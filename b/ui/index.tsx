@@ -9,6 +9,10 @@ import { ToastProvider } from './components/contexts/ToastProvider';
 import { ViewProvider } from './components/contexts/ViewContext';
 import { SimulatorProvider } from './components/contexts/SimulatorProvider';
 import { SuggestionProvider } from './components/contexts/SuggestionContext';
+import { pluginManager } from './plugins';
+
+// Initialize plugins
+pluginManager.loadPlugins();
 
 // Register service worker for PWA functionality
 if ('serviceWorker' in navigator) {

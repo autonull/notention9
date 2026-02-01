@@ -58,15 +58,15 @@ This plan tracks the execution of the Comprehensive Architecture Synthesis outli
 - [x] **Error Handling**: Maintain Version B's comprehensive boundary system.
 
 ## Phase 5: Core Architecture Integration
-- [ ] **Modular Agent Foundation**: Keep Version B's streamlined VoltAgent.
-- [ ] **Selective UI Enhancement**: Add Version A's valuable UI capabilities.
-    - [ ] Integrate `MetaphorPlugin` into `b/ui/plugins/PluginSystem.ts`.
-- [ ] **Service Integration**: Maintain Version B's distributed services.
-- [ ] **Connectivity Management**: Keep Version B's seamless transitions.
+- [x] **Modular Agent Foundation**: Keep Version B's streamlined VoltAgent.
+- [x] **Selective UI Enhancement**: Add Version A's valuable UI capabilities.
+    - [x] Integrate `MetaphorPlugin` into `b/ui/plugins/PluginSystem.ts`.
+- [x] **Service Integration**: Maintain Version B's distributed services.
+- [x] **Connectivity Management**: Keep Version B's seamless transitions.
 
 ## Phase 6: Core Testing and Validation
 - [ ] **Unit Testing**: Comprehensive tests for all integrated components.
-    - [ ] Test `MetaphorMapper`.
+    - [x] Test `MetaphorMapper`.
     - [ ] Test `MetaphorPlugin`.
 - [ ] **Integration Testing**: End-to-end testing of hybrid features.
 - [ ] **Performance Testing**: Ensure hybrid system maintains performance.
