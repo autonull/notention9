@@ -107,6 +107,34 @@ async function bootstrap() {
 
 bootstrap().catch(err => error('Init', 'Bootstrap failed', err));
 
+// --- Persistence ---
+
+const DATA_DIR = join(process.cwd(), 'data');
+const NOTES_FILE = join(DATA_DIR, 'notes.json');
+
+async function ensureDataDir() {
+  try {
+    await fs.promises.mkdir(DATA_DIR, { recursive: true });
+  } catch (e) {
+    // Ignore if exists
+  }
+}
+
+async function loadNotes(): Promise<Note[]> {
+  await ensureDataDir();
+  try {
+    const data = await fs.promises.readFile(NOTES_FILE, 'utf-8');
+    return JSON.parse(data);
+  } catch (e) {
+    return [];
+  }
+}
+
+async function saveNotes(notes: Note[]): Promise<void> {
+  await ensureDataDir();
+  await fs.promises.writeFile(NOTES_FILE, JSON.stringify(notes, null, 2));
+}
+
 // --- WebSocket Handlers ---
 
 wss.on('connection', (ws) => {
@@ -142,12 +170,13 @@ async function handleUIMessage(message: any, ws: WebSocket) {
   const shouldExecuteSkills = async (note: Note) => true;
 
   switch (message.type) {
-    case 'note_created':
+    case 'note_created': {
       const notes = await skillExecutor.executeForNote(message.payload);
       for (const result of notes) {
         broadcastToUI({ type: 'note_created', payload: result });
       }
       break;
+    }
 
     case 'note_updated':
       if (await shouldExecuteSkills(message.payload)) {
@@ -171,6 +200,35 @@ async function handleUIMessage(message: any, ws: WebSocket) {
       const status = await agent.getStatus();
       ws.send(JSON.stringify({ type: 'agent_status', payload: status }));
       break;
+
+    case 'get_notes': {
+      const notes = await loadNotes();
+      ws.send(JSON.stringify({ type: 'notes_list', payload: notes, id: message.id }));
+      break;
+    }
+
+    case 'save_note': {
+      const noteToSave = message.payload;
+      const allNotes = await loadNotes();
+      const index = allNotes.findIndex((n) => n.id === noteToSave.id);
+      if (index >= 0) {
+        allNotes[index] = noteToSave;
+      } else {
+        allNotes.push(noteToSave);
+      }
+      await saveNotes(allNotes);
+      ws.send(JSON.stringify({ type: 'response', id: message.id, success: true }));
+      break;
+    }
+
+    case 'delete_note': {
+      const noteIdToDelete = message.payload.id;
+      const currentNotes = await loadNotes();
+      const filteredNotes = currentNotes.filter((n) => n.id !== noteIdToDelete);
+      await saveNotes(filteredNotes);
+      ws.send(JSON.stringify({ type: 'response', id: message.id, success: true }));
+      break;
+    }
 
     default:
       ws.send(JSON.stringify({ type: 'error', message: `Unknown type: ${message.type}` }));
