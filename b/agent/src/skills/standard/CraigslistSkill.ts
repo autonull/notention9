@@ -1,10 +1,34 @@
 import { Note } from '@notention/core/src/types';
 import { Skill, SkillAction } from '../types';
+import { PropertyPattern, ActionSequence } from '@notention/core/src/skills/types';
 
 export class CraigslistSkill implements Skill {
     id = 'skill-craigslist-search';
     name = 'Craigslist Search';
     description = 'Search Craigslist for items or housing';
+    version = '1.0.0';
+    patterns: PropertyPattern[] = [
+        { required: ['query', 'category'] }
+    ];
+
+    canHandle(note: Note): number {
+        const content = note.content.toLowerCase();
+        if (content.includes('craigslist')) return 0.8;
+        return 0;
+    }
+
+    exportToActions(note: Note): ActionSequence {
+         return {
+            id: crypto.randomUUID(),
+            name: 'Search Craigslist',
+            sourceNote: note as any,
+            actions: []
+        };
+    }
+
+    importFromData(data: unknown, sourceNote: Note): Note[] {
+        return [];
+    }
 
     async export(note: Note): Promise<SkillAction | null> {
         // [search:apt] [price_max:2000]

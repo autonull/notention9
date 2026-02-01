@@ -1,10 +1,34 @@
 import { Note } from '@notention/core/src/types';
 import { Skill, SkillAction } from '../types';
+import { PropertyPattern, ActionSequence } from '@notention/core/src/skills/types';
 
 export class GitHubSkill implements Skill {
     id = 'skill-github-search';
     name = 'GitHub Repository Search';
     description = 'Search GitHub for repositories';
+    version = '1.0.0';
+    patterns: PropertyPattern[] = [
+        { required: ['query'] }
+    ];
+
+    canHandle(note: Note): number {
+        const content = note.content.toLowerCase();
+        if (content.includes('github') || content.includes('repo')) return 0.8;
+        return 0;
+    }
+
+    exportToActions(note: Note): ActionSequence {
+         return {
+            id: crypto.randomUUID(),
+            name: 'Search GitHub',
+            sourceNote: note as any,
+            actions: []
+        };
+    }
+
+    importFromData(data: unknown, sourceNote: Note): Note[] {
+        return [];
+    }
 
     async export(note: Note): Promise<SkillAction | null> {
         const content = note.content;

@@ -74,10 +74,6 @@ async function bootstrap() {
   const { ConfigProcessor } = await import('./configurator/ConfigProcessor');
   const configProcessor = new ConfigProcessor();
 
-  // Initialize Macro Manager (Phase 2.2)
-  const { MacroManager } = await import('./skills/MacroManager');
-  const macroManager = new MacroManager(skillRegistry);
-
   // Initialize Plugin Loader (Phase 2.2)
   const { PluginLoader } = await import('./skills/PluginLoader');
   const pluginLoader = new PluginLoader(skillRegistry);
@@ -104,7 +100,6 @@ async function bootstrap() {
 
     // Process for Configuration
     configProcessor.processNote(note);
-    macroManager.processNote(note);
 
     broadcastToUI({ type: 'note_created', payload: note });
   });

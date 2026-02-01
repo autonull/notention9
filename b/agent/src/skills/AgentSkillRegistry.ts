@@ -45,23 +45,33 @@ export class AgentSkillRegistry extends SkillRegistry {
 
     // This signature might need adjustment based on how it's called
     // In TODO3.md snippet: return (registry as any).findMatching(note, minConfidence);
-    async findMatching(note: Note, minConfidence: number = 0.5): Promise<Array<{ skill: Skill; confidence: number }>> {
+    override findMatching(note: Note): Skill[] {
+        // Fallback to synchronous simple matching for the base class contract
+        const matches: Skill[] = [];
+        for (const meta of this.skillMetadata.values()) {
+             if (meta.skill.canHandle(note) > 0.5) {
+                 matches.push(meta.skill);
+             }
+        }
+        return matches;
+    }
+
+    async findMatchingAsync(note: Note, minConfidence: number = 0.5): Promise<Array<{ skill: Skill; confidence: number }>> {
         // Local matching logic fallback
         const matches: Array<{ skill: Skill; confidence: number }> = [];
         for (const meta of this.skillMetadata.values()) {
-            // Simple keyword matching for fallback
-            // In reality this would be more complex
-            if (note.content.includes(meta.skill.name)) {
-                matches.push({ skill: meta.skill, confidence: 0.8 });
+            const confidence = meta.skill.canHandle(note);
+            if (confidence >= minConfidence) {
+                matches.push({ skill: meta.skill, confidence });
             }
         }
-        return matches.filter(match => match.confidence >= minConfidence);
+        return matches;
     }
 
     async findMatchingWithAgent(note: Note): Promise<Array<{ skill: Skill; confidence: number }>> {
         if (!this.agent || !this.agent.supportsFeature(AgentFeature.WORKFLOWS)) {
             // Fallback to local matching
-            return this.findMatching(note);
+            return this.findMatchingAsync(note);
         }
 
         // Use VoltAgent's skill-matching workflow
@@ -71,10 +81,10 @@ export class AgentSkillRegistry extends SkillRegistry {
                 properties: note.properties
             });
 
-            return (result.rankedSkills || []).filter(match => match.confidence >= 0.5);
+            return (result.rankedSkills || []).filter((match: { confidence: number; }) => match.confidence >= 0.5);
         } catch (e) {
             console.error('Skill matching workflow failed, falling back locally', e);
-            return this.findMatching(note);
+            return this.findMatchingAsync(note);
         }
     }
 

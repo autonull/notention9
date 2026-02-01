@@ -1,10 +1,40 @@
 import { Note } from '@notention/core/src/types';
 import { Skill, SkillAction } from '../types';
+import { PropertyPattern, ActionSequence } from '@notention/core/src/skills/types';
 
 export class IndeedSkill implements Skill {
     id = 'skill-indeed-search';
     name = 'Indeed Job Search';
     description = 'Search for jobs on Indeed based on note criteria';
+    version = '1.0.0';
+    patterns: PropertyPattern[] = [
+        { required: ['role', 'location'] }
+    ];
+
+    canHandle(note: Note): number {
+        const content = note.content.toLowerCase();
+        if (content.includes('indeed') || (content.includes('job') && content.includes('search'))) {
+            return 0.8;
+        }
+        return 0;
+    }
+
+    exportToActions(note: Note): ActionSequence {
+        // Core implementation of exportToActions
+        // This is required by the interface but we are primarily using the 'export' method for VoltAgent
+        // For now, return a dummy sequence or reimplement logic here
+         return {
+            id: crypto.randomUUID(),
+            name: 'Search Indeed',
+            sourceNote: note as any,
+            actions: []
+        };
+    }
+
+    importFromData(data: unknown, sourceNote: Note): Note[] {
+        // Core implementation of importFromData
+        return [];
+    }
 
     async export(note: Note): Promise<SkillAction | null> {
         // Extract search content from note
