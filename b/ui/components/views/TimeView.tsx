@@ -89,23 +89,19 @@ export function TimeView() {
             const end = getDate(['endDateTime', 'endDate', 'end', 'endTime', 'deadline', 'dueDate', 'finish']);
 
             if (start) {
-                // If we have start and end, use them.
-                // If only start, default to 1 hour duration.
                 evts.push({
                     id: note.id,
                     title: note.title || 'Untitled',
                     start: start,
-                    end: end || new Date(start.getTime() + 60 * 60 * 1000),
+                    end: end || new Date(start.getTime() + 60 * 60 * 1000), // Default 1h
                     allDay: false,
                     location: props.find(p => ['location', 'geo', 'place'].includes(p.key))?.values[0]
                 });
             } else if (end) {
-                // Only deadline/due date, show as point event (or 1 hour ending at time?)
-                // Let's show as 1 hour ending at time to be visible
                  evts.push({
                     id: note.id,
                     title: note.title || 'Untitled',
-                    start: new Date(end.getTime() - 60 * 60 * 1000),
+                    start: new Date(end.getTime() - 60 * 60 * 1000), // 1h before deadline
                     end: end,
                     allDay: false,
                     location: props.find(p => ['location', 'geo', 'place'].includes(p.key))?.values[0]
