@@ -1,11 +1,14 @@
 import { UIMetaphor } from '../types/metaphor.js';
 import { logInfo, logWarn } from '../utils/logging.js';
+import { DEFAULT_METAPHORS } from './DefaultMetaphors.js';
 
 export class MetaphorRegistry {
   private metaphors: Map<string, UIMetaphor> = new Map();
   private static instance: MetaphorRegistry;
 
-  constructor() {}
+  constructor() {
+    this.registerDefaults();
+  }
 
   public static getInstance(): MetaphorRegistry {
     if (!MetaphorRegistry.instance) {
@@ -63,6 +66,16 @@ export class MetaphorRegistry {
   clear(): void {
     this.metaphors.clear();
     logInfo('Cleared all metaphors');
+  }
+
+  /**
+   * Register default metaphors
+   */
+  private registerDefaults(): void {
+    DEFAULT_METAPHORS.forEach(metaphor => {
+      this.metaphors.set(metaphor.id, metaphor);
+    });
+    logInfo(`Registered ${DEFAULT_METAPHORS.length} default metaphors`);
   }
 }
 

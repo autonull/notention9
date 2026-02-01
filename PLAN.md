@@ -39,14 +39,14 @@ This plan tracks the execution of the Comprehensive Architecture Synthesis outli
     - [x] Add unit tests for new interfaces in `b/core/src/tests/metaphor`.
 
 ## Phase 3: Core Algorithm Integration
-- [ ] **Essential Algorithm Integration**: Integrate high-value Version A algorithms.
-    - [ ] Port `NotentionUIMetaphorMapper` logic to `b/core/src/metaphor/MetaphorMapper.ts`.
-- [ ] **Maintain Version B Core**: Keep Version B's superior algorithms primary.
-    - [ ] Ensure `b/core/src/utils/matching.ts` is not negatively impacted.
-- [ ] **Pattern Recognition Enhancement**: Enhance with Version A's semantic foundations.
-    - [ ] (Future) Integrate `Pattern` logic from `a/core/src/skills/skillPatternMatcher.ts` if needed.
-- [ ] **UI Representation Algorithms**: Integrate metaphor mapping logic.
-    - [ ] Implement `applyMetaphor` function in `MetaphorMapper.ts`.
+- [x] **Essential Algorithm Integration**: Integrate high-value Version A algorithms.
+    - [x] Port `NotentionUIMetaphorMapper` logic to `b/core/src/metaphor/MetaphorMapper.ts`.
+- [x] **Maintain Version B Core**: Keep Version B's superior algorithms primary.
+    - [x] Ensure `b/core/src/utils/matching.ts` is not negatively impacted.
+- [x] **Pattern Recognition Enhancement**: Enhance with Version A's semantic foundations.
+    - [x] (Future) Integrate `Pattern` logic from `a/core/src/skills/skillPatternMatcher.ts` if needed.
+- [x] **UI Representation Algorithms**: Integrate metaphor mapping logic.
+    - [x] Implement `applyMetaphor` function in `MetaphorMapper.ts`.
 
 ## Phase 4: Core UI/UX Implementation
 - [ ] **Essential Interface**: Build on Version B's responsive design.

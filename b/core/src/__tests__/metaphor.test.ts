@@ -1,6 +1,9 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { MetaphorRegistry, metaphorRegistry } from '../metaphor/MetaphorRegistry';
+import { MetaphorMapper, metaphorMapper } from '../metaphor/MetaphorMapper';
 import { UIMetaphor } from '../types/metaphor';
+import { Note } from '../types/index';
+import { generateId } from '../utils/common';
 
 describe('MetaphorRegistry', () => {
   const testMetaphor: UIMetaphor = {
@@ -80,5 +83,119 @@ describe('MetaphorRegistry', () => {
     const otherCategory = metaphorRegistry.getMetaphorsByCategory('other');
     expect(otherCategory.length).toBe(1);
     expect(otherCategory[0].id).toBe('test-metaphor-2');
+  });
+});
+
+describe('MetaphorMapper', () => {
+  // Re-initialize registry with defaults for mapper tests
+  const registry = new MetaphorRegistry();
+  const mapper = new MetaphorMapper(registry);
+
+  it('should infer "conditional-automation" metaphor from properties', () => {
+    const note: Note = {
+      id: generateId(),
+      title: 'Auto Rule',
+      content: 'If X then Y',
+      tags: [],
+      properties: [
+        { key: 'if', operator: 'is', values: ['temperature > 30'] },
+        { key: 'then', operator: 'is', values: ['turn_on_ac'] }
+      ],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      source: { type: 'user', identifier: 'test', timestamp: Date.now() },
+      public: false,
+      priority: 0
+    };
+
+    const metaphor = mapper.mapToMetaphor(note);
+    expect(metaphor).toBeDefined();
+    expect(metaphor?.id).toBe('conditional-automation');
+  });
+
+  it('should infer "scheduled-task" metaphor from properties', () => {
+    const note: Note = {
+      id: generateId(),
+      title: 'Meeting',
+      content: 'Meeting tomorrow',
+      tags: [],
+      properties: [
+        { key: 'when', operator: 'is', values: ['tomorrow'] },
+        { key: 'do', operator: 'is', values: ['meet_team'] }
+      ],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      source: { type: 'user', identifier: 'test', timestamp: Date.now() },
+      public: false,
+      priority: 0
+    };
+
+    const metaphor = mapper.mapToMetaphor(note);
+    expect(metaphor).toBeDefined();
+    expect(metaphor?.id).toBe('scheduled-task');
+  });
+
+  it('should prioritize explicit metaphor property', () => {
+    const note: Note = {
+      id: generateId(),
+      title: 'Forced Metaphor',
+      content: 'Force monitor',
+      tags: [],
+      properties: [
+        { key: 'metaphor', operator: 'is', values: ['monitoring-agent'] },
+        { key: 'if', operator: 'is', values: ['something'] } // Would otherwise match conditional
+      ],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      source: { type: 'user', identifier: 'test', timestamp: Date.now() },
+      public: false,
+      priority: 0
+    };
+
+    const metaphor = mapper.mapToMetaphor(note);
+    expect(metaphor).toBeDefined();
+    expect(metaphor?.id).toBe('monitoring-agent');
+  });
+
+  it('should return null if no metaphor matches', () => {
+    const note: Note = {
+      id: generateId(),
+      title: 'Random Note',
+      content: 'Just some text',
+      tags: [],
+      properties: [
+        { key: 'random', operator: 'is', values: ['value'] }
+      ],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      source: { type: 'user', identifier: 'test', timestamp: Date.now() },
+      public: false,
+      priority: 0
+    };
+
+    const metaphor = mapper.mapToMetaphor(note);
+    expect(metaphor).toBeNull();
+  });
+
+  it('should apply metaphor to a note', () => {
+    const note: Note = {
+      id: generateId(),
+      title: 'Apply Test',
+      content: 'Test content',
+      tags: [],
+      properties: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      source: { type: 'user', identifier: 'test', timestamp: Date.now() },
+      public: false,
+      priority: 0
+    };
+
+    const metaphor = registry.getMetaphor('conditional-automation')!;
+    const updatedNote = mapper.applyMetaphor(note, metaphor);
+
+    const metaphorProp = updatedNote.properties.find(p => p.key === 'metaphor');
+    expect(metaphorProp).toBeDefined();
+    expect(metaphorProp?.values[0]).toBe('conditional-automation');
   });
 });
