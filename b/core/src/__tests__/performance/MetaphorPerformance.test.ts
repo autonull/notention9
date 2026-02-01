@@ -9,7 +9,6 @@ describe('Metaphor Performance', () => {
       id: 'perf-note',
       title: 'Performance Test',
       content: 'Testing speed',
-      type: 'note',
       properties: [
         { key: 'if', operator: 'is', values: ['condition'] },
         { key: 'then', operator: 'is', values: ['action'] },
@@ -18,10 +17,12 @@ describe('Metaphor Performance', () => {
         { key: 'author', operator: 'is', values: ['me'] },
         { key: 'status', operator: 'is', values: ['draft'] }
       ],
-      created_at: Date.now(),
-      modified_at: Date.now(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       tags: ['test', 'performance'],
-      stats: { viewCount: 0, readTime: 0 }
+      source: { type: 'user', identifier: 'perf-test', timestamp: Date.now() },
+      public: false,
+      priority: 1.0
     };
 
     const iterations = 10000;

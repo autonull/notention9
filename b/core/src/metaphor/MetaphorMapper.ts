@@ -16,7 +16,7 @@ export class MetaphorMapper {
   mapToMetaphor(note: Note): UIMetaphor | null {
     // 1. Check if the note has an explicit metaphor property
     const explicitMetaphor = note.properties.find(p => p.key === 'metaphor' && p.operator === 'is');
-    if (explicitMetaphor?.values.length > 0) {
+    if (explicitMetaphor && explicitMetaphor.values.length > 0) {
       const metaphorId = explicitMetaphor.values[0];
       const metaphor = this.registry.getMetaphor(metaphorId);
       if (metaphor) return metaphor;

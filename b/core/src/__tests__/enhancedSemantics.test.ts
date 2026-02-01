@@ -22,14 +22,15 @@ describe('Enhanced Semantic Capabilities (Phase 7)', () => {
       id: 'test-note-intent',
       title: 'Call Mom',
       content: 'Remind me to call Mom',
-      type: 'note',
       properties: [
         { key: 'intent', operator: 'is', values: ['reminder'] }
       ],
-      created_at: Date.now(),
-      modified_at: Date.now(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       tags: [],
-      stats: { viewCount: 0, readTime: 0 }
+      source: { type: 'user', identifier: userId, timestamp: Date.now() },
+      public: false,
+      priority: 1.0
     };
 
     // 2. Predict

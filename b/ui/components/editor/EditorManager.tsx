@@ -22,6 +22,7 @@ import { SuggestionPanel } from './SuggestionPanel';
 import { SmartNoteAssistant } from '../SmartNoteAssistant';
 import { MetaphorRenderer } from '../metaphor/MetaphorRenderer';
 import { metaphorMapper } from '@notention/core';
+import { PrivacyConfirmModal } from '../modals/PrivacyConfirmModal';
 
 interface EditorManagerProps {
   note: Note;
@@ -53,6 +54,9 @@ export function EditorManager({ note, onSave, sortedNotes }: EditorManagerProps)
     actionLabel,
     missingProperties,
     saveStatus,
+    privacyConfirmation,
+    handlePrivacyConfirm,
+    handlePrivacyCancel
   } = useEditorLogic({ note, onSave });
 
   const {
@@ -241,6 +245,15 @@ export function EditorManager({ note, onSave, sortedNotes }: EditorManagerProps)
         onTimeSelect={handleTimeSelected}
         title={`Pick Time for ${pickingTimeKey}`}
       />
+      {privacyConfirmation && (
+        <PrivacyConfirmModal
+          isOpen={privacyConfirmation.isOpen}
+          onClose={handlePrivacyCancel}
+          onConfirm={handlePrivacyConfirm}
+          noteTitle={dirtyNote.title}
+          destination="Nostr network"
+        />
+      )}
     </div>
   );
 }
