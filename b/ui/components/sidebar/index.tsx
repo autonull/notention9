@@ -75,6 +75,16 @@ export function Sidebar({ sortedNotes = [] }: SidebarProps) {
       </div>
 
       <div className="flex-grow p-2 overflow-y-auto custom-scrollbar">
+        {/* Prominent Create Button in Sidebar Content */}
+        <div className="mb-4">
+            <button
+                onClick={() => handleCreateNote()}
+                className="w-full bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 font-medium py-2 px-3 rounded border border-blue-500/30 transition-all flex items-center justify-center gap-2 text-sm"
+            >
+                <PlusIcon className="w-4 h-4" /> Create New Note
+            </button>
+        </div>
+
         {sortedNotes.length > 0 ? (
           sidebarViewMode === 'list' ? (
               sortedNotes.map((note) => (
