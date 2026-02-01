@@ -112,6 +112,68 @@ async function run() {
     }
     console.log('Delete verification passed!');
 
+    // 5. Robustness / Concurrent Inserts (Race Condition Check)
+    console.log('Testing concurrent inserts (Race Condition Check)...');
+    const iterations = 20;
+    const concurrentNotes = [];
+
+    for (let i = 0; i < iterations; i++) {
+        concurrentNotes.push({
+            id: `concurrent_note_${i}_${Date.now()}`,
+            title: `Concurrent Note ${i}`,
+            updatedAt: new Date().toISOString()
+        });
+    }
+
+    const promises = concurrentNotes.map((note, i) => {
+        return new Promise((resolve) => {
+             ws.send(JSON.stringify({
+                type: 'save_note',
+                payload: note,
+                id: `concurrent_${i}`
+            }));
+            // Rapid fire
+            resolve();
+        });
+    });
+
+    await Promise.all(promises);
+    await new Promise(resolve => setTimeout(resolve, 3000)); // Wait for mutex queue to drain
+
+    // Verify all notes exist
+    console.log('Fetching final concurrent notes...');
+    ws.send(JSON.stringify({ type: 'get_notes', id: 'req_concurrent_final' }));
+
+    const finalNotes = await new Promise((resolve, reject) => {
+         const timeout = setTimeout(() => reject(new Error('Timeout fetching concurrent notes')), 5000);
+         const handler = (data) => {
+            try {
+                const msg = JSON.parse(data);
+                if (msg.type === 'notes_list' && msg.id === 'req_concurrent_final') {
+                    clearTimeout(timeout);
+                    ws.removeListener('message', handler);
+                    resolve(msg.payload);
+                }
+            } catch (e) {}
+        };
+        ws.on('message', handler);
+    });
+
+    let missingCount = 0;
+    for (const note of concurrentNotes) {
+        if (!finalNotes.find(n => n.id === note.id)) {
+            missingCount++;
+            console.error(`Missing note: ${note.id}`);
+        }
+    }
+
+    if (missingCount > 0) {
+        throw new Error(`Race condition detected! ${missingCount} notes were lost.`);
+    }
+
+    console.log(`All ${iterations} concurrent notes verified!`);
+    console.log('Robustness test passed!');
+
     ws.close();
 
   } catch (error) {

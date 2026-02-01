@@ -9,6 +9,7 @@ import { SkillExecutor } from './skills/SkillExecutor';
 import { loadAgentConfig } from './config';
 import { Note } from '@notention/core/src/types';
 import { log, error } from './core/utils';
+import { Mutex } from './utils/Mutex';
 
 // --- Initialization Helpers ---
 
@@ -111,6 +112,7 @@ bootstrap().catch(err => error('Init', 'Bootstrap failed', err));
 
 const DATA_DIR = join(process.cwd(), 'data');
 const NOTES_FILE = join(DATA_DIR, 'notes.json');
+const persistenceMutex = new Mutex();
 
 async function ensureDataDir() {
   try {
@@ -132,7 +134,19 @@ async function loadNotes(): Promise<Note[]> {
 
 async function saveNotes(notes: Note[]): Promise<void> {
   await ensureDataDir();
-  await fs.promises.writeFile(NOTES_FILE, JSON.stringify(notes, null, 2));
+  const tempFile = `${NOTES_FILE}.tmp`;
+  try {
+    await fs.promises.writeFile(tempFile, JSON.stringify(notes, null, 2));
+    await fs.promises.rename(tempFile, NOTES_FILE);
+  } catch (error) {
+    console.error('Failed to save notes atomically', error);
+    try {
+        await fs.promises.unlink(tempFile);
+    } catch (e) {
+        // Ignore unlink error
+    }
+    throw error;
+  }
 }
 
 // --- WebSocket Handlers ---
@@ -202,30 +216,34 @@ async function handleUIMessage(message: any, ws: WebSocket) {
       break;
 
     case 'get_notes': {
-      const notes = await loadNotes();
+      const notes = await persistenceMutex.dispatch(() => loadNotes());
       ws.send(JSON.stringify({ type: 'notes_list', payload: notes, id: message.id }));
       break;
     }
 
     case 'save_note': {
       const noteToSave = message.payload;
-      const allNotes = await loadNotes();
-      const index = allNotes.findIndex((n) => n.id === noteToSave.id);
-      if (index >= 0) {
-        allNotes[index] = noteToSave;
-      } else {
-        allNotes.push(noteToSave);
-      }
-      await saveNotes(allNotes);
+      await persistenceMutex.dispatch(async () => {
+        const allNotes = await loadNotes();
+        const index = allNotes.findIndex((n) => n.id === noteToSave.id);
+        if (index >= 0) {
+          allNotes[index] = noteToSave;
+        } else {
+          allNotes.push(noteToSave);
+        }
+        await saveNotes(allNotes);
+      });
       ws.send(JSON.stringify({ type: 'response', id: message.id, success: true }));
       break;
     }
 
     case 'delete_note': {
       const noteIdToDelete = message.payload.id;
-      const currentNotes = await loadNotes();
-      const filteredNotes = currentNotes.filter((n) => n.id !== noteIdToDelete);
-      await saveNotes(filteredNotes);
+      await persistenceMutex.dispatch(async () => {
+        const currentNotes = await loadNotes();
+        const filteredNotes = currentNotes.filter((n) => n.id !== noteIdToDelete);
+        await saveNotes(filteredNotes);
+      });
       ws.send(JSON.stringify({ type: 'response', id: message.id, success: true }));
       break;
     }
