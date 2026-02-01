@@ -54,10 +54,28 @@ export function CommandPalette({
   const filteredNotes = notes
     .filter((note) => {
         const q = query.toLowerCase();
+
+        // Tag Search
         if (q.startsWith('#')) {
             const tagQuery = q.slice(1);
             return note.tags.some(tag => tag.toLowerCase().includes(tagQuery));
         }
+
+        // Semantic Property Search (key:value)
+        if (q.includes(':')) {
+            const [key, value] = q.split(':').map(s => s.trim());
+            if (key && value) {
+                return note.properties.some(p =>
+                    p.key.toLowerCase().includes(key) &&
+                    p.values.some(v => v.toLowerCase().includes(value))
+                );
+            }
+            // Just key match if value is empty?
+            if (key && !value) {
+                return note.properties.some(p => p.key.toLowerCase().includes(key));
+            }
+        }
+
         return (
             note.title.toLowerCase().includes(q) ||
             note.content.toLowerCase().includes(q)
@@ -194,7 +212,7 @@ export function CommandPalette({
 
         <div className="p-2 border-t border-gray-700/50 text-xs text-gray-500 flex justify-between px-4 py-2 bg-gray-900/30">
             <div>
-                <span className="font-semibold">ProTip:</span> Use <code className="bg-gray-700 px-1 rounded text-gray-300">#</code> to search tags.
+                <span className="font-semibold">ProTip:</span> Use <code className="bg-gray-700 px-1 rounded text-gray-300">#</code> for tags, <code className="bg-gray-700 px-1 rounded text-gray-300">key:value</code> for properties.
             </div>
             <div className="flex gap-4">
                 <span><kbd className="font-sans">↑↓</kbd> navigate</span>

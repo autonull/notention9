@@ -57,6 +57,7 @@ export function OntologyNodeItem({
 
         {isEditing && (
             <div className="opacity-0 group-hover:opacity-100 flex items-center gap-1 transition-opacity">
+                {/* Note: Attribute editing could be added here */}
                 {onAddChild && (
                     <IconButton
                         icon={PlusIcon}

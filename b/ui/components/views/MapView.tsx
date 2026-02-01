@@ -1,4 +1,5 @@
 import React from 'react';
+import 'leaflet/dist/leaflet.css';
 
 import { useMapView } from '../../hooks/useMapView';
 import { MapPinIcon } from '../common/icons';
