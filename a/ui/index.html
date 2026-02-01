@@ -1,0 +1,43 @@
+<!doctype html>
+<html class="dark" lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Notention</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      crossorigin=""
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      rel="stylesheet"
+    />
+
+    <script type="importmap">
+      {
+        "imports": {
+          "react": "https://esm.sh/react@^18.3.1",
+          "react-dom/": "https://esm.sh/react-dom@^18.3.1/",
+          "react/": "https://esm.sh/react@^18.3.1/",
+          "@google/genai": "https://esm.sh/@google/genai@^1.11.0",
+          "localforage": "https://esm.sh/localforage@^1.10.0",
+          "nostr-tools": "https://esm.sh/nostr-tools@^2.7.1",
+          "bech32": "https://esm.sh/bech32@^2.0.0",
+          "nostr-tools/": "https://esm.sh/nostr-tools@^2.7.1/",
+          "leaflet": "https://esm.sh/leaflet@1.9.4",
+          "react-dom": "https://esm.sh/react-dom@^18.3.1"
+        }
+      }
+    </script>
+    <link href="/index.css" rel="stylesheet" />
+  </head>
+  <body class="bg-gray-900 text-gray-200">
+    <div id="root"></div>
+    <script src="/index.tsx" type="module"></script>
+  </body>
+</html>

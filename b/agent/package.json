@@ -1,0 +1,32 @@
+{
+  "name": "@notention/agent",
+  "version": "1.0.0",
+  "description": "Universal Action Agent for Notention",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "build": "tsc"
+  },
+  "keywords": [
+    "notention",
+    "voltagent",
+    "agent"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@notention/agent-voltagent": "*",
+    "@notention/core": "*",
+    "@notention/ui": "*",
+    "express": "^4.21.2",
+    "playwright": "^1.58.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/ws": "^8.18.0",
+    "tsx": "^4.19.2",
+    "typescript": "~5.9.2"
+  }
+}

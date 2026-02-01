@@ -1,0 +1,18 @@
+{
+  "name": "notention-monorepo",
+  "private": true,
+  "workspaces": [
+    "ui",
+    "agent",
+    "agent/voltagent",
+    "core"
+  ],
+  "scripts": {
+    "test": "npm test --workspaces",
+    "build": "npm run build --workspaces"
+  },
+  "dependencies": {
+    "uuid": "^9.0.1",
+    "zod": "^3.23.8"
+  }
+}

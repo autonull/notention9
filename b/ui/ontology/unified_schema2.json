@@ -1,0 +1,357 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Unified Social Media and E-commerce Platform",
+  "description": "A unified JSON Schema representing core data structures for various social media, e-commerce, and content platforms.",
+  "type": "object",
+  "properties": {
+    "users": {
+      "type": "array",
+      "description": "List of users across all platforms.",
+      "items": {
+        "$ref": "#/definitions/User"
+      }
+    },
+    "content": {
+      "type": "array",
+      "description": "List of content across all platforms, including posts, products, listings, etc.",
+      "items": {
+        "$ref": "#/definitions/Content"
+      }
+    },
+    "interactions": {
+      "type": "array",
+      "description": "List of interactions like comments, likes, shares, messages, etc.",
+      "items": {
+        "$ref": "#/definitions/Interaction"
+      }
+    },
+    "transactions": {
+      "type": "array",
+      "description": "List of financial transactions, including orders, payments, donations, etc.",
+      "items": {
+        "$ref": "#/definitions/Transaction"
+      }
+    },
+    "groups": {
+      "type": "array",
+      "description": "List of groups or communities.",
+      "items": {
+        "$ref": "#/definitions/Group"
+      }
+    }
+  },
+  "definitions": {
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Unique identifier for the user."
+        },
+        "username": {
+          "type": "string",
+          "description": "User's unique username."
+        },
+        "name": {
+          "type": "string",
+          "description": "User's full name."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "User's email address."
+        },
+        "phoneNumber": {
+          "type": "string",
+          "description": "User's phone number."
+        },
+        "profilePicture": {
+          "type": "string",
+          "format": "URL",
+          "description": "URL to the user's profile picture."
+        },
+        "bio": {
+          "type": "string",
+          "description": "Short biography of the user."
+        },
+        "location": {
+          "type": "string",
+          "description": "User's location."
+        },
+        "joinedDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Date and time the user joined the platform."
+        },
+        "followers": {
+          "type": "array",
+          "description": "List of user IDs following this user.",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "following": {
+          "type": "array",
+          "description": "List of user IDs this user is following.",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "isVerified": {
+          "type": "boolean",
+          "description": "Whether the user's account is verified."
+        }
+      },
+      "required": [
+        "id",
+        "username",
+        "email"
+      ]
+    },
+    "Content": {
+      "type": "object",
+      "description": "Represents a generic content item.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Unique identifier for the content item."
+        },
+        "creatorId": {
+          "type": "string",
+          "format": "uuid",
+          "description": "ID of the user who created the content."
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of content.",
+          "enum": [
+            "post",
+            "product",
+            "listing",
+            "video",
+            "message",
+            "comment",
+            "event",
+            "group",
+            "page",
+            "campaign",
+            "order",
+            "review",
+            "article"
+          ]
+        },
+        "content": {
+          "type": "string",
+          "description": "Text content of the item (if applicable)."
+        },
+        "media": {
+          "type": "array",
+          "description": "List of media URLs associated with the content.",
+          "items": {
+            "type": "string",
+            "format": "URL"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of content creation."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of last content update."
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Additional metadata specific to the content type.",
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "id",
+        "creatorId",
+        "type",
+        "createdAt"
+      ]
+    },
+    "Interaction": {
+      "type": "object",
+      "description": "Represents an interaction with a content item.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Unique identifier for the interaction."
+        },
+        "userId": {
+          "type": "string",
+          "format": "uuid",
+          "description": "ID of the user performing the interaction."
+        },
+        "contentId": {
+          "type": "string",
+          "format": "uuid",
+          "description": "ID of the content being interacted with."
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of interaction.",
+          "enum": [
+            "like",
+            "comment",
+            "share",
+            "message",
+            "reply",
+            "view",
+            "reaction"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of the interaction."
+        },
+        "commentText": {
+          "type": "string",
+          "description": "Text content of the comment (if interaction type is 'comment')."
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Additional metadata specific to the interaction type.",
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "contentId",
+        "type",
+        "timestamp"
+      ]
+    },
+    "Transaction": {
+      "type": "object",
+      "description": "Represents a financial transaction.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Unique identifier for the transaction."
+        },
+        "buyerId": {
+          "type": "string",
+          "format": "uuid",
+          "description": "ID of the user making the purchase/payment."
+        },
+        "sellerId": {
+          "type": "string",
+          "format": "uuid",
+          "description": "ID of the user receiving the payment (if applicable)."
+        },
+        "contentId": {
+          "type": "string",
+          "format": "uuid",
+          "description": "ID of the content associated with the transaction (e.g., product, listing, event)."
+        },
+        "amount": {
+          "type": "number",
+          "format": "float",
+          "description": "Amount of the transaction."
+        },
+        "currency": {
+          "type": "string",
+          "description": "Currency code (e.g., USD, EUR)."
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of the transaction."
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "completed",
+            "failed",
+            "refunded"
+          ],
+          "description": "Status of the transaction."
+        },
+        "paymentMethod": {
+          "type": "string",
+          "description": "Payment method used (e.g., 'credit_card', 'paypal')."
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Additional metadata specific to the transaction type.",
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "id",
+        "buyerId",
+        "amount",
+        "currency",
+        "timestamp",
+        "status"
+      ]
+    },
+    "Group": {
+      "type": "object",
+      "description": "Represents a group or community.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Unique identifier for the group."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the group."
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the group."
+        },
+        "creatorId": {
+          "type": "string",
+          "format": "uuid",
+          "description": "ID of the user who created the group."
+        },
+        "members": {
+          "type": "array",
+          "description": "List of user IDs who are members of the group.",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of group creation."
+        },
+        "privacy": {
+          "type": "string",
+          "enum": [
+            "public",
+            "private",
+            "secret"
+          ],
+          "description": "Privacy setting of the group."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "creatorId",
+        "members"
+      ]
+    }
+  }
+}
