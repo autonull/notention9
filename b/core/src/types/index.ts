@@ -20,7 +20,7 @@ export interface Property {
   key: string;
   operator: string;
   values: string[];
-  quantity?: import('./quantities.js').Quantity;  // Added for semantic quantity handling
+  quantity?: import('../quantities.js').Quantity;  // Added for semantic quantity handling
 }
 
 export interface NoteSource {
