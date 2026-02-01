@@ -49,13 +49,13 @@ This plan tracks the execution of the Comprehensive Architecture Synthesis outli
     - [x] Implement `applyMetaphor` function in `MetaphorMapper.ts`.
 
 ## Phase 4: Core UI/UX Implementation
-- [ ] **Essential Interface**: Build on Version B's responsive design.
-- [ ] **Selective UI Metaphors**: Integrate valuable Version A metaphor mappings.
-    - [ ] Create `b/ui/plugins/metaphor/MetaphorPlugin.tsx` to hook into the UI.
-    - [ ] Create `b/ui/components/metaphor/MetaphorRenderer.tsx`.
-- [ ] **Agent Visualization**: Maintain Version B's clear activity indicators.
-- [ ] **Command System**: Keep Version B's unified interface.
-- [ ] **Error Handling**: Maintain Version B's comprehensive boundary system.
+- [x] **Essential Interface**: Build on Version B's responsive design.
+- [x] **Selective UI Metaphors**: Integrate valuable Version A metaphor mappings.
+    - [x] Create `b/ui/plugins/metaphor/MetaphorPlugin.tsx` to hook into the UI.
+    - [x] Create `b/ui/components/metaphor/MetaphorRenderer.tsx`.
+- [x] **Agent Visualization**: Maintain Version B's clear activity indicators.
+- [x] **Command System**: Keep Version B's unified interface.
+- [x] **Error Handling**: Maintain Version B's comprehensive boundary system.
 
 ## Phase 5: Core Architecture Integration
 - [ ] **Modular Agent Foundation**: Keep Version B's streamlined VoltAgent.

@@ -20,6 +20,8 @@ import { EditorMatches } from './EditorMatches';
 import { ContextPanel } from './ContextPanel';
 import { SuggestionPanel } from './SuggestionPanel';
 import { SmartNoteAssistant } from '../SmartNoteAssistant';
+import { MetaphorRenderer } from '../metaphor/MetaphorRenderer';
+import { metaphorMapper } from '@notention/core';
 
 interface EditorManagerProps {
   note: Note;
@@ -126,6 +128,8 @@ export function EditorManager({ note, onSave, sortedNotes }: EditorManagerProps)
     handleContentSave(newContent);
   };
 
+  const activeMetaphor = metaphorMapper.mapToMetaphor(dirtyNote);
+
   return (
     <div className="flex flex-col h-full relative">
       <EditorHeader
@@ -180,6 +184,9 @@ export function EditorManager({ note, onSave, sortedNotes }: EditorManagerProps)
             topContent={
               <>
                 <SuggestionPanel noteId={note.id} onApply={handleApplySuggestions} />
+                {activeMetaphor && (
+                  <MetaphorRenderer note={dirtyNote} metaphor={activeMetaphor} />
+                )}
                 <ContextPanel
                   note={dirtyNote}
                   onPickLocation={() => setIsMapPickerOpen(true)}
