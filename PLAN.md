@@ -72,9 +72,12 @@ This plan tracks the execution of the Comprehensive Architecture Synthesis outli
 - [x] **Performance Testing**: Ensure hybrid system maintains performance.
 
 ## Phase 7: Advanced Capabilities
-- [ ] **Enhanced Autonomous Features**: Maintain Version B's superior pattern recognition.
-- [ ] **Enhanced Semantic Processing**: Keep Version B's advanced parsing.
-- [ ] **Enhanced User Experience**: Improve with selective Version A UI capabilities.
+- [x] **Enhanced Autonomous Features**: Maintain Version B's superior pattern recognition.
+    - [x] Integrate Default Patterns from Version A (intent-based predictions).
+- [x] **Enhanced Semantic Processing**: Keep Version B's advanced parsing.
+    - [x] Add Intent Detection strategies to `PropertyExtractor` (regex heuristics from Version A).
+- [x] **Enhanced User Experience**: Improve with selective Version A UI capabilities.
+    - [x] (Already Covered) UI Metaphors integrated in Phase 4.
 
 ## Phase 8: Advanced Testing and Validation
 - [ ] **Enhanced Unit Testing**: Comprehensive tests for advanced components.

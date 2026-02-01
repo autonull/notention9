@@ -42,6 +42,7 @@ export class PropertyExtractor {
         const lower = text.toLowerCase();
 
         // Apply extraction strategies in sequence
+        this.applyIntentStrategy(text, properties);
         this.applySendToStrategy(text, properties);
         this.applyChannelStrategy(text, properties);
         this.applyPhoneStrategy(text, properties);
@@ -51,6 +52,33 @@ export class PropertyExtractor {
         this.applyFuzzyMatchingStrategy(text, properties);
 
         return properties;
+    }
+
+    /**
+     * Strategy 0: Match semantic intents (from Version A)
+     */
+    private applyIntentStrategy(text: string, properties: Property[]): void {
+        const intents = [
+            { key: 'reminder', regex: /remind.*me.*(to|about|that).*|set.*reminder/i },
+            { key: 'schedule', regex: /schedule|book|plan|arrange.*for|appointment.*with/i },
+            { key: 'communication', regex: /email|send.*message|text|call|contact.*about/i },
+            { key: 'task', regex: /todo|to-do|task|do.*later|need.*to.*do/i },
+            { key: 'shopping', regex: /buy|purchase|order|get.*from|shop.*for/i },
+            { key: 'health', regex: /medication|take.*pill|doctor.*appointment|exercise|workout/i }
+        ];
+
+        for (const intent of intents) {
+            if (intent.regex.test(text)) {
+                // Avoid duplicate intents
+                if (!properties.some(p => p.key === 'intent' && p.values.includes(intent.key))) {
+                    properties.push({
+                        key: 'intent',
+                        operator: 'is',
+                        values: [intent.key]
+                    });
+                }
+            }
+        }
     }
 
     /**
