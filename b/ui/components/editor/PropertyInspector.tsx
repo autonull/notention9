@@ -2,14 +2,13 @@ import React, { useState } from 'react';
 
 import type { Property, OntologyNode } from '@notention/core';
 import {
-  PencilIcon,
   PlusIcon,
   TagIcon,
-  TrashIcon,
   XIcon,
   SearchSparkleIcon
 } from '../common/icons';
 import { PropertyForm } from './PropertyForm';
+import { PropertyWidget } from './PropertyWidget';
 import { IconButton } from '../common/IconButton';
 import { useGardener } from '../../hooks/useGardener';
 import { parseProperties } from '@notention/core';
@@ -96,14 +95,6 @@ export function PropertyInspector({
       }
   };
 
-  const startEdit = (prop: Property, idx: number) => {
-    setIsAdding(false);
-    setEditingIndex(idx);
-    setEditKey(prop.key);
-    setEditOp(prop.operator);
-    setEditValue(prop.values.join(', '));
-  };
-
   const cancelEdit = () => {
     setIsAdding(false);
     setEditingIndex(null);
@@ -117,16 +108,13 @@ export function PropertyInspector({
       values: value.split(',').map((v) => v.trim()),
     };
 
-    if (editingIndex !== null) {
-      // Edit existing
-      const oldProp = properties[editingIndex];
-      onUpdateText(oldProp, newProp);
-    } else {
-      // Add new
-      onUpdateText(null, newProp);
-    }
-
+    // Add new
+    onUpdateText(null, newProp);
     cancelEdit();
+  };
+
+  const handleWidgetChange = (oldProp: Property, newProp: Property) => {
+    onUpdateText(oldProp, newProp);
   };
 
   const confirmDelete = () => {
@@ -195,54 +183,14 @@ export function PropertyInspector({
           />
         )}
 
-        {sortedProperties.map((prop, idx) => {
-            const propDetails = getAttributeDetails(prop.key, ontology);
-            return (
-          <div
-            key={idx}
-            className={`bg-gray-800/40 p-2 rounded border border-gray-700/50 hover:border-gray-600 group relative transition-all ${editingIndex === idx ? 'opacity-50 pointer-events-none' : ''}`}
-          >
-            <div className="flex justify-between items-start mb-1">
-              <div
-                className="text-xs text-blue-400 font-mono font-bold truncate pr-6 flex items-center gap-1"
-                title={propDetails?.description || prop.key}
-              >
-                {prop.key}
-                {propDetails && (
-                    <span className="text-[9px] text-gray-500 bg-gray-900/50 px-1 rounded uppercase font-normal">
-                        {propDetails.type}
-                    </span>
-                )}
-              </div>
-              <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-800 rounded">
-                <IconButton
-                  onClick={() => startEdit(prop, properties.indexOf(prop))}
-                  icon={PencilIcon}
-                  size="xs"
-                  variant="ghost"
-                  className="hover:text-yellow-400"
-                  tooltip="Edit"
-                />
-                <IconButton
-                  onClick={() => setPropertyToDelete(prop)}
-                  icon={TrashIcon}
-                  size="xs"
-                  variant="danger"
-                  tooltip="Delete"
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 text-sm text-gray-300">
-              <span className="text-gray-500 text-xs font-mono bg-gray-900 px-1 rounded">
-                {prop.operator === 'is' ? '=' : prop.operator}
-              </span>
-              <span className="truncate" title={prop.values.join(', ')}>
-                {prop.values.join(', ')}
-              </span>
-            </div>
-          </div>
-        )})}
+        {sortedProperties.map((prop, idx) => (
+          <PropertyWidget
+            key={`${prop.key}-${idx}`}
+            property={prop}
+            onChange={(newProp) => handleWidgetChange(prop, newProp)}
+            onRemove={() => setPropertyToDelete(prop)}
+          />
+        ))}
 
         {properties.length === 0 && !isAdding && (
           <div className="flex flex-col items-center justify-center py-12 px-4 text-center text-gray-500 opacity-80">

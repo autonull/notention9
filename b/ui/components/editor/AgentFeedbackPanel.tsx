@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { agentService } from '../../services/AgentService';
+import { FeedbackWidget } from '../common/FeedbackWidget';
 
 interface LogEntry {
     id: string;
@@ -68,7 +69,13 @@ export const AgentFeedbackPanel: React.FC = () => {
         <div className="flex flex-col bg-gray-900 border-l border-gray-800 w-64 h-full text-xs font-mono">
             <div className="p-2 border-b border-gray-800 font-bold text-gray-400 uppercase tracking-wider flex justify-between items-center">
                 <span>Agent Stream</span>
-                <button onClick={() => setLogs([])} className="hover:text-white">Clear</button>
+                <div className="flex items-center gap-2">
+                    <FeedbackWidget
+                        entityId="agent-stream"
+                        onFeedback={(type, val) => console.log('Feedback:', type, val)}
+                    />
+                    <button onClick={() => setLogs([])} className="hover:text-white">Clear</button>
+                </div>
             </div>
             <div className="flex-1 overflow-y-auto p-2 space-y-2" ref={scrollRef}>
                 {logs.map(log => (
