@@ -11,6 +11,23 @@ import { parseQuantity } from './quantities.js';
  * Uses ontology metadata to intelligently parse text and extract semantic properties.
  */
 
+const INTENTS = [
+    { key: 'reminder', regex: /remind.*me.*(to|about|that).*|set.*reminder/i },
+    { key: 'schedule', regex: /schedule|book|plan|arrange.*for|appointment.*with/i },
+    { key: 'communication', regex: /email|send.*message|text|call|contact.*about/i },
+    { key: 'task', regex: /todo|to-do|task|do.*later|need.*to.*do/i },
+    { key: 'shopping', regex: /buy|purchase|order|get.*from|shop.*for/i },
+    { key: 'health', regex: /medication|take.*pill|doctor.*appointment|exercise|workout/i }
+];
+
+const LOCATION_KEYWORDS = ['near', 'in', 'at'];
+
+const DATE_PATTERNS = [
+    { regex: /tomorrow/i, offset: 1 },
+    { regex: /today/i, offset: 0 },
+    { regex: /yesterday/i, offset: -1 }
+];
+
 export class PropertyExtractor {
     private ontologyService: OntologyService;
 
@@ -39,18 +56,18 @@ export class PropertyExtractor {
      */
     extractFromText(text: string): Property[] {
         const properties: Property[] = [];
-        const lower = text.toLowerCase();
+        const strategies = [
+            this.applyIntentStrategy,
+            this.applySendToStrategy,
+            this.applyChannelStrategy,
+            this.applyPhoneStrategy,
+            this.applyEmailStrategy,
+            this.applyLocationStrategy,
+            this.applyDateStrategy,
+            this.applyFuzzyMatchingStrategy
+        ];
 
-        // Apply extraction strategies in sequence
-        this.applyIntentStrategy(text, properties);
-        this.applySendToStrategy(text, properties);
-        this.applyChannelStrategy(text, properties);
-        this.applyPhoneStrategy(text, properties);
-        this.applyEmailStrategy(text, properties);
-        this.applyLocationStrategy(text, properties);
-        this.applyDateStrategy(text, properties);
-        this.applyFuzzyMatchingStrategy(text, properties);
-
+        strategies.forEach(strategy => strategy.call(this, text, properties));
         return properties;
     }
 
@@ -58,16 +75,7 @@ export class PropertyExtractor {
      * Strategy 0: Match semantic intents (from Version A)
      */
     private applyIntentStrategy(text: string, properties: Property[]): void {
-        const intents = [
-            { key: 'reminder', regex: /remind.*me.*(to|about|that).*|set.*reminder/i },
-            { key: 'schedule', regex: /schedule|book|plan|arrange.*for|appointment.*with/i },
-            { key: 'communication', regex: /email|send.*message|text|call|contact.*about/i },
-            { key: 'task', regex: /todo|to-do|task|do.*later|need.*to.*do/i },
-            { key: 'shopping', regex: /buy|purchase|order|get.*from|shop.*for/i },
-            { key: 'health', regex: /medication|take.*pill|doctor.*appointment|exercise|workout/i }
-        ];
-
-        for (const intent of intents) {
+        for (const intent of INTENTS) {
             if (intent.regex.test(text)) {
                 // Avoid duplicate intents
                 if (!properties.some(p => p.key === 'intent' && p.values.includes(intent.key))) {
@@ -106,7 +114,7 @@ export class PropertyExtractor {
             const channel = channelMatch[1];
             // Validate against ontology enum
             const enumOptions = this.ontologyService.getEnumOptions('channel');
-            if (enumOptions && enumOptions.includes(channel)) {
+            if (enumOptions?.includes(channel)) {
                 properties.push({
                     key: 'channel',
                     operator: 'is',
@@ -148,10 +156,8 @@ export class PropertyExtractor {
      * Strategy 5: Match locations (basic)
      */
     private applyLocationStrategy(text: string, properties: Property[]): void {
-        const locationKeywords = ['near', 'in', 'at'];
-
         // Cache regex patterns to avoid recreating them
-        for (const keyword of locationKeywords) {
+        for (const keyword of LOCATION_KEYWORDS) {
             const regex = new RegExp(`${keyword}\\s+([A-Z][a-z]+(?:\\s+[A-Z][a-z]+)*)`, 'gi');
             const matches = text.match(regex);
             if (matches) {
@@ -171,13 +177,7 @@ export class PropertyExtractor {
      * Strategy 6: Match datetime references
      */
     private applyDateStrategy(text: string, properties: Property[]): void {
-        const datePatterns = [
-            { regex: /tomorrow/i, offset: 1 },
-            { regex: /today/i, offset: 0 },
-            { regex: /yesterday/i, offset: -1 }
-        ];
-
-        for (const pattern of datePatterns) {
+        for (const pattern of DATE_PATTERNS) {
             if (pattern.regex.test(text)) {
                 const date = new Date();
                 date.setDate(date.getDate() + pattern.offset);
@@ -220,10 +220,7 @@ export class PropertyExtractor {
      */
     inferType(value: string): string {
         // Check if it's a quantity with units
-        const quantity = this.parseQuantityValue(value);
-        if (quantity) {
-            return 'quantity';
-        }
+        if (this.parseQuantityValue(value)) return 'quantity';
 
         // Number
         if (/^-?\d+(\.\d+)?$/.test(value)) return 'number';
@@ -238,7 +235,7 @@ export class PropertyExtractor {
         if (/^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/.test(value)) return 'geo';
 
         // Email
-        if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'string'; // Could be email type
+        if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'string';
 
         // Phone
         if (/^\+?\d{10,15}$/.test(value)) return 'string';
