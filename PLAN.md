@@ -11,19 +11,19 @@ This plan tracks the execution of the Comprehensive Architecture Synthesis outli
 - [x] **Establish Version B as Base**: Set up Version B as the primary codebase with essential tooling.
     - [x] Ensure `npm install` and `npm run build` pass in `b/`.
     - [x] Confirm `npm test` runs successfully in `b/`.
-- [ ] **Core Architecture Setup**: Ensure Version B's architecture is stable and well-understood.
-    - [ ] Create `b/core/src/metaphor/` directory for incoming logic.
-    - [ ] Create `b/ui/plugins/metaphor/` directory for incoming UI components.
-- [ ] **Identify High-Value Version A Features**: Select specific UI representation and metaphor mapping capabilities.
-    - [ ] Target: `a/agent/moltbot/src/ui-representation/NotentionUIMetaphorMapper.ts`
-    - [ ] Target: `a/agent/moltbot/src/ui-replacement/MetaphorSystem.ts`
-    - [ ] Target: `a/agent/moltbot/src/ui-replacement/ComprehensiveUIReplacementSystem.ts`
-- [ ] **Design Integration Points**: Plan where Version A features will integrate.
-    - [ ] Update `b/ARCHITECTURE.md` to reflect the addition of Metaphor/Plugin systems.
-- [ ] **Set Up Development Environment**: Configure basic tools.
-    - [ ] Verify `b/ui` runs with `npm run dev`.
-- [ ] **Establish Essential Quality Standards**: Define core "best" practices.
-    - [ ] Verify `eslint` configuration in `b/`.
+- [x] **Core Architecture Setup**: Ensure Version B's architecture is stable and well-understood.
+    - [x] Create `b/core/src/metaphor/` directory for incoming logic.
+    - [x] Create `b/ui/plugins/metaphor/` directory for incoming UI components.
+- [x] **Identify High-Value Version A Features**: Select specific UI representation and metaphor mapping capabilities.
+    - [x] Target: `a/agent/moltbot/src/ui-representation/NotentionUIMetaphorMapper.ts`
+    - [x] Target: `a/agent/moltbot/src/ui-replacement/MetaphorSystem.ts`
+    - [x] Target: `a/agent/moltbot/src/ui-replacement/ComprehensiveUIReplacementSystem.ts`
+- [x] **Design Integration Points**: Plan where Version A features will integrate.
+    - [x] Update `b/ARCHITECTURE.md` to reflect the addition of Metaphor/Plugin systems.
+- [x] **Set Up Development Environment**: Configure basic tools.
+    - [x] Verify `b/ui` runs with `npm run dev`.
+- [x] **Establish Essential Quality Standards**: Define core "best" practices.
+    - [x] Verify `eslint` configuration in `b/`.
 
 ## Phase 2: Core Data Structure Integration
 - [ ] **Extend Version B Data Structures**: Add selected Version A data structures.

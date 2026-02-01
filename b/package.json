@@ -14,5 +14,10 @@
   "dependencies": {
     "uuid": "^9.0.1",
     "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "define-data-property": "^1.1.4",
+    "estraverse": "^5.3.0",
+    "has-property-descriptors": "^1.0.2"
   }
 }
