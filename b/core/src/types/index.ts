@@ -264,6 +264,9 @@ export interface SearchResult {
   score: number;
 }
 
+// Export Metaphor Types
+export * from './metaphor.js';
+
 export interface Agent {
   // === Lifecycle ===
   start(): Promise<void>;

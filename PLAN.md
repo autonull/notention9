@@ -26,17 +26,17 @@ This plan tracks the execution of the Comprehensive Architecture Synthesis outli
     - [x] Verify `eslint` configuration in `b/`.
 
 ## Phase 2: Core Data Structure Integration
-- [ ] **Extend Version B Data Structures**: Add selected Version A data structures.
-    - [ ] Port `UIMetaphorMapping` interface from `a/agent/moltbot/src/ui-representation/UIMappingInterfaces.ts` to `b/core/src/types/index.ts`.
-    - [ ] Port `TransformationRule` interface.
-- [ ] **Maintain Version B Foundation**: Keep core Version B structures primary.
-    - [ ] Ensure `Note` and `Property` interfaces remain compatible with existing Version B logic.
-- [ ] **Implement Basic Migration**: Tools to migrate existing data if needed.
-    - [ ] (If applicable) Create a script to convert old Version A metaphors to new structure.
-- [ ] **Integrate Essential UI Representation Structures**: Add metaphor mapping structures.
-    - [ ] Create `b/core/src/metaphor/MetaphorRegistry.ts`.
-- [ ] **Validate Data Integrity**: Ensure all data structures work together.
-    - [ ] Add unit tests for new interfaces in `b/core/src/tests/metaphor`.
+- [x] **Extend Version B Data Structures**: Add selected Version A data structures.
+    - [x] Port `UIMetaphorMapping` interface from `a/agent/moltbot/src/ui-representation/UIMappingInterfaces.ts` to `b/core/src/types/index.ts`.
+    - [x] Port `TransformationRule` interface.
+- [x] **Maintain Version B Foundation**: Keep core Version B structures primary.
+    - [x] Ensure `Note` and `Property` interfaces remain compatible with existing Version B logic.
+- [x] **Implement Basic Migration**: Tools to migrate existing data if needed.
+    - [x] (If applicable) Create a script to convert old Version A metaphors to new structure.
+- [x] **Integrate Essential UI Representation Structures**: Add metaphor mapping structures.
+    - [x] Create `b/core/src/metaphor/MetaphorRegistry.ts`.
+- [x] **Validate Data Integrity**: Ensure all data structures work together.
+    - [x] Add unit tests for new interfaces in `b/core/src/tests/metaphor`.
 
 ## Phase 3: Core Algorithm Integration
 - [ ] **Essential Algorithm Integration**: Integrate high-value Version A algorithms.
