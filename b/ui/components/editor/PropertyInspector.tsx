@@ -17,6 +17,8 @@ import { useToast } from '../../hooks/useToast';
 import { useNotes } from '../../hooks/useNotes';
 import { useView } from '../../hooks/useViewContext';
 import { ConfirmationModal } from '../common/ConfirmationModal';
+import { propertyExtractionService } from '../../services/ai/propertyExtraction';
+import { useEffect } from 'react';
 
 interface PropertyInspectorProps {
   properties: Property[];
@@ -51,6 +53,27 @@ export function PropertyInspector({
   const [editValue, setEditValue] = useState('');
 
   const [propertyToDelete, setPropertyToDelete] = useState<Property | null>(null);
+  const [suggestedProperties, setSuggestedProperties] = useState<Property[]>([]);
+
+  // Watch content for suggestions
+  useEffect(() => {
+      if (!currentNote?.content || currentNote.content.length < 10) return;
+
+      const timer = setTimeout(async () => {
+          try {
+              const suggestions = await propertyExtractionService.extractProperties(currentNote.content);
+              // Filter out existing properties
+              const newSuggestions = suggestions.filter(s =>
+                  !properties.some(p => p.key === s.key && p.values.join(',') === s.values.join(','))
+              );
+              setSuggestedProperties(newSuggestions);
+          } catch (e) {
+              console.error("Failed to extract suggestions", e);
+          }
+      }, 1000); // 1s debounce
+
+      return () => clearTimeout(timer);
+  }, [currentNote?.content, properties]);
 
   const startAdd = () => {
     setIsAdding(true);
@@ -192,7 +215,39 @@ export function PropertyInspector({
           />
         ))}
 
-        {properties.length === 0 && !isAdding && (
+        {/* Suggestions Section */}
+        {suggestedProperties.length > 0 && !isAdding && (
+            <div className="mt-4 border-t border-gray-800 pt-3">
+                <div className="text-xs font-bold text-purple-400 mb-2 flex items-center gap-1 px-1">
+                    <SearchSparkleIcon className="w-3 h-3" />
+                    Suggestions
+                </div>
+                <div className="space-y-2">
+                    {suggestedProperties.map((prop, idx) => (
+                        <div key={`sugg-${idx}`} className="opacity-80 hover:opacity-100 transition-opacity">
+                            <PropertyWidget
+                                property={prop}
+                                onChange={(p) => {}} // No-op
+                                onRemove={() => {}} // No-op
+                                readOnly
+                            />
+                            <div className="flex justify-end mt-1">
+                                <Button
+                                    size="xs"
+                                    variant="ghost"
+                                    className="text-purple-300 hover:text-purple-100 h-6"
+                                    onClick={() => handleSave(prop.key, prop.operator, prop.values.join(','))}
+                                >
+                                    + Add
+                                </Button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        )}
+
+        {properties.length === 0 && suggestedProperties.length === 0 && !isAdding && (
           <div className="flex flex-col items-center justify-center py-12 px-4 text-center text-gray-500 opacity-80">
             <div className="bg-gray-800/50 p-3 rounded-full mb-3 border border-gray-700/50">
                 <TagIcon className="w-6 h-6 text-blue-400" />
@@ -214,21 +269,6 @@ export function PropertyInspector({
                 </Button>
             )}
           </div>
-        )}
-
-        {properties.length > 0 && currentNote && currentNote.content && currentNote.content.length > 10 && !isAdding && (
-            <div className="pt-2 border-t border-gray-800 flex justify-center">
-                 <Button
-                    onClick={handleAutoScan}
-                    size="xs"
-                    variant="ghost"
-                    icon={SearchSparkleIcon}
-                    className="text-gray-500 hover:text-purple-400"
-                    title="Scan content for missing properties"
-                >
-                    Scan for more
-                </Button>
-            </div>
         )}
       </div>
 

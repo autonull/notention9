@@ -1,6 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { agentService } from '../../services/AgentService';
 import { FeedbackWidget } from '../common/FeedbackWidget';
+import { useNotes } from '../../hooks/useNotes';
+import { useView } from '../../hooks/useViewContext';
+import { skillService } from '../../services/SkillService';
+import type { Skill } from '@notention/core';
+import { Button } from '../common/Button';
+import { PlayIcon } from '../common/icons';
+import { useToast } from '../../hooks/useToast';
 
 interface LogEntry {
     id: string;
@@ -13,6 +20,37 @@ interface LogEntry {
 export const AgentFeedbackPanel: React.FC = () => {
     const [logs, setLogs] = useState<LogEntry[]>([]);
     const scrollRef = useRef<HTMLDivElement>(null);
+    const { notes } = useNotes();
+    const { selectedNoteId } = useView();
+    const [matchingSkills, setMatchingSkills] = useState<Skill[]>([]);
+    const { addToast } = useToast();
+
+    // Check for matching skills
+    useEffect(() => {
+        const note = notes.find(n => n.id === selectedNoteId);
+        if (note) {
+            const skills = skillService.getRegistry().findMatching(note);
+            setMatchingSkills(skills);
+        } else {
+            setMatchingSkills([]);
+        }
+    }, [selectedNoteId, notes]);
+
+    const handleRunSkill = (skill: Skill) => {
+        addToast(`Executing ${skill.name}...`, 'info');
+
+        // Mock execution
+        setTimeout(() => {
+            const entry: LogEntry = {
+                id: crypto.randomUUID(),
+                timestamp: new Date().toISOString(),
+                type: 'success',
+                message: `Executed ${skill.name} successfully.`
+            };
+            setLogs(prev => [...prev, entry]);
+            addToast(`Skill ${skill.name} completed`, 'success');
+        }, 1500);
+    };
 
     useEffect(() => {
         const handleMessage = (data: any) => {
@@ -77,11 +115,55 @@ export const AgentFeedbackPanel: React.FC = () => {
                     <button onClick={() => setLogs([])} className="hover:text-white">Clear</button>
                 </div>
             </div>
+
+            {/* Skill Actions */}
+            {matchingSkills.length > 0 && (
+                <div className="bg-gray-800/50 p-2 border-b border-gray-800">
+                    <div className="text-xs font-bold text-purple-400 mb-2 uppercase tracking-wide">
+                        Available Actions
+                    </div>
+                    <div className="space-y-2">
+                        {matchingSkills.map(skill => (
+                            <div key={skill.id} className="bg-gray-800 border border-gray-700 p-2 rounded flex flex-col gap-2">
+                                <div className="flex justify-between items-start">
+                                    <span className="font-bold text-gray-200">{skill.name}</span>
+                                    <span className="text-[10px] bg-purple-900/50 text-purple-300 px-1.5 rounded">
+                                        Skill
+                                    </span>
+                                </div>
+                                <p className="text-gray-400 text-[10px] leading-tight line-clamp-2">
+                                    {skill.description}
+                                </p>
+                                <Button
+                                    size="xs"
+                                    variant="primary"
+                                    icon={PlayIcon}
+                                    onClick={() => handleRunSkill(skill)}
+                                    className="w-full justify-center mt-1"
+                                >
+                                    Run Action
+                                </Button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             <div className="flex-1 overflow-y-auto p-2 space-y-2" ref={scrollRef}>
+                {logs.length === 0 && matchingSkills.length === 0 && (
+                    <div className="text-gray-600 text-center py-8 italic">
+                        No agent activity. <br/>
+                        Create a note with properties to trigger skills.
+                    </div>
+                )}
                 {logs.map(log => (
-                    <div key={log.id} className="animate-fade-in">
-                        <div className="text-gray-500 mb-0.5" style={{ fontSize: '0.65rem' }}>
-                            {new Date(log.timestamp).toLocaleTimeString()}
+                    <div key={log.id} className="animate-fade-in border-l-2 border-gray-700 pl-2 py-1">
+                        <div className="text-gray-500 mb-0.5 flex justify-between items-center" style={{ fontSize: '0.65rem' }}>
+                            <span>{new Date(log.timestamp).toLocaleTimeString()}</span>
+                            <span className={`uppercase font-bold ${
+                                log.type === 'error' ? 'text-red-500' :
+                                log.type === 'success' ? 'text-green-500' : 'text-blue-500'
+                            }`}>{log.type}</span>
                         </div>
 
                         {log.type === 'screenshot' ? (
@@ -90,13 +172,11 @@ export const AgentFeedbackPanel: React.FC = () => {
                             </div>
                         ) : (
                             <div className={`
-                        ${log.type === 'error' ? 'text-red-400' : ''}
-                        ${log.type === 'success' ? 'text-green-400' : ''}
-                        ${log.type === 'info' ? 'text-blue-300' : ''}
-                        break-words
+                        ${log.type === 'error' ? 'text-red-300' : ''}
+                        ${log.type === 'success' ? 'text-green-300' : ''}
+                        ${log.type === 'info' ? 'text-gray-300' : ''}
+                        break-words text-[11px] leading-tight
                     `}>
-                                {log.type === 'success' && '✓ '}
-                                {log.type === 'error' && '✗ '}
                                 {log.message}
                             </div>
                         )}
