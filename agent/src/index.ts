@@ -9,7 +9,7 @@ import { SkillExecutor } from './skills/SkillExecutor';
 import { loadAgentConfig } from './config';
 import { Note } from '@notention/core/src/types';
 import { log, error } from './core/utils';
-import { Mutex } from './utils/Mutex';
+import { PersistenceService } from './persistence';
 
 // --- Initialization Helpers ---
 
@@ -81,7 +81,7 @@ async function bootstrap() {
   await pluginLoader.loadPlugins();
 
   // Check if system is initialized
-  const onboardingNote = configurator.createOnboardingTriggerNote();
+  configurator.createOnboardingTriggerNote();
   // broadcastToUI({ type: 'note_created', payload: onboardingNote }); // Optional: let UI discovery handle it
 
   skillExecutor = new SkillExecutor(voltagent, skillRegistry, (event) => {
@@ -107,47 +107,6 @@ async function bootstrap() {
 }
 
 bootstrap().catch(err => error('Init', 'Bootstrap failed', err));
-
-// --- Persistence ---
-
-const DATA_DIR = join(process.cwd(), 'data');
-const NOTES_FILE = join(DATA_DIR, 'notes.json');
-const persistenceMutex = new Mutex();
-
-async function ensureDataDir() {
-  try {
-    await fs.promises.mkdir(DATA_DIR, { recursive: true });
-  } catch (e) {
-    // Ignore if exists
-  }
-}
-
-async function loadNotes(): Promise<Note[]> {
-  await ensureDataDir();
-  try {
-    const data = await fs.promises.readFile(NOTES_FILE, 'utf-8');
-    return JSON.parse(data);
-  } catch (e) {
-    return [];
-  }
-}
-
-async function saveNotes(notes: Note[]): Promise<void> {
-  await ensureDataDir();
-  const tempFile = `${NOTES_FILE}.tmp`;
-  try {
-    await fs.promises.writeFile(tempFile, JSON.stringify(notes, null, 2));
-    await fs.promises.rename(tempFile, NOTES_FILE);
-  } catch (error) {
-    console.error('Failed to save notes atomically', error);
-    try {
-        await fs.promises.unlink(tempFile);
-    } catch (e) {
-        // Ignore unlink error
-    }
-    throw error;
-  }
-}
 
 // --- WebSocket Handlers ---
 
@@ -216,34 +175,19 @@ async function handleUIMessage(message: any, ws: WebSocket) {
       break;
 
     case 'get_notes': {
-      const notes = await persistenceMutex.dispatch(() => loadNotes());
+      const notes = await PersistenceService.getNotesSafe();
       ws.send(JSON.stringify({ type: 'notes_list', payload: notes, id: message.id }));
       break;
     }
 
     case 'save_note': {
-      const noteToSave = message.payload;
-      await persistenceMutex.dispatch(async () => {
-        const allNotes = await loadNotes();
-        const index = allNotes.findIndex((n) => n.id === noteToSave.id);
-        if (index >= 0) {
-          allNotes[index] = noteToSave;
-        } else {
-          allNotes.push(noteToSave);
-        }
-        await saveNotes(allNotes);
-      });
+      await PersistenceService.saveNoteSafe(message.payload);
       ws.send(JSON.stringify({ type: 'response', id: message.id, success: true }));
       break;
     }
 
     case 'delete_note': {
-      const noteIdToDelete = message.payload.id;
-      await persistenceMutex.dispatch(async () => {
-        const currentNotes = await loadNotes();
-        const filteredNotes = currentNotes.filter((n) => n.id !== noteIdToDelete);
-        await saveNotes(filteredNotes);
-      });
+      await PersistenceService.deleteNoteSafe(message.payload.id);
       ws.send(JSON.stringify({ type: 'response', id: message.id, success: true }));
       break;
     }
