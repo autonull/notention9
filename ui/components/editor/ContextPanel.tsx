@@ -42,7 +42,7 @@ export function ContextPanel({ note, onPickLocation, onPickTime }: ContextPanelP
     if (!context.location && !context.date) return null;
 
     return (
-        <div className="flex gap-4 p-4 bg-gray-900/30 border border-gray-800 rounded-lg mb-4">
+        <div className="flex gap-4 p-4 bg-gray-900/30 border-b border-gray-800">
             {context.location && (
                 <div className="relative group flex items-start gap-3 p-3 bg-gray-800 rounded-lg border border-gray-700 min-w-[200px] hover:border-blue-500/50 transition-colors">
                     <div className="p-2 bg-blue-900/30 rounded-full text-blue-400">

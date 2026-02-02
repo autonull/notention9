@@ -135,23 +135,21 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
         onPickLocation={onPickLocation}
       />
       <div className="flex-grow overflow-y-auto" onClick={handleEditorClick}>
-        <div className="max-w-3xl mx-auto w-full min-h-full pb-20">
-          {topContent}
-          {viewMode === 'rich' ? (
-            <>
-              <EditorBubbleMenu editor={editor} />
-              <EditorContent editor={editor} />
-            </>
-          ) : (
-            <textarea
-              className="w-full h-full p-4 bg-gray-900 text-gray-300 font-mono focus:outline-none resize-none"
-              value={prettyPrintHtml(note.content)}
-              onChange={handleCodeChange}
-              placeholder="Enter HTML..."
-            />
-          )}
-          {children}
-        </div>
+        {topContent}
+        {viewMode === 'rich' ? (
+          <>
+            <EditorBubbleMenu editor={editor} />
+            <EditorContent editor={editor} />
+          </>
+        ) : (
+          <textarea
+            className="w-full h-full p-4 bg-gray-900 text-gray-300 font-mono focus:outline-none resize-none"
+            value={prettyPrintHtml(note.content)}
+            onChange={handleCodeChange}
+            placeholder="Enter HTML..."
+          />
+        )}
+        {children}
       </div>
       {!minimal && <EditorStatusBar editor={editor} saveStatus={saveStatus} />}
     </div>
