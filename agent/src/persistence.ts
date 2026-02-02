@@ -20,9 +20,26 @@ export class PersistenceService {
         await this.ensureDataDir();
         try {
             const data = await fs.promises.readFile(NOTES_FILE, 'utf-8');
-            return JSON.parse(data);
-        } catch (e) {
-            return [];
+            try {
+                return JSON.parse(data);
+            } catch (parseError) {
+                console.error('CRITICAL: Failed to parse notes.json', parseError);
+                // Rename corrupt file to preserve data
+                const corruptFile = `${NOTES_FILE}.corrupt.${Date.now()}`;
+                try {
+                    await fs.promises.rename(NOTES_FILE, corruptFile);
+                    console.warn(`Renamed corrupt notes.json to ${corruptFile}`);
+                } catch (renameError) {
+                    console.error('Failed to rename corrupt file', renameError);
+                    throw renameError; // Re-throw if we can't safely move aside
+                }
+                return []; // Return empty for new start
+            }
+        } catch (e: any) {
+            if (e.code === 'ENOENT') {
+                return []; // File doesn't exist yet, start fresh
+            }
+            throw e; // Other errors (permissions, disk full) should fail hard
         }
     }
 

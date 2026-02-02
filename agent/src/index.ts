@@ -80,9 +80,16 @@ async function bootstrap() {
   const pluginLoader = new PluginLoader(skillRegistry);
   await pluginLoader.loadPlugins();
 
-  // Check if system is initialized
-  configurator.createOnboardingTriggerNote();
-  // broadcastToUI({ type: 'note_created', payload: onboardingNote }); // Optional: let UI discovery handle it
+  // Check initialization status and create onboarding note if needed
+  const currentNotes = await PersistenceService.getNotesSafe();
+  const isInitialized = await configurator.isInitialized(currentNotes);
+
+  if (!isInitialized) {
+      log('Init', 'System not initialized. Creating onboarding note.');
+      const onboardingNote = configurator.createOnboardingTriggerNote();
+      await PersistenceService.saveNoteSafe(onboardingNote);
+      log('Init', `Onboarding note created: ${onboardingNote.id}`);
+  }
 
   skillExecutor = new SkillExecutor(voltagent, skillRegistry, (event) => {
     broadcastToUI(event);
