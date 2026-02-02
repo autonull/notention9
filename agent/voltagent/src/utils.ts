@@ -1,4 +1,5 @@
-import { Logger } from '@notention/core/src/utils/logging';
+import { Logger } from '@notention/core';
+export { createTool } from '@notention/core';
 
 export function log(context: string, message: string, data?: any) {
     if (data) {

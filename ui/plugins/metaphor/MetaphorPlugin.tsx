@@ -1,7 +1,6 @@
 import { BasePlugin, PluginAPI, PluginManifest, pluginManager } from '../PluginSystem';
 import { MetaphorRenderer } from '../../components/metaphor/MetaphorRenderer';
-import { metaphorMapper } from '@notention/core';
-import { Logger } from '@notention/core/src/utils/logging';
+import { metaphorMapper, Logger } from '@notention/core';
 
 export const METAPHOR_PLUGIN_MANIFEST: PluginManifest = {
   id: 'core-metaphor-plugin',

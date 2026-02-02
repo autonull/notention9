@@ -1,9 +1,9 @@
-import { Agent, AgentFeature } from '@notention/core/src/types';
-import { Note } from '@notention/core/src/types';
+import { Agent, AgentFeature } from '@notention/core';
+import { Note } from '@notention/core';
 import { Skill, SkillMetadata } from './types';
 import { SkillToolAdapter } from './SkillToolAdapter';
-import { SkillRegistry } from '@notention/core/src/skills/SkillRegistry';
-import { Logger } from '@notention/core/src/utils/logging';
+import { SkillRegistry } from '@notention/core';
+import { Logger } from '@notention/core';
 
 export class AgentSkillRegistry extends SkillRegistry {
     private agent: Agent | null = null;

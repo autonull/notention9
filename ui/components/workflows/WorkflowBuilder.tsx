@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useWebSocket } from '../../hooks/useWebSocket';
 import { useToast } from '../../hooks/useToast';
-import { Logger } from '@notention/core/src/utils/logging';
+import { Logger } from '@notention/core';
 
 interface WorkflowStep {
     agent: string;

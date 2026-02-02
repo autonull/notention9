@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { MetaphorPlugin, METAPHOR_PLUGIN_MANIFEST } from '../../plugins/metaphor/MetaphorPlugin';
 import { PluginAPI } from '../../plugins/PluginSystem';
 import { MetaphorRenderer } from '../../components/metaphor/MetaphorRenderer';
-import { Logger } from '@notention/core/src/utils/logging';
+import { Logger } from '@notention/core';
 
 describe('MetaphorPlugin', () => {
   it('should have correct manifest', () => {
