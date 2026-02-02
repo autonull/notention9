@@ -2,8 +2,8 @@
  * Base service class providing common functionality for all services
  */
 
-import { generateId } from './utils/common';
-import { logInfo, logError, logWarn } from './utils/logging';
+import { generateId } from './utils/common.js';
+import { logInfo, logError, logWarn } from './utils/logging.js';
 
 export abstract class BaseService {
   protected readonly createdAt: number;

@@ -1,9 +1,9 @@
 import type { Note, Property } from './types';
 import { patternRecognitionService } from './patternRecognition';
 import { predictionAccuracyTracker } from './predictionTracking';
-import { generateId, safeDivide, clamp } from './utils/common';
+import { generateId, safeDivide, clamp } from './utils/common.js';
 import { TaskExecutionError } from './utils/errors';
-import { logInfo, logError, logWarn } from './utils/logging';
+import { logInfo, logError, logWarn } from './utils/logging.js';
 
 export enum TaskStatus {
   PENDING = 'pending',

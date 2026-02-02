@@ -1,9 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSettings } from '../hooks/useSettingsContext';
 import { useToast } from '../hooks/useToast';
-import { Note } from '@notention/core';
-import { parseProperties } from '@notention/core';
-import { matchNotesWithRealVsImaginary } from '../utils/matching';
+import { Note, PropertyExtractor, patternRecognitionService, getTextFromHtml } from '@notention/core';
 
 interface SmartNoteAssistantProps {
   note: Note;
@@ -22,63 +20,94 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeSuggestion, setActiveSuggestion] = useState<number>(0);
 
+  const propertyExtractor = useMemo(() => new PropertyExtractor(settings.ontology), [settings.ontology]);
+
   // Analyze the note and provide smart suggestions
   const analyzeNote = useCallback(() => {
-    const parsedProps = parseProperties(note.content);
-    const suggestions: string[] = [];
+    // 1. Extract plain text for analysis
+    const plainText = getTextFromHtml(note.content);
 
-    // Suggest semantic properties based on content
-    if (note.content.toLowerCase().includes('need') || note.content.toLowerCase().includes('want')) {
-      suggestions.push('Consider adding [status:is:pending] for tracking');
-      suggestions.push('Add [priority:is:high] if urgent');
-    }
+    // 2. Extract properties using core logic
+    const extractedProperties = propertyExtractor.extractFromText(plainText);
 
-    if (note.content.toLowerCase().includes('by') || note.content.toLowerCase().includes('until')) {
-      suggestions.push('Consider adding a [deadline:is:date] property');
-    }
+    // 3. Create a temporary note context with extracted properties for prediction
+    const analysisNote = {
+      ...note,
+      properties: [...note.properties, ...extractedProperties]
+    };
 
-    if (note.content.toLowerCase().includes('$') || note.content.match(/\d+\s*(dollars?|usd)/i)) {
-      suggestions.push('Consider adding [budget:is:amount] property');
-    }
+    // 4. Get predictions from Pattern Recognition Service
+    const predictions = patternRecognitionService.predictUserNeeds('current-user', analysisNote);
 
-    // Suggest related notes
+    // 5. Transform predictions into user-friendly suggestions
+    const newSuggestions: string[] = [];
+
+    predictions.forEach(p => {
+       // Avoid duplicates
+       if (!newSuggestions.includes(p.predictedAction)) {
+           newSuggestions.push(p.predictedAction);
+       }
+    });
+
+    // Suggest related notes / ontology (Legacy logic maintained)
     if (settings.ontology.length > 0) {
       const relatedNodes = settings.ontology.filter(node => 
         note.content.toLowerCase().includes(node.label.toLowerCase())
       );
       
       if (relatedNodes.length > 0) {
-        suggestions.push(`Consider linking to ontology: ${relatedNodes.map(n => n.label).join(', ')}`);
+        newSuggestions.push(`Consider linking to ontology: ${relatedNodes.map(n => n.label).join(', ')}`);
       }
     }
 
-    setSuggestions(suggestions);
-    setShowSuggestions(suggestions.length > 0);
+    setSuggestions(newSuggestions);
+    setShowSuggestions(newSuggestions.length > 0);
     setActiveSuggestion(0);
-  }, [note, settings.ontology]);
+  }, [note, settings.ontology, propertyExtractor]);
 
   useEffect(() => {
-    analyzeNote();
+    const timer = setTimeout(() => {
+        analyzeNote();
+    }, 500); // Debounce analysis
+    return () => clearTimeout(timer);
   }, [analyzeNote]);
 
   const handleApplySuggestion = (suggestion: string) => {
-    // This is a simplified implementation - in a real app, this would be more sophisticated
-    if (suggestion.includes('status:is:pending')) {
-      const newContent = note.content + `\n\n[status:is:pending]`;
-      onNoteUpdate({ ...note, content: newContent });
-    } else if (suggestion.includes('priority:is:high')) {
-      const newContent = note.content + `\n\n[priority:is:high]`;
-      onNoteUpdate({ ...note, content: newContent });
-    } else if (suggestion.includes('deadline:is:date')) {
-      const newContent = note.content + `\n\n[deadline:is:YYYY-MM-DD]`;
-      onNoteUpdate({ ...note, content: newContent });
-    } else if (suggestion.includes('budget:is:amount')) {
-      const newContent = note.content + `\n\n[budget:is:000]`;
-      onNoteUpdate({ ...note, content: newContent });
+    let newContent = note.content;
+    let applied = false;
+
+    // Parse specific property suggestions: "Add property [key:op:value]"
+    const propertyMatch = suggestion.match(/\[(.*?):(.*?):(.*?)\]/);
+
+    if (propertyMatch) {
+        const tag = propertyMatch[0];
+        newContent = newContent.trim() + `\n\n${tag}`;
+        applied = true;
+    } else if (suggestion.includes('Create Task') || suggestion.includes('Todo List')) {
+        // Fallback or generic actions
+        if (!note.content.includes('[status:is:pending]')) {
+             newContent = newContent.trim() + `\n\n[status:is:pending]`;
+             applied = true;
+        }
+    } else if (suggestion.includes('Shopping List')) {
+        if (!note.content.includes('[status:is:pending]')) {
+             newContent = newContent.trim() + `\n\n[status:is:pending]`;
+             applied = true;
+        }
     }
 
-    addToast('Suggestion applied to note', 'success');
-    setShowSuggestions(false);
+    if (applied) {
+        onNoteUpdate({ ...note, content: newContent });
+        addToast('Suggestion applied', 'success');
+        setShowSuggestions(false);
+    } else {
+        // Handle informational suggestions
+        if (suggestion.includes('Consider linking')) {
+            addToast('Info: Use [[ to link to ontology', 'info');
+        } else {
+            addToast('Action not fully implemented yet', 'info');
+        }
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

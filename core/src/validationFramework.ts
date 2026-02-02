@@ -1,8 +1,8 @@
 import type { Note } from './types';
 import { patternRecognitionService, Prediction } from './patternRecognition';
 import { predictionAccuracyTracker, AccuracyMetrics } from './predictionTracking';
-import { clamp, formatPercentage } from './utils/common';
-import { logInfo, logWarn } from './utils/logging';
+import { clamp, formatPercentage } from './utils/common.js';
+import { logInfo, logWarn } from './utils/logging.js';
 
 export interface ValidationConfig {
   targetAccuracyRate: number; // Target accuracy rate (e.g., 0.3 for 30% in Month 1)

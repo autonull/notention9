@@ -1,8 +1,8 @@
 import type { Note } from './types';
 import { patternRecognitionService, Prediction, PredictionResult } from './patternRecognition';
-import { generateId, safeDivide, average } from './utils/common';
-import { logInfo } from './utils/logging';
-import { BaseService } from './baseService';
+import { generateId, safeDivide, average } from './utils/common.js';
+import { logInfo } from './utils/logging.js';
+import { BaseService } from './baseService.js';
 
 export interface AccuracyMetrics {
   predictionAccuracyRate: number; // Overall accuracy rate (0.0 to 1.0)
