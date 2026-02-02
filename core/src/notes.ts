@@ -1,5 +1,5 @@
-import type { Note } from './types';
-import { arePropertyArraysEqual, isIndefiniteProperty } from './properties';
+import type { Note } from './types/index.js';
+import { arePropertyArraysEqual, isIndefiniteProperty } from './properties.js';
 
 export type NoteIntent = 'Real' | 'Imaginary' | 'Ambiguous';
 

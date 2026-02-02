@@ -2,8 +2,8 @@ import { SimplePool, getPublicKey, finalizeEvent } from 'nostr-tools';
 // Using internal utils or redefining if not exposed
 // nostr-tools v2 usually exposes utils at top level or /utils path
 
-import type { NostrEvent, Note, Property } from './types';
-import { NetworkGate, PrivacyError } from './networkGate';
+import type { NostrEvent, Note, Property } from './types/index.js';
+import { NetworkGate, PrivacyError } from './networkGate.js';
 
 // Polyfill-ish implementation for hex conversion to avoid deep imports
 const hexToBytes = (hex: string): Uint8Array => {
@@ -93,7 +93,7 @@ const networkGate = new NetworkGate();
 
 export async function publishNoteToNostr(
   note: Note,
-  privkeyHex: string,
+  privkeyHex: string | undefined,
   relays: string[] = DEFAULT_RELAYS,
   promptUserCallback?: (msg: string) => Promise<boolean>
 ): Promise<void> {
@@ -134,6 +134,9 @@ export async function publishNoteToNostr(
       signedEvent = await (window as any).nostr.signEvent(unsigned);
   } else {
       // Use private key directly
+      if (!privkeyHex) {
+          throw new Error('No private key provided and NIP-07 extension not available');
+      }
       const sk = hexToBytes(privkeyHex);
 
       const eventTemplate = {

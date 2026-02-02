@@ -1,5 +1,5 @@
-import type { Property } from './types';
-import { arePropertiesEqual } from './properties';
+import type { Property } from './types/index.js';
+import { arePropertiesEqual } from './properties.js';
 
 // Map symbolic operators to canonical operator names
 export const SYMBOL_TO_OP: Record<string, string> = {
