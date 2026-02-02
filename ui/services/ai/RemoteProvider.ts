@@ -1,6 +1,7 @@
 import type { AIProvider, InferredAttribute } from '@notention/core';
 import type { Note, OntologyNode } from '@notention/core';
 import { GoogleGenAI } from '@google/genai';
+import { Logger } from '@notention/core';
 
 export const isGeminiApiKeyAvailable = (userKey?: string): boolean => {
   const key = userKey || process.env.API_KEY;
@@ -12,6 +13,7 @@ export class RemoteAIProvider implements AIProvider {
   isAvailable: boolean;
   private client: GoogleGenAI | null = null;
   private modelName = 'gemini-1.5-flash';
+  private logger = Logger.getInstance();
 
   constructor(apiKey?: string) {
     const key = apiKey || process.env.API_KEY;
@@ -31,7 +33,7 @@ export class RemoteAIProvider implements AIProvider {
       });
       return response.text?.trim() || '';
     } catch (e) {
-      console.error('AI Generation Error:', e);
+      this.logger.error('AI Generation Error:', e as Error);
       throw e;
     }
   }
@@ -51,7 +53,7 @@ ${text}`;
       const jsonStr = result.replace(/^```json\s*/, '').replace(/\s*```$/, '');
       return JSON.parse(jsonStr);
     } catch (e) {
-      console.error('Tag Suggestion Error:', e);
+      this.logger.error('Tag Suggestion Error:', e as Error);
       return [];
     }
   }
@@ -86,7 +88,7 @@ ${propertySummary}`;
         const jsonStr = result.replace(/^```json\s*/, '').replace(/\s*```$/, '');
         return JSON.parse(jsonStr);
     } catch (e) {
-        console.error('Ontology Analysis Error:', e);
+        this.logger.error('Ontology Analysis Error:', e as Error);
         return [];
     }
   }
@@ -138,7 +140,7 @@ ${text}`;
           const jsonStr = result.replace(/^```json\s*/, '').replace(/\s*```$/, '');
           return JSON.parse(jsonStr);
       } catch (e) {
-          console.error('Alignment Error:', e);
+          this.logger.error('Alignment Error:', e as Error);
           return [];
       }
   }
@@ -175,7 +177,7 @@ ${keys.join(', ')}`;
           const jsonStr = result.replace(/^```json\s*/, '').replace(/\s*```$/, '');
           return JSON.parse(jsonStr);
       } catch (e) {
-          console.error('Optimization Error:', e);
+          this.logger.error('Optimization Error:', e as Error);
           return { merged: [], pruned: [] };
       }
   }

@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { finalizeEvent } from 'nostr-tools';
 import { useSettings } from './useSettingsContext';
-import { pool, DEFAULT_RELAYS, hexToBytes, NetworkGate, PrivacyError } from '@notention/core';
+import { pool, DEFAULT_RELAYS, hexToBytes, NetworkGate, PrivacyError, Logger } from '@notention/core';
 import { getTextFromHtml } from '@notention/core';
 import type { Note } from '@notention/core';
 
@@ -61,7 +61,7 @@ export const usePublish = () => {
 
       return signedEvent.id;
     } catch (error) {
-      console.error('Failed to publish note:', error);
+      Logger.getInstance().error('Failed to publish note:', error as Error);
       throw error;
     } finally {
       setIsPublishing(false);
@@ -90,7 +90,7 @@ export const usePublish = () => {
       await Promise.any(pubs);
 
     } catch (error) {
-      console.error('Failed to publish profile:', error);
+      Logger.getInstance().error('Failed to publish profile:', error as Error);
       throw error;
     } finally {
       setIsPublishing(false);
