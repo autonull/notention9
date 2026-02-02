@@ -13,7 +13,11 @@ export function NoteGridItem({ note, isSelected, onSelect }: NoteGridItemProps) 
   // Visual indicators based on note state
   const isPublic = note.public;
   const isImported = note.source?.type === 'import' || note.source?.type === 'skill';
-  const isLowPriority = note.priority !== undefined && note.priority < 0.5;
+
+  // Priority Logic (Phase 3.2)
+  const priority = note.priority ?? 1.0;
+  const isLowPriority = priority < 0.5;
+  const isVeryLowPriority = priority < 0.3;
 
   return (
     <div
@@ -25,8 +29,9 @@ export function NoteGridItem({ note, isSelected, onSelect }: NoteGridItemProps) 
           : 'bg-gray-800/50 text-gray-400 hover:bg-gray-800 hover:text-gray-200'
         }
         ${!isSelected && isPublic ? 'border-green-800/50' : ''}
-        ${!isSelected && !isPublic ? 'border-gray-700/50 border-dashed' : ''}
-        ${isLowPriority ? 'opacity-70' : ''}
+        ${!isSelected && !isPublic && !isVeryLowPriority ? 'border-gray-700/50' : ''}
+        ${!isSelected && isVeryLowPriority ? 'border-gray-700/50 border-dashed' : ''}
+        ${isLowPriority ? 'opacity-50' : ''}
       `}
       title={note.title}
     >

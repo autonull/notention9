@@ -101,7 +101,12 @@ export const useEditorLogic = ({ note, onSave }: UseEditorLogicProps) => {
       const properties = [...explicitProperties, ...newImplicitProps];
 
       setDirtyNote((prev) => {
-          const updated = { ...prev, content, properties };
+          const updated = {
+              ...prev,
+              content,
+              properties,
+              priority: 1.0 // User edit promotes priority
+          };
           return updated;
       });
     },
