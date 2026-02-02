@@ -27,7 +27,7 @@ export const ErrorHandlingProvider: React.FC<{ children: ReactNode }> = ({ child
   const [errors, setErrors] = useState<ErrorMessage[]>([]);
 
   const addError = (error: Omit<ErrorMessage, 'id' | 'timestamp'>): string => {
-    const id = `error-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const id = crypto.randomUUID();
     const newError: ErrorMessage = {
       ...error,
       id,
