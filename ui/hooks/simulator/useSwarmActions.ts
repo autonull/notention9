@@ -7,7 +7,7 @@ export function useSwarmActions() {
     const handleDeploySwarm = (template: SwarmTemplate, onSuccess?: () => void) => {
         const newAgents: SimulationAgent[] = template.agents.map(a => ({
             ...a,
-            id: Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join(''),
+            id: crypto.randomUUID(),
             currentDraft: '',
             status: 'Idle',
             isAgent: true

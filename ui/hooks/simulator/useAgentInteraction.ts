@@ -37,7 +37,7 @@ export function useAgentInteraction({
     const sendMessageToAgent = useCallback((agentId: string, content: string) => {
         // 1. Add user message
         const userMsg: NostrEvent & { content: string } = {
-            id: Math.random().toString(36),
+            id: crypto.randomUUID(),
             pubkey: 'user', // Local user
             created_at: Math.floor(Date.now() / 1000),
             kind: 4,
@@ -59,7 +59,7 @@ export function useAgentInteraction({
             // Check if agent is enabled
             if (agent.enabled === false) {
                  const agentMsg: NostrEvent & { content: string } = {
-                    id: Math.random().toString(36),
+                    id: crypto.randomUUID(),
                     pubkey: agentId,
                     created_at: Math.floor(Date.now() / 1000),
                     kind: 4,
@@ -160,7 +160,7 @@ export function useAgentInteraction({
             }
 
             const agentMsg: NostrEvent & { content: string } = {
-                id: Math.random().toString(36),
+                id: crypto.randomUUID(),
                 pubkey: agentId,
                 created_at: Math.floor(Date.now() / 1000),
                 kind: 4,

@@ -13,7 +13,7 @@ import type { SwarmTemplate } from '../../hooks/simulator/types';
 
 // Helper to create a local message object
 const createLocalMessage = (content: string, pubkey: string): NostrEvent => ({
-    id: Math.random().toString(36),
+    id: crypto.randomUUID(),
     pubkey,
     created_at: Math.floor(Date.now() / 1000),
     kind: 4,
@@ -61,7 +61,7 @@ export function ChatView() {
   const handleDeploySwarm = (template: SwarmTemplate) => {
       const newAgents = template.agents.map(a => ({
           ...a,
-          id: Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join(''),
+          id: crypto.randomUUID(),
           status: 'Idle',
           currentDraft: '',
           isAgent: true,
