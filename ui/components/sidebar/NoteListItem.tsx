@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import type { Note } from '@notention/core';
-import { TrashIcon, WorldIcon, DownloadIcon, MapPinIcon, ClockIcon, PinIcon, DocumentDuplicateIcon } from '../common/icons';
+import { TrashIcon, WorldIcon, MapPinIcon, ClockIcon, PinIcon, DocumentDuplicateIcon } from '../common/icons';
 import { getTextFromHtml } from '@notention/core';
 import { IconButton } from '../common/IconButton';
 import { Badge } from '../common/Badge';
@@ -38,17 +38,6 @@ export const NoteListItem = React.memo(({
           return k.includes('date') || k.includes('time') || k === 'start' || k === 'end' || k === 'deadline';
       });
   }, [note.properties]);
-
-  const handleExport = (e: React.MouseEvent) => {
-      e.stopPropagation();
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(note, null, 2));
-      const downloadAnchorNode = document.createElement('a');
-      downloadAnchorNode.setAttribute("href", dataStr);
-      downloadAnchorNode.setAttribute("download", `${note.title || 'untitled'}.json`);
-      document.body.appendChild(downloadAnchorNode); // required for firefox
-      downloadAnchorNode.click();
-      downloadAnchorNode.remove();
-  };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
       if (e.key === 'ArrowDown') {
@@ -165,17 +154,6 @@ export const NoteListItem = React.memo(({
                     className={`${note.pinned ? 'text-blue-400' : 'text-gray-400 hover:text-white hover:bg-gray-700/50'}`}
                     tooltip={note.pinned ? "Unpin Note" : "Pin Note"}
                     icon={PinIcon}
-                    size="sm"
-                    variant="ghost"
-                />
-            )}
-            {!isTrash && (
-                <IconButton
-                    onClick={handleExport}
-                    tabIndex={-1}
-                    className="text-gray-400 hover:text-white hover:bg-gray-700/50"
-                    tooltip="Export Note"
-                    icon={DownloadIcon}
                     size="sm"
                     variant="ghost"
                 />
