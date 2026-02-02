@@ -8,6 +8,7 @@ import type { Skill } from '@notention/core';
 import { Button } from '../common/Button';
 import { PlayIcon } from '../common/icons';
 import { useToast } from '../../hooks/useToast';
+import { Logger } from '@notention/core';
 
 interface LogEntry {
     id: string;
@@ -110,7 +111,7 @@ export const AgentFeedbackPanel: React.FC = () => {
                 <div className="flex items-center gap-2">
                     <FeedbackWidget
                         entityId="agent-stream"
-                        onFeedback={(type, val) => console.log('Feedback:', type, val)}
+                        onFeedback={(type, val) => Logger.getInstance().info('Feedback:', { type, val })}
                     />
                     <button onClick={() => setLogs([])} className="hover:text-white">Clear</button>
                 </div>
