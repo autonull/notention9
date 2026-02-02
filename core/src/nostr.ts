@@ -6,7 +6,7 @@ import type { NostrEvent, Note, Property } from './types/index.js';
 import { NetworkGate, PrivacyError } from './networkGate.js';
 
 // Polyfill-ish implementation for hex conversion to avoid deep imports
-const hexToBytes = (hex: string): Uint8Array => {
+export const hexToBytes = (hex: string): Uint8Array => {
     if (hex.length % 2 !== 0) throw new Error('Invalid hex string');
     const bytes = new Uint8Array(hex.length / 2);
     for (let i = 0; i < bytes.length; i++) {
