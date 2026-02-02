@@ -59,7 +59,6 @@ export const executeSkillTool = createTool({
             for (const stepName of action.payload.chain) {
                 // Find skill by name (fuzzy or exact) or ID
                 // For now assuming name-based lookup helper or iterating registry
-                // TODO: Optimize lookup
                 const stepSkill = (registry as any).getAll().find((s: any) =>
                     s.skill.name.toLowerCase() === stepName.toLowerCase() ||
                     s.skill.id === stepName

@@ -44,8 +44,6 @@ export class AgentSkillRegistry extends SkillRegistry {
         return Array.from(this.skillMetadata.values());
     }
 
-    // This signature might need adjustment based on how it's called
-    // In TODO3.md snippet: return (registry as any).findMatching(note, minConfidence);
     override findMatching(note: Note): Skill[] {
         // Fallback to synchronous simple matching for the base class contract
         const matches: Skill[] = [];
