@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useWebSocket } from '../../hooks/useWebSocket';
 import { useToast } from '../../hooks/useToast';
+import { Logger } from '@notention/core/src/utils/logging';
 
 interface WorkflowStep {
     agent: string;
@@ -35,7 +36,7 @@ export function WorkflowBuilder() {
             }))
         };
 
-        console.log('Saving workflow:', workflow);
+        Logger.getInstance().info('Saving workflow:', workflow);
         // In real implementation, send to agent to register
         // sendMessage({ type: 'register_workflow', payload: workflow });
         addToast(`Workflow "${name}" saved (mock)!`, 'success');

@@ -1,8 +1,9 @@
 import { Agent, AgentFeature } from '@notention/core/src/types';
-import { Note } from '../../../core/src/types';
+import { Note } from '@notention/core/src/types';
 import { Skill, SkillMetadata } from './types';
 import { SkillToolAdapter } from './SkillToolAdapter';
 import { SkillRegistry } from '@notention/core/src/skills/SkillRegistry';
+import { Logger } from '@notention/core/src/utils/logging';
 
 export class AgentSkillRegistry extends SkillRegistry {
     private agent: Agent | null = null;
@@ -31,7 +32,7 @@ export class AgentSkillRegistry extends SkillRegistry {
             this.registerSkillWithAgent(skill);
         }
 
-        console.log(`✅ Registered: ${skill.name} (${skill.id})`);
+        Logger.getInstance().info(`✅ Registered: ${skill.name} (${skill.id})`);
     }
 
     get(id: string): Skill | undefined {
@@ -83,7 +84,7 @@ export class AgentSkillRegistry extends SkillRegistry {
 
             return (result.rankedSkills || []).filter((match: { confidence: number; }) => match.confidence >= 0.5);
         } catch (e) {
-            console.error('Skill matching workflow failed, falling back locally', e);
+            Logger.getInstance().error('Skill matching workflow failed, falling back locally', e instanceof Error ? e : new Error(String(e)));
             return this.findMatchingAsync(note);
         }
     }
