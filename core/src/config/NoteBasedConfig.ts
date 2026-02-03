@@ -1,4 +1,4 @@
-import { Note, AppSettings, Property } from '../types';
+import { Note, AppSettings, Property } from '../types/index.js';
 
 /**
  * Extracts configuration from a Note's semantic properties.

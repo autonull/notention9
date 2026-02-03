@@ -10,12 +10,9 @@ import { loadAgentConfig } from './config';
 import { Note } from '@notention/core/src/types';
 import { log, error } from './core/utils';
 import { PersistenceService } from './persistence';
+import { IndeedSkill, CraigslistSkill, GitHubSkill } from '@notention/core';
 
 // --- Initialization Helpers ---
-
-import { IndeedSkill } from './skills/standard/IndeedSkill';
-import { CraigslistSkill } from './skills/standard/CraigslistSkill';
-import { GitHubSkill } from './skills/standard/GitHubSkill';
 
 function initializeBuiltInSkills(registry: AgentSkillRegistry) {
   log('Init', 'Initializing standard skills...');

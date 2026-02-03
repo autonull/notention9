@@ -1,5 +1,5 @@
 import type { Note } from './types';
-import { patternRecognitionService, Prediction, PredictionResult } from './patternRecognition';
+import { patternRecognitionService, Prediction, PredictionResult } from './patternRecognition.js';
 import { generateId, safeDivide, average } from './utils/common.js';
 import { logInfo } from './utils/logging.js';
 import { BaseService } from './baseService.js';

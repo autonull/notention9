@@ -1,4 +1,4 @@
-import { Pattern } from '../patternRecognition';
+import { Pattern } from '../patternRecognition.js';
 
 export const DEFAULT_PATTERNS: Pattern[] = [
   {

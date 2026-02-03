@@ -1,4 +1,4 @@
-import type { Note, Property } from './types';
+import type { Note, Property } from './types/index.js';
 import { generateId, safeDivide, clamp } from './utils/common.js';
 import { logInfo } from './utils/logging.js';
 import { BaseService } from './baseService.js';

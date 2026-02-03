@@ -1,6 +1,6 @@
 import type { Note } from './types';
-import { patternRecognitionService, Prediction } from './patternRecognition';
-import { predictionAccuracyTracker, AccuracyMetrics } from './predictionTracking';
+import { patternRecognitionService, Prediction } from './patternRecognition.js';
+import { predictionAccuracyTracker, AccuracyMetrics } from './predictionTracking.js';
 import { clamp, formatPercentage } from './utils/common.js';
 import { logInfo, logWarn } from './utils/logging.js';
 

@@ -1,8 +1,8 @@
 import type { Note, Property } from './types';
-import { patternRecognitionService } from './patternRecognition';
-import { predictionAccuracyTracker } from './predictionTracking';
+import { patternRecognitionService } from './patternRecognition.js';
+import { predictionAccuracyTracker } from './predictionTracking.js';
 import { generateId, safeDivide, clamp } from './utils/common.js';
-import { TaskExecutionError } from './utils/errors';
+import { TaskExecutionError } from './utils/errors.js';
 import { logInfo, logError, logWarn } from './utils/logging.js';
 
 export enum TaskStatus {

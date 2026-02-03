@@ -1,5 +1,5 @@
-import { DEFAULT_STEPS, SetupConfiguration, WizardState } from './types';
-import { Note } from '../types';
+import { DEFAULT_STEPS, SetupConfiguration, WizardState } from './types.js';
+import { Note } from '../types/index.js';
 
 export class OnboardingService {
     private state: WizardState;

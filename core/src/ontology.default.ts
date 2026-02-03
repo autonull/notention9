@@ -1,4 +1,4 @@
-import type { OntologyNode } from './types';
+import type { OntologyNode } from './types/index.js';
 
 export const DEFAULT_ONTOLOGY: OntologyNode[] = [
   {

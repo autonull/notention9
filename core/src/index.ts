@@ -39,6 +39,8 @@ export * from './queryBuilder.js';
 // Skill system (Phase 4)
 export * from './skills/BaseSkill.js';
 export * from './skills/IndeedSkill.js';
+export * from './skills/CraigslistSkill.js';
+export * from './skills/GitHubSkill.js';
 export * from './skills/ReminderSkill.js';
 export * from './skills/SkillRegistry.js';
 export * from './skillPatternMatcher.js';
