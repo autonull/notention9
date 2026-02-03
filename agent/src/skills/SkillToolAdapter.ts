@@ -18,9 +18,8 @@ export class SkillToolAdapter {
             execute: async ({ note }: any) => {
                 let action: any = null;
 
-                if (skill.export) {
-                    action = await skill.export(note as Note);
-                } else if (skill.exportToActions) {
+                // Only support core skills now
+                if (skill.exportToActions) {
                     // Convert Core ActionSequence to Agent Action
                     const sequence = skill.exportToActions(note as Note);
                     if (sequence && sequence.actions && sequence.actions.length > 0) {
@@ -35,9 +34,7 @@ export class SkillToolAdapter {
                 // Execute external action
                 const results = await executeAction(action);
 
-                if (skill.import) {
-                    return await skill.import(results);
-                } else if (skill.importFromData) {
+                if (skill.importFromData) {
                     return skill.importFromData(results, note as Note);
                 }
 

@@ -4,13 +4,16 @@ import { ValidationError } from '../utils/errors.js';
 import { Note } from '../types/index.js';
 import { Skill } from './types.js';
 
+// Union type for all supported skill types
+export type RegisteredSkill = BaseSkill | SkillDefinition | Skill;
+
 export class SkillRegistry {
-    protected skills: Map<string, BaseSkill | SkillDefinition | Skill> = new Map();
+    protected skills: Map<string, RegisteredSkill> = new Map();
 
     /**
      * Register a skill
      */
-    registerSkill(skill: BaseSkill | SkillDefinition | Skill): void {
+    registerSkill(skill: RegisteredSkill): void {
         const id = (skill as any).id;
         if (!id) {
             throw new ValidationError('Skill must have an ID');
@@ -36,7 +39,7 @@ export class SkillRegistry {
     /**
      * Get a skill by ID
      */
-    getSkill(skillId: string): BaseSkill | SkillDefinition | Skill | undefined {
+    getSkill(skillId: string): RegisteredSkill | undefined {
         if (!skillId) {
             throw new ValidationError('Skill ID is required');
         }
@@ -46,25 +49,31 @@ export class SkillRegistry {
     /**
      * Get all registered skills
      */
-    getAllSkills(): (BaseSkill | SkillDefinition | Skill)[] {
+    getAllSkills(): RegisteredSkill[] {
         return Array.from(this.skills.values());
     }
 
     /**
-     * Find skills that match a note
+     * Find skills that match a note (generic Skill interface only)
      */
     findMatching(note: Note): Skill[] {
         const matches: Skill[] = [];
         for (const skill of this.skills.values()) {
-            if (this.isSkillInterface(skill) && skill.canHandle(note) > 0) {
-                matches.push(skill);
+            if (this.isSkillInterface(skill)) {
+                try {
+                    if (skill.canHandle(note) > 0) {
+                        matches.push(skill);
+                    }
+                } catch (e) {
+                    console.error(`Error checking skill ${(skill as any).id}`, e);
+                }
             }
         }
         return matches;
     }
 
-    private isSkillInterface(skill: any): skill is Skill {
-        return 'canHandle' in skill && typeof skill.canHandle === 'function';
+    protected isSkillInterface(skill: RegisteredSkill): skill is Skill {
+        return 'canHandle' in skill && typeof (skill as any).canHandle === 'function';
     }
 
     /**
