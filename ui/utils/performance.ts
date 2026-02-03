@@ -1,4 +1,7 @@
 import { useEffect, useRef } from 'react';
+import { debounce, throttle } from '@notention/core';
+
+export { debounce, throttle };
 
 // Performance monitoring utilities
 class PerformanceMonitor {
@@ -98,29 +101,4 @@ export function usePerformanceMonitor(componentName: string, deps: any[]): void 
       perfMonitor.measure(`${componentName}-mount`, `${componentName}-unmount`, `${componentName}-lifetime`);
     };
   }, []);
-}
-
-// Utility to debounce expensive operations
-export function debounce<T extends (...args: any[]) => any>(func: T, wait: number): T {
-  let timeout: NodeJS.Timeout;
-  return function executedFunction(...args: Parameters<T>): void {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-  } as T;
-}
-
-// Utility to throttle expensive operations
-export function throttle<T extends (...args: any[]) => any>(func: T, limit: number): T {
-  let inThrottle: boolean;
-  return function throttledFunction(...args: Parameters<T>): void {
-    if (!inThrottle) {
-      func.apply(this, args);
-      inThrottle = true;
-      setTimeout(() => inThrottle = false, limit);
-    }
-  } as T;
 }
