@@ -7,10 +7,9 @@ import { VoltAgentProvider } from '../voltagent/src/VoltAgentProvider';
 import { AgentSkillRegistry } from './skills/AgentSkillRegistry';
 import { SkillExecutor } from './skills/SkillExecutor';
 import { loadAgentConfig } from './config';
-import { Note } from '@notention/core/src/types';
+import { Note, IndeedSkill, CraigslistSkill, GitHubSkill } from '@notention/core';
 import { log, error } from './core/utils';
 import { PersistenceService } from './persistence';
-import { IndeedSkill, CraigslistSkill, GitHubSkill } from '@notention/core';
 
 // --- Initialization Helpers ---
 

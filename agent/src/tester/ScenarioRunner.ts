@@ -1,7 +1,6 @@
 
-import { ScenarioManager, TestScenario, TestStep } from '../../../core/src/testing/ScenarioManager';
+import { ScenarioManager, TestScenario, TestStep, Note } from '@notention/core';
 import { SandboxAgent } from './SandboxAgent';
-import { Note } from '@notention/core/src/types';
 
 export interface ScenarioResult {
     scenarioId: string;

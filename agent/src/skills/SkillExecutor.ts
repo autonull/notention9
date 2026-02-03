@@ -1,7 +1,5 @@
-import { Agent, WorkflowResult } from '@notention/core/src/types';
-import { Note } from '@notention/core/src/types';
+import { Agent, WorkflowResult, Note, SkillExecutionError } from '@notention/core';
 import { AgentSkillRegistry } from './AgentSkillRegistry';
-import { SkillExecutionError } from '@notention/core/src/errorTypes';
 
 export class SkillExecutor {
     private onEvent?: (event: any) => void;

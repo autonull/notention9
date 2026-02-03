@@ -1,4 +1,4 @@
-import type { Skill as CoreSkill } from '@notention/core/src/skills/types';
+import type { Skill as CoreSkill } from '@notention/core';
 
 // Re-export Core Skill as the base
 export type Skill = CoreSkill;

@@ -57,3 +57,6 @@ export * from './config/NoteBasedConfig.js';
 // Metaphor System (Phase 3)
 export * from './metaphor/MetaphorRegistry.js';
 export * from './metaphor/MetaphorMapper.js';
+
+// Testing
+export * from './testing/ScenarioManager.js';

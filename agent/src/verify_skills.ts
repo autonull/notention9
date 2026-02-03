@@ -1,5 +1,4 @@
-import { IndeedSkill, CraigslistSkill, GitHubSkill } from '@notention/core';
-import { Note } from '@notention/core/src/types';
+import { IndeedSkill, CraigslistSkill, GitHubSkill, Note } from '@notention/core';
 
 async function verifySkills() {
     console.log('🧪 Verifying Standard Skills (Core)...');
