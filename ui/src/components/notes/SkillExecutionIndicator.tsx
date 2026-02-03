@@ -22,11 +22,14 @@ export function SkillExecutionIndicator({ noteId }: { noteId: string }) {
             // I should have implemented that broadcast in SkillExecutor or global event handler!
             // I'll update SkillExecutor later if strict adherence is needed, or just keep this component ready.
 
-            if (message.type === 'skill_execution_started' && message.noteId === noteId) {
+            // The payload is nested in message.payload by broadcastToUI
+            const payload = message.payload || message;
+
+            if (message.type === 'skill_execution_started' && payload.noteId === noteId) {
                 setExecuting(true);
-                setMatchedSkills(message.skills || []);
+                setMatchedSkills(payload.skills || []);
             }
-            if (message.type === 'skill_execution_complete' && message.noteId === noteId) {
+            if (message.type === 'skill_execution_finished' && payload.noteId === noteId) {
                 setExecuting(false);
             }
         });

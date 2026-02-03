@@ -2,6 +2,7 @@ import React from 'react';
 import type { Note } from '@notention/core';
 import { NoteIcon, LockIcon, WorldIcon, DownloadIcon } from '../common/icons';
 import { Badge } from '../common/Badge';
+import { SkillExecutionIndicator } from '../notes/SkillExecutionIndicator';
 
 interface NoteGridItemProps {
   note: Note;
@@ -62,6 +63,10 @@ export function NoteGridItem({ note, isSelected, onSelect }: NoteGridItemProps) 
             </Badge>
         </div>
       )}
+
+      <div className="absolute bottom-1 w-full flex justify-center">
+          <SkillExecutionIndicator noteId={note.id} />
+      </div>
     </div>
   );
 };

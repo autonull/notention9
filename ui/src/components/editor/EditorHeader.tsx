@@ -6,8 +6,10 @@ import {
 import { TagInput } from './TagInput';
 import { IconButton } from '../common/IconButton';
 import { EditorControls } from './EditorControls';
+import { SkillExecutionIndicator } from '../notes/SkillExecutionIndicator';
 
 interface EditorHeaderProps {
+  id?: string; // Add ID to props to track skill execution for current note
   title: string;
   onTitleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onPublish: () => void;
@@ -102,6 +104,8 @@ export function EditorHeader({
             </div>
             {readOnly && <LockIcon className="h-4 w-4 text-gray-500 ml-2 flex-shrink-0" />}
         </div>
+
+        {id && <SkillExecutionIndicator noteId={id} />}
 
         <EditorControls
             onNext={onNext}
