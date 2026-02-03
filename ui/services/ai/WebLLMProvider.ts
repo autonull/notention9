@@ -1,4 +1,5 @@
 import { CreateMLCEngine, MLCEngine } from "@mlc-ai/web-llm";
+import { Logger } from '@notention/core';
 import type { AIProvider, InferredAttribute } from '@notention/core';
 import type { Note, OntologyAttribute, OntologyNode } from '@notention/core';
 
@@ -39,7 +40,7 @@ export class WebLLMProvider implements AIProvider {
                 }
             );
         } catch (e) {
-            console.warn("Failed to load WebLLM:", e);
+            Logger.getInstance().warn("Failed to load WebLLM:", e);
             throw e; // Propagate error
         }
       })();
@@ -109,7 +110,7 @@ export class WebLLMProvider implements AIProvider {
         const jsonStr = content.replace(/```json/g, '').replace(/```/g, '').trim();
         return JSON.parse(jsonStr);
     } catch {
-        console.warn("Failed to parse AI tags:", content);
+        Logger.getInstance().warn("Failed to parse AI tags:", content);
         return [];
     }
   }
@@ -154,7 +155,7 @@ export class WebLLMProvider implements AIProvider {
             sampleValues: r.sampleValues || []
         }));
     } catch {
-        console.warn("Failed to parse AI ontology:", content);
+        Logger.getInstance().warn("Failed to parse AI ontology:", content);
         return [];
     }
   }

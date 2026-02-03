@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { Logger } from '@notention/core';
 import type { Note } from '@notention/core';
 import { areNotesEqual } from '@notention/core';
 
@@ -49,7 +50,7 @@ export const useDebouncedSave = (note: Note, onSave: (note: Note) => void) => {
             onSave(dirtyNote);
             setSaveStatus('saved');
         } catch (e) {
-            console.error("Auto-save failed", e);
+            Logger.getInstance().error("Auto-save failed", undefined, e);
             setSaveStatus('error');
         }
     }, SAVE_DEBOUNCE_MS);
