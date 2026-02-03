@@ -4,6 +4,8 @@ import { PropertyWidget } from './PropertyWidget';
 import { PropertyExtractor, Property, replacePropertyInString, parseProperties } from '@notention/core';
 import { useSettings } from '../../hooks/useSettingsContext';
 import { Button } from '../common/Button';
+import { FeedbackWidget } from '../common/FeedbackWidget';
+import { agentService } from '../../services/AgentService';
 
 interface HybridEditorProps extends React.ComponentProps<typeof TiptapEditor> { }
 
@@ -90,6 +92,25 @@ export const HybridEditor = forwardRef<TiptapEditorRef, HybridEditorProps>((prop
                                  </div>
                              </div>
                          ))}
+                     </div>
+                     <div className="mt-4 pt-4 border-t border-gray-700 flex justify-center">
+                         <FeedbackWidget
+                             entityId={`extraction-${props.note.id}`}
+                             entityType="property-extraction"
+                             onFeedback={(type, val) => {
+                                 agentService.send({
+                                     type: 'feedback',
+                                     payload: {
+                                         id: crypto.randomUUID(),
+                                         entityId: `extraction-${props.note.id}`,
+                                         entityType: 'property-extraction',
+                                         value: type === 'positive' ? 1 : -1,
+                                         context: { details: val },
+                                         timestamp: Date.now()
+                                     }
+                                 });
+                             }}
+                         />
                      </div>
                  </div>
             )}
