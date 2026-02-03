@@ -24,6 +24,7 @@ export * from './utils/tools.js';
 export * from './utils/concurrency.js';
 export * from './baseService.js';
 export * from './remote/RobustWebSocket.js';
+export * from './tools/OntologyTools.js';
 
 // Pattern Recognition and Prediction (Phase 1)
 export * from './patternRecognition.js';
