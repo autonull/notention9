@@ -5,7 +5,7 @@ import fs from 'fs';
 import { AgentRegistry } from './core/AgentRegistry';
 import { VoltAgentProvider } from '@notention/agent-voltagent';
 import { AgentSkillRegistry } from './skills/AgentSkillRegistry';
-import { SkillExecutor } from './skills/SkillExecutor';
+import { AgentWorkflowSkillExecutor } from './skills/AgentWorkflowSkillExecutor';
 import { loadAgentConfig } from './config';
 import { Note, IndeedSkill, CraigslistSkill, GitHubSkill } from '@notention/core';
 import { log, error } from './core/utils';
@@ -48,7 +48,7 @@ const uiClients = new Set<WebSocket>();
 
 const agentRegistry = new AgentRegistry();
 const skillRegistry = new AgentSkillRegistry();
-let skillExecutor: SkillExecutor;
+let skillExecutor: AgentWorkflowSkillExecutor;
 
 async function bootstrap() {
   const config = await loadAgentConfig();
@@ -87,7 +87,7 @@ async function bootstrap() {
       log('Init', `Onboarding note created: ${onboardingNote.id}`);
   }
 
-  skillExecutor = new SkillExecutor(voltagent, skillRegistry, (event) => {
+  skillExecutor = new AgentWorkflowSkillExecutor(voltagent, skillRegistry, (event) => {
     broadcastToUI(event);
   });
 

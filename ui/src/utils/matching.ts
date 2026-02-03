@@ -1,5 +1,5 @@
 import type { Note, Property } from '@notention/core';
-import { matchingService, MatchingService, type MatchResultDetails } from '../services/MatchingService';
+import { matchingService, type MatchResultDetails } from '@notention/core';
 
 export type { MatchResultDetails };
 

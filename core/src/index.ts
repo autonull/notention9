@@ -35,6 +35,7 @@ export * from './ontologyService.js';
 export * from './ontologyServiceFactory.js';
 export * from './propertyExtractor.js';
 export * from './queryBuilder.js';
+export * from './matching/MatchingService.js';
 
 // Skill system (Phase 4)
 export * from './skills/BaseSkill.js';
