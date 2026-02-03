@@ -7,9 +7,10 @@ import { VoltAgentProvider } from '@notention/agent-voltagent';
 import { AgentSkillRegistry } from './skills/AgentSkillRegistry';
 import { AgentWorkflowSkillExecutor } from './skills/AgentWorkflowSkillExecutor';
 import { loadAgentConfig } from './config';
-import { Note, IndeedSkill, CraigslistSkill, GitHubSkill } from '@notention/core';
+import { Note, IndeedSkill, CraigslistSkill, GitHubSkill, Feedback } from '@notention/core';
 import { log, error } from './core/utils';
 import { PersistenceService } from './persistence';
+import { FeedbackCollector } from './feedback/FeedbackCollector';
 
 // --- Initialization Helpers ---
 
@@ -48,6 +49,7 @@ const uiClients = new Set<WebSocket>();
 
 const agentRegistry = new AgentRegistry();
 const skillRegistry = new AgentSkillRegistry();
+const feedbackCollector = new FeedbackCollector();
 let skillExecutor: AgentWorkflowSkillExecutor;
 
 async function bootstrap() {
@@ -193,6 +195,13 @@ async function handleUIMessage(message: any, ws: WebSocket) {
       await PersistenceService.deleteNoteSafe(message.payload.id);
       ws.send(JSON.stringify({ type: 'response', id: message.id, success: true }));
       break;
+    }
+
+    case 'feedback': {
+        const feedback = message.payload as Feedback;
+        await feedbackCollector.recordFeedback(feedback);
+        ws.send(JSON.stringify({ type: 'response', id: message.id, success: true }));
+        break;
     }
 
     default:

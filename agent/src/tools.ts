@@ -3,6 +3,7 @@ import { Note, Tool, ToolInput, ToolResult, createTool, createOntologyQueryTool 
 import { getSkillRegistry, getOntology } from './globals';
 import { log } from './core/utils';
 import { executeAction } from './core/actionExecutor';
+import { SkillToolAdapter } from './skills/SkillToolAdapter';
 
 // Query skill registry
 export const querySkillRegistryTool = createTool({
@@ -43,7 +44,18 @@ export const executeSkillTool = createTool({
         }
 
         const note = noteData as unknown as Note;
-        const action = await skill.export(note);
+        let action: any = null;
+
+        // Support both old 'export' and new 'exportToActions'
+        if (skill.exportToActions) {
+             const sequence = skill.exportToActions(note);
+             if (sequence && sequence.actions && sequence.actions.length > 0) {
+                 action = SkillToolAdapter.convertToAgentAction(sequence.actions);
+             }
+        } else if (skill.export) {
+             action = await skill.export(note);
+        }
+
         if (!action) {
             return { success: false, reason: 'No action generated' };
         }
@@ -106,7 +118,13 @@ export const executeSkillTool = createTool({
         // Execute the actual action (browser automation, API call, etc.)
         const results = await executeAction(action);
 
-        return await skill.import(results);
+        if (skill.importFromData) {
+            return skill.importFromData(results, note);
+        } else if (skill.import) {
+             return await skill.import(results);
+        }
+
+        return [];
     }
 });
 
