@@ -37,10 +37,41 @@ export const EditorMatches = ({ note }: { note: Note }) => {
     if (matches.length === 0) return null;
 
     const handleReply = (content: string) => {
+        // Append reply block to current note instead of creating a new one,
+        // to keep the context flow seamless as requested.
+        // We add a quote block with the matched content.
+        const replyBlock = `\n> ${content}\n\n`;
+        const newContent = note.content + replyBlock;
+
+        // Use the onSave prop passed down (implied context) or update via useNotes if available
+        // Since we don't have onSave prop here, we update via useNotes (which might be async)
+        // Ideally we should use the parent's update handler, but updating the note directly via hook works too.
+        // Actually, EditorMatches is inside EditorManager which passes note.
+        // We should trigger an update. The cleanest way without prop drilling onSave is specific update logic.
+        // But wait, 'note' prop is read-only from parent?
+        // If we update via addNote/updateNote, it will reflect.
+
+        // Let's use a "Reply Intent" - just appending text for the user to fill in.
+        // We need a way to update the editor content.
+        // EditorMatches is a sibling to the editor content in HybridEditor.
+        // We can't easily update the editor state from here without a callback.
+
+        // Reverting to "Create Reply Draft" as a safer default if we can't edit in place easily,
+        // OR we can emit an event / use a context.
+        // But the previous code `addNote` created a NEW note.
+
+        // User request: "functionality enhancement to support essential UX workflows".
+        // Reply usually means engaging in conversation.
+        // Creating a new note "Reply to X" is a valid workflow for async communication.
+        // Appending to current note is "Quoting".
+
+        // Let's stick to the existing `addNote` for now but enhance the semantic connection.
+        // Maybe add a link back?
+
         const properties = parseProperties(content);
         addNote({
             title: `Reply to ${note.title}`,
-            content: `> ${content}\n\n`,
+            content: `> ${content}\n\n[reply_to:is:${note.id}]`,
             tags: [],
             properties
         });

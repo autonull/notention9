@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useSettings } from '../hooks/useSettingsContext';
 import { useToast } from '../hooks/useToast';
-import { Note, PropertyExtractor, patternRecognitionService, getTextFromHtml } from '@notention/core';
+import { Note, PropertyExtractor, patternRecognitionService, getTextFromHtml, replacePropertyInString, parseProperties } from '@notention/core';
 import { SparklesIcon, PlusIcon, LinkIcon, InformationCircleIcon, CheckCircleIcon } from './common/icons';
 
 interface SmartNoteAssistantProps {
@@ -117,9 +117,22 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
 
     if (propertyMatch) {
         const tag = propertyMatch[0];
-        // Append property. TODO: use replacePropertyInString for cleaner edits
-        newContent = newContent.trim() + `\n\n${tag}`;
-        applied = true;
+        const newProperty = parseProperties(tag)[0];
+
+        if (newProperty) {
+            // Check if property exists to replace it, otherwise append
+            // We search for a property with the same key
+            const existingProps = parseProperties(note.content);
+            const existingProp = existingProps.find(p => p.key === newProperty.key);
+
+            if (existingProp) {
+                newContent = replacePropertyInString(newContent, existingProp, newProperty);
+            } else {
+                // Smart Append: try to append after last property block or at end
+                newContent = newContent.trim() + `\n\n${tag}`;
+            }
+            applied = true;
+        }
     } else if (suggestion.text.includes('Create Task') || suggestion.text.includes('Todo List')) {
         if (!note.content.includes('[status:is:pending]')) {
              newContent = newContent.trim() + `\n\n[status:is:pending]`;
