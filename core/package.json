@@ -21,7 +21,8 @@
   "license": "MIT",
   "dependencies": {
     "date-fns": "^4.1.0",
-    "nostr-tools": "^2.20.0"
+    "nostr-tools": "^2.20.0",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
