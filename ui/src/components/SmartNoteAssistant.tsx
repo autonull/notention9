@@ -6,7 +6,7 @@ import { SparklesIcon, PlusIcon, LinkIcon, InformationCircleIcon, CheckCircleIco
 
 interface SmartNoteAssistantProps {
   note: Note;
-  onNoteUpdate: (updatedNote: Note) => void;
+  onNoteUpdate: (content: string) => void;
   className?: string;
 }
 
@@ -146,7 +146,7 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
     }
 
     if (applied) {
-        onNoteUpdate({ ...note, content: newContent });
+        onNoteUpdate(newContent);
         addToast('Suggestion applied', 'success');
         // Remove applied suggestion locally to avoid immediate re-suggestion
         setSuggestions(prev => prev.filter(s => s.id !== suggestion.id));
