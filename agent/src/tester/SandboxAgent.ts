@@ -1,5 +1,5 @@
 
-import { VoltAgentProvider, VoltAgentConfig } from '../../voltagent/src/VoltAgentProvider';
+import { VoltAgentProvider, VoltAgentConfig } from '@notention/agent-voltagent';
 import { TestEnvironment } from '../../../core/src/testing/TestEnvironment';
 
 export class SandboxAgent {

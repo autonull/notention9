@@ -3,7 +3,7 @@ import { WebSocketServer, WebSocket } from 'ws';
 import { join } from 'path';
 import fs from 'fs';
 import { AgentRegistry } from './core/AgentRegistry';
-import { VoltAgentProvider } from '../voltagent/src/VoltAgentProvider';
+import { VoltAgentProvider } from '@notention/agent-voltagent';
 import { AgentSkillRegistry } from './skills/AgentSkillRegistry';
 import { SkillExecutor } from './skills/SkillExecutor';
 import { loadAgentConfig } from './config';
