@@ -1,7 +1,7 @@
 import React, { forwardRef, useState, useCallback, useMemo } from 'react';
 import { TiptapEditor, TiptapEditorRef } from './TiptapEditor';
 import { PropertyWidget } from './PropertyWidget';
-import { PropertyExtractor, Property } from '@notention/core';
+import { PropertyExtractor, Property, replacePropertyInString, parseProperties } from '@notention/core';
 import { useSettings } from '../../hooks/useSettingsContext';
 import { Button } from '../common/Button';
 
@@ -33,8 +33,26 @@ export const HybridEditor = forwardRef<TiptapEditorRef, HybridEditorProps>((prop
     }, [extractor, props.onSave]);
 
     const handleApplyProperty = (prop: Property) => {
-        const propString = `[${prop.key}:${prop.operator}:${prop.values.join(',')}]`;
-        const newContent = props.note.content + `<p>${propString}</p>`;
+        // Check if property exists
+        const currentProps = parseProperties(props.note.content);
+        const existing = currentProps.find(p => p.key === prop.key);
+
+        let newContent = props.note.content;
+
+        if (existing) {
+            // Update existing
+            newContent = replacePropertyInString(newContent, existing, prop);
+        } else {
+            // Append new
+            const propString = `[${prop.key}:${prop.operator}:${prop.values.join(',')}]`;
+            // Ensure proper spacing if content doesn't end with newline/block
+            if (newContent.trim().endsWith('</p>')) {
+                newContent = newContent + `<p>${propString}</p>`;
+            } else {
+                newContent = newContent + `\n<p>${propString}</p>`;
+            }
+        }
+
         props.onSave(newContent);
     };
 
