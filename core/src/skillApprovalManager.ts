@@ -1,3 +1,4 @@
+import { Logger } from './utils/logging.js';
 import { SkillDefinition, SkillMatch } from './skillPatternMatcher.js';
 
 /**
@@ -57,7 +58,7 @@ export class SkillApprovalManager {
 
         // No callback - cannot approve
         if (!this.onApprovalRequest) {
-            console.warn(`Skill ${skill.id} requires approval but no callback provided`);
+            Logger.getInstance().warn(`Skill ${skill.id} requires approval but no callback provided`);
             return false;
         }
 

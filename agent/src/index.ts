@@ -1,15 +1,16 @@
-import express from 'express';
-import { WebSocketServer, WebSocket } from 'ws';
-import { join } from 'path';
 import fs from 'fs';
-import { AgentRegistry } from './core/AgentRegistry';
+import { join } from 'path';
+import express from 'express';
 import { VoltAgentProvider } from '@notention/agent-voltagent';
-import { AgentSkillRegistry } from './skills/AgentSkillRegistry';
-import { SkillExecutor } from './skills/SkillExecutor';
-import { loadAgentConfig } from './config';
 import { Note } from '@notention/core/src/types';
+
+import { loadAgentConfig } from './config';
+import { AgentRegistry } from './core/AgentRegistry';
 import { log, error } from './core/utils';
 import { PersistenceService } from './persistence';
+import { WebSocketManager } from './server/websocket';
+import { AgentSkillRegistry } from './skills/AgentSkillRegistry';
+import { SkillExecutor } from './skills/SkillExecutor';
 
 // --- Initialization Helpers ---
 
@@ -45,8 +46,7 @@ const server = app.listen(PORT, () => {
 });
 
 // WebSocket Setup
-const wss = new WebSocketServer({ server, path: '/ws/agent' });
-const uiClients = new Set<WebSocket>();
+const wsManager = new WebSocketManager(server);
 
 // --- Agent System ---
 
@@ -92,8 +92,11 @@ async function bootstrap() {
   }
 
   skillExecutor = new SkillExecutor(voltagent, skillRegistry, (event) => {
-    broadcastToUI(event);
+    wsManager.broadcast(event);
   });
+
+  // Set dependencies for WebSocket manager
+  wsManager.setDependencies(agentRegistry, skillExecutor);
 
   // Register App-Specific Tools with VoltAgent
   const { querySkillRegistryTool, executeSkillTool, ontologyQueryTool } = await import('./tools');
@@ -109,108 +112,11 @@ async function bootstrap() {
     // Process for Configuration
     configProcessor.processNote(note);
 
-    broadcastToUI({ type: 'note_created', payload: note });
+    wsManager.broadcast({ type: 'note_created', payload: note });
   });
 }
 
 bootstrap().catch(err => error('Init', 'Bootstrap failed', err));
-
-// --- WebSocket Handlers ---
-
-wss.on('connection', (ws) => {
-  log('WS', 'UI client connected');
-  uiClients.add(ws);
-
-  ws.send(JSON.stringify({
-    type: 'connection_established',
-    message: 'Connected to Notention Agent'
-  }));
-
-  ws.on('message', async (data) => {
-    try {
-      const message = JSON.parse(data.toString());
-      await handleUIMessage(message, ws);
-    } catch (e) {
-      error('WS', 'Message handling error', e);
-      ws.send(JSON.stringify({ type: 'error', message: 'Invalid message' }));
-    }
-  });
-
-  ws.on('close', () => uiClients.delete(ws));
-});
-
-async function handleUIMessage(message: any, ws: WebSocket) {
-  const agent = agentRegistry.getDefault();
-  if (!agent) {
-    ws.send(JSON.stringify({ type: 'error', message: 'No agent available' }));
-    return;
-  }
-
-  // Simple permissive check for now
-  const shouldExecuteSkills = async (note: Note) => true;
-
-  switch (message.type) {
-    case 'note_created': {
-      const notes = await skillExecutor.executeForNote(message.payload);
-      for (const result of notes) {
-        broadcastToUI({ type: 'note_created', payload: result });
-      }
-      break;
-    }
-
-    case 'note_updated':
-      if (await shouldExecuteSkills(message.payload)) {
-        const results = await skillExecutor.executeForNote(message.payload);
-        for (const result of results) {
-          broadcastToUI({ type: 'note_created', payload: result });
-        }
-      }
-      break;
-
-    case 'execute_workflow':
-      try {
-        const result = await agent.executeWorkflow(message.payload.workflowId, message.payload.input);
-        ws.send(JSON.stringify({ type: 'workflow_result', payload: result }));
-      } catch (e: any) {
-        ws.send(JSON.stringify({ type: 'error', message: e.message }));
-      }
-      break;
-
-    case 'get_agent_status':
-      const status = await agent.getStatus();
-      ws.send(JSON.stringify({ type: 'agent_status', payload: status }));
-      break;
-
-    case 'get_notes': {
-      const notes = await PersistenceService.getNotesSafe();
-      ws.send(JSON.stringify({ type: 'notes_list', payload: notes, id: message.id }));
-      break;
-    }
-
-    case 'save_note': {
-      await PersistenceService.saveNoteSafe(message.payload);
-      ws.send(JSON.stringify({ type: 'response', id: message.id, success: true }));
-      break;
-    }
-
-    case 'delete_note': {
-      await PersistenceService.deleteNoteSafe(message.payload.id);
-      ws.send(JSON.stringify({ type: 'response', id: message.id, success: true }));
-      break;
-    }
-
-    default:
-      ws.send(JSON.stringify({ type: 'error', message: `Unknown type: ${message.type}` }));
-  }
-}
-
-function broadcastToUI(message: any) {
-  uiClients.forEach(client => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify(message));
-    }
-  });
-}
 
 // --- Shutdown ---
 

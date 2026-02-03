@@ -1,9 +1,10 @@
-import { Property } from './types/index.js';
-import type { Quantity } from './quantities.js';
-import { OntologyService } from './ontologyService.js';
 import { DEFAULT_ONTOLOGY } from './ontology.default.js';
+import { OntologyService } from './ontologyService.js';
 import { PropertyValidationError } from './errorTypes.js';
+import { Logger } from './utils/logging.js';
 import { parseQuantity } from './quantities.js';
+import type { Quantity } from './quantities.js';
+import { Property } from './types/index.js';
 
 const INTENTS = [
     { key: 'reminder', regex: /remind.*me.*(to|about|that).*|set.*reminder/i },
@@ -47,7 +48,9 @@ export class PropertyExtractor {
             this.applyFuzzyMatchingStrategy
         ];
 
-        strategies.forEach(strategy => strategy.call(this, text, properties));
+        for (const strategy of strategies) {
+            strategy.call(this, text, properties);
+        }
         return properties;
     }
 
@@ -187,9 +190,9 @@ export class PropertyExtractor {
 
         if (isPrice) {
             if (quantity.unitType === 'compound' && !isRate) {
-                console.warn(`Warning: Property ${propertyKey} appears to be a simple price but has a compound unit: ${quantity.unit}`);
+                Logger.getInstance().warn(`Property ${propertyKey} appears to be a simple price but has a compound unit: ${quantity.unit}`);
             } else if (quantity.unitType === 'simple' && isRate) {
-                console.warn(`Warning: Property ${propertyKey} appears to be a rate but has a simple unit: ${quantity.unit}`);
+                Logger.getInstance().warn(`Property ${propertyKey} appears to be a rate but has a simple unit: ${quantity.unit}`);
             }
         }
     }

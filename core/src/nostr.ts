@@ -1,11 +1,10 @@
-import { SimplePool, getPublicKey, finalizeEvent } from 'nostr-tools';
-// Using internal utils or redefining if not exposed
-// nostr-tools v2 usually exposes utils at top level or /utils path
-
+import { SimplePool, finalizeEvent } from 'nostr-tools';
+import { Logger } from './utils/logging.js';
 import type { NostrEvent, Note, Property } from './types/index.js';
 import { NetworkGate, PrivacyError } from './networkGate.js';
 
 // Polyfill-ish implementation for hex conversion to avoid deep imports
+// Note: nostr-tools v2 relies on @noble/hashes, but we keep this simple to avoid extra dependencies for now
 export const hexToBytes = (hex: string): Uint8Array => {
     if (hex.length % 2 !== 0) throw new Error('Invalid hex string');
     const bytes = new Uint8Array(hex.length / 2);
@@ -155,7 +154,7 @@ export async function publishNoteToNostr(
   try {
       await promiseAny(pubs);
   } catch (e) {
-      console.warn('Failed to publish to any relay', e);
+      Logger.getInstance().warn('Failed to publish to any relay', e);
       throw e;
   }
 
