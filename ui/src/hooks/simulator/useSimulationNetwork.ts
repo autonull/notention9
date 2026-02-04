@@ -4,6 +4,7 @@ import type { Gardener } from '../../services/gardener';
 import { parseProperties } from '@notention/core';
 import { matchingService } from '../../services/MatchingService';
 import { addAttribute } from '@notention/core';
+import { skillService } from '../../services/SkillService';
 
 export interface Log {
     msg: string;
@@ -54,6 +55,44 @@ export const useSimulationNetwork = (
                  }));
              }
           });
+
+          // Check for Skills
+          const skills = skillService.getRegistry().findMatching(enrichedNote);
+          if (skills.length > 0) {
+              skills.forEach(skill => {
+                  addLog(`SKILL: Triggered ${skill.name}`, 'info');
+
+                  // Simulate Execution
+                  if (skill.exportToActions) {
+                      const actions = skill.exportToActions(enrichedNote);
+                      if (actions) {
+                          // Create Simulated Result Note
+                           const resultNote: Note = {
+                              id: crypto.randomUUID(),
+                              title: `Result from ${skill.name}`,
+                              content: `Simulated result for action: ${actions.name}`,
+                              tags: ['@skill-result'],
+                              properties: [],
+                              createdAt: new Date().toISOString(),
+                              updatedAt: new Date().toISOString(),
+                              source: {
+                                  type: 'skill',
+                                  identifier: skill.id,
+                                  timestamp: Date.now()
+                              },
+                              public: true,
+                              priority: 1
+                          };
+
+                          // Add result note asynchronously to simulate network delay
+                          setTimeout(() => {
+                              setNetworkNotes(current => [resultNote, ...current]);
+                              addLog(`SKILL: Received result from ${skill.name}`, 'info');
+                          }, 1500);
+                      }
+                  }
+              });
+          }
 
           return newNotes;
       });

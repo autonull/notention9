@@ -138,7 +138,8 @@ export const useSimulator = () => {
     aiRef,
     gardenerRef,
     addLog,
-    setAiProviderName
+    setAiProviderName,
+    handlePublish
   });
 
   const randomizeAgent = useCallback((agentIndex: number) => {
