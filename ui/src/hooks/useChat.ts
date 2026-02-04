@@ -64,7 +64,7 @@ export const useChat = ({ privkey, pubkey, selectedContact }: UseChatProps) => {
 
     const sub = pool.subscribeMany(
       DEFAULT_RELAYS,
-      [{ kinds: [3], authors: [pubkey], limit: 1 }],
+      { kinds: [3], authors: [pubkey], limit: 1 },
       {
         onevent: (event) => {
           const newContacts: Contact[] = event.tags
@@ -94,10 +94,11 @@ export const useChat = ({ privkey, pubkey, selectedContact }: UseChatProps) => {
 
     const sub = pool.subscribeMany(
       DEFAULT_RELAYS,
-      [
-        { kinds: [4], authors: [pubkey], '#p': [selectedContact.pubkey] },
-        { kinds: [4], authors: [selectedContact.pubkey], '#p': [pubkey] },
-      ],
+      {
+          kinds: [4],
+          authors: [pubkey, selectedContact.pubkey],
+          '#p': [pubkey, selectedContact.pubkey]
+      },
       { onevent: handleDecryption }
     );
 

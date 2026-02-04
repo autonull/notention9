@@ -24,7 +24,7 @@ export function useSingleNoteMatch(note: Note) {
 
         const sub = pool.subscribeMany(
             relays,
-            [{ kinds: [1], limit: 20 }],
+            { kinds: [1], limit: 20 },
             {
                 onevent: (event) => {
                     if(seen.has(event.id)) return;

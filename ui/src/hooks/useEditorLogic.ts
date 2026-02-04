@@ -156,8 +156,13 @@ export const useEditorLogic = ({ note, onSave }: UseEditorLogicProps) => {
       handleUpdateProperty('location', latlng);
   }, [handleUpdateProperty]);
 
+  const handleNoteUpdate = useCallback((updates: Partial<Note>) => {
+      setDirtyNote(prev => ({ ...prev, ...updates }));
+  }, [setDirtyNote]);
+
   return {
     dirtyNote,
+    handleNoteUpdate,
     isPublishing,
     handleTitleChange,
     handleTagsChange,

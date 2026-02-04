@@ -66,7 +66,7 @@ export const useNetworkView = ({ matchAgainst }: UseNetworkViewProps = {}) => {
 
     const sub = pool.subscribeMany(
       relays,
-      [{ kinds: [1], limit: 50 }],
+      { kinds: [1], limit: 50 },
       {
         onevent: (event) => {
           if (!seenEventIdsRef.current.has(event.id)) {

@@ -74,7 +74,7 @@ export const useNostrProfile = (
 
     const sub = pool.subscribeMany(
       DEFAULT_RELAYS,
-      [{ kinds: [0], authors: pubkeysToFetch }],
+      { kinds: [0], authors: pubkeysToFetch },
       {
         onevent: handleEvent,
       }

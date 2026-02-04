@@ -24,8 +24,16 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({ note, onUpdate }) =>
         setIsPublishing(true);
         setError(null);
         try {
-            await publishNoteToNostr(note, settings.nostr.privkey || undefined);
-            // Success feedback?
+            const relays = settings.nostr.relays && settings.nostr.relays.length > 0
+                ? settings.nostr.relays
+                : undefined;
+            await publishNoteToNostr(note, settings.nostr.privkey || undefined, relays);
+            // Update note with new ID and publishedAt
+            onUpdate({
+                ...note,
+                nostrEventId: note.nostrEventId,
+                publishedAt: note.publishedAt
+            });
         } catch (e: any) {
             setError(e.message || 'Publish failed');
         } finally {
