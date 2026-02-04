@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useWebSocket } from '../../hooks/useWebSocket';
 import { useToast } from '../../hooks/useToast';
+import { agentService } from '../../services/AgentService';
 
 interface WorkflowStep {
     agent: string;
@@ -10,7 +10,6 @@ interface WorkflowStep {
 export function WorkflowBuilder() {
     const [name, setName] = useState('');
     const [steps, setSteps] = useState<WorkflowStep[]>([]);
-    const { sendMessage } = useWebSocket();
     const { addToast } = useToast();
 
     const addStep = () => {
@@ -37,8 +36,13 @@ export function WorkflowBuilder() {
 
         console.log('Saving workflow:', workflow);
         // In real implementation, send to agent to register
-        // sendMessage({ type: 'register_workflow', payload: workflow });
-        addToast(`Workflow "${name}" saved (mock)!`, 'success');
+        if (agentService.isEnabled()) {
+            agentService.send({ type: 'register_workflow', payload: workflow });
+            addToast(`Workflow "${name}" saved to Agent!`, 'success');
+        } else {
+            console.log('Agent disabled, workflow not persisted remotely.');
+            addToast(`Workflow "${name}" saved (Local Mock)!`, 'info');
+        }
     };
 
     return (

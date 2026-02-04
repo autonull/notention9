@@ -13,6 +13,7 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
+        '@notention/core': path.resolve(__dirname, '../core/src/index.ts'),
       },
     },
     test: {

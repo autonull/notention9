@@ -1,4 +1,5 @@
 import { Note, RobustWebSocket } from '@notention/core';
+import { capabilities } from '../config/Capabilities';
 
 class AgentService extends RobustWebSocket {
 
@@ -7,6 +8,13 @@ class AgentService extends RobustWebSocket {
   }
 
   async connect(url?: string): Promise<void> {
+    if (!capabilities.agent) {
+      this.logger.info('Agent subsystem disabled via config');
+      // Status remains 'disconnected' or we can leave it as is.
+      // Important: Do NOT call fallbackToOfflineMode() which emits 'connected'.
+      return;
+    }
+
     const resolvedUrl = await this.resolveUrl(url);
 
     if (resolvedUrl) {
@@ -40,6 +48,10 @@ class AgentService extends RobustWebSocket {
   }
 
   async fetchNotes(): Promise<Note[]> {
+    if (!capabilities.agent) {
+      return [];
+    }
+
     if (!this.isOnlineMode) {
       return Promise.reject(new Error('Offline'));
     }
@@ -74,7 +86,11 @@ class AgentService extends RobustWebSocket {
 
   // Alias methods if needed to match previous API exactly, though base class has most
   isOffline(): boolean {
-    return !this.isOnlineMode;
+    return !this.isOnlineMode && capabilities.agent;
+  }
+
+  isEnabled(): boolean {
+    return capabilities.agent;
   }
 }
 

@@ -1,21 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { useWebSocket } from '../../hooks/useWebSocket';
+import { agentService } from '../../services/AgentService';
 import { AgentStatus as AgentStatusType } from '@notention/core';
 import { Badge } from '../common/Badge';
 
 export function AgentStatus() {
     const [status, setStatus] = useState<AgentStatusType | null>(null);
-    const { sendMessage, subscribe } = useWebSocket();
+
 
     useEffect(() => {
-        const unsubscribe = subscribe((message: any) => {
+        if (!agentService.isEnabled()) return;
+
+        const handler = (message: any) => {
             if (message.type === 'agent_status') {
                 setStatus(message.payload);
             }
-        });
+        };
+
+        agentService.on('message', handler);
 
         const fetchStatus = () => {
-            sendMessage({ type: 'get_agent_status' });
+            if (agentService.isConnected()) {
+                agentService.send({ type: 'get_agent_status' });
+            }
         };
 
         fetchStatus();
@@ -23,9 +29,17 @@ export function AgentStatus() {
 
         return () => {
             clearInterval(interval);
-            unsubscribe();
+            agentService.off('message', handler);
         };
-    }, [sendMessage, subscribe]);
+    }, []);
+
+    if (!agentService.isEnabled()) {
+        return (
+            <div className="bg-gray-900/50 border border-gray-700/50 rounded-lg p-4 text-center text-gray-400 text-sm">
+                Local Mode (Agent Disabled)
+            </div>
+        );
+    }
 
     if (!status) {
         return (
@@ -48,7 +62,7 @@ export function AgentStatus() {
                     <div className={`w-3 h-3 rounded-full ${isRunning ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' : 'bg-red-500'}`} />
                     <h3 className="text-lg font-bold text-white tracking-wide">{status.state.toUpperCase()}</h3>
                 </div>
-                <Badge variant="ghost" size="sm" className="font-mono">v{status.version}</Badge>
+                <Badge variant="outline" size="sm" className="font-mono">v{status.version}</Badge>
             </div>
 
             {/* Content */}
