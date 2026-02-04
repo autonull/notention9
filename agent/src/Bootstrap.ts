@@ -42,6 +42,7 @@ export class Bootstrap {
     // Initialize Config Processor (Phase 1.3)
     const { ConfigProcessor } = await import('./configurator/ConfigProcessor');
     const configProcessor = new ConfigProcessor();
+    configProcessor.setAgent(voltagent); // Hook up agent for dynamic config
 
     // Initialize Plugin Loader (Phase 2.2)
     const { PluginLoader } = await import('./skills/PluginLoader');
