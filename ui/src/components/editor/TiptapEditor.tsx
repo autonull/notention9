@@ -29,8 +29,11 @@ interface TiptapEditorProps {
   topContent?: React.ReactNode;
 }
 
+import { Editor } from '@tiptap/react';
+
 export interface TiptapEditorRef {
-    openPropertyModal: (key?: string) => void;
+  openPropertyModal: (key?: string) => void;
+  editor: Editor | null;
 }
 
 export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
@@ -54,31 +57,32 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
   const { addToast } = useToast();
 
   const {
-      isPropertyModalOpen,
-      setIsPropertyModalOpen,
-      setEditingPropertyPos,
-      initialModalData,
-      setInitialModalData,
-      handleOpenPropertyModal,
-      handleInsertProperty,
-      findAttributeDef,
-      handleClosePropertyModal,
-      handlePrepareNewProperty
+    isPropertyModalOpen,
+    setIsPropertyModalOpen,
+    setEditingPropertyPos,
+    initialModalData,
+    setInitialModalData,
+    handleOpenPropertyModal,
+    handleInsertProperty,
+    findAttributeDef,
+    handleClosePropertyModal,
+    handlePrepareNewProperty
   } = usePropertyInsertion();
 
   useImperativeHandle(ref, () => ({
-      openPropertyModal: handleOpenPropertyModal
+    openPropertyModal: handleOpenPropertyModal,
+    editor
   }));
 
   const editor = useTiptapConfig({
-      content: note.content,
-      onUpdate: onSave,
-      ontology,
-      templates,
-      minimal,
-      notes,
-      onOpenPropertyModal: handleOpenPropertyModal,
-      onMagic
+    content: note.content,
+    onUpdate: onSave,
+    ontology,
+    templates,
+    minimal,
+    notes,
+    onOpenPropertyModal: handleOpenPropertyModal,
+    onMagic
   });
 
   // Sync content from parent
