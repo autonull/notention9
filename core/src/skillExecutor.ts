@@ -9,7 +9,7 @@ import { Logger } from './utils/logging.js';
 /**
  * SkillExecutor - Orchestrates skill execution with approval and privacy
  * 
- * As per TODO2.md Phase 4:
+ * As per ROADMAP.md Phase 2:
  * 1. Pattern matching via ontology
  * 2. One-time approval (or auto if previously approved)
  * 3. Background execution

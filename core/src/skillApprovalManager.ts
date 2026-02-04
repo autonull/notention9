@@ -3,7 +3,7 @@ import { SkillDefinition, SkillMatch } from './skillPatternMatcher.js';
 /**
  * SkillApprovalManager - One-time approval for skill execution
  * 
- * As per TODO2.md Phase 4: Skills require one-time user approval before auto-execution.
+ * As per ROADMAP.md Phase 2: Skills require one-time user approval before auto-execution.
  * After approval, matching patterns auto-execute in background.
  */
 

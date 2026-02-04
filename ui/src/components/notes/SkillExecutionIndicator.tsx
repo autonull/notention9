@@ -18,7 +18,7 @@ export function SkillExecutionIndicator({ noteId }: { noteId: string }) {
             // unless we instrument it. 
             // DONE: Setup instrumented feedback in VoltAgentProvider or SkillExecutor (Phase 3).
             // Or we just listen for 'note_created' with source 'voltagent' related to this note?
-            // TODO3.md snippet expects 'skill_execution_started'.
+            // ROADMAP.md Phase 2 snippet expects 'skill_execution_started'.
             // I should have implemented that broadcast in SkillExecutor or global event handler!
             // I'll update SkillExecutor later if strict adherence is needed, or just keep this component ready.
 
