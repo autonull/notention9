@@ -27,10 +27,10 @@ describe('MatchEngine', () => {
                 return { key, operator: op, values: [rest.join(':')] };
             }),
             author: '',
-            createdAt: 0,
-            modifiedAt: 0,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
             priority: 1
-        };
+        } as unknown as Note;
     }
 
     it('should match numeric constraints', () => {
