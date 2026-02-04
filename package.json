@@ -10,7 +10,8 @@
   "scripts": {
     "build": "npm run build --workspaces",
     "dev:local": "VITE_ENABLE_AGENT=false VITE_LLM_SOURCE=none npm run dev -w @notention/ui",
-    "dev:server": "node scripts/dev-runner.js"
+    "dev:server": "node scripts/dev-runner.js",
+    "verify:e2e": "node verification/verify_end_to_end_flow.mjs"
   },
   "dependencies": {
     "uuid": "^9.0.1",

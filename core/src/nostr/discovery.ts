@@ -64,15 +64,15 @@ export class NetworkDiscoveryService {
             }
 
             // Re-implementing wrapper logic similar to useMatches but async
-            const matches = events.map(event => {
+            const matches = events.map((event: any) => {
                 const remoteNote = convertEventToNote(event);
                 return {
                     note: remoteNote,
                     result: this.engine.calculateMatchScore(localNote, remoteNote)
                 };
             })
-                .filter(m => m.result.score > 0.3) // Filter noise
-                .sort((a, b) => b.result.score - a.result.score);
+                .filter((m: any) => m.result.score > 0.3) // Filter noise
+                .sort((a: any, b: any) => b.result.score - a.result.score);
 
             // extracting just the MatchResult part? No, we need the note.
             // The method signature in plan said Promise<MatchResult[]>, but that's insufficient.
