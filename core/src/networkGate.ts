@@ -1,4 +1,5 @@
 import type { Note } from './types/index.js';
+import { CapabilityManager } from './security/CapabilityManager.js';
 
 /**
  * Privacy error thrown when attempting to transmit private notes without user consent
@@ -15,6 +16,8 @@ export class PrivacyError extends Error {
  * Prevents accidental leaking of private notes to external networks.
  */
 export class NetworkGate {
+    private capabilityManager = new CapabilityManager();
+
     /**
      * Check if note can be transmitted over network
      * @param note - Note to check
@@ -31,6 +34,13 @@ export class NetworkGate {
         // Public notes can always be transmitted
         if (note.public) {
             return true;
+        }
+
+        // Check if note has explicit 'network:transmit' capability
+        // This allows granular overrides without making the whole note public
+        const perms = this.capabilityManager.extractPermissions(note.properties);
+        if (this.capabilityManager.checkPermission('network:fetch', destination, perms)) {
+             return true;
         }
 
         // Private note without user prompt callback - deny

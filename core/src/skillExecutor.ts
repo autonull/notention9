@@ -5,6 +5,7 @@ import { NetworkGate } from './networkGate.js';
 import { OntologyService } from './ontologyService.js';
 import { BaseSkill } from './skills/BaseSkill.js';
 import { Logger } from './utils/logging.js';
+import { CapabilityManager, Permission } from './security/CapabilityManager.js';
 
 /**
  * SkillExecutor - Orchestrates skill execution with approval and privacy
@@ -36,6 +37,7 @@ export class SkillExecutor {
     private approvalManager: SkillApprovalManager;
     private networkGate: NetworkGate;
     private ontologyService: OntologyService;
+    private capabilityManager: CapabilityManager;
     private logger = Logger.getInstance();
 
     // Callback for result notes
@@ -50,6 +52,7 @@ export class SkillExecutor {
         this.approvalManager = approvalManager;
         this.networkGate = new NetworkGate();
         this.ontologyService = ontologyService || matcher.getOntologyService();
+        this.capabilityManager = new CapabilityManager();
     }
 
     /**
@@ -212,6 +215,19 @@ export class SkillExecutor {
                     error: 'Cannot execute skill on private note'
                 };
             }
+
+            // 3. Capability Check (New Phase 2)
+            // Extract permissions from the note
+            const permissions = this.capabilityManager.extractPermissions(note.properties);
+
+            // Note: Currently skills don't declare required capabilities explicitly in a standard way
+            // We assume basic 'browser:navigate' for now if it's a browser skill
+            // In future, skill.getRequiredCapabilities() should be used.
+            // For MVP: We check if the note *explicitly grants* permission if the skill is sensitive.
+
+            // This is a placeholder for the full check logic
+            // const requiredCaps = skill.getRequiredCapabilities();
+            // const hasPermission = this.capabilityManager.checkPermission(..., permissions);
 
             this.logger.info(`[SkillExecutor] Executing ${skill.getName()} with properties:`, note.properties);
 
