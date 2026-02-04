@@ -3,7 +3,7 @@ import React from 'react';
 import { useSettings } from '../../hooks/useSettingsContext';
 import { useView } from '../../hooks/useViewContext';
 import { useNoteActions } from '../../hooks/useNoteActions';
-import { DEFAULT_TEMPLATES } from '@notention/core';
+import { DEFAULT_TEMPLATES, generateTemplatesFromOntology } from '@notention/core';
 import type { View, Template } from '@notention/core';
 import { NavButton } from './NavButton';
 import { IconButton } from '../common/IconButton';
@@ -21,48 +21,53 @@ interface HeaderProps {
 
 export function Header({ onNewNote }: HeaderProps) {
   const {
-      activeView,
-      setActiveView,
-      notificationCount,
-      isSidebarOpen,
-      setIsSidebarOpen,
-      chatNotificationCount,
-      selectedNoteId,
-      setSelectedNoteId,
-      setIsPaletteOpen
+    activeView,
+    setActiveView,
+    notificationCount,
+    isSidebarOpen,
+    setIsSidebarOpen,
+    chatNotificationCount,
+    selectedNoteId,
+    setSelectedNoteId,
+    setIsPaletteOpen
   } = useView();
   const { settings } = useSettings();
   const { createNoteAndNavigate } = useNoteActions();
 
   const handleNavClick = (view: View) => {
-      if (view === 'notes' && activeView === 'notes' && selectedNoteId) {
-          setSelectedNoteId(null);
-      } else {
-          setActiveView(view);
-      }
+    if (view === 'notes' && activeView === 'notes' && selectedNoteId) {
+      setSelectedNoteId(null);
+    } else {
+      setActiveView(view);
+    }
   };
 
   const handleCreateIntent = (type: 'request' | 'offer') => {
-      const isRequest = type === 'request';
-      const content = isRequest
-        ? `#request\n[intent:is:request]\n[status:is:open]\n\nI am looking for...`
-        : `#offer\n[intent:is:offer]\n[status:is:available]\n\nI can provide...`;
+    const isRequest = type === 'request';
+    const content = isRequest
+      ? `#request\n[intent:is:request]\n[status:is:open]\n\nI am looking for...`
+      : `#offer\n[intent:is:offer]\n[status:is:available]\n\nI can provide...`;
 
-      createNoteAndNavigate(
-          isRequest ? 'New Request' : 'New Offer',
-          content
-      );
+    createNoteAndNavigate(
+      isRequest ? 'New Request' : 'New Offer',
+      content
+    );
   };
 
   const handleCreateFromTemplate = (template: Template) => {
-      createNoteAndNavigate(undefined, template.content);
+    createNoteAndNavigate(undefined, template.content);
   };
 
-  const allTemplates = [...DEFAULT_TEMPLATES, ...settings.customTemplates];
+  const generatedTemplates = React.useMemo(() => {
+    return generateTemplatesFromOntology(settings.ontology);
+  }, [settings.ontology]);
+
+  // Combine generated templates with custom ones
+  const allTemplates = [...generatedTemplates, ...settings.customTemplates];
 
   const filteredNavItems = NAV_ITEMS.filter(item => {
-      if (item.requiresDeveloperMode && !settings.developerMode) return false;
-      return true;
+    if (item.requiresDeveloperMode && !settings.developerMode) return false;
+    return true;
   });
 
   return (
@@ -80,39 +85,39 @@ export function Header({ onNewNote }: HeaderProps) {
         />
 
         <NewNoteButton
-            onNewNote={onNewNote}
-            onCreateIntent={handleCreateIntent}
-            templates={allTemplates}
-            onCreateFromTemplate={handleCreateFromTemplate}
+          onNewNote={onNewNote}
+          onCreateIntent={handleCreateIntent}
+          templates={allTemplates}
+          onCreateFromTemplate={handleCreateFromTemplate}
         />
 
         <IconButton
-            onClick={() => setIsPaletteOpen(true)}
-            tooltip="Search & Commands (Ctrl+K)"
-            tooltipPosition="bottom"
-            icon={SearchIcon}
-            variant="ghost"
-            size="lg"
+          onClick={() => setIsPaletteOpen(true)}
+          tooltip="Search & Commands (Ctrl+K)"
+          tooltipPosition="bottom"
+          icon={SearchIcon}
+          variant="ghost"
+          size="lg"
         />
       </div>
 
       {/* Center Section - Navigation */}
       <div className="flex items-center gap-2">
         {filteredNavItems.map((item) => {
-            const badgeCount = item.badgeCountKey
-                ? (item.badgeCountKey === 'notificationCount' ? notificationCount : chatNotificationCount)
-                : undefined;
-            return (
-              <NavButton
-                key={item.id}
-                icon={<item.icon />}
-                label={item.label}
-                tooltip={item.label}
-                isActive={activeView === item.id}
-                onClick={() => handleNavClick(item.id)}
-                badgeCount={badgeCount}
-              />
-            );
+          const badgeCount = item.badgeCountKey
+            ? (item.badgeCountKey === 'notificationCount' ? notificationCount : chatNotificationCount)
+            : undefined;
+          return (
+            <NavButton
+              key={item.id}
+              icon={<item.icon />}
+              label={item.label}
+              tooltip={item.label}
+              isActive={activeView === item.id}
+              onClick={() => handleNavClick(item.id)}
+              badgeCount={badgeCount}
+            />
+          );
         })}
       </div>
 

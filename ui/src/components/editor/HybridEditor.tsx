@@ -1,9 +1,10 @@
 import React, { forwardRef, useState, useCallback, useMemo } from 'react';
 import { TiptapEditor, TiptapEditorRef } from './TiptapEditor';
-import { PropertyWidget } from './PropertyWidget';
+import { PropertyBlock } from '../properties/PropertyBlock';
 import { PropertyExtractor, Property, replacePropertyInString, parseProperties } from '@notention/core';
 import { useSettings } from '../../hooks/useSettingsContext';
 import { Button } from '../common/Button';
+import { LocalDiscoverySidebar } from '../discovery/LocalDiscoverySidebar';
 import { FeedbackWidget } from '../common/FeedbackWidget';
 import { agentService } from '../../services/AgentService';
 
@@ -64,56 +65,55 @@ export const HybridEditor = forwardRef<TiptapEditorRef, HybridEditorProps>((prop
                 <TiptapEditor ref={ref} {...props} onSave={handleContentChange} />
             </div>
 
-            {/* Semantic Sidebar */}
-            {suggestedProps.length > 0 && (
-                 <div className="w-64 bg-gray-900/50 border-l border-gray-700 overflow-y-auto hidden lg:block p-3">
-                     <div className="flex items-center justify-between mb-3">
-                         <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Inferred</h3>
-                         <span className="bg-gray-800 text-gray-400 text-[10px] px-1.5 py-0.5 rounded-full">{suggestedProps.length}</span>
-                     </div>
-                     <div className="space-y-2">
-                         {suggestedProps.map((prop, i) => (
-                             <div key={i} className="bg-gray-800 p-2 rounded border border-gray-700/50 group hover:border-blue-500/30 transition-colors">
-                                 <PropertyWidget
-                                     property={prop}
-                                     onChange={() => {}}
-                                     onRemove={() => {}}
-                                     readOnly={true}
-                                 />
-                                 <div className="mt-2 flex justify-end opacity-0 group-hover:opacity-100 transition-opacity">
-                                      <Button
-                                          size="xs"
-                                          variant="secondary"
-                                          onClick={() => handleApplyProperty(prop)}
-                                          className="text-[10px] h-5 py-0 px-2"
-                                      >
-                                          Add to Note
-                                      </Button>
-                                 </div>
-                             </div>
-                         ))}
-                     </div>
-                     <div className="mt-4 pt-4 border-t border-gray-700 flex justify-center">
-                         <FeedbackWidget
-                             entityId={`extraction-${props.note.id}`}
-                             entityType="property-extraction"
-                             onFeedback={(type, val) => {
-                                 agentService.send({
-                                     type: 'feedback',
-                                     payload: {
-                                         id: crypto.randomUUID(),
-                                         entityId: `extraction-${props.note.id}`,
-                                         entityType: 'property-extraction',
-                                         value: type === 'positive' ? 1 : -1,
-                                         context: { details: val },
-                                         timestamp: Date.now()
-                                     }
-                                 });
-                             }}
-                         />
-                     </div>
-                 </div>
+            {/* Right Sidebar */}
+            {(suggestedProps.length > 0 || true) && (
+                <div className="w-64 bg-gray-900/50 border-l border-gray-700 flex flex-col hidden lg:flex">
+                    {/* Discovery Panel */}
+                    <div className="flex-1 overflow-hidden border-b border-gray-800">
+                        <LocalDiscoverySidebar
+                            note={props.note}
+                            onSelectMatch={(note) => {
+                                // TODO: Open split view or navigate
+                                console.log('Selected match:', note.id);
+                            }}
+                        />
+                    </div>
+
+                    {/* Inferred Properties Panel */}
+                    {suggestedProps.length > 0 && (
+                        <div className="h-1/3 overflow-y-auto border-t border-gray-800 p-3 bg-gray-900/30">
+                            <div className="flex items-center justify-between mb-3">
+                                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Inferred Props</h3>
+                                <span className="bg-gray-800 text-gray-500 text-[10px] px-1.5 py-0.5 rounded-full">{suggestedProps.length}</span>
+                            </div>
+                            <div className="space-y-2">
+                                {suggestedProps.map((prop, i) => (
+                                    <div key={i} className="mb-2">
+                                        <PropertyBlock
+                                            property={prop}
+                                            onUpdate={() => { }}
+                                            onDelete={() => { }}
+                                            ontology={settings.ontology}
+                                            autoFocus={false}
+                                        />
+                                        <div className="mt-2 flex justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <Button
+                                                size="xs"
+                                                variant="secondary"
+                                                onClick={() => handleApplyProperty(prop)}
+                                                className="text-[10px] h-5 py-0 px-2"
+                                            >
+                                                Add
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
             )}
+
         </div>
     );
 });
