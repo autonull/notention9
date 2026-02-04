@@ -8,7 +8,7 @@ import {
   SearchSparkleIcon
 } from '../common/icons';
 import { PropertyForm } from './PropertyForm';
-import { PropertyWidget } from './PropertyWidget';
+import { PropertyBlock } from '../properties/PropertyBlock';
 import { IconButton } from '../common/IconButton';
 import { useGardener } from '../../hooks/useGardener';
 import { parseProperties } from '@notention/core';
@@ -207,11 +207,12 @@ export function PropertyInspector({
         )}
 
         {sortedProperties.map((prop, idx) => (
-          <PropertyWidget
+          <PropertyBlock
             key={`${prop.key}-${idx}`}
             property={prop}
-            onChange={(newProp) => handleWidgetChange(prop, newProp)}
-            onRemove={() => setPropertyToDelete(prop)}
+            onUpdate={(newProp) => handleWidgetChange(prop, newProp)}
+            onDelete={() => setPropertyToDelete(prop)}
+            ontology={ontology}
           />
         ))}
 
@@ -225,11 +226,11 @@ export function PropertyInspector({
                 <div className="space-y-2">
                     {suggestedProperties.map((prop, idx) => (
                         <div key={`sugg-${idx}`} className="opacity-80 hover:opacity-100 transition-opacity">
-                            <PropertyWidget
+                            <PropertyBlock
                                 property={prop}
-                                onChange={(p) => {}} // No-op
-                                onRemove={() => {}} // No-op
-                                readOnly
+                                onUpdate={(p) => {}} // No-op
+                                onDelete={() => {}} // No-op
+                                ontology={ontology}
                             />
                             <div className="flex justify-end mt-1">
                                 <Button
