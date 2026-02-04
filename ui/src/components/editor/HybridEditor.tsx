@@ -5,6 +5,7 @@ import { PropertyExtractor, Property, replacePropertyInString, parseProperties }
 import { useSettings } from '../../hooks/useSettingsContext';
 import { Button } from '../common/Button';
 import { LocalDiscoverySidebar } from '../discovery/LocalDiscoverySidebar';
+import { PublishPanel } from '../publish/PublishPanel';
 import { FeedbackWidget } from '../common/FeedbackWidget';
 import { agentService } from '../../services/AgentService';
 
@@ -59,9 +60,21 @@ export const HybridEditor = forwardRef<TiptapEditorRef, HybridEditorProps>((prop
         props.onSave(newContent);
     };
 
+    const handleNoteUpdate = useCallback((updatedNote) => {
+        // This function would typically update the note in the parent component's state
+        // For now, we'll just log it or call a placeholder prop if available
+        console.log('Note updated from PublishPanel:', updatedNote);
+        // If props.onNoteUpdate exists, call it
+        if (props.onNoteUpdate) {
+            props.onNoteUpdate(updatedNote);
+        }
+    }, [props.onNoteUpdate]);
+
     return (
-        <div className="flex h-full w-full gap-2">
-            <div className="flex-1 flex flex-col h-full overflow-hidden">
+        <div className="flex h-full bg-gray-900 text-white overflow-hidden">
+            {/* Main Editor Area */}
+            <div className="flex-1 flex flex-col min-w-0">
+                <PublishPanel note={props.note} onUpdate={handleNoteUpdate} />
                 <TiptapEditor ref={ref} {...props} onSave={handleContentChange} />
             </div>
 

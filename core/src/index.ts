@@ -39,6 +39,7 @@ export * from './propertyExtractor.js';
 export * from './queryBuilder.js';
 export * from './matching/MatchingService.js';
 export * from './matching/MatchEngine.js';
+export * from './nostr/discovery.js';
 
 // Skill system (Phase 4)
 export * from './skills/BaseSkill.js';
