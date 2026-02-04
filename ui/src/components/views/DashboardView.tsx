@@ -1,17 +1,37 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNotes } from '../../hooks/useNotes';
 import { useView } from '../../hooks/useViewContext';
 import { StatCard } from '../dashboard/StatCard';
 import { ActivityFeed } from '../dashboard/ActivityFeed';
-import { NoteIcon, WorldIcon, CheckCircleIcon, SparklesIcon } from '../common/icons';
+import { NoteIcon, WorldIcon, CheckCircleIcon, SparklesIcon, MagicWandIcon } from '../common/icons';
 
 export function DashboardView() {
   const { notes, addNote } = useNotes();
   const { setActiveView, setSelectedNoteId } = useView();
+  const [fixLifeInput, setFixLifeInput] = useState('');
 
   const handleCreateNote = () => {
     const newNote = addNote({ title: '' });
     setSelectedNoteId(newNote.id);
+    setActiveView('notes');
+  };
+
+  const handleFixLife = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!fixLifeInput.trim()) return;
+
+    // Create a decomposition note
+    const note = addNote({
+      title: 'Life Decomp: ' + fixLifeInput,
+      content: `<p>Goal: ${fixLifeInput}</p><p>Processing decomposition...</p>`,
+      tags: ['@sovereign', '@decomposition'],
+      properties: [
+        { key: 'intent', operator: 'is', values: ['fix-life'] },
+        { key: 'status', operator: 'is', values: ['proposed'] }
+      ]
+    });
+
+    setSelectedNoteId(note.id);
     setActiveView('notes');
   };
 
@@ -33,9 +53,33 @@ export function DashboardView() {
 
   return (
     <div className="p-6 h-full overflow-y-auto bg-gray-900 text-white custom-scrollbar">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold mb-2">Welcome back, Agent</h1>
-        <p className="text-gray-400 text-sm">Here's what's happening in your semantic network.</p>
+
+      {/* Ignition / Fix My Life Section */}
+      <div className="mb-10 text-center py-10 bg-gradient-to-b from-gray-800/50 to-transparent rounded-2xl border border-gray-700/50">
+        <h1 className="text-4xl font-black mb-4 tracking-tight">fix my life.</h1>
+        <p className="text-gray-400 text-sm mb-6 max-w-md mx-auto">
+          Type exactly that. Or your own version. We start where you are.
+        </p>
+
+        <form onSubmit={handleFixLife} className="max-w-lg mx-auto relative">
+          <input
+            type="text"
+            value={fixLifeInput}
+            onChange={(e) => setFixLifeInput(e.target.value)}
+            placeholder="What's overwhelming you right now?"
+            className="w-full bg-gray-900 border border-gray-700 rounded-full py-3 px-6 pr-12 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all shadow-lg"
+          />
+          <button
+            type="submit"
+            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-blue-600 hover:bg-blue-500 rounded-full transition-colors"
+          >
+            <MagicWandIcon className="w-4 h-4 text-white" />
+          </button>
+        </form>
+      </div>
+
+      <div className="mb-8 flex items-center justify-between">
+        <h2 className="text-xl font-bold">System Status</h2>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
