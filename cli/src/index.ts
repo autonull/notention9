@@ -2,8 +2,9 @@ import * as readline from 'readline';
 import dotenv from 'dotenv';
 import { CliClient } from './client.js';
 import { handleSlashCommand } from './commands.js';
-import { LlmSession, LocalTool, LLMConfig } from './llm.js';
+import { LlmSession, LLMConfig } from './llm.js';
 import { getLocalTools } from './tools/index.js';
+import { log, withSpinner } from './utils.js';
 
 dotenv.config();
 
@@ -46,28 +47,24 @@ async function main() {
 
     const cli = new CliClient(MCP_URL);
     const simCli = new CliClient(SIM_MCP_URL);
+    const interactive = !command;
 
     try {
+        if (interactive) log.info("Connecting to Notention Agent...");
         await cli.connect();
-        if (!command) {
-             console.log(`Connected to Notention Agent at ${MCP_URL}`);
-        }
+        if (interactive) log.success(`Connected to Notention Agent at ${MCP_URL}`);
 
         let simTools: any[] = [];
 
         if (enableSim) {
             try {
+                if (interactive) log.info("Connecting to Simulation Agent...");
                 await simCli.connect();
                 const simToolsResult = await simCli.listTools();
                 simTools = simToolsResult.tools;
-                if (!command) {
-                    console.log(`Connected to Simulation Agent at ${SIM_MCP_URL}`);
-                }
+                if (interactive) log.success(`Connected to Simulation Agent at ${SIM_MCP_URL}`);
             } catch (e) {
-                // Simulation server might not be running or reachable, which is fine
-                if (!command) {
-                    console.log(`Simulation Agent unavailable (skipping)`);
-                }
+                if (interactive) log.warn(`Simulation Agent unavailable (skipping)`);
             }
         }
 
@@ -90,41 +87,36 @@ async function main() {
 
         // Create Tool Executor Strategy
         const toolExecutor = async (name: string, args: any) => {
-            // Check Local
             const localTool = localTools.find(t => t.name === name);
             if (localTool) return await localTool.execute(args);
 
-            // Check Sim
             const isSimTool = simTools.some((t: any) => t.name === name);
             if (isSimTool && simCli.connected) {
                 return await simCli.callTool(name, args);
             }
 
-            // Default to Core
             return await cli.callTool(name, args);
         };
 
         const session = new LlmSession(allTools, toolExecutor, llmConfig);
 
         if (command) {
-            // Command Mode
             await session.handleInteraction(command);
             await cli.close();
             await simCli.close();
             process.exit(0);
         } else {
-            // Interactive Mode
             const rl = readline.createInterface({
                 input: process.stdin,
                 output: process.stdout
             });
 
-            console.log("Welcome to Notention CLI.");
-            if (llmConfig.model) console.log(`Model: ${llmConfig.model}`);
+            console.log("\n" + "=".repeat(50));
+            log.info("Welcome to Notention CLI");
+            if (llmConfig.model) log.info(`Model: ${llmConfig.model}`);
+            if (enableSim) log.info("Simulation Mode: ENABLED");
             console.log("Type /help for commands, or just chat with the agent.");
-            if (enableSim) {
-                console.log("Simulation Mode: ENABLED");
-            }
+            console.log("=".repeat(50) + "\n");
 
             const ask = () => {
                 rl.question('> ', async (rawInput) => {
@@ -149,7 +141,7 @@ async function main() {
         }
 
     } catch (e) {
-        console.error("Failed to connect:", e);
+        log.error("Failed to connect", e);
         process.exit(1);
     }
 }

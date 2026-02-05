@@ -3,8 +3,8 @@ import { createOpenAI } from '@ai-sdk/openai';
 import { marked } from 'marked';
 import TerminalRenderer from 'marked-terminal';
 import chalk from 'chalk';
-import ora from 'ora';
 import { CliClient } from './client.js';
+import { log, withSpinner } from './utils.js';
 
 // Configure marked for terminal output
 marked.use({
@@ -61,7 +61,7 @@ export class LlmSession {
 
     public updateConfig(newConfig: Partial<LLMConfig>) {
         this.updateConfigInternal(newConfig);
-        console.log(chalk.green(`LLM Configuration Updated: ${this.config.provider}/${this.config.model}`));
+        log.success(`LLM Configuration Updated: ${this.config.provider}/${this.config.model}`);
     }
 
     public getConfig(): LLMConfig {
@@ -93,21 +93,14 @@ export class LlmSession {
     private async fetchOntology() {
         if (this.ontologyCache) return;
         try {
-            // "query_ontology" with empty query should return root? Or maybe we need a specific query.
-            // Let's assume we can ask for the full tree or just basic types.
-            // If the tool requires a query, we ask for "all types".
             const result: any = await this.toolExecutor('query_ontology', { query: 'ROOT' });
-
-            // The result structure depends on how query_ontology is implemented in Agent.
-            // Assuming it returns some text or JSON representation.
-            // We'll just store it as a string for context.
             if (result && result.content && result.content[0]) {
                  this.ontologyCache = result.content[0].text;
             } else {
                  this.ontologyCache = "No ontology available.";
             }
         } catch (e) {
-            console.warn("Failed to fetch ontology for context:", e);
+            log.warn(`Failed to fetch ontology for context: ${e}`);
             this.ontologyCache = "Ontology unavailable.";
         }
     }
@@ -165,7 +158,7 @@ Output Format:
 
     async handleInteraction(input: string) {
         if (this.config.provider !== 'ollama' && !process.env.OPENAI_API_KEY) {
-            console.warn(chalk.yellow("OPENAI_API_KEY not set. Echo mode:"));
+            log.warn("OPENAI_API_KEY not set. Echo mode:");
             console.log(input);
             return;
         }
@@ -189,7 +182,7 @@ Output Format:
                     ...this.history
                 ];
 
-                process.stdout.write(chalk.blue('Agent: '));
+                log.chat('Agent', ''); // Log header
 
                 const result = await streamText({
                     model: this.model,
@@ -203,18 +196,13 @@ Output Format:
                 }
                 process.stdout.write('\n');
 
-                // Regex to find ALL JSON blocks
                 const jsonBlockRegex = /```json\s*(\{[\s\S]*?\})\s*```/g;
-                // Fallback regex (lazy JSON object if backticks missing)
-                // Looks for { "tool": ... } structure roughly
                 const fallbackRegex = /(\{\s*"tool"\s*:[\s\S]*?\})/g;
 
                 let matches = [...fullText.matchAll(jsonBlockRegex)];
-                let usingFallback = false;
 
                 if (matches.length === 0) {
                     matches = [...fullText.matchAll(fallbackRegex)];
-                    if (matches.length > 0) usingFallback = true;
                 }
 
                 if (matches.length > 0) {
@@ -226,34 +214,33 @@ Output Format:
                          try {
                              action = JSON.parse(jsonStr);
                          } catch (e) {
-                             console.error(chalk.red("Failed to parse tool JSON snippet"));
+                             log.error("Failed to parse tool JSON snippet", e);
                              continue;
                          }
 
                          if (action.tool) {
-                            const spinner = ora(`Executing tool: ${chalk.bold(action.tool)}`).start();
                             try {
-                                const toolResult = await this.toolExecutor(action.tool, action.args);
-                                spinner.succeed(`Executed ${chalk.bold(action.tool)}`);
+                                const toolResult = await withSpinner(
+                                    `Executing tool: ${chalk.bold(action.tool)}`,
+                                    () => this.toolExecutor(action.tool, action.args)
+                                );
                                 const resultStr = JSON.stringify(toolResult, null, 2);
                                 this.history.push({ role: 'user', content: `Tool Result (${action.tool}): ${resultStr}` });
 
                             } catch (toolErr: unknown) {
                                 const msg = toolErr instanceof Error ? toolErr.message : String(toolErr);
-                                spinner.fail(`Tool execution failed: ${msg}`);
+                                log.error(`Tool execution failed`, toolErr);
                                 this.history.push({ role: 'user', content: `Tool Error (${action.tool}): ${msg}` });
                             }
                          }
                     }
-                    // Loop continues to let agent react to results
                 } else {
-                    // No tool call, just conversation
                     this.history.push({ role: 'assistant', content: fullText });
                     keepGoing = false;
                 }
 
             } catch (e: unknown) {
-                 console.error(chalk.red("Error in LLM loop:"), e instanceof Error ? e.message : String(e));
+                 log.error("Error in LLM loop", e);
                  keepGoing = false;
             }
         }
