@@ -207,9 +207,9 @@ export class MatchingService {
     if (keysA.size === 0 || keysB.size === 0) return 0;
 
     let overlap = 0;
-    keysA.forEach(key => {
+    for (const key of keysA) {
       if (keysB.has(key)) overlap++;
-    });
+    }
 
     // Jaccard index (base score)
     const union = new Set([...keysA, ...keysB]);

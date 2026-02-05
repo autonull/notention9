@@ -65,20 +65,9 @@ export const addNode = (
  * Returns a set of all property keys defined within the subtree of a given node.
  */
 export const getSubtreeKeys = (node: OntologyNode): Set<string> => {
-    const keys = new Set<string>();
-
-    if (node.attributes) {
-        Object.keys(node.attributes).forEach(k => keys.add(k));
-    }
-
-    if (node.children) {
-        node.children.forEach(child => {
-            const childKeys = getSubtreeKeys(child);
-            childKeys.forEach(k => keys.add(k));
-        });
-    }
-
-    return keys;
+    const attrKeys = node.attributes ? Object.keys(node.attributes) : [];
+    const childKeys = (node.children || []).flatMap(child => Array.from(getSubtreeKeys(child)));
+    return new Set([...attrKeys, ...childKeys]);
 };
 
 export const deleteNode = (tree: OntologyNode[], nodeId: string): OntologyNode[] => {
