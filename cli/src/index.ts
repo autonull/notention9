@@ -10,18 +10,20 @@ const MCP_URL = process.env.MCP_URL || 'http://localhost:3000/mcp/sse';
 
 const SYSTEM_PROMPT = `
 You are the "Notention Agent", a helpful AI assistant that controls a Notention profile.
-Your goal is to help the user manage their knowledge graph (notes) and execute skills.
+Your goal is to help the user manage their knowledge graph (notes), execute skills, and run simulations.
 
 Capabilities:
 - Manage Notes: Create, Read (Search), Update, Delete.
 - Execute Skills: Trigger agent skills based on note content.
 - Query Ontology: Understand the semantic structure of the knowledge base.
+- Simulations: List and run test scenarios to verify agent behavior.
 
 Guidelines:
 - When a user asks to "find" or "search" for something, use 'search_notes'.
 - When a user wants to list everything, use 'read_notes' (be mindful of limits).
 - When a user provides information to store, use 'create_note'.
 - If the user wants to change something, find the note first (if ID not known) then 'update_note'.
+- To run simulations or tests, use 'list_scenarios' and 'run_scenario'.
 - Be concise in your responses.
 - If you perform an action, summarize the result.
 
@@ -73,11 +75,42 @@ async function main() {
                         case '/tools':
                             console.log("Tools:", tools.map(t => t.name).join(", "));
                             break;
+                        case '/scenarios':
+                            try {
+                                const result = await cli.callTool('list_scenarios', {});
+                                const scenarios = JSON.parse((result.content[0] as any).text);
+                                console.log("Scenarios:");
+                                scenarios.forEach((s: any) => console.log(` - ${s.id}: ${s.name}`));
+                            } catch (e: any) {
+                                console.error("Failed to list scenarios:", e.message);
+                            }
+                            break;
+                        case '/run':
+                            if (args.length === 0) {
+                                console.log("Usage: /run <scenario_id>");
+                            } else {
+                                const id = args[0];
+                                console.log(`Running scenario '${id}'...`);
+                                try {
+                                    const result = await cli.callTool('run_scenario', { id });
+                                    const runResult = JSON.parse((result.content[0] as any).text);
+                                    console.log(`Success: ${runResult.success}`);
+                                    runResult.steps.forEach((step: any) => {
+                                        const icon = step.success ? '✅' : '❌';
+                                        console.log(` ${icon} ${step.name} ${step.error ? `(${step.error})` : ''}`);
+                                    });
+                                } catch (e: any) {
+                                    console.error("Failed to run scenario:", e.message);
+                                }
+                            }
+                            break;
                         case '/help':
                             console.log(`
 Commands:
   /help    - Show this help
   /tools   - List available MCP tools
+  /scenarios - List available test scenarios
+  /run <id>  - Run a specific scenario
   /clear   - Clear the screen
   /quit    - Exit the CLI
                             `);

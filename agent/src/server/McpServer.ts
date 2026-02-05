@@ -4,7 +4,9 @@ import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import { z } from 'zod';
 import { PersistenceService } from '../persistence';
 import { executeSkillTool, ontologyQueryTool } from '../tools';
-import { Note } from '@notention/core';
+import { Note, ScenarioManager } from '@notention/core';
+import { ScenarioRunner } from '../tester/ScenarioRunner';
+import { getAgentRegistry } from '../globals';
 import { randomUUID } from 'crypto';
 
 export function setupMcpServer(app: Express) {
@@ -12,6 +14,10 @@ export function setupMcpServer(app: Express) {
         name: 'notention-agent',
         version: '1.0.0'
     });
+
+    // Initialize Simulation Managers
+    const scenarioManager = new ScenarioManager();
+    const scenarioRunner = new ScenarioRunner();
 
     // Create Note Tool
     server.tool(
@@ -183,6 +189,52 @@ export function setupMcpServer(app: Express) {
                      content: [{ type: 'text', text: e.message }]
                  };
              }
+        }
+    );
+
+    // === SIMULATION TOOLS ===
+
+    // List Scenarios
+    server.tool(
+        'list_scenarios',
+        'List available simulation scenarios',
+        {},
+        async () => {
+            const scenarios = scenarioManager.getAll();
+            return {
+                content: [{ type: 'text', text: JSON.stringify(scenarios.map(s => ({ id: s.id, name: s.name, description: s.description })), null, 2) }]
+            };
+        }
+    );
+
+    // Run Scenario
+    server.tool(
+        'run_scenario',
+        'Run a simulation scenario',
+        {
+            id: z.string()
+        },
+        async ({ id }) => {
+            const scenario = scenarioManager.get(id);
+            if (!scenario) {
+                return { isError: true, content: [{ type: 'text', text: `Scenario ${id} not found` }] };
+            }
+
+            const registry = getAgentRegistry();
+            const agent = registry.getDefault();
+
+            if (!agent) {
+                 return { isError: true, content: [{ type: 'text', text: `No default agent available for simulation` }] };
+            }
+
+            try {
+                const result = await scenarioRunner.run(scenario, agent);
+                return {
+                    content: [{ type: 'text', text: JSON.stringify(result, null, 2) }]
+                };
+            } catch (e: any) {
+                 return { isError: true, content: [{ type: 'text', text: e.message }] };
+            }
         }
     );
 

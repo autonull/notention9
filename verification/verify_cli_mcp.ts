@@ -58,7 +58,6 @@ async function main() {
             query: 'CRUD Test',
             tags: ['test']
         });
-        console.log("Search Result Raw:", JSON.stringify(searchResult, null, 2));
         const searchJson = JSON.parse((searchResult.content[0] as any).text);
         if (!Array.isArray(searchJson) || searchJson.length === 0) {
             throw new Error("Search failed to find the note");
@@ -97,6 +96,31 @@ async function main() {
         console.log("   Deletion Verified.");
 
         console.log("All CRUD operations verified successfully!");
+
+        // 5. Test Simulation Capabilities
+        console.log("\n5. Testing Simulation Tools...");
+
+        console.log("   Listing Scenarios...");
+        const listResult = await client.callTool('list_scenarios', {});
+        console.log("   List Scenarios Result:", JSON.stringify(listResult, null, 2));
+        const scenarios = JSON.parse((listResult.content[0] as any).text);
+        if (!Array.isArray(scenarios) || scenarios.length === 0) {
+            throw new Error("No scenarios found");
+        }
+        const scenarioId = scenarios[0].id;
+        console.log(`   Found Scenario: ${scenarioId}`);
+
+        console.log(`   Running Scenario: ${scenarioId}...`);
+        // Note: This might fail if the agent skills aren't fully configured/mocked in the server environment
+        // effectively. But we want to test that the TOOL executes and returns a result structure.
+        const runResult = await client.callTool('run_scenario', { id: scenarioId });
+        const runJson = JSON.parse((runResult.content[0] as any).text);
+
+        console.log(`   Run Success: ${runJson.success}`);
+        if (!runJson.scenarioId) {
+             throw new Error("Invalid scenario run result");
+        }
+        console.log("   Simulation Tool Verified.");
 
     } catch (e) {
         console.error("Verification Failed:", e);
