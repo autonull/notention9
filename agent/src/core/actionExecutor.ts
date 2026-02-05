@@ -1,4 +1,5 @@
 import { log, error } from './utils';
+import { Capabilities } from './Capabilities.js';
 
 /**
  * Execute a skill action (browser automation, API call, etc.)
@@ -30,6 +31,10 @@ export async function executeAction(action: any): Promise<any[]> {
 }
 
 async function executeBrowserAction(action: any): Promise<any[]> {
+    if (!Capabilities.getInstance().isEnabled('browser')) {
+        throw new Error("Capability 'browser' is disabled. Please configure the agent to allow browser actions.");
+    }
+
     log('ActionExecutor', 'VoltBrowser action:', action.url);
 
     // Lazy import playwright

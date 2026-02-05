@@ -1,5 +1,6 @@
 import { Note, AppSettings, parseConfigFromNote, mergeConfigs } from '@notention/core';
 import { log } from '../core/utils';
+import { Capabilities } from '../core/Capabilities.js';
 import { VoltAgentProvider } from '@notention/agent-voltagent';
 
 export class ConfigProcessor {
@@ -30,8 +31,12 @@ export class ConfigProcessor {
         }
         if (config.capabilities?.browser !== undefined && config.capabilities?.browser !== this.currentConfig.capabilities?.browser) {
             changes.push(`Browser Capability: ${config.capabilities.browser}`);
-            // Logic to enable/disable browser tool in VoltAgent would go here
-            // e.g. this.voltAgent?.toggleFeature('browser', config.capabilities.browser);
+            Capabilities.getInstance().set('browser', config.capabilities.browser);
+        }
+
+        if (config.capabilities?.files !== undefined && config.capabilities?.files !== this.currentConfig.capabilities?.files) {
+            changes.push(`Files Capability: ${config.capabilities.files}`);
+            Capabilities.getInstance().set('files', config.capabilities.files);
         }
         // ... check other fields
 
