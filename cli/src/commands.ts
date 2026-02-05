@@ -1,7 +1,8 @@
 import chalk from 'chalk';
 import { CliClient } from './client.js';
+import { LlmSession } from './llm.js';
 
-export async function handleSlashCommand(input: string, cli: CliClient, tools: any[]): Promise<boolean> {
+export async function handleSlashCommand(input: string, cli: CliClient, tools: any[], session?: LlmSession): Promise<boolean> {
     const [cmd, ...args] = input.split(' ');
     switch (cmd) {
         case '/exit':
@@ -15,6 +16,35 @@ export async function handleSlashCommand(input: string, cli: CliClient, tools: a
             return true;
         case '/tools':
             console.log(chalk.bold("Tools:"), tools.map(t => chalk.cyan(t.name)).join(", "));
+            return true;
+        case '/config':
+            if (!session) {
+                console.log(chalk.red("Configuration unavailable in this context."));
+                return true;
+            }
+            if (args.length === 0) {
+                const config = session.getConfig();
+                console.log(chalk.bold("Current Configuration:"));
+                console.log(`  Provider: ${chalk.cyan(config.provider)}`);
+                console.log(`  Model:    ${chalk.cyan(config.model)}`);
+                console.log(`  URL:      ${chalk.cyan(config.baseURL || '(default)')}`);
+            } else if (args.length === 2 && args[0] === 'set') {
+                 console.log(chalk.yellow("Usage: /config <key> <value>"));
+            } else if (args.length >= 2) {
+                const key = args[0];
+                const val = args[1];
+                if (key === 'model') {
+                    session.updateConfig({ model: val });
+                } else if (key === 'provider') {
+                    session.updateConfig({ provider: val });
+                } else if (key === 'url') {
+                    session.updateConfig({ baseURL: val });
+                } else {
+                    console.log(chalk.red(`Unknown config key: ${key}. Valid keys: model, provider, url`));
+                }
+            } else {
+                console.log(chalk.yellow("Usage: /config [key value]"));
+            }
             return true;
         case '/scenarios':
             try {
@@ -56,12 +86,14 @@ export async function handleSlashCommand(input: string, cli: CliClient, tools: a
         case '/help':
             console.log(chalk.gray(`
 Commands:
-  ${chalk.white('/help')}       - Show this help
-  ${chalk.white('/tools')}      - List available MCP tools
-  ${chalk.white('/scenarios')}  - List available test scenarios
-  ${chalk.white('/run <id>')}   - Run a specific scenario
-  ${chalk.white('/clear')}      - Clear the screen
-  ${chalk.white('/quit')}       - Exit the CLI
+  ${chalk.white('/help')}               - Show this help
+  ${chalk.white('/config')}             - View current LLM config
+  ${chalk.white('/config <key> <val>')} - Set LLM config (model, provider, url)
+  ${chalk.white('/tools')}              - List available MCP tools
+  ${chalk.white('/scenarios')}          - List available test scenarios
+  ${chalk.white('/run <id>')}           - Run a specific scenario
+  ${chalk.white('/clear')}              - Clear the screen
+  ${chalk.white('/quit')}               - Exit the CLI
             `));
             return true;
         default:

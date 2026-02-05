@@ -22,34 +22,72 @@ export interface LocalTool extends ToolDefinition {
     execute: (args: any) => Promise<any>;
 }
 
+export interface LLMConfig {
+    provider: string;
+    model: string;
+    baseURL?: string;
+}
+
 export class LlmSession {
     private history: { role: 'user' | 'assistant' | 'system', content: string }[] = [];
     private toolExecutor: (name: string, args: any) => Promise<any>;
     private tools: ToolDefinition[];
     private model: any;
     private ontologyCache: any | null = null;
+    private config: LLMConfig;
 
     constructor(
         tools: ToolDefinition[],
-        toolExecutor: (name: string, args: any) => Promise<any>
+        toolExecutor: (name: string, args: any) => Promise<any>,
+        initialConfig?: Partial<LLMConfig>
     ) {
         this.tools = tools;
         this.toolExecutor = toolExecutor;
-        this.configure();
+
+        // Default Config
+        this.config = {
+            provider: process.env.LLM_PROVIDER || 'openai',
+            model: process.env.LLM_MODEL || 'gpt-4o',
+            baseURL: process.env.LLM_BASE_URL
+        };
+
+        // Override with initial config
+        if (initialConfig) {
+            this.updateConfigInternal(initialConfig);
+        } else {
+            this.configureModel();
+        }
     }
 
-    private configure() {
-        const provider = process.env.LLM_PROVIDER || 'openai';
-        const baseURL = process.env.LLM_BASE_URL || (provider === 'ollama' ? 'http://localhost:11434/v1' : undefined);
-        const apiKey = process.env.OPENAI_API_KEY || (provider === 'ollama' ? 'ollama' : undefined);
+    public updateConfig(newConfig: Partial<LLMConfig>) {
+        this.updateConfigInternal(newConfig);
+        console.log(chalk.green(`LLM Configuration Updated: ${this.config.provider}/${this.config.model}`));
+    }
+
+    public getConfig(): LLMConfig {
+        return { ...this.config };
+    }
+
+    private updateConfigInternal(newConfig: Partial<LLMConfig>) {
+        this.config = { ...this.config, ...newConfig };
+
+        // Special handling for ollama defaults if not specified
+        if (this.config.provider === 'ollama' && !this.config.baseURL) {
+            this.config.baseURL = 'http://localhost:11434/v1';
+        }
+
+        this.configureModel();
+    }
+
+    private configureModel() {
+        const apiKey = process.env.OPENAI_API_KEY || (this.config.provider === 'ollama' ? 'ollama' : undefined);
 
         const openai = createOpenAI({
-            baseURL,
+            baseURL: this.config.baseURL,
             apiKey,
         });
 
-        const modelName = process.env.LLM_MODEL || 'gpt-4o';
-        this.model = openai(modelName);
+        this.model = openai(this.config.model);
     }
 
     private async fetchOntology() {
@@ -126,7 +164,7 @@ Output Format:
     }
 
     async handleInteraction(input: string) {
-        if (process.env.LLM_PROVIDER !== 'ollama' && !process.env.OPENAI_API_KEY) {
+        if (this.config.provider !== 'ollama' && !process.env.OPENAI_API_KEY) {
             console.warn(chalk.yellow("OPENAI_API_KEY not set. Echo mode:"));
             console.log(input);
             return;

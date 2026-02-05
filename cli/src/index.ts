@@ -2,7 +2,7 @@ import * as readline from 'readline';
 import dotenv from 'dotenv';
 import { CliClient } from './client.js';
 import { handleSlashCommand } from './commands.js';
-import { LlmSession, LocalTool } from './llm.js';
+import { LlmSession, LocalTool, LLMConfig } from './llm.js';
 import { getLocalTools } from './tools/index.js';
 
 dotenv.config();
@@ -10,28 +10,64 @@ dotenv.config();
 const MCP_URL = process.env.MCP_URL || 'http://localhost:3000/mcp/sse';
 const SIM_MCP_URL = process.env.SIM_MCP_URL || 'http://localhost:3000/mcp/simulation/sse';
 
+function parseArgs(args: string[]): { enableSim: boolean, llmConfig: Partial<LLMConfig>, command?: string } {
+    const result: { enableSim: boolean, llmConfig: Partial<LLMConfig>, command?: string } = {
+        enableSim: false,
+        llmConfig: {}
+    };
+
+    const remainingArgs: string[] = [];
+
+    for (let i = 0; i < args.length; i++) {
+        const arg = args[i];
+        if (arg === '--sim' || arg === '--simulation') {
+            result.enableSim = true;
+        } else if (arg === '--provider') {
+            result.llmConfig.provider = args[++i];
+        } else if (arg === '--model') {
+            result.llmConfig.model = args[++i];
+        } else if (arg === '--url') {
+            result.llmConfig.baseURL = args[++i];
+        } else {
+            remainingArgs.push(arg);
+        }
+    }
+
+    if (remainingArgs.length > 0) {
+        result.command = remainingArgs.join(' ');
+    }
+
+    return result;
+}
+
 async function main() {
+    const args = process.argv.slice(2);
+    const { enableSim, llmConfig, command } = parseArgs(args);
+
     const cli = new CliClient(MCP_URL);
     const simCli = new CliClient(SIM_MCP_URL);
 
     try {
         await cli.connect();
-        if (process.argv.length <= 2) {
+        if (!command) {
              console.log(`Connected to Notention Agent at ${MCP_URL}`);
         }
 
         let simTools: any[] = [];
-        try {
-            await simCli.connect();
-            const simToolsResult = await simCli.listTools();
-            simTools = simToolsResult.tools;
-            if (process.argv.length <= 2) {
-                console.log(`Connected to Simulation Agent at ${SIM_MCP_URL}`);
-            }
-        } catch (e) {
-            // Simulation server might not be running or reachable, which is fine
-            if (process.argv.length <= 2) {
-                console.log(`Simulation Agent unavailable (skipping)`);
+
+        if (enableSim) {
+            try {
+                await simCli.connect();
+                const simToolsResult = await simCli.listTools();
+                simTools = simToolsResult.tools;
+                if (!command) {
+                    console.log(`Connected to Simulation Agent at ${SIM_MCP_URL}`);
+                }
+            } catch (e) {
+                // Simulation server might not be running or reachable, which is fine
+                if (!command) {
+                    console.log(`Simulation Agent unavailable (skipping)`);
+                }
             }
         }
 
@@ -68,14 +104,11 @@ async function main() {
             return await cli.callTool(name, args);
         };
 
-        const session = new LlmSession(allTools, toolExecutor);
+        const session = new LlmSession(allTools, toolExecutor, llmConfig);
 
-        // Check for command mode args
-        const args = process.argv.slice(2);
-        if (args.length > 0) {
+        if (command) {
             // Command Mode
-            const input = args.join(' ');
-            await session.handleInteraction(input);
+            await session.handleInteraction(command);
             await cli.close();
             await simCli.close();
             process.exit(0);
@@ -87,7 +120,11 @@ async function main() {
             });
 
             console.log("Welcome to Notention CLI.");
+            if (llmConfig.model) console.log(`Model: ${llmConfig.model}`);
             console.log("Type /help for commands, or just chat with the agent.");
+            if (enableSim) {
+                console.log("Simulation Mode: ENABLED");
+            }
 
             const ask = () => {
                 rl.question('> ', async (rawInput) => {
@@ -99,9 +136,7 @@ async function main() {
                     }
 
                     if (input.startsWith('/')) {
-                        // For slash commands, we currently only use core CLI tools
-                        // We might need to refactor handleSlashCommand to use toolExecutor if needed
-                        await handleSlashCommand(input, cli, coreTools);
+                        await handleSlashCommand(input, cli, coreTools, session);
                     } else {
                         await session.handleInteraction(input);
                     }
