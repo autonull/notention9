@@ -47,15 +47,92 @@ export function setupMcpServer(app: Express) {
         }
     );
 
-    // Read Notes Tool
+    // Update Note Tool
+    server.tool(
+        'update_note',
+        'Update an existing note',
+        {
+            id: z.string(),
+            title: z.string().optional(),
+            content: z.string().optional(),
+            tags: z.array(z.string()).optional(),
+            properties: z.array(z.object({
+                key: z.string(),
+                operator: z.string(),
+                values: z.array(z.string())
+            })).optional()
+        },
+        async ({ id, title, content, tags, properties }) => {
+            const notes = await PersistenceService.getNotesSafe();
+            const existingNote = notes.find(n => n.id === id);
+
+            if (!existingNote) {
+                return {
+                    isError: true,
+                    content: [{ type: 'text', text: `Note with ID ${id} not found` }]
+                };
+            }
+
+            const updatedNote: Note = {
+                ...existingNote,
+                ...(title !== undefined && { title }),
+                ...(content !== undefined && { content }),
+                ...(tags !== undefined && { tags }),
+                ...(properties !== undefined && { properties: properties as any }),
+                updatedAt: new Date().toISOString()
+            };
+
+            await PersistenceService.saveNoteSafe(updatedNote);
+            return {
+                content: [{ type: 'text', text: `Note updated with ID: ${id}` }]
+            };
+        }
+    );
+
+    // Delete Note Tool
+    server.tool(
+        'delete_note',
+        'Delete a note by ID',
+        {
+            id: z.string()
+        },
+        async ({ id }) => {
+            await PersistenceService.deleteNoteSafe(id);
+            return {
+                content: [{ type: 'text', text: `Note deleted with ID: ${id}` }]
+            };
+        }
+    );
+
+    // Search Notes Tool
+    server.tool(
+        'search_notes',
+        'Search notes by query and/or tags',
+        {
+            query: z.string().optional(),
+            tags: z.array(z.string()).optional()
+        },
+        async ({ query, tags }) => {
+            const results = await PersistenceService.searchNotesSafe(query || '', tags);
+            return {
+                content: [{ type: 'text', text: JSON.stringify(results, null, 2) }]
+            };
+        }
+    );
+
+    // Read Notes Tool (Updated)
     server.tool(
         'read_notes',
-        'Read all notes',
-        {},
-        async () => {
+        'Read all notes with pagination',
+        {
+            limit: z.number().optional().default(50),
+            offset: z.number().optional().default(0)
+        },
+        async ({ limit, offset }) => {
             const notes = await PersistenceService.getNotesSafe();
+            const sliced = notes.slice(offset, offset + limit);
             return {
-                content: [{ type: 'text', text: JSON.stringify(notes, null, 2) }]
+                content: [{ type: 'text', text: JSON.stringify(sliced, null, 2) }]
             };
         }
     );

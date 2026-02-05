@@ -8,6 +8,33 @@ dotenv.config();
 
 const MCP_URL = process.env.MCP_URL || 'http://localhost:3000/mcp/sse';
 
+const SYSTEM_PROMPT = `
+You are the "Notention Agent", a helpful AI assistant that controls a Notention profile.
+Your goal is to help the user manage their knowledge graph (notes) and execute skills.
+
+Capabilities:
+- Manage Notes: Create, Read (Search), Update, Delete.
+- Execute Skills: Trigger agent skills based on note content.
+- Query Ontology: Understand the semantic structure of the knowledge base.
+
+Guidelines:
+- When a user asks to "find" or "search" for something, use 'search_notes'.
+- When a user wants to list everything, use 'read_notes' (be mindful of limits).
+- When a user provides information to store, use 'create_note'.
+- If the user wants to change something, find the note first (if ID not known) then 'update_note'.
+- Be concise in your responses.
+- If you perform an action, summarize the result.
+
+Output Format:
+If you need to call a tool, output a JSON object with:
+{ "tool": "tool_name", "args": { ... } }
+
+If you want to respond to the user (or after a tool call), output:
+{ "response": "Your text here" }
+
+Only output valid JSON. No markdown blocks.
+`;
+
 async function main() {
     const cli = new CliClient(MCP_URL);
     try {
@@ -16,82 +43,119 @@ async function main() {
 
         const toolsResult = await cli.listTools();
         const tools = toolsResult.tools;
-        console.log("Available tools:", tools.map(t => t.name).join(", "));
+        // console.log("Available tools:", tools.map(t => t.name).join(", "));
 
         const rl = readline.createInterface({
             input: process.stdin,
             output: process.stdout
         });
 
-        console.log("Enter a command (or 'exit'):");
+        console.log("Welcome to Notention CLI.");
+        console.log("Type /help for commands, or just chat with the agent.");
 
-        rl.on('line', async (line) => {
-            const input = line.trim();
-            if (input === 'exit') {
-                rl.close();
-                return;
-            }
+        const ask = () => {
+            rl.question('> ', async (input) => {
+                input = input.trim();
 
-            if (!input) return;
+                // Slash commands
+                if (input.startsWith('/')) {
+                    const [cmd, ...args] = input.split(' ');
+                    switch (cmd) {
+                        case '/exit':
+                        case '/quit':
+                            console.log("Goodbye.");
+                            await cli.close();
+                            process.exit(0);
+                            break;
+                        case '/clear':
+                            console.clear();
+                            break;
+                        case '/tools':
+                            console.log("Tools:", tools.map(t => t.name).join(", "));
+                            break;
+                        case '/help':
+                            console.log(`
+Commands:
+  /help    - Show this help
+  /tools   - List available MCP tools
+  /clear   - Clear the screen
+  /quit    - Exit the CLI
+                            `);
+                            break;
+                        default:
+                            console.log("Unknown command. Type /help.");
+                    }
+                    ask();
+                    return;
+                }
 
-            if (!process.env.OPENAI_API_KEY) {
-                console.warn("OPENAI_API_KEY not found. LLM features disabled.");
-                // Minimal loopback or manual command parsing could go here
-                console.log("You said:", input);
-                return;
-            }
+                if (!input) {
+                    ask();
+                    return;
+                }
 
-            try {
-                 const prompt = `
-You are an AI assistant controlling a Notention profile.
-Available tools:
-${JSON.stringify(tools, null, 2)}
-
-User Input: "${input}"
-
-If the user input requires an action, output a JSON object with:
-{ "tool": "tool_name", "args": { ... } }
-If no action or just chat, output:
-{ "response": "text response" }
-Only output the valid JSON. Do not include markdown formatting.
-`;
-                const response = await generateText({
-                    model: openai('gpt-4o'),
-                    prompt: prompt
-                });
-
-                let text = response.text.trim();
-                // Strip markdown code blocks if present
-                if (text.startsWith('```json')) {
-                    text = text.replace(/^```json/, '').replace(/```$/, '').trim();
-                } else if (text.startsWith('```')) {
-                    text = text.replace(/^```/, '').replace(/```$/, '').trim();
+                if (!process.env.OPENAI_API_KEY) {
+                    console.warn("OPENAI_API_KEY not set. Echo mode:");
+                    console.log(input);
+                    ask();
+                    return;
                 }
 
                 try {
-                    const action = JSON.parse(text);
-                    if (action.tool) {
-                        console.log(`Calling tool ${action.tool} with args:`, action.args);
-                        const result = await cli.callTool(action.tool, action.args);
-                        console.log("Result:", JSON.stringify(result, null, 2));
-                    } else if (action.response) {
-                        console.log("Agent:", action.response);
-                    } else {
-                        console.log("Agent (raw):", text);
+                    // Inject tools into prompt
+                    const fullPrompt = `
+${SYSTEM_PROMPT}
+
+Available Tools:
+${JSON.stringify(tools, null, 2)}
+
+User Input: "${input}"
+`;
+
+                    const response = await generateText({
+                        model: openai('gpt-4o'),
+                        prompt: fullPrompt
+                    });
+
+                    let text = response.text.trim();
+                    if (text.startsWith('```json')) {
+                        text = text.replace(/^```json/, '').replace(/```$/, '').trim();
+                    } else if (text.startsWith('```')) {
+                        text = text.replace(/^```/, '').replace(/```$/, '').trim();
                     }
-                } catch (jsonErr) {
-                    console.error("Failed to parse JSON response from Agent:", text);
+
+                    try {
+                        const action = JSON.parse(text);
+                        if (action.tool) {
+                            console.log(`[Agent] Calling ${action.tool}...`);
+                            try {
+                                const result = await cli.callTool(action.tool, action.args);
+                                console.log("[Result]", JSON.stringify(result, null, 2));
+
+                                // Optional: Feed result back to LLM for final response?
+                                // For now, just dumping result is fine for a CLI.
+                            } catch (toolErr: any) {
+                                console.error(`[Error] Tool execution failed: ${toolErr.message}`);
+                            }
+                        } else if (action.response) {
+                            console.log("[Agent]", action.response);
+                        } else {
+                            console.log("[Agent (raw)]", text);
+                        }
+                    } catch (jsonErr) {
+                        // Fallback if LLM didn't output JSON
+                        console.log("[Agent]", text);
+                    }
+
+                } catch (e: any) {
+                    console.error("Error:", e.message);
                 }
 
-            } catch (e: any) {
-                console.error("LLM Error:", e.message);
-            }
-        });
+                ask();
+            });
+        };
 
-        rl.on('close', async () => {
-             await cli.close();
-             process.exit(0);
-        });
+        ask();
 
     } catch (e) {
         console.error("Failed to connect:", e);
@@ -100,7 +164,6 @@ Only output the valid JSON. Do not include markdown formatting.
 }
 
 // Check if running directly
-// In Node with tsx, this pattern works for ESM
 // @ts-ignore
 if (import.meta.url === `file://${process.argv[1]}`) {
     main();
