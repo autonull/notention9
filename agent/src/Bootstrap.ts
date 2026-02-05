@@ -4,6 +4,7 @@ import { AgentSkillRegistry } from './skills/AgentSkillRegistry';
 import { AgentWorkflowSkillExecutor } from './skills/AgentWorkflowSkillExecutor';
 import { loadAgentConfig } from './config';
 import { IndeedSkill, CraigslistSkill, GitHubSkill, Note } from '@notention/core';
+import { ConfigSkill } from './skills/ConfigSkill';
 import { log, error } from './core/utils';
 import { PersistenceService } from './persistence';
 import { FeedbackCollector } from './feedback/FeedbackCollector';
@@ -90,5 +91,6 @@ export class Bootstrap {
     this.skillRegistry.register(new IndeedSkill(), { tags: ['job', 'search', 'indeed'], domains: ['indeed.com'] });
     this.skillRegistry.register(new CraigslistSkill(), { tags: ['classifieds', 'search', 'craigslist'], domains: ['craigslist.org'] });
     this.skillRegistry.register(new GitHubSkill(), { tags: ['code', 'repo', 'github'], domains: ['github.com'] });
+    this.skillRegistry.register(new ConfigSkill(), { tags: ['config', 'setting', 'system'], domains: [] });
   }
 }

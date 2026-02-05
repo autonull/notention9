@@ -8,6 +8,7 @@ import { ScenarioRunner } from '../tester/ScenarioRunner';
 import { MultiAgentRunner } from '../tester/MultiAgentRunner';
 import { CommunitySimulation } from '../scenarios/CommunitySimulation';
 import { UserFlowSimulation } from '../scenarios/UserFlowSimulation';
+import { GigEconomySimulation } from '../scenarios/GigEconomySimulation';
 
 export function setupSimulationMcpServer(app: Express) {
     const server = new McpServer({
@@ -22,6 +23,7 @@ export function setupSimulationMcpServer(app: Express) {
     const multiAgentScenarios = new Map<string, MultiAgentScenario>();
     multiAgentScenarios.set(CommunitySimulation.id, CommunitySimulation);
     multiAgentScenarios.set(UserFlowSimulation.id, UserFlowSimulation);
+    multiAgentScenarios.set(GigEconomySimulation.id, GigEconomySimulation);
 
     const multiAgentRunner = new MultiAgentRunner();
 
