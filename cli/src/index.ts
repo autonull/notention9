@@ -5,6 +5,7 @@ import { handleSlashCommand } from './commands.js';
 import { LlmSession, LLMConfig } from './llm.js';
 import { getLocalTools } from './tools/index.js';
 import { log, withSpinner } from './utils.js';
+import { runSetupWizard } from './setup.js';
 
 dotenv.config();
 
@@ -53,6 +54,22 @@ async function main() {
         if (interactive) log.info("Connecting to Notention Agent...");
         await cli.connect();
         if (interactive) log.success(`Connected to Notention Agent at ${MCP_URL}`);
+
+        // Check for onboarding
+        if (interactive) {
+            try {
+                const result: any = await cli.callTool('read_notes', { tags: ['@onboarding:setup'] });
+                if (result && result.content && result.content[0] && result.content[0].text) {
+                     const notes = JSON.parse(result.content[0].text);
+                     if (Array.isArray(notes) && notes.length > 0) {
+                         log.info("🚀 New installation detected! Starting setup wizard...");
+                         await runSetupWizard(cli);
+                     }
+                }
+            } catch (e) {
+                // Ignore error if checking fails, proceed to normal start
+            }
+        }
 
         let simTools: any[] = [];
 

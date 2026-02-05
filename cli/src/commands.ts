@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import { CliClient } from './client.js';
 import { LlmSession } from './llm.js';
 import { log, withSpinner } from './utils.js';
+import { runSetupWizard } from './setup.js';
 
 export async function handleSlashCommand(input: string, cli: CliClient, tools: any[], session?: LlmSession): Promise<boolean> {
     const [cmd, ...args] = input.split(' ');
@@ -14,6 +15,9 @@ export async function handleSlashCommand(input: string, cli: CliClient, tools: a
             return true;
         case '/clear':
             console.clear();
+            return true;
+        case '/setup':
+            await runSetupWizard(cli);
             return true;
         case '/tools':
             log.info(`Tools: ${tools.map(t => chalk.cyan(t.name)).join(", ")}`);
@@ -90,6 +94,7 @@ Commands:
   ${chalk.white('/config')}             - View current LLM config
   ${chalk.white('/config <key> <val>')} - Set LLM config (model, provider, url)
   ${chalk.white('/tools')}              - List available MCP tools
+  ${chalk.white('/setup')}              - Run the configuration wizard
   ${chalk.white('/scenarios')}          - List available test scenarios
   ${chalk.white('/run <id>')}           - Run a specific scenario
   ${chalk.white('/clear')}              - Clear the screen
