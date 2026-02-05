@@ -1,15 +1,41 @@
-import { generateText } from 'ai';
-import { openai } from '@ai-sdk/openai';
+import { streamText } from 'ai';
+import { createOpenAI } from '@ai-sdk/openai';
+import { marked } from 'marked';
+import TerminalRenderer from 'marked-terminal';
+import chalk from 'chalk';
+import ora from 'ora';
 import { CliClient } from './client.js';
+
+// Configure marked for terminal output
+marked.use({
+    // @ts-ignore
+    renderer: new TerminalRenderer()
+});
 
 export class LlmSession {
     private history: { role: 'user' | 'assistant' | 'system', content: string }[] = [];
     private cli: CliClient;
     private tools: any[];
+    private model: any;
 
     constructor(cli: CliClient, tools: any[]) {
         this.cli = cli;
         this.tools = tools;
+        this.configure();
+    }
+
+    private configure() {
+        const provider = process.env.LLM_PROVIDER || 'openai';
+        const baseURL = process.env.LLM_BASE_URL || (provider === 'ollama' ? 'http://localhost:11434/v1' : undefined);
+        const apiKey = process.env.OPENAI_API_KEY || (provider === 'ollama' ? 'ollama' : undefined);
+
+        const openai = createOpenAI({
+            baseURL,
+            apiKey,
+        });
+
+        const modelName = process.env.LLM_MODEL || 'gpt-4o';
+        this.model = openai(modelName);
     }
 
     private getSystemPrompt(): string {
@@ -36,19 +62,18 @@ Available Tools:
 ${JSON.stringify(this.tools, null, 2)}
 
 Output Format:
-If you need to call a tool, output a JSON object with:
+- To speak to the user, just output the text (Markdown supported).
+- To call a tool, output a JSON block wrapped in triple backticks:
+\`\`\`json
 { "tool": "tool_name", "args": { ... } }
-
-If you want to respond to the user (or after a tool call), output:
-{ "response": "Your text here" }
-
-Only output valid JSON. No markdown blocks.
+\`\`\`
+- You can reason before calling a tool.
 `;
     }
 
     async handleInteraction(input: string) {
-        if (!process.env.OPENAI_API_KEY) {
-            console.warn("OPENAI_API_KEY not set. Echo mode:");
+        if (process.env.LLM_PROVIDER !== 'ollama' && !process.env.OPENAI_API_KEY) {
+            console.warn(chalk.yellow("OPENAI_API_KEY not set. Echo mode:"));
             console.log(input);
             return;
         }
@@ -67,60 +92,65 @@ Only output valid JSON. No markdown blocks.
                     ...this.history
                 ];
 
-                const response = await generateText({
-                    model: openai('gpt-4o'),
-                    messages: messages
+                process.stdout.write(chalk.blue('Agent: '));
+
+                const result = await streamText({
+                    model: this.model,
+                    messages: messages,
                 });
 
-                let text = response.text.trim();
-                // Clean markdown blocks if present
-                if (text.startsWith('```')) {
-                     text = text.replace(/^```(json)?/, '').replace(/```$/, '').trim();
+                let fullText = '';
+                for await (const textPart of result.textStream) {
+                    process.stdout.write(textPart);
+                    fullText += textPart;
                 }
+                process.stdout.write('\n');
 
-                // Try to parse JSON
-                let action;
-                try {
-                    action = JSON.parse(text);
-                } catch (e) {
-                    // If not JSON, treat as plain response or error
-                    // Sometimes models might output text that isn't JSON despite instructions.
-                    console.log("[Agent (raw)]", text);
-                    this.history.push({ role: 'assistant', content: text });
-                    keepGoing = false;
-                    continue;
-                }
+                // Check for tool call
+                const jsonMatch = fullText.match(/```json\s*(\{[\s\S]*?\})\s*```/);
 
-                if (action.tool) {
-                    console.log(`[Agent] Calling ${action.tool}...`);
+                if (jsonMatch) {
+                    let action;
                     try {
-                        const result = await this.cli.callTool(action.tool, action.args);
-                        // We format the result to be compact if it's huge, but for now just stringify
-                        const resultStr = JSON.stringify(result, null, 2);
-                        console.log("[Result]", resultStr);
-
-                        this.history.push({ role: 'assistant', content: text });
-                        this.history.push({ role: 'user', content: `Tool Result: ${resultStr}` });
-
-                    } catch (toolErr: unknown) {
-                        const msg = toolErr instanceof Error ? toolErr.message : String(toolErr);
-                        console.error(`[Error] Tool execution failed: ${msg}`);
-                        this.history.push({ role: 'assistant', content: text });
-                        this.history.push({ role: 'user', content: `Tool Error: ${msg}` });
+                        action = JSON.parse(jsonMatch[1]);
+                    } catch (e) {
+                         console.error(chalk.red("Failed to parse tool JSON"));
+                         this.history.push({ role: 'assistant', content: fullText });
+                         keepGoing = false;
+                         continue;
                     }
-                } else if (action.response) {
-                    console.log("[Agent]", action.response);
-                    this.history.push({ role: 'assistant', content: text });
-                    keepGoing = false;
+
+                    if (action.tool) {
+                        const spinner = ora(`Executing tool: ${chalk.bold(action.tool)}`).start();
+                        try {
+                            const toolResult = await this.cli.callTool(action.tool, action.args);
+                            spinner.succeed(`Executed ${chalk.bold(action.tool)}`);
+
+                            const resultStr = JSON.stringify(toolResult, null, 2);
+
+                            this.history.push({ role: 'assistant', content: fullText });
+                            this.history.push({ role: 'user', content: `Tool Result: ${resultStr}` });
+
+                        } catch (toolErr: unknown) {
+                            const msg = toolErr instanceof Error ? toolErr.message : String(toolErr);
+                            spinner.fail(`Tool execution failed: ${msg}`);
+
+                            this.history.push({ role: 'assistant', content: fullText });
+                            this.history.push({ role: 'user', content: `Tool Error: ${msg}` });
+                        }
+                    } else {
+                        // JSON found but no tool field?
+                        this.history.push({ role: 'assistant', content: fullText });
+                        keepGoing = false;
+                    }
                 } else {
-                    // Fallback for unknown JSON
-                    console.log("[Agent (unknown JSON)]", text);
-                    this.history.push({ role: 'assistant', content: text });
+                    // No tool call, just conversation
+                    this.history.push({ role: 'assistant', content: fullText });
                     keepGoing = false;
                 }
 
             } catch (e: unknown) {
-                 console.error("Error in LLM loop:", e instanceof Error ? e.message : String(e));
+                 console.error(chalk.red("Error in LLM loop:"), e instanceof Error ? e.message : String(e));
                  keepGoing = false;
             }
         }

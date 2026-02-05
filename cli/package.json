@@ -10,16 +10,22 @@
     "dev": "tsx watch src/index.ts"
   },
   "dependencies": {
-    "ai": "^3.0.0",
     "@ai-sdk/openai": "^0.0.48",
     "@modelcontextprotocol/sdk": "^1.0.1",
     "@notention/core": "*",
+    "ai": "^3.0.0",
+    "chalk": "^4.1.2",
     "dotenv": "^16.4.5",
     "eventsource": "^2.0.2",
+    "marked": "^15.0.12",
+    "marked-terminal": "^7.3.0",
+    "ora": "^9.3.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/eventsource": "^1.1.15",
+    "@types/marked": "^5.0.2",
+    "@types/marked-terminal": "^6.1.1",
     "@types/node": "^20.11.0",
     "tsx": "^4.19.2",
     "typescript": "~5.9.2"
