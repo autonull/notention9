@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import { CliClient } from './client.js';
 import { handleSlashCommand } from './commands.js';
 import { LlmSession } from './llm.js';
+import { fsTools } from './tools/fs.js';
 
 dotenv.config();
 
@@ -17,7 +18,8 @@ async function main() {
         const toolsResult = await cli.listTools();
         const tools = toolsResult.tools;
 
-        const session = new LlmSession(cli, tools);
+        // Initialize session with both Remote (MCP) and Local (FS) tools
+        const session = new LlmSession(cli, tools, fsTools);
 
         const rl = readline.createInterface({
             input: process.stdin,

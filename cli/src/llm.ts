@@ -12,15 +12,27 @@ marked.use({
     renderer: new TerminalRenderer()
 });
 
+export interface ToolDefinition {
+    name: string;
+    description?: string;
+    inputSchema: any;
+}
+
+export interface LocalTool extends ToolDefinition {
+    execute: (args: any) => Promise<any>;
+}
+
 export class LlmSession {
     private history: { role: 'user' | 'assistant' | 'system', content: string }[] = [];
     private cli: CliClient;
-    private tools: any[];
+    private mcpTools: any[];
+    private localTools: LocalTool[];
     private model: any;
 
-    constructor(cli: CliClient, tools: any[]) {
+    constructor(cli: CliClient, mcpTools: any[], localTools: LocalTool[] = []) {
         this.cli = cli;
-        this.tools = tools;
+        this.mcpTools = mcpTools;
+        this.localTools = localTools;
         this.configure();
     }
 
@@ -39,6 +51,15 @@ export class LlmSession {
     }
 
     private getSystemPrompt(): string {
+        const allTools = [
+            ...this.mcpTools,
+            ...this.localTools.map(t => ({
+                name: t.name,
+                description: t.description,
+                inputSchema: t.inputSchema
+            }))
+        ];
+
         return `
 You are the "Notention Agent", a helpful AI assistant that controls a Notention profile.
 Your goal is to help the user manage their knowledge graph (notes), execute skills, and run simulations.
@@ -48,6 +69,7 @@ Capabilities:
 - Execute Skills: Trigger agent skills based on note content.
 - Query Ontology: Understand the semantic structure of the knowledge base.
 - Simulations: List and run test scenarios to verify agent behavior.
+- Local Files: Access and ingest files from the local filesystem.
 
 Guidelines:
 - When a user asks to "find" or "search" for something, use 'search_notes'.
@@ -59,7 +81,7 @@ Guidelines:
 - If you perform an action, summarize the result.
 
 Available Tools:
-${JSON.stringify(this.tools, null, 2)}
+${JSON.stringify(allTools, null, 2)}
 
 Output Format:
 - To speak to the user, just output the text (Markdown supported).
@@ -123,7 +145,17 @@ Output Format:
                     if (action.tool) {
                         const spinner = ora(`Executing tool: ${chalk.bold(action.tool)}`).start();
                         try {
-                            const toolResult = await this.cli.callTool(action.tool, action.args);
+                            let toolResult;
+                            const localTool = this.localTools.find(t => t.name === action.tool);
+
+                            if (localTool) {
+                                // Execute locally
+                                toolResult = await localTool.execute(action.args);
+                            } else {
+                                // Execute via MCP
+                                toolResult = await this.cli.callTool(action.tool, action.args);
+                            }
+
                             spinner.succeed(`Executed ${chalk.bold(action.tool)}`);
 
                             const resultStr = JSON.stringify(toolResult, null, 2);
