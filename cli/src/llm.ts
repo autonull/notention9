@@ -28,6 +28,7 @@ export class LlmSession {
     private mcpTools: any[];
     private localTools: LocalTool[];
     private model: any;
+    private ontologyCache: any | null = null;
 
     constructor(cli: CliClient, mcpTools: any[], localTools: LocalTool[] = []) {
         this.cli = cli;
@@ -48,6 +49,28 @@ export class LlmSession {
 
         const modelName = process.env.LLM_MODEL || 'gpt-4o';
         this.model = openai(modelName);
+    }
+
+    private async fetchOntology() {
+        if (this.ontologyCache) return;
+        try {
+            // "query_ontology" with empty query should return root? Or maybe we need a specific query.
+            // Let's assume we can ask for the full tree or just basic types.
+            // If the tool requires a query, we ask for "all types".
+            const result: any = await this.cli.callTool('query_ontology', { query: 'ROOT' });
+
+            // The result structure depends on how query_ontology is implemented in Agent.
+            // Assuming it returns some text or JSON representation.
+            // We'll just store it as a string for context.
+            if (result && result.content && result.content[0]) {
+                 this.ontologyCache = result.content[0].text;
+            } else {
+                 this.ontologyCache = "No ontology available.";
+            }
+        } catch (e) {
+            console.warn("Failed to fetch ontology for context:", e);
+            this.ontologyCache = "Ontology unavailable.";
+        }
     }
 
     private getSystemPrompt(): string {
@@ -71,10 +94,25 @@ Capabilities:
 - Simulations: List and run test scenarios to verify agent behavior.
 - Local Files: Access and ingest files from the local filesystem.
 
+Ontology Context:
+${this.ontologyCache || "Ontology loading..."}
+
+Semantic Properties:
+Notention uses a semantic property system. When creating or updating notes, prefer using the 'properties' field over just text.
+Syntax: [key:operator:values]
+- key: From ontology (e.g., 'type', 'priority', 'status')
+- operator: 'is' (equality), '>' (greater), '<' (less), 'contains'
+- values: Comma-separated list (e.g., 'task', 'high', 'active')
+
+Examples:
+- Task: [type:is:task], [priority:is:high]
+- Person: [type:is:person], [email:contains:gmail.com]
+- Project: [type:is:project], [status:is:active]
+
 Guidelines:
 - When a user asks to "find" or "search" for something, use 'search_notes'.
 - When a user wants to list everything, use 'read_notes' (be mindful of limits).
-- When a user provides information to store, use 'create_note'.
+- When a user provides information to store, use 'create_note' and populate 'properties' with relevant semantic tags.
 - If the user wants to change something, find the note first (if ID not known) then 'update_note'.
 - To run simulations or tests, use 'list_scenarios' and 'run_scenario'.
 - Be concise in your responses.
@@ -98,6 +136,11 @@ Output Format:
             console.warn(chalk.yellow("OPENAI_API_KEY not set. Echo mode:"));
             console.log(input);
             return;
+        }
+
+        // Lazy load ontology on first interaction if not present
+        if (!this.ontologyCache) {
+             await this.fetchOntology();
         }
 
         this.history.push({ role: 'user', content: input });
