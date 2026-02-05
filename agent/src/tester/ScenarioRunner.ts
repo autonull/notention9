@@ -12,7 +12,6 @@ export interface ScenarioResult {
 }
 
 export class ScenarioRunner {
-
     async run(scenario: TestScenario, agent: Agent): Promise<ScenarioResult> {
         console.log(`ScenarioRunner: Starting '${scenario.name}'`);
 
@@ -23,57 +22,59 @@ export class ScenarioRunner {
             console.log(`  Step: ${step.name}`);
             try {
                 // Execute the step using the agent
-                // We use processNote as the standard entry point for "Note triggers Action"
                 const outputNotes = await agent.processNote(step.input);
 
-                // Verification Logic
                 let stepSuccess = true;
-                let errorMsg = '';
+                const errors: string[] = [];
 
                 // Check Expected Content
                 if (step.expected.contentContains) {
-                    for (const requiredStr of step.expected.contentContains) {
+                    step.expected.contentContains.forEach(requiredStr => {
                         const found = outputNotes.some(n => n.content.includes(requiredStr));
                         if (!found) {
                             stepSuccess = false;
-                            errorMsg += `Expected content '${requiredStr}' not found. `;
+                            errors.push(`Expected content '${requiredStr}' not found.`);
                         }
-                    }
+                    });
                 }
 
                 // Check Expected Tags
                 if (step.expected.tags) {
-                     for (const requiredTag of step.expected.tags) {
+                    step.expected.tags.forEach(requiredTag => {
                         const found = outputNotes.some(n => n.tags.includes(requiredTag));
                         if (!found) {
                             stepSuccess = false;
-                            errorMsg += `Expected tag '${requiredTag}' not found. `;
+                            errors.push(`Expected tag '${requiredTag}' not found.`);
                         }
-                    }
+                    });
                 }
 
-                // Check Expected Action (Simulated by checking note source or properties)
-                // This depends on how actions are represented in notes.
-                // Typically action results come back as notes.
-                if (step.expected.actionType) {
-                    // This is harder to verify generically without specific property contracts
-                    // For now, we assume if we got output notes, something happened.
-                    if (outputNotes.length === 0) {
-                         stepSuccess = false;
-                         errorMsg += `Expected action '${step.expected.actionType}' but got no results. `;
-                    }
+                // Check Expected Action
+                if (step.expected.actionType && outputNotes.length === 0) {
+                    stepSuccess = false;
+                    errors.push(`Expected action '${step.expected.actionType}' but got no results.`);
                 }
 
                 if (stepSuccess) {
-                    results.push({ name: step.name, success: true, details: { outputCount: outputNotes.length } });
+                    results.push({
+                        name: step.name,
+                        success: true,
+                        details: { outputCount: outputNotes.length }
+                    });
                 } else {
                     allPassed = false;
-                    results.push({ name: step.name, success: false, error: errorMsg, details: { outputCount: outputNotes.length } });
+                    results.push({
+                        name: step.name,
+                        success: false,
+                        error: errors.join(' '),
+                        details: { outputCount: outputNotes.length }
+                    });
                 }
 
-            } catch (e: any) {
-                console.error(`  Failed: ${e.message}`);
-                results.push({ name: step.name, success: false, error: e.message });
+            } catch (e: unknown) {
+                const msg = e instanceof Error ? e.message : String(e);
+                console.error(`  Failed: ${msg}`);
+                results.push({ name: step.name, success: false, error: msg });
                 allPassed = false;
                 break;
             }

@@ -1,13 +1,13 @@
+import { randomUUID } from 'crypto';
 import { Express } from 'express';
+import { z } from 'zod';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
-import { z } from 'zod';
-import { PersistenceService } from '../persistence';
-import { executeSkillTool, ontologyQueryTool } from '../tools';
 import { Note, ScenarioManager } from '@notention/core';
-import { ScenarioRunner } from '../tester/ScenarioRunner';
 import { getAgentRegistry } from '../globals';
-import { randomUUID } from 'crypto';
+import { PersistenceService } from '../persistence';
+import { ScenarioRunner } from '../tester/ScenarioRunner';
+import { executeSkillTool, ontologyQueryTool } from '../tools';
 
 export function setupMcpServer(app: Express) {
     const server = new McpServer({
@@ -19,227 +19,144 @@ export function setupMcpServer(app: Express) {
     const scenarioManager = new ScenarioManager();
     const scenarioRunner = new ScenarioRunner();
 
-    // Create Note Tool
-    server.tool(
-        'create_note',
-        'Create a new note',
-        {
-            title: z.string(),
-            content: z.string(),
-            tags: z.array(z.string()).optional(),
-            properties: z.array(z.object({
-                key: z.string(),
-                operator: z.string(),
-                values: z.array(z.string())
-            })).optional()
-        },
-        async ({ title, content, tags, properties }) => {
-            const note: Note = {
-                id: randomUUID(),
-                title,
-                content,
-                tags: tags || [],
-                properties: (properties as any) || [],
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-                source: { type: 'user', identifier: 'cli', timestamp: Date.now() },
-                public: false,
-                priority: 1.0
-            };
-            await PersistenceService.saveNoteSafe(note);
-            return {
-                content: [{ type: 'text', text: `Note created with ID: ${note.id}` }]
-            };
-        }
-    );
-
-    // Update Note Tool
-    server.tool(
-        'update_note',
-        'Update an existing note',
-        {
-            id: z.string(),
-            title: z.string().optional(),
-            content: z.string().optional(),
-            tags: z.array(z.string()).optional(),
-            properties: z.array(z.object({
-                key: z.string(),
-                operator: z.string(),
-                values: z.array(z.string())
-            })).optional()
-        },
-        async ({ id, title, content, tags, properties }) => {
-            const notes = await PersistenceService.getNotesSafe();
-            const existingNote = notes.find(n => n.id === id);
-
-            if (!existingNote) {
+    // Helper to register tools cleanly
+    const register = (name: string, desc: string, schema: any, handler: (args: any) => Promise<any>) => {
+        server.tool(name, desc, schema, async (args) => {
+            try {
+                const result = await handler(args);
+                return {
+                    content: [{ type: 'text', text: typeof result === 'string' ? result : JSON.stringify(result, null, 2) }]
+                };
+            } catch (e: unknown) {
+                const errorMessage = e instanceof Error ? e.message : String(e);
                 return {
                     isError: true,
-                    content: [{ type: 'text', text: `Note with ID ${id} not found` }]
+                    content: [{ type: 'text', text: errorMessage }]
                 };
             }
+        });
+    };
 
-            const updatedNote: Note = {
-                ...existingNote,
-                ...(title !== undefined && { title }),
-                ...(content !== undefined && { content }),
-                ...(tags !== undefined && { tags }),
-                ...(properties !== undefined && { properties: properties as any }),
-                updatedAt: new Date().toISOString()
-            };
+    // --- Tools Definition ---
 
-            await PersistenceService.saveNoteSafe(updatedNote);
-            return {
-                content: [{ type: 'text', text: `Note updated with ID: ${id}` }]
-            };
-        }
-    );
+    // Create Note
+    register('create_note', 'Create a new note', {
+        title: z.string(),
+        content: z.string(),
+        tags: z.array(z.string()).optional(),
+        properties: z.array(z.object({
+            key: z.string(),
+            operator: z.string(),
+            values: z.array(z.string())
+        })).optional()
+    }, async ({ title, content, tags, properties }) => {
+        const note: Note = {
+            id: randomUUID(),
+            title,
+            content,
+            tags: tags ?? [],
+            properties: (properties as any) ?? [],
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            source: { type: 'user', identifier: 'cli', timestamp: Date.now() },
+            public: false,
+            priority: 1.0
+        };
+        await PersistenceService.saveNoteSafe(note);
+        return `Note created with ID: ${note.id}`;
+    });
 
-    // Delete Note Tool
-    server.tool(
-        'delete_note',
-        'Delete a note by ID',
-        {
-            id: z.string()
-        },
-        async ({ id }) => {
-            await PersistenceService.deleteNoteSafe(id);
-            return {
-                content: [{ type: 'text', text: `Note deleted with ID: ${id}` }]
-            };
-        }
-    );
+    // Update Note
+    register('update_note', 'Update an existing note', {
+        id: z.string(),
+        title: z.string().optional(),
+        content: z.string().optional(),
+        tags: z.array(z.string()).optional(),
+        properties: z.array(z.object({
+            key: z.string(),
+            operator: z.string(),
+            values: z.array(z.string())
+        })).optional()
+    }, async ({ id, title, content, tags, properties }) => {
+        const notes = await PersistenceService.getNotesSafe();
+        const existingNote = notes.find(n => n.id === id);
 
-    // Search Notes Tool
-    server.tool(
-        'search_notes',
-        'Search notes by query and/or tags',
-        {
-            query: z.string().optional(),
-            tags: z.array(z.string()).optional()
-        },
-        async ({ query, tags }) => {
-            const results = await PersistenceService.searchNotesSafe(query || '', tags);
-            return {
-                content: [{ type: 'text', text: JSON.stringify(results, null, 2) }]
-            };
-        }
-    );
+        if (!existingNote) throw new Error(`Note with ID ${id} not found`);
 
-    // Read Notes Tool (Updated)
-    server.tool(
-        'read_notes',
-        'Read all notes with pagination',
-        {
-            limit: z.number().optional().default(50),
-            offset: z.number().optional().default(0)
-        },
-        async ({ limit, offset }) => {
-            const notes = await PersistenceService.getNotesSafe();
-            const sliced = notes.slice(offset, offset + limit);
-            return {
-                content: [{ type: 'text', text: JSON.stringify(sliced, null, 2) }]
-            };
-        }
-    );
+        const updatedNote: Note = {
+            ...existingNote,
+            ...(title !== undefined && { title }),
+            ...(content !== undefined && { content }),
+            ...(tags !== undefined && { tags }),
+            ...(properties !== undefined && { properties: properties as any }),
+            updatedAt: new Date().toISOString()
+        };
 
-    // Execute Skill Tool
-    server.tool(
-        'execute_skill',
-        'Execute a skill',
-        {
-            skillId: z.string(),
-            noteData: z.object({
-                properties: z.array(z.any()),
-                content: z.string()
-            })
-        },
-        async (args) => {
-             try {
-                // executeSkillTool.execute expects args
-                const result = await executeSkillTool.execute(args);
-                return {
-                    content: [{ type: 'text', text: JSON.stringify(result, null, 2) }]
-                };
-             } catch (e: any) {
-                 return {
-                     isError: true,
-                     content: [{ type: 'text', text: e.message }]
-                 };
-             }
-        }
-    );
+        await PersistenceService.saveNoteSafe(updatedNote);
+        return `Note updated with ID: ${id}`;
+    });
 
-    // Ontology Query Tool
-    server.tool(
-        'query_ontology',
-        'Query the ontology',
-        {
-            query: z.string()
-        },
-        async (args) => {
-             try {
-                 const result = await ontologyQueryTool.execute(args);
-                 return {
-                    content: [{ type: 'text', text: JSON.stringify(result, null, 2) }]
-                 };
-             } catch (e: any) {
-                 return {
-                     isError: true,
-                     content: [{ type: 'text', text: e.message }]
-                 };
-             }
-        }
-    );
+    // Delete Note
+    register('delete_note', 'Delete a note by ID', { id: z.string() }, async ({ id }) => {
+        await PersistenceService.deleteNoteSafe(id);
+        return `Note deleted with ID: ${id}`;
+    });
 
-    // === SIMULATION TOOLS ===
+    // Search Notes
+    register('search_notes', 'Search notes by query and/or tags', {
+        query: z.string().optional(),
+        tags: z.array(z.string()).optional()
+    }, async ({ query, tags }) => {
+        return await PersistenceService.searchNotesSafe(query || '', tags);
+    });
+
+    // Read Notes
+    register('read_notes', 'Read all notes with pagination', {
+        limit: z.number().optional().default(50),
+        offset: z.number().optional().default(0)
+    }, async ({ limit, offset }) => {
+        const notes = await PersistenceService.getNotesSafe();
+        return notes.slice(offset, offset + limit);
+    });
+
+    // Execute Skill
+    register('execute_skill', 'Execute a skill', {
+        skillId: z.string(),
+        noteData: z.object({
+            properties: z.array(z.any()),
+            content: z.string()
+        })
+    }, async (args) => {
+        return await executeSkillTool.execute(args);
+    });
+
+    // Query Ontology
+    register('query_ontology', 'Query the ontology', { query: z.string() }, async (args) => {
+        return await ontologyQueryTool.execute(args);
+    });
 
     // List Scenarios
-    server.tool(
-        'list_scenarios',
-        'List available simulation scenarios',
-        {},
-        async () => {
-            const scenarios = scenarioManager.getAll();
-            return {
-                content: [{ type: 'text', text: JSON.stringify(scenarios.map(s => ({ id: s.id, name: s.name, description: s.description })), null, 2) }]
-            };
-        }
-    );
+    register('list_scenarios', 'List available simulation scenarios', {}, async () => {
+        return scenarioManager.getAll().map(s => ({
+            id: s.id,
+            name: s.name,
+            description: s.description
+        }));
+    });
 
     // Run Scenario
-    server.tool(
-        'run_scenario',
-        'Run a simulation scenario',
-        {
-            id: z.string()
-        },
-        async ({ id }) => {
-            const scenario = scenarioManager.get(id);
-            if (!scenario) {
-                return { isError: true, content: [{ type: 'text', text: `Scenario ${id} not found` }] };
-            }
+    register('run_scenario', 'Run a simulation scenario', { id: z.string() }, async ({ id }) => {
+        const scenario = scenarioManager.get(id);
+        if (!scenario) throw new Error(`Scenario ${id} not found`);
 
-            const registry = getAgentRegistry();
-            const agent = registry.getDefault();
+        const agent = getAgentRegistry().getDefault();
+        if (!agent) throw new Error(`No default agent available for simulation`);
 
-            if (!agent) {
-                 return { isError: true, content: [{ type: 'text', text: `No default agent available for simulation` }] };
-            }
+        return await scenarioRunner.run(scenario, agent);
+    });
 
-            try {
-                const result = await scenarioRunner.run(scenario, agent);
-                return {
-                    content: [{ type: 'text', text: JSON.stringify(result, null, 2) }]
-                };
-            } catch (e: any) {
-                 return { isError: true, content: [{ type: 'text', text: e.message }] };
-            }
-        }
-    );
+    // --- Transport Setup ---
 
-
-    // SSE Transport Setup
     const transports: Record<string, SSEServerTransport> = {};
 
     app.get('/mcp/sse', async (req, res) => {

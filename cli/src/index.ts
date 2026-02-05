@@ -1,13 +1,12 @@
-import { CliClient } from './client.js';
 import * as readline from 'readline';
-import { openai } from '@ai-sdk/openai';
 import { generateText } from 'ai';
+import { openai } from '@ai-sdk/openai';
 import dotenv from 'dotenv';
+import { CliClient } from './client.js';
 
 dotenv.config();
 
 const MCP_URL = process.env.MCP_URL || 'http://localhost:3000/mcp/sse';
-
 const SYSTEM_PROMPT = `
 You are the "Notention Agent", a helpful AI assistant that controls a Notention profile.
 Your goal is to help the user manage their knowledge graph (notes), execute skills, and run simulations.
@@ -37,6 +36,120 @@ If you want to respond to the user (or after a tool call), output:
 Only output valid JSON. No markdown blocks.
 `;
 
+async function handleSlashCommand(input: string, cli: CliClient, tools: any[]): Promise<boolean> {
+    const [cmd, ...args] = input.split(' ');
+    switch (cmd) {
+        case '/exit':
+        case '/quit':
+            console.log("Goodbye.");
+            await cli.close();
+            process.exit(0);
+            return true;
+        case '/clear':
+            console.clear();
+            return true;
+        case '/tools':
+            console.log("Tools:", tools.map(t => t.name).join(", "));
+            return true;
+        case '/scenarios':
+            try {
+                const result = await cli.callTool('list_scenarios', {});
+                const scenarios = JSON.parse((result.content[0] as any).text);
+                console.log("Scenarios:");
+                scenarios.forEach((s: any) => console.log(` - ${s.id}: ${s.name}`));
+            } catch (e: unknown) {
+                console.error("Failed to list scenarios:", e instanceof Error ? e.message : String(e));
+            }
+            return true;
+        case '/run':
+            if (args.length === 0) {
+                console.log("Usage: /run <scenario_id>");
+            } else {
+                const id = args[0];
+                console.log(`Running scenario '${id}'...`);
+                try {
+                    const result = await cli.callTool('run_scenario', { id });
+                    const runResult = JSON.parse((result.content[0] as any).text);
+                    console.log(`Success: ${runResult.success}`);
+                    runResult.steps.forEach((step: any) => {
+                        const icon = step.success ? '✅' : '❌';
+                        console.log(` ${icon} ${step.name} ${step.error ? `(${step.error})` : ''}`);
+                    });
+                } catch (e: unknown) {
+                    console.error("Failed to run scenario:", e instanceof Error ? e.message : String(e));
+                }
+            }
+            return true;
+        case '/help':
+            console.log(`
+Commands:
+  /help    - Show this help
+  /tools   - List available MCP tools
+  /scenarios - List available test scenarios
+  /run <id>  - Run a specific scenario
+  /clear   - Clear the screen
+  /quit    - Exit the CLI
+            `);
+            return true;
+        default:
+            console.log("Unknown command. Type /help.");
+            return true;
+    }
+}
+
+async function handleLlmInteraction(input: string, cli: CliClient, tools: any[]) {
+    if (!process.env.OPENAI_API_KEY) {
+        console.warn("OPENAI_API_KEY not set. Echo mode:");
+        console.log(input);
+        return;
+    }
+
+    try {
+        const fullPrompt = `
+${SYSTEM_PROMPT}
+
+Available Tools:
+${JSON.stringify(tools, null, 2)}
+
+User Input: "${input}"
+`;
+
+        const response = await generateText({
+            model: openai('gpt-4o'),
+            prompt: fullPrompt
+        });
+
+        let text = response.text.trim();
+        // Clean markdown blocks if present
+        if (text.startsWith('```')) {
+            text = text.replace(/^```(json)?/, '').replace(/```$/, '').trim();
+        }
+
+        try {
+            const action = JSON.parse(text);
+            if (action.tool) {
+                console.log(`[Agent] Calling ${action.tool}...`);
+                try {
+                    const result = await cli.callTool(action.tool, action.args);
+                    console.log("[Result]", JSON.stringify(result, null, 2));
+                } catch (toolErr: unknown) {
+                    const msg = toolErr instanceof Error ? toolErr.message : String(toolErr);
+                    console.error(`[Error] Tool execution failed: ${msg}`);
+                }
+            } else if (action.response) {
+                console.log("[Agent]", action.response);
+            } else {
+                console.log("[Agent (raw)]", text);
+            }
+        } catch (jsonErr) {
+            console.log("[Agent]", text);
+        }
+
+    } catch (e: unknown) {
+        console.error("Error:", e instanceof Error ? e.message : String(e));
+    }
+}
+
 async function main() {
     const cli = new CliClient(MCP_URL);
     try {
@@ -45,7 +158,6 @@ async function main() {
 
         const toolsResult = await cli.listTools();
         const tools = toolsResult.tools;
-        // console.log("Available tools:", tools.map(t => t.name).join(", "));
 
         const rl = readline.createInterface({
             input: process.stdin,
@@ -56,132 +168,18 @@ async function main() {
         console.log("Type /help for commands, or just chat with the agent.");
 
         const ask = () => {
-            rl.question('> ', async (input) => {
-                input = input.trim();
-
-                // Slash commands
-                if (input.startsWith('/')) {
-                    const [cmd, ...args] = input.split(' ');
-                    switch (cmd) {
-                        case '/exit':
-                        case '/quit':
-                            console.log("Goodbye.");
-                            await cli.close();
-                            process.exit(0);
-                            break;
-                        case '/clear':
-                            console.clear();
-                            break;
-                        case '/tools':
-                            console.log("Tools:", tools.map(t => t.name).join(", "));
-                            break;
-                        case '/scenarios':
-                            try {
-                                const result = await cli.callTool('list_scenarios', {});
-                                const scenarios = JSON.parse((result.content[0] as any).text);
-                                console.log("Scenarios:");
-                                scenarios.forEach((s: any) => console.log(` - ${s.id}: ${s.name}`));
-                            } catch (e: any) {
-                                console.error("Failed to list scenarios:", e.message);
-                            }
-                            break;
-                        case '/run':
-                            if (args.length === 0) {
-                                console.log("Usage: /run <scenario_id>");
-                            } else {
-                                const id = args[0];
-                                console.log(`Running scenario '${id}'...`);
-                                try {
-                                    const result = await cli.callTool('run_scenario', { id });
-                                    const runResult = JSON.parse((result.content[0] as any).text);
-                                    console.log(`Success: ${runResult.success}`);
-                                    runResult.steps.forEach((step: any) => {
-                                        const icon = step.success ? '✅' : '❌';
-                                        console.log(` ${icon} ${step.name} ${step.error ? `(${step.error})` : ''}`);
-                                    });
-                                } catch (e: any) {
-                                    console.error("Failed to run scenario:", e.message);
-                                }
-                            }
-                            break;
-                        case '/help':
-                            console.log(`
-Commands:
-  /help    - Show this help
-  /tools   - List available MCP tools
-  /scenarios - List available test scenarios
-  /run <id>  - Run a specific scenario
-  /clear   - Clear the screen
-  /quit    - Exit the CLI
-                            `);
-                            break;
-                        default:
-                            console.log("Unknown command. Type /help.");
-                    }
-                    ask();
-                    return;
-                }
+            rl.question('> ', async (rawInput) => {
+                const input = rawInput.trim();
 
                 if (!input) {
                     ask();
                     return;
                 }
 
-                if (!process.env.OPENAI_API_KEY) {
-                    console.warn("OPENAI_API_KEY not set. Echo mode:");
-                    console.log(input);
-                    ask();
-                    return;
-                }
-
-                try {
-                    // Inject tools into prompt
-                    const fullPrompt = `
-${SYSTEM_PROMPT}
-
-Available Tools:
-${JSON.stringify(tools, null, 2)}
-
-User Input: "${input}"
-`;
-
-                    const response = await generateText({
-                        model: openai('gpt-4o'),
-                        prompt: fullPrompt
-                    });
-
-                    let text = response.text.trim();
-                    if (text.startsWith('```json')) {
-                        text = text.replace(/^```json/, '').replace(/```$/, '').trim();
-                    } else if (text.startsWith('```')) {
-                        text = text.replace(/^```/, '').replace(/```$/, '').trim();
-                    }
-
-                    try {
-                        const action = JSON.parse(text);
-                        if (action.tool) {
-                            console.log(`[Agent] Calling ${action.tool}...`);
-                            try {
-                                const result = await cli.callTool(action.tool, action.args);
-                                console.log("[Result]", JSON.stringify(result, null, 2));
-
-                                // Optional: Feed result back to LLM for final response?
-                                // For now, just dumping result is fine for a CLI.
-                            } catch (toolErr: any) {
-                                console.error(`[Error] Tool execution failed: ${toolErr.message}`);
-                            }
-                        } else if (action.response) {
-                            console.log("[Agent]", action.response);
-                        } else {
-                            console.log("[Agent (raw)]", text);
-                        }
-                    } catch (jsonErr) {
-                        // Fallback if LLM didn't output JSON
-                        console.log("[Agent]", text);
-                    }
-
-                } catch (e: any) {
-                    console.error("Error:", e.message);
+                if (input.startsWith('/')) {
+                    await handleSlashCommand(input, cli, tools);
+                } else {
+                    await handleLlmInteraction(input, cli, tools);
                 }
 
                 ask();
