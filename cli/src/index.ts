@@ -4,6 +4,7 @@ import { CliClient } from './client.js';
 import { handleSlashCommand } from './commands.js';
 import { LlmSession } from './llm.js';
 import { fsTools } from './tools/fs.js';
+import { shellTools } from './tools/shell.js';
 
 dotenv.config();
 
@@ -21,8 +22,9 @@ async function main() {
         const toolsResult = await cli.listTools();
         const tools = toolsResult.tools;
 
-        // Initialize session with both Remote (MCP) and Local (FS) tools
-        const session = new LlmSession(cli, tools, fsTools);
+        // Initialize session with Remote (MCP), Local (FS), and Shell tools
+        const allLocalTools = [...fsTools, ...shellTools];
+        const session = new LlmSession(cli, tools, allLocalTools);
 
         // Check for command mode args
         const args = process.argv.slice(2);
