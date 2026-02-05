@@ -1,5 +1,6 @@
 import { useState, useCallback, MutableRefObject } from 'react';
 import type { NostrEvent } from '@notention/core';
+import { Logger } from '@notention/core';
 import type { AIProvider } from '@notention/core';
 import { MockLLMProvider } from '../../services/ai/MockLLMProvider';
 import type { SimulationAgent } from './types';
@@ -19,6 +20,7 @@ export function useAgentInteraction({
     updateAgent,
     addLog
 }: UseAgentInteractionProps) {
+    const logger = Logger.getInstance();
     const [agentMessages, setAgentMessages] = useState<Record<string, (NostrEvent & { content: string })[]>>({});
     const messagesRef = useRef(agentMessages);
 
@@ -136,7 +138,7 @@ export function useAgentInteraction({
                         }
                     }
                 } catch (e) {
-                    console.error("AI generation failed", e);
+                    logger.error("AI generation failed", e instanceof Error ? e : new Error(String(e)));
                     // Fallback to Mock Logic if primary AI fails
                     try {
                         const mock = new MockLLMProvider();

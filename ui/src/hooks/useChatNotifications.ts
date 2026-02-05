@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useSettings } from './useSettingsContext';
 import { useView } from './useViewContext';
-import { DEFAULT_RELAYS, pool, hexToBytes } from '@notention/core';
+import { DEFAULT_RELAYS, pool, hexToBytes, Logger } from '@notention/core';
 import { getPublicKey } from 'nostr-tools';
 
 export const useChatNotifications = () => {
@@ -17,8 +17,8 @@ export const useChatNotifications = () => {
         try {
             pubkey = getPublicKey(hexToBytes(privkey));
         } catch (e: unknown) {
-            console.error(e);
-            console.error('Invalid privkey for chat notifications');
+            const logger = Logger.getInstance();
+            logger.error('Invalid privkey for chat notifications', e instanceof Error ? e : new Error(String(e)));
             return;
         }
 

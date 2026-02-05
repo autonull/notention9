@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import type { OntologyNode, Note } from '@notention/core';
+import { Logger } from '@notention/core';
 import type { AIProvider } from '@notention/core';
 import { Gardener } from '../../services/gardener';
 import { DEFAULT_ONTOLOGY } from '@notention/core';
@@ -111,7 +112,7 @@ export const useSimulator = () => {
             aiRef.current = provider;
             setAiProviderName(provider.name);
         } catch (e) {
-            console.warn("WebLLM failed to initialize, falling back to Mock:", e);
+            Logger.getInstance().warn("WebLLM failed to initialize, falling back to Mock:", e instanceof Error ? e : new Error(String(e)));
             aiRef.current = new MockLLMProvider();
             setAiProviderName(aiRef.current.name);
         }

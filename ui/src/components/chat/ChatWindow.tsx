@@ -5,7 +5,7 @@ import { useNostrProfile } from '../../hooks/useNostrProfile';
 import { useNotes } from '../../hooks/useNotes';
 import { useToast } from '../../hooks/useToast';
 import type { Contact, NostrEvent } from '@notention/core';
-import { DEFAULT_RELAYS, formatNpub, hexToBytes, pool } from '@notention/core';
+import { DEFAULT_RELAYS, formatNpub, hexToBytes, pool, Logger } from '@notention/core';
 import { parseProperties } from '@notention/core';
 import { ArrowLeftIcon, SendIcon, DocumentDuplicateIcon, SettingsIcon, TrashIcon } from '../common/icons';
 import { Avatar } from '../common/Avatar';
@@ -97,7 +97,7 @@ export function ChatWindow({
       onSendMessage(selectedContact.pubkey, event, newMessage.trim());
       setNewMessage('');
     } catch (err) {
-      console.error('Failed to send message:', err);
+      Logger.getInstance().error('Failed to send message:', err instanceof Error ? err : new Error(String(err)));
     }
   };
 

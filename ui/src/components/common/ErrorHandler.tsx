@@ -1,4 +1,5 @@
 import { createContext, ReactNode, useContext, useState, useEffect } from 'react';
+import { Logger } from '@notention/core';
 
 export interface ErrorMessage {
   id: string;
@@ -118,7 +119,7 @@ export const handleAppError = (
   }
 
   if (!showError) {
-    console.error(errorMessage);
+    Logger.getInstance().error(errorMessage);
     return null;
   }
 

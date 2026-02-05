@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import L from 'leaflet';
+import { Logger } from '@notention/core';
 import { Modal } from '../common/Modal';
 import { Button } from '../common/Button';
 import { Input } from '../common/Input';
@@ -121,7 +122,7 @@ export function MapPickerModal({
           }
       } catch (err) {
           setSearchError('Search failed. Please try again.');
-          console.error(err);
+          Logger.getInstance().error("Map search failed", err instanceof Error ? err : new Error(String(err)));
       } finally {
           setIsSearching(false);
       }

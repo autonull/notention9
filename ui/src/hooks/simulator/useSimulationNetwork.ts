@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import type { Note, OntologyNode, OntologyAttribute } from '@notention/core';
 import type { Gardener } from '../../services/gardener';
-import { parseProperties, matchingService } from '@notention/core';
+import { parseProperties, matchingService, Logger } from '@notention/core';
 import { addAttribute } from '@notention/core';
 
 export interface Log {
@@ -95,7 +95,7 @@ export const useSimulationNetwork = (
                   });
               }
           } catch (e) {
-              console.error("Gardener Error:", e);
+              Logger.getInstance().error("Gardener Error:", e instanceof Error ? e : new Error(String(e)));
           }
       }
   }, [addLog, gardenerRef, ontologyRef, setOntology]);

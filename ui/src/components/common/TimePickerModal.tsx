@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Logger } from '@notention/core';
 import { Modal } from './Modal';
 import { Input } from './Input';
 import { format, isValid, parseISO } from 'date-fns';
@@ -52,7 +53,7 @@ export function TimePickerModal({
                 addToast("Invalid date/time combination", "error");
             }
         } catch (e: unknown) {
-            console.error(e);
+            Logger.getInstance().error("Error constructing date", e instanceof Error ? e : new Error(String(e)));
             addToast("Error constructing date", "error");
         }
     };

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Logger } from '@notention/core';
 import { useGardener } from './useGardener';
 import { useSettings } from './useSettingsContext';
 import { useNotes } from './useNotes';
@@ -39,7 +40,7 @@ export const useSmartInput = () => {
                  addSuggestions(note.id, results);
             }
         } catch (e) {
-            console.error(e);
+            Logger.getInstance().error("Smart input error", e instanceof Error ? e : new Error(String(e)));
         } finally {
             setIsProcessing(false);
         }

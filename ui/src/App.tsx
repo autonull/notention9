@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Logger } from '@notention/core';
 import { AppShell } from './components/AppShell';
 import { agentService } from './services/AgentService';
 import { ErrorHandlingProvider, ErrorDisplay } from './components/common/ErrorHandler';
@@ -27,7 +28,7 @@ function AppContent() {
     };
 
     const handleError = (errorInfo: any) => {
-      console.error('Agent error:', errorInfo);
+      Logger.getInstance().error('Agent error:', errorInfo instanceof Error ? errorInfo : new Error(String(errorInfo)));
       setAgentStatus(agentService.getStatus());
     };
 

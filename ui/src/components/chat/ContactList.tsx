@@ -4,7 +4,7 @@ import { useNostrProfile } from '../../hooks/useNostrProfile';
 import type { Contact } from '@notention/core';
 import type { SwarmTemplate } from '../../hooks/simulator/types';
 import { SwarmModal } from '../simulator/SwarmModal';
-import { DEFAULT_RELAYS, formatNpub, hexToBytes, pool } from '@notention/core';
+import { DEFAULT_RELAYS, formatNpub, hexToBytes, pool, Logger } from '@notention/core';
 import { SearchIcon, CpuChipIcon, UserGroupIcon, UserPlusIcon } from '../common/icons';
 import { Avatar } from '../common/Avatar';
 import { IconButton } from '../common/IconButton';
@@ -94,7 +94,7 @@ export function ContactList({
       setIsAddingContact(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to add contact.');
-      console.error(err);
+      Logger.getInstance().error("Failed to add contact", err instanceof Error ? err : new Error(String(err)));
     }
   };
 

@@ -1,6 +1,6 @@
 import { BasePlugin, PluginAPI, PluginManifest, pluginManager } from '../PluginSystem';
 import { MetaphorRenderer } from '../../components/metaphor/MetaphorRenderer';
-import { metaphorMapper } from '@notention/core';
+import { metaphorMapper, Logger } from '@notention/core';
 
 export const METAPHOR_PLUGIN_MANIFEST: PluginManifest = {
   id: 'core-metaphor-plugin',
@@ -21,11 +21,11 @@ export class MetaphorPlugin extends BasePlugin {
     // In a full implementation, we would register a hook to render this automatically.
     // For now, we manually integrate into the EditorManager, but this plugin activation
     // serves as the formal registration point.
-    console.log('Metaphor Plugin Activated');
+    Logger.getInstance().info('Metaphor Plugin Activated');
   }
 
   deactivate(): void {
-    console.log('Metaphor Plugin Deactivated');
+    Logger.getInstance().info('Metaphor Plugin Deactivated');
   }
 }
 
