@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useSettings } from './useSettingsContext';
-import { DEFAULT_RELAYS, pool, convertEventToNote } from '@notention/core';
-import { matchingService } from '../services/MatchingService';
+import { DEFAULT_RELAYS, pool, convertEventToNote, matchingService } from '@notention/core';
 import type { Note, NostrEvent } from '@notention/core';
 
 export function useSingleNoteMatch(note: Note) {

@@ -1,7 +1,7 @@
 import { useMemo, useRef } from 'react';
 import type { Note, SortOrder } from '@notention/core';
 import { getTextFromHtml, parseProperties } from '@notention/core';
-import { checkConstraint } from '../utils/matching';
+import { matchingService } from '@notention/core';
 import { GeoCoords, haversineDistance, parseGeoFromValues } from '@notention/core';
 import { isSpatialKey, isTemporalKey } from '@notention/core';
 import { parseDateFromValues } from '@notention/core';
@@ -133,7 +133,7 @@ export const useSortedFilteredNotes = (
 
     return notesWithMetadata.filter((note) => {
       // 1. Check Semantic Constraints
-      const semanticMatch = constraints.every(constraint => checkConstraint(constraint, note));
+      const semanticMatch = constraints.every(constraint => matchingService.checkConstraint(constraint, note));
       if (!semanticMatch) return false;
 
       // 2. Check Text Queries

@@ -1,12 +1,11 @@
 import { useEffect, useRef } from 'react';
-import { debounce, throttle } from '@notention/core';
-
-export { debounce, throttle };
+import { Logger } from '@notention/core';
 
 // Performance monitoring utilities
 class PerformanceMonitor {
   private marks: Map<string, number> = new Map();
   private observers: PerformanceObserver[] = [];
+  private logger = Logger.getInstance();
 
   // Mark a point in time
   mark(name: string): void {
@@ -19,7 +18,7 @@ class PerformanceMonitor {
     const endTime = this.marks.get(endMark);
     
     if (startTime === undefined || endTime === undefined) {
-      console.warn(`Missing marks for measurement: ${startMark} -> ${endMark}`);
+      this.logger.warn(`Missing marks for measurement: ${startMark} -> ${endMark}`);
       return null;
     }
 
@@ -27,7 +26,7 @@ class PerformanceMonitor {
     const measureName = name || `${startMark}-to-${endMark}`;
     
     // Log performance metric
-    console.debug(`Performance: ${measureName} took ${duration.toFixed(2)}ms`);
+    this.logger.debug(`Performance: ${measureName} took ${duration.toFixed(2)}ms`);
     
     return duration;
   }
@@ -38,7 +37,7 @@ class PerformanceMonitor {
       const observer = new PerformanceObserver((list) => {
         list.getEntries().forEach((entry) => {
           if (entry.duration > 50) {
-            console.warn(`Long task detected: ${entry.name} took ${entry.duration.toFixed(2)}ms`);
+            this.logger.warn(`Long task detected: ${entry.name} took ${entry.duration.toFixed(2)}ms`);
           }
         });
       });
@@ -53,7 +52,7 @@ class PerformanceMonitor {
     if ('PerformanceObserver' in window) {
       const observer = new PerformanceObserver((list) => {
         list.getEntries().forEach((entry) => {
-          console.debug(`Layout shift: ${entry.name} caused ${entry.duration.toFixed(2)}ms`);
+          this.logger.debug(`Layout shift: ${entry.name} caused ${entry.duration.toFixed(2)}ms`);
         });
       });
 
@@ -75,6 +74,7 @@ export const perfMonitor = new PerformanceMonitor();
 export function usePerformanceMonitor(componentName: string, deps: any[]): void {
   const renderCount = useRef(0);
   const prevDeps = useRef(deps);
+  const logger = Logger.getInstance();
 
   useEffect(() => {
     renderCount.current += 1;
@@ -82,13 +82,13 @@ export function usePerformanceMonitor(componentName: string, deps: any[]): void 
 
     // Check for excessive re-renders
     if (renders > 10) {
-      console.warn(`${componentName} has re-rendered ${renders} times, consider optimizing`);
+      logger.warn(`${componentName} has re-rendered ${renders} times, consider optimizing`);
     }
 
     // Check for dependency changes causing re-renders
     const changedDeps = deps.filter((dep, index) => dep !== prevDeps.current[index]);
     if (changedDeps.length > 0 && renders > 1) {
-      console.debug(`${componentName} re-rendered due to changed deps:`, changedDeps);
+      logger.debug(`${componentName} re-rendered due to changed deps:`, changedDeps);
     }
 
     prevDeps.current = deps;

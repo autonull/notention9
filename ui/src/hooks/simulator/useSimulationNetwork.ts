@@ -1,8 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import type { Note, OntologyNode, OntologyAttribute } from '@notention/core';
 import type { Gardener } from '../../services/gardener';
-import { parseProperties } from '@notention/core';
-import { matchingService } from '../../services/MatchingService';
+import { parseProperties, matchingService } from '@notention/core';
 import { addAttribute } from '@notention/core';
 
 export interface Log {
