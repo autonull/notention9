@@ -5,12 +5,16 @@ import fs from 'fs';
 import { log, error } from './core/utils';
 import { Bootstrap } from './Bootstrap';
 import { SocketController } from './server/SocketController';
+import { setupMcpServer } from './server/McpServer';
 
 // --- Server Setup ---
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(express.json());
+
+// Setup MCP Server
+setupMcpServer(app);
 
 // UI Static Serving
 let uiDistPath = join(process.cwd(), '../ui/dist');
