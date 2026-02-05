@@ -6,6 +6,7 @@ import { log, error } from './core/utils';
 import { Bootstrap } from './Bootstrap';
 import { SocketController } from './server/SocketController';
 import { setupMcpServer } from './server/McpServer';
+import { setupSimulationMcpServer } from './server/SimulationMcpServer';
 import { setAgentRegistry } from './globals';
 
 // --- Server Setup ---
@@ -14,8 +15,9 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
-// Setup MCP Server
+// Setup MCP Servers
 setupMcpServer(app);
+setupSimulationMcpServer(app);
 
 // UI Static Serving
 let uiDistPath = join(process.cwd(), '../ui/dist');
