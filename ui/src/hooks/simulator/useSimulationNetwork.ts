@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import type { Note, OntologyNode, OntologyAttribute } from '@notention/core';
 import type { Gardener } from '../../services/gardener';
-import { parseProperties, matchingService, Logger } from '@notention/core';
+import { parseProperties, matchingService, Logger, getSubtreeKeys } from '@notention/core';
 import { addAttribute } from '@notention/core';
 
 export interface Log {
@@ -34,7 +34,7 @@ export const useSimulationNetwork = (
 
           // 2. Run Matching Logic
           // Only match against OTHER notes
-          filtered.forEach(otherNote => {
+          for (const otherNote of filtered) {
              const result1 = matchingService.matchNotes(enrichedNote, otherNote);
              const result2 = matchingService.matchNotes(otherNote, enrichedNote);
 
@@ -52,7 +52,7 @@ export const useSimulationNetwork = (
                      '2': [...(n['2'] || []), `Match found!`]
                  }));
              }
-          });
+          }
 
           return newNotes;
       });
@@ -64,14 +64,9 @@ export const useSimulationNetwork = (
 
               // Only add if not exists
               const currentOntology = ontologyRef.current;
-              const existingKeys = new Set<string>();
-              const traverse = (nodes: OntologyNode[]) => {
-                  nodes.forEach(n => {
-                      if (n.attributes) Object.keys(n.attributes).forEach(k => existingKeys.add(k));
-                      if (n.children) traverse(n.children);
-                  });
-              };
-              traverse(currentOntology);
+              const existingKeys = new Set(
+                  currentOntology.flatMap(node => Array.from(getSubtreeKeys(node)))
+              );
 
               const novelAttrs = newAttrs.filter(a => !existingKeys.has(a.key));
 
@@ -80,7 +75,7 @@ export const useSimulationNetwork = (
                       let newOntology = [...prevOntology];
                       const targetNodeId = newOntology[0]?.id || 'root';
 
-                      novelAttrs.forEach(attr => {
+                      for (const attr of novelAttrs) {
                           addLog(`Ontology + ${attr.key}`, 'ontology');
                           setNewAttributes(prev => [{key: attr.key, type: attr.type}, ...prev].slice(0, 10));
 
@@ -90,7 +85,7 @@ export const useSimulationNetwork = (
                               operators: { real: ['is'], imaginary: [] }
                           };
                           newOntology = addAttribute(newOntology, targetNodeId, attr.key, ontAttr);
-                      });
+                      }
                       return newOntology;
                   });
               }

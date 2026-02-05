@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import type { Note } from '@notention/core';
 import { TrashIcon, WorldIcon, MapPinIcon, ClockIcon, PinIcon, DocumentDuplicateIcon } from '../common/icons';
-import { getTextFromHtml } from '@notention/core';
+import { getTextFromHtml } from '../../utils/html';
 import { IconButton } from '../common/IconButton';
 import { Badge } from '../common/Badge';
 

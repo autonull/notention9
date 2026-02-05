@@ -4,7 +4,8 @@ import { useGardener } from './useGardener';
 import { useAutoTagging } from './useAutoTagging';
 import { useToast } from './useToast';
 import { useSuggestions } from '../components/contexts/SuggestionContext';
-import { parseProperties, replacePropertyInString, getTextFromHtml } from '@notention/core';
+import { parseProperties, replacePropertyInString } from '@notention/core';
+import { getTextFromHtml } from '../utils/html';
 import { parseNaturalDate } from '@notention/core';
 
 interface UseEditorMagicProps {

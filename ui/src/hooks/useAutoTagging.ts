@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { RemoteAIProvider, isGeminiApiKeyAvailable } from '../services/ai/RemoteProvider';
 import { LocalAIProvider } from '../services/ai/LocalProvider';
-import { getTextFromHtml } from '@notention/core';
+import { getTextFromHtml } from '../utils/html';
 import { useSettings } from './useSettingsContext';
 import type { AIProvider } from '@notention/core';
 

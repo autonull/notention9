@@ -1,6 +1,7 @@
 import { useMemo, useRef } from 'react';
 import type { Note, SortOrder } from '@notention/core';
-import { getTextFromHtml, parseProperties } from '@notention/core';
+import { parseProperties } from '@notention/core';
+import { getTextFromHtml } from '../utils/html';
 import { matchingService } from '@notention/core';
 import { GeoCoords, haversineDistance, parseGeoFromValues } from '@notention/core';
 import { isSpatialKey, isTemporalKey } from '@notention/core';
