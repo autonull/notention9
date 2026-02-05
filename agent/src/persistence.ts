@@ -1,10 +1,11 @@
 import fs from 'fs';
 import { join } from 'path';
-import { Note, Mutex } from '@notention/core';
+import { Note, Mutex, Logger } from '@notention/core';
 
 const DATA_DIR = join(process.cwd(), 'data');
 const NOTES_FILE = join(DATA_DIR, 'notes.json');
 const persistenceMutex = new Mutex();
+const logger = Logger.getInstance();
 
 export class PersistenceService {
     static async ensureDataDir() {
@@ -22,14 +23,14 @@ export class PersistenceService {
             try {
                 return JSON.parse(data);
             } catch (parseError) {
-                console.error('CRITICAL: Failed to parse notes.json', parseError);
+                logger.error('CRITICAL: Failed to parse notes.json', parseError instanceof Error ? parseError : new Error(String(parseError)));
                 // Rename corrupt file to preserve data
                 const corruptFile = `${NOTES_FILE}.corrupt.${Date.now()}`;
                 try {
                     await fs.promises.rename(NOTES_FILE, corruptFile);
-                    console.warn(`Renamed corrupt notes.json to ${corruptFile}`);
+                    logger.warn(`Renamed corrupt notes.json to ${corruptFile}`);
                 } catch (renameError) {
-                    console.error('Failed to rename corrupt file', renameError);
+                    logger.error('Failed to rename corrupt file', renameError instanceof Error ? renameError : new Error(String(renameError)));
                     throw renameError; // Re-throw if we can't safely move aside
                 }
                 return []; // Return empty for new start
@@ -49,7 +50,7 @@ export class PersistenceService {
             await fs.promises.writeFile(tempFile, JSON.stringify(notes, null, 2));
             await fs.promises.rename(tempFile, NOTES_FILE);
         } catch (error) {
-            console.error('Failed to save notes atomically', error);
+            logger.error('Failed to save notes atomically', error instanceof Error ? error : new Error(String(error)));
             try {
                 await fs.promises.unlink(tempFile);
             } catch (e) {
