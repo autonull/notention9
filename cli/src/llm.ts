@@ -128,53 +128,57 @@ Output Format:
                 }
                 process.stdout.write('\n');
 
-                // Check for tool call
-                const jsonMatch = fullText.match(/```json\s*(\{[\s\S]*?\})\s*```/);
+                // Regex to find ALL JSON blocks
+                const jsonBlockRegex = /```json\s*(\{[\s\S]*?\})\s*```/g;
+                // Fallback regex (lazy JSON object if backticks missing)
+                // Looks for { "tool": ... } structure roughly
+                const fallbackRegex = /(\{\s*"tool"\s*:[\s\S]*?\})/g;
 
-                if (jsonMatch) {
-                    let action;
-                    try {
-                        action = JSON.parse(jsonMatch[1]);
-                    } catch (e) {
-                         console.error(chalk.red("Failed to parse tool JSON"));
-                         this.history.push({ role: 'assistant', content: fullText });
-                         keepGoing = false;
-                         continue;
-                    }
+                let matches = [...fullText.matchAll(jsonBlockRegex)];
+                let usingFallback = false;
 
-                    if (action.tool) {
-                        const spinner = ora(`Executing tool: ${chalk.bold(action.tool)}`).start();
-                        try {
-                            let toolResult;
-                            const localTool = this.localTools.find(t => t.name === action.tool);
+                if (matches.length === 0) {
+                    matches = [...fullText.matchAll(fallbackRegex)];
+                    if (matches.length > 0) usingFallback = true;
+                }
 
-                            if (localTool) {
-                                // Execute locally
-                                toolResult = await localTool.execute(action.args);
-                            } else {
-                                // Execute via MCP
-                                toolResult = await this.cli.callTool(action.tool, action.args);
+                if (matches.length > 0) {
+                    this.history.push({ role: 'assistant', content: fullText });
+
+                    for (const match of matches) {
+                         const jsonStr = match[1];
+                         let action;
+                         try {
+                             action = JSON.parse(jsonStr);
+                         } catch (e) {
+                             console.error(chalk.red("Failed to parse tool JSON snippet"));
+                             continue;
+                         }
+
+                         if (action.tool) {
+                            const spinner = ora(`Executing tool: ${chalk.bold(action.tool)}`).start();
+                            try {
+                                let toolResult;
+                                const localTool = this.localTools.find(t => t.name === action.tool);
+
+                                if (localTool) {
+                                    toolResult = await localTool.execute(action.args);
+                                } else {
+                                    toolResult = await this.cli.callTool(action.tool, action.args);
+                                }
+
+                                spinner.succeed(`Executed ${chalk.bold(action.tool)}`);
+                                const resultStr = JSON.stringify(toolResult, null, 2);
+                                this.history.push({ role: 'user', content: `Tool Result (${action.tool}): ${resultStr}` });
+
+                            } catch (toolErr: unknown) {
+                                const msg = toolErr instanceof Error ? toolErr.message : String(toolErr);
+                                spinner.fail(`Tool execution failed: ${msg}`);
+                                this.history.push({ role: 'user', content: `Tool Error (${action.tool}): ${msg}` });
                             }
-
-                            spinner.succeed(`Executed ${chalk.bold(action.tool)}`);
-
-                            const resultStr = JSON.stringify(toolResult, null, 2);
-
-                            this.history.push({ role: 'assistant', content: fullText });
-                            this.history.push({ role: 'user', content: `Tool Result: ${resultStr}` });
-
-                        } catch (toolErr: unknown) {
-                            const msg = toolErr instanceof Error ? toolErr.message : String(toolErr);
-                            spinner.fail(`Tool execution failed: ${msg}`);
-
-                            this.history.push({ role: 'assistant', content: fullText });
-                            this.history.push({ role: 'user', content: `Tool Error: ${msg}` });
-                        }
-                    } else {
-                        // JSON found but no tool field?
-                        this.history.push({ role: 'assistant', content: fullText });
-                        keepGoing = false;
+                         }
                     }
+                    // Loop continues to let agent react to results
                 } else {
                     // No tool call, just conversation
                     this.history.push({ role: 'assistant', content: fullText });

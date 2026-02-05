@@ -13,7 +13,10 @@ async function main() {
     const cli = new CliClient(MCP_URL);
     try {
         await cli.connect();
-        console.log(`Connected to Notention Agent at ${MCP_URL}`);
+        // Only log connection in interactive mode or if verbose
+        if (process.argv.length <= 2) {
+             console.log(`Connected to Notention Agent at ${MCP_URL}`);
+        }
 
         const toolsResult = await cli.listTools();
         const tools = toolsResult.tools;
@@ -21,34 +24,45 @@ async function main() {
         // Initialize session with both Remote (MCP) and Local (FS) tools
         const session = new LlmSession(cli, tools, fsTools);
 
-        const rl = readline.createInterface({
-            input: process.stdin,
-            output: process.stdout
-        });
-
-        console.log("Welcome to Notention CLI.");
-        console.log("Type /help for commands, or just chat with the agent.");
-
-        const ask = () => {
-            rl.question('> ', async (rawInput) => {
-                const input = rawInput.trim();
-
-                if (!input) {
-                    ask();
-                    return;
-                }
-
-                if (input.startsWith('/')) {
-                    await handleSlashCommand(input, cli, tools);
-                } else {
-                    await session.handleInteraction(input);
-                }
-
-                ask();
+        // Check for command mode args
+        const args = process.argv.slice(2);
+        if (args.length > 0) {
+            // Command Mode
+            const input = args.join(' ');
+            await session.handleInteraction(input);
+            await cli.close();
+            process.exit(0);
+        } else {
+            // Interactive Mode
+            const rl = readline.createInterface({
+                input: process.stdin,
+                output: process.stdout
             });
-        };
 
-        ask();
+            console.log("Welcome to Notention CLI.");
+            console.log("Type /help for commands, or just chat with the agent.");
+
+            const ask = () => {
+                rl.question('> ', async (rawInput) => {
+                    const input = rawInput.trim();
+
+                    if (!input) {
+                        ask();
+                        return;
+                    }
+
+                    if (input.startsWith('/')) {
+                        await handleSlashCommand(input, cli, tools);
+                    } else {
+                        await session.handleInteraction(input);
+                    }
+
+                    ask();
+                });
+            };
+
+            ask();
+        }
 
     } catch (e) {
         console.error("Failed to connect:", e);
