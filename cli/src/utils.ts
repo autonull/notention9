@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import ora from 'ora';
+import path from 'path';
 
 export const log = {
     info: (msg: string) => console.log(chalk.blue('ℹ'), msg),
@@ -26,3 +27,17 @@ export const withSpinner = async <T>(text: string, action: () => Promise<T>): Pr
         throw e;
     }
 };
+
+export function resolveSafePath(userPath: string): string {
+    const cwd = process.cwd();
+    const resolvedPath = path.resolve(cwd, userPath);
+    const rel = path.relative(cwd, resolvedPath);
+
+    // Allow if it's the cwd itself (rel === '') or a subdirectory
+    // Block if it goes up (starts with ..) or is absolute (different drive on windows)
+    if (rel.startsWith('..') || path.isAbsolute(rel)) {
+        throw new Error(`Access denied: Path '${userPath}' is outside the working directory.`);
+    }
+
+    return resolvedPath;
+}

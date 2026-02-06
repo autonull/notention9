@@ -2,6 +2,7 @@ import { CliClient } from '../client.js';
 import { LocalTool } from '../llm.js';
 import fs from 'fs/promises';
 import path from 'path';
+import { resolveSafePath } from '../utils.js';
 
 // Common ignore patterns
 const IGNORED_DIRS = new Set(['.git', 'node_modules', 'dist', 'build', 'coverage', '.DS_Store', '__pycache__']);
@@ -132,9 +133,8 @@ export function createIngestTools(cli: CliClient): LocalTool[] {
                 const maxFiles = args.maxFiles || 100;
                 const dryRun = args.dryRun || false;
 
-                const resolvedPath = path.resolve(process.cwd(), rawPath);
-
                 try {
+                    const resolvedPath = resolveSafePath(rawPath);
                     const stats = await fs.stat(resolvedPath);
 
                     if (stats.isFile()) {
