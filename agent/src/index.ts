@@ -5,6 +5,7 @@ import fs from 'fs';
 import { log, error } from './core/utils';
 import { Bootstrap } from './Bootstrap';
 import { SocketController } from './server/SocketController';
+import { ConfigManager } from './config/ConfigManager';
 import { setupMcpServer } from './server/McpServer';
 import { setupSimulationMcpServer } from './server/SimulationMcpServer';
 import { setAgentRegistry } from './globals';
@@ -12,7 +13,8 @@ import { setAgentRegistry } from './globals';
 // --- Server Setup ---
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const config = ConfigManager.getInstance().getConfig();
+const PORT = config.server.port;
 app.use(express.json());
 
 // Setup MCP Servers

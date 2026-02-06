@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import { streamText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 import { marked } from 'marked';
@@ -39,6 +41,8 @@ export class LlmSession {
     private tools: ToolDefinition[];
     private model: any;
     private ontologyCache: any | null = null;
+    private capabilitiesCache: any | null = null;
+    private customPrompt: string | null = null;
     private config: LLMConfig;
 
     constructor(
@@ -101,18 +105,73 @@ export class LlmSession {
         }
     }
 
+    private async fetchCapabilities() {
+        if (this.capabilitiesCache) return;
+        try {
+            // Check if tool exists
+            const hasTool = this.tools.some(t => t.name === 'get_capabilities');
+            if (hasTool) {
+                const result: any = await this.toolExecutor('get_capabilities', {});
+                this.capabilitiesCache = result?.content?.[0]?.text
+                    ? JSON.parse(result.content[0].text)
+                    : null;
+            }
+        } catch (e) {
+            // Ignore capability fetch errors (tool might not exist yet)
+        }
+    }
+
+    private loadCustomPrompt() {
+        if (this.customPrompt) return;
+        const potentialPaths = [
+            path.join(process.cwd(), 'config', 'system_prompt.md'),
+            path.join(process.cwd(), 'system_prompt.md')
+        ];
+
+        for (const p of potentialPaths) {
+            if (fs.existsSync(p)) {
+                try {
+                    this.customPrompt = fs.readFileSync(p, 'utf-8');
+                    log.info(`Loaded custom system prompt from ${p}`);
+                    break;
+                } catch (e) {
+                    log.error(`Failed to read system prompt file: ${e}`);
+                }
+            }
+        }
+    }
+
     private getSystemPrompt(): string {
-        return `
+        const basePrompt = this.customPrompt || `
 You are the "Notention Agent", a helpful AI assistant that controls a Notention profile.
 Your goal is to help the user manage their knowledge graph (notes), execute skills, and run simulations.
+`;
 
+        let capabilitiesSection = `
 Capabilities:
 - Manage Notes: Create, Read (Search), Update, Delete.
 - Execute Skills: Trigger agent skills based on note content.
 - Query Ontology: Understand the semantic structure of the knowledge base.
 - Simulations: List and run test scenarios to verify agent behavior.
+- Simulations: List and run test scenarios to verify agent behavior.
 - Multi-Agent Simulations: Run complex scenarios with multiple agents to test ontology and community evolution.
 - Local Files: Access and ingest files from the local filesystem.
+- Semantic Extraction: Use 'extract_semantics' to understand the properties of a note text.
+`;
+
+        if (this.capabilitiesCache) {
+            capabilitiesSection += `
+System Flags:
+- Browser: ${this.capabilitiesCache.browser ? 'ENABLED' : 'DISABLED'}
+- Files: ${this.capabilitiesCache.files ? 'ENABLED' : 'DISABLED'}
+- API: ${this.capabilitiesCache.api ? 'ENABLED' : 'DISABLED'}
+`;
+        }
+
+        return `
+${basePrompt}
+
+${capabilitiesSection}
 
 Ontology Context:
 ${this.ontologyCache || "Ontology loading..."}
@@ -152,6 +211,8 @@ Output Format:
         }
 
         if (!this.ontologyCache) await this.fetchOntology();
+        if (!this.capabilitiesCache) await this.fetchCapabilities();
+        this.loadCustomPrompt();
 
         this.history.push({ role: 'user', content: input });
 

@@ -33,6 +33,9 @@ export class OntologyService {
     private enumOptionsCache: Map<string, string[] | null> = new Map();
     private fuzzyMatchesCache: Map<string, string[]> = new Map();
 
+    private usageStats: Map<string, number> = new Map();
+    private coOccurrenceStats: Map<string, Map<string, number>> = new Map();
+
     constructor(ontology: OntologyNode[]) {
         this.ontology = ontology;
         this.attributeIndex = this.buildAttributeIndex();
@@ -259,5 +262,76 @@ export class OntologyService {
         this.widgetMetadataCache.clear();
         this.enumOptionsCache.clear();
         this.fuzzyMatchesCache.clear();
+    }
+
+    /**
+     * Record usage of property keys to track frequency and co-occurrence
+     */
+    recordUsage(keys: string[]) {
+        for (const key of keys) {
+            // Update individual usage
+            this.usageStats.set(key, (this.usageStats.get(key) || 0) + 1);
+
+            // Update co-occurrence
+            if (!this.coOccurrenceStats.has(key)) {
+                this.coOccurrenceStats.set(key, new Map());
+            }
+            const coMap = this.coOccurrenceStats.get(key)!;
+
+            for (const otherKey of keys) {
+                if (key !== otherKey) {
+                    coMap.set(otherKey, (coMap.get(otherKey) || 0) + 1);
+                }
+            }
+        }
+    }
+
+    /**
+     * Infer type of a property based on its values
+     */
+    inferType(key: string, values: any[]): string {
+        if (!values || values.length === 0) return 'string';
+
+        let numberCount = 0;
+        let dateCount = 0;
+
+        for (const v of values) {
+            const valStr = String(v);
+            if (!isNaN(parseFloat(valStr))) numberCount++;
+            if (!isNaN(Date.parse(valStr)) && valStr.includes('-')) dateCount++; // Simple date check
+        }
+
+        const threshold = values.length * 0.8; // 80% confidence
+        if (numberCount >= threshold) return 'number';
+        if (dateCount >= threshold) return 'date';
+
+        return 'string';
+    }
+
+    /**
+     * Get graph data for visualization
+     */
+    getGraphData() {
+        const nodes = Array.from(this.attributeIndex.keys()).map(key => ({
+            id: key,
+            val: this.usageStats.get(key) || 1, // Size based on usage
+            label: key,
+            group: this.attributeIndex.get(key)?.type || 'unknown'
+        }));
+
+        const links: Array<{ source: string, target: string, value: number }> = [];
+        const processedPairs = new Set<string>();
+
+        for (const [source, targets] of this.coOccurrenceStats.entries()) {
+            for (const [target, count] of targets.entries()) {
+                const pairId = [source, target].sort().join('-');
+                if (!processedPairs.has(pairId)) {
+                    links.push({ source, target, value: count });
+                    processedPairs.add(pairId);
+                }
+            }
+        }
+
+        return { nodes, links };
     }
 }

@@ -18,6 +18,23 @@ export interface TestStep {
     timeout?: number;
 }
 
+export interface MultiAgentScenario {
+    id: string;
+    name: string;
+    description: string;
+    agents: Record<string, any>; // Config for each agent
+    steps: {
+        name: string;
+        actor: string;
+        input: Note | string;
+        expected?: {
+            contentContains?: string[];
+            tags?: string[];
+            properties?: { key: string; values?: string[] }[];
+        };
+    }[];
+}
+
 export class ScenarioManager {
     private scenarios = new Map<string, TestScenario>();
 
@@ -49,7 +66,12 @@ export class ScenarioManager {
                         id: 'test-note-1',
                         content: 'Find typescript jobs',
                         tags: [],
-                        timestamp: Date.now()
+                        properties: [],
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                        source: { type: 'user', identifier: 'test', timestamp: Date.now() },
+                        public: false,
+                        priority: 1
                     } as unknown as Note,
                     expected: {
                         actionType: 'browser',
@@ -58,5 +80,35 @@ export class ScenarioManager {
                 }
             ]
         });
+
+        // Register Multi-Agent Default
+        this.register({
+            id: 'marketplace-negotiation',
+            name: 'Marketplace Negotiation',
+            description: 'A Buyer and Seller negotiate the price of a service',
+            agents: {
+                buyer: { /* uses default config */ },
+                seller: { /* uses default config */ }
+            },
+            steps: [
+                {
+                    name: 'Buyer posts request',
+                    actor: 'buyer',
+                    input: 'I need a logo design involved. Budget is $100.',
+                    expected: {
+                        tags: ['request'],
+                        properties: [{ key: 'budget', values: ['100'] }]
+                    }
+                },
+                {
+                    name: 'Seller responds',
+                    actor: 'seller',
+                    input: 'I can do logo design. My rate is $150.',
+                    expected: {
+                        properties: [{ key: 'price', values: ['150'] }]
+                    }
+                }
+            ]
+        } as any);
     }
 }

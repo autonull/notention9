@@ -1,133 +1,59 @@
-import { randomUUID } from 'crypto';
 import { Express } from 'express';
-import { z } from 'zod';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
-import { Note } from '@notention/core';
-import { PersistenceService } from '../persistence';
-import { executeSkillTool, ontologyQueryTool } from '../tools';
+import { McpToolRegistry } from './McpToolRegistry.js';
+import { PluginManager } from './PluginManager.js';
+import { CorePlugin } from './plugins/CorePlugin.js';
+import { IntelligencePlugin } from './plugins/IntelligencePlugin.js';
+import { BatchPlugin } from './plugins/BatchPlugin.js';
+import { SimulationsPlugin } from './plugins/SimulationsPlugin.js';
+
+import { ConfigManager } from '../config/ConfigManager.js';
 
 export function setupMcpServer(app: Express) {
+    const config = ConfigManager.getInstance().getConfig();
+
     const server = new McpServer({
-        name: 'notention-agent',
-        version: '1.0.0'
+        name: config.mcp.serverName,
+        version: config.mcp.version
     });
 
-    // Helper to register tools cleanly
-    const register = (name: string, desc: string, schema: any, handler: (args: any) => Promise<any>) => {
-        server.tool(name, desc, schema, async (args) => {
-            try {
-                const result = await handler(args);
-                return {
-                    content: [{ type: 'text', text: typeof result === 'string' ? result : JSON.stringify(result, null, 2) }]
-                };
-            } catch (e: unknown) {
-                const errorMessage = e instanceof Error ? e.message : String(e);
-                return {
-                    isError: true,
-                    content: [{ type: 'text', text: errorMessage }]
-                };
-            }
+    const registry = new McpToolRegistry();
+    const pluginManager = new PluginManager(registry);
+
+    // Register Core Plugin
+    pluginManager.register(new CorePlugin()).catch(console.error);
+
+    // --- Apply to MCP Server ---
+    // Note: We need to wait for plugins to initialize if they are async?
+    // In our implementation, register is async but we are not awaiting it here (catch block).
+    // ideally we should await. setupMcpServer is synchronous? No, we can make it async.
+    // But Express setup might expect sync. 
+    // registry.getToolDefinitions() will only have tools AFTER register completes.
+    // So we must handle the async nature.
+
+    // For now, let's just assume synchronous registration for Core or await it if we can change signature.
+    // Looking at index.ts might be needed.
+    // BUT checking the original file, setupMcpServer was exported function.
+
+    // Let's check index.ts to see how it's called. 
+    // I already wrote this file and I know the tools registration happens at the end.
+    // If I don't await, getToolDefinitions() might be empty when I call server.tool().
+
+    // Changing signature:
+    // I will use a self-executing async block or promise chain for the server.tool registration.
+
+    (async () => {
+        await pluginManager.register(new CorePlugin());
+        await pluginManager.register(new IntelligencePlugin());
+        await pluginManager.register(new BatchPlugin());
+        await pluginManager.register(new SimulationsPlugin());
+
+        registry.getToolDefinitions().forEach(tool => {
+            console.log(`Registering tool: ${tool.name}`);
+            server.tool(tool.name, tool.description, tool.schema as any, tool.handler);
         });
-    };
-
-    // --- Tools Definition ---
-
-    // Create Note
-    register('create_note', 'Create a new note', {
-        title: z.string(),
-        content: z.string(),
-        tags: z.array(z.string()).optional(),
-        properties: z.array(z.object({
-            key: z.string(),
-            operator: z.string(),
-            values: z.array(z.string())
-        })).optional()
-    }, async ({ title, content, tags, properties }) => {
-        const note: Note = {
-            id: randomUUID(),
-            title,
-            content,
-            tags: tags ?? [],
-            properties: (properties as any) ?? [],
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            source: { type: 'user', identifier: 'cli', timestamp: Date.now() },
-            public: false,
-            priority: 1.0
-        };
-        await PersistenceService.saveNoteSafe(note);
-        return `Note created with ID: ${note.id}`;
-    });
-
-    // Update Note
-    register('update_note', 'Update an existing note', {
-        id: z.string(),
-        title: z.string().optional(),
-        content: z.string().optional(),
-        tags: z.array(z.string()).optional(),
-        properties: z.array(z.object({
-            key: z.string(),
-            operator: z.string(),
-            values: z.array(z.string())
-        })).optional()
-    }, async ({ id, title, content, tags, properties }) => {
-        const notes = await PersistenceService.getNotesSafe();
-        const existingNote = notes.find(n => n.id === id);
-
-        if (!existingNote) throw new Error(`Note with ID ${id} not found`);
-
-        const updatedNote: Note = {
-            ...existingNote,
-            ...(title !== undefined && { title }),
-            ...(content !== undefined && { content }),
-            ...(tags !== undefined && { tags }),
-            ...(properties !== undefined && { properties: properties as any }),
-            updatedAt: new Date().toISOString()
-        };
-
-        await PersistenceService.saveNoteSafe(updatedNote);
-        return `Note updated with ID: ${id}`;
-    });
-
-    // Delete Note
-    register('delete_note', 'Delete a note by ID', { id: z.string() }, async ({ id }) => {
-        await PersistenceService.deleteNoteSafe(id);
-        return `Note deleted with ID: ${id}`;
-    });
-
-    // Search Notes
-    register('search_notes', 'Search notes by query and/or tags', {
-        query: z.string().optional(),
-        tags: z.array(z.string()).optional()
-    }, async ({ query, tags }) => {
-        return await PersistenceService.searchNotesSafe(query || '', tags);
-    });
-
-    // Read Notes
-    register('read_notes', 'Read all notes with pagination', {
-        limit: z.number().optional().default(50),
-        offset: z.number().optional().default(0)
-    }, async ({ limit, offset }) => {
-        const notes = await PersistenceService.getNotesSafe();
-        return notes.slice(offset, offset + limit);
-    });
-
-    // Execute Skill
-    register('execute_skill', 'Execute a skill', {
-        skillId: z.string(),
-        noteData: z.object({
-            properties: z.array(z.any()),
-            content: z.string()
-        })
-    }, async (args) => {
-        return await executeSkillTool.execute(args);
-    });
-
-    // Query Ontology
-    register('query_ontology', 'Query the ontology', { query: z.string() }, async (args) => {
-        return await ontologyQueryTool.execute(args);
-    });
+    })();
 
 
     // --- Transport Setup ---

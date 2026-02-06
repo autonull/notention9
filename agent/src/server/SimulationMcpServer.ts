@@ -3,18 +3,25 @@ import { z } from 'zod';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import { ScenarioManager, MultiAgentScenario } from '@notention/core';
-import { getAgentRegistry } from '../globals';
-import { ScenarioRunner } from '../tester/ScenarioRunner';
-import { MultiAgentRunner } from '../tester/MultiAgentRunner';
-import { CommunitySimulation } from '../scenarios/CommunitySimulation';
-import { UserFlowSimulation } from '../scenarios/UserFlowSimulation';
-import { GigEconomySimulation } from '../scenarios/GigEconomySimulation';
+import { getAgentRegistry } from '../globals.js';
+import { ScenarioRunner } from '../tester/ScenarioRunner.js';
+import { MultiAgentRunner } from '../tester/MultiAgentRunner.js';
+import { CommunitySimulation } from '../scenarios/CommunitySimulation.js';
+import { UserFlowSimulation } from '../scenarios/UserFlowSimulation.js';
+import { GigEconomySimulation } from '../scenarios/GigEconomySimulation.js';
+import { McpToolRegistry } from './McpToolRegistry.js';
+
+import { ConfigManager } from '../config/ConfigManager.js';
 
 export function setupSimulationMcpServer(app: Express) {
+    const config = ConfigManager.getInstance().getConfig();
+
     const server = new McpServer({
-        name: 'notention-simulation-agent',
-        version: '1.0.0'
+        name: `${config.mcp.serverName}-simulation`,
+        version: config.mcp.version
     });
+
+    const registry = new McpToolRegistry();
 
     // Initialize Simulation Managers
     const scenarioManager = new ScenarioManager();
@@ -27,59 +34,64 @@ export function setupSimulationMcpServer(app: Express) {
 
     const multiAgentRunner = new MultiAgentRunner();
 
-    // Helper to register tools cleanly
-    const register = (name: string, desc: string, schema: any, handler: (args: any) => Promise<any>) => {
-        server.tool(name, desc, schema, async (args) => {
-            try {
-                const result = await handler(args);
-                return {
-                    content: [{ type: 'text', text: typeof result === 'string' ? result : JSON.stringify(result, null, 2) }]
-                };
-            } catch (e: unknown) {
-                const errorMessage = e instanceof Error ? e.message : String(e);
-                return {
-                    isError: true,
-                    content: [{ type: 'text', text: errorMessage }]
-                };
-            }
-        });
-    };
+    // --- Tools Registration ---
 
     // List Scenarios
-    register('list_scenarios', 'List available simulation scenarios', {}, async () => {
-        return scenarioManager.getAll().map(s => ({
-            id: s.id,
-            name: s.name,
-            description: s.description
-        }));
+    registry.register('list_scenarios', {
+        description: 'List available simulation scenarios',
+        schema: z.object({}),
+        handler: async () => {
+            return scenarioManager.getAll().map(s => ({
+                id: s.id,
+                name: s.name,
+                description: s.description
+            }));
+        }
     });
 
     // Run Scenario
-    register('run_scenario', 'Run a simulation scenario', { id: z.string() }, async ({ id }) => {
-        const scenario = scenarioManager.get(id);
-        if (!scenario) throw new Error(`Scenario ${id} not found`);
+    registry.register('run_scenario', {
+        description: 'Run a simulation scenario',
+        schema: z.object({ id: z.string() }),
+        handler: async ({ id }) => {
+            const scenario = scenarioManager.get(id);
+            if (!scenario) throw new Error(`Scenario ${id} not found`);
 
-        const agent = getAgentRegistry().getDefault();
-        if (!agent) throw new Error(`No default agent available for simulation`);
+            const agent = getAgentRegistry().getDefault();
+            if (!agent) throw new Error(`No default agent available for simulation`);
 
-        return await scenarioRunner.run(scenario, agent);
+            return await scenarioRunner.run(scenario, agent);
+        }
     });
 
     // List Multi-Agent Scenarios
-    register('list_multi_agent_scenarios', 'List available multi-agent simulation scenarios', {}, async () => {
-        return Array.from(multiAgentScenarios.values()).map(s => ({
-            id: s.id,
-            name: s.name,
-            description: s.description
-        }));
+    registry.register('list_multi_agent_scenarios', {
+        description: 'List available multi-agent simulation scenarios',
+        schema: z.object({}),
+        handler: async () => {
+            return Array.from(multiAgentScenarios.values()).map(s => ({
+                id: s.id,
+                name: s.name,
+                description: s.description
+            }));
+        }
     });
 
     // Run Multi-Agent Scenario
-    register('run_multi_agent_scenario', 'Run a multi-agent simulation scenario', { id: z.string() }, async ({ id }) => {
-        const scenario = multiAgentScenarios.get(id);
-        if (!scenario) throw new Error(`Scenario ${id} not found`);
+    registry.register('run_multi_agent_scenario', {
+        description: 'Run a multi-agent simulation scenario',
+        schema: z.object({ id: z.string() }),
+        handler: async ({ id }) => {
+            const scenario = multiAgentScenarios.get(id);
+            if (!scenario) throw new Error(`Scenario ${id} not found`);
 
-        return await multiAgentRunner.run(scenario);
+            return await multiAgentRunner.run(scenario);
+        }
+    });
+
+    // --- Apply to MCP Server ---
+    registry.getToolDefinitions().forEach(tool => {
+        server.tool(tool.name, tool.description, tool.schema as any, tool.handler);
     });
 
     // --- Transport Setup ---
