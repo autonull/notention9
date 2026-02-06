@@ -6,6 +6,7 @@ import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import { Note } from '@notention/core';
 import { PersistenceService } from '../persistence';
 import { executeSkillTool, ontologyQueryTool } from '../tools';
+import { Capabilities } from '../core/Capabilities';
 
 export function setupMcpServer(app: Express) {
     const server = new McpServer({
@@ -127,6 +128,53 @@ export function setupMcpServer(app: Express) {
     // Query Ontology
     register('query_ontology', 'Query the ontology', { query: z.string() }, async (args) => {
         return await ontologyQueryTool.execute(args);
+    });
+
+    // Get Capabilities
+    register('get_capabilities', 'Get system capabilities', {}, async () => {
+        const caps = Capabilities.getInstance();
+        return {
+            browser: caps.isEnabled('browser'),
+            files: caps.isEnabled('files'),
+            api: caps.isEnabled('api')
+        };
+    });
+
+    // Promote to Thought
+    register('promote_to_thought', 'Promote a note to a Thought with intent and sovereignty', {
+        noteId: z.string(),
+        intent: z.enum(['fleeting', 'planning', 'executing', 'archived']),
+        sovereignty: z.enum(['local', 'pending_sync', 'shared'])
+    }, async ({ noteId, intent, sovereignty }) => {
+        const notes = await PersistenceService.getNotesSafe();
+        const existingNote = notes.find(n => n.id === noteId);
+
+        if (!existingNote) throw new Error(`Note with ID ${noteId} not found`);
+
+        const properties = existingNote.properties || [];
+
+        // Helper to update or append property
+        const updateProp = (key: string, val: string) => {
+            const idx = properties.findIndex(p => p.key === key);
+            if (idx >= 0) {
+                properties[idx] = { key, operator: 'is', values: [val] };
+            } else {
+                properties.push({ key, operator: 'is', values: [val] });
+            }
+        };
+
+        updateProp('type', 'thought');
+        updateProp('thought:intent', intent);
+        updateProp('thought:sovereignty', sovereignty);
+
+        const updatedNote: Note = {
+            ...existingNote,
+            properties,
+            updatedAt: new Date().toISOString()
+        };
+
+        await PersistenceService.saveNoteSafe(updatedNote);
+        return `Note ${noteId} promoted to Thought (${intent}, ${sovereignty})`;
     });
 
 
