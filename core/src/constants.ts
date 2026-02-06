@@ -7,3 +7,5 @@ export const DAILY_PROMPTS = [
     "Who would be a valuable connection right now?",
     "What knowledge is missing from your network?"
 ];
+
+export const SEMANTIC_NOTE_KIND = 35000;

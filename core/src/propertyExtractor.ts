@@ -1,5 +1,4 @@
-import { Property } from './types/index.js';
-import type { Quantity } from './quantities.js';
+import { Property, Quantity } from './types/index.js';
 import { OntologyService } from './ontologyService.js';
 import { DEFAULT_ONTOLOGY } from './ontology.default.js';
 import { PropertyValidationError } from './errorTypes.js';

@@ -8,9 +8,9 @@ describe('MatchEngine', () => {
             id: 'test',
             label: 'Test',
             attributes: {
-                rate: { type: 'number', operators: { real: ['is'], imaginary: ['<', '>'] } },
-                location: { type: 'geo', operators: { real: ['is'], imaginary: ['near'] } },
-                role: { type: 'string', operators: { real: ['is'], imaginary: ['contains'] } }
+                rate: { type: 'number', description: 'Rate', icon: 'cash', operators: { real: ['is'], imaginary: ['<', '>'] } },
+                location: { type: 'geo', description: 'Location', icon: 'map', operators: { real: ['is'], imaginary: ['near'] } },
+                role: { type: 'string', description: 'Role', icon: 'briefcase', operators: { real: ['is'], imaginary: ['contains'] } }
             }
         }
     ];

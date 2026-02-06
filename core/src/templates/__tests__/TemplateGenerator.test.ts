@@ -36,6 +36,8 @@ describe('TemplateGenerator', () => {
                     attributes: {
                         name: {
                             type: 'string',
+                            description: 'Name',
+                            icon: 'tag',
                             operators: { real: ['is'], imaginary: [] }
                         }
                     }

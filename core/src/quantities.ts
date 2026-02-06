@@ -1,19 +1,5 @@
 
-export interface Quantity {
-    value: number;
-    unit: string;
-    unitType?: 'simple' | 'compound' | 'rate';
-    numerator?: string;
-    denominator?: string;
-    semanticType?: 'price' | 'rate' | 'duration' | 'frequency' | 'ratio' | 'other';
-}
-
-export interface CompoundQuantity {
-    value: number;
-    numerator: string;
-    denominator: string;
-    semanticType: 'rate' | 'ratio' | 'frequency';
-}
+import type { Quantity, CompoundQuantity } from './types/index.js';
 
 // Comprehensive unit system with international standards
 const UNIT_SYSTEMS = {

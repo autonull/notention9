@@ -7,8 +7,8 @@ const mockOntology: OntologyNode[] = [
         id: 'root',
         label: 'Root',
         attributes: {
-            'price': { type: 'number', operators: { real: [], imaginary: [] } },
-            'date': { type: 'date', operators: { real: [], imaginary: [] } }
+            'price': { type: 'number', description: 'Price', icon: 'cash', operators: { real: [], imaginary: [] } },
+            'date': { type: 'date', description: 'Date', icon: 'calendar', operators: { real: [], imaginary: [] } }
         }
     }
 ];
