@@ -2,6 +2,9 @@
 
 > **Mission**: Build a universal semantic coordination system where intent (demand) meets capacity (supply) through local-first P2P matching. Notention is the "language" of coordination—semantic by design, private by default, extensible by nature.
 
+> **📖 See [IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md) for file references, code patterns, and step-by-step instructions.**
+
+
 ## Strategic Priorities
 
 This roadmap focuses on **core semantic infrastructure** and **P2P coordination** as the foundation. All other features—tools, skills, automation—extend this base but are not the essence.
