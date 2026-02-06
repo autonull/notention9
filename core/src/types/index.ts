@@ -20,7 +20,7 @@ export interface Note {
 }
 
 export type NoteSource = {
-  type: 'user' | 'import' | 'agent';
+  type: 'user' | 'import' | 'agent' | 'skill' | 'inference';
   identifier: string; // Device ID or Agent ID
   timestamp: number;
 };
@@ -49,4 +49,34 @@ export interface NostrEvent {
   tags: string[][];
   content: string;
   sig: string;
+}
+
+export interface OntologyNode {
+    id: string;
+    label: string;
+    description?: string;
+    requiredAttributes?: string[];
+    attributes?: Record<string, OntologyAttribute>;
+    children?: OntologyNode[];
+    actionLabel?: string;
+    extends?: string[];
+}
+
+export interface OntologyAttribute {
+    type: string; // 'string', 'number', 'enum', 'date', 'datetime', 'geo', 'relationship'
+    description: string;
+    icon: string;
+    operators: {
+        real: string[];
+        imaginary: string[];
+    };
+    options?: string[]; // for enum
+    referenceType?: string; // for relationship
+}
+
+export interface Template {
+    id: string;
+    label: string;
+    icon: string;
+    content: string;
 }
