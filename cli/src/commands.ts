@@ -34,7 +34,7 @@ export async function handleSlashCommand(input: string, cli: CliClient, tools: a
                 console.log(`  Model:    ${chalk.cyan(config.model)}`);
                 console.log(`  URL:      ${chalk.cyan(config.baseURL || '(default)')}`);
             } else if (args.length === 2 && args[0] === 'set') {
-                 log.warn("Usage: /config <key> <value>");
+                log.warn("Usage: /config <key> <value>");
             } else if (args.length >= 2) {
                 const key = args[0];
                 const val = args[1];
@@ -132,6 +132,29 @@ export async function handleSlashCommand(input: string, cli: CliClient, tools: a
                 }
             } else {
                 log.warn("Usage: /security scan");
+            }
+            return true;
+        case '/extract':
+            if (args.length === 0) {
+                log.warn("Usage: /extract <text>");
+            } else {
+                const text = args.join(' ');
+                try {
+                    const result = await withSpinner("Extracting semantics...", () => cli.callTool('extract_semantics', { text }));
+                    const content = (result as any).content;
+                    const extraction = JSON.parse((content[0] as any).text);
+
+                    log.info("Extracted Properties:");
+                    if (extraction.properties && extraction.properties.length > 0) {
+                        extraction.properties.forEach((p: any) => {
+                            console.log(` - [${chalk.cyan(p.key)}:${chalk.yellow(p.operator)}:${chalk.magenta(p.values.join(','))}]`);
+                        });
+                    } else {
+                        log.warn("No properties extracted.");
+                    }
+                } catch (e: unknown) {
+                    log.error("Failed to extract semantics", e);
+                }
             }
             return true;
         case '/help':

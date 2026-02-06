@@ -6,7 +6,8 @@
     "agent",
     "agent/voltagent",
     "core",
-    "cli"
+    "cli",
+    "e2e"
   ],
   "scripts": {
     "build": "npm run build --workspaces",

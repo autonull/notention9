@@ -153,8 +153,10 @@ Capabilities:
 - Execute Skills: Trigger agent skills based on note content.
 - Query Ontology: Understand the semantic structure of the knowledge base.
 - Simulations: List and run test scenarios to verify agent behavior.
+- Simulations: List and run test scenarios to verify agent behavior.
 - Multi-Agent Simulations: Run complex scenarios with multiple agents to test ontology and community evolution.
 - Local Files: Access and ingest files from the local filesystem.
+- Semantic Extraction: Use 'extract_semantics' to understand the properties of a note text.
 `;
 
         if (this.capabilitiesCache) {

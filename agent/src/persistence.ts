@@ -64,17 +64,24 @@ export class PersistenceService {
         return persistenceMutex.dispatch(() => this.loadNotes());
     }
 
+    static async getNoteSafe(id: string): Promise<Note | undefined> {
+        return persistenceMutex.dispatch(async () => {
+            const notes = await this.loadNotes();
+            return notes.find(n => n.id === id);
+        });
+    }
+
     static async saveNoteSafe(note: Note): Promise<void> {
-         return persistenceMutex.dispatch(async () => {
+        return persistenceMutex.dispatch(async () => {
             const allNotes = await this.loadNotes();
             const index = allNotes.findIndex((n) => n.id === note.id);
             if (index >= 0) {
-              allNotes[index] = note;
+                allNotes[index] = note;
             } else {
-              allNotes.push(note);
+                allNotes.push(note);
             }
             await this.saveNotes(allNotes);
-          });
+        });
     }
 
     static async deleteNoteSafe(id: string): Promise<void> {

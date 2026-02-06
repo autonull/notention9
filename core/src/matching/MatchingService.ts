@@ -28,6 +28,7 @@ export interface MatchResultDetails {
   score: number;
   satisfied: Property[];
   failed: Property[];
+  explanation: string;
 }
 
 export class MatchingService {
@@ -94,7 +95,7 @@ export class MatchingService {
     const constraints = request.properties;
 
     if (constraints.length === 0) {
-      return { score: 0, satisfied: [], failed: [] };
+      return { score: 0, satisfied: [], failed: [], explanation: 'No constraints to match.' };
     }
 
     const satisfied: Property[] = [];
@@ -116,10 +117,13 @@ export class MatchingService {
     const priority = offer.priority ?? 1.0; // Default to 1.0 for backward compatibility
     const weightedScore = baseScore * priority;
 
+    const explanation = `Matched ${satisfied.length}/${constraints.length}. Missing: ${failed.map(f => f.key).join(', ') || 'None'}`;
+
     return {
       score: weightedScore,
       satisfied,
-      failed
+      failed,
+      explanation
     };
   }
 
@@ -139,7 +143,7 @@ export class MatchingService {
     const offerConstraints = offer.properties.filter(p => p.operator !== 'is');
 
     if (requestConstraints.length === 0 && offerConstraints.length === 0) {
-      return { score: 1, satisfied: [], failed: [] }; // Perfect match if both have no constraints
+      return { score: 1, satisfied: [], failed: [], explanation: 'Implicit match (no constraints).' };
     }
 
     const satisfied: Property[] = [];
@@ -189,10 +193,13 @@ export class MatchingService {
     const priority = offer.priority ?? 1.0;
     const weightedScore = baseScore * priority;
 
+    const explanation = `Matched ${satisfied.length}/${totalConstraints}. Missing: ${failed.map(f => f.key).join(', ') || 'None'}`;
+
     return {
       score: weightedScore,
       satisfied,
-      failed
+      failed,
+      explanation
     };
   }
 
@@ -248,6 +255,31 @@ export class MatchingService {
         });
       }
       return false;
+    }
+
+    // Optimize 'range' constraint (e.g. "100-500" or explicit "100,500" via comma)
+    if (constraint.operator === 'range') {
+      let min: number, max: number;
+
+      // Handle "100-500" format
+      if (constraint.values.length === 1 && constraint.values[0].includes('-')) {
+        const parts = constraint.values[0].split('-').map(s => s.trim());
+        min = this.parseValue(parts[0]) as number;
+        max = this.parseValue(parts[1]) as number;
+      } else if (constraint.values.length === 2) {
+        min = this.parseValue(constraint.values[0]) as number;
+        max = this.parseValue(constraint.values[1]) as number;
+      } else {
+        return false;
+      }
+
+      if (isNaN(min) || isNaN(max)) return false;
+
+      return targetProp.values.some(v => {
+        const tVal = this.parseValue(v);
+        if (typeof tVal !== 'number') return false;
+        return tVal >= min && tVal <= max;
+      });
     }
 
     // Optimize 'is near' constraint

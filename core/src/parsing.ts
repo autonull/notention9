@@ -1,5 +1,7 @@
 import type { Property } from './types/index.js';
 import { arePropertiesEqual } from './properties.js';
+import { resolveAlias } from './propertyAliases.js';
+import { expandMacro } from './composition.js';
 
 // Map symbolic operators to canonical operator names
 export const SYMBOL_TO_OP: Record<string, string> = {
@@ -13,10 +15,10 @@ export const SYMBOL_TO_OP: Record<string, string> = {
 };
 
 export interface ExtractedProperty {
-    property: Property;
-    index: number;
-    length: number;
-    originalText: string;
+  property: Property;
+  index: number;
+  length: number;
+  originalText: string;
 }
 
 const COMMON_WORDS = new Set(['not', 'neither', 'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'can', 'this', 'that', 'these', 'those', 'i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 'her', 'us', 'them']);
@@ -34,7 +36,7 @@ const PARSERS: PropertyParser[] = [
       const colons = content.split(':');
       if (colons.length < 3) return null;
 
-      const key = colons[0].trim();
+      const key = resolveAlias(colons[0].trim());
       const op = colons[1].trim();
       const val = colons.slice(2).join(':').trim();
 
@@ -43,6 +45,24 @@ const PARSERS: PropertyParser[] = [
         operator: op,
         values: val.split(',').map(v => v.trim())
       };
+    }
+  },
+  {
+    name: 'Nested Properties',
+    parse: (content: string) => {
+      // Supports key.subkey:val
+      // Matches alphanumeric + dots, then colon, then value
+      // Simplistic: assumes implicit 'is' if only one colon? No, wait.
+      // Guide says: [location.city:is:Austin] -> Standard Parser actually handles this if key allows dots!
+      // Let's verify standard regex. standard is split(':').
+      // If content is "location.city:is:Austin", split(:) gives ["location.city", "is", "Austin"].
+      // So Standard Parser ALREADY handles nested keys if we don't block them.
+
+      // However, let's look at "Word Operators" parser.
+      // Regex: /^([^\s]+)\s+.../
+      // [location.city is Austin] -> matches key="location.city"
+
+      return null; // Logic is covered by other parsers if we rely on simple string keys
     }
   },
   {
@@ -56,7 +76,7 @@ const PARSERS: PropertyParser[] = [
 
         if (symMatch) {
           return {
-            key: symMatch[1].trim(),
+            key: resolveAlias(symMatch[1].trim()),
             operator: SYMBOL_TO_OP[symMatch[2]],
             values: symMatch[3].trim().split(',').map(v => v.trim())
           };
@@ -68,18 +88,21 @@ const PARSERS: PropertyParser[] = [
   {
     name: 'Word Operators',
     parse: (content: string) => {
-      const wordOpRegex = /^([^\s]+)\s+(is|contains|before|after|less than|greater than|between|not)\s+(.+)$/;
+      const wordOpRegex = /^([^\s]+)\s+(is|contains|before|after|less than|greater than|between|range|not)\s+(.+)$/;
       const match = content.match(wordOpRegex);
       if (!match) return null;
 
-      const [, key, op, val] = match;
-      // Validation: Key must be alphanumeric/valid
-      if (!/^[a-zA-Z][a-zA-Z0-9_-]*$/.test(key.trim()) || COMMON_WORDS.has(key.trim().toLowerCase())) {
+      const [, rawKey, op, val] = match;
+      const key = resolveAlias(rawKey.trim());
+
+      // Validation: Key must be alphanumeric+dots/valid
+      // Updated regex to allow dots for nested keys
+      if (!/^[a-zA-Z][a-zA-Z0-9_.-]*$/.test(key) || COMMON_WORDS.has(key.toLowerCase())) {
         return null;
       }
 
       return {
-        key: key.trim(),
+        key,
         operator: op.trim(),
         values: val.trim().split(',').map(v => v.trim())
       };
@@ -92,14 +115,16 @@ const PARSERS: PropertyParser[] = [
       const match = content.match(generalSymRegex);
       if (!match) return null;
 
-      const [, key, op, val] = match;
+      const [, rawKey, op, val] = match;
+      const key = resolveAlias(rawKey.trim());
+
       let canonicalOp = op.trim();
       if (op === '!=') canonicalOp = 'is not';
       else if (op === '<=') canonicalOp = 'less than or equal';
       else if (op === '>=') canonicalOp = 'greater than or equal';
 
       return {
-        key: key.trim(),
+        key,
         operator: canonicalOp,
         values: val.trim().split(',').map(v => v.trim())
       };
@@ -113,7 +138,7 @@ const PARSERS: PropertyParser[] = [
       if (!match) return null;
 
       return {
-        key: match[1].trim(),
+        key: resolveAlias(match[1].trim()),
         operator: 'is',
         values: match[2].trim().split(',').map(v => v.trim())
       };
@@ -126,14 +151,15 @@ const PARSERS: PropertyParser[] = [
       const match = content.match(simpleSpaceRegex);
       if (!match) return null;
 
-      const [, key, val] = match;
+      const [, rawKey, val] = match;
+      const key = resolveAlias(rawKey.trim());
 
-      if (!/^[a-zA-Z][a-zA-Z0-9_-]*$/.test(key.trim()) || COMMON_WORDS.has(key.trim().toLowerCase())) {
+      if (!/^[a-zA-Z][a-zA-Z0-9_.-]*$/.test(key) || COMMON_WORDS.has(key.toLowerCase())) {
         return null;
       }
 
       return {
-        key: key.trim(),
+        key,
         operator: 'is',
         values: val.trim().split(',').map(v => v.trim())
       };
@@ -165,10 +191,10 @@ export const extractProperties = (text: string): ExtractedProperty[] => {
     const parsed = parsePropertyBlock(content);
     if (parsed) {
       extracted.push({
-          property: parsed,
-          index: match.index,
-          length: match[0].length,
-          originalText: match[0]
+        property: parsed,
+        index: match.index,
+        length: match[0].length,
+        originalText: match[0]
       });
     }
   }
@@ -187,24 +213,32 @@ export const parseProperties = (text: string): Property[] => {
   const extracted = extractProperties(text);
   properties.push(...extracted.map(e => e.property));
 
+  // 1a. Parse Macros: @macroName
+  const macroRegex = /@([a-zA-Z0-9_]+)/g;
+  for (const match of text.matchAll(macroRegex)) {
+    const macroName = match[1];
+    const expanded = expandMacro(macroName);
+    properties.push(...expanded);
+  }
+
   // 2. Parse HTML Chip syntax: <span data-type="property" ...>
   const spanRegex = /<span\s+[^>]*data-type=["']property["'][^>]*>/g;
 
   for (const spanMatch of text.matchAll(spanRegex)) {
-      const tag = spanMatch[0];
+    const tag = spanMatch[0];
 
-      // Extract attributes
-      const nameMatch = tag.match(/data-name=["']([^"']+)["']/);
-      const opMatch = tag.match(/data-operator=["']([^"']+)["']/);
-      const valMatch = tag.match(/data-value=["']([^"']+)["']/);
+    // Extract attributes
+    const nameMatch = tag.match(/data-name=["']([^"']+)["']/);
+    const opMatch = tag.match(/data-operator=["']([^"']+)["']/);
+    const valMatch = tag.match(/data-value=["']([^"']+)["']/);
 
-      if (nameMatch && valMatch) {
-          properties.push({
-              key: nameMatch[1],
-              operator: opMatch ? opMatch[1] : 'is',
-              values: valMatch[1].split(',').map(v => v.trim())
-          });
-      }
+    if (nameMatch && valMatch) {
+      properties.push({
+        key: nameMatch[1],
+        operator: opMatch ? opMatch[1] : 'is',
+        values: valMatch[1].split(',').map(v => v.trim())
+      });
+    }
   }
 
   return properties;
@@ -266,7 +300,7 @@ export const replacePropertyInString = (
 
   // Case 3: Old property not found, but we have a new one (Fallback: Append)
   if (newTag) {
-     return text + (text.trim().endsWith('</p>') ? `<p>${newTag}</p>` : ` ${newTag}`);
+    return text + (text.trim().endsWith('</p>') ? `<p>${newTag}</p>` : ` ${newTag}`);
   }
 
   return text;

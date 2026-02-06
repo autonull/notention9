@@ -81,6 +81,32 @@ export const useOntologyView = () => {
     }));
   }, [setSettings]);
 
+  const getGraphData = useCallback(() => {
+    // Transform ontology into nodes
+    const nodes = ontology.map(node => ({
+      id: node.id,
+      label: node.label,
+      val: usageStats.get(node.id) || 1,
+      group: 'concept'
+    }));
+
+    // Create links based on hierarchy
+    const links: Array<{ source: string, target: string, value: number }> = [];
+    const traverse = (nodes: any[]) => {
+      nodes.forEach(node => {
+        if (node.children) {
+          node.children.forEach((child: any) => {
+            links.push({ source: node.id, target: child.id, value: 5 });
+            traverse([child]);
+          });
+        }
+      });
+    };
+    traverse(ontology);
+
+    return { nodes, links };
+  }, [ontology, usageStats]);
+
   return {
     settings,
     ontology,
@@ -92,6 +118,7 @@ export const useOntologyView = () => {
     handleAddNode,
     handleDeleteNode,
     usageStats,
-    conflicts
+    conflicts,
+    getGraphData
   };
 };
