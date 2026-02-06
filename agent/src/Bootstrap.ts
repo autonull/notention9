@@ -52,6 +52,10 @@ export class Bootstrap {
 
     // Check initialization status and create onboarding note if needed
     const currentNotes = await PersistenceService.getNotesSafe();
+
+    // Restore system configuration from notes
+    configProcessor.scanForConfigs(currentNotes);
+
     const isInitialized = await configurator.isInitialized(currentNotes);
 
     if (!isInitialized) {
