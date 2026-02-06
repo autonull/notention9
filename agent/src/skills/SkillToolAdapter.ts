@@ -1,8 +1,10 @@
 import { z } from 'zod';
-import { Tool, Note, createTool } from '@notention/core';
-import { Skill } from './types';
-import { log } from '../core/utils';
-import { executeAction } from '../core/actionExecutor';
+import { createTool } from '@notention/core';
+import type { Tool } from '@notention/core';
+import type { Note } from '@notention/core';
+import type { Skill } from './types.ts';
+import { log } from '../core/utils.ts';
+import { executeAction } from '../core/actionExecutor.ts';
 
 export class SkillToolAdapter {
     static createToolFromSkill(skill: Skill): Tool {

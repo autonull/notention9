@@ -1,5 +1,5 @@
-import { log, error } from './utils';
-import { Capabilities } from './Capabilities.js';
+import { log, error } from './utils.ts';
+import { Capabilities } from './Capabilities.ts';
 
 /**
  * Execute a skill action (browser automation, API call, etc.)

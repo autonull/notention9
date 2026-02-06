@@ -1,6 +1,7 @@
-import { Agent, AgentFeature, Note, SkillRegistry, RegisteredSkill, Logger } from '@notention/core';
-import { Skill, SkillMetadata } from './types';
-import { SkillToolAdapter } from './SkillToolAdapter';
+import { AgentFeature, SkillRegistry, Logger } from '@notention/core';
+import type { Agent, Note, RegisteredSkill } from '@notention/core';
+import type { Skill, SkillMetadata } from './types.ts';
+import { SkillToolAdapter } from './SkillToolAdapter.ts';
 
 export class AgentSkillRegistry extends SkillRegistry {
     private logger = Logger.getInstance();
