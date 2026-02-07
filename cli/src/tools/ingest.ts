@@ -2,42 +2,44 @@ import { CliClient } from '../client.js';
 import { LocalTool } from '../llm.js';
 import fs from 'fs/promises';
 import path from 'path';
-import { resolveSafePath } from '../utils.js';
+import { resolveSafePath, isBinary, log } from '../utils.js';
 
 // Common ignore patterns
 const IGNORED_DIRS = new Set(['.git', 'node_modules', 'dist', 'build', 'coverage', '.DS_Store', '__pycache__']);
 const IGNORED_EXTS = new Set(['.exe', '.dll', '.so', '.dylib', '.bin', '.png', '.jpg', '.jpeg', '.gif', '.ico', '.zip', '.tar', '.gz']);
 
-async function isBinary(filePath: string): Promise<boolean> {
-    try {
-        const handle = await fs.open(filePath, 'r');
-        const buffer = Buffer.alloc(1024);
-        const { bytesRead } = await handle.read(buffer, 0, 1024, 0);
-        await handle.close();
+interface WalkOptions {
+    maxDepth: number;
+    currentDepth: number;
+    maxFiles: number;
+    processedCount: number; // accumulated count (mutated or returned)
+    dryRun: boolean;
+}
 
-        for (let i = 0; i < bytesRead; i++) {
-            if (buffer[i] === 0) return true; // Null byte indicates binary
-        }
-        return false;
-    } catch (e) {
-        return true; // If can't read, treat as binary/skip
-    }
+// We return the updated count and any notes created
+interface WalkResult {
+    processedCount: number;
+    notes: string[];
 }
 
 async function walkDirectory(
     dirPath: string,
     cli: CliClient,
-    options: { maxDepth: number, currentDepth: number, maxFiles: number, processedCount: number, dryRun: boolean }
-): Promise<{ processed: number, notes: string[] }> {
-    if (options.currentDepth > options.maxDepth) return { processed: 0, notes: [] };
-    if (options.processedCount >= options.maxFiles) return { processed: 0, notes: [] };
+    options: WalkOptions
+): Promise<WalkResult> {
+    if (options.currentDepth > options.maxDepth) {
+        return { processedCount: options.processedCount, notes: [] };
+    }
+    if (options.processedCount >= options.maxFiles) {
+        return { processedCount: options.processedCount, notes: [] };
+    }
 
     const entries = await fs.readdir(dirPath, { withFileTypes: true });
-    let localProcessed = 0;
+    let currentProcessedCount = options.processedCount;
     const createdNotes: string[] = [];
 
     for (const entry of entries) {
-        if (options.processedCount + localProcessed >= options.maxFiles) break;
+        if (currentProcessedCount >= options.maxFiles) break;
 
         const fullPath = path.join(dirPath, entry.name);
 
@@ -47,14 +49,15 @@ async function walkDirectory(
             const result = await walkDirectory(fullPath, cli, {
                 ...options,
                 currentDepth: options.currentDepth + 1,
-                processedCount: options.processedCount + localProcessed
+                processedCount: currentProcessedCount
             });
-            localProcessed += result.processed;
+
+            // Update our local tracking with the result from recursion
+            currentProcessedCount = result.processedCount;
             createdNotes.push(...result.notes);
         } else if (entry.isFile()) {
             const ext = path.extname(entry.name).toLowerCase();
             if (IGNORED_EXTS.has(ext)) continue;
-            // Skip large files? Maybe later.
 
             if (await isBinary(fullPath)) continue;
 
@@ -63,15 +66,15 @@ async function walkDirectory(
                 const noteId = await ingestSingleFile(fullPath, cli, options.dryRun);
                 if (noteId) {
                     createdNotes.push(noteId);
-                    localProcessed++;
+                    currentProcessedCount++;
                 }
             } catch (e) {
-                console.error(`Failed to ingest ${fullPath}:`, e);
+                log.error(`Failed to ingest ${fullPath}`, e);
             }
         }
     }
 
-    return { processed: localProcessed, notes: createdNotes };
+    return { processedCount: currentProcessedCount, notes: createdNotes };
 }
 
 async function ingestSingleFile(filePath: string, cli: CliClient, dryRun: boolean): Promise<string | null> {
@@ -89,7 +92,7 @@ async function ingestSingleFile(filePath: string, cli: CliClient, dryRun: boolea
     const title = `Ingested: ${filename}`;
 
     if (dryRun) {
-        return `[DryRun] Would create note for ${filename}`;
+        return `[DryRun] ${filename}`;
     }
 
     // Call the remote MCP tool to create the note
@@ -106,10 +109,21 @@ async function ingestSingleFile(filePath: string, cli: CliClient, dryRun: boolea
 
     // Parse result to get ID
     const mcpContent = (result as any).content;
-    const resultText = (mcpContent[0] as any).text;
+    const resultText = (mcpContent && mcpContent[0]) ? (mcpContent[0] as any).text : "Unknown ID";
+
     // Attempt to extract ID if the tool returns "Note created with ID: ..."
-    const match = resultText.match(/ID: ([\w-]+)/);
-    return match ? match[1] : resultText;
+    // The create_note tool usually returns just the note object or a success message
+    // If it returns JSON (the note), we parse it.
+    try {
+        const note = JSON.parse(resultText);
+        if (note.id) return note.id;
+    } catch (e) {
+        // Not JSON, try regex
+        const match = resultText.match(/ID: ([\w-]+)/);
+        if (match) return match[1];
+    }
+
+    return resultText;
 }
 
 export function createIngestTools(cli: CliClient): LocalTool[] {
@@ -133,6 +147,8 @@ export function createIngestTools(cli: CliClient): LocalTool[] {
                 const maxFiles = args.maxFiles || 100;
                 const dryRun = args.dryRun || false;
 
+                if (!rawPath) throw new Error("Path is required");
+
                 try {
                     const resolvedPath = resolveSafePath(rawPath);
                     const stats = await fs.stat(resolvedPath);
@@ -141,14 +157,20 @@ export function createIngestTools(cli: CliClient): LocalTool[] {
                         const noteId = await ingestSingleFile(resolvedPath, cli, dryRun);
                         return `Successfully ingested file. ID: ${noteId}`;
                     } else if (stats.isDirectory()) {
-                        const { processed, notes } = await walkDirectory(resolvedPath, cli, {
+                        const { processedCount, notes } = await walkDirectory(resolvedPath, cli, {
                             maxDepth,
                             currentDepth: 0,
                             maxFiles,
                             processedCount: 0,
                             dryRun
                         });
-                        return `Ingestion complete. Processed ${processed} files.\nCreated Notes: ${notes.slice(0, 10).join(', ')}${notes.length > 10 ? '...' : ''}`;
+
+                        const summary = `Ingestion complete. Processed ${processedCount} files.`;
+                        const noteList = notes.length > 0
+                            ? `\nCreated Notes:\n- ${notes.slice(0, 10).join('\n- ')}${notes.length > 10 ? `\n...and ${notes.length - 10} more` : ''}`
+                            : '\nNo notes created.';
+
+                        return summary + noteList;
                     } else {
                         return "Path is not a file or directory.";
                     }

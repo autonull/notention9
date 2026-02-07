@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import ora from 'ora';
 import path from 'path';
+import fs from 'fs/promises';
 
 export const log = {
     info: (msg: string) => console.log(chalk.blue('ℹ'), msg),
@@ -40,4 +41,20 @@ export function resolveSafePath(userPath: string): string {
     }
 
     return resolvedPath;
+}
+
+export async function isBinary(filePath: string): Promise<boolean> {
+    try {
+        const handle = await fs.open(filePath, 'r');
+        const buffer = Buffer.alloc(1024);
+        const { bytesRead } = await handle.read(buffer, 0, 1024, 0);
+        await handle.close();
+
+        for (let i = 0; i < bytesRead; i++) {
+            if (buffer[i] === 0) return true; // Null byte indicates binary
+        }
+        return false;
+    } catch (e) {
+        return true; // If can't read, treat as binary/skip
+    }
 }
