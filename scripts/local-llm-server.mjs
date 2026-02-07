@@ -8,8 +8,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const CONFIG = {
-    modelUrl: process.env.MODEL_URL || "https://huggingface.co/HuggingFaceTB/SmolLM-135M-Instruct-GGUF/resolve/main/smollm-135m-instruct.q4_k_m.gguf",
-    modelFilename: process.env.MODEL_FILENAME || "smollm-135m-instruct.q4_k_m.gguf",
+    // Use a public model that doesn't require authentication
+    modelUrl: process.env.MODEL_URL || "https://huggingface.co/hugging-quants/Llama-3.2-1B-Instruct-Q4_K_M-GGUF/resolve/main/llama-3.2-1b-instruct-q4_k_m.gguf",
+    modelFilename: process.env.MODEL_FILENAME || "llama-3.2-1b-instruct-q4_k_m.gguf",
     modelsDir: path.join(__dirname, '../models'),
     port: parseInt(process.env.PORT || '11434', 10)
 };
@@ -38,31 +39,47 @@ class ModelManager {
         console.log(`Downloading model from ${this.config.modelUrl}...`);
         try {
             const res = await fetch(this.config.modelUrl);
-            if (!res.ok) throw new Error(`Failed to download: ${res.statusText}`);
+            if (!res.ok) throw new Error(`Failed to download: ${res.status} ${res.statusText}`);
 
             if (!res.body) throw new Error("Response body is empty");
 
             const fileStream = fs.createWriteStream(destPath);
             const totalBytes = parseInt(res.headers.get('content-length') || '0', 10);
             let downloadedBytes = 0;
+
+            // Create a reader from the web stream
             const reader = res.body.getReader();
 
             while (true) {
                 const { done, value } = await reader.read();
                 if (done) break;
+
                 downloadedBytes += value.length;
                 fileStream.write(value);
 
                 if (totalBytes > 0) {
                     const percent = ((downloadedBytes / totalBytes) * 100).toFixed(1);
-                    process.stdout.write(`\rProgress: ${percent}%`);
+                    process.stdout.write(`\rProgress: ${percent}% (${(downloadedBytes / 1024 / 1024).toFixed(1)} MB)`);
+                } else {
+                    process.stdout.write(`\rDownloaded: ${(downloadedBytes / 1024 / 1024).toFixed(1)} MB`);
                 }
             }
+
             fileStream.end();
             console.log('\nDownload complete.');
+
+            // Verify file size (basic check)
+            const stats = fs.statSync(destPath);
+            if (stats.size < 1000) {
+                throw new Error("Downloaded file is too small, likely an error page or redirect issue.");
+            }
+
         } catch (e) {
+            console.error("\nDownload failed:", e.message);
             // Clean up partial file
-            if (fs.existsSync(destPath)) fs.unlinkSync(destPath);
+            if (fs.existsSync(destPath)) {
+                try { fs.unlinkSync(destPath); } catch (err) { }
+            }
             throw e;
         }
     }

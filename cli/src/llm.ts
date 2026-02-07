@@ -1,11 +1,11 @@
 import fs from 'fs';
 import path from 'path';
-import { streamText, CoreMessage } from 'ai';
-import { createOpenAI } from '@ai-sdk/openai';
+import { CoreMessage } from 'ai';
 import { marked } from 'marked';
 import TerminalRenderer from 'marked-terminal';
 import chalk from 'chalk';
 import { log, withSpinner } from './utils.js';
+import { LLMProvider, type LLMProviderConfig } from './providers/base.js';
 
 // Configure marked for terminal output
 marked.use({
@@ -23,12 +23,7 @@ export interface LocalTool extends ToolDefinition {
     execute: (args: any) => Promise<any>;
 }
 
-export interface LLMConfig {
-    provider: string;
-    model: string;
-    baseURL?: string;
-    apiKey?: string;
-}
+export type { LLMProviderConfig };
 
 interface ToolCall {
     tool: string;
@@ -39,54 +34,32 @@ export class LlmSession {
     private history: CoreMessage[] = [];
     private toolExecutor: (name: string, args: any) => Promise<any>;
     private tools: ToolDefinition[];
-    private model: any;
+    private provider: LLMProvider;
     private ontologyCache: string | null = null;
     private capabilitiesCache: any | null = null;
     private customPrompt: string | null = null;
-    private config: LLMConfig;
 
     constructor(
         tools: ToolDefinition[],
         toolExecutor: (name: string, args: any) => Promise<any>,
-        initialConfig?: Partial<LLMConfig>
+        provider: LLMProvider
     ) {
         this.tools = tools;
         this.toolExecutor = toolExecutor;
-
-        // Initialize Config (Args > Env > Default)
-        this.config = {
-            provider: initialConfig?.provider || process.env.LLM_PROVIDER || 'openai',
-            model: initialConfig?.model || process.env.LLM_MODEL || 'gpt-4o',
-            baseURL: initialConfig?.baseURL || process.env.LLM_BASE_URL,
-            apiKey: initialConfig?.apiKey || process.env.LLM_API_KEY || process.env.OPENAI_API_KEY
-        };
-
-        this.configureModel();
+        this.provider = provider;
     }
 
-    public updateConfig(newConfig: Partial<LLMConfig>) {
-        this.config = { ...this.config, ...newConfig };
-        this.configureModel();
-        log.success(`LLM Configuration Updated: ${this.config.provider}/${this.config.model}`);
+    public updateProvider(newProvider: LLMProvider) {
+        this.provider = newProvider;
+        log.success(`LLM Provider Updated: ${newProvider.getName()}`);
     }
 
-    public getConfig(): LLMConfig {
-        return { ...this.config };
+    public getProvider(): LLMProvider {
+        return this.provider;
     }
 
-    private configureModel() {
-        // Special handling for Ollama defaults
-        if (this.config.provider === 'ollama' && !this.config.baseURL) {
-            this.config.baseURL = 'http://localhost:11434/v1';
-        }
-
-        const apiKey = this.config.apiKey || (this.config.provider === 'ollama' ? 'ollama' : undefined);
-
-        const openai = createOpenAI({
-            baseURL: this.config.baseURL,
-            apiKey,
-        });
-        this.model = openai(this.config.model);
+    public getConfig(): Omit<LLMProviderConfig, 'apiKey'> {
+        return this.provider.getConfig();
     }
 
     private async fetchOntology() {
@@ -198,18 +171,7 @@ Output Format:
     }
 
     async handleInteraction(input: string) {
-        // Validation: If no API key and not Ollama, warn and echo (unless local server usage mimics OpenAI without checking key?)
-        // Our local server ignores keys, but we pass "sk-dummy".
-        // If config.apiKey is set (which it is for local script), we proceed.
-        if (!this.config.apiKey && this.config.provider !== 'ollama') {
-             // Check if baseURL implies local?
-             // Ideally we shouldn't block if user knows what they are doing.
-             // But let's keep the warning for standard usage.
-             log.warn("API Key not set. Echo mode:");
-             console.log(input);
-             return;
-        }
-
+        // Provider health check is now handled by the provider itself
         if (!this.ontologyCache) await this.fetchOntology();
         if (!this.capabilitiesCache) await this.fetchCapabilities();
         this.loadCustomPrompt();
@@ -235,15 +197,10 @@ Output Format:
 
             log.chat('Agent', '');
 
-            const result = await streamText({
-                model: this.model,
-                messages: messages,
-            });
-
             let fullText = '';
-            for await (const textPart of result.textStream) {
-                process.stdout.write(textPart);
-                fullText += textPart;
+            for await (const chunk of this.provider.generateStream(messages)) {
+                process.stdout.write(chunk);
+                fullText += chunk;
             }
             process.stdout.write('\n');
 
