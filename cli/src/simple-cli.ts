@@ -3,7 +3,7 @@
 import * as readline from 'readline';
 import { simpleConfig } from './simple-config.js';
 import { ProviderFactory } from './providers/index.js';
-import { LlmSession } from './llm.js';
+import { LlmSession } from './proper-llm-integration.js';
 import { getLocalTools } from './tools/index.js';
 import { CliClient } from './client.js';
 import { log, withSpinner } from './utils.js';
@@ -47,6 +47,8 @@ if (!finalConfig.model) {
   }
 }
 
+console.log(`\n🚀 Using provider: ${finalConfig.provider}, model: ${finalConfig.model}\n`);
+
 // Save the updated config
 simpleConfig.updateConfig(finalConfig);
 
@@ -62,8 +64,25 @@ async function main() {
 
   try {
     if (interactive) log.info("Connecting to Notention Agent...");
-    await cli.connect();
-    if (interactive) log.success(`Connected to Notention Agent at ${MCP_URL}`);
+
+    // Add connection retry logic
+    let connected = false;
+    let retries = 3;
+    while (!connected && retries > 0) {
+      try {
+        await cli.connect();
+        connected = true;
+        if (interactive) log.success(`Connected to Notention Agent at ${MCP_URL}`);
+      } catch (e) {
+        retries--;
+        if (retries > 0) {
+          if (interactive) log.warn(`Connection failed, retrying... (${retries} attempts left)`);
+          await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds before retry
+        } else {
+          throw new Error(`Failed to connect to Notention Agent after 3 attempts: ${e}`);
+        }
+      }
+    }
 
     let simTools: any[] = [];
 
@@ -71,11 +90,11 @@ async function main() {
       try {
         if (interactive) log.info("Connecting to Simulation Agent...");
         await simCli.connect();
-        const simToolsResult = await simCli.listTools();
+        const simToolsResult = await withSpinner('Loading simulation tools...', () => simCli.listTools());
         simTools = simToolsResult.tools;
         if (interactive) log.success(`Connected to Simulation Agent at ${SIM_MCP_URL}`);
       } catch (e) {
-        if (interactive) log.warn(`Simulation Agent unavailable (skipping)`);
+        if (interactive) log.warn(`Simulation Agent unavailable (skipping): ${e}`);
       }
     }
 
@@ -98,31 +117,43 @@ async function main() {
 
     // Create Tool Executor Strategy
     const toolExecutor = async (name: string, args: any) => {
-      const localTool = localTools.find(t => t.name === name);
-      if (localTool) return await localTool.execute(args);
+      try {
+        const localTool = localTools.find(t => t.name === name);
+        if (localTool) {
+          return await localTool.execute(args);
+        }
 
-      const isSimTool = simTools.some((t: any) => t.name === name);
-      if (isSimTool && simCli.connected) {
-        return await simCli.callTool(name, args);
+        const isSimTool = simTools.some((t: any) => t.name === name);
+        if (isSimTool && simCli.connected) {
+          return await simCli.callTool(name, args);
+        }
+
+        return await cli.callTool(name, args);
+      } catch (error) {
+        log.error(`Tool execution failed: ${name}`, error);
+        throw error;
       }
-
-      return await cli.callTool(name, args);
     };
 
     const session = new LlmSession(allTools, toolExecutor, provider);
 
     // Perform health check
     if (interactive) {
-      const healthResult: any = await withSpinner(
-        'Checking LLM provider connection...',
-        () => provider.healthCheck()
-      );
+      try {
+        const healthResult: any = await withSpinner(
+          'Checking LLM provider connection...',
+          () => provider.healthCheck()
+        );
 
-      if (!healthResult.healthy) {
-        log.warn(`Provider health check failed: ${healthResult.message}`);
+        if (!healthResult.healthy) {
+          log.warn(`Provider health check failed: ${healthResult.message}`);
+          log.warn('Continuing anyway, but you may encounter errors...');
+        } else if (healthResult.message) {
+          log.success(healthResult.message);
+        }
+      } catch (healthError: any) {
+        log.warn(`Provider health check failed: ${healthError.message || healthError}`);
         log.warn('Continuing anyway, but you may encounter errors...');
-      } else if (healthResult.message) {
-        log.success(healthResult.message);
       }
     }
 
@@ -164,6 +195,7 @@ Commands:
   /config - Show current configuration
   /providers - List available providers
   /provider <name> [model] - Switch to a different provider
+  /setup - Quick setup information
   /quit - Exit the CLI
               `);
             } else if (input === '/config') {
@@ -183,17 +215,22 @@ Commands:
                 ask();
                 return;
               }
-              
+
               const newProvider = parts[1];
               const newModel = parts[2] || null;
-              
+
               // Update configuration
               const updates: any = { provider: newProvider };
               if (newModel) updates.model = newModel;
-              
+
               simpleConfig.updateConfig(updates);
               console.log(`Configuration updated. Provider: ${newProvider}, Model: ${newModel || updates.model}`);
               console.log('Restart the CLI to use the new configuration.');
+            } else if (input === '/setup') {
+              console.log('\n📋 Quick Setup Wizard');
+              console.log('Available providers: ollama, transformers, openai, local');
+              console.log('Example: /provider ollama -- then restart CLI');
+              console.log('For Ollama, make sure to run: ollama pull llama3.2 (or gemma3:4b)\n');
             } else if (input === '/quit' || input === '/exit') {
               rl.close();
               await cli.close();
