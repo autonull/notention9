@@ -1,11 +1,10 @@
 import fs from 'fs';
 import path from 'path';
-import { streamText } from 'ai';
+import { streamText, CoreMessage } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 import { marked } from 'marked';
 import TerminalRenderer from 'marked-terminal';
 import chalk from 'chalk';
-import { CliClient } from './client.js';
 import { log, withSpinner } from './utils.js';
 
 // Configure marked for terminal output
@@ -28,6 +27,7 @@ export interface LLMConfig {
     provider: string;
     model: string;
     baseURL?: string;
+    apiKey?: string;
 }
 
 interface ToolCall {
@@ -36,11 +36,11 @@ interface ToolCall {
 }
 
 export class LlmSession {
-    private history: { role: 'user' | 'assistant' | 'system', content: string }[] = [];
+    private history: CoreMessage[] = [];
     private toolExecutor: (name: string, args: any) => Promise<any>;
     private tools: ToolDefinition[];
     private model: any;
-    private ontologyCache: any | null = null;
+    private ontologyCache: string | null = null;
     private capabilitiesCache: any | null = null;
     private customPrompt: string | null = null;
     private config: LLMConfig;
@@ -53,23 +53,20 @@ export class LlmSession {
         this.tools = tools;
         this.toolExecutor = toolExecutor;
 
-        // Default Config
+        // Initialize Config (Args > Env > Default)
         this.config = {
-            provider: process.env.LLM_PROVIDER || 'openai',
-            model: process.env.LLM_MODEL || 'gpt-4o',
-            baseURL: process.env.LLM_BASE_URL
+            provider: initialConfig?.provider || process.env.LLM_PROVIDER || 'openai',
+            model: initialConfig?.model || process.env.LLM_MODEL || 'gpt-4o',
+            baseURL: initialConfig?.baseURL || process.env.LLM_BASE_URL,
+            apiKey: initialConfig?.apiKey || process.env.LLM_API_KEY || process.env.OPENAI_API_KEY
         };
 
-        // Override with initial config
-        if (initialConfig) {
-            this.updateConfigInternal(initialConfig);
-        } else {
-            this.configureModel();
-        }
+        this.configureModel();
     }
 
     public updateConfig(newConfig: Partial<LLMConfig>) {
-        this.updateConfigInternal(newConfig);
+        this.config = { ...this.config, ...newConfig };
+        this.configureModel();
         log.success(`LLM Configuration Updated: ${this.config.provider}/${this.config.model}`);
     }
 
@@ -77,16 +74,14 @@ export class LlmSession {
         return { ...this.config };
     }
 
-    private updateConfigInternal(newConfig: Partial<LLMConfig>) {
-        this.config = { ...this.config, ...newConfig };
+    private configureModel() {
+        // Special handling for Ollama defaults
         if (this.config.provider === 'ollama' && !this.config.baseURL) {
             this.config.baseURL = 'http://localhost:11434/v1';
         }
-        this.configureModel();
-    }
 
-    private configureModel() {
-        const apiKey = process.env.OPENAI_API_KEY || (this.config.provider === 'ollama' ? 'ollama' : undefined);
+        const apiKey = this.config.apiKey || (this.config.provider === 'ollama' ? 'ollama' : undefined);
+
         const openai = createOpenAI({
             baseURL: this.config.baseURL,
             apiKey,
@@ -153,7 +148,6 @@ Capabilities:
 - Execute Skills: Trigger agent skills based on note content.
 - Query Ontology: Understand the semantic structure of the knowledge base.
 - Simulations: List and run test scenarios to verify agent behavior.
-- Simulations: List and run test scenarios to verify agent behavior.
 - Multi-Agent Simulations: Run complex scenarios with multiple agents to test ontology and community evolution.
 - Local Files: Access and ingest files from the local filesystem.
 - Semantic Extraction: Use 'extract_semantics' to understand the properties of a note text.
@@ -204,10 +198,16 @@ Output Format:
     }
 
     async handleInteraction(input: string) {
-        if (this.config.provider !== 'ollama' && !process.env.OPENAI_API_KEY) {
-            log.warn("OPENAI_API_KEY not set. Echo mode:");
-            console.log(input);
-            return;
+        // Validation: If no API key and not Ollama, warn and echo (unless local server usage mimics OpenAI without checking key?)
+        // Our local server ignores keys, but we pass "sk-dummy".
+        // If config.apiKey is set (which it is for local script), we proceed.
+        if (!this.config.apiKey && this.config.provider !== 'ollama') {
+             // Check if baseURL implies local?
+             // Ideally we shouldn't block if user knows what they are doing.
+             // But let's keep the warning for standard usage.
+             log.warn("API Key not set. Echo mode:");
+             console.log(input);
+             return;
         }
 
         if (!this.ontologyCache) await this.fetchOntology();
@@ -228,7 +228,7 @@ Output Format:
 
     private async executeTurn(): Promise<boolean> {
         try {
-            const messages: any[] = [
+            const messages: CoreMessage[] = [
                 { role: 'system', content: this.getSystemPrompt() },
                 ...this.history
             ];

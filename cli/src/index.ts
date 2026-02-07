@@ -30,6 +30,8 @@ function parseArgs(args: string[]): { enableSim: boolean, llmConfig: Partial<LLM
             result.llmConfig.model = args[++i];
         } else if (arg === '--url') {
             result.llmConfig.baseURL = args[++i];
+        } else if (arg === '--key' || arg === '--api-key') {
+            result.llmConfig.apiKey = args[++i];
         } else {
             remainingArgs.push(arg);
         }
