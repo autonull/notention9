@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import { CliClient } from './client.js';
 import { LlmSession } from './llm.js';
 import { log, withSpinner } from './utils.js';
-import { runSetupWizard } from './setup.js';
+import { SetupManager } from './setup-manager.js';
 import { ProviderFactory } from './providers/factory.js';
 import { configManager } from './config-manager.js';
 
@@ -19,7 +19,7 @@ export async function handleSlashCommand(input: string, cli: CliClient, tools: a
             console.clear();
             return true;
         case '/setup':
-            await runSetupWizard(cli);
+            await SetupManager.runSetup(cli);
             return true;
         case '/tools':
             log.info(`Tools: ${tools.map(t => chalk.cyan(t.name)).join(", ")}`);
