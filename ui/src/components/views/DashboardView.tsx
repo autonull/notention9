@@ -37,7 +37,7 @@ export function DashboardView() {
 
   const stats = {
     total: notes.length,
-    public: notes.filter(n => n.public).length,
+    public: notes.filter(n => n.privacy === 'public').length,
     tasks: notes.filter(n => n.properties.some(p => p.key === 'intent' && p.values.includes('task'))).length,
     skills: notes.filter(n => n.source?.type === 'skill').length
   };

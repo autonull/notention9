@@ -70,7 +70,7 @@ export class ScenarioManager {
                         createdAt: new Date().toISOString(),
                         updatedAt: new Date().toISOString(),
                         source: { type: 'user', identifier: 'test', timestamp: Date.now() },
-                        public: false,
+                        privacy: 'private',
                         priority: 1
                     } as unknown as Note,
                     expected: {

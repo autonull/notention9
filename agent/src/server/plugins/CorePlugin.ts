@@ -28,7 +28,9 @@ export class CorePlugin implements AgentPlugin {
                     values: z.array(z.string())
                 })).optional()
             }),
-            handler: async ({ title, content, tags, properties }) => {
+            handler: async (args) => {
+                const { title, content, tags, properties } = args;
+                console.log('[CorePlugin] create_note args:', JSON.stringify(args, null, 2));
                 const note: Note = {
                     id: randomUUID(),
                     title,
@@ -38,7 +40,7 @@ export class CorePlugin implements AgentPlugin {
                     createdAt: new Date().toISOString(),
                     updatedAt: new Date().toISOString(),
                     source: { type: 'user', identifier: 'cli', timestamp: Date.now() },
-                    public: false,
+                    privacy: 'private',
                     priority: 1.0
                 };
                 await PersistenceService.saveNoteSafe(note);

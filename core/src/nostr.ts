@@ -85,7 +85,7 @@ export const convertEventToNote = (event: NostrEvent): Note => {
       identifier: 'nostr-import',
       timestamp: Date.now()
     },
-    public: true,
+    privacy: 'public',
     priority: 0.5,
   };
 };

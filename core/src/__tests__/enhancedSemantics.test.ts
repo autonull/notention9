@@ -29,7 +29,7 @@ describe('Enhanced Semantic Capabilities (Phase 7)', () => {
       updatedAt: new Date().toISOString(),
       tags: [],
       source: { type: 'user', identifier: userId, timestamp: Date.now() },
-      public: false,
+      privacy: 'private',
       priority: 1.0
     };
 

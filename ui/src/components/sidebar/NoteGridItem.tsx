@@ -12,7 +12,7 @@ interface NoteGridItemProps {
 
 export function NoteGridItem({ note, isSelected, onSelect }: NoteGridItemProps) {
   // Visual indicators based on note state
-  const isPublic = note.public;
+  const isPublic = note.privacy === 'public';
   const isImported = note.source?.type === 'import' || note.source?.type === 'skill';
 
   // Priority Logic (Phase 3.2)

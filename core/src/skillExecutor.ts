@@ -147,7 +147,7 @@ export class SkillExecutor {
                 undefined // Will throw PrivacyError if private and no callback
             ).catch(() => false);
 
-            if (!canTransmit && !note.public) {
+            if (!canTransmit && note.privacy !== 'public') {
                 this.logger.info(`[SkillExecutor] Skipping ${skill.id} - note is private`);
                 return {
                     success: false,
@@ -208,7 +208,7 @@ export class SkillExecutor {
                 undefined // Will throw PrivacyError if private and no callback
             ).catch(() => false);
 
-            if (!canTransmit && !note.public) {
+            if (!canTransmit && note.privacy !== 'public') {
                 this.logger.info(`[SkillExecutor] Skipping ${skill.getId()} - note is private`);
                 return {
                     success: false,
@@ -283,7 +283,7 @@ export class SkillExecutor {
             },
 
             // Privacy: Results default to same as source note
-            public: sourceNote.public,
+            privacy: sourceNote.privacy,
 
             // Priority: Normal
             priority: 0.5

@@ -21,7 +21,7 @@ export const createNote = (overrides?: Partial<Note>): Note => {
     createdAt: now,
     updatedAt: now,
     source: { type: 'user', identifier: 'user-default', timestamp: Date.now() },
-    public: false,
+    privacy: 'private',
     priority: 1.0,
     ...overrides,
   };

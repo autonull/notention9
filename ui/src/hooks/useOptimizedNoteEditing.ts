@@ -1,5 +1,5 @@
 import { useMemo, useState, useCallback } from 'react';
-import { Note } from '@notention/core';
+import { Note, PrivacyLevel } from '@notention/core';
 
 /**
  * Optimized hook for managing note editing state with performance considerations
@@ -20,7 +20,7 @@ export const useOptimizedNoteEditing = (initialNote?: Note | null) => {
       properties: [...currentNote.properties],
       createdAt: currentNote.createdAt,
       updatedAt: currentNote.updatedAt,
-      public: currentNote.public,
+      privacy: currentNote.privacy,
       priority: currentNote.priority
     };
   }, [currentNote]);
@@ -50,11 +50,11 @@ export const useOptimizedNoteEditing = (initialNote?: Note | null) => {
     });
   }, []);
 
-  const updateNotePublic = useCallback((isPublic: boolean) => {
+  const updateNotePrivacy = useCallback((privacy: PrivacyLevel) => {
     setCurrentNote(prev => {
       if (!prev) return prev;
       setHasUnsavedChanges(true);
-      return { ...prev, public: isPublic, updatedAt: new Date().toISOString() };
+      return { ...prev, privacy, updatedAt: new Date().toISOString() };
     });
   }, []);
 
@@ -72,7 +72,7 @@ export const useOptimizedNoteEditing = (initialNote?: Note | null) => {
     updateNoteContent,
     updateNoteTitle,
     updateNoteTags,
-    updateNotePublic,
+    updateNotePrivacy,
     resetUnsavedChanges
   };
 };

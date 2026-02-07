@@ -1,13 +1,6 @@
 import { CliClient } from '../cli/src/client.js';
 
 async function main() {
-    // This verification assumes the Agent is running and we can query it.
-    // It verifies that we CAN create a note with properties, but it doesn't strictly verify
-    // that the LLM *uses* it correctly without a live LLM call.
-    // However, we can simulate what the LLM would output.
-
-    // We will simulate a "Tool Call" that the LLM would generate for a semantic note.
-
     const client = new CliClient('http://localhost:3000/mcp/sse');
     try {
         await client.connect();
@@ -25,6 +18,8 @@ async function main() {
             ]
         });
 
+        console.log("Create Result:", JSON.stringify(result, null, 2));
+
         const resultText = (result.content[0] as any).text;
         const match = resultText.match(/ID: ([\w-]+)/);
         if (!match) throw new Error("Failed to get Note ID");
@@ -34,10 +29,19 @@ async function main() {
         // Verify properties were stored
         console.log("Verifying properties...");
         const readResult = await client.callTool('read_notes', { limit: 100 });
+
+        // Log the raw read result to debug
+        // console.log("Read Result Raw:", JSON.stringify(readResult, null, 2));
+
         const allNotes = JSON.parse((readResult.content[0] as any).text);
+        console.log(`Read ${allNotes.length} notes.`);
+
         const note = allNotes.find((n: any) => n.id === noteId);
 
-        if (!note) throw new Error("Note not found");
+        if (!note) {
+            console.error("Note IDs found:", allNotes.map((n: any) => n.id));
+            throw new Error(`Note ${noteId} not found`);
+        }
 
         const hasType = note.properties.some((p: any) => p.key === 'type' && p.values.includes('task'));
         const hasPriority = note.properties.some((p: any) => p.key === 'priority' && p.values.includes('high'));

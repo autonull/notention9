@@ -21,7 +21,7 @@ describe('Metaphor Performance', () => {
       updatedAt: new Date().toISOString(),
       tags: ['test', 'performance'],
       source: { type: 'user', identifier: 'perf-test', timestamp: Date.now() },
-      public: false,
+      privacy: 'private',
       priority: 1.0
     };
 

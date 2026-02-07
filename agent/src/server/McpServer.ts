@@ -6,7 +6,6 @@ import { PluginManager } from './PluginManager.js';
 import { CorePlugin } from './plugins/CorePlugin.js';
 import { IntelligencePlugin } from './plugins/IntelligencePlugin.js';
 import { BatchPlugin } from './plugins/BatchPlugin.js';
-import { SimulationsPlugin } from './plugins/SimulationsPlugin.js';
 
 import { ConfigManager } from '../config/ConfigManager.js';
 
@@ -47,11 +46,22 @@ export function setupMcpServer(app: Express) {
         await pluginManager.register(new CorePlugin());
         await pluginManager.register(new IntelligencePlugin());
         await pluginManager.register(new BatchPlugin());
-        await pluginManager.register(new SimulationsPlugin());
 
         registry.getToolDefinitions().forEach(tool => {
             console.log(`Registering tool: ${tool.name}`);
-            server.tool(tool.name, tool.description, tool.schema as any, tool.handler);
+            server.registerTool(tool.name, {
+                description: tool.description,
+                inputSchema: tool.schema
+            }, async (args, extra) => {
+                const result = await tool.handler(args);
+                if (typeof result === 'string') {
+                    return { content: [{ type: 'text', text: result }] };
+                }
+                if (typeof result === 'object' && result !== null && !('content' in result)) {
+                    return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+                }
+                return result;
+            });
         });
     })();
 

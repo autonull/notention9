@@ -1,8 +1,8 @@
 import type { Note } from '@notention/core';
-import { AgentSkillRegistry } from './AgentSkillRegistry.ts';
-import { DynamicSkill } from './DynamicSkill.ts';
-import type { DynamicSkillDefinition } from './DynamicSkill.ts';
-import { log } from '../core/utils.ts';
+import { AgentSkillRegistry } from './AgentSkillRegistry';
+import { DynamicSkill } from './DynamicSkill';
+import type { DynamicSkillDefinition } from './DynamicSkill';
+import { log } from '../core/utils';
 
 export class NoteSkillLoader {
     private registry: AgentSkillRegistry;

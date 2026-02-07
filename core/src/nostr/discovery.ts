@@ -13,7 +13,7 @@ export class NetworkDiscoveryService {
 
         // 1. Semantic Filter (Kind 35000)
         if (localNote.properties.length > 0) {
-            if (privacyMode === 'secret') {
+            if (privacyMode === 'private') {
                 // Level 2: Secret
                 const secretHashes: string[] = [];
                 for (const p of localNote.properties) {
@@ -59,7 +59,7 @@ export class NetworkDiscoveryService {
                 const remoteNote = convertEventToNote(event);
 
                 // Reveal Secret Properties if we matched them
-                if (privacyMode === 'secret' && event.tags) {
+                if (privacyMode === 'private' && event.tags) {
                     for (const t of event.tags) {
                         if (t[0] === 'property-secret') {
                             const hash = t[1];

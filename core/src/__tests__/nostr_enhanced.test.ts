@@ -37,7 +37,7 @@ describe('Nostr Phase 2.2 Privacy Levels', () => {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         source: { type: 'user', identifier: 'test', timestamp: Date.now() },
-        public: true,
+        privacy: 'public',
         priority: 1
     };
 
@@ -62,7 +62,7 @@ describe('Nostr Phase 2.2 Privacy Levels', () => {
     });
 
     it('should generate secret tags in secret mode', async () => {
-        const tags = await getPrivacyTags(mockNote.properties, 'secret');
+        const tags = await getPrivacyTags(mockNote.properties, 'private');
         expect(tags).toHaveLength(1);
         expect(tags[0][0]).toBe('property-secret');
         // Should NOT contain the key 'role'

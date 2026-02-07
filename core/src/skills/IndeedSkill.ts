@@ -113,7 +113,7 @@ export class IndeedSkill implements Skill {
                 identifier: this.id,
                 timestamp: Date.now()
             },
-            public: false,
+            privacy: 'private',
             priority: 0.5
         } as Note);
 
@@ -147,7 +147,7 @@ export class IndeedSkill implements Skill {
                     identifier: this.id,
                     timestamp: Date.now()
                 },
-                public: false,
+                privacy: 'private',
                 priority: 0.5
             } as Note);
         }

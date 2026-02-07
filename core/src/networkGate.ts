@@ -32,7 +32,7 @@ export class NetworkGate {
         promptUser?: (message: string) => Promise<boolean>
     ): Promise<boolean> {
         // Public notes can always be transmitted
-        if (note.public) {
+        if (note.privacy === 'public') {
             return true;
         }
 
@@ -46,12 +46,12 @@ export class NetworkGate {
         // Private note without user prompt callback - deny
         if (!promptUser) {
             throw new PrivacyError(
-                `Cannot transmit private note ${note.id} to ${destination}. Note is marked as private.`
+                `Cannot transmit ${note.privacy} note ${note.id} to ${destination}. Note is not public.`
             );
         }
 
         // Ask user for confirmation
-        const message = `"${note.title}" is currently private. Make it public to share with ${destination}?`;
+        const message = `"${note.title}" is currently ${note.privacy}. Make it public to share with ${destination}?`;
         const confirmed = await promptUser(message);
 
         if (!confirmed) {
@@ -60,7 +60,7 @@ export class NetworkGate {
 
         // User confirmed - mark as public
         // Note: This mutates the note. Caller should persist this change.
-        note.public = true;
+        note.privacy = 'public';
         return true;
     }
 

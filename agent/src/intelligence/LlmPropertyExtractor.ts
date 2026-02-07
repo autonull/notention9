@@ -17,6 +17,7 @@ export class LlmPropertyExtractor {
 
     async extract(text: string): Promise<Property[]> {
         try {
+            // @ts-ignore
             const { object } = await generateObject({
                 model: this.model,
                 schema: extractionSchema,

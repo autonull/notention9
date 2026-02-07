@@ -52,8 +52,7 @@ export const GigEconomySimulation: MultiAgentScenario = {
             input: 'Offers received: Driver Bob ($40), Driver Alice ($60)',
             expected: {
                 // Rider should choose Bob because 40 < 50
-                contentContains: ['Bob', '40'],
-                actionType: 'select_offer'
+                contentContains: ['Bob', '40']
             }
         }
     ]

@@ -40,7 +40,7 @@ export async function getPrivacyTags(properties: Property[], level: PrivacyLevel
             // Level 2: Secret
             // [property-secret, hash(key:value)]
             // Hides both Key and Value. Only exact matches can identify this.
-            else if (level === 'secret') {
+            else if (level === 'private') {
                 const secretPayload = `${p.key}:${v}`;
                 const hashedSecret = await hashValue(secretPayload);
                 tags.push(['property-secret', hashedSecret]);
