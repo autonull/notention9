@@ -126,12 +126,13 @@ export class PropertyExtractor {
     private applyFuzzyMatchingStrategy(text: string, properties: Property[]): void {
         const words = text.split(/\s+/).filter(w => w.length > 3);
         const existingKeys = new Set(properties.map(p => p.key));
+        const STOP_WORDS = new Set(['with', 'the', 'and', 'for', 'from', 'near', 'about', 'that', 'this']);
 
         for (const [index, word] of words.entries()) {
             const matches = this.ontologyService.getFuzzyMatches(word, 1);
             if (matches.length > 0 && !existingKeys.has(matches[0])) {
                 const nextWord = words[index + 1];
-                if (nextWord?.length > 2) {
+                if (nextWord?.length > 2 && !STOP_WORDS.has(nextWord.toLowerCase())) {
                     properties.push({ key: matches[0], operator: 'contains', values: [nextWord] });
                     existingKeys.add(matches[0]);
                 }

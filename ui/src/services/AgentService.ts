@@ -4,21 +4,25 @@ import { capabilities } from '../config/Capabilities';
 class AgentService extends RobustWebSocket {
 
   constructor() {
-    super();
+    // Reduce max retries to fail faster to Offline mode
+    super({ maxReconnectAttempts: 1 });
   }
 
   async connect(url?: string): Promise<void> {
     if (!capabilities.agent) {
       this.logger.info('Agent subsystem disabled via config');
-      // Status remains 'disconnected' or we can leave it as is.
-      // Important: Do NOT call fallbackToOfflineMode() which emits 'connected'.
       return;
     }
 
     const resolvedUrl = await this.resolveUrl(url);
 
     if (resolvedUrl) {
-      await super.connect(resolvedUrl);
+      try {
+        await super.connect(resolvedUrl);
+      } catch (e) {
+        this.logger.warn('Initial connection failed, falling back to offline', e);
+        this.fallbackToOfflineMode();
+      }
     } else {
       this.logger.info('Operating in offline mode');
       this.fallbackToOfflineMode();

@@ -94,7 +94,7 @@ export const useTiptapConfig = ({ content, onUpdate, ontology, templates = [], m
     content: sanitizeHTML(content),
     editorProps: {
       attributes: {
-        class: `prose prose-invert prose-sm focus:outline-none h-full max-w-none w-full ${minimal ? 'p-2 text-xs' : 'sm:prose-base lg:prose-lg xl:prose-2xl p-4'}`,
+        class: `prose prose-invert focus:outline-none h-full max-w-none w-full ${minimal ? 'p-2 text-sm prose-sm' : 'prose-lg sm:prose-xl lg:prose-2xl p-6'}`,
       },
     },
     onUpdate: ({ editor }) => onUpdate(editor.getHTML()),

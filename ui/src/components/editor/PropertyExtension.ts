@@ -73,6 +73,7 @@ export const PropertyExtension = Node.create({
 
   addInputRules() {
     return [
+      // Standard format [key:op:val]
       new InputRule({
         find: /\[([^:]+):([^:]+):([^\]]+)\]$/,
         handler: ({ state, range, match }) => {
@@ -80,6 +81,23 @@ export const PropertyExtension = Node.create({
             name: match[1],
             operator: match[2],
             value: match[3],
+          };
+
+          const { tr } = state;
+          const start = range.from;
+          const end = range.to;
+
+          tr.replaceWith(start, end, this.type.create(attributes));
+        },
+      }),
+      // Short format [key:val] -> implies 'is'
+      new InputRule({
+        find: /\[([^:]+):([^:\]]+)\]$/,
+        handler: ({ state, range, match }) => {
+          const attributes = {
+            name: match[1],
+            operator: 'is',
+            value: match[2],
           };
 
           const { tr } = state;
