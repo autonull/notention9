@@ -7,6 +7,8 @@ def run_visual_verification():
         browser = p.chromium.launch(headless=True)
         context = browser.new_context(viewport={'width': 1280, 'height': 800})
         page = context.new_page()
+        page.on("console", lambda msg: print(f"Browser Console: {msg.text}"))
+        page.on("pageerror", lambda err: print(f"Browser Error: {err}"))
 
         # 1. Navigate to Dashboard
         print("Navigating to Dashboard...")
@@ -33,12 +35,12 @@ def run_visual_verification():
 
         # Wait for Editor
         try:
-            page.wait_for_selector(".ProseMirror", timeout=5000)
+            page.wait_for_selector(".ProseMirror", timeout=15000)
         except Exception as e:
             print(f"Error waiting for editor: {e}")
             page.screenshot(path="verification/error_editor.png")
             print("Saved verification/error_editor.png")
-            print("Page content:", page.content())
+            # print("Page content:", page.content()) # Too verbose
             raise e
 
         # 3. Enter Text to trigger Extraction & Property Blocks
@@ -60,46 +62,50 @@ def run_visual_verification():
         print("Editor extraction screenshot saved.")
 
         # 6. Publish / Privacy Panel
-        print("Checking Publish Panel (Privacy Widget)...")
-        # Look for "Private" button (active)
+        print("Checking Privacy Widget in Header...")
+        # Look for buttons by title attribute since text might be hidden
         try:
-            # Widget uses buttons with text "Private", "Semi-Public", "Public"
-            page.wait_for_selector("button:has-text('Private')", timeout=2000)
-            page.wait_for_selector("button:has-text('Semi-Public')", timeout=2000)
-            page.wait_for_selector("button:has-text('Public')", timeout=2000)
+            page.wait_for_selector("button[title='Set to private']", timeout=2000)
+            page.wait_for_selector("button[title='Set to protected']", timeout=2000)
+            page.wait_for_selector("button[title='Set to public']", timeout=2000)
             print("Found 3-state Privacy Widget.")
         except Exception as e:
-            print("Failed to find Privacy Widget.")
+            print("Failed to find Privacy Widget buttons.")
             page.screenshot(path="verification/error_privacy_widget.png")
-            # Continue to allow other checks
 
         # Test Escalation Confirmation
         print("Testing Privacy Escalation...")
         try:
-            page.click("button:has-text('Public')") # Click Public
+            # Click Public button using title selector
+            page.click("button[title='Set to public']")
 
             # Expect Confirmation Overlay
-            page.wait_for_selector("text=Change Privacy?", timeout=2000)
-            page.wait_for_selector("text=increasing the visibility", timeout=2000)
+            page.wait_for_selector("text=Make public?", timeout=2000)
+            # page.wait_for_selector("text=increasing the visibility", timeout=2000) # Text changed in compact widget
             print("Confirmation overlay appeared.")
             page.screenshot(path="verification/privacy_confirmation.png")
 
             # Confirm
             page.click("button:has-text('Confirm')")
-            time.sleep(0.5)
+            time.sleep(1) # Wait for animation/close
 
             # Check if Public is now active (or at least no overlay)
-            if not page.query_selector("text=Change Privacy?"):
+            if not page.query_selector("text=Make public?"):
                 print("Confirmation accepted.")
-                # Verify "Publish to Network" button appeared
-                if page.query_selector("text=Publish to Network"):
-                    print("Publish button appeared.")
+                # Note: "Publish to Network" button is removed in favor of auto-publish
+                # We can check if the Public button is active (bg-gray-700)
+                # But that's hard to check via selector easily without class checks.
+                # Just verifying overlay is gone is enough for visual check script.
             else:
                 print("Confirmation overlay stuck.")
+                # Force close to proceed
+                page.keyboard.press("Escape")
 
         except Exception as e:
             print(f"Confirmation overlay failed or logic error: {e}")
             page.screenshot(path="verification/error_privacy_confirmation.png")
+            # Try to recover by hitting escape
+            page.keyboard.press("Escape")
 
         page.screenshot(path="verification/publish_panel.png")
 

@@ -7,8 +7,11 @@ import { TagInput } from './TagInput';
 import { IconButton } from '../common/IconButton';
 import { EditorControls } from './EditorControls';
 import { SkillExecutionIndicator } from '../notes/SkillExecutionIndicator';
+import { PrivacyControl } from '../publish/PrivacyControl';
+import type { Note } from '@notention/core';
 
 interface EditorHeaderProps {
+  note: Note; // Pass full note for privacy control
   id?: string; // Add ID to props to track skill execution for current note
   title: string;
   onTitleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -37,9 +40,11 @@ interface EditorHeaderProps {
   actionLabel?: string;
   missingProperties?: string[];
   onAddProperty?: (key: string) => void;
+  onUpdateNote: (note: Note) => void;
 }
 
 export function EditorHeader({
+  note,
   id,
   title,
   onTitleChange,
@@ -67,7 +72,8 @@ export function EditorHeader({
   onToggleToolbar,
   actionLabel = 'Publish',
   missingProperties = [],
-  onAddProperty
+  onAddProperty,
+  onUpdateNote
 }: EditorHeaderProps) {
   const [isTagInputVisible, setIsTagInputVisible] = useState(tags.length > 0);
 
@@ -107,6 +113,11 @@ export function EditorHeader({
         </div>
 
         {id && <SkillExecutionIndicator noteId={id} />}
+
+        {/* Privacy Control Inline */}
+        <div className="mr-2">
+            <PrivacyControl note={note} onUpdate={onUpdateNote} />
+        </div>
 
         <EditorControls
           onNext={onNext}
