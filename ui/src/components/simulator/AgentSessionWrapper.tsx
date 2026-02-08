@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { NotesContext } from '../contexts/NotesContext';
-import { useNotesState } from '../../hooks/useNotesState';
+import { useNotesData } from '../../hooks/data/useNotesData';
 import { SettingsContext } from '../contexts/SettingsContext';
 import localforage from 'localforage';
 import type { ReactNode } from 'react';
@@ -22,7 +22,7 @@ export function AgentSessionWrapper({ agentId, ontology, children }: Props) {
   }, [agentId]);
 
   // Initialize notes state with this driver
-  const notesState = useNotesState(driver);
+  const notesState = useNotesData(driver);
 
   // For the simulation, we provide a static settings context.
   // In a deeper implementation, we could also use useLocalForage for settings.

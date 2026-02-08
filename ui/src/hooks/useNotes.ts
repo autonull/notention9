@@ -6,5 +6,10 @@ export const useNotes = () => {
   if (context === undefined) {
     throw new Error('useNotes must be used within a NotesProvider');
   }
-  return context;
+
+  // Backwards compatibility alias for notesLoading
+  return {
+      ...context,
+      notesLoading: context.loading
+  };
 };
