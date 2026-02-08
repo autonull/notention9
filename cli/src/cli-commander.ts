@@ -1,69 +1,8 @@
 import { Command } from 'commander';
-import inquirer from 'inquirer';
 import { configManager } from './config-manager.js';
 import { ProviderFactory } from './providers/factory.js';
-import { log } from './utils.js';
 import { LLMProviderConfig } from './providers/base.js';
-
-// Define provider-specific questions
-const PROVIDER_QUESTIONS: Record<string, any[]> = {
-  openai: [
-    {
-      type: 'input',
-      name: 'model',
-      message: 'Enter OpenAI model (e.g., gpt-4o):',
-      default: 'gpt-4o',
-    },
-    {
-      type: 'input',
-      name: 'apiKey',
-      message: 'Enter OpenAI API key:',
-      mask: '*',
-    },
-  ],
-  ollama: [
-    {
-      type: 'input',
-      name: 'model',
-      message: 'Enter Ollama model (e.g., llama3.2):',
-      default: 'llama3.2',
-    },
-    {
-      type: 'input',
-      name: 'baseURL',
-      message: 'Enter Ollama base URL:',
-      default: 'http://localhost:11434/v1',
-    },
-  ],
-  transformers: [
-    {
-      type: 'input',
-      name: 'model',
-      message: 'Enter Transformers.js model (e.g., onnx-community/Qwen2.5-0.5B-Instruct):',
-      default: 'onnx-community/Qwen2.5-0.5B-Instruct',
-    },
-  ],
-  local: [
-    {
-      type: 'input',
-      name: 'model',
-      message: 'Enter local model name:',
-      default: 'local-model',
-    },
-    {
-      type: 'input',
-      name: 'baseURL',
-      message: 'Enter local server base URL:',
-      default: 'http://localhost:3000/v1',
-    },
-    {
-      type: 'input',
-      name: 'apiKey',
-      message: 'Enter API key (if required):',
-      mask: '*',
-    },
-  ],
-};
+import { SetupManager } from './setup-manager.js';
 
 export class CLICommander {
   private program: Command;
@@ -145,7 +84,8 @@ export class CLICommander {
           const config = configManager.getAll();
           console.log(`Current provider: ${config.provider || 'default'}`);
         } else if (options.switch) {
-          await this.interactiveSetup(options.switch);
+          console.log('Launching setup wizard for provider switch...');
+          await SetupManager.runSetup();
         } else {
           // Default: show current provider
           const config = configManager.getAll();
@@ -158,7 +98,7 @@ export class CLICommander {
       .command('setup')
       .description('Interactive setup wizard')
       .action(async () => {
-        await this.interactiveSetup();
+        await SetupManager.runSetup();
       });
 
     // Run command (the main functionality)
@@ -178,81 +118,6 @@ export class CLICommander {
         const { main } = await import('./index.js');
         await main({ ...options, command });
       });
-  }
-
-  /**
-   * Interactive setup wizard
-   */
-  async interactiveSetup(provider?: string) {
-    console.log('🚀 Notention Setup Wizard\n');
-
-    // Get current config
-    let currentConfig = configManager.getAll();
-
-    // Select provider if not specified
-    if (!provider) {
-      const providerAnswer = await inquirer.prompt([
-        {
-          type: 'list',
-          name: 'provider',
-          message: 'Select LLM provider:',
-          choices: ProviderFactory.getSupportedProviders(),
-          default: currentConfig.provider || 'ollama',
-        },
-      ]);
-      provider = providerAnswer.provider;
-    }
-
-    // Get provider-specific questions - ensure provider is defined
-    const providerKey = provider || currentConfig.provider || 'ollama';
-    const questions = PROVIDER_QUESTIONS[providerKey] ?
-      [...PROVIDER_QUESTIONS[providerKey]] : [];
-    
-    // Add common options
-    questions.push(
-      {
-        type: 'number',
-        name: 'temperature',
-        message: 'Set temperature (0.0-2.0):',
-        default: currentConfig.temperature || 0.7,
-        min: 0,
-        max: 2,
-      },
-      {
-        type: 'number',
-        name: 'maxTokens',
-        message: 'Set maximum tokens:',
-        default: currentConfig.maxTokens || 2000,
-        min: 1,
-      }
-    );
-
-    // Ask provider-specific questions
-    const answers = await inquirer.prompt(questions);
-
-    // Merge with current config
-    const newConfig = {
-      provider: provider || currentConfig.provider || 'ollama',
-      model: answers.model || currentConfig.model || configManager.getDefaultModel(provider || currentConfig.provider || 'ollama'),
-      baseURL: answers.baseURL || currentConfig.baseURL,
-      apiKey: answers.apiKey || currentConfig.apiKey,
-      temperature: answers.temperature ?? currentConfig.temperature ?? 0.7,
-      maxTokens: answers.maxTokens ?? currentConfig.maxTokens ?? 2000,
-    };
-
-    // Validate the new configuration
-    const validation = configManager.validateConfig(newConfig);
-    if (!validation.valid) {
-      console.error('Configuration validation failed:');
-      validation.errors.forEach(err => console.error(`  - ${err}`));
-      return;
-    }
-
-    // Save the new configuration
-    configManager.saveConfig(newConfig);
-    console.log('\n✅ Configuration saved successfully!');
-    console.log(`Provider: ${newConfig.provider}`);
-    console.log(`Model: ${newConfig.model}`);
   }
 
   /**

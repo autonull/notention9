@@ -4,7 +4,8 @@ import { CoreMessage } from 'ai';
 import { marked } from 'marked';
 import TerminalRenderer from 'marked-terminal';
 import chalk from 'chalk';
-import { log, withSpinner } from './utils.js';
+import ora from 'ora';
+import { log, withSpinner, resolveSafePath } from './utils.js';
 import { LLMProvider, type LLMProviderConfig } from './providers/base.js';
 
 // Configure marked for terminal output
@@ -62,13 +63,50 @@ export class LlmSession {
         return this.provider.getConfig();
     }
 
+    public getHistory(): CoreMessage[] {
+        return [...this.history];
+    }
+
+    public async saveHistory(filepath: string) {
+        try {
+            const resolved = resolveSafePath(filepath);
+            // Ensure directory exists
+            await fs.promises.mkdir(path.dirname(resolved), { recursive: true });
+            await fs.promises.writeFile(resolved, JSON.stringify(this.history, null, 2), 'utf-8');
+            log.success(`History saved to ${filepath}`);
+        } catch (e: any) {
+            log.error(`Failed to save history: ${e.message}`);
+        }
+    }
+
+    public async loadHistory(filepath: string) {
+        try {
+            const resolved = resolveSafePath(filepath);
+            const content = await fs.promises.readFile(resolved, 'utf-8');
+            const data = JSON.parse(content);
+            if (Array.isArray(data)) {
+                this.history = data;
+                log.success(`History loaded from ${filepath} (${this.history.length} messages)`);
+            } else {
+                log.warn("Invalid history file format");
+            }
+        } catch (e: any) {
+            log.error(`Failed to load history: ${e.message}`);
+        }
+    }
+
+    public clearHistory() {
+        this.history = [];
+        log.info("Chat history cleared.");
+    }
+
     private async fetchOntology() {
         if (this.ontologyCache) return;
         try {
             const result: any = await this.toolExecutor('query_ontology', { query: 'ROOT' });
             this.ontologyCache = (result?.content?.[0]?.text) ?? "No ontology available.";
         } catch (e) {
-            log.warn(`Failed to fetch ontology: ${e}`);
+            // log.warn(`Failed to fetch ontology: ${e}`);
             this.ontologyCache = "Ontology unavailable.";
         }
     }
@@ -178,6 +216,11 @@ Output Format:
 
         this.history.push({ role: 'user', content: input });
 
+        // Truncate history if too long (keep last 50 messages)
+        if (this.history.length > 50) {
+            this.history = this.history.slice(this.history.length - 50);
+        }
+
         let turns = 0;
         const MAX_TURNS = 10;
 
@@ -195,14 +238,31 @@ Output Format:
                 ...this.history
             ];
 
-            log.chat('Agent', '');
-
+            const spinner = ora('Thinking...').start();
             let fullText = '';
-            for await (const chunk of this.provider.generateStream(messages)) {
-                process.stdout.write(chunk);
-                fullText += chunk;
+            let isFirstChunk = true;
+
+            try {
+                for await (const chunk of this.provider.generateStream(messages)) {
+                    if (isFirstChunk) {
+                        spinner.stop();
+                        log.chat('Agent', '');
+                        isFirstChunk = false;
+                    }
+                    process.stdout.write(chunk);
+                    fullText += chunk;
+                }
+            } catch (streamError: any) {
+                spinner.fail('Stream failed');
+                throw streamError;
             }
-            process.stdout.write('\n');
+
+            // If we never got a chunk (empty response or error before stream started)
+            if (isFirstChunk) {
+                spinner.stop();
+            } else {
+                process.stdout.write('\n');
+            }
 
             this.history.push({ role: 'assistant', content: fullText });
 

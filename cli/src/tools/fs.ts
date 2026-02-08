@@ -3,7 +3,7 @@ import fsPromises from 'fs/promises';
 import path from 'path';
 import readline from 'readline';
 import { LocalTool } from '../llm.js';
-import { resolveSafePath } from '../utils.js';
+import { resolveSafePath, isBinary } from '../utils.js';
 
 export const fsTools: LocalTool[] = [
     {
@@ -43,6 +43,9 @@ export const fsTools: LocalTool[] = [
             if (!args.path) throw new Error("Path is required");
             try {
                 const resolvedPath = resolveSafePath(args.path);
+                if (await isBinary(resolvedPath)) {
+                    return "Error: File appears to be binary and cannot be read as text.";
+                }
                 const content = await fsPromises.readFile(resolvedPath, 'utf-8');
                 return content;
             } catch (e: any) {
@@ -121,10 +124,12 @@ export const fsTools: LocalTool[] = [
                         const fullPath = path.join(currentPath, entry.name);
 
                         if (entry.isDirectory()) {
-                            if (['.git', 'node_modules', 'dist', 'build', 'coverage'].includes(entry.name)) continue;
+                            if (['.git', 'node_modules', 'dist', 'build', 'coverage', '.DS_Store'].includes(entry.name)) continue;
                             await search(fullPath);
                         } else if (entry.isFile()) {
                             try {
+                                if (await isBinary(fullPath)) continue;
+
                                 const fileStream = fs.createReadStream(fullPath);
                                 const rl = readline.createInterface({
                                     input: fileStream,

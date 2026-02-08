@@ -63,8 +63,25 @@ export async function main(options: {
 
   try {
     if (interactive) log.info("Connecting to Notention Agent...");
-    await cli.connect();
-    if (interactive) log.success(`Connected to Notention Agent at ${MCP_URL}`);
+
+    // Connection retry logic
+    let connected = false;
+    let retries = 3;
+    while (!connected && retries > 0) {
+      try {
+        await cli.connect();
+        connected = true;
+        if (interactive) log.success(`Connected to Notention Agent at ${MCP_URL}`);
+      } catch (e) {
+        retries--;
+        if (retries > 0) {
+          if (interactive) log.warn(`Connection failed, retrying... (${retries} attempts left)`);
+          await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds before retry
+        } else {
+          throw new Error(`Failed to connect to Notention Agent after 3 attempts: ${e}`);
+        }
+      }
+    }
 
     let simTools: any[] = [];
 
@@ -72,7 +89,7 @@ export async function main(options: {
       try {
         if (interactive) log.info("Connecting to Simulation Agent...");
         await simCli.connect();
-        const simToolsResult = await simCli.listTools();
+        const simToolsResult = await withSpinner('Loading simulation tools...', () => simCli.listTools());
         simTools = simToolsResult.tools;
         if (interactive) log.success(`Connected to Simulation Agent at ${SIM_MCP_URL}`);
       } catch (e) {
@@ -114,16 +131,21 @@ export async function main(options: {
 
     // Perform health check
     if (interactive) {
-      const healthResult: any = await withSpinner(
-        'Checking LLM provider connection...',
-        () => provider.healthCheck()
-      );
+      try {
+        const healthResult: any = await withSpinner(
+          'Checking LLM provider connection...',
+          () => provider.healthCheck()
+        );
 
-      if (!healthResult.healthy) {
-        log.warn(`Provider health check failed: ${healthResult.message}`);
-        log.warn('Continuing anyway, but you may encounter errors...');
-      } else if (healthResult.message) {
-        log.success(healthResult.message);
+        if (!healthResult.healthy) {
+          log.warn(`Provider health check failed: ${healthResult.message}`);
+          log.warn('Continuing anyway, but you may encounter errors...');
+        } else if (healthResult.message) {
+          log.success(healthResult.message);
+        }
+      } catch (healthError: any) {
+         log.warn(`Provider health check failed: ${healthError.message || healthError}`);
+         log.warn('Continuing anyway, but you may encounter errors...');
       }
     }
 

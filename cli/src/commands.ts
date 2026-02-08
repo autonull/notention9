@@ -2,9 +2,10 @@ import chalk from 'chalk';
 import { CliClient } from './client.js';
 import { LlmSession } from './llm.js';
 import { log, withSpinner } from './utils.js';
-import { runSetupWizard } from './setup.js';
+import { SetupManager } from './setup-manager.js';
 import { ProviderFactory } from './providers/factory.js';
 import { configManager } from './config-manager.js';
+import path from 'path';
 
 export async function handleSlashCommand(input: string, cli: CliClient, tools: any[], session?: LlmSession): Promise<boolean> {
     const [cmd, ...args] = input.split(' ');
@@ -17,9 +18,28 @@ export async function handleSlashCommand(input: string, cli: CliClient, tools: a
             return true;
         case '/clear':
             console.clear();
+            if (session) {
+                session.clearHistory();
+            }
+            return true;
+        case '/save':
+            if (!session) {
+                log.error("Session unavailable.");
+                return true;
+            }
+            const savePath = args[0] || 'history.json';
+            await session.saveHistory(savePath);
+            return true;
+        case '/load':
+            if (!session) {
+                log.error("Session unavailable.");
+                return true;
+            }
+            const loadPath = args[0] || 'history.json';
+            await session.loadHistory(loadPath);
             return true;
         case '/setup':
-            await runSetupWizard(cli);
+            await SetupManager.runSetup(cli);
             return true;
         case '/tools':
             log.info(`Tools: ${tools.map(t => chalk.cyan(t.name)).join(", ")}`);
@@ -237,11 +257,13 @@ Commands:
   ${chalk.white('/provider <name>')}       - Switch to a different provider
   ${chalk.white('/tools')}                 - List available MCP tools
   ${chalk.white('/setup')}                 - Run the configuration wizard
+  ${chalk.white('/save [path]')}           - Save chat history to file
+  ${chalk.white('/load [path]')}           - Load chat history from file
   ${chalk.white('/security scan')}         - Scan notes for exposed secrets
   ${chalk.white('/scenarios')}             - List available test scenarios
   ${chalk.white('/run <id>')}              - Run a specific scenario
   ${chalk.white('/extract <text>')}        - Extract semantic properties
-  ${chalk.white('/clear')}                 - Clear the screen
+  ${chalk.white('/clear')}                 - Clear the screen and history
   ${chalk.white('/quit')}                  - Exit the CLI
             `));
             return true;
