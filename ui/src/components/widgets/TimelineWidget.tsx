@@ -16,17 +16,27 @@ interface TimelineWidgetProps {
 export function TimelineWidget({ events }: TimelineWidgetProps) {
   if (events.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500 italic">
+      <div
+        className="text-center py-8 text-gray-500 italic"
+        role="status"
+        aria-live="polite"
+      >
         No timeline events recorded.
       </div>
     );
   }
 
   return (
-    <div className="relative pl-4 border-l border-gray-700/50 space-y-6">
+    <ul
+      className="relative pl-4 border-l border-gray-700/50 space-y-6"
+      role="list"
+      aria-label="Timeline of events"
+    >
       {events.map((event) => (
-        <TimelineEventItem key={event.id} event={event} />
+        <li key={event.id} className="relative">
+          <TimelineEventItem event={event} />
+        </li>
       ))}
-    </div>
+    </ul>
   );
 }
