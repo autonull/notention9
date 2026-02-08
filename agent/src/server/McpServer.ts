@@ -1,6 +1,7 @@
 import { Express } from 'express';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
+import { Logger } from '@notention/core';
 import { McpToolRegistry } from './McpToolRegistry.js';
 import { PluginManager } from './PluginManager.js';
 import { CorePlugin } from './plugins/CorePlugin.js';
@@ -10,6 +11,7 @@ import { ConfigManager } from '../config/ConfigManager.js';
 
 export async function setupMcpServer(app: Express) {
     const config = ConfigManager.getInstance().getConfig();
+    const logger = Logger.getInstance();
 
     const server = new McpServer({
         name: config.mcp.serverName,
@@ -26,7 +28,7 @@ export async function setupMcpServer(app: Express) {
 
     // Register Tools
     registry.getToolDefinitions().forEach(tool => {
-        console.log(`Registering tool: ${tool.name}`);
+        logger.info(`Registering MCP tool: ${tool.name}`);
         server.registerTool(tool.name, {
             description: tool.description,
             inputSchema: tool.schema as any

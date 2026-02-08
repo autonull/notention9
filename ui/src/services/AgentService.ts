@@ -1,4 +1,4 @@
-import { Note, RobustWebSocket } from '@notention/core';
+import { Note, RobustWebSocket, generateId } from '@notention/core';
 import { capabilities } from '../config/Capabilities';
 
 interface AgentMessage {
@@ -100,9 +100,7 @@ class AgentService extends RobustWebSocket {
     }
 
     // Fallback to global variable
-    // @ts-ignore
     if (typeof window !== 'undefined' && window.AGENT_WS_URL) {
-      // @ts-ignore
       return window.AGENT_WS_URL;
     }
 
@@ -119,7 +117,7 @@ class AgentService extends RobustWebSocket {
     }
 
     return new Promise((resolve, reject) => {
-      const id = crypto.randomUUID();
+      const id = generateId();
       const timeout = setTimeout(() => {
         this.off('message', handler);
         reject(new Error('Timeout fetching notes'));
