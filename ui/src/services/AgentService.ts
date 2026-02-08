@@ -106,7 +106,7 @@ class AgentService extends RobustWebSocket {
         reject(new Error('Timeout fetching notes'));
       }, 5000);
 
-      const handler = (msg: any) => {
+      const handler = (msg: { type: string; id: string; payload: Note[] }) => {
         if (msg.type === 'notes_list' && msg.id === id) {
           clearTimeout(timeout);
           this.off('message', handler);

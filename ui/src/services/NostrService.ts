@@ -9,7 +9,7 @@ class NostrService {
     private pubkey: string | null = null;
     private logger = Logger.getInstance();
     private _upsertCallback: ((note: Note) => void) | null = null;
-    private _sub: any = null;
+    private _sub: { close: () => void } | null = null;
 
     constructor() {
         this.pool = new SimplePool();

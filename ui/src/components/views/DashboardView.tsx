@@ -3,8 +3,8 @@ import { useNotes } from '../../hooks/useNotes';
 import { useView } from '../../hooks/useViewContext';
 import { useSettings } from '../../hooks/useSettingsContext';
 import { agentService } from '../../services/AgentService';
-import { StatCard } from '../dashboard/StatCard';
-import { ActivityFeed } from '../dashboard/ActivityFeed';
+import { StatCard } from '../widgets/StatCard';
+import { ActivityFeed } from '../widgets/ActivityFeed';
 import {
     NoteIcon,
     WorldIcon,
