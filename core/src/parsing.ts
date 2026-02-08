@@ -256,6 +256,12 @@ const findPropertyInText = (text: string, prop: Property): { index: number; leng
   return null;
 };
 
+const appendPropertyToText = (text: string, tag: string): string => {
+  if (!tag) return text;
+  const suffix = text.trim().endsWith('</p>') ? `<p>${tag}</p>` : ` ${tag}`;
+  return text + suffix;
+};
+
 /**
  * Replaces a property in a text string (or HTML string) with a new one.
  * If oldProp is provided, it attempts to find and replace it.
@@ -273,8 +279,7 @@ export const replacePropertyInString = (
 
   // Append if no old property
   if (!oldProp) {
-      const suffix = text.trim().endsWith('</p>') ? `<p>${newTag}</p>` : ` ${newTag}`;
-      return text + suffix;
+      return appendPropertyToText(text, newTag);
   }
 
   // Find and Replace/Delete
@@ -286,10 +291,5 @@ export const replacePropertyInString = (
   }
 
   // Fallback: Append if not found but new tag exists
-  if (newTag) {
-    const suffix = text.trim().endsWith('</p>') ? `<p>${newTag}</p>` : ` ${newTag}`;
-    return text + suffix;
-  }
-
-  return text;
+  return appendPropertyToText(text, newTag);
 };

@@ -72,12 +72,7 @@ export class Bootstrap {
 
     this.skillExecutor = new AgentWorkflowSkillExecutor(voltagent, this.skillRegistry, onEvent);
 
-    // Register App-Specific Tools with VoltAgent
-    const { querySkillRegistryTool, executeSkillTool, ontologyQueryTool } = await import('./tools');
-    await voltagent.registerTool(querySkillRegistryTool);
-    await voltagent.registerTool(executeSkillTool);
-    await voltagent.registerTool(ontologyQueryTool);
-    log('Init', 'Registered app-specific tools with VoltAgent');
+    await this.registerTools(voltagent);
 
     // Event Handlers
     voltagent.onNoteReceived((note: Note) => {
@@ -106,5 +101,14 @@ export class Bootstrap {
     this.skillRegistry.register(new CraigslistSkill(), { tags: ['classifieds', 'search', 'craigslist'], domains: ['craigslist.org'] });
     this.skillRegistry.register(new GitHubSkill(), { tags: ['code', 'repo', 'github'], domains: ['github.com'] });
     this.skillRegistry.register(new ConfigSkill(), { tags: ['config', 'setting', 'system'], domains: [] });
+  }
+
+  private async registerTools(voltagent: VoltAgentProvider) {
+    // Register App-Specific Tools with VoltAgent
+    const { querySkillRegistryTool, executeSkillTool, ontologyQueryTool } = await import('./tools');
+    await voltagent.registerTool(querySkillRegistryTool);
+    await voltagent.registerTool(executeSkillTool);
+    await voltagent.registerTool(ontologyQueryTool);
+    log('Init', 'Registered app-specific tools with VoltAgent');
   }
 }
