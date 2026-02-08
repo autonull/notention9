@@ -1,8 +1,21 @@
 import { Command } from 'commander';
-import { configManager } from './config-manager.js';
+import { configManager, AppConfig } from './config-manager.js';
 import { ProviderFactory } from './providers/factory.js';
 import { LLMProviderConfig } from './providers/base.js';
 import { SetupManager } from './setup-manager.js';
+
+interface ConfigOptions {
+    get?: string;
+    set?: string;
+    list?: boolean;
+    reset?: boolean;
+}
+
+interface ProviderOptions {
+    list?: boolean;
+    current?: boolean;
+    switch?: string;
+}
 
 export class CLICommander {
   private program: Command;
@@ -32,24 +45,11 @@ export class CLICommander {
       .option('-s, --set <key=value>', 'Set a configuration value')
       .option('-l, --list', 'List all configuration values')
       .option('-r, --reset', 'Reset configuration to defaults')
-      .action(async (options) => {
+      .action(async (options: ConfigOptions) => {
         if (options.get) {
-          const config = configManager.getAll();
-          const value = (config as any)[options.get];
-          console.log(value !== undefined ? value : `Configuration key '${options.get}' not found`);
+          this.handleConfigGet(options.get);
         } else if (options.set) {
-          const [key, value] = options.set.split('=');
-          if (!key || value === undefined) {
-            console.error('Invalid format. Use: --set key=value');
-            return;
-          }
-          
-          const parsedValue = this.validateConfigValue(value);
-          
-          configManager.saveConfig({ [key]: parsedValue });
-          console.log(`Configuration '${key}' set to: ${parsedValue}`);
-        } else if (options.list) {
-          this.listConfig();
+          this.handleConfigSet(options.set);
         } else if (options.reset) {
           configManager.reset();
           console.log('Configuration reset to defaults');
@@ -59,6 +59,25 @@ export class CLICommander {
       });
   }
 
+  private handleConfigGet(key: string) {
+      const config = configManager.getAll();
+      const value = config[key as keyof AppConfig];
+      console.log(value !== undefined ? value : `Configuration key '${key}' not found`);
+  }
+
+  private handleConfigSet(keyValue: string) {
+      const [key, value] = keyValue.split('=');
+      if (!key || value === undefined) {
+        console.error('Invalid format. Use: --set key=value');
+        return;
+      }
+
+      const parsedValue = this.validateConfigValue(value);
+
+      configManager.saveConfig({ [key]: parsedValue });
+      console.log(`Configuration '${key}' set to: ${parsedValue}`);
+  }
+
   private setupProviderCommand() {
     this.program
       .command('provider')
@@ -66,24 +85,25 @@ export class CLICommander {
       .option('-l, --list', 'List available providers')
       .option('-c, --current', 'Show current provider')
       .option('-s, --switch <provider>', 'Switch to a different provider')
-      .action(async (options) => {
+      .action(async (options: ProviderOptions) => {
         if (options.list) {
-          const providers = ProviderFactory.getSupportedProviders();
-          console.log('Supported providers:');
-          providers.forEach(provider => {
-            const desc = ProviderFactory.getProviderDescription(provider);
-            console.log(`  ${provider}: ${desc}`);
-          });
-        } else if (options.current) {
-          const config = configManager.getAll();
-          console.log(`Current provider: ${config.provider || 'default'}`);
+          this.listProviders();
         } else if (options.switch) {
-          console.log('Launching setup wizard for provider switch...');
-          await SetupManager.runSetup();
+           console.log('Launching setup wizard for provider switch...');
+           await SetupManager.runSetup();
         } else {
-          const config = configManager.getAll();
-          console.log(`Current provider: ${config.provider || 'default'}`);
+           const config = configManager.getAll();
+           console.log(`Current provider: ${config.provider || 'default'}`);
         }
+      });
+  }
+
+  private listProviders() {
+      const providers = ProviderFactory.getSupportedProviders();
+      console.log('Supported providers:');
+      providers.forEach(provider => {
+        const desc = ProviderFactory.getProviderDescription(provider);
+        console.log(`  ${provider}: ${desc}`);
       });
   }
 
@@ -114,10 +134,11 @@ export class CLICommander {
       });
   }
 
-  private validateConfigValue(value: string): any {
+  private validateConfigValue(value: string): boolean | number | string {
       if (value === 'true') return true;
       if (value === 'false') return false;
-      if (!isNaN(Number(value))) return Number(value);
+      const num = Number(value);
+      if (!isNaN(num)) return num;
       return value;
   }
 
@@ -133,9 +154,7 @@ export class CLICommander {
    * Parse command line arguments and return as LLMProviderConfig
    */
   parseArgs(): Partial<LLMProviderConfig> {
-    this.program.parse();
     const options = this.program.opts();
-    
     return {
       provider: options.provider,
       model: options.model,
@@ -154,7 +173,7 @@ export class CLICommander {
       const { startInteractiveSession } = await import('./interactive.js');
       await startInteractiveSession({});
     } else {
-      this.program.parse();
+      await this.program.parseAsync(process.argv);
     }
   }
 }

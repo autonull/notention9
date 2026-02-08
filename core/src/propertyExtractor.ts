@@ -5,11 +5,25 @@ import { PropertyValidationError } from './errorTypes.js';
 import { parseQuantity } from './quantities.js';
 import { Logger } from './utils/logging.js';
 
+// Top-level Regex Constants
+const SEND_TO_REGEX = /(?:send|message)\s+(?:to|)\s+([+\w@#-]+)/i;
+const CHANNEL_REGEX = /(?:via|using|on|through)\s+(\w+)/i;
+const PHONE_REGEX = /(\+?\d{10,15})/;
+const EMAIL_REGEX = /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/;
+const BUDGET_REGEX = /(?:\$|USD\s*)(\d+(?:,\d{3})*(?:\.\d+)?)|(\d+(?:,\d{3})*(?:\.\d+)?)\s*(?:USD|dollars?)/i;
+
+const TYPE_CHECKERS = {
+    NUMBER: /^-?\d+(\.\d+)?$/,
+    DATE: /^\d{4}-\d{2}-\d{2}/,
+    DATETIME: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/,
+    GEO: /^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/
+};
+
 const INTENTS = [
     { key: 'reminder', regex: /remind.*me.*(to|about|that).*|set.*reminder/i },
     { key: 'schedule', regex: /schedule|book|plan|arrange.*for|appointment.*with/i },
     { key: 'communication', regex: /email|send.*message|text|call|contact.*about/i },
-    { key: 'task', regex: /todo|to-do|task|do.*later|need.*to|want.*to/i }, // Added broad "need/want to"
+    { key: 'task', regex: /todo|to-do|task|do.*later|need.*to|want.*to/i },
     { key: 'shopping', regex: /buy|purchase|order|get.*from|shop.*for/i },
     { key: 'health', regex: /medication|take.*pill|doctor.*appointment|exercise|workout/i }
 ];
@@ -26,20 +40,21 @@ const DATE_PATTERNS = [
     { regex: /yesterday/i, offset: -1 }
 ];
 
-const BUDGET_REGEX = /(?:\$|USD\s*)(\d+(?:,\d{3})*(?:\.\d+)?)|(\d+(?:,\d{3})*(?:\.\d+)?)\s*(?:USD|dollars?)/i;
-
 const STOP_WORDS = new Set(['with', 'the', 'and', 'for', 'from', 'near', 'about', 'that', 'this']);
+
+import { PropertyType } from './types/index.js';
+
+type ExtractionStrategy = (text: string, properties: Property[]) => void;
 
 export class PropertyExtractor {
     private ontologyService: OntologyService;
     private logger: Logger;
-    private strategies: ((text: string, properties: Property[]) => void)[];
+    private strategies: ExtractionStrategy[];
 
     constructor(ontology = DEFAULT_ONTOLOGY) {
         this.ontologyService = new OntologyService(ontology);
         this.logger = Logger.getInstance();
 
-        // Initialize strategies with bound methods
         this.strategies = [
             this.applyIntentStrategy.bind(this),
             this.applySendToStrategy.bind(this),
@@ -55,7 +70,9 @@ export class PropertyExtractor {
 
     extractFromText(text: string): Property[] {
         const properties: Property[] = [];
-        this.strategies.forEach(strategy => strategy(text, properties));
+        for (const strategy of this.strategies) {
+            strategy(text, properties);
+        }
         return properties;
     }
 
@@ -68,31 +85,32 @@ export class PropertyExtractor {
     }
 
     private applySendToStrategy(text: string, properties: Property[]): void {
-        const match = text.toLowerCase().match(/(?:send|message)\s+(?:to|)\s+([+\w@#-]+)/);
+        const match = text.match(SEND_TO_REGEX);
         if (match) {
             properties.push({ key: 'to', operator: 'send to', values: [match[1]] });
         }
     }
 
     private applyChannelStrategy(text: string, properties: Property[]): void {
-        const match = text.toLowerCase().match(/(?:via|using|on|through)\s+(\w+)/);
+        const match = text.match(CHANNEL_REGEX);
         if (match) {
-            const channel = match[1];
-            if (this.ontologyService.getEnumOptions('channel')?.includes(channel)) {
+            const channel = match[1].toLowerCase(); // Normalize to lowercase
+            const enumOptions = this.ontologyService.getEnumOptions('channel');
+            if (enumOptions?.includes(channel)) {
                 properties.push({ key: 'channel', operator: 'is', values: [channel] });
             }
         }
     }
 
     private applyPhoneStrategy(text: string, properties: Property[]): void {
-        const match = text.match(/(\+?\d{10,15})/);
+        const match = text.match(PHONE_REGEX);
         if (match && !properties.some(p => p.key === 'to')) {
             properties.push({ key: 'from', operator: 'is', values: [match[1]] });
         }
     }
 
     private applyEmailStrategy(text: string, properties: Property[]): void {
-        const match = text.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
+        const match = text.match(EMAIL_REGEX);
         if (match) {
             properties.push({ key: 'email', operator: 'is', values: [match[1]] });
         }
@@ -124,7 +142,6 @@ export class PropertyExtractor {
         const match = text.match(BUDGET_REGEX);
         if (match) {
             const amount = match[1] || match[2];
-            // Normalize amount by removing commas
             const normalizedAmount = amount.replace(/,/g, '');
             properties.push({ key: 'budget', operator: 'is', values: [normalizedAmount] });
         }
@@ -132,8 +149,7 @@ export class PropertyExtractor {
 
     private applyFuzzyMatchingStrategy(text: string, properties: Property[]): void {
         const words = text.split(/\s+/).filter(w => w.length > 3);
-        const existingKeys = new Set<string>();
-        for (const p of properties) existingKeys.add(p.key);
+        const existingKeys = new Set(properties.map(p => p.key));
 
         for (const [index, word] of words.entries()) {
             const matches = this.ontologyService.getFuzzyMatches(word, 1);
@@ -147,12 +163,12 @@ export class PropertyExtractor {
         }
     }
 
-    inferType(value: string): string {
+    inferType(value: string): PropertyType {
         if (this.parseQuantityValue(value)) return 'quantity';
-        if (/^-?\d+(\.\d+)?$/.test(value)) return 'number';
-        if (/^\d{4}-\d{2}-\d{2}/.test(value)) return 'date';
-        if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(value)) return 'datetime';
-        if (/^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/.test(value)) return 'geo';
+        if (TYPE_CHECKERS.NUMBER.test(value)) return 'number';
+        if (TYPE_CHECKERS.DATE.test(value)) return 'date';
+        if (TYPE_CHECKERS.DATETIME.test(value)) return 'datetime';
+        if (TYPE_CHECKERS.GEO.test(value)) return 'geo';
         return 'string';
     }
 
@@ -174,9 +190,11 @@ export class PropertyExtractor {
 
         const enumOptions = this.ontologyService.getEnumOptions(key);
         if (enumOptions) {
-            values.forEach(v => {
-                if (!enumOptions.includes(v)) errors.push(`Value '${v}' not in enum options for '${key}'`);
-            });
+            for (const v of values) {
+                if (!enumOptions.includes(v)) {
+                    errors.push(`Value '${v}' not in enum options for '${key}'`);
+                }
+            }
         }
 
         return { valid: errors.length === 0, errors };

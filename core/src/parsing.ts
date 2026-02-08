@@ -23,10 +23,10 @@ const COMMON_WORDS = new Set([
 ]);
 
 // Pre-compiled Regexes
-const WORD_OP_REGEX = /^([^\s]+)\s+(is|contains|before|after|less than|greater than|between|range|not)\s+(.+)$/;
+const WORD_OP_REGEX = /^([^\s]+)\s+(is|contains|before|after|less than|greater than|between|range|not)\s+(.+)$/i;
 const GENERAL_SYM_REGEX = /^([^\s]+)\s*([<>=!]+)\s*(.+)$/;
-const SIMPLE_COLON_REGEX = /^([^\s]+):(.+)$/;
-const SIMPLE_SPACE_REGEX = /^([^\s]+)\s+(.+)$/;
+const COLON_REGEX = /^([^\s]+):(.+)$/;
+const SPACE_REGEX = /^([^\s]+)\s+(.+)$/;
 const VALID_KEY_REGEX = /^[a-zA-Z][a-zA-Z0-9_.-]*$/;
 const BRACKET_REGEX = /\[([^\]]+)\]/g;
 const MACRO_REGEX = /@([a-zA-Z0-9_]+)/g;
@@ -47,119 +47,105 @@ const SYMBOLIC_REGEXES = Object.keys(SYMBOL_TO_OP)
   });
 
 // Strategy Pattern for Property Parsing
-interface PropertyParser {
-  name: string;
-  parse: (content: string) => Property | null;
-}
+type PropertyParser = (content: string) => Property | null;
 
-const PARSERS: PropertyParser[] = [
-  {
-    name: 'Standard Colon Format',
-    parse: (content: string) => {
-      const colons = content.split(':');
-      if (colons.length < 3) return null;
-
-      const key = resolveAlias(colons[0].trim());
-      const op = colons[1].trim();
-      const val = colons.slice(2).join(':').trim();
-
-      return {
-        key,
-        operator: op,
-        values: val.split(',').map(v => v.trim())
-      };
+const parseColonFormat: PropertyParser = (content) => {
+    const colons = content.split(':');
+    if (colons.length >= 3) {
+        // key:op:val
+        const key = resolveAlias(colons[0].trim());
+        const op = colons[1].trim();
+        const val = colons.slice(2).join(':').trim();
+        return {
+            key,
+            operator: op,
+            values: val.split(',').map(v => v.trim())
+        };
+    } else if (colons.length === 2) {
+        // key:val (implicit 'is')
+        return {
+            key: resolveAlias(colons[0].trim()),
+            operator: 'is',
+            values: colons[1].trim().split(',').map(v => v.trim())
+        };
     }
-  },
-  {
-    name: 'Symbolic Operators',
-    parse: (content: string) => {
-      for (const { regex, op } of SYMBOLIC_REGEXES) {
+    return null;
+};
+
+const parseSymbolicFormat: PropertyParser = (content) => {
+    for (const { regex, op } of SYMBOLIC_REGEXES) {
         const symMatch = content.match(regex);
         if (symMatch) {
-          return {
-            key: resolveAlias(symMatch[1].trim()),
-            operator: op,
-            values: symMatch[3].trim().split(',').map(v => v.trim())
-          };
+            return {
+                key: resolveAlias(symMatch[1].trim()),
+                operator: op,
+                values: symMatch[3].trim().split(',').map(v => v.trim())
+            };
         }
-      }
-      return null;
     }
-  },
-  {
-    name: 'Word Operators',
-    parse: (content: string) => {
-      const match = content.match(WORD_OP_REGEX);
-      if (!match) return null;
 
-      const [, rawKey, op, val] = match;
-      const key = resolveAlias(rawKey.trim());
+    // Fallback for general symbols not in the map but matching the pattern
+    const match = content.match(GENERAL_SYM_REGEX);
+    if (match) {
+        const [, rawKey, op, val] = match;
+        const key = resolveAlias(rawKey.trim());
 
-      if (!VALID_KEY_REGEX.test(key) || COMMON_WORDS.has(key.toLowerCase())) {
-        return null;
-      }
+        let canonicalOp = op.trim();
+        if (op === '!=') canonicalOp = 'is not';
+        else if (op === '<=') canonicalOp = 'less than or equal';
+        else if (op === '>=') canonicalOp = 'greater than or equal';
 
-      return {
-        key,
-        operator: op.trim(),
-        values: val.trim().split(',').map(v => v.trim())
-      };
+        return {
+            key,
+            operator: canonicalOp,
+            values: val.trim().split(',').map(v => v.trim())
+        };
     }
-  },
-  {
-    name: 'General Symbols',
-    parse: (content: string) => {
-      const match = content.match(GENERAL_SYM_REGEX);
-      if (!match) return null;
+    return null;
+};
 
-      const [, rawKey, op, val] = match;
-      const key = resolveAlias(rawKey.trim());
+const parseWordFormat: PropertyParser = (content) => {
+    // Explicit word operators
+    const wordMatch = content.match(WORD_OP_REGEX);
+    if (wordMatch) {
+        const [, rawKey, op, val] = wordMatch;
+        const key = resolveAlias(rawKey.trim());
 
-      let canonicalOp = op.trim();
-      if (op === '!=') canonicalOp = 'is not';
-      else if (op === '<=') canonicalOp = 'less than or equal';
-      else if (op === '>=') canonicalOp = 'greater than or equal';
+        if (!VALID_KEY_REGEX.test(key) || COMMON_WORDS.has(key.toLowerCase())) {
+            return null;
+        }
 
-      return {
-        key,
-        operator: canonicalOp,
-        values: val.trim().split(',').map(v => v.trim())
-      };
+        return {
+            key,
+            operator: op.trim(),
+            values: val.trim().split(',').map(v => v.trim())
+        };
     }
-  },
-  {
-    name: 'Simple Colon (Backcompat)',
-    parse: (content: string) => {
-      const match = content.match(SIMPLE_COLON_REGEX);
-      if (!match) return null;
 
-      return {
-        key: resolveAlias(match[1].trim()),
-        operator: 'is',
-        values: match[2].trim().split(',').map(v => v.trim())
-      };
+    // Simple space format (implicit 'is')
+    const spaceMatch = content.match(SPACE_REGEX);
+    if (spaceMatch) {
+         const [, rawKey, val] = spaceMatch;
+         const key = resolveAlias(rawKey.trim());
+
+         if (!VALID_KEY_REGEX.test(key) || COMMON_WORDS.has(key.toLowerCase())) {
+             return null;
+         }
+
+         return {
+             key,
+             operator: 'is',
+             values: val.trim().split(',').map(v => v.trim())
+         };
     }
-  },
-  {
-    name: 'Simple Space',
-    parse: (content: string) => {
-      const match = content.match(SIMPLE_SPACE_REGEX);
-      if (!match) return null;
 
-      const [, rawKey, val] = match;
-      const key = resolveAlias(rawKey.trim());
+    return null;
+};
 
-      if (!VALID_KEY_REGEX.test(key) || COMMON_WORDS.has(key.toLowerCase())) {
-        return null;
-      }
-
-      return {
-        key,
-        operator: 'is',
-        values: val.trim().split(',').map(v => v.trim())
-      };
-    }
-  }
+const PARSERS: PropertyParser[] = [
+    parseColonFormat,
+    parseSymbolicFormat,
+    parseWordFormat
 ];
 
 /**
@@ -167,7 +153,7 @@ const PARSERS: PropertyParser[] = [
  */
 const parsePropertyBlock = (content: string): Property | null => {
   for (const parser of PARSERS) {
-    const result = parser.parse(content);
+    const result = parser(content);
     if (result) return result;
   }
   return null;
