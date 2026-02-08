@@ -1,10 +1,11 @@
 import { Note, RobustWebSocket, generateId } from '@notention/core';
 import { capabilities } from '../config/Capabilities';
 
-interface AgentMessage {
+interface AgentMessage<T = any> {
     type: string;
     id?: string;
-    payload?: any;
+    payload?: T;
+    error?: string;
 }
 
 class AgentService extends RobustWebSocket {
@@ -107,33 +108,42 @@ class AgentService extends RobustWebSocket {
     return null;
   }
 
+  /**
+   * Generic request-response handler
+   */
+  private request<T>(type: string, payload?: any, timeoutMs = 5000): Promise<T> {
+      if (!this._enabled) return Promise.reject(new Error('Agent disabled'));
+      if (!this.isOnlineMode) return Promise.reject(new Error('Offline'));
+
+      return new Promise((resolve, reject) => {
+          const id = generateId();
+          const timer = setTimeout(() => {
+              this.off('message', handler);
+              reject(new Error(`Timeout waiting for response to ${type}`));
+          }, timeoutMs);
+
+          const handler = (msg: AgentMessage) => {
+              // Check if message correlates to our request ID
+              // Assuming server echoes ID or we wrap response in standard envelope
+              if (msg.id === id) {
+                  clearTimeout(timer);
+                  this.off('message', handler);
+
+                  if (msg.error) {
+                      reject(new Error(msg.error));
+                  } else {
+                      resolve(msg.payload as T);
+                  }
+              }
+          };
+
+          this.on('message', handler);
+          this.send({ type, id, payload });
+      });
+  }
+
   async fetchNotes(): Promise<Note[]> {
-    if (!this._enabled) {
-      return [];
-    }
-
-    if (!this.isOnlineMode) {
-      return Promise.reject(new Error('Offline'));
-    }
-
-    return new Promise((resolve, reject) => {
-      const id = generateId();
-      const timeout = setTimeout(() => {
-        this.off('message', handler);
-        reject(new Error('Timeout fetching notes'));
-      }, 5000);
-
-      const handler = (msg: AgentMessage) => {
-        if (msg.type === 'notes_list' && msg.id === id) {
-          clearTimeout(timeout);
-          this.off('message', handler);
-          resolve(msg.payload as Note[]);
-        }
-      };
-
-      this.on('message', handler);
-      this.send({ type: 'get_notes', id });
-    });
+      return this.request<Note[]>('get_notes');
   }
 
   async saveNote(note: Note): Promise<void> {

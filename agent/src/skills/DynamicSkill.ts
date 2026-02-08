@@ -64,18 +64,6 @@ export class DynamicSkill implements Skill {
         }
 
         // Return a special action that the AgentWorkflowSkillExecutor or ToolAdapter understands
-        // Note: The Core `ActionSequence` expects `actions` to be BrowserActions usually.
-        // However, `agent/src/tools.ts` handles `action.type === 'prompt'` specially.
-        // We will return an object that looks like an ActionSequence but contains our special payload
-        // disguised or extended.
-
-        // Actually, looking at `tools.ts` in memory, it checks `if (action.type === 'prompt')`.
-        // But `exportToActions` returns `ActionSequence`.
-        // `ActionSequence` has `actions: Action[]`.
-        // We might need to cast or abuse the type system slightly if Core doesn't support 'prompt' actions yet.
-        // Or we can assume `tools.ts` uses `skill.export(note)` (legacy) which returns `any`.
-        // Let's implement `export` as well for compatibility with `tools.ts`.
-
         return {
             id: `exec-${this.id}-${Date.now()}`,
             name: `Execute ${this.name}`,
@@ -90,15 +78,9 @@ export class DynamicSkill implements Skill {
         };
     }
 
-    // Legacy method supported by `tools.ts`
-    async export(note: Note): Promise<any> {
-        const sequence = this.exportToActions(note);
-        return (sequence as any).customAction;
-    }
-
-    import(results: any[]): Note[] {
+    importFromData(data: any[], sourceNote: Note): Note[] {
         // Generic import: just wrap the result
-        return results.map((res, idx) => ({
+        return data.map((res, idx) => ({
             id: crypto.randomUUID(),
             title: `${this.name} Result ${idx + 1}`,
             content: typeof res === 'string' ? res : JSON.stringify(res, null, 2),
@@ -110,9 +92,5 @@ export class DynamicSkill implements Skill {
             privacy: 'private',
             priority: 0
         }));
-    }
-
-    importFromData(data: any[], sourceNote: Note): Note[] {
-        return this.import(data);
     }
 }
