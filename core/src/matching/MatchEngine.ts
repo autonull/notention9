@@ -1,5 +1,4 @@
 import { Note, Property, OntologyNode, NoteSource } from '../types/index.js';
-import { matchingService, MatchResultDetails } from './MatchingService.js';
 import { findAttributeDef } from '../ontologyHelpers.js';
 import { haversineDistance, parseGeo } from '../spacetime.js';
 
@@ -83,13 +82,6 @@ export class MatchEngine {
         // If we don't know the type, fallback to string matching
         const type = attributeDef?.type || 'string';
 
-        // Get values
-        const reqVal = req.values[0]; // Constraint value
-        const offVal = off.values[0]; // Fact value
-
-        let compatibility = 0;
-        let reason = '';
-
         switch (type) {
             case 'number':
                 return this.evaluateNumber(req, off);
@@ -105,26 +97,33 @@ export class MatchEngine {
         }
     }
 
+    private parseNumber(val: string): number | null {
+        const num = parseFloat(val);
+        return isNaN(num) ? null : num;
+    }
+
     private evaluateNumber(req: Property, off: Property): PropertyMatch {
-        const oVal = parseFloat(off.values[0]);
-        if (isNaN(oVal)) {
+        const oVal = this.parseNumber(off.values[0]);
+        if (oVal === null) {
             return { requestProp: req, offerProp: off, compatibility: 0, reason: 'Invalid number' };
         }
 
         if (req.operator === 'between') {
-            let min: number, max: number;
+            let min: number | null = null;
+            let max: number | null = null;
+
             if (req.values.length >= 2) {
-                min = parseFloat(req.values[0]);
-                max = parseFloat(req.values[1]);
+                min = this.parseNumber(req.values[0]);
+                max = this.parseNumber(req.values[1]);
             } else if (req.values[0] && req.values[0].includes('-')) {
                 const parts = req.values[0].split('-');
-                min = parseFloat(parts[0]);
-                max = parseFloat(parts[1]);
+                min = this.parseNumber(parts[0]);
+                max = this.parseNumber(parts[1]);
             } else {
                 return { requestProp: req, offerProp: off, compatibility: 0, reason: 'Invalid range format' };
             }
 
-            if (isNaN(min) || isNaN(max)) {
+            if (min === null || max === null) {
                 return { requestProp: req, offerProp: off, compatibility: 0, reason: 'Invalid range values' };
             }
 
@@ -134,8 +133,8 @@ export class MatchEngine {
             return { requestProp: req, offerProp: off, compatibility: -1, reason: `${oVal} is outside ${min}-${max}` };
         }
 
-        const rVal = parseFloat(req.values[0]);
-        if (isNaN(rVal)) {
+        const rVal = this.parseNumber(req.values[0]);
+        if (rVal === null) {
              return { requestProp: req, offerProp: off, compatibility: 0, reason: 'Invalid comparison value' };
         }
 
@@ -168,8 +167,8 @@ export class MatchEngine {
 
             // Check for configurable radius in 2nd value
             if (req.values[1]) {
-                const parsedRadius = parseFloat(req.values[1]);
-                if (!isNaN(parsedRadius)) {
+                const parsedRadius = this.parseNumber(req.values[1]);
+                if (parsedRadius !== null) {
                     maxDist = parsedRadius;
                 }
             }
@@ -228,33 +227,18 @@ export class MatchEngine {
              return { requestProp: req, offerProp: off, compatibility: 1, reason: `Excludes '${req.values[0]}'` };
         }
 
-        // Use legacy matching service for robust string matching (Levenshtein, etc.)
-        const legacyMatch = matchingService.checkConstraint(req, { ...matchableNote(off), properties: [off] });
+        // Fuzzy match implementation
+        const isMatch = normalizedOffVals.some(v => {
+            if (v === normalizedReqVal) return true;
+            if (v.includes(normalizedReqVal) || normalizedReqVal.includes(v)) return true;
+            // Simple Levenshtein check for small typos could go here, but strict contains/equality is safer for now without deps
+            return false;
+        });
 
-        if (legacyMatch) {
+        if (isMatch) {
             return { requestProp: req, offerProp: off, compatibility: 1, reason: 'String match' };
         }
 
         return { requestProp: req, offerProp: off, compatibility: 0, reason: 'No match' };
     }
-}
-
-// Helper to create a dummy note wrapper
-function matchableNote(prop: Property): Note {
-    return {
-        id: 'temp',
-        title: '',
-        content: '',
-        tags: [],
-        properties: [prop],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        source: {
-            type: 'inference',
-            identifier: 'match-engine',
-            timestamp: Date.now()
-        },
-        privacy: 'private',
-        priority: 1
-    } as Note;
 }

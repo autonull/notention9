@@ -18,7 +18,13 @@ export class CLICommander {
       .description('Notention CLI - Agentic text UI for knowledge management')
       .version('1.0.0');
 
-    // Config command
+    this.setupConfigCommand();
+    this.setupProviderCommand();
+    this.setupSetupCommand();
+    this.setupRunCommand();
+  }
+
+  private setupConfigCommand() {
     this.program
       .command('config')
       .description('Manage configuration')
@@ -38,34 +44,22 @@ export class CLICommander {
             return;
           }
           
-          // Convert value to appropriate type
-          let parsedValue: any = value;
-          if (value === 'true') parsedValue = true;
-          else if (value === 'false') parsedValue = false;
-          else if (!isNaN(Number(value))) parsedValue = Number(value);
+          const parsedValue = this.validateConfigValue(value);
           
           configManager.saveConfig({ [key]: parsedValue });
           console.log(`Configuration '${key}' set to: ${parsedValue}`);
         } else if (options.list) {
-          const config = configManager.getAll();
-          console.log('Current configuration:');
-          for (const [key, value] of Object.entries(config)) {
-            console.log(`  ${key}: ${value}`);
-          }
+          this.listConfig();
         } else if (options.reset) {
           configManager.reset();
           console.log('Configuration reset to defaults');
         } else {
-          // Default: show current config
-          const config = configManager.getAll();
-          console.log('Current configuration:');
-          for (const [key, value] of Object.entries(config)) {
-            console.log(`  ${key}: ${value}`);
-          }
+          this.listConfig();
         }
       });
+  }
 
-    // Provider command
+  private setupProviderCommand() {
     this.program
       .command('provider')
       .description('Manage LLM providers')
@@ -87,21 +81,22 @@ export class CLICommander {
           console.log('Launching setup wizard for provider switch...');
           await SetupManager.runSetup();
         } else {
-          // Default: show current provider
           const config = configManager.getAll();
           console.log(`Current provider: ${config.provider || 'default'}`);
         }
       });
+  }
 
-    // Setup command
+  private setupSetupCommand() {
     this.program
       .command('setup')
       .description('Interactive setup wizard')
       .action(async () => {
         await SetupManager.runSetup();
       });
+  }
 
-    // Run command (the main functionality)
+  private setupRunCommand() {
     this.program
       .command('run')
       .description('Run the Notention CLI')
@@ -114,10 +109,24 @@ export class CLICommander {
       .option('--sim, --simulation', 'Enable simulation mode')
       .argument('[command]', 'Optional command to run directly')
       .action(async (command, options) => {
-        // Import and run the main CLI here
         const { startInteractiveSession } = await import('./interactive.js');
         await startInteractiveSession({ ...options, command });
       });
+  }
+
+  private validateConfigValue(value: string): any {
+      if (value === 'true') return true;
+      if (value === 'false') return false;
+      if (!isNaN(Number(value))) return Number(value);
+      return value;
+  }
+
+  private listConfig() {
+      const config = configManager.getAll();
+      console.log('Current configuration:');
+      for (const [key, value] of Object.entries(config)) {
+        console.log(`  ${key}: ${value}`);
+      }
   }
 
   /**
@@ -127,7 +136,6 @@ export class CLICommander {
     this.program.parse();
     const options = this.program.opts();
     
-    // Map commander options to LLMProviderConfig
     return {
       provider: options.provider,
       model: options.model,
@@ -142,9 +150,7 @@ export class CLICommander {
    * Run the CLI
    */
   async run() {
-    // If no command is specified, run the default behavior
     if (!process.argv.slice(2).length) {
-      // Import and run the main CLI here
       const { startInteractiveSession } = await import('./interactive.js');
       await startInteractiveSession({});
     } else {
