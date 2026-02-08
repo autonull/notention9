@@ -12,6 +12,8 @@ export interface LogEntry {
   error?: Error;
 }
 
+const LOG_LEVELS: LogLevel[] = ['debug', 'info', 'warn', 'error'];
+
 export class Logger {
   private static instance: Logger;
   private logLevel: LogLevel = 'info';
@@ -32,47 +34,50 @@ export class Logger {
   }
 
   private shouldLog(level: LogLevel): boolean {
-    const levels: LogLevel[] = ['debug', 'info', 'warn', 'error'];
-    return levels.indexOf(level) >= levels.indexOf(this.logLevel);
+    return LOG_LEVELS.indexOf(level) >= LOG_LEVELS.indexOf(this.logLevel);
   }
 
-  private addToHistory(entry: LogEntry): void {
-    this.logHistory.push(entry);
-    if (this.logHistory.length > this.maxLogEntries) {
-      this.logHistory.shift();
-    }
+  private log(level: LogLevel, message: string, context?: any, error?: Error): void {
+      if (!this.shouldLog(level)) return;
+
+      const entry: LogEntry = {
+          timestamp: Date.now(),
+          level,
+          message,
+          context,
+          error
+      };
+
+      this.logHistory.push(entry);
+      if (this.logHistory.length > this.maxLogEntries) {
+          this.logHistory.shift();
+      }
+
+      const consoleArgs = [context].filter(arg => arg !== undefined);
+      if (error) consoleArgs.push(error);
+
+      switch (level) {
+          case 'debug': console.debug(`[DEBUG] ${message}`, ...consoleArgs); break;
+          case 'info': console.info(`[INFO] ${message}`, ...consoleArgs); break;
+          case 'warn': console.warn(`[WARN] ${message}`, ...consoleArgs); break;
+          case 'error': console.error(`[ERROR] ${message}`, ...consoleArgs); break;
+      }
   }
 
   debug(message: string, context?: any): void {
-    if (this.shouldLog('debug')) {
-      const entry: LogEntry = { timestamp: Date.now(), level: 'debug', message, context };
-      this.addToHistory(entry);
-      console.debug(`[DEBUG] ${message}`, context);
-    }
+    this.log('debug', message, context);
   }
 
   info(message: string, context?: any): void {
-    if (this.shouldLog('info')) {
-      const entry: LogEntry = { timestamp: Date.now(), level: 'info', message, context };
-      this.addToHistory(entry);
-      console.info(`[INFO] ${message}`, context);
-    }
+    this.log('info', message, context);
   }
 
   warn(message: string, context?: any): void {
-    if (this.shouldLog('warn')) {
-      const entry: LogEntry = { timestamp: Date.now(), level: 'warn', message, context };
-      this.addToHistory(entry);
-      console.warn(`[WARN] ${message}`, context);
-    }
+    this.log('warn', message, context);
   }
 
   error(message: string, error?: Error, context?: any): void {
-    if (this.shouldLog('error')) {
-      const entry: LogEntry = { timestamp: Date.now(), level: 'error', message, error, context };
-      this.addToHistory(entry);
-      console.error(`[ERROR] ${message}`, error || context);
-    }
+    this.log('error', message, context, error);
   }
 
   getLogs(level?: LogLevel, limit?: number): LogEntry[] {
