@@ -81,28 +81,40 @@ export function OntologyView() {
   const safeActiveTab = activeTab === 'simulator' ? 'graph' : activeTab;
 
   return (
-    <div className="p-4 md:p-8 h-full overflow-y-auto bg-gray-800/50 rounded-lg flex flex-col">
-      <div className="flex-shrink-0 flex flex-col md:flex-row justify-between items-start md:items-center mb-6 border-b border-gray-700 pb-4 gap-4">
-        <div className="flex items-center gap-4">
-          <h2 className="text-xl font-bold text-white">Ontology</h2>
-          {safeActiveTab === 'graph' && (
+    <div className="p-4 md:p-6 h-full overflow-y-auto bg-gray-900 text-white custom-scrollbar">
+      <div className="flex flex-col gap-4 mb-6 border-b border-gray-700/50 pb-4">
+
+        <div className="flex justify-between items-center">
+            <h2 className="text-xl font-bold text-white">Ontology</h2>
+
             <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-400">Edit Mode</span>
-              <Toggle checked={isEditing} onChange={() => setIsEditing(p => !p)} />
+                {safeActiveTab === 'graph' && (
+                    <div className="flex items-center gap-2 mr-2">
+                    <span className="text-xs text-gray-400 hidden sm:inline">Edit Mode</span>
+                    <Toggle checked={isEditing} onChange={() => setIsEditing(p => !p)} />
+                    </div>
+                )}
+
+                <div className="overflow-x-auto">
+                    <Tabs
+                        tabs={tabs}
+                        activeTab={safeActiveTab}
+                        onChange={(id) => setActiveTab(id as OntologyTab)}
+                        className="bg-gray-800 p-1 rounded-lg"
+                    />
+                </div>
             </div>
-          )}
         </div>
 
-        <div className="flex items-center gap-4 ml-auto">
-          {settings.developerMode && (
-            <>
+        {settings.developerMode && (
+            <div className="flex items-center gap-2 overflow-x-auto pb-1">
               <Button
                 onClick={handleOptimize}
                 disabled={isEvolving}
                 isLoading={isEvolving}
                 variant="primary"
                 size="xs"
-                className="bg-blue-700/80 hover:bg-blue-600"
+                className="bg-blue-700/80 hover:bg-blue-600 flex-shrink-0"
               >
                 Optimize
               </Button>
@@ -113,19 +125,12 @@ export function OntologyView() {
                 isLoading={isEvolving}
                 variant="success"
                 size="xs"
-                className="bg-green-700/80 hover:bg-green-600"
+                className="bg-green-700/80 hover:bg-green-600 flex-shrink-0"
               >
                 {isEvolving ? 'Updating...' : 'Update Ontology'}
               </Button>
-            </>
-          )}
-
-          <Tabs
-            tabs={tabs}
-            activeTab={safeActiveTab}
-            onChange={(id) => setActiveTab(id as OntologyTab)}
-          />
-        </div>
+            </div>
+        )}
       </div>
 
       <div className="flex-grow overflow-y-auto">

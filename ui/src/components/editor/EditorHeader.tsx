@@ -114,8 +114,8 @@ export function EditorHeader({
 
         {id && <SkillExecutionIndicator noteId={id} />}
 
-        {/* Privacy Control Inline */}
-        <div className="mr-2">
+        {/* Privacy Control Inline - Always visible, especially on mobile */}
+        <div className="flex-shrink-0 mr-2">
             <PrivacyControl note={note} onUpdate={onUpdateNote} />
         </div>
 
