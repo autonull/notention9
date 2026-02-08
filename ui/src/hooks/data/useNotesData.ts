@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useLocalForage } from '../useLocalForage';
 import { createNote, matchingService, parseProperties, Logger, haversineDistance } from '@notention/core';
-import type { Note, SortOrder, GeoCoords } from '@notention/core';
+import type { Note, SortOrder, GeoCoords, Property } from '@notention/core';
 import { agentService } from '../../services/AgentService';
 import { nostrService } from '../../services/NostrService';
 import { augmentNote, NoteMetadata } from './noteUtils';
@@ -22,6 +22,34 @@ export interface UseNotesDataResult {
         userLocation?: GeoCoords | null
     ) => Note[];
 }
+
+// Lightweight property check helper to avoid instantiating full MatchEngine in UI hook
+const checkPropertyMatch = (constraint: Property, note: Note): boolean => {
+    return note.properties.some(p => {
+        if (p.key !== constraint.key) return false;
+
+        // Simple value check for now (string/number equality or inclusion)
+        // This restores the basic filtering capability
+        const pVal = p.values[0]?.toLowerCase().trim();
+        const cVal = constraint.values[0]?.toLowerCase().trim();
+
+        if (!pVal || !cVal) return false;
+
+        switch (constraint.operator) {
+            case 'is':
+            case '=':
+            case ':':
+                return pVal === cVal;
+            case 'contains':
+                return pVal.includes(cVal);
+            case 'excludes':
+                return !pVal.includes(cVal);
+            default:
+                // Fallback for other operators: just check key existence if operator matches
+                return p.operator === constraint.operator;
+        }
+    });
+};
 
 export const useNotesData = (driver?: LocalForage): UseNotesDataResult => {
     const [notes, setNotes, loading] = useLocalForage<Note[]>(
@@ -170,10 +198,9 @@ export const useNotesData = (driver?: LocalForage): UseNotesDataResult => {
             });
 
             filtered = notesWithMetadata.filter((note) => {
-                // Semantic check removed/simplified as matchingService checkConstraint is deprecated
-                // For now, rely on property match if constraints exist
+                // Check structured constraints [key:op:val]
                 const semanticMatch = constraints.length > 0 ?
-                    constraints.every(c => note.properties.some(p => p.key === c.key && p.operator === c.operator)) : true;
+                    constraints.every(c => checkPropertyMatch(c, note)) : true;
 
                 if (!semanticMatch) return false;
 
@@ -183,7 +210,15 @@ export const useNotesData = (driver?: LocalForage): UseNotesDataResult => {
                 const textMatch = textQueries.every(q => noteTitle.includes(q) || noteContent.includes(q));
                 const tagMatch = tagQueries.every(q => (note.tags || []).some(t => t.toLowerCase().includes(q)));
 
-                return textMatch && tagMatch;
+                // Restore simple property filtering (e.g. status:done in plain text)
+                const simplePropMatch = simplePropQueries.every(q =>
+                    note.properties.some(p =>
+                        p.key.toLowerCase() === q.key &&
+                        p.values.some(v => v.toLowerCase().includes(q.value))
+                    )
+                );
+
+                return textMatch && tagMatch && simplePropMatch;
             });
         }
 
