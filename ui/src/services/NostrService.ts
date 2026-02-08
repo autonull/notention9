@@ -40,10 +40,18 @@ class NostrService {
     async saveNote(note: Note) {
         if (!this.privkey || !this.relays.length) return;
 
+        // Skip non-public notes to respect privacy settings and avoid unnecessary network calls
+        // Background sync cannot prompt the user, so we only sync what is explicitly public.
+        if (note.privacy !== 'public') {
+            return;
+        }
+
         try {
             await publishNoteToNostr(note, this.privkey, this.relays);
         } catch (e) {
-            this.logger.error("Failed to publish note to Nostr", e);
+            // Log as warning since PrivacyError is expected if NetworkGate rejects it
+            // (e.g. 'protected' notes without prompt callback)
+            this.logger.warn("Failed to publish note to Nostr", e);
         }
     }
 
