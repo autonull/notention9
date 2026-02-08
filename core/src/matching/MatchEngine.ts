@@ -1,4 +1,4 @@
-import { Note, Property, OntologyNode, NoteSource } from '../types/index.js';
+import { Note, Property, OntologyNode } from '../types/index.js';
 import { findAttributeDef } from '../ontologyHelpers.js';
 import { haversineDistance, parseGeo } from '../spacetime.js';
 
@@ -24,8 +24,7 @@ export class MatchEngine {
 
         // Iterate through all Request properties (Constraints)
         for (const reqProp of request.properties) {
-            // Find corresponding properties in Offer (Facts)
-            // We align by key
+            // Find corresponding properties in Offer (Facts) by key
             const offerProps = offer.properties.filter(p => p.key === reqProp.key);
 
             if (offerProps.length === 0) {
@@ -39,17 +38,12 @@ export class MatchEngine {
 
                 if (result.compatibility > 0) {
                     matches.push(result);
-                    // If we found a good match for this request property, we might stop looking at other offer props for this key?
-                    // But maybe there are multiple values. For now, collect all.
                 } else if (result.compatibility < 0) {
                     conflicts.push(result);
                 }
             }
         }
 
-        // Calculate overall score
-        // Basic implementation: (Sum of Compatibilities) / (Total Request Props)
-        // This penalizes missing props.
         let totalScore = 0;
         const matchedKeys = new Set<string>();
 
@@ -67,7 +61,7 @@ export class MatchEngine {
 
         const normalizedScore = request.properties.length > 0
             ? Math.max(0, totalScore / request.properties.length)
-            : 0; // Or 1 if no constraints?
+            : 0;
 
         return {
             score: normalizedScore,
@@ -108,31 +102,12 @@ export class MatchEngine {
             return { requestProp: req, offerProp: off, compatibility: 0, reason: 'Invalid number' };
         }
 
+        // Handle Range Logic
         if (req.operator === 'between') {
-            let min: number | null = null;
-            let max: number | null = null;
-
-            if (req.values.length >= 2) {
-                min = this.parseNumber(req.values[0]);
-                max = this.parseNumber(req.values[1]);
-            } else if (req.values[0] && req.values[0].includes('-')) {
-                const parts = req.values[0].split('-');
-                min = this.parseNumber(parts[0]);
-                max = this.parseNumber(parts[1]);
-            } else {
-                return { requestProp: req, offerProp: off, compatibility: 0, reason: 'Invalid range format' };
-            }
-
-            if (min === null || max === null) {
-                return { requestProp: req, offerProp: off, compatibility: 0, reason: 'Invalid range values' };
-            }
-
-            if (oVal >= min && oVal <= max) {
-                return { requestProp: req, offerProp: off, compatibility: 1, reason: `${oVal} is between ${min} and ${max}` };
-            }
-            return { requestProp: req, offerProp: off, compatibility: -1, reason: `${oVal} is outside ${min}-${max}` };
+            return this.evaluateNumberRange(req, off, oVal);
         }
 
+        // Handle Comparison Logic
         const rVal = this.parseNumber(req.values[0]);
         if (rVal === null) {
              return { requestProp: req, offerProp: off, compatibility: 0, reason: 'Invalid comparison value' };
@@ -140,19 +115,48 @@ export class MatchEngine {
 
         switch (req.operator) {
             case '<':
-                if (oVal < rVal) return { requestProp: req, offerProp: off, compatibility: 1, reason: `${oVal} is less than ${rVal}` };
-                return { requestProp: req, offerProp: off, compatibility: -1, reason: `${oVal} is not less than ${rVal}` };
+                return oVal < rVal
+                    ? { requestProp: req, offerProp: off, compatibility: 1, reason: `${oVal} is less than ${rVal}` }
+                    : { requestProp: req, offerProp: off, compatibility: -1, reason: `${oVal} is not less than ${rVal}` };
             case '>':
-                if (oVal > rVal) return { requestProp: req, offerProp: off, compatibility: 1, reason: `${oVal} is greater than ${rVal}` };
-                return { requestProp: req, offerProp: off, compatibility: -1, reason: `${oVal} is not greater than ${rVal}` };
+                return oVal > rVal
+                    ? { requestProp: req, offerProp: off, compatibility: 1, reason: `${oVal} is greater than ${rVal}` }
+                    : { requestProp: req, offerProp: off, compatibility: -1, reason: `${oVal} is not greater than ${rVal}` };
             case 'is':
             case '=':
                 // Fuzzy equality for numbers (within 5%?)
-                if (Math.abs(oVal - rVal) < (rVal * 0.05)) return { requestProp: req, offerProp: off, compatibility: 1, reason: `Exactly ${rVal}` };
-                return { requestProp: req, offerProp: off, compatibility: -1, reason: `${oVal} != ${rVal}` };
+                const isMatch = Math.abs(oVal - rVal) < (rVal * 0.05);
+                return isMatch
+                    ? { requestProp: req, offerProp: off, compatibility: 1, reason: `Exactly ${rVal}` }
+                    : { requestProp: req, offerProp: off, compatibility: -1, reason: `${oVal} != ${rVal}` };
+            default:
+                return { requestProp: req, offerProp: off, compatibility: 0, reason: `Unknown operator ${req.operator}` };
+        }
+    }
+
+    private evaluateNumberRange(req: Property, off: Property, oVal: number): PropertyMatch {
+        let min: number | null = null;
+        let max: number | null = null;
+
+        if (req.values.length >= 2) {
+            min = this.parseNumber(req.values[0]);
+            max = this.parseNumber(req.values[1]);
+        } else if (req.values[0] && req.values[0].includes('-')) {
+            const parts = req.values[0].split('-');
+            min = this.parseNumber(parts[0]);
+            max = this.parseNumber(parts[1]);
+        } else {
+            return { requestProp: req, offerProp: off, compatibility: 0, reason: 'Invalid range format' };
         }
 
-        return { requestProp: req, offerProp: off, compatibility: 0, reason: `Unknown operator ${req.operator}` };
+        if (min === null || max === null) {
+            return { requestProp: req, offerProp: off, compatibility: 0, reason: 'Invalid range values' };
+        }
+
+        if (oVal >= min && oVal <= max) {
+            return { requestProp: req, offerProp: off, compatibility: 1, reason: `${oVal} is between ${min} and ${max}` };
+        }
+        return { requestProp: req, offerProp: off, compatibility: -1, reason: `${oVal} is outside ${min}-${max}` };
     }
 
     private evaluateGeo(req: Property, off: Property): PropertyMatch {
@@ -199,8 +203,9 @@ export class MatchEngine {
                 return oDate > rDate
                     ? { requestProp: req, offerProp: off, compatibility: 1, reason: 'Date check passed' }
                     : { requestProp: req, offerProp: off, compatibility: -1, reason: 'Too early' };
+            default:
+                return { requestProp: req, offerProp: off, compatibility: 0, reason: 'Date op not supported' };
         }
-        return { requestProp: req, offerProp: off, compatibility: 0, reason: 'Date op not supported' };
     }
 
     private evaluateString(req: Property, off: Property): PropertyMatch {
@@ -231,7 +236,6 @@ export class MatchEngine {
         const isMatch = normalizedOffVals.some(v => {
             if (v === normalizedReqVal) return true;
             if (v.includes(normalizedReqVal) || normalizedReqVal.includes(v)) return true;
-            // Simple Levenshtein check for small typos could go here, but strict contains/equality is safer for now without deps
             return false;
         });
 
