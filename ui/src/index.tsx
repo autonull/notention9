@@ -15,18 +15,7 @@ import { Logger } from '@notention/core';
 // Initialize plugins
 pluginManager.loadPlugins();
 
-// Register service worker for PWA functionality
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js')
-      .then((registration) => {
-        Logger.getInstance().info('SW registered: ', registration);
-      })
-      .catch((registrationError) => {
-        Logger.getInstance().error('SW registration failed: ', registrationError);
-      });
-  });
-}
+// Service worker is registered via vite-plugin-pwa injection
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {

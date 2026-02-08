@@ -5,6 +5,7 @@ import type { Note } from '@notention/core';
 interface NotesContextType {
   notes: Note[];
   addNote: (overrides?: Partial<Note>) => Note;
+  upsertNote: (note: Note) => void;
   updateNote: (note: Note) => void;
   deleteNote: (id: string) => void;
   restoreNote: (id: string) => void;
@@ -17,12 +18,12 @@ const NotesContext = createContext<NotesContextType | undefined>(undefined);
 export function NotesProvider({
   children,
 }: { children: ReactNode }) {
-  const { notes, addNote, updateNote, deleteNote, restoreNote, permanentlyDeleteNote, notesLoading } =
+  const { notes, addNote, upsertNote, updateNote, deleteNote, restoreNote, permanentlyDeleteNote, notesLoading } =
     useNotesState();
 
   return (
     <NotesContext.Provider
-      value={{ notes, addNote, updateNote, deleteNote, restoreNote, permanentlyDeleteNote, notesLoading }}
+      value={{ notes, addNote, upsertNote, updateNote, deleteNote, restoreNote, permanentlyDeleteNote, notesLoading }}
     >
       {children}
     </NotesContext.Provider>

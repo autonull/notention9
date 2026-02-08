@@ -3,6 +3,7 @@ import { useLocalForage } from './useLocalForage';
 import { createNote } from '@notention/core';
 import type { Note } from '@notention/core';
 import { agentService } from '../services/AgentService';
+import { nostrService } from '../services/NostrService';
 import { Logger } from '@notention/core';
 
 export const useNotesState = (driver?: LocalForage) => {
@@ -55,7 +56,31 @@ export const useNotesState = (driver?: LocalForage) => {
       const newNote = { ...createNote(), ...overrides };
       setNotes((prev) => [newNote, ...prev]);
       agentService.saveNote(newNote);
+      nostrService.saveNote(newNote);
       return newNote;
+    },
+    [setNotes]
+  );
+
+  const upsertNote = useCallback(
+    (note: Note) => {
+      setNotes((prev) => {
+        const existingIdx = prev.findIndex((n) => n.id === note.id);
+        if (existingIdx >= 0) {
+           // Update if newer
+           const existing = prev[existingIdx];
+           if (new Date(note.updatedAt) > new Date(existing.updatedAt)) {
+               const newNotes = [...prev];
+               newNotes[existingIdx] = note;
+               return newNotes;
+           }
+           return prev;
+        } else {
+           // Insert
+           return [note, ...prev];
+        }
+      });
+      agentService.saveNote(note);
     },
     [setNotes]
   );
@@ -67,6 +92,7 @@ export const useNotesState = (driver?: LocalForage) => {
         prev.map((n) => (n.id === updatedNote.id ? noteWithTimestamp : n))
       );
       agentService.saveNote(noteWithTimestamp);
+      nostrService.saveNote(noteWithTimestamp);
     },
     [setNotes]
   );
@@ -113,6 +139,7 @@ export const useNotesState = (driver?: LocalForage) => {
   return {
     notes,
     addNote,
+    upsertNote,
     updateNote,
     deleteNote,
     restoreNote,
