@@ -1,24 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { Logger } from '@notention/core';
+import React, { useEffect } from 'react';
 import { agentService } from '../../services/AgentService';
+import { useAgentStatus } from '../../hooks/useAgentStatus';
 
 export function AgentStatusIndicator() {
-  const [agentStatus, setAgentStatus] = useState(agentService.getStatus());
+  const agentStatus = useAgentStatus();
 
   useEffect(() => {
-    const handleStatusChange = (status: any) => {
-      setAgentStatus(status);
-    };
+    // Attempt initial connection if enabled
+    if (agentService.isEnabled() && !agentService.isConnected()) {
+        agentService.connect();
+    }
 
-    const handleError = (errorInfo: any) => {
-      Logger.getInstance().error('Agent error:', errorInfo instanceof Error ? errorInfo : new Error(String(errorInfo)));
-      setAgentStatus(agentService.getStatus());
-    };
-
-    agentService.on('status_change', handleStatusChange);
-    agentService.on('error', handleError);
-
-    // Also listen to browser online/offline events
     const handleBrowserOnline = () => {
       // Try to reconnect when browser comes online
       if (agentStatus.status === 'offline') {
@@ -27,16 +19,10 @@ export function AgentStatusIndicator() {
     };
 
     window.addEventListener('online', handleBrowserOnline);
-
-    // Initial status
-    setAgentStatus(agentService.getStatus());
-
     return () => {
-      agentService.off('status_change', handleStatusChange);
-      agentService.off('error', handleError);
       window.removeEventListener('online', handleBrowserOnline);
     };
-  }, []);
+  }, []); // Run once on mount
 
   // Determine UI status display
   let statusDisplay = null;
