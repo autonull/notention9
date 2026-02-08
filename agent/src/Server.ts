@@ -1,0 +1,118 @@
+import express from 'express';
+import { WebSocketServer, WebSocket } from 'ws';
+import { join } from 'path';
+import fs from 'fs';
+import { log, error } from './core/utils';
+import { Bootstrap } from './Bootstrap';
+import { SocketController } from './server/SocketController';
+import { ConfigManager } from './config/ConfigManager';
+import { setupMcpServer } from './server/McpServer';
+import { setupSimulationMcpServer } from './server/SimulationMcpServer';
+import { setAgentRegistry } from './globals';
+import { Server as HttpServer } from 'http';
+
+export class AgentServer {
+    private app: express.Express;
+    private server: HttpServer | null = null;
+    private wss: WebSocketServer | null = null;
+    private socketController: SocketController | null = null;
+
+    constructor() {
+        this.app = express();
+    }
+
+    async start() {
+        // --- Server Setup ---
+        const config = ConfigManager.getInstance().getConfig();
+        const PORT = config.server.port;
+        this.app.use(express.json());
+
+        // Setup MCP Servers
+        await setupMcpServer(this.app);
+        await setupSimulationMcpServer(this.app);
+
+        // UI Static Serving
+        let uiDistPath = join(process.cwd(), '../ui/dist');
+        if (!fs.existsSync(uiDistPath)) {
+            uiDistPath = join(process.cwd(), 'ui/dist');
+        }
+        if (fs.existsSync(uiDistPath)) {
+            this.app.use(express.static(uiDistPath));
+        }
+
+        this.server = this.app.listen(PORT, () => {
+            log('Server', `Notention + VoltAgent running on http://localhost:${PORT}`);
+        });
+
+        // WebSocket Setup
+        this.wss = new WebSocketServer({ server: this.server, path: '/ws/agent' });
+
+        // --- Agent System Initialization ---
+
+        const bootstrap = new Bootstrap();
+
+        // Initialize bootstrap asynchronously
+        bootstrap.init((event) => {
+            // Event callback from Bootstrap (e.g. from VoltAgent)
+            if (this.socketController) {
+                this.socketController.broadcast(event);
+            }
+        }).then((components) => {
+            log('Init', 'Agent system initialized');
+            setAgentRegistry(components.agentRegistry);
+
+            this.socketController = new SocketController(
+                components.agentRegistry,
+                components.skillExecutor,
+                components.feedbackCollector
+            );
+
+        }).catch(err => error('Init', 'Bootstrap failed', err));
+
+        // --- WebSocket Handlers ---
+
+        this.wss.on('connection', (ws) => {
+            log('WS', 'UI client connected');
+
+            if (this.socketController) {
+                this.socketController.addClient(ws);
+            } else {
+                log('WS', 'Client connected before full init');
+            }
+
+            ws.send(JSON.stringify({
+                type: 'connection_established',
+                message: 'Connected to Notention Agent'
+            }));
+
+            ws.on('message', async (data) => {
+                if (!this.socketController) {
+                    ws.send(JSON.stringify({ type: 'error', message: 'System initializing...' }));
+                    return;
+                }
+
+                try {
+                    const message = JSON.parse(data.toString());
+                    await this.socketController.handleMessage(message, ws);
+                } catch (e) {
+                    error('WS', 'Message handling error', e);
+                    ws.send(JSON.stringify({ type: 'error', message: 'Invalid message' }));
+                }
+            });
+        });
+    }
+
+    async stop() {
+        log('System', 'Shutting down...');
+        return new Promise<void>((resolve, reject) => {
+             if (this.server) {
+                 this.server.close((err) => {
+                     if (err) reject(err);
+                     else resolve();
+                 });
+             } else {
+                 resolve();
+             }
+        });
+    }
+}
