@@ -2,15 +2,40 @@ import chalk from 'chalk';
 import ora from 'ora';
 import path from 'path';
 import fs from 'fs/promises';
+import { Logger } from '@notention/core';
+
+// Configure Core Logger
+const logger = Logger.getInstance();
+
+logger.setLogHandler((level, message, context, error) => {
+    switch (level) {
+        case 'info':
+            console.log(chalk.blue('ℹ'), message);
+            if (context) console.log(context);
+            break;
+        case 'warn':
+            console.log(chalk.yellow('⚠'), message);
+            if (context) console.log(context);
+            break;
+        case 'error':
+            console.error(chalk.red('✖'), message);
+            if (error) console.error(chalk.dim(error instanceof Error ? error.message : String(error)));
+            if (context) console.error(context);
+            break;
+        case 'debug':
+            if (process.env.DEBUG) {
+                 console.debug(chalk.gray('🐛'), message);
+                 if (context) console.debug(context);
+            }
+            break;
+    }
+});
 
 export const log = {
-    info: (msg: string) => console.log(chalk.blue('ℹ'), msg),
+    info: (msg: string, context?: any) => logger.info(msg, context),
     success: (msg: string) => console.log(chalk.green('✔'), msg),
-    warn: (msg: string) => console.log(chalk.yellow('⚠'), msg),
-    error: (msg: string, err?: unknown) => {
-        console.error(chalk.red('✖'), msg);
-        if (err) console.error(chalk.dim(err instanceof Error ? err.message : String(err)));
-    },
+    warn: (msg: string, context?: any) => logger.warn(msg, context),
+    error: (msg: string, err?: unknown) => logger.error(msg, err instanceof Error ? err : new Error(String(err))),
     chat: (role: string, msg: string) => {
         const color = role === 'Agent' ? chalk.blue : chalk.green;
         console.log(`${color.bold(role)}: ${msg}`);

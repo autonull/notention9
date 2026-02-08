@@ -1,4 +1,4 @@
-import type { Note, Property } from './types';
+import type { Note, Property } from './types/index.js';
 import { patternRecognitionService } from './patternRecognition.js';
 import { predictionAccuracyTracker } from './predictionTracking.js';
 import { generateId, safeDivide, clamp } from './utils/common.js';

@@ -19,8 +19,11 @@ export class Logger {
   private logLevel: LogLevel = 'info';
   private logHistory: LogEntry[] = [];
   private maxLogEntries = 1000;
+  private logHandler: (level: LogLevel, message: string, context?: any, error?: Error) => void;
 
-  private constructor() {}
+  private constructor() {
+    this.logHandler = this.defaultLogHandler;
+  }
 
   static getInstance(): Logger {
     if (!Logger.instance) {
@@ -33,8 +36,24 @@ export class Logger {
     this.logLevel = level;
   }
 
+  setLogHandler(handler: (level: LogLevel, message: string, context?: any, error?: Error) => void): void {
+    this.logHandler = handler;
+  }
+
   private shouldLog(level: LogLevel): boolean {
     return LOG_LEVELS.indexOf(level) >= LOG_LEVELS.indexOf(this.logLevel);
+  }
+
+  private defaultLogHandler(level: LogLevel, message: string, context?: any, error?: Error): void {
+    const consoleArgs = [context].filter(arg => arg !== undefined);
+    if (error) consoleArgs.push(error);
+
+    switch (level) {
+      case 'debug': console.debug(`[DEBUG] ${message}`, ...consoleArgs); break;
+      case 'info': console.info(`[INFO] ${message}`, ...consoleArgs); break;
+      case 'warn': console.warn(`[WARN] ${message}`, ...consoleArgs); break;
+      case 'error': console.error(`[ERROR] ${message}`, ...consoleArgs); break;
+    }
   }
 
   private log(level: LogLevel, message: string, context?: any, error?: Error): void {
@@ -53,15 +72,7 @@ export class Logger {
           this.logHistory.shift();
       }
 
-      const consoleArgs = [context].filter(arg => arg !== undefined);
-      if (error) consoleArgs.push(error);
-
-      switch (level) {
-          case 'debug': console.debug(`[DEBUG] ${message}`, ...consoleArgs); break;
-          case 'info': console.info(`[INFO] ${message}`, ...consoleArgs); break;
-          case 'warn': console.warn(`[WARN] ${message}`, ...consoleArgs); break;
-          case 'error': console.error(`[ERROR] ${message}`, ...consoleArgs); break;
-      }
+      this.logHandler(level, message, context, error);
   }
 
   debug(message: string, context?: any): void {

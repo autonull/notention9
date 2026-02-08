@@ -196,16 +196,14 @@ export function isNotEmpty(value: string | any[] | null | undefined): boolean {
 
 // Flatten array utility
 export function flatten<T>(arrays: T[][]): T[] {
-  return ([] as T[]).concat(...arrays);
+  return arrays.flat();
 }
 
 // Chunk array utility
 export function chunk<T>(array: T[], size: number): T[][] {
-  const chunks = [];
-  for (let i = 0; i < array.length; i += size) {
-    chunks.push(array.slice(i, i + size));
-  }
-  return chunks;
+  return Array.from({ length: Math.ceil(array.length / size) }, (_, i) =>
+    array.slice(i * size, i * size + size)
+  );
 }
 
 // Partition array utility
