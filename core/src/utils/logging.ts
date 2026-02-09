@@ -48,12 +48,8 @@ export class Logger {
     const consoleArgs = [context].filter(arg => arg !== undefined);
     if (error) consoleArgs.push(error);
 
-    switch (level) {
-      case 'debug': console.debug(`[DEBUG] ${message}`, ...consoleArgs); break;
-      case 'info': console.info(`[INFO] ${message}`, ...consoleArgs); break;
-      case 'warn': console.warn(`[WARN] ${message}`, ...consoleArgs); break;
-      case 'error': console.error(`[ERROR] ${message}`, ...consoleArgs); break;
-    }
+    const logFn = console[level] || console.log;
+    logFn(`[${level.toUpperCase()}] ${message}`, ...consoleArgs);
   }
 
   private log(level: LogLevel, message: string, context?: any, error?: Error): void {
