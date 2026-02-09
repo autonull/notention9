@@ -4,13 +4,15 @@ import type { Tool, Note } from '@notention/core';
 import type { Skill } from './types';
 import { executeAction } from '../core/actionExecutor';
 
+import type { ActionSequence } from '@notention/core/src/skills/types';
+
 interface AgentAction {
     type: 'browser';
     url: string;
-    extract?: any[];
+    extract?: unknown[];
     interactions: {
         type: string;
-        value?: any;
+        value?: unknown;
         selector?: string;
         key?: string;
     }[];
@@ -31,16 +33,11 @@ export class SkillToolAdapter {
             execute: async ({ note }: { note: Note }) => {
                 let action: AgentAction | null = null;
 
-                // Only support core skills now
                 if (skill.exportToActions) {
-                    // Convert Core ActionSequence to Agent Action
                     const sequence = skill.exportToActions(note);
-                    if (sequence && sequence.actions && sequence.actions.length > 0) {
+                    if (sequence?.actions?.length > 0) {
                         action = SkillToolAdapter.convertToAgentAction(sequence.actions);
                     } else if ((sequence as any).customAction) {
-                        // Handle dynamic skill custom actions directly if executor supports it
-                        // For now, this branch is hypothetical as `executeAction` expects specific structure
-                        // We might need to extend `executeAction` or handle it here
                         console.warn('Custom dynamic actions not fully supported in ToolAdapter yet');
                     }
                 }
@@ -49,7 +46,6 @@ export class SkillToolAdapter {
                     return { success: false, reason: 'Skill did not generate action' };
                 }
 
-                // Execute external action
                 const results = await executeAction(action);
 
                 if (skill.importFromData) {
@@ -61,31 +57,25 @@ export class SkillToolAdapter {
         });
     }
 
-    public static convertToAgentAction(actions: any[]): AgentAction | null {
-        // Find main navigation
-        const nav = actions.find((a: any) => a.type === 'navigate');
-        if (!nav) return null; // Must have navigation
+    public static convertToAgentAction(actions: ActionSequence['actions']): AgentAction | null {
+        const nav = actions.find(a => a.type === 'navigate');
+        if (!nav) return null;
 
-        // Find scraping rules
-        const scrape = actions.find((a: any) => a.type === 'scrape');
+        const scrape = actions.find(a => a.type === 'scrape');
+        const screenshot = actions.find(a => a.type === 'screenshot');
 
-        // Find screenshot
-        const screenshot = actions.find((a: any) => a.type === 'screenshot');
-
-        // Find interactions (everything else)
         const interactions = actions
-            .filter((a: any) => ['wait', 'click', 'type', 'hover', 'scroll'].includes(a.type))
-            .map((a: any) => ({
+            .filter(a => ['wait', 'click', 'type', 'hover', 'scroll'].includes(a.type))
+            .map(a => ({
                 type: a.type,
-                value: a.duration || a.value || a.text, // Map duration/text to value
+                value: a.duration || a.value || a.text,
                 selector: a.selector,
-                key: a.key
             }));
 
         return {
             type: 'browser',
-            url: nav.url,
-            extract: scrape ? scrape.scrapeRules : undefined,
+            url: nav.url!,
+            extract: scrape ? (scrape.scrapeRules as any) : undefined,
             interactions,
             screenshot: screenshot ? (screenshot.fullPage ? 'full' : true) : undefined
         };
