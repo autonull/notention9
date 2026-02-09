@@ -1,12 +1,12 @@
 import React from 'react';
-import type { OntologyAttribute } from '@notention/core';
+import type {OntologyAttribute} from '@notention/core';
 
 interface AttributeListProps {
     attributes: Record<string, OntologyAttribute>;
     usageStats?: Map<string, number>;
 }
 
-export function AttributeList({ attributes, usageStats }: AttributeListProps) {
+export function AttributeList({attributes, usageStats}: AttributeListProps) {
     return (
         <div className="ml-8 mb-2 border-l-2 border-gray-700 pl-4">
             {Object.entries(attributes).map(([key, attr]) => {

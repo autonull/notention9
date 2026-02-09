@@ -1,12 +1,12 @@
-import { useState, useEffect, useMemo } from 'react';
-import { Note, MatchEngine } from '@notention/core'; // We will need to export MatchEngine from core
-import { useSettings } from './useSettingsContext';
-import { useNotes } from './useNotes';
+import {useEffect, useMemo, useState} from 'react';
+import {MatchEngine, Note} from '@notention/core'; // We will need to export MatchEngine from core
+import {useSettings} from './useSettingsContext';
+import {useNotes} from './useNotes';
 
 // Hook to find matches for a specific note against all other local notes
 export function useMatches(note: Note | null) {
-    const { settings } = useSettings();
-    const { notes } = useNotes();
+    const {settings} = useSettings();
+    const {notes} = useNotes();
     // Actually useNoteActions usually gives create/update/delete.
     // We might need useNotes() or similar if available.
     // Let's assume we can subscribe to note store or pass in notes.

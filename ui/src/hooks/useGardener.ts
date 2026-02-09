@@ -1,12 +1,12 @@
-import { useMemo, useCallback } from 'react';
-import { capabilities } from '../config/Capabilities';
-import { useSettings } from './useSettingsContext';
-import { useToast } from './useToast';
-import { Gardener } from '../services/gardener';
-import { LocalAIProvider } from '../services/ai/LocalProvider';
-import { RemoteAIProvider } from '../services/ai/RemoteProvider';
-import { WebLLMProvider } from '../services/ai/WebLLMProvider';
-import type { Note, Property, OntologyNode, OntologyAttribute } from '@notention/core';
+import {useCallback, useMemo} from 'react';
+import {capabilities} from '../config/Capabilities';
+import {useSettings} from './useSettingsContext';
+import {useToast} from './useToast';
+import {Gardener} from '../services/gardener';
+import {LocalAIProvider} from '../services/ai/LocalProvider';
+import {RemoteAIProvider} from '../services/ai/RemoteProvider';
+import {WebLLMProvider} from '../services/ai/WebLLMProvider';
+import type {Note, OntologyAttribute, OntologyNode, Property} from '@notention/core';
 
 // Helper to merge attributes into a target node (or "Emergent" if not found/specified)
 const mergeAttributesToNode = (ontology: OntologyNode[], newAttributes: Record<string, OntologyAttribute>, targetNodeId?: string): OntologyNode[] => {
@@ -15,7 +15,7 @@ const mergeAttributesToNode = (ontology: OntologyNode[], newAttributes: Record<s
     const findAndMerge = (nodes: OntologyNode[]): boolean => {
         for (const node of nodes) {
             if (node.id === targetNodeId) {
-                node.attributes = { ...(node.attributes || {}), ...newAttributes };
+                node.attributes = {...(node.attributes || {}), ...newAttributes};
                 return true;
             }
             if (node.children && findAndMerge(node.children)) return true;
@@ -40,14 +40,14 @@ const mergeAttributesToNode = (ontology: OntologyNode[], newAttributes: Record<s
         };
         updatedOntology.push(emergentNode);
     }
-    emergentNode.attributes = { ...(emergentNode.attributes || {}), ...newAttributes };
+    emergentNode.attributes = {...(emergentNode.attributes || {}), ...newAttributes};
 
     return updatedOntology;
 };
 
 export const useGardener = () => {
-    const { settings, setSettings } = useSettings();
-    const { addToast } = useToast();
+    const {settings, setSettings} = useSettings();
+    const {addToast} = useToast();
 
     const gardener = useMemo(() => {
         // Instantiate provider based on settings
@@ -153,7 +153,7 @@ export const useGardener = () => {
 
             if (!hasChanges) return prev;
 
-            return { ...prev, ontology: mergeAttributesToNode(currentOntology, newAttrsMap) };
+            return {...prev, ontology: mergeAttributesToNode(currentOntology, newAttrsMap)};
         });
     }, [setSettings, addToast]);
 
@@ -172,5 +172,5 @@ export const useGardener = () => {
         return result;
     }, [gardener, settings.ontology, addToast]);
 
-    return { evolveOntology, learnFromProperties, alignToOntology, optimizeOntology };
+    return {evolveOntology, learnFromProperties, alignToOntology, optimizeOntology};
 };

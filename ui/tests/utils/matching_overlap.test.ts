@@ -1,15 +1,15 @@
-import { describe, it, expect } from 'vitest';
-import { calculateSemanticOverlap } from '../../utils/matching';
-import type { Note } from '@notention/core';
+import {describe, expect, it} from 'vitest';
+import {calculateSemanticOverlap} from '../../utils/matching';
+import type {Note} from '@notention/core';
 
 const createNote = (keys: string[]): Note => ({
-  id: '1',
-  title: 'Test',
-  content: '',
-  tags: [],
-  properties: keys.map(k => ({ key: k, operator: 'is', values: [] })),
-  createdAt: '',
-  updatedAt: ''
+    id: '1',
+    title: 'Test',
+    content: '',
+    tags: [],
+    properties: keys.map(k => ({key: k, operator: 'is', values: []})),
+    createdAt: '',
+    updatedAt: ''
 });
 
 describe('calculateSemanticOverlap', () => {

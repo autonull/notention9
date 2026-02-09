@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 
 interface AgentCursorProps {
     // In a real implementation this would accept a WebSocket connection or event emitter
@@ -47,7 +47,7 @@ export const AgentCursor: React.FC<AgentCursorProps> = () => {
                 borderRadius: '50%',
                 opacity: 0.7,
                 boxShadow: '0 0 10px rgba(255,0,0,0.5)'
-            }} />
+            }}/>
             {action && (
                 <div style={{
                     position: 'absolute',

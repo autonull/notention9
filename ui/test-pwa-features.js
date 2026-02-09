@@ -4,11 +4,11 @@ console.log('Testing PWA capabilities...');
 // Check if service worker is supported
 if ('serviceWorker' in navigator) {
     console.log('✅ Service Worker is supported');
-    
+
     // Check registration status
-    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+    navigator.serviceWorker.getRegistrations().then(function (registrations) {
         console.log('Service Worker registrations:', registrations.length);
-        for(let registration of registrations) {
+        for (let registration of registrations) {
             console.log('Scope:', registration.scope);
             console.log('Active:', registration.active ? registration.active.state : 'none');
         }
@@ -27,7 +27,7 @@ try {
     localStorage.setItem('test', 'value');
     localStorage.removeItem('test');
     console.log('✅ Local storage is accessible (offline capability)');
-} catch(e) {
+} catch (e) {
     console.log('❌ Local storage is not accessible:', e);
 }
 

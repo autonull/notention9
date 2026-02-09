@@ -1,8 +1,8 @@
-import { useSimulatorContext } from '../useSimulatorContext';
-import { SwarmTemplate, SimulationAgent } from './types';
+import {useSimulatorContext} from '../useSimulatorContext';
+import {SimulationAgent, SwarmTemplate} from './types';
 
 export function useSwarmActions() {
-    const { deploySwarm } = useSimulatorContext();
+    const {deploySwarm} = useSimulatorContext();
 
     const handleDeploySwarm = (template: SwarmTemplate, onSuccess?: () => void) => {
         const newAgents: SimulationAgent[] = template.agents.map(a => ({
@@ -16,5 +16,5 @@ export function useSwarmActions() {
         if (onSuccess) onSuccess();
     };
 
-    return { handleDeploySwarm };
+    return {handleDeploySwarm};
 }

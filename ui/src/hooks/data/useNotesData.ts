@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { useLocalForage } from '../useLocalForage';
-import { createNote, matchingService, parseProperties, Logger, haversineDistance } from '@notention/core';
-import type { Note, SortOrder, GeoCoords, Property } from '@notention/core';
-import { agentService } from '../../services/AgentService';
-import { nostrService } from '../../services/NostrService';
-import { augmentNote, NoteMetadata } from './noteUtils';
+import {useCallback, useEffect, useRef} from 'react';
+import {useLocalForage} from '../useLocalForage';
+import type {GeoCoords, Note, Property, SortOrder} from '@notention/core';
+import {createNote, haversineDistance, Logger, parseProperties} from '@notention/core';
+import {agentService} from '../../services/AgentService';
+import {nostrService} from '../../services/NostrService';
+import {augmentNote, NoteMetadata} from './noteUtils';
 
 export interface UseNotesDataResult {
     notes: Note[];
@@ -97,7 +97,7 @@ export const useNotesData = (driver?: LocalForage): UseNotesDataResult => {
 
     // --- CRUD Operations ---
     const addNote = useCallback((overrides?: Partial<Note>) => {
-        const newNote = { ...createNote(), ...overrides };
+        const newNote = {...createNote(), ...overrides};
         setNotes((prev) => [newNote, ...prev]);
         agentService.saveNote(newNote);
         nostrService.saveNote(newNote);
@@ -123,7 +123,7 @@ export const useNotesData = (driver?: LocalForage): UseNotesDataResult => {
     }, [setNotes]);
 
     const updateNote = useCallback((updatedNote: Note) => {
-        const noteWithTimestamp = { ...updatedNote, updatedAt: new Date().toISOString() };
+        const noteWithTimestamp = {...updatedNote, updatedAt: new Date().toISOString()};
         setNotes((prev) =>
             prev.map((n) => (n.id === updatedNote.id ? noteWithTimestamp : n))
         );
@@ -135,7 +135,7 @@ export const useNotesData = (driver?: LocalForage): UseNotesDataResult => {
         setNotes((prev) => {
             const now = new Date().toISOString();
             const newNotes = prev.map((n) =>
-                n.id === id ? { ...n, deletedAt: now, updatedAt: now } : n
+                n.id === id ? {...n, deletedAt: now, updatedAt: now} : n
             );
             const deleted = newNotes.find((n) => n.id === id);
             if (deleted) agentService.saveNote(deleted);
@@ -146,7 +146,7 @@ export const useNotesData = (driver?: LocalForage): UseNotesDataResult => {
     const restoreNote = useCallback((id: string) => {
         setNotes((prev) => {
             const newNotes = prev.map((n) =>
-                n.id === id ? { ...n, deletedAt: undefined, updatedAt: new Date().toISOString() } : n
+                n.id === id ? {...n, deletedAt: undefined, updatedAt: new Date().toISOString()} : n
             );
             const restored = newNotes.find((n) => n.id === id);
             if (restored) agentService.saveNote(restored);
@@ -173,11 +173,11 @@ export const useNotesData = (driver?: LocalForage): UseNotesDataResult => {
         const notesWithMetadata = activeNotes.map((note) => {
             const cached = cache[note.id];
             if (cached && cached.updatedAt === note.updatedAt) {
-                return { ...note, ...cached };
+                return {...note, ...cached};
             }
             const metadata = augmentNote(note);
             cache[note.id] = metadata;
-            return { ...note, ...metadata };
+            return {...note, ...metadata};
         });
 
         // 2. Filter by Search Term
@@ -194,7 +194,7 @@ export const useNotesData = (driver?: LocalForage): UseNotesDataResult => {
             const tagQueries = searchParts.filter((p) => p.startsWith('#')).map((p) => p.substring(1));
             const simplePropQueries = searchParts.filter((p) => p.includes(':')).map((p) => {
                 const [key, value] = p.split(':', 2);
-                return { key, value: value.replace(/"/g, '') };
+                return {key, value: value.replace(/"/g, '')};
             });
 
             filtered = notesWithMetadata.filter((note) => {
@@ -228,12 +228,18 @@ export const useNotesData = (driver?: LocalForage): UseNotesDataResult => {
             if (!a.pinned && b.pinned) return 1;
 
             switch (sortOrder) {
-                case 'updatedAt_desc': return b.updatedAt.localeCompare(a.updatedAt);
-                case 'updatedAt_asc': return a.updatedAt.localeCompare(b.updatedAt);
-                case 'createdAt_desc': return b.createdAt.localeCompare(a.createdAt);
-                case 'createdAt_asc': return a.createdAt.localeCompare(b.createdAt);
-                case 'title_asc': return (a.title || '').localeCompare(b.title || '');
-                case 'title_desc': return (b.title || '').localeCompare(a.title || '');
+                case 'updatedAt_desc':
+                    return b.updatedAt.localeCompare(a.updatedAt);
+                case 'updatedAt_asc':
+                    return a.updatedAt.localeCompare(b.updatedAt);
+                case 'createdAt_desc':
+                    return b.createdAt.localeCompare(a.createdAt);
+                case 'createdAt_asc':
+                    return a.createdAt.localeCompare(b.createdAt);
+                case 'title_asc':
+                    return (a.title || '').localeCompare(b.title || '');
+                case 'title_desc':
+                    return (b.title || '').localeCompare(a.title || '');
                 case 'soonest':
                     if (a.minDateTimestamp !== null && b.minDateTimestamp !== null) return a.minDateTimestamp - b.minDateTimestamp;
                     if (a.minDateTimestamp !== null) return -1;
@@ -252,7 +258,8 @@ export const useNotesData = (driver?: LocalForage): UseNotesDataResult => {
                     const countB = (b.tags || []).length;
                     if (countA !== countB) return countB - countA;
                     return (a.title || '').localeCompare(b.title || '');
-                default: return b.updatedAt.localeCompare(a.updatedAt);
+                default:
+                    return b.updatedAt.localeCompare(a.updatedAt);
             }
         });
     }, [notes]);

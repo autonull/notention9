@@ -50,23 +50,21 @@ const SYMBOLIC_REGEXES = Object.keys(SYMBOL_TO_OP)
 type PropertyParser = (content: string) => Property | null;
 
 const parseColonFormat: PropertyParser = (content) => {
-    const colons = content.split(':');
-    if (colons.length >= 3) {
-        // key:op:val
-        const key = resolveAlias(colons[0].trim());
-        const op = colons[1].trim();
-        const val = colons.slice(2).join(':').trim();
+    const colonParts = content.split(':');
+    if (colonParts.length >= 3) {
+        const key = resolveAlias(colonParts[0].trim());
+        const operator = colonParts[1].trim();
+        const value = colonParts.slice(2).join(':').trim();
         return {
             key,
-            operator: op,
-            values: val.split(',').map(v => v.trim())
+            operator,
+            values: value.split(',').map(v => v.trim())
         };
-    } else if (colons.length === 2) {
-        // key:val (implicit 'is')
+    } else if (colonParts.length === 2) {
         return {
-            key: resolveAlias(colons[0].trim()),
+            key: resolveAlias(colonParts[0].trim()),
             operator: 'is',
-            values: colons[1].trim().split(',').map(v => v.trim())
+            values: colonParts[1].trim().split(',').map(v => v.trim())
         };
     }
     return null;
@@ -74,41 +72,39 @@ const parseColonFormat: PropertyParser = (content) => {
 
 const parseSymbolicFormat: PropertyParser = (content) => {
     for (const { regex, op } of SYMBOLIC_REGEXES) {
-        const symMatch = content.match(regex);
-        if (symMatch) {
+        const symbolicMatch = content.match(regex);
+        if (symbolicMatch) {
             return {
-                key: resolveAlias(symMatch[1].trim()),
+                key: resolveAlias(symbolicMatch[1].trim()),
                 operator: op,
-                values: symMatch[3].trim().split(',').map(v => v.trim())
+                values: symbolicMatch[3].trim().split(',').map(v => v.trim())
             };
         }
     }
 
-    // Fallback for general symbols not in the map but matching the pattern
-    const match = content.match(GENERAL_SYM_REGEX);
-    if (match) {
-        const [, rawKey, op, val] = match;
+    const generalMatch = content.match(GENERAL_SYM_REGEX);
+    if (generalMatch) {
+        const [, rawKey, operator, value] = generalMatch;
         const key = resolveAlias(rawKey.trim());
 
-        let canonicalOp = op.trim();
-        if (op === '!=') canonicalOp = 'is not';
-        else if (op === '<=') canonicalOp = 'less than or equal';
-        else if (op === '>=') canonicalOp = 'greater than or equal';
+        let canonicalOperator = operator.trim();
+        if (operator === '!=') canonicalOperator = 'is not';
+        else if (operator === '<=') canonicalOperator = 'less than or equal';
+        else if (operator === '>=') canonicalOperator = 'greater than or equal';
 
         return {
             key,
-            operator: canonicalOp,
-            values: val.trim().split(',').map(v => v.trim())
+            operator: canonicalOperator,
+            values: value.trim().split(',').map(v => v.trim())
         };
     }
     return null;
 };
 
 const parseWordFormat: PropertyParser = (content) => {
-    // Explicit word operators
-    const wordMatch = content.match(WORD_OP_REGEX);
-    if (wordMatch) {
-        const [, rawKey, op, val] = wordMatch;
+    const wordOperatorMatch = content.match(WORD_OP_REGEX);
+    if (wordOperatorMatch) {
+        const [, rawKey, operator, value] = wordOperatorMatch;
         const key = resolveAlias(rawKey.trim());
 
         if (!VALID_KEY_REGEX.test(key) || COMMON_WORDS.has(key.toLowerCase())) {
@@ -117,15 +113,14 @@ const parseWordFormat: PropertyParser = (content) => {
 
         return {
             key,
-            operator: op.trim(),
-            values: val.trim().split(',').map(v => v.trim())
+            operator: operator.trim(),
+            values: value.trim().split(',').map(v => v.trim())
         };
     }
 
-    // Simple space format (implicit 'is')
     const spaceMatch = content.match(SPACE_REGEX);
     if (spaceMatch) {
-         const [, rawKey, val] = spaceMatch;
+         const [, rawKey, value] = spaceMatch;
          const key = resolveAlias(rawKey.trim());
 
          if (!VALID_KEY_REGEX.test(key) || COMMON_WORDS.has(key.toLowerCase())) {
@@ -135,7 +130,7 @@ const parseWordFormat: PropertyParser = (content) => {
          return {
              key,
              operator: 'is',
-             values: val.trim().split(',').map(v => v.trim())
+             values: value.trim().split(',').map(v => v.trim())
          };
     }
 
@@ -148,9 +143,6 @@ const PARSERS: PropertyParser[] = [
     parseWordFormat
 ];
 
-/**
- * Helper to parse the content inside brackets [content]
- */
 const parsePropertyBlock = (content: string): Property | null => {
   for (const parser of PARSERS) {
     const result = parser(content);
@@ -159,10 +151,6 @@ const parsePropertyBlock = (content: string): Property | null => {
   return null;
 };
 
-/**
- * Parses a raw text string and extracts semantic properties from bracket syntax.
- * Supports standard format [key:op:value] and symbolic format [key < value].
- */
 export const extractProperties = (text: string): ExtractedProperty[] => {
   const extracted: ExtractedProperty[] = [];
 
@@ -183,10 +171,10 @@ export const extractProperties = (text: string): ExtractedProperty[] => {
 
 const extractMacros = (text: string): Property[] => {
     const properties: Property[] = [];
-    for (const match of text.matchAll(MACRO_REGEX)) {
-        const macroName = match[1];
-        const expanded = expandMacro(macroName);
-        properties.push(...expanded);
+    for (const macroMatch of text.matchAll(MACRO_REGEX)) {
+        const macroName = macroMatch[1];
+        const expandedProperties = expandMacro(macroName);
+        properties.push(...expandedProperties);
     }
     return properties;
 };
@@ -210,35 +198,21 @@ const extractHtmlSpans = (text: string): Property[] => {
     return properties;
 }
 
-/**
- * Parses a raw text string and extracts semantic properties.
- * Supports standard format [key:op:value] and symbolic format [key < value].
- * Also supports parsing HTML Chip syntax for backward compatibility or processing.
- */
 export const parseProperties = (text: string): Property[] => {
-  // Use map over extracted properties to get the property objects
   const properties: Property[] = extractProperties(text).map(e => e.property);
 
-  // Add macros and HTML spans
   properties.push(...extractMacros(text));
   properties.push(...extractHtmlSpans(text));
 
   return properties;
 };
 
-/**
- * Formats a property into its standard string representation.
- */
 export const formatPropertyTag = (prop: Property): string => {
   const vals = prop.values.join(',');
   return `[${prop.key}:${prop.operator}:${vals}]`;
 };
 
-/**
- * Finds the index and length of a property in the text.
- */
 const findPropertyInText = (text: string, prop: Property): { index: number; length: number } | null => {
-  // Reuse extractProperties to avoid duplicating regex logic
   const extracted = extractProperties(text);
   const found = extracted.find(ep => arePropertiesEqual(ep.property, prop));
   return found ? { index: found.index, length: found.length } : null;
@@ -250,12 +224,6 @@ const appendPropertyToText = (text: string, tag: string): string => {
   return text + suffix;
 };
 
-/**
- * Replaces a property in a text string (or HTML string) with a new one.
- * If oldProp is provided, it attempts to find and replace it.
- * If newProp is null, it removes the found property.
- * If oldProp is null, it appends newProp to the end.
- */
 export const replacePropertyInString = (
   text: string,
   oldProp: Property | null,
@@ -265,12 +233,10 @@ export const replacePropertyInString = (
 
   const newTag = newProp ? formatPropertyTag(newProp) : '';
 
-  // Append if no old property
   if (!oldProp) {
       return appendPropertyToText(text, newTag);
   }
 
-  // Find and Replace/Delete
   const match = findPropertyInText(text, oldProp);
   if (match) {
     const prefix = text.substring(0, match.index);
@@ -278,6 +244,5 @@ export const replacePropertyInString = (
     return prefix + newTag + suffix;
   }
 
-  // Fallback: Append if not found but new tag exists
   return appendPropertyToText(text, newTag);
 };

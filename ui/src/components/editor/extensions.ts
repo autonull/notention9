@@ -1,10 +1,10 @@
 import StarterKit from '@tiptap/starter-kit';
 import BubbleMenu from '@tiptap/extension-bubble-menu';
-import Mention, { MentionNodeAttrs } from '@tiptap/extension-mention';
-import { PropertyExtension } from './PropertyExtension';
-import { GhostTextExtension } from './GhostTextExtension';
-import { configureSuggestions } from './configureSuggestions';
-import type { Template, Note } from '@notention/core';
+import Mention, {MentionNodeAttrs} from '@tiptap/extension-mention';
+import {PropertyExtension} from './PropertyExtension';
+import {GhostTextExtension} from './GhostTextExtension';
+import {configureSuggestions} from './configureSuggestions';
+import type {Note, Template} from '@notention/core';
 
 interface GetExtensionsProps {
     allProperties: { id: string; label: string; description?: string }[];
@@ -20,7 +20,14 @@ interface SlashCommandAttrs extends MentionNodeAttrs {
     type?: string;
 }
 
-export const getExtensions = ({ allProperties, allTags, getNotes, templates, onOpenPropertyModal, onMagic }: GetExtensionsProps) => {
+export const getExtensions = ({
+                                  allProperties,
+                                  allTags,
+                                  getNotes,
+                                  templates,
+                                  onOpenPropertyModal,
+                                  onMagic
+                              }: GetExtensionsProps) => {
     return [
         StarterKit,
         BubbleMenu,
@@ -36,9 +43,9 @@ export const getExtensions = ({ allProperties, allTags, getNotes, templates, onO
                     return allProperties
                         .filter(p => p.label.toLowerCase().includes(lower))
                         .slice(0, 5)
-                        .map(p => ({ id: p.id, label: p.label, description: p.description }));
+                        .map(p => ({id: p.id, label: p.label, description: p.description}));
                 }, '['),
-                command: ({ editor, range, props }) => {
+                command: ({editor, range, props}) => {
                     // Delete the trigger and query
                     editor.chain().focus().deleteRange(range).run();
 
@@ -51,7 +58,7 @@ export const getExtensions = ({ allProperties, allTags, getNotes, templates, onO
                     }
                 }
             }
-        }).extend({ name: 'propertySuggestion' }),
+        }).extend({name: 'propertySuggestion'}),
 
         Mention.configure({
             HTMLAttributes: {
@@ -62,9 +69,9 @@ export const getExtensions = ({ allProperties, allTags, getNotes, templates, onO
                 return allTags
                     .filter(t => t.label.toLowerCase().includes(lower))
                     .slice(0, 5)
-                    .map(t => ({ id: t.id, label: t.label, description: t.description }));
+                    .map(t => ({id: t.id, label: t.label, description: t.description}));
             }, '#'),
-        }).extend({ name: 'tagSuggestion' }),
+        }).extend({name: 'tagSuggestion'}),
 
         Mention.configure({
             HTMLAttributes: {
@@ -81,7 +88,7 @@ export const getExtensions = ({ allProperties, allTags, getNotes, templates, onO
                         description: 'Note'
                     }));
             }, '@'),
-        }).extend({ name: 'noteSuggestion' }),
+        }).extend({name: 'noteSuggestion'}),
 
         Mention.configure({
             HTMLAttributes: {
@@ -99,7 +106,7 @@ export const getExtensions = ({ allProperties, allTags, getNotes, templates, onO
                             description: 'Note'
                         }));
                 }, '[['), // Wiki-link style trigger
-                command: ({ editor, range, props }) => {
+                command: ({editor, range, props}) => {
                     // Delete the trigger and query
                     editor.chain().focus().deleteRange(range).run();
                     // Insert the standard mention node
@@ -112,7 +119,7 @@ export const getExtensions = ({ allProperties, allTags, getNotes, templates, onO
                     }).insertContent(' ').run();
                 }
             }
-        }).extend({ name: 'wikiLinkSuggestion' }),
+        }).extend({name: 'wikiLinkSuggestion'}),
 
         Mention.configure({
             HTMLAttributes: {
@@ -161,7 +168,7 @@ export const getExtensions = ({ allProperties, allTags, getNotes, templates, onO
                         commandItems.push({
                             id: 'time',
                             label: 'Current Time',
-                            description: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                            description: new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}),
                             type: 'command'
                         });
                     }
@@ -171,7 +178,7 @@ export const getExtensions = ({ allProperties, allTags, getNotes, templates, onO
                         type: item.type as "tag" | "property" | "template" | undefined
                     }));
                 }, '/'),
-                command: ({ editor, range, props }) => {
+                command: ({editor, range, props}) => {
                     // Delete the slash command text
                     editor.chain().focus().deleteRange(range).run();
 
@@ -188,7 +195,10 @@ export const getExtensions = ({ allProperties, allTags, getNotes, templates, onO
                         } else if (props.id === 'date') {
                             editor.chain().focus().insertContent(new Date().toISOString().split('T')[0]).run();
                         } else if (props.id === 'time') {
-                            editor.chain().focus().insertContent(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })).run();
+                            editor.chain().focus().insertContent(new Date().toLocaleTimeString([], {
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            })).run();
                         }
                         return;
                     }
@@ -198,6 +208,6 @@ export const getExtensions = ({ allProperties, allTags, getNotes, templates, onO
                     editor.chain().focus().insertContent(content).run();
                 },
             }
-        }).extend({ name: 'slashCommand' }),
+        }).extend({name: 'slashCommand'}),
     ];
 };

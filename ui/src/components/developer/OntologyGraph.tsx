@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import ForceGraph2D from 'react-force-graph-2d';
-import { useOntologyView } from '../../hooks/useOntologyView';
+import {useOntologyView} from '../../hooks/useOntologyView';
 
 interface GraphData {
     nodes: Array<{ id: string; val: number; label: string; group: string }>;
@@ -8,8 +8,8 @@ interface GraphData {
 }
 
 export function OntologyGraph() {
-    const { getGraphData } = useOntologyView();
-    const [data, setData] = useState<GraphData>({ nodes: [], links: [] });
+    const {getGraphData} = useOntologyView();
+    const [data, setData] = useState<GraphData>({nodes: [], links: []});
     const fgRef = useRef<any>();
 
     useEffect(() => {

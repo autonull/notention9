@@ -1,11 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Property } from '@notention/core';
-import { PropertyExtractor } from '@notention/core';
-import { DEFAULT_ONTOLOGY } from '@notention/core';
+import React, {useEffect, useRef, useState} from 'react';
+import {DEFAULT_ONTOLOGY, Property, PropertyExtractor} from '@notention/core';
 
 /**
  * CommandPalette - Natural language → Properties
- * 
+ *
  * Uses PropertyExtractor to parse natural language into semantic properties
  * from ontology patterns.
  */
@@ -20,11 +18,11 @@ interface CommandPaletteProps {
 const propertyExtractor = new PropertyExtractor(DEFAULT_ONTOLOGY);
 
 export const CommandPalette: React.FC<CommandPaletteProps> = ({
-    onCommand,
-    onCancel,
-    isOpen,
-    placeholder = "Type a command... (e.g., 'send message to john via whatsapp')"
-}) => {
+                                                                  onCommand,
+                                                                  onCancel,
+                                                                  isOpen,
+                                                                  placeholder = "Type a command... (e.g., 'send message to john via whatsapp')"
+                                                              }) => {
     const [input, setInput] = useState('');
     const [extractedProps, setExtractedProps] = useState<Property[]>([]);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -122,7 +120,8 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                     <div className="command-examples">
                         <div className="examples-header">Examples:</div>
                         <div className="examples-list">
-                            <div className="example-item" onClick={() => setInput('send message to +1234567890 via whatsapp')}>
+                            <div className="example-item"
+                                 onClick={() => setInput('send message to +1234567890 via whatsapp')}>
                                 <code>send message to +1234567890 via whatsapp</code>
                                 <span className="example-desc">→ Send WhatsApp message</span>
                             </div>

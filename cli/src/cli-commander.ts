@@ -169,9 +169,14 @@ export class CLICommander {
    * Run the CLI
    */
   async run() {
-    if (!process.argv.slice(2).length) {
+    const args = process.argv.slice(2);
+
+    if (!args.length) {
       const { startInteractiveSession } = await import('./interactive.js');
       await startInteractiveSession({});
+    } else if (args[0].startsWith('/')) {
+      const { startInteractiveSession } = await import('./interactive.js');
+      await startInteractiveSession({ command: args.join(' ') });
     } else {
       await this.program.parseAsync(process.argv);
     }

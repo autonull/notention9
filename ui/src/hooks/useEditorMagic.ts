@@ -1,12 +1,11 @@
-import { useCallback } from 'react';
-import type { OntologyNode } from '@notention/core';
-import { useGardener } from './useGardener';
-import { useAutoTagging } from './useAutoTagging';
-import { useToast } from './useToast';
-import { useSuggestions } from '../components/contexts/SuggestionContext';
-import { parseProperties, replacePropertyInString } from '@notention/core';
-import { getTextFromHtml } from '../utils/html';
-import { parseNaturalDate } from '@notention/core';
+import {useCallback} from 'react';
+import type {OntologyNode} from '@notention/core';
+import {parseNaturalDate, parseProperties, replacePropertyInString} from '@notention/core';
+import {useGardener} from './useGardener';
+import {useAutoTagging} from './useAutoTagging';
+import {useToast} from './useToast';
+import {useSuggestions} from '../components/contexts/SuggestionContext';
+import {getTextFromHtml} from '../utils/html';
 
 interface UseEditorMagicProps {
     noteId: string;
@@ -17,12 +16,12 @@ interface UseEditorMagicProps {
     ontology: OntologyNode[];
 }
 
-export function useEditorMagic({ noteId, content, tags, onTagsChange, onContentSave, ontology }: UseEditorMagicProps) {
-    const { alignToOntology } = useGardener();
-    const { addToast } = useToast();
-    const { addSuggestions } = useSuggestions();
+export function useEditorMagic({noteId, content, tags, onTagsChange, onContentSave, ontology}: UseEditorMagicProps) {
+    const {alignToOntology} = useGardener();
+    const {addToast} = useToast();
+    const {addSuggestions} = useSuggestions();
 
-    const { isAutoTagging, handleAutoTag, isApiKeyAvailable } = useAutoTagging({
+    const {isAutoTagging, handleAutoTag, isApiKeyAvailable} = useAutoTagging({
         content,
         tags,
         onTagsChange
@@ -39,15 +38,15 @@ export function useEditorMagic({ noteId, content, tags, onTagsChange, onContentS
 
         existingProps.forEach(prop => {
             if (['date', 'deadline', 'start', 'end'].some(k => prop.key.includes(k))) {
-               const val = prop.values[0];
-               if (!val) return;
+                const val = prop.values[0];
+                if (!val) return;
 
-               const parsed = parseNaturalDate(val);
-               if (parsed && parsed !== val) {
-                   const newProp = { ...prop, values: [parsed] };
-                   newContent = replacePropertyInString(newContent, prop, newProp);
-                   convertedCount++;
-               }
+                const parsed = parseNaturalDate(val);
+                if (parsed && parsed !== val) {
+                    const newProp = {...prop, values: [parsed]};
+                    newContent = replacePropertyInString(newContent, prop, newProp);
+                    convertedCount++;
+                }
             }
         });
 

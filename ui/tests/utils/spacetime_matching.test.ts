@@ -1,20 +1,20 @@
-import { describe, it, expect } from 'vitest';
-import { matchNotes } from '../../utils/matching';
-import type { Note } from '@notention/core';
+import {describe, expect, it} from 'vitest';
+import {matchNotes} from '../../utils/matching';
+import type {Note} from '@notention/core';
 
 describe('Spacetime Matching', () => {
     it('matches date ranges correctly', () => {
         const offer: Note = {
             id: '1', title: 'Event', content: '', tags: [], createdAt: '', updatedAt: '',
             properties: [
-                { key: 'startDateTime', operator: 'is', values: ['2024-05-15'] }
+                {key: 'startDateTime', operator: 'is', values: ['2024-05-15']}
             ]
         };
 
         const request: Note = {
             id: '2', title: 'Request', content: '', tags: [], createdAt: '', updatedAt: '',
             properties: [
-                { key: 'startDateTime', operator: 'is after', values: ['2024-05-01'] }
+                {key: 'startDateTime', operator: 'is after', values: ['2024-05-01']}
             ]
         };
 
@@ -23,7 +23,7 @@ describe('Spacetime Matching', () => {
         const requestLate: Note = {
             id: '3', title: 'Request Late', content: '', tags: [], createdAt: '', updatedAt: '',
             properties: [
-                { key: 'startDateTime', operator: 'is after', values: ['2024-06-01'] }
+                {key: 'startDateTime', operator: 'is after', values: ['2024-06-01']}
             ]
         };
         expect(matchNotes(requestLate, offer).score).toBe(0);
@@ -37,14 +37,14 @@ describe('Spacetime Matching', () => {
         const offer: Note = {
             id: '1', title: 'NYC Event', content: '', tags: [], createdAt: '', updatedAt: '',
             properties: [
-                { key: 'location', operator: 'is', values: [nyc] }
+                {key: 'location', operator: 'is', values: [nyc]}
             ]
         };
 
         const request: Note = {
             id: '2', title: 'Find near NYC', content: '', tags: [], createdAt: '', updatedAt: '',
             properties: [
-                { key: 'location', operator: 'is near', values: [nearNyc] }
+                {key: 'location', operator: 'is near', values: [nearNyc]}
             ]
         };
 
@@ -53,7 +53,7 @@ describe('Spacetime Matching', () => {
         const requestLondon: Note = {
             id: '3', title: 'Find near London', content: '', tags: [], createdAt: '', updatedAt: '',
             properties: [
-                { key: 'location', operator: 'is near', values: [london] }
+                {key: 'location', operator: 'is near', values: [london]}
             ]
         };
 

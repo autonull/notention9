@@ -6,7 +6,7 @@ interface WidgetProps {
     options?: string[];
 }
 
-export const EnumWidget: React.FC<WidgetProps> = ({ value, onChange, options = [] }) => {
+export const EnumWidget: React.FC<WidgetProps> = ({value, onChange, options = []}) => {
     return (
         <select
             value={value}

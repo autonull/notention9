@@ -1,6 +1,13 @@
-import { SimplePool, getPublicKey, finalizeEvent } from 'nostr-tools';
-import { Note, DEFAULT_RELAYS, publishNoteToNostr, convertEventToNote, hexToBytes, SEMANTIC_NOTE_KIND } from '@notention/core';
-import { Logger } from '@notention/core';
+import {getPublicKey, SimplePool} from 'nostr-tools';
+import {
+    convertEventToNote,
+    DEFAULT_RELAYS,
+    hexToBytes,
+    Logger,
+    Note,
+    publishNoteToNostr,
+    SEMANTIC_NOTE_KIND
+} from '@notention/core';
 
 class NostrService {
     private pool: SimplePool;
@@ -54,7 +61,8 @@ class NostrService {
     subscribe() {
         this.unsubscribe(); // Ensure previous subscription is closed
 
-        if (!this.pubkey || !this.relays.length) return () => {};
+        if (!this.pubkey || !this.relays.length) return () => {
+        };
 
         this.logger.info(`Subscribing to Nostr sync for ${this.pubkey} on ${this.relays.length} relays`);
 
@@ -62,7 +70,7 @@ class NostrService {
             this._sub = this.pool.subscribeMany(
                 this.relays,
                 [
-                    { kinds: [1, SEMANTIC_NOTE_KIND], authors: [this.pubkey], limit: 100 },
+                    {kinds: [1, SEMANTIC_NOTE_KIND], authors: [this.pubkey], limit: 100},
                 ],
                 {
                     onevent: (event) => {

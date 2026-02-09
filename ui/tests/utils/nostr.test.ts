@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { extractPropertiesFromTags, convertEventToNote } from '@notention/core';
-import type { NostrEvent } from '@notention/core';
+import {describe, expect, it} from 'vitest';
+import type {NostrEvent} from '@notention/core';
+import {convertEventToNote, extractPropertiesFromTags} from '@notention/core';
 
 describe('utils/nostr', () => {
     describe('extractPropertiesFromTags', () => {

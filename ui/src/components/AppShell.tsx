@@ -1,20 +1,19 @@
-import React, { useEffect } from 'react';
-import { Header } from './layout/Header';
-import { MobileNavigation } from './layout/MobileNavigation';
-import { CommandPalette } from './common/CommandPalette';
-import { HelpModal } from './common/HelpModal';
-import { Sidebar } from './sidebar';
-import { MainView } from './MainView';
+import React from 'react';
+import {Header} from './layout/Header';
+import {MobileNavigation} from './layout/MobileNavigation';
+import {CommandPalette} from './common/CommandPalette';
+import {HelpModal} from './common/HelpModal';
+import {Sidebar} from './sidebar';
+import {MainView} from './MainView';
 
-import { useNotes } from '../hooks/useNotes';
-import { useView } from '../hooks/useViewContext';
-import { useUrlRouting } from '../hooks/useUrlRouting';
-import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
-import { useCommands } from '../hooks/useCommands';
-import { Logger } from '@notention/core';
+import {useNotes} from '../hooks/useNotes';
+import {useView} from '../hooks/useViewContext';
+import {useUrlRouting} from '../hooks/useUrlRouting';
+import {useKeyboardShortcuts} from '../hooks/useKeyboardShortcuts';
+import {useCommands} from '../hooks/useCommands';
 
 export function AppShell() {
-    const { notes, addNote, getSortedFilteredNotes } = useNotes();
+    const {notes, addNote, getSortedFilteredNotes} = useNotes();
     const {
         activeView,
         setActiveView,
@@ -41,10 +40,10 @@ export function AppShell() {
         setSelectedNoteId
     });
 
-    const { commands, handleNewNote } = useCommands({ setIsHelpOpen });
+    const {commands, handleNewNote} = useCommands({setIsHelpOpen});
 
     const handleCreateNote = (title: string) => {
-        const newNote = addNote({ title });
+        const newNote = addNote({title});
         setSelectedNoteId(newNote.id);
         setActiveView('notes');
     };
@@ -126,17 +125,17 @@ export function AppShell() {
 
     return (
         <div className="flex flex-col h-screen bg-gray-800 text-gray-200">
-            <Header onNewNote={handleNewNote} />
+            <Header onNewNote={handleNewNote}/>
             <div className="flex flex-1 overflow-hidden">
                 <div className={sidebarClasses}>
-                    <Sidebar sortedNotes={sortedNotes} />
+                    <Sidebar sortedNotes={sortedNotes}/>
                 </div>
 
                 <main className={mainClasses}>
-                    <MainView sortedNotes={sortedNotes} />
+                    <MainView sortedNotes={sortedNotes}/>
                 </main>
             </div>
-            <MobileNavigation />
+            <MobileNavigation/>
             <CommandPalette
                 isOpen={isPaletteOpen}
                 onClose={() => setIsPaletteOpen(false)}
@@ -148,7 +147,7 @@ export function AppShell() {
                 onCreateNote={handleCreateNote}
                 commands={commands}
             />
-            <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
+            <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)}/>
         </div>
     );
 }

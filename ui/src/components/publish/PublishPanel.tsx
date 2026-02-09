@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
-import { Note, publishNoteToNostr, PrivacyLevel } from '@notention/core';
-import { Button } from '../common/Button';
-import { useSettings } from '../../hooks/useSettingsContext';
-import { LockIcon, WorldIcon, UserGroupIcon } from '../common/icons';
+import React, {useState} from 'react';
+import {Note, PrivacyLevel, publishNoteToNostr} from '@notention/core';
+import {Button} from '../common/Button';
+import {useSettings} from '../../hooks/useSettingsContext';
+import {LockIcon, UserGroupIcon, WorldIcon} from '../common/icons';
 
 interface PublishPanelProps {
     note: Note;
     onUpdate: (note: Note) => void;
 }
 
-export const PublishPanel: React.FC<PublishPanelProps> = ({ note, onUpdate }) => {
-    const { settings } = useSettings();
+export const PublishPanel: React.FC<PublishPanelProps> = ({note, onUpdate}) => {
+    const {settings} = useSettings();
     const [isPublishing, setIsPublishing] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [pendingPrivacy, setPendingPrivacy] = useState<PrivacyLevel | null>(null);
@@ -19,7 +19,7 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({ note, onUpdate }) =>
 
     const handleSetPrivacy = (level: PrivacyLevel) => {
         // Confirmation for escalation
-        const levels = { private: 0, protected: 1, public: 2 };
+        const levels = {private: 0, protected: 1, public: 2};
         if (levels[level] > levels[privacy]) {
             setPendingPrivacy(level);
         } else {
@@ -84,9 +84,9 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({ note, onUpdate }) =>
         <div className="p-3 bg-gray-900 border-b border-gray-800 space-y-3">
             {/* 3-State Privacy Widget */}
             <div className="bg-gray-950 p-1 rounded-lg flex justify-between gap-1 border border-gray-800">
-                {renderPrivacyOption('private', <LockIcon className="w-4 h-4" />, 'Private')}
-                {renderPrivacyOption('protected', <UserGroupIcon className="w-4 h-4" />, 'Semi-Public')}
-                {renderPrivacyOption('public', <WorldIcon className="w-4 h-4" />, 'Public')}
+                {renderPrivacyOption('private', <LockIcon className="w-4 h-4"/>, 'Private')}
+                {renderPrivacyOption('protected', <UserGroupIcon className="w-4 h-4"/>, 'Semi-Public')}
+                {renderPrivacyOption('public', <WorldIcon className="w-4 h-4"/>, 'Public')}
             </div>
 
             {/* Confirmation Overlay */}

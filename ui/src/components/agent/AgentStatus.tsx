@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { agentService } from '../../services/AgentService';
-import { AgentStatus as AgentStatusType } from '@notention/core';
-import { Badge } from '../common/Badge';
+import React, {useEffect, useState} from 'react';
+import {agentService} from '../../services/AgentService';
+import {AgentStatus as AgentStatusType} from '@notention/core';
+import {Badge} from '../common/Badge';
 
 export function AgentStatus() {
     const [status, setStatus] = useState<AgentStatusType | null>(null);
@@ -20,7 +20,7 @@ export function AgentStatus() {
 
         const fetchStatus = () => {
             if (agentService.isConnected()) {
-                agentService.send({ type: 'get_agent_status' });
+                agentService.send({type: 'get_agent_status'});
             }
         };
 
@@ -43,7 +43,8 @@ export function AgentStatus() {
 
     if (!status) {
         return (
-            <div className="flex items-center justify-center p-8 text-gray-500 bg-gray-900/50 rounded-lg border border-gray-700/50">
+            <div
+                className="flex items-center justify-center p-8 text-gray-500 bg-gray-900/50 rounded-lg border border-gray-700/50">
                 <div className="animate-pulse flex items-center gap-2">
                     <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                     <span>Connecting to agent...</span>
@@ -59,7 +60,8 @@ export function AgentStatus() {
             {/* Header */}
             <div className="p-4 border-b border-gray-700/50 flex items-center justify-between bg-gray-800/30">
                 <div className="flex items-center gap-3">
-                    <div className={`w-3 h-3 rounded-full ${isRunning ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' : 'bg-red-500'}`} />
+                    <div
+                        className={`w-3 h-3 rounded-full ${isRunning ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' : 'bg-red-500'}`}/>
                     <h3 className="text-lg font-bold text-white tracking-wide">{status.state.toUpperCase()}</h3>
                 </div>
                 <Badge variant="outline" size="sm" className="font-mono">v{status.version}</Badge>
@@ -100,12 +102,13 @@ export function AgentStatus() {
                                 className={`
                                     px-3 py-1.5 rounded-md text-xs font-medium border flex items-center gap-2 transition-colors
                                     ${enabled
-                                        ? 'bg-blue-900/20 border-blue-800/50 text-blue-300'
-                                        : 'bg-gray-800/50 border-gray-700 text-gray-500 line-through decoration-gray-600'
-                                    }
+                                    ? 'bg-blue-900/20 border-blue-800/50 text-blue-300'
+                                    : 'bg-gray-800/50 border-gray-700 text-gray-500 line-through decoration-gray-600'
+                                }
                                 `}
                             >
-                                <span className={`w-1.5 h-1.5 rounded-full ${enabled ? 'bg-blue-400' : 'bg-gray-600'}`}></span>
+                                <span
+                                    className={`w-1.5 h-1.5 rounded-full ${enabled ? 'bg-blue-400' : 'bg-gray-600'}`}></span>
                                 {feature}
                             </div>
                         ))}

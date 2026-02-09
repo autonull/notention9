@@ -1,5 +1,5 @@
 import React from 'react';
-import { Note, MatchResult, PropertyMatch } from '@notention/core';
+import {MatchResult, Note} from '@notention/core';
 
 interface MatchCardProps {
     note: Note;
@@ -7,7 +7,7 @@ interface MatchCardProps {
     onClick: () => void;
 }
 
-export const MatchCard: React.FC<MatchCardProps> = ({ note, match, onClick }) => {
+export const MatchCard: React.FC<MatchCardProps> = ({note, match, onClick}) => {
     return (
         <div
             className="p-3 bg-gray-800 border border-gray-700 rounded-lg hover:border-gray-500 transition-colors cursor-pointer group"
@@ -18,7 +18,7 @@ export const MatchCard: React.FC<MatchCardProps> = ({ note, match, onClick }) =>
                 <div className={`
                     text-xs font-bold px-1.5 py-0.5 rounded
                     ${match.score > 0.8 ? 'bg-green-900 text-green-300' :
-                        match.score > 0.5 ? 'bg-yellow-900 text-yellow-300' : 'bg-gray-700 text-gray-400'}
+                    match.score > 0.5 ? 'bg-yellow-900 text-yellow-300' : 'bg-gray-700 text-gray-400'}
                 `}>
                     {Math.round(match.score * 100)}%
                 </div>
@@ -28,7 +28,9 @@ export const MatchCard: React.FC<MatchCardProps> = ({ note, match, onClick }) =>
             {match.matches.length > 0 && (
                 <div className="flex flex-wrap gap-1 mb-2">
                     {match.matches.slice(0, 3).map((m, i) => (
-                        <div key={i} className="text-[10px] bg-green-500/10 text-green-400 border border-green-500/20 px-1.5 py-0.5 rounded flex items-center gap-1" title={m.reason}>
+                        <div key={i}
+                             className="text-[10px] bg-green-500/10 text-green-400 border border-green-500/20 px-1.5 py-0.5 rounded flex items-center gap-1"
+                             title={m.reason}>
                             <span>✓</span>
                             <span className="opacity-80">{m.requestProp.key}</span>
                         </div>
@@ -43,7 +45,9 @@ export const MatchCard: React.FC<MatchCardProps> = ({ note, match, onClick }) =>
             {match.conflicts.length > 0 && (
                 <div className="flex flex-wrap gap-1">
                     {match.conflicts.slice(0, 2).map((c, i) => (
-                        <div key={i} className="text-[10px] bg-red-500/10 text-red-400 border border-red-500/20 px-1.5 py-0.5 rounded flex items-center gap-1" title={c.reason}>
+                        <div key={i}
+                             className="text-[10px] bg-red-500/10 text-red-400 border border-red-500/20 px-1.5 py-0.5 rounded flex items-center gap-1"
+                             title={c.reason}>
                             <span>⚠️</span>
                             <span className="opacity-80">{c.requestProp.key}</span>
                         </div>

@@ -1,8 +1,8 @@
 import React from 'react';
-import { SWARM_TEMPLATES } from '../../hooks/simulator/types';
-import type { SwarmTemplate } from '../../hooks/simulator/types';
-import { Modal } from '../common/Modal';
-import { Badge } from '../common/Badge';
+import type {SwarmTemplate} from '../../hooks/simulator/types';
+import {SWARM_TEMPLATES} from '../../hooks/simulator/types';
+import {Modal} from '../common/Modal';
+import {Badge} from '../common/Badge';
 
 interface SwarmModalProps {
     isOpen: boolean;
@@ -10,7 +10,7 @@ interface SwarmModalProps {
     onDeploy: (template: SwarmTemplate) => void;
 }
 
-export function SwarmModal({ isOpen, onClose, onDeploy }: SwarmModalProps) {
+export function SwarmModal({isOpen, onClose, onDeploy}: SwarmModalProps) {
     return (
         <Modal
             isOpen={isOpen}

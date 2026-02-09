@@ -1,10 +1,9 @@
-import React, { useMemo } from 'react';
-import { OntologyService } from '@notention/core';
-import { DEFAULT_ONTOLOGY } from '@notention/core';
+import React, {useMemo} from 'react';
+import {DEFAULT_ONTOLOGY, OntologyService} from '@notention/core';
 
 /**
  * PropertyInput - Ontology-driven property input widget
- * 
+ *
  * Automatically renders the appropriate input widget based on ontology metadata.
  * NO HARDCODING - all widget types determined by querying ontology at runtime.
  */
@@ -20,12 +19,12 @@ interface PropertyInputProps {
 const ontologyService = new OntologyService(DEFAULT_ONTOLOGY);
 
 export const PropertyInput: React.FC<PropertyInputProps> = ({
-    attributeKey,
-    value,
-    operator = 'is',
-    onChange,
-    onOperatorChange
-}) => {
+                                                                attributeKey,
+                                                                value,
+                                                                operator = 'is',
+                                                                onChange,
+                                                                onOperatorChange
+                                                            }) => {
     // Query ontology for widget metadata
     const metadata = useMemo(() => {
         return ontologyService.getWidgetMetadata(attributeKey);

@@ -1,22 +1,21 @@
-import React, { useState, useMemo } from 'react';
-import { useMatches } from '../../hooks/useMatches';
-import { MatchCard } from '../matching/MatchCard';
-import { Note, MatchEngine, Logger } from '@notention/core';
-import { NetworkDiscoveryService, ScoredMatch } from '@notention/core'; // We need to export this
-import { Button } from '../common/Button';
-import { useSettings } from '../../hooks/useSettingsContext';
+import React, {useMemo, useState} from 'react';
+import {useMatches} from '../../hooks/useMatches';
+import {MatchCard} from '../matching/MatchCard';
+import {Logger, MatchEngine, NetworkDiscoveryService, Note, ScoredMatch} from '@notention/core'; // We need to export this
+import {Button} from '../common/Button';
+import {useSettings} from '../../hooks/useSettingsContext';
 
 interface LocalDiscoverySidebarProps {
     note: Note | null;
     onSelectMatch: (note: Note) => void;
 }
 
-export const LocalDiscoverySidebar: React.FC<LocalDiscoverySidebarProps> = ({ note, onSelectMatch }) => {
+export const LocalDiscoverySidebar: React.FC<LocalDiscoverySidebarProps> = ({note, onSelectMatch}) => {
     // Local Matches
     const localMatches = useMatches(note);
 
     // Network Matches
-    const { settings } = useSettings();
+    const {settings} = useSettings();
     const [networkMatches, setNetworkMatches] = useState<ScoredMatch[]>([]);
     const [isSearching, setIsSearching] = useState(false);
 
@@ -44,7 +43,8 @@ export const LocalDiscoverySidebar: React.FC<LocalDiscoverySidebarProps> = ({ no
         <div className="w-64 bg-gray-900 border-l border-gray-800 flex flex-col h-full">
 
             {/* Header / Tabs eventually */}
-            <div className="p-3 border-b border-gray-800 bg-gray-900/50 backdrop-blur sticky top-0 z-10 flex justify-between items-center">
+            <div
+                className="p-3 border-b border-gray-800 bg-gray-900/50 backdrop-blur sticky top-0 z-10 flex justify-between items-center">
                 <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
                     <span>Queries</span>
                 </h3>

@@ -257,7 +257,11 @@ export class RobustWebSocket {
 
     async reconnect(): Promise<void> {
         if (this.ws) {
-            try { this.ws.close(); } catch(e) {}
+            try {
+                this.ws.close();
+            } catch (e) {
+                this.logger.debug('WebSocket already closed or error during close', { error: e });
+            }
         }
         this.reconnectAttempts = 0;
         if (this.url) {

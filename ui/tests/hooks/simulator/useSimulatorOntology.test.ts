@@ -1,7 +1,7 @@
-import { renderHook, act } from '@testing-library/react';
-import { useSimulatorOntology } from '../../../hooks/simulator/useSimulatorOntology';
-import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
-import type { OntologyNode } from '@notention/core';
+import {act, renderHook} from '@testing-library/react';
+import {useSimulatorOntology} from '../../../src/hooks/simulator/useSimulatorOntology';
+import {beforeEach, describe, expect, it, Mock, vi} from 'vitest';
+import type {OntologyNode} from '@notention/core';
 
 describe('useSimulatorOntology', () => {
     let ontologyRefMock: { current: OntologyNode[] };
@@ -10,18 +10,18 @@ describe('useSimulatorOntology', () => {
     let addLogMock: Mock;
 
     beforeEach(() => {
-        ontologyRefMock = { current: [] };
+        ontologyRefMock = {current: []};
         setOntologyMock = vi.fn();
         gardenerRefMock = {
             current: {
-                optimizeOntology: vi.fn().mockResolvedValue({ merged: [], pruned: [] })
+                optimizeOntology: vi.fn().mockResolvedValue({merged: [], pruned: []})
             }
         };
         addLogMock = vi.fn();
     });
 
     it('calls optimizeOntology on gardener', async () => {
-        const { result } = renderHook(() => useSimulatorOntology({
+        const {result} = renderHook(() => useSimulatorOntology({
             ontologyRef: ontologyRefMock,
             setOntology: setOntologyMock,
             gardenerRef: gardenerRefMock,

@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { agentService } from '../../services/AgentService';
+import React, {useEffect, useState} from 'react';
+import {agentService} from '../../services/AgentService';
 
 // Mock Spinner if not found, or replace with common one later
-const Spinner = ({ size }: { size: string }) => <span style={{ marginRight: '5px' }}>⏳</span>;
+const Spinner = ({size}: { size: string }) => <span style={{marginRight: '5px'}}>⏳</span>;
 
-export function SkillExecutionIndicator({ noteId }: { noteId: string }) {
+export function SkillExecutionIndicator({noteId}: { noteId: string }) {
     const [executing, setExecuting] = useState(false);
     const [matchedSkills, setMatchedSkills] = useState<string[]>([]);
 
@@ -48,7 +48,7 @@ export function SkillExecutionIndicator({ noteId }: { noteId: string }) {
             color: '#666',
             marginTop: '4px'
         }}>
-            <Spinner size="sm" />
+            <Spinner size="sm"/>
             <span>Executing skills: {matchedSkills.join(', ')}</span>
         </div>
     );

@@ -1,12 +1,11 @@
-import React, { useEffect } from 'react';
-import { useNotes } from '../../hooks/useNotes';
-import { useSettings } from '../../hooks/useSettingsContext';
-import { parseConfigFromNote, mergeConfigs } from '@notention/core';
-import type { Note } from '@notention/core';
+import React, {useEffect} from 'react';
+import {useNotes} from '../../hooks/useNotes';
+import {useSettings} from '../../hooks/useSettingsContext';
+import {mergeConfigs, parseConfigFromNote} from '@notention/core';
 
 export const ConfigSync: React.FC = () => {
-    const { notes } = useNotes();
-    const { setSettings } = useSettings();
+    const {notes} = useNotes();
+    const {setSettings} = useSettings();
 
     useEffect(() => {
         // Find the active config note

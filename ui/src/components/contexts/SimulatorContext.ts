@@ -1,5 +1,5 @@
-import { createContext } from 'react';
-import { useSimulator } from '../../hooks/simulator/useSimulator';
+import {createContext} from 'react';
+import {useSimulator} from '../../hooks/simulator/useSimulator';
 
 type UseSimulatorReturn = ReturnType<typeof useSimulator>;
 

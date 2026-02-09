@@ -1,12 +1,12 @@
-import { useEffect, useRef } from 'react';
-import { useSettings } from './useSettingsContext';
-import { useView } from './useViewContext';
-import { DEFAULT_RELAYS, pool, hexToBytes, Logger } from '@notention/core';
-import { getPublicKey } from 'nostr-tools';
+import {useEffect, useRef} from 'react';
+import {useSettings} from './useSettingsContext';
+import {useView} from './useViewContext';
+import {DEFAULT_RELAYS, hexToBytes, Logger, pool} from '@notention/core';
+import {getPublicKey} from 'nostr-tools';
 
 export const useChatNotifications = () => {
-    const { settings } = useSettings();
-    const { incrementChatNotification, activeView } = useView();
+    const {settings} = useSettings();
+    const {incrementChatNotification, activeView} = useView();
     const seenEvents = useRef(new Set<string>());
 
     useEffect(() => {
@@ -29,7 +29,7 @@ export const useChatNotifications = () => {
 
         const sub = pool.subscribeMany(
             relays,
-            { kinds: [4], '#p': [pubkey], since },
+            {kinds: [4], '#p': [pubkey], since},
             {
                 onevent: (event) => {
                     if (seenEvents.current.has(event.id)) return;
@@ -44,7 +44,7 @@ export const useChatNotifications = () => {
                     // For now, let's simple increment. ChatView clears on mount/selection.
 
                     if (activeView !== 'chat') {
-                         incrementChatNotification();
+                        incrementChatNotification();
                     }
                 }
             }

@@ -1,6 +1,6 @@
-import { useMemo } from 'react';
-import type { Note, Property } from '@notention/core';
-import { matchingService } from '@notention/core';
+import {useMemo} from 'react';
+import type {Note, Property} from '@notention/core';
+import {matchingService} from '@notention/core';
 
 export interface MatchResult {
     source: Note;
@@ -24,7 +24,7 @@ export function useNetworkMatching(networkNotes: Note[]) {
 
                 const result = matchingService.matchNotes(source, target);
                 if (result.score > 0.5) {
-                    found.push({ source, target, score: result.score, satisfied: result.satisfied });
+                    found.push({source, target, score: result.score, satisfied: result.satisfied});
                 }
             }
         }

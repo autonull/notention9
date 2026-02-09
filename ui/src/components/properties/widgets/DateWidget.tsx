@@ -6,7 +6,7 @@ interface WidgetProps {
     type?: string;
 }
 
-export const DateWidget: React.FC<WidgetProps> = ({ value, onChange, type = 'date' }) => {
+export const DateWidget: React.FC<WidgetProps> = ({value, onChange, type = 'date'}) => {
     return (
         <input
             type={type === 'datetime' ? 'datetime-local' : 'date'}

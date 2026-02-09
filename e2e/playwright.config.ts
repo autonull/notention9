@@ -10,5 +10,7 @@ export default defineConfig({
     workers: 1, // Run sequentially to avoid port conflicts with the agent
     use: {
         trace: 'on-first-retry',
+        headless: true,
     },
+    reporter: 'list',
 });

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 
 interface WidgetProps {
     value: string;
@@ -6,7 +6,7 @@ interface WidgetProps {
     onKeyDown?: (e: React.KeyboardEvent) => void;
 }
 
-export const LocationWidget: React.FC<WidgetProps> = ({ value, onChange, onKeyDown }) => {
+export const LocationWidget: React.FC<WidgetProps> = ({value, onChange, onKeyDown}) => {
     const [suggestions, setSuggestions] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -38,7 +38,8 @@ export const LocationWidget: React.FC<WidgetProps> = ({ value, onChange, onKeyDo
                 className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-1.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {suggestions.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-gray-800 border border-gray-700 rounded shadow-xl z-20">
+                <div
+                    className="absolute top-full left-0 right-0 mt-1 bg-gray-800 border border-gray-700 rounded shadow-xl z-20">
                     {suggestions.map((s, i) => (
                         <button
                             key={i}

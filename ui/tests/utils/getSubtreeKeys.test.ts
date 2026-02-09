@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { getSubtreeKeys } from '@notention/core';
-import type { OntologyNode } from '@notention/core';
+import {describe, expect, it} from 'vitest';
+import type {OntologyNode} from '@notention/core';
+import {getSubtreeKeys} from '@notention/core';
 
 describe('getSubtreeKeys', () => {
     it('returns keys from the node itself', () => {
@@ -8,8 +8,8 @@ describe('getSubtreeKeys', () => {
             id: '1',
             label: 'Test',
             attributes: {
-                'attr1': { type: 'string', operators: { real: [], imaginary: [] } },
-                'attr2': { type: 'string', operators: { real: [], imaginary: [] } }
+                'attr1': {type: 'string', operators: {real: [], imaginary: []}},
+                'attr2': {type: 'string', operators: {real: [], imaginary: []}}
             }
         };
         const keys = getSubtreeKeys(node);
@@ -27,7 +27,7 @@ describe('getSubtreeKeys', () => {
                     id: 'child1',
                     label: 'Child 1',
                     attributes: {
-                        'childAttr': { type: 'string', operators: { real: [], imaginary: [] } }
+                        'childAttr': {type: 'string', operators: {real: [], imaginary: []}}
                     }
                 }
             ]
@@ -41,7 +41,7 @@ describe('getSubtreeKeys', () => {
         const node: OntologyNode = {
             id: 'root',
             label: 'Root',
-            attributes: { 'rootAttr': { type: 'string', operators: { real: [], imaginary: [] } } },
+            attributes: {'rootAttr': {type: 'string', operators: {real: [], imaginary: []}}},
             children: [
                 {
                     id: 'child',
@@ -51,7 +51,7 @@ describe('getSubtreeKeys', () => {
                             id: 'grandchild',
                             label: 'Grandchild',
                             attributes: {
-                                'grandChildAttr': { type: 'string', operators: { real: [], imaginary: [] } }
+                                'grandChildAttr': {type: 'string', operators: {real: [], imaginary: []}}
                             }
                         }
                     ]

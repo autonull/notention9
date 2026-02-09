@@ -1,31 +1,31 @@
-import { describe, it, expect } from 'vitest';
-import { LocalAIProvider } from '../../../services/ai/LocalProvider';
+import {describe, expect, it} from 'vitest';
+import {LocalAIProvider} from '../../../src/services/ai/LocalProvider';
 
 describe('LocalAIProvider', () => {
-  const provider = new LocalAIProvider();
+    const provider = new LocalAIProvider();
 
-  it('suggests tags from hashtags in text', async () => {
-    const text = 'This is a #test of #local-ai provider.';
-    const tags = await provider.suggestTags(text);
-    expect(tags).toEqual(['test', 'local-ai']);
-  });
+    it('suggests tags from hashtags in text', async () => {
+        const text = 'This is a #test of #local-ai provider.';
+        const tags = await provider.suggestTags(text);
+        expect(tags).toEqual(['test', 'local-ai']);
+    });
 
-  it('handles duplicate hashtags', async () => {
-    const text = '#test #test #example';
-    const tags = await provider.suggestTags(text);
-    expect(tags).toEqual(['test', 'example']);
-  });
+    it('handles duplicate hashtags', async () => {
+        const text = '#test #test #example';
+        const tags = await provider.suggestTags(text);
+        expect(tags).toEqual(['test', 'example']);
+    });
 
-  it('returns empty array if no hashtags', async () => {
-    const text = 'No hashtags here.';
-    const tags = await provider.suggestTags(text);
-    expect(tags).toEqual([]);
-  });
+    it('returns empty array if no hashtags', async () => {
+        const text = 'No hashtags here.';
+        const tags = await provider.suggestTags(text);
+        expect(tags).toEqual([]);
+    });
 
-  it('handles mixed case and content', async () => {
-    const text = 'Check out #React and #TypeScript!';
-    const tags = await provider.suggestTags(text);
-    expect(tags).toContain('React');
-    expect(tags).toContain('TypeScript');
-  });
+    it('handles mixed case and content', async () => {
+        const text = 'Check out #React and #TypeScript!';
+        const tags = await provider.suggestTags(text);
+        expect(tags).toContain('React');
+        expect(tags).toContain('TypeScript');
+    });
 });

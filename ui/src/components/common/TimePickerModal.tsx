@@ -1,28 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import { Logger } from '@notention/core';
-import { Modal } from './Modal';
-import { Input } from './Input';
-import { format, isValid, parseISO } from 'date-fns';
-import { useToast } from '../../hooks/useToast';
+import React, {useEffect, useState} from 'react';
+import {Logger} from '@notention/core';
+import {Modal} from './Modal';
+import {Input} from './Input';
+import {format, isValid, parseISO} from 'date-fns';
+import {useToast} from '../../hooks/useToast';
 
 interface TimePickerModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onTimeSelect: (isoString: string) => void;
-  initialValue?: string;
-  title?: string;
+    isOpen: boolean;
+    onClose: () => void;
+    onTimeSelect: (isoString: string) => void;
+    initialValue?: string;
+    title?: string;
 }
 
 export function TimePickerModal({
-    isOpen,
-    onClose,
-    onTimeSelect,
-    initialValue,
-    title = "Pick Date & Time"
-}: TimePickerModalProps) {
+                                    isOpen,
+                                    onClose,
+                                    onTimeSelect,
+                                    initialValue,
+                                    title = "Pick Date & Time"
+                                }: TimePickerModalProps) {
     const [date, setDate] = useState('');
     const [time, setTime] = useState('');
-    const { addToast } = useToast();
+    const {addToast} = useToast();
 
     useEffect(() => {
         if (isOpen) {

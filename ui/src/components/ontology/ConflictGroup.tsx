@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRightIcon } from '../common/icons';
+import {ArrowRightIcon} from '../common/icons';
 
 export interface Conflict {
     noteId: string;
@@ -16,7 +16,7 @@ interface ConflictGroupProps {
     onSelectNote: (noteId: string) => void;
 }
 
-export function ConflictGroup({ noteId, conflicts, onSelectNote }: ConflictGroupProps) {
+export function ConflictGroup({noteId, conflicts, onSelectNote}: ConflictGroupProps) {
     return (
         <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden text-left shadow-lg">
             <div className="bg-gray-900/50 p-3 border-b border-gray-700 flex justify-between items-center">
@@ -28,12 +28,13 @@ export function ConflictGroup({ noteId, conflicts, onSelectNote }: ConflictGroup
                     onClick={() => onSelectNote(noteId)}
                     className="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded flex items-center gap-1 transition-colors"
                 >
-                    Edit Note <ArrowRightIcon className="w-3 h-3" />
+                    Edit Note <ArrowRightIcon className="w-3 h-3"/>
                 </button>
             </div>
             <div className="divide-y divide-gray-700/50">
                 {conflicts.map((conflict, idx) => (
-                    <div key={idx} className="p-4 flex items-start justify-between hover:bg-gray-700/20 transition-colors">
+                    <div key={idx}
+                         className="p-4 flex items-start justify-between hover:bg-gray-700/20 transition-colors">
                         <div>
                             <div className="flex items-center gap-2 mb-1">
                                 <span className="font-mono text-sm text-red-400 bg-red-900/20 px-1.5 py-0.5 rounded">
@@ -44,10 +45,12 @@ export function ConflictGroup({ noteId, conflicts, onSelectNote }: ConflictGroup
                                 </span>
                             </div>
                             <div className="text-sm text-gray-300">
-                                Current value: <span className="text-yellow-300 font-mono bg-yellow-900/20 px-1.5 rounded">&quot;{conflict.actualValue}&quot;</span>
+                                Current value: <span
+                                className="text-yellow-300 font-mono bg-yellow-900/20 px-1.5 rounded">&quot;{conflict.actualValue}&quot;</span>
                             </div>
                         </div>
-                        <div className="text-xs font-semibold text-red-500 bg-red-900/10 px-2 py-1 rounded border border-red-900/30">
+                        <div
+                            className="text-xs font-semibold text-red-500 bg-red-900/10 px-2 py-1 rounded border border-red-900/30">
                             {conflict.reason}
                         </div>
                     </div>

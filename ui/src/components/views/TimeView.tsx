@@ -1,24 +1,24 @@
-import React, { useMemo, useState } from 'react';
-import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
-import { format, parse, startOfWeek, getDay } from 'date-fns';
-import { enUS } from 'date-fns/locale';
+import React, {useMemo, useState} from 'react';
+import {Calendar, dateFnsLocalizer} from 'react-big-calendar';
+import {format, getDay, parse, startOfWeek} from 'date-fns';
+import {enUS} from 'date-fns/locale';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
-import { useNotes } from '../../hooks/useNotes';
-import { useView } from '../../hooks/useViewContext';
-import { MapPinIcon } from '../common/icons';
-import { parseGeoFromValues, haversineDistance } from '@notention/core';
+import {useNotes} from '../../hooks/useNotes';
+import {useView} from '../../hooks/useViewContext';
+import {MapPinIcon} from '../common/icons';
+import {haversineDistance, parseGeoFromValues} from '@notention/core';
 
 const locales = {
-  'en-US': enUS,
+    'en-US': enUS,
 };
 
 const localizer = dateFnsLocalizer({
-  format,
-  parse,
-  startOfWeek,
-  getDay,
-  locales,
+    format,
+    parse,
+    startOfWeek,
+    getDay,
+    locales,
 });
 
 interface CalendarEvent {
@@ -32,8 +32,8 @@ interface CalendarEvent {
 }
 
 export function TimeView() {
-    const { notes } = useNotes();
-    const { setSelectedNoteId, setActiveView } = useView();
+    const {notes} = useNotes();
+    const {setSelectedNoteId, setActiveView} = useView();
     const [locationFilterId, setLocationFilterId] = useState<string>('');
     const [filterRadius, setFilterRadius] = useState<number>(50); // km
 
@@ -46,7 +46,7 @@ export function TimeView() {
         const evts: CalendarEvent[] = [];
 
         // If filtering by location, get the reference location
-        let filterCoords: {lat: number, lng: number} | null = null;
+        let filterCoords: { lat: number, lng: number } | null = null;
         if (locationFilterId) {
             const filterNote = notes.find(n => n.id === locationFilterId);
             const locProp = filterNote?.properties.find(p => ['location', 'geo', 'place'].includes(p.key));
@@ -98,7 +98,7 @@ export function TimeView() {
                     location: props.find(p => ['location', 'geo', 'place'].includes(p.key))?.values[0]
                 });
             } else if (end) {
-                 evts.push({
+                evts.push({
                     id: note.id,
                     title: note.title || 'Untitled',
                     start: new Date(end.getTime() - 60 * 60 * 1000), // 1h before deadline
@@ -121,8 +121,9 @@ export function TimeView() {
         <div className="h-full bg-gray-900 p-4 flex flex-col overflow-hidden">
             {/* Toolbar */}
             <div className="flex flex-wrap items-center gap-4 mb-4 bg-gray-800 p-2 rounded-lg border border-gray-700">
-                <div className="flex items-center gap-2 text-gray-300" title="Filter events by proximity to a location note">
-                    <MapPinIcon className="w-5 h-5 text-blue-400" />
+                <div className="flex items-center gap-2 text-gray-300"
+                     title="Filter events by proximity to a location note">
+                    <MapPinIcon className="w-5 h-5 text-blue-400"/>
                     <span className="text-sm font-semibold hidden sm:inline">Spacetime Filter:</span>
                 </div>
                 <select
@@ -156,7 +157,7 @@ export function TimeView() {
                 events={events}
                 startAccessor="start"
                 endAccessor="end"
-                style={{ height: '100%' }}
+                style={{height: '100%'}}
                 onSelectEvent={handleSelectEvent}
                 views={['month', 'week', 'day', 'agenda']}
                 defaultView='month'

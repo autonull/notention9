@@ -1,7 +1,7 @@
-import { useCallback, MutableRefObject } from 'react';
-import type { OntologyNode } from '@notention/core';
-import { Gardener } from '../../services/gardener';
-import { mergeAttributes, deleteAttribute, findNode, renameAttribute } from '@notention/core';
+import {MutableRefObject, useCallback} from 'react';
+import type {OntologyNode} from '@notention/core';
+import {deleteAttribute, findNode, mergeAttributes, renameAttribute} from '@notention/core';
+import {Gardener} from '../../services/gardener';
 
 interface UseSimulatorOntologyProps {
     ontologyRef: MutableRefObject<OntologyNode[]>;
@@ -11,11 +11,11 @@ interface UseSimulatorOntologyProps {
 }
 
 export function useSimulatorOntology({
-    ontologyRef,
-    setOntology,
-    gardenerRef,
-    addLog
-}: UseSimulatorOntologyProps) {
+                                         ontologyRef,
+                                         setOntology,
+                                         gardenerRef,
+                                         addLog
+                                     }: UseSimulatorOntologyProps) {
 
     const optimizeOntology = useCallback(async () => {
         if (!gardenerRef.current) return;
@@ -49,16 +49,16 @@ export function useSimulatorOntology({
             const nodeIds = findNodeIdsForKey(newOntology, merge.source);
 
             nodeIds.forEach(nodeId => {
-               const node = findNode(newOntology, nodeId);
-               if (node) {
-                   if (node.attributes && node.attributes[merge.target]) {
-                       // Target exists: Merge (delete source, keep target)
-                       newOntology = mergeAttributes(newOntology, nodeId, merge.source, merge.target);
-                   } else {
-                       // Target missing: Rename source to target
-                       newOntology = renameAttribute(newOntology, nodeId, merge.source, merge.target);
-                   }
-               }
+                const node = findNode(newOntology, nodeId);
+                if (node) {
+                    if (node.attributes && node.attributes[merge.target]) {
+                        // Target exists: Merge (delete source, keep target)
+                        newOntology = mergeAttributes(newOntology, nodeId, merge.source, merge.target);
+                    } else {
+                        // Target missing: Rename source to target
+                        newOntology = renameAttribute(newOntology, nodeId, merge.source, merge.target);
+                    }
+                }
             });
         });
 
