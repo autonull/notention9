@@ -44,12 +44,7 @@ class NostrService {
     }
 
     async saveNote(note: Note) {
-        if (!this.privkey || !this.relays.length) return;
-
-        // Skip non-public notes to respect privacy settings
-        if (note.privacy !== 'public') {
-            return;
-        }
+        if (!this.privkey || !this.relays.length || note.privacy !== 'public') return;
 
         try {
             await publishNoteToNostr(note, this.privkey, this.relays);
@@ -59,10 +54,9 @@ class NostrService {
     }
 
     subscribe() {
-        this.unsubscribe(); // Ensure previous subscription is closed
+        this.unsubscribe();
 
-        if (!this.pubkey || !this.relays.length) return () => {
-        };
+        if (!this.pubkey || !this.relays.length) return () => {};
 
         this.logger.info(`Subscribing to Nostr sync for ${this.pubkey} on ${this.relays.length} relays`);
 

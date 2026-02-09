@@ -146,9 +146,9 @@ export class LlmSession {
             this.history = this.history.slice(this.history.length - 50);
         }
 
-        for (let turns = 0; turns < 10; turns++) {
-            const continueLoop = await this.executeTurn();
-            if (!continueLoop) break;
+        let turns = 0;
+        while (turns++ < 10) {
+            if (!(await this.executeTurn())) break;
         }
     }
 
@@ -217,19 +217,20 @@ export class LlmSession {
     }
 
     private parseToolCalls(text: string): ToolCall[] {
-        let matches = [...text.matchAll(REGEX.JSON_BLOCK)];
-        if (matches.length === 0) {
-            matches = [...text.matchAll(REGEX.FALLBACK)];
-        }
+        const jsonMatches = [...text.matchAll(REGEX.JSON_BLOCK)];
+        const matches = jsonMatches.length > 0 ? jsonMatches : [...text.matchAll(REGEX.FALLBACK)];
 
-        return matches.map(match => {
+        return matches.reduce((acc, match) => {
             try {
-                return JSON.parse(match[1]);
+                const call = JSON.parse(match[1]);
+                if (call && typeof call.tool === 'string') {
+                    acc.push(call);
+                }
             } catch (e) {
                 log.error("Failed to parse tool JSON snippet", e);
-                return null;
             }
-        }).filter((call): call is ToolCall => call !== null && typeof call.tool === 'string');
+            return acc;
+        }, [] as ToolCall[]);
     }
 
     private async processToolCall(call: ToolCall) {
