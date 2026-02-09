@@ -29,26 +29,23 @@ export function useNoteAnalysis(note: Note) {
 
         const predictions = patternRecognitionService.predictUserNeeds('current-user', analysisNote);
 
-        const newSuggestions: Suggestion[] = [];
         const seenTexts = new Set<string>();
 
-        predictions.forEach(p => {
+        const predictionSuggestions = predictions.reduce<Suggestion[]>((acc, p) => {
             if (!seenTexts.has(p.predictedAction)) {
                 seenTexts.add(p.predictedAction);
-                let type: 'property' | 'action' = 'action';
-                if (p.predictedAction.includes('[') && p.predictedAction.includes(']')) {
-                    type = 'property';
-                }
-
-                newSuggestions.push({
+                const type = (p.predictedAction.includes('[') && p.predictedAction.includes(']')) ? 'property' : 'action';
+                acc.push({
                     id: `pred-${p.pattern.id}-${p.predictedAction}`,
                     text: p.predictedAction,
                     type,
                     confidence: p.confidence
                 });
             }
-        });
+            return acc;
+        }, []);
 
+        const ontologySuggestions: Suggestion[] = [];
         if (settings.ontology.length > 0) {
             const relatedNodes = settings.ontology.filter(node =>
                 note.content.toLowerCase().includes(node.label.toLowerCase())
@@ -57,7 +54,7 @@ export function useNoteAnalysis(note: Note) {
             if (relatedNodes.length > 0) {
                 const text = `Link to ontology: ${relatedNodes.map(n => n.label).join(', ')}`;
                 if (!seenTexts.has(text)) {
-                    newSuggestions.push({
+                    ontologySuggestions.push({
                         id: 'ontology-link',
                         text,
                         type: 'link',
@@ -67,6 +64,7 @@ export function useNoteAnalysis(note: Note) {
             }
         }
 
+        const newSuggestions = [...predictionSuggestions, ...ontologySuggestions];
         setSuggestions(newSuggestions);
 
         if (newSuggestions.length > 0 && !userDismissedRef.current) {

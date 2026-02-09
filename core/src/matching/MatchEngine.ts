@@ -14,49 +14,34 @@ export class MatchEngine {
     constructor(private ontology: OntologyNode[]) { }
 
     calculateMatchScore(request: Note, offer: Note): MatchResult {
-        const matches: PropertyMatch[] = [];
-        const conflicts: PropertyMatch[] = [];
+        // Collect all evaluations
+        const results = request.properties.flatMap(reqProp =>
+            offer.properties
+                .filter(p => p.key === reqProp.key)
+                .map(offProp => this.evaluateConstraint(reqProp, offProp))
+        );
 
-        request.properties.forEach(reqProp => {
-            const offerProps = offer.properties.filter(p => p.key === reqProp.key);
+        const matches = results.filter(r => r.compatibility > 0);
+        const conflicts = results.filter(r => r.compatibility < 0);
 
-            if (offerProps.length === 0) return;
-
-            offerProps.forEach(offProp => {
-                const result = this.evaluateConstraint(reqProp, offProp);
-
-                if (result.compatibility > 0) {
-                    matches.push(result);
-                } else if (result.compatibility < 0) {
-                    conflicts.push(result);
-                }
-            });
-        });
-
-        let totalScore = 0;
+        // Calculate score
         const matchedKeys = new Set<string>();
-
-        for (const m of matches) {
-            if (!matchedKeys.has(m.requestProp.key)) {
-                totalScore += m.compatibility;
-                matchedKeys.add(m.requestProp.key);
+        const totalScore = results.reduce((acc, r) => {
+            if (r.compatibility > 0 && !matchedKeys.has(r.requestProp.key)) {
+                matchedKeys.add(r.requestProp.key);
+                return acc + r.compatibility;
             }
-        }
-
-        // Reduce score for conflicts
-        for (const c of conflicts) {
-            totalScore += c.compatibility; // compatibility is negative
-        }
+            if (r.compatibility < 0) {
+                return acc + r.compatibility;
+            }
+            return acc;
+        }, 0);
 
         const normalizedScore = request.properties.length > 0
             ? Math.max(0, totalScore / request.properties.length)
             : 0;
 
-        return {
-            score: normalizedScore,
-            matches,
-            conflicts
-        };
+        return { score: normalizedScore, matches, conflicts };
     }
 
     private evaluateConstraint(req: Property, off: Property): PropertyMatch {
