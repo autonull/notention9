@@ -13,6 +13,38 @@ interface SmartNoteAssistantProps {
     className?: string;
 }
 
+const PROPERTY_REGEX = /\[(.*?):(.*?):(.*?)\]/;
+const TASK_KEYWORDS = ['Create Task', 'Todo List', 'Shopping List'];
+const PENDING_STATUS = '[status:is:pending]';
+
+const applyPropertySuggestion = (content: string, suggestionText: string): string | null => {
+    const propertyMatch = suggestionText.match(PROPERTY_REGEX);
+    if (!propertyMatch) return null;
+
+    const tag = propertyMatch[0];
+    const newProperty = parseProperties(tag)[0];
+
+    if (!newProperty) return null;
+
+    const existingProps = parseProperties(content);
+    const existingProp = existingProps.find(p => p.key === newProperty.key);
+
+    if (existingProp) {
+        return replacePropertyInString(content, existingProp, newProperty);
+    } else {
+        return content.trim() + `\n\n${tag}`;
+    }
+};
+
+const applyTaskSuggestion = (content: string, suggestionText: string): string | null => {
+    if (TASK_KEYWORDS.some(s => suggestionText.includes(s))) {
+        if (!content.includes(PENDING_STATUS)) {
+            return content.trim() + `\n\n${PENDING_STATUS}`;
+        }
+    }
+    return null;
+};
+
 export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
     note,
     onNoteUpdate,
@@ -26,26 +58,14 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
         let newContent = note.content;
         let applied = false;
 
-        const propertyMatch = suggestion.text.match(/\[(.*?):(.*?):(.*?)\]/);
-
-        if (propertyMatch) {
-            const tag = propertyMatch[0];
-            const newProperty = parseProperties(tag)[0];
-
-            if (newProperty) {
-                const existingProps = parseProperties(note.content);
-                const existingProp = existingProps.find(p => p.key === newProperty.key);
-
-                if (existingProp) {
-                    newContent = replacePropertyInString(newContent, existingProp, newProperty);
-                } else {
-                    newContent = newContent.trim() + `\n\n${tag}`;
-                }
-                applied = true;
-            }
-        } else if (['Create Task', 'Todo List', 'Shopping List'].some(s => suggestion.text.includes(s))) {
-             if (!note.content.includes('[status:is:pending]')) {
-                newContent = newContent.trim() + `\n\n[status:is:pending]`;
+        const propertyContent = applyPropertySuggestion(newContent, suggestion.text);
+        if (propertyContent) {
+            newContent = propertyContent;
+            applied = true;
+        } else {
+            const taskContent = applyTaskSuggestion(newContent, suggestion.text);
+            if (taskContent) {
+                newContent = taskContent;
                 applied = true;
             }
         }
