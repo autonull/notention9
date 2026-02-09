@@ -17,18 +17,12 @@ export class MatchEngine {
         const matches: PropertyMatch[] = [];
         const conflicts: PropertyMatch[] = [];
 
-        // Iterate through all Request properties (Constraints)
-        for (const reqProp of request.properties) {
-            // Find corresponding properties in Offer (Facts) by key
+        request.properties.forEach(reqProp => {
             const offerProps = offer.properties.filter(p => p.key === reqProp.key);
 
-            if (offerProps.length === 0) {
-                // Determine if this was a *required* attribute?
-                // For now, simple miss.
-                continue;
-            }
+            if (offerProps.length === 0) return;
 
-            for (const offProp of offerProps) {
+            offerProps.forEach(offProp => {
                 const result = this.evaluateConstraint(reqProp, offProp);
 
                 if (result.compatibility > 0) {
@@ -36,8 +30,8 @@ export class MatchEngine {
                 } else if (result.compatibility < 0) {
                     conflicts.push(result);
                 }
-            }
-        }
+            });
+        });
 
         let totalScore = 0;
         const matchedKeys = new Set<string>();
