@@ -33,48 +33,41 @@ class PerformanceMonitor {
         return duration;
     }
 
+    // Helper to abstract PerformanceObserver creation
+    private monitorPerformanceEntry(type: string, callback: (entry: PerformanceEntry) => void): boolean {
+        if (typeof window === 'undefined' || !('PerformanceObserver' in window)) return false;
+
+        try {
+            const observer = new PerformanceObserver((list) => {
+                list.getEntries().forEach(callback);
+            });
+            observer.observe({entryTypes: [type]});
+            this.observers.push(observer);
+            return true;
+        } catch (e) {
+            // Ignore if not supported
+            return false;
+        }
+    }
+
     // Monitor long tasks (>50ms that can block UI)
     monitorLongTasks(): void {
         if (this.isMonitoringLongTasks) return;
 
-        if ('PerformanceObserver' in window) {
-            try {
-                const observer = new PerformanceObserver((list) => {
-                    list.getEntries().forEach((entry) => {
-                        if (entry.duration > 50) {
-                            this.logger.warn(`Long task detected: ${entry.name} took ${entry.duration.toFixed(2)}ms`);
-                        }
-                    });
-                });
-
-                observer.observe({entryTypes: ['longtask']});
-                this.observers.push(observer);
-                this.isMonitoringLongTasks = true;
-            } catch (e) {
-                // Ignore if not supported
+        this.isMonitoringLongTasks = this.monitorPerformanceEntry('longtask', (entry) => {
+            if (entry.duration > 50) {
+                this.logger.warn(`Long task detected: ${entry.name} took ${entry.duration.toFixed(2)}ms`);
             }
-        }
+        });
     }
 
     // Monitor layout thrashing (frequent style/layout recalculations)
     monitorLayoutThrashing(): void {
         if (this.isMonitoringLayout) return;
 
-        if ('PerformanceObserver' in window) {
-            try {
-                const observer = new PerformanceObserver((list) => {
-                    list.getEntries().forEach((entry) => {
-                        this.logger.debug(`Layout shift: ${entry.name} caused ${entry.duration.toFixed(2)}ms`);
-                    });
-                });
-
-                observer.observe({entryTypes: ['layout-shift']});
-                this.observers.push(observer);
-                this.isMonitoringLayout = true;
-            } catch (e) {
-                // Ignore
-            }
-        }
+        this.isMonitoringLayout = this.monitorPerformanceEntry('layout-shift', (entry) => {
+            this.logger.debug(`Layout shift: ${entry.name} caused ${entry.duration.toFixed(2)}ms`);
+        });
     }
 
     // Cleanup function
@@ -90,7 +83,7 @@ class PerformanceMonitor {
 export const perfMonitor = new PerformanceMonitor();
 
 // React hook for component performance monitoring
-export function usePerformanceMonitor(componentName: string, deps: any[]): void {
+export function usePerformanceMonitor(componentName: string, deps: unknown[]): void {
     const renderCount = useRef(0);
     const prevDeps = useRef(deps);
     const logger = Logger.getInstance();

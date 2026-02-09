@@ -46,15 +46,10 @@ export class AgentServer {
 
     async stop() {
         log('System', 'Shutting down...');
+        if (!this.server) return;
+
         return new Promise<void>((resolve, reject) => {
-             if (this.server) {
-                 this.server.close((err) => {
-                     if (err) reject(err);
-                     else resolve();
-                 });
-             } else {
-                 resolve();
-             }
+            this.server!.close((err) => err ? reject(err) : resolve());
         });
     }
 
@@ -74,11 +69,9 @@ export class AgentServer {
             join(process.cwd(), 'ui/dist')
         ];
 
-        for (const path of potentialPaths) {
-            if (fs.existsSync(path)) {
-                this.app.use(express.static(path));
-                return;
-            }
+        const path = potentialPaths.find(p => fs.existsSync(p));
+        if (path) {
+            this.app.use(express.static(path));
         }
     }
 
