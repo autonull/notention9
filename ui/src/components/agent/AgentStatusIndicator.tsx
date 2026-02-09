@@ -24,65 +24,51 @@ export function AgentStatusIndicator() {
         };
     }, []); // Run once on mount
 
-    // Determine UI status display
-    let statusDisplay = null;
-    const status = agentStatus.status;
-
-    if (status === 'offline') {
-        // Check if explicitly disabled to show different message
-        if (!agentService.isEnabled()) {
-            statusDisplay = (
-                <div
-                    className="fixed top-4 right-4 bg-gray-700 text-white px-4 py-2 rounded shadow-lg z-50 opacity-75 hover:opacity-100 transition-opacity">
-                    <div className="flex items-center gap-2">
-                        <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
-                        Local Mode (Agent Disabled)
-                    </div>
-                </div>
-            );
-        } else {
-            statusDisplay = (
-                <div
-                    className="fixed top-4 right-4 bg-yellow-500 text-black px-4 py-2 rounded shadow-lg z-50 animate-pulse">
-                    <div className="flex items-center gap-2">
-                        <span className="w-2 h-2 bg-black rounded-full"></span>
-                        Offline Mode - Working locally
-                    </div>
-                </div>
-            );
+    const getStatusConfig = () => {
+        if (agentStatus.status === 'offline') {
+            if (!agentService.isEnabled()) {
+                return {
+                    bg: 'bg-gray-700', text: 'text-white', opacity: 'opacity-75 hover:opacity-100',
+                    dot: 'bg-gray-400', label: 'Local Mode (Agent Disabled)'
+                };
+            }
+            return {
+                bg: 'bg-yellow-500', text: 'text-black', animate: 'animate-pulse',
+                dot: 'bg-black', label: 'Offline Mode - Working locally'
+            };
         }
-    } else if (status === 'connecting' || status === 'reconnecting') {
-        statusDisplay = (
-            <div className="fixed top-4 right-4 bg-blue-500 text-white px-4 py-2 rounded shadow-lg z-50">
-                <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                    {status === 'connecting' ? 'Connecting...' : 'Reconnecting...'}
-                </div>
+        if (['connecting', 'reconnecting'].includes(agentStatus.status)) {
+            return {
+                bg: 'bg-blue-500', text: 'text-white',
+                dot: 'bg-white animate-pulse',
+                label: agentStatus.status === 'connecting' ? 'Connecting...' : 'Reconnecting...'
+            };
+        }
+        if (agentStatus.status === 'connected') {
+            return {
+                bg: 'bg-green-500', text: 'text-white',
+                dot: 'bg-white', label: 'Connected to Agent'
+            };
+        }
+        return {
+            bg: 'bg-gray-500', text: 'text-white', opacity: 'opacity-50',
+            dot: 'bg-gray-300', label: agentStatus.status.charAt(0).toUpperCase() + agentStatus.status.slice(1)
+        };
+    };
+
+    const config = getStatusConfig();
+
+    const statusDisplay = (
+        <div className={`fixed top-4 right-4 ${config.bg} ${config.text} px-4 py-2 rounded shadow-lg z-50 transition-opacity ${config.opacity || ''} ${config.animate || ''}`}>
+            <div className="flex items-center gap-2">
+                <div className={`w-2 h-2 rounded-full ${config.dot}`}></div>
+                {config.label}
             </div>
-        );
-    } else if (status === 'connected') {
-        statusDisplay = (
-            <div className="fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg z-50">
-                <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-white rounded-full"></div>
-                    Connected to Agent
-                </div>
-                {agentStatus.queueSize > 0 && (
-                    <div className="text-xs mt-1">Processing {agentStatus.queueSize} queued messages...</div>
-                )}
-            </div>
-        );
-    } else {
-        // Fallback/Disconnected state
-        statusDisplay = (
-            <div className="fixed top-4 right-4 bg-gray-500 text-white px-4 py-2 rounded shadow-lg z-50 opacity-50">
-                <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-                    {status.charAt(0).toUpperCase() + status.slice(1)}
-                </div>
-            </div>
-        );
-    }
+            {agentStatus.status === 'connected' && agentStatus.queueSize > 0 && (
+                <div className="text-xs mt-1">Processing {agentStatus.queueSize} queued messages...</div>
+            )}
+        </div>
+    );
 
     // Show error notification if there's an error
     let errorDisplay = null;
