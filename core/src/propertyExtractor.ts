@@ -6,11 +6,13 @@ import { parseQuantity } from './quantities.js';
 import { Logger } from './utils/logging.js';
 
 // Top-level Regex Constants
-const SEND_TO_REGEX = /(?:send|message)\s+(?:to|)\s+([+\w@#-]+)/i;
-const CHANNEL_REGEX = /(?:via|using|on|through)\s+(\w+)/i;
-const PHONE_REGEX = /(\+?\d{10,15})/;
-const EMAIL_REGEX = /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/;
-const BUDGET_REGEX = /(?:\$|USD\s*)(\d+(?:,\d{3})*(?:\.\d+)?)|(\d+(?:,\d{3})*(?:\.\d+)?)\s*(?:USD|dollars?)/i;
+const PATTERNS = {
+    SEND_TO: /(?:send|message)\s+(?:to|)\s+([+\w@#-]+)/i,
+    CHANNEL: /(?:via|using|on|through)\s+(\w+)/i,
+    PHONE: /(\+?\d{10,15})/,
+    EMAIL: /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/,
+    BUDGET: /(?:\$|USD\s*)(\d+(?:,\d{3})*(?:\.\d+)?)|(\d+(?:,\d{3})*(?:\.\d+)?)\s*(?:USD|dollars?)/i
+};
 
 const TYPE_CHECKERS = {
     NUMBER: /^-?\d+(\.\d+)?$/,
@@ -85,14 +87,14 @@ export class PropertyExtractor {
     }
 
     private applySendToStrategy(text: string, properties: Property[]): void {
-        const match = text.match(SEND_TO_REGEX);
+        const match = text.match(PATTERNS.SEND_TO);
         if (match) {
             properties.push({ key: 'to', operator: 'send to', values: [match[1]] });
         }
     }
 
     private applyChannelStrategy(text: string, properties: Property[]): void {
-        const match = text.match(CHANNEL_REGEX);
+        const match = text.match(PATTERNS.CHANNEL);
         if (match) {
             const channel = match[1].toLowerCase(); // Normalize to lowercase
             const enumOptions = this.ontologyService.getEnumOptions('channel');
@@ -103,14 +105,14 @@ export class PropertyExtractor {
     }
 
     private applyPhoneStrategy(text: string, properties: Property[]): void {
-        const match = text.match(PHONE_REGEX);
+        const match = text.match(PATTERNS.PHONE);
         if (match && !properties.some(p => p.key === 'to')) {
             properties.push({ key: 'from', operator: 'is', values: [match[1]] });
         }
     }
 
     private applyEmailStrategy(text: string, properties: Property[]): void {
-        const match = text.match(EMAIL_REGEX);
+        const match = text.match(PATTERNS.EMAIL);
         if (match) {
             properties.push({ key: 'email', operator: 'is', values: [match[1]] });
         }
@@ -139,7 +141,7 @@ export class PropertyExtractor {
     }
 
     private applyBudgetStrategy(text: string, properties: Property[]): void {
-        const match = text.match(BUDGET_REGEX);
+        const match = text.match(PATTERNS.BUDGET);
         if (match) {
             const amount = match[1] || match[2];
             const normalizedAmount = amount.replace(/,/g, '');
@@ -151,29 +153,27 @@ export class PropertyExtractor {
         const words = text.split(/\s+/).filter(w => w.length > 3);
         const existingKeys = new Set(properties.map(p => p.key));
 
-        for (const [index, word] of words.entries()) {
-            const matches = this.ontologyService.getFuzzyMatches(word, 1);
-            if (matches.length > 0 && !existingKeys.has(matches[0])) {
-                const nextWord = words[index + 1];
-                if (nextWord?.length > 2 && !STOP_WORDS.has(nextWord.toLowerCase())) {
-                    properties.push({ key: matches[0], operator: 'contains', values: [nextWord] });
-                    existingKeys.add(matches[0]);
+        for (let i = 0; i < words.length - 1; i++) {
+            const word = words[i];
+            const [match] = this.ontologyService.getFuzzyMatches(word, 1);
+
+            if (match && !existingKeys.has(match)) {
+                const nextWord = words[i + 1];
+                if (nextWord.length > 2 && !STOP_WORDS.has(nextWord.toLowerCase())) {
+                    properties.push({ key: match, operator: 'contains', values: [nextWord] });
+                    existingKeys.add(match);
                 }
             }
         }
     }
 
     inferType(value: string): PropertyType {
-        if (this.parseQuantityValue(value)) return 'quantity';
+        if (parseQuantity(value)) return 'quantity';
         if (TYPE_CHECKERS.NUMBER.test(value)) return 'number';
         if (TYPE_CHECKERS.DATE.test(value)) return 'date';
         if (TYPE_CHECKERS.DATETIME.test(value)) return 'datetime';
         if (TYPE_CHECKERS.GEO.test(value)) return 'geo';
         return 'string';
-    }
-
-    parseQuantityValue(value: string): Quantity | null {
-        return parseQuantity(value);
     }
 
     validateProperty(property: Property): { valid: boolean; errors: string[] } {

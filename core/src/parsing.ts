@@ -23,17 +23,19 @@ const COMMON_WORDS = new Set([
 ]);
 
 // Pre-compiled Regexes
-const WORD_OP_REGEX = /^([^\s]+)\s+(is|contains|before|after|less than|greater than|between|range|not)\s+(.+)$/i;
-const GENERAL_SYM_REGEX = /^([^\s]+)\s*([<>=!]+)\s*(.+)$/;
-const COLON_REGEX = /^([^\s]+):(.+)$/;
-const SPACE_REGEX = /^([^\s]+)\s+(.+)$/;
-const VALID_KEY_REGEX = /^[a-zA-Z][a-zA-Z0-9_.-]*$/;
-const BRACKET_REGEX = /\[([^\]]+)\]/g;
-const MACRO_REGEX = /@([a-zA-Z0-9_]+)/g;
-const SPAN_REGEX = /<span\s+[^>]*data-type=["']property["'][^>]*>/g;
-const SPAN_ATTR_NAME = /data-name=["']([^"']+)["']/;
-const SPAN_ATTR_OP = /data-operator=["']([^"']+)["']/;
-const SPAN_ATTR_VAL = /data-value=["']([^"']+)["']/;
+export const REGEX = {
+  WORD_OP: /^([^\s]+)\s+(is|contains|before|after|less than|greater than|between|range|not)\s+(.+)$/i,
+  GENERAL_SYM: /^([^\s]+)\s*([<>=!]+)\s*(.+)$/,
+  COLON: /^([^\s]+):(.+)$/,
+  SPACE: /^([^\s]+)\s+(.+)$/,
+  VALID_KEY: /^[a-zA-Z][a-zA-Z0-9_.-]*$/,
+  BRACKET: /\[([^\]]+)\]/g,
+  MACRO: /@([a-zA-Z0-9_]+)/g,
+  SPAN: /<span\s+[^>]*data-type=["']property["'][^>]*>/g,
+  SPAN_ATTR_NAME: /data-name=["']([^"']+)["']/,
+  SPAN_ATTR_OP: /data-operator=["']([^"']+)["']/,
+  SPAN_ATTR_VAL: /data-value=["']([^"']+)["']/,
+};
 
 // Pre-compute symbolic regexes
 const SYMBOLIC_REGEXES = Object.keys(SYMBOL_TO_OP)
@@ -47,7 +49,7 @@ const SYMBOLIC_REGEXES = Object.keys(SYMBOL_TO_OP)
   });
 
 // Strategy Pattern for Property Parsing
-type PropertyParser = (content: string) => Property | null;
+export type PropertyParser = (content: string) => Property | null;
 
 const parseColonFormat: PropertyParser = (content) => {
     const colonParts = content.split(':');
@@ -82,7 +84,7 @@ const parseSymbolicFormat: PropertyParser = (content) => {
         }
     }
 
-    const generalMatch = content.match(GENERAL_SYM_REGEX);
+    const generalMatch = content.match(REGEX.GENERAL_SYM);
     if (generalMatch) {
         const [, rawKey, operator, value] = generalMatch;
         const key = resolveAlias(rawKey.trim());
@@ -102,12 +104,12 @@ const parseSymbolicFormat: PropertyParser = (content) => {
 };
 
 const parseWordFormat: PropertyParser = (content) => {
-    const wordOperatorMatch = content.match(WORD_OP_REGEX);
+    const wordOperatorMatch = content.match(REGEX.WORD_OP);
     if (wordOperatorMatch) {
         const [, rawKey, operator, value] = wordOperatorMatch;
         const key = resolveAlias(rawKey.trim());
 
-        if (!VALID_KEY_REGEX.test(key) || COMMON_WORDS.has(key.toLowerCase())) {
+        if (!REGEX.VALID_KEY.test(key) || COMMON_WORDS.has(key.toLowerCase())) {
             return null;
         }
 
@@ -118,12 +120,12 @@ const parseWordFormat: PropertyParser = (content) => {
         };
     }
 
-    const spaceMatch = content.match(SPACE_REGEX);
+    const spaceMatch = content.match(REGEX.SPACE);
     if (spaceMatch) {
          const [, rawKey, value] = spaceMatch;
          const key = resolveAlias(rawKey.trim());
 
-         if (!VALID_KEY_REGEX.test(key) || COMMON_WORDS.has(key.toLowerCase())) {
+         if (!REGEX.VALID_KEY.test(key) || COMMON_WORDS.has(key.toLowerCase())) {
              return null;
          }
 
@@ -154,7 +156,7 @@ const parsePropertyBlock = (content: string): Property | null => {
 export const extractProperties = (text: string): ExtractedProperty[] => {
   const extracted: ExtractedProperty[] = [];
 
-  for (const match of text.matchAll(BRACKET_REGEX)) {
+  for (const match of text.matchAll(REGEX.BRACKET)) {
     const content = match[1];
     const parsed = parsePropertyBlock(content);
     if (parsed) {
@@ -171,7 +173,7 @@ export const extractProperties = (text: string): ExtractedProperty[] => {
 
 const extractMacros = (text: string): Property[] => {
     const properties: Property[] = [];
-    for (const macroMatch of text.matchAll(MACRO_REGEX)) {
+    for (const macroMatch of text.matchAll(REGEX.MACRO)) {
         const macroName = macroMatch[1];
         const expandedProperties = expandMacro(macroName);
         properties.push(...expandedProperties);
@@ -181,11 +183,11 @@ const extractMacros = (text: string): Property[] => {
 
 const extractHtmlSpans = (text: string): Property[] => {
     const properties: Property[] = [];
-    for (const spanMatch of text.matchAll(SPAN_REGEX)) {
+    for (const spanMatch of text.matchAll(REGEX.SPAN)) {
         const tag = spanMatch[0];
-        const nameMatch = tag.match(SPAN_ATTR_NAME);
-        const opMatch = tag.match(SPAN_ATTR_OP);
-        const valMatch = tag.match(SPAN_ATTR_VAL);
+        const nameMatch = tag.match(REGEX.SPAN_ATTR_NAME);
+        const opMatch = tag.match(REGEX.SPAN_ATTR_OP);
+        const valMatch = tag.match(REGEX.SPAN_ATTR_VAL);
 
         if (nameMatch && valMatch) {
             properties.push({
