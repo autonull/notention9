@@ -1,4 +1,4 @@
-import {getPublicKey, SimplePool} from 'nostr-tools';
+import { getPublicKey, SimplePool } from 'nostr-tools';
 import {
     convertEventToNote,
     DEFAULT_RELAYS,
@@ -31,7 +31,7 @@ class NostrService {
         try {
             this.pubkey = getPublicKey(hexToBytes(privkey));
         } catch (e) {
-            this.logger.error("Invalid private key", e);
+            this.logger.error("Invalid private key provided to NostrService", e instanceof Error ? e : new Error(String(e)));
         }
     }
 
@@ -49,7 +49,7 @@ class NostrService {
         try {
             await publishNoteToNostr(note, this.privkey, this.relays);
         } catch (e) {
-            this.logger.warn("Failed to publish note to Nostr", e);
+            this.logger.warn("Failed to publish note to Nostr", e instanceof Error ? e : new Error(String(e)));
         }
     }
 
@@ -64,28 +64,27 @@ class NostrService {
             this._sub = this.pool.subscribeMany(
                 this.relays,
                 [
-                    {kinds: [1, SEMANTIC_NOTE_KIND], authors: [this.pubkey], limit: 100},
+                    { kinds: [1, SEMANTIC_NOTE_KIND], authors: [this.pubkey], limit: 100 },
                 ],
                 {
                     onevent: (event) => {
                         if (this._upsertCallback) {
                             try {
                                 const note = convertEventToNote(event);
-                                // Restore UUID from 'd' tag if present
                                 const dTag = event.tags.find(t => t[0] === 'd');
                                 if (dTag && dTag[1]) {
                                     note.id = dTag[1];
                                 }
                                 this._upsertCallback(note);
                             } catch (err) {
-                                this.logger.error("Error processing Nostr event", err);
+                                this.logger.error("Error processing Nostr event", err instanceof Error ? err : new Error(String(err)));
                             }
                         }
                     }
                 }
             );
         } catch (e) {
-            this.logger.error("Failed to subscribe to relays", e);
+            this.logger.error("Failed to subscribe to relays", e instanceof Error ? e : new Error(String(e)));
         }
 
         return () => this.unsubscribe();

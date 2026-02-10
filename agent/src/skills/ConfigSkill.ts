@@ -1,5 +1,5 @@
-import { Note } from '@notention/core';
-import { Skill, PropertyPattern, ActionSequence } from '@notention/core/src/skills/types';
+import { Note, generateId, PropertyPattern } from '@notention/core';
+import { Skill, ActionSequence } from '@notention/core/src/skills/types';
 
 // Centralized configuration keys for O(1) lookup
 const DIRECT_CONFIG_KEYS = new Set(['llm_model', 'llm_provider', 'debug_mode', 'voice_enabled']);
@@ -31,10 +31,8 @@ export class ConfigSkill implements Skill {
     }
 
     canHandle(note: Note): number {
-        // Check for tags
         if (note.tags.some(tag => META_CONFIG_KEYS.has(tag))) return 1.0;
 
-        // Check for properties
         const hasConfig = note.properties.some(p =>
             META_CONFIG_KEYS.has(p.key) || DIRECT_CONFIG_KEYS.has(p.key)
         );
@@ -57,7 +55,6 @@ export class ConfigSkill implements Skill {
             // Meta config keys: [config:is:debug_mode=true] or [setting:is:voice_enabled=false]
             if (META_CONFIG_KEYS.has(p.key)) {
                  p.values.forEach(val => {
-                     // Check for key=value format
                      const splitIndex = val.indexOf('=');
                      if (splitIndex !== -1) {
                          const k = val.substring(0, splitIndex).trim();
@@ -81,9 +78,8 @@ export class ConfigSkill implements Skill {
     }
 
     importFromData(data: unknown, sourceNote: Note): Note[] {
-        // We could return a confirmation note
         return [{
-            id: crypto.randomUUID(),
+            id: generateId(),
             title: 'Configuration Updated',
             content: `Processed configuration update request.`,
             tags: ['#system', '#log'],
