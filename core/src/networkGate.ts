@@ -1,3 +1,4 @@
+import { Logger } from './utils/logging.js';
 import type { Note } from './types/index.js';
 
 /**
@@ -76,7 +77,7 @@ export class NetworkGate {
                 }
             } catch (error) {
                 if (error instanceof PrivacyError) {
-                    console.warn(`Blocked private note: ${note.id}`);
+                    Logger.getInstance().warn(`Blocked private note: ${note.id}`);
                     continue;
                 }
                 throw error;

@@ -3,6 +3,7 @@ import { SkillDefinition } from '../skillPatternMatcher.js';
 import { ValidationError } from '../utils/errors.js';
 import { Note } from '../types/index.js';
 import { Skill } from './types.js';
+import { Logger } from '../utils/logging.js';
 
 export class SkillRegistry {
     protected skills: Map<string, BaseSkill | SkillDefinition | Skill> = new Map();
@@ -17,7 +18,7 @@ export class SkillRegistry {
         }
 
         if (this.skills.has(id)) {
-            console.warn(`Skill with ID ${id} is already registered and will be overwritten`);
+            Logger.getInstance().warn(`Skill with ID ${id} is already registered and will be overwritten`);
         }
 
         this.skills.set(id, skill);

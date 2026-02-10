@@ -2,6 +2,7 @@ import fs from 'fs';
 import { join } from 'path';
 import { Note } from '@notention/core/src/types';
 import { Mutex } from './utils/Mutex';
+import { log, error } from './core/utils';
 
 const DATA_DIR = join(process.cwd(), 'data');
 const NOTES_FILE = join(DATA_DIR, 'notes.json');
@@ -23,14 +24,14 @@ export class PersistenceService {
             try {
                 return JSON.parse(data);
             } catch (parseError) {
-                console.error('CRITICAL: Failed to parse notes.json', parseError);
+                error('Persistence', 'CRITICAL: Failed to parse notes.json', parseError);
                 // Rename corrupt file to preserve data
                 const corruptFile = `${NOTES_FILE}.corrupt.${Date.now()}`;
                 try {
                     await fs.promises.rename(NOTES_FILE, corruptFile);
-                    console.warn(`Renamed corrupt notes.json to ${corruptFile}`);
+                    log('Persistence', `Renamed corrupt notes.json to ${corruptFile}`);
                 } catch (renameError) {
-                    console.error('Failed to rename corrupt file', renameError);
+                    error('Persistence', 'Failed to rename corrupt file', renameError);
                     throw renameError; // Re-throw if we can't safely move aside
                 }
                 return []; // Return empty for new start
@@ -49,14 +50,14 @@ export class PersistenceService {
         try {
             await fs.promises.writeFile(tempFile, JSON.stringify(notes, null, 2));
             await fs.promises.rename(tempFile, NOTES_FILE);
-        } catch (error) {
-            console.error('Failed to save notes atomically', error);
+        } catch (e) {
+            error('Persistence', 'Failed to save notes atomically', e);
             try {
                 await fs.promises.unlink(tempFile);
-            } catch (e) {
+            } catch (unlinkError) {
                 // Ignore unlink error
             }
-            throw error;
+            throw e;
         }
     }
 
