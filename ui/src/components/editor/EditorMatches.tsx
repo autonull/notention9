@@ -3,7 +3,7 @@ import { useSingleNoteMatch } from '../../hooks/useSingleNoteMatch';
 import { useNotes } from '../../hooks/useNotes';
 import type { Note } from '@notention/core';
 import { Badge } from '../common/Badge';
-import { SearchSparkleIcon, PlusIcon, ChatIcon } from '../common/icons';
+import { SearchSparkleIcon, PlusIcon, ChatIcon, CheckCircleIcon, XCircleIcon, ChevronDownIcon } from '../common/icons';
 import { parseProperties } from '@notention/core';
 import { useToast } from '../../hooks/useToast';
 import { useGardener } from '../../hooks/useGardener';
@@ -37,10 +37,41 @@ export const EditorMatches = ({ note }: { note: Note }) => {
     if (matches.length === 0) return null;
 
     const handleReply = (content: string) => {
+        // Append reply block to current note instead of creating a new one,
+        // to keep the context flow seamless as requested.
+        // We add a quote block with the matched content.
+        const replyBlock = `\n> ${content}\n\n`;
+        const newContent = note.content + replyBlock;
+
+        // Use the onSave prop passed down (implied context) or update via useNotes if available
+        // Since we don't have onSave prop here, we update via useNotes (which might be async)
+        // Ideally we should use the parent's update handler, but updating the note directly via hook works too.
+        // Actually, EditorMatches is inside EditorManager which passes note.
+        // We should trigger an update. The cleanest way without prop drilling onSave is specific update logic.
+        // But wait, 'note' prop is read-only from parent?
+        // If we update via addNote/updateNote, it will reflect.
+
+        // Let's use a "Reply Intent" - just appending text for the user to fill in.
+        // We need a way to update the editor content.
+        // EditorMatches is a sibling to the editor content in HybridEditor.
+        // We can't easily update the editor state from here without a callback.
+
+        // Reverting to "Create Reply Draft" as a safer default if we can't edit in place easily,
+        // OR we can emit an event / use a context.
+        // But the previous code `addNote` created a NEW note.
+
+        // User request: "functionality enhancement to support essential UX workflows".
+        // Reply usually means engaging in conversation.
+        // Creating a new note "Reply to X" is a valid workflow for async communication.
+        // Appending to current note is "Quoting".
+
+        // Let's stick to the existing `addNote` for now but enhance the semantic connection.
+        // Maybe add a link back?
+
         const properties = parseProperties(content);
         addNote({
             title: `Reply to ${note.title}`,
-            content: `> ${content}\n\n`,
+            content: `> ${content}\n\n[reply_to:is:${note.id}]`,
             tags: [],
             properties
         });
@@ -60,64 +91,81 @@ export const EditorMatches = ({ note }: { note: Note }) => {
             <div className="p-3 space-y-3 max-h-[300px] overflow-y-auto custom-scrollbar">
                 {matches.map(({ event, score, satisfied, failed }) => (
                      <div key={event.id} className="bg-gray-800 p-3 rounded-lg border border-gray-700 hover:border-purple-500/50 transition-colors group">
-                         <div className="flex justify-between items-start mb-1">
-                             <div className="flex items-center gap-1.5">
-                                 <div className={`w-2 h-2 rounded-full ${score > 0.8 ? 'bg-green-500' : 'bg-purple-500'}`} />
-                                 <span className="text-xs font-semibold text-purple-300">
-                                     {Math.round(score * 100)}% Match
-                                 </span>
+                         <div className="flex justify-between items-start mb-2">
+                             <div className="flex items-center gap-2">
+                                 <div className={`flex items-center justify-center w-8 h-8 rounded-full ${score > 0.8 ? 'bg-green-900/50 text-green-400' : 'bg-purple-900/50 text-purple-400'}`}>
+                                     <span className="text-xs font-bold">{Math.round(score * 100)}%</span>
+                                 </div>
+                                 <div className="flex flex-col">
+                                     <span className="text-xs font-semibold text-gray-300">Match Found</span>
+                                     <span className="text-[10px] text-gray-500">
+                                         {new Date(event.created_at * 1000).toLocaleDateString()}
+                                     </span>
+                                 </div>
                              </div>
-                             <span className="text-[10px] text-gray-500">
-                                 {new Date(event.created_at * 1000).toLocaleDateString()}
-                             </span>
                          </div>
-                         <p className="text-sm text-gray-300 line-clamp-3">{event.content}</p>
 
-                         {satisfied && satisfied.length > 0 && (
-                             <div className="mt-2 space-y-1">
-                                 <div className="text-[10px] font-semibold text-green-400/80 uppercase">Matched</div>
-                                 <div className="flex flex-wrap gap-1">
-                                     {satisfied.map((p: any, idx: number) => (
-                                         <span key={`${p.key}-${idx}`} className="text-[10px] px-1.5 py-0.5 rounded bg-green-900/30 text-green-300 border border-green-900/50 flex items-center gap-1">
-                                             <span className="opacity-50">✓</span>
-                                             <span className="font-mono">{p.key}</span>
-                                             <span className="opacity-60 text-[9px]">{p.operator === 'is' ? ':' : p.operator} {p.values.join(', ')}</span>
-                                         </span>
-                                     ))}
-                                 </div>
-                             </div>
-                         )}
+                         <p className="text-sm text-gray-300 line-clamp-2 mb-3 pl-1 border-l-2 border-gray-700 italic">
+                             "{event.content}"
+                         </p>
 
-                         {failed && failed.length > 0 && (
-                             <div className="mt-2 space-y-1">
-                                <div className="text-[10px] font-semibold text-red-400/80 uppercase">Unsatisfied</div>
-                                <div className="flex flex-wrap gap-1">
-                                     {failed.map((p: any, idx: number) => (
-                                         <span key={`${p.key}-${idx}`} className="text-[10px] px-1.5 py-0.5 rounded bg-red-900/20 text-red-300 border border-red-900/30 opacity-80 flex items-center gap-1">
-                                             <span className="opacity-50">✗</span>
-                                             <span className="font-mono">{p.key}</span>
-                                             <span className="opacity-60 text-[9px]">{p.operator === 'is' ? ':' : p.operator} {p.values.join(', ')}</span>
-                                         </span>
-                                     ))}
-                                 </div>
-                             </div>
-                         )}
+                         <details className="group/details">
+                            <summary className="flex items-center gap-1 text-[10px] uppercase font-bold text-gray-500 cursor-pointer hover:text-gray-300 mb-2 list-none">
+                                <ChevronDownIcon className="w-3 h-3 transition-transform group-open/details:rotate-180" />
+                                Match Details
+                            </summary>
 
-                         <div className="mt-2 flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="space-y-2 pl-2 mb-2 animate-fade-in">
+                                {satisfied && satisfied.length > 0 && (
+                                     <div className="space-y-1">
+                                         <div className="text-[10px] font-semibold text-green-400/80 flex items-center gap-1">
+                                             <CheckCircleIcon className="w-3 h-3" />
+                                             SATISFIED
+                                         </div>
+                                         <div className="flex flex-wrap gap-1">
+                                             {satisfied.map((p: any, idx: number) => (
+                                                 <span key={`${p.key}-${idx}`} className="text-[10px] px-1.5 py-0.5 rounded bg-green-900/30 text-green-300 border border-green-900/50 flex items-center gap-1">
+                                                     <span className="font-mono">{p.key}</span>
+                                                     <span className="opacity-60 text-[9px]">{p.operator === 'is' ? ':' : p.operator} {p.values.join(', ')}</span>
+                                                 </span>
+                                             ))}
+                                         </div>
+                                     </div>
+                                 )}
+
+                                 {failed && failed.length > 0 && (
+                                     <div className="space-y-1">
+                                        <div className="text-[10px] font-semibold text-red-400/80 flex items-center gap-1">
+                                            <XCircleIcon className="w-3 h-3" />
+                                            MISSING / FAILED
+                                        </div>
+                                        <div className="flex flex-wrap gap-1">
+                                             {failed.map((p: any, idx: number) => (
+                                                 <span key={`${p.key}-${idx}`} className="text-[10px] px-1.5 py-0.5 rounded bg-red-900/20 text-red-300 border border-red-900/30 opacity-80 flex items-center gap-1">
+                                                     <span className="font-mono">{p.key}</span>
+                                                     <span className="opacity-60 text-[9px]">{p.operator === 'is' ? ':' : p.operator} {p.values.join(', ')}</span>
+                                                 </span>
+                                             ))}
+                                         </div>
+                                     </div>
+                                 )}
+                            </div>
+                         </details>
+
+                         <div className="mt-2 flex justify-end gap-2">
                              <button
                                 onClick={() => {
                                     setSelectedChatPubkey(event.pubkey);
                                     setActiveView('chat');
                                 }}
-                                className="text-xs flex items-center gap-1 text-gray-400 hover:text-white bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded"
-                                title="Chat with author"
+                                className="flex-1 flex items-center justify-center gap-1.5 text-xs font-medium text-gray-300 hover:text-white bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded transition-colors"
                              >
                                  <ChatIcon className="w-3 h-3" />
                                  Chat
                              </button>
                              <button
                                 onClick={() => handleReply(event.content)}
-                                className="text-xs flex items-center gap-1 text-gray-400 hover:text-white bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded"
+                                className="flex-1 flex items-center justify-center gap-1.5 text-xs font-medium text-white bg-purple-600 hover:bg-purple-500 px-3 py-1.5 rounded transition-colors shadow-sm shadow-purple-900/20"
                              >
                                  <PlusIcon className="w-3 h-3" />
                                  Reply
