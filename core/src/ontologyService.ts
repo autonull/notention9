@@ -49,32 +49,26 @@ export class OntologyService {
 
     constructor(ontology: OntologyNode[]) {
         this.ontology = ontology;
-        this.attributeIndex = this.buildAttributeIndex();
+        this.attributeIndex = this.buildAttributeIndex(this.ontology);
     }
 
     /**
      * Build index of all attributes across ontology for fast lookup
      */
-    private buildAttributeIndex(): Map<string, OntologyAttribute> {
-        const index = new Map<string, OntologyAttribute>();
-
-        const traverse = (nodes: OntologyNode[]) => {
-            for (const node of nodes) {
-                if (node.attributes) {
-                    Object.entries(node.attributes).forEach(([key, value]) => {
-                        if (!index.has(key)) {
-                            index.set(key, value);
-                        }
-                    });
-                }
-                if (node.children) {
-                    traverse(node.children);
-                }
+    private buildAttributeIndex(nodes: OntologyNode[], index = new Map<string, OntologyAttribute>()): Map<string, OntologyAttribute> {
+        return nodes.reduce((acc, node) => {
+            if (node.attributes) {
+                Object.entries(node.attributes).forEach(([key, value]) => {
+                    if (!acc.has(key)) {
+                        acc.set(key, value);
+                    }
+                });
             }
-        };
-
-        traverse(this.ontology);
-        return index;
+            if (node.children) {
+                this.buildAttributeIndex(node.children, acc);
+            }
+            return acc;
+        }, index);
     }
 
     private withCache<T>(cache: Map<string, T>, key: string, compute: () => T): T {
@@ -142,20 +136,23 @@ export class OntologyService {
 
         return this.withCache(this.fuzzyMatchesCache, cacheKey, () => {
             const lower = input.toLowerCase();
+            const matches: { key: string, score: number }[] = [];
 
-            return Array.from(this.attributeIndex)
-                .map(([key, attr]) => {
-                    const keyLower = key.toLowerCase();
-                    let score = 0;
+            for (const [key, attr] of this.attributeIndex) {
+                 const keyLower = key.toLowerCase();
+                 let score = 0;
 
-                    if (keyLower === lower) score = 100;
-                    else if (keyLower.startsWith(lower)) score = 80;
-                    else if (keyLower.includes(lower)) score = 60;
-                    else if (attr.description?.toLowerCase().includes(lower)) score = 40;
+                 if (keyLower === lower) score = 100;
+                 else if (keyLower.startsWith(lower)) score = 80;
+                 else if (keyLower.includes(lower)) score = 60;
+                 else if (attr.description?.toLowerCase().includes(lower)) score = 40;
 
-                    return { key, score };
-                })
-                .filter(m => m.score > 0)
+                 if (score > 0) {
+                     matches.push({ key, score });
+                 }
+            }
+
+            return matches
                 .sort((a, b) => (b.score - a.score) || a.key.localeCompare(b.key))
                 .slice(0, limit)
                 .map(m => m.key);
@@ -224,21 +221,18 @@ export class OntologyService {
      * Record usage of property keys to track frequency and co-occurrence
      */
     recordUsage(keys: string[]) {
-        for (const key of keys) {
+        keys.forEach(key => {
             this.usageStats.set(key, (this.usageStats.get(key) || 0) + 1);
 
-            let coMap = this.coOccurrenceStats.get(key);
-            if (!coMap) {
-                coMap = new Map();
-                this.coOccurrenceStats.set(key, coMap);
-            }
+            const coMap = this.coOccurrenceStats.get(key) ?? new Map<string, number>();
+            if (!this.coOccurrenceStats.has(key)) this.coOccurrenceStats.set(key, coMap);
 
-            for (const otherKey of keys) {
+            keys.forEach(otherKey => {
                 if (key !== otherKey) {
                     coMap.set(otherKey, (coMap.get(otherKey) || 0) + 1);
                 }
-            }
-        }
+            });
+        });
     }
 
     /**

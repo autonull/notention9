@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Note, patternRecognitionService, PropertyExtractor } from '@notention/core';
+import { Note, patternRecognitionService, PropertyExtractor, OntologyNode } from '@notention/core';
 import { useSettings } from './useSettingsContext';
 import { getTextFromHtml } from '../utils/html';
 
@@ -9,6 +9,23 @@ export interface Suggestion {
     type: 'property' | 'link' | 'action';
     confidence?: number;
 }
+
+const generateOntologySuggestions = (content: string, ontology: OntologyNode[], seenTexts: Set<string>): Suggestion[] => {
+    const contentLower = content.toLowerCase();
+    const relatedNodes = ontology.filter(node => contentLower.includes(node.label.toLowerCase()));
+
+    if (relatedNodes.length === 0) return [];
+
+    const text = `Link to ontology: ${relatedNodes.map(n => n.label).join(', ')}`;
+    if (seenTexts.has(text)) return [];
+
+    return [{
+        id: 'ontology-link',
+        text,
+        type: 'link',
+        confidence: 1.0
+    }];
+};
 
 export function useNoteAnalysis(note: Note) {
     const { settings } = useSettings();
@@ -28,41 +45,26 @@ export function useNoteAnalysis(note: Note) {
         };
 
         const predictions = patternRecognitionService.predictUserNeeds('current-user', analysisNote);
-
         const seenTexts = new Set<string>();
 
         const predictionSuggestions = predictions.reduce<Suggestion[]>((acc, p) => {
-            if (!seenTexts.has(p.predictedAction)) {
-                seenTexts.add(p.predictedAction);
-                const type = (p.predictedAction.includes('[') && p.predictedAction.includes(']')) ? 'property' : 'action';
-                acc.push({
-                    id: `pred-${p.pattern.id}-${p.predictedAction}`,
-                    text: p.predictedAction,
-                    type,
-                    confidence: p.confidence
-                });
-            }
+            if (seenTexts.has(p.predictedAction)) return acc;
+
+            seenTexts.add(p.predictedAction);
+            const isProperty = p.predictedAction.includes('[') && p.predictedAction.includes(']');
+
+            acc.push({
+                id: `pred-${p.pattern.id}-${p.predictedAction}`,
+                text: p.predictedAction,
+                type: isProperty ? 'property' : 'action',
+                confidence: p.confidence
+            });
             return acc;
         }, []);
 
-        const ontologySuggestions: Suggestion[] = [];
-        if (settings.ontology.length > 0) {
-            const relatedNodes = settings.ontology.filter(node =>
-                note.content.toLowerCase().includes(node.label.toLowerCase())
-            );
-
-            if (relatedNodes.length > 0) {
-                const text = `Link to ontology: ${relatedNodes.map(n => n.label).join(', ')}`;
-                if (!seenTexts.has(text)) {
-                    ontologySuggestions.push({
-                        id: 'ontology-link',
-                        text,
-                        type: 'link',
-                        confidence: 1.0
-                    });
-                }
-            }
-        }
+        const ontologySuggestions = settings.ontology.length > 0
+            ? generateOntologySuggestions(note.content, settings.ontology, seenTexts)
+            : [];
 
         const newSuggestions = [...predictionSuggestions, ...ontologySuggestions];
         setSuggestions(newSuggestions);

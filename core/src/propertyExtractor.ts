@@ -91,12 +91,12 @@ export class PropertyExtractor {
 
     private applyChannelStrategy(text: string, properties: Property[]): void {
         const match = text.match(PATTERNS.CHANNEL);
-        if (match) {
-            const channel = match[1].toLowerCase(); // Normalize to lowercase
-            const enumOptions = this.ontologyService.getEnumOptions('channel');
-            if (enumOptions?.includes(channel)) {
-                properties.push({ key: 'channel', operator: 'is', values: [channel] });
-            }
+        if (!match) return;
+
+        const channel = match[1].toLowerCase(); // Normalize to lowercase
+        const enumOptions = this.ontologyService.getEnumOptions('channel');
+        if (enumOptions?.includes(channel)) {
+            properties.push({ key: 'channel', operator: 'is', values: [channel] });
         }
     }
 
@@ -115,24 +115,23 @@ export class PropertyExtractor {
     }
 
     private applyLocationStrategy(text: string, properties: Property[]): void {
-        for (const { regex, prefix } of LOCATION_PATTERNS) {
+        LOCATION_PATTERNS.some(({ regex, prefix }) => {
             const matches = text.match(regex);
             if (matches) {
                 const location = matches[0].replace(prefix, '').trim();
                 properties.push({ key: 'location', operator: 'is near', values: [location] });
-                break;
+                return true;
             }
-        }
+            return false;
+        });
     }
 
     private applyDateStrategy(text: string, properties: Property[]): void {
-        for (const pattern of DATE_PATTERNS) {
-            if (pattern.regex.test(text)) {
-                const date = new Date();
-                date.setDate(date.getDate() + pattern.offset);
-                properties.push({ key: 'date', operator: 'is', values: [date.toISOString().split('T')[0]] });
-                break;
-            }
+        const pattern = DATE_PATTERNS.find(p => p.regex.test(text));
+        if (pattern) {
+            const date = new Date();
+            date.setDate(date.getDate() + pattern.offset);
+            properties.push({ key: 'date', operator: 'is', values: [date.toISOString().split('T')[0]] });
         }
     }
 
@@ -173,24 +172,22 @@ export class PropertyExtractor {
     }
 
     validateProperty(property: Property): { valid: boolean; errors: string[] } {
-        const errors: string[] = [];
         const { key, operator, values } = property;
-
         if (!this.ontologyService.hasAttribute(key)) {
             return { valid: false, errors: [`Attribute '${key}' not found in ontology`] };
         }
 
+        const errors: string[] = [];
         if (!this.ontologyService.getValidOperators(key).includes(operator)) {
             errors.push(`Operator '${operator}' not valid for '${key}'`);
         }
 
         const enumOptions = this.ontologyService.getEnumOptions(key);
         if (enumOptions) {
-            values.forEach(v => {
-                if (!enumOptions.includes(v)) {
-                    errors.push(`Value '${v}' not in enum options for '${key}'`);
-                }
-            });
+            const invalidValues = values.filter(v => !enumOptions.includes(v));
+            if (invalidValues.length > 0) {
+                 invalidValues.forEach(v => errors.push(`Value '${v}' not in enum options for '${key}'`));
+            }
         }
 
         return { valid: errors.length === 0, errors };

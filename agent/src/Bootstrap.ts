@@ -9,6 +9,10 @@ import { log, error } from './core/utils';
 import { PersistenceService } from './persistence';
 import { FeedbackCollector } from './feedback/FeedbackCollector';
 
+// Type-only imports
+import type { ConfigProcessor } from './configurator/ConfigProcessor';
+import type { NoteSkillLoader } from './skills/NoteSkillLoader';
+
 export interface BootstrapResult {
   agentRegistry: AgentRegistry;
   skillRegistry: AgentSkillRegistry;
@@ -17,13 +21,15 @@ export interface BootstrapResult {
   voltagent: VoltAgentProvider;
 }
 
+export type AgentEvent = { type: string, payload: any };
+
 export class Bootstrap {
   private agentRegistry = new AgentRegistry();
   private skillRegistry = new AgentSkillRegistry();
   private feedbackCollector = new FeedbackCollector();
   private skillExecutor!: AgentWorkflowSkillExecutor;
 
-  public async init(onEvent: (event: any) => void): Promise<BootstrapResult> {
+  public async init(onEvent: (event: AgentEvent) => void): Promise<BootstrapResult> {
     const config = await loadAgentConfig();
 
     const voltagent = new VoltAgentProvider(config.voltagent);
@@ -76,7 +82,7 @@ export class Bootstrap {
 
     // Event Handlers
     voltagent.onNoteReceived((note: Note) =>
-        this.handleNoteReceived(note, configProcessor, noteSkillLoader, onEvent)
+        this.processIncomingNote(note, configProcessor, noteSkillLoader, onEvent)
     );
 
     return {
@@ -88,19 +94,24 @@ export class Bootstrap {
     };
   }
 
-  private handleNoteReceived(
+  private processIncomingNote(
       note: Note,
-      configProcessor: any,
-      noteSkillLoader: any,
-      onEvent: (event: any) => void
+      configProcessor: ConfigProcessor,
+      noteSkillLoader: NoteSkillLoader,
+      onEvent: (event: AgentEvent) => void
   ) {
       log('Agent', `Note received: ${note.id}`);
-      configProcessor.processNote(note);
 
-      if (note.tags.includes('@skill:definition')) {
-          noteSkillLoader.scanForSkills([note]);
+      try {
+          configProcessor.processNote(note);
+
+          if (note.tags.includes('@skill:definition')) {
+              noteSkillLoader.scanForSkills([note]);
+          }
+          onEvent({ type: 'note_created', payload: note });
+      } catch (err) {
+          error('Agent', `Error processing note ${note.id}`, err);
       }
-      onEvent({ type: 'note_created', payload: note });
   }
 
   private initializeBuiltInSkills() {
