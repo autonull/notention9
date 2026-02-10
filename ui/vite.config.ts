@@ -20,7 +20,7 @@ export default defineConfig(({mode}) => {
         test: {
             globals: true,
             environment: 'jsdom',
-            setupFiles: './tests/setup.ts',
+            setupFiles: './src/tests/setup.ts',
             exclude: [...configDefaults.exclude, '**/node_modules/**', '**/dist/**'],
             watch: false,
             pool: 'forks',
