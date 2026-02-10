@@ -1,8 +1,8 @@
-import { Agent, AgentFeature } from '@notention/core/src/types';
-import { Note } from '../../../core/src/types';
+import { Agent, AgentFeature } from '@notention/core';
+import { Note } from '@notention/core';
 import { Skill, SkillMetadata } from './types';
 import { SkillToolAdapter } from './SkillToolAdapter';
-import { SkillRegistry } from '@notention/core/src/skills/SkillRegistry';
+import { SkillRegistry, RegisteredSkill } from '@notention/core/src/skills/SkillRegistry';
 
 export class AgentSkillRegistry extends SkillRegistry {
     private agent: Agent | null = null;
@@ -13,11 +13,14 @@ export class AgentSkillRegistry extends SkillRegistry {
         this.syncSkillsToAgent();
     }
 
+    /**
+     * Specialized register method for Agent skills with metadata
+     */
     register(skill: Skill, metadata?: Partial<SkillMetadata>): void {
-        // Call parent register method - need to handle the type difference
-        super.registerSkill(skill as any); // Temporary cast until types are aligned
+        // Register in base class - types are now compatible via RegisteredSkill union
+        super.registerSkill(skill);
 
-        // Store metadata separately
+        // Store metadata
         this.skillMetadata.set(skill.id, {
             skill,
             tags: metadata?.tags ?? [],
@@ -36,18 +39,19 @@ export class AgentSkillRegistry extends SkillRegistry {
 
     get(id: string): Skill | undefined {
         const skill = super.getSkill(id);
-        return skill as Skill | undefined;
+        if (skill && this.isAgentSkill(skill)) {
+            return skill;
+        }
+        return undefined;
     }
 
     getAll(): SkillMetadata[] {
         return Array.from(this.skillMetadata.values());
     }
 
-    // This signature might need adjustment based on how it's called
-    // In TODO3.md snippet: return (registry as any).findMatching(note, minConfidence);
     override findMatching(note: Note): Skill[] {
-        // Fallback to synchronous simple matching for the base class contract
         const matches: Skill[] = [];
+        // Prioritize using metadata-enriched skills
         for (const meta of this.skillMetadata.values()) {
              if (meta.skill.canHandle(note) > 0.5) {
                  matches.push(meta.skill);
@@ -57,7 +61,6 @@ export class AgentSkillRegistry extends SkillRegistry {
     }
 
     async findMatchingAsync(note: Note, minConfidence: number = 0.5): Promise<Array<{ skill: Skill; confidence: number }>> {
-        // Local matching logic fallback
         const matches: Array<{ skill: Skill; confidence: number }> = [];
         for (const meta of this.skillMetadata.values()) {
             const confidence = meta.skill.canHandle(note);
@@ -70,11 +73,9 @@ export class AgentSkillRegistry extends SkillRegistry {
 
     async findMatchingWithAgent(note: Note): Promise<Array<{ skill: Skill; confidence: number }>> {
         if (!this.agent || !this.agent.supportsFeature(AgentFeature.WORKFLOWS)) {
-            // Fallback to local matching
             return this.findMatchingAsync(note);
         }
 
-        // Use VoltAgent's skill-matching workflow
         try {
             const result = await this.agent.executeWorkflow('skill-matching', {
                 note: note,
@@ -99,5 +100,9 @@ export class AgentSkillRegistry extends SkillRegistry {
         for (const { skill } of this.skillMetadata.values()) {
             await this.registerSkillWithAgent(skill);
         }
+    }
+
+    private isAgentSkill(skill: RegisteredSkill): skill is Skill {
+        return 'canHandle' in skill && typeof (skill as any).canHandle === 'function' && 'exportToActions' in skill;
     }
 }

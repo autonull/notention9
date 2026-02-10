@@ -1,17 +1,12 @@
-import { Note } from '../../../core/src/types';
 import type { Skill as CoreSkill } from '@notention/core/src/skills/types';
+
+// Re-export Core Skill as the base
+export type Skill = CoreSkill;
 
 export interface SkillAction {
     type: string;
     payload?: any;
     [key: string]: any;
-}
-
-// Inherit from Core Skill to ensure compatibility
-export interface Skill extends CoreSkill {
-    // Core methods (VoltAgent specific extensions)
-    export?(note: Note): Promise<SkillAction | null>;
-    import?(results: any): Promise<Note[]>;
 }
 
 export interface SkillMetadata {

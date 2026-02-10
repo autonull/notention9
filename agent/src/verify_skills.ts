@@ -1,11 +1,8 @@
-
-import { IndeedSkill } from './skills/standard/IndeedSkill';
-import { CraigslistSkill } from './skills/standard/CraigslistSkill';
-import { GitHubSkill } from './skills/standard/GitHubSkill';
+import { IndeedSkill, CraigslistSkill, GitHubSkill } from '@notention/core';
 import { Note } from '@notention/core/src/types';
 
 async function verifySkills() {
-    console.log('🧪 Verifying Standard Skills...');
+    console.log('🧪 Verifying Standard Skills (Core)...');
 
     const indeed = new IndeedSkill();
     const craigslist = new CraigslistSkill();
@@ -15,48 +12,63 @@ async function verifySkills() {
     const jobNote = {
         id: '1',
         content: 'Find react jobs in San Francisco',
+        properties: [
+            { key: 'role', values: ['react developer'] },
+            { key: 'location', values: ['San Francisco'] }
+        ],
         tags: [],
-        timestamp: Date.now()
+        createdAt: new Date().toISOString()
     } as unknown as Note;
 
-    const indeedAction = await indeed.export(jobNote);
-    console.log('Indeed Action:', indeedAction?.url);
-    if (indeedAction?.url.includes('q=react') && indeedAction?.url.includes('indeed')) {
+    const indeedSequence = indeed.exportToActions(jobNote);
+    const indeedNav = indeedSequence.actions.find(a => a.type === 'navigate');
+    console.log('Indeed Action:', indeedNav?.url);
+
+    if (indeedNav?.url?.includes('q=react') && indeedNav?.url?.includes('indeed')) {
         console.log('✅ Indeed Skill passes');
     } else {
-        console.error('❌ Indeed Skill failed');
+        console.error('❌ Indeed Skill failed', indeedNav);
     }
 
     // Test Craigslist
     const clNote = {
         id: '2',
         content: 'apartment for rent',
+        properties: [
+            { key: 'query', values: ['apartment'] },
+            { key: 'category', values: ['apa'] }
+        ],
         tags: [],
-        timestamp: Date.now()
+        createdAt: new Date().toISOString()
     } as unknown as Note;
 
-    const clAction = await craigslist.export(clNote);
-    console.log('CL Action:', clAction?.url);
-    if (clAction?.url.includes('apa')) {
+    const clSequence = craigslist.exportToActions(clNote);
+    const clNav = clSequence.actions.find(a => a.type === 'navigate');
+    console.log('CL Action:', clNav?.url);
+    if (clNav?.url?.includes('apa')) {
         console.log('✅ Craigslist Skill passes');
     } else {
-        console.error('❌ Craigslist Skill failed');
+        console.error('❌ Craigslist Skill failed', clNav);
     }
 
     // Test GitHub
     const ghNote = {
         id: '3',
         content: 'notention-agent',
+        properties: [
+            { key: 'query', values: ['notention-agent'] }
+        ],
         tags: [],
-        timestamp: Date.now()
+        createdAt: new Date().toISOString()
     } as unknown as Note;
 
-    const ghAction = await github.export(ghNote);
-    console.log('GH Action:', ghAction?.url);
-    if (ghAction?.url.includes('q=notention-agent')) {
+    const ghSequence = github.exportToActions(ghNote);
+    const ghNav = ghSequence.actions.find(a => a.type === 'navigate');
+    console.log('GH Action:', ghNav?.url);
+    if (ghNav?.url?.includes('q=notention-agent')) {
         console.log('✅ GitHub Skill passes');
     } else {
-        console.error('❌ GitHub Skill failed');
+        console.error('❌ GitHub Skill failed', ghNav);
     }
 }
 

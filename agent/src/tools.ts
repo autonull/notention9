@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { Note, Tool, ToolInput, ToolResult } from '@notention/core/src/types';
+import { Note, Tool, ToolInput, ToolResult, createTool } from '@notention/core';
 import { getSkillRegistry, getOntology } from './globals';
-import { createTool, log } from './core/utils';
+import { log } from './core/utils';
 import { executeAction } from './core/actionExecutor';
 
 // Query skill registry

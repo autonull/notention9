@@ -20,6 +20,8 @@ export * from './feedback/types.js';
 export * from './utils/common.js';
 export * from './utils/errors.js';
 export * from './utils/logging.js';
+export * from './utils/tools.js';
+export * from './utils/concurrency.js';
 export * from './baseService.js';
 
 // Pattern Recognition and Prediction (Phase 1)
@@ -37,6 +39,8 @@ export * from './queryBuilder.js';
 // Skill system (Phase 4)
 export * from './skills/BaseSkill.js';
 export * from './skills/IndeedSkill.js';
+export * from './skills/CraigslistSkill.js';
+export * from './skills/GitHubSkill.js';
 export * from './skills/ReminderSkill.js';
 export * from './skills/SkillRegistry.js';
 export * from './skillPatternMatcher.js';

@@ -1,7 +1,6 @@
 import fs from 'fs';
 import { join } from 'path';
-import { Note } from '@notention/core/src/types';
-import { Mutex } from './utils/Mutex';
+import { Note, Mutex } from '@notention/core';
 
 const DATA_DIR = join(process.cwd(), 'data');
 const NOTES_FILE = join(DATA_DIR, 'notes.json');

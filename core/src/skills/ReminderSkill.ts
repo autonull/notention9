@@ -1,5 +1,5 @@
-import type { Note, Property } from '../types';
-import type { Skill, PropertyPattern, ActionSequence } from './types';
+import type { Note, Property } from '../types/index.js';
+import type { Skill, PropertyPattern, ActionSequence } from './types.js';
 
 /**
  * ReminderSkill - Semantic Reminder & Scheduling

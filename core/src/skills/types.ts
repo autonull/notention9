@@ -1,4 +1,4 @@
-import type { Note, Property } from '../types';
+import type { Note, Property } from '../types/index.js';
 
 /**
  * PropertyPattern defines semantic patterns that skills recognize.
