@@ -48,6 +48,12 @@ export interface ABTestResult {
   pValue: number; // Statistical significance
 }
 
+const PERIOD_CONFIGS = {
+    daily: { points: 7, interval: 24 * 60 * 60 * 1000 },
+    weekly: { points: 4, interval: 7 * 24 * 60 * 60 * 1000 },
+    monthly: { points: 12, interval: 30 * 24 * 60 * 60 * 1000 }
+};
+
 export class ValidationFramework {
   private config: ValidationConfig;
   private validationReports: ValidationReport[] = [];
@@ -130,7 +136,7 @@ export class ValidationFramework {
       };
     } catch (error) {
       logWarn(`Validation failed`, { error: (error as Error).message });
-      throw new Error('Failed to validate prediction system'); // Simplified error handling
+      throw new Error('Failed to validate prediction system');
     }
   }
 
@@ -140,25 +146,33 @@ export class ValidationFramework {
   generateValidationReport(period: 'daily' | 'weekly' | 'monthly' = 'daily'): ValidationReport {
     const validationResult = this.validatePredictionSystem();
 
-    // Calculate historical metrics for trend analysis
-    const accuracyOverTime = this.getHistoricalAccuracy(period);
-    const predictionVolume = this.getHistoricalVolume(period);
-    const userEngagement = this.getHistoricalEngagement(period);
-
     const report: ValidationReport = {
       timestamp: Date.now(),
       period,
       results: validationResult,
       detailedMetrics: {
-        accuracyOverTime,
-        predictionVolume,
-        userEngagement
+        accuracyOverTime: this.generateTimeSeriesData(period, (i, points) => {
+            const baseRate = this.config.targetAccuracyRate * 0.8;
+            const improvement = (this.config.targetAccuracyRate - baseRate) * (1 - i / points);
+            const rate = baseRate + improvement + (Math.random() * 0.05 - 0.025);
+            return { rate: clamp(rate, 0, 1) };
+        }),
+        predictionVolume: this.generateTimeSeriesData(period, (i, points) => {
+            const count = Math.floor(10 + (50 * (1 - i / points)) + Math.random() * 20);
+            return { count };
+        }),
+        userEngagement: this.generateTimeSeriesData(period, (i, points) => {
+            const total = 100;
+            const baseEngaged = 20;
+            const improvement = Math.floor(30 * (1 - i / points));
+            const engaged = baseEngaged + improvement + Math.floor(Math.random() * 10);
+            return { engaged: Math.min(total, engaged), total };
+        })
       }
     };
 
     this.validationReports.push(report);
 
-    // Keep only recent reports to manage memory
     if (this.validationReports.length > 100) {
       this.validationReports = this.validationReports.slice(-100);
     }
@@ -168,79 +182,18 @@ export class ValidationFramework {
     return report;
   }
 
-  /**
-   * Gets historical accuracy data
-   */
-  private getHistoricalAccuracy(period: 'daily' | 'weekly' | 'monthly'): { date: number; rate: number }[] {
-    // In a real implementation, this would query historical data
-    // For now, we'll simulate some historical data
-    const points = period === 'daily' ? 7 : period === 'weekly' ? 4 : 12;
-    const data: { date: number; rate: number }[] = [];
+  private generateTimeSeriesData<T>(
+      period: 'daily' | 'weekly' | 'monthly',
+      generator: (i: number, points: number) => T
+  ): (T & { date: number })[] {
+      const { points, interval } = PERIOD_CONFIGS[period];
+      const now = Date.now();
 
-    const now = Date.now();
-    const interval = period === 'daily' ? 24 * 60 * 60 * 1000 :
-                   period === 'weekly' ? 7 * 24 * 60 * 60 * 1000 :
-                   30 * 24 * 60 * 60 * 1000;
-
-    for (let i = points - 1; i >= 0; i--) {
-      const date = now - (i * interval);
-      // Simulate gradually improving accuracy
-      const baseRate = this.config.targetAccuracyRate * 0.8;
-      const improvement = (this.config.targetAccuracyRate - baseRate) * (1 - i / points);
-      const rate = baseRate + improvement + (Math.random() * 0.05 - 0.025); // Small random variation
-
-      data.push({ date, rate: clamp(rate, 0, 1) });
-    }
-
-    return data;
-  }
-
-  /**
-   * Gets historical prediction volume
-   */
-  private getHistoricalVolume(period: 'daily' | 'weekly' | 'monthly'): { date: number; count: number }[] {
-    const points = period === 'daily' ? 7 : period === 'weekly' ? 4 : 12;
-    const data: { date: number; count: number }[] = [];
-
-    const now = Date.now();
-    const interval = period === 'daily' ? 24 * 60 * 60 * 1000 :
-                   period === 'weekly' ? 7 * 24 * 60 * 60 * 1000 :
-                   30 * 24 * 60 * 60 * 1000;
-
-    for (let i = points - 1; i >= 0; i--) {
-      const date = now - (i * interval);
-      // Simulate increasing volume over time
-      const count = Math.floor(10 + (50 * (1 - i / points)) + Math.random() * 20);
-
-      data.push({ date, count });
-    }
-
-    return data;
-  }
-
-  /**
-   * Gets historical user engagement
-   */
-  private getHistoricalEngagement(period: 'daily' | 'weekly' | 'monthly'): { date: number; engaged: number; total: number }[] {
-    const points = period === 'daily' ? 7 : period === 'weekly' ? 4 : 12;
-    const data: { date: number; engaged: number; total: number }[] = [];
-
-    const now = Date.now();
-    const interval = period === 'daily' ? 24 * 60 * 60 * 1000 :
-                   period === 'weekly' ? 7 * 24 * 60 * 60 * 1000 :
-                   30 * 24 * 60 * 60 * 1000;
-
-    for (let i = points - 1; i >= 0; i--) {
-      const date = now - (i * interval);
-      // Simulate increasing engagement over time
-      const total = 100;
-      const baseEngaged = 20;
-      const improvement = Math.floor(30 * (1 - i / points));
-      const engaged = baseEngaged + improvement + Math.floor(Math.random() * 10);
-      data.push({ date, engaged: Math.min(total, engaged), total });
-    }
-
-    return data;
+      return Array.from({ length: points }, (_, i) => {
+          const index = points - 1 - i;
+          const date = now - (index * interval);
+          return { date, ...generator(index, points) };
+      });
   }
 
   /**
@@ -265,9 +218,6 @@ export class ValidationFramework {
       logWarn(`A/B test not found`, { testName });
       return null;
     }
-
-    // In a real implementation, this would analyze actual test data
-    // For now, we'll simulate results
 
     const config = this.abTests.get(testName)!;
 

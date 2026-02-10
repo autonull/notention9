@@ -6,40 +6,39 @@ export interface ValidationResult {
     errors: string[];
 }
 
+const NUMERIC_OPERATORS = new Set(['less than', 'greater than', 'less than or equal', 'greater than or equal', 'range', 'between']);
+
 export const validateProperty = (property: Property): ValidationResult => {
     const errors: string[] = [];
 
-    if (!property.key || property.key.trim() === '') {
+    if (!property.key?.trim()) {
         errors.push('Property key is required.');
     }
 
-    if (!property.values || property.values.length === 0) {
+    if (!property.values?.length) {
         errors.push('Property must have at least one value.');
     }
 
-    const numericOperators = new Set(['less than', 'greater than', 'less than or equal', 'greater than or equal', 'range', 'between']);
-
-    if (numericOperators.has(property.operator)) {
+    if (NUMERIC_OPERATORS.has(property.operator)) {
         if (property.operator === 'range') {
             const value = property.values[0];
-            if (value.includes('-')) {
-                const rangeParts = value.split('-');
-                if (rangeParts.length !== 2 || isNaN(parseFloat(rangeParts[0])) || isNaN(parseFloat(rangeParts[1]))) {
+            if (value?.includes('-')) {
+                const [min, max] = value.split('-').map(parseFloat);
+                if (isNaN(min) || isNaN(max)) {
                     errors.push(`Invalid range format: "${value}". Expected "min-max" numbers.`);
                 }
-            } else if (property.values.length === 2 && (!isNaN(parseFloat(property.values[0])) && !isNaN(parseFloat(property.values[1])))) {
-            } else {
+            } else if (property.values.length !== 2 || property.values.some(v => isNaN(parseFloat(v)))) {
+                 // Logic for array of 2 values could be here or just fall through
             }
         } else {
-            for (const value of property.values) {
+            property.values.forEach(value => {
                 const number = parseFloat(value);
                 if (isNaN(number)) {
-                    const quantity = parseQuantity(value);
-                    if (!quantity) {
+                    if (!parseQuantity(value)) {
                         errors.push(`Operator "${property.operator}" requires numeric values. Got "${value}".`);
                     }
                 }
-            }
+            });
         }
     }
 

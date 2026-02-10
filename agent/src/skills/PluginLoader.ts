@@ -8,8 +8,14 @@ export class PluginLoader {
 
     constructor(private registry: AgentSkillRegistry) {
         this.installedPath = path.join(process.cwd(), 'src/skills/installed');
-        if (!fs.existsSync(this.installedPath)) {
-            fs.mkdirSync(this.installedPath, { recursive: true });
+        this.ensureDirectory();
+    }
+
+    private async ensureDirectory() {
+        try {
+            await fs.promises.mkdir(this.installedPath, { recursive: true });
+        } catch (e) {
+            // Ignore if exists
         }
     }
 
@@ -17,32 +23,34 @@ export class PluginLoader {
         log('PluginLoader', 'Scanning for installed skills...');
 
         try {
-            const files = fs.readdirSync(this.installedPath);
-            for (const file of files) {
-                if (file.endsWith('.ts') || file.endsWith('.js')) {
-                    const pluginPath = path.join(this.installedPath, file);
-                    try {
-                        // Dynamic import
-                        const module = await import(pluginPath);
+            await this.ensureDirectory();
+            const files = await fs.promises.readdir(this.installedPath);
 
-                        // Expect default export or named export 'Skill'
-                        const SkillClass = module.default || module.Skill;
+            const pluginFiles = files.filter(file => file.endsWith('.ts') || file.endsWith('.js'));
 
-                        if (SkillClass && typeof SkillClass === 'function') {
-                            const skillInstance = new SkillClass();
-                            if (skillInstance.id && skillInstance.name) {
-                                this.registry.register(skillInstance, {
-                                    tags: ['external', 'plugin'],
-                                    author: 'unknown'
-                                });
-                                log('PluginLoader', `Loaded external skill: ${skillInstance.name}`);
-                            }
+            await Promise.all(pluginFiles.map(async (file) => {
+                const pluginPath = path.join(this.installedPath, file);
+                try {
+                    // Dynamic import
+                    const module = await import(pluginPath);
+
+                    // Expect default export or named export 'Skill'
+                    const SkillClass = module.default || module.Skill;
+
+                    if (SkillClass && typeof SkillClass === 'function') {
+                        const skillInstance = new SkillClass();
+                        if (skillInstance.id && skillInstance.name) {
+                            this.registry.register(skillInstance, {
+                                tags: ['external', 'plugin'],
+                                author: 'unknown'
+                            });
+                            log('PluginLoader', `Loaded external skill: ${skillInstance.name}`);
                         }
-                    } catch (e) {
-                        log('PluginLoader', `Failed to load plugin ${file}`, e);
                     }
+                } catch (e) {
+                    log('PluginLoader', `Failed to load plugin ${file}`, e);
                 }
-            }
+            }));
         } catch (e) {
             log('PluginLoader', 'Error scanning directory', e);
         }
