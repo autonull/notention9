@@ -1,5 +1,4 @@
-import React from 'react';
-import type { View } from '@notention/core';
+import { ViewConfig } from '../types/ui';
 import {
   ChatIcon,
   MapIcon,
@@ -11,15 +10,6 @@ import {
   HomeIcon,
   CpuChipIcon
 } from '../components/common/icons';
-
-export interface ViewConfig {
-  id: View;
-  label: string;
-  icon: React.FC<React.SVGProps<SVGSVGElement>>;
-  badgeCountKey?: 'notificationCount' | 'chatNotificationCount';
-  showInMobile: boolean;
-  requiresDeveloperMode?: boolean;
-}
 
 export const NAV_ITEMS: ViewConfig[] = [
   { id: 'dashboard', label: 'Dashboard', icon: HomeIcon, showInMobile: true },

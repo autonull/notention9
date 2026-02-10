@@ -4,9 +4,9 @@ import { AppShell } from './components/AppShell';
 import { agentService } from './services/AgentService';
 import { ErrorHandlingProvider, ErrorDisplay } from './components/common/ErrorHandler';
 
-import { OnboardingModal } from './components/onboarding/OnboardingModal';
 import { ConfigSync } from './components/config/ConfigSync';
 import { AgentCursor } from './components/AgentCursor';
+import { useNostrSync } from './hooks/useNostrSync';
 
 function App() {
   return (
@@ -19,6 +19,9 @@ function App() {
 
 function AppContent() {
   const [agentStatus, setAgentStatus] = useState(agentService.getStatus());
+
+  // Enable P2P Sync
+  useNostrSync();
 
   useEffect(() => {
     agentService.connect();
@@ -59,9 +62,7 @@ function AppContent() {
   let statusDisplay = null;
   if (agentStatus.status === 'offline') {
     // Check if explicitly disabled to show different message
-    const isAgentEnabled = import.meta.env.VITE_ENABLE_AGENT !== 'false';
-
-    if (!isAgentEnabled) {
+    if (!agentService.isEnabled()) {
       statusDisplay = (
         <div className="fixed top-4 right-4 bg-gray-700 text-white px-4 py-2 rounded shadow-lg z-50 opacity-75 hover:opacity-100 transition-opacity">
           <div className="flex items-center gap-2">
@@ -125,7 +126,6 @@ function AppContent() {
       {errorDisplay}
       <AgentCursor />
       <AppShell />
-      <OnboardingModal />
       <ConfigSync />
     </>
   );

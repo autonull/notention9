@@ -175,18 +175,6 @@ export function EditorControls({
                     />
                 )}
 
-                {actionLabel !== 'Publish' && (
-                    <Button
-                      onClick={onPublish}
-                      isLoading={isPublishing}
-                      title={actionLabel}
-                      icon={SendIcon}
-                      variant='primary'
-                      size="sm"
-                    >
-                      {actionLabel}
-                    </Button>
-                )}
             </div>
 
             <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />

@@ -2,19 +2,30 @@ import { Note, RobustWebSocket } from '@notention/core';
 import { capabilities } from '../config/Capabilities';
 
 class AgentService extends RobustWebSocket {
+  private _enabled: boolean;
+  private _url: string | null = null;
 
   constructor() {
     // Reduce max retries to fail faster to Offline mode
     super({ maxReconnectAttempts: 1 });
+
+    // Initialize enabled state from local storage or capabilities
+    const storedEnabled = typeof window !== 'undefined' ? localStorage.getItem('agent_enabled') : null;
+    this._enabled = storedEnabled !== null ? storedEnabled === 'true' : capabilities.agent;
+
+    if (typeof window !== 'undefined') {
+        this._url = localStorage.getItem('agent_url');
+    }
   }
 
   async connect(url?: string): Promise<void> {
-    if (!capabilities.agent) {
-      this.logger.info('Agent subsystem disabled via config');
+    // If explicitly disabled via internal state, do not connect
+    if (!this._enabled) {
+      this.logger.info('Agent subsystem disabled by user setting');
       return;
     }
 
-    const resolvedUrl = await this.resolveUrl(url);
+    const resolvedUrl = await this.resolveUrl(url || this._url || undefined);
 
     if (resolvedUrl) {
       try {
@@ -27,6 +38,34 @@ class AgentService extends RobustWebSocket {
       this.logger.info('Operating in offline mode');
       this.fallbackToOfflineMode();
     }
+  }
+
+  setEnabled(enabled: boolean) {
+      this._enabled = enabled;
+      if (typeof window !== 'undefined') {
+          localStorage.setItem('agent_enabled', String(enabled));
+      }
+
+      if (enabled) {
+          this.connect();
+      } else {
+          this.disconnect();
+      }
+  }
+
+  setEndpoint(url: string) {
+      this._url = url;
+      if (typeof window !== 'undefined') {
+          localStorage.setItem('agent_url', url);
+      }
+      if (this._enabled) {
+          this.disconnect();
+          this.connect();
+      }
+  }
+
+  getEndpoint(): string | null {
+      return this._url;
   }
 
   private async resolveUrl(url?: string): Promise<string | null> {
@@ -52,7 +91,7 @@ class AgentService extends RobustWebSocket {
   }
 
   async fetchNotes(): Promise<Note[]> {
-    if (!capabilities.agent) {
+    if (!this._enabled) {
       return [];
     }
 
@@ -67,7 +106,7 @@ class AgentService extends RobustWebSocket {
         reject(new Error('Timeout fetching notes'));
       }, 5000);
 
-      const handler = (msg: any) => {
+      const handler = (msg: { type: string; id: string; payload: Note[] }) => {
         if (msg.type === 'notes_list' && msg.id === id) {
           clearTimeout(timeout);
           this.off('message', handler);
@@ -81,20 +120,22 @@ class AgentService extends RobustWebSocket {
   }
 
   async saveNote(note: Note): Promise<void> {
+    if (!this._enabled) return;
     this.send({ type: 'save_note', payload: note });
   }
 
   async deleteNote(id: string): Promise<void> {
+    if (!this._enabled) return;
     this.send({ type: 'delete_note', payload: { id } });
   }
 
   // Alias methods if needed to match previous API exactly, though base class has most
   isOffline(): boolean {
-    return !this.isOnlineMode && capabilities.agent;
+    return !this.isOnlineMode && this._enabled;
   }
 
   isEnabled(): boolean {
-    return capabilities.agent;
+    return this._enabled;
   }
 }
 

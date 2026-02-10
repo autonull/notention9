@@ -1,29 +1,19 @@
 import React, { createContext, ReactNode } from 'react';
-import { useNotesState } from '../../hooks/useNotesState';
+import { useNotesData, UseNotesDataResult } from '../../hooks/data/useNotesData';
 import type { Note } from '@notention/core';
 
-interface NotesContextType {
-  notes: Note[];
-  addNote: (overrides?: Partial<Note>) => Note;
-  updateNote: (note: Note) => void;
-  deleteNote: (id: string) => void;
-  restoreNote: (id: string) => void;
-  permanentlyDeleteNote: (id: string) => void;
-  notesLoading: boolean;
-}
+// Expose the full data interface
+type NotesContextType = UseNotesDataResult;
 
 const NotesContext = createContext<NotesContextType | undefined>(undefined);
 
 export function NotesProvider({
   children,
 }: { children: ReactNode }) {
-  const { notes, addNote, updateNote, deleteNote, restoreNote, permanentlyDeleteNote, notesLoading } =
-    useNotesState();
+  const notesData = useNotesData();
 
   return (
-    <NotesContext.Provider
-      value={{ notes, addNote, updateNote, deleteNote, restoreNote, permanentlyDeleteNote, notesLoading }}
-    >
+    <NotesContext.Provider value={notesData}>
       {children}
     </NotesContext.Provider>
   );

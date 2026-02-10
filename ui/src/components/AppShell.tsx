@@ -7,7 +7,6 @@ import { Sidebar } from './sidebar';
 import { MainView } from './MainView';
 
 import { useNotes } from '../hooks/useNotes';
-import { useSortedFilteredNotes } from '../hooks/useSortedFilteredNotes';
 import { useView } from '../hooks/useViewContext';
 import { useUrlRouting } from '../hooks/useUrlRouting';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
@@ -15,7 +14,7 @@ import { useCommands } from '../hooks/useCommands';
 import { Logger } from '@notention/core';
 
 export function AppShell() {
-    const { notes, addNote } = useNotes();
+    const { notes, addNote, getSortedFilteredNotes } = useNotes();
     const {
         activeView,
         setActiveView,
@@ -32,7 +31,8 @@ export function AppShell() {
         setIsHelpOpen
     } = useView();
 
-    const sortedNotes = useSortedFilteredNotes(notes, searchTerm, sortOrder, activeView === 'trash', userLocation);
+    // Use optimized selector from unified hook
+    const sortedNotes = getSortedFilteredNotes(searchTerm, sortOrder, activeView === 'trash', userLocation);
 
     useUrlRouting({
         activeView,
