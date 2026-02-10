@@ -18,34 +18,33 @@ export async function hashValue(value: string): Promise<string> {
  * Generate Nostr tags based on privacy level
  */
 export async function getPrivacyTags(properties: Property[], level: PrivacyLevel): Promise<string[][]> {
-    const tags: string[][] = [];
-
-    // Level 0: Public
-    // [property, key, operator, value]
     if (level === 'public') {
         return properties.flatMap(p => p.values.map(v => ['property', p.key, p.operator, v]));
     }
 
+    const tags: string[][] = [];
+
     for (const p of properties) {
-        for (const v of p.values) {
-
-            // Level 1: Protected
-            // [property-hash, key, hash(value)]
-            // Reveals the Key (Ontology), hides the Value.
+        const valueTags = await Promise.all(p.values.map(async (v) => {
             if (level === 'protected') {
+                // Level 1: Protected - [property-hash, key, hash(value)]
+                // Reveals the Key (Ontology), hides the Value.
                 const hashedVal = await hashValue(v);
-                tags.push(['property-hash', p.key, hashedVal]);
-            }
-
-            // Level 2: Secret
-            // [property-secret, hash(key:value)]
-            // Hides both Key and Value. Only exact matches can identify this.
-            else if (level === 'private') {
+                return ['property-hash', p.key, hashedVal];
+            } else if (level === 'private') {
+                // Level 2: Secret - [property-secret, hash(key:value)]
+                // Hides both Key and Value. Only exact matches can identify this.
                 const secretPayload = `${p.key}:${v}`;
                 const hashedSecret = await hashValue(secretPayload);
-                tags.push(['property-secret', hashedSecret]);
+                return ['property-secret', hashedSecret];
             }
-        }
+            return null;
+        }));
+
+        valueTags.forEach(tag => {
+            if (tag) tags.push(tag);
+        });
     }
+
     return tags;
 }

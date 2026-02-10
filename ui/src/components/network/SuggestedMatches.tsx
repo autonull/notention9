@@ -26,4 +26,4 @@ export function SuggestedMatches() {
             <div className="h-px bg-gray-700 my-6"></div>
         </div>
     );
-};
+}
