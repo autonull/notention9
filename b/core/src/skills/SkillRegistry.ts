@@ -1,6 +1,6 @@
 import { BaseSkill } from './BaseSkill.js';
 import { SkillDefinition } from '../skillPatternMatcher.js';
-import { ValidationError } from '../errorTypes.js';
+import { ValidationError } from '../utils/errors.js';
 
 export class SkillRegistry {
     protected skills: Map<string, BaseSkill | SkillDefinition> = new Map();

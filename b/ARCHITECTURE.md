@@ -70,3 +70,24 @@ We support two formats:
 2.  **Save:** `useDebouncedSave` -> `localforage`.
 3.  **Publish:** `usePublish` -> Maps properties to Nostr Tags -> Sign & Send.
 4.  **Network:** `NetworkView` -> Subscribes -> Filters/Matches locally.
+
+---
+
+## 6. Metaphor System & Plugins (Phase 1 Integration)
+
+The Metaphor System allows the UI to adapt based on the semantic content of notes, bridging the gap between raw data and user-friendly representation.
+
+### Metaphor Mapping (`core/src/metaphor/`)
+-   **Concept:** Maps semantic patterns (e.g., `[if:condition]`) to UI metaphors (e.g., "Automation Rule").
+-   **Mapper:** `MetaphorMapper` analyzes note properties to identify the best visual representation.
+-   **Metaphors:**
+    -   **Conditional Automation:** Renders logic rules.
+    -   **Scheduled Task:** Renders calendars/timers.
+    -   **Monitoring Agent:** Renders dashboards/status indicators.
+
+### Plugin System (`ui/plugins/`)
+-   **Architecture:** Extensible plugin architecture where metaphors are implemented as plugins.
+-   **Components:**
+    -   `PluginSystem`: Manages registration and lifecycle of plugins.
+    -   `MetaphorPlugin`: Hooks into the UI to render specialized components when a metaphor match is found.
+-   **Goal:** Keep the core clean while allowing rich, domain-specific UIs to emerge.

@@ -2,13 +2,6 @@
  * Custom error classes for the Notention system
  */
 
-export class ValidationError extends Error {
-    constructor(message: string) {
-        super(message);
-        this.name = 'ValidationError';
-    }
-}
-
 export class OntologyError extends Error {
     constructor(message: string) {
         super(message);

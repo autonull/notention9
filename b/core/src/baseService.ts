@@ -2,8 +2,8 @@
  * Base service class providing common functionality for all services
  */
 
-import { generateId } from './common';
-import { logInfo, logError, logWarn } from './logging';
+import { generateId } from './utils/common';
+import { logInfo, logError, logWarn } from './utils/logging';
 
 export abstract class BaseService {
   protected readonly createdAt: number;
@@ -27,7 +27,7 @@ export abstract class BaseService {
       logInfo(`${operationName} completed successfully`, { ...context, serviceId: this.id });
       return { success: true, result };
     } catch (error) {
-      logError(`${operationName} failed`, { error: (error as Error).message, ...context, serviceId: this.id });
+      logError(`${operationName} failed`, error as Error, { ...context, serviceId: this.id });
       return { success: false, error: error as Error };
     }
   }
@@ -45,7 +45,7 @@ export abstract class BaseService {
       logInfo(`${operationName} completed successfully`, { ...context, serviceId: this.id });
       return { success: true, result };
     } catch (error) {
-      logError(`${operationName} failed`, { error: (error as Error).message, ...context, serviceId: this.id });
+      logError(`${operationName} failed`, error as Error, { ...context, serviceId: this.id });
       return { success: false, error: error as Error };
     }
   }

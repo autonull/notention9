@@ -6,6 +6,17 @@ import { ViewContext } from '../../components/contexts/ViewContext';
 import { SettingsContext } from '../../components/contexts/SettingsContext';
 import type { Note } from '@notention/core';
 
+// Mock @notention/core metaphorMapper
+vi.mock('@notention/core', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@notention/core')>();
+  return {
+    ...actual,
+    metaphorMapper: {
+      mapToMetaphor: vi.fn().mockReturnValue(null),
+    },
+  };
+});
+
 // Mock SuggestionContext
 vi.mock('../../components/contexts/SuggestionContext', () => ({
   useSuggestions: () => ({

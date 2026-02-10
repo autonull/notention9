@@ -50,7 +50,7 @@ const UNIT_ALIASES: Record<string, string> = {
     // Currency (expanded)
     '$': 'USD', 'dollar': 'USD', 'dollars': 'USD', 'usd': 'USD', 'us-dollar': 'USD',
     '€': 'EUR', 'euro': 'EUR', 'euros': 'EUR', 'eur': 'EUR',
-    '£': 'GBP', 'gbp': 'GBP', 'pound': 'GBP', 'pounds': 'GBP',
+    '£': 'GBP', 'gbp': 'GBP',
     '¥': 'JPY', 'yen': 'JPY', 'jpy': 'JPY',
     '₹': 'INR', 'rupee': 'INR', 'inr': 'INR',
     'chf': 'CHF', 'franc': 'CHF',

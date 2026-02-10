@@ -316,10 +316,9 @@ export class AutonomousTaskExecutor {
 
         const executionTime = task.endTime - (task.startTime || 0);
 
-        logError(`Task failed`, {
+        logError(`Task failed`, error instanceof Error ? error : new Error(String(error)), {
           taskId,
           userId: task?.userId,
-          error: error.message,
           executionTime
         });
 
