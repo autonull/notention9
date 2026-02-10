@@ -45,18 +45,20 @@ export class CLICommander {
       .option('-s, --set <key=value>', 'Set a configuration value')
       .option('-l, --list', 'List all configuration values')
       .option('-r, --reset', 'Reset configuration to defaults')
-      .action(async (options: ConfigOptions) => {
-        if (options.get) {
+      .action((options: ConfigOptions) => this.handleConfigAction(options));
+  }
+
+  private async handleConfigAction(options: ConfigOptions) {
+      if (options.get) {
           this.handleConfigGet(options.get);
-        } else if (options.set) {
+      } else if (options.set) {
           this.handleConfigSet(options.set);
-        } else if (options.reset) {
+      } else if (options.reset) {
           configManager.reset();
           console.log('Configuration reset to defaults');
-        } else {
+      } else {
           this.listConfig();
-        }
-      });
+      }
   }
 
   private handleConfigGet(key: string) {
@@ -67,13 +69,13 @@ export class CLICommander {
 
   private handleConfigSet(keyValue: string) {
       const [key, value] = keyValue.split('=');
+
       if (!key || value === undefined) {
-        console.error('Invalid format. Use: --set key=value');
-        return;
+          console.error('Invalid format. Use: --set key=value');
+          return;
       }
 
       const parsedValue = this.validateConfigValue(value);
-
       configManager.saveConfig({ [key]: parsedValue });
       console.log(`Configuration '${key}' set to: ${parsedValue}`);
   }
@@ -87,13 +89,13 @@ export class CLICommander {
       .option('-s, --switch <provider>', 'Switch to a different provider')
       .action(async (options: ProviderOptions) => {
         if (options.list) {
-          this.listProviders();
+            this.listProviders();
         } else if (options.switch) {
-           console.log('Launching setup wizard for provider switch...');
-           await SetupManager.runSetup();
+            console.log('Launching setup wizard for provider switch...');
+            await SetupManager.runSetup();
         } else {
-           const config = configManager.getAll();
-           console.log(`Current provider: ${config.provider || 'default'}`);
+            const { provider } = configManager.getAll();
+            console.log(`Current provider: ${provider || 'default'}`);
         }
       });
   }
@@ -102,8 +104,8 @@ export class CLICommander {
       const providers = ProviderFactory.getSupportedProviders();
       console.log('Supported providers:');
       providers.forEach(provider => {
-        const desc = ProviderFactory.getProviderDescription(provider);
-        console.log(`  ${provider}: ${desc}`);
+          const desc = ProviderFactory.getProviderDescription(provider);
+          console.log(`  ${provider}: ${desc}`);
       });
   }
 
@@ -112,7 +114,7 @@ export class CLICommander {
       .command('setup')
       .description('Interactive setup wizard')
       .action(async () => {
-        await SetupManager.runSetup();
+          await SetupManager.runSetup();
       });
   }
 
@@ -129,8 +131,8 @@ export class CLICommander {
       .option('--sim, --simulation', 'Enable simulation mode')
       .argument('[command]', 'Optional command to run directly')
       .action(async (command, options) => {
-        const { startInteractiveSession } = await import('./interactive.js');
-        await startInteractiveSession({ ...options, command });
+          const { startInteractiveSession } = await import('./interactive.js');
+          await startInteractiveSession({ ...options, command });
       });
   }
 
@@ -138,16 +140,15 @@ export class CLICommander {
       if (value === 'true') return true;
       if (value === 'false') return false;
       const num = Number(value);
-      if (!isNaN(num)) return num;
-      return value;
+      return !isNaN(num) ? num : value;
   }
 
   private listConfig() {
       const config = configManager.getAll();
       console.log('Current configuration:');
-      for (const [key, value] of Object.entries(config)) {
-        console.log(`  ${key}: ${value}`);
-      }
+      Object.entries(config).forEach(([key, value]) => {
+          console.log(`  ${key}: ${value}`);
+      });
   }
 
   /**
@@ -172,13 +173,13 @@ export class CLICommander {
     const args = process.argv.slice(2);
 
     if (!args.length) {
-      const { startInteractiveSession } = await import('./interactive.js');
-      await startInteractiveSession({});
+        const { startInteractiveSession } = await import('./interactive.js');
+        await startInteractiveSession({});
     } else if (args[0].startsWith('/')) {
-      const { startInteractiveSession } = await import('./interactive.js');
-      await startInteractiveSession({ command: args.join(' ') });
+        const { startInteractiveSession } = await import('./interactive.js');
+        await startInteractiveSession({ command: args.join(' ') });
     } else {
-      await this.program.parseAsync(process.argv);
+        await this.program.parseAsync(process.argv);
     }
   }
 }
