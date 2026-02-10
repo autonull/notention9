@@ -25,6 +25,13 @@ describe('Parsing Tests', () => {
       expect(props[0]).toEqual({ key: 'status', operator: 'is', values: ['active'] });
     });
 
+    test('should parse symbolic !=', () => {
+      const text = '[status != inactive]';
+      const props = parseProperties(text);
+      expect(props).toHaveLength(1);
+      expect(props[0]).toEqual({ key: 'status', operator: 'is not', values: ['inactive'] });
+    });
+
     test('should handle mixed formats', () => {
       const text = '[type:is:service] with [rate < 50]';
       const props = parseProperties(text);

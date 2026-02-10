@@ -5,6 +5,8 @@ import { expandMacro } from './composition.js';
 
 // Map symbolic operators to canonical operator names
 export const SYMBOL_TO_OP: Record<string, string> = {
+  '<=': 'less than or equal',
+  '>=': 'greater than or equal',
   '<': 'less than',
   '>': 'greater than',
   '=': 'is',
@@ -25,7 +27,6 @@ const COMMON_WORDS = new Set([
 // Pre-compiled Regexes
 export const REGEX = {
   WORD_OP: /^([^\s]+)\s+(is|contains|before|after|less than|greater than|between|range|not)\s+(.+)$/i,
-  GENERAL_SYM: /^([^\s]+)\s*([<>=!]+)\s*(.+)$/,
   COLON: /^([^\s]+):(.+)$/,
   SPACE: /^([^\s]+)\s+(.+)$/,
   VALID_KEY: /^[a-zA-Z][a-zA-Z0-9_.-]*$/,
@@ -83,23 +84,6 @@ const parseSymbolicFormat: PropertyParser = (content) => {
             values: symbolicMatch[3].trim().split(',').map(v => v.trim())
         };
     }
-
-    const generalMatch = content.match(REGEX.GENERAL_SYM);
-    if (generalMatch) {
-        const [, rawKey, operator, value] = generalMatch;
-        const key = resolveAlias(rawKey.trim());
-
-        let canonicalOperator = operator.trim();
-        if (operator === '!=') canonicalOperator = 'is not';
-        else if (operator === '<=') canonicalOperator = 'less than or equal';
-        else if (operator === '>=') canonicalOperator = 'greater than or equal';
-
-        return {
-            key,
-            operator: canonicalOperator,
-            values: value.trim().split(',').map(v => v.trim())
-        };
-    }
     return null;
 };
 
@@ -146,12 +130,11 @@ const PARSERS: PropertyParser[] = [
 ];
 
 const parsePropertyBlock = (content: string): Property | null => {
-  let result: Property | null = null;
-  PARSERS.some(parser => {
-    result = parser(content);
-    return result !== null;
-  });
-  return result;
+  for (const parser of PARSERS) {
+    const result = parser(content);
+    if (result) return result;
+  }
+  return null;
 };
 
 export const extractProperties = (text: string): ExtractedProperty[] => {
@@ -236,15 +219,11 @@ export const replacePropertyInString = (
 
   const newTag = newProp ? formatPropertyTag(newProp) : '';
 
-  if (!oldProp) {
-      return appendPropertyToText(text, newTag);
-  }
-
-  const match = findPropertyInText(text, oldProp);
-  if (match) {
-    const prefix = text.substring(0, match.index);
-    const suffix = text.substring(match.index + match.length);
-    return prefix + newTag + suffix;
+  if (oldProp) {
+    const match = findPropertyInText(text, oldProp);
+    if (match) {
+      return `${text.substring(0, match.index)}${newTag}${text.substring(match.index + match.length)}`;
+    }
   }
 
   return appendPropertyToText(text, newTag);
