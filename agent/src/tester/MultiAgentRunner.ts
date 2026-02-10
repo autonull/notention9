@@ -68,7 +68,7 @@ export class MultiAgentRunner {
                         createdAt: new Date().toISOString(),
                         updatedAt: new Date().toISOString(),
                         source: { type: 'user', identifier: 'simulation', timestamp: Date.now() },
-                        public: false,
+                        privacy: 'private',
                         priority: 1
                     };
                 } else {
@@ -81,7 +81,7 @@ export class MultiAgentRunner {
                         createdAt: new Date().toISOString(),
                         updatedAt: new Date().toISOString(),
                         source: { type: 'user', identifier: 'simulation', timestamp: Date.now() },
-                        public: false,
+                        privacy: 'private',
                         priority: 1,
                         ...step.input
                     } as Note;

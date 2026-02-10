@@ -1,0 +1,5 @@
+{
+    "provider": "ollama",
+    "model": "llama3.2",
+    "baseURL": "http://localhost:11434/v1"
+}

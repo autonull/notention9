@@ -4,7 +4,7 @@ import { CoreMessage } from 'ai';
 import { marked } from 'marked';
 import TerminalRenderer from 'marked-terminal';
 import chalk from 'chalk';
-import { log, withSpinner } from './utils.js';
+import { log } from './utils.js';
 import { LLMProvider, type LLMProviderConfig } from './providers/base.js';
 
 // Configure marked for terminal output
@@ -24,11 +24,6 @@ export interface LocalTool extends ToolDefinition {
 }
 
 export type { LLMProviderConfig };
-
-interface ToolCall {
-    tool: string;
-    args: any;
-}
 
 export class LlmSession {
     private history: CoreMessage[] = [];
@@ -66,7 +61,7 @@ export class LlmSession {
         if (this.ontologyCache) return;
         try {
             const result: any = await this.toolExecutor('query_ontology', { query: 'ROOT' });
-            this.ontologyCache = (result?.content?.[0]?.text) ?? "No ontology available.";
+            this.ontologyCache = result?.content?.[0]?.text ?? "No ontology available.";
         } catch (e) {
             log.warn(`Failed to fetch ontology: ${e}`);
             this.ontologyCache = "Ontology unavailable.";
@@ -76,7 +71,6 @@ export class LlmSession {
     private async fetchCapabilities() {
         if (this.capabilitiesCache) return;
         try {
-            // Check if tool exists
             const hasTool = this.tools.some(t => t.name === 'get_capabilities');
             if (hasTool) {
                 const result: any = await this.toolExecutor('get_capabilities', {});
@@ -85,7 +79,7 @@ export class LlmSession {
                     : null;
             }
         } catch (e) {
-            // Ignore capability fetch errors (tool might not exist yet)
+            // Ignore capability fetch errors
         }
     }
 
@@ -115,145 +109,131 @@ You are the "Notention Agent", a helpful AI assistant that controls a Notention 
 Your goal is to help the user manage their knowledge graph (notes), execute skills, and run simulations.
 `;
 
-        let capabilitiesSection = `
-Capabilities:
+        const capabilitiesSection = [
+            `Capabilities:
 - Manage Notes: Create, Read (Search), Update, Delete.
 - Execute Skills: Trigger agent skills based on note content.
 - Query Ontology: Understand the semantic structure of the knowledge base.
 - Simulations: List and run test scenarios to verify agent behavior.
 - Multi-Agent Simulations: Run complex scenarios with multiple agents to test ontology and community evolution.
 - Local Files: Access and ingest files from the local filesystem.
-- Semantic Extraction: Use 'extract_semantics' to understand the properties of a note text.
-`;
-
-        if (this.capabilitiesCache) {
-            capabilitiesSection += `
+- Semantic Extraction: Use 'extract_semantics' to understand the properties of a note text.`,
+            this.capabilitiesCache ? `
 System Flags:
 - Browser: ${this.capabilitiesCache.browser ? 'ENABLED' : 'DISABLED'}
 - Files: ${this.capabilitiesCache.files ? 'ENABLED' : 'DISABLED'}
-- API: ${this.capabilitiesCache.api ? 'ENABLED' : 'DISABLED'}
-`;
-        }
+- API: ${this.capabilitiesCache.api ? 'ENABLED' : 'DISABLED'}` : ''
+        ].filter(Boolean).join('');
 
-        return `
-${basePrompt}
-
-${capabilitiesSection}
-
-Ontology Context:
-${this.ontologyCache || "Ontology loading..."}
-
-Semantic Properties:
+        return [
+            basePrompt,
+            capabilitiesSection,
+            `Ontology Context:
+${this.ontologyCache || "Ontology loading..."}`,
+            `Semantic Properties:
 Notention uses a semantic property system. Prefer using the 'properties' field.
 Syntax: [key:operator:values]
 - key: From ontology (e.g., 'type', 'priority', 'status')
 - operator: 'is' (equality), '>' (greater), '<' (less), 'contains'
-- values: Comma-separated list (e.g., 'task', 'high', 'active')
-
-Guidelines:
+- values: Comma-separated list (e.g., 'task', 'high', 'active')`,
+            `Guidelines:
 - Use 'search_notes' to find items.
 - Use 'read_notes' for broad listing.
 - Use 'create_note' with semantic tags.
 - Use 'update_note' after finding ID.
 - Use 'run_scenario' for tests.
 - Be concise. Summarize actions.
+- When a user asks for information that requires accessing notes or other data, YOU MUST use the appropriate tool to retrieve that data.
+- Do NOT generate responses that pretend to know what notes exist or what their content is without first using a tool to retrieve that information.
+- If a user says "list notes", you must call the 'read_notes' tool before responding.
+- If a user asks about specific information, use the appropriate tool to retrieve it first.
+- Only after receiving tool results should you formulate a response based on those actual results.
 
 Available Tools:
-${JSON.stringify(this.tools, null, 2)}
-
-Output Format:
-- Speak directly to the user (Markdown supported).
-- Call tools using JSON blocks:
-\`\`\`json
-{ "tool": "tool_name", "args": { ... } }
-\`\`\`
-`;
+${JSON.stringify(this.tools, null, 2)}`
+        ].join('\n\n');
     }
 
     async handleInteraction(input: string) {
-        // Provider health check is now handled by the provider itself
         if (!this.ontologyCache) await this.fetchOntology();
         if (!this.capabilitiesCache) await this.fetchCapabilities();
         this.loadCustomPrompt();
 
         this.history.push({ role: 'user', content: input });
-
-        let turns = 0;
-        const MAX_TURNS = 10;
-
-        while (turns < MAX_TURNS) {
-            turns++;
-            const continueLoop = await this.executeTurn();
-            if (!continueLoop) break;
-        }
+        await this.executeTurn();
     }
 
-    private async executeTurn(): Promise<boolean> {
+    private async executeTurn() {
         try {
-            const messages: CoreMessage[] = [
+            log.chat('Agent', '');
+            let fullText = '';
+
+            for await (const chunk of this.provider.generateStream([
                 { role: 'system', content: this.getSystemPrompt() },
                 ...this.history
-            ];
-
-            log.chat('Agent', '');
-
-            let fullText = '';
-            for await (const chunk of this.provider.generateStream(messages)) {
+            ])) {
                 process.stdout.write(chunk);
                 fullText += chunk;
             }
-            process.stdout.write('\n');
 
             this.history.push({ role: 'assistant', content: fullText });
 
-            const toolCalls = this.parseToolCalls(fullText);
-
+            const toolCalls = this.extractToolCalls(fullText);
             if (toolCalls.length > 0) {
-                for (const call of toolCalls) {
-                    await this.processToolCall(call);
+                for (const toolCall of toolCalls) {
+                    await this.executeToolCall(toolCall);
+                    await this.executeTurn();
+                    return;
                 }
-                return true; // Continue loop after tool execution
             }
-
-            return false; // Stop if no tools called
-
         } catch (e: unknown) {
-            log.error("Error in LLM loop", e);
-            return false;
-        }
-    }
-
-    private parseToolCalls(text: string): ToolCall[] {
-        const jsonBlockRegex = /```json\s*(\{[\s\S]*?\})\s*```/g;
-        const fallbackRegex = /(\{\s*"tool"\s*:[\s\S]*?\})/g;
-
-        let matches = [...text.matchAll(jsonBlockRegex)];
-        if (matches.length === 0) {
-            matches = [...text.matchAll(fallbackRegex)];
-        }
-
-        return matches.map(match => {
-            try {
-                return JSON.parse(match[1]);
-            } catch (e) {
-                log.error("Failed to parse tool JSON snippet", e);
-                return null;
+            log.error("Error in LLM interaction", e);
+            if (e instanceof Error) {
+                console.error(chalk.red(`LLM Error: ${e.message}`));
             }
-        }).filter((call): call is ToolCall => call !== null && typeof call.tool === 'string');
+        }
     }
 
-    private async processToolCall(call: ToolCall) {
+    private extractToolCalls(text: string): Array<{ tool: string; args: any }> {
+        const jsonBlockRegex = /```json\s*({[\s\S]*?})\s*```/g;
+        const inlineRegex = /{[^{}]*"tool"[^{}]*"args"[^{}]*}/g;
+        const matches = [...text.matchAll(jsonBlockRegex), ...text.matchAll(inlineRegex)];
+        const toolCalls = [];
+
+        for (const match of matches) {
+            try {
+                const jsonStr = match[1] || match[0];
+                const parsed = JSON.parse(jsonStr);
+                if (parsed.tool && parsed.args) {
+                    toolCalls.push(parsed);
+                }
+            } catch (e) {
+                // Skip invalid JSON
+            }
+        }
+
+        return toolCalls;
+    }
+
+    private async executeToolCall(toolCall: { tool: string; args: any }) {
         try {
-            const toolResult = await withSpinner(
-                `Executing tool: ${chalk.bold(call.tool)}`,
-                () => this.toolExecutor(call.tool, call.args)
-            );
-            const resultStr = JSON.stringify(toolResult, null, 2);
-            this.history.push({ role: 'user', content: `Tool Result (${call.tool}): ${resultStr}` });
-        } catch (toolErr: unknown) {
-            const msg = toolErr instanceof Error ? toolErr.message : String(toolErr);
-            log.error(`Tool execution failed`, toolErr);
-            this.history.push({ role: 'user', content: `Tool Error (${call.tool}): ${msg}` });
+            console.log(chalk.blue(`\n[EXECUTING TOOL: ${toolCall.tool}]`));
+            const result = await this.toolExecutor(toolCall.tool, toolCall.args);
+            console.log(chalk.green(`[RESULT FROM ${toolCall.tool}]:`));
+            console.log(JSON.stringify(result, null, 2));
+
+            this.history.push({
+                role: 'user',
+                content: `Tool "${toolCall.tool}" result: ${JSON.stringify(result)}`
+            });
+        } catch (error) {
+            const errorMsg = error instanceof Error ? error.message : String(error);
+            console.log(chalk.red(`[ERROR FROM ${toolCall.tool}]: ${errorMsg}`));
+
+            this.history.push({
+                role: 'user',
+                content: `Tool "${toolCall.tool}" failed with error: ${errorMsg}`
+            });
         }
     }
 }

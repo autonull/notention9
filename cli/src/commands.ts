@@ -3,6 +3,8 @@ import { CliClient } from './client.js';
 import { LlmSession } from './llm.js';
 import { log, withSpinner } from './utils.js';
 import { runSetupWizard } from './setup.js';
+import { ProviderFactory } from './providers/factory.js';
+import { configManager } from './config-manager.js';
 
 export async function handleSlashCommand(input: string, cli: CliClient, tools: any[], session?: LlmSession): Promise<boolean> {
     const [cmd, ...args] = input.split(' ');
@@ -29,26 +31,95 @@ export async function handleSlashCommand(input: string, cli: CliClient, tools: a
             }
             if (args.length === 0) {
                 const config = session.getConfig();
+                const provider = session.getProvider();
+                const capabilities = provider.getCapabilities();
+
                 log.info("Current Configuration:");
-                console.log(`  Provider: ${chalk.cyan(config.provider)}`);
-                console.log(`  Model:    ${chalk.cyan(config.model)}`);
-                console.log(`  URL:      ${chalk.cyan(config.baseURL || '(default)')}`);
-            } else if (args.length === 2 && args[0] === 'set') {
-                log.warn("Usage: /config <key> <value>");
-            } else if (args.length >= 2) {
-                const key = args[0];
-                const val = args[1];
-                if (key === 'model') {
-                    session.updateConfig({ model: val });
-                } else if (key === 'provider') {
-                    session.updateConfig({ provider: val });
-                } else if (key === 'url') {
-                    session.updateConfig({ baseURL: val });
-                } else {
-                    log.error(`Unknown config key: ${key}. Valid keys: model, provider, url`);
-                }
+                console.log(`  Provider:    ${chalk.cyan(config.provider)}`);
+                console.log(`  Model:       ${chalk.cyan(config.model)}`);
+                console.log(`  Base URL:    ${chalk.cyan(config.baseURL || '(default)')}`);
+                console.log(`  Streaming:   ${capabilities.streaming ? chalk.green('✓') : chalk.red('✗')}`);
+                console.log(`  Functions:   ${capabilities.functionCalling ? chalk.green('✓') : chalk.red('✗')}`);
             } else {
-                log.warn("Usage: /config [key value]");
+                log.warn("/config is now read-only. Use /provider to switch providers.");
+            }
+            return true;
+        case '/providers':
+            if (!session) {
+                log.error("Session unavailable in this context.");
+                return true;
+            }
+            const currentConfig = session.getConfig();
+            const supported = ProviderFactory.getSupportedProviders();
+
+            log.info("Supported Providers:");
+            supported.forEach(p => {
+                const isCurrent = p === currentConfig.provider;
+                const icon = isCurrent ? chalk.green('→') : ' ';
+                const desc = ProviderFactory.getProviderDescription(p);
+                console.log(`  ${icon} ${chalk.cyan(p.padEnd(12))} ${chalk.gray(desc)}`);
+            });
+            console.log(chalk.gray("\nUse /provider <name> to switch providers"));
+            return true;
+        case '/provider':
+            if (!session) {
+                log.error("Session unavailable in this context.");
+                return true;
+            }
+            if (args.length === 0) {
+                log.warn("Usage: /provider <name> [model]");
+                log.info("Use /providers to see available providers");
+                return true;
+            }
+
+            try {
+                const providerName = args[0];
+                const modelOverride = args.length > 1 ? args[1] : undefined;
+
+                // Load current config and update with new provider info
+                const currentConfig = configManager.getAll();
+                const newConfigData = {
+                    provider: providerName,
+                    model: modelOverride || currentConfig.model || configManager.getDefaultModel(providerName),
+                    baseURL: currentConfig.baseURL,
+                    apiKey: currentConfig.apiKey,
+                    temperature: currentConfig.temperature ?? 0.7,
+                    maxTokens: currentConfig.maxTokens ?? 2000
+                };
+
+                // Validate the new configuration
+                const validation = configManager.validateConfig(newConfigData);
+                if (!validation.valid) {
+                    log.error('Configuration validation failed:');
+                    validation.errors.forEach(err => log.error(`  - ${err}`));
+                    return true;
+                }
+
+                const newProvider = ProviderFactory.create(newConfigData);
+
+                const healthResult: any = await withSpinner(
+                    `Connecting to ${providerName}...`,
+                    () => newProvider.healthCheck()
+                );
+
+                if (!healthResult.healthy) {
+                    log.error(`Provider health check failed: ${healthResult.message}`);
+                    log.warn("Provider not switched.");
+                    return true;
+                }
+
+                // Update the session with the new provider
+                session.updateProvider(newProvider);
+                
+                // Save the new configuration to persistent storage
+                configManager.saveConfig({
+                    provider: providerName,
+                    model: newConfigData.model
+                });
+                
+                log.success(healthResult.message || `Switched to ${providerName}`);
+            } catch (e: unknown) {
+                log.error("Failed to switch provider", e);
             }
             return true;
         case '/scenarios':
@@ -160,16 +231,18 @@ export async function handleSlashCommand(input: string, cli: CliClient, tools: a
         case '/help':
             console.log(chalk.gray(`
 Commands:
-  ${chalk.white('/help')}               - Show this help
-  ${chalk.white('/config')}             - View current LLM config
-  ${chalk.white('/config <key> <val>')} - Set LLM config (model, provider, url)
-  ${chalk.white('/tools')}              - List available MCP tools
-  ${chalk.white('/setup')}              - Run the configuration wizard
-  ${chalk.white('/security scan')}      - Scan notes for exposed secrets
-  ${chalk.white('/scenarios')}          - List available test scenarios
-  ${chalk.white('/run <id>')}           - Run a specific scenario
-  ${chalk.white('/clear')}              - Clear the screen
-  ${chalk.white('/quit')}               - Exit the CLI
+  ${chalk.white('/help')}                  - Show this help
+  ${chalk.white('/config')}                - View current LLM configuration
+  ${chalk.white('/providers')}             - List available LLM providers
+  ${chalk.white('/provider <name>')}       - Switch to a different provider
+  ${chalk.white('/tools')}                 - List available MCP tools
+  ${chalk.white('/setup')}                 - Run the configuration wizard
+  ${chalk.white('/security scan')}         - Scan notes for exposed secrets
+  ${chalk.white('/scenarios')}             - List available test scenarios
+  ${chalk.white('/run <id>')}              - Run a specific scenario
+  ${chalk.white('/extract <text>')}        - Extract semantic properties
+  ${chalk.white('/clear')}                 - Clear the screen
+  ${chalk.white('/quit')}                  - Exit the CLI
             `));
             return true;
         default:

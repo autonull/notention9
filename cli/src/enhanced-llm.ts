@@ -157,6 +157,11 @@ Guidelines:
 - Use 'update_note' after finding ID.
 - Use 'run_scenario' for tests.
 - Be concise. Summarize actions.
+- MOST IMPORTANT: When a user asks for information that requires accessing notes or other data, YOU MUST use the appropriate tool to retrieve that data.
+- Do NOT generate responses that pretend to know what notes exist or what their content is without first using a tool to retrieve that information.
+- If a user says "list notes", you must call the 'read_notes' tool before responding.
+- If a user asks about specific information, use the appropriate tool to retrieve it first.
+- Only after receiving tool results should you formulate a response based on those actual results.
 
 Available Tools:
 ${JSON.stringify(this.tools, null, 2)}
@@ -178,14 +183,8 @@ Output Format:
 
         this.history.push({ role: 'user', content: input });
 
-        let turns = 0;
-        const MAX_TURNS = 10;
-
-        while (turns < MAX_TURNS) {
-            turns++;
-            const continueLoop = await this.executeTurn();
-            if (!continueLoop) break;
-        }
+        // Execute a single turn - the agent will generate a response or tool call
+        await this.executeTurn();
     }
 
     private async executeTurn(): Promise<boolean> {
@@ -204,18 +203,24 @@ Output Format:
             }
             process.stdout.write('\n');
 
-            this.history.push({ role: 'assistant', content: fullText });
-
+            // Don't add the assistant's response to history yet if it contains tool calls
+            // Instead, process the tool calls first
+            
             const toolCalls = this.parseToolCalls(fullText);
 
             if (toolCalls.length > 0) {
+                // If there are tool calls, process them first
                 for (const call of toolCalls) {
                     await this.processToolCall(call);
                 }
-                return true; // Continue loop after tool execution
+                // After processing tool calls, we should get a new response from the agent
+                // that acknowledges the results
+                return false;
+            } else {
+                // If no tool calls, add the response to history and we're done
+                this.history.push({ role: 'assistant', content: fullText });
+                return false;
             }
-
-            return false; // Stop if no tools called
 
         } catch (e: unknown) {
             log.error("Error in LLM loop", e);
@@ -225,7 +230,7 @@ Output Format:
 
     private parseToolCalls(text: string): ToolCall[] {
         const jsonBlockRegex = /```json\s*(\{[\s\S]*?\})\s*```/g;
-        const fallbackRegex = /(\{\s*"tool"\s*:[\s\S]*?\})/g;
+        const fallbackRegex = /(\{\s*"tool"\s*:[^}]*\s*"args"\s*:[^}]*\})/g;
 
         let matches = [...text.matchAll(jsonBlockRegex)];
         if (matches.length === 0) {
@@ -248,11 +253,21 @@ Output Format:
                 `Executing tool: ${chalk.bold(call.tool)}`,
                 () => this.toolExecutor(call.tool, call.args)
             );
-            const resultStr = JSON.stringify(toolResult, null, 2);
-            this.history.push({ role: 'user', content: `Tool Result (${call.tool}): ${resultStr}` });
+
+            // Display the tool result directly to the user, separate from agent response
+            console.log(chalk.blue(`\n[${call.tool.toUpperCase()} RESULT]:`));
+            console.log(JSON.stringify(toolResult, null, 2));
+
+            // Add the tool result to history so the agent can see it in the next turn
+            this.history.push({ role: 'user', content: `Tool Result (${call.tool}): ${JSON.stringify(toolResult)}` });
+
         } catch (toolErr: unknown) {
             const msg = toolErr instanceof Error ? toolErr.message : String(toolErr);
             log.error(`Tool execution failed`, toolErr);
+            
+            // Display error to user
+            console.log(chalk.red(`\n[${call.tool.toUpperCase()} ERROR]: ${msg}`));
+            
             this.history.push({ role: 'user', content: `Tool Error (${call.tool}): ${msg}` });
         }
     }

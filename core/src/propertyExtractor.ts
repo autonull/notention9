@@ -3,6 +3,7 @@ import { OntologyService } from './ontologyService.js';
 import { DEFAULT_ONTOLOGY } from './ontology.default.js';
 import { PropertyValidationError } from './errorTypes.js';
 import { parseQuantity } from './quantities.js';
+import { Logger } from './utils/logging.js';
 
 const INTENTS = [
     { key: 'reminder', regex: /remind.*me.*(to|about|that).*|set.*reminder/i },
@@ -25,28 +26,35 @@ const DATE_PATTERNS = [
     { regex: /yesterday/i, offset: -1 }
 ];
 
+const BUDGET_REGEX = /(?:\$|USD\s*)(\d+(?:,\d{3})*(?:\.\d+)?)|(\d+(?:,\d{3})*(?:\.\d+)?)\s*(?:USD|dollars?)/i;
+
+const STOP_WORDS = new Set(['with', 'the', 'and', 'for', 'from', 'near', 'about', 'that', 'this']);
+
 export class PropertyExtractor {
     private ontologyService: OntologyService;
+    private logger: Logger;
+
+    // Strategies are bound arrow functions to ensure correct 'this' context and avoid recreation
+    private strategies = [
+        (text: string, properties: Property[]) => this.applyIntentStrategy(text, properties),
+        (text: string, properties: Property[]) => this.applySendToStrategy(text, properties),
+        (text: string, properties: Property[]) => this.applyChannelStrategy(text, properties),
+        (text: string, properties: Property[]) => this.applyPhoneStrategy(text, properties),
+        (text: string, properties: Property[]) => this.applyEmailStrategy(text, properties),
+        (text: string, properties: Property[]) => this.applyLocationStrategy(text, properties),
+        (text: string, properties: Property[]) => this.applyDateStrategy(text, properties),
+        (text: string, properties: Property[]) => this.applyBudgetStrategy(text, properties),
+        (text: string, properties: Property[]) => this.applyFuzzyMatchingStrategy(text, properties)
+    ];
 
     constructor(ontology = DEFAULT_ONTOLOGY) {
         this.ontologyService = new OntologyService(ontology);
+        this.logger = Logger.getInstance();
     }
 
     extractFromText(text: string): Property[] {
         const properties: Property[] = [];
-        const strategies = [
-            this.applyIntentStrategy,
-            this.applySendToStrategy,
-            this.applyChannelStrategy,
-            this.applyPhoneStrategy,
-            this.applyEmailStrategy,
-            this.applyLocationStrategy,
-            this.applyDateStrategy,
-            this.applyBudgetStrategy, // Added Budget strategy
-            this.applyFuzzyMatchingStrategy
-        ];
-
-        strategies.forEach(strategy => strategy.call(this, text, properties));
+        this.strategies.forEach(strategy => strategy(text, properties));
         return properties;
     }
 
@@ -112,9 +120,7 @@ export class PropertyExtractor {
     }
 
     private applyBudgetStrategy(text: string, properties: Property[]): void {
-        // Match $100, 100 USD, 100 dollars
-        const regex = /(?:\$|USD\s*)(\d+(?:,\d{3})*(?:\.\d+)?)|(\d+(?:,\d{3})*(?:\.\d+)?)\s*(?:USD|dollars?)/i;
-        const match = text.match(regex);
+        const match = text.match(BUDGET_REGEX);
         if (match) {
             const amount = match[1] || match[2];
             // Normalize amount by removing commas
@@ -131,7 +137,7 @@ export class PropertyExtractor {
             const matches = this.ontologyService.getFuzzyMatches(word, 1);
             if (matches.length > 0 && !existingKeys.has(matches[0])) {
                 const nextWord = words[index + 1];
-                if (nextWord?.length > 2) {
+                if (nextWord?.length > 2 && !STOP_WORDS.has(nextWord.toLowerCase())) {
                     properties.push({ key: matches[0], operator: 'contains', values: [nextWord] });
                     existingKeys.add(matches[0]);
                 }
@@ -186,9 +192,9 @@ export class PropertyExtractor {
 
         if (isPrice) {
             if (quantity.unitType === 'compound' && !isRate) {
-                console.warn(`Warning: Property ${propertyKey} appears to be a simple price but has a compound unit: ${quantity.unit}`);
+                this.logger.warn(`Property ${propertyKey} appears to be a simple price but has a compound unit: ${quantity.unit}`);
             } else if (quantity.unitType === 'simple' && isRate) {
-                console.warn(`Warning: Property ${propertyKey} appears to be a rate but has a simple unit: ${quantity.unit}`);
+                this.logger.warn(`Property ${propertyKey} appears to be a rate but has a simple unit: ${quantity.unit}`);
             }
         }
     }

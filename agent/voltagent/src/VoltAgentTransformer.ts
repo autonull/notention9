@@ -55,7 +55,7 @@ export class VoltAgentTransformer {
                 identifier: 'voltagent',
                 timestamp: Date.now()
             },
-            public: false,
+            privacy: 'private',
             priority: 0.5
         }));
     }

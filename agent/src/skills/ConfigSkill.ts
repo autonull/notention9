@@ -77,7 +77,7 @@ export class ConfigSkill implements Skill {
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             source: { type: 'skill', identifier: this.id, timestamp: Date.now() },
-            public: false,
+            privacy: 'private',
             priority: 0
         } as Note];
     }

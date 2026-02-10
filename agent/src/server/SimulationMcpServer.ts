@@ -10,10 +10,9 @@ import { CommunitySimulation } from '../scenarios/CommunitySimulation.js';
 import { UserFlowSimulation } from '../scenarios/UserFlowSimulation.js';
 import { GigEconomySimulation } from '../scenarios/GigEconomySimulation.js';
 import { McpToolRegistry } from './McpToolRegistry.js';
-
 import { ConfigManager } from '../config/ConfigManager.js';
 
-export function setupSimulationMcpServer(app: Express) {
+export async function setupSimulationMcpServer(app: Express) {
     const config = ConfigManager.getInstance().getConfig();
 
     const server = new McpServer({
@@ -93,7 +92,7 @@ export function setupSimulationMcpServer(app: Express) {
     registry.getToolDefinitions().forEach(tool => {
         server.registerTool(tool.name, {
             description: tool.description,
-            inputSchema: tool.schema
+            inputSchema: tool.schema as any
         }, async (args) => {
             const result = await tool.handler(args);
             if (typeof result === 'string') {

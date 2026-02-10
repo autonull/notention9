@@ -32,8 +32,13 @@ export class CliClient {
         try {
             await this.client.connect(this.transport);
             this.connected = true;
-        } catch (e) {
+        } catch (e: any) {
             this.connected = false;
+            if (e.message && (e.message.includes('ECONNREFUSED') || e.message.includes('fetch failed'))) {
+                console.error("\n\x1b[31mError: Could not connect to Notention Agent.\x1b[0m");
+                console.error("\x1b[33mTip: Make sure the agent server is running.\x1b[0m");
+                console.error("Run \x1b[36mnpm run dev:server\x1b[0m in a separate terminal.\n");
+            }
             throw e;
         }
     }
