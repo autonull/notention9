@@ -35,13 +35,14 @@ export class AgentWorkflowSkillExecutor {
             skills: matches.map(m => m.skill.name)
         });
 
-        const results = await matches.reduce(async (accPromise, { skill, confidence }) => {
-            const acc = await accPromise;
-            if (confidence < 0.5) return acc;
+        const results: Note[] = [];
+
+        for (const { skill, confidence } of matches) {
+            if (confidence < 0.5) continue;
 
             const resultNotes = await this.executeSingleSkill(skill, note);
-            return [...acc, ...resultNotes];
-        }, Promise.resolve<Note[]>([]));
+            results.push(...resultNotes);
+        }
 
         this.emit('skill_execution_finished', {
             noteId: note.id,

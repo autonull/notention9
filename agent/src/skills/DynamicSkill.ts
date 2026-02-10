@@ -35,15 +35,24 @@ export class DynamicSkill implements Skill {
         let score = 0;
 
         if (this.def.trigger.tags) {
-            const hasTag = this.def.trigger.tags.some(t => note.tags.includes(t));
-            if (hasTag) score += 0.5;
+            for (const tag of this.def.trigger.tags) {
+                if (note.tags.includes(tag)) {
+                    score += 0.5;
+                    break;
+                }
+            }
         }
 
         if (this.def.trigger.properties) {
-            const hasProp = this.def.trigger.properties.some(p =>
-                note.properties.some(np => np.key === p.key && (!p.value || np.values.includes(p.value)))
-            );
-            if (hasProp) score += 0.5;
+            for (const p of this.def.trigger.properties) {
+                const hasMatch = note.properties.some(np =>
+                    np.key === p.key && (!p.value || np.values.includes(p.value))
+                );
+                if (hasMatch) {
+                    score += 0.5;
+                    break;
+                }
+            }
         }
 
         return Math.min(score, 1.0);
