@@ -1,8 +1,8 @@
+@import "tailwindcss";
 @import './styles/property-blocks.css';
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@source "../index.html";
+@source "../src";
 
 body {
   font-family: 'Inter', sans-serif;
@@ -162,6 +162,7 @@ body {
 .widget:hover {
   background-color: #4b5563;
   /* gray-600 */
+  border-radius: 3px;
 }
 
 .widget.is-editing {

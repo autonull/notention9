@@ -6,6 +6,8 @@ class PerformanceMonitor {
   private marks: Map<string, number> = new Map();
   private observers: PerformanceObserver[] = [];
   private logger = Logger.getInstance();
+  private isMonitoringLongTasks = false;
+  private isMonitoringLayout = false;
 
   // Mark a point in time
   mark(name: string): void {
@@ -33,38 +35,55 @@ class PerformanceMonitor {
 
   // Monitor long tasks (>50ms that can block UI)
   monitorLongTasks(): void {
-    if ('PerformanceObserver' in window) {
-      const observer = new PerformanceObserver((list) => {
-        list.getEntries().forEach((entry) => {
-          if (entry.duration > 50) {
-            this.logger.warn(`Long task detected: ${entry.name} took ${entry.duration.toFixed(2)}ms`);
-          }
-        });
-      });
+    if (this.isMonitoringLongTasks) return;
 
-      observer.observe({ entryTypes: ['longtask'] });
-      this.observers.push(observer);
+    if ('PerformanceObserver' in window) {
+      try {
+        const observer = new PerformanceObserver((list) => {
+          list.getEntries().forEach((entry) => {
+            if (entry.duration > 50) {
+              this.logger.warn(`Long task detected: ${entry.name} took ${entry.duration.toFixed(2)}ms`);
+            }
+          });
+        });
+
+        observer.observe({ entryTypes: ['longtask'] });
+        this.observers.push(observer);
+        this.isMonitoringLongTasks = true;
+      } catch (e) {
+        // Ignore if not supported
+      }
     }
   }
 
   // Monitor layout thrashing (frequent style/layout recalculations)
   monitorLayoutThrashing(): void {
-    if ('PerformanceObserver' in window) {
-      const observer = new PerformanceObserver((list) => {
-        list.getEntries().forEach((entry) => {
-          this.logger.debug(`Layout shift: ${entry.name} caused ${entry.duration.toFixed(2)}ms`);
-        });
-      });
+    if (this.isMonitoringLayout) return;
 
-      observer.observe({ entryTypes: ['layout-shift'] });
-      this.observers.push(observer);
+    if ('PerformanceObserver' in window) {
+      try {
+        const observer = new PerformanceObserver((list) => {
+          list.getEntries().forEach((entry) => {
+            this.logger.debug(`Layout shift: ${entry.name} caused ${entry.duration.toFixed(2)}ms`);
+          });
+        });
+
+        observer.observe({ entryTypes: ['layout-shift'] });
+        this.observers.push(observer);
+        this.isMonitoringLayout = true;
+      } catch (e) {
+        // Ignore
+      }
     }
   }
 
   // Cleanup function
   destroy(): void {
     this.observers.forEach(observer => observer.disconnect());
+    this.observers = [];
     this.marks.clear();
+    this.isMonitoringLongTasks = false;
+    this.isMonitoringLayout = false;
   }
 }
 

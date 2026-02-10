@@ -1,11 +1,11 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
 // @ts-ignore
-import EventSource from "eventsource";
+import EventSourcePkg from "eventsource";
 import { log } from "./utils.js";
 
 // Handle both CommonJS and ESM interop
-const EventSourceClass = EventSource.EventSource || EventSource;
+const EventSourceClass = (EventSourcePkg as any).EventSource || EventSourcePkg;
 
 // Polyfill EventSource if needed
 if (!(global as any).EventSource) {
@@ -33,7 +33,7 @@ export class CliClient {
         try {
             await this.client.connect(this.transport);
             this.connected = true;
-        } catch (e: any) {
+        } catch (e) {
             this.connected = false;
             // Throw the error to let the caller handle retries/logging
             throw e;
@@ -44,13 +44,13 @@ export class CliClient {
         if (!this.connected) return { tools: [] };
         try {
             return await this.client.listTools();
-        } catch (e: any) {
+        } catch (e) {
             log.error(`Failed to list tools`, e);
             return { tools: [] };
         }
     }
 
-    async callTool(name: string, args: any) {
+    async callTool(name: string, args: Record<string, unknown>) {
         if (!this.connected) throw new Error("Client not connected");
 
         try {
@@ -59,8 +59,9 @@ export class CliClient {
                 arguments: args
             });
             return result;
-        } catch (e: any) {
-             throw new Error(`Tool '${name}' execution failed: ${e.message}`);
+        } catch (e) {
+             const message = e instanceof Error ? e.message : String(e);
+             throw new Error(`Tool '${name}' execution failed: ${message}`);
         }
     }
 

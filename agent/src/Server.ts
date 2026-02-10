@@ -69,12 +69,16 @@ export class AgentServer {
     }
 
     private setupStaticServing() {
-        let uiDistPath = join(process.cwd(), '../ui/dist');
-        if (!fs.existsSync(uiDistPath)) {
-            uiDistPath = join(process.cwd(), 'ui/dist');
-        }
-        if (fs.existsSync(uiDistPath)) {
-            this.app.use(express.static(uiDistPath));
+        const potentialPaths = [
+            join(process.cwd(), '../ui/dist'),
+            join(process.cwd(), 'ui/dist')
+        ];
+
+        for (const path of potentialPaths) {
+            if (fs.existsSync(path)) {
+                this.app.use(express.static(path));
+                return;
+            }
         }
     }
 
@@ -85,35 +89,36 @@ export class AgentServer {
         }
 
         this.wss = new WebSocketServer({ server: this.server, path: '/ws/agent' });
+        this.wss.on('connection', (ws) => this.handleClientConnection(ws));
+    }
 
-        this.wss.on('connection', (ws) => {
-            log('WS', 'UI client connected');
+    private handleClientConnection(ws: WebSocket) {
+        log('WS', 'UI client connected');
 
-            if (this.socketController) {
-                this.socketController.addClient(ws);
-            } else {
-                log('WS', 'Client connected before full init');
+        if (this.socketController) {
+            this.socketController.addClient(ws);
+        } else {
+            log('WS', 'Client connected before full init');
+        }
+
+        ws.send(JSON.stringify({
+            type: 'connection_established',
+            message: 'Connected to Notention Agent'
+        }));
+
+        ws.on('message', async (data) => {
+            if (!this.socketController) {
+                ws.send(JSON.stringify({ type: 'error', message: 'System initializing...' }));
+                return;
             }
 
-            ws.send(JSON.stringify({
-                type: 'connection_established',
-                message: 'Connected to Notention Agent'
-            }));
-
-            ws.on('message', async (data) => {
-                if (!this.socketController) {
-                    ws.send(JSON.stringify({ type: 'error', message: 'System initializing...' }));
-                    return;
-                }
-
-                try {
-                    const message = JSON.parse(data.toString());
-                    await this.socketController.handleMessage(message, ws);
-                } catch (e) {
-                    error('WS', 'Message handling error', e);
-                    ws.send(JSON.stringify({ type: 'error', message: 'Invalid message' }));
-                }
-            });
+            try {
+                const message = JSON.parse(data.toString());
+                await this.socketController.handleMessage(message, ws);
+            } catch (e) {
+                error('WS', 'Message handling error', e);
+                ws.send(JSON.stringify({ type: 'error', message: 'Invalid message' }));
+            }
         });
     }
 

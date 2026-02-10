@@ -1,4 +1,4 @@
-import type { Note } from './types';
+import type { Note } from './types/index.js';
 import { patternRecognitionService, Prediction } from './patternRecognition.js';
 import { predictionAccuracyTracker, AccuracyMetrics } from './predictionTracking.js';
 import { clamp, formatPercentage } from './utils/common.js';
