@@ -231,6 +231,36 @@ Output Format:
         }
     }
 
+    private async streamLLMResponse(messages: CoreMessage[]): Promise<string> {
+        const spinner = ora('Thinking...').start();
+        let fullText = '';
+        let isFirstChunk = true;
+
+        try {
+            for await (const chunk of this.provider.generateStream(messages)) {
+                if (isFirstChunk) {
+                    spinner.stop();
+                    log.chat('Agent', '');
+                    isFirstChunk = false;
+                }
+                process.stdout.write(chunk);
+                fullText += chunk;
+            }
+        } catch (streamError: any) {
+            spinner.fail('Stream failed');
+            throw streamError;
+        }
+
+        // If we never got a chunk (empty response or error before stream started)
+        if (isFirstChunk) {
+            spinner.stop();
+        } else {
+            process.stdout.write('\n');
+        }
+
+        return fullText;
+    }
+
     private async executeTurn(): Promise<boolean> {
         try {
             const messages: CoreMessage[] = [
@@ -238,31 +268,7 @@ Output Format:
                 ...this.history
             ];
 
-            const spinner = ora('Thinking...').start();
-            let fullText = '';
-            let isFirstChunk = true;
-
-            try {
-                for await (const chunk of this.provider.generateStream(messages)) {
-                    if (isFirstChunk) {
-                        spinner.stop();
-                        log.chat('Agent', '');
-                        isFirstChunk = false;
-                    }
-                    process.stdout.write(chunk);
-                    fullText += chunk;
-                }
-            } catch (streamError: any) {
-                spinner.fail('Stream failed');
-                throw streamError;
-            }
-
-            // If we never got a chunk (empty response or error before stream started)
-            if (isFirstChunk) {
-                spinner.stop();
-            } else {
-                process.stdout.write('\n');
-            }
+            const fullText = await this.streamLLMResponse(messages);
 
             this.history.push({ role: 'assistant', content: fullText });
 

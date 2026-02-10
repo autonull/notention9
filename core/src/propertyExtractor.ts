@@ -33,23 +33,24 @@ const STOP_WORDS = new Set(['with', 'the', 'and', 'for', 'from', 'near', 'about'
 export class PropertyExtractor {
     private ontologyService: OntologyService;
     private logger: Logger;
-
-    // Strategies are bound arrow functions to ensure correct 'this' context and avoid recreation
-    private strategies = [
-        (text: string, properties: Property[]) => this.applyIntentStrategy(text, properties),
-        (text: string, properties: Property[]) => this.applySendToStrategy(text, properties),
-        (text: string, properties: Property[]) => this.applyChannelStrategy(text, properties),
-        (text: string, properties: Property[]) => this.applyPhoneStrategy(text, properties),
-        (text: string, properties: Property[]) => this.applyEmailStrategy(text, properties),
-        (text: string, properties: Property[]) => this.applyLocationStrategy(text, properties),
-        (text: string, properties: Property[]) => this.applyDateStrategy(text, properties),
-        (text: string, properties: Property[]) => this.applyBudgetStrategy(text, properties),
-        (text: string, properties: Property[]) => this.applyFuzzyMatchingStrategy(text, properties)
-    ];
+    private strategies: ((text: string, properties: Property[]) => void)[];
 
     constructor(ontology = DEFAULT_ONTOLOGY) {
         this.ontologyService = new OntologyService(ontology);
         this.logger = Logger.getInstance();
+
+        // Initialize strategies with bound methods
+        this.strategies = [
+            this.applyIntentStrategy.bind(this),
+            this.applySendToStrategy.bind(this),
+            this.applyChannelStrategy.bind(this),
+            this.applyPhoneStrategy.bind(this),
+            this.applyEmailStrategy.bind(this),
+            this.applyLocationStrategy.bind(this),
+            this.applyDateStrategy.bind(this),
+            this.applyBudgetStrategy.bind(this),
+            this.applyFuzzyMatchingStrategy.bind(this)
+        ];
     }
 
     extractFromText(text: string): Property[] {
@@ -131,7 +132,8 @@ export class PropertyExtractor {
 
     private applyFuzzyMatchingStrategy(text: string, properties: Property[]): void {
         const words = text.split(/\s+/).filter(w => w.length > 3);
-        const existingKeys = new Set(properties.map(p => p.key));
+        const existingKeys = new Set<string>();
+        for (const p of properties) existingKeys.add(p.key);
 
         for (const [index, word] of words.entries()) {
             const matches = this.ontologyService.getFuzzyMatches(word, 1);

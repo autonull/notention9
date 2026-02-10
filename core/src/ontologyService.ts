@@ -1,5 +1,5 @@
 import { OntologyNode, OntologyAttribute } from './types/index.js';
-import { findNode, findAttributeDef, getSubtreeKeys } from './ontologyHelpers.js';
+import { findNode } from './ontologyHelpers.js';
 
 /**
  * OntologyService - Programmatic access to ontology metadata
@@ -23,6 +23,15 @@ export interface WidgetMetadata {
     options?: string[];  // For dropdowns
     operators: string[];
 }
+
+const WIDGET_MAPPING: Record<string, WidgetType> = {
+    'string': 'text-input',
+    'number': 'number-input',
+    'datetime': 'datetime-picker',
+    'date': 'date-picker',
+    'geo': 'map-picker',
+    'enum': 'dropdown'
+};
 
 export class OntologyService {
     private ontology: OntologyNode[];
@@ -50,10 +59,13 @@ export class OntologyService {
         const traverse = (nodes: OntologyNode[]) => {
             for (const node of nodes) {
                 if (node.attributes) {
-                    for (const [key, attr] of Object.entries(node.attributes)) {
-                        // Store first definition (precedence to earlier nodes)
-                        if (!index.has(key)) {
-                            index.set(key, attr);
+                    // Optimized loop over keys
+                    for (const key in node.attributes) {
+                        if (Object.prototype.hasOwnProperty.call(node.attributes, key)) {
+                            // Store first definition (precedence to earlier nodes)
+                            if (!index.has(key)) {
+                                index.set(key, node.attributes[key]);
+                            }
                         }
                     }
                 }
@@ -83,7 +95,7 @@ export class OntologyService {
             return null;
         }
 
-        const widgetType = this.typeToWidget(attr.type);
+        const widgetType = WIDGET_MAPPING[attr.type] || 'text-input';
         const metadata = {
             type: widgetType,
             icon: attr.icon,
@@ -97,31 +109,18 @@ export class OntologyService {
     }
 
     /**
-     * Map ontology type to UI widget
-     */
-    private typeToWidget(type: string): WidgetType {
-        const mapping: Record<string, WidgetType> = {
-            'string': 'text-input',
-            'number': 'number-input',
-            'datetime': 'datetime-picker',
-            'date': 'date-picker',
-            'geo': 'map-picker',
-            'enum': 'dropdown'
-        };
-
-        return mapping[type] || 'text-input';
-    }
-
-    /**
      * Get all attributes that support a specific operator
      */
     getAttributesByOperator(operator: string): Array<{ key: string, attribute: OntologyAttribute }> {
-        return Array.from(this.attributeIndex.entries())
-            .filter(([_, attr]) => {
-                const allOps = [...attr.operators.real, ...attr.operators.imaginary];
-                return allOps.includes(operator);
-            })
-            .map(([key, attr]) => ({ key, attribute: attr }));
+        const results: Array<{ key: string, attribute: OntologyAttribute }> = [];
+
+        for (const [key, attr] of this.attributeIndex) {
+            if (attr.operators.real.includes(operator) || attr.operators.imaginary.includes(operator)) {
+                results.push({ key, attribute: attr });
+            }
+        }
+
+        return results;
     }
 
     /**
@@ -177,7 +176,7 @@ export class OntologyService {
         const lower = input.toLowerCase();
         const scoredMatches: Array<{ key: string, score: number }> = [];
 
-        for (const [key, attr] of this.attributeIndex.entries()) {
+        for (const [key, attr] of this.attributeIndex) {
             const keyLower = key.toLowerCase();
             let score = 0;
 
@@ -273,10 +272,11 @@ export class OntologyService {
             this.usageStats.set(key, (this.usageStats.get(key) || 0) + 1);
 
             // Update co-occurrence
-            if (!this.coOccurrenceStats.has(key)) {
-                this.coOccurrenceStats.set(key, new Map());
+            let coMap = this.coOccurrenceStats.get(key);
+            if (!coMap) {
+                coMap = new Map();
+                this.coOccurrenceStats.set(key, coMap);
             }
-            const coMap = this.coOccurrenceStats.get(key)!;
 
             for (const otherKey of keys) {
                 if (key !== otherKey) {
@@ -294,11 +294,17 @@ export class OntologyService {
 
         let numberCount = 0;
         let dateCount = 0;
+        const ISODateRegex = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2})?/;
 
         for (const v of values) {
-            const valStr = String(v);
-            if (!isNaN(parseFloat(valStr))) numberCount++;
-            if (!isNaN(Date.parse(valStr)) && valStr.includes('-')) dateCount++; // Simple date check
+            if (typeof v === 'number') {
+                numberCount++;
+            } else {
+                const valStr = String(v);
+                if (!isNaN(parseFloat(valStr))) numberCount++;
+                // Check if it's an ISO date string
+                if (ISODateRegex.test(valStr) && !isNaN(Date.parse(valStr))) dateCount++;
+            }
         }
 
         const threshold = values.length * 0.8; // 80% confidence
@@ -324,7 +330,7 @@ export class OntologyService {
 
         for (const [source, targets] of this.coOccurrenceStats.entries()) {
             for (const [target, count] of targets.entries()) {
-                const pairId = [source, target].sort().join('-');
+                const pairId = source < target ? `${source}-${target}` : `${target}-${source}`;
                 if (!processedPairs.has(pairId)) {
                     links.push({ source, target, value: count });
                     processedPairs.add(pairId);

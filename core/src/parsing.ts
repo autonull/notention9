@@ -14,7 +14,13 @@ export const SYMBOL_TO_OP: Record<string, string> = {
   '∋': 'contains',
 };
 
-const COMMON_WORDS = new Set(['not', 'neither', 'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'can', 'this', 'that', 'these', 'those', 'i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 'her', 'us', 'them']);
+const COMMON_WORDS = new Set([
+    'not', 'neither', 'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by',
+    'is', 'are', 'was', 'were', 'be', 'been', 'have', 'has', 'had', 'do', 'does', 'did',
+    'will', 'would', 'could', 'should', 'may', 'might', 'can',
+    'this', 'that', 'these', 'those',
+    'i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 'her', 'us', 'them'
+]);
 
 // Pre-compiled Regexes
 const WORD_OP_REGEX = /^([^\s]+)\s+(is|contains|before|after|less than|greater than|between|range|not)\s+(.+)$/;
@@ -224,9 +230,10 @@ const extractHtmlSpans = (text: string): Property[] => {
  * Also supports parsing HTML Chip syntax for backward compatibility or processing.
  */
 export const parseProperties = (text: string): Property[] => {
-  const extracted = extractProperties(text);
-  const properties: Property[] = extracted.map(e => e.property);
+  // Use map over extracted properties to get the property objects
+  const properties: Property[] = extractProperties(text).map(e => e.property);
 
+  // Add macros and HTML spans
   properties.push(...extractMacros(text));
   properties.push(...extractHtmlSpans(text));
 
@@ -245,15 +252,10 @@ export const formatPropertyTag = (prop: Property): string => {
  * Finds the index and length of a property in the text.
  */
 const findPropertyInText = (text: string, prop: Property): { index: number; length: number } | null => {
-  for (const match of text.matchAll(BRACKET_REGEX)) {
-    const content = match[1];
-    const parsed = parsePropertyBlock(content);
-
-    if (parsed && arePropertiesEqual(parsed, prop)) {
-      return { index: match.index, length: match[0].length };
-    }
-  }
-  return null;
+  // Reuse extractProperties to avoid duplicating regex logic
+  const extracted = extractProperties(text);
+  const found = extracted.find(ep => arePropertiesEqual(ep.property, prop));
+  return found ? { index: found.index, length: found.length } : null;
 };
 
 const appendPropertyToText = (text: string, tag: string): string => {

@@ -22,6 +22,70 @@ interface WalkResult {
     notes: string[];
 }
 
+/**
+ * Ingests a single file into the system as a note.
+ * Checks for binary content before processing.
+ */
+export async function ingestFile(filePath: string, cli: CliClient, dryRun: boolean): Promise<string | null> {
+    try {
+        if (await isBinary(filePath)) {
+            // log.warn(`Skipping binary file: ${filePath}`);
+            return null;
+        }
+
+        const fileContent = await fs.readFile(filePath, 'utf-8');
+        const ext = path.extname(filePath).toLowerCase();
+        const filename = path.basename(filePath);
+
+        // Auto-tagging based on extension
+        const tags = ['ingested', 'cli'];
+        if (['.ts', '.js', '.tsx', '.jsx'].includes(ext)) tags.push('code', 'typescript', 'javascript');
+        if (['.md', '.txt'].includes(ext)) tags.push('document');
+        if (['.py'].includes(ext)) tags.push('code', 'python');
+        if (['.json'].includes(ext)) tags.push('data', 'json');
+        if (['.html', '.css', '.scss'].includes(ext)) tags.push('code', 'web');
+
+        const title = `Ingested: ${filename}`;
+
+        if (dryRun) {
+            return `[DryRun] ${filename}`;
+        }
+
+        // Call the remote MCP tool to create the note
+        const result = await cli.callTool('create_note', {
+            title,
+            content: `Source File: ${filePath}\n\n\`\`\`${ext.replace('.', '')}\n${fileContent}\n\`\`\``,
+            tags,
+            properties: [
+                { key: 'type', operator: 'is', values: ['file'] },
+                { key: 'extension', operator: 'is', values: [ext] },
+                { key: 'path', operator: 'is', values: [filePath] }
+            ]
+        });
+
+        // Parse result to get ID
+        const mcpContent = (result as any).content;
+        const resultText = (mcpContent && mcpContent[0]) ? (mcpContent[0] as any).text : "Unknown ID";
+
+        // Attempt to extract ID if the tool returns "Note created with ID: ..."
+        // The create_note tool usually returns just the note object or a success message
+        // If it returns JSON (the note), we parse it.
+        try {
+            const note = JSON.parse(resultText);
+            if (note.id) return note.id;
+        } catch (e) {
+            // Not JSON, try regex
+            const match = resultText.match(/ID: ([\w-]+)/);
+            if (match) return match[1];
+        }
+
+        return resultText;
+    } catch (e: any) {
+        log.error(`Failed to ingest ${filePath}: ${e.message}`);
+        return null;
+    }
+}
+
 async function walkDirectory(
     dirPath: string,
     cli: CliClient,
@@ -59,71 +123,16 @@ async function walkDirectory(
             const ext = path.extname(entry.name).toLowerCase();
             if (IGNORED_EXTS.has(ext)) continue;
 
-            if (await isBinary(fullPath)) continue;
-
-            // Ingest file
-            try {
-                const noteId = await ingestSingleFile(fullPath, cli, options.dryRun);
-                if (noteId) {
-                    createdNotes.push(noteId);
-                    currentProcessedCount++;
-                }
-            } catch (e) {
-                log.error(`Failed to ingest ${fullPath}`, e);
+            // Ingest file (ingestFile now handles binary check and error logging)
+            const noteId = await ingestFile(fullPath, cli, options.dryRun);
+            if (noteId) {
+                createdNotes.push(noteId);
+                currentProcessedCount++;
             }
         }
     }
 
     return { processedCount: currentProcessedCount, notes: createdNotes };
-}
-
-async function ingestSingleFile(filePath: string, cli: CliClient, dryRun: boolean): Promise<string | null> {
-    const fileContent = await fs.readFile(filePath, 'utf-8');
-    const ext = path.extname(filePath).toLowerCase();
-    const filename = path.basename(filePath);
-
-    const tags = ['ingested', 'cli'];
-    if (['.ts', '.js', '.tsx', '.jsx'].includes(ext)) tags.push('code', 'typescript', 'javascript');
-    if (['.md', '.txt'].includes(ext)) tags.push('document');
-    if (['.py'].includes(ext)) tags.push('code', 'python');
-    if (['.json'].includes(ext)) tags.push('data', 'json');
-    if (['.html', '.css', '.scss'].includes(ext)) tags.push('code', 'web');
-
-    const title = `Ingested: ${filename}`;
-
-    if (dryRun) {
-        return `[DryRun] ${filename}`;
-    }
-
-    // Call the remote MCP tool to create the note
-    const result = await cli.callTool('create_note', {
-        title,
-        content: `Source File: ${filePath}\n\n\`\`\`${ext.replace('.', '')}\n${fileContent}\n\`\`\``,
-        tags,
-        properties: [
-            { key: 'type', operator: 'is', values: ['file'] },
-            { key: 'extension', operator: 'is', values: [ext] },
-            { key: 'path', operator: 'is', values: [filePath] }
-        ]
-    });
-
-    // Parse result to get ID
-    const mcpContent = (result as any).content;
-    const resultText = (mcpContent && mcpContent[0]) ? (mcpContent[0] as any).text : "Unknown ID";
-
-    // Attempt to extract ID if the tool returns "Note created with ID: ..."
-    // The create_note tool usually returns just the note object or a success message
-    // If it returns JSON (the note), we parse it.
-    try {
-        const note = JSON.parse(resultText);
-        if (note.id) return note.id;
-    } catch (e) {
-        // Not JSON, try regex
-        const match = resultText.match(/ID: ([\w-]+)/);
-        if (match) return match[1];
-    }
-
-    return resultText;
 }
 
 export function createIngestTools(cli: CliClient): LocalTool[] {
@@ -154,8 +163,10 @@ export function createIngestTools(cli: CliClient): LocalTool[] {
                     const stats = await fs.stat(resolvedPath);
 
                     if (stats.isFile()) {
-                        const noteId = await ingestSingleFile(resolvedPath, cli, dryRun);
-                        return `Successfully ingested file. ID: ${noteId}`;
+                        const noteId = await ingestFile(resolvedPath, cli, dryRun);
+                        return noteId
+                            ? `Successfully ingested file. ID: ${noteId}`
+                            : `Failed to ingest file (binary or error).`;
                     } else if (stats.isDirectory()) {
                         const { processedCount, notes } = await walkDirectory(resolvedPath, cli, {
                             maxDepth,
