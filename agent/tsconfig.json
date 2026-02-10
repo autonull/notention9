@@ -29,6 +29,9 @@
     "paths": {
       "@notention/agent-voltagent": [
         "./voltagent/src/index.ts"
+      ],
+      "@notention/core": [
+        "../core/src/index.ts"
       ]
     }
   },

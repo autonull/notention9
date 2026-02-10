@@ -40,12 +40,14 @@ export const useNotesState = (driver?: LocalForage) => {
         .catch((err) => logger.error('Failed to sync notes:', err as Error));
     };
 
-    if (agentService.isConnected()) {
-      handleConnected();
-    }
+    if (agentService.isEnabled()) {
+      if (agentService.isConnected()) {
+        handleConnected();
+      }
 
-    agentService.on('connected', handleConnected);
-    return () => agentService.off('connected', handleConnected);
+      agentService.on('connected', handleConnected);
+      return () => agentService.off('connected', handleConnected);
+    }
   }, [setNotes]);
 
   const addNote = useCallback(

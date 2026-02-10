@@ -57,14 +57,28 @@ function AppContent() {
   // Determine UI status display
   let statusDisplay = null;
   if (agentStatus.status === 'offline') {
-    statusDisplay = (
-      <div className="fixed top-4 right-4 bg-yellow-500 text-black px-4 py-2 rounded shadow-lg z-50 animate-pulse">
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 bg-black rounded-full"></span>
-          Offline Mode - Working locally
+    // Check if explicitly disabled to show different message
+    const isAgentEnabled = import.meta.env.VITE_ENABLE_AGENT !== 'false';
+
+    if (!isAgentEnabled) {
+      statusDisplay = (
+        <div className="fixed top-4 right-4 bg-gray-700 text-white px-4 py-2 rounded shadow-lg z-50 opacity-75 hover:opacity-100 transition-opacity">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
+            Local Mode (Agent Disabled)
+          </div>
         </div>
-      </div>
-    );
+      );
+    } else {
+      statusDisplay = (
+        <div className="fixed top-4 right-4 bg-yellow-500 text-black px-4 py-2 rounded shadow-lg z-50 animate-pulse">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 bg-black rounded-full"></span>
+            Offline Mode - Working locally
+          </div>
+        </div>
+      );
+    }
   } else if (agentStatus.status === 'connecting' || agentStatus.status === 'reconnecting') {
     statusDisplay = (
       <div className="fixed top-4 right-4 bg-blue-500 text-white px-4 py-2 rounded shadow-lg z-50">

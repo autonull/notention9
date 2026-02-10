@@ -3,6 +3,8 @@ import { useSettings } from '../hooks/useSettingsContext';
 import { useToast } from '../hooks/useToast';
 import { Note, PropertyExtractor, patternRecognitionService, getTextFromHtml, replacePropertyInString, parseProperties } from '@notention/core';
 import { SparklesIcon, PlusIcon, LinkIcon, InformationCircleIcon, CheckCircleIcon } from './common/icons';
+import { FeedbackWidget } from './common/FeedbackWidget';
+import { agentService } from '../services/AgentService';
 
 interface SmartNoteAssistantProps {
   note: Note;
@@ -271,6 +273,28 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
               </div>
             </button>
           ))}
+
+          <div className="pt-2 border-t border-gray-700 flex justify-end">
+               <FeedbackWidget
+                   entityId={`suggestions-${note.id}`}
+                   entityType="suggestion"
+                   onFeedback={(type, val) => {
+                       // Send feedback to agent
+                       agentService.send({
+                           type: 'feedback',
+                           payload: {
+                               id: crypto.randomUUID(),
+                               entityId: `suggestions-${note.id}`,
+                               entityType: 'suggestion',
+                               value: type === 'positive' ? 1 : -1,
+                               context: { details: val },
+                               timestamp: Date.now()
+                           }
+                       });
+                       addToast('Feedback sent', 'success');
+                   }}
+               />
+          </div>
         </div>
       )}
     </div>

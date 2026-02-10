@@ -43,7 +43,7 @@ export class SkillToolAdapter {
         });
     }
 
-    private static convertToAgentAction(actions: any[]): any {
+    public static convertToAgentAction(actions: any[]): any {
         // Find main navigation
         const nav = actions.find((a: any) => a.type === 'navigate');
         if (!nav) return null; // Must have navigation

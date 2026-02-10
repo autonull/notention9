@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNotes } from '../../hooks/useNotes';
 import { useSettings } from '../../hooks/useSettingsContext';
-import { parseConfigFromNote, mergeConfigs } from '@notention/core/src/config/NoteBasedConfig';
+import { parseConfigFromNote, mergeConfigs } from '@notention/core';
 import type { Note } from '@notention/core';
 
 export const ConfigSync: React.FC = () => {

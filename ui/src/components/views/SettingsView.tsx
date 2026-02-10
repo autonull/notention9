@@ -7,6 +7,7 @@ import { AITab } from '../settings/AITab';
 import { DataTab } from '../settings/DataTab';
 import { NostrTab } from '../settings/NostrTab';
 import { OntologyTab } from '../settings/OntologyTab';
+import { AgentTab } from '../settings/AgentTab';
 
 export function SettingsView() {
   const {
@@ -19,6 +20,7 @@ export function SettingsView() {
 
   const tabs = [
     { id: 'ai', label: '🤖 AI Assistant' },
+    { id: 'agent', label: '⚡ Agent Status' },
     { id: 'nostr', label: '🔑 Network & Keys' },
     { id: 'data', label: '📦 Data Management' },
   ];
@@ -58,6 +60,7 @@ export function SettingsView() {
         {activeTab === 'ai' && (
           <AITab settings={settings} setSettings={setSettings} />
         )}
+        {activeTab === 'agent' && <AgentTab />}
         {activeTab === 'nostr' && (
           <NostrTab settings={settings} setSettings={setSettings} />
         )}

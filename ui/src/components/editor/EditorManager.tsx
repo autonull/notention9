@@ -138,6 +138,7 @@ export function EditorManager({ note, onSave, sortedNotes }: EditorManagerProps)
     <div className="flex flex-col h-full relative">
       <EditorHeader
         key={note.id}
+        id={note.id}
         title={dirtyNote.title}
         onTitleChange={handleTitleChange}
         onPublish={handlePublish}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useWebSocket } from '../../hooks/useWebSocket';
+import { agentService } from '../../services/AgentService';
 
 // Mock Spinner if not found, or replace with common one later
 const Spinner = ({ size }: { size: string }) => <span style={{ marginRight: '5px' }}>⏳</span>;
@@ -8,10 +8,10 @@ export function SkillExecutionIndicator({ noteId }: { noteId: string }) {
     const [executing, setExecuting] = useState(false);
     const [matchedSkills, setMatchedSkills] = useState<string[]>([]);
 
-    const { subscribe } = useWebSocket();
-
     useEffect(() => {
-        const unsubscribe = subscribe((message) => {
+        if (!agentService.isEnabled()) return;
+
+        const handler = (message: any) => {
             // In Phase 4 index.ts, we broadcast 'note_created' for results.
             // But we need 'skill_execution_started' message type which defines `skills`
             // usage. In VoltAgentProvider calling executeWorkflow doesn't explicitly send start events
@@ -22,17 +22,21 @@ export function SkillExecutionIndicator({ noteId }: { noteId: string }) {
             // I should have implemented that broadcast in SkillExecutor or global event handler!
             // I'll update SkillExecutor later if strict adherence is needed, or just keep this component ready.
 
-            if (message.type === 'skill_execution_started' && message.noteId === noteId) {
+            // The payload is nested in message.payload by broadcastToUI
+            const payload = message.payload || message;
+
+            if (message.type === 'skill_execution_started' && payload.noteId === noteId) {
                 setExecuting(true);
-                setMatchedSkills(message.skills || []);
+                setMatchedSkills(payload.skills || []);
             }
-            if (message.type === 'skill_execution_complete' && message.noteId === noteId) {
+            if (message.type === 'skill_execution_finished' && payload.noteId === noteId) {
                 setExecuting(false);
             }
-        });
+        };
 
-        return unsubscribe;
-    }, [noteId, subscribe]);
+        agentService.on('message', handler);
+        return () => agentService.off('message', handler);
+    }, [noteId]);
 
     if (!executing) return null;
 

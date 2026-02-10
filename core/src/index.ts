@@ -38,6 +38,8 @@ export * from './ontologyServiceFactory.js';
 export * from './propertyExtractor.js';
 export * from './queryBuilder.js';
 export * from './matching/MatchingService.js';
+export * from './matching/MatchEngine.js';
+export * from './nostr/discovery.js';
 
 // Skill system (Phase 4)
 export * from './skills/BaseSkill.js';
@@ -56,6 +58,11 @@ export * from './onboarding/OnboardingService.js';
 
 // Configuration (Phase 1.3)
 export * from './config/NoteBasedConfig.js';
+export * from './config/features.js';
+
+// Templates
+export * from './templates.js';
+export * from './templates/TemplateGenerator.js';
 
 // Metaphor System (Phase 3)
 export * from './metaphor/MetaphorRegistry.js';
