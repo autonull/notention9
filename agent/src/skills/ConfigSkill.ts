@@ -31,30 +31,34 @@ export class ConfigSkill implements Skill {
     }
 
     canHandle(note: Note): number {
-        if (note.tags.some(tag => META_CONFIG_KEYS.has(tag))) return 1.0;
+        for (const tag of note.tags) {
+            if (META_CONFIG_KEYS.has(tag)) return 1.0;
+        }
 
-        const hasConfig = note.properties.some(p =>
-            META_CONFIG_KEYS.has(p.key) || DIRECT_CONFIG_KEYS.has(p.key)
-        );
+        for (const p of note.properties) {
+            if (META_CONFIG_KEYS.has(p.key) || DIRECT_CONFIG_KEYS.has(p.key)) {
+                return 1.0;
+            }
+        }
 
-        return hasConfig ? 1.0 : 0;
+        return 0;
     }
 
     exportToActions(note: Note): ActionSequence {
         let applied = 0;
 
-        note.properties.forEach(p => {
+        for (const p of note.properties) {
             // Direct config keys: [llm_model:is:gpt-4]
             if (DIRECT_CONFIG_KEYS.has(p.key) && p.values.length > 0) {
                 const val = p.values[0];
                 this.configUpdater(p.key, val);
                 applied++;
-                return;
+                continue;
             }
 
             // Meta config keys: [config:is:debug_mode=true] or [setting:is:voice_enabled=false]
             if (META_CONFIG_KEYS.has(p.key)) {
-                 p.values.forEach(val => {
+                 for (const val of p.values) {
                      const splitIndex = val.indexOf('=');
                      if (splitIndex !== -1) {
                          const k = val.substring(0, splitIndex).trim();
@@ -64,9 +68,9 @@ export class ConfigSkill implements Skill {
                              applied++;
                          }
                      }
-                 });
+                 }
             }
-        });
+        }
 
         return {
             id: `config-update-${Date.now()}`,
