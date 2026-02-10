@@ -45,6 +45,8 @@ export interface ExtractedProperty {
 
 export type PrivacyLevel = 'private' | 'protected' | 'public';
 
+export type PropertyType = 'quantity' | 'number' | 'date' | 'datetime' | 'geo' | 'string';
+
 import type { Event as NostrToolsEvent } from 'nostr-tools';
 export type NostrEvent = NostrToolsEvent;
 

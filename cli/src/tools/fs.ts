@@ -2,8 +2,8 @@ import fs from 'fs';
 import fsPromises from 'fs/promises';
 import path from 'path';
 import readline from 'readline';
-import { LocalTool } from '../llm.js';
-import { resolveSafePath, isBinary } from '../utils.js';
+import {LocalTool} from '../llm.js';
+import {resolveSafePath, isBinary} from '../utils.js';
 
 export const fsTools: LocalTool[] = [
     {
@@ -12,14 +12,14 @@ export const fsTools: LocalTool[] = [
         inputSchema: {
             type: 'object',
             properties: {
-                path: { type: 'string', description: 'Directory path to list (defaults to .)' }
+                path: {type: 'string', description: 'Directory path to list (defaults to .)'}
             }
         },
         execute: async (args: any) => {
             const dirPath = args.path || '.';
             try {
                 const resolvedPath = resolveSafePath(dirPath);
-                const entries = await fsPromises.readdir(resolvedPath, { withFileTypes: true });
+                const entries = await fsPromises.readdir(resolvedPath, {withFileTypes: true});
                 return entries.map(e => ({
                     name: e.name,
                     type: e.isDirectory() ? 'directory' : 'file'
@@ -35,7 +35,7 @@ export const fsTools: LocalTool[] = [
         inputSchema: {
             type: 'object',
             properties: {
-                path: { type: 'string', description: 'Path to the file to read' }
+                path: {type: 'string', description: 'Path to the file to read'}
             },
             required: ['path']
         },
@@ -59,8 +59,8 @@ export const fsTools: LocalTool[] = [
         inputSchema: {
             type: 'object',
             properties: {
-                path: { type: 'string', description: 'Path to the file' },
-                content: { type: 'string', description: 'Content to write' }
+                path: {type: 'string', description: 'Path to the file'},
+                content: {type: 'string', description: 'Content to write'}
             },
             required: ['path', 'content']
         },
@@ -69,7 +69,7 @@ export const fsTools: LocalTool[] = [
             try {
                 const resolvedPath = resolveSafePath(args.path);
                 // Ensure directory exists
-                await fsPromises.mkdir(path.dirname(resolvedPath), { recursive: true });
+                await fsPromises.mkdir(path.dirname(resolvedPath), {recursive: true});
                 await fsPromises.writeFile(resolvedPath, args.content, 'utf-8');
                 return `File created at ${args.path}`;
             } catch (e: any) {
@@ -83,7 +83,7 @@ export const fsTools: LocalTool[] = [
         inputSchema: {
             type: 'object',
             properties: {
-                path: { type: 'string', description: 'Path to the file' }
+                path: {type: 'string', description: 'Path to the file'}
             },
             required: ['path']
         },
@@ -104,8 +104,8 @@ export const fsTools: LocalTool[] = [
         inputSchema: {
             type: 'object',
             properties: {
-                query: { type: 'string', description: 'Text to search for' },
-                path: { type: 'string', description: 'Path to search in (defaults to .)' }
+                query: {type: 'string', description: 'Text to search for'},
+                path: {type: 'string', description: 'Path to search in (defaults to .)'}
             },
             required: ['query']
         },
@@ -119,7 +119,7 @@ export const fsTools: LocalTool[] = [
                 const startPath = resolveSafePath(dirPath);
 
                 async function search(currentPath: string) {
-                    const entries = await fsPromises.readdir(currentPath, { withFileTypes: true });
+                    const entries = await fsPromises.readdir(currentPath, {withFileTypes: true});
                     for (const entry of entries) {
                         const fullPath = path.join(currentPath, entry.name);
 

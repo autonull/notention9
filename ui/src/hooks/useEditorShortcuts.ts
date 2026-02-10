@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import type { Note } from '@notention/core';
+import {useEffect} from 'react';
+import type {Note} from '@notention/core';
 
 interface UseEditorShortcutsProps {
     dirtyNote: Note;
@@ -11,13 +11,13 @@ interface UseEditorShortcutsProps {
 }
 
 export const useEditorShortcuts = ({
-    dirtyNote,
-    onSave,
-    addToast,
-    handlePrevious,
-    handleNext,
-    setSelectedNoteId
-}: UseEditorShortcutsProps) => {
+                                       dirtyNote,
+                                       onSave,
+                                       addToast,
+                                       handlePrevious,
+                                       handleNext,
+                                       setSelectedNoteId
+                                   }: UseEditorShortcutsProps) => {
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if ((e.metaKey || e.ctrlKey) && e.key === 's') {

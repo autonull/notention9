@@ -1,5 +1,5 @@
-import { Property, PropertyExtractor, Logger } from '@notention/core';
-import { WebLLMProvider } from './WebLLMProvider';
+import {Logger, Property, PropertyExtractor} from '@notention/core';
+import {WebLLMProvider} from './WebLLMProvider';
 
 /**
  * Enhanced Property Extraction Service
@@ -32,7 +32,7 @@ export class PropertyExtractionService {
                 const aiTags = await this.llmProvider.suggestTags(text);
 
                 // Parse AI tags into Property objects
-                const { parseProperties } = await import('@notention/core');
+                const {parseProperties} = await import('@notention/core');
 
                 aiTags.forEach(tag => {
                     const parsed = parseProperties(tag);

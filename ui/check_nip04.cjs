@@ -1,4 +1,4 @@
-const { nip04 } = require('nostr-tools');
+const {nip04} = require('nostr-tools');
 
 console.log('Checking nip04...');
 if (typeof nip04.encrypt === 'function' && typeof nip04.decrypt === 'function') {

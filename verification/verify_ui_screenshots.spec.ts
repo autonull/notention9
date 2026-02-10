@@ -1,14 +1,22 @@
 import { test, expect } from '@playwright/test';
 
-test('UI Screenshot Verification', async ({ page }) => {
-    test.setTimeout(120000);
+const MODAL_SELECTORS = {
+    overlay: '.fixed.inset-0.z-50',
+    title: 'h2.text-2xl.font-bold',
+    actionButtons: ['Get Started', 'Next', 'Skip', 'Finish']
+};
 
-    console.log('Navigating to UI...');
-    await page.goto('http://localhost:5173');
+const EDITOR_SELECTORS = {
+    editor: '.ProseMirror',
+    createFirstNote: 'Create First Note',
+    newNote: 'New Note',
+    publicButton: 'button[title="Set to public"]',
+    confirmButton: 'Confirm'
+};
 
-    // Check for Onboarding Modal
-    const modalOverlay = page.locator('.fixed.inset-0.z-50');
-    const modalTitle = page.locator('h2.text-2xl.font-bold').filter({ hasText: 'Welcome to Notention' });
+const dismissOnboardingModal = async (page) => {
+    const modalOverlay = page.locator(MODAL_SELECTORS.overlay);
+    const modalTitle = page.locator(MODAL_SELECTORS.title).filter({ hasText: 'Welcome to Notention' });
 
     try {
         await modalTitle.waitFor({ state: 'visible', timeout: 5000 });
@@ -16,72 +24,85 @@ test('UI Screenshot Verification', async ({ page }) => {
 
         let attempts = 0;
         while (await modalOverlay.isVisible() && attempts < 5) {
-            const actionBtn = page.getByRole('button', { name: 'Get Started' })
-                .or(page.getByRole('button', { name: 'Next' }))
-                .or(page.getByRole('button', { name: 'Skip' }))
-                .or(page.getByRole('button', { name: 'Finish' }))
+            const actionBtn = MODAL_SELECTORS.actionButtons
+                .map(name => page.getByRole('button', { name }))
+                .reduce((acc, btn) => acc.or(btn), page.getByRole('button', { name: MODAL_SELECTORS.actionButtons[0] }))
                 .first();
 
             if (await actionBtn.isVisible()) {
-                 await actionBtn.click();
-                 await page.waitForTimeout(500);
+                await actionBtn.click();
+                await page.waitForTimeout(500);
             } else {
-                 await page.mouse.click(10, 10);
-                 await page.waitForTimeout(500);
+                await page.mouse.click(10, 10);
+                await page.waitForTimeout(500);
             }
             attempts++;
         }
         await expect(modalOverlay).not.toBeVisible({ timeout: 5000 });
     } catch (e) {
-        // Ignore
     }
+};
 
-    // Create Note if needed
-    if (await page.locator('.ProseMirror').count() === 0) {
-        const createFirstBtn = page.getByRole('button', { name: 'Create First Note' });
+const ensureEditorExists = async (page) => {
+    if (await page.locator(EDITOR_SELECTORS.editor).count() === 0) {
+        const createFirstBtn = page.getByRole('button', { name: EDITOR_SELECTORS.createFirstNote });
         if (await createFirstBtn.isVisible()) {
             await createFirstBtn.click();
         } else {
-            const headerNewBtn = page.locator('button').filter({ hasText: 'New Note' });
-            if (await headerNewBtn.count() > 0) await headerNewBtn.first().click();
+            const headerNewBtn = page.locator('button').filter({ hasText: EDITOR_SELECTORS.newNote });
+            if (await headerNewBtn.count() > 0) {
+                await headerNewBtn.first().click();
+            }
         }
     }
+};
 
-    console.log('Waiting for editor...');
-    await page.waitForSelector('.ProseMirror', { timeout: 30000 });
-
-    // Clear editor first just in case
-    await page.locator('.ProseMirror').clear();
-
-    // Type content - Use pressSequentially to trigger InputRules
-    console.log('Typing note...');
-    await page.locator('.ProseMirror').pressSequentially('Meeting with Bob ');
+const typeNoteContent = async (page) => {
+    const editor = page.locator(EDITOR_SELECTORS.editor);
+    await editor.clear();
+    await editor.pressSequentially('Meeting with Bob ');
     await page.waitForTimeout(500);
-    // Type the property carefully to trigger the rule on ']'
-    await page.locator('.ProseMirror').pressSequentially('[priority:high]');
-    // Wait for rule to apply
+    await editor.pressSequentially('[priority:high]');
     await page.waitForTimeout(1000);
-
-    await page.locator('.ProseMirror').pressSequentially(' at 2pm');
-
-    // Wait for UI to settle
+    await editor.pressSequentially(' at 2pm');
     await page.waitForTimeout(2000);
+};
 
-    // Screenshot Authoring
-    console.log('Taking screenshot_authoring.png...');
-    await page.screenshot({ path: 'verification/screenshot_authoring.png' });
+const takeScreenshot = async (page, path) => {
+    console.log(`Taking ${path}...`);
+    await page.screenshot({ path: `verification/${path}` });
+};
 
-    // P2P Publishing
-    const publicBtn = page.locator('button[title="Set to public"]');
+const publishNote = async (page) => {
+    const publicBtn = page.locator(EDITOR_SELECTORS.publicButton);
     if (await publicBtn.count() > 0 && await publicBtn.first().isVisible()) {
         await publicBtn.first().click();
-        const confirmBtn = page.getByRole('button', { name: 'Confirm' });
+        const confirmBtn = page.getByRole('button', { name: EDITOR_SELECTORS.confirmButton });
         try {
             await confirmBtn.waitFor({ state: 'visible', timeout: 5000 });
             await confirmBtn.click();
-        } catch (e) {}
+        } catch (e) {
+        }
         await page.waitForTimeout(2000);
-        console.log('Taking screenshot_p2p.png...');
-        await page.screenshot({ path: 'verification/screenshot_p2p.png' });
+        await takeScreenshot(page, 'screenshot_p2p.png');
     }
+};
+
+test('UI Screenshot Verification', async ({ page }) => {
+    test.setTimeout(120000);
+
+    console.log('Navigating to UI...');
+    await page.goto('http://localhost:5173');
+
+    await dismissOnboardingModal(page);
+    await ensureEditorExists(page);
+
+    console.log('Waiting for editor...');
+    await page.waitForSelector(EDITOR_SELECTORS.editor, { timeout: 30000 });
+
+    console.log('Typing note...');
+    await typeNoteContent(page);
+
+    await takeScreenshot(page, 'screenshot_authoring.png');
+    await publishNote(page);
 });

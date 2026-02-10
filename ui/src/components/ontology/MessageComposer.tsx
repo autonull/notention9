@@ -1,8 +1,6 @@
-import React, { useState } from 'react';
-import { Property } from '@notention/core';
-import { PropertyExtractor, OntologyService } from '@notention/core';
-import { DEFAULT_ONTOLOGY } from '@notention/core';
-import { PropertyInput } from './PropertyInput';
+import React, {useState} from 'react';
+import {DEFAULT_ONTOLOGY, OntologyService, Property, PropertyExtractor} from '@notention/core';
+import {PropertyInput} from './PropertyInput';
 
 /**
  * MessageComposer - Send messages via agent using ontology properties
@@ -17,7 +15,7 @@ interface MessageComposerProps {
 const propertyExtractor = new PropertyExtractor(DEFAULT_ONTOLOGY);
 const ontologyService = new OntologyService(DEFAULT_ONTOLOGY);
 
-export const MessageComposer: React.FC<MessageComposerProps> = ({ onSend }) => {
+export const MessageComposer: React.FC<MessageComposerProps> = ({onSend}) => {
     const [recipient, setRecipient] = useState('');
     const [channel, setChannel] = useState('whatsapp');
     const [message, setMessage] = useState('');
@@ -30,9 +28,9 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({ onSend }) => {
 
         // Create properties with "send to" operator (from ontology)
         const properties: Property[] = [
-            { key: 'to', operator: 'send to', values: [recipient] },
-            { key: 'channel', operator: 'is', values: [channel] },
-            { key: 'messageType', operator: 'is', values: ['text'] }
+            {key: 'to', operator: 'send to', values: [recipient]},
+            {key: 'channel', operator: 'is', values: [channel]},
+            {key: 'messageType', operator: 'is', values: ['text']}
         ];
 
         // Create note with send intent

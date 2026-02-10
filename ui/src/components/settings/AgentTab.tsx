@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { AgentStatus } from '../agent/AgentStatus';
-import { agentService } from '../../services/AgentService';
-import { Toggle } from '../common/Toggle';
-import { Input } from '../common/Input';
-import { Button } from '../common/Button';
+import React, {useState} from 'react';
+import {AgentStatus} from '../agent/AgentStatus';
+import {agentService} from '../../services/AgentService';
+import {Toggle} from '../common/Toggle';
+import {Input} from '../common/Input';
+import {Button} from '../common/Button';
 
 export function AgentTab() {
     const [enabled, setEnabled] = useState(agentService.isEnabled());
@@ -58,7 +58,7 @@ export function AgentTab() {
             {enabled && (
                 <>
                     <h3 className="text-lg font-medium text-white pt-4">Agent Status</h3>
-                    <AgentStatus />
+                    <AgentStatus/>
                 </>
             )}
 

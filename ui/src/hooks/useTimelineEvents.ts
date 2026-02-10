@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import type { Note } from '@notention/core';
+import {useMemo} from 'react';
+import type {Note} from '@notention/core';
 
 export interface TimelineEvent {
     note: Note;

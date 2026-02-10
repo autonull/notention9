@@ -1,6 +1,6 @@
-import { useState, useCallback } from 'react';
-import type { Editor } from '@tiptap/react';
-import type { OntologyNode, OntologyAttribute } from '@notention/core';
+import {useCallback, useState} from 'react';
+import type {Editor} from '@tiptap/react';
+import type {OntologyAttribute, OntologyNode} from '@notention/core';
 
 export function usePropertyInsertion() {
     const [isPropertyModalOpen, setIsPropertyModalOpen] = useState(false);
@@ -13,7 +13,7 @@ export function usePropertyInsertion() {
     } | undefined>(undefined);
 
     const handleOpenPropertyModal = useCallback((key?: string) => {
-        setInitialModalData(key ? { key, operator: 'is', value: '' } : undefined);
+        setInitialModalData(key ? {key, operator: 'is', value: ''} : undefined);
         setIsPropertyModalOpen(true);
     }, []);
 

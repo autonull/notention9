@@ -19,6 +19,12 @@ describe('Phase 2.3: Multi-Instance Coordination', () => {
             const actual = await importOriginal() as any;
             return {
                 ...actual,
+                finalizeEvent: vi.fn().mockImplementation((template) => ({
+                    ...template,
+                    id: 'mock-id-' + Math.random(),
+                    sig: 'mock-sig',
+                    pubkey: 'mock-pubkey'
+                })),
                 SimplePool: class {
                     publish = vi.fn().mockImplementation((relays, event) => {
                         mockRelayEvents.push(event);

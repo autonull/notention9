@@ -1,11 +1,8 @@
 import React from 'react';
-import type { NostrEvent } from '@notention/core';
-import { ArrowLeftIcon } from '../common/icons';
-import { IconButton } from '../common/IconButton';
-import { Input } from '../common/Input';
-
-import { Button } from '../common/Button';
-import type { OntologyNode } from '@notention/core';
+import type {NostrEvent, OntologyNode} from '@notention/core';
+import {ArrowLeftIcon} from '../common/icons';
+import {IconButton} from '../common/IconButton';
+import {Input} from '../common/Input';
 
 interface NetworkFeedHeaderProps {
     matchAgainstTitle?: string;
@@ -19,15 +16,15 @@ interface NetworkFeedHeaderProps {
 }
 
 export function NetworkFeedHeader({
-    matchAgainstTitle,
-    onClearMatch,
-    filter,
-    setFilter,
-    sortedEvents,
-    ontology,
-    activeFilterId = 'all',
-    setActiveFilterId
-}: NetworkFeedHeaderProps) {
+                                      matchAgainstTitle,
+                                      onClearMatch,
+                                      filter,
+                                      setFilter,
+                                      sortedEvents,
+                                      ontology,
+                                      activeFilterId = 'all',
+                                      setActiveFilterId
+                                  }: NetworkFeedHeaderProps) {
     return (
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
             <div className="flex items-center gap-3 overflow-hidden">
@@ -48,8 +45,9 @@ export function NetworkFeedHeader({
             </div>
 
             <div className="flex flex-col md:flex-row items-end md:items-center gap-3 w-full md:w-auto">
-                 {setActiveFilterId && ontology && (
-                    <div className="flex bg-gray-900 rounded-lg p-1 border border-gray-700 overflow-x-auto max-w-xs md:max-w-md custom-scrollbar">
+                {setActiveFilterId && ontology && (
+                    <div
+                        className="flex bg-gray-900 rounded-lg p-1 border border-gray-700 overflow-x-auto max-w-xs md:max-w-md custom-scrollbar">
                         <button
                             onClick={() => setActiveFilterId('all')}
                             className={`whitespace-nowrap px-3 py-1 text-xs font-medium rounded-md transition-colors ${activeFilterId === 'all' ? 'bg-gray-700 text-white shadow-sm' : 'text-gray-400 hover:text-gray-200'}`}

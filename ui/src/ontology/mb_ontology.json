@@ -475,23 +475,23 @@
         "name": "Dynamic Systems",
         "byline": "Contractual exchange systems",
         "systems": [
-           {
+          {
             "id": "dynamic.auction",
             "name": "Auction System",
             "byline": "Participate in dynamic bidding processes",
-             "modules": [
-               {
-                 "id": "dynamic.auction.listing",
-                 "name": "Auction Listings",
-                 "byline": "View available auctions"
-               },
-               {
-                 "id": "dynamic.auction.bid",
-                 "name": "Place Bid",
-                 "byline": "Submit a bid on an auction"
-               }
-             ]
-           },
+            "modules": [
+              {
+                "id": "dynamic.auction.listing",
+                "name": "Auction Listings",
+                "byline": "View available auctions"
+              },
+              {
+                "id": "dynamic.auction.bid",
+                "name": "Place Bid",
+                "byline": "Submit a bid on an auction"
+              }
+            ]
+          },
           {
             "id": "dynamic.service",
             "name": "Service System",
@@ -794,7 +794,7 @@
             "id": "reliance.citadel",
             "name": "Citadel System",
             "byline": "Security and defense",
-             "modules": [
+            "modules": [
               {
                 "id": "reliance.citadel.security",
                 "name": "Security Settings",
@@ -810,8 +810,8 @@
           {
             "id": "reliance.alliance",
             "name": "Alliance System",
-             "byline": "Partnership management",
-             "modules": [
+            "byline": "Partnership management",
+            "modules": [
               {
                 "id": "reliance.alliance.partner",
                 "name": "Partner Management",
@@ -827,8 +827,8 @@
           {
             "id": "reliance.developer",
             "name": "Developer System",
-             "byline": "Developer resources",
-             "modules": [
+            "byline": "Developer resources",
+            "modules": [
               {
                 "id": "reliance.developer.api",
                 "name": "Developer API",
@@ -921,29 +921,29 @@
                   }
                 ]
               },
-               {
+              {
                 "id": "distributed.node.operations",
                 "name": "Node Operations",
-                 "byline": "Node operations",
+                "byline": "Node operations",
                 "topics": [
                   {
                     "id": "distributed.node.operations.start",
                     "name": "Start Node",
                     "byline": "Initiate node operation"
                   },
-                   {
+                  {
                     "id": "distributed.node.operations.stop",
                     "name": "Stop Node",
                     "byline": "Cease node operation"
-                   }
-                 ]
-               }
+                  }
+                ]
+              }
             ]
           },
           {
             "id": "distributed.io",
             "name": "I/O System",
-             "byline": "Input/output operations",
+            "byline": "Input/output operations",
             "modules": [
               {
                 "id": "distributed.io.input",
@@ -960,8 +960,8 @@
           {
             "id": "distributed.protocol",
             "name": "Protocol System",
-             "byline": "Network protocols",
-             "modules": [
+            "byline": "Network protocols",
+            "modules": [
               {
                 "id": "distributed.protocol.config",
                 "name": "Protocol Configuration",
@@ -977,133 +977,637 @@
         ]
       }
     ],
-     "object_types": [
-        { "id": "mbs.dashboard.session", "name": "Dashboard Session Object", "byline": "Represents a user's active session state within the dashboard." },
-        { "id": "mbs.dashboard.live.in", "name": "Live Incoming Object", "byline": "Represents incoming real-time data feed items." },
-        { "id": "mbs.dashboard.live.out", "name": "Live Outgoing Object", "byline": "Represents outgoing real-time data feed items." },
-        { "id": "mbs.shopper.item", "name": "Shopper Item Object", "byline": "Defines an item available for interaction within shopping systems." },
-        { "id": "mbs.shopper.quest", "name": "Shopper Quest Object", "byline": "Represents a user's search or request for an item or service." },
-        { "id": "mbs.shopper.offer", "name": "Shopper Offer Object", "byline": "Represents an offer made by a user for an item or service." },
-        { "id": "mbs.shopper.request", "name": "Shopper Request Object", "byline": "Represents a request from a user within the shopping context." },
-        { "id": "mbs.shopper.reputation", "name": "Shopper Reputation Object", "byline": "Tracks reputation metrics related to shopping activities." },
-        { "id": "mbs.shopper.conversation", "name": "Shopper Conversation Object", "byline": "Represents a communication thread related to a shopping item or transaction." },
-        { "id": "mbs.shopper.dispute", "name": "Shopper Dispute Object", "byline": "Represents a formal dispute filed within a shopping transaction." },
-        { "id": "mbs.shopper.resolution", "name": "Shopper Resolution Object", "byline": "Details the outcome or process for resolving a shopping dispute." },
-        { "id": "mbs.shopper.record", "name": "Shopper Record Object", "byline": "A historical record of shopping-related activities or transactions." },
-        { "id": "mbs.account.profile", "name": "Account Profile Object", "byline": "Stores user profile information." },
-        { "id": "mbs.account.company", "name": "Account Company Object", "byline": "Represents a company or organizational account profile." },
-        { "id": "mbs.account.record", "name": "Account Record Object", "byline": "Historical records related to user or company accounts." },
-        { "id": "mbs.account.wallet", "name": "Account Wallet Object", "byline": "Represents a user's cryptocurrency wallet." },
-        { "id": "mbs.settings.language", "name": "Settings Language Object", "byline": "Configures language preferences for the user interface." },
-        { "id": "mbs.settings.workflow", "name": "Settings Workflow Object", "byline": "Configures user-specific workflow automation settings." },
-        { "id": "mbs.settings.communication", "name": "Settings Communication Object", "byline": "Manages user communication preferences." },
-        { "id": "mbs.settings.business", "name": "Settings Business Object", "byline": "Configures business-related settings for the account." },
-        { "id": "mbs.settings.network", "name": "Settings Network Object", "byline": "Manages network connectivity and preferences." },
-        { "id": "mbs.settings.reputation", "name": "Settings Reputation Object", "byline": "Configures settings related to user reputation." },
-        { "id": "mbs.settings.settlement", "name": "Settings Settlement Object", "byline": "Manages preferences for transaction settlements." },
-        { "id": "mbs.settings.records", "name": "Settings Records Object", "byline": "Configures settings for data retention and record keeping." },
-        { "id": "mbs.access.filter", "name": "Access Filter Object", "byline": "Defines criteria for filtering access to resources." },
-        { "id": "mbs.access.target", "name": "Access Target Object", "byline": "Specifies the resources or entities affected by access rules." },
-        { "id": "mbs.access.firewall", "name": "Access Firewall Object", "byline": "Manages firewall-like access restrictions." },
-        { "id": "mbs.access.firewindow", "name": "Access Firewindow Object", "byline": "Manages time-based or temporary access permissions." },
-        { "id": "mbs.access.directive", "name": "Access Directive Object", "byline": "A specific rule or instruction within the access control system." },
-        { "id": "mbs.access.configuration", "name": "Access Configuration Object", "byline": "Overall configuration settings for access control." },
-        { "id": "mbs.concept.type.text", "name": "Concept Type Text Object", "byline": "Represents the concept of text as a data type." },
-        { "id": "mbs.concept.type.image", "name": "Concept Type Image Object", "byline": "Represents the concept of images as a data type." },
-        { "id": "mbs.concept.type.sound", "name": "Concept Type Sound Object", "byline": "Represents the concept of sound as a data type." },
-        { "id": "mbs.concept.type.motion", "name": "Concept Type Motion Object", "byline": "Represents the concept of motion or animation as a data type." },
-        { "id": "mbs.concept.type.wave", "name": "Concept Type Wave Object", "byline": "Represents the concept of waveforms or signals as a data type." },
-        { "id": "mbs.concept.type.color", "name": "Concept Type Color Object", "byline": "Represents the concept of color as a data type." },
-        { "id": "mbs.concept.abstract.cloud", "name": "Concept Abstract Cloud Object", "byline": "Represents abstract data structures or concepts related to clouds (e.g., tag clouds, data clouds)." },
-        { "id": "mbs.concept.abstract.geometry", "name": "Concept Abstract Geometry Object", "byline": "Represents abstract concepts related to geometric forms or spatial data." },
-        { "id": "mbs.concept.abstract.phenome", "name": "Concept Abstract Phenome Object", "byline": "Represents abstract concepts related to sensory or perceived phenomena." },
-        { "id": "mbs.concept.abstract.lexical", "name": "Concept Abstract Lexical Object", "byline": "Represents abstract concepts related to language and vocabulary." },
-        { "id": "mbs.concept.method", "name": "Concept Method Object", "byline": "Represents the concept of a method or process." },
-        { "id": "mbs.concept.stack", "name": "Concept Stack Object", "byline": "Represents the concept of a data stack or hierarchical structure." },
-        { "id": "mbs.media.document", "name": "Media Document Object", "byline": "Represents a document file within the media system." },
-        { "id": "mbs.media.audio", "name": "Media Audio Object", "byline": "Represents an audio file within the media system." },
-        { "id": "mbs.media.video", "name": "Media Video Object", "byline": "Represents a video file within the media system." },
-        { "id": "mbs.media.gallery", "name": "Media Gallery Object", "byline": "Represents a collection or album of media files." },
-        { "id": "mbs.media.file", "name": "Media File Object", "byline": "A generic representation of any file within the media system." },
-        { "id": "mbs.media.package", "name": "Media Package Object", "byline": "Represents a bundled collection of media files." },
-        { "id": "mbs.media.bitstream", "name": "Media Bitstream Object", "byline": "Represents raw media data streams." },
-        { "id": "mbs.media.channel", "name": "Media Channel Object", "byline": "Represents a channel for distributing media content." },
-        { "id": "mbs.media.subscription", "name": "Media Subscription Object", "byline": "Manages subscriptions to media channels or content." },
-        { "id": "mbs.media.syndication", "name": "Media Syndication Object", "byline": "Manages the distribution and syndication of media content." },
-        { "id": "mbs.media.record", "name": "Media Record Object", "byline": "A historical record related to media system activities." },
-        { "id": "mbs.media.aggregator", "name": "Media Aggregator Object", "byline": "Represents a tool or process for collecting media from multiple sources." },
-        { "id": "mbs.event.listing", "name": "Event Listing Object", "byline": "Represents a publicly listed event." },
-        { "id": "mbs.event.access", "name": "Event Access Object", "byline": "Controls access permissions for events." },
-        { "id": "mbs.event.promotion", "name": "Event Promotion Object", "byline": "Manages promotional campaigns for events." },
-        { "id": "mbs.event.endorsement", "name": "Event Endorsement Object", "byline": "Represents an endorsement or recommendation for an event." },
-        { "id": "mbs.event.invitation", "name": "Event Invitation Object", "byline": "Represents an invitation to an event." },
-        { "id": "mbs.event.ticket", "name": "Event Ticket Object", "byline": "Represents a ticket providing access to an event." },
-        { "id": "mbs.event.announcement", "name": "Event Announcement Object", "byline": "Represents a formal announcement regarding an event." },
-        { "id": "mbs.event.gallery", "name": "Event Gallery Object", "byline": "A collection of media or information related to an event." },
-        { "id": "mbs.product.listing", "name": "Product Listing Object", "byline": "Represents a publicly listed product." },
-        { "id": "mbs.product.access", "name": "Product Access Object", "byline": "Controls access permissions for product information." },
-        { "id": "mbs.product.quest", "name": "Product Quest Object", "byline": "Represents a user's search or request for a specific product." },
-        { "id": "mbs.product.offer", "name": "Product Offer Object", "byline": "Represents an offer made by a user for a product." },
-        { "id": "mbs.product.endorsement", "name": "Product Endorsement Object", "byline": "Represents an endorsement or review for a product." },
-        { "id": "mbs.product.promotion", "name": "Product Promotion Object", "byline": "Manages promotional campaigns for products." },
-        { "id": "mbs.product.syndication", "name": "Product Syndication Object", "byline": "Manages the distribution and syndication of product information." },
-        { "id": "mbs.product.subscription", "name": "Product Subscription Object", "byline": "Manages subscriptions related to products (e.g., updates, newsletters)." },
-        { "id": "mbs.product.order", "name": "Product Order Object", "byline": "Represents a customer order for products." },
-        { "id": "mbs.product.logistic", "name": "Product Logistic Object", "byline": "Manages logistics and shipping details for products." },
-        { "id": "mbs.product.dispute", "name": "Product Dispute Object", "byline": "Represents a formal dispute filed regarding a product transaction." },
-        { "id": "mbs.product.resolution", "name": "Product Resolution Object", "byline": "Details the outcome or process for resolving a product dispute." },
-        { "id": "mbs.product.record", "name": "Product Record Object", "byline": "A historical record of product-related activities or transactions." },
-        { "id": "mbs.service.listing", "name": "Service Listing Object", "byline": "Represents a publicly listed service." },
-        { "id": "mbs.service.access", "name": "Service Access Object", "byline": "Controls access permissions for service information." },
-        { "id": "mbs.service.quest", "name": "Service Quest Object", "byline": "Represents a user's search or request for a specific service." },
-        { "id": "mbs.service.offer", "name": "Service Offer Object", "byline": "Represents an offer made by a user for a service." },
-        { "id": "mbs.service.endorsement", "name": "Service Endorsement Object", "byline": "Represents an endorsement or review for a service." },
-        { "id": "mbs.service.promotion", "name": "Service Promotion Object", "byline": "Manages promotional campaigns for services." },
-        { "id": "mbs.service.syndication", "name": "Service Syndication Object", "byline": "Manages the distribution and syndication of service information." },
-        { "id": "mbs.service.subscription", "name": "Service Subscription Object", "byline": "Manages subscriptions related to services (e.g., plans, updates)." },
-        { "id": "mbs.service.contract", "name": "Service Contract Object", "byline": "Represents a formal contract for service provision." },
-        { "id": "mbs.service.dispute", "name": "Service Dispute Object", "byline": "Represents a formal dispute filed regarding a service contract." },
-        { "id": "mbs.service.resolution", "name": "Service Resolution Object", "byline": "Details the outcome or process for resolving a service dispute." },
-        { "id": "mbs.service.record", "name": "Service Record Object", "byline": "A historical record of service-related activities or contracts." },
-        { "id": "mbs.rental.listing", "name": "Rental Listing Object", "byline": "Represents a publicly listed item for rental." },
-        { "id": "mbs.rental.access", "name": "Rental Access Object", "byline": "Controls access permissions for rental listings." },
-        { "id": "mbs.rental.quest", "name": "Rental Quest Object", "byline": "Represents a user's search or request for a rental item." },
-        { "id": "mbs.rental.offer", "name": "Rental Offer Object", "byline": "Represents an offer made by a user for a rental item." },
-        { "id": "mbs.rental.endorsement", "name": "Rental Endorsement Object", "byline": "Represents an endorsement or review for a rental item or service." },
-        { "id": "mbs.rental.promotion", "name": "Rental Promotion Object", "byline": "Manages promotional campaigns for rental items." },
-        { "id": "mbs.rental.syndication", "name": "Rental Syndication Object", "byline": "Manages the distribution and syndication of rental listings." },
-        { "id": "mbs.rental.subscription", "name": "Rental Subscription Object", "byline": "Manages subscriptions related to rental services." },
-        { "id": "mbs.rental.contract", "name": "Rental Contract Object", "byline": "Represents a formal contract for renting an item." },
-        { "id": "mbs.rental.dispute", "name": "Rental Dispute Object", "byline": "Represents a formal dispute filed regarding a rental contract." },
-        { "id": "mbs.rental.resolution", "name": "Rental Resolution Object", "byline": "Details the outcome or process for resolving a rental dispute." },
-        { "id": "mbs.rental.record", "name": "Rental Record Object", "byline": "A historical record of rental-related activities or contracts." },
-        { "id": "mbs.work.listing", "name": "Work Listing Object", "byline": "Represents a publicly listed work opportunity or service offer." },
-        { "id": "mbs.work.access", "name": "Work Access Object", "byline": "Controls access permissions for work listings." },
-        { "id": "mbs.work.quest", "name": "Work Quest Object", "byline": "Represents a user's search or request for a work opportunity or service." },
-        { "id": "mbs.work.offer", "name": "Work Offer Object", "byline": "Represents an offer made for a work opportunity or service." },
-        { "id": "mbs.work.endorsement", "name": "Work Endorsement Object", "byline": "Represents an endorsement or review related to work performance." },
-        { "id": "mbs.work.promotion", "name": "Work Promotion Object", "byline": "Manages promotional campaigns for work services." },
-        { "id": "mbs.work.syndication", "name": "Work Syndication Object", "byline": "Manages the distribution and syndication of work listings." },
-        { "id": "mbs.work.subscription", "name": "Work Subscription Object", "byline": "Manages subscriptions related to work services or opportunities." },
-        { "id": "mbs.work.contract", "name": "Work Contract Object", "byline": "Represents a formal contract for work or services." },
-        { "id": "mbs.work.dispute", "name": "Work Dispute Object", "byline": "Represents a formal dispute filed regarding a work contract." },
-        { "id": "mbs.work.resolution", "name": "Work Resolution Object", "byline": "Details the outcome or process for resolving a work dispute." },
-        { "id": "mbs.work.record", "name": "Work Record Object", "byline": "A historical record of work-related activities or contracts." },
-        { "id": "mbs.trade.listing", "name": "Trade Listing Object", "byline": "Represents a publicly listed item or service for trade." },
-        { "id": "mbs.trade.access", "name": "Trade Access Object", "byline": "Controls access permissions for trade listings." },
-        { "id": "mbs.trade.quest", "name": "Trade Quest Object", "byline": "Represents a user's search or request for a trade." },
-        { "id": "mbs.trade.offer", "name": "Trade Offer Object", "byline": "Represents an offer made for a trade." },
-        { "id": "mbs.trade.endorsement", "name": "Trade Endorsement Object", "byline": "Represents an endorsement or review related to trade partners." },
-        { "id": "mbs.trade.promotion", "name": "Trade Promotion Object", "byline": "Manages promotional campaigns for trade opportunities." },
-        { "id": "mbs.trade.syndication", "name": "Trade Syndication Object", "byline": "Manages the distribution and syndication of trade listings." },
-        { "id": "mbs.trade.contract", "name": "Trade Contract Object", "byline": "Represents a formal contract or agreement for trade." },
-        { "id": "mbs.trade.arbitrage", "name": "Trade Arbitrage Object", "byline": "Represents opportunities or actions related to trade arbitrage." },
-        { "id": "mbs.trade.dispute", "name": "Trade Dispute Object", "byline": "Represents a formal dispute filed regarding a trade agreement." },
-        { "id": "mbs.trade.resolution", "name": "Trade Resolution Object", "byline": "Details the outcome or process for resolving a trade dispute." },
-        { "id": "mbs.trade.record", "name": "Trade Record Object", "byline": "A historical record of trade-related activities or agreements." },
-        { "id": "open.account.identifier.email", "name": "Open Account Identifier Email", "byline": "An external email address used as an account identifier." },
-        { "id": "open.account.identifier.social", "name": "Open Account Identifier Social", "byline": "An external social media handle used as an account identifier." },
-        { "id": "open.account.identifier.web", "name": "Open Account Identifier Web", "byline": "An external web URL or handle used as an account identifier." }
-     ]
+    "object_types": [
+      {
+        "id": "mbs.dashboard.session",
+        "name": "Dashboard Session Object",
+        "byline": "Represents a user's active session state within the dashboard."
+      },
+      {
+        "id": "mbs.dashboard.live.in",
+        "name": "Live Incoming Object",
+        "byline": "Represents incoming real-time data feed items."
+      },
+      {
+        "id": "mbs.dashboard.live.out",
+        "name": "Live Outgoing Object",
+        "byline": "Represents outgoing real-time data feed items."
+      },
+      {
+        "id": "mbs.shopper.item",
+        "name": "Shopper Item Object",
+        "byline": "Defines an item available for interaction within shopping systems."
+      },
+      {
+        "id": "mbs.shopper.quest",
+        "name": "Shopper Quest Object",
+        "byline": "Represents a user's search or request for an item or service."
+      },
+      {
+        "id": "mbs.shopper.offer",
+        "name": "Shopper Offer Object",
+        "byline": "Represents an offer made by a user for an item or service."
+      },
+      {
+        "id": "mbs.shopper.request",
+        "name": "Shopper Request Object",
+        "byline": "Represents a request from a user within the shopping context."
+      },
+      {
+        "id": "mbs.shopper.reputation",
+        "name": "Shopper Reputation Object",
+        "byline": "Tracks reputation metrics related to shopping activities."
+      },
+      {
+        "id": "mbs.shopper.conversation",
+        "name": "Shopper Conversation Object",
+        "byline": "Represents a communication thread related to a shopping item or transaction."
+      },
+      {
+        "id": "mbs.shopper.dispute",
+        "name": "Shopper Dispute Object",
+        "byline": "Represents a formal dispute filed within a shopping transaction."
+      },
+      {
+        "id": "mbs.shopper.resolution",
+        "name": "Shopper Resolution Object",
+        "byline": "Details the outcome or process for resolving a shopping dispute."
+      },
+      {
+        "id": "mbs.shopper.record",
+        "name": "Shopper Record Object",
+        "byline": "A historical record of shopping-related activities or transactions."
+      },
+      {
+        "id": "mbs.account.profile",
+        "name": "Account Profile Object",
+        "byline": "Stores user profile information."
+      },
+      {
+        "id": "mbs.account.company",
+        "name": "Account Company Object",
+        "byline": "Represents a company or organizational account profile."
+      },
+      {
+        "id": "mbs.account.record",
+        "name": "Account Record Object",
+        "byline": "Historical records related to user or company accounts."
+      },
+      {
+        "id": "mbs.account.wallet",
+        "name": "Account Wallet Object",
+        "byline": "Represents a user's cryptocurrency wallet."
+      },
+      {
+        "id": "mbs.settings.language",
+        "name": "Settings Language Object",
+        "byline": "Configures language preferences for the user interface."
+      },
+      {
+        "id": "mbs.settings.workflow",
+        "name": "Settings Workflow Object",
+        "byline": "Configures user-specific workflow automation settings."
+      },
+      {
+        "id": "mbs.settings.communication",
+        "name": "Settings Communication Object",
+        "byline": "Manages user communication preferences."
+      },
+      {
+        "id": "mbs.settings.business",
+        "name": "Settings Business Object",
+        "byline": "Configures business-related settings for the account."
+      },
+      {
+        "id": "mbs.settings.network",
+        "name": "Settings Network Object",
+        "byline": "Manages network connectivity and preferences."
+      },
+      {
+        "id": "mbs.settings.reputation",
+        "name": "Settings Reputation Object",
+        "byline": "Configures settings related to user reputation."
+      },
+      {
+        "id": "mbs.settings.settlement",
+        "name": "Settings Settlement Object",
+        "byline": "Manages preferences for transaction settlements."
+      },
+      {
+        "id": "mbs.settings.records",
+        "name": "Settings Records Object",
+        "byline": "Configures settings for data retention and record keeping."
+      },
+      {
+        "id": "mbs.access.filter",
+        "name": "Access Filter Object",
+        "byline": "Defines criteria for filtering access to resources."
+      },
+      {
+        "id": "mbs.access.target",
+        "name": "Access Target Object",
+        "byline": "Specifies the resources or entities affected by access rules."
+      },
+      {
+        "id": "mbs.access.firewall",
+        "name": "Access Firewall Object",
+        "byline": "Manages firewall-like access restrictions."
+      },
+      {
+        "id": "mbs.access.firewindow",
+        "name": "Access Firewindow Object",
+        "byline": "Manages time-based or temporary access permissions."
+      },
+      {
+        "id": "mbs.access.directive",
+        "name": "Access Directive Object",
+        "byline": "A specific rule or instruction within the access control system."
+      },
+      {
+        "id": "mbs.access.configuration",
+        "name": "Access Configuration Object",
+        "byline": "Overall configuration settings for access control."
+      },
+      {
+        "id": "mbs.concept.type.text",
+        "name": "Concept Type Text Object",
+        "byline": "Represents the concept of text as a data type."
+      },
+      {
+        "id": "mbs.concept.type.image",
+        "name": "Concept Type Image Object",
+        "byline": "Represents the concept of images as a data type."
+      },
+      {
+        "id": "mbs.concept.type.sound",
+        "name": "Concept Type Sound Object",
+        "byline": "Represents the concept of sound as a data type."
+      },
+      {
+        "id": "mbs.concept.type.motion",
+        "name": "Concept Type Motion Object",
+        "byline": "Represents the concept of motion or animation as a data type."
+      },
+      {
+        "id": "mbs.concept.type.wave",
+        "name": "Concept Type Wave Object",
+        "byline": "Represents the concept of waveforms or signals as a data type."
+      },
+      {
+        "id": "mbs.concept.type.color",
+        "name": "Concept Type Color Object",
+        "byline": "Represents the concept of color as a data type."
+      },
+      {
+        "id": "mbs.concept.abstract.cloud",
+        "name": "Concept Abstract Cloud Object",
+        "byline": "Represents abstract data structures or concepts related to clouds (e.g., tag clouds, data clouds)."
+      },
+      {
+        "id": "mbs.concept.abstract.geometry",
+        "name": "Concept Abstract Geometry Object",
+        "byline": "Represents abstract concepts related to geometric forms or spatial data."
+      },
+      {
+        "id": "mbs.concept.abstract.phenome",
+        "name": "Concept Abstract Phenome Object",
+        "byline": "Represents abstract concepts related to sensory or perceived phenomena."
+      },
+      {
+        "id": "mbs.concept.abstract.lexical",
+        "name": "Concept Abstract Lexical Object",
+        "byline": "Represents abstract concepts related to language and vocabulary."
+      },
+      {
+        "id": "mbs.concept.method",
+        "name": "Concept Method Object",
+        "byline": "Represents the concept of a method or process."
+      },
+      {
+        "id": "mbs.concept.stack",
+        "name": "Concept Stack Object",
+        "byline": "Represents the concept of a data stack or hierarchical structure."
+      },
+      {
+        "id": "mbs.media.document",
+        "name": "Media Document Object",
+        "byline": "Represents a document file within the media system."
+      },
+      {
+        "id": "mbs.media.audio",
+        "name": "Media Audio Object",
+        "byline": "Represents an audio file within the media system."
+      },
+      {
+        "id": "mbs.media.video",
+        "name": "Media Video Object",
+        "byline": "Represents a video file within the media system."
+      },
+      {
+        "id": "mbs.media.gallery",
+        "name": "Media Gallery Object",
+        "byline": "Represents a collection or album of media files."
+      },
+      {
+        "id": "mbs.media.file",
+        "name": "Media File Object",
+        "byline": "A generic representation of any file within the media system."
+      },
+      {
+        "id": "mbs.media.package",
+        "name": "Media Package Object",
+        "byline": "Represents a bundled collection of media files."
+      },
+      {
+        "id": "mbs.media.bitstream",
+        "name": "Media Bitstream Object",
+        "byline": "Represents raw media data streams."
+      },
+      {
+        "id": "mbs.media.channel",
+        "name": "Media Channel Object",
+        "byline": "Represents a channel for distributing media content."
+      },
+      {
+        "id": "mbs.media.subscription",
+        "name": "Media Subscription Object",
+        "byline": "Manages subscriptions to media channels or content."
+      },
+      {
+        "id": "mbs.media.syndication",
+        "name": "Media Syndication Object",
+        "byline": "Manages the distribution and syndication of media content."
+      },
+      {
+        "id": "mbs.media.record",
+        "name": "Media Record Object",
+        "byline": "A historical record related to media system activities."
+      },
+      {
+        "id": "mbs.media.aggregator",
+        "name": "Media Aggregator Object",
+        "byline": "Represents a tool or process for collecting media from multiple sources."
+      },
+      {
+        "id": "mbs.event.listing",
+        "name": "Event Listing Object",
+        "byline": "Represents a publicly listed event."
+      },
+      {
+        "id": "mbs.event.access",
+        "name": "Event Access Object",
+        "byline": "Controls access permissions for events."
+      },
+      {
+        "id": "mbs.event.promotion",
+        "name": "Event Promotion Object",
+        "byline": "Manages promotional campaigns for events."
+      },
+      {
+        "id": "mbs.event.endorsement",
+        "name": "Event Endorsement Object",
+        "byline": "Represents an endorsement or recommendation for an event."
+      },
+      {
+        "id": "mbs.event.invitation",
+        "name": "Event Invitation Object",
+        "byline": "Represents an invitation to an event."
+      },
+      {
+        "id": "mbs.event.ticket",
+        "name": "Event Ticket Object",
+        "byline": "Represents a ticket providing access to an event."
+      },
+      {
+        "id": "mbs.event.announcement",
+        "name": "Event Announcement Object",
+        "byline": "Represents a formal announcement regarding an event."
+      },
+      {
+        "id": "mbs.event.gallery",
+        "name": "Event Gallery Object",
+        "byline": "A collection of media or information related to an event."
+      },
+      {
+        "id": "mbs.product.listing",
+        "name": "Product Listing Object",
+        "byline": "Represents a publicly listed product."
+      },
+      {
+        "id": "mbs.product.access",
+        "name": "Product Access Object",
+        "byline": "Controls access permissions for product information."
+      },
+      {
+        "id": "mbs.product.quest",
+        "name": "Product Quest Object",
+        "byline": "Represents a user's search or request for a specific product."
+      },
+      {
+        "id": "mbs.product.offer",
+        "name": "Product Offer Object",
+        "byline": "Represents an offer made by a user for a product."
+      },
+      {
+        "id": "mbs.product.endorsement",
+        "name": "Product Endorsement Object",
+        "byline": "Represents an endorsement or review for a product."
+      },
+      {
+        "id": "mbs.product.promotion",
+        "name": "Product Promotion Object",
+        "byline": "Manages promotional campaigns for products."
+      },
+      {
+        "id": "mbs.product.syndication",
+        "name": "Product Syndication Object",
+        "byline": "Manages the distribution and syndication of product information."
+      },
+      {
+        "id": "mbs.product.subscription",
+        "name": "Product Subscription Object",
+        "byline": "Manages subscriptions related to products (e.g., updates, newsletters)."
+      },
+      {
+        "id": "mbs.product.order",
+        "name": "Product Order Object",
+        "byline": "Represents a customer order for products."
+      },
+      {
+        "id": "mbs.product.logistic",
+        "name": "Product Logistic Object",
+        "byline": "Manages logistics and shipping details for products."
+      },
+      {
+        "id": "mbs.product.dispute",
+        "name": "Product Dispute Object",
+        "byline": "Represents a formal dispute filed regarding a product transaction."
+      },
+      {
+        "id": "mbs.product.resolution",
+        "name": "Product Resolution Object",
+        "byline": "Details the outcome or process for resolving a product dispute."
+      },
+      {
+        "id": "mbs.product.record",
+        "name": "Product Record Object",
+        "byline": "A historical record of product-related activities or transactions."
+      },
+      {
+        "id": "mbs.service.listing",
+        "name": "Service Listing Object",
+        "byline": "Represents a publicly listed service."
+      },
+      {
+        "id": "mbs.service.access",
+        "name": "Service Access Object",
+        "byline": "Controls access permissions for service information."
+      },
+      {
+        "id": "mbs.service.quest",
+        "name": "Service Quest Object",
+        "byline": "Represents a user's search or request for a specific service."
+      },
+      {
+        "id": "mbs.service.offer",
+        "name": "Service Offer Object",
+        "byline": "Represents an offer made by a user for a service."
+      },
+      {
+        "id": "mbs.service.endorsement",
+        "name": "Service Endorsement Object",
+        "byline": "Represents an endorsement or review for a service."
+      },
+      {
+        "id": "mbs.service.promotion",
+        "name": "Service Promotion Object",
+        "byline": "Manages promotional campaigns for services."
+      },
+      {
+        "id": "mbs.service.syndication",
+        "name": "Service Syndication Object",
+        "byline": "Manages the distribution and syndication of service information."
+      },
+      {
+        "id": "mbs.service.subscription",
+        "name": "Service Subscription Object",
+        "byline": "Manages subscriptions related to services (e.g., plans, updates)."
+      },
+      {
+        "id": "mbs.service.contract",
+        "name": "Service Contract Object",
+        "byline": "Represents a formal contract for service provision."
+      },
+      {
+        "id": "mbs.service.dispute",
+        "name": "Service Dispute Object",
+        "byline": "Represents a formal dispute filed regarding a service contract."
+      },
+      {
+        "id": "mbs.service.resolution",
+        "name": "Service Resolution Object",
+        "byline": "Details the outcome or process for resolving a service dispute."
+      },
+      {
+        "id": "mbs.service.record",
+        "name": "Service Record Object",
+        "byline": "A historical record of service-related activities or contracts."
+      },
+      {
+        "id": "mbs.rental.listing",
+        "name": "Rental Listing Object",
+        "byline": "Represents a publicly listed item for rental."
+      },
+      {
+        "id": "mbs.rental.access",
+        "name": "Rental Access Object",
+        "byline": "Controls access permissions for rental listings."
+      },
+      {
+        "id": "mbs.rental.quest",
+        "name": "Rental Quest Object",
+        "byline": "Represents a user's search or request for a rental item."
+      },
+      {
+        "id": "mbs.rental.offer",
+        "name": "Rental Offer Object",
+        "byline": "Represents an offer made by a user for a rental item."
+      },
+      {
+        "id": "mbs.rental.endorsement",
+        "name": "Rental Endorsement Object",
+        "byline": "Represents an endorsement or review for a rental item or service."
+      },
+      {
+        "id": "mbs.rental.promotion",
+        "name": "Rental Promotion Object",
+        "byline": "Manages promotional campaigns for rental items."
+      },
+      {
+        "id": "mbs.rental.syndication",
+        "name": "Rental Syndication Object",
+        "byline": "Manages the distribution and syndication of rental listings."
+      },
+      {
+        "id": "mbs.rental.subscription",
+        "name": "Rental Subscription Object",
+        "byline": "Manages subscriptions related to rental services."
+      },
+      {
+        "id": "mbs.rental.contract",
+        "name": "Rental Contract Object",
+        "byline": "Represents a formal contract for renting an item."
+      },
+      {
+        "id": "mbs.rental.dispute",
+        "name": "Rental Dispute Object",
+        "byline": "Represents a formal dispute filed regarding a rental contract."
+      },
+      {
+        "id": "mbs.rental.resolution",
+        "name": "Rental Resolution Object",
+        "byline": "Details the outcome or process for resolving a rental dispute."
+      },
+      {
+        "id": "mbs.rental.record",
+        "name": "Rental Record Object",
+        "byline": "A historical record of rental-related activities or contracts."
+      },
+      {
+        "id": "mbs.work.listing",
+        "name": "Work Listing Object",
+        "byline": "Represents a publicly listed work opportunity or service offer."
+      },
+      {
+        "id": "mbs.work.access",
+        "name": "Work Access Object",
+        "byline": "Controls access permissions for work listings."
+      },
+      {
+        "id": "mbs.work.quest",
+        "name": "Work Quest Object",
+        "byline": "Represents a user's search or request for a work opportunity or service."
+      },
+      {
+        "id": "mbs.work.offer",
+        "name": "Work Offer Object",
+        "byline": "Represents an offer made for a work opportunity or service."
+      },
+      {
+        "id": "mbs.work.endorsement",
+        "name": "Work Endorsement Object",
+        "byline": "Represents an endorsement or review related to work performance."
+      },
+      {
+        "id": "mbs.work.promotion",
+        "name": "Work Promotion Object",
+        "byline": "Manages promotional campaigns for work services."
+      },
+      {
+        "id": "mbs.work.syndication",
+        "name": "Work Syndication Object",
+        "byline": "Manages the distribution and syndication of work listings."
+      },
+      {
+        "id": "mbs.work.subscription",
+        "name": "Work Subscription Object",
+        "byline": "Manages subscriptions related to work services or opportunities."
+      },
+      {
+        "id": "mbs.work.contract",
+        "name": "Work Contract Object",
+        "byline": "Represents a formal contract for work or services."
+      },
+      {
+        "id": "mbs.work.dispute",
+        "name": "Work Dispute Object",
+        "byline": "Represents a formal dispute filed regarding a work contract."
+      },
+      {
+        "id": "mbs.work.resolution",
+        "name": "Work Resolution Object",
+        "byline": "Details the outcome or process for resolving a work dispute."
+      },
+      {
+        "id": "mbs.work.record",
+        "name": "Work Record Object",
+        "byline": "A historical record of work-related activities or contracts."
+      },
+      {
+        "id": "mbs.trade.listing",
+        "name": "Trade Listing Object",
+        "byline": "Represents a publicly listed item or service for trade."
+      },
+      {
+        "id": "mbs.trade.access",
+        "name": "Trade Access Object",
+        "byline": "Controls access permissions for trade listings."
+      },
+      {
+        "id": "mbs.trade.quest",
+        "name": "Trade Quest Object",
+        "byline": "Represents a user's search or request for a trade."
+      },
+      {
+        "id": "mbs.trade.offer",
+        "name": "Trade Offer Object",
+        "byline": "Represents an offer made for a trade."
+      },
+      {
+        "id": "mbs.trade.endorsement",
+        "name": "Trade Endorsement Object",
+        "byline": "Represents an endorsement or review related to trade partners."
+      },
+      {
+        "id": "mbs.trade.promotion",
+        "name": "Trade Promotion Object",
+        "byline": "Manages promotional campaigns for trade opportunities."
+      },
+      {
+        "id": "mbs.trade.syndication",
+        "name": "Trade Syndication Object",
+        "byline": "Manages the distribution and syndication of trade listings."
+      },
+      {
+        "id": "mbs.trade.contract",
+        "name": "Trade Contract Object",
+        "byline": "Represents a formal contract or agreement for trade."
+      },
+      {
+        "id": "mbs.trade.arbitrage",
+        "name": "Trade Arbitrage Object",
+        "byline": "Represents opportunities or actions related to trade arbitrage."
+      },
+      {
+        "id": "mbs.trade.dispute",
+        "name": "Trade Dispute Object",
+        "byline": "Represents a formal dispute filed regarding a trade agreement."
+      },
+      {
+        "id": "mbs.trade.resolution",
+        "name": "Trade Resolution Object",
+        "byline": "Details the outcome or process for resolving a trade dispute."
+      },
+      {
+        "id": "mbs.trade.record",
+        "name": "Trade Record Object",
+        "byline": "A historical record of trade-related activities or agreements."
+      },
+      {
+        "id": "open.account.identifier.email",
+        "name": "Open Account Identifier Email",
+        "byline": "An external email address used as an account identifier."
+      },
+      {
+        "id": "open.account.identifier.social",
+        "name": "Open Account Identifier Social",
+        "byline": "An external social media handle used as an account identifier."
+      },
+      {
+        "id": "open.account.identifier.web",
+        "name": "Open Account Identifier Web",
+        "byline": "An external web URL or handle used as an account identifier."
+      }
+    ]
   }
 }

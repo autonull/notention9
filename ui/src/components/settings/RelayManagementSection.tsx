@@ -1,20 +1,20 @@
-import React, { useState } from 'react';
-import { NetworkIcon, PlusIcon, TrashIcon } from '../common/icons';
-import { Button } from '../common/Button';
-import { IconButton } from '../common/IconButton';
-import { Input } from '../common/Input';
-import { ConfirmationModal } from '../common/ConfirmationModal';
-import { useToast } from '../../hooks/useToast';
-import { DEFAULT_RELAYS } from '@notention/core';
-import type { AppSettings } from '@notention/core';
+import React, {useState} from 'react';
+import {NetworkIcon, PlusIcon, TrashIcon} from '../common/icons';
+import {Button} from '../common/Button';
+import {IconButton} from '../common/IconButton';
+import {Input} from '../common/Input';
+import {ConfirmationModal} from '../common/ConfirmationModal';
+import {useToast} from '../../hooks/useToast';
+import type {AppSettings} from '@notention/core';
+import {DEFAULT_RELAYS} from '@notention/core';
 
 interface RelayManagementSectionProps {
     settings: AppSettings;
     setSettings: (updater: (settings: AppSettings) => AppSettings) => void;
 }
 
-export function RelayManagementSection({ settings, setSettings }: RelayManagementSectionProps) {
-    const { addToast } = useToast();
+export function RelayManagementSection({settings, setSettings}: RelayManagementSectionProps) {
+    const {addToast} = useToast();
     const [newRelay, setNewRelay] = useState('');
     const [relayToRemove, setRelayToRemove] = useState<string | null>(null);
 
@@ -60,7 +60,7 @@ export function RelayManagementSection({ settings, setSettings }: RelayManagemen
     return (
         <div className="border-t border-gray-700 pt-6">
             <h2 className="text-xl font-semibold text-gray-100 mb-4 flex items-center gap-3">
-                <NetworkIcon className="h-6 w-6 text-purple-400" />
+                <NetworkIcon className="h-6 w-6 text-purple-400"/>
                 Network Relays
             </h2>
             <div className="space-y-4 max-w-lg">
@@ -70,7 +70,8 @@ export function RelayManagementSection({ settings, setSettings }: RelayManagemen
 
                 <div className="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
                     {currentRelays.map((relay, idx) => (
-                        <div key={idx} className="flex justify-between items-center px-4 py-3 border-b border-gray-700 last:border-0 hover:bg-gray-750">
+                        <div key={idx}
+                             className="flex justify-between items-center px-4 py-3 border-b border-gray-700 last:border-0 hover:bg-gray-750">
                             <span className="text-gray-300 text-sm font-mono truncate">{relay}</span>
                             <IconButton
                                 onClick={() => setRelayToRemove(relay)}
@@ -103,7 +104,7 @@ export function RelayManagementSection({ settings, setSettings }: RelayManagemen
                         className="bg-purple-600 hover:bg-purple-500 text-white"
                         icon={PlusIcon}
                     >
-                         Add
+                        Add
                     </Button>
                 </div>
             </div>
@@ -117,6 +118,6 @@ export function RelayManagementSection({ settings, setSettings }: RelayManagemen
                 confirmLabel="Remove"
                 isDestructive
             />
-       </div>
+        </div>
     );
 };

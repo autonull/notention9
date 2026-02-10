@@ -10,7 +10,8 @@
   "scripts": {
     "start": "tsx src/index.ts",
     "build": "tsc",
-    "dev": "tsx watch src/index.ts"
+    "dev": "tsx watch src/index.ts",
+    "test": "echo \"No tests configured for CLI workspace\" && exit 0"
   },
   "dependencies": {
     "@ai-sdk/openai": "^0.0.48",

@@ -1,8 +1,8 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
-import { NetworkFeedHeader } from '../../components/network/NetworkFeedHeader';
-import { OntologyNode } from '@notention/core';
+import {fireEvent, render, screen} from '@testing-library/react';
+import {describe, expect, it, vi} from 'vitest';
+import {NetworkFeedHeader} from '../../src/components/network/NetworkFeedHeader';
+import {OntologyNode} from '@notention/core';
 
 describe('NetworkFeedHeader', () => {
     const mockSetFilter = vi.fn();
@@ -10,8 +10,8 @@ describe('NetworkFeedHeader', () => {
     const mockOnClearMatch = vi.fn();
 
     const mockOntology: OntologyNode[] = [
-        { id: 'work', label: 'Work', children: [] },
-        { id: 'event', label: 'Event', children: [] }
+        {id: 'work', label: 'Work', children: []},
+        {id: 'event', label: 'Event', children: []}
     ];
 
     const defaultProps = {
@@ -46,7 +46,7 @@ describe('NetworkFeedHeader', () => {
         render(<NetworkFeedHeader {...defaultProps} />);
 
         const input = screen.getByPlaceholderText('Search notes...');
-        fireEvent.change(input, { target: { value: 'test' } });
+        fireEvent.change(input, {target: {value: 'test'}});
         expect(mockSetFilter).toHaveBeenCalledWith('test');
     });
 });

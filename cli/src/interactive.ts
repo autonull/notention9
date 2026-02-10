@@ -149,7 +149,11 @@ export async function startInteractiveSession(options: {
     }
 
     if (command) {
-      await session.handleInteraction(command);
+      if (command.startsWith('/')) {
+        await handleSlashCommand(command, cli, coreTools, session);
+      } else {
+        await session.handleInteraction(command);
+      }
       await cli.close();
       await simCli.close();
       process.exit(0);

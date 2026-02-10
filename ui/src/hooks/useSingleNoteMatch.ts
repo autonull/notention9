@@ -1,10 +1,10 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
-import { useSettings } from './useSettingsContext';
-import { DEFAULT_RELAYS, pool, convertEventToNote, matchingService } from '@notention/core';
-import type { Note, NostrEvent } from '@notention/core';
+import {useEffect, useMemo, useRef, useState} from 'react';
+import {useSettings} from './useSettingsContext';
+import type {NostrEvent, Note} from '@notention/core';
+import {convertEventToNote, DEFAULT_RELAYS, matchingService, pool} from '@notention/core';
 
 export function useSingleNoteMatch(note: Note) {
-    const { settings } = useSettings();
+    const {settings} = useSettings();
     const [events, setEvents] = useState<NostrEvent[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -23,10 +23,10 @@ export function useSingleNoteMatch(note: Note) {
 
         const sub = pool.subscribeMany(
             relays,
-            { kinds: [1], limit: 20 },
+            {kinds: [1], limit: 20},
             {
                 onevent: (event) => {
-                    if(seen.has(event.id)) return;
+                    if (seen.has(event.id)) return;
                     seen.add(event.id);
 
                     setEvents(prev => [...prev, event]);
@@ -57,11 +57,16 @@ export function useSingleNoteMatch(note: Note) {
             if (offer.nostrEventId === note.nostrEventId) return null;
 
             const result = matchingService.matchNotes(note, offer);
-            return { event, score: result.score, satisfied: result.satisfied, failed: result.failed };
+            return {event, score: result.score, satisfied: result.satisfied, failed: result.failed};
         })
-        .filter((m): m is { event: NostrEvent, score: number, satisfied: any[], failed: any[] } => m !== null && m.score > 0.4)
-        .sort((a, b) => b.score - a.score);
+            .filter((m): m is {
+                event: NostrEvent,
+                score: number,
+                satisfied: any[],
+                failed: any[]
+            } => m !== null && m.score > 0.4)
+            .sort((a, b) => b.score - a.score);
     }, [events, note]);
 
-    return { matches, isLoading };
+    return {matches, isLoading};
 }

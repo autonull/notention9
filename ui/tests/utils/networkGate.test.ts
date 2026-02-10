@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from 'vitest';
-import { NetworkGate, PrivacyError, createNote } from '@notention/core';
+import {describe, expect, it, vi} from 'vitest';
+import {createNote, NetworkGate, PrivacyError} from '@notention/core';
 
 describe('NetworkGate', () => {
     const networkGate = new NetworkGate();
@@ -8,7 +8,7 @@ describe('NetworkGate', () => {
         it('allows transmission of public notes without prompt', async () => {
             const note = createNote({
                 title: 'Public Note',
-                public: true
+                privacy: 'public'
             });
 
             const canTransmit = await networkGate.canTransmit(note, 'test destination');
@@ -18,7 +18,7 @@ describe('NetworkGate', () => {
         it('throws PrivacyError for private notes without promptUser callback', async () => {
             const note = createNote({
                 title: 'Private Note',
-                public: false
+                privacy: 'private'
             });
 
             await expect(
@@ -29,7 +29,7 @@ describe('NetworkGate', () => {
         it('returns false when user declines to make note public', async () => {
             const note = createNote({
                 title: 'Private Note',
-                public: false
+                privacy: 'private'
             });
 
             const promptUser = vi.fn().mockResolvedValue(false);
@@ -39,13 +39,13 @@ describe('NetworkGate', () => {
             expect(promptUser).toHaveBeenCalledWith(
                 expect.stringContaining('Private Note')
             );
-            expect(note.public).toBe(false); // Should not mutate if user declined
+            expect(note.privacy).toBe('private'); // Should not mutate if user declined
         });
 
         it('returns true and makes note public when user confirms', async () => {
             const note = createNote({
                 title: 'Private Note',
-                public: false
+                privacy: 'private'
             });
 
             const promptUser = vi.fn().mockResolvedValue(true);
@@ -58,17 +58,17 @@ describe('NetworkGate', () => {
             expect(promptUser).toHaveBeenCalledWith(
                 expect.stringContaining('Nostr network')
             );
-            expect(note.public).toBe(true); // Should mutate to public
+            expect(note.privacy).toBe('public'); // Should mutate to public
         });
     });
 
     describe('filterTransmittable', () => {
         it('filters out private notes without prompt', async () => {
             const notes = [
-                createNote({ title: 'Public 1', public: true }),
-                createNote({ title: 'Private 1', public: false }),
-                createNote({ title: 'Public 2', public: true }),
-                createNote({ title: 'Private 2', public: false }),
+                createNote({title: 'Public 1', privacy: 'public'}),
+                createNote({title: 'Private 1', privacy: 'private'}),
+                createNote({title: 'Public 2', privacy: 'public'}),
+                createNote({title: 'Private 2', privacy: 'private'}),
             ];
 
             const transmittable = await networkGate.filterTransmittable(notes, 'test');
@@ -80,9 +80,9 @@ describe('NetworkGate', () => {
 
         it('prompts user for each private note', async () => {
             const notes = [
-                createNote({ title: 'Public 1', public: true }),
-                createNote({ title: 'Private 1', public: false }),
-                createNote({ title: 'Private 2', public: false }),
+                createNote({title: 'Public 1', privacy: 'public'}),
+                createNote({title: 'Private 1', privacy: 'private'}),
+                createNote({title: 'Private 2', privacy: 'private'}),
             ];
 
             const promptUser = vi.fn()
@@ -93,8 +93,8 @@ describe('NetworkGate', () => {
 
             expect(transmittable).toHaveLength(2); // Public 1 + Private 1 (confirmed)
             expect(promptUser).toHaveBeenCalledTimes(2);
-            expect(notes[1].public).toBe(true); // Private 1 should be made public
-            expect(notes[2].public).toBe(false); // Private 2 should stay private
+            expect(notes[1].privacy).toBe('public'); // Private 1 should be made public
+            expect(notes[2].privacy).toBe('private'); // Private 2 should stay private
         });
     });
 });

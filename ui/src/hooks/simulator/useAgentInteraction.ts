@@ -1,9 +1,8 @@
-import { useState, useCallback, MutableRefObject } from 'react';
-import type { NostrEvent } from '@notention/core';
-import { Logger } from '@notention/core';
-import type { AIProvider } from '@notention/core';
-import { MockLLMProvider } from '../../services/ai/MockLLMProvider';
-import type { SimulationAgent } from './types';
+import {MutableRefObject, useCallback, useEffect, useRef, useState} from 'react';
+import type {AIProvider, NostrEvent} from '@notention/core';
+import {Logger} from '@notention/core';
+import {MockLLMProvider} from '../../services/ai/MockLLMProvider';
+import type {SimulationAgent} from './types';
 
 interface UseAgentInteractionProps {
     agentsRef: MutableRefObject<SimulationAgent[]>;
@@ -12,14 +11,12 @@ interface UseAgentInteractionProps {
     addLog: (msg: string, type: 'info' | 'match' | 'ontology' | 'reuse') => void;
 }
 
-import { useRef, useEffect } from 'react';
-
 export function useAgentInteraction({
-    agentsRef,
-    aiRef,
-    updateAgent,
-    addLog
-}: UseAgentInteractionProps) {
+                                        agentsRef,
+                                        aiRef,
+                                        updateAgent,
+                                        addLog
+                                    }: UseAgentInteractionProps) {
     const logger = Logger.getInstance();
     const [agentMessages, setAgentMessages] = useState<Record<string, (NostrEvent & { content: string })[]>>({});
     const messagesRef = useRef(agentMessages);
@@ -30,7 +27,7 @@ export function useAgentInteraction({
 
     const clearAgentMessages = useCallback((agentId: string) => {
         setAgentMessages(prev => {
-            const next = { ...prev };
+            const next = {...prev};
             delete next[agentId];
             return next;
         });
@@ -50,7 +47,7 @@ export function useAgentInteraction({
 
         setAgentMessages(prev => {
             const existing = prev[agentId] || [];
-            return { ...prev, [agentId]: [...existing, userMsg] };
+            return {...prev, [agentId]: [...existing, userMsg]};
         });
 
         // 2. Simulate response (async)
@@ -60,7 +57,7 @@ export function useAgentInteraction({
 
             // Check if agent is enabled
             if (agent.enabled === false) {
-                 const agentMsg: NostrEvent & { content: string } = {
+                const agentMsg: NostrEvent & { content: string } = {
                     id: crypto.randomUUID(),
                     pubkey: agentId,
                     created_at: Math.floor(Date.now() / 1000),
@@ -71,7 +68,7 @@ export function useAgentInteraction({
                 };
                 setAgentMessages(prev => {
                     const existing = prev[agentId] || [];
-                    return { ...prev, [agentId]: [...existing, agentMsg] };
+                    return {...prev, [agentId]: [...existing, agentMsg]};
                 });
                 return;
             }
@@ -95,7 +92,7 @@ export function useAgentInteraction({
                             `You are an ontology expert assisting ${agent.name} (${agent.persona}). Suggest 5 semantic tags (e.g. #topic or [key:value]) relevant to the following conversation context:\n\n${history}`
                         );
                     } else if (content.startsWith("Summarize")) {
-                         responseText = await aiRef.current.generateCompletion(
+                        responseText = await aiRef.current.generateCompletion(
                             `Summarize the key points of this conversation between User and ${agent.name} (${agent.persona}) so far in 3 bullet points:\n\n${history}`
                         );
                     } else if (content.startsWith("Remember this:")) {
@@ -103,7 +100,7 @@ export function useAgentInteraction({
                         if (fact) {
                             const currentMemory = agent.memory || [];
                             const newMemory = [...currentMemory, fact];
-                            updateAgent(agentsRef.current.findIndex(a => a.id === agentId), { memory: newMemory });
+                            updateAgent(agentsRef.current.findIndex(a => a.id === agentId), {memory: newMemory});
                             addLog(`🧠 Agent ${agent.name} memorized: "${fact}"`, 'info');
                             responseText = `I've stored that in my memory.`;
                         } else {
@@ -125,7 +122,7 @@ export function useAgentInteraction({
 
                         if (intent.includes("GOAL:")) {
                             const newGoal = intent.split("GOAL:")[1].trim();
-                            updateAgent(agentsRef.current.findIndex(a => a.id === agentId), { goal: newGoal });
+                            updateAgent(agentsRef.current.findIndex(a => a.id === agentId), {goal: newGoal});
                             addLog(`🎯 Agent ${agent.name} new goal: ${newGoal}`, 'match');
 
                             responseText = await aiRef.current.generateCompletion(
@@ -147,7 +144,7 @@ export function useAgentInteraction({
                             const parts = content.split(":");
                             const newGoal = parts.length > 1 ? parts[1].trim() : content;
 
-                            updateAgent(agentsRef.current.findIndex(a => a.id === agentId), { goal: newGoal });
+                            updateAgent(agentsRef.current.findIndex(a => a.id === agentId), {goal: newGoal});
                             addLog(`🎯 Agent ${agent.name} new goal (Fallback): ${newGoal}`, 'match');
                             responseText = "Understood. I've updated my goal.";
                         } else {
@@ -173,13 +170,13 @@ export function useAgentInteraction({
 
             setAgentMessages(prev => {
                 const existing = prev[agentId] || [];
-                return { ...prev, [agentId]: [...existing, agentMsg] };
+                return {...prev, [agentId]: [...existing, agentMsg]};
             });
 
             addLog(`Agent ${agent.name} replied to user.`, 'match');
 
         }, 1000); // 1 second delay
-      }, [addLog, agentsRef, aiRef, updateAgent]);
+    }, [addLog, agentsRef, aiRef, updateAgent]);
 
     return {
         agentMessages,

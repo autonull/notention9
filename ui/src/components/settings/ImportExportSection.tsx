@@ -1,11 +1,11 @@
-import React, { useRef, useState } from 'react';
-import { DocumentDuplicateIcon, ArrowDownIcon, ArrowUpIcon } from '../common/icons';
-import { Button } from '../common/Button';
-import { ConfirmationModal } from '../common/ConfirmationModal';
-import { useToast } from '../../hooks/useToast';
+import React, {useRef, useState} from 'react';
+import {ArrowDownIcon, ArrowUpIcon, DocumentDuplicateIcon} from '../common/icons';
+import {Button} from '../common/Button';
+import {ConfirmationModal} from '../common/ConfirmationModal';
+import {useToast} from '../../hooks/useToast';
 import localforage from 'localforage';
-import type { Note, AppSettings } from '@notention/core';
-import { Logger, generateNotesCSV } from '@notention/core';
+import type {AppSettings, Note} from '@notention/core';
+import {generateNotesCSV, Logger} from '@notention/core';
 
 interface ImportExportSectionProps {
     notes: Note[];
@@ -18,8 +18,8 @@ interface PendingImport {
     message: string;
 }
 
-export function ImportExportSection({ notes, settings }: ImportExportSectionProps) {
-    const { addToast } = useToast();
+export function ImportExportSection({notes, settings}: ImportExportSectionProps) {
+    const {addToast} = useToast();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [pendingImport, setPendingImport] = useState<PendingImport | null>(null);
 
@@ -31,11 +31,11 @@ export function ImportExportSection({ notes, settings }: ImportExportSectionProp
             settings
         };
 
-        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], {type: 'application/json'});
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `notention-backup-${new Date().toISOString().slice(0,10)}.json`;
+        a.download = `notention-backup-${new Date().toISOString().slice(0, 10)}.json`;
         a.click();
         URL.revokeObjectURL(url);
         addToast('Data exported successfully', 'success');
@@ -43,11 +43,11 @@ export function ImportExportSection({ notes, settings }: ImportExportSectionProp
 
     const handleExportCSV = () => {
         const csvContent = generateNotesCSV(notes);
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const blob = new Blob([csvContent], {type: 'text/csv;charset=utf-8;'});
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `notention-notes-${new Date().toISOString().slice(0,10)}.csv`;
+        a.download = `notention-notes-${new Date().toISOString().slice(0, 10)}.csv`;
         a.click();
         URL.revokeObjectURL(url);
         addToast('CSV exported successfully', 'success');
@@ -111,25 +111,25 @@ export function ImportExportSection({ notes, settings }: ImportExportSectionProp
 
         try {
             if (pendingImport.type === 'full') {
-                const { data } = pendingImport;
+                const {data} = pendingImport;
                 await localforage.setItem('notention-notes', data.notes);
                 await localforage.setItem('notention-settings', data.settings);
                 addToast("Import successful! Reloading...", "success");
                 setTimeout(() => window.location.reload(), 1500);
             } else if (pendingImport.type === 'note') {
-                 const { data } = pendingImport;
-                 const currentNotes = await localforage.getItem<Note[]>('notention-notes') || [];
-                 const existingIndex = currentNotes.findIndex((n) => n.id === data.id);
+                const {data} = pendingImport;
+                const currentNotes = await localforage.getItem<Note[]>('notention-notes') || [];
+                const existingIndex = currentNotes.findIndex((n) => n.id === data.id);
 
-                 if (existingIndex >= 0) {
-                     currentNotes[existingIndex] = data;
-                 } else {
-                     currentNotes.push(data);
-                 }
+                if (existingIndex >= 0) {
+                    currentNotes[existingIndex] = data;
+                } else {
+                    currentNotes.push(data);
+                }
 
-                 await localforage.setItem('notention-notes', currentNotes);
-                 addToast(`Imported note: ${data.title}`, "success");
-                 setTimeout(() => window.location.reload(), 1000);
+                await localforage.setItem('notention-notes', currentNotes);
+                addToast(`Imported note: ${data.title}`, "success");
+                setTimeout(() => window.location.reload(), 1000);
             }
         } catch (err) {
             Logger.getInstance().error("Import execution failed", err instanceof Error ? err : new Error(String(err)));
@@ -142,39 +142,39 @@ export function ImportExportSection({ notes, settings }: ImportExportSectionProp
     return (
         <div>
             <h2 className="text-xl font-semibold text-gray-100 mb-4 flex items-center gap-3">
-              <DocumentDuplicateIcon className="h-6 w-6 text-blue-400" />
-              Backup & Restore
+                <DocumentDuplicateIcon className="h-6 w-6 text-blue-400"/>
+                Backup & Restore
             </h2>
             <div className="flex gap-4">
                 <Button
-                  onClick={handleExport}
-                  variant="primary"
-                  icon={ArrowDownIcon}
+                    onClick={handleExport}
+                    variant="primary"
+                    icon={ArrowDownIcon}
                 >
                     Export JSON
                 </Button>
 
                 <Button
-                  onClick={handleExportCSV}
-                  variant="secondary"
-                  icon={ArrowDownIcon}
+                    onClick={handleExportCSV}
+                    variant="secondary"
+                    icon={ArrowDownIcon}
                 >
                     Export CSV
                 </Button>
 
                 <Button
-                  onClick={() => fileInputRef.current?.click()}
-                  variant="secondary"
-                  icon={ArrowUpIcon}
+                    onClick={() => fileInputRef.current?.click()}
+                    variant="secondary"
+                    icon={ArrowUpIcon}
                 >
                     Import JSON
                 </Button>
                 <input
-                  type="file"
-                  ref={fileInputRef}
-                  className="hidden"
-                  accept=".json"
-                  onChange={handleImportFile}
+                    type="file"
+                    ref={fileInputRef}
+                    className="hidden"
+                    accept=".json"
+                    onChange={handleImportFile}
                 />
             </div>
             <p className="text-sm text-gray-400 mt-2">

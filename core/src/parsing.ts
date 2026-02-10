@@ -23,10 +23,10 @@ const COMMON_WORDS = new Set([
 ]);
 
 // Pre-compiled Regexes
-const WORD_OP_REGEX = /^([^\s]+)\s+(is|contains|before|after|less than|greater than|between|range|not)\s+(.+)$/;
+const WORD_OP_REGEX = /^([^\s]+)\s+(is|contains|before|after|less than|greater than|between|range|not)\s+(.+)$/i;
 const GENERAL_SYM_REGEX = /^([^\s]+)\s*([<>=!]+)\s*(.+)$/;
-const SIMPLE_COLON_REGEX = /^([^\s]+):(.+)$/;
-const SIMPLE_SPACE_REGEX = /^([^\s]+)\s+(.+)$/;
+const COLON_REGEX = /^([^\s]+):(.+)$/;
+const SPACE_REGEX = /^([^\s]+)\s+(.+)$/;
 const VALID_KEY_REGEX = /^[a-zA-Z][a-zA-Z0-9_.-]*$/;
 const BRACKET_REGEX = /\[([^\]]+)\]/g;
 const MACRO_REGEX = /@([a-zA-Z0-9_]+)/g;
@@ -47,136 +47,110 @@ const SYMBOLIC_REGEXES = Object.keys(SYMBOL_TO_OP)
   });
 
 // Strategy Pattern for Property Parsing
-interface PropertyParser {
-  name: string;
-  parse: (content: string) => Property | null;
-}
+type PropertyParser = (content: string) => Property | null;
+
+const parseColonFormat: PropertyParser = (content) => {
+    const colonParts = content.split(':');
+    if (colonParts.length >= 3) {
+        const key = resolveAlias(colonParts[0].trim());
+        const operator = colonParts[1].trim();
+        const value = colonParts.slice(2).join(':').trim();
+        return {
+            key,
+            operator,
+            values: value.split(',').map(v => v.trim())
+        };
+    } else if (colonParts.length === 2) {
+        return {
+            key: resolveAlias(colonParts[0].trim()),
+            operator: 'is',
+            values: colonParts[1].trim().split(',').map(v => v.trim())
+        };
+    }
+    return null;
+};
+
+const parseSymbolicFormat: PropertyParser = (content) => {
+    for (const { regex, op } of SYMBOLIC_REGEXES) {
+        const symbolicMatch = content.match(regex);
+        if (symbolicMatch) {
+            return {
+                key: resolveAlias(symbolicMatch[1].trim()),
+                operator: op,
+                values: symbolicMatch[3].trim().split(',').map(v => v.trim())
+            };
+        }
+    }
+
+    const generalMatch = content.match(GENERAL_SYM_REGEX);
+    if (generalMatch) {
+        const [, rawKey, operator, value] = generalMatch;
+        const key = resolveAlias(rawKey.trim());
+
+        let canonicalOperator = operator.trim();
+        if (operator === '!=') canonicalOperator = 'is not';
+        else if (operator === '<=') canonicalOperator = 'less than or equal';
+        else if (operator === '>=') canonicalOperator = 'greater than or equal';
+
+        return {
+            key,
+            operator: canonicalOperator,
+            values: value.trim().split(',').map(v => v.trim())
+        };
+    }
+    return null;
+};
+
+const parseWordFormat: PropertyParser = (content) => {
+    const wordOperatorMatch = content.match(WORD_OP_REGEX);
+    if (wordOperatorMatch) {
+        const [, rawKey, operator, value] = wordOperatorMatch;
+        const key = resolveAlias(rawKey.trim());
+
+        if (!VALID_KEY_REGEX.test(key) || COMMON_WORDS.has(key.toLowerCase())) {
+            return null;
+        }
+
+        return {
+            key,
+            operator: operator.trim(),
+            values: value.trim().split(',').map(v => v.trim())
+        };
+    }
+
+    const spaceMatch = content.match(SPACE_REGEX);
+    if (spaceMatch) {
+         const [, rawKey, value] = spaceMatch;
+         const key = resolveAlias(rawKey.trim());
+
+         if (!VALID_KEY_REGEX.test(key) || COMMON_WORDS.has(key.toLowerCase())) {
+             return null;
+         }
+
+         return {
+             key,
+             operator: 'is',
+             values: value.trim().split(',').map(v => v.trim())
+         };
+    }
+
+    return null;
+};
 
 const PARSERS: PropertyParser[] = [
-  {
-    name: 'Standard Colon Format',
-    parse: (content: string) => {
-      const colons = content.split(':');
-      if (colons.length < 3) return null;
-
-      const key = resolveAlias(colons[0].trim());
-      const op = colons[1].trim();
-      const val = colons.slice(2).join(':').trim();
-
-      return {
-        key,
-        operator: op,
-        values: val.split(',').map(v => v.trim())
-      };
-    }
-  },
-  {
-    name: 'Symbolic Operators',
-    parse: (content: string) => {
-      for (const { regex, op } of SYMBOLIC_REGEXES) {
-        const symMatch = content.match(regex);
-        if (symMatch) {
-          return {
-            key: resolveAlias(symMatch[1].trim()),
-            operator: op,
-            values: symMatch[3].trim().split(',').map(v => v.trim())
-          };
-        }
-      }
-      return null;
-    }
-  },
-  {
-    name: 'Word Operators',
-    parse: (content: string) => {
-      const match = content.match(WORD_OP_REGEX);
-      if (!match) return null;
-
-      const [, rawKey, op, val] = match;
-      const key = resolveAlias(rawKey.trim());
-
-      if (!VALID_KEY_REGEX.test(key) || COMMON_WORDS.has(key.toLowerCase())) {
-        return null;
-      }
-
-      return {
-        key,
-        operator: op.trim(),
-        values: val.trim().split(',').map(v => v.trim())
-      };
-    }
-  },
-  {
-    name: 'General Symbols',
-    parse: (content: string) => {
-      const match = content.match(GENERAL_SYM_REGEX);
-      if (!match) return null;
-
-      const [, rawKey, op, val] = match;
-      const key = resolveAlias(rawKey.trim());
-
-      let canonicalOp = op.trim();
-      if (op === '!=') canonicalOp = 'is not';
-      else if (op === '<=') canonicalOp = 'less than or equal';
-      else if (op === '>=') canonicalOp = 'greater than or equal';
-
-      return {
-        key,
-        operator: canonicalOp,
-        values: val.trim().split(',').map(v => v.trim())
-      };
-    }
-  },
-  {
-    name: 'Simple Colon (Backcompat)',
-    parse: (content: string) => {
-      const match = content.match(SIMPLE_COLON_REGEX);
-      if (!match) return null;
-
-      return {
-        key: resolveAlias(match[1].trim()),
-        operator: 'is',
-        values: match[2].trim().split(',').map(v => v.trim())
-      };
-    }
-  },
-  {
-    name: 'Simple Space',
-    parse: (content: string) => {
-      const match = content.match(SIMPLE_SPACE_REGEX);
-      if (!match) return null;
-
-      const [, rawKey, val] = match;
-      const key = resolveAlias(rawKey.trim());
-
-      if (!VALID_KEY_REGEX.test(key) || COMMON_WORDS.has(key.toLowerCase())) {
-        return null;
-      }
-
-      return {
-        key,
-        operator: 'is',
-        values: val.trim().split(',').map(v => v.trim())
-      };
-    }
-  }
+    parseColonFormat,
+    parseSymbolicFormat,
+    parseWordFormat
 ];
 
-/**
- * Helper to parse the content inside brackets [content]
- */
 const parsePropertyBlock = (content: string): Property | null => {
   for (const parser of PARSERS) {
-    const result = parser.parse(content);
+    const result = parser(content);
     if (result) return result;
   }
   return null;
 };
 
-/**
- * Parses a raw text string and extracts semantic properties from bracket syntax.
- * Supports standard format [key:op:value] and symbolic format [key < value].
- */
 export const extractProperties = (text: string): ExtractedProperty[] => {
   const extracted: ExtractedProperty[] = [];
 
@@ -197,10 +171,10 @@ export const extractProperties = (text: string): ExtractedProperty[] => {
 
 const extractMacros = (text: string): Property[] => {
     const properties: Property[] = [];
-    for (const match of text.matchAll(MACRO_REGEX)) {
-        const macroName = match[1];
-        const expanded = expandMacro(macroName);
-        properties.push(...expanded);
+    for (const macroMatch of text.matchAll(MACRO_REGEX)) {
+        const macroName = macroMatch[1];
+        const expandedProperties = expandMacro(macroName);
+        properties.push(...expandedProperties);
     }
     return properties;
 };
@@ -224,35 +198,21 @@ const extractHtmlSpans = (text: string): Property[] => {
     return properties;
 }
 
-/**
- * Parses a raw text string and extracts semantic properties.
- * Supports standard format [key:op:value] and symbolic format [key < value].
- * Also supports parsing HTML Chip syntax for backward compatibility or processing.
- */
 export const parseProperties = (text: string): Property[] => {
-  // Use map over extracted properties to get the property objects
   const properties: Property[] = extractProperties(text).map(e => e.property);
 
-  // Add macros and HTML spans
   properties.push(...extractMacros(text));
   properties.push(...extractHtmlSpans(text));
 
   return properties;
 };
 
-/**
- * Formats a property into its standard string representation.
- */
 export const formatPropertyTag = (prop: Property): string => {
   const vals = prop.values.join(',');
   return `[${prop.key}:${prop.operator}:${vals}]`;
 };
 
-/**
- * Finds the index and length of a property in the text.
- */
 const findPropertyInText = (text: string, prop: Property): { index: number; length: number } | null => {
-  // Reuse extractProperties to avoid duplicating regex logic
   const extracted = extractProperties(text);
   const found = extracted.find(ep => arePropertiesEqual(ep.property, prop));
   return found ? { index: found.index, length: found.length } : null;
@@ -264,12 +224,6 @@ const appendPropertyToText = (text: string, tag: string): string => {
   return text + suffix;
 };
 
-/**
- * Replaces a property in a text string (or HTML string) with a new one.
- * If oldProp is provided, it attempts to find and replace it.
- * If newProp is null, it removes the found property.
- * If oldProp is null, it appends newProp to the end.
- */
 export const replacePropertyInString = (
   text: string,
   oldProp: Property | null,
@@ -279,12 +233,10 @@ export const replacePropertyInString = (
 
   const newTag = newProp ? formatPropertyTag(newProp) : '';
 
-  // Append if no old property
   if (!oldProp) {
       return appendPropertyToText(text, newTag);
   }
 
-  // Find and Replace/Delete
   const match = findPropertyInText(text, oldProp);
   if (match) {
     const prefix = text.substring(0, match.index);
@@ -292,6 +244,5 @@ export const replacePropertyInString = (
     return prefix + newTag + suffix;
   }
 
-  // Fallback: Append if not found but new tag exists
   return appendPropertyToText(text, newTag);
 };

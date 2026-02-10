@@ -1,10 +1,10 @@
 import React from 'react';
-import { Modal } from '../common/Modal';
-import { SimulatorAgentEditor } from './SimulatorAgentEditor';
-import { Button } from '../common/Button';
-import { TrashIcon, PauseIcon, PlayIcon } from '../common/icons';
-import type { SimulationAgent } from '../../hooks/simulator/types';
-import { SELF_AGENT_ID } from '../../hooks/simulator/types';
+import {Modal} from '../common/Modal';
+import {SimulatorAgentEditor} from './SimulatorAgentEditor';
+import {Button} from '../common/Button';
+import {PauseIcon, PlayIcon, TrashIcon} from '../common/icons';
+import type {SimulationAgent} from '../../hooks/simulator/types';
+import {SELF_AGENT_ID} from '../../hooks/simulator/types';
 
 interface AgentSettingsModalProps {
     isOpen: boolean;
@@ -17,8 +17,8 @@ interface AgentSettingsModalProps {
 }
 
 export function AgentSettingsModal({
-    isOpen, onClose, agent, onUpdate, onRandomize, onDelete, onToggle
-}: AgentSettingsModalProps) {
+                                       isOpen, onClose, agent, onUpdate, onRandomize, onDelete, onToggle
+                                   }: AgentSettingsModalProps) {
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={`Settings: ${agent.name}`}>
             <div className="space-y-4">
@@ -29,7 +29,7 @@ export function AgentSettingsModal({
                 />
 
                 <div className="flex justify-between items-center border-t border-gray-700 pt-4 mt-4">
-                     <div className="flex gap-2">
+                    <div className="flex gap-2">
                         <Button
                             variant="secondary"
                             icon={agent.enabled === false ? PlayIcon : PauseIcon}
@@ -37,22 +37,22 @@ export function AgentSettingsModal({
                         >
                             {agent.enabled === false ? 'Resume Agent' : 'Pause Agent'}
                         </Button>
-                     </div>
+                    </div>
 
-                     {agent.id !== SELF_AGENT_ID && (
-                         <Button
+                    {agent.id !== SELF_AGENT_ID && (
+                        <Button
                             variant="danger"
                             icon={TrashIcon}
                             onClick={() => {
-                                if(confirm('Are you sure you want to delete this agent?')) {
+                                if (confirm('Are you sure you want to delete this agent?')) {
                                     onDelete();
                                     onClose();
                                 }
                             }}
-                         >
+                        >
                             Delete Agent
-                         </Button>
-                     )}
+                        </Button>
+                    )}
                 </div>
             </div>
         </Modal>

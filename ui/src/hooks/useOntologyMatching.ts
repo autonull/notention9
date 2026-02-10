@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import type { OntologyNode, Property } from '@notention/core';
+import {useMemo} from 'react';
+import type {OntologyNode, Property} from '@notention/core';
 
 interface UseOntologyMatchingProps {
     tags: string[];
@@ -7,7 +7,7 @@ interface UseOntologyMatchingProps {
     ontology: OntologyNode[];
 }
 
-export function useOntologyMatching({ tags, properties, ontology }: UseOntologyMatchingProps) {
+export function useOntologyMatching({tags, properties, ontology}: UseOntologyMatchingProps) {
     // Find matching ontology node based on tags
     const matchingOntologyNode = useMemo(() => {
         const findNode = (nodes: OntologyNode[]): OntologyNode | null => {

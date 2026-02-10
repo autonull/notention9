@@ -76,9 +76,12 @@ class ModelManager {
 
         } catch (e) {
             console.error("\nDownload failed:", e.message);
-            // Clean up partial file
             if (fs.existsSync(destPath)) {
-                try { fs.unlinkSync(destPath); } catch (err) { }
+                try {
+                    fs.unlinkSync(destPath);
+                } catch (err) {
+                    console.error("Failed to delete partial file:", err.message);
+                }
             }
             throw e;
         }

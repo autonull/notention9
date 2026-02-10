@@ -1,7 +1,7 @@
-import { renderHook, act } from '@testing-library/react';
-import { useDebouncedSave } from '../../hooks/useDebouncedSave';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import type { Note } from '@notention/core';
+import {act, renderHook} from '@testing-library/react';
+import {useDebouncedSave} from '../../src/hooks/useDebouncedSave';
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
+import type {Note} from '@notention/core';
 
 describe('useDebouncedSave', () => {
     const mockNote: Note = {
@@ -25,31 +25,31 @@ describe('useDebouncedSave', () => {
     });
 
     it('should initialize dirtyNote from note prop', () => {
-        const { result } = renderHook(() => useDebouncedSave(mockNote, onSave));
+        const {result} = renderHook(() => useDebouncedSave(mockNote, onSave));
         expect(result.current.dirtyNote).toEqual(mockNote);
     });
 
     it('should update dirtyNote when setDirtyNote is called', () => {
-        const { result } = renderHook(() => useDebouncedSave(mockNote, onSave));
+        const {result} = renderHook(() => useDebouncedSave(mockNote, onSave));
 
         act(() => {
-            result.current.setDirtyNote({ ...mockNote, title: 'New Title' });
+            result.current.setDirtyNote({...mockNote, title: 'New Title'});
         });
 
         expect(result.current.dirtyNote.title).toBe('New Title');
     });
 
     it('should call onSave when dirtyNote changes after timeout', () => {
-        const { result } = renderHook(() => useDebouncedSave(mockNote, onSave));
+        const {result} = renderHook(() => useDebouncedSave(mockNote, onSave));
 
         act(() => {
-            result.current.setDirtyNote({ ...mockNote, title: 'New Title' });
+            result.current.setDirtyNote({...mockNote, title: 'New Title'});
         });
 
         act(() => {
             vi.runAllTimers();
         });
 
-        expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ title: 'New Title' }));
+        expect(onSave).toHaveBeenCalledWith(expect.objectContaining({title: 'New Title'}));
     });
 });

@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { OntologyNode } from '@notention/core';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
+import {OntologyNode} from '@notention/core';
 
 interface PropertyPaletteProps {
     isOpen: boolean;
@@ -15,11 +15,11 @@ interface PropertyOption {
 }
 
 export const PropertyPalette: React.FC<PropertyPaletteProps> = ({
-    isOpen,
-    onClose,
-    onInsert,
-    ontology
-}) => {
+                                                                    isOpen,
+                                                                    onClose,
+                                                                    onInsert,
+                                                                    ontology
+                                                                }) => {
     const [filter, setFilter] = useState('');
     const [selectedIndex, setSelectedIndex] = useState(0);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -37,11 +37,11 @@ export const PropertyPalette: React.FC<PropertyPaletteProps> = ({
     // Memoize options generation
     const propertyOptions = useMemo(() => {
         const defaults = [
-            { key: 'role', icon: '💼', description: 'Add a role or skill' },
-            { key: 'rate', icon: '💰', description: 'Hourly or daily rate' },
-            { key: 'location', icon: '📍', description: 'Geographic location' },
-            { key: 'deadline', icon: '📅', description: 'Due date or time' },
-            { key: 'skill', icon: '⚡', description: 'Technical skill' }
+            {key: 'role', icon: '💼', description: 'Add a role or skill'},
+            {key: 'rate', icon: '💰', description: 'Hourly or daily rate'},
+            {key: 'location', icon: '📍', description: 'Geographic location'},
+            {key: 'deadline', icon: '📅', description: 'Due date or time'},
+            {key: 'skill', icon: '⚡', description: 'Technical skill'}
         ];
 
         const options = [...defaults];
@@ -104,11 +104,12 @@ export const PropertyPalette: React.FC<PropertyPaletteProps> = ({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[110] flex items-start justify-center pt-[20vh] bg-transparent" onClick={onClose}>
+        <div className="fixed inset-0 z-[110] flex items-start justify-center pt-[20vh] bg-transparent"
+             onClick={onClose}>
             <div
                 className="bg-gray-800 rounded-xl shadow-2xl border border-gray-700 w-80 overflow-hidden flex flex-col transform transition-all animate-fade-in-up"
                 onClick={e => e.stopPropagation()}
-                style={{ maxHeight: '400px' }}
+                style={{maxHeight: '400px'}}
             >
                 <div className="p-2 border-b border-gray-700 bg-gray-800">
                     <input

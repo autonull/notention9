@@ -1,14 +1,14 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { agentService } from '../../services/AgentService';
-import { FeedbackWidget } from '../common/FeedbackWidget';
-import { useNotes } from '../../hooks/useNotes';
-import { useView } from '../../hooks/useViewContext';
-import { skillService } from '../../services/SkillService';
-import type { Skill } from '@notention/core';
-import { Button } from '../common/Button';
-import { PlayIcon } from '../common/icons';
-import { useToast } from '../../hooks/useToast';
-import { Logger } from '@notention/core';
+import React, {useEffect, useRef, useState} from 'react';
+import {agentService} from '../../services/AgentService';
+import {FeedbackWidget} from '../common/FeedbackWidget';
+import {useNotes} from '../../hooks/useNotes';
+import {useView} from '../../hooks/useViewContext';
+import {skillService} from '../../services/SkillService';
+import type {Skill} from '@notention/core';
+import {Logger} from '@notention/core';
+import {Button} from '../common/Button';
+import {PlayIcon} from '../common/icons';
+import {useToast} from '../../hooks/useToast';
 
 interface LogEntry {
     id: string;
@@ -21,10 +21,10 @@ interface LogEntry {
 export const AgentFeedbackPanel: React.FC = () => {
     const [logs, setLogs] = useState<LogEntry[]>([]);
     const scrollRef = useRef<HTMLDivElement>(null);
-    const { notes } = useNotes();
-    const { selectedNoteId } = useView();
+    const {notes} = useNotes();
+    const {selectedNoteId} = useView();
     const [matchingSkills, setMatchingSkills] = useState<Skill[]>([]);
-    const { addToast } = useToast();
+    const {addToast} = useToast();
 
     // Check for matching skills
     useEffect(() => {
@@ -57,7 +57,12 @@ export const AgentFeedbackPanel: React.FC = () => {
         const handleMessage = (data: any) => {
             let parsed = data;
             if (typeof data === 'string') {
-                try { parsed = JSON.parse(data); } catch (e) { return; }
+                try {
+                    parsed = JSON.parse(data);
+                } catch (e) {
+                    Logger.getInstance().debug('Failed to parse agent message', {data, error: e});
+                    return;
+                }
             }
 
             // Handle screenshot specifically
@@ -106,12 +111,13 @@ export const AgentFeedbackPanel: React.FC = () => {
 
     return (
         <div className="flex flex-col bg-gray-900 border-l border-gray-800 w-64 h-full text-xs font-mono">
-            <div className="p-2 border-b border-gray-800 font-bold text-gray-400 uppercase tracking-wider flex justify-between items-center">
+            <div
+                className="p-2 border-b border-gray-800 font-bold text-gray-400 uppercase tracking-wider flex justify-between items-center">
                 <span>Agent Stream</span>
                 <div className="flex items-center gap-2">
                     <FeedbackWidget
                         entityId="agent-stream"
-                        onFeedback={(type, val) => Logger.getInstance().info('Feedback:', { type, val })}
+                        onFeedback={(type, val) => Logger.getInstance().info('Feedback:', {type, val})}
                     />
                     <button onClick={() => setLogs([])} className="hover:text-white">Clear</button>
                 </div>
@@ -125,7 +131,8 @@ export const AgentFeedbackPanel: React.FC = () => {
                     </div>
                     <div className="space-y-2">
                         {matchingSkills.map(skill => (
-                            <div key={skill.id} className="bg-gray-800 border border-gray-700 p-2 rounded flex flex-col gap-2">
+                            <div key={skill.id}
+                                 className="bg-gray-800 border border-gray-700 p-2 rounded flex flex-col gap-2">
                                 <div className="flex justify-between items-start">
                                     <span className="font-bold text-gray-200">{skill.name}</span>
                                     <span className="text-[10px] bg-purple-900/50 text-purple-300 px-1.5 rounded">
@@ -159,17 +166,18 @@ export const AgentFeedbackPanel: React.FC = () => {
                 )}
                 {logs.map(log => (
                     <div key={log.id} className="animate-fade-in border-l-2 border-gray-700 pl-2 py-1">
-                        <div className="text-gray-500 mb-0.5 flex justify-between items-center" style={{ fontSize: '0.65rem' }}>
+                        <div className="text-gray-500 mb-0.5 flex justify-between items-center"
+                             style={{fontSize: '0.65rem'}}>
                             <span>{new Date(log.timestamp).toLocaleTimeString()}</span>
                             <span className={`uppercase font-bold ${
                                 log.type === 'error' ? 'text-red-500' :
-                                log.type === 'success' ? 'text-green-500' : 'text-blue-500'
+                                    log.type === 'success' ? 'text-green-500' : 'text-blue-500'
                             }`}>{log.type}</span>
                         </div>
 
                         {log.type === 'screenshot' ? (
                             <div className="border border-gray-700 rounded overflow-hidden mt-1">
-                                <img src={log.data} alt="Agent View" className="w-full h-auto" />
+                                <img src={log.data} alt="Agent View" className="w-full h-auto"/>
                             </div>
                         ) : (
                             <div className={`

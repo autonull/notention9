@@ -1,204 +1,210 @@
-import React, { useState, useEffect } from 'react';
-import { useNotes } from '../../hooks/useNotes';
-import { useView } from '../../hooks/useViewContext';
-import { useSettings } from '../../hooks/useSettingsContext';
-import { agentService } from '../../services/AgentService';
-import { StatCard } from '../widgets/StatCard';
-import { ActivityFeed } from '../widgets/ActivityFeed';
+import React, {useEffect, useState} from 'react';
+import {useNotes} from '../../hooks/useNotes';
+import {useView} from '../../hooks/useViewContext';
+import {useSettings} from '../../hooks/useSettingsContext';
+import {agentService} from '../../services/AgentService';
+import {StatCard} from '../widgets/StatCard';
+import {ActivityFeed} from '../widgets/ActivityFeed';
 import {
-    NoteIcon,
-    WorldIcon,
     CheckCircleIcon,
-    SparklesIcon,
+    CpuChipIcon,
     MagicWandIcon,
     NetworkIcon,
-    CpuChipIcon,
-    PlusIcon
+    NoteIcon,
+    PlusIcon,
+    SparklesIcon
 } from '../common/icons';
 
 export function DashboardView() {
-  const { notes, addNote } = useNotes();
-  const { setActiveView, setSelectedNoteId } = useView();
-  const { settings } = useSettings();
-  const [fixLifeInput, setFixLifeInput] = useState('');
-  const [agentStatus, setAgentStatus] = useState(agentService.getStatus());
+    const {notes, addNote} = useNotes();
+    const {setActiveView, setSelectedNoteId} = useView();
+    const {settings} = useSettings();
+    const [fixLifeInput, setFixLifeInput] = useState('');
+    const [agentStatus, setAgentStatus] = useState(agentService.getStatus());
 
-  useEffect(() => {
-    const handleStatusChange = (status: any) => setAgentStatus(status);
-    agentService.on('status_change', handleStatusChange);
-    return () => {
-        agentService.off('status_change', handleStatusChange);
+    useEffect(() => {
+        const handleStatusChange = (status: any) => setAgentStatus(status);
+        agentService.on('status_change', handleStatusChange);
+        return () => {
+            agentService.off('status_change', handleStatusChange);
+        };
+    }, []);
+
+    const handleCreateNote = () => {
+        const newNote = addNote({title: ''});
+        setSelectedNoteId(newNote.id);
+        setActiveView('notes');
     };
-  }, []);
 
-  const handleCreateNote = () => {
-    const newNote = addNote({ title: '' });
-    setSelectedNoteId(newNote.id);
-    setActiveView('notes');
-  };
+    const handleFixLife = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!fixLifeInput.trim()) return;
 
-  const handleFixLife = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!fixLifeInput.trim()) return;
+        // Create a decomposition note
+        const note = addNote({
+            title: 'Life Decomp: ' + fixLifeInput,
+            content: `<p>Goal: ${fixLifeInput}</p><p>Processing decomposition...</p>`,
+            tags: ['@sovereign', '@decomposition'],
+            properties: [
+                {key: 'intent', operator: 'is', values: ['fix-life']},
+                {key: 'status', operator: 'is', values: ['proposed']}
+            ]
+        });
 
-    // Create a decomposition note
-    const note = addNote({
-      title: 'Life Decomp: ' + fixLifeInput,
-      content: `<p>Goal: ${fixLifeInput}</p><p>Processing decomposition...</p>`,
-      tags: ['@sovereign', '@decomposition'],
-      properties: [
-        { key: 'intent', operator: 'is', values: ['fix-life'] },
-        { key: 'status', operator: 'is', values: ['proposed'] }
-      ]
-    });
+        setSelectedNoteId(note.id);
+        setActiveView('notes');
+    };
 
-    setSelectedNoteId(note.id);
-    setActiveView('notes');
-  };
+    const stats = {
+        total: notes.length,
+        public: notes.filter(n => n.privacy === 'public').length,
+        tasks: notes.filter(n => n.properties.some(p => p.key === 'intent' && p.values.includes('task'))).length,
+        skills: notes.filter(n => n.source?.type === 'skill').length,
+        relays: settings.nostr?.relays?.length || 0
+    };
 
-  const stats = {
-    total: notes.length,
-    public: notes.filter(n => n.privacy === 'public').length,
-    tasks: notes.filter(n => n.properties.some(p => p.key === 'intent' && p.values.includes('task'))).length,
-    skills: notes.filter(n => n.source?.type === 'skill').length,
-    relays: settings.nostr?.relays?.length || 0
-  };
+    const recentNotes = [...notes]
+        .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+        .slice(0, 5);
 
-  const recentNotes = [...notes]
-    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
-    .slice(0, 5);
+    const handleSelectNote = (id: string) => {
+        setSelectedNoteId(id);
+        setActiveView('notes');
+    };
 
-  const handleSelectNote = (id: string) => {
-    setSelectedNoteId(id);
-    setActiveView('notes');
-  };
+    return (
+        <div className="p-6 h-full overflow-y-auto bg-gray-900 text-white custom-scrollbar">
 
-  return (
-    <div className="p-6 h-full overflow-y-auto bg-gray-900 text-white custom-scrollbar">
+            {/* Ignition / Fix My Life Section */}
+            <div
+                className="mb-8 text-center py-10 bg-gradient-to-b from-gray-800/50 to-transparent rounded-2xl border border-gray-700/50 relative overflow-hidden group">
+                <div
+                    className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-10 transition-opacity duration-1000"></div>
+                <h1 className="text-4xl font-black mb-4 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+                    What's on your mind?
+                </h1>
+                <p className="text-gray-400 text-sm mb-6 max-w-md mx-auto">
+                    Type a goal, a problem, or just a thought. We'll help you organize it.
+                </p>
 
-      {/* Ignition / Fix My Life Section */}
-      <div className="mb-8 text-center py-10 bg-gradient-to-b from-gray-800/50 to-transparent rounded-2xl border border-gray-700/50 relative overflow-hidden group">
-        <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-10 transition-opacity duration-1000"></div>
-        <h1 className="text-4xl font-black mb-4 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-            What's on your mind?
-        </h1>
-        <p className="text-gray-400 text-sm mb-6 max-w-md mx-auto">
-          Type a goal, a problem, or just a thought. We'll help you organize it.
-        </p>
+                <form onSubmit={handleFixLife} className="max-w-lg mx-auto relative z-10">
+                    <input
+                        type="text"
+                        value={fixLifeInput}
+                        onChange={(e) => setFixLifeInput(e.target.value)}
+                        placeholder="e.g., I need to find a new apartment..."
+                        className="w-full bg-gray-900 border border-gray-700 rounded-full py-3 px-6 pr-12 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all shadow-lg placeholder-gray-600"
+                    />
+                    <button
+                        type="submit"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-blue-600 hover:bg-blue-500 rounded-full transition-colors"
+                    >
+                        <MagicWandIcon className="w-4 h-4 text-white"/>
+                    </button>
+                </form>
+            </div>
 
-        <form onSubmit={handleFixLife} className="max-w-lg mx-auto relative z-10">
-          <input
-            type="text"
-            value={fixLifeInput}
-            onChange={(e) => setFixLifeInput(e.target.value)}
-            placeholder="e.g., I need to find a new apartment..."
-            className="w-full bg-gray-900 border border-gray-700 rounded-full py-3 px-6 pr-12 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all shadow-lg placeholder-gray-600"
-          />
-          <button
-            type="submit"
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-blue-600 hover:bg-blue-500 rounded-full transition-colors"
-          >
-            <MagicWandIcon className="w-4 h-4 text-white" />
-          </button>
-        </form>
-      </div>
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-8">
+                {/* Agent Status Card */}
+                <StatCard
+                    label="Agent Status"
+                    value={agentStatus.status === 'connected' ? 'Online' : 'Offline'}
+                    icon={<CpuChipIcon
+                        className={`w-5 h-5 ${agentStatus.status === 'connected' ? 'text-green-400' : 'text-gray-500'}`}/>}
+                    className={agentStatus.status === 'connected' ? 'border-green-900/30 bg-green-900/5' : 'border-gray-700/50'}
+                    trend={agentStatus.status === 'connected' ? 'up' : 'neutral'}
+                    trendValue={agentStatus.status === 'connected' ? 'Ready' : 'Local Mode'}
+                />
 
-      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-8">
-        {/* Agent Status Card */}
-        <StatCard
-            label="Agent Status"
-            value={agentStatus.status === 'connected' ? 'Online' : 'Offline'}
-            icon={<CpuChipIcon className={`w-5 h-5 ${agentStatus.status === 'connected' ? 'text-green-400' : 'text-gray-500'}`} />}
-            className={agentStatus.status === 'connected' ? 'border-green-900/30 bg-green-900/5' : 'border-gray-700/50'}
-            trend={agentStatus.status === 'connected' ? 'up' : 'neutral'}
-            trendValue={agentStatus.status === 'connected' ? 'Ready' : 'Local Mode'}
-        />
+                {/* Network Status Card */}
+                <StatCard
+                    label="P2P Network"
+                    value={`${stats.relays} Relays`}
+                    icon={<NetworkIcon
+                        className={`w-5 h-5 ${stats.relays > 0 ? 'text-purple-400' : 'text-gray-500'}`}/>}
+                    className={stats.relays > 0 ? 'border-purple-900/30 bg-purple-900/5' : 'border-gray-700/50'}
+                    trend={stats.relays > 0 ? 'up' : 'neutral'}
+                    trendValue={stats.public > 0 ? `${stats.public} Shared` : 'No Public Notes'}
+                />
 
-        {/* Network Status Card */}
-        <StatCard
-            label="P2P Network"
-            value={`${stats.relays} Relays`}
-            icon={<NetworkIcon className={`w-5 h-5 ${stats.relays > 0 ? 'text-purple-400' : 'text-gray-500'}`} />}
-            className={stats.relays > 0 ? 'border-purple-900/30 bg-purple-900/5' : 'border-gray-700/50'}
-            trend={stats.relays > 0 ? 'up' : 'neutral'}
-            trendValue={stats.public > 0 ? `${stats.public} Shared` : 'No Public Notes'}
-        />
+                <StatCard
+                    label="Total Notes"
+                    value={stats.total}
+                    icon={<NoteIcon className="w-5 h-5 text-blue-400"/>}
+                    trend="neutral"
+                />
 
-        <StatCard
-          label="Total Notes"
-          value={stats.total}
-          icon={<NoteIcon className="w-5 h-5 text-blue-400"/>}
-          trend="neutral"
-        />
+                <StatCard
+                    label="Pending Tasks"
+                    value={stats.tasks}
+                    icon={<CheckCircleIcon className="w-5 h-5 text-yellow-400"/>}
+                    className="border-blue-900/30 bg-blue-900/10"
+                />
+            </div>
 
-        <StatCard
-          label="Pending Tasks"
-          value={stats.tasks}
-          icon={<CheckCircleIcon className="w-5 h-5 text-yellow-400"/>}
-          className="border-blue-900/30 bg-blue-900/10"
-        />
-      </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-20 md:mb-0">
+                <div className="lg:col-span-2 bg-gray-800/50 rounded-xl border border-gray-700/50 p-4 md:p-6">
+                    <div className="flex justify-between items-center mb-4 md:mb-6">
+                        <h2 className="text-lg font-bold flex items-center gap-2">
+                            <NoteIcon className="w-5 h-5 text-gray-400"/>
+                            Recent Activity
+                        </h2>
+                        <button
+                            onClick={() => setActiveView('notes')}
+                            className="text-xs text-blue-400 hover:text-blue-300 transition-colors uppercase font-semibold tracking-wide"
+                        >
+                            View All
+                        </button>
+                    </div>
+                    <ActivityFeed recentNotes={recentNotes} onSelectNote={handleSelectNote}/>
+                </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-20 md:mb-0">
-        <div className="lg:col-span-2 bg-gray-800/50 rounded-xl border border-gray-700/50 p-4 md:p-6">
-          <div className="flex justify-between items-center mb-4 md:mb-6">
-            <h2 className="text-lg font-bold flex items-center gap-2">
-                <NoteIcon className="w-5 h-5 text-gray-400" />
-                Recent Activity
-            </h2>
-            <button
-                onClick={() => setActiveView('notes')}
-                className="text-xs text-blue-400 hover:text-blue-300 transition-colors uppercase font-semibold tracking-wide"
-            >
-                View All
-            </button>
-          </div>
-          <ActivityFeed recentNotes={recentNotes} onSelectNote={handleSelectNote} />
+                <div
+                    className="bg-gray-800/30 rounded-xl border border-gray-700/30 p-4 md:p-6 flex flex-col gap-3 md:gap-4">
+                    <h2 className="text-lg font-bold mb-2">Quick Actions</h2>
+
+                    <button
+                        onClick={handleCreateNote}
+                        className="w-full text-left p-4 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 transition-all shadow-lg flex items-center gap-3 group"
+                    >
+                        <div className="p-2 bg-white/20 rounded-lg text-white">
+                            <PlusIcon className="w-5 h-5"/>
+                        </div>
+                        <div>
+                            <div className="font-bold text-white">Create Note</div>
+                            <div className="text-xs text-blue-100 opacity-80">Capture a new thought</div>
+                        </div>
+                    </button>
+
+                    <button
+                        onClick={() => setActiveView('ontology')}
+                        className="w-full text-left p-4 rounded-xl bg-gray-800 hover:bg-gray-750 border border-gray-700 transition-all flex items-center gap-3 group"
+                    >
+                        <div
+                            className="p-2 bg-purple-900/30 rounded-lg text-purple-400 group-hover:bg-purple-900/50 transition-colors">
+                            <SparklesIcon className="w-5 h-5"/>
+                        </div>
+                        <div>
+                            <div className="font-medium text-gray-200">Ontology Graph</div>
+                            <div className="text-xs text-gray-500">Explore relationships</div>
+                        </div>
+                    </button>
+
+                    <button
+                        onClick={() => setActiveView('settings')}
+                        className="w-full text-left p-4 rounded-xl bg-gray-800 hover:bg-gray-750 border border-gray-700 transition-all flex items-center gap-3 group"
+                    >
+                        <div
+                            className="p-2 bg-gray-700/50 rounded-lg text-gray-400 group-hover:bg-gray-700 transition-colors">
+                            <NetworkIcon className="w-5 h-5"/>
+                        </div>
+                        <div>
+                            <div className="font-medium text-gray-200">Configure Network</div>
+                            <div className="text-xs text-gray-500">Manage relays & privacy</div>
+                        </div>
+                    </button>
+                </div>
+            </div>
         </div>
-
-        <div className="bg-gray-800/30 rounded-xl border border-gray-700/30 p-4 md:p-6 flex flex-col gap-3 md:gap-4">
-            <h2 className="text-lg font-bold mb-2">Quick Actions</h2>
-
-            <button
-                onClick={handleCreateNote}
-                className="w-full text-left p-4 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 transition-all shadow-lg flex items-center gap-3 group"
-            >
-                <div className="p-2 bg-white/20 rounded-lg text-white">
-                    <PlusIcon className="w-5 h-5" />
-                </div>
-                <div>
-                    <div className="font-bold text-white">Create Note</div>
-                    <div className="text-xs text-blue-100 opacity-80">Capture a new thought</div>
-                </div>
-            </button>
-
-            <button
-                onClick={() => setActiveView('ontology')}
-                className="w-full text-left p-4 rounded-xl bg-gray-800 hover:bg-gray-750 border border-gray-700 transition-all flex items-center gap-3 group"
-            >
-                <div className="p-2 bg-purple-900/30 rounded-lg text-purple-400 group-hover:bg-purple-900/50 transition-colors">
-                    <SparklesIcon className="w-5 h-5" />
-                </div>
-                <div>
-                    <div className="font-medium text-gray-200">Ontology Graph</div>
-                    <div className="text-xs text-gray-500">Explore relationships</div>
-                </div>
-            </button>
-
-            <button
-                onClick={() => setActiveView('settings')}
-                className="w-full text-left p-4 rounded-xl bg-gray-800 hover:bg-gray-750 border border-gray-700 transition-all flex items-center gap-3 group"
-            >
-                <div className="p-2 bg-gray-700/50 rounded-lg text-gray-400 group-hover:bg-gray-700 transition-colors">
-                    <NetworkIcon className="w-5 h-5" />
-                </div>
-                <div>
-                    <div className="font-medium text-gray-200">Configure Network</div>
-                    <div className="text-xs text-gray-500">Manage relays & privacy</div>
-                </div>
-            </button>
-        </div>
-      </div>
-    </div>
-  );
+    );
 }

@@ -1,10 +1,21 @@
 import { z } from 'zod';
 import { createTool } from '@notention/core';
-import type { Tool } from '@notention/core';
-import type { Note } from '@notention/core';
+import type { Tool, Note } from '@notention/core';
 import type { Skill } from './types';
-import { log } from '../core/utils';
 import { executeAction } from '../core/actionExecutor';
+
+interface AgentAction {
+    type: 'browser';
+    url: string;
+    extract?: any[];
+    interactions: {
+        type: string;
+        value?: any;
+        selector?: string;
+        key?: string;
+    }[];
+    screenshot?: 'full' | boolean;
+}
 
 export class SkillToolAdapter {
     static createToolFromSkill(skill: Skill): Tool {
@@ -17,15 +28,20 @@ export class SkillToolAdapter {
                     content: z.string()
                 })
             }),
-            execute: async ({ note }: any) => {
-                let action: any = null;
+            execute: async ({ note }: { note: Note }) => {
+                let action: AgentAction | null = null;
 
                 // Only support core skills now
                 if (skill.exportToActions) {
                     // Convert Core ActionSequence to Agent Action
-                    const sequence = skill.exportToActions(note as Note);
+                    const sequence = skill.exportToActions(note);
                     if (sequence && sequence.actions && sequence.actions.length > 0) {
                         action = SkillToolAdapter.convertToAgentAction(sequence.actions);
+                    } else if ((sequence as any).customAction) {
+                        // Handle dynamic skill custom actions directly if executor supports it
+                        // For now, this branch is hypothetical as `executeAction` expects specific structure
+                        // We might need to extend `executeAction` or handle it here
+                        console.warn('Custom dynamic actions not fully supported in ToolAdapter yet');
                     }
                 }
 
@@ -37,7 +53,7 @@ export class SkillToolAdapter {
                 const results = await executeAction(action);
 
                 if (skill.importFromData) {
-                    return skill.importFromData(results, note as Note);
+                    return skill.importFromData(results, note);
                 }
 
                 return [];
@@ -45,7 +61,7 @@ export class SkillToolAdapter {
         });
     }
 
-    public static convertToAgentAction(actions: any[]): any {
+    public static convertToAgentAction(actions: any[]): AgentAction | null {
         // Find main navigation
         const nav = actions.find((a: any) => a.type === 'navigate');
         if (!nav) return null; // Must have navigation

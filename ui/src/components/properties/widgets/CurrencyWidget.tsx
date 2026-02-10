@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState} from 'react';
 
 interface WidgetProps {
     value: string;
@@ -6,7 +6,7 @@ interface WidgetProps {
     onKeyDown?: (e: React.KeyboardEvent) => void;
 }
 
-export const CurrencyWidget: React.FC<WidgetProps> = ({ value, onChange, onKeyDown }) => {
+export const CurrencyWidget: React.FC<WidgetProps> = ({value, onChange, onKeyDown}) => {
     const [numValue, setNumValue] = useState(parseFloat(value) || 0);
 
     const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {

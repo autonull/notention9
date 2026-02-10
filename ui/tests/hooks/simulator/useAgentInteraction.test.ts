@@ -1,8 +1,8 @@
-import { renderHook, act } from '@testing-library/react';
-import { useAgentInteraction } from '../../../hooks/simulator/useAgentInteraction';
-import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
-import type { SimulationAgent } from '../../../hooks/simulator/types';
-import type { AIProvider } from '@notention/core';
+import {act, renderHook} from '@testing-library/react';
+import {useAgentInteraction} from '../../../src/hooks/simulator/useAgentInteraction';
+import {beforeEach, describe, expect, it, Mock, vi} from 'vitest';
+import type {SimulationAgent} from '../../../src/hooks/simulator/types';
+import type {AIProvider} from '@notention/core';
 
 describe('useAgentInteraction', () => {
     let agentsRefMock: { current: SimulationAgent[] };
@@ -13,16 +13,16 @@ describe('useAgentInteraction', () => {
     beforeEach(() => {
         agentsRefMock = {
             current: [
-                { id: '1', name: 'Agent1', persona: 'Test Persona', goal: 'Test Goal', status: 'Idle', currentDraft: '' }
+                {id: '1', name: 'Agent1', persona: 'Test Persona', goal: 'Test Goal', status: 'Idle', currentDraft: ''}
             ]
         };
-        aiRefMock = { current: null };
+        aiRefMock = {current: null};
         updateAgentMock = vi.fn();
         addLogMock = vi.fn();
     });
 
     it('adds user message immediately', async () => {
-        const { result } = renderHook(() => useAgentInteraction({
+        const {result} = renderHook(() => useAgentInteraction({
             agentsRef: agentsRefMock,
             aiRef: aiRefMock,
             updateAgent: updateAgentMock,
@@ -41,7 +41,7 @@ describe('useAgentInteraction', () => {
     it('simulates response after delay', async () => {
         vi.useFakeTimers();
 
-        const { result } = renderHook(() => useAgentInteraction({
+        const {result} = renderHook(() => useAgentInteraction({
             agentsRef: agentsRefMock,
             aiRef: aiRefMock,
             updateAgent: updateAgentMock,

@@ -1,7 +1,7 @@
 import React from 'react';
-import { NoteIcon, PlusIcon } from '../common/icons';
-import { Button } from '../common/Button';
-import { EmptyState } from '../common/EmptyState';
+import {NoteIcon, PlusIcon} from '../common/icons';
+import {Button} from '../common/Button';
+import {EmptyState} from '../common/EmptyState';
 
 interface SidebarEmptyStateProps {
     searchTerm: string;
@@ -9,7 +9,7 @@ interface SidebarEmptyStateProps {
     onCreateNote: (term?: string) => void;
 }
 
-export function SidebarEmptyState({ searchTerm, isTrashView, onCreateNote }: SidebarEmptyStateProps) {
+export function SidebarEmptyState({searchTerm, isTrashView, onCreateNote}: SidebarEmptyStateProps) {
     return (
         <EmptyState
             icon={NoteIcon}

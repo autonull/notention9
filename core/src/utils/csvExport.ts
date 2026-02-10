@@ -3,12 +3,9 @@ import type { Note } from '../types/index.js';
 export const generateNotesCSV = (notes: Note[]): string => {
     if (notes.length === 0) return '';
 
-    // 1. Collect all unique property keys
-    const propKeysSet = new Set<string>();
-    notes.forEach(note => {
-        note.properties.forEach(p => propKeysSet.add(p.key));
-    });
-    const propKeys = Array.from(propKeysSet).sort();
+    const propKeys = Array.from(
+        new Set(notes.flatMap(note => note.properties.map(p => p.key)))
+    ).sort();
 
     // 2. Build Header
     const headers = ['id', 'title', 'created_at', 'tags', 'content', ...propKeys];

@@ -6,7 +6,7 @@ interface OperatorDropdownProps {
     onChange: (op: string) => void;
 }
 
-export const OperatorDropdown: React.FC<OperatorDropdownProps> = ({ value, options, onChange }) => {
+export const OperatorDropdown: React.FC<OperatorDropdownProps> = ({value, options, onChange}) => {
     return (
         <select
             value={value}

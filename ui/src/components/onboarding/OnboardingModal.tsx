@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { SetupWizard } from './SetupWizard';
-import { OnboardingService, SetupConfiguration, Note, createNote } from '@notention/core';
-import { useNotes } from '../../hooks/useNotes'; // Assuming this hook exists or similar state management
+import React, {useEffect, useState} from 'react';
+import {SetupWizard} from './SetupWizard';
+import {createNote, OnboardingService, SetupConfiguration} from '@notention/core';
+import {useNotes} from '../../hooks/useNotes'; // Assuming this hook exists or similar state management
 
 interface OnboardingModalProps {
     // Mechanism to close or check status could be passed here
@@ -10,7 +10,7 @@ interface OnboardingModalProps {
 export const OnboardingModal: React.FC<OnboardingModalProps> = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [service] = useState(new OnboardingService());
-    const { notes, addNote } = useNotes();
+    const {notes, addNote} = useNotes();
 
     useEffect(() => {
         // Check if configuration already exists
@@ -61,8 +61,9 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = () => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm p-4">
-            <SetupWizard onComplete={handleComplete} service={service} />
+        <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm p-4">
+            <SetupWizard onComplete={handleComplete} service={service}/>
         </div>
     );
 };

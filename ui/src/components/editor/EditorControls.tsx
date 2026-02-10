@@ -1,18 +1,16 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
-    ChevronUpIcon,
     ChevronDownIcon,
+    ChevronUpIcon,
     CodeBracketsIcon,
-    TagIcon,
     DocumentDuplicateIcon,
     EditIcon,
     HelpIcon,
     SearchSparkleIcon,
-    SendIcon
+    TagIcon
 } from '../common/icons';
-import { IconButton } from '../common/IconButton';
-import { Button } from '../common/Button';
-import { HelpModal } from '../common/HelpModal';
+import {IconButton} from '../common/IconButton';
+import {HelpModal} from '../common/HelpModal';
 
 export interface EditorControlsProps {
     onNext?: () => void;
@@ -37,26 +35,26 @@ export interface EditorControlsProps {
 }
 
 export function EditorControls({
-    onNext,
-    onPrevious,
-    hasNext,
-    hasPrevious,
-    isToolbarVisible = true,
-    onToggleToolbar,
-    isInspectorOpen,
-    onToggleInspector,
-    isTagInputVisible,
-    onToggleTags,
-    onSaveTemplate,
-    onCopyContent,
-    missingProperties = [],
-    onAddProperty,
-    onFindMatches,
-    onPublish,
-    isPublishing,
-    isPublished,
-    actionLabel
-}: EditorControlsProps) {
+                                   onNext,
+                                   onPrevious,
+                                   hasNext,
+                                   hasPrevious,
+                                   isToolbarVisible = true,
+                                   onToggleToolbar,
+                                   isInspectorOpen,
+                                   onToggleInspector,
+                                   isTagInputVisible,
+                                   onToggleTags,
+                                   onSaveTemplate,
+                                   onCopyContent,
+                                   missingProperties = [],
+                                   onAddProperty,
+                                   onFindMatches,
+                                   onPublish,
+                                   isPublishing,
+                                   isPublished,
+                                   actionLabel
+                               }: EditorControlsProps) {
     const [isHelpOpen, setIsHelpOpen] = useState(false);
 
     return (
@@ -70,7 +68,7 @@ export function EditorControls({
                         className="p-1.5 text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors rounded-l-lg hover:bg-gray-700/50"
                         title="Previous Note (Alt+Up)"
                     >
-                        <ChevronUpIcon className="h-5 w-5" />
+                        <ChevronUpIcon className="h-5 w-5"/>
                     </button>
                     <div className="w-px h-4 bg-gray-700/50"></div>
                     <button
@@ -79,14 +77,14 @@ export function EditorControls({
                         className="p-1.5 text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors rounded-r-lg hover:bg-gray-700/50"
                         title="Next Note (Alt+Down)"
                     >
-                        <ChevronDownIcon className="h-5 w-5" />
+                        <ChevronDownIcon className="h-5 w-5"/>
                     </button>
                 </div>
             )}
 
             {/* View/Tool Toggles */}
             <div className="flex items-center gap-1 border-r border-gray-700/50 pr-2 mr-1">
-                 {onToggleToolbar && (
+                {onToggleToolbar && (
                     <IconButton
                         onClick={onToggleToolbar}
                         tooltip={isToolbarVisible ? "Hide Formatting Toolbar" : "Show Formatting Toolbar"}
@@ -106,7 +104,7 @@ export function EditorControls({
                         size="sm"
                     />
                 )}
-                 <IconButton
+                <IconButton
                     onClick={onToggleTags}
                     tooltip="Tags"
                     icon={TagIcon}
@@ -127,7 +125,7 @@ export function EditorControls({
                         size="sm"
                     />
                 )}
-                 {onCopyContent && (
+                {onCopyContent && (
                     <IconButton
                         onClick={onCopyContent}
                         tooltip="Copy Content"
@@ -137,7 +135,7 @@ export function EditorControls({
                         className="hidden md:flex"
                     />
                 )}
-                 <IconButton
+                <IconButton
                     onClick={() => setIsHelpOpen(true)}
                     tooltip="Help & Shortcuts"
                     icon={HelpIcon}
@@ -147,9 +145,9 @@ export function EditorControls({
             </div>
 
             {/* Network Actions */}
-             <div className="flex items-center gap-2">
-                 {/* Property Hints */}
-                 {missingProperties.length > 0 && onAddProperty && (
+            <div className="flex items-center gap-2">
+                {/* Property Hints */}
+                {missingProperties.length > 0 && onAddProperty && (
                     <div className="hidden lg:flex items-center gap-1 mr-2 animate-fade-in">
                         <span className="text-xs text-yellow-500 mr-1">Missing:</span>
                         {missingProperties.map(prop => (
@@ -167,17 +165,17 @@ export function EditorControls({
 
                 {onFindMatches && (
                     <IconButton
-                      onClick={onFindMatches}
-                      tooltip="Find matches in network"
-                      icon={SearchSparkleIcon}
-                      className="text-purple-400 hover:bg-purple-600 hover:text-white"
-                      size="lg"
+                        onClick={onFindMatches}
+                        tooltip="Find matches in network"
+                        icon={SearchSparkleIcon}
+                        className="text-purple-400 hover:bg-purple-600 hover:text-white"
+                        size="lg"
                     />
                 )}
 
             </div>
 
-            <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
+            <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)}/>
         </div>
     );
 };

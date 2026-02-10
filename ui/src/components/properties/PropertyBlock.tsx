@@ -1,13 +1,11 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { Property, OntologyNode } from '@notention/core';
-import { findAttributeDef } from '@notention/core';
-import { CurrencyWidget } from './widgets/CurrencyWidget';
-import { LocationWidget } from './widgets/LocationWidget';
-import { DateWidget } from './widgets/DateWidget';
-import { EnumWidget } from './widgets/EnumWidget';
-import { TextWidget } from './widgets/TextWidget';
-import { BooleanWidget } from './widgets/BooleanWidget';
-import { OperatorDropdown } from './OperatorDropdown';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {findAttributeDef, OntologyNode, Property} from '@notention/core';
+import {CurrencyWidget} from './widgets/CurrencyWidget';
+import {LocationWidget} from './widgets/LocationWidget';
+import {DateWidget} from './widgets/DateWidget';
+import {EnumWidget} from './widgets/EnumWidget';
+import {TextWidget} from './widgets/TextWidget';
+import {OperatorDropdown} from './OperatorDropdown';
 
 interface PropertyBlockProps {
     property: Property;
@@ -18,12 +16,12 @@ interface PropertyBlockProps {
 }
 
 export const PropertyBlock: React.FC<PropertyBlockProps> = ({
-    property,
-    onUpdate,
-    onDelete,
-    ontology,
-    autoFocus
-}) => {
+                                                                property,
+                                                                onUpdate,
+                                                                onDelete,
+                                                                ontology,
+                                                                autoFocus
+                                                            }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [localValue, setLocalValue] = useState(property.values[0] || '');
     const [hasChanges, setHasChanges] = useState(false);
@@ -37,7 +35,7 @@ export const PropertyBlock: React.FC<PropertyBlockProps> = ({
 
     const handleSave = useCallback(() => {
         if (hasChanges) {
-            onUpdate({ ...property, values: [localValue] });
+            onUpdate({...property, values: [localValue]});
             // Success animation class logic (could be handled via CSS modules or just classes)
             blockRef.current?.classList.add('property-saved');
             setTimeout(() => {
@@ -88,7 +86,7 @@ export const PropertyBlock: React.FC<PropertyBlockProps> = ({
                 return <LocationWidget {...widgetProps} />;
             case 'date':
             case 'datetime':
-                return <DateWidget {...widgetProps} type={attributeType} />;
+                return <DateWidget {...widgetProps} type={attributeType}/>;
             case 'enum':
                 return <EnumWidget {...widgetProps} />;
             // case 'boolean': return <BooleanWidget {...widgetProps} />; // If we had boolean type in ontology
@@ -148,7 +146,7 @@ export const PropertyBlock: React.FC<PropertyBlockProps> = ({
                             <OperatorDropdown
                                 value={property.operator}
                                 options={getValidOperators(property.key, ontology)}
-                                onChange={(op) => onUpdate({ ...property, operator: op })}
+                                onChange={(op) => onUpdate({...property, operator: op})}
                             />
                         </div>
                         <div className="flex-1">
@@ -159,13 +157,19 @@ export const PropertyBlock: React.FC<PropertyBlockProps> = ({
                     <div className="flex justify-end gap-2 mt-2">
                         <button
                             className="px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 rounded text-gray-300"
-                            onClick={(e) => { e.stopPropagation(); handleCancel(); }}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleCancel();
+                            }}
                         >
                             Cancel
                         </button>
                         <button
                             className="px-3 py-1 text-xs bg-blue-600 hover:bg-blue-500 rounded text-white font-medium disabled:opacity-50"
-                            onClick={(e) => { e.stopPropagation(); handleSave(); }}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleSave();
+                            }}
                             disabled={!hasChanges}
                         >
                             Save

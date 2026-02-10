@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
-import { OnboardingService, SetupConfiguration } from '@notention/core';
+import React, {useState} from 'react';
+import {OnboardingService, SetupConfiguration} from '@notention/core';
 
 interface SetupWizardProps {
     onComplete: (config: SetupConfiguration) => void;
     service: OnboardingService;
 }
 
-export const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete, service }) => {
+export const SetupWizard: React.FC<SetupWizardProps> = ({onComplete, service}) => {
     const [state, setState] = useState(service.getState());
     const currentStep = state.steps[state.currentStepIndex];
 
     const handleNext = () => {
         service.completeStep(currentStep.id);
         service.nextStep();
-        setState({ ...service.getState() });
+        setState({...service.getState()});
 
         if (state.isComplete || (currentStep.id === 'finalize' && state.currentStepIndex === state.steps.length - 1)) {
             onComplete(state.config);
@@ -22,12 +22,12 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete, service })
 
     const handleBack = () => {
         service.prevStep();
-        setState({ ...service.getState() });
+        setState({...service.getState()});
     };
 
     const updateConfig = (updates: Partial<SetupConfiguration>) => {
         service.updateConfig(updates);
-        setState({ ...service.getState() });
+        setState({...service.getState()});
     };
 
     const renderStepContent = () => {
@@ -36,7 +36,9 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete, service })
                 return (
                     <div className="space-y-4">
                         <h2 className="text-2xl font-bold">Welcome to Notention</h2>
-                        <p>Notention is a hybrid workspace where your <strong>Notes</strong> become <strong>Actions</strong> through the power of <strong>Agents</strong>.</p>
+                        <p>Notention is a hybrid workspace where
+                            your <strong>Notes</strong> become <strong>Actions</strong> through the power
+                            of <strong>Agents</strong>.</p>
                         <ul className="list-disc pl-5 space-y-2">
                             <li><strong>Think:</strong> Write normally.</li>
                             <li><strong>Do:</strong> Create tasks and automations.</li>
@@ -50,13 +52,14 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete, service })
                         <h2 className="text-2xl font-bold">Privacy Settings</h2>
                         <p>Notention is Local-First by default. You decide what leaves your machine.</p>
                         <div className="space-y-2">
-                            <label className="flex items-center space-x-2 p-3 border rounded cursor-pointer hover:bg-gray-50">
+                            <label
+                                className="flex items-center space-x-2 p-3 border rounded cursor-pointer hover:bg-gray-50">
                                 <input
                                     type="radio"
                                     name="privacy"
                                     value="local-only"
                                     checked={state.config.privacyLevel === 'local-only'}
-                                    onChange={() => updateConfig({ privacyLevel: 'local-only' })}
+                                    onChange={() => updateConfig({privacyLevel: 'local-only'})}
                                     className="form-radio"
                                 />
                                 <div>
@@ -64,18 +67,20 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete, service })
                                     <div className="text-sm text-gray-500">Data never leaves this device.</div>
                                 </div>
                             </label>
-                            <label className="flex items-center space-x-2 p-3 border rounded cursor-pointer hover:bg-gray-50">
+                            <label
+                                className="flex items-center space-x-2 p-3 border rounded cursor-pointer hover:bg-gray-50">
                                 <input
                                     type="radio"
                                     name="privacy"
                                     value="shared-network"
                                     checked={state.config.privacyLevel === 'shared-network'}
-                                    onChange={() => updateConfig({ privacyLevel: 'shared-network' })}
+                                    onChange={() => updateConfig({privacyLevel: 'shared-network'})}
                                     className="form-radio"
                                 />
                                 <div>
                                     <div className="font-semibold">Shared Network</div>
-                                    <div className="text-sm text-gray-500">Allow P2P sync for specific shared notes.</div>
+                                    <div className="text-sm text-gray-500">Allow P2P sync for specific shared notes.
+                                    </div>
                                 </div>
                             </label>
                         </div>
@@ -90,7 +95,7 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete, service })
                             <input
                                 type="checkbox"
                                 checked={state.config.enableBrowserAutomation}
-                                onChange={(e) => updateConfig({ enableBrowserAutomation: e.target.checked })}
+                                onChange={(e) => updateConfig({enableBrowserAutomation: e.target.checked})}
                                 className="form-checkbox"
                             />
                             <span>Enable Browser Automation (VoltAgent Browser)</span>
@@ -99,7 +104,7 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete, service })
                             <input
                                 type="checkbox"
                                 checked={state.config.enableFileAccess}
-                                onChange={(e) => updateConfig({ enableFileAccess: e.target.checked })}
+                                onChange={(e) => updateConfig({enableFileAccess: e.target.checked})}
                                 className="form-checkbox"
                             />
                             <span>Enable Local File Access</span>
@@ -111,7 +116,7 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete, service })
                                 className="mt-1 block w-full border rounded p-2"
                                 placeholder="User"
                                 value={state.config.userName || ''}
-                                onChange={(e) => updateConfig({ userName: e.target.value })}
+                                onChange={(e) => updateConfig({userName: e.target.value})}
                             />
                         </div>
                     </div>

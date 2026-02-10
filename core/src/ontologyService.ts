@@ -1,4 +1,4 @@
-import { OntologyNode, OntologyAttribute } from './types/index.js';
+import { OntologyNode, OntologyAttribute, PropertyType } from './types/index.js';
 import { findNode } from './ontologyHelpers.js';
 
 /**
@@ -59,10 +59,8 @@ export class OntologyService {
         const traverse = (nodes: OntologyNode[]) => {
             for (const node of nodes) {
                 if (node.attributes) {
-                    // Optimized loop over keys
                     for (const key in node.attributes) {
                         if (Object.prototype.hasOwnProperty.call(node.attributes, key)) {
-                            // Store first definition (precedence to earlier nodes)
                             if (!index.has(key)) {
                                 index.set(key, node.attributes[key]);
                             }
@@ -79,33 +77,29 @@ export class OntologyService {
         return index;
     }
 
+    private withCache<T>(cache: Map<string, T>, key: string, compute: () => T): T {
+        if (cache.has(key)) return cache.get(key)!;
+        const value = compute();
+        cache.set(key, value);
+        return value;
+    }
+
     /**
      * Get widget type and metadata for an attribute
      */
     getWidgetMetadata(attributeKey: string): WidgetMetadata | null {
-        // Check cache first
-        if (this.widgetMetadataCache.has(attributeKey)) {
-            return this.widgetMetadataCache.get(attributeKey)!;
-        }
+        return this.withCache(this.widgetMetadataCache, attributeKey, () => {
+            const attr = this.attributeIndex.get(attributeKey);
+            if (!attr) return null;
 
-        const attr = this.attributeIndex.get(attributeKey);
-        if (!attr) {
-            // Cache the null result
-            this.widgetMetadataCache.set(attributeKey, null);
-            return null;
-        }
-
-        const widgetType = WIDGET_MAPPING[attr.type] || 'text-input';
-        const metadata = {
-            type: widgetType,
-            icon: attr.icon,
-            options: attr.type === 'enum' ? attr.options : undefined,
-            operators: [...attr.operators.real, ...attr.operators.imaginary]
-        };
-
-        // Cache the result
-        this.widgetMetadataCache.set(attributeKey, metadata);
-        return metadata;
+            const widgetType = WIDGET_MAPPING[attr.type] || 'text-input';
+            return {
+                type: widgetType,
+                icon: attr.icon,
+                options: attr.type === 'enum' ? attr.options : undefined,
+                operators: [...attr.operators.real, ...attr.operators.imaginary]
+            };
+        });
     }
 
     /**
@@ -127,23 +121,11 @@ export class OntologyService {
      * Get enum options for an attribute
      */
     getEnumOptions(attributeKey: string): string[] | null {
-        // Check cache first
-        if (this.enumOptionsCache.has(attributeKey)) {
-            return this.enumOptionsCache.get(attributeKey)!;
-        }
-
-        const attr = this.attributeIndex.get(attributeKey);
-        if (!attr || attr.type !== 'enum') {
-            // Cache the null result
-            this.enumOptionsCache.set(attributeKey, null);
-            return null;
-        }
-
-        const options = attr.options || [];
-
-        // Cache the result
-        this.enumOptionsCache.set(attributeKey, options);
-        return options;
+        return this.withCache(this.enumOptionsCache, attributeKey, () => {
+            const attr = this.attributeIndex.get(attributeKey);
+            if (!attr || attr.type !== 'enum') return null;
+            return attr.options || [];
+        });
     }
 
     /**
@@ -168,43 +150,31 @@ export class OntologyService {
     getFuzzyMatches(input: string, limit: number = 5): string[] {
         const cacheKey = `${input}_${limit}`;
 
-        // Check cache first
-        if (this.fuzzyMatchesCache.has(cacheKey)) {
-            return this.fuzzyMatchesCache.get(cacheKey)!;
-        }
+        return this.withCache(this.fuzzyMatchesCache, cacheKey, () => {
+            const lower = input.toLowerCase();
+            const scoredMatches: Array<{ key: string, score: number }> = [];
 
-        const lower = input.toLowerCase();
-        const scoredMatches: Array<{ key: string, score: number }> = [];
+            for (const [key, attr] of this.attributeIndex) {
+                const keyLower = key.toLowerCase();
+                let score = 0;
 
-        for (const [key, attr] of this.attributeIndex) {
-            const keyLower = key.toLowerCase();
-            let score = 0;
+                if (keyLower === lower) score = 100;
+                else if (keyLower.startsWith(lower)) score = 80;
+                else if (keyLower.includes(lower)) score = 60;
+                else if (attr.description?.toLowerCase().includes(lower)) score = 40;
 
-            // Exact match
-            if (keyLower === lower) score = 100;
-            // Starts with
-            else if (keyLower.startsWith(lower)) score = 80;
-            // Contains
-            else if (keyLower.includes(lower)) score = 60;
-            // Description match
-            else if (attr.description?.toLowerCase().includes(lower)) score = 40;
-
-            if (score > 0) {
-                scoredMatches.push({ key, score });
+                if (score > 0) {
+                    scoredMatches.push({ key, score });
+                }
             }
-        }
 
-        // Sort by score desc, then alphabetically
-        scoredMatches.sort((a, b) => {
-            if (a.score !== b.score) return b.score - a.score;
-            return a.key.localeCompare(b.key);
+            scoredMatches.sort((a, b) => {
+                if (a.score !== b.score) return b.score - a.score;
+                return a.key.localeCompare(b.key);
+            });
+
+            return scoredMatches.slice(0, limit).map(m => m.key);
         });
-
-        const result = scoredMatches.slice(0, limit).map(m => m.key);
-
-        // Cache the result
-        this.fuzzyMatchesCache.set(cacheKey, result);
-        return result;
     }
 
     /**
@@ -235,9 +205,11 @@ export class OntologyService {
         const attr = this.attributeIndex.get(attributeKey);
         if (!attr) return [];
 
-        if (type === 'real') return attr.operators.real;
-        if (type === 'imaginary') return attr.operators.imaginary;
-        return [...attr.operators.real, ...attr.operators.imaginary];
+        switch (type) {
+            case 'real': return attr.operators.real;
+            case 'imaginary': return attr.operators.imaginary;
+            default: return [...attr.operators.real, ...attr.operators.imaginary];
+        }
     }
 
     /**
@@ -268,10 +240,8 @@ export class OntologyService {
      */
     recordUsage(keys: string[]) {
         for (const key of keys) {
-            // Update individual usage
             this.usageStats.set(key, (this.usageStats.get(key) || 0) + 1);
 
-            // Update co-occurrence
             let coMap = this.coOccurrenceStats.get(key);
             if (!coMap) {
                 coMap = new Map();
@@ -289,7 +259,7 @@ export class OntologyService {
     /**
      * Infer type of a property based on its values
      */
-    inferType(key: string, values: any[]): string {
+    inferType(key: string, values: any[]): PropertyType {
         if (!values || values.length === 0) return 'string';
 
         let numberCount = 0;
@@ -302,7 +272,6 @@ export class OntologyService {
             } else {
                 const valStr = String(v);
                 if (!isNaN(parseFloat(valStr))) numberCount++;
-                // Check if it's an ISO date string
                 if (ISODateRegex.test(valStr) && !isNaN(Date.parse(valStr))) dateCount++;
             }
         }

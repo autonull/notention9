@@ -40,7 +40,6 @@ export class SkillExecutor {
     private capabilityManager: CapabilityManager;
     private logger = Logger.getInstance();
 
-    // Callback for result notes
     private onResultNotes?: (notes: Note[], sourceNote: Note, skill: SkillDefinition | BaseSkill) => void;
 
     constructor(
@@ -65,17 +64,13 @@ export class SkillExecutor {
     } = {}): Promise<SkillExecutionResult[]> {
         const { autoExecute = true, confidenceThreshold = 50 } = options;
 
-        // Find matching skills
         const matches = this.matcher.matchSkills(note);
-
-        // Filter by confidence
         const qualified = matches.filter(m => m.confidence >= confidenceThreshold);
 
         if (qualified.length === 0) {
-            return []; // No matching skills
+            return [];
         }
 
-        // Execute each matching skill
         const results: SkillExecutionResult[] = [];
 
         for (const match of qualified) {
@@ -97,12 +92,9 @@ export class SkillExecutor {
         const { skill } = match;
 
         try {
-            // Handle both legacy skill definitions and new base skill classes
             if ('execute' in skill && typeof skill.execute === 'function') {
-                // Legacy skill definition
                 return await this.executeLegacySkill(note, skill as SkillDefinition, match, autoExecute);
             } else if (skill instanceof BaseSkill) {
-                // New base skill class
                 return await this.executeBaseSkill(note, skill, autoExecute);
             } else {
                 return {
@@ -110,11 +102,12 @@ export class SkillExecutor {
                     error: 'Invalid skill type'
                 };
             }
-        } catch (error: any) {
-            this.logger.error(`[SkillExecutor] Error executing skill:`, error);
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            this.logger.error(`[SkillExecutor] Error executing skill:`, error instanceof Error ? error : new Error(errorMessage));
             return {
                 success: false,
-                error: error.message || 'Unknown error'
+                error: errorMessage
             };
         }
     }
@@ -129,7 +122,6 @@ export class SkillExecutor {
         autoExecute: boolean
     ): Promise<SkillExecutionResult> {
         try {
-            // 1. Check approval
             if (autoExecute) {
                 const approved = await this.approvalManager.requestApproval(skill, match);
                 if (!approved) {
@@ -140,11 +132,10 @@ export class SkillExecutor {
                 }
             }
 
-            // 2. Privacy check (note may contain sensitive data)
             const canTransmit = await this.networkGate.canTransmit(
                 note,
                 `${skill.name} (external API)`,
-                undefined // Will throw PrivacyError if private and no callback
+                undefined
             ).catch(() => false);
 
             if (!canTransmit && note.privacy !== 'public') {
@@ -155,10 +146,8 @@ export class SkillExecutor {
                 };
             }
 
-            // 3. Map note properties to external API parameters
             const exportParams = this.matcher.mapToExternal(note, skill);
 
-            // 4. Execute skill
             if (!skill.execute) {
                 return {
                     success: false,
@@ -170,10 +159,8 @@ export class SkillExecutor {
 
             const data = await skill.execute(note.properties);
 
-            // 5. Transform results to notes
             const resultNotes = this.transformResults(data, note, skill);
 
-            // 6. Notify callback
             if (resultNotes.length > 0 && this.onResultNotes) {
                 this.onResultNotes(resultNotes, note, skill);
             }
@@ -183,11 +170,12 @@ export class SkillExecutor {
                 data,
                 resultNotes
             };
-        } catch (error: any) {
-            this.logger.error(`[SkillExecutor] Error executing ${skill.name}:`, error);
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            this.logger.error(`[SkillExecutor] Error executing ${skill.name}:`, error instanceof Error ? error : new Error(errorMessage));
             return {
                 success: false,
-                error: error.message || 'Unknown error'
+                error: errorMessage
             };
         }
     }
@@ -201,11 +189,10 @@ export class SkillExecutor {
         autoExecute: boolean
     ): Promise<SkillExecutionResult> {
         try {
-            // 2. Privacy check (note may contain sensitive data)
             const canTransmit = await this.networkGate.canTransmit(
                 note,
                 `${skill.getName()} (external API)`,
-                undefined // Will throw PrivacyError if private and no callback
+                undefined
             ).catch(() => false);
 
             if (!canTransmit && note.privacy !== 'public') {
@@ -216,31 +203,18 @@ export class SkillExecutor {
                 };
             }
 
-            // 3. Capability Check (New Phase 2)
-            // Extract permissions from the note
             const permissions = this.capabilityManager.extractPermissions(note.properties);
-
-            // Note: Currently skills don't declare required capabilities explicitly in a standard way
-            // We assume basic 'browser:navigate' for now if it's a browser skill
-            // In future, skill.getRequiredCapabilities() should be used.
-            // For MVP: We check if the note *explicitly grants* permission if the skill is sensitive.
-
-            // This is a placeholder for the full check logic
-            // const requiredCaps = skill.getRequiredCapabilities();
-            // const hasPermission = this.capabilityManager.checkPermission(..., permissions);
 
             this.logger.info(`[SkillExecutor] Executing ${skill.getName()} with properties:`, note.properties);
 
             const data = await skill.execute(note.properties);
 
-            // 5. Transform results to notes using the skill's own method
             const properties = skill['mapExternalToProperties']
-                ? skill['mapExternalToProperties'](data, {}) // This would need to be customized per skill
+                ? skill['mapExternalToProperties'](data, {})
                 : this.matcher.mapFromExternal(data, { id: skill.getId(), name: skill.getName(), description: skill.getDescription(), semanticPattern: {}, exportMapping: {}, importMapping: {} } as SkillDefinition);
 
             const resultNotes = [this.createResultNote(data, note, properties, skill)];
 
-            // 6. Notify callback
             if (resultNotes.length > 0 && this.onResultNotes) {
                 this.onResultNotes(resultNotes, note, skill);
             }
@@ -268,24 +242,18 @@ export class SkillExecutor {
         return {
             id: crypto.randomUUID(),
             title: this.generateTitle(properties, skill),
-            content: JSON.stringify(data, null, 2), // Raw data in content
+            content: JSON.stringify(data, null, 2),
             tags: ['#skill-result', `#${skillId}`],
             properties,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
-
-            // Provenance tracking
             source: {
                 type: 'skill',
                 identifier: `${skillId}-v1`,
                 url: (data as any).url || undefined,
                 timestamp: Date.now()
             },
-
-            // Privacy: Results default to same as source note
             privacy: sourceNote.privacy,
-
-            // Priority: Normal
             priority: 0.5
         };
     }
@@ -305,10 +273,7 @@ export class SkillExecutor {
         const notes: Note[] = [];
 
         for (const item of data) {
-            // Map external data → ontology properties
             const properties = this.matcher.mapFromExternal(item, skill);
-
-            // Create result note
             notes.push(this.createResultNote(item, sourceNote, properties, skill));
         }
 

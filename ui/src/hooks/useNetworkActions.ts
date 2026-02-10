@@ -1,14 +1,14 @@
-import { useCallback } from 'react';
-import type { Note, NostrEvent } from '@notention/core';
-import { extractPropertiesFromTags, convertEventToNote } from '@notention/core';
-import { useNotes } from './useNotes';
-import { useToast } from './useToast';
-import { useView } from './useViewContext';
+import {useCallback} from 'react';
+import type {NostrEvent, Note} from '@notention/core';
+import {convertEventToNote, extractPropertiesFromTags} from '@notention/core';
+import {useNotes} from './useNotes';
+import {useToast} from './useToast';
+import {useView} from './useViewContext';
 
 export function useNetworkActions() {
-    const { addNote, updateNote } = useNotes();
-    const { addToast } = useToast();
-    const { setSelectedNoteId, setActiveView } = useView();
+    const {addNote, updateNote} = useNotes();
+    const {addToast} = useToast();
+    const {setSelectedNoteId, setActiveView} = useView();
 
     const applyMatchToNote = useCallback((targetNote: Note, event: NostrEvent) => {
         const props = extractPropertiesFromTags(event.tags);

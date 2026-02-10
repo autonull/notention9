@@ -1,7 +1,5 @@
 import { Tool } from '@notention/core/src/types';
-import { Logger } from '@notention/core';
-
-const logger = Logger.getInstance();
+import { log, error } from '@notention/core';
 
 export function createTool(config: Partial<Tool> & { name: string; description: string; execute: any }): Tool {
     return {
@@ -13,10 +11,4 @@ export function createTool(config: Partial<Tool> & { name: string; description: 
     };
 }
 
-export function log(context: string, message: string, data?: any) {
-    logger.info(`[${context}] ${message}`, data);
-}
-
-export function error(context: string, message: string, err?: any) {
-    logger.error(`[${context}] ERROR: ${message}`, err instanceof Error ? err : new Error(String(err)));
-}
+export { log, error };

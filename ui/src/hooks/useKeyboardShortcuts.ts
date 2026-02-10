@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import {useEffect} from 'react';
 
 interface UseKeyboardShortcutsProps {
     onNewNote: () => void;
@@ -15,18 +15,18 @@ interface UseKeyboardShortcutsProps {
 }
 
 export const useKeyboardShortcuts = ({
-    onNewNote,
-    onSearch,
-    onCommandPalette,
-    onPropertyPalette,
-    onSave,
-    onPreviousNote,
-    onNextNote,
-    onBackToList,
-    onToggleSidebar,
-    onToggleDeveloperMode,
-    onEscape
-}: UseKeyboardShortcutsProps) => {
+                                         onNewNote,
+                                         onSearch,
+                                         onCommandPalette,
+                                         onPropertyPalette,
+                                         onSave,
+                                         onPreviousNote,
+                                         onNextNote,
+                                         onBackToList,
+                                         onToggleSidebar,
+                                         onToggleDeveloperMode,
+                                         onEscape
+                                     }: UseKeyboardShortcutsProps) => {
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             const isMeta = e.metaKey || e.ctrlKey;

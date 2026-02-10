@@ -1,12 +1,10 @@
-import React, { useState, useMemo } from 'react';
-import { Property } from '@notention/core';
-import { QueryBuilder as QueryBuilderService, FilterSuggestion } from '@notention/core';
-import { DEFAULT_ONTOLOGY } from '@notention/core';
-import { PropertyInput } from './PropertyInput';
+import React, {useMemo, useState} from 'react';
+import {DEFAULT_ONTOLOGY, FilterSuggestion, Property, QueryBuilder as QueryBuilderService} from '@notention/core';
+import {PropertyInput} from './PropertyInput';
 
 /**
  * QueryBuilderUI - Visual query builder powered by ontology
- * 
+ *
  * Suggests filters based on ontology, validates queries, shows contextual suggestions.
  */
 
@@ -19,10 +17,10 @@ interface QueryBuilderUIProps {
 const queryBuilder = new QueryBuilderService(DEFAULT_ONTOLOGY);
 
 export const QueryBuilderUI: React.FC<QueryBuilderUIProps> = ({
-    initialProperties = [],
-    onChange,
-    onValidate
-}) => {
+                                                                  initialProperties = [],
+                                                                  onChange,
+                                                                  onValidate
+                                                              }) => {
     const [properties, setProperties] = useState<Property[]>(initialProperties);
     const [showSuggestions, setShowSuggestions] = useState(false);
 
@@ -57,7 +55,7 @@ export const QueryBuilderUI: React.FC<QueryBuilderUIProps> = ({
 
     const updateProperty = (index: number, updates: Partial<Property>) => {
         const updated = properties.map((prop, i) =>
-            i === index ? { ...prop, ...updates } : prop
+            i === index ? {...prop, ...updates} : prop
         );
         setProperties(updated);
         onChange(updated);
@@ -97,8 +95,8 @@ export const QueryBuilderUI: React.FC<QueryBuilderUIProps> = ({
                                 attributeKey={prop.key}
                                 value={prop.values[0] || ''}
                                 operator={prop.operator}
-                                onChange={(value) => updateProperty(index, { values: [value] })}
-                                onOperatorChange={(operator) => updateProperty(index, { operator })}
+                                onChange={(value) => updateProperty(index, {values: [value]})}
+                                onOperatorChange={(operator) => updateProperty(index, {operator})}
                             />
 
                             <button

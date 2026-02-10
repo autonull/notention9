@@ -1,7 +1,7 @@
 import React from 'react';
-import { Modal } from './Modal';
-import { Button } from './Button';
-import type { Note } from '@notention/core';
+import {Modal} from './Modal';
+import {Button} from './Button';
+import type {Note} from '@notention/core';
 
 interface PrivacyConfirmModalProps {
     isOpen: boolean;
@@ -12,12 +12,12 @@ interface PrivacyConfirmModalProps {
 }
 
 export function PrivacyConfirmModal({
-    isOpen,
-    onClose,
-    onConfirm,
-    note,
-    destination,
-}: PrivacyConfirmModalProps) {
+                                        isOpen,
+                                        onClose,
+                                        onConfirm,
+                                        note,
+                                        destination,
+                                    }: PrivacyConfirmModalProps) {
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="⚠️ Privacy Warning">
             <div className="space-y-6">

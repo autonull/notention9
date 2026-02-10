@@ -1,4 +1,4 @@
-import { Extension, InputRule } from '@tiptap/core';
+import {Extension, InputRule} from '@tiptap/core';
 
 export const GhostTextExtension = Extension.create({
     name: 'ghostText',
@@ -7,7 +7,7 @@ export const GhostTextExtension = Extension.create({
         return [
             new InputRule({
                 find: /^(Buy|Call|Email|Meet) (.+)$/i,
-                handler: ({ state, range, match }) => {
+                handler: ({state, range, match}) => {
                     const action = match[1].toLowerCase();
                     const object = match[2];
 
