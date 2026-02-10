@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
-import { publishNoteToNostr } from '../nostr.js';
-import { Note } from '../types/index.js';
-import { getPrivacyTags, hashValue } from '../nostr/privacy.js';
+import { publishNoteToNostr } from '../src/nostr.js';
+import { Note } from '../src/types/index.js';
+import { getPrivacyTags, hashValue } from '../src/nostr/privacy.js';
 
 // Mock nostr-tools pool
 vi.mock('../nostr.js', async (importOriginal) => {

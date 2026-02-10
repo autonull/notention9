@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { SkillToolAdapter } from '../SkillToolAdapter.js';
+import { SkillToolAdapter } from '../../src/skills/SkillToolAdapter.js';
 import type { ActionSequence } from '@notention/core/src/skills/types';
 
 describe('SkillToolAdapter', () => {

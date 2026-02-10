@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import * as ingest from '../ingest.js';
+import * as ingest from '../../src/tools/ingest.js';
 import fs from 'fs/promises';
-import { CliClient } from '../../client.js';
-import * as utils from '../../utils.js';
+import { CliClient } from '../../src/client.js';
+import * as utils from '../../src/utils.js';
 
 vi.mock('fs/promises');
-vi.mock('../../client.js');
-vi.mock('../../utils.js');
+vi.mock('../../src/client.js');
+vi.mock('../../src/utils.js');
 
 describe('ingest tools', () => {
     let mockCli: CliClient;

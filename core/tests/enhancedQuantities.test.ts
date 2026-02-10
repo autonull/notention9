@@ -6,7 +6,7 @@ import {
   divideQuantities,
   createCompoundQuantity,
   convertTemperature
-} from '../quantities.js';
+} from '../src/quantities.js';
 import { describe, test, expect } from 'vitest';
 
 describe('Enhanced Quantities System Tests', () => {

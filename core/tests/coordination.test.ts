@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import type { Note } from '../types/index.js';
-import { MatchEngine } from '../matching/MatchEngine.js';
+import type { Note } from '../src/types/index.js';
+import { MatchEngine } from '../src/matching/MatchEngine.js';
 
 describe('Phase 2.3: Multi-Instance Coordination', () => {
     // Shared state
@@ -53,16 +53,16 @@ describe('Phase 2.3: Multi-Instance Coordination', () => {
         });
 
         // 2. Mock NetworkGate
-        vi.doMock('../networkGate.js', () => ({
+        vi.doMock('../src/networkGate.js', () => ({
             NetworkGate: class { canTransmit() { return Promise.resolve(true); } },
             PrivacyError: class extends Error { }
         }));
 
         // 3. Import modules
-        const nostrModule = await import('../nostr.js');
+        const nostrModule = await import('../src/nostr.js');
         publishNoteToNostr = nostrModule.publishNoteToNostr;
 
-        const discoveryModule = await import('../nostr/discovery.js');
+        const discoveryModule = await import('../src/nostr/discovery.js');
         NetworkDiscoveryService = discoveryModule.NetworkDiscoveryService;
     });
 

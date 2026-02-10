@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { SocketController } from '../SocketController.js';
+import { SocketController } from '../../src/server/SocketController.js';
 import { WebSocket } from 'ws';
-import { PersistenceService } from '../../persistence.js';
+import { PersistenceService } from '../../src/persistence.js';
 
 // Mocks
-vi.mock('../../persistence.js');
+vi.mock('../../src/persistence.js');
 vi.mock('ws');
 
 describe('SocketController', () => {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { DynamicSkill } from '../DynamicSkill.js';
+import { DynamicSkill } from '../../src/skills/DynamicSkill.js';
 import type { Note } from '@notention/core';
 
 describe('DynamicSkill', () => {
@@ -79,12 +79,7 @@ describe('DynamicSkill', () => {
             properties: [{ key: 'anyprop', operator: 'is', values: ['foo'] }]
         } as unknown as Note;
 
-        expect(skill.canHandle(note)).toBe(0.5); // Max 1.0 but only one condition met (property) -> wait, logic adds 0.5 per condition type?
-        // Let's re-read code:
-        // if tags match -> +0.5
-        // if props match -> +0.5
-        // Math.min(score, 1.0)
-        // So property only match is 0.5.
+        expect(skill.canHandle(note)).toBe(0.5);
     });
 
     it('should export actions with prompt replacement', () => {

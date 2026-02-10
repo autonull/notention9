@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { generateTemplatesFromOntology } from '../TemplateGenerator.js';
-import { OntologyNode } from '../../types/index.js';
+import { generateTemplatesFromOntology } from '../../src/templates/TemplateGenerator.js';
+import { OntologyNode } from '../../src/templates/../types/index.js';
 
 describe('TemplateGenerator', () => {
     const mockOntology: OntologyNode[] = [

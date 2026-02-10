@@ -1,4 +1,4 @@
-import { parseProperties, extractProperties } from '../parsing.js';
+import { parseProperties, extractProperties } from '../src/parsing.js';
 import { describe, test, expect } from 'vitest';
 
 describe('Parsing Tests', () => {
