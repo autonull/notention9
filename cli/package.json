@@ -42,6 +42,7 @@
     "@types/marked-terminal": "^6.1.1",
     "@types/node": "^20.11.0",
     "tsx": "^4.19.2",
-    "typescript": "~5.9.2"
+    "typescript": "~5.9.2",
+    "vitest": "^4.0.18"
   }
 }

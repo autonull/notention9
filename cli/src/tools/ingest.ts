@@ -8,6 +8,20 @@ import { resolveSafePath, isBinary, log } from '../utils.js';
 const IGNORED_DIRS = new Set(['.git', 'node_modules', 'dist', 'build', 'coverage', '.DS_Store', '__pycache__']);
 const IGNORED_EXTS = new Set(['.exe', '.dll', '.so', '.dylib', '.bin', '.png', '.jpg', '.jpeg', '.gif', '.ico', '.zip', '.tar', '.gz']);
 
+const TAG_MAP: Record<string, string[]> = {
+    '.ts': ['code', 'typescript'],
+    '.js': ['code', 'javascript'],
+    '.tsx': ['code', 'typescript', 'react'],
+    '.jsx': ['code', 'javascript', 'react'],
+    '.md': ['document'],
+    '.txt': ['document'],
+    '.py': ['code', 'python'],
+    '.json': ['data', 'json'],
+    '.html': ['code', 'web'],
+    '.css': ['code', 'web'],
+    '.scss': ['code', 'web']
+};
+
 interface WalkOptions {
     maxDepth: number;
     currentDepth: number;
@@ -20,6 +34,14 @@ interface WalkOptions {
 interface WalkResult {
     processedCount: number;
     notes: string[];
+}
+
+function getTagsForFile(ext: string): string[] {
+    const tags = ['ingested', 'cli'];
+    if (TAG_MAP[ext]) {
+        tags.push(...TAG_MAP[ext]);
+    }
+    return tags;
 }
 
 /**
@@ -36,28 +58,7 @@ export async function ingestFile(filePath: string, cli: CliClient, dryRun: boole
         const fileContent = await fs.readFile(filePath, 'utf-8');
         const ext = path.extname(filePath).toLowerCase();
         const filename = path.basename(filePath);
-
-        // Auto-tagging based on extension
-        const tags = ['ingested', 'cli'];
-
-        const TAG_MAP: Record<string, string[]> = {
-            '.ts': ['code', 'typescript'],
-            '.js': ['code', 'javascript'],
-            '.tsx': ['code', 'typescript', 'react'],
-            '.jsx': ['code', 'javascript', 'react'],
-            '.md': ['document'],
-            '.txt': ['document'],
-            '.py': ['code', 'python'],
-            '.json': ['data', 'json'],
-            '.html': ['code', 'web'],
-            '.css': ['code', 'web'],
-            '.scss': ['code', 'web']
-        };
-
-        if (TAG_MAP[ext]) {
-            tags.push(...TAG_MAP[ext]);
-        }
-
+        const tags = getTagsForFile(ext);
         const title = `Ingested: ${filename}`;
 
         if (dryRun) {
@@ -104,10 +105,7 @@ async function walkDirectory(
     cli: CliClient,
     options: WalkOptions
 ): Promise<WalkResult> {
-    if (options.currentDepth > options.maxDepth) {
-        return { processedCount: options.processedCount, notes: [] };
-    }
-    if (options.processedCount >= options.maxFiles) {
+    if (options.currentDepth > options.maxDepth || options.processedCount >= options.maxFiles) {
         return { processedCount: options.processedCount, notes: [] };
     }
 

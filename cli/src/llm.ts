@@ -219,18 +219,19 @@ export class LlmSession {
     private parseToolCalls(text: string): ToolCall[] {
         const jsonMatches = [...text.matchAll(REGEX.JSON_BLOCK)];
         const matches = jsonMatches.length > 0 ? jsonMatches : [...text.matchAll(REGEX.FALLBACK)];
+        const toolCalls: ToolCall[] = [];
 
-        return matches.reduce((acc, match) => {
+        for (const match of matches) {
             try {
                 const call = JSON.parse(match[1]);
                 if (call && typeof call.tool === 'string') {
-                    acc.push(call);
+                    toolCalls.push(call);
                 }
             } catch (e) {
                 log.error("Failed to parse tool JSON snippet", e);
             }
-            return acc;
-        }, [] as ToolCall[]);
+        }
+        return toolCalls;
     }
 
     private async processToolCall(call: ToolCall) {
