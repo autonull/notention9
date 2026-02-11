@@ -19,11 +19,10 @@ export function getUpdatedSettings(notes: Note[], currentSettings: AppSettings):
     // Actually, iterate in normal order (newest first usually) means newest wins.
     // Let's just iterate and let the last one win.
 
-    // Reverse to apply oldest first, so newest (last in array if sorted by date desc?)
-    // Actually notes from useNotes are usually sorted by updatedAt desc.
-    // So the first note in the array is the latest.
-    // We should process in reverse order so the latest one overrides previous ones.
-    const sortedNotes = [...configNotes].reverse();
+    // Sort oldest to newest so latest updates override earlier ones
+    const sortedNotes = [...configNotes].sort((a, b) =>
+        new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()
+    );
 
     for (const note of sortedNotes) {
         for (const prop of note.properties) {
