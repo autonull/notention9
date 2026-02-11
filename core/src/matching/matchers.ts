@@ -9,7 +9,10 @@ export interface PropertyMatch {
 }
 
 const parseNumber = (val: string): number | null => {
-    const num = parseFloat(val);
+    // Extract first number found in string to handle "100 USD", "$100", etc.
+    const match = val.match(/-?\d+(\.\d+)?/);
+    if (!match) return null;
+    const num = parseFloat(match[0]);
     return isNaN(num) ? null : num;
 };
 
@@ -19,6 +22,68 @@ const createMatch = (
     compatibility: number,
     reason: string
 ): PropertyMatch => ({ requestProp, offerProp, compatibility, reason });
+
+const levenshteinDistance = (a: string, b: string): number => {
+    if (a.length === 0) return b.length;
+    if (b.length === 0) return a.length;
+
+    const matrix = [];
+
+    for (let i = 0; i <= b.length; i++) {
+        matrix[i] = [i];
+    }
+
+    for (let j = 0; j <= a.length; j++) {
+        matrix[0][j] = j;
+    }
+
+    for (let i = 1; i <= b.length; i++) {
+        for (let j = 1; j <= a.length; j++) {
+            if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                matrix[i][j] = matrix[i - 1][j - 1];
+            } else {
+                matrix[i][j] = Math.min(
+                    matrix[i - 1][j - 1] + 1, // substitution
+                    Math.min(
+                        matrix[i][j - 1] + 1, // insertion
+                        matrix[i - 1][j] + 1 // deletion
+                    )
+                );
+            }
+        }
+    }
+
+    return matrix[b.length][a.length];
+};
+
+const CANONICAL: Record<string, string> = {
+    js: 'javascript',
+    javascript: 'javascript',
+    ts: 'typescript',
+    typescript: 'typescript',
+    py: 'python',
+    python: 'python',
+    react: 'react',
+    reactjs: 'react',
+    node: 'nodejs',
+    nodejs: 'nodejs',
+    dev: 'developer',
+    developer: 'developer',
+    engineer: 'developer',
+    eng: 'engineer',
+    swe: 'software engineer',
+    'software engineer': 'software engineer',
+    remote: 'remote',
+    wfh: 'remote',
+    distributed: 'remote',
+};
+
+const normalizeTerm = (term: string): string => {
+    if (!term) return '';
+    const lower = term.toLowerCase().trim();
+    const clean = lower.replace(/[^a-z0-9\s]/g, '');
+    return CANONICAL[clean] || clean;
+};
 
 export const PropertyMatchers = {
     evaluateNumber: (request: Property, offer: Property): PropertyMatch => {
@@ -130,27 +195,50 @@ export const PropertyMatchers = {
     evaluateString: (request: Property, offer: Property): PropertyMatch => {
         if (!request.values[0]) return createMatch(request, offer, 0, 'Missing constraint value');
 
-        const normalizedOffer = offer.values.map(v => v.toLowerCase().trim());
-        const normalizedReq = request.values[0].toLowerCase().trim();
+        const offerVal = offer.values[0];
+        const reqVal = request.values[0];
+
+        const normalizedOffer = normalizeTerm(offerVal);
+        const normalizedReq = normalizeTerm(reqVal);
 
         if (request.operator === 'contains') {
-            return normalizedOffer.some(v => v.includes(normalizedReq))
-                ? createMatch(request, offer, 1, `Contains '${request.values[0]}'`)
-                : createMatch(request, offer, -1, `Does not contain '${request.values[0]}'`);
+            // Check normalized contains
+            if (normalizedOffer.includes(normalizedReq)) {
+                return createMatch(request, offer, 1, `Contains '${reqVal}'`);
+            }
+            // Fallback to simple inclusion
+            return offerVal.toLowerCase().includes(reqVal.toLowerCase())
+                ? createMatch(request, offer, 1, `Contains '${reqVal}'`)
+                : createMatch(request, offer, -1, `Does not contain '${reqVal}'`);
         }
 
         if (request.operator === 'excludes') {
-            return normalizedOffer.some(v => v.includes(normalizedReq))
-                ? createMatch(request, offer, -1, `Should exclude '${request.values[0]}'`)
-                : createMatch(request, offer, 1, `Excludes '${request.values[0]}'`);
+             if (normalizedOffer.includes(normalizedReq) || offerVal.toLowerCase().includes(reqVal.toLowerCase())) {
+                 return createMatch(request, offer, -1, `Should exclude '${reqVal}'`);
+             }
+             return createMatch(request, offer, 1, `Excludes '${reqVal}'`);
         }
 
-        const isMatch = normalizedOffer.some(v =>
-            v === normalizedReq || v.includes(normalizedReq) || normalizedReq.includes(v)
-        );
+        // Exact or Fuzzy match
+        if (normalizedOffer === normalizedReq) {
+            return createMatch(request, offer, 1, 'Exact synonym match');
+        }
 
-        return isMatch
-            ? createMatch(request, offer, 1, 'String match')
-            : createMatch(request, offer, 0, 'No match');
+        // Fuzzy Match
+        const dist = levenshteinDistance(normalizedOffer, normalizedReq);
+        const maxLen = Math.max(normalizedOffer.length, normalizedReq.length);
+        const allowedDist = maxLen > 7 ? 2 : maxLen > 3 ? 1 : 0;
+
+        if (dist <= allowedDist) {
+            const score = 1 - (dist / maxLen); // Discount slightly for fuzzy match
+            return createMatch(request, offer, score, `Fuzzy match (${Math.round(score * 100)}%)`);
+        }
+
+        // Substring match as fallback
+        if (normalizedOffer.includes(normalizedReq) || normalizedReq.includes(normalizedOffer)) {
+             return createMatch(request, offer, 0.8, 'Partial match');
+        }
+
+        return createMatch(request, offer, 0, 'No match');
     }
 };

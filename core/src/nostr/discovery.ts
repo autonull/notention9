@@ -51,10 +51,18 @@ export class NetworkDiscoveryService {
     ): Promise<Filter | null> {
         if (localNote.properties.length === 0) return null;
 
+        // Query for notes that have relevant properties (indexed via 't' tag with 'prop:' prefix)
+        const propertyKeys = localNote.properties.map(p => `prop:${p.key}`);
+
         const filter: Filter = {
             kinds: [35000],
             limit: 50
         };
+
+        // Only query public property keys if not in private mode
+        if (privacyMode !== 'private') {
+            filter['#t'] = propertyKeys;
+        }
 
         if (privacyMode === 'private') {
             // Level 2: Secret

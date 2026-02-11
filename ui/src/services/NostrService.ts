@@ -6,7 +6,11 @@ import {
     Logger,
     Note,
     publishNoteToNostr,
-    SEMANTIC_NOTE_KIND
+    SEMANTIC_NOTE_KIND,
+    MatchEngine,
+    NetworkDiscoveryService,
+    ScoredMatch,
+    OntologyNode
 } from '@notention/core';
 
 class NostrService {
@@ -50,6 +54,17 @@ class NostrService {
             await publishNoteToNostr(note, this.privkey, this.relays);
         } catch (e) {
             this.logger.warn("Failed to publish note to Nostr", e instanceof Error ? e : new Error(String(e)));
+        }
+    }
+
+    async findMatches(note: Note, ontology: OntologyNode[]): Promise<ScoredMatch[]> {
+        try {
+            const engine = new MatchEngine(ontology);
+            const discovery = new NetworkDiscoveryService(engine);
+            return await discovery.discoverMatches(note, this.relays, note.privacy);
+        } catch (e) {
+            this.logger.error("Failed to discover matches", e instanceof Error ? e : new Error(String(e)));
+            return [];
         }
     }
 

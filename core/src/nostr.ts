@@ -114,9 +114,17 @@ export async function publishNoteToNostr(
   // Calculate privacy tags
   const propertyTags = await getPrivacyTags(note.properties, privacyMode);
 
+  // Add indexable tags for properties to allow efficient discovery
+  // We use 't' tags with a prefix 'prop:' so we can use standard hashtag indexing on relays.
+  // Note: For 'private' mode, we do NOT expose property keys.
+  const propertyIndexTags = privacyMode === 'private'
+    ? []
+    : note.properties.map(p => ['t', `prop:${p.key}`]);
+
   const tags: string[][] = [
     ['d', note.id],
     ...note.tags.map(t => ['t', t]),
+    ...propertyIndexTags,
     ...propertyTags
   ];
 
