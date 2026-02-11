@@ -11,8 +11,10 @@ import {EditIcon, SparklesIcon, PlusIcon} from '../common/icons';
 import {InputModal} from '../common/InputModal';
 import {ConfirmationModal} from '../common/ConfirmationModal';
 import {OntologyGraph} from '../developer/OntologyGraph';
+import {useToast} from '../../hooks/useToast';
 
 export function OntologyView() {
+    const {addToast} = useToast();
     const {
         settings,
         ontology,
@@ -196,6 +198,7 @@ export function OntologyView() {
                                                             imaginary: []
                                                         }
                                                     });
+                                                    addToast(`Added '${suggestion.key}' to ontology`, 'success');
                                                 }
                                             }}
                                         >

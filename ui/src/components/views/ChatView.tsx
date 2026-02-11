@@ -51,7 +51,7 @@ export function ChatView() {
         pubkey,
         localSelectedContact,
         contacts,
-        setContacts,
+        addContact,
         messages,
         isLoading,
         addMessage,
@@ -125,7 +125,7 @@ export function ChatView() {
                     privkey={privkey}
                     pubkey={pubkey}
                     contacts={allContacts}
-                    setContacts={setContacts}
+                    onAddContact={addContact}
                     selectedContact={fullSelectedContact}
                     onSelectContact={handleSelectContact}
                     isLoading={isLoading}

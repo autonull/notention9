@@ -10,6 +10,7 @@ import { useNoteAnalysis, Suggestion } from '../hooks/useNoteAnalysis';
 import { SuggestionItem } from './SuggestionItem';
 import { applyPropertySuggestion, applyTaskSuggestion } from '../utils/suggestionUtils';
 import { useView } from '../hooks/useViewContext';
+import { useContacts } from '../hooks/useContacts';
 
 interface SmartNoteAssistantProps {
     note: Note;
@@ -25,6 +26,7 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
     const { addToast } = useToast();
     const { settings } = useSettings();
     const { setActiveView, setSelectedChatPubkey } = useView();
+    const { contacts } = useContacts();
     const { suggestions, showSuggestions, dismissSuggestions, openSuggestions, removeSuggestion } = useNoteAnalysis(note);
     const [activeSuggestion, setActiveSuggestion] = useState<number>(0);
 
@@ -44,6 +46,11 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
             addToast('Failed to connect', 'error');
         }
     };
+
+    const handleChat = (author: string) => {
+        setActiveView('chat');
+        setSelectedChatPubkey(author);
+    }
 
     const handleFindMatches = async (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -188,7 +195,10 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
                         <span className="text-xs font-bold text-green-400">Network Matches ({matches.length})</span>
                         <button onClick={() => setShowMatches(false)} className="text-xs text-gray-500 hover:text-white">Close</button>
                     </div>
-                    {matches.map((match, idx) => (
+                    {matches.map((match, idx) => {
+                        const isContact = match.note.author && contacts.some(c => c.pubkey === match.note.author);
+
+                        return (
                         <div key={idx} className="bg-gray-900/50 p-2 rounded border border-gray-700 hover:border-gray-600">
                             <div className="flex justify-between items-start">
                                 <div className="flex flex-col gap-1">
@@ -217,15 +227,23 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        handleConnect(match);
+                                        if (isContact) {
+                                            handleChat(match.note.author!);
+                                        } else {
+                                            handleConnect(match);
+                                        }
                                     }}
-                                    className="mt-2 text-[10px] bg-blue-600 hover:bg-blue-500 text-white px-2 py-1 rounded w-full transition-colors"
+                                    className={`mt-2 text-[10px] px-2 py-1 rounded w-full transition-colors ${
+                                        isContact
+                                            ? 'bg-gray-700 hover:bg-gray-600 text-gray-200 border border-gray-600'
+                                            : 'bg-blue-600 hover:bg-blue-500 text-white'
+                                    }`}
                                 >
-                                    Connect & Chat
+                                    {isContact ? 'Chat' : 'Connect & Chat'}
                                 </button>
                             )}
                         </div>
-                    ))}
+                    )})}
                 </div>
             )}
 
