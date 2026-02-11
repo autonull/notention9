@@ -9,6 +9,7 @@ import { useSettings } from '../hooks/useSettingsContext';
 import { useNoteAnalysis, Suggestion } from '../hooks/useNoteAnalysis';
 import { SuggestionItem } from './SuggestionItem';
 import { applyPropertySuggestion, applyTaskSuggestion } from '../utils/suggestionUtils';
+import { useView } from '../hooks/useViewContext';
 
 interface SmartNoteAssistantProps {
     note: Note;
@@ -23,6 +24,7 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
 }) => {
     const { addToast } = useToast();
     const { settings } = useSettings();
+    const { setActiveView, setSelectedChatPubkey } = useView();
     const { suggestions, showSuggestions, dismissSuggestions, openSuggestions, removeSuggestion } = useNoteAnalysis(note);
     const [activeSuggestion, setActiveSuggestion] = useState<number>(0);
 
@@ -30,6 +32,18 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
     const [matches, setMatches] = useState<ScoredMatch[]>([]);
     const [isSearching, setIsSearching] = useState(false);
     const [showMatches, setShowMatches] = useState(false);
+
+    const handleConnect = async (match: ScoredMatch) => {
+        if (!match.note.author) return;
+        try {
+            await nostrService.addContact(match.note.author);
+            setActiveView('chat');
+            setSelectedChatPubkey(match.note.author);
+            addToast('Connected! Starting chat...', 'success');
+        } catch (e) {
+            addToast('Failed to connect', 'error');
+        }
+    };
 
     const handleFindMatches = async (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -199,6 +213,17 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
                                     </span>
                                 ))}
                             </div>
+                            {match.note.author && (
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleConnect(match);
+                                    }}
+                                    className="mt-2 text-[10px] bg-blue-600 hover:bg-blue-500 text-white px-2 py-1 rounded w-full transition-colors"
+                                >
+                                    Connect & Chat
+                                </button>
+                            )}
                         </div>
                     ))}
                 </div>

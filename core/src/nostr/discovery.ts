@@ -1,6 +1,6 @@
 import { Note, PrivacyLevel, Property, NostrEvent } from '../types/index.js';
 import { MatchEngine, MatchResult } from '../matching/MatchEngine.js';
-import { pool, DEFAULT_RELAYS, convertEventToNote } from '../nostr.js';
+import { pool, DEFAULT_RELAYS, convertEventToNote, queryEvents } from '../nostr.js';
 import { Filter } from 'nostr-tools';
 import { hashValue } from './privacy.js';
 import { Logger } from '../utils/logging.js';
@@ -32,7 +32,7 @@ export class NetworkDiscoveryService {
 
         try {
             // nostr-tools v2 use query, v1 list.
-            const events = await (pool as any).query(relays, filters) as NostrEvent[];
+            const events = await queryEvents(pool, relays, filters);
 
             return events
                 .map(event => this.processEvent(event, localNote, privacyMode, secretHashToProp))

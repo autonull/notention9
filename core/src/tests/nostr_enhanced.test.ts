@@ -6,9 +6,9 @@ import { NetworkDiscoveryService } from '../nostr/discovery.js';
 import { MatchEngine } from '../matching/MatchEngine.js';
 
 // Hoist mocks
-const { mockQuery, mockPublish } = vi.hoisted(() => {
+const { mockQueryEvents, mockPublish } = vi.hoisted(() => {
     return {
-        mockQuery: vi.fn(),
+        mockQueryEvents: vi.fn(),
         mockPublish: vi.fn().mockReturnValue([Promise.resolve()])
     };
 });
@@ -18,9 +18,9 @@ vi.mock('../nostr.js', async (importOriginal) => {
     const actual = await importOriginal() as any;
     return {
         ...actual,
+        queryEvents: mockQueryEvents,
         pool: {
-            publish: mockPublish,
-            query: mockQuery
+            publish: mockPublish
         }
     };
 });
@@ -103,7 +103,7 @@ describe('NetworkDiscoveryService Enhanced', () => {
     const service = new NetworkDiscoveryService(engine);
 
     beforeEach(() => {
-        mockQuery.mockReset();
+        mockQueryEvents.mockReset();
     });
 
     it('should match outgoing requests (Local Request -> Remote Offer)', async () => {
@@ -135,7 +135,7 @@ describe('NetworkDiscoveryService Enhanced', () => {
             sig: 'sig1'
         };
 
-        mockQuery.mockResolvedValue([remoteEvent]);
+        mockQueryEvents.mockResolvedValue([remoteEvent]);
 
         const matches = await service.discoverMatches(localNote);
 
@@ -175,7 +175,7 @@ describe('NetworkDiscoveryService Enhanced', () => {
             sig: 'sig1'
         };
 
-        mockQuery.mockResolvedValue([remoteEvent]);
+        mockQueryEvents.mockResolvedValue([remoteEvent]);
 
         const matches = await service.discoverMatches(localNote);
 
