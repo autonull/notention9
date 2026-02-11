@@ -1,10 +1,10 @@
-import {useCallback, useMemo, useState} from 'react';
+import {useCallback, useMemo, useState, useEffect} from 'react';
 import {useSettings} from './useSettingsContext';
 import {useNotes} from './useNotes';
 import {useGardener} from './useGardener';
-import {addNode, deleteNode, detectConflicts} from '@notention/core';
+import {addNode, deleteNode, detectConflicts, OntologyService, SuggestedAttribute} from '@notention/core';
 
-export type OntologyTab = 'graph' | 'simulator' | 'conflicts';
+export type OntologyTab = 'graph' | 'simulator' | 'conflicts' | 'suggestions';
 
 export const useOntologyView = () => {
     const {settings, setSettings} = useSettings();
@@ -13,6 +13,23 @@ export const useOntologyView = () => {
     const {evolveOntology, optimizeOntology} = useGardener();
     const [activeTab, setActiveTab] = useState<OntologyTab>('graph');
     const [isEvolving, setIsEvolving] = useState(false);
+    const [suggestions, setSuggestions] = useState<SuggestedAttribute[]>([]);
+
+    // Instantiate OntologyService to generate learning stats
+    // We recreate it when ontology or notes change to re-scan
+    // In a real app, this should probably be incremental or a singleton context
+    const ontologyService = useMemo(() => new OntologyService(ontology), [ontology]);
+
+    useEffect(() => {
+        // Feed notes to service to learn
+        // This simulates "learning from history"
+        ontologyService.recordUsage(notes.flatMap(n => n.properties.map(p => ({
+            key: p.key,
+            values: p.values
+        }))));
+
+        setSuggestions(ontologyService.getSuggestedAttributes());
+    }, [notes, ontologyService]);
 
     const usageStats = useMemo(() => {
         const stats = new Map<string, number>();
@@ -37,9 +54,6 @@ export const useOntologyView = () => {
         setIsEvolving(true);
         await evolveOntology(notes);
         setIsEvolving(false);
-        // Alert handled by hook? No, alert was here.
-        // Let's rely on Toast in useGardener if possible, or keep alert.
-        // alert('Ontology updated based on local notes!');
     };
 
     const handleOptimize = async () => {
@@ -74,7 +88,6 @@ export const useOntologyView = () => {
     }, [setSettings]);
 
     const getGraphData = useCallback(() => {
-        // Transform ontology into nodes
         const nodes = ontology.map(node => ({
             id: node.id,
             label: node.label,
@@ -82,7 +95,6 @@ export const useOntologyView = () => {
             group: 'concept'
         }));
 
-        // Create links based on hierarchy
         const links: Array<{ source: string, target: string, value: number }> = [];
         const traverse = (nodes: any[]) => {
             nodes.forEach(node => {
@@ -111,6 +123,7 @@ export const useOntologyView = () => {
         handleDeleteNode,
         usageStats,
         conflicts,
-        getGraphData
+        getGraphData,
+        suggestions
     };
 };

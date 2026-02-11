@@ -1,5 +1,5 @@
 import { OntologyNode, OntologyAttribute, PropertyType } from './types/index.js';
-import { findNode } from './ontologyHelpers.js';
+import { findNode, getCanonicalKey } from './ontologyHelpers.js';
 
 /**
  * OntologyService - Programmatic access to ontology metadata
@@ -24,6 +24,14 @@ export interface WidgetMetadata {
     operators: string[];
 }
 
+export interface SuggestedAttribute {
+    key: string;
+    type: PropertyType;
+    frequency: number;
+    confidence: number;
+    parentContext?: string; // Likely parent node ID or Label
+}
+
 const WIDGET_MAPPING: Record<string, WidgetType> = {
     'string': 'text-input',
     'number': 'number-input',
@@ -45,6 +53,9 @@ export class OntologyService {
     private fuzzyMatchesCache: Map<string, string[]> = new Map();
 
     private usageStats: Map<string, number> = new Map();
+    private unknownUsageStats: Map<string, number> = new Map();
+    private unknownValuesSample: Map<string, any[]> = new Map();
+
     private coOccurrenceStats: Map<string, Map<string, number>> = new Map();
 
     constructor(ontology: OntologyNode[]) {
@@ -218,24 +229,129 @@ export class OntologyService {
     }
 
     /**
-     * Record usage of property keys to track frequency and co-occurrence
+     * Record usage of property keys to track frequency and co-occurrence.
+     * Optionally takes property values to infer types for unknown attributes.
      */
-    recordUsage(keys: string[]) {
-        for (const key of keys) {
-            this.usageStats.set(key, (this.usageStats.get(key) || 0) + 1);
+    recordUsage(properties: Array<{ key: string, values?: any[] }>) {
+        const keys = properties.map(p => p.key);
+        const uniqueKeys = new Set(keys);
 
-            let coMap = this.coOccurrenceStats.get(key);
-            if (!coMap) {
-                coMap = new Map<string, number>();
-                this.coOccurrenceStats.set(key, coMap);
-            }
+        for (const prop of properties) {
+            const key = prop.key;
+            const canonical = getCanonicalKey(key, this.ontology);
+            const isKnown = canonical !== key || this.attributeIndex.has(key);
 
-            for (const otherKey of keys) {
-                if (key !== otherKey) {
-                    coMap.set(otherKey, (coMap.get(otherKey) || 0) + 1);
+            if (isKnown) {
+                // Record stats for canonical key
+                const targetKey = canonical;
+                this.usageStats.set(targetKey, (this.usageStats.get(targetKey) || 0) + 1);
+
+                // Update co-occurrence for known keys
+                let coMap = this.coOccurrenceStats.get(targetKey);
+                if (!coMap) {
+                    coMap = new Map<string, number>();
+                    this.coOccurrenceStats.set(targetKey, coMap);
+                }
+
+                for (const otherKey of uniqueKeys) {
+                    if (otherKey !== key) {
+                        const otherCanonical = getCanonicalKey(otherKey, this.ontology);
+                        // We track co-occurrence between CANONICAL keys mostly, but also raw for debugging?
+                        // Let's stick to canonical for the graph.
+                        if (this.attributeIndex.has(otherCanonical)) {
+                             coMap.set(otherCanonical, (coMap.get(otherCanonical) || 0) + 1);
+                        }
+                    }
+                }
+            } else {
+                // Unknown key - track for learning
+                this.unknownUsageStats.set(key, (this.unknownUsageStats.get(key) || 0) + 1);
+
+                // Sample values for type inference
+                if (prop.values && prop.values.length > 0) {
+                    let samples = this.unknownValuesSample.get(key);
+                    if (!samples) {
+                        samples = [];
+                        this.unknownValuesSample.set(key, samples);
+                    }
+                    if (samples.length < 20) { // Limit samples
+                        samples.push(...prop.values);
+                    }
+                }
+
+                // Track co-occurrence of Unknown key with Known keys (to infer context)
+                let coMap = this.coOccurrenceStats.get(key);
+                if (!coMap) {
+                    coMap = new Map<string, number>();
+                    this.coOccurrenceStats.set(key, coMap);
+                }
+
+                for (const otherKey of uniqueKeys) {
+                    if (otherKey !== key) {
+                        const otherCanonical = getCanonicalKey(otherKey, this.ontology);
+                        if (this.attributeIndex.has(otherCanonical)) {
+                            coMap.set(otherCanonical, (coMap.get(otherCanonical) || 0) + 1);
+                        }
+                    }
                 }
             }
         }
+    }
+
+    /**
+     * Get suggested attributes based on usage frequency of unknown keys.
+     */
+    getSuggestedAttributes(minFrequency: number = 3): SuggestedAttribute[] {
+        const suggestions: SuggestedAttribute[] = [];
+
+        for (const [key, frequency] of this.unknownUsageStats.entries()) {
+            if (frequency >= minFrequency) {
+                const values = this.unknownValuesSample.get(key) || [];
+                const type = this.inferType(key, values);
+
+                // Infer context from co-occurrence
+                let likelyContext: string | undefined;
+                const coMap = this.coOccurrenceStats.get(key);
+                if (coMap) {
+                    // Find the known key with highest co-occurrence
+                    let maxCo = 0;
+                    let bestKey = '';
+                    for (const [otherKey, count] of coMap.entries()) {
+                        if (count > maxCo) {
+                            maxCo = count;
+                            bestKey = otherKey;
+                        }
+                    }
+
+                    // Find which node owns this bestKey
+                    if (bestKey) {
+                        const node = this.findNodeOwningAttribute(bestKey);
+                        if (node) likelyContext = node.label;
+                    }
+                }
+
+                suggestions.push({
+                    key,
+                    type,
+                    frequency,
+                    confidence: Math.min(0.9, frequency / 10), // Simple confidence metric
+                    parentContext: likelyContext
+                });
+            }
+        }
+
+        return suggestions.sort((a, b) => b.frequency - a.frequency);
+    }
+
+    private findNodeOwningAttribute(attrKey: string): OntologyNode | null {
+        // BFS to find node
+        const queue = [...this.ontology];
+        while (queue.length > 0) {
+            const node = queue.shift()!;
+            if (node.attributes && node.attributes[attrKey]) return node;
+            if (node.children) queue.push(...node.children);
+        }
+        return null;
     }
 
     /**
