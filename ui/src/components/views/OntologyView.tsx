@@ -23,6 +23,7 @@ export function OntologyView() {
         handleOptimize,
         handleAddNode,
         handleDeleteNode,
+        handleAddAttribute,
         usageStats,
         conflicts,
         suggestions
@@ -180,8 +181,22 @@ export function OntologyView() {
                                             variant="secondary"
                                             icon={PlusIcon}
                                             onClick={() => {
-                                                // Pre-fill Add Attribute logic would go here
-                                                alert(`TODO: Open Add Attribute modal for '${suggestion.key}' on '${suggestion.parentContext || 'Root'}'`);
+                                                const targetNode = ontology.find(n => n.label === suggestion.parentContext) || ontology[0];
+                                                if (targetNode) {
+                                                    const operators = suggestion.type === 'number' ? ['is', 'between', '<', '>'] :
+                                                                    suggestion.type === 'date' ? ['before', 'after'] :
+                                                                    suggestion.type === 'geo' ? ['near'] :
+                                                                    ['is', 'contains'];
+
+                                                    handleAddAttribute(targetNode.id, suggestion.key, {
+                                                        type: suggestion.type,
+                                                        description: `Learned: ${suggestion.key}`,
+                                                        operators: {
+                                                            real: operators,
+                                                            imaginary: []
+                                                        }
+                                                    });
+                                                }
                                             }}
                                         >
                                             Add

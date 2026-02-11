@@ -17,8 +17,8 @@ describe('Ontology Evolution', () => {
     const service = new OntologyService(mockOntology);
 
     it('should track usage stats', () => {
-        service.recordUsage(['price', 'date']);
-        service.recordUsage(['price']);
+        service.recordUsage([{ key: 'price' }, { key: 'date' }]);
+        service.recordUsage([{ key: 'price' }]);
 
         const data = service.getGraphData();
         const priceNode = data.nodes.find(n => n.id === 'price');
@@ -29,7 +29,7 @@ describe('Ontology Evolution', () => {
     });
 
     it('should track co-occurrence', () => {
-        service.recordUsage(['price', 'date']); // Co-occurrence
+        service.recordUsage([{ key: 'price' }, { key: 'date' }]); // Co-occurrence
 
         const data = service.getGraphData();
         const link = data.links.find(l => (l.source === 'price' && l.target === 'date') || (l.source === 'date' && l.target === 'price'));

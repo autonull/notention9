@@ -63,6 +63,7 @@ export class MatchEngine {
             case 'datetime':
                 return PropertyMatchers.evaluateDate(req, off);
             case 'enum':
+                return PropertyMatchers.evaluateEnum(req, off);
             case 'string':
             default:
                 return PropertyMatchers.evaluateString(req, off);

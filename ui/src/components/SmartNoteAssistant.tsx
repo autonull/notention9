@@ -176,11 +176,22 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
                     </div>
                     {matches.map((match, idx) => (
                         <div key={idx} className="bg-gray-900/50 p-2 rounded border border-gray-700 hover:border-gray-600">
-                            <div className="flex justify-between">
-                                <span className="text-xs font-semibold text-gray-300">Match Score: {Math.round(match.result.score * 100)}%</span>
+                            <div className="flex justify-between items-start">
+                                <div className="flex flex-col gap-1">
+                                    <span className="text-xs font-semibold text-gray-300">Match Score: {Math.round(match.result.score * 100)}%</span>
+                                    {match.direction && (
+                                        <span className={`text-[10px] w-fit px-1.5 py-0.5 rounded-full ${
+                                            match.direction === 'outgoing'
+                                                ? 'bg-blue-900/40 text-blue-400 border border-blue-800/50'
+                                                : 'bg-purple-900/40 text-purple-400 border border-purple-800/50'
+                                        }`}>
+                                            {match.direction === 'outgoing' ? 'Request → Offer' : 'Offer → Request'}
+                                        </span>
+                                    )}
+                                </div>
                                 <span className="text-[10px] text-gray-500">{match.note.author ? 'User' : 'Anon'}</span>
                             </div>
-                            <p className="text-xs text-gray-400 line-clamp-2 mt-1">{match.note.content}</p>
+                            <p className="text-xs text-gray-400 line-clamp-2 mt-2">{match.note.content}</p>
                             <div className="mt-2 flex flex-wrap gap-1">
                                 {match.result.matches.map((m, i) => (
                                     <span key={i} className="text-[10px] bg-green-900/30 text-green-400 px-1 rounded border border-green-900/50">

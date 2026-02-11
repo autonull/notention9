@@ -1,7 +1,17 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { publishNoteToNostr } from '../nostr.js';
-import { Note } from '../types/index.js';
+import { Note, OntologyNode, NostrEvent } from '../types/index.js';
 import { getPrivacyTags, hashValue } from '../nostr/privacy.js';
+import { NetworkDiscoveryService } from '../nostr/discovery.js';
+import { MatchEngine } from '../matching/MatchEngine.js';
+
+// Hoist mocks
+const { mockQuery, mockPublish } = vi.hoisted(() => {
+    return {
+        mockQuery: vi.fn(),
+        mockPublish: vi.fn().mockReturnValue([Promise.resolve()])
+    };
+});
 
 // Mock nostr-tools pool
 vi.mock('../nostr.js', async (importOriginal) => {
@@ -9,7 +19,8 @@ vi.mock('../nostr.js', async (importOriginal) => {
     return {
         ...actual,
         pool: {
-            publish: vi.fn().mockReturnValue([Promise.resolve()])
+            publish: mockPublish,
+            query: mockQuery
         }
     };
 });
@@ -74,4 +85,101 @@ describe('Nostr Phase 2.2 Privacy Levels', () => {
         }
     });
 
+});
+
+describe('NetworkDiscoveryService Enhanced', () => {
+    const ontology: OntologyNode[] = [
+        {
+            id: 'root',
+            label: 'Root',
+            attributes: {
+                'skill': { type: 'string', description: 'Skill', operators: { real: ['is'], imaginary: [] } },
+                'role': { type: 'string', description: 'Role', operators: { real: ['is'], imaginary: [] } }
+            }
+        }
+    ];
+
+    const engine = new MatchEngine(ontology);
+    const service = new NetworkDiscoveryService(engine);
+
+    beforeEach(() => {
+        mockQuery.mockReset();
+    });
+
+    it('should match outgoing requests (Local Request -> Remote Offer)', async () => {
+        const localNote: Note = {
+            id: 'local1',
+            content: 'I need a JS dev',
+            properties: [
+                { key: 'role', operator: 'is', values: ['developer'] },
+                { key: 'skill', operator: 'is', values: ['javascript'] }
+            ],
+            tags: [],
+            publishedAt: '',
+            createdAt: '',
+            updatedAt: ''
+        };
+
+        const remoteEvent: NostrEvent = {
+            id: 'remote1',
+            pubkey: 'pk1',
+            created_at: 1000,
+            kind: 35000,
+            tags: [
+                ['t', 'prop:role'],
+                ['t', 'prop:skill'],
+                ['property', 'role', 'is', 'developer'],
+                ['property', 'skill', 'is', 'javascript']
+            ],
+            content: 'I am a JS dev',
+            sig: 'sig1'
+        };
+
+        mockQuery.mockResolvedValue([remoteEvent]);
+
+        const matches = await service.discoverMatches(localNote);
+
+        expect(matches.length).toBe(1);
+        expect(matches[0].direction).toBe('outgoing');
+        expect(matches[0].result.score).toBeGreaterThan(0.8);
+    });
+
+    it('should match incoming requests (Local Offer -> Remote Request)', async () => {
+        // Local Note is OFFERING skill
+        const localNote: Note = {
+            id: 'local1',
+            content: 'I am a JS dev',
+            properties: [
+                { key: 'role', operator: 'is', values: ['developer'] },
+                { key: 'skill', operator: 'is', values: ['javascript'] }
+            ],
+            tags: [],
+            publishedAt: '',
+            createdAt: '',
+            updatedAt: ''
+        };
+
+        // Remote Note is REQUESTING skill
+        const remoteEvent: NostrEvent = {
+            id: 'remote1',
+            pubkey: 'pk1',
+            created_at: 1000,
+            kind: 35000,
+            tags: [
+                ['t', 'prop:role'],
+                ['t', 'prop:skill'],
+                ['property', 'role', 'is', 'developer'],
+                ['property', 'skill', 'is', 'javascript']
+            ],
+            content: 'I need a JS dev',
+            sig: 'sig1'
+        };
+
+        mockQuery.mockResolvedValue([remoteEvent]);
+
+        const matches = await service.discoverMatches(localNote);
+
+        expect(matches.length).toBe(1);
+        expect(matches[0].result.score).toBeGreaterThan(0.8);
+    });
 });

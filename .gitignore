@@ -12,6 +12,7 @@ agent/dist/
 # UI
 ui/node_modules/
 ui/dist/
+ui/dev-dist/
 ui/.vite/
 
 # Misc
