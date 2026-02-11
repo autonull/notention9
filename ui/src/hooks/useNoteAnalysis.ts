@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Note, patternRecognitionService, PropertyExtractor, OntologyNode } from '@notention/core';
+import { Note, patternRecognitionService, PropertyExtractor, OntologyNode, getCanonicalKey } from '@notention/core';
 import { useSettings } from './useSettingsContext';
 import { getTextFromHtml } from '../utils/html';
 
@@ -48,14 +48,31 @@ export function useNoteAnalysis(note: Note) {
         const seenTexts = new Set<string>();
 
         const predictionSuggestions = predictions.reduce<Suggestion[]>((acc, p) => {
-            if (seenTexts.has(p.predictedAction)) return acc;
+            let predictedText = p.predictedAction;
 
-            seenTexts.add(p.predictedAction);
-            const isProperty = p.predictedAction.includes('[') && p.predictedAction.includes(']');
+            // Normalize property keys in predictions if it looks like a property
+            // Regex for [key:op:val] or [key:val]
+            const propMatch = predictedText.match(/^\[(.*?):(.*)\]$/);
+            if (propMatch) {
+                const parts = predictedText.slice(1, -1).split(':');
+                if (parts.length >= 2) {
+                    const key = parts[0];
+                    const canonicalKey = getCanonicalKey(key, settings.ontology);
+                    if (canonicalKey !== key) {
+                        parts[0] = canonicalKey;
+                        predictedText = `[${parts.join(':')}]`;
+                    }
+                }
+            }
+
+            if (seenTexts.has(predictedText)) return acc;
+
+            seenTexts.add(predictedText);
+            const isProperty = predictedText.includes('[') && predictedText.includes(']');
 
             acc.push({
-                id: `pred-${p.pattern.id}-${p.predictedAction}`,
-                text: p.predictedAction,
+                id: `pred-${p.pattern.id}-${predictedText}`,
+                text: predictedText,
                 type: isProperty ? 'property' : 'action',
                 confidence: p.confidence
             });
