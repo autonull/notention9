@@ -1,20 +1,22 @@
 import { z } from 'zod';
 import { randomUUID } from 'crypto';
-import { Note, PropertyExtractor, getTextFromHtml, OntologyNode, Property } from '@notention/core';
+import { Note, PropertyExtractor, getTextFromHtml, OntologyNode, Property, OntologyServiceFactory } from '@notention/core';
 import { McpToolRegistry } from '../McpToolRegistry.js';
 import { AgentPlugin } from '../AgentPlugin.js';
 import { PersistenceService } from '../../persistence.js';
 import { executeSkillTool, ontologyQueryTool } from '../../tools.js';
 import { Capabilities } from '../../core/Capabilities.js';
 
-// TODO: Load real ontology from PersistenceService if available
-const DEFAULT_ONTOLOGY: OntologyNode[] = [];
-
 export class CorePlugin implements AgentPlugin {
     name = 'core';
     version = '1.0.0';
 
+    // Cache ontology for extraction
+    private ontology: OntologyNode[] = [];
+
     async initialize(registry: McpToolRegistry): Promise<void> {
+        // Load ontology asynchronously on init
+        this.loadOntology().catch(err => console.warn('[CorePlugin] Failed to load ontology', err));
 
         // --- Note Management Tools ---
 
@@ -40,7 +42,10 @@ export class CorePlugin implements AgentPlugin {
                 // Auto-extract properties if not provided or to augment
                 // We attempt to extract from content to "smart tag" the note
                 try {
-                    const extractor = new PropertyExtractor(DEFAULT_ONTOLOGY);
+                    // Refresh ontology if empty (lazy load retry)
+                    if (this.ontology.length === 0) await this.loadOntology();
+
+                    const extractor = new PropertyExtractor(this.ontology);
                     const extracted = extractor.extractFromText(getTextFromHtml(content));
                     if (extracted.length > 0) {
                         // Merge extracted properties
@@ -215,5 +220,13 @@ export class CorePlugin implements AgentPlugin {
                 return `Note ${noteId} promoted to Thought (${intent}, ${sovereignty})`;
             }
         });
+    }
+
+    private async loadOntology() {
+        // Attempt to load from default service which usually has defaults
+        // In a real scenario, we might want to fetch a specific 'ontology' note from PersistenceService
+        // For now, we use the standard factory to get defaults + structure
+        const service = OntologyServiceFactory.createStandardService();
+        this.ontology = service.getAllNodes();
     }
 }
