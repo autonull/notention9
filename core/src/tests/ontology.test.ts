@@ -9,6 +9,39 @@ describe('Enhanced Ontology Tests', () => {
     ontologyService = new OntologyService(DEFAULT_ONTOLOGY);
   });
 
+  describe('contextual suggestions', () => {
+      test('should suggest co-occurring attributes', () => {
+          // Train with co-occurrence data
+          ontologyService.recordUsage([
+              { key: 'role', values: ['dev'] },
+              { key: 'rate', values: ['100'] },
+              { key: 'skill', values: ['react'] }
+          ]);
+          ontologyService.recordUsage([
+              { key: 'role', values: ['designer'] },
+              { key: 'rate', values: ['90'] }
+          ]);
+
+          // Ask for suggestions given 'role'
+          const suggestions = ontologyService.getContextualSuggestions(['role']);
+
+          const keys = suggestions.map(s => s.key);
+          expect(keys).toContain('rate');
+          expect(keys).toContain('skill');
+
+          // 'rate' appears twice with 'role', 'skill' once. So rate should be higher freq?
+          const rate = suggestions.find(s => s.key === 'rate');
+          const skill = suggestions.find(s => s.key === 'skill');
+
+          expect(rate?.frequency).toBeGreaterThanOrEqual(skill?.frequency || 0);
+      });
+
+      test('should suggest nothing if no co-occurrence', () => {
+          const suggestions = ontologyService.getContextualSuggestions(['randomKey']);
+          expect(suggestions).toHaveLength(0);
+      });
+  });
+
   describe('attribute retrieval', () => {
     test('should retrieve widget metadata for basic attributes', () => {
       const nameMetadata = ontologyService.getWidgetMetadata('name');

@@ -3,7 +3,7 @@ import {OntologyService, SuggestedAttribute} from '@notention/core';
 import {useSettings} from './useSettingsContext';
 import {useNotes} from './useNotes';
 
-export function useOntologySuggestions() {
+export function useOntologySuggestions(contextKeys?: string[]) {
     const {settings} = useSettings();
     const ontology = settings.ontology;
     const {notes} = useNotes();
@@ -20,10 +20,15 @@ export function useOntologySuggestions() {
             values: p.values
         }))));
 
-        // Lower threshold for suggestions in developer mode for easier testing/feedback
-        const threshold = settings.developerMode ? 1 : 3;
-        setSuggestions(ontologyService.getSuggestedAttributes(threshold));
-    }, [notes, ontologyService, settings.developerMode]);
+        if (contextKeys && contextKeys.length > 0) {
+            // Contextual suggestions (no frequency threshold, relevance based)
+            setSuggestions(ontologyService.getContextualSuggestions(contextKeys));
+        } else {
+            // Global suggestions
+            const threshold = settings.developerMode ? 1 : 3;
+            setSuggestions(ontologyService.getSuggestedAttributes(threshold));
+        }
+    }, [notes, ontologyService, settings.developerMode, contextKeys]);
 
     return {
         suggestions,
