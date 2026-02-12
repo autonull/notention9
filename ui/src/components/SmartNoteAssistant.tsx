@@ -16,6 +16,7 @@ import { useMatches } from '../hooks/useMatches';
 import { MatchList } from './match/MatchList';
 import { OntologyAliasLinkModal } from './ontology/OntologyAliasLinkModal';
 import { AttributeEditorModal } from './ontology/AttributeEditorModal';
+import { useNetworkDiscovery } from '../hooks/useNetworkDiscovery';
 
 interface SmartNoteAssistantProps {
     note: Note;
@@ -38,9 +39,8 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
     // Local Matches
     const localMatches = useMatches(note);
 
-    // Network Matching State
-    const [networkMatches, setNetworkMatches] = useState<ScoredMatch[]>([]);
-    const [isSearching, setIsSearching] = useState(false);
+    // Network Discovery Hook
+    const { matches: networkMatches, isSearching, discover: discoverMatches } = useNetworkDiscovery(note, settings.ontology);
 
     // Modals State
     const [attributeModalOpen, setAttributeModalOpen] = useState(false);
@@ -102,24 +102,11 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
 
     const handleFindMatches = async (e?: React.MouseEvent) => {
         e?.stopPropagation();
-        setIsSearching(true);
         // Ensure we are on the network tab
         if (activeTab !== 'network') setActiveTab('network');
         if (!isOpen) setIsOpen(true);
 
-        try {
-            const results = await nostrService.findMatches(note, settings.ontology);
-            setNetworkMatches(results);
-            if (results.length === 0) {
-                addToast('No matches found in the network', 'info');
-            } else {
-                addToast(`Found ${results.length} matches!`, 'success');
-            }
-        } catch (err) {
-            addToast('Failed to search network', 'error');
-        } finally {
-            setIsSearching(false);
-        }
+        await discoverMatches();
     };
 
     const handleApplySuggestion = (suggestion: Suggestion) => {
