@@ -12,7 +12,7 @@ import {
     ScoredMatch,
     OntologyNode,
     queryEvents,
-    getAliases
+    getCanonicalKey
 } from '@notention/core';
 
 class NostrService {
@@ -54,22 +54,20 @@ class NostrService {
 
         try {
             // Enhance note with alias tags for discoverability
+            // Crucially, we only add the CANONICAL key to reinforce the ontology as a protocol
+            // This ensures that even if a user uses a local alias, the network sees the standard term
             const enhancedNote = { ...note, tags: [...note.tags] };
             if (ontology) {
-                const propertyAliases = new Set<string>();
+                const propertyTags = new Set<string>();
                 for (const prop of note.properties) {
-                    const aliases = getAliases(prop.key, ontology);
-                    aliases.forEach(alias => {
-                        // Only add aliases that are different from the main key
-                        // (The main key is automatically indexed by publishNoteToNostr)
-                        if (alias !== prop.key) {
-                            propertyAliases.add(`prop:${alias}`);
-                        }
-                    });
+                    const canonical = getCanonicalKey(prop.key, ontology);
+
+                    if (canonical !== prop.key) {
+                        propertyTags.add(`prop:${canonical}`);
+                    }
                 }
 
-                // Add unique alias tags
-                propertyAliases.forEach(tag => {
+                propertyTags.forEach(tag => {
                     if (!enhancedNote.tags.includes(tag)) {
                         enhancedNote.tags.push(tag);
                     }
