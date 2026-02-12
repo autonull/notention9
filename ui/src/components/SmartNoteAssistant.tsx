@@ -108,6 +108,14 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
 
     const toggleOpen = (e?: React.MouseEvent) => {
         e?.stopPropagation();
+        if (!isOpen) {
+            // Smart default tab selection
+            if (suggestions.length === 0 && matches.length > 0) {
+                setActiveTab('network');
+            } else if (suggestions.length > 0) {
+                setActiveTab('suggestions');
+            }
+        }
         setIsOpen(!isOpen);
     };
 
@@ -177,6 +185,15 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
                 </div>
 
                 <div className="flex items-center gap-2">
+                    {note.properties.length > 0 && !isSearching && matches.length === 0 && (
+                        <button
+                            onClick={handleFindMatches}
+                            className="text-xs text-blue-400 hover:text-blue-300 px-2 py-1 rounded hover:bg-gray-800 flex items-center gap-1 mr-2"
+                        >
+                            <SearchSparkleIcon className="w-3 h-3"/>
+                            Find Matches
+                        </button>
+                    )}
                     <button
                         onClick={toggleOpen}
                         className="text-xs text-gray-500 hover:text-white"

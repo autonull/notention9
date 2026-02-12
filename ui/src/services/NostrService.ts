@@ -146,11 +146,10 @@ class NostrService {
         this.logger.info(`Subscribing to Nostr sync for ${this.pubkey} on ${this.relays.length} relays`);
 
         try {
+            // Use subscribeMany with a single filter, as strictly required by nostr-tools v2 SimplePool
             this._sub = this.pool.subscribeMany(
                 this.relays,
-                [
-                    { kinds: [1, SEMANTIC_NOTE_KIND], authors: [this.pubkey], limit: 100 },
-                ],
+                { kinds: [1, SEMANTIC_NOTE_KIND], authors: [this.pubkey], limit: 100 },
                 {
                     onevent: (event) => {
                         if (this._upsertCallback) {
