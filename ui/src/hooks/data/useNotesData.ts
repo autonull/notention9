@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useRef} from 'react';
 import {useLocalForage} from '../useLocalForage';
-import type {GeoCoords, Note, Property, SortOrder} from '@notention/core';
-import {createNote, haversineDistance, Logger, parseProperties} from '@notention/core';
+import type {GeoCoords, Note, Property, SortOrder, OntologyNode} from '@notention/core';
+import {createNote, haversineDistance, Logger, parseProperties, getCanonicalKey} from '@notention/core';
 import {agentService} from '../../services/AgentService';
 import {nostrService} from '../../services/NostrService';
 import {useSettings} from '../useSettingsContext';
@@ -25,9 +25,12 @@ export interface UseNotesDataResult {
 }
 
 // Lightweight property check helper to avoid instantiating full MatchEngine in UI hook
-const checkPropertyMatch = (constraint: Property, note: Note): boolean => {
+const checkPropertyMatch = (constraint: Property, note: Note, ontology: OntologyNode[]): boolean => {
+    const canonicalConstraint = getCanonicalKey(constraint.key, ontology);
+
     return note.properties.some(p => {
-        if (p.key !== constraint.key) return false;
+        const canonicalProp = getCanonicalKey(p.key, ontology);
+        if (canonicalProp !== canonicalConstraint) return false;
 
         // Simple value check for now (string/number equality or inclusion)
         // This restores the basic filtering capability
@@ -202,7 +205,7 @@ export const useNotesData = (driver?: LocalForage): UseNotesDataResult => {
             filtered = notesWithMetadata.filter((note) => {
                 // Check structured constraints [key:op:val]
                 const semanticMatch = constraints.length > 0 ?
-                    constraints.every(c => checkPropertyMatch(c, note)) : true;
+                    constraints.every(c => checkPropertyMatch(c, note, settings.ontology)) : true;
 
                 if (!semanticMatch) return false;
 
@@ -213,12 +216,16 @@ export const useNotesData = (driver?: LocalForage): UseNotesDataResult => {
                 const tagMatch = tagQueries.every(q => (note.tags || []).some(t => t.toLowerCase().includes(q)));
 
                 // Restore simple property filtering (e.g. status:done in plain text)
-                const simplePropMatch = simplePropQueries.every(q =>
-                    note.properties.some(p =>
-                        p.key.toLowerCase() === q.key &&
-                        p.values.some(v => v.toLowerCase().includes(q.value))
-                    )
-                );
+                const simplePropMatch = simplePropQueries.every(q => {
+                    // Try to match simple prop queries against canonical keys too
+                    const canonicalQueryKey = getCanonicalKey(q.key, settings.ontology);
+
+                    return note.properties.some(p => {
+                        const canonicalPropKey = getCanonicalKey(p.key, settings.ontology);
+                        return canonicalPropKey === canonicalQueryKey &&
+                               p.values.some(v => v.toLowerCase().includes(q.value));
+                    });
+                });
 
                 return textMatch && tagMatch && simplePropMatch;
             });
