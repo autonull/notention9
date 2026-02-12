@@ -47,6 +47,7 @@ export const DEFAULT_ONTOLOGY: OntologyNode[] = [
             description: 'Professional role or position',
             icon: 'briefcase',
             operators: { real: ['is'], imaginary: ['is not', 'contains'] },
+            aliases: ['job', 'position', 'dev', 'title'],
           },
           organization: {
             type: 'string',

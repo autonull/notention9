@@ -1,11 +1,20 @@
 import { Property } from '../types/index.js';
 import { haversineDistance, parseGeo } from '../spacetime.js';
 
+export type MatchType = 'exact' | 'alias' | 'fuzzy' | 'range' | 'partial' | 'geo' | 'date' | 'unknown';
+
+export interface MatchDetails {
+    type: MatchType;
+    aliasUsed?: string;
+    valueMatch?: string; // e.g., "100 is between 50-150"
+}
+
 export interface PropertyMatch {
     requestProp: Property;
     offerProp: Property;
     compatibility: number;   // 0.0 - 1.0 (or negative for conflict)
     reason: string;
+    details?: MatchDetails;
 }
 
 const parseNumber = (val: string): number | null => {
@@ -20,8 +29,9 @@ const createMatch = (
     requestProp: Property,
     offerProp: Property,
     compatibility: number,
-    reason: string
-): PropertyMatch => ({ requestProp, offerProp, compatibility, reason });
+    reason: string,
+    details?: MatchDetails
+): PropertyMatch => ({ requestProp, offerProp, compatibility, reason, details });
 
 const levenshteinDistance = (a: string, b: string): number => {
     if (a.length === 0) return b.length;
@@ -105,29 +115,29 @@ export const PropertyMatchers = {
         switch (request.operator) {
             case '<':
                 return offerValue < requestValue
-                    ? createMatch(request, offer, 1, `${offerValue} < ${requestValue}`)
-                    : createMatch(request, offer, -1, `${offerValue} >= ${requestValue}`);
+                    ? createMatch(request, offer, 1, `${offerValue} < ${requestValue}`, { type: 'exact', valueMatch: 'lt' })
+                    : createMatch(request, offer, -1, `${offerValue} >= ${requestValue}`, { type: 'exact', valueMatch: 'gte' });
             case '<=':
                 return offerValue <= requestValue
-                    ? createMatch(request, offer, 1, `${offerValue} <= ${requestValue}`)
-                    : createMatch(request, offer, -1, `${offerValue} > ${requestValue}`);
+                    ? createMatch(request, offer, 1, `${offerValue} <= ${requestValue}`, { type: 'exact', valueMatch: 'lte' })
+                    : createMatch(request, offer, -1, `${offerValue} > ${requestValue}`, { type: 'exact', valueMatch: 'gt' });
             case '>':
                 return offerValue > requestValue
-                    ? createMatch(request, offer, 1, `${offerValue} > ${requestValue}`)
-                    : createMatch(request, offer, -1, `${offerValue} <= ${requestValue}`);
+                    ? createMatch(request, offer, 1, `${offerValue} > ${requestValue}`, { type: 'exact', valueMatch: 'gt' })
+                    : createMatch(request, offer, -1, `${offerValue} <= ${requestValue}`, { type: 'exact', valueMatch: 'lte' });
             case '>=':
                 return offerValue >= requestValue
-                    ? createMatch(request, offer, 1, `${offerValue} >= ${requestValue}`)
-                    : createMatch(request, offer, -1, `${offerValue} < ${requestValue}`);
+                    ? createMatch(request, offer, 1, `${offerValue} >= ${requestValue}`, { type: 'exact', valueMatch: 'gte' })
+                    : createMatch(request, offer, -1, `${offerValue} < ${requestValue}`, { type: 'exact', valueMatch: 'lt' });
             case 'is':
             case '=':
                 // Allow 5% tolerance
                 const isClose = Math.abs(offerValue - requestValue) < (requestValue * 0.05);
                 return isClose
-                    ? createMatch(request, offer, 1, `~= ${requestValue}`)
-                    : createMatch(request, offer, -1, `${offerValue} != ${requestValue}`);
+                    ? createMatch(request, offer, 1, `~= ${requestValue}`, { type: 'exact', valueMatch: 'close' })
+                    : createMatch(request, offer, -1, `${offerValue} != ${requestValue}`, { type: 'exact', valueMatch: 'diff' });
             default:
-                return createMatch(request, offer, 0, `Unknown operator ${request.operator}`);
+                return createMatch(request, offer, 0, `Unknown operator ${request.operator}`, { type: 'unknown' });
         }
     },
 
@@ -156,8 +166,8 @@ export const PropertyMatchers = {
         }
 
         return (offerValue >= min && offerValue <= max)
-            ? createMatch(request, offer, 1, `${offerValue} is between ${min} and ${max}`)
-            : createMatch(request, offer, -1, `${offerValue} is outside ${min}-${max}`);
+            ? createMatch(request, offer, 1, `${offerValue} is between ${min} and ${max}`, { type: 'range', valueMatch: 'in' })
+            : createMatch(request, offer, -1, `${offerValue} is outside ${min}-${max}`, { type: 'range', valueMatch: 'out' });
     },
 
     evaluateGeo: (request: Property, offer: Property): PropertyMatch => {
@@ -175,9 +185,9 @@ export const PropertyMatchers = {
 
         if (distance <= maxDist) {
             const score = 1 - (distance / maxDist);
-            return createMatch(request, offer, score, `${Math.round(distance)}km away (max ${maxDist}km)`);
+            return createMatch(request, offer, score, `${Math.round(distance)}km away (max ${maxDist}km)`, { type: 'geo', valueMatch: 'near' });
         }
-        return createMatch(request, offer, -0.5, `Too far (${Math.round(distance)}km > ${maxDist}km)`);
+        return createMatch(request, offer, -0.5, `Too far (${Math.round(distance)}km > ${maxDist}km)`, { type: 'geo', valueMatch: 'far' });
     },
 
     evaluateDate: (request: Property, offer: Property): PropertyMatch => {
@@ -189,12 +199,12 @@ export const PropertyMatchers = {
         switch (request.operator) {
             case 'before':
                 return offTime < reqTime
-                    ? createMatch(request, offer, 1, 'Date check passed')
-                    : createMatch(request, offer, -1, 'Too late');
+                    ? createMatch(request, offer, 1, 'Date check passed', { type: 'date', valueMatch: 'before' })
+                    : createMatch(request, offer, -1, 'Too late', { type: 'date', valueMatch: 'late' });
             case 'after':
                 return offTime > reqTime
-                    ? createMatch(request, offer, 1, 'Date check passed')
-                    : createMatch(request, offer, -1, 'Too early');
+                    ? createMatch(request, offer, 1, 'Date check passed', { type: 'date', valueMatch: 'after' })
+                    : createMatch(request, offer, -1, 'Too early', { type: 'date', valueMatch: 'early' });
             default:
                 return createMatch(request, offer, 0, 'Date op not supported');
         }
@@ -212,24 +222,24 @@ export const PropertyMatchers = {
         if (request.operator === 'contains') {
             // Check normalized contains
             if (normalizedOffer.includes(normalizedReq)) {
-                return createMatch(request, offer, 1, `Contains '${reqVal}'`);
+                return createMatch(request, offer, 1, `Contains '${reqVal}'`, { type: 'partial' });
             }
             // Fallback to simple inclusion
             return offerVal.toLowerCase().includes(reqVal.toLowerCase())
-                ? createMatch(request, offer, 1, `Contains '${reqVal}'`)
-                : createMatch(request, offer, -1, `Does not contain '${reqVal}'`);
+                ? createMatch(request, offer, 1, `Contains '${reqVal}'`, { type: 'partial' })
+                : createMatch(request, offer, -1, `Does not contain '${reqVal}'`, { type: 'partial' });
         }
 
         if (request.operator === 'excludes') {
              if (normalizedOffer.includes(normalizedReq) || offerVal.toLowerCase().includes(reqVal.toLowerCase())) {
-                 return createMatch(request, offer, -1, `Should exclude '${reqVal}'`);
+                 return createMatch(request, offer, -1, `Should exclude '${reqVal}'`, { type: 'partial' });
              }
-             return createMatch(request, offer, 1, `Excludes '${reqVal}'`);
+             return createMatch(request, offer, 1, `Excludes '${reqVal}'`, { type: 'partial' });
         }
 
         // Exact match (case insensitive)
         if (normalizedOffer === normalizedReq) {
-            return createMatch(request, offer, 1, 'Exact synonym match');
+            return createMatch(request, offer, 1, 'Exact synonym match', { type: 'exact' });
         }
 
         // Fuzzy Match
@@ -239,12 +249,12 @@ export const PropertyMatchers = {
 
         if (dist <= allowedDist) {
             const score = 1 - (dist / maxLen); // Discount slightly for fuzzy match
-            return createMatch(request, offer, score, `Fuzzy match (${Math.round(score * 100)}%)`);
+            return createMatch(request, offer, score, `Fuzzy match (${Math.round(score * 100)}%)`, { type: 'fuzzy' });
         }
 
         // Substring match as fallback
         if (normalizedOffer.includes(normalizedReq) || normalizedReq.includes(normalizedOffer)) {
-             return createMatch(request, offer, 0.8, 'Partial match');
+             return createMatch(request, offer, 0.8, 'Partial match', { type: 'partial' });
         }
 
         return createMatch(request, offer, 0, 'No match');
@@ -262,9 +272,9 @@ export const PropertyMatchers = {
         const normalizedReq = normalizeTerm(reqVal);
 
         if (normalizedOffer === normalizedReq) {
-            return createMatch(request, offer, 1, 'Exact enum match');
+            return createMatch(request, offer, 1, 'Exact enum match', { type: 'exact' });
         }
 
-        return createMatch(request, offer, -1, `Enum mismatch: ${offerVal} != ${reqVal}`);
+        return createMatch(request, offer, -1, `Enum mismatch: ${offerVal} != ${reqVal}`, { type: 'exact' });
     }
 };

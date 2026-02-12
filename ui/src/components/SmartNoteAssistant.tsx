@@ -13,6 +13,7 @@ import { useView } from '../hooks/useViewContext';
 import { useContacts } from '../hooks/useContacts';
 import { Tabs } from './common/Tabs';
 import { useMatches } from '../hooks/useMatches';
+import { MatchList } from './match/MatchList';
 
 interface SmartNoteAssistantProps {
     note: Note;
@@ -142,70 +143,6 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
         }
     };
 
-    const renderMatchItem = (match: ScoredMatch, isLocal: boolean) => {
-        const isContact = !isLocal && match.note.author && contacts.some(c => c.pubkey === match.note.author);
-
-        return (
-            <div key={match.note.id}
-                 onClick={() => isLocal && setSelectedNoteId(match.note.id)}
-                 className={`bg-gray-900/50 p-2 rounded border border-gray-700 hover:border-gray-600 transition-colors group ${isLocal ? 'cursor-pointer' : ''}`}
-            >
-                <div className="flex justify-between items-start">
-                    <div className="flex flex-col gap-1">
-                        <div className="flex items-center gap-2">
-                            <span className={`text-xs font-bold ${match.result.score > 0.8 ? 'text-green-400' : 'text-blue-400'}`}>
-                                {Math.round(match.result.score * 100)}% Match
-                            </span>
-                            {match.direction && (
-                                <span className={`text-[9px] px-1 py-0.5 rounded ${
-                                    match.direction === 'outgoing'
-                                        ? 'bg-blue-900/30 text-blue-300'
-                                        : 'bg-purple-900/30 text-purple-300'
-                                }`}>
-                                    {match.direction === 'outgoing' ? 'Outgoing' : 'Incoming'}
-                                </span>
-                            )}
-                        </div>
-                    </div>
-                    {match.note.author && !isLocal && (
-                        <span className="text-[10px] text-gray-500 font-mono">
-                            {match.note.author.slice(0, 6)}
-                        </span>
-                    )}
-                </div>
-                <p className="text-xs text-gray-300 line-clamp-2 mt-2 pl-2 border-l-2 border-gray-800 group-hover:border-gray-600 transition-colors">
-                    {match.note.title || match.note.content}
-                </p>
-                <div className="mt-2 flex flex-wrap gap-1">
-                    {match.result.matches.map((m, i) => (
-                        <span key={i} className="text-[9px] bg-green-900/20 text-green-300 px-1.5 py-0.5 rounded border border-green-900/30 flex items-center gap-1">
-                            {m.reason}
-                        </span>
-                    ))}
-                </div>
-                {!isLocal && match.note.author && (
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            if (isContact) {
-                                handleChat(match.note.author!);
-                            } else {
-                                handleConnect(match);
-                            }
-                        }}
-                        className={`mt-2 text-[10px] px-2 py-1.5 rounded w-full transition-colors font-medium ${
-                            isContact
-                                ? 'bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700'
-                                : 'bg-blue-600 hover:bg-blue-500 text-white shadow-sm'
-                        }`}
-                    >
-                        {isContact ? 'Chat with Peer' : 'Add Contact & Chat'}
-                    </button>
-                )}
-            </div>
-        );
-    };
-
     return (
         <div
             className={`flex flex-col h-full bg-gray-900 border-l border-gray-800 ${className}`}
@@ -291,7 +228,13 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
                                                 Refresh
                                             </button>
                                         </div>
-                                        {networkMatches.map((match) => renderMatchItem(match, false))}
+                                        <MatchList
+                                            matches={networkMatches}
+                                            isLocal={false}
+                                            contacts={contacts}
+                                            onConnect={handleConnect}
+                                            onChat={handleChat}
+                                        />
                                     </div>
                                 )}
                              </>
@@ -304,9 +247,12 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
                                         No local matches found.
                                     </div>
                                 ) : (
-                                    <div className="space-y-2">
-                                        {localMatches.map((match) => renderMatchItem(match, true))}
-                                    </div>
+                                    <MatchList
+                                        matches={localMatches}
+                                        isLocal={true}
+                                        contacts={contacts}
+                                        onSelect={(m) => setSelectedNoteId(m.note.id)}
+                                    />
                                 )}
                             </>
                         )}

@@ -25,7 +25,11 @@ export class MatchEngine {
                 .map(offProp => {
                     const match = this.evaluateConstraint(reqProp, offProp);
                     if (reqProp.key !== offProp.key) {
-                        match.reason = `(Matched '${offProp.key}' as alias of '${reqProp.key}') ${match.reason}`;
+                        match.details = {
+                            type: 'alias',
+                            aliasUsed: offProp.key,
+                            valueMatch: match.details?.valueMatch
+                        };
                     }
                     return match;
                 });
