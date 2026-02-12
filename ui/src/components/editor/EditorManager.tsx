@@ -17,7 +17,6 @@ import {TemplateSelector} from './TemplateSelector';
 import {SaveTemplateModal} from './SaveTemplateModal';
 import {MapPickerModal} from '../map/MapPickerModal';
 import {TimePickerModal} from '../common/TimePickerModal';
-import {EditorMatches} from './EditorMatches';
 import {ContextPanel} from './ContextPanel';
 import {SuggestionPanel} from './SuggestionPanel';
 import {SmartNoteAssistant} from '../SmartNoteAssistant';
@@ -203,16 +202,14 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                                 />
                             </>
                         }
-                    >
-                        <EditorMatches note={dirtyNote}/>
-                        <div className="mt-4">
+                        assistant={
                             <SmartNoteAssistant
                                 note={dirtyNote}
                                 onNoteUpdate={handleContentSave}
-                                className="mt-2"
+                                className="h-full border-none rounded-none bg-transparent"
                             />
-                        </div>
-                    </HybridEditor>
+                        }
+                    />
 
                     {isTemplateSelectorOpen && (
                         <TemplateSelector

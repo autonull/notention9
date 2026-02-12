@@ -5,10 +5,10 @@ import {PropertyPalette} from '../properties/PropertyPalette';
 import {Logger, parseProperties, Property, PropertyExtractor, replacePropertyInString} from '@notention/core';
 import {useSettings} from '../../hooks/useSettingsContext';
 import {Button} from '../common/Button';
-import {LocalDiscoverySidebar} from '../discovery/LocalDiscoverySidebar';
 
 interface HybridEditorProps extends React.ComponentProps<typeof TiptapEditor> {
     onNoteUpdate?: (note: any) => void;
+    assistant?: React.ReactNode;
 }
 
 export const HybridEditor = forwardRef<TiptapEditorRef, HybridEditorProps>((props, ref) => {
@@ -114,15 +114,9 @@ export const HybridEditor = forwardRef<TiptapEditorRef, HybridEditorProps>((prop
 
             {/* Right Sidebar */}
             <div className="w-64 bg-gray-900/50 border-l border-gray-700 flex flex-col hidden lg:flex">
-                {/* Discovery Panel */}
+                {/* Assistant Panel */}
                 <div className="flex-1 overflow-hidden border-b border-gray-800">
-                    <LocalDiscoverySidebar
-                        note={props.note}
-                        onSelectMatch={(note) => {
-                            // TODO: Open split view or navigate
-                            Logger.getInstance().info('Selected match: ' + note.id);
-                        }}
-                    />
+                    {props.assistant}
                 </div>
 
                 {/* Inferred Properties Panel */}
