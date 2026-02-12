@@ -1,10 +1,11 @@
 import { parseProperties, replacePropertyInString } from '@notention/core';
 
-const PROPERTY_REGEX = /\[(.*?):(.*?):(.*?)\]/;
+const PROPERTY_REGEX = /\[.*?\]/;
 const TASK_KEYWORDS = ['Create Task', 'Todo List', 'Shopping List'];
 const PENDING_STATUS = '[status:is:pending]';
 
 export const applyPropertySuggestion = (content: string, suggestionText: string): string | null => {
+    // Look for the actual property tag, ignoring any extra context text
     const propertyMatch = suggestionText.match(PROPERTY_REGEX);
     if (!propertyMatch) return null;
 
