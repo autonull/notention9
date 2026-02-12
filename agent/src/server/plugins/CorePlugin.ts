@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { randomUUID } from 'crypto';
-import { Note, PropertyExtractor, getTextFromHtml, OntologyNode, Property, OntologyServiceFactory } from '@notention/core';
+import { Note, PropertyExtractor, getTextFromHtml, OntologyNode, Property, OntologyServiceFactory, getCanonicalKey } from '@notention/core';
 import { McpToolRegistry } from '../McpToolRegistry.js';
 import { AgentPlugin } from '../AgentPlugin.js';
 import { PersistenceService } from '../../persistence.js';
@@ -53,6 +53,14 @@ export class CorePlugin implements AgentPlugin {
                     }
                 } catch (e) {
                     console.warn('[CorePlugin] Failed to auto-extract properties', e);
+                }
+
+                // Canonicalize all properties to ensure database consistency
+                if (this.ontology.length > 0) {
+                    finalProperties = finalProperties.map(p => ({
+                        ...p,
+                        key: getCanonicalKey(p.key, this.ontology)
+                    }));
                 }
 
                 const note: Note = {
