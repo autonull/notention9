@@ -106,10 +106,20 @@ export function InsertPropertyModal({
                         autoFocus={!activeDef}
                         className={activeDef ? "border-blue-500/50" : ""}
                     />
-                    {activeDef?.description && (
-                        <div className="flex items-center gap-1 mt-1 text-xs text-blue-400">
-                            <InformationCircleIcon className="w-3 h-3"/>
-                            {activeDef.description}
+                    {activeDef && (
+                        <div className="flex flex-col gap-1 mt-1 text-xs">
+                            {activeDef.description && (
+                                <div className="flex items-center gap-1 text-blue-400">
+                                    <InformationCircleIcon className="w-3 h-3"/>
+                                    {activeDef.description}
+                                </div>
+                            )}
+                            {activeDef.aliases && activeDef.aliases.length > 0 && (
+                                <div className="text-gray-500 pl-4">
+                                    <span className="italic">Aliases: </span>
+                                    {activeDef.aliases.join(', ')}
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
