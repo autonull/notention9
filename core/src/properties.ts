@@ -1,4 +1,5 @@
-import type { Property } from './types/index.js';
+import type { Property, Note, OntologyNode } from './types/index.js';
+import { getCanonicalKey } from './ontologyHelpers.js';
 
 export const TEMPORAL_KEYS = ['date', 'time', 'deadline', 'start', 'end', 'due'];
 export const SPATIAL_KEYS = ['location', 'geo', 'place', 'coords'];
@@ -49,3 +50,20 @@ export const arePropertiesEqual = (p1: Property | null, p2: Property | null): bo
 
 export const arePropertyArraysEqual = (a: Property[], b: Property[]): boolean =>
   a === b || (a.length === b.length && a.every((p, i) => arePropertiesEqual(p, b[i])));
+
+/**
+ * Returns a new Note with all property keys normalized to their canonical forms based on the ontology.
+ */
+export const normalizeNoteProperties = (note: Note, ontology: OntologyNode[]): Note => {
+  if (!ontology || ontology.length === 0) return note;
+
+  const normalizedProperties = note.properties.map(p => ({
+    ...p,
+    key: getCanonicalKey(p.key, ontology)
+  }));
+
+  return {
+    ...note,
+    properties: normalizedProperties
+  };
+};

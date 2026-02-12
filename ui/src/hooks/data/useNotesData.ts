@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useRef} from 'react';
 import {useLocalForage} from '../useLocalForage';
 import type {GeoCoords, Note, Property, SortOrder, OntologyNode} from '@notention/core';
-import {createNote, haversineDistance, Logger, parseProperties, getCanonicalKey} from '@notention/core';
+import {createNote, haversineDistance, Logger, parseProperties, getCanonicalKey, normalizeNoteProperties} from '@notention/core';
 import {agentService} from '../../services/AgentService';
 import {nostrService} from '../../services/NostrService';
 import {useSettings} from '../useSettingsContext';
@@ -102,7 +102,10 @@ export const useNotesData = (driver?: LocalForage): UseNotesDataResult => {
 
     // --- CRUD Operations ---
     const addNote = useCallback((overrides?: Partial<Note>) => {
-        const newNote = {...createNote(), ...overrides};
+        let newNote = {...createNote(), ...overrides};
+        // Normalize properties to canonical keys on creation
+        newNote = normalizeNoteProperties(newNote, settings.ontology);
+
         setNotes((prev) => [newNote, ...prev]);
         agentService.saveNote(newNote);
         nostrService.saveNote(newNote, settings.ontology);
@@ -110,27 +113,32 @@ export const useNotesData = (driver?: LocalForage): UseNotesDataResult => {
     }, [setNotes, settings.ontology]);
 
     const upsertNote = useCallback((note: Note) => {
+        const normalizedNote = normalizeNoteProperties(note, settings.ontology);
+
         setNotes((prev) => {
-            const existingIdx = prev.findIndex((n) => n.id === note.id);
+            const existingIdx = prev.findIndex((n) => n.id === normalizedNote.id);
             if (existingIdx >= 0) {
                 const existing = prev[existingIdx];
-                if (new Date(note.updatedAt) > new Date(existing.updatedAt)) {
+                if (new Date(normalizedNote.updatedAt) > new Date(existing.updatedAt)) {
                     const newNotes = [...prev];
-                    newNotes[existingIdx] = note;
+                    newNotes[existingIdx] = normalizedNote;
                     return newNotes;
                 }
                 return prev;
             } else {
-                return [note, ...prev];
+                return [normalizedNote, ...prev];
             }
         });
-        agentService.saveNote(note);
-    }, [setNotes]);
+        agentService.saveNote(normalizedNote);
+    }, [setNotes, settings.ontology]);
 
     const updateNote = useCallback((updatedNote: Note) => {
-        const noteWithTimestamp = {...updatedNote, updatedAt: new Date().toISOString()};
+        let noteWithTimestamp = {...updatedNote, updatedAt: new Date().toISOString()};
+        // Normalize properties to canonical keys on update
+        noteWithTimestamp = normalizeNoteProperties(noteWithTimestamp, settings.ontology);
+
         setNotes((prev) =>
-            prev.map((n) => (n.id === updatedNote.id ? noteWithTimestamp : n))
+            prev.map((n) => (n.id === noteWithTimestamp.id ? noteWithTimestamp : n))
         );
         agentService.saveNote(noteWithTimestamp);
         nostrService.saveNote(noteWithTimestamp, settings.ontology);
