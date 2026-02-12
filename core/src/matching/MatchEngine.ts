@@ -8,6 +8,7 @@ export interface MatchResult {
     score: number;           // 0.0 - 1.0
     matches: PropertyMatch[];
     conflicts: PropertyMatch[]; // Matches with negative compatibility
+    missing: Property[];        // Request properties not present in offer
 }
 
 export class MatchEngine {
@@ -38,6 +39,7 @@ export class MatchEngine {
         const matches: PropertyMatch[] = [];
         const conflicts: PropertyMatch[] = [];
         const matchedKeys = new Set<string>();
+        const conflictKeys = new Set<string>();
 
         const totalScore = results.reduce((acc, r) => {
             if (r.compatibility > 0) {
@@ -48,16 +50,21 @@ export class MatchEngine {
                 }
             } else if (r.compatibility < 0) {
                 conflicts.push(r);
+                conflictKeys.add(r.requestProp.key);
                 return acc + r.compatibility;
             }
             return acc;
         }, 0);
 
+        const missing = request.properties.filter(p =>
+            !matchedKeys.has(p.key) && !conflictKeys.has(p.key)
+        );
+
         const normalizedScore = request.properties.length > 0
             ? Math.max(0, totalScore / request.properties.length)
             : 0;
 
-        return { score: normalizedScore, matches, conflicts };
+        return { score: normalizedScore, matches, conflicts, missing };
     }
 
     private evaluateConstraint(req: Property, off: Property): PropertyMatch {

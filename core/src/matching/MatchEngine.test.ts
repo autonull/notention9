@@ -129,4 +129,48 @@ describe('MatchEngine', () => {
             expect(match.details?.valueMatch).toBe('in');
         });
     });
+
+    describe('Missing Properties', () => {
+        it('should identify missing properties in the offer', () => {
+            const req = createNote([
+                { key: 'role', operator: 'is', values: ['Engineer'] },
+                { key: 'location', operator: 'is', values: ['Remote'] },
+                { key: 'price', operator: 'is', values: ['100'] }
+            ]);
+
+            // Offer only has 'role'
+            const off = createNote([{ key: 'role', operator: 'is', values: ['Engineer'] }]);
+
+            const res = engine.calculateMatchScore(req, off);
+
+            expect(res.matches.length).toBe(1);
+            expect(res.missing.length).toBe(2);
+
+            const missingKeys = res.missing.map(p => p.key);
+            expect(missingKeys).toContain('location');
+            expect(missingKeys).toContain('price');
+        });
+
+        it('should not mark aliased matches as missing', () => {
+             const req = createNote([{ key: 'role', operator: 'is', values: ['Engineer'] }]);
+             // Offer has 'dev' (alias of role)
+             const off = createNote([{ key: 'dev', operator: 'is', values: ['Engineer'] }]);
+
+             const res = engine.calculateMatchScore(req, off);
+
+             expect(res.matches.length).toBe(1);
+             expect(res.missing.length).toBe(0);
+        });
+
+        it('should not mark conflicts as missing', () => {
+             const req = createNote([{ key: 'price', operator: 'is', values: ['100'] }]);
+             // Offer has price but value mismatch (conflict)
+             const off = createNote([{ key: 'price', operator: 'is', values: ['200'] }]);
+
+             const res = engine.calculateMatchScore(req, off);
+
+             expect(res.conflicts.length).toBe(1);
+             expect(res.missing.length).toBe(0);
+        });
+    });
 });
