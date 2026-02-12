@@ -4,6 +4,7 @@ import type {GeoCoords, Note, Property, SortOrder} from '@notention/core';
 import {createNote, haversineDistance, Logger, parseProperties} from '@notention/core';
 import {agentService} from '../../services/AgentService';
 import {nostrService} from '../../services/NostrService';
+import {useSettings} from '../useSettingsContext';
 import {augmentNote, NoteMetadata} from './noteUtils';
 
 export interface UseNotesDataResult {
@@ -52,6 +53,7 @@ const checkPropertyMatch = (constraint: Property, note: Note): boolean => {
 };
 
 export const useNotesData = (driver?: LocalForage): UseNotesDataResult => {
+    const { settings } = useSettings();
     const [notes, setNotes, loading] = useLocalForage<Note[]>(
         'notention-notes',
         [],
@@ -100,9 +102,9 @@ export const useNotesData = (driver?: LocalForage): UseNotesDataResult => {
         const newNote = {...createNote(), ...overrides};
         setNotes((prev) => [newNote, ...prev]);
         agentService.saveNote(newNote);
-        nostrService.saveNote(newNote);
+        nostrService.saveNote(newNote, settings.ontology);
         return newNote;
-    }, [setNotes]);
+    }, [setNotes, settings.ontology]);
 
     const upsertNote = useCallback((note: Note) => {
         setNotes((prev) => {
@@ -128,8 +130,8 @@ export const useNotesData = (driver?: LocalForage): UseNotesDataResult => {
             prev.map((n) => (n.id === updatedNote.id ? noteWithTimestamp : n))
         );
         agentService.saveNote(noteWithTimestamp);
-        nostrService.saveNote(noteWithTimestamp);
-    }, [setNotes]);
+        nostrService.saveNote(noteWithTimestamp, settings.ontology);
+    }, [setNotes, settings.ontology]);
 
     const deleteNote = useCallback((id: string) => {
         setNotes((prev) => {

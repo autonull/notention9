@@ -22,7 +22,13 @@ export class MatchEngine {
 
             return offer.properties
                 .filter(p => keysToCheck.has(p.key))
-                .map(offProp => this.evaluateConstraint(reqProp, offProp));
+                .map(offProp => {
+                    const match = this.evaluateConstraint(reqProp, offProp);
+                    if (reqProp.key !== offProp.key) {
+                        match.reason = `(Matched '${offProp.key}' as alias of '${reqProp.key}') ${match.reason}`;
+                    }
+                    return match;
+                });
         });
 
         const matches: PropertyMatch[] = [];

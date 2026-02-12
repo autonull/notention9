@@ -11,7 +11,8 @@ import {
     NetworkDiscoveryService,
     ScoredMatch,
     OntologyNode,
-    queryEvents
+    queryEvents,
+    getAliases
 } from '@notention/core';
 
 class NostrService {
@@ -48,11 +49,34 @@ class NostrService {
         this._upsertCallback = cb;
     }
 
-    async saveNote(note: Note) {
+    async saveNote(note: Note, ontology?: OntologyNode[]) {
         if (!this.privkey || !this.relays.length || note.privacy !== 'public') return;
 
         try {
-            await publishNoteToNostr(note, this.privkey, this.relays);
+            // Enhance note with alias tags for discoverability
+            const enhancedNote = { ...note, tags: [...note.tags] };
+            if (ontology) {
+                const propertyAliases = new Set<string>();
+                for (const prop of note.properties) {
+                    const aliases = getAliases(prop.key, ontology);
+                    aliases.forEach(alias => {
+                        // Only add aliases that are different from the main key
+                        // (The main key is automatically indexed by publishNoteToNostr)
+                        if (alias !== prop.key) {
+                            propertyAliases.add(`prop:${alias}`);
+                        }
+                    });
+                }
+
+                // Add unique alias tags
+                propertyAliases.forEach(tag => {
+                    if (!enhancedNote.tags.includes(tag)) {
+                        enhancedNote.tags.push(tag);
+                    }
+                });
+            }
+
+            await publishNoteToNostr(enhancedNote, this.privkey, this.relays);
         } catch (e) {
             this.logger.warn("Failed to publish note to Nostr", e instanceof Error ? e : new Error(String(e)));
         }
