@@ -9,9 +9,12 @@ import {Button} from '../common/Button';
 import {Toggle} from '../common/Toggle';
 import {EditIcon, SparklesIcon, PlusIcon} from '../common/icons';
 import {InputModal} from '../common/InputModal';
+import {AttributeEditorModal} from '../ontology/AttributeEditorModal';
+import {OntologySuggestionItem} from '../ontology/OntologySuggestionItem';
 import {ConfirmationModal} from '../common/ConfirmationModal';
 import {OntologyGraph} from '../developer/OntologyGraph';
 import {useToast} from '../../hooks/useToast';
+import {OntologyAttribute} from '@notention/core';
 
 export function OntologyView() {
     const {addToast} = useToast();
@@ -36,10 +39,15 @@ export function OntologyView() {
 
     // Modal States
     const [inputModalOpen, setInputModalOpen] = useState(false);
+    const [attributeModalOpen, setAttributeModalOpen] = useState(false);
     const [confirmModalOpen, setConfirmModalOpen] = useState(false);
     const [modalType, setModalType] = useState<'addRoot' | 'addChild'>('addRoot');
     const [selectedParentId, setSelectedParentId] = useState<string | null>(null);
     const [nodeToDelete, setNodeToDelete] = useState<string | null>(null);
+
+    // Attribute Modal State
+    const [targetNodeId, setTargetNodeId] = useState<string | null>(null);
+    const [attributeInitialValues, setAttributeInitialValues] = useState<{key: string, type: string, description?: string, aliases?: string[]} | undefined>(undefined);
 
     const handleSelectNote = (noteId: string) => {
         setSelectedNoteId(noteId);
@@ -62,6 +70,13 @@ export function OntologyView() {
             handleAddNode(null, name);
         } else if (selectedParentId) {
             handleAddNode(selectedParentId, name);
+        }
+    };
+
+    const handleAddAttributeConfirm = (key: string, attribute: OntologyAttribute) => {
+        if (targetNodeId) {
+            handleAddAttribute(targetNodeId, key, attribute);
+            addToast(`Added '${key}' to ontology`, 'success');
         }
     };
 
@@ -160,51 +175,24 @@ export function OntologyView() {
                         ) : (
                             <div className="grid gap-3">
                                 {suggestions.map((suggestion) => (
-                                    <div key={suggestion.key} className="bg-gray-800 p-4 rounded-lg border border-gray-700 flex justify-between items-center">
-                                        <div>
-                                            <div className="flex items-center gap-2">
-                                                <span className="font-mono text-blue-300 font-bold">{suggestion.key}</span>
-                                                <span className="text-xs bg-gray-700 px-2 py-0.5 rounded text-gray-400">
-                                                    {suggestion.type}
-                                                </span>
-                                            </div>
-                                            <div className="text-sm text-gray-400 mt-1">
-                                                Used {suggestion.frequency} times •
-                                                Confidence: {Math.round(suggestion.confidence * 100)}%
-                                                {suggestion.parentContext && (
-                                                    <span className="ml-2 text-green-400">
-                                                        Likely belongs to: <strong>{suggestion.parentContext}</strong>
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </div>
-                                        <Button
-                                            size="sm"
-                                            variant="secondary"
-                                            icon={PlusIcon}
-                                            onClick={() => {
-                                                const targetNode = ontology.find(n => n.label === suggestion.parentContext) || ontology[0];
-                                                if (targetNode) {
-                                                    const operators = suggestion.type === 'number' ? ['is', 'between', '<', '>'] :
-                                                                    suggestion.type === 'date' ? ['before', 'after'] :
-                                                                    suggestion.type === 'geo' ? ['near'] :
-                                                                    ['is', 'contains'];
-
-                                                    handleAddAttribute(targetNode.id, suggestion.key, {
-                                                        type: suggestion.type,
-                                                        description: `Learned: ${suggestion.key}`,
-                                                        operators: {
-                                                            real: operators,
-                                                            imaginary: []
-                                                        }
-                                                    });
-                                                    addToast(`Added '${suggestion.key}' to ontology`, 'success');
-                                                }
-                                            }}
-                                        >
-                                            Add
-                                        </Button>
-                                    </div>
+                                    <OntologySuggestionItem
+                                        key={suggestion.key}
+                                        suggestion={suggestion}
+                                        onAdd={() => {
+                                            const targetNode = ontology.find(n => n.label === suggestion.parentContext) || ontology[0];
+                                            if (targetNode) {
+                                                setTargetNodeId(targetNode.id);
+                                                setAttributeInitialValues({
+                                                    key: suggestion.key,
+                                                    type: suggestion.type,
+                                                    description: `Learned from usage: ${suggestion.key}`
+                                                });
+                                                setAttributeModalOpen(true);
+                                            } else {
+                                                addToast('No suitable parent node found', 'error');
+                                            }
+                                        }}
+                                    />
                                 ))}
                             </div>
                         )}
@@ -275,6 +263,14 @@ export function OntologyView() {
                 label="Concept Name"
                 placeholder="e.g. Project, Task, Person"
                 confirmLabel="Add Concept"
+            />
+
+            <AttributeEditorModal
+                isOpen={attributeModalOpen}
+                onClose={() => setAttributeModalOpen(false)}
+                onConfirm={handleAddAttributeConfirm}
+                initialValues={attributeInitialValues}
+                title={`Add Attribute to ${ontology.find(n => n.id === targetNodeId)?.label || 'Node'}`}
             />
 
             <ConfirmationModal
