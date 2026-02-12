@@ -2,7 +2,7 @@ import {useCallback, useMemo, useState, useEffect} from 'react';
 import {useSettings} from './useSettingsContext';
 import {useNotes} from './useNotes';
 import {useGardener} from './useGardener';
-import {addNode, deleteNode, detectConflicts, OntologyService, SuggestedAttribute, addAttribute, OntologyAttribute} from '@notention/core';
+import {addNode, deleteNode, detectConflicts, OntologyService, SuggestedAttribute, addAttribute, addAliasToAttribute, OntologyAttribute} from '@notention/core';
 
 export type OntologyTab = 'graph' | 'simulator' | 'conflicts' | 'suggestions';
 
@@ -96,6 +96,13 @@ export const useOntologyView = () => {
         }));
     }, [setSettings]);
 
+    const handleAddAlias = useCallback((nodeId: string, attributeKey: string, alias: string) => {
+        setSettings(prev => ({
+            ...prev,
+            ontology: addAliasToAttribute(prev.ontology, nodeId, attributeKey, alias)
+        }));
+    }, [setSettings]);
+
     const getGraphData = useCallback(() => {
         const nodes = ontology.map(node => ({
             id: node.id,
@@ -131,6 +138,7 @@ export const useOntologyView = () => {
         handleAddNode,
         handleDeleteNode,
         handleAddAttribute,
+        handleAddAlias,
         usageStats,
         conflicts,
         getGraphData,

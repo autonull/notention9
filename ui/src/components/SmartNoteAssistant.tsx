@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useToast } from '../hooks/useToast';
-import { Note, ScoredMatch } from '@notention/core';
+import { Note, ScoredMatch, getCanonicalKey, findAttributeDef, OntologyAttribute, addAttribute, addAliasToAttribute } from '@notention/core';
 import { SparklesIcon, SearchSparkleIcon, NetworkIcon, HomeIcon, LightBulbIcon } from './common/icons';
 import { FeedbackWidget } from './common/FeedbackWidget';
 import { agentService } from '../services/AgentService';
@@ -14,6 +14,8 @@ import { useContacts } from '../hooks/useContacts';
 import { Tabs } from './common/Tabs';
 import { useMatches } from '../hooks/useMatches';
 import { MatchList } from './match/MatchList';
+import { OntologyAliasLinkModal } from './ontology/OntologyAliasLinkModal';
+import { AttributeEditorModal } from './ontology/AttributeEditorModal';
 
 interface SmartNoteAssistantProps {
     note: Note;
@@ -27,7 +29,7 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
     className = ''
 }) => {
     const { addToast } = useToast();
-    const { settings } = useSettings();
+    const { settings, setSettings } = useSettings();
     const { setActiveView, setSelectedChatPubkey, setSelectedNoteId } = useView();
     const { contacts } = useContacts();
     const { suggestions, removeSuggestion } = useNoteAnalysis(note);
@@ -40,6 +42,11 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
     const [networkMatches, setNetworkMatches] = useState<ScoredMatch[]>([]);
     const [isSearching, setIsSearching] = useState(false);
 
+    // Modals State
+    const [attributeModalOpen, setAttributeModalOpen] = useState(false);
+    const [aliasModalOpen, setAliasModalOpen] = useState(false);
+    const [targetKey, setTargetKey] = useState<string>('');
+
     // UI State
     const [isOpen, setIsOpen] = useState(true);
     const [activeTab, setActiveTab] = useState<'suggestions' | 'local' | 'network'>('suggestions');
@@ -50,6 +57,31 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
             setActiveTab('suggestions');
         }
     }, [suggestions.length]);
+
+    // Analyze network matches for unknown properties
+    const unknownProperties = useMemo(() => {
+        if (networkMatches.length === 0) return [];
+        const uniqueKeys = new Set<string>();
+        const counts = new Map<string, number>();
+
+        networkMatches.forEach(m => {
+            m.note.properties.forEach(p => {
+                const canonical = getCanonicalKey(p.key, settings.ontology);
+                // If getCanonicalKey returns same key, check if it's defined
+                // (because getCanonicalKey returns input if unknown)
+                const def = findAttributeDef(canonical, settings.ontology);
+
+                if (!def) {
+                    uniqueKeys.add(p.key);
+                    counts.set(p.key, (counts.get(p.key) || 0) + 1);
+                }
+            });
+        });
+
+        return Array.from(uniqueKeys)
+            .sort((a, b) => (counts.get(b)! - counts.get(a)!))
+            .map(key => ({ key, count: counts.get(key)! }));
+    }, [networkMatches, settings.ontology]);
 
     const handleConnect = async (match: ScoredMatch) => {
         if (!match.note.author) return;
@@ -117,6 +149,28 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
                 addToast('Action not fully implemented yet', 'info');
             }
         }
+    };
+
+    const handleConfirmAddAttribute = (key: string, attribute: OntologyAttribute) => {
+        // Default to first root node for quick add
+        const targetNodeId = settings.ontology[0]?.id;
+        if (targetNodeId) {
+            setSettings(prev => ({
+                ...prev,
+                ontology: addAttribute(prev.ontology, targetNodeId, key, attribute)
+            }));
+            addToast(`Added '${key}' to ontology`, 'success');
+        } else {
+             addToast('No ontology root found to attach attribute', 'error');
+        }
+    };
+
+    const handleConfirmAddAlias = (nodeId: string, attributeKey: string) => {
+        setSettings(prev => ({
+            ...prev,
+            ontology: addAliasToAttribute(prev.ontology, nodeId, attributeKey, targetKey)
+        }));
+        addToast(`Linked alias '${targetKey}' to '${attributeKey}'`, 'success');
     };
 
     const toggleOpen = (e?: React.MouseEvent) => {
@@ -218,6 +272,45 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
                                     </div>
                                 ) : (
                                     <div className="space-y-2">
+                                        {unknownProperties.length > 0 && (
+                                             <div className="mb-4 bg-gray-800/50 rounded-lg p-2 border border-gray-700">
+                                                 <div className="flex items-center gap-2 mb-2">
+                                                     <LightBulbIcon className="w-3.5 h-3.5 text-yellow-400" />
+                                                     <span className="text-xs font-bold text-gray-300">Discovered Properties</span>
+                                                 </div>
+                                                 <div className="flex flex-wrap gap-2">
+                                                     {unknownProperties.map(({key, count}) => (
+                                                         <div key={key} className="flex items-center gap-1 bg-gray-900 rounded border border-gray-700 px-1.5 py-1">
+                                                             <span className="text-xs text-gray-300 font-mono">{key}</span>
+                                                             {count > 1 && <span className="text-[10px] text-gray-500">({count})</span>}
+                                                             <div className="flex gap-1 ml-1 pl-1 border-l border-gray-700">
+                                                                 <button
+                                                                     onClick={() => {
+                                                                         setTargetKey(key);
+                                                                         setAttributeModalOpen(true);
+                                                                     }}
+                                                                     className="text-[10px] text-blue-400 hover:text-blue-300 px-1"
+                                                                     title="Define as new attribute"
+                                                                 >
+                                                                     Add
+                                                                 </button>
+                                                                 <button
+                                                                     onClick={() => {
+                                                                         setTargetKey(key);
+                                                                         setAliasModalOpen(true);
+                                                                     }}
+                                                                     className="text-[10px] text-purple-400 hover:text-purple-300 px-1"
+                                                                     title="Link as alias to existing"
+                                                                 >
+                                                                     Link
+                                                                 </button>
+                                                             </div>
+                                                         </div>
+                                                     ))}
+                                                 </div>
+                                             </div>
+                                        )}
+
                                         <div className="flex justify-end px-1">
                                             <button
                                                 onClick={handleFindMatches}
@@ -301,6 +394,22 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
                     </div>
                 </div>
             )}
+
+            <AttributeEditorModal
+                isOpen={attributeModalOpen}
+                onClose={() => setAttributeModalOpen(false)}
+                onConfirm={handleConfirmAddAttribute}
+                initialValues={{ key: targetKey, type: 'string' }}
+                title={`Define '${targetKey}'`}
+            />
+
+            <OntologyAliasLinkModal
+                isOpen={aliasModalOpen}
+                onClose={() => setAliasModalOpen(false)}
+                onConfirm={handleConfirmAddAlias}
+                aliasCandidate={targetKey}
+                ontology={settings.ontology}
+            />
         </div>
     );
 };
