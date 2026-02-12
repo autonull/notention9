@@ -1,11 +1,14 @@
 import { z } from 'zod';
 import { randomUUID } from 'crypto';
-import { Note } from '@notention/core';
+import { Note, PropertyExtractor, getTextFromHtml, OntologyNode, Property } from '@notention/core';
 import { McpToolRegistry } from '../McpToolRegistry.js';
 import { AgentPlugin } from '../AgentPlugin.js';
 import { PersistenceService } from '../../persistence.js';
 import { executeSkillTool, ontologyQueryTool } from '../../tools.js';
 import { Capabilities } from '../../core/Capabilities.js';
+
+// TODO: Load real ontology from PersistenceService if available
+const DEFAULT_ONTOLOGY: OntologyNode[] = [];
 
 export class CorePlugin implements AgentPlugin {
     name = 'core';
@@ -31,12 +34,28 @@ export class CorePlugin implements AgentPlugin {
             handler: async (args) => {
                 const { title, content, tags, properties } = args;
                 console.log('[CorePlugin] create_note args:', JSON.stringify(args, null, 2));
+
+                let finalProperties: Property[] = (properties as any) ?? [];
+
+                // Auto-extract properties if not provided or to augment
+                // We attempt to extract from content to "smart tag" the note
+                try {
+                    const extractor = new PropertyExtractor(DEFAULT_ONTOLOGY);
+                    const extracted = extractor.extractFromText(getTextFromHtml(content));
+                    if (extracted.length > 0) {
+                        // Merge extracted properties
+                        finalProperties = [...finalProperties, ...extracted];
+                    }
+                } catch (e) {
+                    console.warn('[CorePlugin] Failed to auto-extract properties', e);
+                }
+
                 const note: Note = {
                     id: randomUUID(),
                     title,
                     content,
                     tags: tags ?? [],
-                    properties: (properties as any) ?? [],
+                    properties: finalProperties,
                     createdAt: new Date().toISOString(),
                     updatedAt: new Date().toISOString(),
                     source: { type: 'user', identifier: 'cli', timestamp: Date.now() },
