@@ -1,8 +1,8 @@
 import {useEditor} from '@tiptap/react';
 import {sanitizeHTML} from '../../utils/sanitize';
 import {useOntologyIndex} from '../../hooks/useOntologyIndex';
-import type {Note, OntologyNode, Template} from '@notention/core';
-import {useEffect, useRef} from 'react';
+import type {Note, OntologyNode, Template, SuggestedAttribute} from '@notention/core';
+import {useEffect, useMemo, useRef} from 'react';
 import {getExtensions} from './extensions';
 
 interface UseTiptapConfigProps {
@@ -14,6 +14,7 @@ interface UseTiptapConfigProps {
     notes?: Note[];
     onOpenPropertyModal?: (key: string) => void;
     onMagic?: () => void;
+    suggestions?: SuggestedAttribute[];
 }
 
 export const useTiptapConfig = ({
@@ -24,9 +25,22 @@ export const useTiptapConfig = ({
                                     minimal,
                                     notes = [],
                                     onOpenPropertyModal,
-                                    onMagic
+                                    onMagic,
+                                    suggestions = []
                                 }: UseTiptapConfigProps) => {
     const {allTags, allProperties} = useOntologyIndex(ontology);
+
+    const mergedProperties = useMemo(() => {
+        const existingIds = new Set(allProperties.map(p => p.id));
+        const learned = suggestions
+            .filter(s => !existingIds.has(s.key))
+            .map(s => ({
+                id: s.key,
+                label: s.key,
+                description: `Learned (Freq: ${s.frequency})`
+            }));
+        return [...allProperties, ...learned];
+    }, [allProperties, suggestions]);
 
     // Use ref to access latest notes in callbacks without re-initializing editor
     // Note: getExtensions is called inside useEditor, so it uses the current notesRef if passed correctly?
@@ -93,7 +107,7 @@ export const useTiptapConfig = ({
 
     return useEditor({
         extensions: getExtensions({
-            allProperties,
+            allProperties: mergedProperties,
             allTags,
             getNotes, // Changed this
             templates,
@@ -107,5 +121,5 @@ export const useTiptapConfig = ({
             },
         },
         onUpdate: ({editor}) => onUpdate(editor.getHTML()),
-    }, [ontology, minimal, onOpenPropertyModal]);
+    }, [ontology, minimal, onOpenPropertyModal, suggestions]);
 };
