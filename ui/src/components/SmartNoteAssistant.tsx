@@ -1,8 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useToast } from '../hooks/useToast';
-import { Note, ScoredMatch, getCanonicalKey, findAttributeDef, OntologyAttribute, addAttribute, addAliasToAttribute } from '@notention/core';
-import { SparklesIcon, SearchSparkleIcon, NetworkIcon, HomeIcon, LightBulbIcon } from './common/icons';
+import { Note, ScoredMatch, getCanonicalKey, findAttributeDef, OntologyAttribute, addAttribute, addAliasToAttribute, Property, OntologyNode } from '@notention/core';
+import { SparklesIcon, SearchSparkleIcon, NetworkIcon, HomeIcon, LightBulbIcon, TagIcon, PlusIcon } from './common/icons';
 import { FeedbackWidget } from './common/FeedbackWidget';
+import { PropertyBlock } from './properties/PropertyBlock';
+import { PropertyForm } from './editor/PropertyForm';
+import { Button } from './common/Button';
+import { ConfirmationModal } from './common/ConfirmationModal';
 import { agentService } from '../services/AgentService';
 import { nostrService } from '../services/NostrService';
 import { useSettings } from '../hooks/useSettingsContext';
@@ -22,12 +26,22 @@ interface SmartNoteAssistantProps {
     note: Note;
     onNoteUpdate: (content: string) => void;
     className?: string;
+    properties?: Property[];
+    onUpdateProperty?: (oldProp: Property | null, newProp: Property | null) => void;
+    onPickLocation?: () => void;
+    onPickTime?: (key: string) => void;
+    ontology?: OntologyNode[];
 }
 
 export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
     note,
     onNoteUpdate,
-    className = ''
+    className = '',
+    properties = note.properties || [],
+    onUpdateProperty,
+    onPickLocation,
+    onPickTime,
+    ontology = []
 }) => {
     const { addToast } = useToast();
     const { settings, setSettings } = useSettings();
@@ -50,7 +64,12 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
 
     // UI State
     const [isOpen, setIsOpen] = useState(true);
-    const [activeTab, setActiveTab] = useState<'suggestions' | 'local' | 'network'>('suggestions');
+    const [activeTab, setActiveTab] = useState<'properties' | 'suggestions' | 'local' | 'network'>('properties');
+
+    // Properties Tab State
+    const [isAddingProperty, setIsAddingProperty] = useState(false);
+    const [editingPropertyIndex, setEditingPropertyIndex] = useState<number | null>(null);
+    const [propertyToDelete, setPropertyToDelete] = useState<Property | null>(null);
 
     // Auto-switch tab based on content?
     useEffect(() => {
@@ -58,6 +77,37 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
             setActiveTab('suggestions');
         }
     }, [suggestions.length]);
+
+    const handleSaveProperty = (key: string, op: string, value: string) => {
+        if (!onUpdateProperty) return;
+
+        const newProp: Property = {
+            key,
+            operator: op,
+            values: value.split(',').map(v => v.trim())
+        };
+
+        if (editingPropertyIndex !== null && properties) {
+            const oldProp = properties[editingPropertyIndex];
+            onUpdateProperty(oldProp, newProp);
+            setEditingPropertyIndex(null);
+        } else {
+            onUpdateProperty(null, newProp);
+            setIsAddingProperty(false);
+        }
+    };
+
+    const handleDeleteProperty = () => {
+        if (propertyToDelete && onUpdateProperty) {
+            onUpdateProperty(propertyToDelete, null);
+            setPropertyToDelete(null);
+        }
+    };
+
+    const handleCancelEdit = () => {
+        setIsAddingProperty(false);
+        setEditingPropertyIndex(null);
+    };
 
     // Analyze network matches for unknown properties
     const unknownProperties = useMemo(() => {
@@ -185,6 +235,10 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
         addToast(`Linked alias '${targetKey}' to '${attributeKey}'`, 'success');
     };
 
+    const propertySuggestions = useMemo(() =>
+        suggestions.filter(s => s.type === 'property'),
+    [suggestions]);
+
     const toggleOpen = (e?: React.MouseEvent) => {
         e?.stopPropagation();
         setIsOpen(!isOpen);
@@ -245,6 +299,7 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
                             activeTab={activeTab}
                             onChange={(id) => setActiveTab(id as any)}
                             tabs={[
+                                { id: 'properties', label: 'Props', count: properties.length },
                                 { id: 'suggestions', label: 'AI', count: suggestions.length },
                                 { id: 'local', label: 'Local', count: localMatches.length },
                                 { id: 'network', label: 'Net', count: networkMatches.length }
@@ -254,6 +309,86 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
                     </div>
 
                     <div className="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-2">
+                        {activeTab === 'properties' && (
+                            <div className="space-y-3">
+                                {!isAddingProperty && (
+                                    <div className="flex justify-between items-center px-1">
+                                        <span className="text-xs text-gray-500 font-medium">
+                                            {properties.length} Properties
+                                        </span>
+                                        <Button
+                                            size="xs"
+                                            variant="ghost"
+                                            icon={PlusIcon}
+                                            onClick={() => setIsAddingProperty(true)}
+                                            className="text-blue-400 hover:bg-blue-900/30"
+                                        >
+                                            Add
+                                        </Button>
+                                    </div>
+                                )}
+
+                                {isAddingProperty && (
+                                    <PropertyForm
+                                        initialKey=""
+                                        initialOp="is"
+                                        initialValue=""
+                                        isAdding={true}
+                                        onSave={handleSaveProperty}
+                                        onCancel={handleCancelEdit}
+                                        onPickLocation={onPickLocation}
+                                        onPickTime={onPickTime}
+                                        ontology={ontology}
+                                    />
+                                )}
+
+                                <div className="space-y-1">
+                                    {properties.map((prop, idx) => (
+                                        <PropertyBlock
+                                            key={`${prop.key}-${idx}`}
+                                            property={prop}
+                                            onUpdate={(newProp) => {
+                                                if (onUpdateProperty) onUpdateProperty(prop, newProp);
+                                            }}
+                                            onDelete={() => setPropertyToDelete(prop)}
+                                            ontology={ontology}
+                                        />
+                                    ))}
+                                </div>
+
+                                {properties.length === 0 && !isAddingProperty && (
+                                    <div className="text-center py-4 text-gray-500 text-xs italic bg-gray-900/30 rounded border border-gray-800 border-dashed">
+                                        No properties yet.
+                                    </div>
+                                )}
+
+                                {propertySuggestions.length > 0 && !isAddingProperty && (
+                                    <div className="pt-3 border-t border-gray-800 mt-2">
+                                        <div className="flex items-center gap-2 mb-2 px-1">
+                                            <SparklesIcon className="w-3 h-3 text-purple-400"/>
+                                            <span className="text-xs font-bold text-gray-400 uppercase">Detected in Text</span>
+                                        </div>
+                                        <div className="space-y-2">
+                                            {propertySuggestions.map(s => (
+                                                <div key={s.id}
+                                                     className="bg-purple-900/10 border border-purple-500/20 rounded p-2 flex justify-between items-center group hover:bg-purple-900/20 transition-colors">
+                                                    <code className="text-xs text-purple-300 font-mono">{s.text}</code>
+                                                    <Button
+                                                        size="xs"
+                                                        variant="ghost"
+                                                        className="text-purple-400 hover:text-purple-200"
+                                                        onClick={() => handleApplySuggestion(s)}
+                                                    >
+                                                        Add
+                                                    </Button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
                         {activeTab === 'network' && (
                              <>
                                 {networkMatches.length === 0 ? (
@@ -423,6 +558,16 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
                 onConfirm={handleConfirmAddAlias}
                 aliasCandidate={targetKey}
                 ontology={settings.ontology}
+            />
+
+            <ConfirmationModal
+                isOpen={!!propertyToDelete}
+                onClose={() => setPropertyToDelete(null)}
+                onConfirm={handleDeleteProperty}
+                title="Delete Property?"
+                message={`Are you sure you want to delete the property '${propertyToDelete?.key}'?`}
+                confirmLabel="Delete"
+                isDestructive
             />
         </div>
     );

@@ -12,13 +12,11 @@ import {metaphorMapper} from '@notention/core';
 import {EditorHeader} from './EditorHeader';
 import {TiptapEditorRef} from './TiptapEditor';
 import {HybridEditor} from './HybridEditor';
-import {PropertyInspector} from './PropertyInspector';
 import {TemplateSelector} from './TemplateSelector';
 import {SaveTemplateModal} from './SaveTemplateModal';
 import {MapPickerModal} from '../map/MapPickerModal';
 import {TimePickerModal} from '../common/TimePickerModal';
 import {ContextPanel} from './ContextPanel';
-import {SuggestionPanel} from './SuggestionPanel';
 import {SmartNoteAssistant} from '../SmartNoteAssistant';
 import {MetaphorRenderer} from '../metaphor/MetaphorRenderer';
 import {PrivacyConfirmModal} from '../modals/PrivacyConfirmModal';
@@ -191,7 +189,6 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                         saveStatus={saveStatus}
                         topContent={
                             <>
-                                <SuggestionPanel noteId={note.id} onApply={handleApplySuggestions}/>
                                 {activeMetaphor && (
                                     <MetaphorRenderer note={dirtyNote} metaphor={activeMetaphor}/>
                                 )}
@@ -201,13 +198,6 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                                     onPickTime={handlePickTime}
                                 />
                             </>
-                        }
-                        assistant={
-                            <SmartNoteAssistant
-                                note={dirtyNote}
-                                onNoteUpdate={handleContentSave}
-                                className="h-full border-none rounded-none bg-transparent"
-                            />
                         }
                     />
 
@@ -220,16 +210,18 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                     )}
                 </div>
                 {isInspectorOpen && (
-                    <PropertyInspector
-                        properties={dirtyNote.properties ?? []}
-                        onUpdateText={handleUpdateTextFromInspector}
-                        onPropertyChange={() => {
-                        }} // Read only for now (updates text)
-                        onPickLocation={() => setIsMapPickerOpen(true)}
-                        onPickTime={handlePickTime}
-                        ontology={settings.ontology}
-                        onClose={() => setIsInspectorOpen(false)}
-                    />
+                    <div className="fixed inset-y-0 right-0 w-80 bg-gray-900 border-l border-gray-700/50 flex flex-col h-full z-20 shadow-xl lg:relative lg:shadow-none lg:flex-shrink-0">
+                        <SmartNoteAssistant
+                            note={dirtyNote}
+                            onNoteUpdate={handleContentSave}
+                            className="h-full border-none rounded-none bg-transparent"
+                            properties={dirtyNote.properties}
+                            onUpdateProperty={handleUpdateTextFromInspector}
+                            onPickLocation={() => setIsMapPickerOpen(true)}
+                            onPickTime={handlePickTime}
+                            ontology={settings.ontology}
+                        />
+                    </div>
                 )}
             </div>
             <SaveTemplateModal
