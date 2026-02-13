@@ -156,8 +156,8 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                 missingProperties={missingProperties}
                 onAddProperty={handleAddPropertyHint}
             />
-            <div className="flex flex-1 overflow-hidden">
-                <div className="flex-1 flex flex-col relative">
+            <div className="flex flex-1 overflow-hidden relative">
+                <div className="flex-1 flex flex-col relative transition-all duration-300">
                     <HybridEditor
                         ref={editorRef}
                         key={note.id}
@@ -199,20 +199,38 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                         />
                     )}
                 </div>
+
+                {/* Mobile Backdrop */}
                 {isInspectorOpen && (
-                    <div className="fixed inset-y-0 right-0 w-80 bg-gray-900 border-l border-gray-700/50 flex flex-col h-full z-20 shadow-xl lg:relative lg:shadow-none lg:flex-shrink-0">
-                        <SmartNoteAssistant
-                            note={dirtyNote}
-                            onNoteUpdate={handleContentSave}
-                            className="h-full border-none rounded-none bg-transparent"
-                            properties={dirtyNote.properties}
-                            onUpdateProperty={handleUpdateTextFromInspector}
-                            onPickLocation={() => setIsMapPickerOpen(true)}
-                            onPickTime={handlePickTime}
-                            ontology={settings.ontology}
-                        />
-                    </div>
+                    <div
+                        className="fixed inset-0 bg-black/50 z-20 lg:hidden transition-opacity duration-300"
+                        onClick={() => setIsInspectorOpen(false)}
+                    />
                 )}
+
+                {/* Assistant Sidebar */}
+                <div
+                    className={`
+                        flex flex-col h-full bg-gray-900 border-l border-gray-700/50
+                        transition-all duration-300 ease-in-out transform
+                        fixed inset-y-0 right-0 z-30 shadow-xl lg:shadow-none lg:z-0 lg:relative
+                        w-80
+                        ${isInspectorOpen
+                            ? 'translate-x-0'
+                            : 'translate-x-full lg:w-0 lg:translate-x-0 lg:border-l-0 lg:overflow-hidden'}
+                    `.replace(/\s+/g, ' ').trim()}
+                >
+                    <SmartNoteAssistant
+                        note={dirtyNote}
+                        onNoteUpdate={handleContentSave}
+                        className="h-full border-none rounded-none bg-transparent"
+                        properties={dirtyNote.properties}
+                        onUpdateProperty={handleUpdateTextFromInspector}
+                        onPickLocation={() => setIsMapPickerOpen(true)}
+                        onPickTime={handlePickTime}
+                        ontology={settings.ontology}
+                    />
+                </div>
             </div>
             <SaveTemplateModal
                 isOpen={isSaveTemplateModalOpen}
