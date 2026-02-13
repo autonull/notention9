@@ -2,7 +2,6 @@ import React from 'react';
 import {Header} from './layout/Header';
 import {MobileNavigation} from './layout/MobileNavigation';
 import {CommandPalette} from './common/CommandPalette';
-import {HelpModal} from './common/HelpModal';
 import {Sidebar} from './sidebar';
 import {MainView} from './MainView';
 
@@ -148,7 +147,6 @@ export function AppShell() {
                 onCreateNote={handleCreateNote}
                 commands={commands}
             />
-            <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)}/>
         </div>
     );
 }
