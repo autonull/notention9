@@ -124,10 +124,10 @@ export function TiptapToolbar({
 
     return (
         <div
-            className="flex-shrink-0 px-3 py-2 border-b border-gray-700/50 flex items-center flex-wrap gap-2 bg-gray-900/50 backdrop-blur-sm">
+            className="flex-shrink-0 px-3 py-2 border-b border-gray-700/50 flex items-center gap-2 bg-gray-900/50 backdrop-blur-sm overflow-x-auto flex-nowrap md:flex-wrap">
             {(onMagic || onTemplates || onInsertProperty) && (
                 <div
-                    className="flex items-center gap-1 bg-purple-900/20 p-0.5 rounded-lg border border-purple-500/20 mr-2">
+                    className="flex items-center gap-1 bg-purple-900/20 p-0.5 rounded-lg border border-purple-500/20 mr-2 flex-shrink-0">
                     {onMagic && (
                         <IconButton
                             onClick={onMagic}
@@ -158,30 +158,31 @@ export function TiptapToolbar({
                 </div>
             )}
 
-            <div className="flex items-center flex-wrap gap-0.5 flex-grow">
+            <div className="flex items-center gap-0.5 flex-grow flex-nowrap md:flex-wrap">
                 {actions.map((item, index) => {
                     if (item.type === 'separator') {
                         return (
                             <div
                                 key={`sep-${index}`}
-                                className="w-px h-4 bg-gray-700/50 mx-1.5 hidden sm:block"
+                                className="w-px h-4 bg-gray-700/50 mx-1.5 hidden sm:block flex-shrink-0"
                             ></div>
                         );
                     }
                     return (
-                        <IconButton
-                            key={item.title}
-                            onClick={item.action}
-                            disabled={item.disabled ? item.disabled() : false}
-                            isActive={item.isActive ? item.isActive() : false}
-                            tooltip={item.title}
-                            icon={item.icon}
-                        />
+                        <div key={item.title} className="flex-shrink-0">
+                            <IconButton
+                                onClick={item.action}
+                                disabled={item.disabled ? item.disabled() : false}
+                                isActive={item.isActive ? item.isActive() : false}
+                                tooltip={item.title}
+                                icon={item.icon}
+                            />
+                        </div>
                     );
                 })}
             </div>
 
-            <div className="border-l border-gray-700/50 pl-2 ml-1">
+            <div className="border-l border-gray-700/50 pl-2 ml-1 flex-shrink-0">
                 <IconButton
                     onClick={toggleViewMode}
                     isActive={viewMode === 'code'}

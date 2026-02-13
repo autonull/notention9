@@ -77,28 +77,28 @@ export const NoteListItem = React.memo(({
             tabIndex={0}
             onClick={onSelect}
             onKeyDown={handleKeyDown}
-            className={`note-list-item group relative flex flex-col p-3 mx-2 my-1 rounded-lg cursor-pointer transition-all duration-200 border border-transparent
+            className={`note-list-item group relative flex flex-col p-4 mx-2 my-1 rounded-lg cursor-pointer transition-all duration-200 border border-transparent
         ${isSelected
                 ? 'bg-blue-900/30 border-blue-500/30 shadow-md'
                 : 'hover:bg-gray-800 border-transparent hover:border-gray-700/50'
-            } focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+            } focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50`}
         >
-            <div className="flex justify-between items-start mb-0.5">
+            <div className="flex justify-between items-start mb-1">
                 <h3 className={`font-semibold text-sm truncate pr-8 ${isSelected ? 'text-blue-100' : 'text-gray-200'}`}>
                     {note.title || 'Untitled Note'}
                 </h3>
                 {note.pinned && (
-                    <PinIcon className="h-3.5 w-3.5 text-blue-400 absolute top-3.5 right-3"/>
+                    <PinIcon className="h-4 w-4 text-blue-400 absolute top-4 right-4"/>
                 )}
             </div>
 
-            <p className={`text-xs truncate mb-2 ${isSelected ? 'text-blue-200/70' : 'text-gray-500'}`}>
+            <p className={`text-xs truncate mb-3 ${isSelected ? 'text-blue-200/70' : 'text-gray-500'}`}>
                 {contentPreview}
             </p>
 
             {/* Property Badges */}
             {note.properties.length > 0 && (
-                <div className="flex flex-wrap gap-1 mb-2">
+                <div className="flex flex-wrap gap-1 mb-3">
                     {note.properties.slice(0, 3).map((p, i) => (
                         <Badge key={i} size="sm" variant="outline"
                                className={`border-opacity-50 ${isSelected ? 'text-blue-200 border-blue-400' : 'text-gray-400 border-gray-600'}`}>
@@ -112,27 +112,27 @@ export const NoteListItem = React.memo(({
                 </div>
             )}
 
-            <div className="flex items-center justify-between h-5">
-                <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between h-6">
+                <div className="flex items-center gap-3">
                     {note.nostrEventId && note.publishedAt && (
                         <span title={`Published on Nostr at ${new Date(note.publishedAt).toLocaleString()}`}>
-                    <WorldIcon className={`h-3.5 w-3.5 ${isSelected ? 'text-green-300' : 'text-green-500/70'}`}/>
+                    <WorldIcon className={`h-4 w-4 ${isSelected ? 'text-green-300' : 'text-green-500/70'}`}/>
                 </span>
                     )}
                     {hasLocation && (
                         <span title="Has location data">
-                    <MapPinIcon className={`h-3.5 w-3.5 ${isSelected ? 'text-blue-300' : 'text-blue-500/70'}`}/>
+                    <MapPinIcon className={`h-4 w-4 ${isSelected ? 'text-blue-300' : 'text-blue-500/70'}`}/>
                 </span>
                     )}
                     {hasTime && (
                         <span title="Has time data">
-                    <ClockIcon className={`h-3.5 w-3.5 ${isSelected ? 'text-yellow-300' : 'text-yellow-500/70'}`}/>
+                    <ClockIcon className={`h-4 w-4 ${isSelected ? 'text-yellow-300' : 'text-yellow-500/70'}`}/>
                 </span>
                     )}
                 </div>
 
                 <div
-                    className={`flex items-center gap-1 transition-opacity duration-200 ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} focus-within:opacity-100`}>
+                    className={`flex items-center gap-2 transition-opacity duration-200 ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} focus-within:opacity-100`}>
                     {isTrash && onRestore && (
                         <IconButton
                             onClick={(e) => {
@@ -140,9 +140,9 @@ export const NoteListItem = React.memo(({
                                 onRestore();
                             }}
                             tabIndex={-1}
-                            className="text-gray-400 hover:text-green-400 hover:bg-green-900/30"
+                            className="text-gray-400 hover:text-green-400 hover:bg-green-900/30 p-2"
                             tooltip="Restore Note"
-                            icon={() => <DocumentDuplicateIcon className="h-3.5 w-3.5 transform rotate-180"/>}
+                            icon={() => <DocumentDuplicateIcon className="h-4 w-4 transform rotate-180"/>}
                             size="sm"
                             variant="ghost"
                         />
@@ -154,7 +154,7 @@ export const NoteListItem = React.memo(({
                                 onPin();
                             }}
                             tabIndex={-1}
-                            className={`${note.pinned ? 'text-blue-400' : 'text-gray-400 hover:text-white hover:bg-gray-700/50'}`}
+                            className={`${note.pinned ? 'text-blue-400' : 'text-gray-400 hover:text-white hover:bg-gray-700/50'} p-2`}
                             tooltip={note.pinned ? "Unpin Note" : "Pin Note"}
                             icon={PinIcon}
                             size="sm"
@@ -167,7 +167,7 @@ export const NoteListItem = React.memo(({
                             onDelete();
                         }}
                         tabIndex={-1}
-                        className="text-gray-400 hover:text-red-400 hover:bg-red-900/30"
+                        className="text-gray-400 hover:text-red-400 hover:bg-red-900/30 p-2"
                         tooltip={isTrash ? "Delete Permanently" : "Move to Trash"}
                         icon={TrashIcon}
                         size="sm"
