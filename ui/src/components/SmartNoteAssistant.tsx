@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useToast } from '../hooks/useToast';
 import { Note, ScoredMatch, getCanonicalKey, findAttributeDef, OntologyAttribute, addAttribute, addAliasToAttribute, Property, OntologyNode } from '@notention/core';
-import { SparklesIcon, SearchSparkleIcon, NetworkIcon, HomeIcon, LightBulbIcon, TagIcon, PlusIcon } from './common/icons';
+import { SparklesIcon, SearchSparkleIcon, LightBulbIcon, PlusIcon } from './common/icons';
 import { FeedbackWidget } from './common/FeedbackWidget';
 import { PropertyBlock } from './properties/PropertyBlock';
 import { PropertyForm } from './editor/PropertyForm';
@@ -33,7 +33,7 @@ interface SmartNoteAssistantProps {
     ontology?: OntologyNode[];
 }
 
-export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
+export function SmartNoteAssistant({
     note,
     onNoteUpdate,
     className = '',
@@ -42,7 +42,7 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
     onPickLocation,
     onPickTime,
     ontology = []
-}) => {
+}: SmartNoteAssistantProps) {
     const { addToast } = useToast();
     const { settings, setSettings } = useSettings();
     const { setActiveView, setSelectedChatPubkey, setSelectedNoteId } = useView();
@@ -50,28 +50,21 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
     const { suggestions, removeSuggestion } = useNoteAnalysis(note);
     const [activeSuggestion, setActiveSuggestion] = useState<number>(0);
 
-    // Local Matches
     const localMatches = useMatches(note);
-
-    // Network Discovery Hook
     const { matches: networkMatches, isSearching, discover: discoverMatches } = useNetworkDiscovery(note, settings.ontology);
 
-    // Modals State
     const [attributeModalOpen, setAttributeModalOpen] = useState(false);
     const [aliasModalOpen, setAliasModalOpen] = useState(false);
     const [targetKey, setTargetKey] = useState<string>('');
     const [inferredType, setInferredType] = useState<string>('string');
 
-    // UI State
     const [isOpen, setIsOpen] = useState(true);
     const [activeTab, setActiveTab] = useState<'properties' | 'suggestions' | 'local' | 'network'>('properties');
 
-    // Properties Tab State
     const [isAddingProperty, setIsAddingProperty] = useState(false);
     const [editingPropertyIndex, setEditingPropertyIndex] = useState<number | null>(null);
     const [propertyToDelete, setPropertyToDelete] = useState<Property | null>(null);
 
-    // Auto-switch tab based on content?
     useEffect(() => {
         if (suggestions.length > 0 && activeTab === 'network' && networkMatches.length === 0) {
             setActiveTab('suggestions');
@@ -109,18 +102,15 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
         setEditingPropertyIndex(null);
     };
 
-    // Analyze network matches for unknown properties
     const unknownProperties = useMemo(() => {
         if (networkMatches.length === 0) return [];
         const uniqueKeys = new Set<string>();
         const counts = new Map<string, number>();
         const valuesMap = new Map<string, string[]>();
 
-        networkMatches.forEach(m => {
-            m.note.properties.forEach(p => {
+        for (const m of networkMatches) {
+            for (const p of m.note.properties) {
                 const canonical = getCanonicalKey(p.key, settings.ontology);
-                // If getCanonicalKey returns same key, check if it's defined
-                // (because getCanonicalKey returns input if unknown)
                 const def = findAttributeDef(canonical, settings.ontology);
 
                 if (!def) {
@@ -130,23 +120,20 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
                     const existing = valuesMap.get(p.key) || [];
                     valuesMap.set(p.key, [...existing, ...p.values]);
                 }
-            });
-        });
+            }
+        }
 
         return Array.from(uniqueKeys)
             .sort((a, b) => (counts.get(b)! - counts.get(a)!))
             .map(key => {
-                // Infer type
                 const values = valuesMap.get(key) || [];
                 let type = 'string';
 
                 if (values.length > 0) {
-                    // Use Number() for stricter check than parseFloat (which allows trailing chars)
                     const allNumbers = values.every(v => !isNaN(Number(v)) && v.trim() !== '');
                     if (allNumbers) {
                         type = 'number';
                     } else {
-                        // Check for date format
                         const allDates = values.every(v => !isNaN(Date.parse(v)));
                         if (allDates) {
                             type = 'date';
@@ -173,11 +160,10 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
     const handleChat = (author: string) => {
         setActiveView('chat');
         setSelectedChatPubkey(author);
-    }
+    };
 
     const handleFindMatches = async (e?: React.MouseEvent) => {
         e?.stopPropagation();
-        // Ensure we are on the network tab
         if (activeTab !== 'network') setActiveTab('network');
         if (!isOpen) setIsOpen(true);
 
@@ -185,36 +171,30 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
     };
 
     const handleApplySuggestion = (suggestion: Suggestion) => {
-        let newContent = note.content;
-        let applied = false;
-
-        const propertyContent = applyPropertySuggestion(newContent, suggestion.text);
+        const propertyContent = applyPropertySuggestion(note.content, suggestion.text);
         if (propertyContent) {
-            newContent = propertyContent;
-            applied = true;
-        } else {
-            const taskContent = applyTaskSuggestion(newContent, suggestion.text);
-            if (taskContent) {
-                newContent = taskContent;
-                applied = true;
-            }
-        }
-
-        if (applied) {
-            onNoteUpdate(newContent);
+            onNoteUpdate(propertyContent);
             addToast('Suggestion applied', 'success');
             removeSuggestion(suggestion.id);
+            return;
+        }
+
+        const taskContent = applyTaskSuggestion(note.content, suggestion.text);
+        if (taskContent) {
+            onNoteUpdate(taskContent);
+            addToast('Suggestion applied', 'success');
+            removeSuggestion(suggestion.id);
+            return;
+        }
+
+        if (suggestion.type === 'link') {
+            addToast('Info: Use [[ to link to ontology', 'info');
         } else {
-            if (suggestion.type === 'link') {
-                addToast('Info: Use [[ to link to ontology', 'info');
-            } else {
-                addToast('Action not fully implemented yet', 'info');
-            }
+            addToast('Action not fully implemented yet', 'info');
         }
     };
 
     const handleConfirmAddAttribute = (key: string, attribute: OntologyAttribute) => {
-        // Default to first root node for quick add
         const targetNodeId = settings.ontology[0]?.id;
         if (targetNodeId) {
             setSettings(prev => ({
@@ -571,4 +551,4 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
             />
         </div>
     );
-};
+}

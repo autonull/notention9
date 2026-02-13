@@ -6,43 +6,32 @@ interface FilterBarProps {
     onSetSearch: (term: string) => void;
 }
 
-interface FilterOption {
-    id: string;
-    label: string;
-    icon: React.ComponentType<{ className?: string }>;
-    query: string;
-}
-
-const FILTERS: FilterOption[] = [
+const FILTERS = [
     {id: 'tasks', label: 'Tasks', icon: CheckCircleIcon, query: '[status:is:todo]'},
     {id: 'journal', label: 'Journal', icon: NoteIcon, query: '[type:is:journal]'},
     {id: 'ideas', label: 'Ideas', icon: LightBulbIcon, query: '[type:is:idea]'},
     {id: 'people', label: 'People', icon: UserGroupIcon, query: '[type:is:person]'},
-];
+] as const;
 
 export function FilterBar({searchTerm, onSetSearch}: FilterBarProps) {
-    // Check if current search matches a filter
     const activeFilterId = FILTERS.find(f => f.query === searchTerm)?.id;
 
-    const handleFilterClick = (filter: FilterOption) => {
-        if (activeFilterId === filter.id) {
-            onSetSearch(''); // Toggle off
-        } else {
-            onSetSearch(filter.query);
-        }
+    const handleFilterClick = (query: string, id: string) => {
+        onSetSearch(activeFilterId === id ? '' : query);
     };
+
+    const getButtonClass = (isActive: boolean, isAll = false) => `
+        flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-colors flex-shrink-0 border
+        ${isActive
+        ? (isAll ? 'bg-gray-700 text-white border-gray-600' : 'bg-blue-900/30 text-blue-200 border-blue-700/50')
+        : 'bg-transparent text-gray-400 border-gray-800 hover:bg-gray-800 hover:text-gray-300'}
+    `;
 
     return (
         <div className="flex items-center gap-1 overflow-x-auto pb-1 custom-scrollbar scrollbar-none">
-            {/* All / Clear Button */}
             <button
                 onClick={() => onSetSearch('')}
-                className={`
-                    flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-colors flex-shrink-0 border
-                    ${!searchTerm
-                    ? 'bg-gray-700 text-white border-gray-600'
-                    : 'bg-transparent text-gray-400 border-gray-800 hover:bg-gray-800 hover:text-gray-300'}
-                `}
+                className={getButtonClass(!searchTerm, true)}
                 title="All Notes"
             >
                 <ClockIcon className="w-3 h-3"/>
@@ -54,13 +43,8 @@ export function FilterBar({searchTerm, onSetSearch}: FilterBarProps) {
                 return (
                     <button
                         key={filter.id}
-                        onClick={() => handleFilterClick(filter)}
-                        className={`
-                            flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-colors flex-shrink-0 border
-                            ${isActive
-                            ? 'bg-blue-900/30 text-blue-200 border-blue-700/50'
-                            : 'bg-transparent text-gray-400 border-gray-800 hover:bg-gray-800 hover:text-gray-300'}
-                        `}
+                        onClick={() => handleFilterClick(filter.query, filter.id)}
+                        className={getButtonClass(isActive)}
                     >
                         <filter.icon className={`w-3 h-3 ${isActive ? 'text-blue-400' : ''}`}/>
                         {filter.label}

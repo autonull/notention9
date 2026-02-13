@@ -15,6 +15,27 @@ import {
     SparklesIcon
 } from '../common/icons';
 
+const TEMPLATES = {
+    task: {
+        title: 'New Task',
+        content: '<p>Describe task...</p>',
+        properties: [{key: 'status', operator: 'is', values: ['todo']}],
+        tags: ['task']
+    },
+    journal: {
+        title: () => new Date().toLocaleDateString(),
+        content: '<p>Thoughts...</p>',
+        properties: [{key: 'type', operator: 'is', values: ['journal']}],
+        tags: ['journal']
+    },
+    idea: {
+        title: 'New Idea',
+        content: '<p>Idea description...</p>',
+        properties: [{key: 'type', operator: 'is', values: ['idea']}],
+        tags: ['idea']
+    }
+};
+
 export function DashboardView() {
     const {notes, addNote} = useNotes();
     const {setActiveView, setSelectedNoteId} = useView();
@@ -40,9 +61,8 @@ export function DashboardView() {
         e.preventDefault();
         if (!quickCaptureInput.trim()) return;
 
-        // Simple quick capture
         const note = addNote({
-            title: 'Quick Note', // Or maybe use first few words?
+            title: 'Quick Note',
             content: `<p>${quickCaptureInput}</p>`,
             tags: ['quick-capture']
         });
@@ -51,41 +71,27 @@ export function DashboardView() {
         setActiveView('notes');
     };
 
-    const handleQuickTemplate = (type: 'task' | 'journal' | 'idea') => {
-        let title = 'Untitled';
-        let content = '';
-        let tags: string[] = [];
-        let properties: any[] = [];
+    const handleQuickTemplate = (type: keyof typeof TEMPLATES) => {
+        const template = TEMPLATES[type];
+        const title = typeof template.title === 'function' ? template.title() : template.title;
 
-        if (type === 'task') {
-            title = 'New Task';
-            content = '<p>Describe task...</p>';
-            properties = [{key: 'status', operator: 'is', values: ['todo']}];
-            tags = ['task'];
-        } else if (type === 'journal') {
-            title = new Date().toLocaleDateString();
-            content = '<p>Thoughts...</p>';
-            properties = [{key: 'type', operator: 'is', values: ['journal']}];
-            tags = ['journal'];
-        } else if (type === 'idea') {
-            title = 'New Idea';
-            content = '<p>Idea description...</p>';
-            properties = [{key: 'type', operator: 'is', values: ['idea']}];
-            tags = ['idea'];
-        }
-
-        const note = addNote({title, content, tags, properties});
+        const note = addNote({
+            title,
+            content: template.content,
+            tags: template.tags,
+            properties: template.properties
+        });
         setSelectedNoteId(note.id);
         setActiveView('notes');
     };
 
-    const stats = {
-        total: notes.length,
-        public: notes.filter(n => n.privacy === 'public').length,
-        tasks: notes.filter(n => n.properties.some(p => p.key === 'status' && p.values.includes('todo'))).length,
-        skills: notes.filter(n => n.source?.type === 'skill').length,
-        relays: settings.nostr?.relays?.length || 0
-    };
+    const stats = notes.reduce((acc, n) => {
+        acc.total++;
+        if (n.privacy === 'public') acc.public++;
+        if (n.properties.some(p => p.key === 'status' && p.values.includes('todo'))) acc.tasks++;
+        if (n.source?.type === 'skill') acc.skills++;
+        return acc;
+    }, {total: 0, public: 0, tasks: 0, skills: 0, relays: settings.nostr?.relays?.length || 0});
 
     const recentNotes = [...notes]
         .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
@@ -96,10 +102,11 @@ export function DashboardView() {
         setActiveView('notes');
     };
 
+    const isConnected = agentStatus.status === 'connected';
+
     return (
         <div className="p-6 h-full overflow-y-auto bg-gray-900 text-white custom-scrollbar">
 
-            {/* Quick Capture Section */}
             <div
                 className="mb-8 text-center py-10 bg-gradient-to-b from-gray-800/50 to-transparent rounded-2xl border border-gray-700/50 relative overflow-hidden group">
                 <div
@@ -151,18 +158,16 @@ export function DashboardView() {
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-8">
-                {/* Agent Status Card */}
                 <StatCard
                     label="Agent Status"
-                    value={agentStatus.status === 'connected' ? 'Online' : 'Offline'}
+                    value={isConnected ? 'Online' : 'Offline'}
                     icon={<CpuChipIcon
-                        className={`w-5 h-5 ${agentStatus.status === 'connected' ? 'text-green-400' : 'text-gray-500'}`}/>}
-                    className={agentStatus.status === 'connected' ? 'border-green-900/30 bg-green-900/5' : 'border-gray-700/50'}
-                    trend={agentStatus.status === 'connected' ? 'up' : 'neutral'}
-                    trendValue={agentStatus.status === 'connected' ? 'Ready' : 'Local Mode'}
+                        className={`w-5 h-5 ${isConnected ? 'text-green-400' : 'text-gray-500'}`}/>}
+                    className={isConnected ? 'border-green-900/30 bg-green-900/5' : 'border-gray-700/50'}
+                    trend={isConnected ? 'up' : 'neutral'}
+                    trendValue={isConnected ? 'Ready' : 'Local Mode'}
                 />
 
-                {/* Network Status Card */}
                 <StatCard
                     label="P2P Network"
                     value={`${stats.relays} Relays`}

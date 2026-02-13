@@ -1,5 +1,4 @@
-import React, {useRef, useState} from 'react';
-
+import React, {useRef, useState, useCallback} from 'react';
 import {useEditorLogic} from '../../hooks/useEditorLogic';
 import {useEditorModals} from '../../hooks/useEditorModals';
 import {useView} from '../../hooks/useViewContext';
@@ -80,13 +79,13 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
     const hasPrevious = currentIndex > 0;
     const hasNext = currentIndex !== -1 && currentIndex < safeSortedNotes.length - 1;
 
-    const handlePrevious = React.useCallback(() => {
+    const handlePrevious = useCallback(() => {
         if (hasPrevious && sortedNotes) {
             setSelectedNoteId(sortedNotes[currentIndex - 1].id);
         }
     }, [hasPrevious, sortedNotes, currentIndex, setSelectedNoteId]);
 
-    const handleNext = React.useCallback(() => {
+    const handleNext = useCallback(() => {
         if (hasNext && sortedNotes) {
             setSelectedNoteId(sortedNotes[currentIndex + 1].id);
         }
@@ -103,31 +102,22 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
         setSelectedNoteId
     });
 
-    const allTemplates = settings.customTemplates;
-
     const handleInsertTemplate = (template: OntologyNode) => {
-        // Create empty semantic tags for each attribute in the template
         const attributes = template.attributes || {};
         const tags = Object.keys(attributes).map(key => `[${key}:is:?]`);
+        const content = [
+            dirtyNote.content,
+            dirtyNote.content ? '\n\n' : '',
+            `<h2>${template.label}</h2>\n`,
+            tags.map(t => `<p>${t}</p>`).join('')
+        ].join('');
 
-        const newContent = dirtyNote.content + (dirtyNote.content ? '\n\n' : '') +
-            `<h2>${template.label}</h2>\n` +
-            tags.map(t => `<p>${t}</p>`).join('');
-
-        handleContentSave(newContent);
+        handleContentSave(content);
         setIsTemplateSelectorOpen(false);
     };
 
     const handleAddPropertyHint = (key: string) => {
-        if (editorRef.current) {
-            editorRef.current.openPropertyModal(key);
-        }
-    };
-
-    const handleApplySuggestions = (suggestions: string[]) => {
-        const additions = suggestions.map(s => `<p>${s}</p>`).join('');
-        const newContent = dirtyNote.content + additions;
-        handleContentSave(newContent);
+        editorRef.current?.openPropertyModal(key);
     };
 
     const activeMetaphor = metaphorMapper.mapToMetaphor(dirtyNote);
@@ -175,7 +165,7 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                         onSave={handleContentSave}
                         onNoteUpdate={handleNoteUpdate}
                         ontology={settings.ontology}
-                        templates={allTemplates}
+                        templates={settings.customTemplates}
                         showToolbar={isToolbarVisible}
                         onMagic={() => {
                             if (settings.aiProvider === 'webllm' && settings.aiEnabled) {
