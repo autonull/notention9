@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScoredMatch } from '@notention/core';
+import { ScoredMatch, PropertyMatch } from '@notention/core';
 import {
     SparklesIcon,
     TagIcon,
@@ -12,6 +12,7 @@ import {
     XMarkIcon,
     QuestionMarkCircleIcon
 } from '../common/icons';
+import { Button } from '../common/Button';
 
 interface MatchItemProps {
     match: ScoredMatch;
@@ -87,67 +88,9 @@ export const MatchItem: React.FC<MatchItemProps> = ({
 
             {/* Semantic Matches (Badges) */}
             <div className="flex flex-wrap gap-1.5 mt-1">
-                {result.matches.map((m, i) => {
-                    const type = m.details?.type || 'unknown';
-                    const details = m.details;
-
-                    let badgeClass = 'bg-gray-800 text-gray-400 border-gray-700';
-                    let icon = null;
-                    let text = m.reason;
-
-                    switch (type) {
-                        case 'alias':
-                            badgeClass = 'bg-purple-900/20 text-purple-300 border-purple-900/30';
-                            icon = <TagIcon className="w-3 h-3" />;
-                            text = `Alias: ${details?.aliasUsed} ≈ ${m.requestProp.key}`;
-                            break;
-                        case 'fuzzy':
-                            badgeClass = 'bg-orange-900/20 text-orange-300 border-orange-900/30';
-                            icon = <SparklesIcon className="w-3 h-3" />;
-                            text = `~ ${m.offerProp.values[0]}`;
-                            break;
-                        case 'range':
-                            badgeClass = 'bg-blue-900/20 text-blue-300 border-blue-900/30';
-                            if (details?.valueMatch === 'in') {
-                                text = `In range: ${m.offerProp.values[0]}`;
-                            } else if (details?.valueMatch === 'out') {
-                                badgeClass = 'bg-red-900/20 text-red-300 border-red-900/30';
-                                text = `Out of range: ${m.offerProp.values[0]}`;
-                            }
-                            break;
-                        case 'geo':
-                            badgeClass = 'bg-teal-900/20 text-teal-300 border-teal-900/30';
-                            break;
-                        case 'date':
-                            badgeClass = 'bg-cyan-900/20 text-cyan-300 border-cyan-900/30';
-                            icon = <ClockIcon className="w-3 h-3" />;
-                            // Simplify date text if possible, else use reason
-                            break;
-                        case 'partial':
-                            badgeClass = 'bg-yellow-900/20 text-yellow-300 border-yellow-900/30';
-                            icon = <ExclamationTriangleIcon className="w-3 h-3" />;
-                            break;
-                        case 'exact':
-                            badgeClass = 'bg-green-900/20 text-green-300 border-green-900/30';
-                            icon = <CheckCircleIcon className="w-3 h-3" />;
-                            text = `${m.requestProp.key}: ${m.offerProp.values[0]}`;
-                            break;
-                    }
-
-                    return (
-                        <span
-                            key={`match-${i}`}
-                            className={`
-                                text-[10px] px-1.5 py-0.5 rounded border flex items-center gap-1
-                                ${badgeClass}
-                            `}
-                            title={m.reason}
-                        >
-                            {icon}
-                            {text}
-                        </span>
-                    );
-                })}
+                {result.matches.map((m, i) => (
+                    <MatchBadge key={`match-${i}`} match={m} />
+                ))}
 
                 {/* Conflicts */}
                 {result.conflicts?.map((m, i) => (
@@ -178,25 +121,88 @@ export const MatchItem: React.FC<MatchItemProps> = ({
             {!isLocal && note.author && (
                 <div className="mt-2 pt-2 border-t border-gray-800 flex gap-2">
                     {isContact ? (
-                        <button
+                        <Button
+                            size="xs"
+                            variant="secondary"
                             onClick={(e) => { e.stopPropagation(); onChat?.(); }}
-                            className="flex-1 flex items-center justify-center gap-1.5 text-[10px] bg-gray-800 hover:bg-gray-700 text-gray-300 py-1.5 rounded transition-colors border border-gray-700"
+                            icon={ChatIcon}
+                            className="flex-1"
                         >
-                            <ChatIcon className="w-3 h-3" />
                             Chat
-                        </button>
+                        </Button>
                     ) : (
-                        <button
+                        <Button
+                            size="xs"
+                            variant="primary"
                             onClick={(e) => { e.stopPropagation(); onConnect?.(); }}
-                            className="flex-1 flex items-center justify-center gap-1.5 text-[10px] bg-blue-600 hover:bg-blue-500 text-white py-1.5 rounded transition-colors shadow-sm shadow-blue-900/20"
-                            title="Add to Contacts"
+                            icon={UserPlusIcon}
+                            className="flex-1"
                         >
-                            <UserPlusIcon className="w-3 h-3" />
                             Connect
-                        </button>
+                        </Button>
                     )}
                 </div>
             )}
         </div>
+    );
+};
+
+const MatchBadge: React.FC<{ match: PropertyMatch }> = ({ match }) => {
+    const type = match.details?.type || 'unknown';
+    const details = match.details;
+
+    let badgeClass = 'bg-gray-800 text-gray-400 border-gray-700';
+    let icon = null;
+    let text = match.reason;
+
+    switch (type) {
+        case 'alias':
+            badgeClass = 'bg-purple-900/20 text-purple-300 border-purple-900/30';
+            icon = <TagIcon className="w-3 h-3" />;
+            text = `Alias: ${details?.aliasUsed} ≈ ${match.requestProp.key}`;
+            break;
+        case 'fuzzy':
+            badgeClass = 'bg-orange-900/20 text-orange-300 border-orange-900/30';
+            icon = <SparklesIcon className="w-3 h-3" />;
+            text = `~ ${match.offerProp.values[0]}`;
+            break;
+        case 'range':
+            badgeClass = 'bg-blue-900/20 text-blue-300 border-blue-900/30';
+            if (details?.valueMatch === 'in') {
+                text = `In range: ${match.offerProp.values[0]}`;
+            } else if (details?.valueMatch === 'out') {
+                badgeClass = 'bg-red-900/20 text-red-300 border-red-900/30';
+                text = `Out of range: ${match.offerProp.values[0]}`;
+            }
+            break;
+        case 'geo':
+            badgeClass = 'bg-teal-900/20 text-teal-300 border-teal-900/30';
+            break;
+        case 'date':
+            badgeClass = 'bg-cyan-900/20 text-cyan-300 border-cyan-900/30';
+            icon = <ClockIcon className="w-3 h-3" />;
+            break;
+        case 'partial':
+            badgeClass = 'bg-yellow-900/20 text-yellow-300 border-yellow-900/30';
+            icon = <ExclamationTriangleIcon className="w-3 h-3" />;
+            break;
+        case 'exact':
+            badgeClass = 'bg-green-900/20 text-green-300 border-green-900/30';
+            icon = <CheckCircleIcon className="w-3 h-3" />;
+            text = `${match.requestProp.key}: ${match.offerProp.values[0]}`;
+            break;
+    }
+
+    return (
+        <span
+            className={`
+                text-[10px] px-1.5 py-0.5 rounded border flex items-center gap-1
+                ${badgeClass}
+            `}
+            title={match.reason}
+        >
+            {icon}
+            {text}
+        </span>
     );
 };
