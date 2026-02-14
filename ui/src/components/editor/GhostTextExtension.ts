@@ -29,6 +29,16 @@ const GHOST_PATTERNS = [
     {
         regex: /^(Idea|Note) (.+)$/i,
         handler: (match: RegExpMatchArray) => `[type:idea] [content:${match[2]}]`
+    },
+    // New: Schedule pattern
+    {
+        regex: /^(Schedule|Book) (.+) at (.+)$/i,
+        handler: (match: RegExpMatchArray) => `[action:${match[1].toLowerCase()}] [event:${match[2]}] [time:${match[3]}]`
+    },
+    // New: Location pattern
+    {
+        regex: /^(Go to|Travel to|Visit) (.+)$/i,
+        handler: (match: RegExpMatchArray) => `[action:travel] [destination:${match[2]}]`
     }
 ];
 
@@ -44,7 +54,10 @@ export const GhostTextExtension = Extension.create({
                     if (replacement) {
                         const start = range.from;
                         const end = range.to;
-                        state.tr.insertText(replacement, start, end);
+                        // Replace the typed text with the structured property blocks
+                        // We use insertText for now, which the PropertyExtension InputRule might pick up recursively
+                        // if we output valid bracket syntax
+                        state.tr.replaceWith(start, end, state.schema.text(replacement));
                     }
                 }
             })

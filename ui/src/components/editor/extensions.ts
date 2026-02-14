@@ -65,12 +65,27 @@ export const getExtensions = ({
                         // Fallback: insert partial property and let user type
                         // We use a text insertion here, not a node, to allow smooth typing
                         editor.chain().focus().insertContent(`[${props.label}:is:]`).run();
-                        // Move cursor inside values?
-                        // editor.commands.setTextSelection(range.from + props.label.length + 5);
                     }
                 }
             }
         }).extend({name: 'propertySuggestion'}),
+
+        // Property Value Autocomplete
+        Mention.configure({
+            HTMLAttributes: {
+                class: 'suggestion-value',
+            },
+            suggestion: {
+                ...configureSuggestions((query) => {
+                    // This is a simplified implementation. Ideally, we need context of the Key.
+                    // Since Mention extension relies on a single char trigger, matching inside [key:is:VALUE] is hard.
+                    // We can use a special trigger if the user types ':' inside a property block?
+                    // Or we assume this is triggered by ':' and we check the preceding text.
+                    return [];
+                }, ':'),
+                allowSpaces: true
+            }
+        }).extend({name: 'valueSuggestion'}),
 
         Mention.configure({
             HTMLAttributes: {
@@ -141,8 +156,18 @@ export const getExtensions = ({
                 ...configureSuggestions((query) => {
                     const lower = query.toLowerCase();
 
+                    // Sort templates: prioritize those matching content "keywords" if possible?
+                    // For now, simple alphabetical or query match relevance
                     const templateItems = templates
                         .filter(t => t.label.toLowerCase().includes(lower))
+                        .sort((a, b) => {
+                            // Prioritize templates starting with query
+                            const aStarts = a.label.toLowerCase().startsWith(lower);
+                            const bStarts = b.label.toLowerCase().startsWith(lower);
+                            if (aStarts && !bStarts) return -1;
+                            if (!aStarts && bStarts) return 1;
+                            return 0;
+                        })
                         .map(t => ({
                             id: t.content, // Insert content
                             label: t.label,
@@ -153,7 +178,7 @@ export const getExtensions = ({
                     const propertyItems = allProperties
                         .filter(p => p.label.toLowerCase().includes(lower))
                         .map(p => ({
-                            id: `[${p.label}:is:?]`, // Insert semantic property syntax
+                            id: `[${p.label}:is:]`, // Updated default template
                             label: p.label,
                             description: 'Property',
                             type: 'property'
