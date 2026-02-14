@@ -234,11 +234,6 @@ const getPropertyIcon = (key: string): React.ComponentType<{ className?: string 
     return TagIcon;
 };
 
-// Placeholder icons if they don't exist in common/icons yet (we should check)
-// Assuming they exist or using fallbacks
-const CurrencyDollarIcon = (props: any) => <span {...props}>💰</span>; // Fallback if missing, but plan says replace emojis.
-// Wait, I should verify icons exist.
-
 const formatValue = (prop: Property): string => {
     if (prop.key.match(/rate|price|cost|budget/)) return `$${prop.values[0]}`;
     return prop.values[0] || '(empty)';
