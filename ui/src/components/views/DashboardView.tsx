@@ -14,7 +14,8 @@ import {
     PlusIcon,
     SparklesIcon,
     PencilIcon,
-    ArrowRightIcon
+    ArrowRightIcon,
+    ClockIcon
 } from '../common/icons';
 
 const TEMPLATES = {
