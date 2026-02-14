@@ -40,21 +40,33 @@ export const getExtensions = ({
             suggestion: {
                 ...configureSuggestions((query) => {
                     const lower = query.toLowerCase();
-                    return allProperties
+                    // Prioritize exact matches
+                    const sorted = [...allProperties].sort((a, b) => {
+                        const aStart = a.label.toLowerCase().startsWith(lower);
+                        const bStart = b.label.toLowerCase().startsWith(lower);
+                        if (aStart && !bStart) return -1;
+                        if (!aStart && bStart) return 1;
+                        return 0;
+                    });
+
+                    return sorted
                         .filter(p => p.label.toLowerCase().includes(lower))
-                        .slice(0, 5)
+                        .slice(0, 10) // Show more suggestions
                         .map(p => ({id: p.id, label: p.label, description: p.description}));
                 }, '['),
                 command: ({editor, range, props}) => {
                     // Delete the trigger and query
                     editor.chain().focus().deleteRange(range).run();
 
-                    // Open modal if available
+                    // Open modal if available to complete the property
                     if (onOpenPropertyModal) {
                         onOpenPropertyModal(props.label || '');
                     } else {
-                        // Fallback to inserting text template
-                        editor.chain().focus().insertContent(`[${props.label}:is:?]`).run();
+                        // Fallback: insert partial property and let user type
+                        // We use a text insertion here, not a node, to allow smooth typing
+                        editor.chain().focus().insertContent(`[${props.label}:is:]`).run();
+                        // Move cursor inside values?
+                        // editor.commands.setTextSelection(range.from + props.label.length + 5);
                     }
                 }
             }
