@@ -70,23 +70,6 @@ export const getExtensions = ({
             }
         }).extend({name: 'propertySuggestion'}),
 
-        // Property Value Autocomplete
-        Mention.configure({
-            HTMLAttributes: {
-                class: 'suggestion-value',
-            },
-            suggestion: {
-                ...configureSuggestions((query) => {
-                    // This is a simplified implementation. Ideally, we need context of the Key.
-                    // Since Mention extension relies on a single char trigger, matching inside [key:is:VALUE] is hard.
-                    // We can use a special trigger if the user types ':' inside a property block?
-                    // Or we assume this is triggered by ':' and we check the preceding text.
-                    return [];
-                }, ':'),
-                allowSpaces: true
-            }
-        }).extend({name: 'valueSuggestion'}),
-
         Mention.configure({
             HTMLAttributes: {
                 class: 'suggestion-tag',
