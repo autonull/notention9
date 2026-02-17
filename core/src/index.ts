@@ -1,6 +1,7 @@
 export * from './types/index.js';
 export * from './errorTypes.js';
 export * from './nostr.js';
+export * from './nostr/privacy.js';
 export * from './ontology.default.js';
 export * from './ontologyHelpers.js';
 export * from './properties.js';
