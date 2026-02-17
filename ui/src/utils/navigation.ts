@@ -19,7 +19,6 @@ export const NAV_ITEMS: ViewConfig[] = [
     {id: 'network', label: 'Network', icon: NetworkIcon, showInMobile: false, badgeCountKey: 'notificationCount'},
     {id: 'chat', label: 'Chat', icon: ChatIcon, showInMobile: true, badgeCountKey: 'chatNotificationCount'},
     {id: 'ontology', label: 'Ontology', icon: OntologyIcon, showInMobile: false},
-    {id: 'simulator', label: 'Simulator', icon: CpuChipIcon, showInMobile: false, requiresDeveloperMode: true},
 ];
 
 export const SETTINGS_VIEW: ViewConfig = {

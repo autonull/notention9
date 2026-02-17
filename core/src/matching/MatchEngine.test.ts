@@ -36,7 +36,7 @@ const createNote = (props: Property[]): Note => ({
     title: 'Test',
     content: '',
     tags: [],
-    properties: props.map(p => ({ values: [], ...p })), // Ensure values array exists
+    properties: props.map(p => ({ ...p, values: p.values || [] })), // Ensure values array exists
     publishedAt: new Date().toISOString(),
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),

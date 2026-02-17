@@ -7,7 +7,8 @@
     "agent/voltagent",
     "core",
     "cli",
-    "e2e"
+    "e2e",
+    "simulator"
   ],
   "scripts": {
     "build": "npm run build --workspaces",

@@ -350,7 +350,7 @@ export class OntologyService {
             let type: PropertyType = 'string';
             const attr = this.attributeIndex.get(key);
             if (attr) {
-                type = attr.type;
+                type = attr.type as PropertyType;
             } else {
                 // If it's an unknown key, try to infer from samples
                 const values = this.unknownValuesSample.get(key);
@@ -384,7 +384,7 @@ export class OntologyService {
      * Infer type of a property based on its values
      */
     inferType(key: string, values: any[]): PropertyType {
-        if (!values?.length) return 'string';
+        if (!values?.length) return 'string' as PropertyType;
 
         const counts = values.reduce((acc, v) => {
             if (typeof v === 'number') {
@@ -398,10 +398,10 @@ export class OntologyService {
         }, { number: 0, date: 0 });
 
         const threshold = values.length * 0.8; // 80% confidence
-        if (counts.number >= threshold) return 'number';
-        if (counts.date >= threshold) return 'date';
+        if (counts.number >= threshold) return 'number' as PropertyType;
+        if (counts.date >= threshold) return 'date' as PropertyType;
 
-        return 'string';
+        return 'string' as PropertyType;
     }
 
     /**
