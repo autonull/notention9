@@ -1,8 +1,23 @@
 import type { Property, Note, OntologyNode } from './types/index.js';
 import { getCanonicalKey } from './ontologyHelpers.js';
 
-export const TEMPORAL_KEYS = ['date', 'time', 'deadline', 'start', 'end', 'due'];
-export const SPATIAL_KEYS = ['location', 'geo', 'place', 'coords'];
+const TEMPORAL_KEYS = new Set([
+  'date', 'time', 'deadline', 'start', 'end', 'due',
+  'year', 'month', 'day', 'hour', 'minute', 'second',
+  'now', 'today', 'tomorrow', 'yesterday'
+]);
+
+const TEMPORAL_SUFFIXES = ['Date', 'Time', 'At'];
+const TEMPORAL_SNAKE_SUFFIXES = ['_date', '_time', '_at'];
+
+const SPATIAL_KEYS = new Set([
+  'location', 'geo', 'place', 'coords', 'coordinates',
+  'address', 'city', 'state', 'country', 'zip', 'zipcode',
+  'lat', 'lon', 'latitude', 'longitude', 'venue'
+]);
+
+const SPATIAL_SUFFIXES = ['Location', 'Place', 'Address', 'Geo', 'Coords'];
+const SPATIAL_SNAKE_SUFFIXES = ['_location', '_place', '_address', '_geo', '_coords'];
 
 const INDEFINITE_OPS = new Set([
   'greater than',
@@ -27,13 +42,17 @@ export const isIndefiniteProperty = (prop: Property): boolean => {
 };
 
 export const isTemporalKey = (key: string): boolean => {
-  const lowerKey = key.toLowerCase();
-  return TEMPORAL_KEYS.some(k => lowerKey.includes(k));
+  if (TEMPORAL_KEYS.has(key)) return true;
+  if (TEMPORAL_SUFFIXES.some(s => key.endsWith(s))) return true;
+  if (TEMPORAL_SNAKE_SUFFIXES.some(s => key.endsWith(s))) return true;
+  return false;
 };
 
 export const isSpatialKey = (key: string): boolean => {
-  const lowerKey = key.toLowerCase();
-  return SPATIAL_KEYS.some(k => lowerKey.includes(k));
+  if (SPATIAL_KEYS.has(key)) return true;
+  if (SPATIAL_SUFFIXES.some(s => key.endsWith(s))) return true;
+  if (SPATIAL_SNAKE_SUFFIXES.some(s => key.endsWith(s))) return true;
+  return false;
 };
 
 export const arePropertiesEqual = (p1: Property | null, p2: Property | null): boolean => {
