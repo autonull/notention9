@@ -8,7 +8,6 @@ import {useBackgroundMatcher} from '../hooks/useBackgroundMatcher';
 import {useChatNotifications} from '../hooks/useChatNotifications';
 import {useMetaprogramming} from '../hooks/useMetaprogramming';
 import {LoadingSpinner} from './common/icons';
-import {SimulatorView} from './views/SimulatorView';
 import {ChatView} from './views/ChatView';
 import {MapView} from './views/MapView';
 import {TimeView} from './views/TimeView';
@@ -61,8 +60,6 @@ export function MainView({sortedNotes}: MainViewProps) {
                 return <ChatView/>;
             case 'settings':
                 return <SettingsView/>;
-            case 'simulator':
-                return <SimulatorView/>;
             default:
                 return null;
         }
