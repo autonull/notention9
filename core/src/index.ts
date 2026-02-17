@@ -21,6 +21,7 @@ export * from './feedback/types.js';
 export * from './utils/common.js';
 export * from './utils/errors.js';
 export * from './utils/logging.js';
+export * from './utils/encoding.js';
 export * from './utils/tools.js';
 export * from './utils/concurrency.js';
 export * from './utils/csvExport.js';

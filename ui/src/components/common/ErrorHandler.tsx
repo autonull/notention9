@@ -1,5 +1,4 @@
 import {createContext, ReactNode, useContext, useEffect, useState} from 'react';
-import {Logger} from '@notention/core';
 
 export interface ErrorMessage {
     id: string;
@@ -93,42 +92,6 @@ export const useErrorHandler = (): ErrorHandlerContextType => {
         throw new Error('useErrorHandler must be used within an ErrorHandlingProvider');
     }
     return context;
-};
-
-// Utility function to handle errors consistently
-export const handleAppError = (
-    error: any,
-    context?: string,
-    showError: boolean = true
-): string | null => {
-    const {addError} = useErrorHandler();
-
-    let errorMessage = 'An unexpected error occurred';
-    let errorType: 'error' | 'warning' | 'info' = 'error';
-
-    if (error instanceof Error) {
-        errorMessage = error.message;
-    } else if (typeof error === 'string') {
-        errorMessage = error;
-    } else {
-        errorMessage = JSON.stringify(error);
-    }
-
-    if (context) {
-        errorMessage = `${context}: ${errorMessage}`;
-    }
-
-    if (!showError) {
-        Logger.getInstance().error(errorMessage);
-        return null;
-    }
-
-    return addError({
-        message: errorMessage,
-        type: errorType,
-        autoDismiss: true,
-        dismissAfter: 5000,
-    });
 };
 
 // Component to display errors

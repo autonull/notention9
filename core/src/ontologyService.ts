@@ -54,7 +54,7 @@ export class OntologyService {
 
     private usageStats: Map<string, number> = new Map();
     private unknownUsageStats: Map<string, number> = new Map();
-    private unknownValuesSample: Map<string, any[]> = new Map();
+    private unknownValuesSample: Map<string, unknown[]> = new Map();
 
     private coOccurrenceStats: Map<string, Map<string, number>> = new Map();
 
@@ -232,8 +232,7 @@ export class OntologyService {
      * Record usage of property keys to track frequency and co-occurrence.
      * Optionally takes property values to infer types for unknown attributes.
      */
-    recordUsage(properties: Array<{ key: string, values?: any[] }>) {
-        // 1. Process Individual Stats & Values
+    recordUsage(properties: Array<{ key: string, values?: unknown[] }>) {
         for (const prop of properties) {
             const key = prop.key;
             const canonical = getCanonicalKey(key, this.ontology);
@@ -383,7 +382,7 @@ export class OntologyService {
     /**
      * Infer type of a property based on its values
      */
-    inferType(key: string, values: any[]): PropertyType {
+    inferType(key: string, values: unknown[]): PropertyType {
         if (!values?.length) return 'string' as PropertyType;
 
         const counts = values.reduce((acc, v) => {
