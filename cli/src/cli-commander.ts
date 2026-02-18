@@ -129,6 +129,7 @@ export class CLICommander {
       .option('--temperature <temp>', 'Temperature for generation', parseFloat)
       .option('--max-tokens <tokens>', 'Maximum tokens to generate', parseInt)
       .option('--sim, --simulation', 'Enable simulation mode')
+      .option('-v, --verbose', 'Enable verbose logging')
       .argument('[command]', 'Optional command to run directly')
       .action(async (command, options) => {
           const { startInteractiveSession } = await import('./interactive.js');

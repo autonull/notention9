@@ -4,10 +4,11 @@ import { CliClient } from './client.js';
 import { handleSlashCommand } from './commands.js';
 import { LlmSession, LLMProviderConfig } from './llm.js';
 import { getLocalTools } from './tools/index.js';
-import { log, withSpinner } from './utils.js';
+import { log, withSpinner, setVerbose } from './utils.js';
 import { configManager } from './config-manager.js';
 import { ProviderFactory } from './providers/index.js';
 import { ServerManager } from './server-manager.js';
+import chalk from 'chalk';
 
 dotenv.config();
 
@@ -25,7 +26,13 @@ export async function startInteractiveSession(options: {
   sim?: boolean;
   simulation?: boolean;
   command?: string;
+  verbose?: boolean;
 } = {}) {
+  if (options.verbose) {
+      setVerbose(true);
+      log.info('Verbose logging enabled');
+  }
+
   // Prepare config overrides from options
   const configOverrides: Partial<LLMProviderConfig> = {};
   if (options.provider) configOverrides.provider = options.provider;
@@ -212,7 +219,7 @@ export async function startInteractiveSession(options: {
       console.log("=".repeat(50) + "\n");
 
       const ask = () => {
-        rl.question('> ', async (rawInput) => {
+        rl.question(chalk.green('Notention > '), async (rawInput) => {
           const input = rawInput.trim();
 
           if (!input) {
@@ -221,7 +228,17 @@ export async function startInteractiveSession(options: {
           }
 
           if (input.startsWith('/')) {
-            await handleSlashCommand(input, cli, coreTools, session);
+            if (input === '/status') {
+                log.info('--- System Status ---');
+                const conf = session.getConfig();
+                log.info(`Provider: ${conf.provider}`);
+                log.info(`Model: ${conf.model}`);
+                log.info(`Server URL: ${mcpUrl}`);
+                log.info(`Simulation: ${enableSim ? 'Enabled' : 'Disabled'}`);
+                log.info('---------------------');
+            } else {
+                await handleSlashCommand(input, cli, coreTools, session);
+            }
           } else {
             await session.handleInteraction(input);
           }

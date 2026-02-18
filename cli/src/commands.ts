@@ -269,6 +269,7 @@ const handleHelp: CommandHandler = async () => {
     console.log(chalk.gray(`
 Commands:
   ${chalk.white('/help')}                  - Show this help
+  ${chalk.white('/status')}                - Show current system status
   ${chalk.white('/config')}                - View current LLM configuration
   ${chalk.white('/providers')}             - List available LLM providers
   ${chalk.white('/provider <name>')}       - Switch to a different provider
