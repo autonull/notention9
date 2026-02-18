@@ -1,5 +1,4 @@
 import { OntologyNode, OntologyAttribute, Note, Property } from './types/index.js';
-import { matchingService } from './matching/MatchingService.js';
 
 /**
  * Pure functions for manipulating the Ontology tree.
@@ -253,17 +252,4 @@ export const mergeAttributes = (
     delete node.attributes[sourceKey];
   }
   return newTree;
-};
-
-/**
- * Calculates a match score between two notes based on semantic overlap.
- * Weighted by the priority of the target note to surface high-priority matches.
- */
-export const calculateMatchScore = (
-  note1: Note,
-  note2: Note,
-  ontology: OntologyNode[]
-): number => {
-  // Delegate to the centralized matching service
-  return matchingService.calculateSemanticOverlap(note1, note2);
 };
