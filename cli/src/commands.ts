@@ -148,47 +148,6 @@ const handleProvider: CommandHandler = async (args, _cli, _tools, session) => {
     return true;
 };
 
-const handleScenarios: CommandHandler = async (_args, cli) => {
-    try {
-        const result = await withSpinner("Fetching scenarios...", () => cli.callTool('list_scenarios', {}));
-        const content = (result as any).content;
-        const scenarios = JSON.parse((content[0] as any).text);
-        log.info("Scenarios:");
-        scenarios.forEach((s: any) => console.log(` - ${chalk.cyan(s.id)}: ${s.name}`));
-    } catch (e: unknown) {
-        log.error("Failed to list scenarios", e);
-    }
-    return true;
-};
-
-const handleRun: CommandHandler = async (args, cli) => {
-    if (args.length === 0) {
-        log.warn("Usage: /run <scenario_id>");
-        return true;
-    }
-
-    const id = args[0];
-    try {
-        const result = await withSpinner(`Running scenario '${id}'...`, () => cli.callTool('run_scenario', { id }));
-        const content = (result as any).content;
-        const runResult = JSON.parse((content[0] as any).text);
-
-        if (runResult.success) {
-            log.success(`Scenario Passed: ${runResult.scenarioId}`);
-        } else {
-            log.error(`Scenario Failed: ${runResult.scenarioId}`);
-        }
-
-        runResult.steps.forEach((step: any) => {
-            const icon = step.success ? chalk.green('✅') : chalk.red('❌');
-            console.log(` ${icon} ${step.name} ${step.error ? chalk.gray(`(${step.error})`) : ''}`);
-        });
-    } catch (e: unknown) {
-        log.error("Failed to run scenario", e);
-    }
-    return true;
-};
-
 const handleSecurity: CommandHandler = async (args, cli) => {
     if (args.length === 0 || args[0] !== 'scan') {
         log.warn("Usage: /security scan");
@@ -317,8 +276,6 @@ Commands:
   ${chalk.white('/save [path]')}           - Save chat history to file
   ${chalk.white('/load [path]')}           - Load chat history from file
   ${chalk.white('/security scan')}         - Scan notes for exposed secrets
-  ${chalk.white('/scenarios')}             - List available test scenarios
-  ${chalk.white('/run <id>')}              - Run a specific scenario
   ${chalk.white('/extract <text>')}        - Extract semantic properties
   ${chalk.white('/open <id>')}             - Set active context to a note
   ${chalk.white('/close')}                 - Clear active context
@@ -339,8 +296,6 @@ const COMMANDS: Record<string, CommandHandler> = {
     '/config': handleConfig,
     '/providers': handleProviders,
     '/provider': handleProvider,
-    '/scenarios': handleScenarios,
-    '/run': handleRun,
     '/security': handleSecurity,
     '/extract': handleExtract,
     '/open': handleOpen,
