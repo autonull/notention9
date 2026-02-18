@@ -3,7 +3,6 @@ import {SettingsProvider} from './contexts/SettingsContext';
 import {NotesProvider} from './contexts/NotesContext';
 import {ToastProvider} from './contexts/ToastProvider';
 import {ViewProvider} from './contexts/ViewContext';
-import {SimulatorProvider} from './contexts/SimulatorProvider';
 import {SuggestionProvider} from './contexts/SuggestionContext';
 
 export function UIProvider({children}: { children: ReactNode }) {
@@ -12,11 +11,9 @@ export function UIProvider({children}: { children: ReactNode }) {
             <NotesProvider>
                 <ToastProvider>
                     <ViewProvider>
-                        <SimulatorProvider>
-                            <SuggestionProvider>
-                                {children}
-                            </SuggestionProvider>
-                        </SimulatorProvider>
+                        <SuggestionProvider>
+                            {children}
+                        </SuggestionProvider>
                     </ViewProvider>
                 </ToastProvider>
             </NotesProvider>

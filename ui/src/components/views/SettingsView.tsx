@@ -1,7 +1,6 @@
-import React from 'react';
+import React, {useState} from 'react';
 
-import {SettingsTab, useSettingsView} from '../../hooks/useSettingsView';
-import {Toggle} from '../common/Toggle';
+import {useSettingsView} from '../../hooks/useSettingsView';
 import {Tabs} from '../common/Tabs';
 import {AITab} from '../settings/AITab';
 import {DataTab} from '../settings/DataTab';
@@ -13,21 +12,17 @@ export function SettingsView() {
     const {
         settings,
         setSettings,
-        activeTab,
-        setActiveTab,
-        toggleDeveloperMode,
     } = useSettingsView();
+
+    const [activeTab, setActiveTab] = useState('ai');
 
     const tabs = [
         {id: 'ai', label: '🤖 AI Assistant'},
         {id: 'agent', label: '⚡ Agent Status'},
         {id: 'nostr', label: '🔑 Network & Keys'},
         {id: 'data', label: '📦 Data Management'},
+        {id: 'ontology', label: '🧬 Ontology Graph'},
     ];
-
-    if (settings.developerMode) {
-        tabs.push({id: 'ontology', label: '🧬 Ontology Graph'});
-    }
 
     return (
         <div className="p-4 md:p-8 h-full overflow-y-auto bg-gray-800/50 rounded-lg flex flex-col">
@@ -37,22 +32,13 @@ export function SettingsView() {
                     <h2 className="text-2xl font-bold text-white mb-1">Settings</h2>
                     <p className="text-gray-400 text-sm">Manage your preferences and data.</p>
                 </div>
-
-                <div className="flex items-center gap-4">
-                    <Toggle
-                        label="Developer Mode"
-                        checked={settings.developerMode}
-                        onChange={toggleDeveloperMode}
-                        ariaLabel="Toggle Developer Mode"
-                    />
-                </div>
             </div>
 
             <div className="flex-shrink-0 mb-6 overflow-x-auto">
                 <Tabs
                     tabs={tabs}
                     activeTab={activeTab}
-                    onChange={(id) => setActiveTab(id as SettingsTab)}
+                    onChange={(id) => setActiveTab(id)}
                     className="bg-gray-900/50 p-1 inline-flex min-w-max"
                 />
             </div>
@@ -66,7 +52,7 @@ export function SettingsView() {
                     <NostrTab settings={settings} setSettings={setSettings}/>
                 )}
                 {activeTab === 'data' && <DataTab/>}
-                {activeTab === 'ontology' && settings.developerMode && <OntologyTab/>}
+                {activeTab === 'ontology' && <OntologyTab/>}
             </div>
         </div>
     );

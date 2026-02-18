@@ -55,22 +55,6 @@ export function SettingsProvider({
         }
     }, [settings.nostr.relays, settingsLoading, setSettings]);
 
-    // Listen for developer mode toggle event
-    useEffect(() => {
-        const handleToggleDeveloperMode = () => {
-            setSettings(prevSettings => ({
-                ...prevSettings,
-                developerMode: !prevSettings.developerMode
-            }));
-        };
-
-        window.addEventListener('toggleDeveloperMode', handleToggleDeveloperMode);
-
-        return () => {
-            window.removeEventListener('toggleDeveloperMode', handleToggleDeveloperMode);
-        };
-    }, [setSettings]);
-
     return (
         <SettingsContext.Provider
             value={{settings, setSettings, settingsLoading}}

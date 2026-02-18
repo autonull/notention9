@@ -7,5 +7,4 @@ export interface ViewConfig {
     icon: React.FC<React.SVGProps<SVGSVGElement>>;
     badgeCountKey?: 'notificationCount' | 'chatNotificationCount';
     showInMobile: boolean;
-    requiresDeveloperMode?: boolean;
 }

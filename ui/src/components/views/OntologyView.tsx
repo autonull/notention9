@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 
-import {OntologyTab, useOntologyView} from '../../hooks/useOntologyView';
+import {useOntologyView} from '../../hooks/useOntologyView';
 import {OntologyNodeItem} from '../ontology/OntologyNodeItem';
 import {OntologyConflicts} from '../ontology/OntologyConflicts';
 import {useView} from '../../hooks/useViewContext';
@@ -12,14 +12,12 @@ import {InputModal} from '../common/InputModal';
 import {AttributeEditorModal} from '../ontology/AttributeEditorModal';
 import {OntologySuggestionItem} from '../ontology/OntologySuggestionItem';
 import {ConfirmationModal} from '../common/ConfirmationModal';
-import {OntologyGraph} from '../developer/OntologyGraph';
 import {useToast} from '../../hooks/useToast';
 import {OntologyAttribute} from '@notention/core';
 
 export function OntologyView() {
     const {addToast} = useToast();
     const {
-        settings,
         ontology,
         activeTab,
         setActiveTab,
@@ -91,7 +89,7 @@ export function OntologyView() {
         }
     };
 
-    const tabs = [
+    const tabs: any[] = [
         {id: 'graph', label: 'Graph'},
         {id: 'suggestions', label: 'Learning', count: suggestions.length > 0 ? suggestions.length : undefined},
         {id: 'conflicts', label: 'Conflicts', count: conflicts.length}
@@ -119,38 +117,36 @@ export function OntologyView() {
                             <Tabs
                                 tabs={tabs}
                                 activeTab={safeActiveTab}
-                                onChange={(id) => setActiveTab(id as OntologyTab)}
+                                onChange={(id) => setActiveTab(id as any)}
                                 className="bg-gray-800 p-1 rounded-lg"
                             />
                         </div>
                     </div>
                 </div>
 
-                {settings.developerMode && (
-                    <div className="flex items-center gap-2 overflow-x-auto pb-1">
-                        <Button
-                            onClick={handleOptimize}
-                            disabled={isEvolving}
-                            isLoading={isEvolving}
-                            variant="primary"
-                            size="xs"
-                            className="bg-blue-700/80 hover:bg-blue-600 flex-shrink-0"
-                        >
-                            Optimize
-                        </Button>
+                <div className="flex items-center gap-2 overflow-x-auto pb-1">
+                    <Button
+                        onClick={handleOptimize}
+                        disabled={isEvolving}
+                        isLoading={isEvolving}
+                        variant="primary"
+                        size="xs"
+                        className="bg-blue-700/80 hover:bg-blue-600 flex-shrink-0"
+                    >
+                        Optimize
+                    </Button>
 
-                        <Button
-                            onClick={handleEvolve}
-                            disabled={isEvolving}
-                            isLoading={isEvolving}
-                            variant="success"
-                            size="xs"
-                            className="bg-green-700/80 hover:bg-green-600 flex-shrink-0"
-                        >
-                            {isEvolving ? 'Updating...' : 'Update Ontology'}
-                        </Button>
-                    </div>
-                )}
+                    <Button
+                        onClick={handleEvolve}
+                        disabled={isEvolving}
+                        isLoading={isEvolving}
+                        variant="success"
+                        size="xs"
+                        className="bg-green-700/80 hover:bg-green-600 flex-shrink-0"
+                    >
+                        {isEvolving ? 'Updating...' : 'Update Ontology'}
+                    </Button>
+                </div>
             </div>
 
             <div className="flex-grow overflow-y-auto">
@@ -224,11 +220,6 @@ export function OntologyView() {
                                 </Button>
                             </div>
                         )}
-
-                        <div
-                            className="mb-6 h-[400px] bg-gray-900 rounded-lg border border-gray-700/50 overflow-hidden">
-                            <OntologyGraph/>
-                        </div>
 
                         <div className="bg-gray-900/70 p-6 rounded-lg border border-gray-700/50">
                             {ontology.length === 0 ? (

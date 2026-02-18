@@ -97,11 +97,6 @@ export function AppShell() {
             }
         },
         onToggleSidebar: () => setIsSidebarOpen(!isSidebarOpen),
-        onToggleDeveloperMode: () => {
-            // Toggle developer mode in settings
-            const event = new CustomEvent('toggleDeveloperMode');
-            window.dispatchEvent(event);
-        },
         onEscape: () => {
             setIsPaletteOpen(false);
             setIsHelpOpen(false);
