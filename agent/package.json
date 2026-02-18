@@ -2,6 +2,7 @@
   "name": "@notention/agent",
   "version": "1.0.0",
   "description": "Universal Action Agent for Notention",
+  "type": "module",
   "main": "src/index.ts",
   "scripts": {
     "dev": "tsx watch src/start.ts",

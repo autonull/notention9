@@ -29,9 +29,12 @@ export async function startInteractiveSession(options: {
   command?: string;
   verbose?: boolean;
 } = {}) {
+  const command = options.command;
+  const interactive = !command;
+
   if (options.verbose) {
-      setVerbose(true);
-      log.info('Verbose logging enabled');
+    setVerbose(true);
+    log.info('Verbose logging enabled');
   }
 
   // Prepare config overrides from options
@@ -69,36 +72,35 @@ export async function startInteractiveSession(options: {
   let simMcpUrl = SIM_MCP_URL;
 
   try {
-      if (interactive) log.info("Checking server status...");
-      const serverInfo = await serverManager.ensureServer(mcpUrl);
-      if (serverInfo.started) {
-          mcpUrl = serverInfo.url;
+    if (interactive) log.info("Checking server status...");
+    const serverInfo = await serverManager.ensureServer(mcpUrl);
+    if (serverInfo.started) {
+      mcpUrl = serverInfo.url;
 
-          // Update SIM URL to match new port
-          try {
-              const mcpUrlObj = new URL(mcpUrl);
-              const simUrlObj = new URL(simMcpUrl);
-              simUrlObj.port = mcpUrlObj.port;
-              simMcpUrl = simUrlObj.toString();
-          } catch (e) {
-              // Ignore URL parsing errors
-          }
+      // Update SIM URL to match new port
+      try {
+        const mcpUrlObj = new URL(mcpUrl);
+        const simUrlObj = new URL(simMcpUrl);
+        simUrlObj.port = mcpUrlObj.port;
+        simMcpUrl = simUrlObj.toString();
+      } catch (e) {
+        // Ignore URL parsing errors
       }
+    }
   } catch (e) {
-      log.error("Failed to ensure server is running", e);
-      process.exit(1);
+    log.error("Failed to ensure server is running", e);
+    process.exit(1);
   }
 
   const cli = new CliClient(mcpUrl);
   const simCli = new CliClient(simMcpUrl);
   const enableSim = options.sim || options.simulation;
-  const command = options.command;
-  const interactive = !command;
+
 
   const cleanup = async () => {
-      await serverManager.stop();
-      await cli.close();
-      await simCli.close();
+    await serverManager.stop();
+    await cli.close();
+    await simCli.close();
   };
 
   try {
@@ -184,8 +186,8 @@ export async function startInteractiveSession(options: {
           log.success(healthResult.message);
         }
       } catch (healthError: any) {
-         log.warn(`Provider health check failed: ${healthError.message || healthError}`);
-         log.warn('Continuing anyway, but you may encounter errors...');
+        log.warn(`Provider health check failed: ${healthError.message || healthError}`);
+        log.warn('Continuing anyway, but you may encounter errors...');
       }
     }
 
@@ -200,10 +202,10 @@ export async function startInteractiveSession(options: {
     } else {
       // Setup Completer
       const completer = (line: string) => {
-          if (!line.startsWith('/')) return [[], line];
-          const hits = getSlashCommands().filter((c) => c.startsWith(line));
-          // Show all completions if none found
-          return [hits.length ? hits : getSlashCommands(), line];
+        if (!line.startsWith('/')) return [[], line];
+        const hits = getSlashCommands().filter((c) => c.startsWith(line));
+        // Show all completions if none found
+        return [hits.length ? hits : getSlashCommands(), line];
       };
 
       const rl = readline.createInterface({
@@ -216,14 +218,14 @@ export async function startInteractiveSession(options: {
 
       // Handle exit signals
       rl.on('SIGINT', async () => {
-          if (rl.line.length > 0) {
-              rl.clearLine(0);
-              rl.prompt(true);
-          } else {
-              console.log('\nExiting...');
-              await cleanup();
-              process.exit(0);
-          }
+        if (rl.line.length > 0) {
+          rl.clearLine(0);
+          rl.prompt(true);
+        } else {
+          console.log('\nExiting...');
+          await cleanup();
+          process.exit(0);
+        }
       });
 
       console.log("\n" + "=".repeat(50));
@@ -238,8 +240,8 @@ export async function startInteractiveSession(options: {
       const ask = () => {
         const activeContext = session.getActiveContext();
         const prompt = activeContext
-            ? `${chalk.green('Notention')} [${chalk.yellow(activeContext.title)}] > `
-            : chalk.green('Notention > ');
+          ? `${chalk.green('Notention')} [${chalk.yellow(activeContext.title)}] > `
+          : chalk.green('Notention > ');
 
         rl.question(prompt, async (rawInput) => {
           const input = rawInput.trim();
@@ -253,15 +255,15 @@ export async function startInteractiveSession(options: {
 
           if (input.startsWith('/')) {
             if (input === '/status') {
-                log.info('--- System Status ---');
-                const conf = session.getConfig();
-                log.info(`Provider: ${conf.provider}`);
-                log.info(`Model: ${conf.model}`);
-                log.info(`Server URL: ${mcpUrl}`);
-                log.info(`Simulation: ${enableSim ? 'Enabled' : 'Disabled'}`);
-                log.info('---------------------');
+              log.info('--- System Status ---');
+              const conf = session.getConfig();
+              log.info(`Provider: ${conf.provider}`);
+              log.info(`Model: ${conf.model}`);
+              log.info(`Server URL: ${mcpUrl}`);
+              log.info(`Simulation: ${enableSim ? 'Enabled' : 'Disabled'}`);
+              log.info('---------------------');
             } else {
-                await handleSlashCommand(input, cli, coreTools, session);
+              await handleSlashCommand(input, cli, coreTools, session);
             }
           } else {
             await session.handleInteraction(input);
