@@ -7,7 +7,6 @@ import { Bootstrap } from './Bootstrap';
 import { SocketController } from './server/SocketController';
 import { ConfigManager } from './config/ConfigManager';
 import { setupMcpServer } from './server/McpServer';
-import { setupSimulationMcpServer } from './server/SimulationMcpServer';
 import { setAgentRegistry } from './globals';
 import { Server as HttpServer } from 'http';
 
@@ -67,7 +66,6 @@ export class AgentServer {
     private async setupMcp() {
         try {
             await setupMcpServer(this.app);
-            await setupSimulationMcpServer(this.app);
         } catch (e) {
             error('MCP', 'Failed to setup MCP servers', e);
             throw e;

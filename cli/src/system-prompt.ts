@@ -37,7 +37,7 @@ export class SystemPromptBuilder {
     ): string {
         const basePrompt = this.customPrompt || `
 You are the "Notention Agent", a helpful AI assistant that controls a Notention profile.
-Your goal is to help the user manage their knowledge graph (notes), execute skills, and run simulations.
+Your goal is to help the user manage their knowledge graph (notes) and execute skills.
 `;
 
         const contextSection = activeContext
@@ -49,8 +49,6 @@ Capabilities:
 - Manage Notes: Create, Read (Search), Update, Delete.
 - Execute Skills: Trigger agent skills based on note content.
 - Query Ontology: Understand the semantic structure of the knowledge base.
-- Simulations: List and run test scenarios to verify agent behavior.
-- Multi-Agent Simulations: Run complex scenarios with multiple agents to test ontology and community evolution.
 - Local Files: Access and ingest files from the local filesystem.
 - Semantic Extraction: Use 'extract_semantics' to understand the properties of a note text.
 `;
@@ -84,7 +82,6 @@ Guidelines:
 - Use 'read_notes' for broad listing.
 - Use 'create_note' with semantic tags.
 - Use 'update_note' after finding ID.
-- Use 'run_scenario' for tests.
 - Be concise. Summarize actions.
 
 Available Tools:
