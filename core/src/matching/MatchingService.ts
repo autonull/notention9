@@ -1,6 +1,7 @@
 import { Note, Property } from '../types/index.js';
 import { parseGeo, haversineDistance } from '../spacetime.js';
 import { parseQuantity, compareQuantities } from '../quantities.js';
+import { levenshteinDistance } from '../utils/string.js';
 
 const CANONICAL: Record<string, string> = {
   js: 'javascript',
@@ -32,42 +33,6 @@ export interface MatchResultDetails {
 }
 
 export class MatchingService {
-
-  /**
-   * Levenshtein distance for fuzzy string matching
-   */
-  levenshteinDistance(a: string, b: string): number {
-    if (a.length === 0) return b.length;
-    if (b.length === 0) return a.length;
-
-    const matrix = [];
-
-    for (let i = 0; i <= b.length; i++) {
-      matrix[i] = [i];
-    }
-
-    for (let j = 0; j <= a.length; j++) {
-      matrix[0][j] = j;
-    }
-
-    for (let i = 1; i <= b.length; i++) {
-      for (let j = 1; j <= a.length; j++) {
-        if (b.charAt(i - 1) === a.charAt(j - 1)) {
-          matrix[i][j] = matrix[i - 1][j - 1];
-        } else {
-          matrix[i][j] = Math.min(
-            matrix[i - 1][j - 1] + 1, // substitution
-            Math.min(
-              matrix[i][j - 1] + 1, // insertion
-              matrix[i - 1][j] + 1 // deletion
-            )
-          );
-        }
-      }
-    }
-
-    return matrix[b.length][a.length];
-  }
 
   normalizeTerm(term: string): string {
     if (!term) return '';
@@ -353,7 +318,7 @@ export class MatchingService {
               const rawC = constraintVal.toLowerCase().replace(/[^a-z0-9]/g, '');
 
               // Fuzzy Match
-              const dist = this.levenshteinDistance(rawT, rawC);
+              const dist = levenshteinDistance(rawT, rawC);
               const maxLen = Math.max(rawT.length, rawC.length);
               // Allow 1 edit for length 4-7, 2 edits for length 8+
               const allowedDist = maxLen > 7 ? 2 : maxLen > 3 ? 1 : 0;
@@ -372,7 +337,7 @@ export class MatchingService {
               const rawT = tVal.toLowerCase().replace(/[^a-z0-9]/g, '');
               const rawC = constraintVal.toLowerCase().replace(/[^a-z0-9]/g, '');
               // It is NOT a match if they ARE equal (or soft equal)
-              const dist = this.levenshteinDistance(rawT, rawC);
+              const dist = levenshteinDistance(rawT, rawC);
               const maxLen = Math.max(rawT.length, rawC.length);
               const allowedDist = maxLen > 7 ? 2 : maxLen > 3 ? 1 : 0;
 
