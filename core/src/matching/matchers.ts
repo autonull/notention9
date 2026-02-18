@@ -1,5 +1,5 @@
 import { Property } from '../types/index.js';
-import { haversineDistance, parseGeo } from '../spacetime.js';
+import { haversineDistance, parseGeo } from '../utils/geo.js';
 import { levenshteinDistance } from '../utils/string.js';
 
 export type MatchType = 'exact' | 'alias' | 'fuzzy' | 'range' | 'partial' | 'geo' | 'date' | 'unknown';

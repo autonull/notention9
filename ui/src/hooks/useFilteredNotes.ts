@@ -1,6 +1,5 @@
 import {useMemo} from 'react';
-import {Note} from '@notention/core';
-import {getDistance} from './spacetime';
+import {Note, haversineDistance} from '@notention/core';
 
 // Memoized note filtering function
 export const useFilteredNotes = (
@@ -46,8 +45,8 @@ export const useFilteredNotes = (
 
                     // Sort by distance if location is available
                     filteredNotes.sort((a, b) => {
-                        const distA = getDistance(a, userLocation);
-                        const distB = getDistance(b, userLocation);
+                        const distA = haversineDistance(a as any, userLocation); // Ensure type compat or fix usage
+                        const distB = haversineDistance(b as any, userLocation);
                         return distA - distB;
                     });
                 }

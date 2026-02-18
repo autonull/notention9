@@ -8,7 +8,7 @@ export * from './properties.js';
 export * from './parsing.js';
 export * from './dateParsing.js';
 export * from './notes.js';
-export * from './spacetime.js';
+export * from './utils/geo.js';
 export * from './conflicts.js';
 export * from './constants.js';
 export * from './quantities.js';
