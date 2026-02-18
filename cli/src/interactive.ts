@@ -236,7 +236,12 @@ export async function startInteractiveSession(options: {
       console.log("=".repeat(50) + "\n");
 
       const ask = () => {
-        rl.question(chalk.green('Notention > '), async (rawInput) => {
+        const activeContext = session.getActiveContext();
+        const prompt = activeContext
+            ? `${chalk.green('Notention')} [${chalk.yellow(activeContext.title)}] > `
+            : chalk.green('Notention > ');
+
+        rl.question(prompt, async (rawInput) => {
           const input = rawInput.trim();
 
           if (!input) {
