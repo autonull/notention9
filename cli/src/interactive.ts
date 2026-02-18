@@ -7,6 +7,7 @@ import { getLocalTools } from './tools/index.js';
 import { log, withSpinner } from './utils.js';
 import { configManager } from './config-manager.js';
 import { ProviderFactory } from './providers/index.js';
+import { ServerManager } from './server-manager.js';
 
 dotenv.config();
 
@@ -54,11 +55,43 @@ export async function startInteractiveSession(options: {
   // Create provider
   const provider = ProviderFactory.create(finalConfig);
 
-  const cli = new CliClient(MCP_URL);
-  const simCli = new CliClient(SIM_MCP_URL);
+  // Initialize Server Manager
+  const serverManager = new ServerManager();
+  let mcpUrl = MCP_URL;
+  let simMcpUrl = SIM_MCP_URL;
+
+  try {
+      if (interactive) log.info("Checking server status...");
+      const serverInfo = await serverManager.ensureServer(mcpUrl);
+      if (serverInfo.started) {
+          mcpUrl = serverInfo.url;
+
+          // Update SIM URL to match new port
+          try {
+              const mcpUrlObj = new URL(mcpUrl);
+              const simUrlObj = new URL(simMcpUrl);
+              simUrlObj.port = mcpUrlObj.port;
+              simMcpUrl = simUrlObj.toString();
+          } catch (e) {
+              // Ignore URL parsing errors
+          }
+      }
+  } catch (e) {
+      log.error("Failed to ensure server is running", e);
+      process.exit(1);
+  }
+
+  const cli = new CliClient(mcpUrl);
+  const simCli = new CliClient(simMcpUrl);
   const enableSim = options.sim || options.simulation;
   const command = options.command;
   const interactive = !command;
+
+  const cleanup = async () => {
+      await serverManager.stop();
+      await cli.close();
+      await simCli.close();
+  };
 
   try {
     if (interactive) log.info("Connecting to Notention Agent...");
@@ -70,7 +103,7 @@ export async function startInteractiveSession(options: {
       try {
         await cli.connect();
         connected = true;
-        if (interactive) log.success(`Connected to Notention Agent at ${MCP_URL}`);
+        if (interactive) log.success(`Connected to Notention Agent at ${mcpUrl}`);
       } catch (e) {
         retries--;
         if (retries > 0) {
@@ -90,7 +123,7 @@ export async function startInteractiveSession(options: {
         await simCli.connect();
         const simToolsResult = await withSpinner('Loading simulation tools...', () => simCli.listTools());
         simTools = simToolsResult.tools;
-        if (interactive) log.success(`Connected to Simulation Agent at ${SIM_MCP_URL}`);
+        if (interactive) log.success(`Connected to Simulation Agent at ${simMcpUrl}`);
       } catch (e) {
         if (interactive) log.warn(`Simulation Agent unavailable (skipping)`);
       }
@@ -154,13 +187,19 @@ export async function startInteractiveSession(options: {
       } else {
         await session.handleInteraction(command);
       }
-      await cli.close();
-      await simCli.close();
+      await cleanup();
       process.exit(0);
     } else {
       const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout
+      });
+
+      // Handle exit signals
+      rl.on('SIGINT', async () => {
+          console.log('\nExiting...');
+          await cleanup();
+          process.exit(0);
       });
 
       console.log("\n" + "=".repeat(50));

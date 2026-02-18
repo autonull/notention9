@@ -2,10 +2,10 @@
   "name": "@notention/agent",
   "version": "1.0.0",
   "description": "Universal Action Agent for Notention",
-  "main": "dist/index.js",
+  "main": "src/index.ts",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "start": "tsx src/index.ts",
+    "dev": "tsx watch src/start.ts",
+    "start": "tsx src/start.ts",
     "build": "tsc",
     "test": "vitest run"
   },
