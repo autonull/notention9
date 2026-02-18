@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "start": "tsx src/index.ts",
+    "test:e2e": "playwright test -c src/tests/e2e/playwright.config.ts",
     "build": "tsc"
   },
   "dependencies": {
@@ -14,8 +15,10 @@
     "ws": "^8.18.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.41.0",
     "@types/node": "^20.11.0",
     "@types/ws": "^8.5.10",
+    "ts-node": "^10.9.2",
     "tsx": "^4.19.2",
     "typescript": "~5.3.3"
   }

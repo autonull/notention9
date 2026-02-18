@@ -1,7 +1,12 @@
 import time
+import os
 from playwright.sync_api import sync_playwright
 
 def verify_ui():
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    verification_dir = os.path.join(base_dir, "verification")
+    os.makedirs(verification_dir, exist_ok=True)
+
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         context = browser.new_context(viewport={'width': 1280, 'height': 800})
@@ -29,7 +34,8 @@ def verify_ui():
 
         # Take screenshot of Dashboard
         print("Capturing Dashboard screenshot...")
-        page.screenshot(path="verification/dashboard.png")
+        dashboard_path = os.path.join(verification_dir, "dashboard.png")
+        page.screenshot(path=dashboard_path)
 
         # Navigate to Notes (Sidebar link)
         # Assuming there is a sidebar link with "Notes" or similar icon
@@ -43,12 +49,13 @@ def verify_ui():
             print("Navigating to Notes...")
             page.click("text=Notes", timeout=5000)
             time.sleep(1) # Wait for transition
-            page.screenshot(path="verification/notes_view.png")
+            notes_view_path = os.path.join(verification_dir, "notes_view.png")
+            page.screenshot(path=notes_view_path)
         except Exception as e:
             print(f"Could not navigate to Notes view: {e}")
 
         browser.close()
-        print("Verification complete.")
+        print(f"Verification complete. Screenshots saved to {verification_dir}")
 
 if __name__ == "__main__":
     verify_ui()
