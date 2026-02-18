@@ -72,12 +72,12 @@ export class ScenarioRunner {
     }
 
     private scheduleEvents(events: EventConfig[]) {
-        for (const event of events) {
+        events.forEach(event => {
             setTimeout(async () => {
                 console.log(chalk.bold(`\n[${event.at}s] Event: ${event.actorRole} -> ${event.action}`));
                 await this.executeAction(event.actorRole, event.action);
             }, event.at * 1000);
-        }
+        });
     }
 
     private async executeAction(role: string, action: string) {

@@ -1,4 +1,5 @@
 import { OntologyNode, OntologyAttribute, Note, Property } from './types/index.js';
+import { deepClone } from './utils/common.js';
 
 /**
  * Pure functions for manipulating the Ontology tree.
@@ -6,7 +7,7 @@ import { OntologyNode, OntologyAttribute, Note, Property } from './types/index.j
  */
 
 // Helper to deep clone the tree to ensure immutability
-const cloneTree = (tree: OntologyNode[]): OntologyNode[] => JSON.parse(JSON.stringify(tree));
+const cloneTree = (tree: OntologyNode[]): OntologyNode[] => deepClone(tree);
 
 export const findNode = (tree: OntologyNode[], nodeId: string): OntologyNode | null => {
   for (const node of tree) {
