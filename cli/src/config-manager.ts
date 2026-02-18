@@ -119,11 +119,11 @@ export class ConfigManager {
     };
 
     // Apply CLI arguments (highest priority)
-    for (const [key, value] of Object.entries(cliArgs)) {
+    Object.entries(cliArgs).forEach(([key, value]) => {
       if (value !== undefined) {
         (config as any)[key] = value;
       }
-    }
+    });
 
     // Validate the final configuration
     try {
@@ -141,11 +141,11 @@ export class ConfigManager {
    * Save configuration to persistent store
    */
   saveConfig(config: Partial<AppConfig>): void {
-    for (const [key, value] of Object.entries(config)) {
+    Object.entries(config).forEach(([key, value]) => {
       if (value !== undefined) {
         this.store.set(key, value);
       }
-    }
+    });
   }
 
   /**

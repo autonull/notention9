@@ -16,15 +16,14 @@ export class SystemPromptBuilder {
             path.join(process.cwd(), 'system_prompt.md')
         ];
 
-        for (const p of potentialPaths) {
-            if (fs.existsSync(p)) {
-                try {
-                    this.customPrompt = fs.readFileSync(p, 'utf-8');
-                    log.info(`Loaded custom system prompt from ${p}`);
-                    break;
-                } catch (e) {
-                    log.error(`Failed to read system prompt file: ${e}`);
-                }
+        const foundPath = potentialPaths.find(p => fs.existsSync(p));
+
+        if (foundPath) {
+            try {
+                this.customPrompt = fs.readFileSync(foundPath, 'utf-8');
+                log.info(`Loaded custom system prompt from ${foundPath}`);
+            } catch (e) {
+                log.error(`Failed to read system prompt file: ${e}`);
             }
         }
     }
