@@ -25,7 +25,7 @@ export interface PropertyPattern {
  * Skills translate semantic notes into browser actions that interact with external websites.
  */
 export interface BrowserAction {
-    type: 'navigate' | 'fill-form' | 'click' | 'scrape' | 'wait' | 'type' | 'screenshot';
+    type: 'navigate' | 'fill-form' | 'click' | 'scrape' | 'wait' | 'type' | 'screenshot' | 'hover' | 'scroll';
 
     /** URL to navigate to (for 'navigate' type) */
     url?: string;

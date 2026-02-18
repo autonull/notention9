@@ -3,7 +3,7 @@
  */
 
 export class PredictionError extends Error {
-  constructor(message: string, public readonly cause?: Error) {
+  constructor(message: string, public override readonly cause?: Error) {
     super(message);
     this.name = 'PredictionError';
   }
@@ -17,7 +17,7 @@ export class ValidationError extends Error {
 }
 
 export class TaskExecutionError extends Error {
-  constructor(message: string, public readonly taskId?: string, public readonly cause?: Error) {
+  constructor(message: string, public readonly taskId?: string, public override readonly cause?: Error) {
     super(message);
     this.name = 'TaskExecutionError';
   }

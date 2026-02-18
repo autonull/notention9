@@ -1,6 +1,3 @@
-
-import type { Quantity, CompoundQuantity } from './types/index.js';
-
 import type { Quantity, CompoundQuantity } from './types/index.js';
 import {
     UNIT_ALIASES,

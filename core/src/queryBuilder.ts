@@ -15,7 +15,7 @@ export interface FilterSuggestion {
     widget: WidgetMetadata;
 }
 
-export interface ValidationResult {
+export interface QueryValidationResult {
     valid: boolean;
     errors: string[];
     warnings: string[];
@@ -68,7 +68,7 @@ export class QueryBuilder {
     /**
      * Validate a complete query against ontology
      */
-    validateQuery(properties: Property[]): ValidationResult {
+    validateQuery(properties: Property[]): QueryValidationResult {
         const errors: string[] = [];
         const warnings: string[] = [];
 
