@@ -1,13 +1,14 @@
 import * as readline from 'readline';
 import dotenv from 'dotenv';
 import { CliClient } from './client.js';
-import { handleSlashCommand } from './commands.js';
+import { handleSlashCommand, getSlashCommands } from './commands.js';
 import { LlmSession, LLMProviderConfig } from './llm.js';
 import { getLocalTools } from './tools/index.js';
 import { log, withSpinner, setVerbose } from './utils.js';
 import { configManager } from './config-manager.js';
 import { ProviderFactory } from './providers/index.js';
 import { ServerManager } from './server-manager.js';
+import { loadHistory, appendHistory } from './history-manager.js';
 import chalk from 'chalk';
 
 dotenv.config();
@@ -197,16 +198,32 @@ export async function startInteractiveSession(options: {
       await cleanup();
       process.exit(0);
     } else {
+      // Setup Completer
+      const completer = (line: string) => {
+          if (!line.startsWith('/')) return [[], line];
+          const hits = getSlashCommands().filter((c) => c.startsWith(line));
+          // Show all completions if none found
+          return [hits.length ? hits : getSlashCommands(), line];
+      };
+
       const rl = readline.createInterface({
         input: process.stdin,
-        output: process.stdout
+        output: process.stdout,
+        history: loadHistory().reverse(), // RL expects most recent first
+        historySize: 1000,
+        completer
       });
 
       // Handle exit signals
       rl.on('SIGINT', async () => {
-          console.log('\nExiting...');
-          await cleanup();
-          process.exit(0);
+          if (rl.line.length > 0) {
+              rl.clearLine(0);
+              rl.prompt(true);
+          } else {
+              console.log('\nExiting...');
+              await cleanup();
+              process.exit(0);
+          }
       });
 
       console.log("\n" + "=".repeat(50));
@@ -226,6 +243,8 @@ export async function startInteractiveSession(options: {
             ask();
             return;
           }
+
+          appendHistory(input);
 
           if (input.startsWith('/')) {
             if (input === '/status') {

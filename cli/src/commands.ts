@@ -316,3 +316,7 @@ export async function handleSlashCommand(input: string, cli: CliClient, tools: a
     log.warn("Unknown command. Type /help.");
     return true;
 }
+
+export function getSlashCommands(): string[] {
+    return Object.keys(COMMANDS);
+}
