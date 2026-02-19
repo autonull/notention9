@@ -39,7 +39,7 @@ describe('parseQuantity', () => {
             unitType: 'compound',
             numerator: 'km',
             denominator: 'h',
-            semanticType: 'other' // speed falls back to other or specific if mapped
+            semanticType: 'ratio'
         });
     });
 

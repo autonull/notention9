@@ -53,32 +53,23 @@ const SYMBOLIC_REGEXES = Object.keys(SYMBOL_TO_OP)
 // Strategy Pattern for Property Parsing
 export type PropertyParser = (content: string, ontology?: OntologyNode[]) => Property | null;
 
-const resolveKey = (key: string, ontology?: OntologyNode[]): string => {
-    if (ontology) {
-        return getCanonicalKey(key, ontology);
-    }
-    return resolveAlias(key);
-}
+const resolveKey = (key: string, ontology?: OntologyNode[]): string =>
+    ontology ? getCanonicalKey(key, ontology) : resolveAlias(key);
 
 const parseColonFormat: PropertyParser = (content, ontology) => {
-    const colonParts = content.split(':');
-    if (colonParts.length >= 3) {
-        const key = resolveKey(colonParts[0].trim(), ontology);
-        const operator = colonParts[1].trim();
-        const value = colonParts.slice(2).join(':').trim();
-        return {
-            key,
-            operator,
-            values: value.split(',').map(v => v.trim())
-        };
-    } else if (colonParts.length === 2) {
-        return {
-            key: resolveKey(colonParts[0].trim(), ontology),
-            operator: 'is',
-            values: colonParts[1].trim().split(',').map(v => v.trim())
-        };
-    }
-    return null;
+    const parts = content.split(':');
+    if (parts.length < 2) return null;
+
+    const key = resolveKey(parts[0].trim(), ontology);
+    const hasOperator = parts.length >= 3;
+    const operator = hasOperator ? parts[1].trim() : 'is';
+    const valueStr = hasOperator ? parts.slice(2).join(':') : parts[1];
+
+    return {
+        key,
+        operator,
+        values: valueStr.trim().split(',').map(v => v.trim())
+    };
 };
 
 const parseSymbolicFormat: PropertyParser = (content, ontology) => {
@@ -97,38 +88,30 @@ const parseSymbolicFormat: PropertyParser = (content, ontology) => {
 
 const parseWordFormat: PropertyParser = (content, ontology) => {
     const wordOperatorMatch = content.match(REGEX.WORD_OP);
+
     if (wordOperatorMatch) {
         const [, rawKey, operator, value] = wordOperatorMatch;
-        const key = resolveKey(rawKey.trim(), ontology);
-
-        if (!REGEX.VALID_KEY.test(key) || COMMON_WORDS.has(key.toLowerCase())) {
-            return null;
-        }
-
-        return {
-            key,
-            operator: operator.trim(),
-            values: value.trim().split(',').map(v => v.trim())
-        };
+        return createProperty(rawKey, operator, value, ontology);
     }
 
     const spaceMatch = content.match(REGEX.SPACE);
     if (spaceMatch) {
          const [, rawKey, value] = spaceMatch;
-         const key = resolveKey(rawKey.trim(), ontology);
-
-         if (!REGEX.VALID_KEY.test(key) || COMMON_WORDS.has(key.toLowerCase())) {
-             return null;
-         }
-
-         return {
-             key,
-             operator: 'is',
-             values: value.trim().split(',').map(v => v.trim())
-         };
+         return createProperty(rawKey, 'is', value, ontology);
     }
 
     return null;
+};
+
+const createProperty = (rawKey: string, operator: string, value: string, ontology?: OntologyNode[]): Property | null => {
+    const key = resolveKey(rawKey.trim(), ontology);
+    if (!REGEX.VALID_KEY.test(key) || COMMON_WORDS.has(key.toLowerCase())) return null;
+
+    return {
+        key,
+        operator: operator.trim(),
+        values: value.trim().split(',').map(v => v.trim())
+    };
 };
 
 const PARSERS: PropertyParser[] = [
@@ -149,12 +132,11 @@ export const extractProperties = (text: string, ontology?: OntologyNode[]): Extr
   const extracted: ExtractedProperty[] = [];
 
   for (const match of text.matchAll(REGEX.BRACKET)) {
-    const content = match[1];
-    const parsed = parsePropertyBlock(content, ontology);
+    const parsed = parsePropertyBlock(match[1], ontology);
     if (parsed) {
       extracted.push({
         property: parsed,
-        index: match.index,
+        index: match.index!,
         length: match[0].length,
         originalText: match[0]
       });
@@ -166,9 +148,7 @@ export const extractProperties = (text: string, ontology?: OntologyNode[]): Extr
 const extractMacros = (text: string): Property[] => {
     const properties: Property[] = [];
     for (const macroMatch of text.matchAll(REGEX.MACRO)) {
-        const macroName = macroMatch[1];
-        const expandedProperties = expandMacro(macroName);
-        properties.push(...expandedProperties);
+        properties.push(...expandMacro(macroMatch[1]));
     }
     return properties;
 };
@@ -193,31 +173,25 @@ const extractHtmlSpans = (text: string): Property[] => {
 }
 
 export const parseProperties = (text: string, ontology?: OntologyNode[]): Property[] => {
-  const properties: Property[] = extractProperties(text, ontology).map(e => e.property);
-
+  const properties = extractProperties(text, ontology).map(e => e.property);
   properties.push(...extractMacros(text));
   properties.push(...extractHtmlSpans(text));
-
   return properties;
 };
 
-export const formatPropertyTag = (prop: Property): string => {
-  const vals = prop.values.join(',');
-  return `[${prop.key}:${prop.operator}:${vals}]`;
-};
+export const formatPropertyTag = (prop: Property): string =>
+  `[${prop.key}:${prop.operator}:${prop.values.join(',')}]`;
 
 const findPropertyInText = (text: string, prop: Property): { index: number; length: number } | null => {
-  // Finding property in text logic might rely on equality check which relies on keys
-  // This is tricky if keys are normalized.
-  const extracted = extractProperties(text); // No ontology here, finding raw?
+  const extracted = extractProperties(text);
   const found = extracted.find(ep => arePropertiesEqual(ep.property, prop));
   return found ? { index: found.index, length: found.length } : null;
 };
 
 const appendPropertyToText = (text: string, tag: string): string => {
   if (!tag) return text;
-  const suffix = text.trim().endsWith('</p>') ? `<p>${tag}</p>` : ` ${tag}`;
-  return text + suffix;
+  // Replace only the last closing paragraph tag to inject the property inside it
+  return text.trim().endsWith('</p>') ? text.replace(/<\/p>$/, ` ${tag}</p>`) : `${text} ${tag}`;
 };
 
 export const replacePropertyInString = (
@@ -226,7 +200,6 @@ export const replacePropertyInString = (
   newProp: Property | null
 ): string => {
   if (!oldProp && !newProp) return text;
-
   const newTag = newProp ? formatPropertyTag(newProp) : '';
 
   if (oldProp) {
