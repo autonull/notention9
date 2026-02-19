@@ -15,9 +15,22 @@ export class MatchEngine {
     constructor(private ontology: OntologyNode[]) { }
 
     calculateMatchScore(request: Note, offer: Note): MatchResult {
-        // Collect all evaluations
-        const results = request.properties.flatMap(reqProp => {
-            // Get all aliases for the request property key to match against offer
+        const results = this.findMatches(request, offer);
+        const { matches, conflicts, totalScore, matchedKeys, conflictKeys } = this.aggregateResults(results);
+
+        const missing = request.properties.filter(p =>
+            !matchedKeys.has(p.key) && !conflictKeys.has(p.key)
+        );
+
+        const normalizedScore = request.properties.length > 0
+            ? Math.max(0, totalScore / request.properties.length)
+            : 0;
+
+        return { score: normalizedScore, matches, conflicts, missing };
+    }
+
+    private findMatches(request: Note, offer: Note): PropertyMatch[] {
+        return request.properties.flatMap(reqProp => {
             const aliases = getAliases(reqProp.key, this.ontology);
             const keysToCheck = new Set(aliases);
 
@@ -35,7 +48,9 @@ export class MatchEngine {
                     return match;
                 });
         });
+    }
 
+    private aggregateResults(results: PropertyMatch[]) {
         const matches: PropertyMatch[] = [];
         const conflicts: PropertyMatch[] = [];
         const matchedKeys = new Set<string>();
@@ -56,20 +71,12 @@ export class MatchEngine {
             return acc;
         }, 0);
 
-        const missing = request.properties.filter(p =>
-            !matchedKeys.has(p.key) && !conflictKeys.has(p.key)
-        );
-
-        const normalizedScore = request.properties.length > 0
-            ? Math.max(0, totalScore / request.properties.length)
-            : 0;
-
-        return { score: normalizedScore, matches, conflicts, missing };
+        return { matches, conflicts, totalScore, matchedKeys, conflictKeys };
     }
 
     private evaluateConstraint(req: Property, off: Property): PropertyMatch {
         const attributeDef = findAttributeDef(req.key, this.ontology);
-        const type = attributeDef?.type || 'string';
+        const type = attributeDef?.type ?? 'string';
 
         switch (type) {
             case 'number':

@@ -33,27 +33,20 @@ const INDEFINITE_OPS = new Set([
   '∋',
 ]);
 
-export const isIndefiniteOperator = (operator: string): boolean => {
-  return INDEFINITE_OPS.has(operator);
-};
+export const isIndefiniteOperator = (operator: string): boolean => INDEFINITE_OPS.has(operator);
 
-export const isIndefiniteProperty = (prop: Property): boolean => {
-  return isIndefiniteOperator(prop.operator);
-};
+export const isIndefiniteProperty = (prop: Property): boolean => isIndefiniteOperator(prop.operator);
 
-const isKeyOfType = (key: string, keys: Set<string>, suffixes: string[], snakeSuffixes: string[]): boolean => {
-  return keys.has(key) ||
-    suffixes.some(s => key.endsWith(s)) ||
-    snakeSuffixes.some(s => key.endsWith(s));
-};
+const isKeyOfType = (key: string, keys: Set<string>, suffixes: string[], snakeSuffixes: string[]): boolean =>
+  keys.has(key) ||
+  suffixes.some(s => key.endsWith(s)) ||
+  snakeSuffixes.some(s => key.endsWith(s));
 
-export const isTemporalKey = (key: string): boolean => {
-  return isKeyOfType(key, TEMPORAL_KEYS, TEMPORAL_SUFFIXES, TEMPORAL_SNAKE_SUFFIXES);
-};
+export const isTemporalKey = (key: string): boolean =>
+  isKeyOfType(key, TEMPORAL_KEYS, TEMPORAL_SUFFIXES, TEMPORAL_SNAKE_SUFFIXES);
 
-export const isSpatialKey = (key: string): boolean => {
-  return isKeyOfType(key, SPATIAL_KEYS, SPATIAL_SUFFIXES, SPATIAL_SNAKE_SUFFIXES);
-};
+export const isSpatialKey = (key: string): boolean =>
+  isKeyOfType(key, SPATIAL_KEYS, SPATIAL_SUFFIXES, SPATIAL_SNAKE_SUFFIXES);
 
 export const arePropertiesEqual = (p1: Property | null, p2: Property | null): boolean => {
   if (p1 === p2) return true;
@@ -74,15 +67,12 @@ export const arePropertyArraysEqual = (a: Property[], b: Property[]): boolean =>
  * Returns a new Note with all property keys normalized to their canonical forms based on the ontology.
  */
 export const normalizeNoteProperties = (note: Note, ontology: OntologyNode[]): Note => {
-  if (!ontology || ontology.length === 0) return note;
+  if (!ontology?.length) return note;
 
-  const normalizedProperties = note.properties.map(p => ({
+  const properties = note.properties.map(p => ({
     ...p,
     key: getCanonicalKey(p.key, ontology)
   }));
 
-  return {
-    ...note,
-    properties: normalizedProperties
-  };
+  return { ...note, properties };
 };
