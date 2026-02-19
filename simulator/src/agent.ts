@@ -26,6 +26,10 @@ export class Agent {
     private readonly privkey: string;
     private readonly engine: MatchEngine;
     private readonly seenEvents = new Set<string>();
+
+    public get secretKey(): string {
+        return this.privkey;
+    }
     private relay: WebSocket;
 
     constructor(
@@ -94,25 +98,62 @@ export class Agent {
                  matches.forEach(m => {
                      this.log(`  - Matched: ${m.requestProp.key} ${m.requestProp.operator} ${m.offerProp.values.join(', ')}`);
                  });
+
+                 // Publish explanation for dashboard
+                 this.publishExplanation(event.pubkey, score, matches);
             }
         } catch (e) {
             this.log(`Error processing event: ${e}`);
         }
     }
 
-    public async publishJob() {
+    public async publishJob(inputMethod: string = 'raw') {
         const content = `Job: ${this.profile.role} needed. ` +
             this.profile.interests.map(formatPropertyTag).join(' ');
-        await this.publish(content, this.profile.interests);
+        await this.publish(content, this.profile.interests, inputMethod);
     }
 
-    public async publishOffer() {
+    public async publishOffer(inputMethod: string = 'raw') {
         const content = `Offer: I am a ${this.profile.role}. ` +
             this.profile.properties.map(formatPropertyTag).join(' ');
-        await this.publish(content, this.profile.properties);
+        await this.publish(content, this.profile.properties, inputMethod);
     }
 
-    private async publish(content: string, properties: Property[]) {
+    public async sendMessage(targetId: string, message: string) {
+        // Find target pubkey from id? In simulator ID is first 8 of pubkey.
+        // Simplified: just publish a DM-like event for visualization
+        const content = `[@${targetId}] ${message}`;
+        await this.publish(content, [], 'chat');
+    }
+
+    private async publishExplanation(matchedPubkey: string, score: number, details: any[]) {
+        if (this.relay.readyState !== WebSocket.OPEN) return;
+
+        const explanation = {
+            matcher: this.profile.name,
+            matchedWith: matchedPubkey.slice(0, 8),
+            score,
+            details: details.map(d => ({
+                request: `${d.requestProp.key} ${d.requestProp.operator}`,
+                offer: d.offerProp.values.join(', '),
+                score: d.score
+            }))
+        };
+
+        const sk = Uint8Array.from(Buffer.from(this.privkey, 'hex'));
+
+        // Kind 35001 for explanations/logs
+        const event = finalizeEvent({
+            kind: 35001,
+            created_at: Math.floor(Date.now() / 1000),
+            tags: [['p', matchedPubkey]],
+            content: JSON.stringify(explanation),
+        }, sk);
+
+        this.relay.send(JSON.stringify(['EVENT', event]));
+    }
+
+    private async publish(content: string, properties: Property[], inputMethod: string = 'raw') {
         if (this.relay.readyState !== WebSocket.OPEN) {
             this.log('Relay not connected, cannot publish.');
             return;
@@ -126,11 +167,12 @@ export class Agent {
 
         // Add index tags for discovery (prop:key)
         const indexTags = properties.map(p => ['t', `prop:${p.key}`]);
+        const methodTag = ['input-method', inputMethod];
 
         const event = finalizeEvent({
             kind: 35000,
             created_at: Math.floor(Date.now() / 1000),
-            tags: [...privacyTags, ...indexTags],
+            tags: [...privacyTags, ...indexTags, methodTag],
             content,
         }, sk);
 

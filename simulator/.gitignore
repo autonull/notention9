@@ -1,0 +1,5 @@
+movies/
+dist/
+test-results/
+playwright-report/
+node_modules/

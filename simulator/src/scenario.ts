@@ -10,10 +10,15 @@ export interface AgentConfig {
     readonly traits: string[];
 }
 
+export type InputMethod = 'raw' | 'autocomplete' | 'form';
+
 export interface EventConfig {
     readonly at: number; // seconds
     readonly action: string;
     readonly actorRole: string;
+    readonly inputMethod?: InputMethod;
+    readonly targetAgentId?: string; // For directed messages/matches
+    readonly cameraFocus?: string; // Agent ID to focus on, or 'grid'
 }
 
 export interface Scenario {
@@ -25,7 +30,7 @@ export interface Scenario {
 }
 
 export class ScenarioRunner {
-    private readonly agents: Agent[] = [];
+    public readonly agents: Agent[] = [];
     private readonly colors = [chalk.red, chalk.green, chalk.yellow, chalk.blue, chalk.magenta, chalk.cyan];
 
     constructor(
@@ -33,16 +38,22 @@ export class ScenarioRunner {
         private readonly ontology: OntologyNode[]
     ) {}
 
-    async run(scenario: Scenario) {
+    async prepare(scenario: Scenario) {
         console.log(chalk.bold.cyan(`\nRunning Scenario: ${scenario.name}`));
         console.log(chalk.gray(scenario.description));
 
         await this.spawnAgents(scenario.agents);
+    }
+
+    async execute(scenario: Scenario) {
         this.scheduleEvents(scenario.events);
-
         await new Promise(resolve => setTimeout(resolve, scenario.duration * 1000));
-
         console.log(chalk.bold.green(`\nScenario Completed.`));
+    }
+
+    async run(scenario: Scenario) {
+        await this.prepare(scenario);
+        await this.execute(scenario);
     }
 
     private async spawnAgents(configs: AgentConfig[]) {
@@ -71,21 +82,34 @@ export class ScenarioRunner {
         console.log(chalk.white(`Spawned ${this.agents.length} agents.\n`));
     }
 
+    public onEvent?: (event: EventConfig) => void;
+
     private scheduleEvents(events: EventConfig[]) {
         events.forEach(event => {
             setTimeout(async () => {
-                console.log(chalk.bold(`\n[${event.at}s] Event: ${event.actorRole} -> ${event.action}`));
-                await this.executeAction(event.actorRole, event.action);
+                console.log(chalk.bold(`\n[${event.at}s] Event: ${event.actorRole} -> ${event.action} (${event.inputMethod || 'raw'})`));
+                if (this.onEvent) this.onEvent(event);
+
+                // If camera event, skip agent execution
+                if (event.action === 'camera') return;
+
+                await this.executeAction(event.actorRole, event.action, event.inputMethod, event.targetAgentId);
             }, event.at * 1000);
         });
     }
 
-    private async executeAction(role: string, action: string) {
+    private async executeAction(role: string, action: string, inputMethod: string = 'raw', targetId?: string) {
         const actors = this.agents.filter(a => a.profile.role === role);
+
+        // If a target is specified, only that agent acts? Or acts *towards* that target?
+        // For simplicity: all matching role agents perform the action.
+
         const tasks = actors.map(actor => {
             switch (action) {
-                case 'publish_job': return actor.publishJob();
-                case 'publish_offer': return actor.publishOffer();
+                case 'publish_job': return actor.publishJob(inputMethod);
+                case 'publish_offer': return actor.publishOffer(inputMethod);
+                case 'send_message': return targetId ? actor.sendMessage(targetId, "Hello!") : Promise.resolve();
+                case 'camera': return Promise.resolve(); // Handled externally by MovieMaker watcher or event listener
                 default: return Promise.resolve();
             }
         });
