@@ -1,6 +1,7 @@
 import { LocalRelay } from './relay.js';
 import { ScenarioRunner, Scenario } from './scenario.js';
 import { GigEconomyScenario } from './scenarios/gigEconomy.js';
+import { generateScenario } from './scenarios/generator.js';
 import { MovieMaker, MovieOptions } from './movie_maker.js';
 import { DEFAULT_ONTOLOGY } from '@notention/core';
 import chalk from 'chalk';
@@ -23,6 +24,8 @@ Usage: node dist/index.js [options]
 Options:
   --port=<number>       Port for the local relay (default: 4444)
   --scenario=<name>     Name of the scenario to run (default: gig-economy)
+  --generate=<count>    Generate a random scenario with <count> agents
+  --duration=<seconds>  Duration for generated scenario (default: 30)
   --list-scenarios      List available scenarios
   --movie               Run in Movie Maker mode (visual simulation)
   --fps=<number>        Framerate for movie (default: 2)
@@ -44,14 +47,25 @@ Options:
     const relayPort = portArg ? parseInt(portArg.split('=')[1]) : 4444;
     const relayUrl = `ws://localhost:${relayPort}`;
 
-    const scenarioArg = args.find(arg => arg.startsWith('--scenario='));
-    const scenarioName = scenarioArg ? scenarioArg.split('=')[1] : 'default';
-    const scenario = SCENARIOS[scenarioName];
+    let scenario: Scenario;
+    const genArg = args.find(arg => arg.startsWith('--generate='));
 
-    if (!scenario) {
-        console.error(chalk.red(`Error: Scenario '${scenarioName}' not found.`));
-        console.log("Available scenarios:", Object.keys(SCENARIOS).join(', '));
-        process.exit(1);
+    if (genArg) {
+        const count = parseInt(genArg.split('=')[1]);
+        const durArg = args.find(arg => arg.startsWith('--duration='));
+        const duration = durArg ? parseInt(durArg.split('=')[1]) : 30;
+        scenario = generateScenario(count, duration);
+        console.log(chalk.magenta(`Generated scenario with ${count} agents over ${duration}s`));
+    } else {
+        const scenarioArg = args.find(arg => arg.startsWith('--scenario='));
+        const scenarioName = scenarioArg ? scenarioArg.split('=')[1] : 'default';
+        scenario = SCENARIOS[scenarioName];
+
+        if (!scenario) {
+            console.error(chalk.red(`Error: Scenario '${scenarioName}' not found.`));
+            console.log("Available scenarios:", Object.keys(SCENARIOS).join(', '));
+            process.exit(1);
+        }
     }
 
     const relay = new LocalRelay(relayPort);

@@ -10,10 +10,14 @@ export interface AgentConfig {
     readonly traits: string[];
 }
 
+export type InputMethod = 'raw' | 'autocomplete' | 'form';
+
 export interface EventConfig {
     readonly at: number; // seconds
     readonly action: string;
     readonly actorRole: string;
+    readonly inputMethod?: InputMethod;
+    readonly targetAgentId?: string; // For directed messages/matches
 }
 
 export interface Scenario {
@@ -80,18 +84,23 @@ export class ScenarioRunner {
     private scheduleEvents(events: EventConfig[]) {
         events.forEach(event => {
             setTimeout(async () => {
-                console.log(chalk.bold(`\n[${event.at}s] Event: ${event.actorRole} -> ${event.action}`));
-                await this.executeAction(event.actorRole, event.action);
+                console.log(chalk.bold(`\n[${event.at}s] Event: ${event.actorRole} -> ${event.action} (${event.inputMethod || 'raw'})`));
+                await this.executeAction(event.actorRole, event.action, event.inputMethod, event.targetAgentId);
             }, event.at * 1000);
         });
     }
 
-    private async executeAction(role: string, action: string) {
+    private async executeAction(role: string, action: string, inputMethod: string = 'raw', targetId?: string) {
         const actors = this.agents.filter(a => a.profile.role === role);
+
+        // If a target is specified, only that agent acts? Or acts *towards* that target?
+        // For simplicity: all matching role agents perform the action.
+
         const tasks = actors.map(actor => {
             switch (action) {
-                case 'publish_job': return actor.publishJob();
-                case 'publish_offer': return actor.publishOffer();
+                case 'publish_job': return actor.publishJob(inputMethod);
+                case 'publish_offer': return actor.publishOffer(inputMethod);
+                case 'send_message': return targetId ? actor.sendMessage(targetId, "Hello!") : Promise.resolve();
                 default: return Promise.resolve();
             }
         });

@@ -104,19 +104,26 @@ export class Agent {
         }
     }
 
-    public async publishJob() {
+    public async publishJob(inputMethod: string = 'raw') {
         const content = `Job: ${this.profile.role} needed. ` +
             this.profile.interests.map(formatPropertyTag).join(' ');
-        await this.publish(content, this.profile.interests);
+        await this.publish(content, this.profile.interests, inputMethod);
     }
 
-    public async publishOffer() {
+    public async publishOffer(inputMethod: string = 'raw') {
         const content = `Offer: I am a ${this.profile.role}. ` +
             this.profile.properties.map(formatPropertyTag).join(' ');
-        await this.publish(content, this.profile.properties);
+        await this.publish(content, this.profile.properties, inputMethod);
     }
 
-    private async publish(content: string, properties: Property[]) {
+    public async sendMessage(targetId: string, message: string) {
+        // Find target pubkey from id? In simulator ID is first 8 of pubkey.
+        // Simplified: just publish a DM-like event for visualization
+        const content = `[@${targetId}] ${message}`;
+        await this.publish(content, [], 'chat');
+    }
+
+    private async publish(content: string, properties: Property[], inputMethod: string = 'raw') {
         if (this.relay.readyState !== WebSocket.OPEN) {
             this.log('Relay not connected, cannot publish.');
             return;
@@ -130,11 +137,12 @@ export class Agent {
 
         // Add index tags for discovery (prop:key)
         const indexTags = properties.map(p => ['t', `prop:${p.key}`]);
+        const methodTag = ['input-method', inputMethod];
 
         const event = finalizeEvent({
             kind: 35000,
             created_at: Math.floor(Date.now() / 1000),
-            tags: [...privacyTags, ...indexTags],
+            tags: [...privacyTags, ...indexTags, methodTag],
             content,
         }, sk);
 
