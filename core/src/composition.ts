@@ -15,7 +15,5 @@ export const MACROS: Record<string, Property[]> = {
     ]
 };
 
-export const expandMacro = (macroName: string): Property[] => {
-    const key = macroName.toLowerCase();
-    return MACROS[key] || [];
-};
+export const expandMacro = (macroName: string): Property[] =>
+    MACROS[macroName.toLowerCase()] || [];

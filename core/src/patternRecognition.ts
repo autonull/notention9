@@ -31,9 +31,7 @@ export class PatternRecognitionService extends BaseService {
         for (const prop of note.properties) {
           const key = `${prop.key}_${prop.operator}`;
 
-          const freq = propertyFrequency[key] ?? { count: 0, values: {} };
-          propertyFrequency[key] = freq;
-
+          const freq = propertyFrequency[key] ??= { count: 0, values: {} };
           freq.count++;
 
           for (const value of prop.values) {
@@ -41,9 +39,7 @@ export class PatternRecognitionService extends BaseService {
           }
 
           // Track temporal patterns (when certain properties appear)
-          const times = temporalPatterns[key] ?? [];
-          temporalPatterns[key] = times;
-          times.push(new Date(note.updatedAt).getTime());
+          (temporalPatterns[key] ||= []).push(new Date(note.updatedAt).getTime());
         }
       }
 
@@ -70,6 +66,16 @@ export class PatternRecognitionService extends BaseService {
     propertyFrequency: Record<string, { count: number; values: Record<string, number> }>,
     temporalPatterns: Record<string, number[]>,
     notes: Note[]
+  ): Pattern[] {
+    const coOccurrencePatterns = this.discoverCoOccurrencePatterns(propertyFrequency, temporalPatterns);
+    const sequentialPatterns = this.discoverSequentialPatterns(notes);
+
+    return [...coOccurrencePatterns, ...sequentialPatterns];
+  }
+
+  private discoverCoOccurrencePatterns(
+    propertyFrequency: Record<string, { count: number; values: Record<string, number> }>,
+    temporalPatterns: Record<string, number[]>
   ): Pattern[] {
     const patterns: Pattern[] = [];
 
@@ -125,11 +131,6 @@ export class PatternRecognitionService extends BaseService {
         }
       }
     }
-
-    // Look for sequential patterns (A often followed by B)
-    const sequentialPatterns = this.discoverSequentialPatterns(notes);
-    patterns.push(...sequentialPatterns);
-
     return patterns;
   }
 
@@ -234,11 +235,9 @@ export class PatternRecognitionService extends BaseService {
         };
 
         const result = engine.calculateMatchScore(requestNote, note);
-
         const matchedKeys = new Set(result.matches.map(m => m.requestProp.key));
-        const allConditionsMet = conditions.every(c => matchedKeys.has(c.key));
 
-        return allConditionsMet;
+        return conditions.every(c => matchedKeys.has(c.key));
     }
 
     // Fallback to simple equality matching if no ontology provided
@@ -251,15 +250,14 @@ export class PatternRecognitionService extends BaseService {
       if (!matchingProp) return false;
 
       // Check if values match (at least one value should match)
-      return condition.values.some(conditionValue => {
-        // Special case: 'ANY' matches any value
-        if (conditionValue === 'ANY') return true;
-
-        return matchingProp.values.some(propValue =>
+      // Special case: 'ANY' matches any value
+      return condition.values.some(conditionValue =>
+        conditionValue === 'ANY' ||
+        matchingProp.values.some(propValue =>
           propValue.toLowerCase().includes(conditionValue.toLowerCase()) ||
           conditionValue.toLowerCase().includes(propValue.toLowerCase())
-        );
-      });
+        )
+      );
     });
   }
 
@@ -269,11 +267,9 @@ export class PatternRecognitionService extends BaseService {
   recordPredictionOutcome(predictionId: string, wasAccurate: boolean, feedback?: string): void {
     this.safeExecuteSync(() => {
       // Find the prediction in our records
-      const predictionIndex = this.predictions.findIndex(p => p.pattern.id === predictionId);
+      const prediction = this.predictions.find(p => p.pattern.id === predictionId);
 
-      if (predictionIndex !== -1) {
-        const prediction = this.predictions[predictionIndex];
-
+      if (prediction) {
         // Update the pattern's accuracy rate
         const pattern = prediction.pattern;
         pattern.usageCount++;
@@ -283,13 +279,6 @@ export class PatternRecognitionService extends BaseService {
         const accuratePredictions = pattern.accuracyRate * (totalPredictions - 1) + (wasAccurate ? 1 : 0);
         pattern.accuracyRate = accuratePredictions / totalPredictions;
         pattern.lastUsed = Date.now();
-
-        // Store the result for analytics
-        const result: PredictionResult = {
-          prediction,
-          wasAccurate,
-          feedback
-        };
 
         logInfo(`Prediction outcome recorded`, {
           predictionId,
