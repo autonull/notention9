@@ -20,17 +20,16 @@ logger.setLogHandler((level, message, context, error) => {
         return;
     }
 
-    // Don't print context object if suppressed (even if verbose, maybe we just want the message?)
-    // Actually, let's keep it simple: if not verbose and context is suppressed, skip entirely.
+    const shouldShowContext = context && (isVerbose || !suppressedContexts.includes(context as string));
 
     switch (level) {
         case 'info':
             console.log(chalk.blue('ℹ'), message);
-            if (context && (!suppressedContexts.includes(context as string) || isVerbose)) console.log(context);
+            if (shouldShowContext) console.log(context);
             break;
         case 'warn':
             console.log(chalk.yellow('⚠'), message);
-            if (context && (!suppressedContexts.includes(context as string) || isVerbose)) console.log(context);
+            if (shouldShowContext) console.log(context);
             break;
         case 'error':
             console.error(chalk.red('✖'), message);

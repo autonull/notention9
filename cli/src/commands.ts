@@ -8,6 +8,17 @@ import { configManager } from './config-manager.js';
 
 type CommandHandler = (args: string[], cli: CliClient, tools: any[], session?: LlmSession) => Promise<boolean> | boolean;
 
+// Higher-order function to require session
+const withSession = (handler: (args: string[], cli: CliClient, tools: any[], session: LlmSession) => Promise<boolean> | boolean): CommandHandler => {
+    return (args, cli, tools, session) => {
+        if (!session) {
+            log.error("Session unavailable in this context.");
+            return true;
+        }
+        return handler(args, cli, tools, session);
+    };
+};
+
 const handleExit: CommandHandler = async () => {
     log.warn("Goodbye.");
     process.exit(0);
@@ -19,25 +30,17 @@ const handleClear: CommandHandler = async (_args, _cli, _tools, session) => {
     return true;
 };
 
-const handleSave: CommandHandler = async (args, _cli, _tools, session) => {
-    if (!session) {
-        log.error("Session unavailable.");
-        return true;
-    }
+const handleSave = withSession(async (args, _cli, _tools, session) => {
     const savePath = args[0] || 'history.json';
     await session.saveHistory(savePath);
     return true;
-};
+});
 
-const handleLoad: CommandHandler = async (args, _cli, _tools, session) => {
-    if (!session) {
-        log.error("Session unavailable.");
-        return true;
-    }
+const handleLoad = withSession(async (args, _cli, _tools, session) => {
     const loadPath = args[0] || 'history.json';
     await session.loadHistory(loadPath);
     return true;
-};
+});
 
 const handleSetup: CommandHandler = async (_args, cli) => {
     await SetupManager.runSetup(cli);
@@ -49,11 +52,7 @@ const handleTools: CommandHandler = async (_args, _cli, tools) => {
     return true;
 };
 
-const handleConfig: CommandHandler = async (args, _cli, _tools, session) => {
-    if (!session) {
-        log.error("Configuration unavailable in this context.");
-        return true;
-    }
+const handleConfig = withSession(async (args, _cli, _tools, session) => {
     if (args.length === 0) {
         const config = session.getConfig();
         const provider = session.getProvider();
@@ -69,13 +68,9 @@ const handleConfig: CommandHandler = async (args, _cli, _tools, session) => {
         log.warn("/config is now read-only. Use /provider to switch providers.");
     }
     return true;
-};
+});
 
-const handleProviders: CommandHandler = async (_args, _cli, _tools, session) => {
-    if (!session) {
-        log.error("Session unavailable in this context.");
-        return true;
-    }
+const handleProviders = withSession(async (_args, _cli, _tools, session) => {
     const currentConfig = session.getConfig();
     const supported = ProviderFactory.getSupportedProviders();
 
@@ -88,23 +83,10 @@ const handleProviders: CommandHandler = async (_args, _cli, _tools, session) => 
     });
     console.log(chalk.gray("\nUse /provider <name> to switch providers"));
     return true;
-};
+});
 
-const handleProvider: CommandHandler = async (args, _cli, _tools, session) => {
-    if (!session) {
-        log.error("Session unavailable in this context.");
-        return true;
-    }
-    if (args.length === 0) {
-        log.warn("Usage: /provider <name> [model]");
-        log.info("Use /providers to see available providers");
-        return true;
-    }
-
+const switchProvider = async (providerName: string, modelOverride: string | undefined, session: LlmSession) => {
     try {
-        const providerName = args[0];
-        const modelOverride = args.length > 1 ? args[1] : undefined;
-
         const currentConfig = configManager.getAll();
         const newConfigData = {
             provider: providerName,
@@ -119,7 +101,7 @@ const handleProvider: CommandHandler = async (args, _cli, _tools, session) => {
         if (!validation.valid) {
             log.error('Configuration validation failed:');
             validation.errors.forEach(err => log.error(`  - ${err}`));
-            return true;
+            return;
         }
 
         const newProvider = ProviderFactory.create(newConfigData);
@@ -132,7 +114,7 @@ const handleProvider: CommandHandler = async (args, _cli, _tools, session) => {
         if (!healthResult.healthy) {
             log.error(`Provider health check failed: ${healthResult.message}`);
             log.warn("Provider not switched.");
-            return true;
+            return;
         }
 
         session.updateProvider(newProvider);
@@ -145,8 +127,17 @@ const handleProvider: CommandHandler = async (args, _cli, _tools, session) => {
     } catch (e: unknown) {
         log.error("Failed to switch provider", e);
     }
-    return true;
 };
+
+const handleProvider = withSession(async (args, _cli, _tools, session) => {
+    if (args.length === 0) {
+        log.warn("Usage: /provider <name> [model]");
+        log.info("Use /providers to see available providers");
+        return true;
+    }
+    await switchProvider(args[0], args.length > 1 ? args[1] : undefined, session);
+    return true;
+});
 
 const handleSecurity: CommandHandler = async (args, cli) => {
     if (args.length === 0 || args[0] !== 'scan') {
@@ -224,11 +215,7 @@ const handleExtract: CommandHandler = async (args, cli) => {
     return true;
 };
 
-const handleOpen: CommandHandler = async (args, cli, _tools, session) => {
-    if (!session) {
-        log.error("Session unavailable.");
-        return true;
-    }
+const handleOpen = withSession(async (args, cli, _tools, session) => {
     if (args.length === 0) {
         log.warn("Usage: /open <note_id>");
         return true;
@@ -254,14 +241,13 @@ const handleOpen: CommandHandler = async (args, cli, _tools, session) => {
         log.error("Failed to open note", e);
     }
     return true;
-};
+});
 
-const handleClose: CommandHandler = async (_args, _cli, _tools, session) => {
-    if (!session) return true;
+const handleClose = withSession(async (_args, _cli, _tools, session) => {
     session.setActiveContext(null);
     log.success("Context closed.");
     return true;
-};
+});
 
 const handleHelp: CommandHandler = async () => {
     console.log(chalk.gray(`
