@@ -1,4 +1,4 @@
-import fs from 'fs';
+import fs from 'fs/promises';
 import { join } from 'path';
 import { Note, Mutex, Logger } from '@notention/core';
 
@@ -10,7 +10,7 @@ const logger = Logger.getInstance();
 export class PersistenceService {
     static async ensureDataDir() {
         try {
-            await fs.promises.mkdir(DATA_DIR, { recursive: true });
+            await fs.mkdir(DATA_DIR, { recursive: true });
         } catch (e) {
             // Ignore if exists
         }
@@ -19,14 +19,14 @@ export class PersistenceService {
     static async loadNotes(): Promise<Note[]> {
         await this.ensureDataDir();
         try {
-            const data = await fs.promises.readFile(NOTES_FILE, 'utf-8');
+            const data = await fs.readFile(NOTES_FILE, 'utf-8');
             try {
                 return JSON.parse(data);
             } catch (parseError) {
                 logger.error('CRITICAL: Failed to parse notes.json', parseError instanceof Error ? parseError : new Error(String(parseError)));
                 const corruptFile = `${NOTES_FILE}.corrupt.${Date.now()}`;
                 try {
-                    await fs.promises.rename(NOTES_FILE, corruptFile);
+                    await fs.rename(NOTES_FILE, corruptFile);
                     logger.warn(`Renamed corrupt notes.json to ${corruptFile}`);
                 } catch (renameError) {
                     logger.error('Failed to rename corrupt file', renameError instanceof Error ? renameError : new Error(String(renameError)));
@@ -34,8 +34,8 @@ export class PersistenceService {
                 }
                 return [];
             }
-        } catch (e: any) {
-            if (e.code === 'ENOENT') {
+        } catch (e: unknown) {
+            if (e && typeof e === 'object' && 'code' in e && (e as any).code === 'ENOENT') {
                 return [];
             }
             throw e;
@@ -46,12 +46,12 @@ export class PersistenceService {
         await this.ensureDataDir();
         const tempFile = `${NOTES_FILE}.tmp`;
         try {
-            await fs.promises.writeFile(tempFile, JSON.stringify(notes, null, 2));
-            await fs.promises.rename(tempFile, NOTES_FILE);
+            await fs.writeFile(tempFile, JSON.stringify(notes, null, 2));
+            await fs.rename(tempFile, NOTES_FILE);
         } catch (error) {
             logger.error('Failed to save notes atomically', error instanceof Error ? error : new Error(String(error)));
             try {
-                await fs.promises.unlink(tempFile);
+                await fs.unlink(tempFile);
             } catch (e) {
                 // Ignore unlink error
             }

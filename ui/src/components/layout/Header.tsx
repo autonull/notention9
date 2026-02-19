@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 
 import {useSettings} from '../../hooks/useSettingsContext';
 import {useView} from '../../hooks/useViewContext';
@@ -55,17 +55,12 @@ export function Header({onNewNote}: HeaderProps) {
         createNoteAndNavigate(undefined, template.content);
     };
 
-    const generatedTemplates = React.useMemo(() => {
+    const generatedTemplates = useMemo(() => {
         return generateTemplatesFromOntology(settings.ontology);
     }, [settings.ontology]);
 
     // Combine generated templates with custom ones
     const allTemplates = [...generatedTemplates, ...settings.customTemplates];
-
-    const filteredNavItems = NAV_ITEMS.filter(item => {
-        if (item.requiresDeveloperMode && !settings.developerMode) return false;
-        return true;
-    });
 
     return (
         <header
@@ -102,7 +97,7 @@ export function Header({onNewNote}: HeaderProps) {
 
             {/* Center Section - Navigation (Hidden on Mobile) */}
             <div className="hidden md:flex items-center gap-2">
-                {filteredNavItems.map((item) => {
+                {NAV_ITEMS.map((item) => {
                     const badgeCount = item.badgeCountKey
                         ? (item.badgeCountKey === 'notificationCount' ? notificationCount : chatNotificationCount)
                         : undefined;

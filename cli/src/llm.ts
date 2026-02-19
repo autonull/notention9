@@ -9,7 +9,6 @@ import { log, withSpinner, resolveSafePath } from './utils.js';
 import { LLMProvider, type LLMProviderConfig } from './providers/base.js';
 import { SystemPromptBuilder } from './system-prompt.js';
 
-// Configure marked for terminal output
 marked.use({
     // @ts-ignore
     renderer: new TerminalRenderer()
@@ -82,8 +81,8 @@ export class LlmSession {
             await fs.promises.mkdir(path.dirname(resolved), { recursive: true });
             await fs.promises.writeFile(resolved, JSON.stringify(this.history, null, 2), 'utf-8');
             log.success(`History saved to ${filepath}`);
-        } catch (e: any) {
-            log.error(`Failed to save history: ${e.message}`);
+        } catch (e: unknown) {
+            log.error(`Failed to save history: ${e instanceof Error ? e.message : String(e)}`);
         }
     }
 
@@ -98,8 +97,8 @@ export class LlmSession {
             } else {
                 log.warn("Invalid history file format");
             }
-        } catch (e: any) {
-            log.error(`Failed to load history: ${e.message}`);
+        } catch (e: unknown) {
+            log.error(`Failed to load history: ${e instanceof Error ? e.message : String(e)}`);
         }
     }
 
@@ -181,7 +180,7 @@ export class LlmSession {
                 process.stdout.write(chunk);
                 fullText += chunk;
             }
-        } catch (streamError: any) {
+        } catch (streamError: unknown) {
             spinner.fail('Stream failed');
             throw streamError;
         }
@@ -234,19 +233,15 @@ export class LlmSession {
     private parseToolCalls(text: string): ToolCall[] {
         const jsonMatches = [...text.matchAll(REGEX.JSON_BLOCK)];
         const matches = jsonMatches.length > 0 ? jsonMatches : [...text.matchAll(REGEX.FALLBACK)];
-        const toolCalls: ToolCall[] = [];
 
-        for (const match of matches) {
+        return matches.map(match => {
             try {
-                const call = JSON.parse(match[1]);
-                if (call && typeof call.tool === 'string') {
-                    toolCalls.push(call);
-                }
+                return JSON.parse(match[1]);
             } catch (e) {
                 log.error("Failed to parse tool JSON snippet", e);
+                return null;
             }
-        }
-        return toolCalls;
+        }).filter((call): call is ToolCall => call !== null && typeof call.tool === 'string');
     }
 
     private async processToolCall(call: ToolCall) {

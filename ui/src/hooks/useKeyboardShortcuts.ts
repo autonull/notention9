@@ -10,7 +10,6 @@ interface UseKeyboardShortcutsProps {
     onNextNote?: () => void;
     onBackToList?: () => void;
     onToggleSidebar?: () => void;
-    onToggleDeveloperMode?: () => void;
     onEscape?: () => void;
 }
 
@@ -24,7 +23,6 @@ export const useKeyboardShortcuts = ({
                                          onNextNote,
                                          onBackToList,
                                          onToggleSidebar,
-                                         onToggleDeveloperMode,
                                          onEscape
                                      }: UseKeyboardShortcutsProps) => {
     useEffect(() => {
@@ -112,12 +110,6 @@ export const useKeyboardShortcuts = ({
                 e.preventDefault();
                 onToggleSidebar?.();
             }
-
-            // Toggle developer mode: Ctrl+Shift+D
-            if (isMeta && isShift && e.key.toLowerCase() === 'd') {
-                e.preventDefault();
-                onToggleDeveloperMode?.();
-            }
         };
 
         window.addEventListener('keydown', handleKeyDown);
@@ -132,7 +124,6 @@ export const useKeyboardShortcuts = ({
         onNextNote,
         onBackToList,
         onToggleSidebar,
-        onToggleDeveloperMode,
         onEscape
     ]);
 };

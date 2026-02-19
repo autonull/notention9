@@ -9,7 +9,6 @@ import {DEFAULT_RELAYS, formatNpub, hexToBytes, Logger, parseProperties, pool} f
 import {ArrowLeftIcon, DocumentDuplicateIcon, SendIcon, SettingsIcon, TrashIcon} from '../common/icons';
 import {Avatar} from '../common/Avatar';
 import {IconButton} from '../common/IconButton';
-import {SELF_AGENT_ID} from '../../hooks/simulator/types';
 
 interface ChatWindowProps {
     privkey: string;
@@ -57,24 +56,6 @@ export function ChatWindow({
     const handleSendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!newMessage.trim() || !selectedContact) return;
-
-        if (selectedContact.isAgent) {
-            // Bypass Nostr encryption for local agents
-            // We pass a dummy event object, as the handler in ChatView will call sendMessageToAgent
-            // which constructs its own event.
-            const dummyEvent = {
-                id: 'local-' + Date.now(),
-                pubkey: pubkey,
-                created_at: Math.floor(Date.now() / 1000),
-                kind: 1,
-                tags: [],
-                content: newMessage.trim(),
-                sig: ''
-            };
-            onSendMessage(selectedContact.pubkey, dummyEvent, newMessage.trim());
-            setNewMessage('');
-            return;
-        }
 
         try {
             const encryptedContent = await nip04.encrypt(
@@ -241,133 +222,6 @@ export function ChatWindow({
 
             {/* Input */}
             <div className="flex-shrink-0 p-4 bg-gray-900/50 border-t border-gray-700/50">
-                {selectedContact.isAgent && (
-                    <div className="flex gap-2 mb-2 overflow-x-auto pb-2 custom-scrollbar">
-                        {selectedContact.pubkey === SELF_AGENT_ID ? (
-                            <>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        const msg = "Scan notes";
-                                        const dummyEvent = {
-                                            id: 'local-' + Date.now(),
-                                            pubkey: pubkey,
-                                            created_at: Math.floor(Date.now() / 1000),
-                                            kind: 1,
-                                            tags: [],
-                                            content: msg,
-                                            sig: ''
-                                        };
-                                        onSendMessage(selectedContact.pubkey, dummyEvent, msg);
-                                    }}
-                                    className="whitespace-nowrap px-3 py-1 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-full text-xs text-purple-300 transition-colors"
-                                >
-                                    Scan Notes
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        const msg = "Update Ontology";
-                                        const dummyEvent = {
-                                            id: 'local-' + Date.now(),
-                                            pubkey: pubkey,
-                                            created_at: Math.floor(Date.now() / 1000),
-                                            kind: 1,
-                                            tags: [],
-                                            content: msg,
-                                            sig: ''
-                                        };
-                                        onSendMessage(selectedContact.pubkey, dummyEvent, msg);
-                                    }}
-                                    className="whitespace-nowrap px-3 py-1 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-full text-xs text-blue-300 transition-colors"
-                                >
-                                    Update Ontology
-                                </button>
-                            </>
-                        ) : (
-                            <>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        const msg = "Analyze the intent of my last message and suggest improvements.";
-                                        const dummyEvent = {
-                                            id: 'local-' + Date.now(),
-                                            pubkey: pubkey,
-                                            created_at: Math.floor(Date.now() / 1000),
-                                            kind: 1,
-                                            tags: [],
-                                            content: msg,
-                                            sig: ''
-                                        };
-                                        onSendMessage(selectedContact.pubkey, dummyEvent, msg);
-                                    }}
-                                    className="whitespace-nowrap px-3 py-1 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-full text-xs text-blue-300 transition-colors"
-                                >
-                                    Analyze Intent
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        const msg = "Suggest semantic tags for this conversation context.";
-                                        const dummyEvent = {
-                                            id: 'local-' + Date.now(),
-                                            pubkey: pubkey,
-                                            created_at: Math.floor(Date.now() / 1000),
-                                            kind: 1,
-                                            tags: [],
-                                            content: msg,
-                                            sig: ''
-                                        };
-                                        onSendMessage(selectedContact.pubkey, dummyEvent, msg);
-                                    }}
-                                    className="whitespace-nowrap px-3 py-1 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-full text-xs text-purple-300 transition-colors"
-                                >
-                                    Suggest Tags
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        const msg = "Summarize our chat so far.";
-                                        const dummyEvent = {
-                                            id: 'local-' + Date.now(),
-                                            pubkey: pubkey,
-                                            created_at: Math.floor(Date.now() / 1000),
-                                            kind: 1,
-                                            tags: [],
-                                            content: msg,
-                                            sig: ''
-                                        };
-                                        onSendMessage(selectedContact.pubkey, dummyEvent, msg);
-                                    }}
-                                    className="whitespace-nowrap px-3 py-1 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-full text-xs text-green-300 transition-colors"
-                                >
-                                    Summarize
-                                </button>
-                            </>
-                        )}
-                        <button
-                            type="button"
-                            onClick={() => {
-                                const fact = prompt("What should I remember?");
-                                if (!fact) return;
-                                const msg = `Remember this: ${fact}`;
-                                const dummyEvent = {
-                                    id: 'local-' + Date.now(),
-                                    pubkey: pubkey,
-                                    created_at: Math.floor(Date.now() / 1000),
-                                    kind: 1,
-                                    tags: [],
-                                    content: msg,
-                                    sig: ''
-                                };
-                                onSendMessage(selectedContact.pubkey, dummyEvent, msg);
-                            }}
-                            className="whitespace-nowrap px-3 py-1 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-full text-xs text-yellow-300 transition-colors"
-                        >
-                            Remember This
-                        </button>
-                    </div>
-                )}
                 <form onSubmit={handleSendMessage} className="flex gap-2 max-w-4xl mx-auto">
                     <input
                         type="text"

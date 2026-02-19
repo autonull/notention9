@@ -1,11 +1,9 @@
 import React from 'react';
 import {useNotes} from './useNotes';
 import {useView} from './useViewContext';
-import {useSettings} from './useSettingsContext';
 import {useToast} from './useToast';
 import {
     ChatIcon,
-    CodeBracketsIcon,
     DocumentDuplicateIcon,
     DownloadIcon,
     HelpIcon,
@@ -33,7 +31,6 @@ export function useCommands({setIsHelpOpen}: UseCommandsProps) {
         isSidebarOpen,
         setIsSidebarOpen,
     } = useView();
-    const {settings, setSettings} = useSettings();
     const {addToast} = useToast();
 
     const handleNewNote = () => {
@@ -42,7 +39,7 @@ export function useCommands({setIsHelpOpen}: UseCommandsProps) {
         setActiveView('notes');
     };
 
-    const commands = [
+    const commands: any[] = [
         {
             label: 'New Note',
             icon: <PlusIcon className="h-5 w-5"/>,
@@ -98,11 +95,6 @@ export function useCommands({setIsHelpOpen}: UseCommandsProps) {
             icon: <HelpIcon className="h-5 w-5"/>,
             action: () => setIsHelpOpen(true)
         },
-        {
-            label: settings.developerMode ? 'Disable Developer Mode' : 'Enable Developer Mode',
-            icon: <CodeBracketsIcon className="h-5 w-5"/>,
-            action: () => setSettings((s) => ({...s, developerMode: !s.developerMode}))
-        },
     ];
 
     if (activeView === 'notes' && selectedNoteId) {
@@ -134,8 +126,6 @@ export function useCommands({setIsHelpOpen}: UseCommandsProps) {
             }
         });
     }
-
-    // Simulator view is removed, functionality moved to Chat
 
     return {commands, handleNewNote};
 }

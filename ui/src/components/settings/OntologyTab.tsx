@@ -1,6 +1,5 @@
 import React from 'react';
 import {useSettings} from '../../hooks/useSettingsContext';
-import {DeveloperToolsPanel} from '../developer/DeveloperToolsPanel';
 
 export function OntologyTab() {
     const {settings, setSettings} = useSettings();
@@ -35,7 +34,7 @@ export function OntologyTab() {
                     Define the schema for your semantic network. The Gardener evolves this based on usage.
                 </p>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6">
                     <div>
                         <h4 className="font-medium text-white mb-2">Current Ontology</h4>
                         <div className="bg-gray-800 p-4 rounded">
@@ -51,14 +50,6 @@ export function OntologyTab() {
                                 ))}
                             </div>
                         </div>
-                    </div>
-
-                    <div>
-                        <h4 className="font-medium text-white mb-2">Developer Tools</h4>
-                        <p className="text-gray-400 text-sm mb-3">
-                            Advanced tools for ontology management and debugging
-                        </p>
-                        <DeveloperToolsPanel/>
                     </div>
                 </div>
             </div>
