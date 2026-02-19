@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Trash2, Film, PlayCircle, Download } from 'lucide-react';
+import { useToast } from './Toast';
 
 interface Movie {
     name: string;
@@ -9,6 +10,7 @@ interface Movie {
 const MovieLibrary = () => {
     const [movies, setMovies] = useState<Movie[]>([]);
     const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
+    const { addToast } = useToast();
 
     const loadMovies = () => {
         fetch('/api/movies')
@@ -22,9 +24,14 @@ const MovieLibrary = () => {
 
     const deleteMovie = async (name: string) => {
         if (!confirm('Are you sure?')) return;
-        await fetch(`/api/movies/${name}`, { method: 'DELETE' });
-        loadMovies();
-        if (selectedMovie?.name === name) setSelectedMovie(null);
+        try {
+            await fetch(`/api/movies/${name}`, { method: 'DELETE' });
+            addToast(`Deleted ${name}`, 'success');
+            loadMovies();
+            if (selectedMovie?.name === name) setSelectedMovie(null);
+        } catch (e) {
+            addToast('Failed to delete movie', 'error');
+        }
     };
 
     return (

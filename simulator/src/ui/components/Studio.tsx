@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Play, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from './Toast';
 
 const Studio = () => {
     const [scenarios, setScenarios] = useState<string[]>([]);
@@ -8,7 +9,7 @@ const Studio = () => {
     const [agentCount, setAgentCount] = useState(5);
     const [duration, setDuration] = useState(30);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
+    const { addToast } = useToast();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -22,7 +23,6 @@ const Studio = () => {
 
     const startJob = async () => {
         setLoading(true);
-        setError('');
         try {
             const res = await fetch('/api/jobs', {
                 method: 'POST',
@@ -35,12 +35,13 @@ const Studio = () => {
             });
             const data = await res.json();
             if (data.success) {
+                addToast('Production started!', 'success');
                 navigate('/live');
             } else {
-                setError(data.error || 'Failed to start job');
+                addToast(data.error || 'Failed to start job', 'error');
             }
         } catch (e) {
-            setError('Network error');
+            addToast('Network error', 'error');
         } finally {
             setLoading(false);
         }
@@ -51,11 +52,6 @@ const Studio = () => {
             <h2 className="text-3xl font-bold mb-6">Create New Movie</h2>
 
             <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 shadow-xl">
-                {error && (
-                    <div className="bg-red-900/50 border border-red-500 text-red-200 p-4 rounded mb-6">
-                        {error}
-                    </div>
-                )}
 
                 <div className="space-y-6">
                     <div>

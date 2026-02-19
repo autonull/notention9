@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Loader2, AlertTriangle, CheckCircle, StopCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useToast } from './Toast';
 
 interface JobStatus {
     status: 'running' | 'completed' | 'failed' | 'cancelled';
@@ -12,6 +14,8 @@ const LivePreview = () => {
     const [job, setJob] = useState<JobStatus | null>(null);
     const [cancelling, setCancelling] = useState(false);
     const logsEndRef = useRef<HTMLDivElement>(null);
+    const navigate = useNavigate();
+    const { addToast } = useToast();
 
     const checkStatus = async () => {
         try {
@@ -45,9 +49,15 @@ const LivePreview = () => {
 
     if (!job) {
         return (
-            <div className="flex flex-col items-center justify-center h-full text-gray-500">
-                <div className="text-xl">No active job</div>
-                <div className="mt-2 text-sm">Start a new movie in Studio</div>
+            <div className="flex flex-col items-center justify-center h-full text-gray-500 space-y-4">
+                <div className="text-2xl font-bold">No Active Production</div>
+                <div className="text-gray-400">Ready to start a new simulation movie?</div>
+                <button
+                    onClick={() => navigate('/')}
+                    className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-lg font-bold transition-all transform hover:scale-105"
+                >
+                    Go to Studio
+                </button>
             </div>
         );
     }
