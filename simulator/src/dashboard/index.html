@@ -62,6 +62,21 @@
             z-index: 10;
         }
 
+        .agent-frame-container.focused {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 999;
+            border-radius: 0;
+            border: none;
+        }
+
+        .agent-frame-container.hidden {
+            display: none;
+        }
+
         .agent-header {
             padding: 5px 10px;
             background: #2a2a2a;
@@ -274,6 +289,35 @@
         const explanationContent = document.getElementById('explanation-content');
         let captionTimeout;
         let explanationTimeout;
+
+        // Camera Focus Logic
+        window.setCameraFocus = function(agentId) {
+            const all = document.querySelectorAll('.agent-frame-container');
+            const target = document.getElementById(`agent-${agentId}`);
+
+            if (!agentId || agentId === 'grid' || !target) {
+                // Reset to Grid
+                all.forEach(el => {
+                    el.classList.remove('focused', 'hidden');
+                    el.style.display = ''; // Reset flex/grid
+                });
+                grid.style.display = 'grid';
+                showCaption("Camera: Grid View");
+                return;
+            }
+
+            // Focus Mode
+            showCaption(`Camera: Focused on ${agentId}`);
+            all.forEach(el => {
+                if (el.id === `agent-${agentId}`) {
+                    el.classList.add('focused');
+                    el.classList.remove('hidden');
+                } else {
+                    el.classList.remove('focused');
+                    el.classList.add('hidden');
+                }
+            });
+        };
 
         function showCaption(text) {
             captionEl.innerText = text;

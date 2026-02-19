@@ -1,4 +1,4 @@
-import { LocalRelay } from './relay.js';
+import { ServerManager } from './server_manager.js';
 import { ScenarioRunner, Scenario } from './scenario.js';
 import { GigEconomyScenario } from './scenarios/gigEconomy.js';
 import { generateScenario } from './scenarios/generator.js';
@@ -34,7 +34,7 @@ Options:
   --fps=<number>        Framerate for movie (default: 2)
   --width=<number>      Video width (default: 1920)
   --height=<number>     Video height (default: 1080)
-  --ui-port=<number>    Port for UI server (default: 5173)
+  --ui-port=<number>    Requested Port for UI server (default: 5173, auto-finds free port)
   --help                Show this help message
 `);
         process.exit(0);
@@ -46,10 +46,7 @@ Options:
         process.exit(0);
     }
 
-    const portArg = args.find(arg => arg.startsWith('--port='));
-    const relayPort = portArg ? parseInt(portArg.split('=')[1]) : 4444;
-    const relayUrl = `ws://localhost:${relayPort}`;
-
+    // Determine Scenario
     let scenario: Scenario;
     const genArg = args.find(arg => arg.startsWith('--generate='));
     const scriptArg = args.find(arg => arg.startsWith('--script='));
@@ -96,8 +93,21 @@ Options:
         }
     }
 
-    const relay = new LocalRelay(relayPort);
-    // console.log(chalk.gray(`Relay listening on ${relayUrl}`));
+    // Setup Servers
+    const serverManager = new ServerManager();
+    const requestedUiPortArg = args.find(a => a.startsWith('--ui-port='));
+    const requestedUiPort = requestedUiPortArg ? parseInt(requestedUiPortArg.split('=')[1]) : 5173;
+
+    let ports;
+    try {
+        // Start servers (Relay, UI, Dashboard placeholder)
+        // We start dashboard with empty agents initially. MovieMaker will restart/update logic?
+        // Actually, we'll let MovieMaker re-start the dashboard with correct agents using the same port.
+        ports = await serverManager.start([], requestedUiPort);
+    } catch (e) {
+        console.error("Failed to start servers:", e);
+        process.exit(1);
+    }
 
     const spinner = ora('Loading Ontology...').start();
     const ontology = DEFAULT_ONTOLOGY;
@@ -117,32 +127,47 @@ Options:
             const heightArg = args.find(a => a.startsWith('--height='));
             const height = heightArg ? parseInt(heightArg.split('=')[1]) : 1080;
 
-            const uiPortArg = args.find(a => a.startsWith('--ui-port='));
-            const uiPort = uiPortArg ? parseInt(uiPortArg.split('=')[1]) : 5173;
-
             const viewArg = args.find(a => a.startsWith('--view='));
             const view = viewArg ? viewArg.split('=')[1] as 'dashboard' | 'ontology' : 'dashboard';
+
+            // We need to re-start dashboard with actual agents after spawning.
+            // MovieMaker does this?
+            // In `movie_maker.ts`, `start` method:
+            // 1. Start UI Server (ServerManager does this now)
+            // 2. Prepare Scenario (Spawn Agents)
+            // 3. Start Dashboard Server (Pass agents)
+
+            // So we should NOT start dashboard in `ServerManager.start` if we want MovieMaker to do it.
+            // Or we pass the `serverManager` to MovieMaker and let it call `startDashboard`.
+
+            // Let's modify MovieMaker to accept `ServerManager` and use it.
 
             const options: MovieOptions = {
                 framerate: fps,
                 resolution: { width, height },
-                uiPort,
-                dashboardPort: 8000, // Fixed for now
+                uiPort: ports.ui,
+                dashboardPort: ports.dashboard,
                 outputDir: path.resolve(process.cwd(), 'movies'), // save to simulator/movies/
                 view
             };
 
-            const movieMaker = new MovieMaker(relayUrl, options);
+            const movieMaker = new MovieMaker(serverManager.relayUrl, options);
+
+            // Hack: Stop the dashboard started by ServerManager so MovieMaker can start it with agents
+            if (serverManager['dashboardServer']) {
+                serverManager['dashboardServer'].close();
+            }
+
             await movieMaker.start(scenario);
         } else {
-            const runner = new ScenarioRunner(relayUrl, ontology);
+            const runner = new ScenarioRunner(serverManager.relayUrl, ontology);
             await runner.run(scenario);
         }
     } catch (e) {
         console.error(chalk.red("Simulation Failed:"), e);
     } finally {
         console.log(chalk.yellow("\nStopping simulation..."));
-        relay.stop();
+        await serverManager.shutdown();
         process.exit();
     }
 }

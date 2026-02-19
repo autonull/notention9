@@ -18,6 +18,7 @@ export interface EventConfig {
     readonly actorRole: string;
     readonly inputMethod?: InputMethod;
     readonly targetAgentId?: string; // For directed messages/matches
+    readonly cameraFocus?: string; // Agent ID to focus on, or 'grid'
 }
 
 export interface Scenario {
@@ -81,10 +82,17 @@ export class ScenarioRunner {
         console.log(chalk.white(`Spawned ${this.agents.length} agents.\n`));
     }
 
+    public onEvent?: (event: EventConfig) => void;
+
     private scheduleEvents(events: EventConfig[]) {
         events.forEach(event => {
             setTimeout(async () => {
                 console.log(chalk.bold(`\n[${event.at}s] Event: ${event.actorRole} -> ${event.action} (${event.inputMethod || 'raw'})`));
+                if (this.onEvent) this.onEvent(event);
+
+                // If camera event, skip agent execution
+                if (event.action === 'camera') return;
+
                 await this.executeAction(event.actorRole, event.action, event.inputMethod, event.targetAgentId);
             }, event.at * 1000);
         });
@@ -101,6 +109,7 @@ export class ScenarioRunner {
                 case 'publish_job': return actor.publishJob(inputMethod);
                 case 'publish_offer': return actor.publishOffer(inputMethod);
                 case 'send_message': return targetId ? actor.sendMessage(targetId, "Hello!") : Promise.resolve();
+                case 'camera': return Promise.resolve(); // Handled externally by MovieMaker watcher or event listener
                 default: return Promise.resolve();
             }
         });

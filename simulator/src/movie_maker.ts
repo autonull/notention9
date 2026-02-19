@@ -215,7 +215,33 @@ export class MovieMaker {
 
         // Start Simulation Execution
         console.log(chalk.cyan("Starting Simulation Execution..."));
-        await this.runner.execute(scenario);
+
+        // Monitor for Camera Events
+        this.runner.onEvent = (event) => {
+            if (event.action === 'camera' && event.cameraFocus) {
+                // Determine Agent ID (first 8 chars)
+                let targetId = event.cameraFocus;
+
+                // If it's a role name, find first agent? Or strict ID?
+                // Let's assume strict ID or 'grid' for now.
+                // But scenario generator doesn't know IDs beforehand.
+                // So let's match by Role + Index (e.g. "Developer 1")
+
+                if (targetId !== 'grid') {
+                     const agent = this.runner?.agents.find(a => a.profile.name === targetId || a.id === targetId);
+                     if (agent) targetId = agent.id;
+                }
+
+                // Execute in browser
+                page.evaluate((focusId) => {
+                    // Defined in dashboard/index.html
+                    // @ts-ignore
+                    if (window.setCameraFocus) window.setCameraFocus(focusId);
+                }, targetId).catch(() => {});
+            }
+        };
+
+        if (this.runner) await this.runner.execute(scenario);
 
         // Allow a few seconds for final states to settle
         await new Promise(r => setTimeout(r, 2000));
