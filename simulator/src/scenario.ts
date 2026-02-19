@@ -25,7 +25,7 @@ export interface Scenario {
 }
 
 export class ScenarioRunner {
-    private readonly agents: Agent[] = [];
+    public readonly agents: Agent[] = [];
     private readonly colors = [chalk.red, chalk.green, chalk.yellow, chalk.blue, chalk.magenta, chalk.cyan];
 
     constructor(
@@ -33,16 +33,22 @@ export class ScenarioRunner {
         private readonly ontology: OntologyNode[]
     ) {}
 
-    async run(scenario: Scenario) {
+    async prepare(scenario: Scenario) {
         console.log(chalk.bold.cyan(`\nRunning Scenario: ${scenario.name}`));
         console.log(chalk.gray(scenario.description));
 
         await this.spawnAgents(scenario.agents);
+    }
+
+    async execute(scenario: Scenario) {
         this.scheduleEvents(scenario.events);
-
         await new Promise(resolve => setTimeout(resolve, scenario.duration * 1000));
-
         console.log(chalk.bold.green(`\nScenario Completed.`));
+    }
+
+    async run(scenario: Scenario) {
+        await this.prepare(scenario);
+        await this.execute(scenario);
     }
 
     private async spawnAgents(configs: AgentConfig[]) {

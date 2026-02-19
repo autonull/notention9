@@ -1,9 +1,11 @@
 import { LocalRelay } from './relay.js';
 import { ScenarioRunner, Scenario } from './scenario.js';
 import { GigEconomyScenario } from './scenarios/gigEconomy.js';
+import { MovieMaker, MovieOptions } from './movie_maker.js';
 import { DEFAULT_ONTOLOGY } from '@notention/core';
 import chalk from 'chalk';
 import ora from 'ora';
+import path from 'path';
 
 const SCENARIOS: Record<string, Scenario> = {
     'gig-economy': GigEconomyScenario,
@@ -22,6 +24,11 @@ Options:
   --port=<number>       Port for the local relay (default: 4444)
   --scenario=<name>     Name of the scenario to run (default: gig-economy)
   --list-scenarios      List available scenarios
+  --movie               Run in Movie Maker mode (visual simulation)
+  --fps=<number>        Framerate for movie (default: 2)
+  --width=<number>      Video width (default: 1920)
+  --height=<number>     Video height (default: 1080)
+  --ui-port=<number>    Port for UI server (default: 5173)
   --help                Show this help message
 `);
         process.exit(0);
@@ -54,12 +61,39 @@ Options:
     const ontology = DEFAULT_ONTOLOGY;
     spinner.succeed(`Ontology Loaded (${ontology.length} root nodes)`);
 
-    const runner = new ScenarioRunner(relayUrl, ontology);
+    // Check for Movie Mode
+    const isMovieMode = args.includes('--movie');
 
     try {
-        await runner.run(scenario);
+        if (isMovieMode) {
+            const fpsArg = args.find(a => a.startsWith('--fps='));
+            const fps = fpsArg ? parseInt(fpsArg.split('=')[1]) : 2;
+
+            const widthArg = args.find(a => a.startsWith('--width='));
+            const width = widthArg ? parseInt(widthArg.split('=')[1]) : 1920;
+
+            const heightArg = args.find(a => a.startsWith('--height='));
+            const height = heightArg ? parseInt(heightArg.split('=')[1]) : 1080;
+
+            const uiPortArg = args.find(a => a.startsWith('--ui-port='));
+            const uiPort = uiPortArg ? parseInt(uiPortArg.split('=')[1]) : 5173;
+
+            const options: MovieOptions = {
+                framerate: fps,
+                resolution: { width, height },
+                uiPort,
+                dashboardPort: 8000, // Fixed for now
+                outputDir: path.resolve(process.cwd(), 'movies') // save to simulator/movies/
+            };
+
+            const movieMaker = new MovieMaker(relayUrl, options);
+            await movieMaker.start(scenario);
+        } else {
+            const runner = new ScenarioRunner(relayUrl, ontology);
+            await runner.run(scenario);
+        }
     } catch (e) {
-        console.error(chalk.red("Scenario Failed:"), e);
+        console.error(chalk.red("Simulation Failed:"), e);
     } finally {
         console.log(chalk.yellow("\nStopping simulation..."));
         relay.stop();

@@ -26,6 +26,10 @@ export class Agent {
     private readonly privkey: string;
     private readonly engine: MatchEngine;
     private readonly seenEvents = new Set<string>();
+
+    public get secretKey(): string {
+        return this.privkey;
+    }
     private relay: WebSocket;
 
     constructor(
