@@ -11,10 +11,15 @@ export { DEFAULT_RELAYS };
 export const KIND_TEXT_NOTE = 1;
 export const KIND_SEMANTIC_NOTE = 35000;
 
-interface NostrWindow extends Window {
+interface NIP07Window extends Window {
   nostr?: {
-    signEvent: (event: any) => Promise<NostrEvent>;
-    getPublicKey?: () => Promise<string>;
+    getPublicKey: () => Promise<string>;
+    signEvent: (event: {
+      kind: number;
+      tags: string[][];
+      content: string;
+      created_at: number;
+    }) => Promise<NostrEvent>;
   };
 }
 
@@ -24,22 +29,12 @@ export const pool = new SimplePool();
  * Helper to query events using subscribeMany since SimplePool in v2 might lack list/query.
  * Aggregates events until EOSE or timeout.
  */
-export const queryEvents = (
-  pool: SimplePool,
-  relays: string[],
-  filters: Filter[]
-): Promise<NostrEvent[]> => {
-  return queryEventsWithTimeout(pool, relays, filters);
-};
+export const queryEvents = queryEventsWithTimeout;
 
 export const formatNpub = (npub: string) =>
   `${npub.slice(0, 10)}...${npub.slice(-4)}`;
 
 export const extractPropertiesFromTags = (tags: string[][]): Property[] => {
-    return parsePropertiesFromTags(tags);
-};
-
-export const parsePropertiesFromTags = (tags: string[][]): Property[] => {
     const propsMap = new Map<string, Property>();
 
     for (const tag of tags) {
@@ -53,7 +48,10 @@ export const parsePropertiesFromTags = (tags: string[][]): Property[] => {
         }
     }
     return Array.from(propsMap.values());
-}
+};
+
+// Deprecated alias for backward compatibility (if needed internally), but prefer extractPropertiesFromTags
+export const parsePropertiesFromTags = extractPropertiesFromTags;
 
 export const convertEventToNote = (event: NostrEvent): Note => {
   const timestamp = new Date(event.created_at * 1000).toISOString();
@@ -63,7 +61,7 @@ export const convertEventToNote = (event: NostrEvent): Note => {
     content: event.content,
     tags: event.tags.filter(t => t[0] === 't').map(t => t[1]),
     publishedAt: timestamp,
-    properties: parsePropertiesFromTags(event.tags),
+    properties: extractPropertiesFromTags(event.tags),
     createdAt: timestamp,
     updatedAt: timestamp,
     nostrEventId: event.id,
@@ -122,7 +120,7 @@ async function prepareAndSignEvent(
 
     // Check for window.nostr (NIP-07)
     const hasWindow = typeof window !== 'undefined';
-    const nostrWindow = hasWindow ? (window as unknown as NostrWindow) : undefined;
+    const nostrWindow = hasWindow ? (window as unknown as NIP07Window) : undefined;
 
     if (nostrWindow?.nostr?.signEvent) {
         return await nostrWindow.nostr.signEvent({ kind, created_at, tags, content });
