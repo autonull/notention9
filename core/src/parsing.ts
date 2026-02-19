@@ -56,20 +56,31 @@ export type PropertyParser = (content: string, ontology?: OntologyNode[]) => Pro
 const resolveKey = (key: string, ontology?: OntologyNode[]): string =>
     ontology ? getCanonicalKey(key, ontology) : resolveAlias(key);
 
+const createProperty = (rawKey: string, operator: string, value: string, ontology?: OntologyNode[], validate: boolean = true): Property | null => {
+    const key = resolveKey(rawKey.trim(), ontology);
+
+    if (validate) {
+        if (!REGEX.VALID_KEY.test(key) || COMMON_WORDS.has(key.toLowerCase())) return null;
+    }
+
+    return {
+        key,
+        operator: operator.trim(),
+        values: value.trim().split(',').map(v => v.trim())
+    };
+};
+
 const parseColonFormat: PropertyParser = (content, ontology) => {
     const parts = content.split(':');
     if (parts.length < 2) return null;
 
-    const key = resolveKey(parts[0].trim(), ontology);
+    const rawKey = parts[0];
     const hasOperator = parts.length >= 3;
-    const operator = hasOperator ? parts[1].trim() : 'is';
-    const valueStr = hasOperator ? parts.slice(2).join(':') : parts[1];
+    const operator = hasOperator ? parts[1] : 'is';
+    const value = hasOperator ? parts.slice(2).join(':') : parts[1];
 
-    return {
-        key,
-        operator,
-        values: valueStr.trim().split(',').map(v => v.trim())
-    };
+    // Don't validate keys for explicit formats
+    return createProperty(rawKey, operator, value, ontology, false);
 };
 
 const parseSymbolicFormat: PropertyParser = (content, ontology) => {
@@ -77,11 +88,7 @@ const parseSymbolicFormat: PropertyParser = (content, ontology) => {
 
     if (matchedSymbol) {
         const symbolicMatch = content.match(matchedSymbol.regex)!;
-        return {
-            key: resolveKey(symbolicMatch[1].trim(), ontology),
-            operator: matchedSymbol.op,
-            values: symbolicMatch[3].trim().split(',').map(v => v.trim())
-        };
+        return createProperty(symbolicMatch[1], matchedSymbol.op, symbolicMatch[3], ontology, false);
     }
     return null;
 };
@@ -91,27 +98,16 @@ const parseWordFormat: PropertyParser = (content, ontology) => {
 
     if (wordOperatorMatch) {
         const [, rawKey, operator, value] = wordOperatorMatch;
-        return createProperty(rawKey, operator, value, ontology);
+        return createProperty(rawKey, operator, value, ontology, true);
     }
 
     const spaceMatch = content.match(REGEX.SPACE);
     if (spaceMatch) {
          const [, rawKey, value] = spaceMatch;
-         return createProperty(rawKey, 'is', value, ontology);
+         return createProperty(rawKey, 'is', value, ontology, true);
     }
 
     return null;
-};
-
-const createProperty = (rawKey: string, operator: string, value: string, ontology?: OntologyNode[]): Property | null => {
-    const key = resolveKey(rawKey.trim(), ontology);
-    if (!REGEX.VALID_KEY.test(key) || COMMON_WORDS.has(key.toLowerCase())) return null;
-
-    return {
-        key,
-        operator: operator.trim(),
-        values: value.trim().split(',').map(v => v.trim())
-    };
 };
 
 const PARSERS: PropertyParser[] = [

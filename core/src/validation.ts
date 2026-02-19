@@ -85,6 +85,16 @@ const validateGeo = (value: string): AttributeValidationResult => {
     return { isValid: true, message: '' };
 };
 
+// --- Strategy Map ---
+
+const VALIDATORS: Record<string, (value: string, definition: OntologyAttribute, operator: string) => AttributeValidationResult> = {
+    number: validateNumber,
+    enum: validateEnum,
+    date: (v) => validateDate(v),
+    datetime: (v) => validateDate(v),
+    geo: (v) => validateGeo(v),
+};
+
 // --- Main Validation Functions ---
 
 export const validateAttributeValue = (
@@ -98,37 +108,25 @@ export const validateAttributeValue = (
     const opResult = validateOperator(name, operator, definition);
     if (!opResult.isValid) return opResult;
 
-    switch (definition.type) {
-        case 'number': return validateNumber(value, definition, operator);
-        case 'enum': return validateEnum(value, definition);
-        case 'date':
-        case 'datetime': return validateDate(value);
-        case 'geo': return validateGeo(value);
-        default: return { isValid: true, message: '' };
-    }
+    const validator = VALIDATORS[definition.type];
+    return validator ? validator(value, definition, operator) : { isValid: true, message: '' };
 };
 
 const validateNumericValues = (property: Property): string[] => {
-    const errors: string[] = [];
-
     if (property.operator === 'range') {
         const value = property.values[0];
         if (value?.includes('-')) {
             const [min, max] = value.split('-').map(parseFloat);
             if (isNaN(min) || isNaN(max)) {
-                errors.push(`Invalid range format: "${value}". Expected "min-max" numbers.`);
+                return [`Invalid range format: "${value}". Expected "min-max" numbers.`];
             }
-        } else if (property.values.length !== 2 || property.values.some(v => isNaN(parseFloat(v)))) {
-             // Optional: Add specific error for array format range if strictly enforced
         }
-    } else {
-        property.values.forEach(value => {
-            if (isNaN(parseFloat(value)) && !parseQuantity(value)) {
-                errors.push(`Operator "${property.operator}" requires numeric values. Got "${value}".`);
-            }
-        });
+        return [];
     }
-    return errors;
+
+    return property.values
+        .filter(value => isNaN(parseFloat(value)) && !parseQuantity(value))
+        .map(value => `Operator "${property.operator}" requires numeric values. Got "${value}".`);
 };
 
 export const validateProperty = (property: Property, ontology?: OntologyNode[]): ValidationResult => {
@@ -170,27 +168,28 @@ export const validateNote = (note: Note, ontology: OntologyNode[]): ValidationRe
         note.properties.map(p => getCanonicalKey(p.key, ontology))
     );
 
-    const checkNodeRequirements = (nodes: OntologyNode[]) => {
-        for (const node of nodes) {
-            if (node.requiredAttributes?.length) {
-                const nodeKeys = Object.keys(node.attributes || {});
+    // Iterative traversal to avoid stack overflow
+    const stack = [...ontology];
+    while (stack.length > 0) {
+        const node = stack.pop()!;
 
-                // Check if note matches this node context (has any property defined in this node)
-                const hasRelevantProperty = nodeKeys.some(key => noteCanonicalKeys.has(key));
+        if (node.requiredAttributes?.length) {
+            const nodeKeys = Object.keys(node.attributes || {});
 
-                if (hasRelevantProperty) {
-                    node.requiredAttributes.forEach(reqKey => {
-                        if (!noteCanonicalKeys.has(reqKey)) {
-                            errors.push(`Missing required property: '${reqKey}' (for ${node.label}).`);
-                        }
-                    });
-                }
+            // Check if note matches this node context
+            if (nodeKeys.some(key => noteCanonicalKeys.has(key))) {
+                node.requiredAttributes.forEach(reqKey => {
+                    if (!noteCanonicalKeys.has(reqKey)) {
+                        errors.push(`Missing required property: '${reqKey}' (for ${node.label}).`);
+                    }
+                });
             }
-            if (node.children) checkNodeRequirements(node.children);
         }
-    };
 
-    checkNodeRequirements(ontology);
+        if (node.children) {
+            stack.push(...node.children);
+        }
+    }
 
     return { isValid: errors.length === 0, errors, warnings };
 };

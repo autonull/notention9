@@ -10,14 +10,15 @@ import { deepClone } from './utils/common.js';
 const cloneTree = (tree: OntologyNode[]): OntologyNode[] => deepClone(tree);
 
 export const findNode = (tree: OntologyNode[], nodeId: string): OntologyNode | null => {
-  for (const node of tree) {
-    if (node.id === nodeId) return node;
-    if (node.children) {
-      const found = findNode(node.children, nodeId);
-      if (found) return found;
+    const stack = [...tree];
+    while (stack.length > 0) {
+        const node = stack.pop()!;
+        if (node.id === nodeId) return node;
+        if (node.children) {
+            stack.push(...node.children);
+        }
     }
-  }
-  return null;
+    return null;
 };
 
 /**
@@ -25,22 +26,23 @@ export const findNode = (tree: OntologyNode[], nodeId: string): OntologyNode | n
  * @returns The attribute definition if found.
  */
 export const findAttributeDef = (key: string, nodes: OntologyNode[]): OntologyAttribute | undefined => {
-  for (const node of nodes) {
-    if (node.attributes) {
-        if (node.attributes[key]) return node.attributes[key];
+    const stack = [...nodes];
+    while (stack.length > 0) {
+        const node = stack.pop()!;
+        if (node.attributes) {
+            if (node.attributes[key]) return node.attributes[key];
 
-        // Check aliases
-        for (const attr of Object.values(node.attributes)) {
-            if (attr.aliases?.includes(key)) return attr;
+            // Check aliases
+            for (const attr of Object.values(node.attributes)) {
+                if (attr.aliases?.includes(key)) return attr;
+            }
+        }
+
+        if (node.children) {
+            stack.push(...node.children);
         }
     }
-
-    if (node.children) {
-      const found = findAttributeDef(key, node.children);
-      if (found) return found;
-    }
-  }
-  return undefined;
+    return undefined;
 };
 
 /**
@@ -49,7 +51,9 @@ export const findAttributeDef = (key: string, nodes: OntologyNode[]): OntologyAt
  * If the key is not found, it is returned as is (assumption: unknown keys are their own canonical form).
  */
 export const getCanonicalKey = (key: string, nodes: OntologyNode[]): string => {
-    for (const node of nodes) {
+    const stack = [...nodes];
+    while (stack.length > 0) {
+        const node = stack.pop()!;
         if (node.attributes) {
             if (node.attributes[key]) return key; // It's canonical
 
@@ -59,8 +63,7 @@ export const getCanonicalKey = (key: string, nodes: OntologyNode[]): string => {
         }
 
         if (node.children) {
-            const found = getCanonicalKey(key, node.children);
-            if (found !== key) return found; // Found deeper in tree
+            stack.push(...node.children);
         }
     }
     return key;
@@ -109,12 +112,16 @@ export const addNode = (
  * Returns a set of all property keys defined within the subtree of a given node.
  */
 export const getSubtreeKeys = (node: OntologyNode): Set<string> => {
-    const keys = new Set(node.attributes ? Object.keys(node.attributes) : []);
+    const keys = new Set<string>();
+    const stack = [node];
 
-    if (node.children) {
-        for (const child of node.children) {
-            const childKeys = getSubtreeKeys(child);
-            for (const key of childKeys) keys.add(key);
+    while (stack.length > 0) {
+        const current = stack.pop()!;
+        if (current.attributes) {
+            Object.keys(current.attributes).forEach(k => keys.add(k));
+        }
+        if (current.children) {
+            stack.push(...current.children);
         }
     }
     return keys;
@@ -149,20 +156,20 @@ export const renameNode = (
  * Finds the ID of the node that defines a given attribute (by key or alias).
  */
 export const findNodeIdForAttribute = (nodes: OntologyNode[], key: string): string | null => {
-  for (const node of nodes) {
-    if (node.attributes) {
-      if (node.attributes[key]) return node.id;
-      for (const attr of Object.values(node.attributes)) {
-         if (attr.aliases?.includes(key)) return node.id;
-      }
+    const stack = [...nodes];
+    while (stack.length > 0) {
+        const node = stack.pop()!;
+        if (node.attributes) {
+            if (node.attributes[key]) return node.id;
+            for (const attr of Object.values(node.attributes)) {
+                if (attr.aliases?.includes(key)) return node.id;
+            }
+        }
+        if (node.children) {
+            stack.push(...node.children);
+        }
     }
-
-    if (node.children) {
-      const found = findNodeIdForAttribute(node.children, key);
-      if (found) return found;
-    }
-  }
-  return null;
+    return null;
 }
 
 // --- Attribute Operations ---
