@@ -98,6 +98,9 @@ export class Agent {
                  matches.forEach(m => {
                      this.log(`  - Matched: ${m.requestProp.key} ${m.requestProp.operator} ${m.offerProp.values.join(', ')}`);
                  });
+
+                 // Publish explanation for dashboard
+                 this.publishExplanation(event.pubkey, score, matches);
             }
         } catch (e) {
             this.log(`Error processing event: ${e}`);
@@ -121,6 +124,33 @@ export class Agent {
         // Simplified: just publish a DM-like event for visualization
         const content = `[@${targetId}] ${message}`;
         await this.publish(content, [], 'chat');
+    }
+
+    private async publishExplanation(matchedPubkey: string, score: number, details: any[]) {
+        if (this.relay.readyState !== WebSocket.OPEN) return;
+
+        const explanation = {
+            matcher: this.profile.name,
+            matchedWith: matchedPubkey.slice(0, 8),
+            score,
+            details: details.map(d => ({
+                request: `${d.requestProp.key} ${d.requestProp.operator}`,
+                offer: d.offerProp.values.join(', '),
+                score: d.score
+            }))
+        };
+
+        const sk = Uint8Array.from(Buffer.from(this.privkey, 'hex'));
+
+        // Kind 35001 for explanations/logs
+        const event = finalizeEvent({
+            kind: 35001,
+            created_at: Math.floor(Date.now() / 1000),
+            tags: [['p', matchedPubkey]],
+            content: JSON.stringify(explanation),
+        }, sk);
+
+        this.relay.send(JSON.stringify(['EVENT', event]));
     }
 
     private async publish(content: string, properties: Property[], inputMethod: string = 'raw') {

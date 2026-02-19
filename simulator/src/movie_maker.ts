@@ -23,6 +23,7 @@ export interface MovieOptions {
     uiPort: number;
     dashboardPort: number;
     outputDir: string;
+    view?: 'dashboard' | 'ontology';
 }
 
 export class MovieMaker {
@@ -175,8 +176,13 @@ export class MovieMaker {
 
         console.log(chalk.yellow("Starting Dashboard & Recording..."));
         const page = await this.context.newPage();
-        const dashboardUrl = `http://localhost:${this.options.dashboardPort}`;
-        await page.goto(dashboardUrl, { waitUntil: 'networkidle' });
+
+        let url = `http://localhost:${this.options.dashboardPort}`;
+        if (this.options.view === 'ontology') {
+            url += '/ontology';
+        }
+
+        await page.goto(url, { waitUntil: 'networkidle' });
 
         // Ensure output directory exists
         const framesDir = path.join(this.options.outputDir, 'frames');

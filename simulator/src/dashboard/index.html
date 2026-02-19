@@ -119,6 +119,7 @@
         }
         .event-item.kind-1 { border-color: #2196F3; } /* Note */
         .event-item.kind-35000 { border-color: #9C27B0; } /* Semantic */
+        .event-item.kind-35001 { border-color: #FFC107; background: #332b00; } /* Explanation */
 
         .timestamp { color: #888; font-size: 0.7rem; float: right; }
         .content { margin-top: 4px; word-break: break-word; }
@@ -143,6 +144,33 @@
             z-index: 100;
         }
 
+        #explanation-modal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(30, 30, 30, 0.95);
+            border: 1px solid #555;
+            padding: 20px;
+            border-radius: 8px;
+            color: #eee;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            z-index: 200;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            backdrop-filter: blur(5px);
+        }
+
+        #explanation-modal pre {
+            background: #111;
+            padding: 10px;
+            overflow: auto;
+            border-radius: 4px;
+        }
+
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -162,6 +190,10 @@
             <div id="events-list"></div>
         </div>
         <div id="caption-overlay"></div>
+        <div id="explanation-modal">
+            <h3>🧩 Match Explained</h3>
+            <div id="explanation-content"></div>
+        </div>
     </div>
 
     <script>
@@ -238,7 +270,10 @@
 
         // Caption Logic
         const captionEl = document.getElementById('caption-overlay');
+        const explanationEl = document.getElementById('explanation-modal');
+        const explanationContent = document.getElementById('explanation-content');
         let captionTimeout;
+        let explanationTimeout;
 
         function showCaption(text) {
             captionEl.innerText = text;
@@ -247,6 +282,17 @@
             captionTimeout = setTimeout(() => {
                 captionEl.style.opacity = '0';
             }, 3000);
+        }
+
+        function showExplanation(data) {
+            const pretty = JSON.stringify(data, null, 2);
+            explanationContent.innerHTML = `<pre>${pretty}</pre>`;
+            explanationEl.style.opacity = '1';
+
+            clearTimeout(explanationTimeout);
+            explanationTimeout = setTimeout(() => {
+                explanationEl.style.opacity = '0';
+            }, 6000); // Show for 6 seconds
         }
 
         // Connect to Relay
@@ -282,28 +328,32 @@
         function handleEvent(event) {
             addToList(event);
 
-            // Visual Highlight
             const shortId = event.pubkey.slice(0, 8);
             const el = agentElements[shortId];
+
+            // Highlight Agent
             if (el) {
                 el.classList.add('active');
                 setTimeout(() => el.classList.remove('active'), 1000);
+            }
 
-                // Determine Agent Name
-                const agent = agents.find(a => a.id === shortId);
-                const name = agent ? agent.name : shortId;
+            // Determine Agent Name
+            const agent = agents.find(a => a.id === shortId);
+            const name = agent ? agent.name : shortId;
 
-                // Caption & Sound
-                if (event.kind === 35000) {
-                    playSound('publish');
-                    const inputMethodTag = event.tags.find(t => t[0] === 'input-method');
-                    const method = inputMethodTag ? inputMethodTag[1] : 'raw';
-                    showCaption(`${name} published an intent via ${method} input.`);
-                } else if (event.content.includes("Matched")) {
-                    // Simulator logging might publish matches?
-                    // Actually simulator logic logs to console, doesn't publish match events yet.
-                    // We might need to deduce matches or update simulator to publish "Match" events (Kind 1 maybe?)
-                }
+            // Logic by Kind
+            if (event.kind === 35000) {
+                // Publish Intent
+                playSound('publish');
+                const inputMethodTag = event.tags.find(t => t[0] === 'input-method');
+                const method = inputMethodTag ? inputMethodTag[1] : 'raw';
+                showCaption(`${name} published an intent via ${method} input.`);
+            } else if (event.kind === 35001) {
+                // Explanation Log
+                playSound('match');
+                const explanation = JSON.parse(event.content);
+                showCaption(`${name} found a match!`);
+                showExplanation(explanation);
             }
         }
 
@@ -319,6 +369,8 @@
 
             if (event.kind === 35000) {
                 content = content.length > 100 ? content.slice(0, 100) + '...' : content;
+            } else if (event.kind === 35001) {
+                 content = "Match Explanation Details...";
             }
 
             item.innerHTML = `

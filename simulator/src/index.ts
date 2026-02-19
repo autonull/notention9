@@ -7,6 +7,8 @@ import { DEFAULT_ONTOLOGY } from '@notention/core';
 import chalk from 'chalk';
 import ora from 'ora';
 import path from 'path';
+import fs from 'fs';
+import { pathToFileURL } from 'url';
 
 const SCENARIOS: Record<string, Scenario> = {
     'gig-economy': GigEconomyScenario,
@@ -26,6 +28,7 @@ Options:
   --scenario=<name>     Name of the scenario to run (default: gig-economy)
   --generate=<count>    Generate a random scenario with <count> agents
   --duration=<seconds>  Duration for generated scenario (default: 30)
+  --script=<path>       Path to a JS/TS script exporting a Scenario object
   --list-scenarios      List available scenarios
   --movie               Run in Movie Maker mode (visual simulation)
   --fps=<number>        Framerate for movie (default: 2)
@@ -49,6 +52,7 @@ Options:
 
     let scenario: Scenario;
     const genArg = args.find(arg => arg.startsWith('--generate='));
+    const scriptArg = args.find(arg => arg.startsWith('--script='));
 
     if (genArg) {
         const count = parseInt(genArg.split('=')[1]);
@@ -56,6 +60,30 @@ Options:
         const duration = durArg ? parseInt(durArg.split('=')[1]) : 30;
         scenario = generateScenario(count, duration);
         console.log(chalk.magenta(`Generated scenario with ${count} agents over ${duration}s`));
+    } else if (scriptArg) {
+        const scriptPath = scriptArg.split('=')[1];
+        const absolutePath = path.resolve(process.cwd(), scriptPath);
+
+        if (!fs.existsSync(absolutePath)) {
+            console.error(chalk.red(`Error: Script not found at ${absolutePath}`));
+            process.exit(1);
+        }
+
+        try {
+            // Import using file:// URL for ESM
+            const module = await import(pathToFileURL(absolutePath).href);
+            if (module.default) {
+                scenario = module.default;
+            } else if (module.scenario) {
+                scenario = module.scenario;
+            } else {
+                 throw new Error("Script must export a default Scenario object or a named 'scenario' export.");
+            }
+            console.log(chalk.magenta(`Loaded scenario from script: ${scenario.name}`));
+        } catch (e) {
+            console.error(chalk.red(`Error loading script: ${e}`));
+            process.exit(1);
+        }
     } else {
         const scenarioArg = args.find(arg => arg.startsWith('--scenario='));
         const scenarioName = scenarioArg ? scenarioArg.split('=')[1] : 'default';
@@ -92,12 +120,16 @@ Options:
             const uiPortArg = args.find(a => a.startsWith('--ui-port='));
             const uiPort = uiPortArg ? parseInt(uiPortArg.split('=')[1]) : 5173;
 
+            const viewArg = args.find(a => a.startsWith('--view='));
+            const view = viewArg ? viewArg.split('=')[1] as 'dashboard' | 'ontology' : 'dashboard';
+
             const options: MovieOptions = {
                 framerate: fps,
                 resolution: { width, height },
                 uiPort,
                 dashboardPort: 8000, // Fixed for now
-                outputDir: path.resolve(process.cwd(), 'movies') // save to simulator/movies/
+                outputDir: path.resolve(process.cwd(), 'movies'), // save to simulator/movies/
+                view
             };
 
             const movieMaker = new MovieMaker(relayUrl, options);

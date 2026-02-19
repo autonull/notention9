@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notention Ontology Visualizer</title>
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <style>
+        body { margin: 0; background: #111; color: #eee; font-family: sans-serif; height: 100vh; display: flex; flex-direction: column; }
+        header { padding: 10px; background: #222; border-bottom: 1px solid #444; display: flex; justify-content: space-between; }
+        #network { flex: 1; border: 1px solid #333; }
+        .legend { font-size: 0.8rem; color: #aaa; }
+    </style>
+</head>
+<body>
+    <header>
+        <div><strong>Ontology Visualizer</strong></div>
+        <div class="legend">Root (Blue) | Property (Green) | Active (Red Pulse)</div>
+    </header>
+    <div id="network"></div>
+
+    <script>
+        // Default Ontology (injected or fetched)
+        // Ideally the server should inject this. For now, we'll start empty and build from events?
+        // Or we assume a default set.
+
+        // Let's connect to relay and build the graph dynamically based on usage
+        const relayUrl = window.RELAY_URL || 'ws://localhost:4444';
+
+        const nodes = new vis.DataSet([]);
+        const edges = new vis.DataSet([]);
+        const container = document.getElementById('network');
+
+        const data = { nodes, edges };
+        const options = {
+            nodes: {
+                shape: 'dot',
+                size: 10,
+                font: { color: '#ffffff' },
+                borderWidth: 2
+            },
+            edges: {
+                width: 1,
+                color: { inherit: 'from' },
+                smooth: { type: 'continuous' }
+            },
+            physics: {
+                stabilization: false,
+                barnesHut: {
+                    gravitationalConstant: -2000,
+                    centralGravity: 0.3,
+                    springLength: 95
+                }
+            }
+        };
+
+        const network = new vis.Network(container, data, options);
+
+        // State tracking
+        const seenProperties = new Set();
+
+        function addPropertyNode(key, value) {
+            // Add Property Node (Key)
+            if (!seenProperties.has(key)) {
+                nodes.add({ id: key, label: key, color: '#4CAF50', group: 'property' });
+                seenProperties.add(key);
+
+                // Link to Root (virtual)
+                if (!nodes.get('ROOT')) nodes.add({ id: 'ROOT', label: 'Ontology', color: '#2196F3', size: 20 });
+                edges.add({ from: 'ROOT', to: key });
+            }
+
+            // Add Value Node (Leaf)
+            const valueId = `${key}:${value}`;
+            if (!seenProperties.has(valueId)) {
+                nodes.add({ id: valueId, label: value, color: '#888', size: 5, shape: 'diamond' });
+                edges.add({ from: key, to: valueId });
+                seenProperties.add(valueId);
+            }
+
+            // Pulse/Highlight
+            pulseNode(key);
+            pulseNode(valueId);
+        }
+
+        function pulseNode(id) {
+            const node = nodes.get(id);
+            if (!node) return;
+
+            // Highlight
+            nodes.update({ id, color: '#FF5722', size: node.size * 1.5 });
+
+            setTimeout(() => {
+                const originalColor = node.group === 'property' ? '#4CAF50' : '#888';
+                const originalSize = node.group === 'property' ? 10 : 5;
+                nodes.update({ id, color: originalColor, size: originalSize });
+            }, 500);
+        }
+
+        // Websocket
+        function connect() {
+            const ws = new WebSocket(relayUrl);
+            ws.onopen = () => ws.send(JSON.stringify(['REQ', 'viz', { limit: 100 }]));
+
+            ws.onmessage = (msg) => {
+                const d = JSON.parse(msg.data);
+                if (d[0] === 'EVENT') {
+                    const event = d[2];
+                    if (event.kind === 35000) {
+                        // Parse Tags: ['property', key, op, val] (from core formatPropertyTag?)
+                        // Actually core `getPrivacyTags` adds `['property', key, op, val]` AND `['t', 'prop:key']`
+                        // Let's look for 'property' tags
+                        event.tags.forEach(tag => {
+                            if (tag[0] === 'property') {
+                                const [_, key, op, val] = tag;
+                                addPropertyNode(key, val);
+                            }
+                        });
+                    }
+                }
+            };
+        }
+
+        connect();
+    </script>
+</body>
+</html>
