@@ -28,8 +28,8 @@
     "@playwright/test": "^1.41.0",
     "@types/fluent-ffmpeg": "^2.1.28",
     "@types/node": "^20.11.0",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
+    "@types/react": "^18.3.28",
+    "@types/react-dom": "^18.3.7",
     "@types/ws": "^8.5.10",
     "@vitejs/plugin-react": "^5.1.4",
     "autoprefixer": "^10.4.24",
@@ -38,6 +38,6 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.19.2",
     "typescript": "~5.3.3",
-    "vite": "^7.3.1"
+    "vite": "^5.4.21"
   }
 }

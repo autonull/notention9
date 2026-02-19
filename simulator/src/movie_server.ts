@@ -20,7 +20,7 @@ export class MovieServer {
 
     constructor(
         private relayUrl: string,
-        private uiPort: number // Port where Agents UI is running
+        private uiPort: number
     ) {
         this.setupRoutes();
     }
@@ -37,11 +37,9 @@ export class MovieServer {
         });
 
         // API
-        this.app.get('/api/scenarios', (req, res) => {
-            res.json(Object.keys(SCENARIOS));
-        });
+        this.app.get('/api/scenarios', (_, res) => res.json(Object.keys(SCENARIOS)));
 
-        this.app.get('/api/status', (req, res) => {
+        this.app.get('/api/status', (_, res) => {
             res.json({
                 job: this.currentJob ? {
                     status: this.currentJob.status,
@@ -53,38 +51,31 @@ export class MovieServer {
         });
 
         this.app.post('/api/jobs', async (req, res) => {
-            if (this.currentJob && this.currentJob.status === 'running') {
+            if (this.currentJob?.status === 'running') {
                 return res.status(409).json({ error: "Job already running" });
             }
 
             const { scenarioName, agentCount, duration } = req.body;
-            let scenario;
-
-            if (scenarioName === 'generate' || !scenarioName) {
-                scenario = generateScenario(agentCount || 5, duration || 30);
-            } else {
-                scenario = SCENARIOS[scenarioName];
-            }
+            const scenario = (scenarioName === 'generate' || !scenarioName)
+                ? generateScenario(agentCount || 5, duration || 30)
+                : SCENARIOS[scenarioName];
 
             if (!scenario) {
                 return res.status(404).json({ error: "Scenario not found" });
             }
 
-            // Start Job
             const logs: string[] = [];
             const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
             const outputDir = path.resolve(process.cwd(), 'movies', `${scenario.name}-${timestamp}`);
-
-            // Random port for dashboard to avoid collisions
             const dashboardPort = 4000 + Math.floor(Math.random() * 1000);
 
             const options: MovieOptions = {
-                framerate: 24, // Higher framerate for smoother video
+                framerate: 24,
                 resolution: { width: 1920, height: 1080 },
                 uiPort: this.uiPort,
                 dashboardPort,
                 outputDir,
-                skipUiServer: true, // ServerManager runs UI
+                skipUiServer: true,
                 onProgress: (msg) => logs.push(msg),
                 onError: (err) => logs.push(`Error: ${err.message}`)
             };
@@ -100,19 +91,16 @@ export class MovieServer {
 
             res.json({ success: true, jobId: scenario.name });
 
-            // Async execution
-            (async () => {
-                try {
-                    await maker.start(scenario);
-                    if (this.currentJob) this.currentJob.status = 'completed';
-                } catch (e) {
-                    if (this.currentJob) this.currentJob.status = 'failed';
-                }
-            })();
+            try {
+                await maker.start(scenario);
+                if (this.currentJob) this.currentJob.status = 'completed';
+            } catch {
+                if (this.currentJob) this.currentJob.status = 'failed';
+            }
         });
 
-        this.app.post('/api/jobs/cancel', async (req, res) => {
-            if (this.currentJob && this.currentJob.status === 'running') {
+        this.app.post('/api/jobs/cancel', async (_, res) => {
+            if (this.currentJob?.status === 'running') {
                 await this.currentJob.maker.cancel();
                 this.currentJob.status = 'cancelled';
                 res.json({ success: true });
@@ -121,25 +109,37 @@ export class MovieServer {
             }
         });
 
-        this.app.get('/api/movies', (req, res) => {
+        this.app.get('/api/movies', (_, res) => {
             const moviesDir = path.resolve(process.cwd(), 'movies');
             if (!fs.existsSync(moviesDir)) return res.json([]);
 
-            const dirs = fs.readdirSync(moviesDir).filter(f => fs.statSync(path.join(moviesDir, f)).isDirectory());
-            const movies = dirs.map(d => {
-                const mp4 = path.join(moviesDir, d, 'simulation.mp4');
-                return {
+            const movies = fs.readdirSync(moviesDir)
+                .filter(f => fs.statSync(path.join(moviesDir, f)).isDirectory())
+                .map(d => ({
                     name: d,
-                    hasVideo: fs.existsSync(mp4),
+                    hasVideo: fs.existsSync(path.join(moviesDir, d, 'simulation.mp4')),
                     path: `/movies/${d}/simulation.mp4`
-                };
-            }).filter(m => m.hasVideo); // Only return finished movies
+                }))
+                .filter(m => m.hasVideo);
+
             res.json(movies);
         });
 
         this.app.delete('/api/movies/:name', (req, res) => {
             const name = req.params.name;
+            // Prevent path traversal
+            if (!/^[a-zA-Z0-9_-]+$/.test(name) || name.includes('..')) {
+                return res.status(400).json({ error: "Invalid movie name" });
+            }
+
             const dir = path.resolve(process.cwd(), 'movies', name);
+
+            // Ensure the resolved path is inside the movies directory
+            const moviesDir = path.resolve(process.cwd(), 'movies');
+            if (!dir.startsWith(moviesDir)) {
+                 return res.status(400).json({ error: "Invalid path" });
+            }
+
             if (fs.existsSync(dir)) {
                 fs.rmSync(dir, { recursive: true, force: true });
                 res.json({ success: true });
@@ -148,15 +148,12 @@ export class MovieServer {
             }
         });
 
-        // Serve movies static
         this.app.use('/movies', express.static(path.resolve(process.cwd(), 'movies')));
 
-        // Serve UI (if built)
         const uiBuildDir = path.resolve(__dirname, '../dist/ui');
         if (fs.existsSync(uiBuildDir)) {
              this.app.use(express.static(uiBuildDir));
              this.app.get('*', (req, res, next) => {
-                 // Don't serve index.html for api requests
                  if (req.path.startsWith('/api') || req.path.startsWith('/movies')) return next();
                  res.sendFile(path.join(uiBuildDir, 'index.html'));
              });
@@ -164,9 +161,7 @@ export class MovieServer {
     }
 
     start(port: number) {
-        this.server = this.app.listen(port, () => {
-            console.log(`Movie UI Server running at http://localhost:${port}`);
-        });
+        this.server = this.app.listen(port, () => console.log(`Movie UI Server running at http://localhost:${port}`));
         return this.server;
     }
 }

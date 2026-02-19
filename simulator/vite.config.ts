@@ -19,11 +19,12 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/api': 'http://localhost:4444', // Default backend port
+      '/api': 'http://localhost:3000',
       '/ws': {
         target: 'ws://localhost:4444',
         ws: true,
       },
+      '/movies': 'http://localhost:3000'
     },
   },
 });

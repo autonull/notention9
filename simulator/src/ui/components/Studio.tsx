@@ -18,7 +18,7 @@ const Studio = () => {
             .then(data => {
                  setScenarios(['generate', ...data]);
             })
-            .catch(err => setError("Failed to load scenarios"));
+            .catch(err => addToast("Failed to load scenarios", "error"));
     }, []);
 
     const startJob = async () => {

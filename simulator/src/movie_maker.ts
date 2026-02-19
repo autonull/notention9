@@ -44,19 +44,11 @@ export class MovieMaker {
     ) {}
 
     private log(message: string) {
-        if (this.options.onProgress) {
-            this.options.onProgress(message);
-        } else {
-            console.log(chalk.blue(`[MovieMaker] ${message}`));
-        }
+        this.options.onProgress?.(message) ?? console.log(chalk.blue(`[MovieMaker] ${message}`));
     }
 
     private error(err: Error) {
-        if (this.options.onError) {
-            this.options.onError(err);
-        } else {
-            console.error(chalk.red(`[MovieMaker Error]`), err);
-        }
+        this.options.onError?.(err) ?? console.error(chalk.red(`[MovieMaker Error]`), err);
     }
 
     async cancel() {
@@ -71,20 +63,13 @@ export class MovieMaker {
         this.log(`Starting movie generation for scenario: ${scenario.name}`);
 
         try {
-            // 1. Start UI Server (if needed)
-            if (!this.options.skipUiServer) {
-                await this.startUIServer();
-            }
-
+            if (!this.options.skipUiServer) await this.startUIServer();
             if (this.cancelled) return;
 
-            // 2. Prepare Scenario (Spawn Agents)
             this.runner = new ScenarioRunner(this.relayUrl, DEFAULT_ONTOLOGY);
             await this.runner.prepare(scenario);
-
             if (this.cancelled) return;
 
-            // 3. Start Dashboard Server
             const agents = this.runner.agents.map(a => ({
                 id: a.id,
                 name: a.profile.name,
@@ -95,20 +80,15 @@ export class MovieMaker {
 
             if (this.cancelled) return;
 
-            // 4. Setup Browser & Agents
             await this.setupBrowser(this.runner.agents);
-
             if (this.cancelled) return;
 
-            // 5. Start Recording & Simulation
             await this.recordAndRun(scenario);
-
             if (this.cancelled) return;
 
-            // 6. Cleanup & Encode
             await this.cleanup();
-        } catch (e: any) {
-            this.error(e);
+        } catch (e) {
+            this.error(e instanceof Error ? e : new Error(String(e)));
             await this.cleanup();
             throw e;
         }
@@ -116,11 +96,8 @@ export class MovieMaker {
 
     private async startUIServer() {
         this.log("Starting UI Server (Vite)...");
-
-        // We assume we are in simulator/src, so ui is at ../../ui
         const uiPath = path.resolve(__dirname, '../../ui');
 
-        // Check if node_modules exists in ui or root (hoisting)
         if (!fs.existsSync(path.join(uiPath, 'node_modules')) && !fs.existsSync(path.join(uiPath, '../../node_modules'))) {
              console.warn(chalk.yellow("Warning: node_modules not found in UI or root. UI server may fail."));
         }
@@ -128,11 +105,10 @@ export class MovieMaker {
         return new Promise<void>((resolve, reject) => {
             this.uiProcess = spawn('npm', ['run', 'dev', '--', '--host', '--port', String(this.options.uiPort)], {
                 cwd: uiPath,
-                stdio: 'ignore', // 'inherit' for debugging
+                stdio: 'ignore',
                 env: { ...process.env, VITE_PORT: String(this.options.uiPort) }
             });
 
-            // Poll for server readiness
             const checkServer = async () => {
                 if (this.cancelled) {
                     reject(new Error("Cancelled"));
@@ -145,7 +121,7 @@ export class MovieMaker {
                         resolve();
                         return;
                     }
-                } catch (e) {}
+                } catch {}
                 setTimeout(checkServer, 1000);
             };
             checkServer();
@@ -167,7 +143,6 @@ export class MovieMaker {
         });
 
         this.log(`Configuring ${agents.length} agent sessions...`);
-
         const page = await this.context.newPage();
 
         for (const agent of agents) {
@@ -175,10 +150,7 @@ export class MovieMaker {
             const url = `http://${agent.id}.lvh.me:${this.options.uiPort}`;
 
             try {
-                // Navigate to trigger DB creation
                 await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
-
-                // Inject settings into IndexedDB (localforage default)
                 await page.evaluate(async (data) => {
                     const { key, relayUrl } = data;
                     const settings = {
@@ -192,13 +164,10 @@ export class MovieMaker {
                         const request = indexedDB.open('localforage');
                         request.onerror = () => reject(request.error);
                         request.onupgradeneeded = (e: any) => {
-                            const db = e.target.result;
-                            db.createObjectStore('keyvaluepairs');
+                            e.target.result.createObjectStore('keyvaluepairs');
                         };
                         request.onsuccess = (e: any) => {
-                            const db = e.target.result;
-                            const tx = db.transaction(['keyvaluepairs'], 'readwrite');
-                            const store = tx.objectStore('keyvaluepairs');
+                            const store = e.target.result.transaction(['keyvaluepairs'], 'readwrite').objectStore('keyvaluepairs');
                             const putReq = store.put(settings, 'notention-settings-v2');
                             putReq.onsuccess = () => resolve();
                             putReq.onerror = () => reject(putReq.error);
@@ -206,11 +175,11 @@ export class MovieMaker {
                     });
                 }, { key: agent.secretKey, relayUrl: this.relayUrl });
 
-            } catch (e: any) {
-                this.error(new Error(`Failed to configure agent ${agent.profile.name}: ${e.message}`));
+            } catch (e) {
+                const message = e instanceof Error ? e.message : String(e);
+                this.error(new Error(`Failed to configure agent ${agent.profile.name}: ${message}`));
             }
         }
-
         await page.close();
     }
 
@@ -219,15 +188,10 @@ export class MovieMaker {
 
         this.log("Starting Dashboard & Recording...");
         const page = await this.context.newPage();
-
-        let url = `http://localhost:${this.options.dashboardPort}`;
-        if (this.options.view === 'ontology') {
-            url += '/ontology';
-        }
+        const url = `http://localhost:${this.options.dashboardPort}${this.options.view === 'ontology' ? '/ontology' : ''}`;
 
         await page.goto(url, { waitUntil: 'networkidle' });
 
-        // Ensure output directory exists
         const framesDir = path.join(this.options.outputDir, 'frames');
         if (fs.existsSync(framesDir)) fs.rmSync(framesDir, { recursive: true, force: true });
         fs.mkdirSync(framesDir, { recursive: true });
@@ -238,7 +202,6 @@ export class MovieMaker {
         let frameCount = 0;
         this.recording = true;
 
-        // Start Recording Loop
         const recordingPromise = (async () => {
             while (this.recording && !this.cancelled) {
                 const start = Date.now();
@@ -246,19 +209,14 @@ export class MovieMaker {
                 try {
                     await page.screenshot({ path: framePath, fullPage: true });
                     frameCount++;
-                } catch (e) {
-                    break;
-                }
+                } catch { break; }
+
                 const duration = Date.now() - start;
-                const delay = Math.max(0, intervalMs - duration);
-                await new Promise(r => setTimeout(r, delay));
+                await new Promise(r => setTimeout(r, Math.max(0, intervalMs - duration)));
             }
         })();
 
-        // Start Simulation Execution
         this.log("Starting Simulation Execution...");
-
-        // Monitor for Camera Events
         this.runner.onEvent = (event) => {
             if (event.action === 'camera' && event.cameraFocus) {
                 let targetId = event.cameraFocus;
@@ -266,26 +224,19 @@ export class MovieMaker {
                      const agent = this.runner?.agents.find(a => a.profile.name === targetId || a.id === targetId);
                      if (agent) targetId = agent.id;
                 }
-                page.evaluate((focusId) => {
-                    // @ts-ignore
-                    if (window.setCameraFocus) window.setCameraFocus(focusId);
-                }, targetId).catch(() => {});
+                // @ts-ignore
+                page.evaluate((focusId) => window.setCameraFocus && window.setCameraFocus(focusId), targetId).catch(() => {});
             }
         };
 
         if (this.runner) await this.runner.execute(scenario);
-
-        // Allow a few seconds for final states to settle
         await new Promise(r => setTimeout(r, 2000));
 
         this.recording = false;
         await recordingPromise;
         this.log(`🎥 Recording finished. captured ${frameCount} frames.`);
 
-        // Encode
-        if (!this.cancelled) {
-            await this.encodeVideo(framesDir, frameCount);
-        }
+        if (!this.cancelled) await this.encodeVideo(framesDir, frameCount);
     }
 
     private async encodeVideo(framesDir: string, frameCount: number) {
@@ -315,9 +266,7 @@ export class MovieMaker {
         this.log("Cleaning up...");
         if (this.browser) await this.browser.close();
         if (this.dashboardServer) this.dashboardServer.close();
-        if (this.uiProcess) {
-            this.uiProcess.kill();
-        }
+        if (this.uiProcess) this.uiProcess.kill();
         this.browser = null;
         this.dashboardServer = null;
         this.uiProcess = null;

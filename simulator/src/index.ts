@@ -42,10 +42,10 @@ Options:
         process.exit(0);
     }
 
-    // Determine Scenario (only if not running UI server, but let's parse anyway)
     let scenario: Scenario | undefined;
     const genArg = args.find(arg => arg.startsWith('--generate='));
     const scriptArg = args.find(arg => arg.startsWith('--script='));
+    const scenarioArg = args.find(arg => arg.startsWith('--scenario='));
 
     if (genArg) {
         const count = parseInt(genArg.split('=')[1]);
@@ -63,7 +63,6 @@ Options:
         }
 
         try {
-            // Import using file:// URL for ESM
             const module = await import(pathToFileURL(absolutePath).href);
             if (module.default) {
                 scenario = module.default;
@@ -78,12 +77,10 @@ Options:
             process.exit(1);
         }
     } else {
-        const scenarioArg = args.find(arg => arg.startsWith('--scenario='));
         const scenarioName = scenarioArg ? scenarioArg.split('=')[1] : 'default';
         scenario = SCENARIOS[scenarioName];
 
-        if (!scenario && !args.includes('--ui-server')) { // Only error if needed
-             // Fallback to first if default not found
+        if (!scenario && !args.includes('--ui-server')) {
              if (scenarioName === 'default' && Object.keys(SCENARIOS).length > 0) {
                  scenario = SCENARIOS[Object.keys(SCENARIOS)[0]];
              } else {
@@ -94,7 +91,6 @@ Options:
         }
     }
 
-    // Setup Servers
     const serverManager = new ServerManager();
     const requestedUiPortArg = args.find(a => a.startsWith('--ui-port='));
     const requestedUiPort = requestedUiPortArg ? parseInt(requestedUiPortArg.split('=')[1]) : 5173;
@@ -108,62 +104,42 @@ Options:
     }
 
     const spinner = ora('Loading Ontology...').start();
-    const ontology = DEFAULT_ONTOLOGY;
-    spinner.succeed(`Ontology Loaded (${ontology.length} root nodes)`);
+    spinner.succeed(`Ontology Loaded (${DEFAULT_ONTOLOGY.length} root nodes)`);
 
-    // Check for UI Server Mode
     if (args.includes('--ui-server')) {
         const movieServerPort = 3000;
-        const movieServer = new MovieServer(serverManager.relayUrl, ports.ui);
-        movieServer.start(movieServerPort);
-
+        new MovieServer(serverManager.relayUrl, ports.ui).start(movieServerPort);
         console.log(chalk.green(`\n🎬 Movie UI available at http://localhost:${movieServerPort}`));
-
-        // Keep process alive
         await new Promise(() => {});
         return;
     }
 
-    // Check for Movie Mode
-    const isMovieMode = args.includes('--movie');
-
     try {
-        if (!scenario) {
-             throw new Error("No scenario selected");
-        }
+        if (!scenario) throw new Error("No scenario selected");
 
-        if (isMovieMode) {
+        if (args.includes('--movie')) {
             const fpsArg = args.find(a => a.startsWith('--fps='));
-            const fps = fpsArg ? parseInt(fpsArg.split('=')[1]) : 2;
-
             const widthArg = args.find(a => a.startsWith('--width='));
-            const width = widthArg ? parseInt(widthArg.split('=')[1]) : 1920;
-
             const heightArg = args.find(a => a.startsWith('--height='));
-            const height = heightArg ? parseInt(heightArg.split('=')[1]) : 1080;
-
             const viewArg = args.find(a => a.startsWith('--view='));
-            const view = viewArg ? viewArg.split('=')[1] as 'dashboard' | 'ontology' : 'dashboard';
 
             const options: MovieOptions = {
-                framerate: fps,
-                resolution: { width, height },
+                framerate: fpsArg ? parseInt(fpsArg.split('=')[1]) : 2,
+                resolution: {
+                    width: widthArg ? parseInt(widthArg.split('=')[1]) : 1920,
+                    height: heightArg ? parseInt(heightArg.split('=')[1]) : 1080
+                },
                 uiPort: ports.ui,
                 dashboardPort: ports.dashboard,
-                outputDir: path.resolve(process.cwd(), 'movies'), // save to simulator/movies/
-                view
+                outputDir: path.resolve(process.cwd(), 'movies'),
+                view: (viewArg ? viewArg.split('=')[1] : 'dashboard') as 'dashboard' | 'ontology'
             };
 
             const movieMaker = new MovieMaker(serverManager.relayUrl, options);
-
-            // Hack: Stop the dashboard started by ServerManager so MovieMaker can start it with agents
-            if (serverManager['dashboardServer']) {
-                serverManager['dashboardServer'].close();
-            }
-
+            if (serverManager['dashboardServer']) serverManager['dashboardServer'].close();
             await movieMaker.start(scenario!);
         } else {
-            const runner = new ScenarioRunner(serverManager.relayUrl, ontology);
+            const runner = new ScenarioRunner(serverManager.relayUrl, DEFAULT_ONTOLOGY);
             await runner.run(scenario!);
         }
     } catch (e) {
