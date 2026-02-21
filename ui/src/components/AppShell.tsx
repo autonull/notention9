@@ -1,0 +1,147 @@
+import React from 'react';
+import {Header} from './layout/Header';
+import {MobileNavigation} from './layout/MobileNavigation';
+import {CommandPalette} from './common/CommandPalette';
+import {Sidebar} from './sidebar';
+import {MainView} from './MainView';
+
+import {useNotes} from '../hooks/useNotes';
+import {useView} from '../hooks/useViewContext';
+import {useUrlRouting} from '../hooks/useUrlRouting';
+import {useKeyboardShortcuts} from '../hooks/useKeyboardShortcuts';
+import {useCommands} from '../hooks/useCommands';
+
+export function AppShell() {
+    const {notes, addNote, getSortedFilteredNotes} = useNotes();
+    const {
+        activeView,
+        setActiveView,
+        selectedNoteId,
+        setSelectedNoteId,
+        searchTerm,
+        sortOrder,
+        isSidebarOpen,
+        setIsSidebarOpen,
+        userLocation,
+        isPaletteOpen,
+        setIsPaletteOpen,
+        isHelpOpen,
+        setIsHelpOpen
+    } = useView();
+
+    // Use optimized selector from unified hook
+    const sortedNotes = getSortedFilteredNotes(searchTerm, sortOrder, activeView === 'trash', userLocation);
+
+    useUrlRouting({
+        activeView,
+        setActiveView,
+        selectedNoteId,
+        setSelectedNoteId
+    });
+
+    const {commands, handleNewNote} = useCommands({setIsHelpOpen});
+
+    const handleCreateNote = (title: string) => {
+        const newNote = addNote({title});
+        setSelectedNoteId(newNote.id);
+        setActiveView('notes');
+    };
+
+    useKeyboardShortcuts({
+        onNewNote: handleNewNote,
+        onSearch: () => {
+            const searchInput = document.getElementById('sidebar-search-input');
+            if (searchInput) {
+                searchInput.focus();
+                if (activeView !== 'notes') {
+                    setActiveView('notes');
+                }
+            }
+        },
+        onCommandPalette: () => setIsPaletteOpen(true),
+        onPropertyPalette: () => {
+            window.dispatchEvent(new CustomEvent('open-property-palette'));
+        },
+        onSave: () => {
+            // Trigger save if in note editor
+            window.dispatchEvent(new CustomEvent('save-note'));
+
+            // Fallback
+            setTimeout(() => {
+                const saveButton = document.querySelector('button[data-action="save"]');
+                if (saveButton) {
+                    (saveButton as HTMLButtonElement).click();
+                }
+            }, 0);
+        },
+        onPreviousNote: () => {
+            if (sortedNotes.length > 0 && selectedNoteId) {
+                const currentIndex = sortedNotes.findIndex(note => note.id === selectedNoteId);
+                if (currentIndex > 0) {
+                    setSelectedNoteId(sortedNotes[currentIndex - 1].id);
+                }
+            }
+        },
+        onNextNote: () => {
+            if (sortedNotes.length > 0 && selectedNoteId) {
+                const currentIndex = sortedNotes.findIndex(note => note.id === selectedNoteId);
+                if (currentIndex < sortedNotes.length - 1) {
+                    setSelectedNoteId(sortedNotes[currentIndex + 1].id);
+                }
+            }
+        },
+        onBackToList: () => {
+            setSelectedNoteId(null);
+            if (activeView !== 'notes') {
+                setActiveView('notes');
+            }
+        },
+        onToggleSidebar: () => setIsSidebarOpen(!isSidebarOpen),
+        onEscape: () => {
+            setIsPaletteOpen(false);
+            setIsHelpOpen(false);
+        }
+    });
+
+    const isMobileNoteList = activeView === 'notes' && !selectedNoteId;
+
+    // Streamlined layout logic
+    const sidebarClasses = `
+        flex-shrink-0 bg-gray-900 border-r border-gray-700/50
+        transition-all duration-300 ease-in-out
+        ${isMobileNoteList ? 'w-full block' : 'hidden md:block'}
+        ${isSidebarOpen ? 'md:w-[320px]' : 'md:w-0 md:border-r-0 overflow-hidden'}
+    `.replace(/\s+/g, ' ').trim();
+
+    const mainClasses = `
+        flex-1 p-3 overflow-hidden pb-20 md:pb-3
+        ${isMobileNoteList ? 'hidden md:block' : 'block'}
+    `.replace(/\s+/g, ' ').trim();
+
+    return (
+        <div className="flex flex-col h-screen bg-gray-800 text-gray-200">
+            <Header onNewNote={handleNewNote}/>
+            <div className="flex flex-1 overflow-hidden">
+                <div className={sidebarClasses}>
+                    <Sidebar sortedNotes={sortedNotes}/>
+                </div>
+
+                <main className={mainClasses}>
+                    <MainView sortedNotes={sortedNotes}/>
+                </main>
+            </div>
+            <MobileNavigation/>
+            <CommandPalette
+                isOpen={isPaletteOpen}
+                onClose={() => setIsPaletteOpen(false)}
+                notes={sortedNotes}
+                onSelectNote={(id) => {
+                    setSelectedNoteId(id);
+                    setActiveView('notes');
+                }}
+                onCreateNote={handleCreateNote}
+                commands={commands}
+            />
+        </div>
+    );
+}

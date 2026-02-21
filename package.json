@@ -1,0 +1,37 @@
+{
+  "name": "notention-monorepo",
+  "private": true,
+  "workspaces": [
+    "ui",
+    "agent",
+    "agent/voltagent",
+    "core",
+    "cli",
+    "e2e",
+    "simulator"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces",
+    "ui:dev": "npm run dev -w @notention/ui",
+    "ui:preview": "npm run preview -w @notention/ui",
+    "agent": "npm start -w @notention/agent",
+    "dev:local": "VITE_ENABLE_AGENT=false VITE_LLM_SOURCE=none npm run dev -w @notention/ui",
+    "dev:server": "node scripts/dev-runner.js",
+    "cli": "npm start -w @notention/cli --"
+  },
+  "dependencies": {
+    "date-fns": "^4.1.0",
+    "uuid": "^9.0.1",
+    "ws": "^8.19.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^9.0.9",
+    "@types/uuid": "^10.0.0",
+    "define-data-property": "^1.1.4",
+    "estraverse": "^5.3.0",
+    "has-property-descriptors": "^1.0.2",
+    "node-llama-cpp": "^3.15.1"
+  }
+}

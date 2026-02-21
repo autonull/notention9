@@ -1,0 +1,21 @@
+# Core
+node_modules/
+dist/
+build/
+.env
+
+# Agent
+agent/data/
+agent/node_modules/
+agent/dist/
+
+# UI
+ui/node_modules/
+ui/dist/
+ui/dev-dist/
+ui/.vite/
+
+# Misc
+.DS_Store
+*.log
+.idea

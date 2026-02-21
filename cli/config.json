@@ -1,0 +1,5 @@
+{
+    "provider": "ollama",
+    "model": "glm-5:cloud",
+    "baseURL": "http://localhost:11434/v1"
+}

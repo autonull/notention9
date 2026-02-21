@@ -1,0 +1,1078 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "JSON schemas of popular web service/apps",
+  "type": "object",
+  "properties": {
+    "Users": {
+      "$ref": "#/definitions/User"
+    },
+    "Content": {
+      "$ref": "#/definitions/Content"
+    },
+    "Transactions": {
+      "$ref": "#/definitions/Transaction"
+    },
+    "Intentions": {
+      "$ref": "#/definitions/Intention"
+    },
+    "Listings": {
+      "$ref": "#/definitions/Listing"
+    },
+    "Rides": {
+      "$ref": "#/definitions/Ride"
+    },
+    "Media": {
+      "$ref": "#/definitions/Media"
+    },
+    "Messages": {
+      "$ref": "#/definitions/Message"
+    },
+    "Bookings": {
+      "$ref": "#/definitions/Booking"
+    },
+    "Orders": {
+      "$ref": "#/definitions/Order"
+    },
+    "Playlists": {
+      "$ref": "#/definitions/Playlist"
+    },
+    "Issues": {
+      "$ref": "#/definitions/Issue"
+    },
+    "Endorsements": {
+      "$ref": "#/definitions/Endorsement"
+    },
+    "Reviews": {
+      "$ref": "#/definitions/Review"
+    },
+    "Communities": {
+      "$ref": "#/definitions/Community"
+    },
+    "CommunityPosts": {
+      "$ref": "#/definitions/CommunityPost"
+    },
+    "CommunityVotes": {
+      "$ref": "#/definitions/CommunityVote"
+    }
+  },
+  "recommended": [
+    "Users",
+    "Content",
+    "Transactions",
+    "Intentions",
+    "Listings",
+    "Rides",
+    "Media",
+    "Messages",
+    "Bookings",
+    "Orders",
+    "Playlists",
+    "Issues",
+    "Endorsements",
+    "Reviews",
+    "Communities",
+    "CommunityPosts",
+    "CommunityVotes"
+  ],
+  "definitions": {
+    "User": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "password": {
+          "type": "string",
+          "format": "password"
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "admin",
+            "user",
+            "driver",
+            "seller",
+            "buyer",
+            "artist"
+          ]
+        },
+        "preferences": {
+          "type": "object"
+        },
+        "connections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Connection"
+          }
+        },
+        "balance": {
+          "type": "number",
+          "minimum": 0
+        },
+        "linked_accounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LinkedAccount"
+          }
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "profile": {
+          "$ref": "#/definitions/Profile"
+        },
+        "phone_number": {
+          "type": "string",
+          "pattern": "^\\+?[1-9]\\d{1,14}$"
+        },
+        "address": {
+          "$ref": "#/definitions/Address"
+        }
+      },
+      "recommended": [
+        "user_id",
+        "name",
+        "email",
+        "password",
+        "role",
+        "created_at"
+      ]
+    },
+    "Connection": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string"
+        },
+        "connected_user_id": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "accepted",
+            "blocked"
+          ]
+        },
+        "connected_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "recommended": [
+        "connection_id",
+        "connected_user_id",
+        "status",
+        "connected_at"
+      ]
+    },
+    "LinkedAccount": {
+      "type": "object",
+      "properties": {
+        "platform": {
+          "type": "string"
+        },
+        "account_id": {
+          "type": "string"
+        },
+        "linked_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "recommended": [
+        "platform",
+        "account_id",
+        "linked_at"
+      ]
+    },
+    "Profile": {
+      "type": "object",
+      "properties": {
+        "bio": {
+          "type": "string"
+        },
+        "avatar_url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "cover_photo_url": {
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    },
+    "Address": {
+      "type": "object",
+      "properties": {
+        "street": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "postal_code": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        }
+      },
+      "recommended": [
+        "street",
+        "city",
+        "state",
+        "postal_code",
+        "country"
+      ]
+    },
+    "Content": {
+      "type": "object",
+      "properties": {
+        "content_id": {
+          "type": "string"
+        },
+        "uploader_id": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "post",
+            "media",
+            "product",
+            "ride",
+            "listing"
+          ]
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "metadata": {
+          "type": "object"
+        }
+      },
+      "recommended": [
+        "content_id",
+        "uploader_id",
+        "type",
+        "created_at"
+      ]
+    },
+    "Transaction": {
+      "type": "object",
+      "properties": {
+        "transaction_id": {
+          "type": "string"
+        },
+        "sender_id": {
+          "type": "string"
+        },
+        "receiver_id": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "number",
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "default": "USD"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "completed",
+            "failed",
+            "reversed"
+          ]
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "transaction_type": {
+          "type": "string",
+          "enum": [
+            "payment",
+            "refund",
+            "transfer"
+          ]
+        },
+        "metadata": {
+          "type": "object"
+        }
+      },
+      "recommended": [
+        "transaction_id",
+        "sender_id",
+        "receiver_id",
+        "amount",
+        "status",
+        "created_at",
+        "transaction_type"
+      ]
+    },
+    "Intention": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "price": {
+          "type": "number",
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "default": "USD"
+        },
+        "availability": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Intention"
+          }
+        },
+        "category": {
+          "type": "string"
+        },
+        "images": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      },
+      "recommended": [
+        "intention_id",
+        "title",
+        "description",
+        "location",
+        "categpry"
+      ]
+    },
+    "Listing": {
+      "type": "object",
+      "properties": {
+        "listing_id": {
+          "type": "string"
+        },
+        "host_id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "price": {
+          "type": "number",
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "default": "USD"
+        },
+        "availability": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Availability"
+          }
+        },
+        "location": {
+          "$ref": "#/definitions/Location"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "category": {
+          "type": "string"
+        },
+        "images": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      },
+      "recommended": [
+        "listing_id",
+        "host_id",
+        "title",
+        "price",
+        "availability",
+        "location",
+        "created_at"
+      ]
+    },
+    "Availability": {
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "is_available": {
+          "type": "boolean"
+        }
+      },
+      "recommended": [
+        "date",
+        "is_available"
+      ]
+    },
+    "Location": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "latitude": {
+          "type": "number",
+          "minimum": -90,
+          "maximum": 90
+        },
+        "longitude": {
+          "type": "number",
+          "minimum": -180,
+          "maximum": 180
+        }
+      },
+      "recommended": [
+        "address",
+        "latitude",
+        "longitude"
+      ]
+    },
+    "Ride": {
+      "type": "object",
+      "properties": {
+        "ride_id": {
+          "type": "string"
+        },
+        "rider_id": {
+          "type": "string"
+        },
+        "driver_id": {
+          "type": "string"
+        },
+        "pickup_location": {
+          "$ref": "#/definitions/Location"
+        },
+        "dropoff_location": {
+          "$ref": "#/definitions/Location"
+        },
+        "price": {
+          "type": "number",
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "default": "USD"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "requested",
+            "accepted",
+            "in_progress",
+            "completed",
+            "cancelled"
+          ]
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "estimated_time": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "distance": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "recommended": [
+        "ride_id",
+        "rider_id",
+        "driver_id",
+        "pickup_location",
+        "dropoff_location",
+        "price",
+        "status",
+        "created_at"
+      ]
+    },
+    "Media": {
+      "type": "object",
+      "properties": {
+        "media_id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "audio",
+            "video",
+            "image",
+            "document"
+          ]
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "duration": {
+          "type": "number",
+          "minimum": 0
+        },
+        "metadata": {
+          "type": "object"
+        }
+      },
+      "recommended": [
+        "media_id",
+        "title",
+        "type",
+        "url",
+        "created_at"
+      ]
+    },
+    "Message": {
+      "type": "object",
+      "properties": {
+        "message_id": {
+          "type": "string"
+        },
+        "sender_id": {
+          "type": "string"
+        },
+        "receiver_id": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "media_urls": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "sent",
+            "delivered",
+            "read"
+          ]
+        }
+      },
+      "recommended": [
+        "message_id",
+        "sender_id",
+        "receiver_id",
+        "content",
+        "timestamp"
+      ]
+    },
+    "Booking": {
+      "type": "object",
+      "properties": {
+        "booking_id": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string"
+        },
+        "listing_id": {
+          "type": "string"
+        },
+        "start_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "end_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "confirmed",
+            "cancelled",
+            "completed"
+          ]
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "total_price": {
+          "type": "number",
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "default": "USD"
+        },
+        "payment_method": {
+          "type": "string"
+        }
+      },
+      "recommended": [
+        "booking_id",
+        "user_id",
+        "listing_id",
+        "start_date",
+        "end_date",
+        "status",
+        "created_at",
+        "total_price"
+      ]
+    },
+    "Order": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string"
+        },
+        "product_id": {
+          "type": "string"
+        },
+        "quantity": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "price_per_unit": {
+          "type": "number",
+          "minimum": 0
+        },
+        "total_price": {
+          "type": "number",
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "default": "USD"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "processed",
+            "shipped",
+            "delivered",
+            "cancelled"
+          ]
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "shipping_address": {
+          "$ref": "#/definitions/Address"
+        },
+        "payment_method": {
+          "type": "string"
+        }
+      },
+      "recommended": [
+        "order_id",
+        "user_id",
+        "product_id",
+        "quantity",
+        "total_price",
+        "status",
+        "created_at"
+      ]
+    },
+    "Playlist": {
+      "type": "object",
+      "properties": {
+        "playlist_id": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "media_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "description": {
+          "type": "string"
+        },
+        "cover_image_url": {
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "recommended": [
+        "playlist_id",
+        "user_id",
+        "name",
+        "media_ids",
+        "created_at"
+      ]
+    },
+    "Issue": {
+      "type": "object",
+      "properties": {
+        "issue_id": {
+          "type": "string"
+        },
+        "reporter_id": {
+          "type": "string"
+        },
+        "related_id": {
+          "type": "string"
+        },
+        "issue_type": {
+          "type": "string",
+          "enum": [
+            "bug",
+            "feature_request",
+            "user_report",
+            "payment_issue"
+          ]
+        },
+        "description": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "open",
+            "in_progress",
+            "resolved",
+            "closed"
+          ]
+        },
+        "priority": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "critical"
+          ]
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "comments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/IssueComment"
+          }
+        }
+      },
+      "recommended": [
+        "issue_id",
+        "reporter_id",
+        "issue_type",
+        "description",
+        "status",
+        "priority",
+        "created_at"
+      ]
+    },
+    "IssueComment": {
+      "type": "object",
+      "properties": {
+        "comment_id": {
+          "type": "string"
+        },
+        "issue_id": {
+          "type": "string"
+        },
+        "commenter_id": {
+          "type": "string"
+        },
+        "comment": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "recommended": [
+        "comment_id",
+        "issue_id",
+        "commenter_id",
+        "comment",
+        "created_at"
+      ]
+    },
+    "Endorsement": {
+      "type": "object",
+      "properties": {
+        "endorsement_id": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string"
+        },
+        "endorsed_id": {
+          "type": "string"
+        },
+        "endorsement_type": {
+          "type": "string",
+          "enum": [
+            "skill",
+            "product",
+            "service",
+            "content"
+          ]
+        },
+        "comment": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "recommended": [
+        "endorsement_id",
+        "user_id",
+        "endorsed_id",
+        "endorsement_type",
+        "created_at"
+      ]
+    },
+    "Review": {
+      "type": "object",
+      "properties": {
+        "review_id": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string"
+        },
+        "target_id": {
+          "type": "string"
+        },
+        "rating": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "review_text": {
+          "type": "string"
+        },
+        "review_type": {
+          "type": "string",
+          "enum": [
+            "product",
+            "service",
+            "user",
+            "content"
+          ]
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "recommended": [
+        "review_id",
+        "user_id",
+        "target_id",
+        "rating",
+        "review_type",
+        "created_at"
+      ]
+    },
+    "Community": {
+      "type": "object",
+      "properties": {
+        "community_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "owner_id": {
+          "type": "string"
+        },
+        "members": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "rules": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        }
+      },
+      "recommended": [
+        "community_id",
+        "name",
+        "owner_id",
+        "members",
+        "created_at"
+      ]
+    },
+    "CommunityPost": {
+      "type": "object",
+      "properties": {
+        "post_id": {
+          "type": "string"
+        },
+        "community_id": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "media_urls": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "recommended": [
+        "post_id",
+        "community_id",
+        "user_id",
+        "content",
+        "created_at"
+      ]
+    },
+    "CommunityVote": {
+      "type": "object",
+      "properties": {
+        "vote_id": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string"
+        },
+        "community_id": {
+          "type": "string"
+        },
+        "target_id": {
+          "type": "string"
+        },
+        "vote_type": {
+          "type": "string",
+          "enum": [
+            "upvote",
+            "downvote"
+          ]
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "recommended": [
+        "vote_id",
+        "user_id",
+        "community_id",
+        "target_id",
+        "vote_type",
+        "created_at"
+      ]
+    }
+  },
+  "additionalProperties": false
+}
+

@@ -1,6 +1,0 @@
-{
-  "name": "Notention 4",
-  "description": "Decentralized note-taking and semantic matching network.  A lightweight, client-side Progressive Web App (PWA).  Enables users to capture, organize, and share notes with embedded semantic structure. Powered by local-first storage and optional AI enhancements.",
-  "requestFramePermissions": [],
-  "prompt": ""
-}
