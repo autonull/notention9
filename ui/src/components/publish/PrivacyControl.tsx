@@ -89,24 +89,19 @@ export const PrivacyControl: React.FC<PrivacyControlProps> = ({note, onUpdate}) 
 
     return (
         <div className="relative flex items-center">
-            <div className="flex bg-gray-800/50 rounded-lg border border-gray-700/50 p-0.5">
-                {(['private', 'protected', 'public'] as PrivacyLevel[]).map(level => (
-                    <button
-                        key={level}
-                        onClick={() => handleSetPrivacy(level)}
-                        className={`
-                            flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium transition-all
-                            ${privacy === level
-                            ? 'bg-gray-700 text-white shadow-sm'
-                            : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30'}
-                        `}
-                        title={`Set to ${level}`}
-                    >
-                        {getIcon(level)}
-                        <span className="hidden xl:inline">{getLabel(level)}</span>
-                    </button>
-                ))}
-            </div>
+            <button
+                onClick={() => handleSetPrivacy(privacy === 'private' ? 'public' : 'private')}
+                className={`
+                    flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all border
+                    ${privacy === 'public'
+                    ? 'bg-green-900/30 text-green-400 border-green-800/50 hover:bg-green-900/50'
+                    : 'bg-gray-800 text-gray-400 border-gray-700/50 hover:bg-gray-700'}
+                `}
+                title={privacy === 'public' ? 'Make Private' : 'Make Public'}
+            >
+                {getIcon(privacy === 'public' ? 'public' : 'private')}
+                <span>{privacy === 'public' ? 'Public' : 'Private'}</span>
+            </button>
 
             {/* Loading Indicator for Auto-Publish */}
             {isPublishing && (

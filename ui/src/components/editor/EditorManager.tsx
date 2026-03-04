@@ -238,10 +238,17 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                     {/* Match Replies - Simulated Thread */}
                     <div className="px-8 pb-8 max-w-4xl mx-auto w-full">
                         <MatchReplies matches={combinedMatches} onMatchClick={handleMatchClick} />
-                        {dirtyNote.author === undefined && (
-                            <div className="text-center mt-4 text-xs text-gray-500 font-medium">
-                                This is a private note. Network matching is disabled.
+                        {(dirtyNote.privacy === 'private' || !dirtyNote.privacy) ? (
+                            <div className="text-center mt-4 text-xs text-gray-500 font-medium border border-dashed border-gray-700/50 rounded-lg p-4 bg-gray-800/20">
+                                🔒 This is a private note. Network matching is disabled. Make it public to find matches.
                             </div>
+                        ) : (
+                            combinedMatches.length === 0 && (
+                                <div className="text-center mt-4 text-xs text-gray-400 font-medium border border-dashed border-blue-900/30 rounded-lg p-4 bg-blue-900/10">
+                                    <span className="inline-block animate-pulse mr-2">📡</span>
+                                    Listening for network matches...
+                                </div>
+                            )
                         )}
                     </div>
                 </div>

@@ -26,6 +26,14 @@ export const InlinePropertyForm = forwardRef((props: InlinePropertyFormProps, re
         else setOperator('is');
     }, [isConstraint]);
 
+    // Handle initial focus and selection
+    const inputRef = React.useRef<HTMLInputElement | HTMLSelectElement>(null);
+    useEffect(() => {
+        if (inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, []);
+
     const submit = () => {
         if (!value.trim()) return;
         const icon = attributeDef?.icon;
@@ -83,10 +91,10 @@ export const InlinePropertyForm = forwardRef((props: InlinePropertyFormProps, re
 
                 {type === 'enum' && attributeDef?.options ? (
                     <select
+                        ref={inputRef as React.RefObject<HTMLSelectElement>}
                         value={value}
                         onChange={(e) => setValue(e.target.value)}
                         className="flex-grow bg-gray-900 border border-gray-700 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-blue-500"
-                        autoFocus
                     >
                         <option value="" disabled>Select {propertyKey}...</option>
                         {attributeDef.options.map(opt => (
@@ -95,29 +103,29 @@ export const InlinePropertyForm = forwardRef((props: InlinePropertyFormProps, re
                     </select>
                 ) : type === 'date' ? (
                      <input
+                        ref={inputRef as React.RefObject<HTMLInputElement>}
                         type="date"
                         value={value}
                         onChange={(e) => setValue(e.target.value)}
                         className="flex-grow bg-gray-900 border border-gray-700 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-blue-500"
-                        autoFocus
                     />
                 ) : type === 'number' ? (
                      <input
+                        ref={inputRef as React.RefObject<HTMLInputElement>}
                         type="number"
                         value={value}
                         onChange={(e) => setValue(e.target.value)}
                         placeholder="Value..."
                         className="flex-grow bg-gray-900 border border-gray-700 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-blue-500"
-                        autoFocus
                     />
                 ) : (
                     <input
+                        ref={inputRef as React.RefObject<HTMLInputElement>}
                         type="text"
                         value={value}
                         onChange={(e) => setValue(e.target.value)}
                         placeholder="Value..."
                         className="flex-grow bg-gray-900 border border-gray-700 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-blue-500"
-                        autoFocus
                     />
                 )}
             </div>
