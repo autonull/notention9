@@ -1,20 +1,56 @@
-import React from 'react';
-import {CheckCircleIcon, ClockIcon, LightBulbIcon, NoteIcon, UserGroupIcon} from '../common/icons';
+import React, {useMemo} from 'react';
+import {CheckCircleIcon, ClockIcon, LightBulbIcon, NoteIcon, UserGroupIcon, TagIcon} from '../common/icons';
+import {useSettings} from '../../hooks/useSettingsContext';
 
 interface FilterBarProps {
     searchTerm: string;
     onSetSearch: (term: string) => void;
 }
 
-const FILTERS = [
+// Fallback filters if ontology is empty or not matching well
+const DEFAULT_FILTERS = [
     {id: 'tasks', label: 'Tasks', icon: CheckCircleIcon, query: '[status:is:todo]'},
     {id: 'journal', label: 'Journal', icon: NoteIcon, query: '[type:is:journal]'},
     {id: 'ideas', label: 'Ideas', icon: LightBulbIcon, query: '[type:is:idea]'},
     {id: 'people', label: 'People', icon: UserGroupIcon, query: '[type:is:person]'},
-] as const;
+];
 
 export function FilterBar({searchTerm, onSetSearch}: FilterBarProps) {
-    const activeFilterId = FILTERS.find(f => f.query === searchTerm)?.id;
+    const {settings} = useSettings();
+
+    // Dynamically build filters based on ontology top-level items if available
+    const filters = useMemo(() => {
+        if (!settings.ontology || settings.ontology.length === 0) {
+            return DEFAULT_FILTERS;
+        }
+
+        // Use ontology nodes as filters, creating semantic queries
+        const ontologyFilters = settings.ontology.map(node => {
+            // Find a suitable icon based on the label, or default to Tag
+            let icon = TagIcon;
+            const lowerLabel = node.label.toLowerCase();
+            if (lowerLabel.includes('task') || lowerLabel.includes('todo')) icon = CheckCircleIcon;
+            else if (lowerLabel.includes('journal') || lowerLabel.includes('note')) icon = NoteIcon;
+            else if (lowerLabel.includes('idea')) icon = LightBulbIcon;
+            else if (lowerLabel.includes('person') || lowerLabel.includes('user')) icon = UserGroupIcon;
+
+            return {
+                id: node.id,
+                label: node.label,
+                icon,
+                // Create a query that checks for the existence of properties related to this node
+                // Here we simplify by searching for any property key matching the node id/label,
+                // but a simpler text query might just be the label for now
+                query: `[type:is:${node.label.toLowerCase()}]`
+            };
+        });
+
+        // Merge with defaults if they don't overlap, or just replace
+        return ontologyFilters.length > 0 ? ontologyFilters : DEFAULT_FILTERS;
+
+    }, [settings.ontology]);
+
+    const activeFilterId = filters.find(f => f.query === searchTerm)?.id;
 
     const handleFilterClick = (query: string, id: string) => {
         onSetSearch(activeFilterId === id ? '' : query);
@@ -40,7 +76,7 @@ export function FilterBar({searchTerm, onSetSearch}: FilterBarProps) {
                 All
             </button>
 
-            {FILTERS.map(filter => {
+            {filters.map(filter => {
                 const isActive = activeFilterId === filter.id;
                 return (
                     <button

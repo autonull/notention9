@@ -112,13 +112,16 @@ export const NoteListItem = React.memo(({
                     {displayProperties.map((p, i) => (
                         <div
                             key={i}
-                            className={`px-1.5 py-0.5 text-[10px] font-medium rounded-md border backdrop-blur-sm max-w-[100px] truncate transition-colors ${
+                            className={`flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-mono rounded-md border backdrop-blur-sm max-w-[120px] truncate transition-colors ${
                                 isSelected
-                                    ? 'bg-blue-500/10 border-blue-400/20 text-blue-300'
-                                    : 'bg-gray-800/50 border-gray-700/50 text-gray-500 group-hover:border-gray-600'
+                                    ? 'bg-blue-900/30 border-blue-400/30 text-blue-300 shadow-sm'
+                                    : 'bg-blue-900/10 border-blue-900/30 text-blue-400/80 group-hover:border-blue-700/50 group-hover:text-blue-300'
                             }`}
+                            title={`[${p.key}:${p.operator}:${p.values.join(',')}]`}
                         >
-                            {p.key}
+                            <span className="font-bold opacity-90">{p.key}</span>
+                            <span className="opacity-50">{p.operator === 'is' ? ':' : p.operator}</span>
+                            <span className="truncate">{p.values[0]}</span>
                         </div>
                     ))}
                     {hiddenPropertyCount > 0 && (

@@ -14,6 +14,8 @@ import {InsertPropertyModal} from './InsertPropertyModal';
 import {usePropertyInsertion} from '../../hooks/usePropertyInsertion';
 import {useOntologySuggestions} from '../../hooks/useOntologySuggestions';
 import {InlinePropertyForm} from './inline/InlinePropertyForm';
+import {useNoteAnalysis} from '../../hooks/useNoteAnalysis';
+import {SparklesIcon} from '../common/icons';
 
 interface TiptapEditorProps {
     note: Note;
@@ -70,6 +72,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
     } = usePropertyInsertion();
 
     const {suggestions} = useOntologySuggestions();
+    const {suggestions: aiSuggestions, removeSuggestion} = useNoteAnalysis(note);
 
     const [inlineFormProps, setInlineFormProps] = useState<{
         key: string;
@@ -162,8 +165,10 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
         setSelectedNoteId
     });
 
+    const aiPropertySuggestions = aiSuggestions.filter(s => s.type === 'property');
+
     return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full relative">
             {!minimal && showToolbar && (
                 <TiptapToolbar
                     editor={editor}
@@ -174,6 +179,44 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
                     onInsertProperty={handlePrepareNewProperty}
                 />
             )}
+
+            {!minimal && aiPropertySuggestions.length > 0 && (
+                <div className="px-3 py-1.5 bg-purple-900/10 border-b border-purple-900/20 flex flex-wrap gap-2 items-center text-xs animate-in slide-in-from-top-2">
+                    <SparklesIcon className="w-3 h-3 text-purple-400" />
+                    <span className="text-purple-300 font-medium mr-1">AI Suggestions:</span>
+                    {aiPropertySuggestions.map(suggestion => {
+                        // Extract just the key if it's formatted like [key:op:value]
+                        const match = suggestion.text.match(/^\[(.*?):/);
+                        const displayKey = match ? match[1] : suggestion.text.replace(/\[|\]/g, '');
+
+                        return (
+                            <button
+                                key={suggestion.id}
+                                onClick={() => {
+                                    // Use the existing mechanism to pop open the inline form for this key
+                                    handlePrepareNewProperty();
+                                    // Actually, it's better to directly open the inline form with this key
+                                    // However, `handleOpenInlinePropertyForm` requires an editor and a cursor position.
+                                    // Since the cursor might not be at the end, let's just insert the suggested text directly
+                                    // or open the form at the current cursor.
+
+                                    if (editor) {
+                                        editor.commands.focus();
+                                        editor.commands.insertContent(suggestion.text + ' ');
+                                        removeSuggestion(suggestion.id);
+                                        addToast('Applied suggestion', 'success');
+                                    }
+                                }}
+                                className="px-2 py-1 bg-purple-900/30 hover:bg-purple-800/50 border border-purple-500/30 rounded-md text-purple-200 transition-colors"
+                                title="Click to insert"
+                            >
+                                {suggestion.text}
+                            </button>
+                        );
+                    })}
+                </div>
+            )}
+
             <InsertPropertyModal
                 isOpen={isPropertyModalOpen}
                 onClose={handleClosePropertyModal}
