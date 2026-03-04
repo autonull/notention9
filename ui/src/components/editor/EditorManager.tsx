@@ -9,6 +9,7 @@ import {useEditorShortcuts} from '../../hooks/useEditorShortcuts';
 import type {Note, OntologyNode} from '@notention/core';
 import {metaphorMapper} from '@notention/core';
 import {EditorHeader} from './EditorHeader';
+import {useView} from '../../hooks/useViewContext';
 import {TiptapEditorRef} from './TiptapEditor';
 import {HybridEditor} from './HybridEditor';
 import {TemplateSelector} from './TemplateSelector';
@@ -71,7 +72,7 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
         handleRequestLocationPick
     } = useEditorModals(handleUpdateProperty, handleUpdateLocation);
 
-    const {setSelectedNoteId} = useView();
+    const {setSelectedNoteId, matches: globalMatches} = useView();
     const {addToast} = useToast();
     const editorRef = useRef<TiptapEditorRef>(null);
     const [isToolbarVisible, setIsToolbarVisible] = useState(true);
@@ -123,7 +124,33 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
     };
 
     const activeMetaphor = metaphorMapper.mapToMetaphor(dirtyNote);
-    const matches = useMatches(dirtyNote);
+    const localMatches = useMatches(dirtyNote);
+
+    // Integrate network matches from ViewContext
+    const networkMatchesForNote = globalMatches
+        .filter(m => m.localNoteId === note.id)
+        .map(m => {
+            // Convert to ScoredMatch shape for MatchReplies
+            const fakeNote: Note = {
+                id: m.event.id,
+                title: '',
+                content: m.event.content,
+                createdAt: m.event.created_at * 1000,
+                updatedAt: m.event.created_at * 1000,
+                tags: [],
+                properties: [], // Parse if needed, or rely on MatchReplies rendering content
+                author: m.event.pubkey,
+                _attachments: []
+            };
+            return {
+                note: fakeNote,
+                result: { score: m.score, matches: [], satisfied: m.satisfied },
+                direction: 'incoming' as 'incoming' | 'outgoing' | 'bidirectional'
+            };
+        });
+
+    // Combine local and network matches, sort by score
+    const combinedMatches = [...localMatches, ...networkMatchesForNote].sort((a, b) => b.result.score - a.result.score);
 
     const handleMatchClick = useCallback((match: any) => {
         // Navigate or preview match
@@ -210,7 +237,12 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
 
                     {/* Match Replies - Simulated Thread */}
                     <div className="px-8 pb-8 max-w-4xl mx-auto w-full">
-                        <MatchReplies matches={matches} onMatchClick={handleMatchClick} />
+                        <MatchReplies matches={combinedMatches} onMatchClick={handleMatchClick} />
+                        {dirtyNote.author === undefined && (
+                            <div className="text-center mt-4 text-xs text-gray-500 font-medium">
+                                This is a private note. Network matching is disabled.
+                            </div>
+                        )}
                     </div>
                 </div>
 

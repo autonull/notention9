@@ -12,24 +12,27 @@ export function MatchReplies({matches, onMatchClick}: MatchRepliesProps) {
     if (!matches || matches.length === 0) return null;
 
     return (
-        <div className="mt-8 border-t border-gray-800 pt-6">
-            <div className="flex items-center gap-2 mb-4 text-gray-400">
-                <SparklesIcon className="w-4 h-4 text-blue-400"/>
-                <h3 className="text-sm font-semibold uppercase tracking-wider">Semantic Matches</h3>
-                <span className="text-xs bg-blue-900/30 text-blue-300 px-2 py-0.5 rounded-full border border-blue-800/50">
+        <div className="mt-8 max-w-4xl mx-auto">
+            <div className="flex items-center gap-2 mb-6 text-gray-400 pl-4 border-l-4 border-blue-500/50">
+                <SparklesIcon className="w-5 h-5 text-blue-400"/>
+                <h3 className="text-base font-medium uppercase tracking-widest text-gray-300">Semantic Matches</h3>
+                <span className="text-xs bg-blue-900/40 text-blue-300 px-2.5 py-1 rounded-full border border-blue-700/50 font-bold ml-2">
                     {matches.length}
                 </span>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-6 relative ml-6">
+                {/* Vertical thread line */}
+                <div className="absolute top-0 bottom-4 -left-6 w-px bg-gradient-to-b from-gray-700 via-gray-700/50 to-transparent"></div>
+
                 {matches.map((match) => (
-                    <div key={match.note.id} className="relative pl-6 before:absolute before:left-0 before:top-0 before:bottom-0 before:w-0.5 before:bg-gray-800">
-                        {/* Avatar / Line Connector Placeholder */}
-                        <div className="absolute left-[-5px] top-4 w-2.5 h-2.5 rounded-full bg-gray-700 border-2 border-gray-900"></div>
+                    <div key={match.note.id} className="relative">
+                        {/* Horizontal connector line */}
+                        <div className="absolute top-8 -left-6 w-4 h-px bg-gray-700"></div>
 
                         <MatchItem
                             match={match}
-                            isLocal={true} // For now, treating as local view
+                            isLocal={!match.note.author}
                             onClick={() => onMatchClick && onMatchClick(match)}
                         />
                     </div>

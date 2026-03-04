@@ -1,4 +1,4 @@
-import React, {forwardRef, useEffect, useImperativeHandle, useState} from 'react';
+import React, {forwardRef, useEffect, useImperativeHandle, useState, useRef, useCallback} from 'react';
 import {Editor, EditorContent} from '@tiptap/react';
 import type {Note, OntologyNode, Template} from '@notention/core';
 import {TiptapToolbar} from './TiptapToolbar';
@@ -13,6 +13,7 @@ import {EditorBubbleMenu} from './EditorBubbleMenu';
 import {InsertPropertyModal} from './InsertPropertyModal';
 import {usePropertyInsertion} from '../../hooks/usePropertyInsertion';
 import {useOntologySuggestions} from '../../hooks/useOntologySuggestions';
+import {InlinePropertyForm} from './inline/InlinePropertyForm';
 
 interface TiptapEditorProps {
     note: Note;
@@ -70,6 +71,50 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
 
     const {suggestions} = useOntologySuggestions();
 
+    const [inlineFormProps, setInlineFormProps] = useState<{
+        key: string;
+        pos: { top: number; left: number };
+    } | null>(null);
+
+    const inlineFormRef = useRef<any>(null);
+
+    const handleOpenInlinePropertyForm = useCallback((key: string, editorToUse: any) => {
+        if (editorToUse) {
+            const { view } = editorToUse;
+            const { from } = view.state.selection;
+            const coords = view.coordsAtPos(from);
+
+            // coordsAtPos returns viewport-relative coordinates.
+            // Using position: fixed, we can just use these directly.
+            setInlineFormProps({
+                key,
+                pos: { top: coords.bottom, left: coords.left }
+            });
+        }
+    }, []);
+
+    // Also close inline form if clicked outside
+    useEffect(() => {
+        if (!inlineFormProps) return;
+
+        const closeHandler = () => setInlineFormProps(null);
+        window.addEventListener('click', closeHandler);
+        // Intercept keys when inline form is open
+        const keyHandler = (e: KeyboardEvent) => {
+            if (inlineFormRef.current?.onKeyDown) {
+                if (inlineFormRef.current.onKeyDown({ event: e })) {
+                    // Handled
+                }
+            }
+        };
+        window.addEventListener('keydown', keyHandler, true);
+
+        return () => {
+            window.removeEventListener('click', closeHandler);
+            window.removeEventListener('keydown', keyHandler, true);
+        };
+    }, [inlineFormProps]);
+
     useImperativeHandle(ref, () => ({
         openPropertyModal: handleOpenPropertyModal,
         editor
@@ -83,6 +128,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
         minimal,
         notes,
         onOpenPropertyModal: handleOpenPropertyModal,
+        onOpenInlinePropertyForm: handleOpenInlinePropertyForm,
         onMagic,
         suggestions
     });
@@ -143,6 +189,28 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
             />
             <div className="flex-grow overflow-y-auto" onClick={handleEditorClick}>
                 {topContent}
+                {inlineFormProps && (
+                    <div
+                        className="fixed z-50"
+                        style={{ top: inlineFormProps.pos.top, left: inlineFormProps.pos.left }}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <InlinePropertyForm
+                            ref={inlineFormRef}
+                            propertyKey={inlineFormProps.key}
+                            attributeDef={findAttributeDef(inlineFormProps.key, ontology)}
+                            onSubmit={(key, operator, value, icon) => {
+                                handleInsertProperty(editor, key, operator, value, icon);
+                                setInlineFormProps(null);
+                                editor?.commands.focus();
+                            }}
+                            onCancel={() => {
+                                setInlineFormProps(null);
+                                editor?.commands.focus();
+                            }}
+                        />
+                    </div>
+                )}
                 {viewMode === 'rich' ? (
                     <>
                         <EditorBubbleMenu editor={editor}/>

@@ -40,103 +40,134 @@ export const MatchItem: React.FC<MatchItemProps> = ({
         return 'text-yellow-400';
     };
 
+    // Attempt to extract meaningful text if no title
+    const extractSummary = (content: string) => {
+        // Remove HTML tags and semantic properties for preview
+        let clean = content.replace(/<[^>]+>/g, ' ').replace(/\[[^\]]+\]/g, ' ').trim();
+        if (!clean) {
+            // If it's pure semantic, just show the first few properties
+            const propsMatch = content.match(/\[(.*?)\]/g);
+            if (propsMatch) return propsMatch.slice(0, 3).join(' ');
+            return "No text content";
+        }
+        return clean.length > 150 ? clean.substring(0, 150) + '...' : clean;
+    };
+
+    const summary = note.title || extractSummary(note.content);
+
     return (
         <div
             onClick={onClick}
             className={`
-                group relative flex flex-col gap-2 p-3 rounded-lg border border-gray-800 bg-gray-900/50
-                hover:border-gray-700 hover:bg-gray-800/50 transition-all duration-200
-                ${isLocal ? 'cursor-pointer' : ''}
+                group relative flex flex-col p-4 rounded-xl border border-gray-700/60 bg-gray-800/80 shadow-sm
+                hover:border-gray-500 hover:bg-gray-800 transition-all duration-200 cursor-pointer mb-4
             `}
         >
-            {/* Header: Score, Direction, Author */}
-            <div className="flex justify-between items-start">
-                <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-2">
-                        <span className={`text-sm font-bold ${getScoreColor(score)}`}>
-                            {score}% Match
-                        </span>
-                        {direction && (
-                            <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium uppercase tracking-wide ${
-                                direction === 'outgoing'
-                                    ? 'bg-blue-900/30 text-blue-300 border border-blue-800/50'
-                                    : 'bg-purple-900/30 text-purple-300 border border-purple-800/50'
-                            }`}>
-                                {direction === 'outgoing' ? 'Outgoing' : 'Incoming'}
+            {/* Header: Avatar, Name, Score, Badges */}
+            <div className="flex items-start justify-between mb-3 border-b border-gray-700/50 pb-3">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden border-2 border-gray-800">
+                        {isLocal ? (
+                            <span className="text-gray-400 font-bold text-sm">Me</span>
+                        ) : (
+                            <span className="text-gray-400 text-xs text-center break-all px-1 leading-none font-mono">
+                                {note.author?.slice(0, 4)}
                             </span>
                         )}
                     </div>
+                    <div className="flex flex-col">
+                        <div className="flex items-center gap-2">
+                            <span className="font-semibold text-gray-200 text-sm">
+                                {isLocal ? 'Local Note' : (note.author ? `Network Peer (${note.author.slice(0, 8)})` : 'Anonymous Peer')}
+                            </span>
+                            {!isLocal && (
+                                <span className="bg-blue-900/30 text-blue-400 text-[10px] px-1.5 py-0.5 rounded font-medium border border-blue-800/30">
+                                    P2P
+                                </span>
+                            )}
+                        </div>
+                        <span className="text-xs text-gray-500">
+                            {new Date(note.updatedAt || Date.now()).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                    </div>
                 </div>
 
-                {note.author && !isLocal && (
-                    <div className="flex items-center gap-1.5 text-[10px] text-gray-500 font-mono bg-gray-950 px-1.5 py-0.5 rounded border border-gray-800">
-                        <NetworkIcon className="w-3 h-3 text-gray-600" />
-                        {note.author.slice(0, 8)}...
-                    </div>
-                )}
-            </div>
-
-            {/* Content Preview */}
-            <div className="pl-2 border-l-2 border-gray-800 group-hover:border-gray-600 transition-colors">
-                <p className="text-xs text-gray-300 line-clamp-2 font-medium">
-                    {note.title || note.content}
-                </p>
-                {!note.title && note.content.length > 100 && (
-                     <span className="text-[10px] text-gray-500 italic">...more</span>
-                )}
-            </div>
-
-            {/* Semantic Matches (Badges) */}
-            <div className="flex flex-wrap gap-1.5 mt-1">
-                {result.matches.map((m, i) => (
-                    <MatchBadge key={`match-${i}`} match={m} />
-                ))}
-
-                {/* Conflicts */}
-                {result.conflicts?.map((m, i) => (
-                    <span
-                        key={`conflict-${i}`}
-                        className="text-[10px] px-1.5 py-0.5 rounded border flex items-center gap-1 bg-red-900/20 text-red-300 border-red-900/30"
-                        title={m.reason}
-                    >
-                        <XMarkIcon className="w-3 h-3" />
-                        {m.reason}
+                <div className="flex flex-col items-end gap-1">
+                    <span className={`text-lg font-bold ${getScoreColor(score)} flex items-center gap-1`}>
+                        <SparklesIcon className="w-4 h-4" />
+                        {score}%
                     </span>
-                ))}
-
-                {/* Missing */}
-                {result.missing?.map((p, i) => (
-                    <span
-                        key={`missing-${i}`}
-                        className="text-[10px] px-1.5 py-0.5 rounded border border-dashed flex items-center gap-1 bg-gray-800/30 text-gray-500 border-gray-700"
-                        title={`Missing property: ${p.key}`}
-                    >
-                        <QuestionMarkCircleIcon className="w-3 h-3" />
-                        Missing: {p.key}
-                    </span>
-                ))}
+                    {direction && (
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium uppercase tracking-wide ${
+                            direction === 'outgoing'
+                                ? 'bg-blue-900/30 text-blue-300 border border-blue-800/50'
+                                : 'bg-purple-900/30 text-purple-300 border border-purple-800/50'
+                        }`}>
+                            {direction === 'outgoing' ? 'Outgoing' : 'Incoming'}
+                        </span>
+                    )}
+                </div>
             </div>
 
-            {/* Actions (Network Only) */}
+            {/* Note Content Summary */}
+            <div className="text-sm text-gray-300 mb-4 px-1 line-clamp-3 leading-relaxed">
+                {summary}
+            </div>
+
+            {/* Semantic Matches Evidence */}
+            <div className="bg-gray-900/50 rounded-lg p-3 border border-gray-800/50">
+                <div className="text-[10px] uppercase tracking-wider font-semibold text-gray-500 mb-2">Match Details</div>
+                <div className="flex flex-wrap gap-2">
+                    {result.matches.map((m, i) => (
+                        <MatchBadge key={`match-${i}`} match={m} />
+                    ))}
+
+                    {/* Conflicts */}
+                    {result.conflicts?.map((m, i) => (
+                        <span
+                            key={`conflict-${i}`}
+                            className="text-xs px-2 py-1 rounded-md flex items-center gap-1.5 bg-red-900/20 text-red-300 border border-red-900/30 shadow-sm"
+                            title={m.reason}
+                        >
+                            <XMarkIcon className="w-3.5 h-3.5" />
+                            {m.reason}
+                        </span>
+                    ))}
+
+                    {/* Missing */}
+                    {result.missing?.map((p, i) => (
+                        <span
+                            key={`missing-${i}`}
+                            className="text-xs px-2 py-1 rounded-md flex items-center gap-1.5 bg-gray-800/50 text-gray-400 border border-gray-700 border-dashed"
+                            title={`Missing property: ${p.key}`}
+                        >
+                            <QuestionMarkCircleIcon className="w-3.5 h-3.5" />
+                            Missing: {p.key}
+                        </span>
+                    ))}
+                </div>
+            </div>
+
+            {/* Actions */}
             {!isLocal && note.author && (
-                <div className="mt-2 pt-2 border-t border-gray-800 flex gap-2">
+                <div className="mt-4 pt-3 border-t border-gray-700/30 flex justify-end gap-3">
                     {isContact ? (
                         <Button
-                            size="xs"
+                            size="sm"
                             variant="secondary"
                             onClick={(e) => { e.stopPropagation(); onChat?.(); }}
                             icon={ChatIcon}
-                            className="flex-1"
+                            className="px-4 hover:bg-blue-600 hover:text-white hover:border-blue-500 transition-colors"
                         >
-                            Chat
+                            Reply via Chat
                         </Button>
                     ) : (
                         <Button
-                            size="xs"
+                            size="sm"
                             variant="primary"
                             onClick={(e) => { e.stopPropagation(); onConnect?.(); }}
                             icon={UserPlusIcon}
-                            className="flex-1"
+                            className="px-4 shadow-md hover:shadow-lg transition-all"
                         >
                             Connect
                         </Button>

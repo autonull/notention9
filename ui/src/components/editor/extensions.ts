@@ -12,6 +12,7 @@ interface GetExtensionsProps {
     getNotes: () => Note[];
     templates: Template[];
     onOpenPropertyModal?: (key: string) => void;
+    onOpenInlinePropertyForm?: (key: string, editor: any) => void;
     onMagic?: () => void;
 }
 
@@ -26,6 +27,7 @@ export const getExtensions = ({
                                   getNotes,
                                   templates,
                                   onOpenPropertyModal,
+                                  onOpenInlinePropertyForm,
                                   onMagic
                               }: GetExtensionsProps) => {
     return [
@@ -58,13 +60,8 @@ export const getExtensions = ({
                     // Delete the trigger and query
                     editor.chain().focus().deleteRange(range).run();
 
-                    // Open modal if available to complete the property
-                    if (onOpenPropertyModal) {
-                        onOpenPropertyModal(props.label || '');
-                    } else {
-                        // Fallback: insert partial property and let user type
-                        // We use a text insertion here, not a node, to allow smooth typing
-                        editor.chain().focus().insertContent(`[${props.label}:is:]`).run();
+                    if (onOpenInlinePropertyForm) {
+                        onOpenInlinePropertyForm(props.label || '', editor);
                     }
                 }
             }
@@ -204,8 +201,10 @@ export const getExtensions = ({
 
                     const slashProps = props as unknown as SlashCommandAttrs;
 
-                    if (slashProps.type === 'property' && onOpenPropertyModal) {
-                        onOpenPropertyModal(props.label || '');
+                    if (slashProps.type === 'property') {
+                        if (onOpenInlinePropertyForm) {
+                            onOpenInlinePropertyForm(props.label || '', editor);
+                        }
                         return;
                     }
 
