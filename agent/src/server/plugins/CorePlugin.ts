@@ -184,46 +184,6 @@ export class CorePlugin implements AgentPlugin {
                 };
             }
         });
-
-        // Promote to Thought
-        registry.register('promote_to_thought', {
-            description: 'Promote a note to a Thought with intent and sovereignty',
-            schema: z.object({
-                noteId: z.string(),
-                intent: z.enum(['fleeting', 'planning', 'executing', 'archived']),
-                sovereignty: z.enum(['local', 'pending_sync', 'shared'])
-            }),
-            handler: async ({ noteId, intent, sovereignty }) => {
-                const notes = await PersistenceService.getNotesSafe();
-                const existingNote = notes.find(n => n.id === noteId);
-
-                if (!existingNote) throw new Error(`Note with ID ${noteId} not found`);
-
-                const properties = existingNote.properties || [];
-
-                const updateProp = (key: string, val: string) => {
-                    const idx = properties.findIndex(p => p.key === key);
-                    if (idx >= 0) {
-                        properties[idx] = { key, operator: 'is', values: [val] };
-                    } else {
-                        properties.push({ key, operator: 'is', values: [val] });
-                    }
-                };
-
-                updateProp('type', 'thought');
-                updateProp('thought:intent', intent);
-                updateProp('thought:sovereignty', sovereignty);
-
-                const updatedNote: Note = {
-                    ...existingNote,
-                    properties,
-                    updatedAt: new Date().toISOString()
-                };
-
-                await PersistenceService.saveNoteSafe(updatedNote);
-                return `Note ${noteId} promoted to Thought (${intent}, ${sovereignty})`;
-            }
-        });
     }
 
     private async loadOntology() {
