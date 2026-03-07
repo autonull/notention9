@@ -145,7 +145,7 @@ export interface Contact {
     isAgent?: boolean;
 }
 
-export type View = 'notes' | 'ontology' | 'network' | 'chat' | 'settings' | 'map' | 'time' | 'trash' | 'simulator' | 'dashboard';
+export type View = 'notes' | 'ontology' | 'network' | 'chat' | 'settings' | 'map' | 'timeline' | 'trash' | 'simulator' | 'dashboard' | 'actions';
 
 export interface AgentStatus {
     state: 'initializing' | 'ready' | 'running' | 'error' | 'stopped';
