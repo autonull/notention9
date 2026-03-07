@@ -31,7 +31,7 @@ interface CalendarEvent {
     location?: string | null;
 }
 
-export function TimeView() {
+export function TimelineView() {
     const {notes} = useNotes();
     const {setSelectedNoteId, setActiveView} = useView();
     const [locationFilterId, setLocationFilterId] = useState<string>('');

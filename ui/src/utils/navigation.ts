@@ -4,6 +4,7 @@ import {
     ClockIcon,
     CpuChipIcon,
     HomeIcon,
+    LightBulbIcon,
     MapIcon,
     NetworkIcon,
     NoteIcon,
@@ -15,8 +16,9 @@ export const NAV_ITEMS: ViewConfig[] = [
     {id: 'dashboard', label: 'Dashboard', icon: HomeIcon, showInMobile: true},
     {id: 'notes', label: 'Notes', icon: NoteIcon, showInMobile: true},
     {id: 'map', label: 'Map', icon: MapIcon, showInMobile: false},
-    {id: 'time', label: 'Time', icon: ClockIcon, showInMobile: false},
+    {id: 'timeline', label: 'Timeline', icon: ClockIcon, showInMobile: false},
     {id: 'network', label: 'Network', icon: NetworkIcon, showInMobile: false, badgeCountKey: 'notificationCount'},
+    {id: 'actions', label: 'Actions', icon: LightBulbIcon, showInMobile: false},
     {id: 'chat', label: 'Chat', icon: ChatIcon, showInMobile: true, badgeCountKey: 'chatNotificationCount'},
     {id: 'ontology', label: 'Ontology', icon: OntologyIcon, showInMobile: false},
 ];

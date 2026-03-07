@@ -9,6 +9,7 @@ import {
     HelpIcon,
     HomeIcon,
     MapIcon,
+    LightBulbIcon,
     NetworkIcon,
     OntologyIcon,
     PlusIcon,
@@ -64,6 +65,11 @@ export function useCommands({setIsHelpOpen}: UseCommandsProps) {
             label: 'Go to Map',
             icon: <MapIcon className="h-5 w-5"/>,
             action: () => setActiveView('map')
+        },
+        {
+            label: 'Go to Actions',
+            icon: <LightBulbIcon className="h-5 w-5"/>,
+            action: () => setActiveView('actions')
         },
         {
             label: 'Go to Network',
