@@ -13,6 +13,8 @@ import {
 import {IconButton} from '../common/IconButton';
 
 export interface EditorControlsProps {
+    isActive?: boolean;
+    onToggleActive?: () => void;
     onNext?: () => void;
     onPrevious?: () => void;
     hasNext?: boolean;
@@ -53,10 +55,29 @@ export function EditorControls({
                                    onPublish,
                                    isPublishing,
                                    isPublished,
-                                   actionLabel
+                                   actionLabel,
+                                   isActive,
+                                   onToggleActive
                                }: EditorControlsProps) {
     return (
         <div className="flex items-center gap-2 flex-shrink-0">
+            {/* Active Toggle */}
+            {onToggleActive && (
+                <div className="hidden md:flex items-center border-r border-gray-700/50 pr-2 mr-1">
+                    <button
+                        onClick={onToggleActive}
+                        className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors border ${
+                            isActive
+                                ? 'bg-purple-900/30 text-purple-400 border-purple-500/50 hover:bg-purple-900/50'
+                                : 'bg-gray-800 text-gray-400 border-gray-700/50 hover:text-gray-300 hover:bg-gray-700/50'
+                        }`}
+                        title="Toggle Active Agent Task (Ctrl+Shift+A)"
+                    >
+                        <span className="text-lg leading-none">{isActive ? '⚡' : '📝'}</span>
+                        {isActive ? 'Active' : 'Passive'}
+                    </button>
+                </div>
+            )}
             {/* Navigation */}
             {(onNext || onPrevious) && (
                 <div className="hidden md:flex items-center bg-gray-800/50 rounded-lg border border-gray-700/50 mr-2">

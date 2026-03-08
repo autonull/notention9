@@ -22,6 +22,7 @@ import {MetaphorRenderer} from '../metaphor/MetaphorRenderer';
 import {PrivacyConfirmModal} from '../modals/PrivacyConfirmModal';
 import {MatchReplies} from '../match/MatchReplies';
 import {useMatches} from '../../hooks/useMatches';
+import {AgentFeedbackPanel} from './AgentFeedbackPanel';
 
 interface EditorManagerProps {
     note: Note;
@@ -56,7 +57,9 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
         saveStatus,
         privacyConfirmation,
         handlePrivacyConfirm,
-        handlePrivacyCancel
+        handlePrivacyCancel,
+        isActive,
+        handleToggleActive
     } = useEditorLogic({note, onSave});
 
     const {
@@ -102,7 +105,13 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
         addToast,
         handlePrevious,
         handleNext,
-        setSelectedNoteId
+        setSelectedNoteId,
+        onToggleActive: handleToggleActive,
+        onTogglePrivacy: () => setDirtyNote(prev => ({...prev, privacy: prev.privacy === 'public' ? 'private' : 'public'})),
+        onFocusMatchPanel: () => {
+            const matchesPanel = document.getElementById('match-replies-panel');
+            matchesPanel?.scrollIntoView({ behavior: 'smooth' });
+        }
     });
 
     const handleInsertTemplate = (template: OntologyNode) => {
@@ -188,6 +197,8 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                 onCopyContent={handleCopyContent}
                 isToolbarVisible={isToolbarVisible}
                 onToggleToolbar={() => setIsToolbarVisible(!isToolbarVisible)}
+                isActive={isActive}
+                onToggleActive={handleToggleActive}
                 actionLabel={actionLabel}
                 missingProperties={missingProperties}
                 onAddProperty={handleAddPropertyHint}
@@ -236,7 +247,7 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                     )}
 
                     {/* Match Replies - Simulated Thread */}
-                    <div className="px-8 pb-8 max-w-4xl mx-auto w-full">
+                    <div id="match-replies-panel" className="px-8 pb-8 max-w-4xl mx-auto w-full">
                         <MatchReplies matches={combinedMatches} onMatchClick={handleMatchClick} />
                         {(dirtyNote.privacy === 'private' || !dirtyNote.privacy) ? (
                             <div className="text-center mt-4 text-xs text-gray-500 font-medium border border-dashed border-gray-700/50 rounded-lg p-4 bg-gray-800/20">
@@ -261,7 +272,10 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                     />
                 )}
 
-                {/* Assistant Sidebar */}
+                {isActive && (
+                    <AgentFeedbackPanel />
+                )}
+
                 <div
                     className={`
                         flex flex-col h-full bg-gray-900 border-l border-gray-700/50
