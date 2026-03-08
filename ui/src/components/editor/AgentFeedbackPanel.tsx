@@ -107,7 +107,7 @@ export const AgentFeedbackPanel: React.FC = () => {
         }
     }, [logs]);
 
-    if (logs.length === 0) return null;
+    // Removed "if (logs.length === 0) return null;" to always show the panel when active
 
     return (
         <div className="flex flex-col bg-gray-900 border-l border-gray-800 w-64 h-full text-xs font-mono">

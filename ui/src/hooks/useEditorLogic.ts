@@ -72,6 +72,33 @@ export const useEditorLogic = ({note, onSave}: UseEditorLogicProps) => {
 
     const {handleSaveTemplate} = useEditorTemplates({dirtyNote});
 
+    const isActive = dirtyNote.properties.some(p => p.key === 'status' && (p.values.includes('running') || p.values.includes('queued')));
+
+    const handleToggleActive = useCallback(() => {
+        setDirtyNote((prev) => {
+            const hasStatus = prev.properties.some(p => p.key === 'status');
+            let newProps = [...prev.properties];
+
+            if (isActive) {
+                // Remove running/queued status
+                newProps = newProps.filter(p => !(p.key === 'status' && (p.values.includes('running') || p.values.includes('queued'))));
+            } else {
+                if (hasStatus) {
+                    newProps = newProps.map(p => p.key === 'status' ? {...p, values: ['queued']} : p);
+                } else {
+                    newProps.push({key: 'status', operator: 'is', values: ['queued']});
+                }
+            }
+
+            const updated = {...prev, properties: newProps};
+
+            // Note: handleContentSave expects string content and parses properties.
+            // Since we modified properties directly, we need to update the note state and trigger save.
+            onSave(updated);
+            return updated;
+        });
+    }, [isActive, setDirtyNote, onSave]);
+
     const handleTitleChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) =>
             setDirtyNote((prev) => ({...prev, title: e.target.value})),
@@ -181,6 +208,8 @@ export const useEditorLogic = ({note, onSave}: UseEditorLogicProps) => {
         isApiKeyAvailable,
         settings, // needed for ontology
         isPublished: !!dirtyNote.nostrEventId,
+        isActive,
+        handleToggleActive,
         actionLabel,
         validationErrors,
         missingProperties,
