@@ -272,34 +272,32 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                     />
                 )}
 
-                {isActive ? (
-                    <div className="hidden lg:block h-full border-l border-gray-700/50">
-                        <AgentFeedbackPanel />
-                    </div>
-                ) : (
-                    <div
-                        className={`
-                            flex flex-col h-full bg-gray-900 border-l border-gray-700/50
-                            transition-all duration-300 ease-in-out transform
-                            fixed inset-y-0 right-0 z-30 shadow-xl lg:shadow-none lg:z-0 lg:relative
-                            w-80
-                            ${isInspectorOpen
-                                ? 'translate-x-0'
-                                : 'translate-x-full lg:w-0 lg:translate-x-0 lg:border-l-0 lg:overflow-hidden'}
-                        `.replace(/\s+/g, ' ').trim()}
-                    >
-                        <SmartNoteAssistant
-                            note={dirtyNote}
-                            onNoteUpdate={handleContentSave}
-                            className="h-full border-none rounded-none bg-transparent"
-                            properties={dirtyNote.properties}
-                            onUpdateProperty={handleUpdateTextFromInspector}
-                            onPickLocation={() => setIsMapPickerOpen(true)}
-                            onPickTime={handlePickTime}
-                            ontology={settings.ontology}
-                        />
-                    </div>
+                {isActive && (
+                    <AgentFeedbackPanel />
                 )}
+
+                <div
+                    className={`
+                        flex flex-col h-full bg-gray-900 border-l border-gray-700/50
+                        transition-all duration-300 ease-in-out transform
+                        fixed inset-y-0 right-0 z-30 shadow-xl lg:shadow-none lg:z-0 lg:relative
+                        w-80
+                        ${isInspectorOpen
+                            ? 'translate-x-0'
+                            : 'translate-x-full lg:w-0 lg:translate-x-0 lg:border-l-0 lg:overflow-hidden'}
+                    `.replace(/\s+/g, ' ').trim()}
+                >
+                    <SmartNoteAssistant
+                        note={dirtyNote}
+                        onNoteUpdate={handleContentSave}
+                        className="h-full border-none rounded-none bg-transparent"
+                        properties={dirtyNote.properties}
+                        onUpdateProperty={handleUpdateTextFromInspector}
+                        onPickLocation={() => setIsMapPickerOpen(true)}
+                        onPickTime={handlePickTime}
+                        ontology={settings.ontology}
+                    />
+                </div>
             </div>
             <SaveTemplateModal
                 isOpen={isSaveTemplateModalOpen}
