@@ -76,10 +76,11 @@ export const useEditorLogic = ({note, onSave}: UseEditorLogicProps) => {
 
     const handleToggleActive = useCallback(() => {
         setDirtyNote((prev) => {
+            const currentlyActive = prev.properties.some(p => p.key === 'status' && (p.values.includes('running') || p.values.includes('queued')));
             const hasStatus = prev.properties.some(p => p.key === 'status');
             let newProps = [...prev.properties];
 
-            if (isActive) {
+            if (currentlyActive) {
                 // Remove running/queued status
                 newProps = newProps.filter(p => !(p.key === 'status' && (p.values.includes('running') || p.values.includes('queued'))));
             } else {
@@ -94,10 +95,11 @@ export const useEditorLogic = ({note, onSave}: UseEditorLogicProps) => {
 
             // Note: handleContentSave expects string content and parses properties.
             // Since we modified properties directly, we need to update the note state and trigger save.
-            onSave(updated);
+            // Using setTimeout to defer the side-effect outside the pure render/updater phase
+            setTimeout(() => onSave(updated), 0);
             return updated;
         });
-    }, [isActive, setDirtyNote, onSave]);
+    }, [setDirtyNote, onSave]);
 
     const handleTitleChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) =>
