@@ -180,43 +180,6 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
                 />
             )}
 
-            {!minimal && aiPropertySuggestions.length > 0 && (
-                <div className="px-3 py-1.5 bg-purple-900/10 border-b border-purple-900/20 flex flex-wrap gap-2 items-center text-xs animate-in slide-in-from-top-2">
-                    <SparklesIcon className="w-3 h-3 text-purple-400" />
-                    <span className="text-purple-300 font-medium mr-1">AI Suggestions:</span>
-                    {aiPropertySuggestions.map(suggestion => {
-                        // Extract just the key if it's formatted like [key:op:value]
-                        const match = suggestion.text.match(/^\[(.*?):/);
-                        const displayKey = match ? match[1] : suggestion.text.replace(/\[|\]/g, '');
-
-                        return (
-                            <button
-                                key={suggestion.id}
-                                onClick={() => {
-                                    // Use the existing mechanism to pop open the inline form for this key
-                                    handlePrepareNewProperty();
-                                    // Actually, it's better to directly open the inline form with this key
-                                    // However, `handleOpenInlinePropertyForm` requires an editor and a cursor position.
-                                    // Since the cursor might not be at the end, let's just insert the suggested text directly
-                                    // or open the form at the current cursor.
-
-                                    if (editor) {
-                                        editor.commands.focus();
-                                        editor.commands.insertContent(suggestion.text + ' ');
-                                        removeSuggestion(suggestion.id);
-                                        addToast('Applied suggestion', 'success');
-                                    }
-                                }}
-                                className="px-2 py-1 bg-purple-900/30 hover:bg-purple-800/50 border border-purple-500/30 rounded-md text-purple-200 transition-colors"
-                                title="Click to insert"
-                            >
-                                {suggestion.text}
-                            </button>
-                        );
-                    })}
-                </div>
-            )}
-
             <InsertPropertyModal
                 isOpen={isPropertyModalOpen}
                 onClose={handleClosePropertyModal}
@@ -268,6 +231,46 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
                     />
                 )}
                 {children}
+
+                {!minimal && aiPropertySuggestions.length > 0 && (
+                    <div className="px-4 md:px-8 mt-4 mb-8 mx-auto w-full max-w-[800px]">
+                        <div className="p-4 bg-purple-900/10 border border-purple-900/20 rounded-lg flex flex-col gap-3 animate-in slide-in-from-top-2">
+                            <div className="flex items-center text-sm">
+                                <SparklesIcon className="w-4 h-4 text-purple-400 mr-2" />
+                                <span className="text-purple-300 font-medium">✨ Add a detail?</span>
+                            </div>
+
+                            <div className="flex flex-col gap-2">
+                                {aiPropertySuggestions.map(suggestion => (
+                                    <div key={suggestion.id} className="flex items-center gap-4 text-sm bg-gray-900/50 p-3 rounded-md border border-purple-500/10">
+                                        <span className="font-mono text-purple-200 flex-grow">{suggestion.text}</span>
+                                        <div className="flex gap-2 shrink-0">
+                                            <button
+                                                onClick={() => {
+                                                    if (editor) {
+                                                        editor.commands.focus();
+                                                        editor.commands.insertContent(suggestion.text + ' ');
+                                                        removeSuggestion(suggestion.id);
+                                                        addToast('Applied suggestion', 'success');
+                                                    }
+                                                }}
+                                                className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded font-medium transition-colors"
+                                            >
+                                                Add
+                                            </button>
+                                            <button
+                                                onClick={() => removeSuggestion(suggestion.id)}
+                                                className="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-gray-200 rounded font-medium transition-colors"
+                                            >
+                                                Skip
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
             {!minimal && <EditorStatusBar editor={editor} saveStatus={saveStatus}/>}
         </div>
