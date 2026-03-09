@@ -9,7 +9,7 @@ interface PrivacyControlProps {
     onUpdate: (note: Note) => void;
 }
 
-export const PrivacyControl: React.FC<PrivacyControlProps> = ({note, onUpdate}) => {
+export function PrivacyControl({note, onUpdate}: PrivacyControlProps) {
     const {settings} = useSettings();
     const [pendingPrivacy, setPendingPrivacy] = useState<PrivacyLevel | null>(null);
     const [isPublishing, setIsPublishing] = useState(false);
@@ -17,8 +17,13 @@ export const PrivacyControl: React.FC<PrivacyControlProps> = ({note, onUpdate}) 
     const privacy = note.privacy || 'private';
 
     const handleSetPrivacy = (level: PrivacyLevel) => {
-        // Always confirm privacy changes
-        setPendingPrivacy(level);
+        const levels = {private: 0, protected: 1, public: 2};
+        // If escalating (Private -> Public/Protected, or Protected -> Public), confirm
+        if (levels[level] > levels[privacy]) {
+            setPendingPrivacy(level);
+        } else {
+            updatePrivacy(level);
+        }
     };
 
     const confirmPrivacyChange = async () => {
@@ -83,68 +88,54 @@ export const PrivacyControl: React.FC<PrivacyControlProps> = ({note, onUpdate}) 
     };
 
     return (
-        <div className="relative flex flex-col items-end">
-            <button
-                onClick={() => handleSetPrivacy(privacy === 'private' ? 'public' : 'private')}
-                className={`
-                    flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all border
-                    ${privacy === 'public'
-                    ? 'bg-[#10b981]/10 text-[#10b981] border-[#10b981]/30 hover:bg-[#10b981]/20'
-                    : 'bg-transparent text-gray-400 border-gray-700 hover:bg-gray-800 hover:text-gray-300'}
-                `}
-                title={privacy === 'public' ? 'Make Private' : 'Make Public'}
-            >
-                {privacy === 'public' ? <span>🌐</span> : <span>🔒</span>}
-                <span>{privacy === 'public' ? 'Published' : 'Private'}</span>
-            </button>
+        <div className="relative flex items-center">
+            <div className="flex bg-gray-800/50 rounded-lg border border-gray-700/50 p-0.5">
+                {(['private', 'protected', 'public'] as PrivacyLevel[]).map(level => (
+                    <button
+                        key={level}
+                        onClick={() => handleSetPrivacy(level)}
+                        className={`
+                            flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium transition-all
+                            ${privacy === level
+                            ? 'bg-gray-700 text-white shadow-sm'
+                            : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30'}
+                        `}
+                        title={`Set to ${level}`}
+                    >
+                        {getIcon(level)}
+                        <span className="hidden xl:inline">{getLabel(level)}</span>
+                    </button>
+                ))}
+            </div>
 
             {/* Loading Indicator for Auto-Publish */}
             {isPublishing && (
-                <div className="absolute -bottom-6 right-0 text-xs text-blue-400 animate-pulse whitespace-nowrap">
+                <div className="absolute -bottom-4 right-0 text-[9px] text-blue-400 animate-pulse whitespace-nowrap">
                     Publishing...
                 </div>
             )}
 
             {/* Confirmation Modal (Portal or Absolute Overlay) */}
             {pendingPrivacy && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
                     <div
-                        className="bg-[#1e293b] p-6 rounded-xl shadow-2xl border border-gray-700/50 max-w-md w-full animate-in fade-in zoom-in-95 duration-200">
-                        <h3 className="text-lg font-bold text-white mb-4">
-                            {pendingPrivacy === 'public' ? 'Publish this note?' : 'Make note private?'}
+                        className="bg-gray-800 p-4 rounded-lg shadow-xl border border-gray-700 max-w-xs w-full animate-in fade-in zoom-in-95 duration-200">
+                        <h3 className="text-sm font-bold text-white mb-2 flex items-center gap-2">
+                            {getIcon(pendingPrivacy)}
+                            Make {pendingPrivacy}?
                         </h3>
-                        <div className="text-sm text-gray-300 space-y-4 mb-6 leading-relaxed">
-                            {pendingPrivacy === 'public' ? (
-                                <>
-                                    <p>Your note will be visible to anyone on the Nostr network. It will be signed with your cryptographic identity.</p>
-                                    <p>You can make it private again at any time.</p>
-                                </>
-                            ) : (
-                                <>
-                                    <p>Your note will no longer be broadcasted to the Nostr network for matching.</p>
-                                    <p>Note: Events already sent to relays cannot be easily deleted and may still be visible to others.</p>
-                                </>
-                            )}
-                        </div>
-                        <div className="flex gap-3">
-                            <button
-                                className={`flex-1 px-4 py-2 text-white rounded-md font-medium transition-colors ${
-                                    pendingPrivacy === 'public' ? 'bg-[#10b981] hover:bg-[#059669]' : 'bg-red-500 hover:bg-red-600'
-                                }`}
-                                onClick={confirmPrivacyChange}
-                            >
-                                {pendingPrivacy === 'public' ? 'Publish' : 'Make Private'}
-                            </button>
-                            <button
-                                className="flex-1 px-4 py-2 bg-transparent border border-gray-600 hover:bg-gray-800 text-gray-300 rounded-md font-medium transition-colors"
-                                onClick={() => setPendingPrivacy(null)}
-                            >
-                                Cancel
-                            </button>
+                        <p className="text-xs text-gray-400 mb-4">
+                            {pendingPrivacy === 'public'
+                                ? "This will publish the note to the network immediately."
+                                : "This increases visibility to specific groups."}
+                        </p>
+                        <div className="flex justify-end gap-2">
+                            <Button size="xs" variant="ghost" onClick={() => setPendingPrivacy(null)}>Cancel</Button>
+                            <Button size="xs" onClick={confirmPrivacyChange}>Confirm</Button>
                         </div>
                     </div>
                 </div>
             )}
         </div>
     );
-};
+}

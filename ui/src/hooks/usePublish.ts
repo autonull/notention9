@@ -5,7 +5,7 @@ import type {Note} from '@notention/core';
 import {DEFAULT_RELAYS, hexToBytes, Logger, pool, publishNoteToNostr} from '@notention/core';
 import {getTextFromHtml} from '../utils/html';
 
-export const usePublish = () => {
+export function usePublish() {
     const {settings} = useSettings();
     const [isPublishing, setIsPublishing] = useState(false);
 

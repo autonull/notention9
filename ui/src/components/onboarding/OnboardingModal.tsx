@@ -7,7 +7,7 @@ interface OnboardingModalProps {
     // Mechanism to close or check status could be passed here
 }
 
-export const OnboardingModal: React.FC<OnboardingModalProps> = () => {
+export function OnboardingModal() {
     const [isOpen, setIsOpen] = useState(false);
     const [service] = useState(new OnboardingService());
     const {notes, addNote} = useNotes();
@@ -66,4 +66,4 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = () => {
             <SetupWizard onComplete={handleComplete} service={service}/>
         </div>
     );
-};
+}

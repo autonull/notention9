@@ -6,7 +6,7 @@ interface WidgetProps {
     onKeyDown?: (e: React.KeyboardEvent) => void;
 }
 
-export const CurrencyWidget: React.FC<WidgetProps> = ({value, onChange, onKeyDown}) => {
+export function CurrencyWidget({value, onChange, onKeyDown}: WidgetProps) {
     const [numValue, setNumValue] = useState(parseFloat(value) || 0);
 
     const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,4 +49,4 @@ export const CurrencyWidget: React.FC<WidgetProps> = ({value, onChange, onKeyDow
             />
         </div>
     );
-};
+}

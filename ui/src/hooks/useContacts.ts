@@ -4,7 +4,7 @@ import { Contact, DEFAULT_RELAYS, hexToBytes, pool } from '@notention/core';
 import { useSettings } from './useSettingsContext';
 import { nostrService } from '../services/NostrService';
 
-export const useContacts = () => {
+export function useContacts() {
     const { settings } = useSettings();
     const [contacts, setContacts] = useState<Contact[]>([]);
     const [isLoading, setIsLoading] = useState(true);

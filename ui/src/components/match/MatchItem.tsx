@@ -23,15 +23,15 @@ interface MatchItemProps {
     onChat?: () => void;
 }
 
-export const MatchItem: React.FC<MatchItemProps> = ({
+export function MatchItem({
     match,
     isLocal,
     isContact = false,
     onClick,
     onConnect,
     onChat
-}) => {
-    const { note, result } = match;
+}: MatchItemProps) {
+    const { note, result, direction } = match;
     const score = Math.round(result.score * 100);
 
     const getScoreColor = (s: number) => {
@@ -40,104 +40,169 @@ export const MatchItem: React.FC<MatchItemProps> = ({
         return 'text-yellow-400';
     };
 
-    // Attempt to extract meaningful text if no title
-    const extractSummary = (content: string) => {
-        let clean = content.replace(/<[^>]+>/g, ' ').replace(/\[[^\]]+\]/g, ' ').trim();
-        if (!clean) return "No text content";
-        return clean.length > 150 ? clean.substring(0, 150) + '...' : clean;
-    };
-
-    const summary = note.title || extractSummary(note.content);
-
-    // Build the "Matched:" text evidence
-    const matchedKeys = result.matches.map(m => m.requestProp.key).join(' ✓ ');
-    const evidenceText = result.matches.length > 0 ? `Matched: ${matchedKeys} ✓` : 'Matched: General semantic overlap';
-
-    // Highlight key properties to show under the name (like spec: 💼 React Dev • 📍 Austin • 💰 $5k/mo)
-    const highlightProps = note.properties?.slice(0, 3) || [];
-
-    // Icon mapping by key prefix (from spec)
-    const getSpecIcon = (key: string) => {
-        const k = key.toLowerCase();
-        if (/^(role|job|skill|title)/.test(k)) return '💼';
-        if (/^(budget|price|salary|cost)/.test(k)) return '💰';
-        if (/^(location|city|country|remote)/.test(k)) return '📍';
-        if (/^(deadline|date|when|start)/.test(k)) return '📅';
-        if (/^(experience|years|seniority)/.test(k)) return '⏱';
-        return '';
-    };
-
     return (
         <div
             onClick={onClick}
-            className="group relative flex flex-col p-4 rounded-xl border border-gray-700/60 bg-gray-800/80 shadow-sm hover:border-gray-500 hover:bg-gray-800 transition-all duration-200 cursor-pointer mb-4"
+            className={`
+                group relative flex flex-col gap-2 p-3 rounded-lg border border-gray-800 bg-gray-900/50
+                hover:border-gray-700 hover:bg-gray-800/50 transition-all duration-200
+                ${isLocal ? 'cursor-pointer' : ''}
+            `}
         >
-            {/* Header: Name, Score, Privacy */}
-            <div className="flex items-start justify-between mb-2">
-                <div className="flex items-center gap-3">
-                    <div className="flex flex-col">
-                        <div className="flex items-center gap-2">
-                            <span className="font-semibold text-gray-200 text-base flex items-center gap-2">
-                                <span className="text-gray-400 text-lg">👤</span>
-                                {isLocal ? 'Local Note' : (note.author ? `Network Peer (${note.author.slice(0, 8)})` : 'Anonymous Peer')}
+            {/* Header: Score, Direction, Author */}
+            <div className="flex justify-between items-start">
+                <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2">
+                        <span className={`text-sm font-bold ${getScoreColor(score)}`}>
+                            {score}% Match
+                        </span>
+                        {direction && (
+                            <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium uppercase tracking-wide ${
+                                direction === 'outgoing'
+                                    ? 'bg-blue-900/30 text-blue-300 border border-blue-800/50'
+                                    : 'bg-purple-900/30 text-purple-300 border border-purple-800/50'
+                            }`}>
+                                {direction === 'outgoing' ? 'Outgoing' : 'Incoming'}
                             </span>
-                        </div>
+                        )}
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                    <span className={`text-sm font-bold ${getScoreColor(score)} flex items-center gap-1`}>
-                        ⭐ {score}%
-                    </span>
-                    <span className="text-xs text-gray-500 bg-gray-900/50 px-2 py-1 rounded border border-gray-700/50">
-                        {isLocal ? '🔒' : '🌐'}
-                    </span>
-                </div>
-            </div>
-
-            {/* Key Properties Highlight */}
-            {highlightProps.length > 0 && (
-                <div className="text-sm text-gray-400 mb-3 flex items-center flex-wrap gap-2">
-                    {highlightProps.map((p, i) => {
-                        const icon = getSpecIcon(p.key);
-                        return (
-                            <span key={i} className="flex items-center">
-                                {icon && <span className="mr-1">{icon}</span>}
-                                {p.values[0]}
-                                {i < highlightProps.length - 1 && <span className="mx-2 text-gray-600">•</span>}
-                            </span>
-                        );
-                    })}
-                </div>
-            )}
-
-            {/* Note Content Summary */}
-            <div className="text-sm text-gray-300 mb-3 italic px-1 line-clamp-2 leading-relaxed opacity-80 border-l-2 border-gray-700 pl-3 ml-1">
-                "{summary}"
-            </div>
-
-            {/* Semantic Matches Evidence */}
-            <div className="text-xs text-blue-400/80 font-medium mb-4 flex items-center gap-1">
-                {evidenceText}
-            </div>
-
-            {/* Actions */}
-            <div className="mt-1 flex justify-start gap-3">
-                <button
-                    onClick={(e) => { e.stopPropagation(); onClick?.(); }}
-                    className="text-xs text-gray-300 hover:text-white bg-gray-700/50 hover:bg-gray-700 px-3 py-1.5 rounded transition-colors border border-gray-600/50"
-                >
-                    [View Note]
-                </button>
-                {!isLocal && note.author && (
-                    <button
-                        onClick={(e) => { e.stopPropagation(); onChat ? onChat() : onConnect?.(); }}
-                        className="text-xs text-blue-300 hover:text-white bg-blue-900/30 hover:bg-blue-800 px-3 py-1.5 rounded transition-colors border border-blue-800/50"
-                    >
-                        [Start Chat]
-                    </button>
+                {note.author && !isLocal && (
+                    <div className="flex items-center gap-1.5 text-[10px] text-gray-500 font-mono bg-gray-950 px-1.5 py-0.5 rounded border border-gray-800">
+                        <NetworkIcon className="w-3 h-3 text-gray-600" />
+                        {note.author.slice(0, 8)}...
+                    </div>
                 )}
             </div>
+
+            {/* Content Preview */}
+            <div className="pl-2 border-l-2 border-gray-800 group-hover:border-gray-600 transition-colors">
+                <p className="text-xs text-gray-300 line-clamp-2 font-medium">
+                    {note.title || note.content}
+                </p>
+                {!note.title && note.content.length > 100 && (
+                     <span className="text-[10px] text-gray-500 italic">...more</span>
+                )}
+            </div>
+
+            {/* Semantic Matches (Badges) */}
+            <div className="flex flex-wrap gap-1.5 mt-1">
+                {result.matches.map((m, i) => (
+                    <MatchBadge key={`match-${i}`} match={m} />
+                ))}
+
+                {/* Conflicts */}
+                {result.conflicts?.map((m, i) => (
+                    <span
+                        key={`conflict-${i}`}
+                        className="text-[10px] px-1.5 py-0.5 rounded border flex items-center gap-1 bg-red-900/20 text-red-300 border-red-900/30"
+                        title={m.reason}
+                    >
+                        <XMarkIcon className="w-3 h-3" />
+                        {m.reason}
+                    </span>
+                ))}
+
+                {/* Missing */}
+                {result.missing?.map((p, i) => (
+                    <span
+                        key={`missing-${i}`}
+                        className="text-[10px] px-1.5 py-0.5 rounded border border-dashed flex items-center gap-1 bg-gray-800/30 text-gray-500 border-gray-700"
+                        title={`Missing property: ${p.key}`}
+                    >
+                        <QuestionMarkCircleIcon className="w-3 h-3" />
+                        Missing: {p.key}
+                    </span>
+                ))}
+            </div>
+
+            {/* Actions (Network Only) */}
+            {!isLocal && note.author && (
+                <div className="mt-2 pt-2 border-t border-gray-800 flex gap-2">
+                    {isContact ? (
+                        <Button
+                            size="xs"
+                            variant="secondary"
+                            onClick={(e) => { e.stopPropagation(); onChat?.(); }}
+                            icon={ChatIcon}
+                            className="flex-1"
+                        >
+                            Chat
+                        </Button>
+                    ) : (
+                        <Button
+                            size="xs"
+                            variant="primary"
+                            onClick={(e) => { e.stopPropagation(); onConnect?.(); }}
+                            icon={UserPlusIcon}
+                            className="flex-1"
+                        >
+                            Connect
+                        </Button>
+                    )}
+                </div>
+            )}
         </div>
+    );
+}
+
+const MatchBadge: React.FC<{ match: PropertyMatch }> = ({ match }) => {
+    const type = match.details?.type || 'unknown';
+    const details = match.details;
+
+    let badgeClass = 'bg-gray-800 text-gray-400 border-gray-700';
+    let icon = null;
+    let text = match.reason;
+
+    switch (type) {
+        case 'alias':
+            badgeClass = 'bg-purple-900/20 text-purple-300 border-purple-900/30';
+            icon = <TagIcon className="w-3 h-3" />;
+            text = `Alias: ${details?.aliasUsed} ≈ ${match.requestProp.key}`;
+            break;
+        case 'fuzzy':
+            badgeClass = 'bg-orange-900/20 text-orange-300 border-orange-900/30';
+            icon = <SparklesIcon className="w-3 h-3" />;
+            text = `~ ${match.offerProp.values[0]}`;
+            break;
+        case 'range':
+            badgeClass = 'bg-blue-900/20 text-blue-300 border-blue-900/30';
+            if (details?.valueMatch === 'in') {
+                text = `In range: ${match.offerProp.values[0]}`;
+            } else if (details?.valueMatch === 'out') {
+                badgeClass = 'bg-red-900/20 text-red-300 border-red-900/30';
+                text = `Out of range: ${match.offerProp.values[0]}`;
+            }
+            break;
+        case 'geo':
+            badgeClass = 'bg-teal-900/20 text-teal-300 border-teal-900/30';
+            break;
+        case 'date':
+            badgeClass = 'bg-cyan-900/20 text-cyan-300 border-cyan-900/30';
+            icon = <ClockIcon className="w-3 h-3" />;
+            break;
+        case 'partial':
+            badgeClass = 'bg-yellow-900/20 text-yellow-300 border-yellow-900/30';
+            icon = <ExclamationTriangleIcon className="w-3 h-3" />;
+            break;
+        case 'exact':
+            badgeClass = 'bg-green-900/20 text-green-300 border-green-900/30';
+            icon = <CheckCircleIcon className="w-3 h-3" />;
+            text = `${match.requestProp.key}: ${match.offerProp.values[0]}`;
+            break;
+    }
+
+    return (
+        <span
+            className={`
+                text-[10px] px-1.5 py-0.5 rounded border flex items-center gap-1
+                ${badgeClass}
+            `}
+            title={match.reason}
+        >
+            {icon}
+            {text}
+        </span>
     );
 };

@@ -45,7 +45,7 @@ const mergeAttributesToNode = (ontology: OntologyNode[], newAttributes: Record<s
     return updatedOntology;
 };
 
-export const useGardener = () => {
+export function useGardener() {
     const {settings, setSettings} = useSettings();
     const {addToast} = useToast();
 

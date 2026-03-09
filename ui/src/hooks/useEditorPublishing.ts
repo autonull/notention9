@@ -12,13 +12,13 @@ interface UseEditorPublishingProps {
     actionLabel: string;
 }
 
-export const useEditorPublishing = ({
+export function useEditorPublishing({
                                         dirtyNote,
                                         setDirtyNote,
                                         onSave,
                                         validationErrors,
                                         actionLabel,
-                                    }: UseEditorPublishingProps) => {
+                                    }: UseEditorPublishingProps) {
     const {publishNote, isPublishing} = usePublish();
     const {evolveOntology} = useGardener();
     const {addToast} = useToast();

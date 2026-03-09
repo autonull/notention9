@@ -9,7 +9,7 @@ interface WidgetProps {
     placeholder?: string;
 }
 
-export const TextWidget: React.FC<WidgetProps> = ({value, onChange, onKeyDown, placeholder}) => {
+export function TextWidget({value, onChange, onKeyDown, placeholder}: WidgetProps) {
     return (
         <input
             type="text"
@@ -21,4 +21,4 @@ export const TextWidget: React.FC<WidgetProps> = ({value, onChange, onKeyDown, p
             autoFocus
         />
     );
-};
+}

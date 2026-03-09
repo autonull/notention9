@@ -20,7 +20,7 @@ interface UseNetworkViewProps {
     matchAgainst?: Note | null;
 }
 
-export const useNetworkView = ({matchAgainst}: UseNetworkViewProps = {}) => {
+export function useNetworkView({matchAgainst}: UseNetworkViewProps = {}) {
     const {settings} = useSettings();
     const {setActiveView, setMatchingNoteId} = useView();
     const {learnFromProperties} = useGardener();

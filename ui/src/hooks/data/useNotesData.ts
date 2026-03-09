@@ -55,7 +55,7 @@ const checkPropertyMatch = (constraint: Property, note: Note, ontology: Ontology
     });
 };
 
-export const useNotesData = (driver?: LocalForage): UseNotesDataResult => {
+export function useNotesData(driver?: LocalForage): UseNotesDataResult {
     const { settings } = useSettings();
     const [notes, setNotes, loading] = useLocalForage<Note[]>(
         'notention-notes',

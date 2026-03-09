@@ -17,7 +17,7 @@ interface UseEditorLogicProps {
     onSave: (note: Note) => void;
 }
 
-export const useEditorLogic = ({note, onSave}: UseEditorLogicProps) => {
+export function useEditorLogic({note, onSave}: UseEditorLogicProps) {
     const {setActiveView, setMatchingNoteId} = useView();
     const {addToast} = useToast();
     const {settings} = useSettings();

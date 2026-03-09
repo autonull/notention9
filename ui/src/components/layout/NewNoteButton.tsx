@@ -9,12 +9,12 @@ interface NewNoteButtonProps {
     onCreateFromTemplate?: (template: Template) => void;
 }
 
-export const NewNoteButton: React.FC<NewNoteButtonProps> = ({
+export function NewNoteButton({
                                                                 onNewNote,
                                                                 onCreateIntent,
                                                                 templates = [],
                                                                 onCreateFromTemplate
-                                                            }) => {
+                                                            }: NewNoteButtonProps) {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -108,4 +108,4 @@ export const NewNoteButton: React.FC<NewNoteButtonProps> = ({
             )}
         </div>
     );
-};
+}

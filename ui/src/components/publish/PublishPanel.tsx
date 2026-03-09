@@ -9,7 +9,7 @@ interface PublishPanelProps {
     onUpdate: (note: Note) => void;
 }
 
-export const PublishPanel: React.FC<PublishPanelProps> = ({note, onUpdate}) => {
+export function PublishPanel({note, onUpdate}: PublishPanelProps) {
     const {settings} = useSettings();
     const [isPublishing, setIsPublishing] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -131,4 +131,4 @@ export const PublishPanel: React.FC<PublishPanelProps> = ({note, onUpdate}) => {
             )}
         </div>
     );
-};
+}

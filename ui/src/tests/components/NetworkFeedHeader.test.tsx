@@ -24,10 +24,28 @@ describe('NetworkFeedHeader', () => {
         setActiveFilterId: mockSetActiveFilterId
     };
 
+    it('renders intent filter buttons based on ontology', () => {
+        render(<NetworkFeedHeader {...defaultProps} />);
+
+        expect(screen.getByText('All')).toBeInTheDocument();
+        expect(screen.getByText('Work')).toBeInTheDocument();
+        expect(screen.getByText('Event')).toBeInTheDocument();
+    });
+
+    it('calls setActiveFilterId when a filter button is clicked', () => {
+        render(<NetworkFeedHeader {...defaultProps} />);
+
+        fireEvent.click(screen.getByText('Work'));
+        expect(mockSetActiveFilterId).toHaveBeenCalledWith('work');
+
+        fireEvent.click(screen.getByText('Event'));
+        expect(mockSetActiveFilterId).toHaveBeenCalledWith('event');
+    });
+
     it('updates search input', () => {
         render(<NetworkFeedHeader {...defaultProps} />);
 
-        const input = screen.getByPlaceholderText('Filter notes...');
+        const input = screen.getByPlaceholderText('Search notes...');
         fireEvent.change(input, {target: {value: 'test'}});
         expect(mockSetFilter).toHaveBeenCalledWith('test');
     });

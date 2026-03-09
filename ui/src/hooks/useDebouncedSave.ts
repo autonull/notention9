@@ -4,7 +4,7 @@ import {areNotesEqual, Logger} from '@notention/core';
 
 const SAVE_DEBOUNCE_MS = 1000;
 
-export const useDebouncedSave = (note: Note, onSave: (note: Note) => void) => {
+export function useDebouncedSave(note: Note, onSave: (note: Note) => void) {
     const [dirtyNote, setDirtyNote] = useState<Note>(note);
     const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'error'>('saved');
 

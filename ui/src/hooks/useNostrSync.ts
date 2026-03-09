@@ -3,7 +3,7 @@ import {useNotes} from './useNotes';
 import {useSettings} from './useSettingsContext';
 import {nostrService} from '../services/NostrService';
 
-export const useNostrSync = () => {
+export function useNostrSync() {
     const {upsertNote} = useNotes();
     const {settings} = useSettings();
 

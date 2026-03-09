@@ -2,12 +2,12 @@ import {useMemo} from 'react';
 import {Note, haversineDistance} from '@notention/core';
 
 // Memoized note filtering function
-export const useFilteredNotes = (
+export function useFilteredNotes(
     notes: Note[],
     searchTerm: string = '',
     activeView: string = 'notes',
     userLocation?: { lat: number; lng: number }
-) => {
+) {
     return useMemo(() => {
         let filteredNotes = [...notes];
 
@@ -61,10 +61,10 @@ export const useFilteredNotes = (
 };
 
 // Memoized note sorting function
-export const useSortedNotes = (
+export function useSortedNotes(
     notes: Note[],
     sortOrder: string = 'updatedAt_desc'
-) => {
+) {
     return useMemo(() => {
         const sortedNotes = [...notes];
 

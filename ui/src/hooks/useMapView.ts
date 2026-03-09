@@ -12,7 +12,7 @@ interface GeoPoint {
     type: 'local' | 'match';
 }
 
-export const useMapView = () => {
+export function useMapView() {
     const {notes} = useNotes();
     const {setActiveView, setSelectedNoteId, matches} = useView();
     const mapRef = useRef<L.Map | null>(null);

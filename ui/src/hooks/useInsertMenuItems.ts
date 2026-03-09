@@ -11,10 +11,10 @@ export interface InsertMenuItem {
 export type InsertMenuMode = 'all' | 'property';
 
 // This hook now accepts the output of `useOntologyIndex`
-export const useInsertMenuItems = (
+export function useInsertMenuItems(
     indexedOntology: ReturnType<typeof useOntologyIndex>,
     mode: InsertMenuMode = 'all'
-): InsertMenuItem[] => {
+): InsertMenuItem[] {
     const {allTags, allTemplates, allProperties} = indexedOntology;
 
     return useMemo(() => {

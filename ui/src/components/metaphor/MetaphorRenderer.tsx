@@ -6,7 +6,7 @@ interface MetaphorRendererProps {
     metaphor: UIMetaphor;
 }
 
-export const MetaphorRenderer: React.FC<MetaphorRendererProps> = ({note, metaphor}) => {
+export function MetaphorRenderer({note, metaphor}: MetaphorRendererProps) {
     const matchedProperties = useMemo(() => metaphor.properties.map((prop) => {
         const propertyMatch = note.properties.find(p =>
             p.key === prop.name ||
@@ -33,7 +33,7 @@ export const MetaphorRenderer: React.FC<MetaphorRendererProps> = ({note, metapho
             </div>
         </div>
     );
-};
+}
 
 const MetaphorProperty: React.FC<{ label: string; match?: Property }> = ({label, match}) => (
     <div className="flex flex-col bg-gray-750 p-2 rounded">

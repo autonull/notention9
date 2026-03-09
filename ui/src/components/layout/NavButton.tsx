@@ -11,7 +11,7 @@ export interface NavButtonProps {
     tooltipPosition?: 'top' | 'bottom' | 'left' | 'right';
 }
 
-export const NavButton: React.FC<NavButtonProps> = ({
+export function NavButton({
                                                         icon,
                                                         label,
                                                         isActive,
@@ -19,7 +19,7 @@ export const NavButton: React.FC<NavButtonProps> = ({
                                                         badgeCount,
                                                         tooltip,
                                                         tooltipPosition = 'bottom'
-                                                    }) => {
+                                                    }: NavButtonProps) {
     // Use label as default tooltip if not suppressed (e.g. by explicitly passing empty string if we wanted that, but here we assume label is good default)
     const tooltipContent = tooltip ?? label;
 
@@ -49,4 +49,4 @@ export const NavButton: React.FC<NavButtonProps> = ({
             {button}
         </Tooltip>
     );
-};
+}
