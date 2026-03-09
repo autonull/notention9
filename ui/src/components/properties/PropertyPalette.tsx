@@ -19,13 +19,13 @@ interface PropertyOption {
     frequency?: number;
 }
 
-export const PropertyPalette: React.FC<PropertyPaletteProps> = ({
+export function PropertyPalette({
     isOpen,
     onClose,
     onInsert,
     ontology,
     suggestions = []
-}) => {
+}: PropertyPaletteProps) {
     const [filter, setFilter] = useState('');
     const [selectedIndex, setSelectedIndex] = useState(0);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -193,4 +193,4 @@ export const PropertyPalette: React.FC<PropertyPaletteProps> = ({
             </div>
         </div>
     );
-};
+}

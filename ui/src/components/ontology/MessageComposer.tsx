@@ -15,7 +15,7 @@ interface MessageComposerProps {
 const propertyExtractor = new PropertyExtractor(DEFAULT_ONTOLOGY);
 const ontologyService = new OntologyService(DEFAULT_ONTOLOGY);
 
-export const MessageComposer: React.FC<MessageComposerProps> = ({onSend}) => {
+export function MessageComposer({onSend}: MessageComposerProps) {
     const [recipient, setRecipient] = useState('');
     const [channel, setChannel] = useState('whatsapp');
     const [message, setMessage] = useState('');
@@ -134,4 +134,4 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({onSend}) => {
             </div>
         </div>
     );
-};
+}

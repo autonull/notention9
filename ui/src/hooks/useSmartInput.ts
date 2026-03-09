@@ -6,7 +6,7 @@ import {useNotes} from './useNotes';
 import {useView} from './useViewContext';
 import {useSuggestions} from '../components/contexts/SuggestionContext';
 
-export const useSmartInput = () => {
+export function useSmartInput() {
     const [isProcessing, setIsProcessing] = useState(false);
     const {alignToOntology} = useGardener();
     const {settings} = useSettings();

@@ -56,10 +56,10 @@ export function SuggestionProvider({children}: { children: ReactNode }) {
     );
 };
 
-export const useSuggestions = () => {
+export function useSuggestions() {
     const context = useContext(SuggestionContext);
     if (!context) {
         throw new Error('useSuggestions must be used within a SuggestionProvider');
     }
     return context;
-};
+}

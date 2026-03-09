@@ -11,7 +11,7 @@ interface SuggestionItemProps {
     onMouseEnter: () => void;
 }
 
-export const SuggestionItem: React.FC<SuggestionItemProps> = ({ suggestion, isActive, onApply, onMouseEnter }) => {
+export function SuggestionItem({ suggestion, isActive, onApply, onMouseEnter }: SuggestionItemProps) {
 
     const getIconForType = (type: string) => {
         switch (type) {
@@ -103,4 +103,4 @@ export const SuggestionItem: React.FC<SuggestionItemProps> = ({ suggestion, isAc
             </div>
         </div>
     );
-};
+}

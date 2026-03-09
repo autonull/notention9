@@ -11,14 +11,14 @@ interface MatchListProps {
     onSelect?: (match: ScoredMatch) => void;
 }
 
-export const MatchList: React.FC<MatchListProps> = ({
+export function MatchList({
     matches,
     isLocal,
     contacts,
     onConnect,
     onChat,
     onSelect
-}) => {
+}: MatchListProps) {
     if (!matches || matches.length === 0) {
         return null;
     }
@@ -42,4 +42,4 @@ export const MatchList: React.FC<MatchListProps> = ({
             })}
         </div>
     );
-};
+}

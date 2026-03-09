@@ -20,13 +20,13 @@ interface AttributeEditorModalProps {
 
 const ATTRIBUTE_TYPES = ['string', 'number', 'date', 'datetime', 'geo', 'enum', 'relationship'];
 
-export const AttributeEditorModal: React.FC<AttributeEditorModalProps> = ({
+export function AttributeEditorModal({
     isOpen,
     onClose,
     onConfirm,
     initialValues,
     title = 'Add Attribute'
-}) => {
+}: AttributeEditorModalProps) {
     const [key, setKey] = useState('');
     const [type, setType] = useState('string');
     const [description, setDescription] = useState('');
@@ -166,4 +166,4 @@ export const AttributeEditorModal: React.FC<AttributeEditorModalProps> = ({
             </form>
         </Modal>
     );
-};
+}

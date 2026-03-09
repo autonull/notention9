@@ -8,12 +8,12 @@ interface UseUrlRoutingProps {
     setSelectedNoteId: (id: string | null) => void;
 }
 
-export const useUrlRouting = ({
+export function useUrlRouting({
                                   activeView,
                                   setActiveView,
                                   selectedNoteId,
                                   setSelectedNoteId,
-                              }: UseUrlRoutingProps) => {
+                              }: UseUrlRoutingProps) {
     // Use a ref to track if the update is coming from the URL to prevent loops
     const isUpdatingFromUrl = useRef(false);
 

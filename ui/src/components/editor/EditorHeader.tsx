@@ -34,8 +34,6 @@ interface EditorHeaderProps {
     readOnly?: boolean;
     isToolbarVisible?: boolean;
     onToggleToolbar?: () => void;
-    isActive?: boolean;
-    onToggleActive?: () => void;
     actionLabel?: string;
     missingProperties?: string[];
     onAddProperty?: (key: string) => void;
@@ -69,8 +67,6 @@ export function EditorHeader({
                                  readOnly = false,
                                  isToolbarVisible = true,
                                  onToggleToolbar,
-                                 isActive,
-                                 onToggleActive,
                                  actionLabel = 'Publish',
                                  missingProperties = [],
                                  onAddProperty,
@@ -140,8 +136,6 @@ export function EditorHeader({
                     isPublishing={isPublishing}
                     isPublished={isPublished}
                     actionLabel={actionLabel}
-                    isActive={isActive}
-                    onToggleActive={onToggleActive}
                 />
             </div>
 

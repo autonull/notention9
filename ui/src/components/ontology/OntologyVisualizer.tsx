@@ -6,7 +6,7 @@ interface OntologyVisualizerProps {
     className?: string;
 }
 
-export const OntologyVisualizer: React.FC<OntologyVisualizerProps> = ({className = ''}) => {
+export function OntologyVisualizer({className = ''}: OntologyVisualizerProps) {
     const {settings} = useSettings();
     const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
     const [searchTerm, setSearchTerm] = useState('');
@@ -116,4 +116,4 @@ export const OntologyVisualizer: React.FC<OntologyVisualizerProps> = ({className
             </div>
         </div>
     );
-};
+}

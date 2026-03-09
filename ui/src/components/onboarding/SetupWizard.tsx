@@ -6,7 +6,7 @@ interface SetupWizardProps {
     service: OnboardingService;
 }
 
-export const SetupWizard: React.FC<SetupWizardProps> = ({onComplete, service}) => {
+export function SetupWizard({onComplete, service}: SetupWizardProps) {
     const [state, setState] = useState(service.getState());
     const currentStep = state.steps[state.currentStepIndex];
 
@@ -172,4 +172,4 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({onComplete, service}) =
             </div>
         </div>
     );
-};
+}

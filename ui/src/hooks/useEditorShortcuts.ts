@@ -13,7 +13,7 @@ interface UseEditorShortcutsProps {
     onFocusMatchPanel?: () => void;
 }
 
-export const useEditorShortcuts = ({
+export function useEditorShortcuts({
                                        dirtyNote,
                                        onSave,
                                        addToast,
@@ -23,7 +23,7 @@ export const useEditorShortcuts = ({
                                        onToggleActive,
                                        onTogglePrivacy,
                                        onFocusMatchPanel
-                                   }: UseEditorShortcutsProps) => {
+                                   }: UseEditorShortcutsProps) {
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if ((e.metaKey || e.ctrlKey) && e.key === 's') {

@@ -11,7 +11,7 @@ interface UseAutoTaggingProps {
     onTagsChange: (tags: string[]) => void;
 }
 
-export const useAutoTagging = ({content, tags, onTagsChange}: UseAutoTaggingProps) => {
+export function useAutoTagging({content, tags, onTagsChange}: UseAutoTaggingProps) {
     const {settings} = useSettings();
     const [isAutoTagging, setIsAutoTagging] = useState(false);
 

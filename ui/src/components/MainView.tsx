@@ -10,13 +10,12 @@ import {useMetaprogramming} from '../hooks/useMetaprogramming';
 import {LoadingSpinner} from './common/icons';
 import {ChatView} from './views/ChatView';
 import {MapView} from './views/MapView';
-import {TimelineView} from './views/TimelineView';
+import {TimeView} from './views/TimeView';
 import {NetworkView} from './views/NetworkView';
 import {NotesView} from './views/NotesView';
 import {OntologyView} from './views/OntologyView';
 import {SettingsView} from './views/SettingsView';
 import {DashboardView} from './views/DashboardView';
-import {ActionsView} from './views/ActionsView';
 
 interface MainViewProps {
     sortedNotes?: Note[];
@@ -50,8 +49,8 @@ export function MainView({sortedNotes}: MainViewProps) {
                 return <OntologyView/>;
             case 'map':
                 return <MapView/>;
-            case 'timeline':
-                return <TimelineView/>;
+            case 'time':
+                return <TimeView/>;
             case 'network':
                 const matchNote = matchingNoteId
                     ? notes.find((n) => n.id === matchingNoteId)
@@ -61,8 +60,6 @@ export function MainView({sortedNotes}: MainViewProps) {
                 return <ChatView/>;
             case 'settings':
                 return <SettingsView/>;
-            case 'actions':
-                return <ActionsView/>;
             default:
                 return null;
         }

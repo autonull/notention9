@@ -9,7 +9,6 @@ import {useEditorShortcuts} from '../../hooks/useEditorShortcuts';
 import type {Note, OntologyNode} from '@notention/core';
 import {metaphorMapper} from '@notention/core';
 import {EditorHeader} from './EditorHeader';
-import {useView} from '../../hooks/useViewContext';
 import {TiptapEditorRef} from './TiptapEditor';
 import {HybridEditor} from './HybridEditor';
 import {TemplateSelector} from './TemplateSelector';
@@ -22,7 +21,6 @@ import {MetaphorRenderer} from '../metaphor/MetaphorRenderer';
 import {PrivacyConfirmModal} from '../modals/PrivacyConfirmModal';
 import {MatchReplies} from '../match/MatchReplies';
 import {useMatches} from '../../hooks/useMatches';
-import {AgentFeedbackPanel} from './AgentFeedbackPanel';
 
 interface EditorManagerProps {
     note: Note;
@@ -57,9 +55,7 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
         saveStatus,
         privacyConfirmation,
         handlePrivacyConfirm,
-        handlePrivacyCancel,
-        isActive,
-        handleToggleActive
+        handlePrivacyCancel
     } = useEditorLogic({note, onSave});
 
     const {
@@ -75,7 +71,7 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
         handleRequestLocationPick
     } = useEditorModals(handleUpdateProperty, handleUpdateLocation);
 
-    const {setSelectedNoteId, matches: globalMatches} = useView();
+    const {setSelectedNoteId} = useView();
     const {addToast} = useToast();
     const editorRef = useRef<TiptapEditorRef>(null);
     const [isToolbarVisible, setIsToolbarVisible] = useState(true);
@@ -105,13 +101,7 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
         addToast,
         handlePrevious,
         handleNext,
-        setSelectedNoteId,
-        onToggleActive: handleToggleActive,
-        onTogglePrivacy: () => setDirtyNote(prev => ({...prev, privacy: prev.privacy === 'public' ? 'private' : 'public'})),
-        onFocusMatchPanel: () => {
-            const matchesPanel = document.getElementById('match-replies-panel');
-            matchesPanel?.scrollIntoView({ behavior: 'smooth' });
-        }
+        setSelectedNoteId
     });
 
     const handleInsertTemplate = (template: OntologyNode) => {
@@ -133,33 +123,7 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
     };
 
     const activeMetaphor = metaphorMapper.mapToMetaphor(dirtyNote);
-    const localMatches = useMatches(dirtyNote);
-
-    // Integrate network matches from ViewContext
-    const networkMatchesForNote = globalMatches
-        .filter(m => m.localNoteId === note.id)
-        .map(m => {
-            // Convert to ScoredMatch shape for MatchReplies
-            const fakeNote: Note = {
-                id: m.event.id,
-                title: '',
-                content: m.event.content,
-                createdAt: m.event.created_at * 1000,
-                updatedAt: m.event.created_at * 1000,
-                tags: [],
-                properties: [], // Parse if needed, or rely on MatchReplies rendering content
-                author: m.event.pubkey,
-                _attachments: []
-            };
-            return {
-                note: fakeNote,
-                result: { score: m.score, matches: [], satisfied: m.satisfied },
-                direction: 'incoming' as 'incoming' | 'outgoing' | 'bidirectional'
-            };
-        });
-
-    // Combine local and network matches, sort by score
-    const combinedMatches = [...localMatches, ...networkMatchesForNote].sort((a, b) => b.result.score - a.result.score);
+    const matches = useMatches(dirtyNote);
 
     const handleMatchClick = useCallback((match: any) => {
         // Navigate or preview match
@@ -197,8 +161,6 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                 onCopyContent={handleCopyContent}
                 isToolbarVisible={isToolbarVisible}
                 onToggleToolbar={() => setIsToolbarVisible(!isToolbarVisible)}
-                isActive={isActive}
-                onToggleActive={handleToggleActive}
                 actionLabel={actionLabel}
                 missingProperties={missingProperties}
                 onAddProperty={handleAddPropertyHint}
@@ -247,20 +209,8 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                     )}
 
                     {/* Match Replies - Simulated Thread */}
-                    <div id="match-replies-panel" className="px-8 pb-8 max-w-4xl mx-auto w-full">
-                        <MatchReplies matches={combinedMatches} onMatchClick={handleMatchClick} />
-                        {(dirtyNote.privacy === 'private' || !dirtyNote.privacy) ? (
-                            <div className="text-center mt-4 text-xs text-gray-500 font-medium border border-dashed border-gray-700/50 rounded-lg p-4 bg-gray-800/20">
-                                🔒 This is a private note. Network matching is disabled. Make it public to find matches.
-                            </div>
-                        ) : (
-                            combinedMatches.length === 0 && (
-                                <div className="text-center mt-4 text-xs text-gray-400 font-medium border border-dashed border-blue-900/30 rounded-lg p-4 bg-blue-900/10">
-                                    <span className="inline-block animate-pulse mr-2">📡</span>
-                                    Listening for network matches...
-                                </div>
-                            )
-                        )}
+                    <div className="px-8 pb-8 max-w-4xl mx-auto w-full">
+                        <MatchReplies matches={matches} onMatchClick={handleMatchClick} />
                     </div>
                 </div>
 
@@ -272,10 +222,7 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                     />
                 )}
 
-                {isActive && (
-                    <AgentFeedbackPanel />
-                )}
-
+                {/* Assistant Sidebar */}
                 <div
                     className={`
                         flex flex-col h-full bg-gray-900 border-l border-gray-700/50

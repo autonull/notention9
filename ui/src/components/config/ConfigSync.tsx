@@ -3,7 +3,7 @@ import {useNotes} from '../../hooks/useNotes';
 import {useSettings} from '../../hooks/useSettingsContext';
 import {mergeConfigs, parseConfigFromNote} from '@notention/core';
 
-export const ConfigSync: React.FC = () => {
+export function ConfigSync() {
     const {notes} = useNotes();
     const {setSettings} = useSettings();
 
@@ -31,4 +31,4 @@ export const ConfigSync: React.FC = () => {
     }, [notes, setSettings]);
 
     return null;
-};
+}

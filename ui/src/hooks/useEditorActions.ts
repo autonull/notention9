@@ -2,7 +2,7 @@ import {useCallback} from 'react';
 import {useToast} from './useToast';
 import type {Note} from '@notention/core';
 
-export const useEditorActions = (dirtyNote: Note) => {
+export function useEditorActions(dirtyNote: Note) {
     const {addToast} = useToast();
 
     const handleExport = useCallback(() => {

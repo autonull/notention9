@@ -16,11 +16,11 @@ interface QueryBuilderUIProps {
 
 const queryBuilder = new QueryBuilderService(DEFAULT_ONTOLOGY);
 
-export const QueryBuilderUI: React.FC<QueryBuilderUIProps> = ({
+export function QueryBuilderUI({
                                                                   initialProperties = [],
                                                                   onChange,
                                                                   onValidate
-                                                              }) => {
+                                                              }: QueryBuilderUIProps) {
     const [properties, setProperties] = useState<Property[]>(initialProperties);
     const [showSuggestions, setShowSuggestions] = useState(false);
 
@@ -197,4 +197,4 @@ export const QueryBuilderUI: React.FC<QueryBuilderUIProps> = ({
             )}
         </div>
     );
-};
+}

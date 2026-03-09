@@ -2,14 +2,14 @@ import React from 'react';
 
 export type IconProps = React.SVGProps<SVGSVGElement>;
 
-export const BaseIcon: React.FC<IconProps & { children: React.ReactNode; fill?: string; stroke?: string }> = ({
+export function BaseIcon({
                                                                                                                   className,
                                                                                                                   children,
                                                                                                                   fill = "none",
                                                                                                                   stroke = "currentColor",
                                                                                                                   viewBox = "0 0 24 24",
                                                                                                                   ...props
-                                                                                                              }) => (
+                                                                                                              }: IconProps & { children: React.ReactNode; fill?: string; stroke?: string }) { return (
     <svg
         xmlns="http://www.w3.org/2000/svg"
         className={className}
@@ -21,12 +21,12 @@ export const BaseIcon: React.FC<IconProps & { children: React.ReactNode; fill?: 
     >
         {children}
     </svg>
-);
+); }
 
-export const OutlineIcon: React.FC<IconProps & { children: React.ReactNode }> = (props) => (
+export function OutlineIcon(props: IconProps & { children: React.ReactNode }) { return (
     <BaseIcon fill="none" stroke="currentColor" {...props} />
-);
+); }
 
-export const SolidIcon: React.FC<IconProps & { children: React.ReactNode }> = (props) => (
+export function SolidIcon(props: IconProps & { children: React.ReactNode }) { return (
     <BaseIcon fill="currentColor" stroke="none" {...props} />
-);
+); }

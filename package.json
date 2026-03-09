@@ -33,6 +33,7 @@
     "estraverse": "^5.3.0",
     "has-property-descriptors": "^1.0.2",
     "node-llama-cpp": "^3.15.1",
+    "ts-morph": "^27.0.2",
     "ts-node": "^10.9.2"
   }
 }

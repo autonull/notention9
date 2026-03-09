@@ -18,13 +18,13 @@ interface PropertyInputProps {
 
 const ontologyService = new OntologyService(DEFAULT_ONTOLOGY);
 
-export const PropertyInput: React.FC<PropertyInputProps> = ({
+export function PropertyInput({
                                                                 attributeKey,
                                                                 value,
                                                                 operator = 'is',
                                                                 onChange,
                                                                 onOperatorChange
-                                                            }) => {
+                                                            }: PropertyInputProps) {
     // Query ontology for widget metadata
     const metadata = useMemo(() => {
         return ontologyService.getWidgetMetadata(attributeKey);
@@ -160,4 +160,4 @@ export const PropertyInput: React.FC<PropertyInputProps> = ({
             </div>
         </div>
     );
-};
+}

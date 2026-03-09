@@ -4,7 +4,7 @@ interface AgentCursorProps {
     // In a real implementation this would accept a WebSocket connection or event emitter
 }
 
-export const AgentCursor: React.FC<AgentCursorProps> = () => {
+export function AgentCursor() {
     const [position, setPosition] = useState<{ x: number, y: number } | null>(null);
     const [action, setAction] = useState<string | null>(null);
 
@@ -65,4 +65,4 @@ export const AgentCursor: React.FC<AgentCursorProps> = () => {
             )}
         </div>
     );
-};
+}

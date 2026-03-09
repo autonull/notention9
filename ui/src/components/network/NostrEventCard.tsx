@@ -44,91 +44,106 @@ export function NostrEventCard({
 
     return (
         <div
-            className="bg-[#1e293b] rounded-xl border border-gray-700/50 animate-fade-in relative overflow-hidden group hover:border-[#3b82f6]/50 transition-colors">
+            className="bg-gray-800 rounded-lg border border-gray-700/80 animate-fade-in relative overflow-hidden group hover:border-blue-500/30 transition-colors">
 
-            <div className="p-5">
-                {/* Header Row: Title/Author and Stats */}
-                <div className="flex justify-between items-start mb-4">
-                    <div className="flex items-center gap-3">
-                        <Avatar
-                            src={profile?.picture}
-                            pubkey={event.pubkey}
-                            size="sm"
-                        />
-                        <div className="min-w-0">
-                            <div className="flex items-center gap-2">
-                                <span title="Published" className="text-xs">🌐</span>
-                                <div
-                                    className="font-bold text-white text-base truncate cursor-pointer hover:text-blue-400 transition-colors"
-                                    title={authorNpub}
-                                >
-                                    {profile?.name || formatNpub(authorNpub)}
-                                </div>
-                            </div>
-                            <div className="text-xs text-gray-400 mt-0.5">Posted {eventDate}</div>
-                        </div>
-                    </div>
+            {/* Match Score Badge */}
+            {matchScore !== undefined && (
+                <div
+                    className={`absolute top-0 right-0 px-3 py-1 text-xs font-bold rounded-bl-lg shadow-sm z-10 ${
+                        matchScore > 80
+                            ? 'bg-green-600 text-white'
+                            : matchScore > 50
+                                ? 'bg-yellow-600 text-white'
+                                : 'bg-gray-600 text-gray-200'
+                    }`}
+                >
+                    {Math.round(matchScore)}% Match
+                </div>
+            )}
 
-                    <div className="flex items-center gap-3">
-                        {matchScore !== undefined && (
-                            <div className="flex items-center gap-1 text-sm font-bold text-[#f59e0b]">
-                                <span>⭐</span>
-                                <span>{Math.round(matchScore)}%</span>
-                            </div>
-                        )}
-                        <div className="flex items-center gap-1 text-sm text-gray-400" title="Connections">
-                            <span>🔁</span>
-                            <span>{(parseInt(event.id.substring(0, 4), 16) % 5) + 1}</span>
+            <div className="p-4">
+                {/* Header */}
+                <div className="flex items-center gap-3 mb-3">
+                    <Avatar
+                        src={profile?.picture}
+                        pubkey={event.pubkey}
+                        size="sm"
+                    />
+                    <div className="min-w-0">
+                        <div
+                            className="font-semibold text-white truncate hover:underline cursor-pointer"
+                            title={authorNpub}
+                        >
+                            {profile?.name || formatNpub(authorNpub)}
                         </div>
+                        <div className="text-xs text-gray-500">{eventDate}</div>
                     </div>
                 </div>
 
-                {/* Semantic Properties Inline Highlight */}
-                {properties.length > 0 && (
-                    <div className="mb-3 text-sm text-gray-300">
-                        {properties.map((prop, idx) => {
-                            let icon = '🏷️';
-                            if (prop.key.match(/role|job|skill/i)) icon = '💼';
-                            else if (prop.key.match(/budget|price/i)) icon = '💰';
-                            else if (prop.key.match(/location|city/i)) icon = '📍';
+                {/* Content */}
+                <div className="text-gray-300 text-sm whitespace-pre-wrap break-words mb-4 line-clamp-6">
+                    {event.content}
+                </div>
 
-                            return (
-                                <React.Fragment key={idx}>
-                                    <span className="font-medium text-blue-200">{icon} {prop.values.join(', ')}</span>
-                                    {idx < properties.length - 1 && <span className="mx-2 text-gray-600">•</span>}
-                                </React.Fragment>
-                            );
-                        })}
+                {/* Semantic Properties */}
+                {properties.length > 0 && (
+                    <div className="mb-3 flex flex-wrap gap-2">
+                        {properties.map((prop, idx) => (
+                            <div key={idx}
+                                 className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono bg-blue-900/30 text-blue-300 border border-blue-900/50">
+                                <span className="font-bold">{prop.key}</span>
+                                <span className="opacity-70">{prop.operator === 'is' ? ':' : prop.operator}</span>
+                                <span className="text-white">{prop.values.join(', ')}</span>
+                            </div>
+                        ))}
                     </div>
                 )}
 
-                {/* Content Snippet */}
-                <div className="text-gray-400 text-sm whitespace-pre-wrap break-words mb-5 line-clamp-3 italic">
-                    "{event.content.substring(0, 150)}{event.content.length > 150 ? '...' : ''}"
-                </div>
+                {/* Hashtags */}
+                {hashtags.length > 0 && (
+                    <div className="mb-4 flex flex-wrap gap-2 text-xs text-gray-400">
+                        {hashtags.map((tag, idx) => (
+                            <span key={idx} className="hover:text-blue-400 cursor-pointer">#{tag}</span>
+                        ))}
+                    </div>
+                )}
 
                 {/* Actions */}
-                <div className="flex items-center gap-3">
-                    <button
-                        onClick={onFork}
-                        className="px-4 py-1.5 text-xs font-medium rounded-md bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white border border-gray-700 transition-colors"
-                    >
-                        [View]
-                    </button>
-                    <button
-                        onClick={handleChat}
-                        className="px-4 py-1.5 text-xs font-medium rounded-md bg-blue-900/30 text-blue-400 hover:bg-blue-900/50 border border-blue-900/50 transition-colors"
-                    >
-                        [Start Chat]
-                    </button>
+                <div
+                    className="flex justify-end gap-2 pt-3 border-t border-gray-700/50 opacity-100 md:opacity-80 group-hover:opacity-100 transition-all">
                     {onApplyMatch && properties.length > 0 && (
-                        <button
+                        <Button
                             onClick={() => onApplyMatch(event)}
-                            className="px-4 py-1.5 text-xs font-medium rounded-md bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white border border-gray-700 transition-colors"
+                            variant="secondary"
+                            size="xs"
+                            icon={MergeIcon}
+                            className="hover:bg-purple-600 hover:text-white"
+                            title="Apply semantic properties to your note"
                         >
-                            [Import as Note]
-                        </button>
+                            Apply Match
+                        </Button>
                     )}
+                    {onFork && (
+                        <Button
+                            onClick={onFork}
+                            variant="secondary"
+                            size="xs"
+                            icon={DocumentDuplicateIcon}
+                            className="hover:bg-green-600 hover:text-white"
+                            title="Fork this note to your collection"
+                        >
+                            Fork
+                        </Button>
+                    )}
+                    <Button
+                        onClick={handleChat}
+                        variant="secondary"
+                        size="xs"
+                        icon={ChatIcon}
+                        className="hover:bg-blue-600 hover:text-white"
+                    >
+                        Chat
+                    </Button>
                 </div>
             </div>
         </div>

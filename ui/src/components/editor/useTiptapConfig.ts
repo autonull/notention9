@@ -13,7 +13,6 @@ interface UseTiptapConfigProps {
     minimal?: boolean;
     notes?: Note[];
     onOpenPropertyModal?: (key: string) => void;
-    onOpenInlinePropertyForm?: (key: string, editor: any) => void;
     onMagic?: () => void;
     suggestions?: SuggestedAttribute[];
 }
@@ -26,7 +25,6 @@ export const useTiptapConfig = ({
                                     minimal,
                                     notes = [],
                                     onOpenPropertyModal,
-                                    onOpenInlinePropertyForm,
                                     onMagic,
                                     suggestions = []
                                 }: UseTiptapConfigProps) => {
@@ -114,7 +112,6 @@ export const useTiptapConfig = ({
             getNotes, // Changed this
             templates,
             onOpenPropertyModal,
-            onOpenInlinePropertyForm,
             onMagic
         }),
         content: sanitizeHTML(content),

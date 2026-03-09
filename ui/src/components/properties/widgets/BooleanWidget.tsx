@@ -5,7 +5,7 @@ interface WidgetProps {
     onChange: (val: string) => void;
 }
 
-export const BooleanWidget: React.FC<WidgetProps> = ({value, onChange}) => {
+export function BooleanWidget({value, onChange}: WidgetProps) {
     const isTrue = value === 'true' || value === true;
 
     return (
@@ -24,4 +24,4 @@ export const BooleanWidget: React.FC<WidgetProps> = ({value, onChange}) => {
             </button>
         </div>
     );
-};
+}

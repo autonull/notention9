@@ -1,7 +1,7 @@
 import {useMemo} from 'react';
 import type {OntologyAttribute, OntologyNode} from '@notention/core';
 
-export const useOntologyIndex = (ontology: OntologyNode[]) => {
+export function useOntologyIndex(ontology: OntologyNode[]) {
     return useMemo(() => {
         const safeOntology = Array.isArray(ontology) ? ontology : [];
 

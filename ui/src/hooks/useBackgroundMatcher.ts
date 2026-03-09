@@ -5,7 +5,7 @@ import {useView} from './useViewContext';
 import {useToast} from './useToast';
 import {convertEventToNote, DEFAULT_RELAYS, matchingService, pool} from '@notention/core';
 
-export const useBackgroundMatcher = () => {
+export function useBackgroundMatcher() {
     const {settings} = useSettings();
     const {notes} = useNotes(); // Local notes
     const {addMatch} = useView();

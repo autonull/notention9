@@ -10,7 +10,7 @@ interface UseChatProps {
     selectedContact: Contact | null;
 }
 
-export const useChat = ({privkey, pubkey, selectedContact}: UseChatProps) => {
+export function useChat({privkey, pubkey, selectedContact}: UseChatProps) {
     const { contacts, isLoading: contactsLoading, addContact } = useContacts();
 
     const [messages, setMessages] = useState<
