@@ -260,29 +260,28 @@ export class OntologyService {
         const uniqueKeys = Array.from(new Set(properties.map(p => p.key)));
         const canonicals = uniqueKeys.map(k => getCanonicalKey(k, this.ontology));
 
-        for (const src of canonicals) {
+        canonicals.forEach(src => {
             let coMap = this.coOccurrenceStats.get(src);
             if (!coMap) {
                 coMap = new Map<string, number>();
                 this.coOccurrenceStats.set(src, coMap);
             }
 
-            for (const target of canonicals) {
+            canonicals.forEach(target => {
                 if (src !== target) {
-                    coMap.set(target, (coMap.get(target) || 0) + 1);
+                    coMap!.set(target, (coMap!.get(target) || 0) + 1);
                 }
-            }
-        }
+            });
+        });
     }
 
     /**
      * Get suggested attributes based on usage frequency of unknown keys.
      */
     getSuggestedAttributes(minFrequency: number = 3): SuggestedAttribute[] {
-        const suggestions: SuggestedAttribute[] = [];
-
-        for (const [key, frequency] of this.unknownUsageStats.entries()) {
-            if (frequency >= minFrequency) {
+        return Array.from(this.unknownUsageStats.entries())
+            .filter(([, frequency]) => frequency >= minFrequency)
+            .map(([key, frequency]) => {
                 const values = this.unknownValuesSample.get(key) || [];
                 const type = inferPropertyType(key, values);
 
@@ -291,14 +290,8 @@ export class OntologyService {
                 const coMap = this.coOccurrenceStats.get(key);
                 if (coMap) {
                     // Find the known key with highest co-occurrence
-                    let maxCo = 0;
-                    let bestKey = '';
-                    for (const [otherKey, count] of coMap.entries()) {
-                        if (count > maxCo) {
-                            maxCo = count;
-                            bestKey = otherKey;
-                        }
-                    }
+                    const bestKey = Array.from(coMap.entries())
+                        .reduce((best, current) => current[1] > best[1] ? current : best, ['', 0])[0];
 
                     // Find which node owns this bestKey
                     if (bestKey) {
@@ -307,17 +300,15 @@ export class OntologyService {
                     }
                 }
 
-                suggestions.push({
+                return {
                     key,
                     type,
                     frequency,
                     confidence: Math.min(0.9, frequency / 10), // Simple confidence metric
                     parentContext: likelyContext
-                });
-            }
-        }
-
-        return suggestions.sort((a, b) => b.frequency - a.frequency);
+                };
+            })
+            .sort((a, b) => b.frequency - a.frequency);
     }
 
     /**
@@ -342,29 +333,29 @@ export class OntologyService {
         }
 
         // Convert scores to suggestions
-        const suggestions: SuggestedAttribute[] = [];
-        for (const [key, score] of scoreMap.entries()) {
-            // Determine type
-            let type: PropertyType = 'string';
-            const attr = this.attributeIndex.get(key);
-            if (attr) {
-                type = attr.type as PropertyType;
-            } else {
-                // If it's an unknown key, try to infer from samples
-                const values = this.unknownValuesSample.get(key);
-                type = inferPropertyType(key, values || []);
-            }
+        return Array.from(scoreMap.entries())
+            .map(([key, score]) => {
+                // Determine type
+                let type: PropertyType = 'string';
+                const attr = this.attributeIndex.get(key);
+                if (attr) {
+                    type = attr.type as PropertyType;
+                } else {
+                    // If it's an unknown key, try to infer from samples
+                    const values = this.unknownValuesSample.get(key);
+                    type = inferPropertyType(key, values || []);
+                }
 
-            suggestions.push({
-                key,
-                type,
-                frequency: score,
-                confidence: Math.min(0.95, score / 10), // Heuristic
-                parentContext: 'Contextual'
-            });
-        }
-
-        return suggestions.sort((a, b) => b.frequency - a.frequency).slice(0, limit);
+                return {
+                    key,
+                    type,
+                    frequency: score,
+                    confidence: Math.min(0.95, score / 10), // Heuristic
+                    parentContext: 'Contextual'
+                };
+            })
+            .sort((a, b) => b.frequency - a.frequency)
+            .slice(0, limit);
     }
 
     private findNodeOwningAttribute(attrKey: string): OntologyNode | null {
@@ -392,15 +383,15 @@ export class OntologyService {
         const links: Array<{ source: string, target: string, value: number }> = [];
         const processedPairs = new Set<string>();
 
-        for (const [source, targets] of this.coOccurrenceStats.entries()) {
-            for (const [target, count] of targets.entries()) {
+        Array.from(this.coOccurrenceStats.entries()).forEach(([source, targets]) => {
+            Array.from(targets.entries()).forEach(([target, count]) => {
                 const pairId = source < target ? `${source}-${target}` : `${target}-${source}`;
                 if (!processedPairs.has(pairId)) {
                     links.push({ source, target, value: count });
                     processedPairs.add(pairId);
                 }
-            }
-        }
+            });
+        });
 
         return { nodes, links };
     }
