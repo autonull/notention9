@@ -59,44 +59,26 @@ export class SkillToolAdapter {
     }
 
     public static convertToAgentAction(actions: ActionSequence['actions']): AgentAction | null {
-        let nav: any = null;
-        let scrape: any = null;
-        let screenshot: any = null;
-        const interactions: any[] = [];
-
-        for (const action of actions) {
-            switch (action.type) {
-                case 'navigate':
-                    if (!nav) nav = action;
-                    break;
-                case 'scrape':
-                    scrape = action;
-                    break;
-                case 'screenshot':
-                    screenshot = action;
-                    break;
-                case 'wait':
-                case 'click':
-                case 'type':
-                case 'hover':
-                case 'scroll':
-                    interactions.push({
-                        type: action.type,
-                        value: action.duration || action.value || action.text,
-                        selector: action.selector,
-                    });
-                    break;
-            }
-        }
-
+        const nav = actions.find(a => a.type === 'navigate');
         if (!nav) return null;
+
+        const scrape = actions.find(a => a.type === 'scrape');
+        const screenshot = actions.find(a => a.type === 'screenshot');
+
+        const interactions = actions
+            .filter(a => ['wait', 'click', 'type', 'hover', 'scroll'].includes(a.type))
+            .map(a => ({
+                type: a.type,
+                value: (a as any).duration || (a as any).value || (a as any).text,
+                selector: (a as any).selector,
+            }));
 
         return {
             type: 'browser',
-            url: nav.url!,
-            extract: scrape ? (scrape.scrapeRules as any) : undefined,
+            url: (nav as any).url!,
+            extract: scrape ? ((scrape as any).scrapeRules as any) : undefined,
             interactions,
-            screenshot: screenshot ? (screenshot.fullPage ? 'full' : true) : undefined
+            screenshot: screenshot ? ((screenshot as any).fullPage ? 'full' : true) : undefined
         };
     }
 }
