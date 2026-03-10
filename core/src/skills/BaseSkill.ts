@@ -51,9 +51,7 @@ export abstract class BaseSkill {
    * Transform external data to ontology properties
    */
   protected mapExternalToProperties(externalData: any, mapping: Record<string, string>): Property[] {
-    const properties: Property[] = [];
-
-    for (const [externalKey, ontologyKey] of Object.entries(mapping)) {
+    return Object.entries(mapping).reduce<Property[]>((properties, [externalKey, ontologyKey]) => {
       const value = this.extractValue(externalData, externalKey);
       if (value !== null && value !== undefined) {
         // Get default operator from ontology
@@ -66,9 +64,8 @@ export abstract class BaseSkill {
           values: Array.isArray(value) ? value : [String(value)]
         });
       }
-    }
-
-    return properties;
+      return properties;
+    }, []);
   }
 
   /**
@@ -82,16 +79,12 @@ export abstract class BaseSkill {
     }
 
     // Dot notation path (e.g., 'job.title')
-    const parts = path.split('.');
-    let current = data;
-    for (const part of parts) {
+    return path.split('.').reduce((current, part) => {
       if (current && typeof current === 'object' && part in current) {
-        current = current[part];
-      } else {
-        return null;
+        return current[part];
       }
-    }
-    return current;
+      return null;
+    }, data);
   }
 
   /**
