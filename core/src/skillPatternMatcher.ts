@@ -118,14 +118,14 @@ export class SkillPatternMatcher {
         // Check requiresAny (at least one must match)
         if (pattern.requiresAny && pattern.requiresAny.length > 0) {
             let anyMatched = false;
-            pattern.requiresAny.forEach(requirement => {
+            for (const requirement of pattern.requiresAny) {
                 const matches = this.matchRequirement(note.properties, requirement);
                 if (matches.length > 0) {
                     anyMatched = true;
                     matchedAttributes.push(...matches);
                     score += 20; // Bonus for optional match
                 }
-            });
+            }
 
             if (!anyMatched) {
                 // None of the optional requirements matched

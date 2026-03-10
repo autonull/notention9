@@ -155,13 +155,13 @@ export const validateNote = (note: Note, ontology: OntologyNode[]): ValidationRe
     const warnings: string[] = [];
 
     // 1. Validate individual properties
-    note.properties.forEach(p => {
+    for (const p of note.properties) {
         const result = validateProperty(p, ontology);
         if (!result.isValid) {
             errors.push(...result.errors.map(e => `Property '${p.key}': ${e}`));
         }
         if (result.warnings) warnings.push(...result.warnings);
-    });
+    }
 
     // 2. Check required attributes
     const noteCanonicalKeys = new Set(
@@ -178,11 +178,11 @@ export const validateNote = (note: Note, ontology: OntologyNode[]): ValidationRe
 
             // Check if note matches this node context
             if (nodeKeys.some(key => noteCanonicalKeys.has(key))) {
-                node.requiredAttributes.forEach(reqKey => {
+                for (const reqKey of node.requiredAttributes) {
                     if (!noteCanonicalKeys.has(reqKey)) {
                         errors.push(`Missing required property: '${reqKey}' (for ${node.label}).`);
                     }
-                });
+                }
             }
         }
 

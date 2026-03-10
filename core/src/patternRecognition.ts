@@ -27,21 +27,21 @@ export class PatternRecognitionService extends BaseService {
       const propertyFrequency: Record<string, { count: number; values: Record<string, number> }> = {};
       const temporalPatterns: Record<string, number[]> = {}; // Track patterns over time
 
-      notes.forEach(note => {
-        note.properties.forEach(prop => {
+      for (const note of notes) {
+        for (const prop of note.properties) {
           const key = `${prop.key}_${prop.operator}`;
 
           const freq = propertyFrequency[key] ??= { count: 0, values: {} };
           freq.count++;
 
-          prop.values.forEach(value => {
+          for (const value of prop.values) {
             freq.values[value] = (freq.values[value] ?? 0) + 1;
-          });
+          }
 
           // Track temporal patterns (when certain properties appear)
           (temporalPatterns[key] ||= []).push(new Date(note.updatedAt).getTime());
-        });
-      });
+        }
+      }
 
       // Generate potential patterns based on frequency and co-occurrence
       const newPatterns: Pattern[] = this.discoverPatterns(propertyFrequency, temporalPatterns, notes);
@@ -85,8 +85,9 @@ export class PatternRecognitionService extends BaseService {
       .map(([key, stats]) => ({ key, stats }));
 
     // Create patterns based on co-occurrences
-    frequentProps.forEach((propA, i) => {
-      frequentProps.slice(i + 1).forEach(propB => {
+    for (let i = 0; i < frequentProps.length; i++) {
+      const propA = frequentProps[i];
+      for (const propB of frequentProps.slice(i + 1)) {
         // Check if these properties often appear in close temporal proximity
         const timesA = temporalPatterns[propA.key] ?? [];
         const timesB = temporalPatterns[propB.key] ?? [];
@@ -121,8 +122,8 @@ export class PatternRecognitionService extends BaseService {
             patterns.push(pattern);
           }
         }
-      });
-    });
+      }
+    }
 
     return patterns;
   }
@@ -137,7 +138,8 @@ export class PatternRecognitionService extends BaseService {
     );
 
     // Look for sequences where certain properties tend to follow others
-    sortedNotes.slice(0, -1).forEach((currentNote, i) => {
+    for (let i = 0; i < sortedNotes.length - 1; i++) {
+      const currentNote = sortedNotes[i];
       const nextNote = sortedNotes[i + 1];
 
       // Calculate time difference (within 24 hours for it to be considered sequential)
@@ -145,8 +147,8 @@ export class PatternRecognitionService extends BaseService {
 
       if (timeDiff <= 24 * 60 * 60 * 1000) { // Within 24 hours
         // Look for property sequences
-        currentNote.properties.forEach(currProp => {
-          nextNote.properties.forEach(nextProp => {
+        for (const currProp of currentNote.properties) {
+          for (const nextProp of nextNote.properties) {
             // Create a pattern: when currProp appears, nextProp often follows
             const pattern: Pattern = {
               id: generateId('seq_pattern_'),
@@ -161,10 +163,10 @@ export class PatternRecognitionService extends BaseService {
             };
 
             patterns.push(pattern);
-          });
-        });
+          }
+        }
       }
-    });
+    }
 
     return patterns;
   }

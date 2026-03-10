@@ -71,7 +71,9 @@ export class PropertyExtractor {
 
     extractFromText(text: string): Property[] {
         const properties: Property[] = [];
-        this.strategies.forEach(strategy => strategy(text, properties));
+        for (const strategy of this.strategies) {
+            strategy(text, properties);
+        }
 
         // Normalize properties to canonical keys
         return this.normalizeProperties(properties);
@@ -97,11 +99,11 @@ export class PropertyExtractor {
     }
 
     private applyIntentStrategy(text: string, properties: Property[]): void {
-        INTENTS.forEach(intent => {
+        for (const intent of INTENTS) {
             if (intent.regex.test(text) && !properties.some(p => p.key === 'intent' && p.values.includes(intent.key))) {
                 properties.push({ key: 'intent', operator: 'is', values: [intent.key] });
             }
-        });
+        }
     }
 
     private applySendToStrategy(text: string, properties: Property[]): void {
@@ -170,18 +172,20 @@ export class PropertyExtractor {
         const words = text.split(/\s+/);
         const existingKeys = new Set(properties.map(p => p.key));
 
-        words.slice(0, -1).forEach((word, i) => {
-            if (word.length <= 3) return;
+        const slice = words.slice(0, -1);
+        for (let i = 0; i < slice.length; i++) {
+            const word = slice[i];
+            if (word.length <= 3) continue;
 
             const [match] = this.ontologyService.getFuzzyMatches(word, 1);
-            if (!match || existingKeys.has(match)) return;
+            if (!match || existingKeys.has(match)) continue;
 
             const nextWord = words[i + 1];
             if (nextWord.length > 2 && !STOP_WORDS.has(nextWord.toLowerCase())) {
                 properties.push({ key: match, operator: 'contains', values: [nextWord] });
                 existingKeys.add(match);
             }
-        });
+        }
     }
 
     inferType(value: string): PropertyType {
@@ -208,7 +212,9 @@ export class PropertyExtractor {
         if (enumOptions) {
             const invalidValues = values.filter(v => !enumOptions.includes(v));
             if (invalidValues.length > 0) {
-                 invalidValues.forEach(v => errors.push(`Value '${v}' not in enum options for '${key}'`));
+                 for (const v of invalidValues) {
+                    errors.push(`Value '${v}' not in enum options for '${key}'`);
+                }
             }
         }
 
