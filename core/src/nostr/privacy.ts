@@ -41,9 +41,9 @@ export async function getPrivacyTags(properties: Property[], level: PrivacyLevel
             return null;
         }));
 
-        for (const tag of valueTags) {
+        valueTags.forEach(tag => {
             if (tag) tags.push(tag);
-        }
+        });
     }
 
     return tags;

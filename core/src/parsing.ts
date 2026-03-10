@@ -51,7 +51,6 @@ const SYMBOLIC_REGEXES = Object.keys(SYMBOL_TO_OP)
   });
 
 // Strategy Pattern for Property Parsing
-export type PropertyParser = (content: string, ontology?: OntologyNode[]) => Property | null;
 
 const resolveKey = (key: string, ontology?: OntologyNode[]): string =>
     ontology ? getCanonicalKey(key, ontology) : resolveAlias(key);
@@ -70,54 +69,75 @@ const createProperty = (rawKey: string, operator: string, value: string, ontolog
     };
 };
 
-const parseColonFormat: PropertyParser = (content, ontology) => {
-    const parts = content.split(':');
-    if (parts.length < 2) return null;
+export interface PropertyParserStrategy {
+    parse(content: string, ontology?: OntologyNode[]): Property | null;
+}
 
-    const rawKey = parts[0];
-    const hasOperator = parts.length >= 3;
-    const operator = hasOperator ? parts[1] : 'is';
-    const value = hasOperator ? parts.slice(2).join(':') : parts[1];
+export class ColonFormatStrategy implements PropertyParserStrategy {
+    parse(content: string, ontology?: OntologyNode[]): Property | null {
+        const parts = content.split(':');
+        if (parts.length < 2) return null;
 
-    // Don't validate keys for explicit formats
-    return createProperty(rawKey, operator, value, ontology, false);
-};
+        const rawKey = parts[0];
+        const hasOperator = parts.length >= 3;
+        const operator = hasOperator ? parts[1] : 'is';
+        const value = hasOperator ? parts.slice(2).join(':') : parts[1];
 
-const parseSymbolicFormat: PropertyParser = (content, ontology) => {
-    const matchedSymbol = SYMBOLIC_REGEXES.find(({ regex }) => regex.test(content));
-
-    if (matchedSymbol) {
-        const symbolicMatch = content.match(matchedSymbol.regex)!;
-        return createProperty(symbolicMatch[1], matchedSymbol.op, symbolicMatch[3], ontology, false);
+        // Don't validate keys for explicit formats
+        return createProperty(rawKey, operator, value, ontology, false);
     }
-    return null;
-};
+}
 
-const parseWordFormat: PropertyParser = (content, ontology) => {
-    const wordOperatorMatch = content.match(REGEX.WORD_OP);
-
-    if (wordOperatorMatch) {
-        const [, rawKey, operator, value] = wordOperatorMatch;
-        return createProperty(rawKey, operator, value, ontology, true);
+export class SymbolicFormatStrategy implements PropertyParserStrategy {
+    parse(content: string, ontology?: OntologyNode[]): Property | null {
+        for (const { regex, op } of SYMBOLIC_REGEXES) {
+            const match = content.match(regex);
+            if (match) {
+                return createProperty(match[1], op, match[3], ontology, false);
+            }
+        }
+        return null;
     }
+}
 
-    const spaceMatch = content.match(REGEX.SPACE);
-    if (spaceMatch) {
-         const [, rawKey, value] = spaceMatch;
-         return createProperty(rawKey, 'is', value, ontology, true);
+export class WordFormatStrategy implements PropertyParserStrategy {
+    parse(content: string, ontology?: OntologyNode[]): Property | null {
+        const wordOperatorMatch = content.match(REGEX.WORD_OP);
+        if (wordOperatorMatch) {
+            const [, rawKey, operator, value] = wordOperatorMatch;
+            return createProperty(rawKey, operator, value, ontology, true);
+        }
+
+        const spaceMatch = content.match(REGEX.SPACE);
+        if (spaceMatch) {
+             const [, rawKey, value] = spaceMatch;
+             return createProperty(rawKey, 'is', value, ontology, true);
+        }
+
+        return null;
     }
+}
 
-    return null;
-};
+export class PropertyBlockParser {
+    private strategies: PropertyParserStrategy[] = [
+        new ColonFormatStrategy(),
+        new SymbolicFormatStrategy(),
+        new WordFormatStrategy()
+    ];
 
-const PARSERS: PropertyParser[] = [
-    parseColonFormat,
-    parseSymbolicFormat,
-    parseWordFormat
-];
+    parse(content: string, ontology?: OntologyNode[]): Property | null {
+        for (const strategy of this.strategies) {
+            const result = strategy.parse(content, ontology);
+            if (result) return result;
+        }
+        return null;
+    }
+}
+
+const parserInstance = new PropertyBlockParser();
 
 const parsePropertyBlock = (content: string, ontology?: OntologyNode[]): Property | null => {
-  return PARSERS.reduce<Property | null>((result, parser) => result || parser(content, ontology), null);
+  return parserInstance.parse(content, ontology);
 };
 
 export const extractProperties = (text: string, ontology?: OntologyNode[]): ExtractedProperty[] => {
