@@ -117,17 +117,11 @@ const PARSERS: PropertyParser[] = [
 ];
 
 const parsePropertyBlock = (content: string, ontology?: OntologyNode[]): Property | null => {
-  for (const parser of PARSERS) {
-    const result = parser(content, ontology);
-    if (result) return result;
-  }
-  return null;
+  return PARSERS.reduce<Property | null>((result, parser) => result || parser(content, ontology), null);
 };
 
 export const extractProperties = (text: string, ontology?: OntologyNode[]): ExtractedProperty[] => {
-  const extracted: ExtractedProperty[] = [];
-
-  for (const match of text.matchAll(REGEX.BRACKET)) {
+  return Array.from(text.matchAll(REGEX.BRACKET)).reduce<ExtractedProperty[]>((extracted, match) => {
     const parsed = parsePropertyBlock(match[1], ontology);
     if (parsed) {
       extracted.push({
@@ -137,21 +131,16 @@ export const extractProperties = (text: string, ontology?: OntologyNode[]): Extr
         originalText: match[0]
       });
     }
-  }
-  return extracted;
+    return extracted;
+  }, []);
 };
 
 const extractMacros = (text: string): Property[] => {
-    const properties: Property[] = [];
-    for (const macroMatch of text.matchAll(REGEX.MACRO)) {
-        properties.push(...expandMacro(macroMatch[1]));
-    }
-    return properties;
+    return Array.from(text.matchAll(REGEX.MACRO)).flatMap(macroMatch => expandMacro(macroMatch[1]));
 };
 
 const extractHtmlSpans = (text: string): Property[] => {
-    const properties: Property[] = [];
-    for (const spanMatch of text.matchAll(REGEX.SPAN)) {
+    return Array.from(text.matchAll(REGEX.SPAN)).reduce<Property[]>((properties, spanMatch) => {
         const tag = spanMatch[0];
         const nameMatch = tag.match(REGEX.SPAN_ATTR_NAME);
         const opMatch = tag.match(REGEX.SPAN_ATTR_OP);
@@ -164,8 +153,8 @@ const extractHtmlSpans = (text: string): Property[] => {
                 values: valMatch[1].split(',').map(v => v.trim())
             });
         }
-    }
-    return properties;
+        return properties;
+    }, []);
 }
 
 export const parseProperties = (text: string, ontology?: OntologyNode[]): Property[] => {
