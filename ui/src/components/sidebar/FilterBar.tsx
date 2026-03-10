@@ -21,20 +21,22 @@ export function FilterBar({searchTerm, onSetSearch}: FilterBarProps) {
     };
 
     const getButtonClass = (isActive: boolean, isAll = false) => `
-        flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-colors flex-shrink-0 border
+        flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 flex-shrink-0 border select-none
         ${isActive
-        ? (isAll ? 'bg-gray-700 text-white border-gray-600' : 'bg-blue-900/30 text-blue-200 border-blue-700/50')
-        : 'bg-transparent text-gray-400 border-gray-800 hover:bg-gray-800 hover:text-gray-300'}
+        ? (isAll
+            ? 'bg-gray-700 text-white border-gray-600 shadow-sm'
+            : 'bg-blue-900/30 text-blue-300 border-blue-500/30 shadow-sm shadow-blue-900/20')
+        : 'bg-transparent text-gray-400 border-transparent hover:bg-gray-800 hover:text-gray-200 hover:border-gray-700/50'}
     `;
 
     return (
-        <div className="flex items-center gap-1 overflow-x-auto pb-1 custom-scrollbar scrollbar-none">
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 -mx-3 px-3 scrollbar-hide mask-fade-sides">
             <button
                 onClick={() => onSetSearch('')}
                 className={getButtonClass(!searchTerm, true)}
                 title="All Notes"
             >
-                <ClockIcon className="w-3 h-3"/>
+                <ClockIcon className={`w-3.5 h-3.5 ${!searchTerm ? 'text-gray-200' : 'text-gray-500 group-hover:text-gray-400'}`}/>
                 All
             </button>
 
@@ -46,7 +48,7 @@ export function FilterBar({searchTerm, onSetSearch}: FilterBarProps) {
                         onClick={() => handleFilterClick(filter.query, filter.id)}
                         className={getButtonClass(isActive)}
                     >
-                        <filter.icon className={`w-3 h-3 ${isActive ? 'text-blue-400' : ''}`}/>
+                        <filter.icon className={`w-3.5 h-3.5 ${isActive ? 'text-blue-400' : 'text-gray-500'}`}/>
                         {filter.label}
                     </button>
                 );

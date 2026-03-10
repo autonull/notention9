@@ -30,13 +30,13 @@ export function Modal({isOpen, onClose, title, children, className}: ModalProps)
 
     return (
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in"
             onClick={handleBackdropClick}
             role="dialog"
             aria-modal="true"
         >
             <div
-                className={`bg-gray-800 rounded-lg shadow-xl border border-gray-700 w-full p-6 flex flex-col ${className ?? 'max-w-md'}`}
+                className={`bg-gray-800 rounded-lg shadow-xl border border-gray-700 w-full p-6 flex flex-col transition-all duration-200 ${className ?? 'max-w-md'}`}
                 onClick={e => e.stopPropagation()}
             >
                 <div className="flex justify-between items-center mb-4 flex-shrink-0">
@@ -44,7 +44,7 @@ export function Modal({isOpen, onClose, title, children, className}: ModalProps)
                     <button
                         onClick={onClose}
                         aria-label="Close"
-                        className="text-gray-400 hover:text-white transition-colors"
+                        className="text-gray-400 hover:text-white hover:bg-gray-700 p-1.5 rounded-full transition-colors"
                     >
                         ✕
                     </button>

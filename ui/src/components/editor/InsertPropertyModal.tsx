@@ -1,6 +1,6 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {Modal} from '../common/Modal';
-import {InformationCircleIcon, TagIcon, ExclamationTriangleIcon, SparklesIcon} from '../common/icons';
+import {InformationCircleIcon, TagIcon, ExclamationTriangleIcon, SparklesIcon, CodeBlockIcon} from '../common/icons';
 import {ICON_MAP} from '../layout/iconMap';
 import type {OntologyAttribute, OntologyNode, SuggestedAttribute} from '@notention/core';
 import {findAttributeDef} from '@notention/core';
@@ -24,35 +24,31 @@ interface InsertPropertyModalProps {
 }
 
 export function InsertPropertyModal({
-                                        isOpen,
-                                        onClose,
-                                        onInsert,
-                                        initialKey = '',
-                                        initialOperator = 'is',
-                                        initialValue = '',
-                                        attributeDef,
-                                        ontology,
-                                        isEditing = false,
-                                        onPickLocation,
-                                        suggestions = []
-                                    }: InsertPropertyModalProps) {
+    isOpen,
+    onClose,
+    onInsert,
+    initialKey = '',
+    initialOperator = 'is',
+    initialValue = '',
+    attributeDef,
+    ontology,
+    isEditing = false,
+    onPickLocation,
+    suggestions = []
+}: InsertPropertyModalProps) {
     const [key, setKey] = useState(initialKey);
     const [operator, setOperator] = useState(initialOperator);
     const [value, setValue] = useState(initialValue);
     const [touched, setTouched] = useState(false);
 
-    // Find attribute definition dynamically if key changes
     const activeDef = useMemo(() => {
         if (ontology && key) {
-            // First try direct lookup if ontology is flat or we have a helper
-            // findAttributeDef recursively searches the tree
             const found = findAttributeDef(key, ontology);
             if (found) return found;
         }
         return attributeDef;
     }, [key, ontology, attributeDef]);
 
-    // Reset state when opening
     useEffect(() => {
         if (isOpen) {
             setKey(initialKey || '');
@@ -62,21 +58,17 @@ export function InsertPropertyModal({
         }
     }, [isOpen, initialKey, initialOperator, initialValue]);
 
-    // Validate in real-time
     const validation = useMemo(() => {
         return validatePropertyAgainstOntology(key, operator, value, activeDef);
     }, [key, operator, value, activeDef]);
 
-    // Derived operators list
     const availableOperators = useMemo(() => {
         if (activeDef) {
             return [...(activeDef.operators.real || []), ...(activeDef.operators.imaginary || [])];
         }
-        // Default set if unknown
         return ['is', 'is not', 'greater than', 'less than', 'contains', 'between'];
     }, [activeDef]);
 
-    // Filter suggestions based on input
     const filteredSuggestions = useMemo(() => {
         if (!key || activeDef) return [];
         const lower = key.toLowerCase();
@@ -98,16 +90,13 @@ export function InsertPropertyModal({
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={isEditing ? "Edit Property" : "Insert Property"}>
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <p className="text-sm text-gray-400">
-                    Properties make your note machine-readable and searchable.
-                </p>
+            <form onSubmit={handleSubmit} className="space-y-5">
 
                 {/* Key Field */}
                 <div>
                     <label className="block text-xs uppercase font-bold text-gray-500 mb-2 tracking-wider flex items-center gap-1">
                         {activeDef?.icon && ICON_MAP[activeDef.icon] && React.createElement(ICON_MAP[activeDef.icon], {className: "w-4 h-4 text-blue-400"})}
-                        Key
+                        Property Key
                     </label>
                     <Input
                         type="text"
@@ -115,7 +104,7 @@ export function InsertPropertyModal({
                         value={key}
                         onChange={(e) => setKey(e.target.value)}
                         autoFocus={!activeDef}
-                        className={activeDef ? "border-blue-500/50" : ""}
+                        className={`w-full ${activeDef ? "border-blue-500/50 ring-1 ring-blue-500/20" : ""}`}
                         list="learned-keys"
                     />
                     <datalist id="learned-keys">
@@ -124,17 +113,16 @@ export function InsertPropertyModal({
                          ))}
                     </datalist>
 
-                    {/* Quick Suggestions Badges */}
                     {filteredSuggestions.length > 0 && (
-                         <div className="flex flex-wrap gap-1 mt-2">
+                         <div className="flex flex-wrap gap-2 mt-2">
                              {filteredSuggestions.map(s => (
                                  <button
                                      key={s.key}
                                      type="button"
                                      onClick={() => setKey(s.key)}
-                                     className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-purple-900/30 text-purple-300 border border-purple-800/50 hover:bg-purple-900/50 transition-colors"
+                                     className="flex items-center gap-1 text-[10px] px-2 py-1 rounded-full bg-purple-900/30 text-purple-300 border border-purple-800/50 hover:bg-purple-900/50 transition-colors"
                                  >
-                                     <SparklesIcon className="w-2.5 h-2.5" />
+                                     <SparklesIcon className="w-3 h-3" />
                                      {s.key}
                                  </button>
                              ))}
@@ -142,16 +130,16 @@ export function InsertPropertyModal({
                     )}
 
                     {activeDef && (
-                        <div className="flex flex-col gap-1 mt-1 text-xs">
+                        <div className="bg-blue-900/10 border border-blue-900/30 rounded p-2 mt-2 text-xs flex flex-col gap-1">
                             {activeDef.description && (
-                                <div className="flex items-center gap-1 text-blue-400">
-                                    <InformationCircleIcon className="w-3 h-3"/>
-                                    {activeDef.description}
+                                <div className="flex items-start gap-1.5 text-blue-300">
+                                    <InformationCircleIcon className="w-3.5 h-3.5 mt-0.5 flex-shrink-0"/>
+                                    <span>{activeDef.description}</span>
                                 </div>
                             )}
                             {activeDef.aliases && activeDef.aliases.length > 0 && (
-                                <div className="text-gray-500 pl-4">
-                                    <span className="italic">Aliases: </span>
+                                <div className="text-gray-500 pl-5">
+                                    <span className="italic text-gray-600">Also known as: </span>
                                     {activeDef.aliases.join(', ')}
                                 </div>
                             )}
@@ -159,61 +147,66 @@ export function InsertPropertyModal({
                     )}
                 </div>
 
-                {/* Operator Field */}
-                <div>
-                    <label className="block text-xs uppercase font-bold text-gray-500 mb-2 tracking-wider">
-                        Operator
-                    </label>
-                    <select
-                        className="w-full bg-gray-900/50 border border-gray-700/50 rounded-lg px-3 py-2.5 text-gray-300 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all"
-                        value={operator}
-                        onChange={(e) => setOperator(e.target.value)}
-                    >
-                        {availableOperators.map(op => (
-                            <option key={op} value={op}>{op}</option>
-                        ))}
-                    </select>
+                <div className="grid grid-cols-[1fr,2fr] gap-3">
+                    {/* Operator Field */}
+                    <div>
+                        <label className="block text-xs uppercase font-bold text-gray-500 mb-2 tracking-wider">
+                            Operator
+                        </label>
+                        <select
+                            className="w-full bg-gray-900/50 border border-gray-700/50 rounded-lg px-3 py-2.5 text-gray-300 text-sm focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all cursor-pointer hover:bg-gray-800/50"
+                            value={operator}
+                            onChange={(e) => setOperator(e.target.value)}
+                        >
+                            {availableOperators.map(op => (
+                                <option key={op} value={op}>{op}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Value Field */}
+                    <div>
+                        <label className="block text-xs uppercase font-bold text-gray-500 mb-2 tracking-wider">
+                            Value
+                        </label>
+                        <PropertyValueInput
+                            value={value}
+                            onChange={(val) => {
+                                setValue(val);
+                                setTouched(true);
+                            }}
+                            attributeDef={activeDef}
+                            onPickLocation={onPickLocation}
+                        />
+                    </div>
                 </div>
 
-                {/* Value Field */}
-                <div>
-                    <label className="block text-xs uppercase font-bold text-gray-500 mb-2 tracking-wider">
-                        Value
-                    </label>
-                    <PropertyValueInput
-                        value={value}
-                        onChange={(val) => {
-                            setValue(val);
-                            setTouched(true);
-                        }}
-                        attributeDef={activeDef}
-                        onPickLocation={onPickLocation}
-                    />
-
-                    {/* Validation Error Message */}
-                    {touched && !validation.isValid && (
-                        <div className="flex items-center gap-1.5 mt-2 text-red-400 text-xs animate-fadeIn">
-                            <ExclamationTriangleIcon className="w-3.5 h-3.5"/>
-                            <span>{validation.message}</span>
-                        </div>
-                    )}
-                </div>
+                {/* Validation Error Message */}
+                {touched && !validation.isValid && (
+                    <div className="bg-red-900/20 border border-red-900/50 rounded p-2 flex items-center gap-2 text-red-300 text-xs animate-fadeIn">
+                        <ExclamationTriangleIcon className="w-4 h-4 flex-shrink-0"/>
+                        <span>{validation.message}</span>
+                    </div>
+                )}
 
                 {/* Preview */}
-                <div className={`p-3 rounded border flex items-center justify-between transition-colors ${
-                    validation.isValid ? 'bg-gray-900/50 border-gray-700/50' : 'bg-red-900/20 border-red-900/50'
+                <div className={`mt-2 p-3 rounded-lg border flex items-center justify-between transition-colors ${
+                    validation.isValid && key && value ? 'bg-gray-900/80 border-gray-700' : 'bg-gray-900/30 border-gray-800'
                 }`}>
-                    <span className="text-xs text-gray-500 uppercase">Preview</span>
-                    <code className={`${validation.isValid ? 'text-blue-400' : 'text-red-400'} font-mono text-sm`}>
+                    <div className="flex items-center gap-2 text-gray-500">
+                        <CodeBlockIcon className="w-4 h-4" />
+                        <span className="text-xs uppercase font-semibold">Preview</span>
+                    </div>
+                    <code className={`${validation.isValid && key && value ? 'text-blue-300' : 'text-gray-600'} font-mono text-sm`}>
                         {preview}
                     </code>
                 </div>
 
-                <div className="flex justify-end gap-2 pt-2">
+                <div className="flex justify-end gap-3 pt-4 border-t border-gray-700/50">
                     <Button
                         type="button"
                         onClick={onClose}
-                        variant="ghost"
+                        variant="secondary"
                     >
                         Cancel
                     </Button>
@@ -223,7 +216,7 @@ export function InsertPropertyModal({
                         variant="primary"
                         icon={TagIcon}
                     >
-                        {isEditing ? "Update" : "Insert"}
+                        {isEditing ? "Update Property" : "Insert Property"}
                     </Button>
                 </div>
             </form>

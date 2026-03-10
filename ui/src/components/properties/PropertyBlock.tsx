@@ -6,6 +6,18 @@ import {DateWidget} from './widgets/DateWidget';
 import {EnumWidget} from './widgets/EnumWidget';
 import {TextWidget} from './widgets/TextWidget';
 import {OperatorDropdown} from './OperatorDropdown';
+import {
+    ClockIcon,
+    CurrencyDollarIcon,
+    MapPinIcon,
+    TagIcon,
+    BriefcaseIcon,
+    TrashIcon,
+    BoltIcon,
+    ChartBarIcon,
+    HomeIcon,
+    XMarkIcon
+} from '../common/icons';
 
 interface PropertyBlockProps {
     property: Property;
@@ -16,12 +28,12 @@ interface PropertyBlockProps {
 }
 
 export const PropertyBlock: React.FC<PropertyBlockProps> = ({
-                                                                property,
-                                                                onUpdate,
-                                                                onDelete,
-                                                                ontology,
-                                                                autoFocus
-                                                            }) => {
+    property,
+    onUpdate,
+    onDelete,
+    ontology,
+    autoFocus
+}) => {
     const [isEditing, setIsEditing] = useState(false);
     const [localValue, setLocalValue] = useState(property.values[0] || '');
     const [hasChanges, setHasChanges] = useState(false);
@@ -36,7 +48,6 @@ export const PropertyBlock: React.FC<PropertyBlockProps> = ({
     const handleSave = useCallback(() => {
         if (hasChanges) {
             onUpdate({...property, values: [localValue]});
-            // Success animation class logic (could be handled via CSS modules or just classes)
             blockRef.current?.classList.add('property-saved');
             setTimeout(() => {
                 blockRef.current?.classList.remove('property-saved');
@@ -76,7 +87,7 @@ export const PropertyBlock: React.FC<PropertyBlockProps> = ({
             onChange: handleChange,
             onKeyDown: handleKeyDown,
             operator: property.operator,
-            options: attributeDef?.options || [] // Passed to all, used by Enum
+            options: attributeDef?.options || []
         };
 
         switch (attributeType) {
@@ -89,13 +100,8 @@ export const PropertyBlock: React.FC<PropertyBlockProps> = ({
                 return <DateWidget {...widgetProps} type={attributeType}/>;
             case 'enum':
                 return <EnumWidget {...widgetProps} />;
-            // case 'boolean': return <BooleanWidget {...widgetProps} />; // If we had boolean type in ontology
             case 'string':
             default:
-                // Handle explicit boolean check if needed, but ontology uses enum for boolean mostly??
-                if (localValue === 'true' || localValue === 'false') {
-                    // Maybe auto-detect boolean? Or stick to ontology type.
-                }
                 return <TextWidget {...widgetProps} />;
         }
     };
@@ -106,57 +112,91 @@ export const PropertyBlock: React.FC<PropertyBlockProps> = ({
         return [...attributeDef.operators.real, ...attributeDef.operators.imaginary];
     };
 
+    const IconComponent = getPropertyIcon(property.key);
+
     return (
         <div
             ref={blockRef}
-            className={`property-block transition-all duration-200 border border-transparent hover:border-blue-300 rounded p-1 mb-1 cursor-pointer ${isEditing ? 'bg-gray-800 border-blue-500 shadow-lg z-10' : 'hover:bg-gray-800/50'}`}
+            className={`
+                property-block relative group transition-all duration-200 border rounded-md mb-1.5 overflow-hidden
+                ${isEditing
+                    ? 'bg-gray-800 border-blue-500/50 shadow-lg z-10 p-3'
+                    : 'bg-gray-800/30 border-transparent hover:bg-gray-800 hover:border-gray-700 cursor-pointer p-2'
+                }
+            `}
             onClick={(e) => {
                 if (!isEditing) {
-                    e.stopPropagation(); // Prevent parent click
+                    e.stopPropagation();
                     setIsEditing(true);
                 }
             }}
         >
             {!isEditing ? (
-                <div className="flex items-center gap-2 text-sm">
-                    <span className="text-gray-400">{getPropertyIcon(property.key)}</span>
-                    <span className="font-medium text-blue-300">{property.key}</span>
-                    <span className="text-gray-500">{property.operator}</span>
-                    <span className="text-gray-200">{formatValue(property)}</span>
-                    {isValid(property) && <span className="text-green-500 ml-auto text-xs">✓</span>}
-                    <button
-                        className="ml-2 text-gray-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            onDelete();
-                        }}
-                    >
-                        ×
-                    </button>
+                <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center w-6 h-6 rounded bg-gray-700/50 text-gray-400">
+                        <IconComponent className="w-3.5 h-3.5" />
+                    </div>
+
+                    <div className="flex items-baseline gap-2 min-w-0 flex-1">
+                        <span className="text-sm font-semibold text-gray-300 truncate" title={property.key}>
+                            {property.key}
+                        </span>
+                        <span className="text-xs text-gray-500 font-mono">
+                            {property.operator}
+                        </span>
+                        <span className={`text-sm truncate ${property.key.match(/rate|price|cost|budget/) ? 'text-green-400 font-mono' : 'text-blue-300'}`}>
+                            {formatValue(property)}
+                        </span>
+                    </div>
+
+                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                         {isValid(property) && <div className="w-1.5 h-1.5 rounded-full bg-green-500/50 shadow-[0_0_4px_rgba(34,197,94,0.5)]"></div>}
+                        <button
+                            className="p-1 text-gray-500 hover:text-red-400 hover:bg-red-900/20 rounded transition-colors"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onDelete();
+                            }}
+                            title="Delete property"
+                        >
+                            <TrashIcon className="w-3.5 h-3.5" />
+                        </button>
+                    </div>
                 </div>
             ) : (
-                <div className="p-2 space-y-2">
-                    <div className="flex items-center gap-2 mb-2">
-                        <span className="text-gray-400">{getPropertyIcon(property.key)}</span>
-                        <span className="font-bold text-gray-200">{property.key}</span>
+                <div className="space-y-3">
+                    <div className="flex items-center justify-between border-b border-gray-700/50 pb-2">
+                        <div className="flex items-center gap-2">
+                            <IconComponent className="w-4 h-4 text-blue-400" />
+                            <span className="font-bold text-sm text-gray-200 tracking-wide">{property.key}</span>
+                        </div>
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onDelete();
+                            }}
+                             className="text-xs text-red-400 hover:text-red-300 hover:underline flex items-center gap-1"
+                        >
+                            <TrashIcon className="w-3 h-3" /> Remove
+                        </button>
                     </div>
 
                     <div className="flex gap-2">
-                        <div className="w-1/3">
+                        <div className="w-[100px] flex-shrink-0">
                             <OperatorDropdown
                                 value={property.operator}
                                 options={getValidOperators(property.key, ontology)}
                                 onChange={(op) => onUpdate({...property, operator: op})}
                             />
                         </div>
-                        <div className="flex-1">
+                        <div className="flex-1 min-w-0">
                             {getWidget()}
                         </div>
                     </div>
 
-                    <div className="flex justify-end gap-2 mt-2">
+                    <div className="flex justify-end gap-2 pt-1">
                         <button
-                            className="px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 rounded text-gray-300"
+                            className="px-3 py-1.5 text-xs font-medium text-gray-400 hover:text-white hover:bg-gray-700 rounded transition-colors"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 handleCancel();
@@ -165,14 +205,14 @@ export const PropertyBlock: React.FC<PropertyBlockProps> = ({
                             Cancel
                         </button>
                         <button
-                            className="px-3 py-1 text-xs bg-blue-600 hover:bg-blue-500 rounded text-white font-medium disabled:opacity-50"
+                            className="px-3 py-1.5 text-xs font-medium bg-blue-600 hover:bg-blue-500 text-white rounded shadow-sm shadow-blue-900/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 handleSave();
                             }}
                             disabled={!hasChanges}
                         >
-                            Save
+                            Save Changes
                         </button>
                     </div>
                 </div>
@@ -182,11 +222,16 @@ export const PropertyBlock: React.FC<PropertyBlockProps> = ({
 };
 
 // Helpers
-const getPropertyIcon = (key: string): string => {
-    const icons: Record<string, string> = {
-        role: '💼', rate: '💰', location: '📍', remote: '🏠', deadline: '📅', experience: '📊', skill: '⚡',
-    };
-    return icons[key] || '🏷️';
+const getPropertyIcon = (key: string): React.ComponentType<{ className?: string }> => {
+    const k = key.toLowerCase();
+    if (k.match(/rate|price|cost|budget|amount|fee/)) return CurrencyDollarIcon;
+    if (k.match(/location|place|city|country|geo/)) return MapPinIcon;
+    if (k.match(/deadline|date|time|start|end|due/)) return ClockIcon;
+    if (k.match(/role|job|title|position/)) return BriefcaseIcon;
+    if (k.match(/skill|tech|stack/)) return BoltIcon;
+    if (k.match(/experience|level|seniority/)) return ChartBarIcon;
+    if (k.match(/remote|onsite|hybrid/)) return HomeIcon;
+    return TagIcon;
 };
 
 const formatValue = (prop: Property): string => {
