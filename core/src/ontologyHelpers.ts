@@ -33,9 +33,8 @@ export const findAttributeDef = (key: string, nodes: OntologyNode[]): OntologyAt
             if (node.attributes[key]) return node.attributes[key];
 
             // Check aliases
-            for (const attr of Object.values(node.attributes)) {
-                if (attr.aliases?.includes(key)) return attr;
-            }
+            const aliasMatch = Object.values(node.attributes).find(attr => attr.aliases?.includes(key));
+            if (aliasMatch) return aliasMatch;
         }
 
         if (node.children) {
@@ -57,9 +56,8 @@ export const getCanonicalKey = (key: string, nodes: OntologyNode[]): string => {
         if (node.attributes) {
             if (node.attributes[key]) return key; // It's canonical
 
-            for (const [canonicalKey, attr] of Object.entries(node.attributes)) {
-                if (attr.aliases?.includes(key)) return canonicalKey;
-            }
+            const entryMatch = Object.entries(node.attributes).find(([, attr]) => attr.aliases?.includes(key));
+            if (entryMatch) return entryMatch[0];
         }
 
         if (node.children) {
@@ -161,9 +159,8 @@ export const findNodeIdForAttribute = (nodes: OntologyNode[], key: string): stri
         const node = stack.pop()!;
         if (node.attributes) {
             if (node.attributes[key]) return node.id;
-            for (const attr of Object.values(node.attributes)) {
-                if (attr.aliases?.includes(key)) return node.id;
-            }
+            const aliasMatch = Object.values(node.attributes).find(attr => attr.aliases?.includes(key));
+            if (aliasMatch) return node.id;
         }
         if (node.children) {
             stack.push(...node.children);
