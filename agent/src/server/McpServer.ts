@@ -27,7 +27,7 @@ export async function setupMcpServer(app: Express) {
     await pluginManager.register(new BatchPlugin());
 
     // Register Tools
-    registry.getToolDefinitions().forEach(tool => {
+    for (const tool of registry.getToolDefinitions()) {
         logger.info(`Registering MCP tool: ${tool.name}`);
         server.registerTool(tool.name, {
             description: tool.description,
@@ -42,7 +42,7 @@ export async function setupMcpServer(app: Express) {
             }
             return result;
         });
-    });
+    }
 
     // --- Transport Setup ---
 

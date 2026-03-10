@@ -260,19 +260,19 @@ export class OntologyService {
         const uniqueKeys = Array.from(new Set(properties.map(p => p.key)));
         const canonicals = uniqueKeys.map(k => getCanonicalKey(k, this.ontology));
 
-        canonicals.forEach(src => {
+        for (const src of canonicals) {
             let coMap = this.coOccurrenceStats.get(src);
             if (!coMap) {
                 coMap = new Map<string, number>();
                 this.coOccurrenceStats.set(src, coMap);
             }
 
-            canonicals.forEach(target => {
+            for (const target of canonicals) {
                 if (src !== target) {
                     coMap!.set(target, (coMap!.get(target) || 0) + 1);
                 }
-            });
-        });
+            }
+        }
     }
 
     /**
@@ -383,15 +383,15 @@ export class OntologyService {
         const links: Array<{ source: string, target: string, value: number }> = [];
         const processedPairs = new Set<string>();
 
-        Array.from(this.coOccurrenceStats.entries()).forEach(([source, targets]) => {
-            Array.from(targets.entries()).forEach(([target, count]) => {
+        for (const [source, targets] of this.coOccurrenceStats.entries()) {
+            for (const [target, count] of targets.entries()) {
                 const pairId = source < target ? `${source}-${target}` : `${target}-${source}`;
                 if (!processedPairs.has(pairId)) {
                     links.push({ source, target, value: count });
                     processedPairs.add(pairId);
                 }
-            });
-        });
+            }
+        }
 
         return { nodes, links };
     }
