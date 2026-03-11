@@ -1,7 +1,3 @@
-/**
- * Custom error types for Notention system
- */
-
 export class PredictionError extends Error {
   constructor(message: string, public override readonly cause?: Error) {
     super(message);
@@ -10,7 +6,7 @@ export class PredictionError extends Error {
 }
 
 export class ValidationError extends Error {
-  constructor(message: string, public readonly details?: any) {
+  constructor(message: string, public readonly details?: unknown) {
     super(message);
     this.name = 'ValidationError';
   }

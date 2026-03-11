@@ -19,11 +19,10 @@ export interface PropertyMatch {
 }
 
 const parseNumber = (val: string): number | null => {
-    // Extract first number found in string to handle "100 USD", "$100", etc.
-    const match = val.match(/-?\d+(\.\d+)?/);
-    if (!match) return null;
-    const num = parseFloat(match[0]);
-    return isNaN(num) ? null : num;
+  const match = val.match(/-?\d+(\.\d+)?/);
+  if (!match) return null;
+  const num = parseFloat(match[0]);
+  return isNaN(num) ? null : num;
 };
 
 const createMatch = (
@@ -35,33 +34,29 @@ const createMatch = (
 ): PropertyMatch => ({ requestProp, offerProp, compatibility, reason, details });
 
 const CANONICAL: Record<string, string> = {
-    js: 'javascript',
-    javascript: 'javascript',
-    ts: 'typescript',
-    typescript: 'typescript',
-    py: 'python',
-    python: 'python',
-    react: 'react',
-    reactjs: 'react',
-    node: 'nodejs',
-    nodejs: 'nodejs',
-    dev: 'developer',
-    developer: 'developer',
-    engineer: 'developer',
-    eng: 'engineer',
-    swe: 'software engineer',
-    'software engineer': 'software engineer',
-    remote: 'remote',
-    wfh: 'remote',
-    distributed: 'remote',
+  js: 'javascript',
+  javascript: 'javascript',
+  ts: 'typescript',
+  typescript: 'typescript',
+  py: 'python',
+  python: 'python',
+  react: 'react',
+  reactjs: 'react',
+  node: 'nodejs',
+  nodejs: 'nodejs',
+  dev: 'developer',
+  developer: 'developer',
+  engineer: 'developer',
+  eng: 'engineer',
+  swe: 'software engineer',
+  'software engineer': 'software engineer',
+  remote: 'remote',
+  wfh: 'remote',
+  distributed: 'remote',
 };
 
-const normalizeTerm = (term: string): string => {
-    if (!term) return '';
-    const lower = term.toLowerCase().trim();
-    const clean = lower.replace(/[^a-z0-9\s]/g, '');
-    return CANONICAL[clean] || clean;
-};
+const normalizeTerm = (term: string): string =>
+  term ? CANONICAL[term.toLowerCase().trim().replace(/[^a-z0-9\s]/g, '')] ?? term.toLowerCase().trim().replace(/[^a-z0-9\s]/g, '') : '';
 
 export const PropertyMatchers = {
     evaluateNumber: (request: Property, offer: Property): PropertyMatch => {

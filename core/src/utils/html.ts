@@ -1,21 +1,22 @@
-/**
- * Extracts plain text from an HTML string using regex.
- * Safe for use in Node.js and Browser.
- */
-export function getTextFromHtml(html: string): string {
-    if (!html) return '';
-    // Replace block tags with newlines
-    let text = html.replace(/<\/(p|div|h[1-6]|li|blockquote|pre)>/gi, '\n');
-    // Replace <br> with newline
-    text = text.replace(/<br\s*\/?>/gi, '\n');
-    // Strip all other tags
-    text = text.replace(/<[^>]+>/g, '');
-    // Decode entities (basic ones)
-    text = text
-        .replace(/&nbsp;/g, ' ')
-        .replace(/&amp;/g, '&')
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&quot;/g, '"');
-    return text.trim();
-}
+const HTML_ENTITY_MAP: Record<string, string> = {
+  '&nbsp;': ' ',
+  '&amp;': '&',
+  '&lt;': '<',
+  '&gt;': '>',
+  '&quot;': '"',
+};
+
+const BLOCK_TAGS = /<\/(p|div|h[1-6]|li|blockquote|pre)>/gi;
+const BR_TAGS = /<br\s*\/?>/gi;
+const ALL_TAGS = /<[^>]+>/g;
+
+export const getTextFromHtml = (html: string): string => {
+  if (!html) return '';
+  let text = html.replace(BLOCK_TAGS, '\n');
+  text = text.replace(BR_TAGS, '\n');
+  text = text.replace(ALL_TAGS, '');
+  for (const [entity, char] of Object.entries(HTML_ENTITY_MAP)) {
+    text = text.replace(new RegExp(entity, 'g'), char);
+  }
+  return text.trim();
+};

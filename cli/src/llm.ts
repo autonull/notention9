@@ -15,9 +15,9 @@ marked.use({
 });
 
 const REGEX = {
-    JSON_BLOCK: /```json\s*(\{[\s\S]*?\})\s*```/g,
-    FALLBACK: /(\{\s*"tool"\s*:[\s\S]*?\})/g
-};
+  JSON_BLOCK: /```json\s*(\{[\s\S]*?\})\s*```/g,
+  FALLBACK: /(\{\s*"tool"\s*:[\s\S]*?\})/g,
+} as const;
 
 export interface ToolDefinition {
     name: string;
@@ -120,32 +120,27 @@ export class LlmSession {
         return this.activeContext;
     }
 
-    private async fetchOntology() {
-        if (this.ontologyCache) return;
-        try {
-            const result: any = await this.toolExecutor('query_ontology', { query: 'ROOT' });
-            this.ontologyCache = (result?.content?.[0]?.text) ?? "No ontology available.";
-        } catch (e) {
-            // log.warn(`Failed to fetch ontology: ${e}`);
-            this.ontologyCache = "Ontology unavailable.";
-        }
+  private async fetchOntology() {
+    if (this.ontologyCache) return;
+    try {
+      const result: any = await this.toolExecutor('query_ontology', { query: 'ROOT' });
+      this.ontologyCache = result?.content?.[0]?.text ?? "No ontology available.";
+    } catch {
+      this.ontologyCache = "Ontology unavailable.";
     }
+  }
 
-    private async fetchCapabilities() {
-        if (this.capabilitiesCache) return;
-        try {
-            // Check if tool exists
-            const hasTool = this.tools.some(t => t.name === 'get_capabilities');
-            if (hasTool) {
-                const result: any = await this.toolExecutor('get_capabilities', {});
-                this.capabilitiesCache = result?.content?.[0]?.text
-                    ? JSON.parse(result.content[0].text)
-                    : null;
-            }
-        } catch (e) {
-            // Ignore capability fetch errors (tool might not exist yet)
-        }
+  private async fetchCapabilities() {
+    if (this.capabilitiesCache) return;
+    try {
+      if (this.tools.some(t => t.name === 'get_capabilities')) {
+        const result: any = await this.toolExecutor('get_capabilities', {});
+        this.capabilitiesCache = result?.content?.[0]?.text ? JSON.parse(result.content[0].text) : null;
+      }
+    } catch {
+      // Ignore capability fetch errors (tool might not exist yet)
     }
+  }
 
     async handleInteraction(input: string) {
         // Provider health check is now handled by the provider itself
@@ -230,19 +225,22 @@ export class LlmSession {
         }
     }
 
-    private parseToolCalls(text: string): ToolCall[] {
-        const jsonMatches = [...text.matchAll(REGEX.JSON_BLOCK)];
-        const matches = jsonMatches.length > 0 ? jsonMatches : [...text.matchAll(REGEX.FALLBACK)];
+  private parseToolCalls(text: string): ToolCall[] {
+    const matches = [...text.matchAll(REGEX.JSON_BLOCK)].length > 0
+      ? [...text.matchAll(REGEX.JSON_BLOCK)]
+      : [...text.matchAll(REGEX.FALLBACK)];
 
-        return matches.map(match => {
-            try {
-                return JSON.parse(match[1]);
-            } catch (e) {
-                log.error("Failed to parse tool JSON snippet", e);
-                return null;
-            }
-        }).filter((call): call is ToolCall => call !== null && typeof call.tool === 'string');
-    }
+    return matches
+      .map(match => {
+        try {
+          return JSON.parse(match[1]);
+        } catch {
+          log.error("Failed to parse tool JSON snippet");
+          return null;
+        }
+      })
+      .filter((call): call is ToolCall => call !== null && typeof call.tool === 'string');
+  }
 
     private async processToolCall(call: ToolCall) {
         try {
