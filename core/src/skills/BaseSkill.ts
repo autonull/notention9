@@ -116,7 +116,7 @@ export abstract class BaseSkill {
       },
 
       // Privacy: Results default to same as source note
-      public: sourceNote.public,
+      privacy: sourceNote.privacy,
 
       // Priority: Normal
       priority: 0.5

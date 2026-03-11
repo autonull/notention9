@@ -254,7 +254,7 @@ function matchableNote(prop: Property): Note {
             identifier: 'match-engine',
             timestamp: Date.now()
         },
-        public: false,
+        privacy: 'private',
         priority: 1
     } as Note;
 }

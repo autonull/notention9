@@ -69,7 +69,7 @@ describe('Phase 2.3: Multi-Instance Coordination', () => {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         source: { type: 'user', identifier: id, timestamp: Date.now() },
-        public: true,
+        privacy: 'public',
         priority: 1
     });
 
@@ -89,13 +89,13 @@ describe('Phase 2.3: Multi-Instance Coordination', () => {
     });
 
     it('Scenario 2: Secret-Secret Match', async () => {
-        const aliceNote = createNote('alice_spy', 'spy', 'secret');
-        await publishNoteToNostr(aliceNote, DUMMY_PRIVKEY, ['wss://dummy'], undefined, 'secret');
+        const aliceNote = createNote('alice_spy', 'spy', 'private');
+        await publishNoteToNostr(aliceNote, DUMMY_PRIVKEY, ['wss://dummy'], undefined, 'private');
 
         const bobEngine = new MatchEngine([]);
         const bobDiscovery = new NetworkDiscoveryService(bobEngine);
-        const bobInterests = createNote('bob_spy', 'spy', 'secret');
-        const matches = await bobDiscovery.discoverMatches(bobInterests, ['wss://dummy'], 'secret');
+        const bobInterests = createNote('bob_spy', 'spy', 'private');
+        const matches = await bobDiscovery.discoverMatches(bobInterests, ['wss://dummy'], 'private');
 
         expect(matches.length).toBeGreaterThan(0);
         const event = mockRelayEvents.find((e: any) => e.kind === 35000);
@@ -103,8 +103,8 @@ describe('Phase 2.3: Multi-Instance Coordination', () => {
     });
 
     it('Scenario 3: Eve cannot find Secret note', async () => {
-        const aliceNote = createNote('alice_secret', 'spy', 'secret');
-        await publishNoteToNostr(aliceNote, DUMMY_PRIVKEY, ['wss://dummy'], undefined, 'secret');
+        const aliceNote = createNote('alice_secret', 'spy', 'private');
+        await publishNoteToNostr(aliceNote, DUMMY_PRIVKEY, ['wss://dummy'], undefined, 'private');
 
         const eveEngine = new MatchEngine([]);
         const eveDiscovery = new NetworkDiscoveryService(eveEngine);

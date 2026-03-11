@@ -1,7 +1,7 @@
 import { parseConfigFromNote, mergeConfigs } from '@notention/core';
 import type { Note, AppSettings } from '@notention/core';
-import { log } from '../core/utils.ts';
-import { Capabilities } from '../core/Capabilities.ts';
+import { log } from '../core/utils';
+import { Capabilities } from '../core/Capabilities';
 import { VoltAgentProvider } from '@notention/agent-voltagent';
 
 export class ConfigProcessor {

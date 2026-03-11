@@ -175,17 +175,18 @@ export function EditorControls({
                     />
                 )}
 
-                <Button
-                  onClick={onPublish}
-                  isLoading={isPublishing}
-                  title={isPublished ? 'Update on Nostr' : actionLabel}
-                  icon={SendIcon}
-                  variant={actionLabel !== 'Publish' ? 'primary' : 'ghost'}
-                  className={actionLabel === 'Publish' ? 'text-blue-400 hover:text-white hover:bg-blue-600' : ''}
-                  size="sm"
-                >
-                  {actionLabel !== 'Publish' && actionLabel}
-                </Button>
+                {actionLabel !== 'Publish' && (
+                    <Button
+                      onClick={onPublish}
+                      isLoading={isPublishing}
+                      title={actionLabel}
+                      icon={SendIcon}
+                      variant='primary'
+                      size="sm"
+                    >
+                      {actionLabel}
+                    </Button>
+                )}
             </div>
 
             <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />

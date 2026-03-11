@@ -6,7 +6,6 @@ import { PropertyExtractor, Property, replacePropertyInString, parseProperties, 
 import { useSettings } from '../../hooks/useSettingsContext';
 import { Button } from '../common/Button';
 import { LocalDiscoverySidebar } from '../discovery/LocalDiscoverySidebar';
-import { PublishPanel } from '../publish/PublishPanel';
 import { FeedbackWidget } from '../common/FeedbackWidget';
 import { agentService } from '../../services/AgentService';
 
@@ -105,7 +104,6 @@ export const HybridEditor = forwardRef<TiptapEditorRef, HybridEditorProps>((prop
         }}>
             {/* Main Editor Area */}
             <div className="flex-1 flex flex-col min-w-0 relative">
-                <PublishPanel note={props.note} onUpdate={handleNoteUpdate} />
                 <TiptapEditor ref={ref} {...props} onSave={handleContentChange} />
 
                 <PropertyPalette

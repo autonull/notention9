@@ -96,7 +96,7 @@ export class DynamicSkill implements Skill {
         return (sequence as any).customAction;
     }
 
-    async import(results: any[]): Promise<Note[]> {
+    import(results: any[]): Note[] {
         // Generic import: just wrap the result
         return results.map((res, idx) => ({
             id: crypto.randomUUID(),
@@ -107,8 +107,12 @@ export class DynamicSkill implements Skill {
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             source: { type: 'skill', identifier: this.id, timestamp: Date.now() },
-            public: false,
+            privacy: 'private',
             priority: 0
         }));
+    }
+
+    importFromData(data: any[], sourceNote: Note): Note[] {
+        return this.import(data);
     }
 }

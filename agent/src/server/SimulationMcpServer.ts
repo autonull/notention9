@@ -91,7 +91,19 @@ export function setupSimulationMcpServer(app: Express) {
 
     // --- Apply to MCP Server ---
     registry.getToolDefinitions().forEach(tool => {
-        server.tool(tool.name, tool.description, tool.schema as any, tool.handler);
+        server.registerTool(tool.name, {
+            description: tool.description,
+            inputSchema: tool.schema
+        }, async (args) => {
+            const result = await tool.handler(args);
+            if (typeof result === 'string') {
+                return { content: [{ type: 'text', text: result }] };
+            }
+            if (typeof result === 'object' && result !== null && !('content' in result)) {
+                return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+            }
+            return result;
+        });
     });
 
     // --- Transport Setup ---
