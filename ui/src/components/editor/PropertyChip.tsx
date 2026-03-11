@@ -14,14 +14,16 @@ export const PropertyChip = (props: NodeViewProps) => {
     const {settings} = useSettings();
     const {propertyTypes} = useOntologyIndex(settings.ontology);
 
-    const IconComponent = icon && ICON_MAP[icon] ? ICON_MAP[icon] : TagIcon;
-
-    // Enhanced Validation Logic
-    const definition = propertyTypes.get(name);
-
     const canonicalKey = useMemo(() => {
         return getCanonicalKey(name, settings.ontology);
     }, [name, settings.ontology]);
+
+    // Enhanced Validation Logic - Use canonical key to look up definition
+    const definition = propertyTypes.get(canonicalKey);
+
+    // Use icon from definition if available (for aliases or typed properties), fallback to node attr or default
+    const effectiveIcon = definition?.icon || icon;
+    const IconComponent = effectiveIcon && ICON_MAP[effectiveIcon] ? ICON_MAP[effectiveIcon] : TagIcon;
 
     const isAlias = canonicalKey !== name;
 

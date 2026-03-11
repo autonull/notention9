@@ -8,7 +8,9 @@ import {
     ChatIcon,
     ClockIcon,
     CheckCircleIcon,
-    ExclamationTriangleIcon
+    ExclamationTriangleIcon,
+    XMarkIcon,
+    QuestionMarkCircleIcon
 } from '../common/icons';
 
 interface MatchItemProps {
@@ -134,7 +136,7 @@ export const MatchItem: React.FC<MatchItemProps> = ({
 
                     return (
                         <span
-                            key={i}
+                            key={`match-${i}`}
                             className={`
                                 text-[10px] px-1.5 py-0.5 rounded border flex items-center gap-1
                                 ${badgeClass}
@@ -146,6 +148,30 @@ export const MatchItem: React.FC<MatchItemProps> = ({
                         </span>
                     );
                 })}
+
+                {/* Conflicts */}
+                {result.conflicts?.map((m, i) => (
+                    <span
+                        key={`conflict-${i}`}
+                        className="text-[10px] px-1.5 py-0.5 rounded border flex items-center gap-1 bg-red-900/20 text-red-300 border-red-900/30"
+                        title={m.reason}
+                    >
+                        <XMarkIcon className="w-3 h-3" />
+                        {m.reason}
+                    </span>
+                ))}
+
+                {/* Missing */}
+                {result.missing?.map((p, i) => (
+                    <span
+                        key={`missing-${i}`}
+                        className="text-[10px] px-1.5 py-0.5 rounded border border-dashed flex items-center gap-1 bg-gray-800/30 text-gray-500 border-gray-700"
+                        title={`Missing property: ${p.key}`}
+                    >
+                        <QuestionMarkCircleIcon className="w-3 h-3" />
+                        Missing: {p.key}
+                    </span>
+                ))}
             </div>
 
             {/* Actions (Network Only) */}

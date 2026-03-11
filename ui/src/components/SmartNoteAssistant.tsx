@@ -46,6 +46,7 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
     const [attributeModalOpen, setAttributeModalOpen] = useState(false);
     const [aliasModalOpen, setAliasModalOpen] = useState(false);
     const [targetKey, setTargetKey] = useState<string>('');
+    const [inferredType, setInferredType] = useState<string>('string');
 
     // UI State
     const [isOpen, setIsOpen] = useState(true);
@@ -63,6 +64,7 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
         if (networkMatches.length === 0) return [];
         const uniqueKeys = new Set<string>();
         const counts = new Map<string, number>();
+        const valuesMap = new Map<string, string[]>();
 
         networkMatches.forEach(m => {
             m.note.properties.forEach(p => {
@@ -74,13 +76,36 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
                 if (!def) {
                     uniqueKeys.add(p.key);
                     counts.set(p.key, (counts.get(p.key) || 0) + 1);
+
+                    const existing = valuesMap.get(p.key) || [];
+                    valuesMap.set(p.key, [...existing, ...p.values]);
                 }
             });
         });
 
         return Array.from(uniqueKeys)
             .sort((a, b) => (counts.get(b)! - counts.get(a)!))
-            .map(key => ({ key, count: counts.get(key)! }));
+            .map(key => {
+                // Infer type
+                const values = valuesMap.get(key) || [];
+                let type = 'string';
+
+                if (values.length > 0) {
+                    // Use Number() for stricter check than parseFloat (which allows trailing chars)
+                    const allNumbers = values.every(v => !isNaN(Number(v)) && v.trim() !== '');
+                    if (allNumbers) {
+                        type = 'number';
+                    } else {
+                        // Check for date format
+                        const allDates = values.every(v => !isNaN(Date.parse(v)));
+                        if (allDates) {
+                            type = 'date';
+                        }
+                    }
+                }
+
+                return { key, count: counts.get(key)!, inferredType: type };
+            });
     }, [networkMatches, settings.ontology]);
 
     const handleConnect = async (match: ScoredMatch) => {
@@ -266,18 +291,20 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
                                                      <span className="text-xs font-bold text-gray-300">Discovered Properties</span>
                                                  </div>
                                                  <div className="flex flex-wrap gap-2">
-                                                     {unknownProperties.map(({key, count}) => (
+                                                     {unknownProperties.map(({key, count, inferredType}) => (
                                                          <div key={key} className="flex items-center gap-1 bg-gray-900 rounded border border-gray-700 px-1.5 py-1">
                                                              <span className="text-xs text-gray-300 font-mono">{key}</span>
                                                              {count > 1 && <span className="text-[10px] text-gray-500">({count})</span>}
+                                                             <span className="text-[9px] text-gray-600 italic px-1">{inferredType}</span>
                                                              <div className="flex gap-1 ml-1 pl-1 border-l border-gray-700">
                                                                  <button
                                                                      onClick={() => {
                                                                          setTargetKey(key);
+                                                                         setInferredType(inferredType);
                                                                          setAttributeModalOpen(true);
                                                                      }}
                                                                      className="text-[10px] text-blue-400 hover:text-blue-300 px-1"
-                                                                     title="Define as new attribute"
+                                                                     title={`Define as new ${inferredType} attribute`}
                                                                  >
                                                                      Add
                                                                  </button>
@@ -386,7 +413,7 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
                 isOpen={attributeModalOpen}
                 onClose={() => setAttributeModalOpen(false)}
                 onConfirm={handleConfirmAddAttribute}
-                initialValues={{ key: targetKey, type: 'string' }}
+                initialValues={{ key: targetKey, type: inferredType }}
                 title={`Define '${targetKey}'`}
             />
 
