@@ -1,7 +1,9 @@
 import type {Dispatch, SetStateAction} from 'react';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import localforage from 'localforage';
-import {Logger} from '@notention/core';
+import {createScopedLogger} from './logging.js';
+
+const log = createScopedLogger('useLocalForage');
 
 export function useLocalForage<T>(
     key: string,
@@ -51,7 +53,7 @@ export function useLocalForage<T>(
                 setLoading(false);
             })
             .catch((err) => {
-                Logger.getInstance().error(`Error reading from localForage key "${key}":`, err);
+                log.error(`Error reading from localForage key "${key}"`, err);
                 if (isMounted) {
                     setLoading(false);
                 }
@@ -60,7 +62,7 @@ export function useLocalForage<T>(
         return () => {
             isMounted = false;
         };
-    }, [key, driver]); // Add driver to dependencies
+    }, [key, driver]);
 
     const setValue: Dispatch<SetStateAction<T>> = useCallback(
         (value) => {
@@ -70,7 +72,7 @@ export function useLocalForage<T>(
 
                 const storage = driver || localforage;
                 storage.setItem(key, valueToStore).catch((err) => {
-                    Logger.getInstance().error(`Error writing to localForage key "${key}":`, err);
+                    log.error(`Error writing to localForage key "${key}"`, err);
                 });
 
                 return valueToStore;

@@ -2,18 +2,38 @@ import { Logger } from '../utils/logging.js';
 
 type Listener = (...args: any[]) => void;
 
+/**
+ * Message queued for delivery when connection is unavailable
+ */
 export interface QueuedMessage {
     data: any;
     timestamp: number;
     retries: number;
 }
 
+/**
+ * Configuration options for RobustWebSocket
+ */
 export interface RobustWebSocketOptions {
+    /** Maximum number of reconnection attempts (default: 5) */
     maxReconnectAttempts?: number;
+    /** Ping interval in milliseconds */
     pingInterval?: number;
-    webSocketCtor?: any; // For Node.js environments (ws)
+    /** WebSocket constructor for Node.js environments (ws package) */
+    webSocketCtor?: any;
 }
 
+/**
+ * RobustWebSocket - Resilient WebSocket connection with automatic reconnection,
+ * message queuing, and offline mode support.
+ *
+ * Features:
+ * - Automatic reconnection with exponential backoff
+ * - Message queuing during disconnection
+ * - Offline mode fallback
+ * - Connection status tracking
+ * - Event-driven architecture
+ */
 export class RobustWebSocket {
     protected ws: any | null = null;
     protected url: string | null = null;
@@ -33,6 +53,10 @@ export class RobustWebSocket {
         this.webSocketCtor = options.webSocketCtor || (typeof WebSocket !== 'undefined' ? WebSocket : null);
     }
 
+    /**
+     * Establish WebSocket connection to the specified URL
+     * @param url - WebSocket server URL
+     */
     async connect(url: string): Promise<void> {
         if (this.ws && (this.ws.readyState === 0 || this.ws.readyState === 1)) { // CONNECTING or OPEN
             this.logger.info('Already connecting or connected');

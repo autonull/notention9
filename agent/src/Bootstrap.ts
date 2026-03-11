@@ -1,17 +1,17 @@
-import { AgentRegistry } from './core/AgentRegistry';
+import { AgentRegistry } from './core/AgentRegistry.js';
 import { VoltAgentProvider } from '@notention/agent-voltagent';
-import { AgentSkillRegistry } from './skills/AgentSkillRegistry';
-import { AgentWorkflowSkillExecutor } from './skills/AgentWorkflowSkillExecutor';
-import { loadAgentConfig } from './config';
+import { AgentSkillRegistry } from './skills/AgentSkillRegistry.js';
+import { AgentWorkflowSkillExecutor } from './skills/AgentWorkflowSkillExecutor.js';
+import { loadAgentConfig } from './config/index.js';
 import { IndeedSkill, CraigslistSkill, GitHubSkill, Note } from '@notention/core';
-import { ConfigSkill } from './skills/ConfigSkill';
-import { log, error } from './core/utils';
-import { PersistenceService } from './persistence';
-import { FeedbackCollector } from './feedback/FeedbackCollector';
+import { ConfigSkill } from './skills/ConfigSkill.js';
+import { log, error } from './core/utils.js';
+import { PersistenceService } from './persistence.js';
+import { FeedbackCollector } from './feedback/FeedbackCollector.js';
 
 // Type-only imports
-import type { ConfigProcessor } from './configurator/ConfigProcessor';
-import type { NoteSkillLoader } from './skills/NoteSkillLoader';
+import type { ConfigProcessor } from './configurator/ConfigProcessor.js';
+import type { NoteSkillLoader } from './skills/NoteSkillLoader.js';
 
 export interface BootstrapResult {
   agentRegistry: AgentRegistry;
@@ -43,20 +43,20 @@ export class Bootstrap {
     this.initializeBuiltInSkills();
 
     // Initialize Configurator
-    const { InitialConfigurator } = await import('./configurator/InitialConfigurator');
+    const { InitialConfigurator } = await import('./configurator/InitialConfigurator.js');
     const configurator = new InitialConfigurator();
 
     // Initialize Config Processor
-    const { ConfigProcessor } = await import('./configurator/ConfigProcessor');
+    const { ConfigProcessor } = await import('./configurator/ConfigProcessor.js');
     const configProcessor = new ConfigProcessor();
     configProcessor.setAgent(voltagent);
 
     // Initialize Note Skill Loader
-    const { NoteSkillLoader } = await import('./skills/NoteSkillLoader');
+    const { NoteSkillLoader } = await import('./skills/NoteSkillLoader.js');
     const noteSkillLoader = new NoteSkillLoader(this.skillRegistry);
 
     // Initialize Plugin Loader
-    const { PluginLoader } = await import('./skills/PluginLoader');
+    const { PluginLoader } = await import('./skills/PluginLoader.js');
     const pluginLoader = new PluginLoader(this.skillRegistry);
     await pluginLoader.loadPlugins();
 
@@ -124,7 +124,7 @@ export class Bootstrap {
 
   private async registerTools(voltagent: VoltAgentProvider) {
     // Register App-Specific Tools with VoltAgent
-    const { querySkillRegistryTool, executeSkillTool, ontologyQueryTool } = await import('./tools');
+    const { querySkillRegistryTool, executeSkillTool, ontologyQueryTool } = await import('./tools.js');
     await voltagent.registerTool(querySkillRegistryTool);
     await voltagent.registerTool(executeSkillTool);
     await voltagent.registerTool(ontologyQueryTool);

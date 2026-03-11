@@ -1,5 +1,5 @@
 import { Property } from './types/index.js';
-import { OntologyService, WidgetMetadata } from './ontologyService.js';
+import { OntologyService, type WidgetMetadata } from './ontologyService.js';
 import { DEFAULT_ONTOLOGY } from './ontology.default.js';
 
 /**

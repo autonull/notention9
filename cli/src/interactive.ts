@@ -219,7 +219,7 @@ export async function startInteractiveSession(options: {
       // Handle exit signals
       rl.on('SIGINT', async () => {
         if (rl.line.length > 0) {
-          rl.clearLine(0);
+          (rl as any).clearLine(0);
           rl.prompt(true);
         } else {
           console.log('\nExiting...');

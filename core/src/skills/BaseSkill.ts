@@ -104,7 +104,7 @@ export abstract class BaseSkill {
       source: {
         type: 'skill',
         identifier: `${this.id}-v1`,
-        url: (data as any).url || undefined,
+        url: typeof data === 'object' && data !== null && 'url' in data ? data.url as string : undefined,
         timestamp: Date.now()
       },
 

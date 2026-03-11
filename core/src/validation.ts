@@ -35,13 +35,12 @@ const validateOperator = (name: string, operator: string, definition: OntologyAt
 };
 
 const validateNumber = (value: string, definition: OntologyAttribute, operator: string): AttributeValidationResult => {
-    const defAny = definition as any;
-
     // Check for range format "10-50"
     if ((operator === 'between' || operator === 'is') && RANGE_REGEX.test(value)) {
         const [rMin, rMax] = value.split('-').map(v => parseFloat(v.trim()));
-        if (defAny.range) {
-            const [defMin, defMax] = defAny.range;
+        const range = (definition as OntologyAttribute & { range?: [number, number] }).range;
+        if (range) {
+            const [defMin, defMax] = range;
             if (rMin < defMin || rMax > defMax) {
                 return { isValid: false, message: `Range must be within ${defMin}-${defMax}` };
             }
@@ -54,8 +53,9 @@ const validateNumber = (value: string, definition: OntologyAttribute, operator: 
     }
 
     const num = Number(value);
-    if (defAny.range) {
-        const [min, max] = defAny.range;
+    const range = (definition as OntologyAttribute & { range?: [number, number] }).range;
+    if (range) {
+        const [min, max] = range;
         if (num < min || num > max) {
             return { isValid: false, message: `Value must be between ${min} and ${max}` };
         }

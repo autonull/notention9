@@ -3,11 +3,12 @@
  */
 
 import { generateId } from './utils/common.js';
-import { logInfo, logError, logWarn } from './utils/logging.js';
+import { Logger, logInfo, logError, logWarn } from './utils/logging.js';
 
 export abstract class BaseService {
   protected readonly createdAt: number;
   protected readonly id: string;
+  protected readonly logger = Logger.getInstance();
 
   constructor(idPrefix?: string) {
     this.createdAt = Date.now();

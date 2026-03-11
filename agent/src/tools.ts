@@ -1,9 +1,36 @@
 import { z } from 'zod';
-import { Note, Tool, ToolInput, ToolResult, createTool, createOntologyQueryTool } from '@notention/core';
-import { getSkillRegistry, getOntology } from './globals';
-import { log } from './core/utils';
-import { executeAction } from './core/actionExecutor';
-import { SkillToolAdapter } from './skills/SkillToolAdapter';
+import { Note, Tool, ToolInput, ToolResult, createTool, createOntologyQueryTool, Property, Skill as CoreSkill } from '@notention/core';
+import { getSkillRegistry, getOntology } from './globals.js';
+import { log } from './core/utils.js';
+import { executeAction } from './core/actionExecutor.js';
+import { SkillToolAdapter } from './skills/SkillToolAdapter.js';
+import type { Skill as AgentSkill } from './skills/types.js';
+
+type SkillLike = (CoreSkill | AgentSkill) & {
+    export?: (note: Note) => Promise<any>;
+    exportToActions?: (note: Note) => { actions: any[] };
+    import?: (result: any) => Promise<Note[]>;
+    importFromData?: (data: any, note: Note) => Note[];
+};
+
+interface SkillRegistryLike {
+    findMatching(note: Note, minConfidence?: number): Promise<any[]>;
+    get(skillId: string): SkillLike | undefined;
+    getAll(): Array<{ skill: SkillLike }>;
+}
+
+interface QuerySkillRegistryInput {
+    properties: Property[];
+    minConfidence?: number;
+}
+
+interface ExecuteSkillInput {
+    skillId: string;
+    noteData: {
+        properties: Property[];
+        content: string;
+    };
+}
 
 // Query skill registry
 export const querySkillRegistryTool = createTool({
@@ -17,13 +44,13 @@ export const querySkillRegistryTool = createTool({
         })),
         minConfidence: z.number().optional()
     }),
-    execute: async ({ properties, minConfidence = 0.5 }: any) => {
-        const registry = getSkillRegistry();
-        const note = { properties } as Note;
-        const matches = await (registry as any).findMatching(note, minConfidence);
+    execute: async ({ properties, minConfidence = 0.5 }: QuerySkillRegistryInput) => {
+        const registry = getSkillRegistry() as unknown as SkillRegistryLike;
+        const note: Partial<Note> = { properties };
+        const matches = await registry.findMatching(note as Note, minConfidence);
         return { matches };
     }
-});
+}) as Tool;
 
 // Execute skill
 export const executeSkillTool = createTool({
@@ -36,24 +63,25 @@ export const executeSkillTool = createTool({
             content: z.string()
         })
     }),
-    execute: async ({ skillId, noteData }: any) => {
-        const registry = getSkillRegistry();
-        const skill = (registry as any).get(skillId);
+    execute: async ({ skillId, noteData }: ExecuteSkillInput) => {
+        const registry = getSkillRegistry() as unknown as SkillRegistryLike;
+        const skill = registry.get(skillId);
         if (!skill) {
             throw new Error(`Skill ${skillId} not found`);
         }
 
-        const note = noteData as unknown as Note;
+        const note: Partial<Note> = noteData;
         let action: any = null;
 
         // Support both old 'export' and new 'exportToActions'
-        if (skill.exportToActions) {
-             const sequence = skill.exportToActions(note);
+        const skillDef = skill as SkillLike & { exportToActions?: (note: Note) => { actions: any[] } };
+        if (skillDef.exportToActions) {
+             const sequence = skillDef.exportToActions(note as Note);
              if (sequence && sequence.actions && sequence.actions.length > 0) {
                  action = SkillToolAdapter.convertToAgentAction(sequence.actions);
              }
-        } else if (skill.export) {
-             action = await skill.export(note);
+        } else if ('export' in skill && typeof skill.export === 'function') {
+             action = await skill.export(note as Note);
         }
 
         if (!action) {
@@ -69,22 +97,17 @@ export const executeSkillTool = createTool({
 
             // Execute chain sequentially
             for (const stepName of action.payload.chain) {
-                // Find skill by name (fuzzy or exact) or ID
-                // For now assuming name-based lookup helper or iterating registry
-                // TODO: Optimize lookup
-                const stepSkill = (registry as any).getAll().find((s: any) =>
+                const stepSkill = registry.getAll().find((s) =>
                     s.skill.name.toLowerCase() === stepName.toLowerCase() ||
                     s.skill.id === stepName
                 )?.skill;
 
-                if (stepSkill) {
+                if (stepSkill && stepSkill.export) {
                     log('Tool', `Macro Step: ${stepSkill.name}`);
-                    // Recursively execute the skill using the *original* note
-                    // (Or potentially the output of the previous step? For now original)
-                    const stepAction = await stepSkill.export(note);
+                    const stepAction = await stepSkill.export(note as Note);
                     if (stepAction) {
                         const stepResult = await executeAction(stepAction);
-                        const stepNotes = await stepSkill.import(stepResult);
+                        const stepNotes = stepSkill.import ? await stepSkill.import(stepResult) : [];
                         results.push(...stepNotes);
                     }
                 } else {
@@ -99,13 +122,12 @@ export const executeSkillTool = createTool({
             log('Tool', 'Executing Prompt Action:', action.payload.prompt.substring(0, 30));
 
             try {
-                // Access Agent from globals to use generateText
-                const { getAgentRegistry } = await import('./globals');
+                const { getAgentRegistry } = await import('./globals.js');
                 const agent = getAgentRegistry().getDefault();
 
-                if (agent && agent.generateText) {
+                if (agent && 'generateText' in agent && typeof agent.generateText === 'function') {
                     const result = await agent.generateText(action.payload.prompt);
-                    return await skill.import([result]);
+                    return skill.import ? await skill.import([result]) : [];
                 } else {
                     return { success: false, reason: 'Agent does not support generation' };
                 }
@@ -119,14 +141,14 @@ export const executeSkillTool = createTool({
         const results = await executeAction(action);
 
         if (skill.importFromData) {
-            return skill.importFromData(results, note);
+            return skill.importFromData(results, note as Note);
         } else if (skill.import) {
              return await skill.import(results);
         }
 
         return [];
     }
-});
+}) as Tool;
 
 // Ontology query tool
 export const ontologyQueryTool = createOntologyQueryTool({

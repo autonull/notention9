@@ -2,12 +2,12 @@ import express from 'express';
 import { WebSocketServer, WebSocket } from 'ws';
 import { join } from 'path';
 import fs from 'fs';
-import { log, error } from './core/utils';
-import { Bootstrap } from './Bootstrap';
-import { SocketController } from './server/SocketController';
-import { ConfigManager } from './config/ConfigManager';
-import { setupMcpServer } from './server/McpServer';
-import { setAgentRegistry } from './globals';
+import { log, error } from './core/utils.js';
+import { Bootstrap } from './Bootstrap.js';
+import { SocketController } from './server/SocketController.js';
+import { ConfigManager } from './config/ConfigManager.js';
+import { setupMcpServer } from './server/McpServer.js';
+import { setAgentRegistry } from './globals.js';
 import { Server as HttpServer } from 'http';
 
 export class AgentServer {
@@ -128,12 +128,12 @@ export class AgentServer {
         const bootstrap = new Bootstrap();
 
         // Initialize bootstrap asynchronously
-        bootstrap.init((event) => {
+        bootstrap.init((event: any) => {
             // Event callback from Bootstrap (e.g. from VoltAgent)
             if (this.socketController) {
                 this.socketController.broadcast(event);
             }
-        }).then((components) => {
+        }).then((components: any) => {
             log('Init', 'Agent system initialized');
             setAgentRegistry(components.agentRegistry);
 
@@ -143,6 +143,6 @@ export class AgentServer {
                 components.feedbackCollector
             );
 
-        }).catch(err => error('Init', 'Bootstrap failed', err));
+        }).catch((err: any) => error('Init', 'Bootstrap failed', err));
     }
 }

@@ -49,16 +49,13 @@ type ExtractionStrategy = (text: string, properties: Property[]) => void;
 
 export class PropertyExtractor {
     private ontologyService: OntologyService;
-    private logger: Logger;
+    private logger = Logger.getInstance();
     private strategies: ExtractionStrategy[];
 
     constructor(ontology = DEFAULT_ONTOLOGY) {
         this.ontologyService = new OntologyService(ontology);
-        this.logger = Logger.getInstance();
 
         this.strategies = [
-            this.applyIntentStrategy.bind(this),
-            this.applySendToStrategy.bind(this),
             this.applyChannelStrategy.bind(this),
             this.applyPhoneStrategy.bind(this),
             this.applyEmailStrategy.bind(this),

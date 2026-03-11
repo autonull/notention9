@@ -1,5 +1,6 @@
 import type { Note } from './types/index.js';
 import { CapabilityManager } from './security/CapabilityManager.js';
+import { logWarn } from './utils/logging.js';
 
 /**
  * Privacy error thrown when attempting to transmit private notes without user consent
@@ -86,7 +87,7 @@ export class NetworkGate {
                 }
             } catch (error) {
                 if (error instanceof PrivacyError) {
-                    console.warn(`Blocked private note: ${note.id}`);
+                    logWarn(`Blocked private note: ${note.id}`);
                     continue;
                 }
                 throw error;

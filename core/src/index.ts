@@ -37,6 +37,9 @@ export * from './predictionTracking.js';
 export { ValidationFramework, validationFramework } from './validationFramework.js';
 export * from './autonomousTasks.js';
 
+// Tasks Module (modular)
+export * from './tasks/index.js';
+
 // Ontology-driven services (Phase 1.4 & 2)
 export * from './ontologyService.js';
 export * from './ontologyServiceFactory.js';

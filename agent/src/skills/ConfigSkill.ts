@@ -1,5 +1,5 @@
 import { Note, generateId, PropertyPattern, getCanonicalKey, OntologyNode } from '@notention/core';
-import { Skill, ActionSequence } from '@notention/core/src/skills/types';
+import { Skill, ActionSequence } from '@notention/core';
 
 // Centralized configuration keys for O(1) lookup
 const DIRECT_CONFIG_KEYS = new Set(['llm_model', 'llm_provider', 'debug_mode', 'voice_enabled']);

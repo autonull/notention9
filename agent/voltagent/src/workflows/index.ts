@@ -1,5 +1,4 @@
-import { Workflow, WorkflowInput, WorkflowResult } from '@notention/core/src/types';
-import { Note, Property } from '@notention/core/src/types';
+import { Workflow, WorkflowInput, WorkflowResult, Note, Property } from '@notention/core';
 
 export const propertyExtractionWorkflow: Workflow = {
     id: 'property-extraction',

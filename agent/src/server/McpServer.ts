@@ -32,7 +32,7 @@ export async function setupMcpServer(app: Express) {
         server.registerTool(tool.name, {
             description: tool.description,
             inputSchema: tool.schema as any
-        }, async (args, extra) => {
+        }, async (args: any, extra: any) => {
             const result = await tool.handler(args);
             if (typeof result === 'string') {
                 return { content: [{ type: 'text', text: result }] };

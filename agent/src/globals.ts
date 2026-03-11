@@ -1,6 +1,6 @@
 // Simple singleton management for the agent module
-import { AgentRegistry } from './core/AgentRegistry';
-import { AgentSkillRegistry } from './skills/AgentSkillRegistry';
+import { AgentRegistry } from './core/AgentRegistry.js';
+import { AgentSkillRegistry } from './skills/AgentSkillRegistry.js';
 
 let agentRegistry: AgentRegistry | null = null;
 let skillRegistry: AgentSkillRegistry | null = null;
