@@ -126,6 +126,3 @@ export class MatchingService {
     return baseScore * ((priorityA + priorityB) / 2);
   }
 }
-
-// Export a singleton for default usage
-export const matchingService = new MatchingService();

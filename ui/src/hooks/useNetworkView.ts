@@ -6,13 +6,13 @@ import {
     DEFAULT_RELAYS,
     extractPropertiesFromTags,
     hexToBytes,
-    matchingService,
     pool,
     SEMANTIC_NOTE_KIND
 } from '@notention/core';
 import {useNostrProfile} from './useNostrProfile';
 import {useView} from './useViewContext';
 import {useSettings} from './useSettingsContext';
+import {useMatching} from '../components/contexts/MatchingContext';
 import {useGardener} from './useGardener';
 import {useNetworkActions} from './useNetworkActions';
 
@@ -22,6 +22,7 @@ interface UseNetworkViewProps {
 
 export function useNetworkView({matchAgainst}: UseNetworkViewProps = {}) {
     const {settings} = useSettings();
+    const {matchingService} = useMatching();
     const {setActiveView, setMatchingNoteId} = useView();
     const {learnFromProperties} = useGardener();
     const {applyMatchToNote: applyMatch, forkNote} = useNetworkActions();
@@ -120,7 +121,7 @@ export function useNetworkView({matchAgainst}: UseNetworkViewProps = {}) {
         return filtered
             .sort((a, b) => b.created_at - a.created_at)
             .slice(0, 100);
-    }, [events, filter, matchAgainst]);
+    }, [events, filter, matchAgainst, matchingService]);
 
     const authorPubkeys = useMemo(() => {
         const pubkeys = new Set(sortedEvents.map((e) => e.pubkey));
