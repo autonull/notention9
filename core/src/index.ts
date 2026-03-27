@@ -75,3 +75,7 @@ export * from './metaphor/MetaphorMapper.js';
 
 // Testing
 export * from './testing/ScenarioManager.js';
+export * from './validation.js';
+export * from './utils/inference.js';
+export * from './utils/matching.js';
+export * from './utils/html.js';

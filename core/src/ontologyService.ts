@@ -1,5 +1,7 @@
 import { OntologyNode, OntologyAttribute, PropertyType } from './types/index.js';
 import { findNode, getCanonicalKey } from './ontologyHelpers.js';
+import { inferPropertyType } from './utils/inference.js';
+import { calculateFuzzyMatchScore } from './utils/matching.js';
 
 /**
  * OntologyService - Programmatic access to ontology metadata
@@ -40,8 +42,6 @@ const WIDGET_MAPPING: Record<string, WidgetType> = {
     'geo': 'map-picker',
     'enum': 'dropdown'
 };
-
-const ISODATE_REGEX = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2})?/;
 
 export class OntologyService {
     private ontology: OntologyNode[];
@@ -146,18 +146,10 @@ export class OntologyService {
         const cacheKey = `${input}_${limit}`;
 
         return this.withCache(this.fuzzyMatchesCache, cacheKey, () => {
-            const lower = input.toLowerCase();
-
             const matches: { key: string; score: number }[] = [];
 
             for (const [key, attr] of this.attributeIndex) {
-                const keyLower = key.toLowerCase();
-                let score = 0;
-                if (keyLower === lower) score = 100;
-                else if (keyLower.startsWith(lower)) score = 80;
-                else if (keyLower.includes(lower)) score = 60;
-                else if (attr.description?.toLowerCase().includes(lower)) score = 40;
-
+                const score = calculateFuzzyMatchScore(input, key, attr);
                 if (score > 0) {
                     matches.push({ key, score });
                 }
@@ -233,6 +225,11 @@ export class OntologyService {
      * Optionally takes property values to infer types for unknown attributes.
      */
     recordUsage(properties: Array<{ key: string, values?: unknown[] }>) {
+        this.updateUsageStats(properties);
+        this.updateCoOccurrenceStats(properties);
+    }
+
+    private updateUsageStats(properties: Array<{ key: string, values?: unknown[] }>) {
         for (const prop of properties) {
             const key = prop.key;
             const canonical = getCanonicalKey(key, this.ontology);
@@ -256,7 +253,9 @@ export class OntologyService {
                 }
             }
         }
+    }
 
+    private updateCoOccurrenceStats(properties: Array<{ key: string, values?: unknown[] }>) {
         // 2. Process Co-occurrence (All vs All)
         const uniqueKeys = Array.from(new Set(properties.map(p => p.key)));
         const canonicals = uniqueKeys.map(k => getCanonicalKey(k, this.ontology));
@@ -285,7 +284,7 @@ export class OntologyService {
         for (const [key, frequency] of this.unknownUsageStats.entries()) {
             if (frequency >= minFrequency) {
                 const values = this.unknownValuesSample.get(key) || [];
-                const type = this.inferType(key, values);
+                const type = inferPropertyType(key, values);
 
                 // Infer context from co-occurrence
                 let likelyContext: string | undefined;
@@ -353,7 +352,7 @@ export class OntologyService {
             } else {
                 // If it's an unknown key, try to infer from samples
                 const values = this.unknownValuesSample.get(key);
-                type = this.inferType(key, values || []);
+                type = inferPropertyType(key, values || []);
             }
 
             suggestions.push({
@@ -377,30 +376,6 @@ export class OntologyService {
             if (node.children) queue.push(...node.children);
         }
         return null;
-    }
-
-    /**
-     * Infer type of a property based on its values
-     */
-    inferType(key: string, values: unknown[]): PropertyType {
-        if (!values?.length) return 'string' as PropertyType;
-
-        const counts = values.reduce((acc, v) => {
-            if (typeof v === 'number') {
-                acc.number++;
-            } else {
-                const valStr = String(v);
-                if (!isNaN(parseFloat(valStr))) acc.number++;
-                if (ISODATE_REGEX.test(valStr) && !isNaN(Date.parse(valStr))) acc.date++;
-            }
-            return acc;
-        }, { number: 0, date: 0 });
-
-        const threshold = values.length * 0.8; // 80% confidence
-        if (counts.number >= threshold) return 'number' as PropertyType;
-        if (counts.date >= threshold) return 'date' as PropertyType;
-
-        return 'string' as PropertyType;
     }
 
     /**

@@ -30,29 +30,38 @@ describe('Phase 2.3: Multi-Instance Coordination', () => {
                         mockRelayEvents.push(event);
                         return [Promise.resolve()];
                     });
+
+                    subscribeMap = vi.fn().mockImplementation((requests, callbacks) => {
+                         const filters = requests.map((r: any) => r.filter);
+
+                         const results = mockRelayEvents.filter(event => {
+                             return filters.some((f: any) => {
+                                 if (f.kinds && !f.kinds.includes(event.kind)) return false;
+
+                                 for (const key in f) {
+                                     if (key.startsWith('#')) {
+                                         const tagName = key.slice(1);
+                                         const tagValues = f[key] as string[];
+                                         const hasTag = event.tags?.some((t: string[]) =>
+                                             t[0] === tagName && tagValues.includes(t[1])
+                                         );
+                                         if (!hasTag) return false;
+                                     }
+                                 }
+                                 return true;
+                             });
+                         });
+
+                         setTimeout(() => {
+                             results.forEach((e: any) => callbacks.onevent(e));
+                             if (callbacks.oneose) callbacks.oneose();
+                         }, 0);
+
+                         return { close: () => {} };
+                    });
+
                     subscribeMany = vi.fn().mockImplementation((relays, filters, callbacks) => {
-                        const results = mockRelayEvents.filter(event => {
-                            return filters.some((f: any) => {
-                                if (f.kinds && !f.kinds.includes(event.kind)) return false;
-                                for (const key in f) {
-                                    if (key.startsWith('#')) {
-                                        const tagName = key.slice(1);
-                                        const tagValues = f[key] as string[];
-                                        const hasTag = event.tags.some((t: string[]) =>
-                                            t[0] === tagName && tagValues.includes(t[1])
-                                        );
-                                        if (!hasTag) return false;
-                                    }
-                                }
-                                return true;
-                            });
-                        });
-
-                        setTimeout(() => {
-                            results.forEach((e: any) => callbacks.onevent(e));
-                            if (callbacks.oneose) callbacks.oneose();
-                        }, 0);
-
+                        // Legacy fallback logic if needed
                         return { close: () => {} };
                     });
                 }

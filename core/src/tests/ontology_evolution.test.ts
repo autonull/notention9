@@ -1,4 +1,5 @@
 import { OntologyService } from '../ontologyService.js';
+import { inferPropertyType } from '../utils/inference.js';
 import { OntologyNode } from '../types/index.js';
 import { describe, it, expect } from 'vitest';
 
@@ -39,12 +40,12 @@ describe('Ontology Evolution', () => {
     });
 
     it('should infer number type', () => {
-        const type = service.inferType('newProp', ['100', '200', '50.5']);
+        const type = inferPropertyType('newProp', ['100', '200', '50.5']);
         expect(type).toBe('number');
     });
 
     it('should infer string type for mixed content', () => {
-        const type = service.inferType('mixed', ['100', 'hello', '200']);
+        const type = inferPropertyType('mixed', ['100', 'hello', '200']);
         expect(type).toBe('string');
     });
 });

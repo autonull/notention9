@@ -41,18 +41,18 @@ export const isIndefiniteProperty = (prop: Property): boolean => {
   return isIndefiniteOperator(prop.operator);
 };
 
+const isKeyOfType = (key: string, keys: Set<string>, suffixes: string[], snakeSuffixes: string[]): boolean => {
+  return keys.has(key) ||
+    suffixes.some(s => key.endsWith(s)) ||
+    snakeSuffixes.some(s => key.endsWith(s));
+};
+
 export const isTemporalKey = (key: string): boolean => {
-  if (TEMPORAL_KEYS.has(key)) return true;
-  if (TEMPORAL_SUFFIXES.some(s => key.endsWith(s))) return true;
-  if (TEMPORAL_SNAKE_SUFFIXES.some(s => key.endsWith(s))) return true;
-  return false;
+  return isKeyOfType(key, TEMPORAL_KEYS, TEMPORAL_SUFFIXES, TEMPORAL_SNAKE_SUFFIXES);
 };
 
 export const isSpatialKey = (key: string): boolean => {
-  if (SPATIAL_KEYS.has(key)) return true;
-  if (SPATIAL_SUFFIXES.some(s => key.endsWith(s))) return true;
-  if (SPATIAL_SNAKE_SUFFIXES.some(s => key.endsWith(s))) return true;
-  return false;
+  return isKeyOfType(key, SPATIAL_KEYS, SPATIAL_SUFFIXES, SPATIAL_SNAKE_SUFFIXES);
 };
 
 export const arePropertiesEqual = (p1: Property | null, p2: Property | null): boolean => {
