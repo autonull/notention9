@@ -1,5 +1,4 @@
-import { Note, AppSettings } from '@notention/core';
-import { parseConfigFromNote, mergeConfigs } from '@notention/core/src/config/NoteBasedConfig';
+import { Note, AppSettings, parseConfigFromNote, mergeConfigs } from '@notention/core';
 import { log } from '../core/utils';
 
 export class ConfigProcessor {

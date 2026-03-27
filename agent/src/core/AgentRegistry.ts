@@ -1,4 +1,4 @@
-import { Agent } from '@notention/core/src/types';
+import { Agent } from '@notention/core';
 
 export class AgentRegistry {
     private agents = new Map<string, Agent>();
