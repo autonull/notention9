@@ -21,17 +21,19 @@ export class MatchEngine {
                 .map(offProp => this.evaluateConstraint(reqProp, offProp))
         );
 
-        const matches = results.filter(r => r.compatibility > 0);
-        const conflicts = results.filter(r => r.compatibility < 0);
-
-        // Calculate score
+        const matches: PropertyMatch[] = [];
+        const conflicts: PropertyMatch[] = [];
         const matchedKeys = new Set<string>();
+
         const totalScore = results.reduce((acc, r) => {
-            if (r.compatibility > 0 && !matchedKeys.has(r.requestProp.key)) {
-                matchedKeys.add(r.requestProp.key);
-                return acc + r.compatibility;
-            }
-            if (r.compatibility < 0) {
+            if (r.compatibility > 0) {
+                matches.push(r);
+                if (!matchedKeys.has(r.requestProp.key)) {
+                    matchedKeys.add(r.requestProp.key);
+                    return acc + r.compatibility;
+                }
+            } else if (r.compatibility < 0) {
+                conflicts.push(r);
                 return acc + r.compatibility;
             }
             return acc;

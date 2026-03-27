@@ -32,23 +32,25 @@ export const PropertyMatchers = {
         const requestValue = parseNumber(request.values[0]);
         if (requestValue === null) return createMatch(request, offer, 0, 'Invalid comparison value');
 
-        const { operator } = request;
-        if (operator === '<') {
-            return offerValue < requestValue
-                ? createMatch(request, offer, 1, `${offerValue} is less than ${requestValue}`)
-                : createMatch(request, offer, -1, `${offerValue} is not less than ${requestValue}`);
+        switch (request.operator) {
+            case '<':
+                return offerValue < requestValue
+                    ? createMatch(request, offer, 1, `${offerValue} < ${requestValue}`)
+                    : createMatch(request, offer, -1, `${offerValue} >= ${requestValue}`);
+            case '>':
+                return offerValue > requestValue
+                    ? createMatch(request, offer, 1, `${offerValue} > ${requestValue}`)
+                    : createMatch(request, offer, -1, `${offerValue} <= ${requestValue}`);
+            case 'is':
+            case '=':
+                // Allow 5% tolerance
+                const isClose = Math.abs(offerValue - requestValue) < (requestValue * 0.05);
+                return isClose
+                    ? createMatch(request, offer, 1, `~= ${requestValue}`)
+                    : createMatch(request, offer, -1, `${offerValue} != ${requestValue}`);
+            default:
+                return createMatch(request, offer, 0, `Unknown operator ${request.operator}`);
         }
-        if (operator === '>') {
-            return offerValue > requestValue
-                ? createMatch(request, offer, 1, `${offerValue} is greater than ${requestValue}`)
-                : createMatch(request, offer, -1, `${offerValue} is not greater than ${requestValue}`);
-        }
-        if (operator === 'is' || operator === '=') {
-            return Math.abs(offerValue - requestValue) < (requestValue * 0.05)
-                ? createMatch(request, offer, 1, `Exactly ${requestValue}`)
-                : createMatch(request, offer, -1, `${offerValue} != ${requestValue}`);
-        }
-        return createMatch(request, offer, 0, `Unknown operator ${operator}`);
     },
 
     evaluateNumberRange: (request: Property, offer: Property, offerValue: number): PropertyMatch => {

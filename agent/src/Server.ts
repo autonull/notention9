@@ -22,25 +22,15 @@ export class AgentServer {
     }
 
     async start() {
-        // --- Server Setup ---
         const config = ConfigManager.getInstance().getConfig();
         const PORT = config.server.port;
-        this.app.use(express.json());
 
-        // Setup MCP Servers
+        this.initExpress();
         await this.setupMcp();
-
-        // UI Static Serving
         this.setupStaticServing();
 
-        this.server = this.app.listen(PORT, () => {
-            log('Server', `Notention + VoltAgent running on http://localhost:${PORT}`);
-        });
-
-        // WebSocket Setup
+        await this.startHttpServer(PORT);
         this.setupWebsocket();
-
-        // --- Agent System Initialization ---
         await this.initAgentSystem();
     }
 
@@ -50,6 +40,19 @@ export class AgentServer {
 
         return new Promise<void>((resolve, reject) => {
             this.server!.close((err) => err ? reject(err) : resolve());
+        });
+    }
+
+    private initExpress() {
+        this.app.use(express.json());
+    }
+
+    private startHttpServer(port: number): Promise<void> {
+        return new Promise((resolve) => {
+            this.server = this.app.listen(port, () => {
+                log('Server', `Notention + VoltAgent running on http://localhost:${port}`);
+                resolve();
+            });
         });
     }
 

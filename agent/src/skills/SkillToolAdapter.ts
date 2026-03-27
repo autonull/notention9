@@ -30,7 +30,8 @@ export class SkillToolAdapter {
                     content: z.string()
                 })
             }),
-            execute: async ({ note }: { note: Note }) => {
+            execute: async (input: any) => {
+                const { note } = input as { note: Note };
                 let action: AgentAction | null = null;
 
                 if (skill.exportToActions) {

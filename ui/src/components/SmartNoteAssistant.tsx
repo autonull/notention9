@@ -1,49 +1,18 @@
 import React, { useState } from 'react';
 import { useToast } from '../hooks/useToast';
-import { Note, parseProperties, replacePropertyInString } from '@notention/core';
+import { Note } from '@notention/core';
 import { SparklesIcon } from './common/icons';
 import { FeedbackWidget } from './common/FeedbackWidget';
 import { agentService } from '../services/AgentService';
 import { useNoteAnalysis, Suggestion } from '../hooks/useNoteAnalysis';
 import { SuggestionItem } from './SuggestionItem';
+import { applyPropertySuggestion, applyTaskSuggestion } from '../utils/suggestionUtils';
 
 interface SmartNoteAssistantProps {
     note: Note;
     onNoteUpdate: (content: string) => void;
     className?: string;
 }
-
-const PROPERTY_REGEX = /\[(.*?):(.*?):(.*?)\]/;
-const TASK_KEYWORDS = ['Create Task', 'Todo List', 'Shopping List'];
-const PENDING_STATUS = '[status:is:pending]';
-
-const applyPropertySuggestion = (content: string, suggestionText: string): string | null => {
-    const propertyMatch = suggestionText.match(PROPERTY_REGEX);
-    if (!propertyMatch) return null;
-
-    const tag = propertyMatch[0];
-    const newProperty = parseProperties(tag)[0];
-
-    if (!newProperty) return null;
-
-    const existingProps = parseProperties(content);
-    const existingProp = existingProps.find(p => p.key === newProperty.key);
-
-    if (existingProp) {
-        return replacePropertyInString(content, existingProp, newProperty);
-    } else {
-        return content.trim() + `\n\n${tag}`;
-    }
-};
-
-const applyTaskSuggestion = (content: string, suggestionText: string): string | null => {
-    if (TASK_KEYWORDS.some(s => suggestionText.includes(s))) {
-        if (!content.includes(PENDING_STATUS)) {
-            return content.trim() + `\n\n${PENDING_STATUS}`;
-        }
-    }
-    return null;
-};
 
 export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
     note,

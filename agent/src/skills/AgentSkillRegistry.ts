@@ -17,10 +17,8 @@ export class AgentSkillRegistry extends SkillRegistry {
      * Specialized register method for Agent skills with metadata
      */
     register(skill: Skill, metadata?: Partial<SkillMetadata>): void {
-        // Register in base class - types are now compatible via RegisteredSkill union
         super.registerSkill(skill);
 
-        // Store metadata
         this.skillMetadata.set(skill.id, {
             skill,
             tags: metadata?.tags ?? [],
@@ -29,7 +27,6 @@ export class AgentSkillRegistry extends SkillRegistry {
             author: metadata?.author
         });
 
-        // Auto-register as VoltAgent tool if agent is set
         if (this.agent) {
             this.registerSkillWithAgent(skill);
         }
@@ -50,7 +47,6 @@ export class AgentSkillRegistry extends SkillRegistry {
     }
 
     override findMatching(note: Note): Skill[] {
-        // Prioritize using metadata-enriched skills
         return Array.from(this.skillMetadata.values())
             .filter(meta => meta.skill.canHandle(note) > 0.5)
             .map(meta => meta.skill);
@@ -73,7 +69,18 @@ export class AgentSkillRegistry extends SkillRegistry {
                 properties: note.properties
             });
 
-            return (result.rankedSkills || []).filter((match: { confidence: number; }) => match.confidence >= 0.5);
+            const rankedSkills = result.rankedSkills as Array<{ skillId: string, confidence: number }>;
+            if (!rankedSkills) return [];
+
+            return rankedSkills
+                .map(match => {
+                    const skill = this.get(match.skillId);
+                    return skill ? { skill, confidence: match.confidence } : null;
+                })
+                .filter((item): item is { skill: Skill; confidence: number } =>
+                    item !== null && item.confidence >= 0.5
+                );
+
         } catch (e) {
             this.logger.error('Skill matching workflow failed, falling back locally', e instanceof Error ? e : new Error(String(e)));
             return this.findMatchingAsync(note);

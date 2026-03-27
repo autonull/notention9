@@ -1,9 +1,9 @@
-import React, {createContext, ReactNode, useState} from 'react';
-import {useLocalForage} from '../../hooks/useLocalForage';
-import {useToast} from '../../hooks/useToast';
-import type {NostrEvent, Property, SidebarViewMode, SortOrder, View} from '@notention/core';
-import {GeoCoords, Logger} from '@notention/core';
-import {getCurrentPosition} from '../../utils/geolocation';
+import React, { createContext, ReactNode, useState } from 'react';
+import { useLocalForage } from '../../hooks/useLocalForage';
+import { useToast } from '../../hooks/useToast';
+import type { NostrEvent, Property, SidebarViewMode, SortOrder, View } from '@notention/core';
+import { GeoCoords, Logger } from '@notention/core';
+import { getCurrentPosition } from '../../utils/geolocation';
 
 export interface MatchResult {
     localNoteId: string;
@@ -48,31 +48,30 @@ export interface ViewContextType {
 
 const ViewContext = createContext<ViewContextType | undefined>(undefined);
 
-export function ViewProvider({
-                                 children,
-                             }: { children: ReactNode }) {
-    const [sortOrder, setSortOrder] = useLocalForage<SortOrder>(
-        'notention-sort-order',
-        'updatedAt_desc'
-    );
-    const [sidebarViewMode, setSidebarViewMode] = useLocalForage<SidebarViewMode>(
-        'notention-sidebar-view-mode',
-        'list'
-    );
+export function ViewProvider({ children }: { children: ReactNode }) {
+    const [sortOrder, setSortOrder] = useLocalForage<SortOrder>('notention-sort-order', 'updatedAt_desc');
+    const [sidebarViewMode, setSidebarViewMode] = useLocalForage<SidebarViewMode>('notention-sidebar-view-mode', 'list');
+
+    // UI State
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [isPaletteOpen, setIsPaletteOpen] = useState(false);
     const [isHelpOpen, setIsHelpOpen] = useState(false);
+
+    // Navigation State
     const [activeView, setActiveView] = useState<View>('notes');
     const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
     const [matchingNoteId, setMatchingNoteId] = useState<string | null>(null);
     const [selectedChatPubkey, setSelectedChatPubkey] = useState<string | null>(null);
+
+    // Data State
     const [userLocation, setUserLocation] = useState<GeoCoords | null>(null);
-    const {addToast} = useToast();
     const [matches, setMatches] = useState<MatchResult[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [chatNotificationCount, setChatNotificationCount] = useState(0);
 
+    const { addToast } = useToast();
     const notificationCount = matches.length;
+    const logger = Logger.getInstance();
 
     const showToast = (msg: string) => {
         addToast(msg);
@@ -80,7 +79,6 @@ export function ViewProvider({
 
     const addMatch = (match: MatchResult) => {
         setMatches(prev => {
-            // Avoid duplicates
             if (prev.some(m => m.event.id === match.event.id && m.localNoteId === match.localNoteId)) {
                 return prev;
             }
@@ -89,14 +87,7 @@ export function ViewProvider({
     };
 
     const clearNotifications = () => {
-        // We might want to keep matches but clear the "count" badge?
-        // For MVP, let's just assume viewing them clears them or we don't clear them.
-        // But the interface needs to exist.
-        // Let's implement specific clearing later if needed, for now no-op or clear all?
-        // Actually, if we clear matches, we lose the list.
-        // Let's just reset the list for now if the user wants to "clear" them.
-        // Better: we don't clear them, the badge shows total matches.
-        // But the prompt says "alerting users".
+        // Placeholder for notification clearing logic
     };
 
     const incrementChatNotification = () => setChatNotificationCount(c => c + 1);
@@ -107,7 +98,7 @@ export function ViewProvider({
             const loc = await getCurrentPosition();
             setUserLocation(loc);
         } catch (e) {
-            Logger.getInstance().error("Failed to get location", e instanceof Error ? e : new Error(String(e)));
+            logger.error("Failed to get location", e instanceof Error ? e : new Error(String(e)));
             addToast("Could not access location for 'Nearest' sort", 'error');
         }
     };
@@ -150,6 +141,6 @@ export function ViewProvider({
             {children}
         </ViewContext.Provider>
     );
-};
+}
 
-export {ViewContext};
+export { ViewContext };

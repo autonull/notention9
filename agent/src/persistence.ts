@@ -24,22 +24,21 @@ export class PersistenceService {
                 return JSON.parse(data);
             } catch (parseError) {
                 logger.error('CRITICAL: Failed to parse notes.json', parseError instanceof Error ? parseError : new Error(String(parseError)));
-                // Rename corrupt file to preserve data
                 const corruptFile = `${NOTES_FILE}.corrupt.${Date.now()}`;
                 try {
                     await fs.promises.rename(NOTES_FILE, corruptFile);
                     logger.warn(`Renamed corrupt notes.json to ${corruptFile}`);
                 } catch (renameError) {
                     logger.error('Failed to rename corrupt file', renameError instanceof Error ? renameError : new Error(String(renameError)));
-                    throw renameError; // Re-throw if we can't safely move aside
+                    throw renameError;
                 }
-                return []; // Return empty for new start
+                return [];
             }
         } catch (e: any) {
             if (e.code === 'ENOENT') {
-                return []; // File doesn't exist yet, start fresh
+                return [];
             }
-            throw e; // Other errors (permissions, disk full) should fail hard
+            throw e;
         }
     }
 
