@@ -169,7 +169,7 @@ export class ConfigManager {
     const defaults: Record<string, string> = {
       openai: 'gpt-4o',
       ollama: 'llama3.2',
-      transformers: 'onnx-community/Qwen2.5-0.5B-Instruct',
+      transformers: 'Xenova/Qwen1.5-0.5B-Chat',
       local: 'local-model',
     };
 

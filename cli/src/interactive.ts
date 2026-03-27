@@ -1,12 +1,15 @@
 import * as readline from 'readline';
 import dotenv from 'dotenv';
 import { CliClient } from './client.js';
-import { handleSlashCommand } from './commands.js';
+import { handleSlashCommand, getSlashCommands } from './commands.js';
 import { LlmSession, LLMProviderConfig } from './llm.js';
 import { getLocalTools } from './tools/index.js';
-import { log, withSpinner } from './utils.js';
+import { log, withSpinner, setVerbose } from './utils.js';
 import { configManager } from './config-manager.js';
 import { ProviderFactory } from './providers/index.js';
+import { ServerManager } from './server-manager.js';
+import { loadHistory, appendHistory } from './history-manager.js';
+import chalk from 'chalk';
 
 dotenv.config();
 
@@ -24,7 +27,16 @@ export async function startInteractiveSession(options: {
   sim?: boolean;
   simulation?: boolean;
   command?: string;
+  verbose?: boolean;
 } = {}) {
+  const command = options.command;
+  const interactive = !command;
+
+  if (options.verbose) {
+    setVerbose(true);
+    log.info('Verbose logging enabled');
+  }
+
   // Prepare config overrides from options
   const configOverrides: Partial<LLMProviderConfig> = {};
   if (options.provider) configOverrides.provider = options.provider;
@@ -54,11 +66,42 @@ export async function startInteractiveSession(options: {
   // Create provider
   const provider = ProviderFactory.create(finalConfig);
 
-  const cli = new CliClient(MCP_URL);
-  const simCli = new CliClient(SIM_MCP_URL);
+  // Initialize Server Manager
+  const serverManager = new ServerManager();
+  let mcpUrl = MCP_URL;
+  let simMcpUrl = SIM_MCP_URL;
+
+  try {
+    if (interactive) log.info("Checking server status...");
+    const serverInfo = await serverManager.ensureServer(mcpUrl);
+    if (serverInfo.started) {
+      mcpUrl = serverInfo.url;
+
+      // Update SIM URL to match new port
+      try {
+        const mcpUrlObj = new URL(mcpUrl);
+        const simUrlObj = new URL(simMcpUrl);
+        simUrlObj.port = mcpUrlObj.port;
+        simMcpUrl = simUrlObj.toString();
+      } catch (e) {
+        // Ignore URL parsing errors
+      }
+    }
+  } catch (e) {
+    log.error("Failed to ensure server is running", e);
+    process.exit(1);
+  }
+
+  const cli = new CliClient(mcpUrl);
+  const simCli = new CliClient(simMcpUrl);
   const enableSim = options.sim || options.simulation;
-  const command = options.command;
-  const interactive = !command;
+
+
+  const cleanup = async () => {
+    await serverManager.stop();
+    await cli.close();
+    await simCli.close();
+  };
 
   try {
     if (interactive) log.info("Connecting to Notention Agent...");
@@ -70,7 +113,7 @@ export async function startInteractiveSession(options: {
       try {
         await cli.connect();
         connected = true;
-        if (interactive) log.success(`Connected to Notention Agent at ${MCP_URL}`);
+        if (interactive) log.success(`Connected to Notention Agent at ${mcpUrl}`);
       } catch (e) {
         retries--;
         if (retries > 0) {
@@ -90,7 +133,7 @@ export async function startInteractiveSession(options: {
         await simCli.connect();
         const simToolsResult = await withSpinner('Loading simulation tools...', () => simCli.listTools());
         simTools = simToolsResult.tools;
-        if (interactive) log.success(`Connected to Simulation Agent at ${SIM_MCP_URL}`);
+        if (interactive) log.success(`Connected to Simulation Agent at ${simMcpUrl}`);
       } catch (e) {
         if (interactive) log.warn(`Simulation Agent unavailable (skipping)`);
       }
@@ -143,8 +186,8 @@ export async function startInteractiveSession(options: {
           log.success(healthResult.message);
         }
       } catch (healthError: any) {
-         log.warn(`Provider health check failed: ${healthError.message || healthError}`);
-         log.warn('Continuing anyway, but you may encounter errors...');
+        log.warn(`Provider health check failed: ${healthError.message || healthError}`);
+        log.warn('Continuing anyway, but you may encounter errors...');
       }
     }
 
@@ -154,13 +197,35 @@ export async function startInteractiveSession(options: {
       } else {
         await session.handleInteraction(command);
       }
-      await cli.close();
-      await simCli.close();
+      await cleanup();
       process.exit(0);
     } else {
+      // Setup Completer
+      const completer = (line: string) => {
+        if (!line.startsWith('/')) return [[], line];
+        const hits = getSlashCommands().filter((c) => c.startsWith(line));
+        // Show all completions if none found
+        return [hits.length ? hits : getSlashCommands(), line];
+      };
+
       const rl = readline.createInterface({
         input: process.stdin,
-        output: process.stdout
+        output: process.stdout,
+        history: loadHistory().reverse(), // RL expects most recent first
+        historySize: 1000,
+        completer
+      });
+
+      // Handle exit signals
+      rl.on('SIGINT', async () => {
+        if (rl.line.length > 0) {
+          rl.clearLine(0);
+          rl.prompt(true);
+        } else {
+          console.log('\nExiting...');
+          await cleanup();
+          process.exit(0);
+        }
       });
 
       console.log("\n" + "=".repeat(50));
@@ -173,7 +238,12 @@ export async function startInteractiveSession(options: {
       console.log("=".repeat(50) + "\n");
 
       const ask = () => {
-        rl.question('> ', async (rawInput) => {
+        const activeContext = session.getActiveContext();
+        const prompt = activeContext
+          ? `${chalk.green('Notention')} [${chalk.yellow(activeContext.title)}] > `
+          : chalk.green('Notention > ');
+
+        rl.question(prompt, async (rawInput) => {
           const input = rawInput.trim();
 
           if (!input) {
@@ -181,8 +251,20 @@ export async function startInteractiveSession(options: {
             return;
           }
 
+          appendHistory(input);
+
           if (input.startsWith('/')) {
-            await handleSlashCommand(input, cli, coreTools, session);
+            if (input === '/status') {
+              log.info('--- System Status ---');
+              const conf = session.getConfig();
+              log.info(`Provider: ${conf.provider}`);
+              log.info(`Model: ${conf.model}`);
+              log.info(`Server URL: ${mcpUrl}`);
+              log.info(`Simulation: ${enableSim ? 'Enabled' : 'Disabled'}`);
+              log.info('---------------------');
+            } else {
+              await handleSlashCommand(input, cli, coreTools, session);
+            }
           } else {
             await session.handleInteraction(input);
           }

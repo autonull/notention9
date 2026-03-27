@@ -16,14 +16,19 @@ export class AgentServer {
     private server: HttpServer | null = null;
     private wss: WebSocketServer | null = null;
     private socketController: SocketController | null = null;
+    private port: number = 0;
 
     constructor() {
         this.app = express();
     }
 
-    async start() {
+    public getPort(): number {
+        return this.port;
+    }
+
+    async start(port?: number) {
         const config = ConfigManager.getInstance().getConfig();
-        const PORT = config.server.port;
+        const PORT = port !== undefined ? port : config.server.port;
 
         this.initExpress();
         await this.setupMcp();
@@ -50,7 +55,10 @@ export class AgentServer {
     private startHttpServer(port: number): Promise<void> {
         return new Promise((resolve) => {
             this.server = this.app.listen(port, () => {
-                log('Server', `Notention + VoltAgent running on http://localhost:${port}`);
+                const addr = this.server?.address();
+                const realPort = typeof addr === 'object' && addr ? addr.port : port;
+                this.port = realPort;
+                log('Server', `Notention + VoltAgent running on http://localhost:${realPort}`);
                 resolve();
             });
         });

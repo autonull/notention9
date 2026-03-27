@@ -44,6 +44,7 @@ export class LlmSession {
     private provider: LLMProvider;
     private ontologyCache: string | null = null;
     private capabilitiesCache: any | null = null;
+    private activeContext: { id: string, title: string } | null = null;
     private promptBuilder: SystemPromptBuilder;
 
     constructor(
@@ -105,6 +106,19 @@ export class LlmSession {
     public clearHistory() {
         this.history = [];
         log.info("Chat history cleared.");
+    }
+
+    public setActiveContext(context: { id: string, title: string } | null) {
+        this.activeContext = context;
+        if (context) {
+            log.info(`Active context set to: ${context.title} (${context.id})`);
+        } else {
+            log.info("Active context cleared.");
+        }
+    }
+
+    public getActiveContext() {
+        return this.activeContext;
     }
 
     private async fetchOntology() {
@@ -187,7 +201,8 @@ export class LlmSession {
             const systemPrompt = this.promptBuilder.build(
                 this.capabilitiesCache,
                 this.ontologyCache,
-                this.tools
+                this.tools,
+                this.activeContext
             );
 
             const messages: CoreMessage[] = [

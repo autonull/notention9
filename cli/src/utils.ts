@@ -7,15 +7,30 @@ import { Logger } from '@notention/core';
 // Configure Core Logger
 const logger = Logger.getInstance();
 
+let isVerbose = false;
+const suppressedContexts = ['Server', 'WS', 'Init', 'MCP'];
+
+export const setVerbose = (v: boolean) => {
+    isVerbose = v;
+};
+
 logger.setLogHandler((level, message, context, error) => {
+    // Filter out suppressed contexts unless verbose
+    if (!isVerbose && typeof context === 'string' && suppressedContexts.includes(context)) {
+        return;
+    }
+
+    // Don't print context object if suppressed (even if verbose, maybe we just want the message?)
+    // Actually, let's keep it simple: if not verbose and context is suppressed, skip entirely.
+
     switch (level) {
         case 'info':
             console.log(chalk.blue('ℹ'), message);
-            if (context) console.log(context);
+            if (context && (!suppressedContexts.includes(context as string) || isVerbose)) console.log(context);
             break;
         case 'warn':
             console.log(chalk.yellow('⚠'), message);
-            if (context) console.log(context);
+            if (context && (!suppressedContexts.includes(context as string) || isVerbose)) console.log(context);
             break;
         case 'error':
             console.error(chalk.red('✖'), message);
@@ -23,7 +38,7 @@ logger.setLogHandler((level, message, context, error) => {
             if (context) console.error(context);
             break;
         case 'debug':
-            if (process.env.DEBUG) {
+            if (process.env.DEBUG || isVerbose) {
                  console.debug(chalk.gray('🐛'), message);
                  if (context) console.debug(context);
             }

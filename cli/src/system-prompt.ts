@@ -32,12 +32,17 @@ export class SystemPromptBuilder {
     public build(
         capabilities: any | null,
         ontologyCache: string | null,
-        tools: ToolDefinition[]
+        tools: ToolDefinition[],
+        activeContext: { id: string, title: string } | null = null
     ): string {
         const basePrompt = this.customPrompt || `
 You are the "Notention Agent", a helpful AI assistant that controls a Notention profile.
 Your goal is to help the user manage their knowledge graph (notes), execute skills, and run simulations.
 `;
+
+        const contextSection = activeContext
+            ? `\nActive Context:\nThe user is currently focused on the note: "${activeContext.title}" (ID: ${activeContext.id}). Assume all commands apply to this note unless specified otherwise.\n`
+            : '';
 
         let capabilitiesSection = `
 Capabilities:
@@ -61,7 +66,7 @@ System Flags:
 
         return `
 ${basePrompt}
-
+${contextSection}
 ${capabilitiesSection}
 
 Ontology Context:

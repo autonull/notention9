@@ -265,10 +265,50 @@ const handleExtract: CommandHandler = async (args, cli) => {
     return true;
 };
 
+const handleOpen: CommandHandler = async (args, cli, _tools, session) => {
+    if (!session) {
+        log.error("Session unavailable.");
+        return true;
+    }
+    if (args.length === 0) {
+        log.warn("Usage: /open <note_id>");
+        return true;
+    }
+    const noteId = args[0];
+
+    try {
+        // Fetch note to verify and get title
+        const result = await withSpinner(`Fetching note '${noteId}'...`, () => cli.callTool('read_notes', { query: noteId }));
+        const content = (result as any).content;
+        const notes = JSON.parse((content[0] as any).text);
+
+        // Find exact match by ID
+        const note = notes.find((n: any) => n.id === noteId);
+
+        if (note) {
+            session.setActiveContext({ id: note.id, title: note.title });
+            log.success(`Context set to: ${chalk.bold(note.title)}`);
+        } else {
+            log.warn(`Note '${noteId}' not found.`);
+        }
+    } catch (e: unknown) {
+        log.error("Failed to open note", e);
+    }
+    return true;
+};
+
+const handleClose: CommandHandler = async (_args, _cli, _tools, session) => {
+    if (!session) return true;
+    session.setActiveContext(null);
+    log.success("Context closed.");
+    return true;
+};
+
 const handleHelp: CommandHandler = async () => {
     console.log(chalk.gray(`
 Commands:
   ${chalk.white('/help')}                  - Show this help
+  ${chalk.white('/status')}                - Show current system status
   ${chalk.white('/config')}                - View current LLM configuration
   ${chalk.white('/providers')}             - List available LLM providers
   ${chalk.white('/provider <name>')}       - Switch to a different provider
@@ -280,6 +320,8 @@ Commands:
   ${chalk.white('/scenarios')}             - List available test scenarios
   ${chalk.white('/run <id>')}              - Run a specific scenario
   ${chalk.white('/extract <text>')}        - Extract semantic properties
+  ${chalk.white('/open <id>')}             - Set active context to a note
+  ${chalk.white('/close')}                 - Clear active context
   ${chalk.white('/clear')}                 - Clear the screen and history
   ${chalk.white('/quit')}                  - Exit the CLI
             `));
@@ -301,6 +343,8 @@ const COMMANDS: Record<string, CommandHandler> = {
     '/run': handleRun,
     '/security': handleSecurity,
     '/extract': handleExtract,
+    '/open': handleOpen,
+    '/close': handleClose,
     '/help': handleHelp,
 };
 
@@ -314,4 +358,8 @@ export async function handleSlashCommand(input: string, cli: CliClient, tools: a
 
     log.warn("Unknown command. Type /help.");
     return true;
+}
+
+export function getSlashCommands(): string[] {
+    return Object.keys(COMMANDS);
 }

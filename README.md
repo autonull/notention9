@@ -6,6 +6,8 @@ It bridges the gap between **thinking** (Notes) and **doing** (Actions).
 
 ## Core Philosophy
 
+> **Mission:** Private by default, semantic by design. Universal matching. Skills as translators. Single-user utility first.
+
 1.  **Everything is a Note:** A project, a task, a product for sale, a job offer - all are just Notes.
 2.  **Semantic Properties:** We use a simple syntax to make text machine-readable (`[role:is:Engineer]`, `[budget < 500]`).
 3.  **From Thought to Action:** Your notes aren't just static text. They are instructions. The system understands your intent and executes it using its integrated Agent capabilities.
@@ -49,7 +51,7 @@ Powerful tools for architects and developers:
 Publish your intent to the censorship-resistant Nostr network to find matches outside your personal workspace.
 -   **Publish:** Turn a private request note into a public offer or job posting with one click.
 -   **Smart Matching:** Connect with peers offering exactly what you need, based on semantic compatibility, not keyword spam.
--   **Privacy Controls:** Default-private with explicit consent for publishing
+-   **Privacy Controls:** Default-private with explicit consent for publishing.
 
 ## Getting Started
 

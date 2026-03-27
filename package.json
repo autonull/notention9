@@ -15,13 +15,10 @@
     "test": "npm run test --workspaces",
     "ui:dev": "npm run dev -w @notention/ui",
     "ui:preview": "npm run preview -w @notention/ui",
-    "agent:start": "npm start -w @notention/agent",
-    "cli:start": "npm start -w @notention/cli --",
+    "agent": "npm start -w @notention/agent",
     "dev:local": "VITE_ENABLE_AGENT=false VITE_LLM_SOURCE=none npm run dev -w @notention/ui",
     "dev:server": "node scripts/dev-runner.js",
-    "cli": "npm start -w @notention/cli --",
-    "cli:ollama": "LLM_PROVIDER=ollama npm run cli --",
-    "cli:local": "node scripts/start-local-cli.mjs"
+    "cli": "npm start -w @notention/cli --"
   },
   "dependencies": {
     "date-fns": "^4.1.0",
