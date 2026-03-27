@@ -1,4 +1,4 @@
-import type { Property } from './types/index.js';
+import type { Property, ExtractedProperty } from './types/index.js';
 import { arePropertiesEqual } from './properties.js';
 import { resolveAlias } from './propertyAliases.js';
 import { expandMacro } from './composition.js';
@@ -13,13 +13,6 @@ export const SYMBOL_TO_OP: Record<string, string> = {
   '≈': 'is near',
   '∋': 'contains',
 };
-
-export interface ExtractedProperty {
-  property: Property;
-  index: number;
-  length: number;
-  originalText: string;
-}
 
 const COMMON_WORDS = new Set(['not', 'neither', 'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'can', 'this', 'that', 'these', 'those', 'i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 'her', 'us', 'them']);
 

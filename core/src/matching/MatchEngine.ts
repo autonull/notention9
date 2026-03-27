@@ -106,11 +106,37 @@ export class MatchEngine {
     }
 
     private evaluateNumber(req: Property, off: Property): PropertyMatch {
-        const rVal = parseFloat(req.values[0]);
         const oVal = parseFloat(off.values[0]);
-
-        if (isNaN(rVal) || isNaN(oVal)) {
+        if (isNaN(oVal)) {
             return { requestProp: req, offerProp: off, compatibility: 0, reason: 'Invalid number' };
+        }
+
+        if (req.operator === 'between') {
+            let min: number, max: number;
+            if (req.values.length >= 2) {
+                min = parseFloat(req.values[0]);
+                max = parseFloat(req.values[1]);
+            } else if (req.values[0] && req.values[0].includes('-')) {
+                const parts = req.values[0].split('-');
+                min = parseFloat(parts[0]);
+                max = parseFloat(parts[1]);
+            } else {
+                return { requestProp: req, offerProp: off, compatibility: 0, reason: 'Invalid range format' };
+            }
+
+            if (isNaN(min) || isNaN(max)) {
+                return { requestProp: req, offerProp: off, compatibility: 0, reason: 'Invalid range values' };
+            }
+
+            if (oVal >= min && oVal <= max) {
+                return { requestProp: req, offerProp: off, compatibility: 1, reason: `${oVal} is between ${min} and ${max}` };
+            }
+            return { requestProp: req, offerProp: off, compatibility: -1, reason: `${oVal} is outside ${min}-${max}` };
+        }
+
+        const rVal = parseFloat(req.values[0]);
+        if (isNaN(rVal)) {
+             return { requestProp: req, offerProp: off, compatibility: 0, reason: 'Invalid comparison value' };
         }
 
         switch (req.operator) {
@@ -125,10 +151,6 @@ export class MatchEngine {
                 // Fuzzy equality for numbers (within 5%?)
                 if (Math.abs(oVal - rVal) < (rVal * 0.05)) return { requestProp: req, offerProp: off, compatibility: 1, reason: `Exactly ${rVal}` };
                 return { requestProp: req, offerProp: off, compatibility: -1, reason: `${oVal} != ${rVal}` };
-            case 'between':
-                // Expect values[0] and values[1]
-                // Skipping partial implementation for now
-                break;
         }
 
         return { requestProp: req, offerProp: off, compatibility: 0, reason: `Unknown operator ${req.operator}` };
@@ -142,14 +164,22 @@ export class MatchEngine {
             if (!p1 || !p2) return { requestProp: req, offerProp: off, compatibility: 0, reason: 'Invalid coordinates' };
 
             const dist = haversineDistance(p1, p2);
-            const maxDist = 50; // default 50km
+            let maxDist = 50; // default 50km
+
+            // Check for configurable radius in 2nd value
+            if (req.values[1]) {
+                const parsedRadius = parseFloat(req.values[1]);
+                if (!isNaN(parsedRadius)) {
+                    maxDist = parsedRadius;
+                }
+            }
 
             if (dist <= maxDist) {
                 // Higher score for closer?
                 const score = 1 - (dist / maxDist);
-                return { requestProp: req, offerProp: off, compatibility: score, reason: `${Math.round(dist)}km away` };
+                return { requestProp: req, offerProp: off, compatibility: score, reason: `${Math.round(dist)}km away (max ${maxDist}km)` };
             }
-            return { requestProp: req, offerProp: off, compatibility: -0.5, reason: `Too far (${Math.round(dist)}km)` };
+            return { requestProp: req, offerProp: off, compatibility: -0.5, reason: `Too far (${Math.round(dist)}km > ${maxDist}km)` };
         }
 
         return { requestProp: req, offerProp: off, compatibility: 0, reason: 'Geo operator not supported' };
@@ -175,6 +205,29 @@ export class MatchEngine {
     }
 
     private evaluateString(req: Property, off: Property): PropertyMatch {
+        if (!req.values[0]) {
+             return { requestProp: req, offerProp: off, compatibility: 0, reason: 'Missing constraint value' };
+        }
+        const normalizedOffVals = off.values.map(v => v.toLowerCase().trim());
+        const normalizedReqVal = req.values[0].toLowerCase().trim();
+
+        if (req.operator === 'contains') {
+            // Check if any of the offer values partially match the request value
+            const match = normalizedOffVals.some(v => v.includes(normalizedReqVal));
+            if (match) {
+                 return { requestProp: req, offerProp: off, compatibility: 1, reason: `Contains '${req.values[0]}'` };
+            }
+             return { requestProp: req, offerProp: off, compatibility: -1, reason: `Does not contain '${req.values[0]}'` };
+        }
+
+        if (req.operator === 'excludes') {
+             const match = normalizedOffVals.some(v => v.includes(normalizedReqVal));
+             if (match) {
+                 return { requestProp: req, offerProp: off, compatibility: -1, reason: `Should exclude '${req.values[0]}'` };
+             }
+             return { requestProp: req, offerProp: off, compatibility: 1, reason: `Excludes '${req.values[0]}'` };
+        }
+
         // Use legacy matching service for robust string matching (Levenshtein, etc.)
         const legacyMatch = matchingService.checkConstraint(req, { ...matchableNote(off), properties: [off] });
 

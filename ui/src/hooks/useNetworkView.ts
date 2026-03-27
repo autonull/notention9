@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, useRef } from 'react';
 import { getPublicKey } from 'nostr-tools';
 import type { NostrEvent, Note, Property } from '@notention/core';
-import { DEFAULT_RELAYS, hexToBytes, pool, extractPropertiesFromTags, convertEventToNote, matchingService } from '@notention/core';
+import { DEFAULT_RELAYS, hexToBytes, pool, extractPropertiesFromTags, convertEventToNote, matchingService, SEMANTIC_NOTE_KIND } from '@notention/core';
 import { useNostrProfile } from './useNostrProfile';
 import { useView } from './useViewContext';
 import { useSettings } from './useSettingsContext';
@@ -65,7 +65,7 @@ export const useNetworkView = ({ matchAgainst }: UseNetworkViewProps = {}) => {
 
     const sub = pool.subscribeMany(
       relays,
-      { kinds: [1], limit: 50 },
+      { kinds: [1, SEMANTIC_NOTE_KIND], limit: 50 },
       {
         onevent: (event) => {
           if (!seenEventIdsRef.current.has(event.id)) {
