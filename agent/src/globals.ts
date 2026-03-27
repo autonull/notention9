@@ -13,6 +13,10 @@ export function getAgentRegistry(): AgentRegistry {
     return agentRegistry;
 }
 
+export function setAgentRegistry(registry: AgentRegistry) {
+    agentRegistry = registry;
+}
+
 export function setSkillRegistry(registry: AgentSkillRegistry) {
     skillRegistry = registry;
 }

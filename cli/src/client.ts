@@ -1,10 +1,14 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
+// @ts-ignore
 import EventSource from "eventsource";
+
+// Handle both CommonJS and ESM interop
+const EventSourceClass = EventSource.EventSource || EventSource;
 
 // Polyfill EventSource if needed
 if (!(global as any).EventSource) {
-    (global as any).EventSource = EventSource;
+    (global as any).EventSource = EventSourceClass;
 }
 
 export class CliClient {

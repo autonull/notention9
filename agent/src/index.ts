@@ -6,6 +6,7 @@ import { log, error } from './core/utils';
 import { Bootstrap } from './Bootstrap';
 import { SocketController } from './server/SocketController';
 import { setupMcpServer } from './server/McpServer';
+import { setAgentRegistry } from './globals';
 
 // --- Server Setup ---
 
@@ -44,6 +45,7 @@ bootstrap.init((event) => {
   }
 }).then((components) => {
   log('Init', 'Agent system initialized');
+  setAgentRegistry(components.agentRegistry);
 
   socketController = new SocketController(
     components.agentRegistry,

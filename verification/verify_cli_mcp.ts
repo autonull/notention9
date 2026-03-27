@@ -22,13 +22,14 @@ async function main() {
         if (data.toString().includes('running on')) {
             console.log("Agent Server appears to be running.");
         }
+        console.log(`[Agent Out]: ${data}`);
     });
     agentProcess.stderr.on('data', (data) => {
-        // console.error(`[Agent Err]: ${data}`);
+        console.error(`[Agent Err]: ${data}`);
     });
 
     // Wait for server to start
-    await sleep(5000);
+    await sleep(10000);
 
     let client: CliClient | null = null;
     let noteId: string | null = null;
@@ -114,7 +115,15 @@ async function main() {
         // Note: This might fail if the agent skills aren't fully configured/mocked in the server environment
         // effectively. But we want to test that the TOOL executes and returns a result structure.
         const runResult = await client.callTool('run_scenario', { id: scenarioId });
-        const runJson = JSON.parse((runResult.content[0] as any).text);
+        const runText = (runResult.content[0] as any).text;
+
+        let runJson;
+        try {
+            runJson = JSON.parse(runText);
+        } catch (e) {
+            console.error("Failed to parse run result:", runText);
+            throw new Error("Invalid JSON from run_scenario");
+        }
 
         console.log(`   Run Success: ${runJson.success}`);
         if (!runJson.scenarioId) {
@@ -127,8 +136,12 @@ async function main() {
         process.exit(1);
     } finally {
         if (client) await client.close();
-        if (agentProcess.pid) process.kill(-agentProcess.pid);
-        else agentProcess.kill();
+        try {
+            if (agentProcess.pid) process.kill(-agentProcess.pid);
+            else agentProcess.kill();
+        } catch (e) {
+            // Ignore if process already dead
+        }
         process.exit(0);
     }
 }
