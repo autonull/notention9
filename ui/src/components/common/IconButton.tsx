@@ -4,7 +4,7 @@ import {Tooltip} from './Tooltip';
 export interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     icon: React.ComponentType<{ className?: string }>;
     isActive?: boolean;
-    variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
+    variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'success';
     size?: 'xs' | 'sm' | 'md' | 'lg';
     tooltip?: string;
     tooltipPosition?: 'top' | 'bottom' | 'left' | 'right';
@@ -39,6 +39,8 @@ export function IconButton({
                 return "bg-blue-600 hover:bg-blue-700 text-white shadow-sm";
             case 'secondary':
                 return "bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700";
+            case 'success':
+                return "bg-transparent text-gray-400 hover:text-green-400 hover:bg-green-900/30";
             case 'danger':
                 return "bg-transparent text-gray-400 hover:text-red-400 hover:bg-red-900/30";
             case 'ghost':

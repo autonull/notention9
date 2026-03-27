@@ -4,9 +4,23 @@ import {SearchIcon} from '../common/icons';
 import {NAV_ITEMS} from '../../utils/navigation';
 
 export function MobileNavigation() {
-    const {activeView, setActiveView, setIsPaletteOpen} = useView();
+    const {activeView, setActiveView, setIsPaletteOpen, selectedNoteId, setSelectedNoteId} = useView();
 
     const mobileNavItems = NAV_ITEMS.filter(item => item.showInMobile);
+
+    const handleNavClick = (viewId: string) => {
+        // If clicking the currently active view
+        if (activeView === viewId) {
+            // And if it's the Notes view with a selected note
+            if (viewId === 'notes' && selectedNoteId) {
+                // Clear selection to go back to list
+                setSelectedNoteId(null);
+            }
+            // For other views or if already at list, do nothing or scroll to top (future)
+        } else {
+            setActiveView(viewId as any);
+        }
+    };
 
     return (
         <div className="md:hidden fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-800 z-50 pb-safe">
@@ -14,7 +28,7 @@ export function MobileNavigation() {
                 {mobileNavItems.map((item) => (
                     <button
                         key={item.id}
-                        onClick={() => setActiveView(item.id)}
+                        onClick={() => handleNavClick(item.id)}
                         className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${
                             activeView === item.id ? 'text-blue-500' : 'text-gray-500 hover:text-gray-300'
                         }`}

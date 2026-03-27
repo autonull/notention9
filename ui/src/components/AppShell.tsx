@@ -2,7 +2,6 @@ import React from 'react';
 import {Header} from './layout/Header';
 import {MobileNavigation} from './layout/MobileNavigation';
 import {CommandPalette} from './common/CommandPalette';
-import {HelpModal} from './common/HelpModal';
 import {Sidebar} from './sidebar';
 import {MainView} from './MainView';
 
@@ -65,11 +64,9 @@ export function AppShell() {
         },
         onSave: () => {
             // Trigger save if in note editor
-            // We can dispatch a custom event for this too
             window.dispatchEvent(new CustomEvent('save-note'));
 
-            // Fallback to old behavior if event not handled?
-            // For now keep the DOM query as backup
+            // Fallback
             setTimeout(() => {
                 const saveButton = document.querySelector('button[data-action="save"]');
                 if (saveButton) {
@@ -111,17 +108,20 @@ export function AppShell() {
         }
     });
 
-    const sidebarClasses = [
-        'flex-shrink-0 bg-gray-900 border-r border-gray-700/50',
-        'transition-all duration-300 ease-in-out',
-        activeView === 'notes' && !selectedNoteId ? 'w-full block' : 'hidden md:block',
-        isSidebarOpen ? 'md:w-[320px]' : 'md:w-0 md:border-r-0 overflow-hidden'
-    ].filter(Boolean).join(' ');
+    const isMobileNoteList = activeView === 'notes' && !selectedNoteId;
 
-    const mainClasses = [
-        'flex-1 p-3 overflow-hidden pb-20 md:pb-3',
-        activeView === 'notes' && !selectedNoteId ? 'hidden md:block' : 'block'
-    ].filter(Boolean).join(' ');
+    // Streamlined layout logic
+    const sidebarClasses = `
+        flex-shrink-0 bg-gray-900 border-r border-gray-700/50
+        transition-all duration-300 ease-in-out
+        ${isMobileNoteList ? 'w-full block' : 'hidden md:block'}
+        ${isSidebarOpen ? 'md:w-[320px]' : 'md:w-0 md:border-r-0 overflow-hidden'}
+    `.replace(/\s+/g, ' ').trim();
+
+    const mainClasses = `
+        flex-1 p-3 overflow-hidden pb-20 md:pb-3
+        ${isMobileNoteList ? 'hidden md:block' : 'block'}
+    `.replace(/\s+/g, ' ').trim();
 
     return (
         <div className="flex flex-col h-screen bg-gray-800 text-gray-200">
@@ -147,7 +147,6 @@ export function AppShell() {
                 onCreateNote={handleCreateNote}
                 commands={commands}
             />
-            <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)}/>
         </div>
     );
 }

@@ -96,11 +96,12 @@ export function Header({onNewNote}: HeaderProps) {
                     icon={SearchIcon}
                     variant="ghost"
                     size="lg"
+                    className="hidden md:flex"
                 />
             </div>
 
-            {/* Center Section - Navigation */}
-            <div className="flex items-center gap-2">
+            {/* Center Section - Navigation (Hidden on Mobile) */}
+            <div className="hidden md:flex items-center gap-2">
                 {filteredNavItems.map((item) => {
                     const badgeCount = item.badgeCountKey
                         ? (item.badgeCountKey === 'notificationCount' ? notificationCount : chatNotificationCount)

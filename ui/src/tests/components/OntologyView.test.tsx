@@ -8,6 +8,9 @@ import { useView } from '../../hooks/useViewContext';
 // Mock dependencies
 vi.mock('../../hooks/useOntologyView');
 vi.mock('../../hooks/useViewContext');
+vi.mock('../../hooks/useToast', () => ({
+    useToast: () => ({ addToast: vi.fn() })
+}));
 vi.mock('../../components/developer/OntologyGraph', () => ({
     OntologyGraph: () => <div data-testid="ontology-graph">Graph</div>
 }));
@@ -43,7 +46,8 @@ describe('OntologyView', () => {
             handleAddNode: mockHandleAddNode,
             handleDeleteNode: mockHandleDeleteNode,
             usageStats: new Map(),
-            conflicts: []
+            conflicts: [],
+            suggestions: []
         });
     });
 

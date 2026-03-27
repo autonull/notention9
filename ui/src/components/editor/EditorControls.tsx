@@ -11,7 +11,6 @@ import {
     SparklesIcon
 } from '../common/icons';
 import {IconButton} from '../common/IconButton';
-import {HelpModal} from '../common/HelpModal';
 
 export interface EditorControlsProps {
     onNext?: () => void;
@@ -56,8 +55,6 @@ export function EditorControls({
                                    isPublished,
                                    actionLabel
                                }: EditorControlsProps) {
-    const [isHelpOpen, setIsHelpOpen] = useState(false);
-
     return (
         <div className="flex items-center gap-2 flex-shrink-0">
             {/* Navigation */}
@@ -136,13 +133,6 @@ export function EditorControls({
                         className="hidden md:flex"
                     />
                 )}
-                <IconButton
-                    onClick={() => setIsHelpOpen(true)}
-                    tooltip="Help & Shortcuts"
-                    icon={HelpIcon}
-                    variant="ghost"
-                    size="sm"
-                />
             </div>
 
             {/* Network Actions */}
@@ -176,7 +166,6 @@ export function EditorControls({
 
             </div>
 
-            <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)}/>
         </div>
     );
 };
