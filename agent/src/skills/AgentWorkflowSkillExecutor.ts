@@ -1,7 +1,7 @@
 import { Agent, WorkflowResult, Note, SkillExecutionError } from '@notention/core';
 import { AgentSkillRegistry } from './AgentSkillRegistry';
 
-export class SkillExecutor {
+export class AgentWorkflowSkillExecutor {
     private onEvent?: (event: any) => void;
 
     constructor(

@@ -23,6 +23,8 @@ export * from './utils/logging.js';
 export * from './utils/tools.js';
 export * from './utils/concurrency.js';
 export * from './baseService.js';
+export * from './remote/RobustWebSocket.js';
+export * from './tools/OntologyTools.js';
 
 // Pattern Recognition and Prediction (Phase 1)
 export * from './patternRecognition.js';
@@ -35,6 +37,7 @@ export * from './ontologyService.js';
 export * from './ontologyServiceFactory.js';
 export * from './propertyExtractor.js';
 export * from './queryBuilder.js';
+export * from './matching/MatchingService.js';
 
 // Skill system (Phase 4)
 export * from './skills/BaseSkill.js';
