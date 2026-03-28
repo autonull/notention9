@@ -1,4 +1,4 @@
-import { OntologyNode, OntologyAttribute } from './types';
+import { OntologyNode, OntologyAttribute, Note, Property } from './types';
 
 /**
  * Pure functions for manipulating the Ontology tree.
@@ -181,3 +181,42 @@ export const mergeAttributes = (
   }
   return newTree;
 };
+
+/**
+ * Calculates a match score between two notes based on semantic overlap.
+ * Weighted by the priority of the target note to surface high-priority matches.
+ */
+export const calculateMatchScore = (
+  note1: Note,
+  note2: Note,
+  ontology: OntologyNode[]
+): number => {
+  // Simple Semantic Overlap: Count matching property keys/values
+  const overlap = calculateSemanticOverlap(note1.properties, note2.properties);
+
+  // Weight by priority (0.0 to 1.0)
+  // Higher priority notes boost the score
+  const priorityWeight = note2.priority !== undefined ? note2.priority : 1.0;
+
+  return overlap * priorityWeight;
+};
+
+/**
+ * Calculates raw semantic overlap between property sets.
+ * Simple implementation: +1 for matching key, +2 for matching key AND value.
+ */
+function calculateSemanticOverlap(props1: Property[], props2: Property[]): number {
+  let score = 0;
+  for (const p1 of props1) {
+    for (const p2 of props2) {
+      if (p1.key === p2.key) {
+        score += 1; // Key match
+        // Check value overlap
+        if (p1.values.some(v1 => p2.values.includes(v1))) {
+          score += 2; // Value match bonus
+        }
+      }
+    }
+  }
+  return score;
+}
