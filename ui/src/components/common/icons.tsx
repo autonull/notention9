@@ -536,6 +536,12 @@ export const CheckIcon = (props: IconProps) => (
     </OutlineIcon>
 );
 
+export const DragHandleIcon = (props: IconProps) => (
+    <OutlineIcon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 9h16.5m-16.5 6.75h16.5" />
+    </OutlineIcon>
+);
+
 export const XIcon = (props: IconProps) => (
     <OutlineIcon {...props}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/>

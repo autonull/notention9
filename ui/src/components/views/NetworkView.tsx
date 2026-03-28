@@ -29,21 +29,46 @@ export function NetworkView({matchAgainst}: NetworkViewProps) {
     } = useNetworkView({matchAgainst});
 
     const [activeFilterId, setActiveFilterId] = useState<string>('all');
+    const [activeTab, setActiveTab] = useState<'browse' | 'published' | 'matches'>('browse');
 
     // Derive top-level categories from ontology
     const rootCategories = useMemo(() => {
         return settings.ontology || [];
     }, [settings.ontology]);
 
+    const relayCount = useMemo(() => {
+        return settings.nostr.relays?.length || 0;
+    }, [settings.nostr.relays]);
+
+    const myPublishedEvents = useMemo(() => {
+        if (!pubkey) return [];
+        return sortedEvents.filter(event => event.pubkey === pubkey);
+    }, [sortedEvents, pubkey]);
+
+    // Simplified mock for matches, could be based on ontology intersection or reply tags later
+    const incomingMatchEvents = useMemo(() => {
+        return sortedEvents.filter(event => {
+            return event.tags.some(tag => tag[0] === 'e') && event.pubkey !== pubkey;
+        });
+    }, [sortedEvents, pubkey]);
+
     const filteredEvents = useMemo(() => {
-        if (activeFilterId === 'all') return sortedEvents;
+        let baseEvents = sortedEvents;
+
+        if (activeTab === 'published') {
+            baseEvents = myPublishedEvents;
+        } else if (activeTab === 'matches') {
+            baseEvents = incomingMatchEvents;
+        }
+
+        if (activeFilterId === 'all') return baseEvents;
 
         const selectedNode = findNode(settings.ontology, activeFilterId);
         if (!selectedNode) return sortedEvents;
 
         const keysInBranch = getSubtreeKeys(selectedNode);
 
-        return sortedEvents.filter(event => {
+        return baseEvents.filter(event => {
             // Parse properties from content (since they might not be in tags)
             // Optimization: Check for presence of key strings first before full parse?
             // Full parse is safer.
@@ -53,14 +78,14 @@ export function NetworkView({matchAgainst}: NetworkViewProps) {
             // Check if any property key exists in the branch
             return props.some(p => keysInBranch.has(p.key));
         });
-    }, [sortedEvents, activeFilterId, settings.ontology]);
+    }, [sortedEvents, activeFilterId, settings.ontology, activeTab, myPublishedEvents, incomingMatchEvents]);
 
     if (!pubkey) {
         return <ConnectIdentityPrompt onNavigateToSettings={onNavigateToSettings}/>;
     }
 
     return (
-        <div className="h-full flex flex-col bg-gray-800/50 rounded-lg overflow-hidden">
+        <div className="h-full flex flex-col bg-[#0f172a] text-white rounded-lg overflow-hidden custom-scrollbar">
             <ProfileHeader
                 settings={settings}
                 pubkey={pubkey}
@@ -72,13 +97,47 @@ export function NetworkView({matchAgainst}: NetworkViewProps) {
                     onClearMatch={() => setMatchingNoteId(null)}
                     filter={filter}
                     setFilter={setFilter}
-                    sortedEvents={sortedEvents}
+                    sortedEvents={filteredEvents}
                     ontology={rootCategories}
                     activeFilterId={activeFilterId}
                     setActiveFilterId={setActiveFilterId}
+                    relayCount={relayCount}
                 />
 
-                {!matchAgainst && !filter && activeFilterId === 'all' && <SuggestedMatches/>}
+                <div className="mb-6 flex gap-4 border-b border-gray-700/50 pb-2">
+                    <button
+                        onClick={() => setActiveTab('browse')}
+                        className={`text-sm font-semibold pb-2 px-2 -mb-[9px] ${
+                            activeTab === 'browse'
+                            ? 'text-white border-b-2 border-blue-500'
+                            : 'text-gray-500 hover:text-gray-300'
+                        }`}
+                    >
+                        Browse
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('published')}
+                        className={`text-sm font-semibold pb-2 px-2 -mb-[9px] ${
+                            activeTab === 'published'
+                            ? 'text-white border-b-2 border-blue-500'
+                            : 'text-gray-500 hover:text-gray-300'
+                        }`}
+                    >
+                        My Published ({myPublishedEvents.length})
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('matches')}
+                        className={`text-sm font-semibold pb-2 px-2 -mb-[9px] ${
+                            activeTab === 'matches'
+                            ? 'text-white border-b-2 border-blue-500'
+                            : 'text-gray-500 hover:text-gray-300'
+                        }`}
+                    >
+                        Incoming Matches ({incomingMatchEvents.length})
+                    </button>
+                </div>
+
+                {!matchAgainst && !filter && activeFilterId === 'all' && activeTab === 'browse' && <SuggestedMatches/>}
 
                 <NetworkFeedList
                     isLoading={isLoading}
