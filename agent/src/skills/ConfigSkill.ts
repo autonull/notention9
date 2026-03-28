@@ -1,4 +1,4 @@
-import { Note, generateId, PropertyPattern } from '@notention/core';
+import { Note, generateId, PropertyPattern, getCanonicalKey, OntologyNode } from '@notention/core';
 import { Skill, ActionSequence } from '@notention/core/src/skills/types';
 
 // Centralized configuration keys for O(1) lookup
@@ -25,9 +25,15 @@ export class ConfigSkill implements Skill {
     ];
 
     private configUpdater: (key: string, value: any) => void;
+    private ontology: OntologyNode[] = [];
 
-    constructor(configUpdater?: (key: string, value: any) => void) {
+    constructor(configUpdater?: (key: string, value: any) => void, ontology?: OntologyNode[]) {
         this.configUpdater = configUpdater || ((k, v) => console.log(`[ConfigSkill] Dry Run: Set ${k} = ${v}`));
+        this.ontology = ontology || [];
+    }
+
+    setOntology(ontology: OntologyNode[]) {
+        this.ontology = ontology;
     }
 
     canHandle(note: Note): number {
@@ -36,7 +42,9 @@ export class ConfigSkill implements Skill {
         }
 
         for (const p of note.properties) {
-            if (META_CONFIG_KEYS.has(p.key) || DIRECT_CONFIG_KEYS.has(p.key)) {
+            const canonicalKey = getCanonicalKey(p.key, this.ontology);
+
+            if (META_CONFIG_KEYS.has(canonicalKey) || DIRECT_CONFIG_KEYS.has(canonicalKey)) {
                 return 1.0;
             }
         }
@@ -48,22 +56,25 @@ export class ConfigSkill implements Skill {
         let applied = 0;
 
         for (const p of note.properties) {
+            const canonicalKey = getCanonicalKey(p.key, this.ontology);
+
             // Direct config keys: [llm_model:is:gpt-4]
-            if (DIRECT_CONFIG_KEYS.has(p.key) && p.values.length > 0) {
+            if (DIRECT_CONFIG_KEYS.has(canonicalKey) && p.values.length > 0) {
                 const val = p.values[0];
-                this.configUpdater(p.key, val);
+                this.configUpdater(canonicalKey, val);
                 applied++;
                 continue;
             }
 
             // Meta config keys: [config:is:debug_mode=true] or [setting:is:voice_enabled=false]
-            if (META_CONFIG_KEYS.has(p.key)) {
+            if (META_CONFIG_KEYS.has(canonicalKey)) {
                  for (const val of p.values) {
                      const splitIndex = val.indexOf('=');
                      if (splitIndex !== -1) {
                          const k = val.substring(0, splitIndex).trim();
                          const v = val.substring(splitIndex + 1).trim();
                          if (k && v) {
+                             // Also resolve key in value if needed? For now assume k is exact.
                              this.configUpdater(k, v);
                              applied++;
                          }

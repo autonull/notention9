@@ -5,6 +5,7 @@ import {ICON_MAP} from '../layout/iconMap';
 import {useSettings} from '../../hooks/useSettingsContext';
 import {useOntologyIndex} from '../../hooks/useOntologyIndex';
 import {validatePropertyAgainstOntology} from '../../utils/propertyValidation';
+import {getCanonicalKey} from '@notention/core';
 
 export const PropertyChip = (props: NodeViewProps) => {
     const {node} = props;
@@ -17,6 +18,12 @@ export const PropertyChip = (props: NodeViewProps) => {
 
     // Enhanced Validation Logic
     const definition = propertyTypes.get(name);
+
+    const canonicalKey = useMemo(() => {
+        return getCanonicalKey(name, settings.ontology);
+    }, [name, settings.ontology]);
+
+    const isAlias = canonicalKey !== name;
 
     const validation = useMemo(() => {
         return validatePropertyAgainstOntology(name, operator, value, definition);
@@ -31,10 +38,16 @@ export const PropertyChip = (props: NodeViewProps) => {
         <NodeViewWrapper
             as="span"
             className={`${baseClasses} ${validation.isValid ? validClasses : invalidClasses}`}
-            title={validation.isValid ? "Click to edit" : validation.message}
+            title={
+                !validation.isValid ? validation.message :
+                isAlias ? `Using alias for '${canonicalKey}'` : "Click to edit"
+            }
         >
             <IconComponent className={`w-3.5 h-3.5 ${validation.isValid ? 'text-blue-400' : 'text-red-400'}`}/>
-            <span className={`font-semibold ${validation.isValid ? 'text-blue-300' : 'text-red-300'}`}>{name}</span>
+            <span className={`font-semibold ${validation.isValid ? 'text-blue-300' : 'text-red-300'} flex items-center gap-1`}>
+                {name}
+                {isAlias && <span className="text-[10px] opacity-70 ml-0.5 italic text-blue-400">({canonicalKey})</span>}
+            </span>
             <span
                 className={`${validation.isValid ? 'text-blue-500' : 'text-red-500'} text-xs uppercase font-bold`}>{operator}</span>
             <span

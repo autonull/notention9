@@ -1,9 +1,10 @@
 import {useCallback, useEffect, useRef} from 'react';
 import {useLocalForage} from '../useLocalForage';
-import type {GeoCoords, Note, Property, SortOrder} from '@notention/core';
-import {createNote, haversineDistance, Logger, parseProperties} from '@notention/core';
+import type {GeoCoords, Note, Property, SortOrder, OntologyNode} from '@notention/core';
+import {createNote, haversineDistance, Logger, parseProperties, getCanonicalKey, normalizeNoteProperties} from '@notention/core';
 import {agentService} from '../../services/AgentService';
 import {nostrService} from '../../services/NostrService';
+import {useSettings} from '../useSettingsContext';
 import {augmentNote, NoteMetadata} from './noteUtils';
 
 export interface UseNotesDataResult {
@@ -24,9 +25,12 @@ export interface UseNotesDataResult {
 }
 
 // Lightweight property check helper to avoid instantiating full MatchEngine in UI hook
-const checkPropertyMatch = (constraint: Property, note: Note): boolean => {
+const checkPropertyMatch = (constraint: Property, note: Note, ontology: OntologyNode[]): boolean => {
+    const canonicalConstraint = getCanonicalKey(constraint.key, ontology);
+
     return note.properties.some(p => {
-        if (p.key !== constraint.key) return false;
+        const canonicalProp = getCanonicalKey(p.key, ontology);
+        if (canonicalProp !== canonicalConstraint) return false;
 
         // Simple value check for now (string/number equality or inclusion)
         // This restores the basic filtering capability
@@ -52,6 +56,7 @@ const checkPropertyMatch = (constraint: Property, note: Note): boolean => {
 };
 
 export const useNotesData = (driver?: LocalForage): UseNotesDataResult => {
+    const { settings } = useSettings();
     const [notes, setNotes, loading] = useLocalForage<Note[]>(
         'notention-notes',
         [],
@@ -97,39 +102,47 @@ export const useNotesData = (driver?: LocalForage): UseNotesDataResult => {
 
     // --- CRUD Operations ---
     const addNote = useCallback((overrides?: Partial<Note>) => {
-        const newNote = {...createNote(), ...overrides};
+        let newNote = {...createNote(), ...overrides};
+        // Normalize properties to canonical keys on creation
+        newNote = normalizeNoteProperties(newNote, settings.ontology);
+
         setNotes((prev) => [newNote, ...prev]);
         agentService.saveNote(newNote);
-        nostrService.saveNote(newNote);
+        nostrService.saveNote(newNote, settings.ontology);
         return newNote;
-    }, [setNotes]);
+    }, [setNotes, settings.ontology]);
 
     const upsertNote = useCallback((note: Note) => {
+        const normalizedNote = normalizeNoteProperties(note, settings.ontology);
+
         setNotes((prev) => {
-            const existingIdx = prev.findIndex((n) => n.id === note.id);
+            const existingIdx = prev.findIndex((n) => n.id === normalizedNote.id);
             if (existingIdx >= 0) {
                 const existing = prev[existingIdx];
-                if (new Date(note.updatedAt) > new Date(existing.updatedAt)) {
+                if (new Date(normalizedNote.updatedAt) > new Date(existing.updatedAt)) {
                     const newNotes = [...prev];
-                    newNotes[existingIdx] = note;
+                    newNotes[existingIdx] = normalizedNote;
                     return newNotes;
                 }
                 return prev;
             } else {
-                return [note, ...prev];
+                return [normalizedNote, ...prev];
             }
         });
-        agentService.saveNote(note);
-    }, [setNotes]);
+        agentService.saveNote(normalizedNote);
+    }, [setNotes, settings.ontology]);
 
     const updateNote = useCallback((updatedNote: Note) => {
-        const noteWithTimestamp = {...updatedNote, updatedAt: new Date().toISOString()};
+        let noteWithTimestamp = {...updatedNote, updatedAt: new Date().toISOString()};
+        // Normalize properties to canonical keys on update
+        noteWithTimestamp = normalizeNoteProperties(noteWithTimestamp, settings.ontology);
+
         setNotes((prev) =>
-            prev.map((n) => (n.id === updatedNote.id ? noteWithTimestamp : n))
+            prev.map((n) => (n.id === noteWithTimestamp.id ? noteWithTimestamp : n))
         );
         agentService.saveNote(noteWithTimestamp);
-        nostrService.saveNote(noteWithTimestamp);
-    }, [setNotes]);
+        nostrService.saveNote(noteWithTimestamp, settings.ontology);
+    }, [setNotes, settings.ontology]);
 
     const deleteNote = useCallback((id: string) => {
         setNotes((prev) => {
@@ -200,7 +213,7 @@ export const useNotesData = (driver?: LocalForage): UseNotesDataResult => {
             filtered = notesWithMetadata.filter((note) => {
                 // Check structured constraints [key:op:val]
                 const semanticMatch = constraints.length > 0 ?
-                    constraints.every(c => checkPropertyMatch(c, note)) : true;
+                    constraints.every(c => checkPropertyMatch(c, note, settings.ontology)) : true;
 
                 if (!semanticMatch) return false;
 
@@ -211,12 +224,16 @@ export const useNotesData = (driver?: LocalForage): UseNotesDataResult => {
                 const tagMatch = tagQueries.every(q => (note.tags || []).some(t => t.toLowerCase().includes(q)));
 
                 // Restore simple property filtering (e.g. status:done in plain text)
-                const simplePropMatch = simplePropQueries.every(q =>
-                    note.properties.some(p =>
-                        p.key.toLowerCase() === q.key &&
-                        p.values.some(v => v.toLowerCase().includes(q.value))
-                    )
-                );
+                const simplePropMatch = simplePropQueries.every(q => {
+                    // Try to match simple prop queries against canonical keys too
+                    const canonicalQueryKey = getCanonicalKey(q.key, settings.ontology);
+
+                    return note.properties.some(p => {
+                        const canonicalPropKey = getCanonicalKey(p.key, settings.ontology);
+                        return canonicalPropKey === canonicalQueryKey &&
+                               p.values.some(v => v.toLowerCase().includes(q.value));
+                    });
+                });
 
                 return textMatch && tagMatch && simplePropMatch;
             });

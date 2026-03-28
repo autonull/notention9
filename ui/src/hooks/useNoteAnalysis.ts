@@ -36,6 +36,7 @@ export function useNoteAnalysis(note: Note) {
     const propertyExtractor = useMemo(() => new PropertyExtractor(settings.ontology), [settings.ontology]);
 
     const analyzeNote = useCallback(() => {
+        if (!settings.ontology || settings.ontology.length === 0) return; // Skip if no ontology
         const plainText = getTextFromHtml(note.content);
         const extractedProperties = propertyExtractor.extractFromText(plainText);
 
@@ -49,18 +50,20 @@ export function useNoteAnalysis(note: Note) {
 
         const predictionSuggestions = predictions.reduce<Suggestion[]>((acc, p) => {
             let predictedText = p.predictedAction;
+            let displayText = predictedText;
 
             // Normalize property keys in predictions if it looks like a property
-            // Regex for [key:op:val] or [key:val]
-            const propMatch = predictedText.match(/^\[(.*?):(.*)\]$/);
+            const propMatch = predictedText.match(/^\[(.*?)\]$/);
             if (propMatch) {
-                const parts = predictedText.slice(1, -1).split(':');
+                const parts = propMatch[1].split(':');
                 if (parts.length >= 2) {
                     const key = parts[0];
                     const canonicalKey = getCanonicalKey(key, settings.ontology);
                     if (canonicalKey !== key) {
                         parts[0] = canonicalKey;
-                        predictedText = `[${parts.join(':')}]`;
+                        const canonicalText = `[${parts.join(':')}]`;
+                        displayText = `${canonicalText} (from alias '${key}')`;
+                        predictedText = canonicalText;
                     }
                 }
             }
@@ -72,7 +75,7 @@ export function useNoteAnalysis(note: Note) {
 
             acc.push({
                 id: `pred-${p.pattern.id}-${predictedText}`,
-                text: predictedText,
+                text: displayText, // Show user context
                 type: isProperty ? 'property' : 'action',
                 confidence: p.confidence
             });
