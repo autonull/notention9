@@ -39,31 +39,25 @@ export class VoltAgentTransformer {
 
     // VoltAgent Result → Notes
     async workflowResultToNotes(result: WorkflowResult, parentNote: Note): Promise<Note[]> {
-        const notes: Note[] = [];
-
         // Check if result has items (array of potential notes)
         const items = result.items || [];
 
-        for (const item of items) {
-            notes.push({
-                id: uuidv4(),
-                title: item.title || 'Result',
-                content: item.content || '',
-                tags: [...parentNote.tags, '#result'],
-                properties: this.deserializeProperties(item.properties || {}),
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-                source: {
-                    type: 'skill',
-                    identifier: 'voltagent',
-                    timestamp: Date.now()
-                },
-                public: false,
-                priority: 0.5
-            });
-        }
-
-        return notes;
+        return items.map(item => ({
+            id: uuidv4(),
+            title: item.title || 'Result',
+            content: item.content || '',
+            tags: [...parentNote.tags, '#result'],
+            properties: this.deserializeProperties(item.properties || {}),
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            source: {
+                type: 'skill',
+                identifier: 'voltagent',
+                timestamp: Date.now()
+            },
+            public: false,
+            priority: 0.5
+        }));
     }
 
     // Note → VoltAgent Tool Action
@@ -85,14 +79,15 @@ export class VoltAgentTransformer {
     }
 
     private serializeProperties(properties: Property[]): Record<string, any> {
-        const serialized: Record<string, any> = {};
-        for (const prop of properties) {
-            serialized[prop.key] = {
-                operator: prop.operator,
-                values: prop.values
-            };
-        }
-        return serialized;
+        return Object.fromEntries(
+            properties.map(prop => [
+                prop.key,
+                {
+                    operator: prop.operator,
+                    values: prop.values
+                }
+            ])
+        );
     }
 
     private deserializeProperties(data: Record<string, any>): Property[] {

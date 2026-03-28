@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useSettings } from '../hooks/useSettingsContext';
 import { useToast } from '../hooks/useToast';
-import { Note, PropertyExtractor, patternRecognitionService, getTextFromHtml, replacePropertyInString, parseProperties } from '@notention/core';
+import { Note, PropertyExtractor, patternRecognitionService, replacePropertyInString, parseProperties } from '@notention/core';
+import { getTextFromHtml } from '../utils/html';
 import { SparklesIcon, PlusIcon, LinkIcon, InformationCircleIcon, CheckCircleIcon } from './common/icons';
 import { FeedbackWidget } from './common/FeedbackWidget';
 import { agentService } from '../services/AgentService';

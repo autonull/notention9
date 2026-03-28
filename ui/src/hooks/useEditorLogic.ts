@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import type { Note, Property } from '@notention/core';
-import { parseProperties, replacePropertyInString, PropertyExtractor, getTextFromHtml } from '@notention/core';
+import { parseProperties, replacePropertyInString, PropertyExtractor } from '@notention/core';
+import { getTextFromHtml } from '../utils/html';
 import { useDebouncedSave } from './useDebouncedSave';
 import { useView } from './useViewContext';
 import { useToast } from './useToast';

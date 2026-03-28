@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getTextFromHtml, prettyPrintHtml } from '@notention/core';
+import { getTextFromHtml, prettyPrintHtml } from '../../src/utils/html';
 
 describe('parsing HTML utils', () => {
   describe('getTextFromHtml', () => {

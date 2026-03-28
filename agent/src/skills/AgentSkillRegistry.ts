@@ -49,25 +49,16 @@ export class AgentSkillRegistry extends SkillRegistry {
     }
 
     override findMatching(note: Note): Skill[] {
-        const matches: Skill[] = [];
         // Prioritize using metadata-enriched skills
-        for (const meta of this.skillMetadata.values()) {
-             if (meta.skill.canHandle(note) > 0.5) {
-                 matches.push(meta.skill);
-             }
-        }
-        return matches;
+        return Array.from(this.skillMetadata.values())
+            .filter(meta => meta.skill.canHandle(note) > 0.5)
+            .map(meta => meta.skill);
     }
 
     async findMatchingAsync(note: Note, minConfidence: number = 0.5): Promise<Array<{ skill: Skill; confidence: number }>> {
-        const matches: Array<{ skill: Skill; confidence: number }> = [];
-        for (const meta of this.skillMetadata.values()) {
-            const confidence = meta.skill.canHandle(note);
-            if (confidence >= minConfidence) {
-                matches.push({ skill: meta.skill, confidence });
-            }
-        }
-        return matches;
+        return Array.from(this.skillMetadata.values())
+            .map(meta => ({ skill: meta.skill, confidence: meta.skill.canHandle(note) }))
+            .filter(match => match.confidence >= minConfidence);
     }
 
     async findMatchingWithAgent(note: Note): Promise<Array<{ skill: Skill; confidence: number }>> {
@@ -96,9 +87,10 @@ export class AgentSkillRegistry extends SkillRegistry {
     }
 
     private async syncSkillsToAgent(): Promise<void> {
-        for (const { skill } of this.skillMetadata.values()) {
-            await this.registerSkillWithAgent(skill);
-        }
+        await Promise.all(
+            Array.from(this.skillMetadata.values())
+                .map(({ skill }) => this.registerSkillWithAgent(skill))
+        );
     }
 
     private isAgentSkill(skill: RegisteredSkill): skill is Skill {

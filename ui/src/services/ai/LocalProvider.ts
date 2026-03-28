@@ -1,6 +1,7 @@
 import type { AIProvider, InferredAttribute } from '@notention/core';
 import type { Note, OntologyNode } from '@notention/core';
-import { parseProperties, getTextFromHtml } from '@notention/core';
+import { parseProperties } from '@notention/core';
+import { getTextFromHtml } from '../../utils/html';
 import { addDays, format } from 'date-fns';
 import { parseQuantity } from '@notention/core';
 

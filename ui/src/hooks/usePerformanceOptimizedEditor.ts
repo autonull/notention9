@@ -45,9 +45,8 @@ export const useOptimizedPropertyExtraction = (content: string) => {
     // Use a more efficient regex that avoids catastrophic backtracking
     const propertyRegex = /\[([^\]:]+):([^\]:]+):([^\]]+)\]|(\[[^\]]+\])/g;
     const matches = [];
-    let match;
 
-    while ((match = propertyRegex.exec(content)) !== null) {
+      for (const match of content.matchAll(propertyRegex)) {
       if (match[1]) { // Canonical form [key:op:value]
         matches.push({
           key: match[1],

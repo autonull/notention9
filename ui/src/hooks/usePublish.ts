@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { finalizeEvent } from 'nostr-tools';
 import { useSettings } from './useSettingsContext';
 import { pool, DEFAULT_RELAYS, hexToBytes, publishNoteToNostr, Logger } from '@notention/core';
-import { getTextFromHtml } from '@notention/core';
+import { getTextFromHtml } from '../utils/html';
 import type { Note } from '@notention/core';
 
 export const usePublish = () => {

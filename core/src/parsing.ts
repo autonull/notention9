@@ -19,6 +19,139 @@ export interface ExtractedProperty {
     originalText: string;
 }
 
+const COMMON_WORDS = new Set(['not', 'neither', 'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'can', 'this', 'that', 'these', 'those', 'i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 'her', 'us', 'them']);
+
+// Strategy Pattern for Property Parsing
+interface PropertyParser {
+  name: string;
+  parse: (content: string) => Property | null;
+}
+
+const PARSERS: PropertyParser[] = [
+  {
+    name: 'Standard Colon Format',
+    parse: (content: string) => {
+      const colons = content.split(':');
+      if (colons.length < 3) return null;
+
+      const key = colons[0].trim();
+      const op = colons[1].trim();
+      const val = colons.slice(2).join(':').trim();
+
+      return {
+        key,
+        operator: op,
+        values: val.split(',').map(v => v.trim())
+      };
+    }
+  },
+  {
+    name: 'Symbolic Operators',
+    parse: (content: string) => {
+      const symbols = Object.keys(SYMBOL_TO_OP).sort((a, b) => b.length - a.length);
+      for (const sym of symbols) {
+        const escapedSym = sym.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const symRegex = new RegExp(`^(.+?)\\s*(${escapedSym})\\s*(.*)$`);
+        const symMatch = content.match(symRegex);
+
+        if (symMatch) {
+          return {
+            key: symMatch[1].trim(),
+            operator: SYMBOL_TO_OP[symMatch[2]],
+            values: symMatch[3].trim().split(',').map(v => v.trim())
+          };
+        }
+      }
+      return null;
+    }
+  },
+  {
+    name: 'Word Operators',
+    parse: (content: string) => {
+      const wordOpRegex = /^([^\s]+)\s+(is|contains|before|after|less than|greater than|between|not)\s+(.+)$/;
+      const match = content.match(wordOpRegex);
+      if (!match) return null;
+
+      const [, key, op, val] = match;
+      // Validation: Key must be alphanumeric/valid
+      if (!/^[a-zA-Z][a-zA-Z0-9_-]*$/.test(key.trim()) || COMMON_WORDS.has(key.trim().toLowerCase())) {
+        return null;
+      }
+
+      return {
+        key: key.trim(),
+        operator: op.trim(),
+        values: val.trim().split(',').map(v => v.trim())
+      };
+    }
+  },
+  {
+    name: 'General Symbols',
+    parse: (content: string) => {
+      const generalSymRegex = /^([^\s]+)\s*([<>=!]+)\s*(.+)$/;
+      const match = content.match(generalSymRegex);
+      if (!match) return null;
+
+      const [, key, op, val] = match;
+      let canonicalOp = op.trim();
+      if (op === '!=') canonicalOp = 'is not';
+      else if (op === '<=') canonicalOp = 'less than or equal';
+      else if (op === '>=') canonicalOp = 'greater than or equal';
+
+      return {
+        key: key.trim(),
+        operator: canonicalOp,
+        values: val.trim().split(',').map(v => v.trim())
+      };
+    }
+  },
+  {
+    name: 'Simple Colon (Backcompat)',
+    parse: (content: string) => {
+      const simpleColonRegex = /^([^\s]+):(.+)$/;
+      const match = content.match(simpleColonRegex);
+      if (!match) return null;
+
+      return {
+        key: match[1].trim(),
+        operator: 'is',
+        values: match[2].trim().split(',').map(v => v.trim())
+      };
+    }
+  },
+  {
+    name: 'Simple Space',
+    parse: (content: string) => {
+      const simpleSpaceRegex = /^([^\s]+)\s+(.+)$/;
+      const match = content.match(simpleSpaceRegex);
+      if (!match) return null;
+
+      const [, key, val] = match;
+
+      if (!/^[a-zA-Z][a-zA-Z0-9_-]*$/.test(key.trim()) || COMMON_WORDS.has(key.trim().toLowerCase())) {
+        return null;
+      }
+
+      return {
+        key: key.trim(),
+        operator: 'is',
+        values: val.trim().split(',').map(v => v.trim())
+      };
+    }
+  }
+];
+
+/**
+ * Helper to parse the content inside brackets [content]
+ */
+const parsePropertyBlock = (content: string): Property | null => {
+  for (const parser of PARSERS) {
+    const result = parser.parse(content);
+    if (result) return result;
+  }
+  return null;
+};
+
 /**
  * Parses a raw text string and extracts semantic properties from bracket syntax.
  * Supports standard format [key:op:value] and symbolic format [key < value].
@@ -26,9 +159,8 @@ export interface ExtractedProperty {
 export const extractProperties = (text: string): ExtractedProperty[] => {
   const extracted: ExtractedProperty[] = [];
   const bracketRegex = /\[([^\]]+)\]/g;
-  let match;
 
-  while ((match = bracketRegex.exec(text)) !== null) {
+  for (const match of text.matchAll(bracketRegex)) {
     const content = match[1];
     const parsed = parsePropertyBlock(content);
     if (parsed) {
@@ -56,11 +188,9 @@ export const parseProperties = (text: string): Property[] => {
   properties.push(...extracted.map(e => e.property));
 
   // 2. Parse HTML Chip syntax: <span data-type="property" ...>
-  // We use a regex that is robust enough for simple attributes
   const spanRegex = /<span\s+[^>]*data-type=["']property["'][^>]*>/g;
-  let spanMatch;
 
-  while ((spanMatch = spanRegex.exec(text)) !== null) {
+  for (const spanMatch of text.matchAll(spanRegex)) {
       const tag = spanMatch[0];
 
       // Extract attributes
@@ -81,115 +211,6 @@ export const parseProperties = (text: string): Property[] => {
 };
 
 /**
- * Helper to parse the content inside brackets [content]
- */
-const parsePropertyBlock = (content: string): Property | null => {
-  // Check if it matches standard format (two colons)
-  // heuristic: count colons
-  const colons = content.split(':');
-  if (colons.length >= 3) {
-    const key = colons[0].trim();
-    const op = colons[1].trim();
-    const val = colons.slice(2).join(':').trim();
-
-    return {
-      key,
-      operator: op,
-      values: val.split(',').map(v => v.trim())
-    };
-  }
-
-  // Check for symbolic operators
-  const symbols = Object.keys(SYMBOL_TO_OP).sort((a, b) => b.length - a.length);
-
-  for (const sym of symbols) {
-    const escapedSym = sym.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const symRegex = new RegExp(`^(.+?)\\s*(${escapedSym})\\s*(.*)$`);
-
-    const symMatch = content.match(symRegex);
-    if (symMatch) {
-      const key = symMatch[1].trim();
-      const opSymbol = symMatch[2];
-      const val = symMatch[3].trim();
-
-      return {
-        key,
-        operator: SYMBOL_TO_OP[opSymbol],
-        values: val.split(',').map(v => v.trim())
-      };
-    }
-  }
-
-  // Enhanced parsing for more complex symbolic formats
-  // Handle [key op value] format where op is a word like 'before', 'after', etc.
-  const wordOpRegex = /^([^\s]+)\s+(is|contains|before|after|less than|greater than|between|not)\s+(.+)$/;
-  const wordOpMatch = content.match(wordOpRegex);
-  if (wordOpMatch) {
-    const [, key, op, val] = wordOpMatch;
-    // Only accept if key looks like a valid property name (alphanumeric, hyphens, underscores)
-    // Exclude common English words that are not likely to be property names
-    const commonWords = ['not', 'neither', 'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'can', 'this', 'that', 'these', 'those', 'i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 'her', 'us', 'them'];
-    if (/^[a-zA-Z][a-zA-Z0-9_-]*$/.test(key.trim()) && !commonWords.includes(key.trim().toLowerCase())) {
-      return {
-        key: key.trim(),
-        operator: op.trim(),
-        values: val.trim().split(',').map(v => v.trim())
-      };
-    }
-  }
-
-  // Handle [key op value] format where op is a symbol but not in our standard list
-  const generalSymRegex = /^([^\s]+)\s*([<>=!]+)\s*(.+)$/;
-  const generalSymMatch = content.match(generalSymRegex);
-  if (generalSymMatch) {
-    const [, key, op, val] = generalSymMatch;
-    // Map common operators to canonical form
-    let canonicalOp = op.trim();
-    if (op === '!=') canonicalOp = 'is not';
-    else if (op === '<=') canonicalOp = 'less than or equal';
-    else if (op === '>=') canonicalOp = 'greater than or equal';
-
-    return {
-      key: key.trim(),
-      operator: canonicalOp,
-      values: val.trim().split(',').map(v => v.trim())
-    };
-  }
-
-  // Handle simple [key:value] format (backward compatibility)
-  const simpleColonRegex = /^([^\s]+):(.+)$/;
-  const simpleMatch = content.match(simpleColonRegex);
-  if (simpleMatch) {
-    const [, key, val] = simpleMatch;
-    return {
-      key: key.trim(),
-      operator: 'is',
-      values: val.trim().split(',').map(v => v.trim())
-    };
-  }
-
-  // Handle [key value] format where key is a property name and value is the value
-  const simpleSpaceRegex = /^([^\s]+)\s+(.+)$/;
-  const simpleSpaceMatch = content.match(simpleSpaceRegex);
-  if (simpleSpaceMatch) {
-    const [, key, val] = simpleSpaceMatch;
-    // Only accept if key looks like a valid property name (alphanumeric, hyphens, underscores)
-    // Exclude common English words that are not likely to be property names
-    const commonWords = ['not', 'neither', 'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'can', 'this', 'that', 'these', 'those', 'i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 'her', 'us', 'them'];
-    if (/^[a-zA-Z][a-zA-Z0-9_-]*$/.test(key.trim()) && !commonWords.includes(key.trim().toLowerCase())) {
-      return {
-        key: key.trim(),
-        operator: 'is',
-        values: val.trim().split(',').map(v => v.trim())
-      };
-    }
-  }
-
-  // If nothing matches, return null to indicate this is not a valid property
-  return null;
-}
-
-/**
  * Formats a property into its standard string representation.
  */
 export const formatPropertyTag = (prop: Property): string => {
@@ -202,9 +223,8 @@ export const formatPropertyTag = (prop: Property): string => {
  */
 const findPropertyInText = (text: string, prop: Property): { index: number; length: number } | null => {
   const bracketRegex = /\[([^\]]+)\]/g;
-  let match;
 
-  while ((match = bracketRegex.exec(text)) !== null) {
+  for (const match of text.matchAll(bracketRegex)) {
     const content = match[1];
     const parsed = parsePropertyBlock(content);
 
@@ -250,47 +270,4 @@ export const replacePropertyInString = (
   }
 
   return text;
-};
-
-/**
- * Extracts plain text from an HTML string.
- * @param content - An HTML string.
- * @returns A single string containing all the text from the document.
- */
-export function getTextFromHtml(content: string): string {
-  if (!content) return '';
-
-  const div = document.createElement('div');
-  div.innerHTML = content;
-
-  // Add newlines after block elements for better preview readability
-  div
-    .querySelectorAll('p, h1, h2, h3, li, blockquote, pre, div')
-    .forEach((el) => {
-      el.appendChild(document.createTextNode('\n'));
-    });
-
-  return div.textContent || '';
-}
-
-/**
- * Prepares HTML for display in code view (pretty printing).
- * Adds newlines before block tags to make it more readable.
- */
-export const prettyPrintHtml = (html: string) => {
-  if (!html) return '';
-  const blockTags = [
-    'p',
-    'h1',
-    'h2',
-    'h3',
-    'hr',
-    'ul',
-    'ol',
-    'li',
-    'blockquote',
-    'pre',
-  ];
-  const regex = new RegExp(`(<(?:${blockTags.join('|')})[^>]*>)`, 'g');
-  return html.replace(regex, '\n$1').trim();
 };
