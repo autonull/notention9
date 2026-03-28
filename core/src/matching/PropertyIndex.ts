@@ -20,7 +20,9 @@ export class PropertyIndex {
     rebuild(notes: Note[]) {
         this.keyIndex.clear();
         this.noteKeys.clear();
-        notes.forEach(note => this.addNote(note));
+        for (const note of notes) {
+            this.addNote(note);
+        }
     }
 
     /**
@@ -30,13 +32,13 @@ export class PropertyIndex {
         if (!note.properties) return;
 
         const keys = new Set<string>();
-        note.properties.forEach(prop => {
+        for (const prop of note.properties) {
             if (!this.keyIndex.has(prop.key)) {
                 this.keyIndex.set(prop.key, new Set());
             }
             this.keyIndex.get(prop.key)!.add(note.id);
             keys.add(prop.key);
-        });
+        }
         this.noteKeys.set(note.id, keys);
     }
 
@@ -47,7 +49,7 @@ export class PropertyIndex {
         const keys = this.noteKeys.get(noteId);
         if (!keys) return;
 
-        keys.forEach(key => {
+        for (const key of keys) {
             const ids = this.keyIndex.get(key);
             if (ids) {
                 ids.delete(noteId);
@@ -55,7 +57,7 @@ export class PropertyIndex {
                     this.keyIndex.delete(key);
                 }
             }
-        });
+        }
         this.noteKeys.delete(noteId);
     }
 
@@ -99,11 +101,11 @@ export class PropertyIndex {
 
             // Intersect
             const intersected = new Set<string>();
-            candidateIds.forEach(id => {
+            for (const id of candidateIds) {
                 if (idsWithKey.has(id)) {
                     intersected.add(id);
                 }
-            });
+            }
 
             return intersected;
         }, null) || new Set();

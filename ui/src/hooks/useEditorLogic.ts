@@ -1,6 +1,6 @@
 import {useCallback, useMemo} from 'react';
 import type {Note, Property} from '@notention/core';
-import {parseProperties, PropertyExtractor, replacePropertyInString} from '@notention/core';
+import {parseProperties, PropertyExtractor, replacePropertyInString, NOTE_STATUS} from '@notention/core';
 import {getTextFromHtml} from '../utils/html';
 import {useDebouncedSave} from './useDebouncedSave';
 import {useView} from './useViewContext';
@@ -72,22 +72,22 @@ export function useEditorLogic({note, onSave}: UseEditorLogicProps) {
 
     const {handleSaveTemplate} = useEditorTemplates({dirtyNote});
 
-    const isActive = dirtyNote.properties.some(p => p.key === 'status' && (p.values.includes('running') || p.values.includes('queued')));
+    const isActive = dirtyNote.properties.some(p => p.key === NOTE_STATUS.KEY && (p.values.includes(NOTE_STATUS.RUNNING) || p.values.includes(NOTE_STATUS.QUEUED)));
 
     const handleToggleActive = useCallback(() => {
         setDirtyNote((prev) => {
-            const currentlyActive = prev.properties.some(p => p.key === 'status' && (p.values.includes('running') || p.values.includes('queued')));
-            const hasStatus = prev.properties.some(p => p.key === 'status');
+            const currentlyActive = prev.properties.some(p => p.key === NOTE_STATUS.KEY && (p.values.includes(NOTE_STATUS.RUNNING) || p.values.includes(NOTE_STATUS.QUEUED)));
+            const hasStatus = prev.properties.some(p => p.key === NOTE_STATUS.KEY);
             let newProps = [...prev.properties];
 
             if (currentlyActive) {
                 // Remove running/queued status
-                newProps = newProps.filter(p => !(p.key === 'status' && (p.values.includes('running') || p.values.includes('queued'))));
+                newProps = newProps.filter(p => !(p.key === NOTE_STATUS.KEY && (p.values.includes(NOTE_STATUS.RUNNING) || p.values.includes(NOTE_STATUS.QUEUED))));
             } else {
                 if (hasStatus) {
-                    newProps = newProps.map(p => p.key === 'status' ? {...p, values: ['queued']} : p);
+                    newProps = newProps.map(p => p.key === NOTE_STATUS.KEY ? {...p, values: [NOTE_STATUS.QUEUED]} : p);
                 } else {
-                    newProps.push({key: 'status', operator: 'is', values: ['queued']});
+                    newProps.push({key: NOTE_STATUS.KEY, operator: 'is', values: [NOTE_STATUS.QUEUED]});
                 }
             }
 

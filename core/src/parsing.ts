@@ -3,6 +3,7 @@ import { arePropertiesEqual } from './properties.js';
 import { resolveAlias } from './propertyAliases.js';
 import { expandMacro } from './composition.js';
 import { getCanonicalKey } from './ontologyHelpers.js';
+import { Logger } from './utils/logging.js';
 
 export const SYMBOL_TO_OP: Record<string, string> = {
   '<=': 'less than or equal',
@@ -49,10 +50,18 @@ const resolveKey = (key: string, ontology?: OntologyNode[]): string =>
 
 const isValidKey = (key: string): boolean => REGEX.VALID_KEY.test(key) && !COMMON_WORDS.has(key.toLowerCase());
 
+const logger = Logger.getInstance();
+
+export const parseValues = (raw: string): string[] =>
+  raw.trim().split(',').map(v => v.trim());
+
 const createProperty = (rawKey: string, operator: string, value: string, ontology?: OntologyNode[], validate = true): Property | null => {
   const key = resolveKey(rawKey.trim(), ontology);
-  if (validate && !isValidKey(key)) return null;
-  return { key, operator: operator.trim(), values: value.trim().split(',').map(v => v.trim()) };
+  if (validate && !isValidKey(key)) {
+    logger.debug('Property parse skipped', { rawKey, reason: 'invalid key', isCommonWord: COMMON_WORDS.has(key.toLowerCase()), invalidFormat: !REGEX.VALID_KEY.test(key) });
+    return null;
+  }
+  return { key, operator: operator.trim(), values: parseValues(value) };
 };
 
 export interface PropertyParserStrategy {
@@ -136,7 +145,7 @@ const extractHtmlSpans = (text: string): Property[] =>
       const opMatch = tag.match(REGEX.SPAN_ATTR_OP);
       const valMatch = tag.match(REGEX.SPAN_ATTR_VAL);
       if (nameMatch && valMatch) {
-        return [{ key: nameMatch[1], operator: opMatch?.[1] ?? 'is', values: valMatch[1].split(',').map(v => v.trim()) }];
+        return [{ key: nameMatch[1], operator: opMatch?.[1] ?? 'is', values: parseValues(valMatch[1]) }];
       }
       return [];
     });

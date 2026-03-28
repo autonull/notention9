@@ -184,8 +184,8 @@ export class OntologyService {
         const processedPairs = new Set<string>();
         const coOccurrence = this.usageTracker.getCoOccurrenceData();
 
-        for (const [source, targets] of Array.from(coOccurrence.entries())) {
-            for (const [target, count] of Array.from(targets.entries())) {
+        for (const [source, targets] of coOccurrence) {
+            for (const [target, count] of targets) {
                 const pairId = source < target ? `${source}-${target}` : `${target}-${source}`;
                 if (!processedPairs.has(pairId)) {
                     links.push({ source, target, value: count });

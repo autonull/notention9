@@ -54,6 +54,8 @@ export class PropertyExtractor {
   constructor(ontology = DEFAULT_ONTOLOGY) {
     this.ontologyService = new OntologyService(ontology);
     this.strategies = [
+      this.applyIntentStrategy.bind(this),
+      this.applySendToStrategy.bind(this),
       this.applyChannelStrategy.bind(this),
       this.applyPhoneStrategy.bind(this),
       this.applyEmailStrategy.bind(this),

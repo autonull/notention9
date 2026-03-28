@@ -1,5 +1,5 @@
 import type { OntologyNode, OntologyAttribute } from '../types/index.js';
-import { getCanonicalKey } from '../ontologyHelpers.js';
+import { getCanonicalKey, findNodeIdForAttribute, findNode } from '../ontologyHelpers.js';
 import { inferPropertyType } from '../utils/inference.js';
 
 export interface SuggestedAttribute {
@@ -22,8 +22,10 @@ interface UsageStats {
 export class UsageTracker {
     private stats: UsageStats;
     private coOccurrence: Map<string, Map<string, number>>;
+    private ontology: OntologyNode[];
 
-    constructor() {
+    constructor(ontology: OntologyNode[] = []) {
+        this.ontology = ontology;
         this.stats = {
             known: new Map(),
             unknown: new Map(),
@@ -43,7 +45,7 @@ export class UsageTracker {
     private updateUsageStats(properties: Array<{ key: string; values?: unknown[] }>): void {
         for (const prop of properties) {
             const key = prop.key;
-            const canonical = getCanonicalKey(key, []);
+            const canonical = getCanonicalKey(key, this.ontology);
             const isKnown = canonical !== key;
 
             if (isKnown) {
@@ -67,7 +69,7 @@ export class UsageTracker {
 
     private updateCoOccurrenceStats(properties: Array<{ key: string; values?: unknown[] }>): void {
         const uniqueKeys = Array.from(new Set(properties.map(p => p.key)));
-        const canonicals = uniqueKeys.map(k => getCanonicalKey(k, []));
+        const canonicals = uniqueKeys.map(k => getCanonicalKey(k, this.ontology));
 
         for (const src of canonicals) {
             let coMap = this.coOccurrence.get(src);
@@ -105,8 +107,11 @@ export class UsageTracker {
                         .reduce((best, current) => current[1] > best[1] ? current : best, ['', 0])[0];
 
                     if (bestKey) {
-                        const node = findNodeOwningAttribute(ontology, bestKey);
-                        if (node) likelyContext = node.label;
+                        const nodeId = findNodeIdForAttribute(ontology, bestKey);
+                        if (nodeId) {
+                            const node = findNode(ontology, nodeId);
+                            if (node) likelyContext = node.label;
+                        }
                     }
                 }
 
@@ -131,7 +136,7 @@ export class UsageTracker {
         limit: number = 5
     ): SuggestedAttribute[] {
         const scoreMap = new Map<string, number>();
-        const canonicalKeys = existingKeys.map(k => getCanonicalKey(k, []));
+        const canonicalKeys = existingKeys.map(k => getCanonicalKey(k, this.ontology));
 
         for (const key of canonicalKeys) {
             const coMap = this.coOccurrence.get(key);
@@ -183,14 +188,4 @@ export class UsageTracker {
     getCoOccurrenceData(): Map<string, Map<string, number>> {
         return new Map(this.coOccurrence);
     }
-}
-
-function findNodeOwningAttribute(ontology: OntologyNode[], attrKey: string): OntologyNode | null {
-    const queue = [...ontology];
-    while (queue.length > 0) {
-        const node = queue.shift()!;
-        if (node.attributes && node.attributes[attrKey]) return node;
-        if (node.children) queue.push(...node.children);
-    }
-    return null;
 }

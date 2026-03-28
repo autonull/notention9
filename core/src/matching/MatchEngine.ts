@@ -74,9 +74,20 @@ export class MatchEngine {
         return { matches, conflicts, totalScore, matchedKeys, conflictKeys };
     }
 
+    private static NUMERIC_OPS = new Set(['less than', 'greater than', 'less than or equal', 'greater than or equal', '<', '>', '<=', '>=', 'between', 'range']);
+    private static DATE_OPS = new Set(['is after', 'is before', 'after', 'before']);
+    private static GEO_OPS = new Set(['is near', 'near']);
+
     private evaluateConstraint(req: Property, off: Property): PropertyMatch {
         const attributeDef = findAttributeDef(req.key, this.ontology);
-        const type = attributeDef?.type ?? 'string';
+        let type = attributeDef?.type ?? 'string';
+
+        // Infer type from operator when ontology doesn't provide it
+        if (type === 'string') {
+            if (MatchEngine.NUMERIC_OPS.has(req.operator)) type = 'number';
+            else if (MatchEngine.DATE_OPS.has(req.operator)) type = 'date';
+            else if (MatchEngine.GEO_OPS.has(req.operator)) type = 'geo';
+        }
 
         switch (type) {
             case 'number':

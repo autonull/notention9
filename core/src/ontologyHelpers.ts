@@ -62,7 +62,11 @@ export const getSubtreeKeys = (node: OntologyNode): Set<string> => {
   const stack = [node];
   while (stack.length > 0) {
     const current = stack.pop()!;
-    if (current.attributes) Object.keys(current.attributes).forEach(k => keys.add(k));
+    if (current.attributes) {
+      for (const k of Object.keys(current.attributes)) {
+        keys.add(k);
+      }
+    }
     stack.push(...(current.children ?? []));
   }
   return keys;

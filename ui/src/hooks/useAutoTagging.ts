@@ -33,10 +33,6 @@ export function useAutoTagging({content, tags, onTagsChange}: UseAutoTaggingProp
                 new Set([...tags, ...suggestions])
             );
             onTagsChange(uniqueTags);
-        } catch (e) {
-            alert(
-                'Failed to auto-tag: ' + (e instanceof Error ? e.message : String(e))
-            );
         } finally {
             setIsAutoTagging(false);
         }

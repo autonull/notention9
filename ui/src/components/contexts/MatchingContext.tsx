@@ -21,6 +21,8 @@ export function MatchingProvider({ children }: { children: ReactNode }) {
 
 export function useMatching(): MatchingContextType {
     const ctx = useContext(MatchingContext);
-    if (!ctx) throw new Error('useMatching must be used within MatchingProvider');
+    if (!ctx) {
+        return { engine: new MatchEngine([]), matchingService: new MatchingService([]) };
+    }
     return ctx;
 }
