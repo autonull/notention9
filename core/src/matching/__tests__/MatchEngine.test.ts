@@ -26,10 +26,12 @@ describe('MatchEngine', () => {
                 const [key, op, ...rest] = p.split(':'); // simplified parsing for test
                 return { key, operator: op, values: [rest.join(':')] };
             }),
-            author: '',
-            createdAt: 0,
-            modifiedAt: 0,
-            priority: 1
+            tags: [],
+            createdAt: '0',
+            updatedAt: '0',
+            priority: 1,
+            public: false,
+            source: { type: 'user', identifier: 'test', timestamp: 0 }
         };
     }
 

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import type { OntologyNode } from '@notention/core';
+import type { OntologyNode, Note } from '@notention/core';
 import type { AIProvider } from '../../services/ai/types';
 import type { SimulationAgent } from './types';
 import { Gardener } from '../../services/gardener';
@@ -15,6 +15,7 @@ interface UseSimulationLoopProps {
     gardenerRef: React.MutableRefObject<Gardener | null>;
     addLog: (msg: string, type: 'info' | 'match' | 'ontology' | 'reuse') => void;
     setAiProviderName: (name: string) => void;
+    handlePublish: (note: Note) => void;
 }
 
 export const useSimulationLoop = ({
@@ -25,7 +26,8 @@ export const useSimulationLoop = ({
     aiRef,
     gardenerRef,
     addLog,
-    setAiProviderName
+    setAiProviderName,
+    handlePublish
 }: UseSimulationLoopProps) => {
 
   useEffect(() => {
@@ -129,6 +131,26 @@ export const useSimulationLoop = ({
             // 5. Done - Publish Trigger
             updateAgent(agentIndex, { status: 'Published', goal: 'Wait for matches' });
             addLog(`${agent.name} published a note`, 'info');
+
+            // Construct and Publish Note
+            const note: Note = {
+                id: crypto.randomUUID(),
+                title: `${agent.name}'s Note`,
+                content: taggedContent,
+                tags: [], // Tags are embedded in content for now or parsed by handlePublish
+                properties: [], // Parsed by handlePublish
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                source: {
+                    type: 'user',
+                    identifier: agent.id,
+                    timestamp: Date.now()
+                },
+                public: true,
+                priority: 1
+            };
+
+            handlePublish(note);
 
             // Wait a bit before next loop
         // Add randomness to the delay (2000ms - 5000ms) to feel more organic

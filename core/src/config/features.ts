@@ -30,9 +30,9 @@ export const OPTIONAL_FEATURES = {
  */
 export function getFeatureFlag(key: keyof typeof OPTIONAL_FEATURES): boolean {
     // If running in a browser environment (Vite)
-    if (typeof import.meta !== 'undefined' && import.meta.env) {
+    if (typeof import.meta !== 'undefined' && (import.meta as any).env) {
         const envKey = `VITE_ENABLE_${key}`;
-        const envValue = import.meta.env[envKey];
+        const envValue = (import.meta as any).env[envKey];
 
         if (envValue === 'true') return true;
         if (envValue === 'false') return false;
