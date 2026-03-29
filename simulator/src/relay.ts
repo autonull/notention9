@@ -1,15 +1,16 @@
 import { WebSocketServer, WebSocket } from 'ws';
 import { NostrEvent } from '@notention/core';
+import { Filter } from 'nostr-tools';
 
 interface Subscription {
     id: string;
-    filters: any[];
+    filters: Filter[];
     ws: WebSocket;
 }
 
 export class LocalRelay {
-    private wss: WebSocketServer;
-    private events: NostrEvent[] = [];
+    private readonly wss: WebSocketServer;
+    private readonly events: NostrEvent[] = [];
     private subs: Subscription[] = [];
 
     constructor(port: number = 4444) {
@@ -21,7 +22,7 @@ export class LocalRelay {
                     const data = JSON.parse(message.toString());
                     this.handleMessage(ws, data);
                 } catch (e) {
-                    console.error('Relay error parsing message:', e);
+                    console.error('Relay error:', e);
                 }
             });
 
@@ -33,69 +34,63 @@ export class LocalRelay {
         console.log(`Local Relay running on ws://localhost:${port}`);
     }
 
-    private handleMessage(ws: WebSocket, data: any[]) {
-        const [type, ...payload] = data;
-
-        if (type === 'EVENT') {
-            const event = payload[0] as NostrEvent;
-            this.publishEvent(event);
-            ws.send(JSON.stringify(['OK', event.id, true, 'saved']));
-        } else if (type === 'REQ') {
-            const subId = payload[0] as string;
-            const filters = payload.slice(1);
-            this.subscribe(ws, subId, filters);
-        } else if (type === 'CLOSE') {
-            const subId = payload[0] as string;
-            this.subs = this.subs.filter(s => s.ws !== ws || s.id !== subId);
+    private handleMessage(ws: WebSocket, [type, ...payload]: any[]) {
+        switch (type) {
+            case 'EVENT': {
+                const event = payload[0] as NostrEvent;
+                this.publishEvent(event);
+                ws.send(JSON.stringify(['OK', event.id, true, 'saved']));
+                break;
+            }
+            case 'REQ': {
+                const subId = payload[0] as string;
+                const filters = payload.slice(1) as Filter[];
+                this.subscribe(ws, subId, filters);
+                break;
+            }
+            case 'CLOSE': {
+                const subId = payload[0] as string;
+                this.subs = this.subs.filter(s => s.ws !== ws || s.id !== subId);
+                break;
+            }
         }
     }
 
     private publishEvent(event: NostrEvent) {
-        // Simple deduplication
         if (this.events.some(e => e.id === event.id)) return;
-
         this.events.push(event);
 
-        // Notify subscribers
-        this.subs.forEach(sub => {
-            if (this.matchesFilters(event, sub.filters)) {
-                if (sub.ws.readyState === WebSocket.OPEN) {
-                    sub.ws.send(JSON.stringify(['EVENT', sub.id, event]));
-                }
-            }
-        });
+        this.subs
+            .filter(sub => this.matchesFilters(event, sub.filters))
+            .filter(sub => sub.ws.readyState === WebSocket.OPEN)
+            .forEach(sub => sub.ws.send(JSON.stringify(['EVENT', sub.id, event])));
     }
 
-    private subscribe(ws: WebSocket, subId: string, filters: any[]) {
+    private subscribe(ws: WebSocket, subId: string, filters: Filter[]) {
         this.subs.push({ id: subId, filters, ws });
 
-        // Send existing events
-        this.events.forEach(event => {
-            if (this.matchesFilters(event, filters)) {
-                ws.send(JSON.stringify(['EVENT', subId, event]));
-            }
-        });
+        this.events
+            .filter(event => this.matchesFilters(event, filters))
+            .forEach(event => ws.send(JSON.stringify(['EVENT', subId, event])));
 
         ws.send(JSON.stringify(['EOSE', subId]));
     }
 
-    private matchesFilters(event: NostrEvent, filters: any[]): boolean {
+    private matchesFilters(event: NostrEvent, filters: Filter[]): boolean {
         return filters.some(filter => {
             if (filter.ids && !filter.ids.includes(event.id)) return false;
             if (filter.kinds && !filter.kinds.includes(event.kind)) return false;
             if (filter.authors && !filter.authors.includes(event.pubkey)) return false;
 
-            // Tag filters
-            for (const key in filter) {
-                if (key.startsWith('#')) {
+            // Tag filters check
+            return Object.entries(filter)
+                .filter(([key]) => key.startsWith('#'))
+                .every(([key, values]) => {
                     const tagName = key.slice(1);
-                    const tagValues = filter[key] as string[];
+                    const tagValues = values as string[];
                     const eventTags = event.tags.filter(t => t[0] === tagName).map(t => t[1]);
-                    if (!tagValues.some(v => eventTags.includes(v))) return false;
-                }
-            }
-
-            return true;
+                    return tagValues.some(v => eventTags.includes(v));
+                });
         });
     }
 
