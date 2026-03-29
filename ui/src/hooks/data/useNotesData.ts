@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useLocalForage } from '../useLocalForage';
-import { createNote, matchingService, parseProperties, Logger } from '@notention/core';
-import type { Note, SortOrder, GeoCoords } from '@notention/core';
+import { createNote, matchingService, parseProperties, Logger, haversineDistance } from '@notention/core';
+import type { Note, SortOrder, GeoCoords, Property } from '@notention/core';
 import { agentService } from '../../services/AgentService';
 import { nostrService } from '../../services/NostrService';
 import { augmentNote, NoteMetadata } from './noteUtils';
@@ -22,6 +22,34 @@ export interface UseNotesDataResult {
         userLocation?: GeoCoords | null
     ) => Note[];
 }
+
+// Lightweight property check helper to avoid instantiating full MatchEngine in UI hook
+const checkPropertyMatch = (constraint: Property, note: Note): boolean => {
+    return note.properties.some(p => {
+        if (p.key !== constraint.key) return false;
+
+        // Simple value check for now (string/number equality or inclusion)
+        // This restores the basic filtering capability
+        const pVal = p.values[0]?.toLowerCase().trim();
+        const cVal = constraint.values[0]?.toLowerCase().trim();
+
+        if (!pVal || !cVal) return false;
+
+        switch (constraint.operator) {
+            case 'is':
+            case '=':
+            case ':':
+                return pVal === cVal;
+            case 'contains':
+                return pVal.includes(cVal);
+            case 'excludes':
+                return !pVal.includes(cVal);
+            default:
+                // Fallback for other operators: just check key existence if operator matches
+                return p.operator === constraint.operator;
+        }
+    });
+};
 
 export const useNotesData = (driver?: LocalForage): UseNotesDataResult => {
     const [notes, setNotes, loading] = useLocalForage<Note[]>(
@@ -136,7 +164,7 @@ export const useNotesData = (driver?: LocalForage): UseNotesDataResult => {
         searchTerm: string,
         sortOrder: SortOrder,
         showTrash: boolean = false,
-        userLocation: GeoCoords | null = null
+        userLocation?: GeoCoords | null
     ) => {
         // 1. Filter by status (trash vs active) and augment with metadata
         const activeNotes = notes.filter(n => showTrash ? !!n.deletedAt : !n.deletedAt);
@@ -170,12 +198,25 @@ export const useNotesData = (driver?: LocalForage): UseNotesDataResult => {
             });
 
             filtered = notesWithMetadata.filter((note) => {
-                const semanticMatch = constraints.every(c => matchingService.checkConstraint(c, note));
+                // Check structured constraints [key:op:val]
+                const semanticMatch = constraints.length > 0 ?
+                    constraints.every(c => checkPropertyMatch(c, note)) : true;
+
                 if (!semanticMatch) return false;
 
-                const textMatch = textQueries.every(q => note.lowerTitle.includes(q) || note.textContent.includes(q));
-                const tagMatch = tagQueries.every(q => note.lowerTags.some(t => t.includes(q)));
-                const simplePropMatch = simplePropQueries.every(q => note.lowerProps.some(p => p.key === q.key && p.values.some(v => v.includes(q.value))));
+                const noteContent = (note.content || '').toLowerCase();
+                const noteTitle = (note.title || '').toLowerCase();
+
+                const textMatch = textQueries.every(q => noteTitle.includes(q) || noteContent.includes(q));
+                const tagMatch = tagQueries.every(q => (note.tags || []).some(t => t.toLowerCase().includes(q)));
+
+                // Restore simple property filtering (e.g. status:done in plain text)
+                const simplePropMatch = simplePropQueries.every(q =>
+                    note.properties.some(p =>
+                        p.key.toLowerCase() === q.key &&
+                        p.values.some(v => v.toLowerCase().includes(q.value))
+                    )
+                );
 
                 return textMatch && tagMatch && simplePropMatch;
             });
@@ -185,35 +226,32 @@ export const useNotesData = (driver?: LocalForage): UseNotesDataResult => {
         return [...filtered].sort((a, b) => {
             if (a.pinned && !b.pinned) return -1;
             if (!a.pinned && b.pinned) return 1;
-            // ... (Sorting logic same as before, simplified for brevity but needs full impl from previous)
-            // Reusing the utility function or duplicating strictly the sort logic here
-            // For robust refactor, I will inline the sort logic to ensure it works
-             switch (sortOrder) {
+
+            switch (sortOrder) {
                 case 'updatedAt_desc': return b.updatedAt.localeCompare(a.updatedAt);
                 case 'updatedAt_asc': return a.updatedAt.localeCompare(b.updatedAt);
                 case 'createdAt_desc': return b.createdAt.localeCompare(a.createdAt);
                 case 'createdAt_asc': return a.createdAt.localeCompare(b.createdAt);
-                case 'title_asc': return a.title.localeCompare(b.title);
-                case 'title_desc': return b.title.localeCompare(a.title);
+                case 'title_asc': return (a.title || '').localeCompare(b.title || '');
+                case 'title_desc': return (b.title || '').localeCompare(a.title || '');
                 case 'soonest':
                     if (a.minDateTimestamp !== null && b.minDateTimestamp !== null) return a.minDateTimestamp - b.minDateTimestamp;
                     if (a.minDateTimestamp !== null) return -1;
                     if (b.minDateTimestamp !== null) return 1;
                     return b.updatedAt.localeCompare(a.updatedAt);
                 case 'nearest':
-                    // @ts-ignore
                     if (!userLocation) return b.updatedAt.localeCompare(a.updatedAt);
-                    // @ts-ignore
-                    const distA = a.location ? ((Math.sqrt(Math.pow(a.location.lat - userLocation.lat, 2) + Math.pow(a.location.lon - userLocation.lon, 2)))) : Infinity;
-                    // @ts-ignore
-                    const distB = b.location ? ((Math.sqrt(Math.pow(b.location.lat - userLocation.lat, 2) + Math.pow(b.location.lon - userLocation.lon, 2)))) : Infinity;
+
+                    const distA = a.location ? haversineDistance(a.location, userLocation) : Infinity;
+                    const distB = b.location ? haversineDistance(b.location, userLocation) : Infinity;
+
                     if (distA !== distB) return distA - distB;
                     return b.updatedAt.localeCompare(a.updatedAt);
                 case 'tags':
-                    const countA = a.tags.length;
-                    const countB = b.tags.length;
+                    const countA = (a.tags || []).length;
+                    const countB = (b.tags || []).length;
                     if (countA !== countB) return countB - countA;
-                    return a.title.localeCompare(b.title);
+                    return (a.title || '').localeCompare(b.title || '');
                 default: return b.updatedAt.localeCompare(a.updatedAt);
             }
         });

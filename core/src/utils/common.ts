@@ -22,8 +22,11 @@ export function inRange(value: number, min: number, max: number): boolean {
   return value >= min && value <= max;
 }
 
-// Deep clone utility (shallow for now, can be extended)
+// Deep clone utility
 export function deepClone<T>(obj: T): T {
+  if (typeof structuredClone === 'function') {
+      return structuredClone(obj);
+  }
   return JSON.parse(JSON.stringify(obj));
 }
 
@@ -32,10 +35,11 @@ export function debounce<T extends (...args: any[]) => any>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout;
+  let timeout: NodeJS.Timeout | undefined;
+
   return function executedFunction(...args: Parameters<T>): void {
     const later = () => {
-      clearTimeout(timeout);
+      timeout = undefined;
       func(...args);
     };
     clearTimeout(timeout);

@@ -1,9 +1,16 @@
 import { Note, RobustWebSocket } from '@notention/core';
 import { capabilities } from '../config/Capabilities';
 
+interface AgentMessage {
+    type: string;
+    id?: string;
+    payload?: any;
+}
+
 class AgentService extends RobustWebSocket {
   private _enabled: boolean;
   private _url: string | null = null;
+  private _connectionPromise: Promise<void> | null = null;
 
   constructor() {
     // Reduce max retries to fail faster to Offline mode
@@ -25,18 +32,28 @@ class AgentService extends RobustWebSocket {
       return;
     }
 
-    const resolvedUrl = await this.resolveUrl(url || this._url || undefined);
+    if (this._connectionPromise) return this._connectionPromise;
 
-    if (resolvedUrl) {
-      try {
-        await super.connect(resolvedUrl);
-      } catch (e) {
-        this.logger.warn('Initial connection failed, falling back to offline', e);
-        this.fallbackToOfflineMode();
-      }
-    } else {
-      this.logger.info('Operating in offline mode');
-      this.fallbackToOfflineMode();
+    this._connectionPromise = (async () => {
+        const resolvedUrl = await this.resolveUrl(url || this._url || undefined);
+
+        if (resolvedUrl) {
+          try {
+            await super.connect(resolvedUrl);
+          } catch (e) {
+            this.logger.warn('Initial connection failed, falling back to offline', e);
+            this.fallbackToOfflineMode();
+          }
+        } else {
+          this.logger.info('Operating in offline mode');
+          this.fallbackToOfflineMode();
+        }
+    })();
+
+    try {
+        await this._connectionPromise;
+    } finally {
+        this._connectionPromise = null;
     }
   }
 
@@ -76,15 +93,17 @@ class AgentService extends RobustWebSocket {
       const res = await fetch('/agent-config.json');
       if (res.ok) {
         const config = await res.json();
-        return config.wsUrl;
+        if (config.wsUrl) return config.wsUrl;
       }
     } catch (e) {
       this.logger.warn('Failed to fetch agent config', e);
     }
 
     // Fallback to global variable
-    if (typeof window !== 'undefined' && (window as any).AGENT_WS_URL) {
-      return (window as any).AGENT_WS_URL;
+    // @ts-ignore
+    if (typeof window !== 'undefined' && window.AGENT_WS_URL) {
+      // @ts-ignore
+      return window.AGENT_WS_URL;
     }
 
     return null;
@@ -106,11 +125,11 @@ class AgentService extends RobustWebSocket {
         reject(new Error('Timeout fetching notes'));
       }, 5000);
 
-      const handler = (msg: { type: string; id: string; payload: Note[] }) => {
+      const handler = (msg: AgentMessage) => {
         if (msg.type === 'notes_list' && msg.id === id) {
           clearTimeout(timeout);
           this.off('message', handler);
-          resolve(msg.payload);
+          resolve(msg.payload as Note[]);
         }
       };
 
@@ -127,11 +146,6 @@ class AgentService extends RobustWebSocket {
   async deleteNote(id: string): Promise<void> {
     if (!this._enabled) return;
     this.send({ type: 'delete_note', payload: { id } });
-  }
-
-  // Alias methods if needed to match previous API exactly, though base class has most
-  isOffline(): boolean {
-    return !this.isOnlineMode && this._enabled;
   }
 
   isEnabled(): boolean {

@@ -28,10 +28,47 @@ export class AgentServer {
         this.app.use(express.json());
 
         // Setup MCP Servers
-        await setupMcpServer(this.app);
-        await setupSimulationMcpServer(this.app);
+        await this.setupMcp();
 
         // UI Static Serving
+        this.setupStaticServing();
+
+        this.server = this.app.listen(PORT, () => {
+            log('Server', `Notention + VoltAgent running on http://localhost:${PORT}`);
+        });
+
+        // WebSocket Setup
+        this.setupWebsocket();
+
+        // --- Agent System Initialization ---
+        await this.initAgentSystem();
+    }
+
+    async stop() {
+        log('System', 'Shutting down...');
+        return new Promise<void>((resolve, reject) => {
+             if (this.server) {
+                 this.server.close((err) => {
+                     if (err) reject(err);
+                     else resolve();
+                 });
+             } else {
+                 resolve();
+             }
+        });
+    }
+
+    private async setupMcp() {
+        try {
+            await setupMcpServer(this.app);
+            await setupSimulationMcpServer(this.app);
+        } catch (e) {
+            error('MCP', 'Failed to setup MCP servers', e);
+            throw e;
+        }
+    }
+
+    private setupStaticServing() {
         let uiDistPath = join(process.cwd(), '../ui/dist');
         if (!fs.existsSync(uiDistPath)) {
             uiDistPath = join(process.cwd(), 'ui/dist');
@@ -39,37 +76,15 @@ export class AgentServer {
         if (fs.existsSync(uiDistPath)) {
             this.app.use(express.static(uiDistPath));
         }
+    }
 
-        this.server = this.app.listen(PORT, () => {
-            log('Server', `Notention + VoltAgent running on http://localhost:${PORT}`);
-        });
+    private setupWebsocket() {
+        if (!this.server) {
+            error('WS', 'Server not initialized');
+            return;
+        }
 
-        // WebSocket Setup
         this.wss = new WebSocketServer({ server: this.server, path: '/ws/agent' });
-
-        // --- Agent System Initialization ---
-
-        const bootstrap = new Bootstrap();
-
-        // Initialize bootstrap asynchronously
-        bootstrap.init((event) => {
-            // Event callback from Bootstrap (e.g. from VoltAgent)
-            if (this.socketController) {
-                this.socketController.broadcast(event);
-            }
-        }).then((components) => {
-            log('Init', 'Agent system initialized');
-            setAgentRegistry(components.agentRegistry);
-
-            this.socketController = new SocketController(
-                components.agentRegistry,
-                components.skillExecutor,
-                components.feedbackCollector
-            );
-
-        }).catch(err => error('Init', 'Bootstrap failed', err));
-
-        // --- WebSocket Handlers ---
 
         this.wss.on('connection', (ws) => {
             log('WS', 'UI client connected');
@@ -102,17 +117,25 @@ export class AgentServer {
         });
     }
 
-    async stop() {
-        log('System', 'Shutting down...');
-        return new Promise<void>((resolve, reject) => {
-             if (this.server) {
-                 this.server.close((err) => {
-                     if (err) reject(err);
-                     else resolve();
-                 });
-             } else {
-                 resolve();
-             }
-        });
+    private async initAgentSystem() {
+        const bootstrap = new Bootstrap();
+
+        // Initialize bootstrap asynchronously
+        bootstrap.init((event) => {
+            // Event callback from Bootstrap (e.g. from VoltAgent)
+            if (this.socketController) {
+                this.socketController.broadcast(event);
+            }
+        }).then((components) => {
+            log('Init', 'Agent system initialized');
+            setAgentRegistry(components.agentRegistry);
+
+            this.socketController = new SocketController(
+                components.agentRegistry,
+                components.skillExecutor,
+                components.feedbackCollector
+            );
+
+        }).catch(err => error('Init', 'Bootstrap failed', err));
     }
 }

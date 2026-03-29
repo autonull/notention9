@@ -16,6 +16,30 @@ export const SYMBOL_TO_OP: Record<string, string> = {
 
 const COMMON_WORDS = new Set(['not', 'neither', 'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'can', 'this', 'that', 'these', 'those', 'i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 'her', 'us', 'them']);
 
+// Pre-compiled Regexes
+const WORD_OP_REGEX = /^([^\s]+)\s+(is|contains|before|after|less than|greater than|between|range|not)\s+(.+)$/;
+const GENERAL_SYM_REGEX = /^([^\s]+)\s*([<>=!]+)\s*(.+)$/;
+const SIMPLE_COLON_REGEX = /^([^\s]+):(.+)$/;
+const SIMPLE_SPACE_REGEX = /^([^\s]+)\s+(.+)$/;
+const VALID_KEY_REGEX = /^[a-zA-Z][a-zA-Z0-9_.-]*$/;
+const BRACKET_REGEX = /\[([^\]]+)\]/g;
+const MACRO_REGEX = /@([a-zA-Z0-9_]+)/g;
+const SPAN_REGEX = /<span\s+[^>]*data-type=["']property["'][^>]*>/g;
+const SPAN_ATTR_NAME = /data-name=["']([^"']+)["']/;
+const SPAN_ATTR_OP = /data-operator=["']([^"']+)["']/;
+const SPAN_ATTR_VAL = /data-value=["']([^"']+)["']/;
+
+// Pre-compute symbolic regexes
+const SYMBOLIC_REGEXES = Object.keys(SYMBOL_TO_OP)
+  .sort((a, b) => b.length - a.length)
+  .map(sym => {
+      const escapedSym = sym.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      return {
+          regex: new RegExp(`^(.+?)\\s*(${escapedSym})\\s*(.*)$`),
+          op: SYMBOL_TO_OP[sym]
+      };
+  });
+
 // Strategy Pattern for Property Parsing
 interface PropertyParser {
   name: string;
@@ -41,36 +65,14 @@ const PARSERS: PropertyParser[] = [
     }
   },
   {
-    name: 'Nested Properties',
-    parse: (content: string) => {
-      // Supports key.subkey:val
-      // Matches alphanumeric + dots, then colon, then value
-      // Simplistic: assumes implicit 'is' if only one colon? No, wait.
-      // Guide says: [location.city:is:Austin] -> Standard Parser actually handles this if key allows dots!
-      // Let's verify standard regex. standard is split(':').
-      // If content is "location.city:is:Austin", split(:) gives ["location.city", "is", "Austin"].
-      // So Standard Parser ALREADY handles nested keys if we don't block them.
-
-      // However, let's look at "Word Operators" parser.
-      // Regex: /^([^\s]+)\s+.../
-      // [location.city is Austin] -> matches key="location.city"
-
-      return null; // Logic is covered by other parsers if we rely on simple string keys
-    }
-  },
-  {
     name: 'Symbolic Operators',
     parse: (content: string) => {
-      const symbols = Object.keys(SYMBOL_TO_OP).sort((a, b) => b.length - a.length);
-      for (const sym of symbols) {
-        const escapedSym = sym.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        const symRegex = new RegExp(`^(.+?)\\s*(${escapedSym})\\s*(.*)$`);
-        const symMatch = content.match(symRegex);
-
+      for (const { regex, op } of SYMBOLIC_REGEXES) {
+        const symMatch = content.match(regex);
         if (symMatch) {
           return {
             key: resolveAlias(symMatch[1].trim()),
-            operator: SYMBOL_TO_OP[symMatch[2]],
+            operator: op,
             values: symMatch[3].trim().split(',').map(v => v.trim())
           };
         }
@@ -81,16 +83,13 @@ const PARSERS: PropertyParser[] = [
   {
     name: 'Word Operators',
     parse: (content: string) => {
-      const wordOpRegex = /^([^\s]+)\s+(is|contains|before|after|less than|greater than|between|range|not)\s+(.+)$/;
-      const match = content.match(wordOpRegex);
+      const match = content.match(WORD_OP_REGEX);
       if (!match) return null;
 
       const [, rawKey, op, val] = match;
       const key = resolveAlias(rawKey.trim());
 
-      // Validation: Key must be alphanumeric+dots/valid
-      // Updated regex to allow dots for nested keys
-      if (!/^[a-zA-Z][a-zA-Z0-9_.-]*$/.test(key) || COMMON_WORDS.has(key.toLowerCase())) {
+      if (!VALID_KEY_REGEX.test(key) || COMMON_WORDS.has(key.toLowerCase())) {
         return null;
       }
 
@@ -104,8 +103,7 @@ const PARSERS: PropertyParser[] = [
   {
     name: 'General Symbols',
     parse: (content: string) => {
-      const generalSymRegex = /^([^\s]+)\s*([<>=!]+)\s*(.+)$/;
-      const match = content.match(generalSymRegex);
+      const match = content.match(GENERAL_SYM_REGEX);
       if (!match) return null;
 
       const [, rawKey, op, val] = match;
@@ -126,8 +124,7 @@ const PARSERS: PropertyParser[] = [
   {
     name: 'Simple Colon (Backcompat)',
     parse: (content: string) => {
-      const simpleColonRegex = /^([^\s]+):(.+)$/;
-      const match = content.match(simpleColonRegex);
+      const match = content.match(SIMPLE_COLON_REGEX);
       if (!match) return null;
 
       return {
@@ -140,14 +137,13 @@ const PARSERS: PropertyParser[] = [
   {
     name: 'Simple Space',
     parse: (content: string) => {
-      const simpleSpaceRegex = /^([^\s]+)\s+(.+)$/;
-      const match = content.match(simpleSpaceRegex);
+      const match = content.match(SIMPLE_SPACE_REGEX);
       if (!match) return null;
 
       const [, rawKey, val] = match;
       const key = resolveAlias(rawKey.trim());
 
-      if (!/^[a-zA-Z][a-zA-Z0-9_.-]*$/.test(key) || COMMON_WORDS.has(key.toLowerCase())) {
+      if (!VALID_KEY_REGEX.test(key) || COMMON_WORDS.has(key.toLowerCase())) {
         return null;
       }
 
@@ -177,9 +173,8 @@ const parsePropertyBlock = (content: string): Property | null => {
  */
 export const extractProperties = (text: string): ExtractedProperty[] => {
   const extracted: ExtractedProperty[] = [];
-  const bracketRegex = /\[([^\]]+)\]/g;
 
-  for (const match of text.matchAll(bracketRegex)) {
+  for (const match of text.matchAll(BRACKET_REGEX)) {
     const content = match[1];
     const parsed = parsePropertyBlock(content);
     if (parsed) {
@@ -194,45 +189,46 @@ export const extractProperties = (text: string): ExtractedProperty[] => {
   return extracted;
 };
 
+const extractMacros = (text: string): Property[] => {
+    const properties: Property[] = [];
+    for (const match of text.matchAll(MACRO_REGEX)) {
+        const macroName = match[1];
+        const expanded = expandMacro(macroName);
+        properties.push(...expanded);
+    }
+    return properties;
+};
+
+const extractHtmlSpans = (text: string): Property[] => {
+    const properties: Property[] = [];
+    for (const spanMatch of text.matchAll(SPAN_REGEX)) {
+        const tag = spanMatch[0];
+        const nameMatch = tag.match(SPAN_ATTR_NAME);
+        const opMatch = tag.match(SPAN_ATTR_OP);
+        const valMatch = tag.match(SPAN_ATTR_VAL);
+
+        if (nameMatch && valMatch) {
+            properties.push({
+                key: nameMatch[1],
+                operator: opMatch ? opMatch[1] : 'is',
+                values: valMatch[1].split(',').map(v => v.trim())
+            });
+        }
+    }
+    return properties;
+}
+
 /**
  * Parses a raw text string and extracts semantic properties.
  * Supports standard format [key:op:value] and symbolic format [key < value].
  * Also supports parsing HTML Chip syntax for backward compatibility or processing.
  */
 export const parseProperties = (text: string): Property[] => {
-  const properties: Property[] = [];
-
-  // 1. Parse standard [...] bracket syntax
   const extracted = extractProperties(text);
-  properties.push(...extracted.map(e => e.property));
+  const properties: Property[] = extracted.map(e => e.property);
 
-  // 1a. Parse Macros: @macroName
-  const macroRegex = /@([a-zA-Z0-9_]+)/g;
-  for (const match of text.matchAll(macroRegex)) {
-    const macroName = match[1];
-    const expanded = expandMacro(macroName);
-    properties.push(...expanded);
-  }
-
-  // 2. Parse HTML Chip syntax: <span data-type="property" ...>
-  const spanRegex = /<span\s+[^>]*data-type=["']property["'][^>]*>/g;
-
-  for (const spanMatch of text.matchAll(spanRegex)) {
-    const tag = spanMatch[0];
-
-    // Extract attributes
-    const nameMatch = tag.match(/data-name=["']([^"']+)["']/);
-    const opMatch = tag.match(/data-operator=["']([^"']+)["']/);
-    const valMatch = tag.match(/data-value=["']([^"']+)["']/);
-
-    if (nameMatch && valMatch) {
-      properties.push({
-        key: nameMatch[1],
-        operator: opMatch ? opMatch[1] : 'is',
-        values: valMatch[1].split(',').map(v => v.trim())
-      });
-    }
-  }
+  properties.push(...extractMacros(text));
+  properties.push(...extractHtmlSpans(text));
 
   return properties;
 };
@@ -249,9 +245,7 @@ export const formatPropertyTag = (prop: Property): string => {
  * Finds the index and length of a property in the text.
  */
 const findPropertyInText = (text: string, prop: Property): { index: number; length: number } | null => {
-  const bracketRegex = /\[([^\]]+)\]/g;
-
-  for (const match of text.matchAll(bracketRegex)) {
+  for (const match of text.matchAll(BRACKET_REGEX)) {
     const content = match[1];
     const parsed = parsePropertyBlock(content);
 
@@ -277,23 +271,24 @@ export const replacePropertyInString = (
 
   const newTag = newProp ? formatPropertyTag(newProp) : '';
 
-  // Case 1: Append (no old property to replace)
+  // Append if no old property
   if (!oldProp) {
-    return text + (text.trim().endsWith('</p>') ? `<p>${newTag}</p>` : ` ${newTag}`);
+      const suffix = text.trim().endsWith('</p>') ? `<p>${newTag}</p>` : ` ${newTag}`;
+      return text + suffix;
   }
 
-  // Case 2: Find and Replace/Delete
+  // Find and Replace/Delete
   const match = findPropertyInText(text, oldProp);
-
   if (match) {
     const prefix = text.substring(0, match.index);
     const suffix = text.substring(match.index + match.length);
     return prefix + newTag + suffix;
   }
 
-  // Case 3: Old property not found, but we have a new one (Fallback: Append)
+  // Fallback: Append if not found but new tag exists
   if (newTag) {
-    return text + (text.trim().endsWith('</p>') ? `<p>${newTag}</p>` : ` ${newTag}`);
+    const suffix = text.trim().endsWith('</p>') ? `<p>${newTag}</p>` : ` ${newTag}`;
+    return text + suffix;
   }
 
   return text;

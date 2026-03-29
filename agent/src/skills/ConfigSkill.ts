@@ -40,22 +40,30 @@ export class ConfigSkill implements Skill {
     }
 
     exportToActions(note: Note): ActionSequence {
-        // Execute side effects immediately (Pragmatic approach for internal skill)
-        const configKeys = ['llm_model', 'llm_provider', 'debug_mode', 'voice_enabled'];
+        const configKeys = new Set(['llm_model', 'llm_provider', 'debug_mode', 'voice_enabled']);
         let applied = 0;
 
-        note.properties.forEach(p => {
-            if (configKeys.includes(p.key) && p.values.length > 0) {
+        for (const p of note.properties) {
+            // Direct config keys: [llm_model:is:gpt-4]
+            if (configKeys.has(p.key) && p.values.length > 0) {
                 const val = p.values[0];
                 this.configUpdater(p.key, val);
                 applied++;
-            } else if ((p.key === 'config' || p.key === 'setting') && p.values.length > 0) {
-                // Handle [config:is:model=gpt4] if parsed as key='config', value='model=gpt4'?
-                // Or [config:model:gpt4] -> key='config', operator='model', values=['gpt4']
-                // Notention properties have specific structure.
-                // Let's assume user writes [llm_model:is:gpt-4]
             }
-        });
+            // Meta config keys: [config:is:debug_mode=true] or [setting:is:voice_enabled=false]
+            else if ((p.key === 'config' || p.key === 'setting') && p.values.length > 0) {
+                 for (const val of p.values) {
+                     // Check for key=value format
+                     if (val.includes('=')) {
+                         const [k, v] = val.split('=');
+                         if (k && v) {
+                             this.configUpdater(k.trim(), v.trim());
+                             applied++;
+                         }
+                     }
+                 }
+            }
+        }
 
         return {
             id: `config-update-${Date.now()}`,
