@@ -3,6 +3,7 @@ import { useLocalForage } from './useLocalForage';
 import { createNote } from '@notention/core';
 import type { Note } from '@notention/core';
 import { agentService } from '../services/AgentService';
+import { Logger } from '@notention/core';
 
 export const useNotesState = (driver?: LocalForage) => {
   const [notes, setNotes, notesLoading] = useLocalForage<Note[]>(
@@ -10,11 +11,12 @@ export const useNotesState = (driver?: LocalForage) => {
     [],
     driver
   );
+  const logger = Logger.getInstance();
 
   // Sync Logic
   useEffect(() => {
     const handleConnected = () => {
-      console.log('Connected to agent, syncing notes...');
+      logger.info('Connected to agent, syncing notes...');
       agentService
         .fetchNotes()
         .then((remoteNotes) => {
@@ -35,7 +37,7 @@ export const useNotesState = (driver?: LocalForage) => {
             });
           }
         })
-        .catch((err) => console.error('Failed to sync notes:', err));
+        .catch((err) => logger.error('Failed to sync notes:', err as Error));
     };
 
     if (agentService.isConnected()) {

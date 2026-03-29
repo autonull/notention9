@@ -1,8 +1,10 @@
 import type { AIProvider } from '@notention/core';
 import type { Note, OntologyAttribute, OntologyNode } from '@notention/core';
+import { Logger } from '@notention/core';
 
 export class Gardener {
   private provider: AIProvider;
+  private logger = Logger.getInstance();
 
   constructor(provider: AIProvider) {
     this.provider = provider;
@@ -15,7 +17,7 @@ export class Gardener {
       const attributes = await this.provider.analyzeOntology(notes, context);
       return attributes;
     } catch (e) {
-      console.error('Gardener failed to evolve ontology:', e);
+      this.logger.error('Gardener failed to evolve ontology:', e as Error);
       return [];
     }
   }
@@ -24,7 +26,7 @@ export class Gardener {
       try {
           return await this.provider.alignToOntology(text, ontology);
       } catch (e) {
-          console.error('Gardener failed to align text:', e);
+          this.logger.error('Gardener failed to align text:', e as Error);
           return [];
       }
   }
@@ -33,7 +35,7 @@ export class Gardener {
       try {
           return await this.provider.optimizeOntology(ontology);
       } catch (e) {
-          console.error('Gardener failed to optimize ontology:', e);
+          this.logger.error('Gardener failed to optimize ontology:', e as Error);
           return { merged: [], pruned: [] };
       }
   }

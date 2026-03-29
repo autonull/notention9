@@ -44,7 +44,7 @@ export const useSimulationAgents = () => {
       setAgents(prev => [
           ...prev,
           {
-              id: Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join(''),
+              id: crypto.randomUUID(),
               name: `Agent ${prev.length + 1}`,
               persona: "You are a new agent.",
               bio: "New Agent.",

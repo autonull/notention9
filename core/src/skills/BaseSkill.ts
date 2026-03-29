@@ -143,6 +143,6 @@ export abstract class BaseSkill {
    * Simple ID generator
    */
   protected generateId(): string {
-    return `note-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    return `note-${Date.now()}-${crypto.randomUUID().slice(0, 8)}`;
   }
 }

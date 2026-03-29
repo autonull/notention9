@@ -1,6 +1,7 @@
 import type { Dispatch, SetStateAction } from 'react';
 import { useCallback, useEffect, useState, useRef } from 'react';
 import localforage from 'localforage';
+import { Logger } from '@notention/core';
 
 export function useLocalForage<T>(
   key: string,
@@ -50,7 +51,7 @@ export function useLocalForage<T>(
         setLoading(false);
       })
       .catch((err) => {
-        console.error(`Error reading from localForage key "${key}":`, err);
+        Logger.getInstance().error(`Error reading from localForage key "${key}":`, err);
         if (isMounted) {
           setLoading(false);
         }
@@ -69,7 +70,7 @@ export function useLocalForage<T>(
 
         const storage = driver || localforage;
         storage.setItem(key, valueToStore).catch((err) => {
-          console.error(`Error writing to localForage key "${key}":`, err);
+          Logger.getInstance().error(`Error writing to localForage key "${key}":`, err);
         });
 
         return valueToStore;

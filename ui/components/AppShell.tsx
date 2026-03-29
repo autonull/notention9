@@ -12,6 +12,7 @@ import { useView } from '../hooks/useViewContext';
 import { useUrlRouting } from '../hooks/useUrlRouting';
 import { useGlobalShortcuts } from '../hooks/useGlobalShortcuts';
 import { useCommands } from '../hooks/useCommands';
+import { Logger } from '@notention/core';
 
 export function AppShell() {
   const { notes, addNote } = useNotes();
@@ -66,7 +67,7 @@ export function AppShell() {
               (saveButton as HTMLButtonElement).click();
           } else {
               // If no specific save button, we could trigger a general save
-              console.log('Save action triggered');
+              Logger.getInstance().info('Save action triggered');
           }
       },
       onPreviousNote: () => {

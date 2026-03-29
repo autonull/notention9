@@ -1,4 +1,5 @@
 // Plugin system for extensibility and developmental growth
+import { Logger } from '@notention/core';
 
 export interface PluginManifest {
   id: string;
@@ -62,6 +63,7 @@ class PluginManager {
   private plugins: Map<string, BasePlugin> = new Map();
   private api: PluginAPI;
   private eventListeners: Map<string, Function[]> = new Map();
+  private logger = Logger.getInstance();
 
   constructor() {
     this.api = this.createAPI();
@@ -71,31 +73,31 @@ class PluginManager {
     return {
       registerComponent: (name, component) => {
         // Register component in the system
-        console.log(`Registered component: ${name}`);
+        this.logger.info(`Registered component: ${name}`);
       },
       registerHook: (hookName, hook) => {
         // Register hook in the system
-        console.log(`Registered hook: ${hookName}`);
+        this.logger.info(`Registered hook: ${hookName}`);
       },
       registerRoute: (path, component) => {
         // Register route in the system
-        console.log(`Registered route: ${path}`);
+        this.logger.info(`Registered route: ${path}`);
       },
       addNoteProcessor: (processor) => {
         // Add processor to the note processing pipeline
-        console.log('Added note processor');
+        this.logger.info('Added note processor');
       },
       addNoteValidator: (validator) => {
         // Add validator to the note validation pipeline
-        console.log('Added note validator');
+        this.logger.info('Added note validator');
       },
       addToolbarButton: (buttonConfig) => {
         // Add button to toolbar
-        console.log(`Added toolbar button: ${buttonConfig.id}`);
+        this.logger.info(`Added toolbar button: ${buttonConfig.id}`);
       },
       addSidebarWidget: (widget) => {
         // Add widget to sidebar
-        console.log(`Added sidebar widget: ${widget.id}`);
+        this.logger.info(`Added sidebar widget: ${widget.id}`);
       },
       on: (event, callback) => {
         if (!this.eventListeners.has(event)) {
@@ -112,47 +114,47 @@ class PluginManager {
 
   registerPlugin(plugin: BasePlugin): void {
     if (this.plugins.has(plugin.manifest.id)) {
-      console.warn(`Plugin ${plugin.manifest.id} is already registered`);
+      this.logger.warn(`Plugin ${plugin.manifest.id} is already registered`);
       return;
     }
     
     this.plugins.set(plugin.manifest.id, plugin);
-    console.log(`Plugin registered: ${plugin.manifest.name}`);
+    this.logger.info(`Plugin registered: ${plugin.manifest.name}`);
   }
 
   activatePlugin(pluginId: string): void {
     const plugin = this.plugins.get(pluginId);
     if (!plugin) {
-      console.error(`Plugin ${pluginId} not found`);
+      this.logger.error(`Plugin ${pluginId} not found`);
       return;
     }
 
     try {
       plugin.activate(this.api);
-      console.log(`Plugin activated: ${plugin.manifest.name}`);
+      this.logger.info(`Plugin activated: ${plugin.manifest.name}`);
     } catch (error) {
-      console.error(`Failed to activate plugin ${pluginId}:`, error);
+      this.logger.error(`Failed to activate plugin ${pluginId}:`, error as Error);
     }
   }
 
   deactivatePlugin(pluginId: string): void {
     const plugin = this.plugins.get(pluginId);
     if (!plugin) {
-      console.error(`Plugin ${pluginId} not found`);
+      this.logger.error(`Plugin ${pluginId} not found`);
       return;
     }
 
     try {
       plugin.deactivate();
-      console.log(`Plugin deactivated: ${plugin.manifest.name}`);
+      this.logger.info(`Plugin deactivated: ${plugin.manifest.name}`);
     } catch (error) {
-      console.error(`Failed to deactivate plugin ${pluginId}:`, error);
+      this.logger.error(`Failed to deactivate plugin ${pluginId}:`, error as Error);
     }
   }
 
   loadPlugins(): void {
     // Load plugins from storage or configuration
-    console.log('Loading plugins...');
+    this.logger.info('Loading plugins...');
     
     // Activate enabled plugins
     for (const [id, plugin] of this.plugins) {

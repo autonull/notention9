@@ -10,6 +10,7 @@ import { ViewProvider } from './components/contexts/ViewContext';
 import { SimulatorProvider } from './components/contexts/SimulatorProvider';
 import { SuggestionProvider } from './components/contexts/SuggestionContext';
 import { pluginManager } from './plugins';
+import { Logger } from '@notention/core';
 
 // Initialize plugins
 pluginManager.loadPlugins();
@@ -19,10 +20,10 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/service-worker.js')
       .then((registration) => {
-        console.log('SW registered: ', registration);
+        Logger.getInstance().info('SW registered: ', registration);
       })
       .catch((registrationError) => {
-        console.log('SW registration failed: ', registrationError);
+        Logger.getInstance().error('SW registration failed: ', registrationError);
       });
   });
 }

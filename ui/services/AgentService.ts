@@ -1,5 +1,5 @@
-import { ConnectionError } from '../utils/errors';
 import type { Note } from '@notention/core';
+import { Logger } from '@notention/core';
 
 type Listener = (...args: any[]) => void;
 
@@ -20,10 +20,11 @@ class AgentService {
   private isProcessingQueue = false;
   private status: 'disconnected' | 'connecting' | 'connected' | 'reconnecting' | 'offline' = 'disconnected';
   private lastError: string | null = null;
+  private logger = Logger.getInstance();
 
   async connect(url?: string): Promise<void> {
     if (this.ws && this.ws.readyState === WebSocket.CONNECTING) {
-      console.log('Already connecting to agent service');
+      this.logger.info('Already connecting to agent service');
       return;
     }
 
@@ -39,13 +40,13 @@ class AgentService {
         this.ws = new WebSocket(resolvedUrl);
         this.setupWebSocketHandlers(resolvedUrl);
       } catch (error) {
-        console.error('Failed to create WebSocket, falling back to offline mode', error);
+        this.logger.error('Failed to create WebSocket, falling back to offline mode', error as Error);
         this.lastError = (error as Error).message;
         this.fallbackToOfflineMode();
       }
     } else {
       // No remote agent configured, operate in offline mode
-      console.log('Operating in offline mode');
+      this.logger.info('Operating in offline mode');
       this.fallbackToOfflineMode();
     }
   }
@@ -71,7 +72,7 @@ class AgentService {
         return config.wsUrl;
       }
     } catch (e) {
-      console.warn('Failed to fetch agent config', e);
+      this.logger.warn('Failed to fetch agent config', e);
     }
 
     // Fallback to global variable
@@ -84,7 +85,7 @@ class AgentService {
 
   private setupWebSocketHandlers(url: string): void {
     this.ws!.onopen = () => {
-      console.log('Connected to Agent');
+      this.logger.info('Connected to Agent');
       this.reconnectAttempts = 0; // Reset attempts on successful connection
       this.isOnlineMode = true;
       this.status = 'connected';
@@ -106,13 +107,13 @@ class AgentService {
           this.removeProcessedMessage(parsedData.id);
         }
       } catch (e) {
-        console.error('Failed to parse agent message', e);
+        this.logger.error('Failed to parse agent message', e as Error);
         this.emit('message', msg.data);
       }
     };
 
     this.ws!.onclose = (event) => {
-      console.log(`Agent connection closed: ${event.code} - ${event.reason}`);
+      this.logger.info(`Agent connection closed: ${event.code} - ${event.reason}`);
       this.isOnlineMode = false;
       this.ws = null;
       this.status = 'disconnected';
@@ -126,16 +127,16 @@ class AgentService {
         this.emit('status_change', { status: this.status, isOnline: this.isOnlineMode });
 
         const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000); // Max 30 seconds
-        console.log(`Attempting to reconnect in ${delay}ms (attempt ${this.reconnectAttempts})`);
+        this.logger.info(`Attempting to reconnect in ${delay}ms (attempt ${this.reconnectAttempts})`);
         setTimeout(() => this.connect(url), delay);
       } else {
-        console.log('Max reconnection attempts reached, staying in offline mode');
+        this.logger.info('Max reconnection attempts reached, staying in offline mode');
         this.fallbackToOfflineMode();
       }
     };
 
     this.ws!.onerror = (err) => {
-      console.error('Agent connection error', err);
+      this.logger.error('Agent connection error', err as unknown as Error);
       this.lastError = err.toString();
       this.emit('error', { error: err, status: this.status });
     };
@@ -147,7 +148,7 @@ class AgentService {
   send(data: any): void {
     const message = {
       ...data,
-      id: data.id || `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: data.id || crypto.randomUUID(),
       timestamp: Date.now()
     };
 
@@ -156,7 +157,7 @@ class AgentService {
         this.ws.send(JSON.stringify(message));
         this.emit('sent', message);
       } catch (error) {
-        console.error('Failed to send message, queuing for retry', error);
+        this.logger.error('Failed to send message, queuing for retry', error as Error);
         this.queueMessage(message);
       }
     } else {
@@ -168,7 +169,7 @@ class AgentService {
   private queueMessage(message: any): void {
     // Limit queue size to prevent memory issues
     if (this.messageQueue.length > 100) {
-      console.warn('Message queue too large, dropping oldest message');
+      this.logger.warn('Message queue too large, dropping oldest message');
       this.messageQueue.shift();
     }
 
@@ -178,7 +179,7 @@ class AgentService {
       retries: 0
     });
 
-    console.log(`Message queued (${this.messageQueue.length} in queue)`);
+    this.logger.info(`Message queued (${this.messageQueue.length} in queue)`);
     this.emit('queued', { message, queueSize: this.messageQueue.length });
 
     // Process queue if not already processing
@@ -214,13 +215,13 @@ class AgentService {
           this.messageQueue.shift(); // Remove successfully sent message
           this.emit('sent', queuedMsg.data);
         } catch (error) {
-          console.error('Failed to send queued message', error);
+          this.logger.error('Failed to send queued message', error as Error);
           // Increment retry count
           queuedMsg.retries++;
 
           if (queuedMsg.retries > 3) {
             // Too many retries, remove from queue
-            console.warn('Message failed after 3 retries, removing from queue', queuedMsg.data);
+            this.logger.warn('Message failed after 3 retries, removing from queue', queuedMsg.data);
             this.messageQueue.shift();
           } else {
             // Wait a bit before trying again
@@ -237,7 +238,7 @@ class AgentService {
     const index = this.messageQueue.findIndex(msg => msg.data.id === id);
     if (index !== -1) {
       this.messageQueue.splice(index, 1);
-      console.log(`Removed processed message from queue: ${id}`);
+      this.logger.info(`Removed processed message from queue: ${id}`);
     }
   }
 
@@ -304,7 +305,7 @@ class AgentService {
     }
 
     return new Promise((resolve, reject) => {
-      const id = `req_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
+      const id = crypto.randomUUID();
       const timeout = setTimeout(() => {
         this.off('message', handler);
         reject(new Error('Timeout fetching notes'));

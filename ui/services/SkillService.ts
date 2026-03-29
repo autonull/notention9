@@ -1,7 +1,8 @@
-import { SkillRegistry, IndeedSkill, ReminderSkill } from '@notention/core';
+import { SkillRegistry, IndeedSkill, ReminderSkill, Logger } from '@notention/core';
 
 class SkillService {
     private registry: SkillRegistry;
+    private logger = Logger.getInstance();
 
     constructor() {
         this.registry = new SkillRegistry();
@@ -13,9 +14,9 @@ class SkillService {
         try {
             this.registry.registerSkill(new IndeedSkill());
             this.registry.registerSkill(new ReminderSkill());
-            console.log('Registered Default Skills');
+            this.logger.info('Registered Default Skills');
         } catch (e) {
-            console.error('Failed to register skills', e);
+            this.logger.error('Failed to register skills', e as Error);
         }
     }
 

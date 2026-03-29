@@ -3,7 +3,7 @@ import { useSettings } from '../hooks/useSettingsContext';
 import { useToast } from '../hooks/useToast';
 import { Note, NostrEvent } from '@notention/core';
 import { matchNotesWithRealVsImaginary } from '../utils/matching';
-import { pool, DEFAULT_RELAYS, hexToBytes } from '@notention/core';
+import { pool, DEFAULT_RELAYS, hexToBytes, Logger } from '@notention/core';
 import { finalizeEvent } from 'nostr-tools';
 
 interface UseEnhancedNostrIntegrationProps {
@@ -20,6 +20,7 @@ export const useEnhancedNostrIntegration = ({
   const [isListening, setIsListening] = useState(false);
   const [receivedEvents, setReceivedEvents] = useState<NostrEvent[]>([]);
   const subscriptionRef = useRef<any>(null);
+  const logger = Logger.getInstance();
 
   // Enhanced publishing with better error handling and feedback
   const publishNote = useCallback(async (note: Note) => {
@@ -67,12 +68,12 @@ export const useEnhancedNostrIntegration = ({
       // Track publication promises
       const pubPromises = pubs.map(pub => new Promise((resolve, reject) => {
         pub.on('ok', () => {
-          console.log(`Event ${signedEvent.id} accepted by relay`);
+          logger.info(`Event ${signedEvent.id} accepted by relay`);
           resolve(signedEvent.id);
         });
         
         pub.on('failed', (relay: any) => {
-          console.error(`Event ${signedEvent.id} rejected by relay:`, relay);
+          logger.error(`Event ${signedEvent.id} rejected by relay:`, undefined, relay);
           reject(new Error(`Failed to publish to relay: ${relay}`));
         });
       }));
@@ -83,7 +84,7 @@ export const useEnhancedNostrIntegration = ({
       addToast(`Note published successfully`, 'success');
       return signedEvent.id;
     } catch (error: any) {
-      console.error('Failed to publish note:', error);
+      logger.error('Failed to publish note:', error);
       addToast(`Failed to publish: ${error.message}`, 'error');
       throw error;
     }
@@ -135,7 +136,7 @@ export const useEnhancedNostrIntegration = ({
             }
           },
           oneose: () => {
-            console.log('Subscription ended');
+            logger.info('Subscription ended');
           }
         }
       );
@@ -143,7 +144,7 @@ export const useEnhancedNostrIntegration = ({
       setIsListening(true);
       addToast('Started listening to Nostr network', 'info');
     } catch (error) {
-      console.error('Failed to start Nostr subscription:', error);
+      logger.error('Failed to start Nostr subscription:', error as Error);
       addToast('Failed to connect to Nostr network', 'error');
     }
   }, [settings.nostr, addToast, onNoteReceived]);
@@ -161,7 +162,7 @@ export const useEnhancedNostrIntegration = ({
   const checkForMatches = useCallback(async (incomingEvent: NostrEvent) => {
     // This would typically fetch local notes to match against
     // For now, we'll just log the potential match
-    console.log('Checking for matches with incoming event:', incomingEvent);
+    logger.info('Checking for matches with incoming event:', incomingEvent);
   }, []);
 
   // Auto-start listening when settings are available

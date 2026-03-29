@@ -1,4 +1,5 @@
 import { useEffect, useCallback } from 'react';
+import { Logger } from '@notention/core';
 
 // Simple event bus setup to share connection
 type MessageHandler = (message: any) => void;
@@ -7,6 +8,7 @@ let ws: WebSocket | null = null;
 const listeners = new Set<MessageHandler>();
 const pendingMessages: string[] = [];
 let connectTimeout: any = null;
+const logger = Logger.getInstance();
 
 function connect() {
     if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) return;
@@ -17,37 +19,40 @@ function connect() {
     // Note: If served via proxy, might be different. 
     const url = `${protocol}//${window.location.hostname}:3000/ws/agent`;
 
-    console.log('Connecting to Agent WS:', url);
-    ws = new WebSocket(url);
+    logger.info('Connecting to Agent WS:', url);
+    const socket = new WebSocket(url);
+    ws = socket;
 
-    ws.onopen = () => {
-        console.log('WS Connected');
+    socket.onopen = () => {
+        logger.info('WS Connected');
         // Flush pending
         while (pendingMessages.length > 0) {
             const msg = pendingMessages.shift();
-            if (msg) ws.send(msg);
+            if (msg) socket.send(msg);
         }
     };
 
-    ws.onmessage = (event) => {
+    socket.onmessage = (event) => {
         try {
             const data = JSON.parse(event.data);
             listeners.forEach(l => l(data));
         } catch (e) {
-            console.error('WS parse error', e);
+            logger.error('WS parse error', e as Error);
         }
     };
 
-    ws.onclose = () => {
-        console.log('WS Closed');
-        ws = null;
+    socket.onclose = () => {
+        logger.info('WS Closed');
+        if (ws === socket) {
+            ws = null;
+        }
         // Reconnect logic
         if (connectTimeout) clearTimeout(connectTimeout);
         connectTimeout = setTimeout(connect, 3000);
     };
 
-    ws.onerror = (err) => {
-        console.error('WS Error', err);
+    socket.onerror = (err) => {
+        logger.error('WS Error', err as unknown as Error);
     };
 }
 

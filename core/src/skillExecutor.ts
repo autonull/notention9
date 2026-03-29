@@ -4,6 +4,7 @@ import { SkillApprovalManager } from './skillApprovalManager.js';
 import { NetworkGate } from './networkGate.js';
 import { OntologyService } from './ontologyService.js';
 import { BaseSkill } from './skills/BaseSkill.js';
+import { Logger } from './utils/logging.js';
 
 /**
  * SkillExecutor - Orchestrates skill execution with approval and privacy
@@ -35,6 +36,7 @@ export class SkillExecutor {
     private approvalManager: SkillApprovalManager;
     private networkGate: NetworkGate;
     private ontologyService: OntologyService;
+    private logger = Logger.getInstance();
 
     // Callback for result notes
     private onResultNotes?: (notes: Note[], sourceNote: Note, skill: SkillDefinition | BaseSkill) => void;
@@ -106,7 +108,7 @@ export class SkillExecutor {
                 };
             }
         } catch (error: any) {
-            console.error(`[SkillExecutor] Error executing skill:`, error);
+            this.logger.error(`[SkillExecutor] Error executing skill:`, error);
             return {
                 success: false,
                 error: error.message || 'Unknown error'
@@ -143,7 +145,7 @@ export class SkillExecutor {
             ).catch(() => false);
 
             if (!canTransmit && !note.public) {
-                console.log(`[SkillExecutor] Skipping ${skill.id} - note is private`);
+                this.logger.info(`[SkillExecutor] Skipping ${skill.id} - note is private`);
                 return {
                     success: false,
                     error: 'Cannot execute skill on private note'
@@ -161,7 +163,7 @@ export class SkillExecutor {
                 };
             }
 
-            console.log(`[SkillExecutor] Executing ${skill.name} with params:`, exportParams);
+            this.logger.info(`[SkillExecutor] Executing ${skill.name} with params:`, exportParams);
 
             const data = await skill.execute(note.properties);
 
@@ -179,7 +181,7 @@ export class SkillExecutor {
                 resultNotes
             };
         } catch (error: any) {
-            console.error(`[SkillExecutor] Error executing ${skill.name}:`, error);
+            this.logger.error(`[SkillExecutor] Error executing ${skill.name}:`, error);
             return {
                 success: false,
                 error: error.message || 'Unknown error'
@@ -204,14 +206,14 @@ export class SkillExecutor {
             ).catch(() => false);
 
             if (!canTransmit && !note.public) {
-                console.log(`[SkillExecutor] Skipping ${skill.getId()} - note is private`);
+                this.logger.info(`[SkillExecutor] Skipping ${skill.getId()} - note is private`);
                 return {
                     success: false,
                     error: 'Cannot execute skill on private note'
                 };
             }
 
-            console.log(`[SkillExecutor] Executing ${skill.getName()} with properties:`, note.properties);
+            this.logger.info(`[SkillExecutor] Executing ${skill.getName()} with properties:`, note.properties);
 
             const data = await skill.execute(note.properties);
 
@@ -233,7 +235,7 @@ export class SkillExecutor {
                 resultNotes
             };
         } catch (error: any) {
-            console.error(`[SkillExecutor] Error executing ${skill.getName()}:`, error);
+            this.logger.error(`[SkillExecutor] Error executing ${skill.getName()}:`, error);
             return {
                 success: false,
                 error: error.message || 'Unknown error'
@@ -245,11 +247,13 @@ export class SkillExecutor {
      * Create a result note from external data
      */
     private createResultNote(data: any, sourceNote: Note, properties: Property[], skill: SkillDefinition | BaseSkill): Note {
+        const skillId = skill instanceof BaseSkill ? skill.getId() : skill.id;
+
         return {
-            id: this.generateId(),
+            id: crypto.randomUUID(),
             title: this.generateTitle(properties, skill),
             content: JSON.stringify(data, null, 2), // Raw data in content
-            tags: ['#skill-result', `#${skill instanceof BaseSkill ? skill.getId() : skill.id}`],
+            tags: ['#skill-result', `#${skillId}`],
             properties,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
@@ -257,7 +261,7 @@ export class SkillExecutor {
             // Provenance tracking
             source: {
                 type: 'skill',
-                identifier: `${skill instanceof BaseSkill ? skill.getId() : skill.id}-v1`,
+                identifier: `${skillId}-v1`,
                 url: (data as any).url || undefined,
                 timestamp: Date.now()
             },
@@ -296,27 +300,6 @@ export class SkillExecutor {
     }
 
     /**
-     * Transform results for legacy skills
-     */
-    private transformLegacyResults(data: any, sourceNote: Note, skill: SkillDefinition): Note[] {
-        if (!data || !Array.isArray(data)) {
-            return [];
-        }
-
-        const notes: Note[] = [];
-
-        for (const item of data) {
-            // Map external data → ontology properties
-            const properties = this.matcher.mapFromExternal(item, skill);
-
-            // Create result note
-            notes.push(this.createResultNote(item, sourceNote, properties, skill));
-        }
-
-        return notes;
-    }
-
-    /**
      * Generate title from properties
      */
     private generateTitle(properties: Property[], skill: SkillDefinition | BaseSkill): string {
@@ -330,13 +313,6 @@ export class SkillExecutor {
         }
 
         return `Result from ${skill instanceof BaseSkill ? skill.getName() : skill.name}`;
-    }
-
-    /**
-     * Simple ID generator
-     */
-    private generateId(): string {
-        return `note-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     }
 
     /**
