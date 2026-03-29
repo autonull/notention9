@@ -1,5 +1,5 @@
-import { parseProperties } from '../parsing.js';
-import { resolveAlias } from '../propertyAliases.js';
+import { parseProperties } from '../src/parsing.js';
+import { resolveAlias } from '../src/propertyAliases.js';
 import { describe, it, expect } from 'vitest';
 
 describe('Enhanced Property Parsing', () => {

@@ -59,19 +59,37 @@ export class SkillToolAdapter {
     }
 
     public static convertToAgentAction(actions: ActionSequence['actions']): AgentAction | null {
-        const nav = actions.find(a => a.type === 'navigate');
+        let nav: any = null;
+        let scrape: any = null;
+        let screenshot: any = null;
+        const interactions: any[] = [];
+
+        for (const action of actions) {
+            switch (action.type) {
+                case 'navigate':
+                    if (!nav) nav = action;
+                    break;
+                case 'scrape':
+                    scrape = action;
+                    break;
+                case 'screenshot':
+                    screenshot = action;
+                    break;
+                case 'wait':
+                case 'click':
+                case 'type':
+                case 'hover':
+                case 'scroll':
+                    interactions.push({
+                        type: action.type,
+                        value: action.duration || action.value || action.text,
+                        selector: action.selector,
+                    });
+                    break;
+            }
+        }
+
         if (!nav) return null;
-
-        const scrape = actions.find(a => a.type === 'scrape');
-        const screenshot = actions.find(a => a.type === 'screenshot');
-
-        const interactions = actions
-            .filter(a => ['wait', 'click', 'type', 'hover', 'scroll'].includes(a.type))
-            .map(a => ({
-                type: a.type,
-                value: a.duration || a.value || a.text,
-                selector: a.selector,
-            }));
 
         return {
             type: 'browser',

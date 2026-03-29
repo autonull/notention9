@@ -1,4 +1,4 @@
-import { parseProperties, extractProperties } from '../parsing.js';
+import { parseProperties, extractProperties } from '../src/parsing.js';
 import { describe, test, expect } from 'vitest';
 
 describe('Parsing Tests', () => {
@@ -23,6 +23,13 @@ describe('Parsing Tests', () => {
       const text = '[status = active]';
       const props = parseProperties(text);
       expect(props[0]).toEqual({ key: 'status', operator: 'is', values: ['active'] });
+    });
+
+    test('should parse symbolic !=', () => {
+      const text = '[status != inactive]';
+      const props = parseProperties(text);
+      expect(props).toHaveLength(1);
+      expect(props[0]).toEqual({ key: 'status', operator: 'is not', values: ['inactive'] });
     });
 
     test('should handle mixed formats', () => {

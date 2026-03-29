@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { MetaphorRegistry, metaphorRegistry } from '../metaphor/MetaphorRegistry';
-import { MetaphorMapper, metaphorMapper } from '../metaphor/MetaphorMapper';
-import { UIMetaphor } from '../types/metaphor';
-import { Note } from '../types/index';
-import { generateId } from '../utils/common';
+import { MetaphorRegistry, metaphorRegistry } from '../src/metaphor/MetaphorRegistry';
+import { MetaphorMapper, metaphorMapper } from '../src/metaphor/MetaphorMapper';
+import { UIMetaphor } from '../src/types/metaphor';
+import { Note } from '../src/types/index';
+import { generateId } from '../src/utils/common';
 
 describe('MetaphorRegistry', () => {
   const testMetaphor: UIMetaphor = {

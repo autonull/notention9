@@ -1,5 +1,5 @@
-import { OntologyService } from '../ontologyService.js';
-import { OntologyNode } from '../types/index.js';
+import { OntologyService } from '../src/ontologyService.js';
+import { OntologyNode } from '../src/types/index.js';
 import { describe, it, expect } from 'vitest';
 
 const mockOntology: OntologyNode[] = [

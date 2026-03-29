@@ -11,7 +11,7 @@
     "start": "tsx src/index.ts",
     "build": "tsc",
     "dev": "tsx watch src/index.ts",
-    "test": "echo \"No tests configured for CLI workspace\" && exit 0"
+    "test": "vitest run"
   },
   "dependencies": {
     "@ai-sdk/openai": "^0.0.48",
@@ -42,6 +42,7 @@
     "@types/marked-terminal": "^6.1.1",
     "@types/node": "^20.11.0",
     "tsx": "^4.19.2",
-    "typescript": "~5.9.2"
+    "typescript": "~5.9.2",
+    "vitest": "^4.0.18"
   }
 }

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { MatchEngine } from '../MatchEngine.js';
-import { Note, OntologyNode } from '../../types/index.js';
+import { MatchEngine } from '../../src/matching/MatchEngine.js';
+import { Note, OntologyNode } from '../../src/matching/../types/index.js';
 
 describe('MatchEngine', () => {
     const mockOntology: OntologyNode[] = [

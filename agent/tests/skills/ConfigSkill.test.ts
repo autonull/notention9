@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { ConfigSkill } from '../ConfigSkill.js';
+import { ConfigSkill } from '../../src/skills/ConfigSkill.js';
 import { Note } from '@notention/core';
 
 describe('ConfigSkill', () => {

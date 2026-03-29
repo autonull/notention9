@@ -1,5 +1,5 @@
-import { OntologyService } from '../ontologyService.js';
-import { DEFAULT_ONTOLOGY } from '../ontology.default.js';
+import { OntologyService } from '../src/ontologyService.js';
+import { DEFAULT_ONTOLOGY } from '../src/ontology.default.js';
 import { describe, test, expect, beforeEach } from 'vitest';
 
 describe('Enhanced Ontology Tests', () => {

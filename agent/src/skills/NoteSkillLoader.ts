@@ -15,13 +15,15 @@ export class NoteSkillLoader {
      * Scans notes for the tag '@skill:definition' and registers them.
      */
     scanForSkills(notes: Note[]): void {
-        const skillNotes = notes.filter(n => n.tags.includes('@skill:definition'));
-
-        if (skillNotes.length > 0) {
-            log('SkillLoader', `Found ${skillNotes.length} skill definition notes.`);
-            for (const note of skillNotes) {
+        let count = 0;
+        for (const note of notes) {
+            if (note.tags.includes('@skill:definition')) {
                 this.loadSkillFromNote(note);
+                count++;
             }
+        }
+        if (count > 0) {
+            log('SkillLoader', `Found ${count} skill definition notes.`);
         }
     }
 
@@ -36,18 +38,21 @@ export class NoteSkillLoader {
             // Trigger extraction
             const triggers: { tags: string[], properties: {key:string, value?:string}[] } = { tags: [], properties: [] };
 
-            note.properties.forEach(p => {
+            for (const p of note.properties) {
                 // [skill:trigger:tag:foo]
                 if (p.key === 'skill:trigger:tag' || p.key === 'trigger:tag') {
                     triggers.tags.push(...p.values);
                 }
                 // [skill:trigger:prop:key] or [trigger:prop:key:value]
                 if (p.key.startsWith('trigger:prop:')) {
-                    const key = p.key.split(':')[2];
-                    const value = p.values.length > 0 ? p.values[0] : undefined;
-                    triggers.properties.push({ key, value });
+                    const parts = p.key.split(':');
+                    if (parts.length >= 3) {
+                        const key = parts[2];
+                        const value = p.values.length > 0 ? p.values[0] : undefined;
+                        triggers.properties.push({ key, value });
+                    }
                 }
-            });
+            }
 
             // 2. Extract Action from Content
             // Expecting JSON block in content

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { Note } from '../../types';
-import { metaphorMapper } from '../../metaphor/MetaphorMapper';
+import { Note } from '../../src/types/index.js';
+import { metaphorMapper } from '../../src/metaphor/MetaphorMapper.js';
 
 describe('Metaphor Performance', () => {
   it('should map metaphors efficiently', () => {

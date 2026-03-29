@@ -21,11 +21,11 @@ export class SocketController {
   }
 
   public broadcast(message: any) {
-    this.uiClients.forEach(client => {
+    for (const client of this.uiClients) {
       if (client.readyState === WebSocket.OPEN) {
         client.send(JSON.stringify(message));
       }
-    });
+    }
   }
 
   public async handleMessage(message: any, ws: WebSocket) {
@@ -42,14 +42,18 @@ export class SocketController {
       switch (message.type) {
         case 'note_created': {
           const notes = await this.skillExecutor.executeForNote(message.payload);
-          notes.forEach(result => this.broadcast({ type: 'note_created', payload: result }));
+          for (const result of notes) {
+            this.broadcast({ type: 'note_created', payload: result });
+          }
           break;
         }
 
         case 'note_updated':
           if (await shouldExecuteSkills(message.payload)) {
             const results = await this.skillExecutor.executeForNote(message.payload);
-            results.forEach(result => this.broadcast({ type: 'note_created', payload: result }));
+            for (const result of results) {
+              this.broadcast({ type: 'note_created', payload: result });
+            }
           }
           break;
 
