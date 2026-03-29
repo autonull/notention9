@@ -20,10 +20,7 @@ export class PropertyIndex {
     rebuild(notes: Note[]) {
         this.keyIndex.clear();
         this.noteKeys.clear();
-
-        for (const note of notes) {
-            this.addNote(note);
-        }
+        notes.forEach(note => this.addNote(note));
     }
 
     /**
@@ -33,13 +30,13 @@ export class PropertyIndex {
         if (!note.properties) return;
 
         const keys = new Set<string>();
-        for (const prop of note.properties) {
+        note.properties.forEach(prop => {
             if (!this.keyIndex.has(prop.key)) {
                 this.keyIndex.set(prop.key, new Set());
             }
             this.keyIndex.get(prop.key)!.add(note.id);
             keys.add(prop.key);
-        }
+        });
         this.noteKeys.set(note.id, keys);
     }
 
@@ -50,7 +47,7 @@ export class PropertyIndex {
         const keys = this.noteKeys.get(noteId);
         if (!keys) return;
 
-        for (const key of keys) {
+        keys.forEach(key => {
             const ids = this.keyIndex.get(key);
             if (ids) {
                 ids.delete(noteId);
@@ -58,7 +55,7 @@ export class PropertyIndex {
                     this.keyIndex.delete(key);
                 }
             }
-        }
+        });
         this.noteKeys.delete(noteId);
     }
 
@@ -86,9 +83,9 @@ export class PropertyIndex {
     getCandidates(constraints: Property[]): Set<string> | null {
         if (constraints.length === 0) return null; // No constraints -> all notes are candidates (or let caller handle)
 
-        let candidateIds: Set<string> | null = null;
+        return constraints.reduce<Set<string> | null>((candidateIds, constraint) => {
+            if (candidateIds !== null && candidateIds.size === 0) return candidateIds;
 
-        for (const constraint of constraints) {
             const idsWithKey = this.keyIndex.get(constraint.key);
 
             if (!idsWithKey) {
@@ -97,20 +94,18 @@ export class PropertyIndex {
             }
 
             if (candidateIds === null) {
-                // Initialize with first set
-                candidateIds = new Set(idsWithKey);
-            } else {
-                // Intersect
-                for (const id of candidateIds) {
-                    if (!idsWithKey.has(id)) {
-                        candidateIds.delete(id);
-                    }
-                }
+                return new Set(idsWithKey);
             }
 
-            if (candidateIds.size === 0) return new Set();
-        }
+            // Intersect
+            const intersected = new Set<string>();
+            candidateIds.forEach(id => {
+                if (idsWithKey.has(id)) {
+                    intersected.add(id);
+                }
+            });
 
-        return candidateIds || new Set();
+            return intersected;
+        }, null) || new Set();
     }
 }

@@ -37,25 +37,22 @@ export class ConfigSkill implements Skill {
     }
 
     canHandle(note: Note): number {
-        for (const tag of note.tags) {
-            if (META_CONFIG_KEYS.has(tag)) return 1.0;
+        if (note.tags.some(tag => META_CONFIG_KEYS.has(tag))) {
+            return 1.0;
         }
 
-        for (const p of note.properties) {
+        const hasConfigProp = note.properties.some(p => {
             const canonicalKey = getCanonicalKey(p.key, this.ontology);
+            return META_CONFIG_KEYS.has(canonicalKey) || DIRECT_CONFIG_KEYS.has(canonicalKey);
+        });
 
-            if (META_CONFIG_KEYS.has(canonicalKey) || DIRECT_CONFIG_KEYS.has(canonicalKey)) {
-                return 1.0;
-            }
-        }
-
-        return 0;
+        return hasConfigProp ? 1.0 : 0;
     }
 
     exportToActions(note: Note): ActionSequence {
         let applied = 0;
 
-        for (const p of note.properties) {
+        note.properties.forEach(p => {
             const canonicalKey = getCanonicalKey(p.key, this.ontology);
 
             // Direct config keys: [llm_model:is:gpt-4]
@@ -63,12 +60,12 @@ export class ConfigSkill implements Skill {
                 const val = p.values[0];
                 this.configUpdater(canonicalKey, val);
                 applied++;
-                continue;
+                return;
             }
 
             // Meta config keys: [config:is:debug_mode=true] or [setting:is:voice_enabled=false]
             if (META_CONFIG_KEYS.has(canonicalKey)) {
-                 for (const val of p.values) {
+                 p.values.forEach(val => {
                      const splitIndex = val.indexOf('=');
                      if (splitIndex !== -1) {
                          const k = val.substring(0, splitIndex).trim();
@@ -79,9 +76,9 @@ export class ConfigSkill implements Skill {
                              applied++;
                          }
                      }
-                 }
+                 });
             }
-        }
+        });
 
         return {
             id: `config-update-${Date.now()}`,

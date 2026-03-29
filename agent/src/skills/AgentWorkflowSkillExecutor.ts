@@ -35,14 +35,13 @@ export class AgentWorkflowSkillExecutor {
             skills: matches.map(m => m.skill.name)
         });
 
-        const results: Note[] = [];
-
-        for (const { skill, confidence } of matches) {
-            if (confidence < 0.5) continue;
-
-            const resultNotes = await this.executeSingleSkill(skill, note);
-            results.push(...resultNotes);
-        }
+        const results = (
+            await Promise.all(
+                matches
+                    .filter((m) => m.confidence >= 0.5)
+                    .map((m) => this.executeSingleSkill(m.skill, note))
+            )
+        ).flat();
 
         this.emit('skill_execution_finished', {
             noteId: note.id,
@@ -78,15 +77,7 @@ export class AgentWorkflowSkillExecutor {
             });
 
             if (!(error instanceof SkillExecutionError)) {
-                // Log and swallow error to allow other skills to proceed,
-                // unless it is a critical SkillExecutionError
-                // But per original logic, it seemed to throw?
-                // Wait, original logic re-threw if NOT SkillExecutionError.
-                // Let's keep it consistent but safer.
-                // Actually, throwing here stops the reduce loop.
-                // We should probably catch it to let other skills run.
-                // But AGENTS.md says "handle errors at appropriate abstraction level".
-                // If one skill fails, others should probably still try.
+                this.logger.warn(`Non-critical error in skill ${skill.name}, continuing execution`);
             }
             return [];
         }

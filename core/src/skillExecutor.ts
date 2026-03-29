@@ -9,13 +9,6 @@ import { CapabilityManager, Permission } from './security/CapabilityManager.js';
 
 /**
  * SkillExecutor - Orchestrates skill execution with approval and privacy
- * 
- * As per ROADMAP.md Phase 2:
- * 1. Pattern matching via ontology
- * 2. One-time approval (or auto if previously approved)
- * 3. Background execution
- * 4. Privacy firewall for external API calls
- * 5. Result transformation via skill importMapping
  */
 
 export interface SkillExecutionContext {
@@ -71,14 +64,9 @@ export class SkillExecutor {
             return [];
         }
 
-        const results: SkillExecutionResult[] = [];
-
-        for (const match of qualified) {
-            const result = await this.executeSkill(note, match, autoExecute);
-            results.push(result);
-        }
-
-        return results;
+        return await Promise.all(
+            qualified.map(match => this.executeSkill(note, match, autoExecute))
+        );
     }
 
     /**
@@ -270,14 +258,10 @@ export class SkillExecutor {
             return [];
         }
 
-        const notes: Note[] = [];
-
-        for (const item of data) {
+        return data.map((item: any) => {
             const properties = this.matcher.mapFromExternal(item, skill);
-            notes.push(this.createResultNote(item, sourceNote, properties, skill));
-        }
-
-        return notes;
+            return this.createResultNote(item, sourceNote, properties, skill);
+        });
     }
 
     /**

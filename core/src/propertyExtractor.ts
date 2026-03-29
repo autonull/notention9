@@ -71,9 +71,7 @@ export class PropertyExtractor {
 
     extractFromText(text: string): Property[] {
         const properties: Property[] = [];
-        for (const strategy of this.strategies) {
-            strategy(text, properties);
-        }
+        this.strategies.forEach(strategy => strategy(text, properties));
 
         // Normalize properties to canonical keys
         return this.normalizeProperties(properties);
@@ -99,11 +97,11 @@ export class PropertyExtractor {
     }
 
     private applyIntentStrategy(text: string, properties: Property[]): void {
-        for (const intent of INTENTS) {
+        INTENTS.forEach(intent => {
             if (intent.regex.test(text) && !properties.some(p => p.key === 'intent' && p.values.includes(intent.key))) {
                 properties.push({ key: 'intent', operator: 'is', values: [intent.key] });
             }
-        }
+        });
     }
 
     private applySendToStrategy(text: string, properties: Property[]): void {
@@ -139,14 +137,15 @@ export class PropertyExtractor {
     }
 
     private applyLocationStrategy(text: string, properties: Property[]): void {
-        for (const { regex, prefix } of LOCATION_PATTERNS) {
+        LOCATION_PATTERNS.some(({ regex, prefix }) => {
             const matches = text.match(regex);
             if (matches) {
                 const location = matches[0].replace(prefix, '').trim();
                 properties.push({ key: 'location', operator: 'is near', values: [location] });
-                break;
+                return true;
             }
-        }
+            return false;
+        });
     }
 
     private applyDateStrategy(text: string, properties: Property[]): void {
@@ -171,19 +170,18 @@ export class PropertyExtractor {
         const words = text.split(/\s+/);
         const existingKeys = new Set(properties.map(p => p.key));
 
-        for (let i = 0; i < words.length - 1; i++) {
-            const word = words[i];
-            if (word.length <= 3) continue;
+        words.slice(0, -1).forEach((word, i) => {
+            if (word.length <= 3) return;
 
             const [match] = this.ontologyService.getFuzzyMatches(word, 1);
-            if (!match || existingKeys.has(match)) continue;
+            if (!match || existingKeys.has(match)) return;
 
             const nextWord = words[i + 1];
             if (nextWord.length > 2 && !STOP_WORDS.has(nextWord.toLowerCase())) {
                 properties.push({ key: match, operator: 'contains', values: [nextWord] });
                 existingKeys.add(match);
             }
-        }
+        });
     }
 
     inferType(value: string): PropertyType {
