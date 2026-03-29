@@ -39,11 +39,24 @@ export async function ingestFile(filePath: string, cli: CliClient, dryRun: boole
 
         // Auto-tagging based on extension
         const tags = ['ingested', 'cli'];
-        if (['.ts', '.js', '.tsx', '.jsx'].includes(ext)) tags.push('code', 'typescript', 'javascript');
-        if (['.md', '.txt'].includes(ext)) tags.push('document');
-        if (['.py'].includes(ext)) tags.push('code', 'python');
-        if (['.json'].includes(ext)) tags.push('data', 'json');
-        if (['.html', '.css', '.scss'].includes(ext)) tags.push('code', 'web');
+
+        const TAG_MAP: Record<string, string[]> = {
+            '.ts': ['code', 'typescript'],
+            '.js': ['code', 'javascript'],
+            '.tsx': ['code', 'typescript', 'react'],
+            '.jsx': ['code', 'javascript', 'react'],
+            '.md': ['document'],
+            '.txt': ['document'],
+            '.py': ['code', 'python'],
+            '.json': ['data', 'json'],
+            '.html': ['code', 'web'],
+            '.css': ['code', 'web'],
+            '.scss': ['code', 'web']
+        };
+
+        if (TAG_MAP[ext]) {
+            tags.push(...TAG_MAP[ext]);
+        }
 
         const title = `Ingested: ${filename}`;
 

@@ -1,4 +1,4 @@
-import { Property, Quantity } from './types/index.js';
+import { Property, Quantity, PropertyType } from './types/index.js';
 import { OntologyService } from './ontologyService.js';
 import { DEFAULT_ONTOLOGY } from './ontology.default.js';
 import { PropertyValidationError } from './errorTypes.js';
@@ -44,8 +44,6 @@ const DATE_PATTERNS = [
 
 const STOP_WORDS = new Set(['with', 'the', 'and', 'for', 'from', 'near', 'about', 'that', 'this']);
 
-import { PropertyType } from './types/index.js';
-
 type ExtractionStrategy = (text: string, properties: Property[]) => void;
 
 export class PropertyExtractor {
@@ -79,11 +77,11 @@ export class PropertyExtractor {
     }
 
     private applyIntentStrategy(text: string, properties: Property[]): void {
-        for (const intent of INTENTS) {
+        INTENTS.forEach(intent => {
             if (intent.regex.test(text) && !properties.some(p => p.key === 'intent' && p.values.includes(intent.key))) {
                 properties.push({ key: 'intent', operator: 'is', values: [intent.key] });
             }
-        }
+        });
     }
 
     private applySendToStrategy(text: string, properties: Property[]): void {
@@ -150,11 +148,14 @@ export class PropertyExtractor {
     }
 
     private applyFuzzyMatchingStrategy(text: string, properties: Property[]): void {
-        const words = text.split(/\s+/).filter(w => w.length > 3);
+        const words = text.split(/\s+/);
         const existingKeys = new Set(properties.map(p => p.key));
 
         for (let i = 0; i < words.length - 1; i++) {
             const word = words[i];
+
+            if (word.length <= 3) continue;
+
             const [match] = this.ontologyService.getFuzzyMatches(word, 1);
 
             if (match && !existingKeys.has(match)) {
@@ -190,11 +191,11 @@ export class PropertyExtractor {
 
         const enumOptions = this.ontologyService.getEnumOptions(key);
         if (enumOptions) {
-            for (const v of values) {
+            values.forEach(v => {
                 if (!enumOptions.includes(v)) {
                     errors.push(`Value '${v}' not in enum options for '${key}'`);
                 }
-            }
+            });
         }
 
         return { valid: errors.length === 0, errors };

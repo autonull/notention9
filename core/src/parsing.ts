@@ -73,15 +73,15 @@ const parseColonFormat: PropertyParser = (content) => {
 };
 
 const parseSymbolicFormat: PropertyParser = (content) => {
-    for (const { regex, op } of SYMBOLIC_REGEXES) {
-        const symbolicMatch = content.match(regex);
-        if (symbolicMatch) {
-            return {
-                key: resolveAlias(symbolicMatch[1].trim()),
-                operator: op,
-                values: symbolicMatch[3].trim().split(',').map(v => v.trim())
-            };
-        }
+    const matchedSymbol = SYMBOLIC_REGEXES.find(({ regex }) => regex.test(content));
+
+    if (matchedSymbol) {
+        const symbolicMatch = content.match(matchedSymbol.regex)!;
+        return {
+            key: resolveAlias(symbolicMatch[1].trim()),
+            operator: matchedSymbol.op,
+            values: symbolicMatch[3].trim().split(',').map(v => v.trim())
+        };
     }
 
     const generalMatch = content.match(REGEX.GENERAL_SYM);
@@ -146,11 +146,12 @@ const PARSERS: PropertyParser[] = [
 ];
 
 const parsePropertyBlock = (content: string): Property | null => {
-  for (const parser of PARSERS) {
-    const result = parser(content);
-    if (result) return result;
-  }
-  return null;
+  let result: Property | null = null;
+  PARSERS.some(parser => {
+    result = parser(content);
+    return result !== null;
+  });
+  return result;
 };
 
 export const extractProperties = (text: string): ExtractedProperty[] => {

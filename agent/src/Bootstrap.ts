@@ -40,16 +40,16 @@ export class Bootstrap {
     const { InitialConfigurator } = await import('./configurator/InitialConfigurator');
     const configurator = new InitialConfigurator();
 
-    // Initialize Config Processor (Phase 1.3)
+    // Initialize Config Processor
     const { ConfigProcessor } = await import('./configurator/ConfigProcessor');
     const configProcessor = new ConfigProcessor();
     configProcessor.setAgent(voltagent);
 
-    // Initialize Note Skill Loader (Phase 2.3: Metaprogramming)
+    // Initialize Note Skill Loader
     const { NoteSkillLoader } = await import('./skills/NoteSkillLoader');
     const noteSkillLoader = new NoteSkillLoader(this.skillRegistry);
 
-    // Initialize Plugin Loader (Phase 2.2)
+    // Initialize Plugin Loader
     const { PluginLoader } = await import('./skills/PluginLoader');
     const pluginLoader = new PluginLoader(this.skillRegistry);
     await pluginLoader.loadPlugins();
@@ -75,16 +75,9 @@ export class Bootstrap {
     await this.registerTools(voltagent);
 
     // Event Handlers
-    voltagent.onNoteReceived((note: Note) => {
-      log('Agent', `Note received: ${note.id}`);
-      configProcessor.processNote(note);
-      // We could also re-scan for skills if the note is a skill definition,
-      // but simpler to just reload all or check tag.
-      if (note.tags.includes('@skill:definition')) {
-          noteSkillLoader.scanForSkills([note]);
-      }
-      onEvent({ type: 'note_created', payload: note });
-    });
+    voltagent.onNoteReceived((note: Note) =>
+        this.handleNoteReceived(note, configProcessor, noteSkillLoader, onEvent)
+    );
 
     return {
       agentRegistry: this.agentRegistry,
@@ -93,6 +86,21 @@ export class Bootstrap {
       skillExecutor: this.skillExecutor,
       voltagent
     };
+  }
+
+  private handleNoteReceived(
+      note: Note,
+      configProcessor: any,
+      noteSkillLoader: any,
+      onEvent: (event: any) => void
+  ) {
+      log('Agent', `Note received: ${note.id}`);
+      configProcessor.processNote(note);
+
+      if (note.tags.includes('@skill:definition')) {
+          noteSkillLoader.scanForSkills([note]);
+      }
+      onEvent({ type: 'note_created', payload: note });
   }
 
   private initializeBuiltInSkills() {

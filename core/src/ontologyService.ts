@@ -108,15 +108,11 @@ export class OntologyService {
      * Get all attributes that support a specific operator
      */
     getAttributesByOperator(operator: string): Array<{ key: string, attribute: OntologyAttribute }> {
-        const results: Array<{ key: string, attribute: OntologyAttribute }> = [];
-
-        for (const [key, attr] of this.attributeIndex) {
-            if (attr.operators.real.includes(operator) || attr.operators.imaginary.includes(operator)) {
-                results.push({ key, attribute: attr });
-            }
-        }
-
-        return results;
+        return Array.from(this.attributeIndex)
+            .filter(([_, attr]) =>
+                attr.operators.real.includes(operator) || attr.operators.imaginary.includes(operator)
+            )
+            .map(([key, attribute]) => ({ key, attribute }));
     }
 
     /**
@@ -134,15 +130,9 @@ export class OntologyService {
      * Get all attributes of a specific type
      */
     getAttributesByType(type: string): Map<string, OntologyAttribute> {
-        const results = new Map<string, OntologyAttribute>();
-
-        for (const [key, attr] of this.attributeIndex.entries()) {
-            if (attr.type === type) {
-                results.set(key, attr);
-            }
-        }
-
-        return results;
+        return new Map(
+            Array.from(this.attributeIndex.entries()).filter(([_, attr]) => attr.type === type)
+        );
     }
 
     /**
@@ -154,21 +144,20 @@ export class OntologyService {
 
         return this.withCache(this.fuzzyMatchesCache, cacheKey, () => {
             const lower = input.toLowerCase();
-            const scoredMatches: Array<{ key: string, score: number }> = [];
 
-            for (const [key, attr] of this.attributeIndex) {
-                const keyLower = key.toLowerCase();
-                let score = 0;
+            return Array.from(this.attributeIndex)
+                .map(([key, attr]) => {
+                    const keyLower = key.toLowerCase();
+                    let score = 0;
 
-                if (keyLower === lower) score = 100;
-                else if (keyLower.startsWith(lower)) score = 80;
-                else if (keyLower.includes(lower)) score = 60;
-                else if (attr.description?.toLowerCase().includes(lower)) score = 40;
+                    if (keyLower === lower) score = 100;
+                    else if (keyLower.startsWith(lower)) score = 80;
+                    else if (keyLower.includes(lower)) score = 60;
+                    else if (attr.description?.toLowerCase().includes(lower)) score = 40;
 
-                if (score > 0) scoredMatches.push({ key, score });
-            }
-
-            return scoredMatches
+                    return { key, score };
+                })
+                .filter(m => m.score > 0)
                 .sort((a, b) => (b.score - a.score) || a.key.localeCompare(b.key))
                 .slice(0, limit)
                 .map(m => m.key);

@@ -42,18 +42,14 @@ export class SocketController {
       switch (message.type) {
         case 'note_created': {
           const notes = await this.skillExecutor.executeForNote(message.payload);
-          for (const result of notes) {
-            this.broadcast({ type: 'note_created', payload: result });
-          }
+          notes.forEach(result => this.broadcast({ type: 'note_created', payload: result }));
           break;
         }
 
         case 'note_updated':
           if (await shouldExecuteSkills(message.payload)) {
             const results = await this.skillExecutor.executeForNote(message.payload);
-            for (const result of results) {
-              this.broadcast({ type: 'note_created', payload: result });
-            }
+            results.forEach(result => this.broadcast({ type: 'note_created', payload: result }));
           }
           break;
 
