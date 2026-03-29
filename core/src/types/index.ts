@@ -79,6 +79,14 @@ export interface Note {
   priority: number;
 }
 
+export interface Thought {
+  id: string; // same as Note.id
+  intent: 'fleeting' | 'planning' | 'executing' | 'archived';
+  sovereignty: 'local' | 'pending_sync' | 'shared';
+  volt_agent_state?: 'idle' | 'demonstrating' | 'acting' | 'blocked';
+  source_note: Note;
+}
+
 export interface Template {
   id: string;
   label: string;
