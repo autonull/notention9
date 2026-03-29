@@ -33,7 +33,7 @@ export const useChatView = () => {
 
     const {
         contacts,
-        setContacts,
+        addContact,
         messages,
         isLoading,
         addMessage
@@ -44,7 +44,7 @@ export const useChatView = () => {
         pubkey,
         localSelectedContact,
         contacts,
-        setContacts,
+        addContact,
         messages,
         isLoading,
         addMessage,

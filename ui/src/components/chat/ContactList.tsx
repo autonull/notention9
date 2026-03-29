@@ -2,7 +2,7 @@ import React, {useMemo, useState} from 'react';
 import {finalizeEvent, nip19} from 'nostr-tools';
 import {useNostrProfile} from '../../hooks/useNostrProfile';
 import type {Contact} from '@notention/core';
-import {DEFAULT_RELAYS, formatNpub, hexToBytes, Logger, pool} from '@notention/core';
+import {formatNpub, Logger} from '@notention/core';
 import type {SwarmTemplate} from '../../hooks/simulator/types';
 import {SwarmModal} from '../simulator/SwarmModal';
 import {CpuChipIcon, SearchIcon, UserGroupIcon, UserPlusIcon} from '../common/icons';
@@ -15,7 +15,8 @@ interface ContactListProps {
     privkey: string;
     pubkey: string;
     contacts: Contact[];
-    setContacts: React.Dispatch<React.SetStateAction<Contact[]>>;
+    // setContacts replaced by onAddContact
+    onAddContact: (pubkey: string) => Promise<void>;
     selectedContact: Contact | null;
     onSelectContact: (contact: Contact) => void;
     isLoading: boolean;
@@ -27,7 +28,7 @@ export function ContactList({
                                 privkey,
                                 pubkey,
                                 contacts,
-                                setContacts,
+                                onAddContact,
                                 selectedContact,
                                 onSelectContact,
                                 isLoading,
@@ -74,22 +75,8 @@ export function ContactList({
             if (contacts.some((c) => c.pubkey === newPubkey) || newPubkey === pubkey)
                 throw new Error('Contact already exists or is yourself.');
 
-            const currentTags = contacts.filter(c => !c.isAgent).map((c) => ['p', c.pubkey]);
-            const newTags = [...currentTags, ['p', newPubkey]];
+            await onAddContact(newPubkey);
 
-            const event = finalizeEvent(
-                {
-                    kind: 3,
-                    created_at: Math.floor(Date.now() / 1000),
-                    tags: newTags,
-                    content: '',
-                },
-                hexToBytes(privkey)
-            );
-
-            await Promise.all(pool.publish(DEFAULT_RELAYS, event));
-
-            setContacts((c) => [...c, {pubkey: newPubkey}]);
             setNewContactNpub('');
             setIsAddingContact(false);
         } catch (err) {

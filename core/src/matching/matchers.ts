@@ -93,6 +93,7 @@ export const PropertyMatchers = {
         // Check for range-like input even with 'is' operator
         // Supports: [price:is:10-50] or [price:between:10,50]
         if (request.operator === 'between' ||
+            request.operator === 'range' || // Explicit range operator support
             (request.values.length >= 2) ||
             (request.values[0]?.includes('-') && /^\d+(\.\d+)?\s*-\s*\d+(\.\d+)?$/.test(request.values[0]))) {
             return PropertyMatchers.evaluateNumberRange(request, offer, offerValue);
@@ -146,6 +147,13 @@ export const PropertyMatchers = {
         }
 
         if (min === null || max === null) return createMatch(request, offer, 0, 'Invalid range values');
+
+        // Swap if min > max
+        if (min > max) {
+            const temp = min;
+            min = max;
+            max = temp;
+        }
 
         return (offerValue >= min && offerValue <= max)
             ? createMatch(request, offer, 1, `${offerValue} is between ${min} and ${max}`)
@@ -219,7 +227,7 @@ export const PropertyMatchers = {
              return createMatch(request, offer, 1, `Excludes '${reqVal}'`);
         }
 
-        // Exact or Fuzzy match
+        // Exact match (case insensitive)
         if (normalizedOffer === normalizedReq) {
             return createMatch(request, offer, 1, 'Exact synonym match');
         }
@@ -240,5 +248,23 @@ export const PropertyMatchers = {
         }
 
         return createMatch(request, offer, 0, 'No match');
+    },
+
+    evaluateEnum: (request: Property, offer: Property): PropertyMatch => {
+        if (!request.values[0]) return createMatch(request, offer, 0, 'Missing enum value');
+
+        const offerVal = offer.values[0];
+        const reqVal = request.values[0];
+
+        // Use normalized strict matching for enums
+        // We don't want fuzzy matching for enums unless we're really sure
+        const normalizedOffer = normalizeTerm(offerVal);
+        const normalizedReq = normalizeTerm(reqVal);
+
+        if (normalizedOffer === normalizedReq) {
+            return createMatch(request, offer, 1, 'Exact enum match');
+        }
+
+        return createMatch(request, offer, -1, `Enum mismatch: ${offerVal} != ${reqVal}`);
     }
 };

@@ -1,6 +1,6 @@
 import { Note, PrivacyLevel, Property, NostrEvent } from '../types/index.js';
 import { MatchEngine, MatchResult } from '../matching/MatchEngine.js';
-import { pool, DEFAULT_RELAYS, convertEventToNote } from '../nostr.js';
+import { pool, DEFAULT_RELAYS, convertEventToNote, queryEvents } from '../nostr.js';
 import { Filter } from 'nostr-tools';
 import { hashValue } from './privacy.js';
 import { Logger } from '../utils/logging.js';
@@ -8,6 +8,7 @@ import { Logger } from '../utils/logging.js';
 export interface ScoredMatch {
     note: Note;
     result: MatchResult;
+    direction?: 'outgoing' | 'incoming';
 }
 
 export class NetworkDiscoveryService {
@@ -31,7 +32,7 @@ export class NetworkDiscoveryService {
 
         try {
             // nostr-tools v2 use query, v1 list.
-            const events = await (pool as any).query(relays, filters) as NostrEvent[];
+            const events = await queryEvents(pool, relays, filters);
 
             return events
                 .map(event => this.processEvent(event, localNote, privacyMode, secretHashToProp))
@@ -112,10 +113,28 @@ export class NetworkDiscoveryService {
                 });
             }
 
-            return {
-                note: remoteNote,
-                result: this.engine.calculateMatchScore(localNote, remoteNote)
-            };
+            // Dual Direction Matching
+            // 1. Forward: Does remote note satisfy local note's request? (e.g., Local: Requesting Dev, Remote: Is Dev)
+            const forwardMatch = this.engine.calculateMatchScore(localNote, remoteNote);
+
+            // 2. Reverse: Does local note satisfy remote note's request? (e.g., Local: Is Dev, Remote: Requesting Dev)
+            const reverseMatch = this.engine.calculateMatchScore(remoteNote, localNote);
+
+            // Determine best match
+            if (forwardMatch.score >= reverseMatch.score) {
+                return {
+                    note: remoteNote,
+                    result: forwardMatch,
+                    direction: 'outgoing'
+                };
+            } else {
+                return {
+                    note: remoteNote,
+                    result: reverseMatch,
+                    direction: 'incoming'
+                };
+            }
+
         } catch (e) {
             return null; // Skip invalid events
         }

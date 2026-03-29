@@ -19,6 +19,7 @@ export interface Note {
   // Logic
   privacy: PrivacyLevel;
   priority: number; // 0-1
+  author?: string; // Pubkey
 }
 
 export type NoteSource = {

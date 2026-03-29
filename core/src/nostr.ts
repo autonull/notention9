@@ -1,4 +1,4 @@
-import { SimplePool, getPublicKey, finalizeEvent } from 'nostr-tools';
+import { SimplePool, getPublicKey, finalizeEvent, Filter } from 'nostr-tools';
 // Using internal utils or redefining if not exposed
 // nostr-tools v2 usually exposes utils at top level or /utils path
 
@@ -47,6 +47,34 @@ export const DEFAULT_RELAYS = [
 
 export const pool = new SimplePool();
 
+/**
+ * Helper to query events using subscribeMany since SimplePool in v2 might lack list/query.
+ * Aggregates events until EOSE or timeout.
+ */
+export const queryEvents = (
+  pool: SimplePool,
+  relays: string[],
+  filters: Filter[]
+): Promise<NostrEvent[]> => {
+  return new Promise((resolve) => {
+    const events: NostrEvent[] = [];
+    const sub = pool.subscribeMany(relays, filters, {
+      onevent(event) {
+        events.push(event as NostrEvent);
+      },
+      oneose() {
+        sub.close();
+        resolve(events);
+      }
+    });
+    // Fallback timeout in case relays don't send EOSE
+    setTimeout(() => {
+        sub.close();
+        resolve(events);
+    }, 5000);
+  });
+};
+
 export const formatNpub = (npub: string) =>
   `${npub.slice(0, 10)}...${npub.slice(-4)}`;
 
@@ -87,6 +115,7 @@ export const convertEventToNote = (event: NostrEvent): Note => {
     },
     privacy: 'public',
     priority: 0.5,
+    author: event.pubkey,
   };
 };
 

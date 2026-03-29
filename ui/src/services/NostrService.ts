@@ -1,4 +1,4 @@
-import { getPublicKey, SimplePool } from 'nostr-tools';
+import { getPublicKey, SimplePool, finalizeEvent } from 'nostr-tools';
 import {
     convertEventToNote,
     DEFAULT_RELAYS,
@@ -10,7 +10,8 @@ import {
     MatchEngine,
     NetworkDiscoveryService,
     ScoredMatch,
-    OntologyNode
+    OntologyNode,
+    queryEvents
 } from '@notention/core';
 
 class NostrService {
@@ -65,6 +66,50 @@ class NostrService {
         } catch (e) {
             this.logger.error("Failed to discover matches", e instanceof Error ? e : new Error(String(e)));
             return [];
+        }
+    }
+
+    async addContact(newPubkey: string): Promise<void> {
+        if (!this.privkey || !this.pubkey) throw new Error("No identity configured");
+
+        try {
+            // Fetch existing contacts (Kind 3)
+            const events = await queryEvents(this.pool, this.relays, [
+                { kinds: [3], authors: [this.pubkey], limit: 1 }
+            ]);
+
+            let currentTags: string[][] = [];
+            if (events.length > 0) {
+                // Keep existing tags (not just 'p', but usually kind 3 is mostly p and relays)
+                // We should preserve all tags actually, to not lose relay lists (which are often stored in content or tags)
+                currentTags = events[0].tags;
+            }
+
+            // Check if already exists
+            if (currentTags.some(t => t[0] === 'p' && t[1] === newPubkey)) {
+                this.logger.info(`Contact ${newPubkey} already exists.`);
+                return;
+            }
+
+            // Append new contact
+            const newTags = [...currentTags, ['p', newPubkey]];
+
+            const event = finalizeEvent(
+                {
+                    kind: 3,
+                    created_at: Math.floor(Date.now() / 1000),
+                    tags: newTags,
+                    content: events.length > 0 ? events[0].content : '', // Preserve content (often relay list)
+                },
+                hexToBytes(this.privkey)
+            );
+
+            await Promise.all(this.pool.publish(this.relays, event));
+            this.logger.info(`Added contact ${newPubkey}`);
+
+        } catch (e) {
+            this.logger.error("Failed to add contact", e instanceof Error ? e : new Error(String(e)));
+            throw e;
         }
     }
 

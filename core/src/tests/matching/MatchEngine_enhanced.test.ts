@@ -132,4 +132,45 @@ describe('MatchEngine Enhanced', () => {
         expect(result.matches).toHaveLength(1);
         expect(result.matches[0].reason).toContain('50 < 100');
     });
+
+    it('should handle explicit ranges in number evaluation', () => {
+        // Note: Using createNote helper
+        const request = createNote('req1', ['price:range:10-50']);
+        const offer = createNote('off1', ['price:is:30']);
+
+        const result = engine.calculateMatchScore(request, offer);
+        expect(result.matches).toHaveLength(1);
+        expect(result.matches[0].compatibility).toBe(1);
+    });
+
+    it('should handle enum evaluation strictly', () => {
+        // We need to define enum in ontology for this test to work if we want to test "strict"
+        // But the current mockOntology doesn't have an enum type.
+        // We can add it or modify mockOntology.
+
+        // Let's modify the engine instance or mockOntology.
+        // Or just create a new engine for this test?
+
+        const enumOntology: OntologyNode[] = [
+             {
+                id: 'enum-test',
+                label: 'Enum Test',
+                attributes: {
+                    'status': { type: 'enum', description: 'Status', options: ['active', 'inactive'], operators: { real: ['is'], imaginary: [] } }
+                }
+            }
+        ];
+
+        const enumEngine = new MatchEngine(enumOntology);
+
+        const req = createNote('req1', ['status:is:active']);
+        const offerCorrect = createNote('off1', ['status:is:active']);
+        const offerWrong = createNote('off2', ['status:is:inactive']);
+
+        const res1 = enumEngine.calculateMatchScore(req, offerCorrect);
+        expect(res1.score).toBe(1);
+
+        const res2 = enumEngine.calculateMatchScore(req, offerWrong);
+        expect(res2.score).toBe(0); // Should be 0 because compatibility is -1
+    });
 });

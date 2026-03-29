@@ -30,8 +30,8 @@ describe('Phase 2.3: Multi-Instance Coordination', () => {
                         mockRelayEvents.push(event);
                         return [Promise.resolve()];
                     });
-                    query = vi.fn().mockImplementation((relays, filters) => {
-                        return Promise.resolve(mockRelayEvents.filter(event => {
+                    subscribeMany = vi.fn().mockImplementation((relays, filters, callbacks) => {
+                        const results = mockRelayEvents.filter(event => {
                             return filters.some((f: any) => {
                                 if (f.kinds && !f.kinds.includes(event.kind)) return false;
                                 for (const key in f) {
@@ -46,7 +46,14 @@ describe('Phase 2.3: Multi-Instance Coordination', () => {
                                 }
                                 return true;
                             });
-                        }));
+                        });
+
+                        setTimeout(() => {
+                            results.forEach((e: any) => callbacks.onevent(e));
+                            if (callbacks.oneose) callbacks.oneose();
+                        }, 0);
+
+                        return { close: () => {} };
                     });
                 }
             };
