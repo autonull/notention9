@@ -21,16 +21,16 @@ export function FilterBar({searchTerm, onSetSearch}: FilterBarProps) {
     };
 
     const getButtonClass = (isActive: boolean, isAll = false) => `
-        flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 flex-shrink-0 border select-none
+        flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 flex-shrink-0 border select-none cursor-pointer
         ${isActive
         ? (isAll
             ? 'bg-gray-700 text-white border-gray-600 shadow-sm'
             : 'bg-blue-900/30 text-blue-300 border-blue-500/30 shadow-sm shadow-blue-900/20')
-        : 'bg-transparent text-gray-400 border-transparent hover:bg-gray-800 hover:text-gray-200 hover:border-gray-700/50'}
+        : 'bg-gray-800/30 text-gray-400 border-transparent hover:bg-gray-800 hover:text-gray-200 hover:border-gray-700/50'}
     `;
 
     return (
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 -mx-3 px-3 scrollbar-hide mask-fade-sides">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 -mx-2 px-2 scrollbar-hide">
             <button
                 onClick={() => onSetSearch('')}
                 className={getButtonClass(!searchTerm, true)}

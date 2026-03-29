@@ -78,54 +78,63 @@ export const NoteListItem = React.memo(({
             tabIndex={0}
             onClick={onSelect}
             onKeyDown={handleKeyDown}
-            className={`note-list-item group relative flex flex-col p-3 mx-2 my-1 rounded-lg cursor-pointer transition-all duration-200 border
+            className={`note-list-item group relative flex flex-col p-4 rounded-xl cursor-pointer transition-all duration-300
         ${isSelected
-                ? 'bg-blue-900/20 border-blue-500/40 shadow-sm'
-                : 'bg-transparent border-transparent hover:bg-gray-800/60 hover:border-gray-700/50'
-            } focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50`}
+                ? 'bg-gradient-to-r from-blue-900/30 to-indigo-900/20 shadow-md translate-x-1'
+                : 'bg-transparent hover:bg-gray-800/40 hover:translate-x-0.5'
+            } focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 overflow-hidden`}
         >
+            {/* Selected Indicator */}
+            {isSelected && (
+                <div className="absolute left-0 top-3 bottom-3 w-1 bg-blue-500 rounded-r-full shadow-lg shadow-blue-500/50"></div>
+            )}
+
             {/* Header */}
-            <div className="flex justify-between items-start mb-1 gap-2">
-                <h3 className={`font-semibold text-sm truncate flex-1 ${isSelected ? 'text-blue-100' : 'text-gray-200 group-hover:text-white'}`}>
+            <div className="flex justify-between items-start mb-1.5 gap-2 relative z-10 pl-2">
+                <h3 className={`font-bold text-[15px] leading-tight truncate flex-1 transition-colors ${isSelected ? 'text-blue-50' : 'text-gray-300 group-hover:text-white'}`}>
                     {note.title || 'Untitled Note'}
                 </h3>
                 {note.pinned && (
-                    <PinIcon className="h-3.5 w-3.5 text-blue-400 flex-shrink-0"/>
+                    <div className="bg-blue-500/10 p-1 rounded-full">
+                        <PinIcon className="h-3 w-3 text-blue-400 flex-shrink-0"/>
+                    </div>
                 )}
             </div>
 
             {/* Preview */}
-            <p className={`text-xs truncate mb-2.5 h-4 ${isSelected ? 'text-blue-200/60' : 'text-gray-500 group-hover:text-gray-400'}`}>
+            <p className={`text-xs pl-2 mb-3 h-8 line-clamp-2 leading-relaxed transition-colors ${isSelected ? 'text-blue-200/70' : 'text-gray-500 group-hover:text-gray-400'}`}>
                 {contentPreview}
             </p>
 
             {/* Properties & Meta */}
-            <div className="flex items-end justify-between">
-                <div className="flex flex-wrap gap-1.5 max-w-[70%]">
+            <div className="flex items-end justify-between pl-2 relative z-10">
+                <div className="flex flex-wrap gap-1.5 max-w-[65%]">
                     {displayProperties.map((p, i) => (
-                        <Badge
+                        <div
                             key={i}
-                            size="sm"
-                            variant="outline"
-                            className={`max-w-[100px] truncate ${isSelected ? 'border-blue-400/30 text-blue-200' : 'border-gray-700 text-gray-400'}`}
+                            className={`px-1.5 py-0.5 text-[10px] font-medium rounded-md border backdrop-blur-sm max-w-[100px] truncate transition-colors ${
+                                isSelected
+                                    ? 'bg-blue-500/10 border-blue-400/20 text-blue-300'
+                                    : 'bg-gray-800/50 border-gray-700/50 text-gray-500 group-hover:border-gray-600'
+                            }`}
                         >
                             {p.key}
-                        </Badge>
+                        </div>
                     ))}
                     {hiddenPropertyCount > 0 && (
-                        <span className={`text-[10px] self-center px-1 ${isSelected ? 'text-blue-300' : 'text-gray-600'}`}>
+                        <span className={`text-[10px] font-medium self-center px-1 ${isSelected ? 'text-blue-400/60' : 'text-gray-600'}`}>
                             +{hiddenPropertyCount}
                         </span>
                     )}
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <span className={`text-[10px] whitespace-nowrap ${isSelected ? 'text-blue-300/60' : 'text-gray-600'}`}>
+                    <span className={`text-[10px] font-medium whitespace-nowrap transition-colors ${isSelected ? 'text-blue-300/50' : 'text-gray-600 group-hover:text-gray-500'}`}>
                         {relativeTime}
                     </span>
 
                     {/* Hover Actions */}
-                    <div className={`flex items-center gap-1 transition-opacity duration-200 ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+                    <div className={`flex items-center gap-1 transition-all duration-200 ${isSelected ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0'}`}>
                         {isTrash && onRestore && (
                             <IconButton
                                 onClick={(e) => { e.stopPropagation(); onRestore(); }}

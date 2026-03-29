@@ -123,29 +123,30 @@ export function DashboardView() {
         <div className="p-6 h-full overflow-y-auto bg-gray-900 text-white custom-scrollbar">
 
             {/* Quick Capture Section */}
-            <div className="mb-8 p-8 bg-gradient-to-br from-gray-800/80 to-gray-900/50 rounded-3xl border border-gray-700/50 relative overflow-hidden shadow-xl">
-                <div className="absolute top-0 right-0 p-32 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4 pointer-events-none"></div>
-                <div className="absolute bottom-0 left-0 p-24 bg-purple-500/10 rounded-full blur-3xl translate-y-1/3 -translate-x-1/4 pointer-events-none"></div>
+            <div className="mb-8 p-8 bg-gradient-to-br from-gray-900/90 via-indigo-950/40 to-gray-900/90 rounded-3xl border border-gray-700/50 relative overflow-hidden shadow-2xl backdrop-blur-sm group hover:border-indigo-500/30 transition-colors duration-500">
+                <div className="absolute top-0 right-0 p-48 bg-blue-500/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/4 pointer-events-none animate-pulse"></div>
+                <div className="absolute bottom-0 left-0 p-32 bg-purple-500/10 rounded-full blur-[80px] translate-y-1/3 -translate-x-1/4 pointer-events-none animate-pulse delay-700"></div>
 
                 <div className="relative z-10 max-w-2xl mx-auto text-center">
-                    <h1 className="text-3xl md:text-4xl font-black mb-3 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">
+                    <h1 className="text-4xl md:text-5xl font-black mb-4 tracking-tight text-white drop-shadow-sm">
                         What's on your mind?
                     </h1>
-                    <p className="text-gray-400 text-sm md:text-base mb-8">
+                    <p className="text-gray-400 text-sm md:text-base mb-8 font-medium tracking-wide">
                         Capture thoughts, tasks, and ideas instantly.
                     </p>
 
-                    <form onSubmit={handleQuickCapture} className="relative mb-8">
+                    <form onSubmit={handleQuickCapture} className="relative mb-10 group/input">
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-2xl blur opacity-0 group-focus-within/input:opacity-100 transition-opacity duration-500"></div>
                         <input
                             type="text"
                             value={quickCaptureInput}
                             onChange={(e) => setQuickCaptureInput(e.target.value)}
                             placeholder="Type here..."
-                            className="w-full bg-gray-950/50 border border-gray-700/50 rounded-2xl py-4 px-6 pr-14 text-lg text-white focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all shadow-inner placeholder-gray-600 backdrop-blur-sm"
+                            className="relative w-full bg-gray-950/80 border border-gray-700/50 rounded-2xl py-5 px-7 pr-16 text-lg text-white focus:outline-none focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 transition-all shadow-inner placeholder-gray-500 backdrop-blur-md"
                         />
                         <button
                             type="submit"
-                            className="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 bg-blue-600 hover:bg-blue-500 rounded-xl transition-all shadow-lg hover:shadow-blue-600/20 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:scale-100"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 p-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 rounded-xl transition-all shadow-lg hover:shadow-indigo-500/25 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:scale-100 disabled:shadow-none"
                             disabled={!quickCaptureInput.trim()}
                             title="Create Note"
                         >
@@ -158,10 +159,12 @@ export function DashboardView() {
                             <button
                                 key={type}
                                 onClick={() => handleQuickTemplate(type)}
-                                className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border transition-all duration-200 group ${t.bgColor} ${t.borderColor} hover:scale-[1.02] hover:shadow-lg`}
+                                className={`flex flex-col items-center justify-center gap-3 p-5 rounded-2xl border transition-all duration-300 group ${t.bgColor} ${t.borderColor} hover:scale-[1.02] hover:shadow-lg hover:bg-opacity-80 active:scale-[0.98]`}
                             >
-                                <t.icon className={`w-6 h-6 ${t.color} group-hover:scale-110 transition-transform`}/>
-                                <span className={`text-xs font-semibold uppercase tracking-wide ${t.color} opacity-80 group-hover:opacity-100`}>{type}</span>
+                                <div className={`p-2 rounded-lg bg-white/5 ring-1 ring-white/10 group-hover:bg-white/10 transition-colors`}>
+                                    <t.icon className={`w-6 h-6 ${t.color} group-hover:scale-110 transition-transform duration-300`}/>
+                                </div>
+                                <span className={`text-xs font-bold uppercase tracking-wider ${t.color} opacity-75 group-hover:opacity-100 transition-opacity`}>{type}</span>
                             </button>
                         ))}
                     </div>
@@ -203,66 +206,68 @@ export function DashboardView() {
                 />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
                 {/* Recent Activity */}
-                <div className="lg:col-span-2 bg-gray-800/40 rounded-2xl border border-gray-700/50 overflow-hidden flex flex-col">
-                    <div className="p-6 border-b border-gray-700/50 flex justify-between items-center bg-gray-800/30">
-                        <h2 className="text-lg font-bold flex items-center gap-2 text-gray-100">
-                            <ClockIcon className="w-5 h-5 text-gray-400"/>
+                <div className="lg:col-span-2 bg-gray-900/50 rounded-3xl border border-gray-700/30 overflow-hidden flex flex-col backdrop-blur-sm shadow-xl">
+                    <div className="p-6 border-b border-gray-700/30 flex justify-between items-center bg-gray-800/20">
+                        <h2 className="text-xl font-bold flex items-center gap-3 text-white">
+                            <div className="p-2 bg-gray-800 rounded-lg text-gray-300">
+                                <ClockIcon className="w-5 h-5"/>
+                            </div>
                             Recent Activity
                         </h2>
                         <button
                             onClick={() => setActiveView('notes')}
-                            className="text-xs font-medium text-blue-400 hover:text-blue-300 transition-colors uppercase tracking-wider flex items-center gap-1"
+                            className="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-xs font-semibold text-blue-400 hover:text-blue-300 transition-all uppercase tracking-wider flex items-center gap-2 border border-gray-700 hover:border-gray-600"
                         >
                             View All <ArrowRightIcon className="w-3 h-3"/>
                         </button>
                     </div>
-                    <div className="p-4">
+                    <div className="p-6">
                         <ActivityFeed recentNotes={recentNotes} onSelectNote={handleSelectNote}/>
                     </div>
                 </div>
 
                 {/* Quick Actions / Tools */}
-                <div className="bg-gray-800/40 rounded-2xl border border-gray-700/50 p-6 flex flex-col gap-4">
-                    <h2 className="text-lg font-bold text-gray-100 mb-2">Tools & Views</h2>
+                <div className="bg-gray-900/50 rounded-3xl border border-gray-700/30 p-6 flex flex-col gap-4 backdrop-blur-sm shadow-xl">
+                    <h2 className="text-xl font-bold text-white mb-2 px-2">Tools & Views</h2>
 
                     <button
                         onClick={handleCreateNote}
-                        className="w-full text-left p-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 transition-all shadow-lg flex items-center gap-4 group"
+                        className="w-full text-left p-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 transition-all shadow-lg hover:shadow-indigo-500/25 flex items-center gap-5 group border border-transparent hover:scale-[1.02]"
                     >
-                        <div className="p-2.5 bg-white/20 rounded-lg text-white group-hover:scale-110 transition-transform">
-                            <PencilIcon className="w-5 h-5"/>
+                        <div className="p-3 bg-white/20 rounded-xl text-white group-hover:rotate-12 transition-transform duration-300 shadow-inner">
+                            <PencilIcon className="w-6 h-6"/>
                         </div>
                         <div>
-                            <div className="font-bold text-white">New Note</div>
-                            <div className="text-xs text-blue-100/80">Start writing</div>
+                            <div className="font-bold text-white text-lg">New Note</div>
+                            <div className="text-sm text-blue-100/90 font-medium">Start writing</div>
                         </div>
                     </button>
 
                     <button
                         onClick={() => setActiveView('ontology')}
-                        className="w-full text-left p-4 rounded-xl bg-gray-800 hover:bg-gray-750 border border-gray-700 hover:border-gray-600 transition-all flex items-center gap-4 group"
+                        className="w-full text-left p-4 rounded-2xl bg-gray-800/50 hover:bg-gray-800 border border-gray-700/50 hover:border-gray-600 transition-all flex items-center gap-5 group hover:shadow-lg"
                     >
-                        <div className="p-2.5 bg-purple-500/10 rounded-lg text-purple-400 group-hover:bg-purple-500/20 transition-colors">
-                            <SparklesIcon className="w-5 h-5"/>
+                        <div className="p-3 bg-purple-500/10 rounded-xl text-purple-400 group-hover:bg-purple-500/20 transition-colors ring-1 ring-purple-500/20">
+                            <SparklesIcon className="w-6 h-6"/>
                         </div>
                         <div>
-                            <div className="font-medium text-gray-200">Ontology Graph</div>
-                            <div className="text-xs text-gray-500">Visualize knowledge</div>
+                            <div className="font-bold text-gray-200">Ontology Graph</div>
+                            <div className="text-sm text-gray-500 group-hover:text-gray-400 transition-colors">Visualize knowledge</div>
                         </div>
                     </button>
 
                     <button
                         onClick={() => setActiveView('settings')}
-                        className="w-full text-left p-4 rounded-xl bg-gray-800 hover:bg-gray-750 border border-gray-700 hover:border-gray-600 transition-all flex items-center gap-4 group"
+                        className="w-full text-left p-4 rounded-2xl bg-gray-800/50 hover:bg-gray-800 border border-gray-700/50 hover:border-gray-600 transition-all flex items-center gap-5 group hover:shadow-lg"
                     >
-                        <div className="p-2.5 bg-gray-700/50 rounded-lg text-gray-400 group-hover:bg-gray-600 transition-colors">
-                            <NetworkIcon className="w-5 h-5"/>
+                        <div className="p-3 bg-gray-700/50 rounded-xl text-gray-400 group-hover:bg-gray-600/80 transition-colors ring-1 ring-gray-600/30">
+                            <NetworkIcon className="w-6 h-6"/>
                         </div>
                         <div>
-                            <div className="font-medium text-gray-200">Network Settings</div>
-                            <div className="text-xs text-gray-500">Configure connections</div>
+                            <div className="font-bold text-gray-200">Network Settings</div>
+                            <div className="text-sm text-gray-500 group-hover:text-gray-400 transition-colors">Configure connections</div>
                         </div>
                     </button>
                 </div>

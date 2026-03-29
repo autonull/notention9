@@ -19,6 +19,8 @@ import {ContextPanel} from './ContextPanel';
 import {SmartNoteAssistant} from '../SmartNoteAssistant';
 import {MetaphorRenderer} from '../metaphor/MetaphorRenderer';
 import {PrivacyConfirmModal} from '../modals/PrivacyConfirmModal';
+import {MatchReplies} from '../match/MatchReplies';
+import {useMatches} from '../../hooks/useMatches';
 
 interface EditorManagerProps {
     note: Note;
@@ -121,6 +123,13 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
     };
 
     const activeMetaphor = metaphorMapper.mapToMetaphor(dirtyNote);
+    const matches = useMatches(dirtyNote);
+
+    const handleMatchClick = useCallback((match: any) => {
+        // Navigate or preview match
+        // For now, let's just toast
+        addToast(`Selected match: ${match.note.title || 'Untitled'}`, 'info');
+    }, [addToast]);
 
     return (
         <div className="flex flex-col h-full relative">
@@ -198,6 +207,11 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                             onClose={() => setIsTemplateSelectorOpen(false)}
                         />
                     )}
+
+                    {/* Match Replies - Simulated Thread */}
+                    <div className="px-8 pb-8 max-w-4xl mx-auto w-full">
+                        <MatchReplies matches={matches} onMatchClick={handleMatchClick} />
+                    </div>
                 </div>
 
                 {/* Mobile Backdrop */}

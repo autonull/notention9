@@ -69,7 +69,7 @@ export function Header({onNewNote}: HeaderProps) {
 
     return (
         <header
-            className="flex-shrink-0 bg-gray-900 h-16 px-4 flex items-center justify-between border-b border-gray-700/50">
+            className="flex-shrink-0 bg-gray-900/80 backdrop-blur-md h-16 px-4 flex items-center justify-between border-b border-gray-700/50 z-50 relative">
             {/* Left Section */}
             <div className="flex items-center gap-4">
                 <IconButton
