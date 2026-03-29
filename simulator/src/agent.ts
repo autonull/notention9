@@ -26,11 +26,11 @@ export class Agent {
     private readonly privkey: string;
     private readonly engine: MatchEngine;
     private readonly seenEvents = new Set<string>();
+    private relay: WebSocket;
 
     public get secretKey(): string {
         return this.privkey;
     }
-    private relay: WebSocket;
 
     constructor(
         public readonly profile: AgentProfile,
@@ -82,28 +82,30 @@ export class Agent {
         if (this.seenEvents.has(event.id) || event.pubkey === this.pubkey) return;
         this.seenEvents.add(event.id);
 
+        let note: Note;
         try {
-            const note = convertEventToNote(event);
-
-            const myInterestsNote: Note = {
-                ...note,
-                id: `interest-${this.id}`,
-                properties: this.profile.interests
-            };
-
-            const { score, matches } = this.engine.calculateMatchScore(myInterestsNote, note);
-
-            if (score > 0.5) {
-                 this.log(`Matched event from ${event.pubkey.slice(0, 8)} (Score: ${score.toFixed(2)})`);
-                 matches.forEach(m => {
-                     this.log(`  - Matched: ${m.requestProp.key} ${m.requestProp.operator} ${m.offerProp.values.join(', ')}`);
-                 });
-
-                 // Publish explanation for dashboard
-                 this.publishExplanation(event.pubkey, score, matches);
-            }
+            note = convertEventToNote(event);
         } catch (e) {
-            this.log(`Error processing event: ${e}`);
+            this.log(`Error converting event to note: ${e}`);
+            return;
+        }
+
+        const myInterestsNote: Note = {
+            ...note,
+            id: `interest-${this.id}`,
+            properties: this.profile.interests
+        };
+
+        const { score, matches } = this.engine.calculateMatchScore(myInterestsNote, note);
+
+        if (score > 0.5) {
+                this.log(`Matched event from ${event.pubkey.slice(0, 8)} (Score: ${score.toFixed(2)})`);
+                matches.forEach(m => {
+                    this.log(`  - Matched: ${m.requestProp.key} ${m.requestProp.operator} ${m.offerProp.values.join(', ')}`);
+                });
+
+                // Publish explanation for dashboard
+                this.publishExplanation(event.pubkey, score, matches);
         }
     }
 
@@ -126,6 +128,20 @@ export class Agent {
         await this.publish(content, [], 'chat');
     }
 
+    private async createEvent(
+        kind: number,
+        content: string,
+        tags: string[][]
+    ): Promise<NostrEvent> {
+        const sk = Uint8Array.from(Buffer.from(this.privkey, 'hex'));
+        return finalizeEvent({
+            kind,
+            created_at: Math.floor(Date.now() / 1000),
+            tags,
+            content,
+        }, sk);
+    }
+
     private async publishExplanation(matchedPubkey: string, score: number, details: any[]) {
         if (this.relay.readyState !== WebSocket.OPEN) return;
 
@@ -140,15 +156,12 @@ export class Agent {
             }))
         };
 
-        const sk = Uint8Array.from(Buffer.from(this.privkey, 'hex'));
-
         // Kind 35001 for explanations/logs
-        const event = finalizeEvent({
-            kind: 35001,
-            created_at: Math.floor(Date.now() / 1000),
-            tags: [['p', matchedPubkey]],
-            content: JSON.stringify(explanation),
-        }, sk);
+        const event = await this.createEvent(
+            35001,
+            JSON.stringify(explanation),
+            [['p', matchedPubkey]]
+        );
 
         this.relay.send(JSON.stringify(['EVENT', event]));
     }
@@ -159,8 +172,6 @@ export class Agent {
             return;
         }
 
-        const sk = Uint8Array.from(Buffer.from(this.privkey, 'hex'));
-
         // Use core utility for privacy/property tags
         // We use 'public' mode for simulator by default
         const privacyTags = await getPrivacyTags(properties, 'public');
@@ -169,12 +180,11 @@ export class Agent {
         const indexTags = properties.map(p => ['t', `prop:${p.key}`]);
         const methodTag = ['input-method', inputMethod];
 
-        const event = finalizeEvent({
-            kind: 35000,
-            created_at: Math.floor(Date.now() / 1000),
-            tags: [...privacyTags, ...indexTags, methodTag],
+        const event = await this.createEvent(
+            35000,
             content,
-        }, sk);
+            [...privacyTags, ...indexTags, methodTag]
+        );
 
         this.relay.send(JSON.stringify(['EVENT', event]));
         this.log(`Published: "${content.slice(0, 50)}..."`);

@@ -58,8 +58,11 @@ export class ScenarioRunner {
 
     private async spawnAgents(configs: AgentConfig[]) {
         let colorIdx = 0;
+
         for (const config of configs) {
-            for (let i = 1; i <= config.count; i++) {
+            const agentsToSpawn = Array.from({ length: config.count }, (_, i) => i + 1);
+
+            for (const i of agentsToSpawn) {
                 const profile: AgentProfile = {
                     name: `${config.role} ${i}`,
                     role: config.role,
@@ -88,12 +91,11 @@ export class ScenarioRunner {
         events.forEach(event => {
             setTimeout(async () => {
                 console.log(chalk.bold(`\n[${event.at}s] Event: ${event.actorRole} -> ${event.action} (${event.inputMethod || 'raw'})`));
-                if (this.onEvent) this.onEvent(event);
+                this.onEvent?.(event);
 
-                // If camera event, skip agent execution
-                if (event.action === 'camera') return;
-
-                await this.executeAction(event.actorRole, event.action, event.inputMethod, event.targetAgentId);
+                if (event.action !== 'camera') {
+                    await this.executeAction(event.actorRole, event.action, event.inputMethod, event.targetAgentId);
+                }
             }, event.at * 1000);
         });
     }
@@ -101,15 +103,12 @@ export class ScenarioRunner {
     private async executeAction(role: string, action: string, inputMethod: string = 'raw', targetId?: string) {
         const actors = this.agents.filter(a => a.profile.role === role);
 
-        // If a target is specified, only that agent acts? Or acts *towards* that target?
-        // For simplicity: all matching role agents perform the action.
-
         const tasks = actors.map(actor => {
             switch (action) {
                 case 'publish_job': return actor.publishJob(inputMethod);
                 case 'publish_offer': return actor.publishOffer(inputMethod);
                 case 'send_message': return targetId ? actor.sendMessage(targetId, "Hello!") : Promise.resolve();
-                case 'camera': return Promise.resolve(); // Handled externally by MovieMaker watcher or event listener
+                case 'camera': return Promise.resolve();
                 default: return Promise.resolve();
             }
         });

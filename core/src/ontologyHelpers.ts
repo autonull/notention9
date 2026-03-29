@@ -1,4 +1,4 @@
-import { OntologyNode, OntologyAttribute, Note, Property } from './types/index.js';
+import { OntologyNode, OntologyAttribute } from './types/index.js';
 import { deepClone } from './utils/common.js';
 
 /**
@@ -27,16 +27,14 @@ export const findNode = (tree: OntologyNode[], nodeId: string): OntologyNode | n
 export const findAttributeDef = (key: string, nodes: OntologyNode[]): OntologyAttribute | undefined => {
   for (const node of nodes) {
     if (node.attributes) {
-        if (node.attributes[key]) {
-            return node.attributes[key];
-        }
+        if (node.attributes[key]) return node.attributes[key];
+
         // Check aliases
-        for (const [attrKey, attr] of Object.entries(node.attributes)) {
-            if (attr.aliases?.includes(key)) {
-                return attr;
-            }
+        for (const attr of Object.values(node.attributes)) {
+            if (attr.aliases?.includes(key)) return attr;
         }
     }
+
     if (node.children) {
       const found = findAttributeDef(key, node.children);
       if (found) return found;
@@ -56,11 +54,10 @@ export const getCanonicalKey = (key: string, nodes: OntologyNode[]): string => {
             if (node.attributes[key]) return key; // It's canonical
 
             for (const [canonicalKey, attr] of Object.entries(node.attributes)) {
-                if (attr.aliases?.includes(key)) {
-                    return canonicalKey;
-                }
+                if (attr.aliases?.includes(key)) return canonicalKey;
             }
         }
+
         if (node.children) {
             const found = getCanonicalKey(key, node.children);
             if (found !== key) return found; // Found deeper in tree
@@ -93,6 +90,7 @@ export const addNode = (
   newNode: OntologyNode
 ): OntologyNode[] => {
   const newTree = cloneTree(tree);
+
   if (!parentId) {
     newTree.push(newNode);
     return newTree;
@@ -100,8 +98,7 @@ export const addNode = (
 
   const parent = findNode(newTree, parentId);
   if (parent) {
-    parent.children = parent.children || [];
-    parent.children.push(newNode);
+    (parent.children ||= []).push(newNode);
   }
   return newTree;
 };
@@ -112,13 +109,18 @@ export const addNode = (
  * Returns a set of all property keys defined within the subtree of a given node.
  */
 export const getSubtreeKeys = (node: OntologyNode): Set<string> => {
-    const attrKeys = node.attributes ? Object.keys(node.attributes) : [];
-    const childKeys = (node.children || []).flatMap(child => Array.from(getSubtreeKeys(child)));
-    return new Set([...attrKeys, ...childKeys]);
+    const keys = new Set(node.attributes ? Object.keys(node.attributes) : []);
+
+    if (node.children) {
+        for (const child of node.children) {
+            const childKeys = getSubtreeKeys(child);
+            for (const key of childKeys) keys.add(key);
+        }
+    }
+    return keys;
 };
 
 export const deleteNode = (tree: OntologyNode[], nodeId: string): OntologyNode[] => {
-  // Filter from root or recursive children
   const filterNodes = (nodes: OntologyNode[]): OntologyNode[] => {
     return nodes
       .filter(n => n.id !== nodeId)
@@ -150,10 +152,11 @@ export const findNodeIdForAttribute = (nodes: OntologyNode[], key: string): stri
   for (const node of nodes) {
     if (node.attributes) {
       if (node.attributes[key]) return node.id;
-      for (const [attrKey, attr] of Object.entries(node.attributes)) {
+      for (const attr of Object.values(node.attributes)) {
          if (attr.aliases?.includes(key)) return node.id;
       }
     }
+
     if (node.children) {
       const found = findNodeIdForAttribute(node.children, key);
       if (found) return found;
@@ -186,7 +189,7 @@ export const deleteAttribute = (
 ): OntologyNode[] => {
   const newTree = cloneTree(tree);
   const node = findNode(newTree, nodeId);
-  if (node && node.attributes) {
+  if (node?.attributes) {
     delete node.attributes[key];
   }
   return newTree;
@@ -200,8 +203,8 @@ export const renameAttribute = (
 ): OntologyNode[] => {
   const newTree = cloneTree(tree);
   const node = findNode(newTree, nodeId);
-  if (node && node.attributes && node.attributes[oldKey]) {
-    // Check collision
+
+  if (node?.attributes?.[oldKey]) {
     if (node.attributes[newKey]) {
         throw new Error(`Attribute '${newKey}' already exists.`);
     }
@@ -220,7 +223,8 @@ export const addAliasToAttribute = (
 ): OntologyNode[] => {
     const newTree = cloneTree(tree);
     const node = findNode(newTree, nodeId);
-    if (node && node.attributes && node.attributes[attributeKey]) {
+
+    if (node?.attributes?.[attributeKey]) {
         const attr = node.attributes[attributeKey];
         const aliases = new Set(attr.aliases || []);
         aliases.add(alias);
@@ -233,7 +237,6 @@ export const addAliasToAttribute = (
  * Merges sourceAttribute into targetAttribute.
  * - Source is removed.
  * - Target is kept.
- * - Target's description/operators could be updated (optional, for now we just keep target).
  */
 export const mergeAttributes = (
   tree: OntologyNode[],
@@ -244,12 +247,10 @@ export const mergeAttributes = (
   const newTree = cloneTree(tree);
   const node = findNode(newTree, nodeId);
 
-  if (node && node.attributes) {
+  if (node?.attributes) {
     if (!node.attributes[sourceKey] || !node.attributes[targetKey]) {
-        // One doesn't exist, can't merge
         return newTree;
     }
-    // Logic: We simply remove source. In a real app we might merge metadata.
     delete node.attributes[sourceKey];
   }
   return newTree;

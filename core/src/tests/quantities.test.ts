@@ -60,7 +60,7 @@ describe('Quantities System Tests', () => {
         unitType: 'compound',
         numerator: 'km',
         denominator: 'h',
-        semanticType: 'other'
+        semanticType: 'ratio'
       });
     });
 

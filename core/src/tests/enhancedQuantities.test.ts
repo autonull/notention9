@@ -80,7 +80,7 @@ describe('Enhanced Quantities System Tests', () => {
         unitType: 'compound',
         numerator: 'g',
         denominator: 'cm³',
-        semanticType: 'other'
+        semanticType: 'ratio'
       });
 
       expect(parseQuantity('100 W')).toEqual({

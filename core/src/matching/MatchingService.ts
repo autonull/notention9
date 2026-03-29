@@ -1,5 +1,5 @@
 import { Note, Property, OntologyNode } from '../types/index.js';
-import { MatchEngine } from './MatchEngine.js';
+import { MatchEngine, MatchResult } from './MatchEngine.js';
 import { DEFAULT_ONTOLOGY } from '../ontology.default.js';
 
 export interface MatchResultDetails {
@@ -29,18 +29,18 @@ export class MatchingService {
    * Score = (Satisfied Constraints) / (Total Constraints)
    */
   matchNotes(request: Note, offer: Note): MatchResultDetails {
-    const result = this.matchEngine.calculateMatchScore(request, offer);
+    const { score, matches, conflicts, missing } = this.matchEngine.calculateMatchScore(request, offer);
 
     // Weight by target note priority
     const priority = offer.priority ?? 1.0;
-    const weightedScore = result.score * priority;
+    const weightedScore = score * priority;
 
-    const explanation = `Matched ${result.matches.length}/${request.properties.length}. Missing: ${result.missing.map(p => p.key).join(', ') || 'None'}`;
+    const explanation = `Matched ${matches.length}/${request.properties.length}. Missing: ${missing.map(p => p.key).join(', ') || 'None'}`;
 
     return {
       score: weightedScore,
-      satisfied: result.matches.map(m => m.requestProp),
-      failed: [...result.conflicts.map(c => c.requestProp), ...result.missing],
+      satisfied: matches.map(m => m.requestProp),
+      failed: [...conflicts.map(c => c.requestProp), ...missing],
       explanation
     };
   }
@@ -54,65 +54,50 @@ export class MatchingService {
    */
   matchNotesWithRealVsImaginary(request: Note, offer: Note): MatchResultDetails {
     // 1. Check Request Constraints vs Offer Facts
-    // Offer facts are properties with 'is' operator
     const offerFacts = offer.properties.filter(p => p.operator === 'is');
-    // If offer has no facts, treat all as facts? No, strict.
 
-    // Create virtual notes for matching
     // Request -> Offer match
-    // Request properties are all constraints (assumed, or explicit imaginary?)
-    // This function assumes ALL request properties are constraints.
     const reqToOffer = this.matchEngine.calculateMatchScore(
       request,
       { ...offer, properties: offerFacts }
     );
 
-    // 2. Check Offer Constraints vs Request Facts
-    // Offer constraints are properties NOT 'is'
-    const offerConstraints = offer.properties.filter(p => p.operator !== 'is');
-    const requestFacts = request.properties.filter(p => p.operator === 'is');
-
-    let offerToReqScore = 1;
     let satisfied: Property[] = reqToOffer.matches.map(m => m.requestProp);
     let failed: Property[] = [...reqToOffer.conflicts.map(c => c.requestProp), ...reqToOffer.missing];
 
+    // 2. Check Offer Constraints vs Request Facts
+    const offerConstraints = offer.properties.filter(p => p.operator !== 'is');
+
     if (offerConstraints.length > 0) {
-      // Create a virtual note representing the Offer's constraints as a Request
-      const offerAsRequest: Note = { ...offer, properties: offerConstraints };
-      const reqAsOffer: Note = { ...request, properties: requestFacts };
+      const { matches, conflicts, missing } = this.calculateReverseMatch(request, offer, offerConstraints);
 
-      const offerToReq = this.matchEngine.calculateMatchScore(offerAsRequest, reqAsOffer);
-      offerToReqScore = offerToReq.score;
-
-      // Merge results?
-      // Satisfied list is tricky because it mixes perspectives.
-      // Usually matching is directional (Search -> Result).
-      // But for "compatibility", it's bidirectional.
-      // We'll append satisfied constraints from both sides.
-      satisfied = [...satisfied, ...offerToReq.matches.map(m => m.requestProp)];
-      failed = [...failed, ...offerToReq.conflicts.map(c => c.requestProp), ...offerToReq.missing];
+      satisfied = [...satisfied, ...matches.map(m => m.requestProp)];
+      failed = [...failed, ...conflicts.map(c => c.requestProp), ...missing];
     }
 
-    // Weighted average score? Or simple average?
     // Total constraints = Request Constraints + Offer Constraints
     const totalConstraints = request.properties.length + offerConstraints.length;
     const totalSatisfied = satisfied.length;
 
     const baseScore = totalConstraints > 0 ? totalSatisfied / totalConstraints : 1;
-
-    // Weight by priority
     const priority = offer.priority ?? 1.0;
-    const weightedScore = baseScore * priority;
-
-    const explanation = `Matched ${totalSatisfied}/${totalConstraints}.`;
 
     return {
-      score: weightedScore,
+      score: baseScore * priority,
       satisfied,
       failed,
-      explanation
+      explanation: `Matched ${totalSatisfied}/${totalConstraints}.`
     };
   }
+
+  private calculateReverseMatch(request: Note, offer: Note, offerConstraints: Property[]): MatchResult {
+      const requestFacts = request.properties.filter(p => p.operator === 'is');
+      const offerAsRequest: Note = { ...offer, properties: offerConstraints };
+      const reqAsOffer: Note = { ...request, properties: requestFacts };
+
+      return this.matchEngine.calculateMatchScore(offerAsRequest, reqAsOffer);
+  }
+
 
   /**
    * Calculates a semantic overlap score between two notes based on shared property keys.
@@ -124,22 +109,21 @@ export class MatchingService {
 
     if (keysA.size === 0 || keysB.size === 0) return 0;
 
+    // Intersection size
     let overlap = 0;
     for (const key of keysA) {
       if (keysB.has(key)) overlap++;
     }
 
     // Jaccard index (base score)
-    const union = new Set([...keysA, ...keysB]);
-    const baseScore = overlap / union.size;
+    const unionSize = new Set([...keysA, ...keysB]).size;
+    const baseScore = unionSize > 0 ? overlap / unionSize : 0;
 
-    // Weight by average priority of both notes
-    // This ensures low-priority bulk imports don't pollute related suggestions
+    // Weight by average priority
     const priorityA = noteA.priority ?? 1.0;
     const priorityB = noteB.priority ?? 1.0;
-    const avgPriority = (priorityA + priorityB) / 2;
 
-    return baseScore * avgPriority;
+    return baseScore * ((priorityA + priorityB) / 2);
   }
 }
 
