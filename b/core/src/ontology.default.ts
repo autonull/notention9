@@ -60,6 +60,13 @@ export const DEFAULT_ONTOLOGY: OntologyNode[] = [
             icon: 'link',
             operators: { real: ['has'], imaginary: ['not has'] },
             referenceType: 'entity'
+          },
+          intent: {
+            type: 'enum',
+            options: ['reminder', 'schedule', 'task', 'shopping', 'health', 'communication', 'monitor', 'automation'],
+            description: 'The inferred intent of the note',
+            icon: 'brain',
+            operators: { real: ['is'], imaginary: ['is not'] }
           }
         },
       },

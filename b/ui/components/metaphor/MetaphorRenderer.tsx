@@ -1,6 +1,5 @@
-import React from 'react';
-import { Note } from '@notention/core';
-import { UIMetaphor } from '@notention/core';
+import React, { useMemo } from 'react';
+import { Note, UIMetaphor, Property } from '@notention/core';
 
 interface MetaphorRendererProps {
   note: Note;
@@ -8,6 +7,19 @@ interface MetaphorRendererProps {
 }
 
 export const MetaphorRenderer: React.FC<MetaphorRendererProps> = ({ note, metaphor }) => {
+  // Memoize property matching logic for performance
+  const matchedProperties = useMemo(() => {
+    return metaphor.properties.map((prop) => {
+      const propertyMatch = note.properties.find(
+        p => p.key === prop.name ||
+          (prop.name === 'condition' && (p.key === 'if' || p.key === 'condition')) ||
+          (prop.name === 'action' && (p.key === 'then' || p.key === 'do' || p.key === 'action')) ||
+          (prop.name === 'time' && (p.key === 'when' || p.key === 'at' || p.key === 'time'))
+      );
+      return { prop, match: propertyMatch };
+    });
+  }, [note.properties, metaphor.properties]);
+
   return (
     <div className="bg-gray-800 border border-gray-700 rounded-lg p-3 my-2 shadow-sm">
       <div className="flex items-center gap-2 mb-2">
@@ -22,24 +34,20 @@ export const MetaphorRenderer: React.FC<MetaphorRendererProps> = ({ note, metaph
       </div>
 
       <div className="grid grid-cols-1 gap-2">
-        {metaphor.properties.map((prop) => {
-          const propertyMatch = note.properties.find(
-            p => p.key === prop.name ||
-            (prop.name === 'condition' && (p.key === 'if' || p.key === 'condition')) ||
-            (prop.name === 'action' && (p.key === 'then' || p.key === 'do' || p.key === 'action')) ||
-            (prop.name === 'time' && (p.key === 'when' || p.key === 'at' || p.key === 'time'))
-          );
-
-          return (
-            <div key={prop.name} className="flex flex-col bg-gray-750 p-2 rounded">
-              <span className="text-xs text-gray-500 uppercase font-medium">{prop.label}</span>
-              <span className={`text-sm ${propertyMatch ? 'text-white' : 'text-gray-600 italic'}`}>
-                {propertyMatch ? propertyMatch.values.join(', ') : '(Not set)'}
-              </span>
-            </div>
-          );
-        })}
+        {matchedProperties.map(({ prop, match }) => (
+          <MetaphorProperty key={prop.name} label={prop.label} match={match} />
+        ))}
       </div>
     </div>
   );
 };
+
+// Extracted sub-component for cleaner rendering
+const MetaphorProperty: React.FC<{ label: string; match?: Property }> = ({ label, match }) => (
+  <div className="flex flex-col bg-gray-750 p-2 rounded">
+    <span className="text-xs text-gray-500 uppercase font-medium">{label}</span>
+    <span className={`text-sm ${match ? 'text-white' : 'text-gray-600 italic'}`}>
+      {match ? match.values.join(', ') : '(Not set)'}
+    </span>
+  </div>
+);

@@ -47,3 +47,7 @@ export * from './onboarding/OnboardingService.js';
 
 // Configuration (Phase 1.3)
 export * from './config/NoteBasedConfig.js';
+
+// Metaphor System (Phase 3)
+export * from './metaphor/MetaphorRegistry.js';
+export * from './metaphor/MetaphorMapper.js';

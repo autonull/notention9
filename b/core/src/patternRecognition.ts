@@ -2,6 +2,7 @@ import type { Note, Property } from './types';
 import { generateId, safeDivide, clamp } from './utils/common';
 import { logInfo } from './utils/logging';
 import { BaseService } from './baseService';
+import { DEFAULT_PATTERNS } from './patternRecognition/DefaultPatterns.js';
 
 export interface Pattern {
   id: string;
@@ -208,13 +209,11 @@ export class PatternRecognitionService extends BaseService {
    */
   predictUserNeeds(userId: string, currentNote: Note): Prediction[] {
     return this.safeExecuteSync(() => {
-      const userPatterns = this.patterns.get(userId);
-      if (!userPatterns) return []; // No patterns for this user yet
-
+      const allPatterns = this.getAllPatternsForUser(userId);
       const predictions: Prediction[] = [];
 
       // For each pattern, check if current note matches conditions
-      for (const pattern of userPatterns.patterns) {
+      for (const pattern of allPatterns) {
         if (this.matchesPatternConditions(currentNote, pattern.conditions)) {
           // Generate predictions based on this pattern
           for (const predictedAction of pattern.predictedActions) {
@@ -339,7 +338,12 @@ export class PatternRecognitionService extends BaseService {
    * Gets all patterns for a user
    */
   getUserPatterns(userId: string): Pattern[] {
-    return this.patterns.get(userId)?.patterns ?? [];
+    return this.getAllPatternsForUser(userId);
+  }
+
+  private getAllPatternsForUser(userId: string): Pattern[] {
+    const userPatterns = this.patterns.get(userId)?.patterns || [];
+    return [...DEFAULT_PATTERNS, ...userPatterns];
   }
 }
 

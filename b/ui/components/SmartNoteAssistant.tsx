@@ -103,14 +103,12 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
   return (
     <div className={`bg-gray-800 rounded-lg p-3 ${className}`} onKeyDown={handleKeyDown}>
       <div className="flex items-center justify-between mb-2">
-        <h4 className="font-medium text-blue-400 flex items-center">
-          <span className="mr-2">💡</span> Smart Assistant
-        </h4>
+        <h4 className="font-medium text-blue-400">Suggestions</h4>
         <button 
           onClick={() => setShowSuggestions(!showSuggestions)}
           className="text-xs text-gray-400 hover:text-white"
         >
-          {showSuggestions ? 'Hide' : 'Show'} Suggestions
+          {showSuggestions ? 'Hide' : 'Show'}
         </button>
       </div>
       
@@ -137,13 +135,13 @@ export const SmartNoteAssistant: React.FC<SmartNoteAssistantProps> = ({
       
       {showSuggestions && suggestions.length === 0 && (
         <div className="text-sm text-gray-500 italic">
-          No suggestions available for this note
+          None
         </div>
       )}
       
       {!showSuggestions && (
         <div className="text-sm text-gray-500">
-          {suggestions.length} suggestion{ suggestions.length !== 1 ? 's' : '' } available
+          {suggestions.length} available
         </div>
       )}
     </div>
