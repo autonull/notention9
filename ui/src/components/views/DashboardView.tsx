@@ -6,8 +6,14 @@ import { ActivityFeed } from '../dashboard/ActivityFeed';
 import { NoteIcon, WorldIcon, CheckCircleIcon, SparklesIcon } from '../common/icons';
 
 export function DashboardView() {
-  const { notes } = useNotes();
+  const { notes, addNote } = useNotes();
   const { setActiveView, setSelectedNoteId } = useView();
+
+  const handleCreateNote = () => {
+    const newNote = addNote({ title: '' });
+    setSelectedNoteId(newNote.id);
+    setActiveView('notes');
+  };
 
   const stats = {
     total: notes.length,
@@ -77,7 +83,7 @@ export function DashboardView() {
             <h2 className="text-lg font-bold mb-4">Quick Actions</h2>
             <div className="space-y-3">
                 <button
-                    onClick={() => setActiveView('notes')}
+                    onClick={handleCreateNote}
                     className="w-full text-left p-3 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-700 transition-all flex items-center gap-3 group"
                 >
                     <div className="p-2 bg-blue-900/30 rounded-lg text-blue-400 group-hover:bg-blue-900/50 transition-colors">

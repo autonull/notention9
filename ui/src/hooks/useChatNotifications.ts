@@ -29,7 +29,7 @@ export const useChatNotifications = () => {
 
         const sub = pool.subscribeMany(
             relays,
-            [{ kinds: [4], '#p': [pubkey], since }],
+            { kinds: [4], '#p': [pubkey], since },
             {
                 onevent: (event) => {
                     if (seenEvents.current.has(event.id)) return;

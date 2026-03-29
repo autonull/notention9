@@ -34,6 +34,7 @@ export function EditorManager({ note, onSave, sortedNotes }: EditorManagerProps)
   const { notes } = useNotes();
   const {
     dirtyNote,
+    handleNoteUpdate,
     isPublishing,
     handleTitleChange,
     handleTagsChange,
@@ -173,6 +174,7 @@ export function EditorManager({ note, onSave, sortedNotes }: EditorManagerProps)
             key={note.id}
             note={dirtyNote}
             onSave={handleContentSave}
+            onNoteUpdate={handleNoteUpdate}
             ontology={settings.ontology}
             templates={allTemplates}
             showToolbar={isToolbarVisible}

@@ -23,7 +23,7 @@ export const useBackgroundMatcher = () => {
 
     const sub = pool.subscribeMany(
       relays,
-      [{ kinds: [1], limit: 0, since: Math.floor(Date.now() / 1000) }], // Only new events
+      { kinds: [1], limit: 0, since: Math.floor(Date.now() / 1000) }, // Only new events
       {
         onevent: (event) => {
           if (seenEvents.current.has(event.id)) return;
