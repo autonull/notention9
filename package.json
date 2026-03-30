@@ -5,7 +5,8 @@
     "ui",
     "agent",
     "agent/voltagent",
-    "core"
+    "core",
+    "cli"
   ],
   "scripts": {
     "build": "npm run build --workspaces",

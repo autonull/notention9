@@ -84,4 +84,20 @@ export class PersistenceService {
             await this.saveNotes(filteredNotes);
         });
     }
+
+    static async searchNotesSafe(query: string, tags?: string[]): Promise<Note[]> {
+        return persistenceMutex.dispatch(async () => {
+            const allNotes = await this.loadNotes();
+            return allNotes.filter(note => {
+                const matchesQuery = !query ||
+                    note.title.toLowerCase().includes(query.toLowerCase()) ||
+                    note.content.toLowerCase().includes(query.toLowerCase());
+
+                const matchesTags = !tags || tags.length === 0 ||
+                    tags.every(tag => note.tags.includes(tag));
+
+                return matchesQuery && matchesTags;
+            });
+        });
+    }
 }

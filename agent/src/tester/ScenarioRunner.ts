@@ -1,6 +1,4 @@
-
-import { ScenarioManager, TestScenario, TestStep, Note } from '@notention/core';
-import { SandboxAgent } from './SandboxAgent';
+import { TestScenario, Agent } from '@notention/core';
 
 export interface ScenarioResult {
     scenarioId: string;
@@ -9,21 +7,12 @@ export interface ScenarioResult {
         name: string;
         success: boolean;
         error?: string;
+        details?: any;
     }[];
 }
 
 export class ScenarioRunner {
-    private sandbox: SandboxAgent;
-
-    constructor() {
-        this.sandbox = new SandboxAgent();
-    }
-
-    async initialize() {
-        await this.sandbox.initialize();
-    }
-
-    async run(scenario: TestScenario): Promise<ScenarioResult> {
+    async run(scenario: TestScenario, agent: Agent): Promise<ScenarioResult> {
         console.log(`ScenarioRunner: Starting '${scenario.name}'`);
 
         const results = [];
@@ -32,23 +21,62 @@ export class ScenarioRunner {
         for (const step of scenario.steps) {
             console.log(`  Step: ${step.name}`);
             try {
-                // In a real runner, we would inject the note into the agent's processing pipeline
-                // and wait for the result.
-                // For now, since we haven't exposed 'processNote' on SandboxAgent public interface perfectly,
-                // we will simulate the check or assume SandboxAgent has a 'process' method.
+                // Execute the step using the agent
+                const outputNotes = await agent.processNote(step.input);
 
-                // Mock execution for phase 2.5 demonstration
-                // TODO: Connect to actual Agent.processNote()
+                let stepSuccess = true;
+                const errors: string[] = [];
 
-                // Simulate success
-                await new Promise(resolve => setTimeout(resolve, 100)); // Mock work
+                // Check Expected Content
+                if (step.expected.contentContains) {
+                    step.expected.contentContains.forEach(requiredStr => {
+                        const found = outputNotes.some(n => n.content.includes(requiredStr));
+                        if (!found) {
+                            stepSuccess = false;
+                            errors.push(`Expected content '${requiredStr}' not found.`);
+                        }
+                    });
+                }
 
-                results.push({ name: step.name, success: true });
-            } catch (e: any) {
-                console.error(`  Failed: ${e.message}`);
-                results.push({ name: step.name, success: false, error: e.message });
+                // Check Expected Tags
+                if (step.expected.tags) {
+                    step.expected.tags.forEach(requiredTag => {
+                        const found = outputNotes.some(n => n.tags.includes(requiredTag));
+                        if (!found) {
+                            stepSuccess = false;
+                            errors.push(`Expected tag '${requiredTag}' not found.`);
+                        }
+                    });
+                }
+
+                // Check Expected Action
+                if (step.expected.actionType && outputNotes.length === 0) {
+                    stepSuccess = false;
+                    errors.push(`Expected action '${step.expected.actionType}' but got no results.`);
+                }
+
+                if (stepSuccess) {
+                    results.push({
+                        name: step.name,
+                        success: true,
+                        details: { outputCount: outputNotes.length }
+                    });
+                } else {
+                    allPassed = false;
+                    results.push({
+                        name: step.name,
+                        success: false,
+                        error: errors.join(' '),
+                        details: { outputCount: outputNotes.length }
+                    });
+                }
+
+            } catch (e: unknown) {
+                const msg = e instanceof Error ? e.message : String(e);
+                console.error(`  Failed: ${msg}`);
+                results.push({ name: step.name, success: false, error: msg });
                 allPassed = false;
-                break; // Stop on first failure?
+                break;
             }
         }
 
@@ -57,9 +85,5 @@ export class ScenarioRunner {
             success: allPassed,
             steps: results
         };
-    }
-
-    async shutdown() {
-        await this.sandbox.shutdown();
     }
 }
