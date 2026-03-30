@@ -1,10 +1,9 @@
-import fs from 'fs/promises';
+import fs from 'fs';
+import fsPromises from 'fs/promises';
 import path from 'path';
-import { exec } from 'child_process';
-import { promisify } from 'util';
+import readline from 'readline';
 import { LocalTool } from '../llm.js';
-
-const execAsync = promisify(exec);
+import { resolveSafePath } from '../utils.js';
 
 export const fsTools: LocalTool[] = [
     {
@@ -18,9 +17,9 @@ export const fsTools: LocalTool[] = [
         },
         execute: async (args: any) => {
             const dirPath = args.path || '.';
-            const resolvedPath = path.resolve(process.cwd(), dirPath);
             try {
-                const entries = await fs.readdir(resolvedPath, { withFileTypes: true });
+                const resolvedPath = resolveSafePath(dirPath);
+                const entries = await fsPromises.readdir(resolvedPath, { withFileTypes: true });
                 return entries.map(e => ({
                     name: e.name,
                     type: e.isDirectory() ? 'directory' : 'file'
@@ -42,9 +41,9 @@ export const fsTools: LocalTool[] = [
         },
         execute: async (args: any) => {
             if (!args.path) throw new Error("Path is required");
-            const resolvedPath = path.resolve(process.cwd(), args.path);
             try {
-                const content = await fs.readFile(resolvedPath, 'utf-8');
+                const resolvedPath = resolveSafePath(args.path);
+                const content = await fsPromises.readFile(resolvedPath, 'utf-8');
                 return content;
             } catch (e: any) {
                 return `Error reading file: ${e.message}`;
@@ -64,11 +63,11 @@ export const fsTools: LocalTool[] = [
         },
         execute: async (args: any) => {
             if (!args.path || args.content === undefined) throw new Error("Path and content are required");
-            const resolvedPath = path.resolve(process.cwd(), args.path);
             try {
+                const resolvedPath = resolveSafePath(args.path);
                 // Ensure directory exists
-                await fs.mkdir(path.dirname(resolvedPath), { recursive: true });
-                await fs.writeFile(resolvedPath, args.content, 'utf-8');
+                await fsPromises.mkdir(path.dirname(resolvedPath), { recursive: true });
+                await fsPromises.writeFile(resolvedPath, args.content, 'utf-8');
                 return `File created at ${args.path}`;
             } catch (e: any) {
                 return `Error creating file: ${e.message}`;
@@ -87,9 +86,9 @@ export const fsTools: LocalTool[] = [
         },
         execute: async (args: any) => {
             if (!args.path) throw new Error("Path is required");
-            const resolvedPath = path.resolve(process.cwd(), args.path);
             try {
-                await fs.unlink(resolvedPath);
+                const resolvedPath = resolveSafePath(args.path);
+                await fsPromises.unlink(resolvedPath);
                 return `File deleted: ${args.path}`;
             } catch (e: any) {
                 return `Error deleting file: ${e.message}`;
@@ -98,7 +97,7 @@ export const fsTools: LocalTool[] = [
     },
     {
         name: 'search_local_files',
-        description: 'Search for text in files using grep (recursive)',
+        description: 'Search for text in files (recursive)',
         inputSchema: {
             type: 'object',
             properties: {
@@ -110,18 +109,50 @@ export const fsTools: LocalTool[] = [
         execute: async (args: any) => {
             if (!args.query) throw new Error("Query is required");
             const dirPath = args.path || '.';
-            // Safe grep construction is hard, but we trust the user for now in this dev tool.
-            // Using exec with basic sanitization would be better, but let's just run it.
-            // Note: This relies on 'grep' being available.
+            const query = args.query;
+            const results: string[] = [];
+
             try {
-                // grep -r "query" path
-                const { stdout, stderr } = await execAsync(`grep -r "${args.query}" "${dirPath}"`);
-                if (stderr) return `Error (stderr): ${stderr}`;
-                return stdout || "No matches found.";
+                const startPath = resolveSafePath(dirPath);
+
+                async function search(currentPath: string) {
+                    const entries = await fsPromises.readdir(currentPath, { withFileTypes: true });
+                    for (const entry of entries) {
+                        const fullPath = path.join(currentPath, entry.name);
+
+                        if (entry.isDirectory()) {
+                            if (['.git', 'node_modules', 'dist', 'build', 'coverage'].includes(entry.name)) continue;
+                            await search(fullPath);
+                        } else if (entry.isFile()) {
+                            try {
+                                const fileStream = fs.createReadStream(fullPath);
+                                const rl = readline.createInterface({
+                                    input: fileStream,
+                                    crlfDelay: Infinity
+                                });
+
+                                let lineNum = 0;
+                                for await (const line of rl) {
+                                    lineNum++;
+                                    if (line.includes(query)) {
+                                        const truncated = line.length > 100 ? line.substring(0, 100) + '...' : line;
+                                        results.push(`${path.relative(process.cwd(), fullPath)}:${lineNum}: ${truncated.trim()}`);
+                                        // Stop after 5 matches per file to avoid spam?
+                                        if (lineNum > 10000) break; // Safety break for huge files
+                                    }
+                                }
+                            } catch (e) {
+                                // Ignore read errors
+                            }
+                        }
+                    }
+                }
+
+                await search(startPath);
+                return results.length > 0 ? results.join('\n') : "No matches found.";
+
             } catch (e: any) {
-                // grep returns exit code 1 if not found, which throws in exec
-                if (e.code === 1) return "No matches found.";
-                return `Error executing grep: ${e.message}`;
+                return `Error searching files: ${e.message}`;
             }
         }
     }

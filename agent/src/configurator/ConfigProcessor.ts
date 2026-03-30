@@ -1,6 +1,7 @@
-import { Note, AppSettings, parseConfigFromNote, mergeConfigs } from '@notention/core';
-import { log } from '../core/utils';
-import { Capabilities } from '../core/Capabilities.js';
+import { parseConfigFromNote, mergeConfigs } from '@notention/core';
+import type { Note, AppSettings } from '@notention/core';
+import { log } from '../core/utils.ts';
+import { Capabilities } from '../core/Capabilities.ts';
 import { VoltAgentProvider } from '@notention/agent-voltagent';
 
 export class ConfigProcessor {
@@ -12,12 +13,28 @@ export class ConfigProcessor {
     }
 
     /**
+     * Process a list of notes and apply configuration from any active config notes.
+     * Useful for restoring state on startup.
+     */
+    scanForConfigs(notes: Note[]): void {
+        const configNotes = notes.filter(n => n.tags.includes('@config:active'));
+        if (configNotes.length > 0) {
+            log('Config', `Found ${configNotes.length} active configuration notes. Restoring state...`);
+            // Process in order (by priority or creation date? creation date for now)
+            configNotes.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+            for (const note of configNotes) {
+                this.processNote(note);
+            }
+        }
+    }
+
+    /**
      * Process a note to see if it is a configuration note.
      * If so, parse it and update the system configuration.
      */
     processNote(note: Note): void {
         if (note.tags.includes('@config:active')) {
-            log('Config', `Detected active configuration note: ${note.title}`);
+            log('Config', `Processing configuration note: ${note.title}`);
             const newConfig = parseConfigFromNote(note);
             this.applyConfig(newConfig);
         }

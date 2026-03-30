@@ -43,7 +43,11 @@ export class Bootstrap {
     // Initialize Config Processor (Phase 1.3)
     const { ConfigProcessor } = await import('./configurator/ConfigProcessor');
     const configProcessor = new ConfigProcessor();
-    configProcessor.setAgent(voltagent); // Hook up agent for dynamic config
+    configProcessor.setAgent(voltagent);
+
+    // Initialize Note Skill Loader (Phase 2.3: Metaprogramming)
+    const { NoteSkillLoader } = await import('./skills/NoteSkillLoader');
+    const noteSkillLoader = new NoteSkillLoader(this.skillRegistry);
 
     // Initialize Plugin Loader (Phase 2.2)
     const { PluginLoader } = await import('./skills/PluginLoader');
@@ -52,6 +56,11 @@ export class Bootstrap {
 
     // Check initialization status and create onboarding note if needed
     const currentNotes = await PersistenceService.getNotesSafe();
+
+    // Restore system configuration and dynamic skills from notes
+    configProcessor.scanForConfigs(currentNotes);
+    noteSkillLoader.scanForSkills(currentNotes);
+
     const isInitialized = await configurator.isInitialized(currentNotes);
 
     if (!isInitialized) {
@@ -74,6 +83,11 @@ export class Bootstrap {
     voltagent.onNoteReceived((note: Note) => {
       log('Agent', `Note received: ${note.id}`);
       configProcessor.processNote(note);
+      // We could also re-scan for skills if the note is a skill definition,
+      // but simpler to just reload all or check tag.
+      if (note.tags.includes('@skill:definition')) {
+          noteSkillLoader.scanForSkills([note]);
+      }
       onEvent({ type: 'note_created', payload: note });
     });
 
