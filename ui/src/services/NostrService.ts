@@ -12,7 +12,7 @@ import {
     ScoredMatch,
     OntologyNode,
     queryEvents,
-    getCanonicalKey
+    getAliases
 } from '@notention/core';
 
 class NostrService {
@@ -54,17 +54,20 @@ class NostrService {
 
         try {
             // Enhance note with alias tags for discoverability
-            // Crucially, we only add the CANONICAL key to reinforce the ontology as a protocol
-            // This ensures that even if a user uses a local alias, the network sees the standard term
+            // We publish ALL known aliases for a property to maximize reach across peers with different ontology versions
             const enhancedNote = { ...note, tags: [...note.tags] };
             if (ontology) {
                 const propertyTags = new Set<string>();
                 for (const prop of note.properties) {
-                    const canonical = getCanonicalKey(prop.key, ontology);
+                    const aliases = getAliases(prop.key, ontology);
 
-                    if (canonical !== prop.key) {
-                        propertyTags.add(`prop:${canonical}`);
-                    }
+                    aliases.forEach(alias => {
+                        // publishNoteToNostr already adds the current key as 'prop:KEY'
+                        // We add others
+                        if (alias !== prop.key) {
+                            propertyTags.add(`prop:${alias}`);
+                        }
+                    });
                 }
 
                 propertyTags.forEach(tag => {
@@ -143,11 +146,10 @@ class NostrService {
         this.logger.info(`Subscribing to Nostr sync for ${this.pubkey} on ${this.relays.length} relays`);
 
         try {
+            // Use subscribeMany with a single filter, as strictly required by nostr-tools v2 SimplePool
             this._sub = this.pool.subscribeMany(
                 this.relays,
-                [
-                    { kinds: [1, SEMANTIC_NOTE_KIND], authors: [this.pubkey], limit: 100 },
-                ],
+                { kinds: [1, SEMANTIC_NOTE_KIND], authors: [this.pubkey], limit: 100 },
                 {
                     onevent: (event) => {
                         if (this._upsertCallback) {

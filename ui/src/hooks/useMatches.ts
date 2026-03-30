@@ -1,23 +1,14 @@
 import {useEffect, useMemo, useState} from 'react';
-import {MatchEngine, Note} from '@notention/core'; // We will need to export MatchEngine from core
+import {MatchEngine, Note, ScoredMatch} from '@notention/core';
 import {useSettings} from './useSettingsContext';
 import {useNotes} from './useNotes';
 
 // Hook to find matches for a specific note against all other local notes
-export function useMatches(note: Note | null) {
+export function useMatches(note: Note | null): ScoredMatch[] {
     const {settings} = useSettings();
     const {notes} = useNotes();
-    // Actually useNoteActions usually gives create/update/delete.
-    // We might need useNotes() or similar if available.
-    // Let's assume we can subscribe to note store or pass in notes.
-    // Checking previous context, maybe 'useView' or similar has notes?
-    // Usually there is a context provider with notes. Let's assume a useNotes hook or Context.
-    // If not, we'll need to fetch them.
 
-    // For now, let's mock the 'notes' retrieval or assume it comes from a StoreContext we need to find.
-    // I will use a placeholder and we might need to fix this import after checking.
-
-    const [matches, setMatches] = useState<any[]>([]);
+    const [matches, setMatches] = useState<ScoredMatch[]>([]);
 
     // Engine instance
     const engine = useMemo(() => new MatchEngine(settings.ontology), [settings.ontology]);
@@ -28,15 +19,21 @@ export function useMatches(note: Note | null) {
             return;
         }
 
-        // Run matching async to avoid blocking UI?
-        // For local set < 1000 notes, sync is fine.
-        const results = notes
+        // Run matching synchronously for local notes (assuming < 1000 notes is fast enough)
+        const results: ScoredMatch[] = notes
             .filter(other => other.id !== note.id)
-            .map(other => ({
-                note: other,
-                result: engine.calculateMatchScore(note, other)
-            }))
-            .filter(m => m.result.score > 0) // Only relevant matches
+            .map(other => {
+                // Determine directionality
+                const forward = engine.calculateMatchScore(note, other);
+                const reverse = engine.calculateMatchScore(other, note);
+
+                if (forward.score >= reverse.score) {
+                    return { note: other, result: forward, direction: 'outgoing' };
+                } else {
+                    return { note: other, result: reverse, direction: 'incoming' };
+                }
+            })
+            .filter(m => m.result.score > 0.3) // Filter low relevance
             .sort((a, b) => b.result.score - a.result.score);
 
         setMatches(results);

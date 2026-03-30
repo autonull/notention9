@@ -58,7 +58,14 @@ export const queryEvents = (
 ): Promise<NostrEvent[]> => {
   return new Promise((resolve) => {
     const events: NostrEvent[] = [];
-    const sub = pool.subscribeMany(relays, filters, {
+
+    // Use subscribeMap to support multiple filters per relay,
+    // as subscribeMany in this version only accepts a single Filter.
+    const requests = relays.flatMap(url =>
+      filters.map(filter => ({ url, filter }))
+    );
+
+    const sub = pool.subscribeMap(requests, {
       onevent(event) {
         events.push(event as NostrEvent);
       },
