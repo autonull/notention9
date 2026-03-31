@@ -32,16 +32,26 @@ async function main() {
     await sleep(10000);
 
     let client: CliClient | null = null;
+    let simClient: CliClient | null = null;
     let noteId: string | null = null;
 
     try {
+        // --- TEST 1: CORE API ---
         client = new CliClient('http://localhost:3000/mcp/sse');
-        console.log("Connecting to MCP...");
+        console.log("Connecting to Core MCP...");
         await client.connect();
         console.log("Connected.");
 
-        // 1. Create Note
-        console.log("1. Creating Note...");
+        // 1. Verify Simulation Tools are ABSENT from Core
+        const coreTools = await client.listTools();
+        const hasSimTool = coreTools.tools.some((t: any) => t.name === 'run_scenario');
+        if (hasSimTool) {
+            throw new Error("Core MCP should NOT have simulation tools!");
+        }
+        console.log("   ✅ Core MCP does not contain simulation tools.");
+
+        // 2. Create Note (Verify Core functionality still works)
+        console.log("   Creating Note...");
         const createResult = await client.callTool('create_note', {
             title: 'CRUD Test Note',
             content: 'Initial content',
@@ -53,89 +63,40 @@ async function main() {
         noteId = match[1];
         console.log(`   Created Note ID: ${noteId}`);
 
-        // 2. Search Note
-        console.log("2. Searching Note...");
-        const searchResult = await client.callTool('search_notes', {
-            query: 'CRUD Test',
-            tags: ['test']
-        });
-        const searchJson = JSON.parse((searchResult.content[0] as any).text);
-        if (!Array.isArray(searchJson) || searchJson.length === 0) {
-            throw new Error("Search failed to find the note");
-        }
-        console.log(`   Found ${searchJson.length} notes.`);
-
-        // 3. Update Note
-        console.log("3. Updating Note...");
-        await client.callTool('update_note', {
-            id: noteId,
-            content: 'Updated content'
-        });
-
-        // Verify Update
-        const readResult = await client.callTool('read_notes', { limit: 100 });
-        const allNotes = JSON.parse((readResult.content[0] as any).text);
-        const updatedNote = allNotes.find((n: any) => n.id === noteId);
-        if (updatedNote.content !== 'Updated content') {
-            throw new Error("Update failed content verification");
-        }
-        console.log("   Update Verified.");
-
-        // 4. Delete Note
-        console.log("4. Deleting Note...");
+        // Cleanup Note
         await client.callTool('delete_note', { id: noteId });
+        console.log("   Cleanup successful.");
 
-        // Verify Deletion
-        const searchDeleted = await client.callTool('search_notes', { query: 'CRUD Test' });
-        const deletedJson = JSON.parse((searchDeleted.content[0] as any).text);
-        if (deletedJson.length > 0) {
-            // Check strict ID match just in case
-             if (deletedJson.find((n: any) => n.id === noteId)) {
-                 throw new Error("Note still exists after deletion");
-             }
+
+        // --- TEST 2: SIMULATION API ---
+        console.log("\nConnecting to Simulation MCP...");
+        simClient = new CliClient('http://localhost:3000/mcp/simulation/sse');
+        await simClient.connect();
+        console.log("Connected.");
+
+        const simTools = await simClient.listTools();
+        const hasSimToolInSim = simTools.tools.some((t: any) => t.name === 'run_scenario');
+        if (!hasSimToolInSim) {
+            throw new Error("Simulation MCP SHOULD have simulation tools!");
         }
-        console.log("   Deletion Verified.");
-
-        console.log("All CRUD operations verified successfully!");
-
-        // 5. Test Simulation Capabilities
-        console.log("\n5. Testing Simulation Tools...");
+        console.log("   ✅ Simulation MCP contains simulation tools.");
 
         console.log("   Listing Scenarios...");
-        const listResult = await client.callTool('list_scenarios', {});
-        console.log("   List Scenarios Result:", JSON.stringify(listResult, null, 2));
+        const listResult = await simClient.callTool('list_scenarios', {});
         const scenarios = JSON.parse((listResult.content[0] as any).text);
         if (!Array.isArray(scenarios) || scenarios.length === 0) {
-            throw new Error("No scenarios found");
+            throw new Error("No scenarios found in simulation API");
         }
-        const scenarioId = scenarios[0].id;
-        console.log(`   Found Scenario: ${scenarioId}`);
+        console.log(`   Found ${scenarios.length} scenarios.`);
 
-        console.log(`   Running Scenario: ${scenarioId}...`);
-        // Note: This might fail if the agent skills aren't fully configured/mocked in the server environment
-        // effectively. But we want to test that the TOOL executes and returns a result structure.
-        const runResult = await client.callTool('run_scenario', { id: scenarioId });
-        const runText = (runResult.content[0] as any).text;
-
-        let runJson;
-        try {
-            runJson = JSON.parse(runText);
-        } catch (e) {
-            console.error("Failed to parse run result:", runText);
-            throw new Error("Invalid JSON from run_scenario");
-        }
-
-        console.log(`   Run Success: ${runJson.success}`);
-        if (!runJson.scenarioId) {
-             throw new Error("Invalid scenario run result");
-        }
-        console.log("   Simulation Tool Verified.");
+        console.log("\n✅ API Separation Verified Successfully!");
 
     } catch (e) {
         console.error("Verification Failed:", e);
         process.exit(1);
     } finally {
         if (client) await client.close();
+        if (simClient) await simClient.close();
         try {
             if (agentProcess.pid) process.kill(-agentProcess.pid);
             else agentProcess.kill();

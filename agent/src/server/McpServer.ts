@@ -3,10 +3,8 @@ import { Express } from 'express';
 import { z } from 'zod';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
-import { Note, ScenarioManager } from '@notention/core';
-import { getAgentRegistry } from '../globals';
+import { Note } from '@notention/core';
 import { PersistenceService } from '../persistence';
-import { ScenarioRunner } from '../tester/ScenarioRunner';
 import { executeSkillTool, ontologyQueryTool } from '../tools';
 
 export function setupMcpServer(app: Express) {
@@ -14,10 +12,6 @@ export function setupMcpServer(app: Express) {
         name: 'notention-agent',
         version: '1.0.0'
     });
-
-    // Initialize Simulation Managers
-    const scenarioManager = new ScenarioManager();
-    const scenarioRunner = new ScenarioRunner();
 
     // Helper to register tools cleanly
     const register = (name: string, desc: string, schema: any, handler: (args: any) => Promise<any>) => {
@@ -135,25 +129,6 @@ export function setupMcpServer(app: Express) {
         return await ontologyQueryTool.execute(args);
     });
 
-    // List Scenarios
-    register('list_scenarios', 'List available simulation scenarios', {}, async () => {
-        return scenarioManager.getAll().map(s => ({
-            id: s.id,
-            name: s.name,
-            description: s.description
-        }));
-    });
-
-    // Run Scenario
-    register('run_scenario', 'Run a simulation scenario', { id: z.string() }, async ({ id }) => {
-        const scenario = scenarioManager.get(id);
-        if (!scenario) throw new Error(`Scenario ${id} not found`);
-
-        const agent = getAgentRegistry().getDefault();
-        if (!agent) throw new Error(`No default agent available for simulation`);
-
-        return await scenarioRunner.run(scenario, agent);
-    });
 
     // --- Transport Setup ---
 

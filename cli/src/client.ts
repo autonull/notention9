@@ -15,6 +15,7 @@ export class CliClient {
     private client: Client;
     private transport: SSEClientTransport;
     private url: string;
+    public connected: boolean = false;
 
     constructor(url: string) {
         this.url = url;
@@ -28,14 +29,22 @@ export class CliClient {
     }
 
     async connect() {
-        await this.client.connect(this.transport);
+        try {
+            await this.client.connect(this.transport);
+            this.connected = true;
+        } catch (e) {
+            this.connected = false;
+            throw e;
+        }
     }
 
     async listTools() {
+        if (!this.connected) return { tools: [] };
         return await this.client.listTools();
     }
 
     async callTool(name: string, args: any) {
+        if (!this.connected) throw new Error("Client not connected");
         return await this.client.callTool({
             name,
             arguments: args
@@ -43,6 +52,8 @@ export class CliClient {
     }
 
     async close() {
-        await this.client.close();
+        if (this.connected) {
+            await this.client.close();
+        }
     }
 }

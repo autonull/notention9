@@ -11,7 +11,8 @@
   "scripts": {
     "build": "npm run build --workspaces",
     "dev:local": "VITE_ENABLE_AGENT=false VITE_LLM_SOURCE=none npm run dev -w @notention/ui",
-    "dev:server": "node scripts/dev-runner.js"
+    "dev:server": "node scripts/dev-runner.js",
+    "cli": "npm start -w @notention/cli --"
   },
   "dependencies": {
     "uuid": "^9.0.1",
@@ -19,6 +20,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@types/uuid": "^10.0.0",
     "define-data-property": "^1.1.4",
     "estraverse": "^5.3.0",
     "has-property-descriptors": "^1.0.2"
