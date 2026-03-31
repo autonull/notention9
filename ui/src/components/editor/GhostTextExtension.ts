@@ -1,27 +1,46 @@
 import {Extension, InputRule} from '@tiptap/core';
 
+// Enhanced patterns for natural language injection
+const GHOST_PATTERNS = [
+    {
+        regex: /^(Buy|Get|Purchase) (.+)$/i,
+        handler: (match: RegExpMatchArray) => `[task:buy] [item:${match[2]}]`
+    },
+    {
+        regex: /^(Call|Phone|Ring) (.+)$/i,
+        handler: (match: RegExpMatchArray) => `[task:call] [person:${match[2]}]`
+    },
+    {
+        regex: /^(Email|Mail|Write to) (.+)$/i,
+        handler: (match: RegExpMatchArray) => `[task:email] [person:${match[2]}]`
+    },
+    {
+        regex: /^(Meet|Meeting with) (.+)$/i,
+        handler: (match: RegExpMatchArray) => `[task:meeting] [attendee:${match[2]}]`
+    },
+    {
+        regex: /^(Remind me to|Task) (.+)$/i,
+        handler: (match: RegExpMatchArray) => `[task:todo] [desc:${match[2]}]`
+    },
+    {
+        regex: /^(Research|Look up) (.+)$/i,
+        handler: (match: RegExpMatchArray) => `[task:research] [topic:${match[2]}]`
+    },
+    {
+        regex: /^(Idea|Note) (.+)$/i,
+        handler: (match: RegExpMatchArray) => `[type:idea] [content:${match[2]}]`
+    }
+];
+
 export const GhostTextExtension = Extension.create({
     name: 'ghostText',
 
     addInputRules() {
-        return [
+        return GHOST_PATTERNS.map(pattern =>
             new InputRule({
-                find: /^(Buy|Call|Email|Meet) (.+)$/i,
+                find: pattern.regex,
                 handler: ({state, range, match}) => {
-                    const action = match[1].toLowerCase();
-                    const object = match[2];
-
-                    let replacement = '';
-                    if (action === 'buy') {
-                        replacement = `[` + `task:buy] [item:${object}]`;
-                    } else if (action === 'call') {
-                        replacement = `[` + `task:call] [person:${object}]`;
-                    } else if (action === 'email') {
-                        replacement = `[` + `task:email] [person:${object}]`;
-                    } else if (action === 'meet') {
-                        replacement = `[` + `task:meeting] [attendee:${object}]`;
-                    }
-
+                    const replacement = pattern.handler(match);
                     if (replacement) {
                         const start = range.from;
                         const end = range.to;
@@ -29,6 +48,6 @@ export const GhostTextExtension = Extension.create({
                     }
                 }
             })
-        ];
+        );
     },
 });

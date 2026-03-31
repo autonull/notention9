@@ -25,7 +25,11 @@ export const PropertyMatchers = {
         const offerValue = parseNumber(offer.values[0]);
         if (offerValue === null) return createMatch(request, offer, 0, 'Invalid number');
 
-        if (request.operator === 'between') {
+        // Check for range-like input even with 'is' operator
+        // Supports: [price:is:10-50] or [price:between:10,50]
+        if (request.operator === 'between' ||
+            (request.values.length >= 2) ||
+            (request.values[0]?.includes('-') && /^\d+(\.\d+)?\s*-\s*\d+(\.\d+)?$/.test(request.values[0]))) {
             return PropertyMatchers.evaluateNumberRange(request, offer, offerValue);
         }
 
@@ -37,10 +41,18 @@ export const PropertyMatchers = {
                 return offerValue < requestValue
                     ? createMatch(request, offer, 1, `${offerValue} < ${requestValue}`)
                     : createMatch(request, offer, -1, `${offerValue} >= ${requestValue}`);
+            case '<=':
+                return offerValue <= requestValue
+                    ? createMatch(request, offer, 1, `${offerValue} <= ${requestValue}`)
+                    : createMatch(request, offer, -1, `${offerValue} > ${requestValue}`);
             case '>':
                 return offerValue > requestValue
                     ? createMatch(request, offer, 1, `${offerValue} > ${requestValue}`)
                     : createMatch(request, offer, -1, `${offerValue} <= ${requestValue}`);
+            case '>=':
+                return offerValue >= requestValue
+                    ? createMatch(request, offer, 1, `${offerValue} >= ${requestValue}`)
+                    : createMatch(request, offer, -1, `${offerValue} < ${requestValue}`);
             case 'is':
             case '=':
                 // Allow 5% tolerance

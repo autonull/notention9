@@ -44,7 +44,7 @@ export function useNoteAnalysis(note: Note) {
             properties: [...note.properties, ...extractedProperties]
         };
 
-        const predictions = patternRecognitionService.predictUserNeeds('current-user', analysisNote);
+        const predictions = patternRecognitionService.predictUserNeeds('current-user', analysisNote, settings.ontology);
         const seenTexts = new Set<string>();
 
         const predictionSuggestions = predictions.reduce<Suggestion[]>((acc, p) => {

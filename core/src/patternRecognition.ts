@@ -1,9 +1,10 @@
-import type { Note, Property } from './types/index.js';
+import type { Note, Property, OntologyNode } from './types/index.js';
 import { generateId, safeDivide, clamp } from './utils/common.js';
 import { logInfo } from './utils/logging.js';
 import { BaseService } from './baseService.js';
 import { DEFAULT_PATTERNS } from './patternRecognition/DefaultPatterns.js';
 import { Pattern, UserBehaviorPattern, Prediction, PredictionResult } from './patternRecognition/types.js';
+import { MatchEngine } from './matching/MatchEngine.js';
 
 export * from './patternRecognition/types.js';
 
@@ -178,14 +179,16 @@ export class PatternRecognitionService extends BaseService {
   /**
    * Makes predictions based on user patterns
    */
-  predictUserNeeds(userId: string, currentNote: Note): Prediction[] {
+  predictUserNeeds(userId: string, currentNote: Note, ontology?: OntologyNode[]): Prediction[] {
     return this.safeExecuteSync(() => {
       const allPatterns = this.getAllPatternsForUser(userId);
       const predictions: Prediction[] = [];
 
+      const matchEngine = ontology ? new MatchEngine(ontology) : undefined;
+
       // For each pattern, check if current note matches conditions
       for (const pattern of allPatterns) {
-        if (this.matchesPatternConditions(currentNote, pattern.conditions)) {
+        if (this.matchesPatternConditions(currentNote, pattern.conditions, matchEngine)) {
           // Generate predictions based on this pattern
           for (const predictedAction of pattern.predictedActions) {
             const prediction: Prediction = {
@@ -221,8 +224,24 @@ export class PatternRecognitionService extends BaseService {
   /**
    * Checks if a note matches the conditions of a pattern
    */
-  private matchesPatternConditions(note: Note, conditions: Property[]): boolean {
-    // For now, simple matching - all conditions must be met
+  private matchesPatternConditions(note: Note, conditions: Property[], engine?: MatchEngine): boolean {
+    if (engine) {
+        // Treat conditions as a "request" note
+        const requestNote: Note = {
+            ...note,
+            id: 'condition-request',
+            properties: conditions
+        };
+
+        const result = engine.calculateMatchScore(requestNote, note);
+
+        const matchedKeys = new Set(result.matches.map(m => m.requestProp.key));
+        const allConditionsMet = conditions.every(c => matchedKeys.has(c.key));
+
+        return allConditionsMet;
+    }
+
+    // Fallback to simple equality matching if no ontology provided
     return conditions.every(condition => {
       const matchingProp = note.properties.find(prop =>
         prop.key === condition.key &&

@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {NodeViewProps, NodeViewWrapper} from '@tiptap/react';
 import {ExclamationTriangleIcon, TagIcon} from '../common/icons';
 import {ICON_MAP} from '../layout/iconMap';
 import {useSettings} from '../../hooks/useSettingsContext';
 import {useOntologyIndex} from '../../hooks/useOntologyIndex';
+import {validatePropertyAgainstOntology} from '../../utils/propertyValidation';
 
 export const PropertyChip = (props: NodeViewProps) => {
     const {node} = props;
@@ -14,34 +15,12 @@ export const PropertyChip = (props: NodeViewProps) => {
 
     const IconComponent = icon && ICON_MAP[icon] ? ICON_MAP[icon] : TagIcon;
 
-    // Validation Logic
+    // Enhanced Validation Logic
     const definition = propertyTypes.get(name);
-    let isValid = true;
-    let errorMessage = '';
 
-    if (definition) {
-        // Check options
-        if (definition.options && definition.options.length > 0) {
-            if (!definition.options.includes(value)) {
-                isValid = false;
-                errorMessage = `Expected one of: ${definition.options.join(', ')}`;
-            }
-        }
-
-        // Check range - Cast to any
-        const defAny = definition as any;
-        if (defAny.range) {
-            const numVal = parseFloat(value);
-            const [min, max] = defAny.range;
-            if (isNaN(numVal)) {
-                isValid = false;
-                errorMessage = 'Value must be a number';
-            } else if (numVal < min || numVal > max) {
-                isValid = false;
-                errorMessage = `Value must be between ${min} and ${max}`;
-            }
-        }
-    }
+    const validation = useMemo(() => {
+        return validatePropertyAgainstOntology(name, operator, value, definition);
+    }, [name, operator, value, definition]);
 
     // Styling
     const baseClasses = "node-property inline-flex items-center gap-1.5 px-2 py-0.5 mx-1 border rounded-md select-none cursor-pointer transition-colors text-sm";
@@ -51,16 +30,16 @@ export const PropertyChip = (props: NodeViewProps) => {
     return (
         <NodeViewWrapper
             as="span"
-            className={`${baseClasses} ${isValid ? validClasses : invalidClasses}`}
-            title={isValid ? "Click to edit" : errorMessage}
+            className={`${baseClasses} ${validation.isValid ? validClasses : invalidClasses}`}
+            title={validation.isValid ? "Click to edit" : validation.message}
         >
-            <IconComponent className={`w-3.5 h-3.5 ${isValid ? 'text-blue-400' : 'text-red-400'}`}/>
-            <span className={`font-semibold ${isValid ? 'text-blue-300' : 'text-red-300'}`}>{name}</span>
+            <IconComponent className={`w-3.5 h-3.5 ${validation.isValid ? 'text-blue-400' : 'text-red-400'}`}/>
+            <span className={`font-semibold ${validation.isValid ? 'text-blue-300' : 'text-red-300'}`}>{name}</span>
             <span
-                className={`${isValid ? 'text-blue-500' : 'text-red-500'} text-xs uppercase font-bold`}>{operator}</span>
+                className={`${validation.isValid ? 'text-blue-500' : 'text-red-500'} text-xs uppercase font-bold`}>{operator}</span>
             <span
-                className={`font-mono px-1 rounded ${isValid ? 'bg-blue-900/50 text-blue-200' : 'bg-red-900/50 text-red-200'}`}>{value}</span>
-            {!isValid && <ExclamationTriangleIcon className="w-3.5 h-3.5 text-red-400 ml-1"/>}
+                className={`font-mono px-1 rounded ${validation.isValid ? 'bg-blue-900/50 text-blue-200' : 'bg-red-900/50 text-red-200'}`}>{value}</span>
+            {!validation.isValid && <ExclamationTriangleIcon className="w-3.5 h-3.5 text-red-400 ml-1"/>}
         </NodeViewWrapper>
     );
 };
