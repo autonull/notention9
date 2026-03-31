@@ -5,37 +5,18 @@ import { SimplePool, getPublicKey, finalizeEvent, Filter } from 'nostr-tools';
 import type { NostrEvent, Note, Property, PrivacyLevel } from './types/index.js';
 import { NetworkGate, PrivacyError } from './networkGate.js';
 import { getPrivacyTags } from './nostr/privacy.js';
+import { hexToBytes } from './utils/encoding.js';
+import { Logger } from './utils/logging.js';
 
-// Polyfill-ish implementation for hex conversion to avoid deep imports
-export const hexToBytes = (hex: string): Uint8Array => {
-  if (hex.length % 2 !== 0) throw new Error('Invalid hex string');
-  const bytes = new Uint8Array(hex.length / 2);
-  for (let i = 0; i < bytes.length; i++) {
-    bytes[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
-  }
-  return bytes;
-};
+export const KIND_TEXT_NOTE = 1;
+export const KIND_SEMANTIC_NOTE = 35000;
 
-// Simple Promise.any polyfill for ES2020 target
-const promiseAny = <T>(promises: Promise<T>[]): Promise<T> => {
-  return new Promise((resolve, reject) => {
-    let errors: any[] = [];
-    let rejectedCount = 0;
-    if (promises.length === 0) {
-      reject(new Error('No promises'));
-      return;
-    }
-    promises.forEach((p) => {
-      p.then(resolve).catch((e) => {
-        errors.push(e);
-        rejectedCount++;
-        if (rejectedCount === promises.length) {
-          reject(new Error(`All promises rejected: ${errors.map(e => e.message).join(', ')}`));
-        }
-      });
-    });
-  });
-};
+interface NostrWindow extends Window {
+  nostr?: {
+    signEvent: (event: any) => Promise<NostrEvent>;
+    getPublicKey?: () => Promise<string>;
+  };
+}
 
 export const DEFAULT_RELAYS = [
   'wss://relay.damus.io',
@@ -167,7 +148,7 @@ export async function publishNoteToNostr(
   const created_at = Math.floor(Date.now() / 1000);
 
   // Use Kind 35000 (Semantic Note) if we have properties, otherwise Kind 1 (Text Note)
-  const kind = note.properties.length > 0 ? 35000 : 1;
+  const kind = note.properties.length > 0 ? KIND_SEMANTIC_NOTE : KIND_TEXT_NOTE;
 
   const content = note.content;
 
@@ -176,8 +157,9 @@ export async function publishNoteToNostr(
   // Check for window.nostr (NIP-07)
   // Use a safer check for window presence
   const hasWindow = typeof window !== 'undefined';
+  const nostrWindow = hasWindow ? (window as unknown as NostrWindow) : undefined;
 
-  if (hasWindow && (window as any).nostr?.signEvent) {
+  if (nostrWindow?.nostr?.signEvent) {
     // Use NIP-07 extension
     const unsigned = {
       kind,
@@ -185,7 +167,7 @@ export async function publishNoteToNostr(
       tags,
       content
     };
-    signedEvent = await (window as any).nostr.signEvent(unsigned);
+    signedEvent = await nostrWindow.nostr.signEvent(unsigned);
   } else {
     // Use private key directly
     if (!privkeyHex) {
@@ -207,9 +189,9 @@ export async function publishNoteToNostr(
   const pubs = pool.publish(relays, signedEvent);
 
   try {
-    await promiseAny(pubs);
-  } catch (e) {
-    console.warn('Failed to publish to any relay', e);
+    await Promise.any(pubs);
+  } catch (e: any) {
+    Logger.getInstance().warn('Failed to publish to any relay', e);
     throw e;
   }
 

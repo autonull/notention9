@@ -6,9 +6,11 @@ import { Note, Property } from '../types/index.js';
  */
 export class PropertyIndex {
     private keyIndex: Map<string, Set<string>>;
+    private noteKeys: Map<string, Set<string>>; // Reverse index: noteId -> keys
 
     constructor() {
         this.keyIndex = new Map();
+        this.noteKeys = new Map();
     }
 
     /**
@@ -17,17 +19,55 @@ export class PropertyIndex {
      */
     rebuild(notes: Note[]) {
         this.keyIndex.clear();
+        this.noteKeys.clear();
 
         for (const note of notes) {
-            if (!note.properties) continue;
+            this.addNote(note);
+        }
+    }
 
-            for (const prop of note.properties) {
-                if (!this.keyIndex.has(prop.key)) {
-                    this.keyIndex.set(prop.key, new Set());
+    /**
+     * Adds a note to the index.
+     */
+    addNote(note: Note) {
+        if (!note.properties) return;
+
+        const keys = new Set<string>();
+        for (const prop of note.properties) {
+            if (!this.keyIndex.has(prop.key)) {
+                this.keyIndex.set(prop.key, new Set());
+            }
+            this.keyIndex.get(prop.key)!.add(note.id);
+            keys.add(prop.key);
+        }
+        this.noteKeys.set(note.id, keys);
+    }
+
+    /**
+     * Removes a note from the index.
+     */
+    removeNote(noteId: string) {
+        const keys = this.noteKeys.get(noteId);
+        if (!keys) return;
+
+        for (const key of keys) {
+            const ids = this.keyIndex.get(key);
+            if (ids) {
+                ids.delete(noteId);
+                if (ids.size === 0) {
+                    this.keyIndex.delete(key);
                 }
-                this.keyIndex.get(prop.key)!.add(note.id);
             }
         }
+        this.noteKeys.delete(noteId);
+    }
+
+    /**
+     * Updates a note in the index.
+     */
+    updateNote(note: Note) {
+        this.removeNote(note.id);
+        this.addNote(note);
     }
 
     /**
@@ -45,10 +85,6 @@ export class PropertyIndex {
      */
     getCandidates(constraints: Property[]): Set<string> | null {
         if (constraints.length === 0) return null; // No constraints -> all notes are candidates (or let caller handle)
-
-        // Sort constraints by selectivity (approximate: assume keys with fewer notes are more selective)
-        // Actually we don't know selectivity without checking the set size. 
-        // Let's just find the smallest set to start with to optimize intersection.
 
         let candidateIds: Set<string> | null = null;
 
