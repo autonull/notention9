@@ -7,8 +7,7 @@ export function log(context: string, message: string, data?: any) {
 }
 
 export function error(context: string, message: string, err?: any) {
-    logger.error(`[${context}] ERROR: ${message}`, {
-        error: err instanceof Error ? err : new Error(String(err)),
+    logger.error(`[${context}] ERROR: ${message}`, err instanceof Error ? err : new Error(String(err)), {
         context,
         timestamp: new Date().toISOString()
     });

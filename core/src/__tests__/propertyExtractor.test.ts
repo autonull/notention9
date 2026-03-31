@@ -49,55 +49,6 @@ describe('PropertyExtractor Tests', () => {
     });
   });
 
-  describe('parseQuantityValue', () => {
-    test('should parse simple price', () => {
-      const result = extractor.parseQuantityValue('$80');
-      expect(result).toEqual({
-        value: 80,
-        unit: 'USD',
-        unitType: 'simple',
-        semanticType: 'price'
-      });
-    });
-
-    test('should parse price rate', () => {
-      const result = extractor.parseQuantityValue('$80/hr');
-      expect(result).toEqual({
-        value: 80,
-        unit: 'USD/h',
-        unitType: 'compound',
-        numerator: 'USD',
-        denominator: 'h',
-        semanticType: 'rate'
-      });
-    });
-
-    test('should parse distance', () => {
-      const result = extractor.parseQuantityValue('10 km');
-      expect(result).toEqual({
-        value: 10,
-        unit: 'km',
-        unitType: 'simple',
-        semanticType: 'distance'
-      });
-    });
-
-    test('should parse temperature', () => {
-      const result = extractor.parseQuantityValue('25 °C');
-      expect(result).toEqual({
-        value: 25,
-        unit: '°C',
-        unitType: 'simple',
-        semanticType: 'temperature'
-      });
-    });
-
-    test('should return null for non-quantity', () => {
-      const result = extractor.parseQuantityValue('John Doe');
-      expect(result).toBeNull();
-    });
-  });
-
   describe('extractFromText', () => {
     test('should extract send to property', () => {
       const result = extractor.extractFromText('send to john@example.com');

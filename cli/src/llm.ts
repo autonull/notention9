@@ -7,12 +7,18 @@ import chalk from 'chalk';
 import ora from 'ora';
 import { log, withSpinner, resolveSafePath } from './utils.js';
 import { LLMProvider, type LLMProviderConfig } from './providers/base.js';
+import { SystemPromptBuilder } from './system-prompt.js';
 
 // Configure marked for terminal output
 marked.use({
     // @ts-ignore
     renderer: new TerminalRenderer()
 });
+
+const REGEX = {
+    JSON_BLOCK: /```json\s*(\{[\s\S]*?\})\s*```/g,
+    FALLBACK: /(\{\s*"tool"\s*:[\s\S]*?\})/g
+};
 
 export interface ToolDefinition {
     name: string;
@@ -38,7 +44,7 @@ export class LlmSession {
     private provider: LLMProvider;
     private ontologyCache: string | null = null;
     private capabilitiesCache: any | null = null;
-    private customPrompt: string | null = null;
+    private promptBuilder: SystemPromptBuilder;
 
     constructor(
         tools: ToolDefinition[],
@@ -48,6 +54,7 @@ export class LlmSession {
         this.tools = tools;
         this.toolExecutor = toolExecutor;
         this.provider = provider;
+        this.promptBuilder = new SystemPromptBuilder();
     }
 
     public updateProvider(newProvider: LLMProvider) {
@@ -127,92 +134,10 @@ export class LlmSession {
         }
     }
 
-    private loadCustomPrompt() {
-        if (this.customPrompt) return;
-        const potentialPaths = [
-            path.join(process.cwd(), 'config', 'system_prompt.md'),
-            path.join(process.cwd(), 'system_prompt.md')
-        ];
-
-        for (const p of potentialPaths) {
-            if (fs.existsSync(p)) {
-                try {
-                    this.customPrompt = fs.readFileSync(p, 'utf-8');
-                    log.info(`Loaded custom system prompt from ${p}`);
-                    break;
-                } catch (e) {
-                    log.error(`Failed to read system prompt file: ${e}`);
-                }
-            }
-        }
-    }
-
-    private getSystemPrompt(): string {
-        const basePrompt = this.customPrompt || `
-You are the "Notention Agent", a helpful AI assistant that controls a Notention profile.
-Your goal is to help the user manage their knowledge graph (notes), execute skills, and run simulations.
-`;
-
-        let capabilitiesSection = `
-Capabilities:
-- Manage Notes: Create, Read (Search), Update, Delete.
-- Execute Skills: Trigger agent skills based on note content.
-- Query Ontology: Understand the semantic structure of the knowledge base.
-- Simulations: List and run test scenarios to verify agent behavior.
-- Multi-Agent Simulations: Run complex scenarios with multiple agents to test ontology and community evolution.
-- Local Files: Access and ingest files from the local filesystem.
-- Semantic Extraction: Use 'extract_semantics' to understand the properties of a note text.
-`;
-
-        if (this.capabilitiesCache) {
-            capabilitiesSection += `
-System Flags:
-- Browser: ${this.capabilitiesCache.browser ? 'ENABLED' : 'DISABLED'}
-- Files: ${this.capabilitiesCache.files ? 'ENABLED' : 'DISABLED'}
-- API: ${this.capabilitiesCache.api ? 'ENABLED' : 'DISABLED'}
-`;
-        }
-
-        return `
-${basePrompt}
-
-${capabilitiesSection}
-
-Ontology Context:
-${this.ontologyCache || "Ontology loading..."}
-
-Semantic Properties:
-Notention uses a semantic property system. Prefer using the 'properties' field.
-Syntax: [key:operator:values]
-- key: From ontology (e.g., 'type', 'priority', 'status')
-- operator: 'is' (equality), '>' (greater), '<' (less), 'contains'
-- values: Comma-separated list (e.g., 'task', 'high', 'active')
-
-Guidelines:
-- Use 'search_notes' to find items.
-- Use 'read_notes' for broad listing.
-- Use 'create_note' with semantic tags.
-- Use 'update_note' after finding ID.
-- Use 'run_scenario' for tests.
-- Be concise. Summarize actions.
-
-Available Tools:
-${JSON.stringify(this.tools, null, 2)}
-
-Output Format:
-- Speak directly to the user (Markdown supported).
-- Call tools using JSON blocks:
-\`\`\`json
-{ "tool": "tool_name", "args": { ... } }
-\`\`\`
-`;
-    }
-
     async handleInteraction(input: string) {
         // Provider health check is now handled by the provider itself
         if (!this.ontologyCache) await this.fetchOntology();
         if (!this.capabilitiesCache) await this.fetchCapabilities();
-        this.loadCustomPrompt();
 
         this.history.push({ role: 'user', content: input });
 
@@ -221,11 +146,7 @@ Output Format:
             this.history = this.history.slice(this.history.length - 50);
         }
 
-        let turns = 0;
-        const MAX_TURNS = 10;
-
-        while (turns < MAX_TURNS) {
-            turns++;
+        for (let turns = 0; turns < 10; turns++) {
             const continueLoop = await this.executeTurn();
             if (!continueLoop) break;
         }
@@ -263,8 +184,14 @@ Output Format:
 
     private async executeTurn(): Promise<boolean> {
         try {
+            const systemPrompt = this.promptBuilder.build(
+                this.capabilitiesCache,
+                this.ontologyCache,
+                this.tools
+            );
+
             const messages: CoreMessage[] = [
-                { role: 'system', content: this.getSystemPrompt() },
+                { role: 'system', content: systemPrompt },
                 ...this.history
             ];
 
@@ -290,12 +217,9 @@ Output Format:
     }
 
     private parseToolCalls(text: string): ToolCall[] {
-        const jsonBlockRegex = /```json\s*(\{[\s\S]*?\})\s*```/g;
-        const fallbackRegex = /(\{\s*"tool"\s*:[\s\S]*?\})/g;
-
-        let matches = [...text.matchAll(jsonBlockRegex)];
+        let matches = [...text.matchAll(REGEX.JSON_BLOCK)];
         if (matches.length === 0) {
-            matches = [...text.matchAll(fallbackRegex)];
+            matches = [...text.matchAll(REGEX.FALLBACK)];
         }
 
         return matches.map(match => {

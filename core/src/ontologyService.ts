@@ -33,6 +33,8 @@ const WIDGET_MAPPING: Record<string, WidgetType> = {
     'enum': 'dropdown'
 };
 
+const ISODATE_REGEX = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2})?/;
+
 export class OntologyService {
     private ontology: OntologyNode[];
     private attributeIndex: Map<string, OntologyAttribute>;
@@ -163,17 +165,13 @@ export class OntologyService {
                 else if (keyLower.includes(lower)) score = 60;
                 else if (attr.description?.toLowerCase().includes(lower)) score = 40;
 
-                if (score > 0) {
-                    scoredMatches.push({ key, score });
-                }
+                if (score > 0) scoredMatches.push({ key, score });
             }
 
-            scoredMatches.sort((a, b) => {
-                if (a.score !== b.score) return b.score - a.score;
-                return a.key.localeCompare(b.key);
-            });
-
-            return scoredMatches.slice(0, limit).map(m => m.key);
+            return scoredMatches
+                .sort((a, b) => (b.score - a.score) || a.key.localeCompare(b.key))
+                .slice(0, limit)
+                .map(m => m.key);
         });
     }
 
@@ -260,11 +258,10 @@ export class OntologyService {
      * Infer type of a property based on its values
      */
     inferType(key: string, values: any[]): PropertyType {
-        if (!values || values.length === 0) return 'string';
+        if (!values?.length) return 'string';
 
         let numberCount = 0;
         let dateCount = 0;
-        const ISODateRegex = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2})?/;
 
         for (const v of values) {
             if (typeof v === 'number') {
@@ -272,7 +269,7 @@ export class OntologyService {
             } else {
                 const valStr = String(v);
                 if (!isNaN(parseFloat(valStr))) numberCount++;
-                if (ISODateRegex.test(valStr) && !isNaN(Date.parse(valStr))) dateCount++;
+                if (ISODATE_REGEX.test(valStr) && !isNaN(Date.parse(valStr))) dateCount++;
             }
         }
 
