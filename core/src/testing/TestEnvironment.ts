@@ -1,3 +1,5 @@
+import { Logger } from '../utils/logging.js';
+
 export class TestEnvironment {
     private dbUrl: string;
     private isInitialized = false;
@@ -7,7 +9,7 @@ export class TestEnvironment {
     }
 
     async setup() {
-        console.log('TestEnvironment: Setting up in-memory database...');
+        Logger.getInstance().info('TestEnvironment: Setting up in-memory database...');
         // Here we would initialize the Core DB connection using `this.dbUrl`
         // For now, we simulate success
         this.isInitialized = true;
@@ -17,7 +19,7 @@ export class TestEnvironment {
     }
 
     async teardown() {
-        console.log('TestEnvironment: Tearing down...');
+        Logger.getInstance().info('TestEnvironment: Tearing down...');
         this.isInitialized = false;
     }
 }

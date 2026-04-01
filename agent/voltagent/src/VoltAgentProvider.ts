@@ -228,7 +228,7 @@ export class VoltAgentProvider implements Agent {
         try {
             // For RAG operations, we'll use a different approach that doesn't require embedding
             // Store in a way that can be retrieved later for RAG purposes
-            console.log(`Storing in memory: ${key}`);
+            log('Memory', `Storing in memory: ${key}`);
             // In a real implementation with embedding, we would use:
             // const document: Document = {
             //     id: key,
