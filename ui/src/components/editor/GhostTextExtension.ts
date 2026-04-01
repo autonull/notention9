@@ -13,13 +13,13 @@ export const GhostTextExtension = Extension.create({
 
                     let replacement = '';
                     if (action === 'buy') {
-                        replacement = `[task:buy] [item:${object}]`;
+                        replacement = `[` + `task:buy] [item:${object}]`;
                     } else if (action === 'call') {
-                        replacement = `[task:call] [person:${object}]`;
+                        replacement = `[` + `task:call] [person:${object}]`;
                     } else if (action === 'email') {
-                        replacement = `[task:email] [person:${object}]`;
+                        replacement = `[` + `task:email] [person:${object}]`;
                     } else if (action === 'meet') {
-                        replacement = `[task:meeting] [attendee:${object}]`;
+                        replacement = `[` + `task:meeting] [attendee:${object}]`;
                     }
 
                     if (replacement) {

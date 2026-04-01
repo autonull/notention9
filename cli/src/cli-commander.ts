@@ -115,8 +115,8 @@ export class CLICommander {
       .argument('[command]', 'Optional command to run directly')
       .action(async (command, options) => {
         // Import and run the main CLI here
-        const { main } = await import('./index.js');
-        await main({ ...options, command });
+        const { startInteractiveSession } = await import('./interactive.js');
+        await startInteractiveSession({ ...options, command });
       });
   }
 
@@ -145,8 +145,8 @@ export class CLICommander {
     // If no command is specified, run the default behavior
     if (!process.argv.slice(2).length) {
       // Import and run the main CLI here
-      const { main } = await import('./index.js');
-      await main({});
+      const { startInteractiveSession } = await import('./interactive.js');
+      await startInteractiveSession({});
     } else {
       this.program.parse();
     }

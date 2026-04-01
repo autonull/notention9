@@ -1,5 +1,9 @@
 @import './styles/property-blocks.css';
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 body {
   font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
