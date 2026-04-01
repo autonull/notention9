@@ -12,6 +12,7 @@ import {
   SearchIcon
 } from '../common/icons';
 import { NewNoteButton } from './NewNoteButton';
+import { ConnectionStatus } from './ConnectionStatus';
 import { NAV_ITEMS, SETTINGS_VIEW } from '../../utils/navigation';
 
 interface HeaderProps {
@@ -116,7 +117,8 @@ export function Header({ onNewNote }: HeaderProps) {
       </div>
 
       {/* Right Section */}
-      <div className="flex items-center">
+      <div className="flex items-center gap-2">
+        <ConnectionStatus />
         <NavButton
           icon={<SETTINGS_VIEW.icon />}
           label={SETTINGS_VIEW.label}

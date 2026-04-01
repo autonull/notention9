@@ -1,4 +1,5 @@
 import { ConnectionError } from '../utils/errors';
+import type { Note } from '@notention/core';
 
 type Listener = (...args: any[]) => void;
 
@@ -191,35 +192,40 @@ class AgentService {
       return;
     }
 
+    // Only process if connected
+    if (!this.isOnlineMode || !this.ws || this.ws.readyState !== WebSocket.OPEN) {
+      return;
+    }
+
     this.isProcessingQueue = true;
 
     try {
       while (this.messageQueue.length > 0) {
+        // Stop if connection is lost during processing
+        if (!this.isOnlineMode || !this.ws || this.ws.readyState !== WebSocket.OPEN) {
+          break;
+        }
+
         const queuedMsg = this.messageQueue[0];
 
-        if (this.isOnlineMode && this.ws && this.ws.readyState === WebSocket.OPEN) {
-          // Try to send the message
-          try {
-            this.ws.send(JSON.stringify(queuedMsg.data));
-            this.messageQueue.shift(); // Remove successfully sent message
-            this.emit('sent', queuedMsg.data);
-          } catch (error) {
-            console.error('Failed to send queued message', error);
-            // Increment retry count
-            queuedMsg.retries++;
+        // Try to send the message
+        try {
+          this.ws.send(JSON.stringify(queuedMsg.data));
+          this.messageQueue.shift(); // Remove successfully sent message
+          this.emit('sent', queuedMsg.data);
+        } catch (error) {
+          console.error('Failed to send queued message', error);
+          // Increment retry count
+          queuedMsg.retries++;
 
-            if (queuedMsg.retries > 3) {
-              // Too many retries, remove from queue
-              console.warn('Message failed after 3 retries, removing from queue', queuedMsg.data);
-              this.messageQueue.shift();
-            } else {
-              // Wait a bit before trying again
-              await new Promise(resolve => setTimeout(resolve, 1000));
-            }
+          if (queuedMsg.retries > 3) {
+            // Too many retries, remove from queue
+            console.warn('Message failed after 3 retries, removing from queue', queuedMsg.data);
+            this.messageQueue.shift();
+          } else {
+            // Wait a bit before trying again
+            await new Promise((resolve) => setTimeout(resolve, 1000));
           }
-        } else {
-          // Still offline, wait a bit before checking again
-          await new Promise(resolve => setTimeout(resolve, 1000));
         }
       }
     } finally {
@@ -290,6 +296,39 @@ class AgentService {
   clearQueue(): void {
     this.messageQueue = [];
     this.emit('queue_cleared');
+  }
+
+  async fetchNotes(): Promise<Note[]> {
+    if (!this.isOnlineMode) {
+      return Promise.reject(new Error('Offline'));
+    }
+
+    return new Promise((resolve, reject) => {
+      const id = `req_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
+      const timeout = setTimeout(() => {
+        this.off('message', handler);
+        reject(new Error('Timeout fetching notes'));
+      }, 5000);
+
+      const handler = (msg: any) => {
+        if (msg.type === 'notes_list' && msg.id === id) {
+          clearTimeout(timeout);
+          this.off('message', handler);
+          resolve(msg.payload);
+        }
+      };
+
+      this.on('message', handler);
+      this.send({ type: 'get_notes', id });
+    });
+  }
+
+  async saveNote(note: Note): Promise<void> {
+    this.send({ type: 'save_note', payload: note });
+  }
+
+  async deleteNote(id: string): Promise<void> {
+    this.send({ type: 'delete_note', payload: { id } });
   }
 }
 
