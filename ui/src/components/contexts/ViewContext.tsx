@@ -2,7 +2,7 @@ import React, { createContext, ReactNode, useState } from 'react';
 import { useLocalForage } from '../../hooks/useLocalForage';
 import { useToast } from '../../hooks/useToast';
 import type { View, SortOrder, NostrEvent, SidebarViewMode } from '@notention/core';
-import { GeoCoords } from '@notention/core';
+import { GeoCoords, Logger } from '@notention/core';
 import { getCurrentPosition } from '../../utils/geolocation';
 
 import type { Property } from '@notention/core';
@@ -109,7 +109,7 @@ export function ViewProvider({
           const loc = await getCurrentPosition();
           setUserLocation(loc);
       } catch (e) {
-          console.error("Failed to get location", e);
+          Logger.getInstance().error("Failed to get location", e instanceof Error ? e : new Error(String(e)));
           addToast("Could not access location for 'Nearest' sort", 'error');
       }
   };

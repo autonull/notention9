@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState, useRef } from 'react';
 import { getPublicKey } from 'nostr-tools';
 import type { NostrEvent, Note, Property } from '@notention/core';
-import { DEFAULT_RELAYS, hexToBytes, pool, extractPropertiesFromTags, convertEventToNote } from '@notention/core';
-import { matchNotes } from '../utils/matching';
+import { DEFAULT_RELAYS, hexToBytes, pool, extractPropertiesFromTags, convertEventToNote, matchingService } from '@notention/core';
 import { useNostrProfile } from './useNostrProfile';
 import { useView } from './useViewContext';
 import { useSettings } from './useSettingsContext';
@@ -100,7 +99,7 @@ export const useNetworkView = ({ matchAgainst }: UseNetworkViewProps = {}) => {
     if (matchAgainst) {
         return filtered.map(event => {
             const offerNote: Note = convertEventToNote(event);
-            const matchDetails = matchNotes(matchAgainst, offerNote);
+            const matchDetails = matchingService.matchNotes(matchAgainst, offerNote);
             return { event, score: matchDetails.score * 100, details: matchDetails };
         })
         .sort((a, b) => b.score - a.score)

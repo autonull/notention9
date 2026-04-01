@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import type { Note, Property } from '@notention/core';
-import { matchingService } from '../services/MatchingService';
+import { matchingService } from '@notention/core';
 
 export interface MatchResult {
     source: Note;

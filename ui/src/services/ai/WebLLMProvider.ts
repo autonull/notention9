@@ -1,5 +1,6 @@
 import { CreateMLCEngine, MLCEngine } from "@mlc-ai/web-llm";
 import type { AIProvider, InferredAttribute } from '@notention/core';
+import { Logger } from '@notention/core';
 import type { Note, OntologyAttribute, OntologyNode } from '@notention/core';
 
 export const AVAILABLE_MODELS = [
@@ -14,6 +15,7 @@ export class WebLLMProvider implements AIProvider {
   private engine: MLCEngine | null = null;
   private modelId: string;
   private initPromise: Promise<void> | null = null;
+  private logger = Logger.getInstance();
 
   constructor(modelId: string = "Llama-3.2-3B-Instruct-q4f16_1-MLC") {
     this.modelId = modelId;
@@ -39,7 +41,7 @@ export class WebLLMProvider implements AIProvider {
                 }
             );
         } catch (e) {
-            console.warn("Failed to load WebLLM:", e);
+            this.logger.warn("Failed to load WebLLM:", e instanceof Error ? e : new Error(String(e)));
             throw e; // Propagate error
         }
       })();
@@ -109,7 +111,7 @@ export class WebLLMProvider implements AIProvider {
         const jsonStr = content.replace(/```json/g, '').replace(/```/g, '').trim();
         return JSON.parse(jsonStr);
     } catch {
-        console.warn("Failed to parse AI tags:", content);
+        this.logger.warn("Failed to parse AI tags:", new Error(content));
         return [];
     }
   }
@@ -154,7 +156,7 @@ export class WebLLMProvider implements AIProvider {
             sampleValues: r.sampleValues || []
         }));
     } catch {
-        console.warn("Failed to parse AI ontology:", content);
+        this.logger.warn("Failed to parse AI ontology:", new Error(content));
         return [];
     }
   }

@@ -1,8 +1,9 @@
-import { Agent, WorkflowResult, Note, SkillExecutionError } from '@notention/core';
+import { Agent, WorkflowResult, Note, SkillExecutionError, Logger } from '@notention/core';
 import { AgentSkillRegistry } from './AgentSkillRegistry';
 
 export class AgentWorkflowSkillExecutor {
     private onEvent?: (event: any) => void;
+    private logger = Logger.getInstance();
 
     constructor(
         private agent: Agent,
@@ -23,11 +24,11 @@ export class AgentWorkflowSkillExecutor {
         const matches = await this.registry.findMatchingWithAgent(note);
 
         if (matches.length === 0) {
-            console.log(`No matching skills for note: ${note.title}`);
+            this.logger.info(`No matching skills for note: ${note.title}`);
             return [];
         }
 
-        console.log(`Found ${matches.length} matching skills`);
+        this.logger.info(`Found ${matches.length} matching skills`);
 
         this.emit('skill_execution_started', {
             noteId: note.id,
@@ -59,7 +60,7 @@ export class AgentWorkflowSkillExecutor {
                 this.emit('skill_completed', { skill: skill.name, success: true });
             } catch (error) {
                 const errorMessage = error instanceof Error ? error.message : String(error);
-                console.error(`Error executing skill ${skill.name}:`, error);
+                this.logger.error(`Error executing skill ${skill.name}:`, error instanceof Error ? error : new Error(String(error)));
 
                 // Emit structured error information
                 this.emit('skill_failed', {

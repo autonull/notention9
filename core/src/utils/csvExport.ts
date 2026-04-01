@@ -1,4 +1,4 @@
-import type { Note } from '@notention/core';
+import type { Note } from '../types/index.js';
 
 export const generateNotesCSV = (notes: Note[]): string => {
     if (notes.length === 0) return '';

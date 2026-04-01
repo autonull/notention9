@@ -5,7 +5,7 @@ import { ConfirmationModal } from '../common/ConfirmationModal';
 import { useToast } from '../../hooks/useToast';
 import localforage from 'localforage';
 import type { Note, AppSettings } from '@notention/core';
-import { generateNotesCSV } from '../../utils/csvExport';
+import { Logger, generateNotesCSV } from '@notention/core';
 
 interface ImportExportSectionProps {
     notes: Note[];
@@ -132,7 +132,7 @@ export function ImportExportSection({ notes, settings }: ImportExportSectionProp
                  setTimeout(() => window.location.reload(), 1000);
             }
         } catch (err) {
-            console.error(err);
+            Logger.getInstance().error("Import execution failed", err instanceof Error ? err : new Error(String(err)));
             addToast("Import execution failed.", "error");
         } finally {
             setPendingImport(null);

@@ -22,6 +22,7 @@ export * from './utils/errors.js';
 export * from './utils/logging.js';
 export * from './utils/tools.js';
 export * from './utils/concurrency.js';
+export * from './utils/csvExport.js';
 export * from './baseService.js';
 export * from './remote/RobustWebSocket.js';
 export * from './tools/OntologyTools.js';

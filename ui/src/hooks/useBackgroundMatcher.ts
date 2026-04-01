@@ -3,8 +3,7 @@ import { useSettings } from './useSettingsContext';
 import { useNotes } from './useNotes';
 import { useView } from './useViewContext';
 import { useToast } from './useToast';
-import { DEFAULT_RELAYS, pool, convertEventToNote } from '@notention/core';
-import { matchingService } from '../services/MatchingService';
+import { DEFAULT_RELAYS, pool, convertEventToNote, matchingService } from '@notention/core';
 
 export const useBackgroundMatcher = () => {
   const { settings } = useSettings();

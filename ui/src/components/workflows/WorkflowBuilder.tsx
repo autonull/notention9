@@ -34,13 +34,13 @@ export function WorkflowBuilder() {
             }))
         };
 
-        console.log('Saving workflow:', workflow);
+        Logger.getInstance().info('Saving workflow: ' + JSON.stringify(workflow));
         // In real implementation, send to agent to register
         if (agentService.isEnabled()) {
             agentService.send({ type: 'register_workflow', payload: workflow });
             addToast(`Workflow "${name}" saved to Agent!`, 'success');
         } else {
-            console.log('Agent disabled, workflow not persisted remotely.');
+            Logger.getInstance().info('Agent disabled, workflow not persisted remotely.');
             addToast(`Workflow "${name}" saved (Local Mock)!`, 'info');
         }
     };

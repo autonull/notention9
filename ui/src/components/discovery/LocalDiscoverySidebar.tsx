@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useMatches } from '../../hooks/useMatches';
 import { MatchCard } from '../matching/MatchCard';
-import { Note, MatchEngine } from '@notention/core';
+import { Note, MatchEngine, Logger } from '@notention/core';
 import { NetworkDiscoveryService, ScoredMatch } from '@notention/core'; // We need to export this
 import { Button } from '../common/Button';
 import { useSettings } from '../../hooks/useSettingsContext';
@@ -32,7 +32,7 @@ export const LocalDiscoverySidebar: React.FC<LocalDiscoverySidebarProps> = ({ no
             const results = await discoveryService.discoverMatches(note);
             setNetworkMatches(results);
         } catch (e) {
-            console.error(e);
+            Logger.getInstance().error("Network search failed", e instanceof Error ? e : new Error(String(e)));
         } finally {
             setIsSearching(false);
         }

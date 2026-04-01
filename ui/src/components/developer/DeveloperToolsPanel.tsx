@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { Note } from '@notention/core';
 import { useSettings } from '../../hooks/useSettingsContext';
 import { OntologyVisualizer } from '../ontology/OntologyVisualizer';
-import { parseProperties } from '@notention/core';
-import { matchNotesWithRealVsImaginary } from '../../utils/matching';
+import { parseProperties, matchingService } from '@notention/core';
 
 interface DeveloperToolsPanelProps {
   className?: string;
@@ -21,7 +20,7 @@ export const DeveloperToolsPanel: React.FC<DeveloperToolsPanelProps> = ({ classN
 
   const handleTestMatch = () => {
     if (requestNote && offerNote) {
-      const result = matchNotesWithRealVsImaginary(requestNote, offerNote);
+      const result = matchingService.matchNotesWithRealVsImaginary(requestNote, offerNote);
       setMatchResult(result);
     }
   };

@@ -14,14 +14,7 @@ const escapeHTML = (str: string) => {
   return p.innerHTML;
 };
 
-export const escapeAttribute = (str: string): string => {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-};
+export { escapeAttribute } from '@notention/core';
 
 export const sanitizeHTML = (dirty: string): string => {
   if (typeof window === 'undefined' || !dirty) {

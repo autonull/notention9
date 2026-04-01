@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo, useRef } from 'react';
-import { DEFAULT_RELAYS, pool } from '@notention/core';
+import { DEFAULT_RELAYS, pool, Logger } from '@notention/core';
 import type { NostrEvent, NostrProfile } from '@notention/core';
 
 const profileCache = new Map<string, NostrProfile>();
@@ -68,7 +68,7 @@ export const useNostrProfile = (
         profileCache.set(event.pubkey, profile);
         setProfiles((prev) => ({ ...prev, [event.pubkey]: profile }));
       } catch (e) {
-        console.warn('Failed to parse Nostr profile', e);
+        Logger.getInstance().warn('Failed to parse Nostr profile', e instanceof Error ? e : new Error(String(e)));
       }
     };
 

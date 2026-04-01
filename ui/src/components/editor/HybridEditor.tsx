@@ -2,7 +2,7 @@ import React, { forwardRef, useState, useCallback, useMemo, useEffect } from 're
 import { TiptapEditor, TiptapEditorRef } from './TiptapEditor';
 import { PropertyBlock } from '../properties/PropertyBlock';
 import { PropertyPalette } from '../properties/PropertyPalette';
-import { PropertyExtractor, Property, replacePropertyInString, parseProperties } from '@notention/core';
+import { PropertyExtractor, Property, replacePropertyInString, parseProperties, Logger } from '@notention/core';
 import { useSettings } from '../../hooks/useSettingsContext';
 import { Button } from '../common/Button';
 import { LocalDiscoverySidebar } from '../discovery/LocalDiscoverySidebar';
@@ -124,7 +124,7 @@ export const HybridEditor = forwardRef<TiptapEditorRef, HybridEditorProps>((prop
                         note={props.note}
                         onSelectMatch={(note) => {
                             // TODO: Open split view or navigate
-                            console.log('Selected match:', note.id);
+                            Logger.getInstance().info('Selected match: ' + note.id);
                         }}
                     />
                 </div>

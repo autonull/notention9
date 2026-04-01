@@ -219,3 +219,13 @@ export function partition<T>(array: T[], predicate: (value: T) => boolean): [T[]
 export function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+// Escape HTML attributes
+export const escapeAttribute = (str: string): string => {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+};

@@ -1,4 +1,4 @@
-import { Property, PropertyExtractor } from '@notention/core';
+import { Property, PropertyExtractor, Logger } from '@notention/core';
 import { WebLLMProvider } from './WebLLMProvider';
 
 /**
@@ -8,6 +8,7 @@ import { WebLLMProvider } from './WebLLMProvider';
 export class PropertyExtractionService {
     private coreExtractor: PropertyExtractor;
     private llmProvider: WebLLMProvider;
+    private logger = Logger.getInstance();
 
     constructor() {
         this.coreExtractor = new PropertyExtractor();
@@ -47,7 +48,7 @@ export class PropertyExtractionService {
                     }
                 });
             } catch (e) {
-                console.warn("AI extraction failed, falling back to rules only", e);
+                this.logger.warn("AI extraction failed, falling back to rules only", e instanceof Error ? e : new Error(String(e)));
             }
         }
 

@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { generateSecretKey, getPublicKey, nip19 } from 'nostr-tools';
 import { bytesToHex, hexToBytes } from '@noble/hashes/utils.js';
 import { KeyIcon, UserPlusIcon } from '../common/icons';
+import { Logger } from '@notention/core';
 import type { AppSettings } from '@notention/core';
 import { CopyableField } from '../common/CopyableField';
 import { usePublish } from '@/hooks/usePublish';
@@ -68,7 +69,7 @@ export function NostrTab({
           addToast('Key imported successfully', 'success');
       } catch (e) {
           setImportError('Invalid key format.');
-          console.error(e);
+          Logger.getInstance().error("Key import failed", e instanceof Error ? e : new Error(String(e)));
       }
   };
 
@@ -96,7 +97,7 @@ export function NostrTab({
         nsec: nip19.nsecEncode(hexToBytes(settings.nostr.privkey)),
       };
     } catch (e) {
-      console.error('Error encoding keys:', e);
+      Logger.getInstance().error('Error encoding keys:', e instanceof Error ? e : new Error(String(e)));
       return { npub: 'Error', nsec: 'Error' };
     }
   }, [settings.nostr.privkey]);

@@ -8,6 +8,7 @@ import {
   SearchSparkleIcon
 } from '../common/icons';
 import type { OntologyNode } from '@notention/core';
+import { Logger } from '@notention/core';
 import { getCurrentPosition } from '../../utils/geolocation';
 import { useToast } from '../../hooks/useToast';
 import { Input } from '../common/Input';
@@ -106,7 +107,7 @@ export function PropertyForm({
               addToast('No properties found in text.', 'info');
           }
       } catch (e) {
-          console.error(e);
+          Logger.getInstance().error("Property extraction failed", e instanceof Error ? e : new Error(String(e)));
           addToast('Extraction failed.', 'error');
       }
   };

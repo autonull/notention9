@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Logger } from '@notention/core';
 
 import type { Property, OntologyNode } from '@notention/core';
 import {
@@ -68,7 +69,7 @@ export function PropertyInspector({
               );
               setSuggestedProperties(newSuggestions);
           } catch (e) {
-              console.error("Failed to extract suggestions", e);
+              Logger.getInstance().error("Failed to extract suggestions", e instanceof Error ? e : new Error(String(e)));
           }
       }, 1000); // 1s debounce
 

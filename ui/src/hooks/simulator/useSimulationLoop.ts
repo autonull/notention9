@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Logger } from '@notention/core';
 import type { OntologyNode } from '@notention/core';
 import type { AIProvider } from '../../services/ai/types';
 import type { SimulationAgent } from './types';
@@ -73,7 +74,7 @@ export const useSimulationLoop = ({
             try {
                 content = await aiRef.current.generateCompletion(prompt);
             } catch (e) {
-                console.error("AI Generation failed:", e);
+                Logger.getInstance().error("AI Generation failed:", e instanceof Error ? e : new Error(String(e)));
                 // Last ditch fallback if main provider crashes mid-loop
                 if (aiRef.current instanceof WebLLMProvider) {
                    addLog("WebLLM crashed, switching to Mock", 'info');
@@ -137,7 +138,7 @@ export const useSimulationLoop = ({
             updateAgent(agentIndex, { status: 'Idle' });
 
         } catch (e) {
-            console.error(e);
+            Logger.getInstance().error("Simulation loop error", e instanceof Error ? e : new Error(String(e)));
             updateAgent(agentIndex, { status: 'Error' });
             // Add slight delay on error to avoid rapid looping
             await new Promise(r => setTimeout(r, 2000));
