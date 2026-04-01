@@ -28,8 +28,10 @@ export const useOntologyView = () => {
             values: p.values
         }))));
 
-        setSuggestions(ontologyService.getSuggestedAttributes());
-    }, [notes, ontologyService]);
+        // Lower threshold for suggestions in developer mode for easier testing/feedback
+        const threshold = settings.developerMode ? 1 : 3;
+        setSuggestions(ontologyService.getSuggestedAttributes(threshold));
+    }, [notes, ontologyService, settings.developerMode]);
 
     const usageStats = useMemo(() => {
         const stats = new Map<string, number>();

@@ -59,7 +59,7 @@ export function AgentStatusIndicator() {
     const config = getStatusConfig();
 
     const statusDisplay = (
-        <div className={`fixed top-4 right-4 ${config.bg} ${config.text} px-4 py-2 rounded shadow-lg z-50 transition-opacity ${config.opacity || ''} ${config.animate || ''}`}>
+        <div className={`fixed top-4 right-4 ${config.bg} ${config.text} px-4 py-2 rounded shadow-lg z-50 transition-opacity ${config.opacity || ''} ${config.animate || ''} pointer-events-none`}>
             <div className="flex items-center gap-2">
                 <div className={`w-2 h-2 rounded-full ${config.dot}`}></div>
                 {config.label}

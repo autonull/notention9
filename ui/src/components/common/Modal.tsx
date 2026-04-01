@@ -32,9 +32,13 @@ export function Modal({isOpen, onClose, title, children, className}: ModalProps)
         <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
             onClick={handleBackdropClick}
+            role="dialog"
+            aria-modal="true"
         >
             <div
-                className={`bg-gray-800 rounded-lg shadow-xl border border-gray-700 w-full p-6 flex flex-col ${className ?? 'max-w-md'}`}>
+                className={`bg-gray-800 rounded-lg shadow-xl border border-gray-700 w-full p-6 flex flex-col ${className ?? 'max-w-md'}`}
+                onClick={e => e.stopPropagation()}
+            >
                 <div className="flex justify-between items-center mb-4 flex-shrink-0">
                     <h3 className="text-xl font-bold text-white">{title}</h3>
                     <button
