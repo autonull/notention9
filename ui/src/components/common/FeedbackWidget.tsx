@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {MessageIcon, ThumbsDownIcon, ThumbsUpIcon} from './icons';
 import {IconButton} from './IconButton';
 import {InputModal} from './InputModal';
@@ -13,12 +13,20 @@ interface FeedbackWidgetProps {
 export function FeedbackWidget({entityId, entityType = 'note', onFeedback, className = ''}: FeedbackWidgetProps) {
     const [feedbackGiven, setFeedbackGiven] = useState<'positive' | 'negative' | null>(null);
     const [showCommentModal, setShowCommentModal] = useState(false);
+    const [showThanks, setShowThanks] = useState(false);
 
-    const handleFeedback = (type: 'positive' | 'negative') => {
+    const handleFeedback = (e: React.MouseEvent, type: 'positive' | 'negative') => {
+        e.stopPropagation();
         setFeedbackGiven(type);
         if (onFeedback) {
             onFeedback(type, '');
         }
+        setShowThanks(true);
+    };
+
+    const handleCommentClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setShowCommentModal(true);
     };
 
     const handleComment = (comment: string) => {
@@ -26,33 +34,48 @@ export function FeedbackWidget({entityId, entityType = 'note', onFeedback, class
             onFeedback('comment', comment);
         }
         setShowCommentModal(false);
+        setShowThanks(true);
     };
 
+    useEffect(() => {
+        if (showThanks) {
+            const timer = setTimeout(() => setShowThanks(false), 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [showThanks]);
+
     return (
-        <div className={`flex items-center gap-1 ${className}`}>
-            <IconButton
-                icon={ThumbsUpIcon}
-                variant={feedbackGiven === 'positive' ? 'success' : 'ghost'}
-                size="xs"
-                onClick={() => handleFeedback('positive')}
-                title="Helpful"
-                className={feedbackGiven === 'positive' ? 'bg-green-900/30' : ''}
-            />
-            <IconButton
-                icon={ThumbsDownIcon}
-                variant={feedbackGiven === 'negative' ? 'danger' : 'ghost'}
-                size="xs"
-                onClick={() => handleFeedback('negative')}
-                title="Not helpful"
-                className={feedbackGiven === 'negative' ? 'bg-red-900/30' : ''}
-            />
-            <IconButton
-                icon={MessageIcon}
-                variant="ghost"
-                size="xs"
-                onClick={() => setShowCommentModal(true)}
-                title="Provide details"
-            />
+        <div className={`flex items-center gap-1 ${className}`} onClick={e => e.stopPropagation()}>
+            {showThanks ? (
+                <span className="text-xs text-green-400 font-medium animate-fadeIn px-2">Thanks!</span>
+            ) : (
+                <>
+                    <IconButton
+                        icon={ThumbsUpIcon}
+                        variant={feedbackGiven === 'positive' ? 'success' : 'ghost'}
+                        size="xs"
+                        onClick={(e) => handleFeedback(e, 'positive')}
+                        title="Helpful"
+                        className={`transition-transform ${feedbackGiven === 'positive' ? 'scale-110 bg-green-900/30' : 'hover:scale-110'}`}
+                    />
+                    <IconButton
+                        icon={ThumbsDownIcon}
+                        variant={feedbackGiven === 'negative' ? 'danger' : 'ghost'}
+                        size="xs"
+                        onClick={(e) => handleFeedback(e, 'negative')}
+                        title="Not helpful"
+                        className={`transition-transform ${feedbackGiven === 'negative' ? 'scale-110 bg-red-900/30' : 'hover:scale-110'}`}
+                    />
+                    <IconButton
+                        icon={MessageIcon}
+                        variant="ghost"
+                        size="xs"
+                        onClick={handleCommentClick}
+                        title="Provide details"
+                        className="hover:scale-110 transition-transform"
+                    />
+                </>
+            )}
 
             <InputModal
                 isOpen={showCommentModal}

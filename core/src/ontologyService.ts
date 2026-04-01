@@ -233,38 +233,15 @@ export class OntologyService {
      * Optionally takes property values to infer types for unknown attributes.
      */
     recordUsage(properties: Array<{ key: string, values?: any[] }>) {
-        const keys = properties.map(p => p.key);
-        const uniqueKeys = new Set(keys);
-
+        // 1. Process Individual Stats & Values
         for (const prop of properties) {
             const key = prop.key;
             const canonical = getCanonicalKey(key, this.ontology);
             const isKnown = canonical !== key || this.attributeIndex.has(key);
 
             if (isKnown) {
-                // Record stats for canonical key
-                const targetKey = canonical;
-                this.usageStats.set(targetKey, (this.usageStats.get(targetKey) || 0) + 1);
-
-                // Update co-occurrence for known keys
-                let coMap = this.coOccurrenceStats.get(targetKey);
-                if (!coMap) {
-                    coMap = new Map<string, number>();
-                    this.coOccurrenceStats.set(targetKey, coMap);
-                }
-
-                for (const otherKey of uniqueKeys) {
-                    if (otherKey !== key) {
-                        const otherCanonical = getCanonicalKey(otherKey, this.ontology);
-                        // We track co-occurrence between CANONICAL keys mostly, but also raw for debugging?
-                        // Let's stick to canonical for the graph.
-                        if (this.attributeIndex.has(otherCanonical)) {
-                             coMap.set(otherCanonical, (coMap.get(otherCanonical) || 0) + 1);
-                        }
-                    }
-                }
+                this.usageStats.set(canonical, (this.usageStats.get(canonical) || 0) + 1);
             } else {
-                // Unknown key - track for learning
                 this.unknownUsageStats.set(key, (this.unknownUsageStats.get(key) || 0) + 1);
 
                 // Sample values for type inference
@@ -278,21 +255,23 @@ export class OntologyService {
                         samples.push(...prop.values);
                     }
                 }
+            }
+        }
 
-                // Track co-occurrence of Unknown key with Known keys (to infer context)
-                let coMap = this.coOccurrenceStats.get(key);
-                if (!coMap) {
-                    coMap = new Map<string, number>();
-                    this.coOccurrenceStats.set(key, coMap);
-                }
+        // 2. Process Co-occurrence (All vs All)
+        const uniqueKeys = Array.from(new Set(properties.map(p => p.key)));
+        const canonicals = uniqueKeys.map(k => getCanonicalKey(k, this.ontology));
 
-                for (const otherKey of uniqueKeys) {
-                    if (otherKey !== key) {
-                        const otherCanonical = getCanonicalKey(otherKey, this.ontology);
-                        if (this.attributeIndex.has(otherCanonical)) {
-                            coMap.set(otherCanonical, (coMap.get(otherCanonical) || 0) + 1);
-                        }
-                    }
+        for (const src of canonicals) {
+            let coMap = this.coOccurrenceStats.get(src);
+            if (!coMap) {
+                coMap = new Map<string, number>();
+                this.coOccurrenceStats.set(src, coMap);
+            }
+
+            for (const target of canonicals) {
+                if (src !== target) {
+                    coMap.set(target, (coMap.get(target) || 0) + 1);
                 }
             }
         }
@@ -341,6 +320,53 @@ export class OntologyService {
         }
 
         return suggestions.sort((a, b) => b.frequency - a.frequency);
+    }
+
+    /**
+     * Get suggested attributes based on the context of existing keys in a note.
+     * Suggests keys that frequently co-occur with the provided keys.
+     */
+    getContextualSuggestions(existingKeys: string[], limit: number = 5): SuggestedAttribute[] {
+        const scoreMap = new Map<string, number>();
+
+        // Resolve canonicals
+        const canonicalKeys = existingKeys.map(k => getCanonicalKey(k, this.ontology));
+
+        for (const key of canonicalKeys) {
+            const coMap = this.coOccurrenceStats.get(key);
+            if (coMap) {
+                for (const [neighbor, count] of coMap.entries()) {
+                    if (!canonicalKeys.includes(neighbor)) {
+                        scoreMap.set(neighbor, (scoreMap.get(neighbor) || 0) + count);
+                    }
+                }
+            }
+        }
+
+        // Convert scores to suggestions
+        const suggestions: SuggestedAttribute[] = [];
+        for (const [key, score] of scoreMap.entries()) {
+            // Determine type
+            let type: PropertyType = 'string';
+            const attr = this.attributeIndex.get(key);
+            if (attr) {
+                type = attr.type;
+            } else {
+                // If it's an unknown key, try to infer from samples
+                const values = this.unknownValuesSample.get(key);
+                type = this.inferType(key, values || []);
+            }
+
+            suggestions.push({
+                key,
+                type,
+                frequency: score,
+                confidence: Math.min(0.95, score / 10), // Heuristic
+                parentContext: 'Contextual'
+            });
+        }
+
+        return suggestions.sort((a, b) => b.frequency - a.frequency).slice(0, limit);
     }
 
     private findNodeOwningAttribute(attrKey: string): OntologyNode | null {

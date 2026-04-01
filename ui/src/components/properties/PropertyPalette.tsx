@@ -1,11 +1,12 @@
 import React, {useEffect, useMemo, useRef, useState} from 'react';
-import {OntologyNode} from '@notention/core';
+import {OntologyNode, SuggestedAttribute} from '@notention/core';
 
 interface PropertyPaletteProps {
     isOpen: boolean;
     onClose: () => void;
     onInsert: (key: string) => void;
     ontology: OntologyNode[];
+    suggestions?: SuggestedAttribute[];
 }
 
 interface PropertyOption {
@@ -18,7 +19,8 @@ export const PropertyPalette: React.FC<PropertyPaletteProps> = ({
                                                                     isOpen,
                                                                     onClose,
                                                                     onInsert,
-                                                                    ontology
+                                                                    ontology,
+                                                                    suggestions = []
                                                                 }) => {
     const [filter, setFilter] = useState('');
     const [selectedIndex, setSelectedIndex] = useState(0);
@@ -47,6 +49,18 @@ export const PropertyPalette: React.FC<PropertyPaletteProps> = ({
         const options = [...defaults];
         const existingKeys = new Set(defaults.map(d => d.key));
 
+        // Add learned suggestions
+        suggestions.forEach(s => {
+            if (!existingKeys.has(s.key)) {
+                options.push({
+                    key: s.key,
+                    icon: '✨',
+                    description: `Learned (Freq: ${s.frequency})`
+                });
+                existingKeys.add(s.key);
+            }
+        });
+
         ontology.forEach(node => {
             if (!node.attributes) return;
             Object.entries(node.attributes).forEach(([key, attr]) => {
@@ -61,7 +75,7 @@ export const PropertyPalette: React.FC<PropertyPaletteProps> = ({
             });
         });
         return options;
-    }, [ontology]);
+    }, [ontology, suggestions]);
 
     const filtered = useMemo(() => {
         if (!filter) return propertyOptions;

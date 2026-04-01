@@ -143,6 +143,25 @@ export const renameNode = (
   return newTree;
 };
 
+/**
+ * Finds the ID of the node that defines a given attribute (by key or alias).
+ */
+export const findNodeIdForAttribute = (nodes: OntologyNode[], key: string): string | null => {
+  for (const node of nodes) {
+    if (node.attributes) {
+      if (node.attributes[key]) return node.id;
+      for (const [attrKey, attr] of Object.entries(node.attributes)) {
+         if (attr.aliases?.includes(key)) return node.id;
+      }
+    }
+    if (node.children) {
+      const found = findNodeIdForAttribute(node.children, key);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
 // --- Attribute Operations ---
 
 export const addAttribute = (
@@ -192,6 +211,23 @@ export const renameAttribute = (
   }
   return newTree;
 };
+
+export const addAliasToAttribute = (
+  tree: OntologyNode[],
+  nodeId: string,
+  attributeKey: string,
+  alias: string
+): OntologyNode[] => {
+    const newTree = cloneTree(tree);
+    const node = findNode(newTree, nodeId);
+    if (node && node.attributes && node.attributes[attributeKey]) {
+        const attr = node.attributes[attributeKey];
+        const aliases = new Set(attr.aliases || []);
+        aliases.add(alias);
+        attr.aliases = Array.from(aliases);
+    }
+    return newTree;
+}
 
 /**
  * Merges sourceAttribute into targetAttribute.

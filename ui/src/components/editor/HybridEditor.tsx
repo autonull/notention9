@@ -5,6 +5,7 @@ import {PropertyPalette} from '../properties/PropertyPalette';
 import {Logger, parseProperties, Property, PropertyExtractor, replacePropertyInString} from '@notention/core';
 import {useSettings} from '../../hooks/useSettingsContext';
 import {Button} from '../common/Button';
+import {useOntologySuggestions} from '../../hooks/useOntologySuggestions';
 
 interface HybridEditorProps extends React.ComponentProps<typeof TiptapEditor> {
     onNoteUpdate?: (note: any) => void;
@@ -13,6 +14,7 @@ interface HybridEditorProps extends React.ComponentProps<typeof TiptapEditor> {
 
 export const HybridEditor = forwardRef<TiptapEditorRef, HybridEditorProps>((props, ref) => {
     const {settings} = useSettings();
+    const {suggestions} = useOntologySuggestions();
     const [suggestedProps, setSuggestedProps] = useState<Property[]>([]);
 
     // Use settings.ontology for extraction
@@ -109,6 +111,7 @@ export const HybridEditor = forwardRef<TiptapEditorRef, HybridEditorProps>((prop
                     onClose={() => setIsPropertyPaletteOpen(false)}
                     onInsert={handleInsertProperty}
                     ontology={settings.ontology}
+                    suggestions={suggestions}
                 />
             </div>
 

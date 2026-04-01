@@ -1,8 +1,8 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {Modal} from '../common/Modal';
-import {InformationCircleIcon, TagIcon, ExclamationTriangleIcon} from '../common/icons';
+import {InformationCircleIcon, TagIcon, ExclamationTriangleIcon, SparklesIcon} from '../common/icons';
 import {ICON_MAP} from '../layout/iconMap';
-import type {OntologyAttribute, OntologyNode} from '@notention/core';
+import type {OntologyAttribute, OntologyNode, SuggestedAttribute} from '@notention/core';
 import {findAttributeDef} from '@notention/core';
 import {Input} from '../common/Input';
 import {Button} from '../common/Button';
@@ -20,6 +20,7 @@ interface InsertPropertyModalProps {
     ontology?: OntologyNode[];
     isEditing?: boolean;
     onPickLocation?: () => Promise<string>;
+    suggestions?: SuggestedAttribute[];
 }
 
 export function InsertPropertyModal({
@@ -32,7 +33,8 @@ export function InsertPropertyModal({
                                         attributeDef,
                                         ontology,
                                         isEditing = false,
-                                        onPickLocation
+                                        onPickLocation,
+                                        suggestions = []
                                     }: InsertPropertyModalProps) {
     const [key, setKey] = useState(initialKey);
     const [operator, setOperator] = useState(initialOperator);
@@ -74,6 +76,15 @@ export function InsertPropertyModal({
         return ['is', 'is not', 'greater than', 'less than', 'contains', 'between'];
     }, [activeDef]);
 
+    // Filter suggestions based on input
+    const filteredSuggestions = useMemo(() => {
+        if (!key || activeDef) return [];
+        const lower = key.toLowerCase();
+        return suggestions
+            .filter(s => s.key.toLowerCase().includes(lower) && s.key.toLowerCase() !== lower)
+            .slice(0, 5);
+    }, [key, suggestions, activeDef]);
+
     const handleSubmit = (e?: React.FormEvent) => {
         e?.preventDefault();
         setTouched(true);
@@ -105,7 +116,31 @@ export function InsertPropertyModal({
                         onChange={(e) => setKey(e.target.value)}
                         autoFocus={!activeDef}
                         className={activeDef ? "border-blue-500/50" : ""}
+                        list="learned-keys"
                     />
+                    <datalist id="learned-keys">
+                         {suggestions.map(s => (
+                             <option key={s.key} value={s.key}>{s.key} (Learned)</option>
+                         ))}
+                    </datalist>
+
+                    {/* Quick Suggestions Badges */}
+                    {filteredSuggestions.length > 0 && (
+                         <div className="flex flex-wrap gap-1 mt-2">
+                             {filteredSuggestions.map(s => (
+                                 <button
+                                     key={s.key}
+                                     type="button"
+                                     onClick={() => setKey(s.key)}
+                                     className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-purple-900/30 text-purple-300 border border-purple-800/50 hover:bg-purple-900/50 transition-colors"
+                                 >
+                                     <SparklesIcon className="w-2.5 h-2.5" />
+                                     {s.key}
+                                 </button>
+                             ))}
+                         </div>
+                    )}
+
                     {activeDef && (
                         <div className="flex flex-col gap-1 mt-1 text-xs">
                             {activeDef.description && (

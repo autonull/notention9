@@ -1,8 +1,9 @@
-import {useCallback, useMemo, useState, useEffect} from 'react';
+import {useCallback, useMemo, useState} from 'react';
 import {useSettings} from './useSettingsContext';
 import {useNotes} from './useNotes';
 import {useGardener} from './useGardener';
-import {addNode, deleteNode, detectConflicts, OntologyService, SuggestedAttribute, addAttribute, OntologyAttribute} from '@notention/core';
+import {addNode, deleteNode, detectConflicts, addAttribute, addAliasToAttribute, OntologyAttribute} from '@notention/core';
+import {useOntologySuggestions} from './useOntologySuggestions';
 
 export type OntologyTab = 'graph' | 'simulator' | 'conflicts' | 'suggestions';
 
@@ -13,25 +14,9 @@ export const useOntologyView = () => {
     const {evolveOntology, optimizeOntology} = useGardener();
     const [activeTab, setActiveTab] = useState<OntologyTab>('graph');
     const [isEvolving, setIsEvolving] = useState(false);
-    const [suggestions, setSuggestions] = useState<SuggestedAttribute[]>([]);
 
-    // Instantiate OntologyService to generate learning stats
-    // We recreate it when ontology or notes change to re-scan
-    // In a real app, this should probably be incremental or a singleton context
-    const ontologyService = useMemo(() => new OntologyService(ontology), [ontology]);
-
-    useEffect(() => {
-        // Feed notes to service to learn
-        // This simulates "learning from history"
-        ontologyService.recordUsage(notes.flatMap(n => n.properties.map(p => ({
-            key: p.key,
-            values: p.values
-        }))));
-
-        // Lower threshold for suggestions in developer mode for easier testing/feedback
-        const threshold = settings.developerMode ? 1 : 3;
-        setSuggestions(ontologyService.getSuggestedAttributes(threshold));
-    }, [notes, ontologyService, settings.developerMode]);
+    // Use reusable hook for suggestions
+    const {suggestions} = useOntologySuggestions();
 
     const usageStats = useMemo(() => {
         const stats = new Map<string, number>();
@@ -96,6 +81,13 @@ export const useOntologyView = () => {
         }));
     }, [setSettings]);
 
+    const handleAddAlias = useCallback((nodeId: string, attributeKey: string, alias: string) => {
+        setSettings(prev => ({
+            ...prev,
+            ontology: addAliasToAttribute(prev.ontology, nodeId, attributeKey, alias)
+        }));
+    }, [setSettings]);
+
     const getGraphData = useCallback(() => {
         const nodes = ontology.map(node => ({
             id: node.id,
@@ -131,6 +123,7 @@ export const useOntologyView = () => {
         handleAddNode,
         handleDeleteNode,
         handleAddAttribute,
+        handleAddAlias,
         usageStats,
         conflicts,
         getGraphData,

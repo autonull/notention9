@@ -5,7 +5,10 @@ import {
     TagIcon,
     NetworkIcon,
     UserPlusIcon,
-    ChatIcon
+    ChatIcon,
+    ClockIcon,
+    CheckCircleIcon,
+    ExclamationTriangleIcon
 } from '../common/icons';
 
 interface MatchItemProps {
@@ -84,28 +87,49 @@ export const MatchItem: React.FC<MatchItemProps> = ({
             <div className="flex flex-wrap gap-1.5 mt-1">
                 {result.matches.map((m, i) => {
                     const type = m.details?.type || 'unknown';
+                    const details = m.details;
 
                     let badgeClass = 'bg-gray-800 text-gray-400 border-gray-700';
                     let icon = null;
                     let text = m.reason;
 
-                    if (type === 'alias') {
-                        badgeClass = 'bg-purple-900/20 text-purple-300 border-purple-900/30';
-                        icon = <TagIcon className="w-3 h-3" />;
-                        text = `Alias: ${m.details?.aliasUsed} ≈ ${m.requestProp.key}`;
-                    } else if (type === 'fuzzy') {
-                        badgeClass = 'bg-orange-900/20 text-orange-300 border-orange-900/30';
-                        icon = <SparklesIcon className="w-3 h-3" />;
-                        // simplify fuzzy reason
-                        text = `~ ${m.offerProp.values[0]}`;
-                    } else if (type === 'range') {
-                        badgeClass = 'bg-blue-900/20 text-blue-300 border-blue-900/30';
-                        text = m.reason.replace(' is between ', ' ∈ [').replace(' and ', ', ').replace(']', ']');
-                    } else if (type === 'geo') {
-                        badgeClass = 'bg-teal-900/20 text-teal-300 border-teal-900/30';
-                    } else if (type === 'exact') {
-                        badgeClass = 'bg-green-900/20 text-green-300 border-green-900/30';
-                        text = `${m.requestProp.key}: ${m.offerProp.values[0]}`;
+                    switch (type) {
+                        case 'alias':
+                            badgeClass = 'bg-purple-900/20 text-purple-300 border-purple-900/30';
+                            icon = <TagIcon className="w-3 h-3" />;
+                            text = `Alias: ${details?.aliasUsed} ≈ ${m.requestProp.key}`;
+                            break;
+                        case 'fuzzy':
+                            badgeClass = 'bg-orange-900/20 text-orange-300 border-orange-900/30';
+                            icon = <SparklesIcon className="w-3 h-3" />;
+                            text = `~ ${m.offerProp.values[0]}`;
+                            break;
+                        case 'range':
+                            badgeClass = 'bg-blue-900/20 text-blue-300 border-blue-900/30';
+                            if (details?.valueMatch === 'in') {
+                                text = `In range: ${m.offerProp.values[0]}`;
+                            } else if (details?.valueMatch === 'out') {
+                                badgeClass = 'bg-red-900/20 text-red-300 border-red-900/30';
+                                text = `Out of range: ${m.offerProp.values[0]}`;
+                            }
+                            break;
+                        case 'geo':
+                            badgeClass = 'bg-teal-900/20 text-teal-300 border-teal-900/30';
+                            break;
+                        case 'date':
+                            badgeClass = 'bg-cyan-900/20 text-cyan-300 border-cyan-900/30';
+                            icon = <ClockIcon className="w-3 h-3" />;
+                            // Simplify date text if possible, else use reason
+                            break;
+                        case 'partial':
+                            badgeClass = 'bg-yellow-900/20 text-yellow-300 border-yellow-900/30';
+                            icon = <ExclamationTriangleIcon className="w-3 h-3" />;
+                            break;
+                        case 'exact':
+                            badgeClass = 'bg-green-900/20 text-green-300 border-green-900/30';
+                            icon = <CheckCircleIcon className="w-3 h-3" />;
+                            text = `${m.requestProp.key}: ${m.offerProp.values[0]}`;
+                            break;
                     }
 
                     return (

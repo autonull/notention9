@@ -12,6 +12,7 @@ import {EditorStatusBar} from './EditorStatusBar';
 import {EditorBubbleMenu} from './EditorBubbleMenu';
 import {InsertPropertyModal} from './InsertPropertyModal';
 import {usePropertyInsertion} from '../../hooks/usePropertyInsertion';
+import {useOntologySuggestions} from '../../hooks/useOntologySuggestions';
 
 interface TiptapEditorProps {
     note: Note;
@@ -67,6 +68,8 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
         handlePrepareNewProperty
     } = usePropertyInsertion();
 
+    const {suggestions} = useOntologySuggestions();
+
     useImperativeHandle(ref, () => ({
         openPropertyModal: handleOpenPropertyModal,
         editor
@@ -80,7 +83,8 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
         minimal,
         notes,
         onOpenPropertyModal: handleOpenPropertyModal,
-        onMagic
+        onMagic,
+        suggestions
     });
 
     // Sync content from parent
@@ -135,6 +139,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
                 ontology={ontology}
                 isEditing={!!initialModalData} // Check if we have initial data (editing) - or track pos
                 onPickLocation={onPickLocation}
+                suggestions={suggestions}
             />
             <div className="flex-grow overflow-y-auto" onClick={handleEditorClick}>
                 {topContent}

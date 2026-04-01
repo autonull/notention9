@@ -1,6 +1,9 @@
 import React from 'react';
 import { CheckCircleIcon, InformationCircleIcon, LinkIcon, PlusIcon } from './common/icons';
 import { Suggestion } from '../hooks/useNoteAnalysis';
+import { FeedbackWidget } from './common/FeedbackWidget';
+import { agentService } from '../services/AgentService';
+import { useToast } from '../hooks/useToast';
 
 interface SuggestionItemProps {
     suggestion: Suggestion;
@@ -10,6 +13,8 @@ interface SuggestionItemProps {
 }
 
 export const SuggestionItem: React.FC<SuggestionItemProps> = ({ suggestion, isActive, onApply, onMouseEnter }) => {
+    const { addToast } = useToast();
+
     const getIconForType = (type: string) => {
         switch (type) {
             case 'property':
@@ -21,9 +26,24 @@ export const SuggestionItem: React.FC<SuggestionItemProps> = ({ suggestion, isAc
         }
     };
 
+    const handleFeedback = (type: 'positive' | 'negative' | 'comment', val: string) => {
+        agentService.send({
+            type: 'feedback',
+            payload: {
+                id: crypto.randomUUID(),
+                entityId: suggestion.id,
+                entityType: 'suggestion',
+                value: type === 'positive' ? 1 : -1,
+                context: {details: val, text: suggestion.text},
+                timestamp: Date.now()
+            }
+        });
+        // FeedbackWidget handles the 'Thanks' state, but we could toast if needed
+    };
+
     return (
-        <button
-            className={`w-full text-left group flex items-start gap-2.5 p-2 rounded-lg transition-all border border-transparent
+        <div
+            className={`w-full relative group flex items-start gap-2.5 p-2 rounded-lg transition-all border border-transparent cursor-pointer
                 ${isActive ? 'bg-gray-700 border-gray-600' : 'hover:bg-gray-700/50 hover:border-gray-600'}
               `}
             onClick={onApply}
@@ -32,7 +52,7 @@ export const SuggestionItem: React.FC<SuggestionItemProps> = ({ suggestion, isAc
             <div className="mt-0.5 flex-shrink-0">
                 {getIconForType(suggestion.type)}
             </div>
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 pr-8"> {/* Extra padding right for feedback */}
                 <p className="text-sm text-gray-200 group-hover:text-white truncate">
                     {suggestion.text}
                 </p>
@@ -44,15 +64,27 @@ export const SuggestionItem: React.FC<SuggestionItemProps> = ({ suggestion, isAc
                                 style={{width: `${suggestion.confidence * 100}%`}}
                             />
                         </div>
-                        <span
-                            className="text-[10px] text-gray-500">{Math.round(suggestion.confidence * 100)}% match</span>
+                        <span className="text-[10px] text-gray-500">
+                            {Math.round(suggestion.confidence * 100)}% match
+                        </span>
                     </div>
                 )}
             </div>
-            <div
-                className={`transition-opacity ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
-                <CheckCircleIcon className="w-4 h-4 text-gray-400 hover:text-green-400"/>
+
+            {/* Action Icon (Apply) */}
+            <div className={`absolute right-2 top-2 transition-opacity ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+                 <CheckCircleIcon className="w-4 h-4 text-gray-400 hover:text-green-400"/>
             </div>
-        </button>
+
+            {/* Feedback Widget (Bottom Right, visible on hover) */}
+            <div className={`absolute right-2 bottom-1 transition-opacity ${isActive || 'group-hover:opacity-100'} opacity-0`}>
+                <FeedbackWidget
+                    entityId={suggestion.id}
+                    entityType="suggestion"
+                    onFeedback={handleFeedback}
+                    className="bg-gray-800 rounded-full shadow-sm scale-75 origin-bottom-right"
+                />
+            </div>
+        </div>
     );
 };
