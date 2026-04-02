@@ -7,7 +7,8 @@ import {
     EditIcon,
     HelpIcon,
     SearchSparkleIcon,
-    TagIcon
+    TagIcon,
+    SparklesIcon
 } from '../common/icons';
 import {IconButton} from '../common/IconButton';
 import {HelpModal} from '../common/HelpModal';
@@ -97,8 +98,8 @@ export function EditorControls({
                 {onToggleInspector && (
                     <IconButton
                         onClick={onToggleInspector}
-                        tooltip="Toggle Property Inspector"
-                        icon={CodeBracketsIcon}
+                        tooltip="Toggle Assistant"
+                        icon={SparklesIcon}
                         variant="ghost"
                         isActive={isInspectorOpen}
                         size="sm"

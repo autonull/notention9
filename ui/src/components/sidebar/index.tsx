@@ -3,6 +3,7 @@ import type {Note} from '@notention/core';
 import {ConfirmationModal} from '../common/ConfirmationModal';
 import {NoteListItem} from './NoteListItem';
 import {Search} from './Search';
+import {FilterBar} from './FilterBar';
 import {SortSelector} from './SortSelector';
 import {ViewSelector} from './ViewSelector';
 import {NoteGridItem} from './NoteGridItem';
@@ -65,6 +66,8 @@ export function Sidebar({sortedNotes = []}: SidebarProps) {
                         containerClassName="flex-shrink-0"
                     />
                 </div>
+
+                <FilterBar searchTerm={searchTerm} onSetSearch={setSearchTerm}/>
 
                 <div className="flex gap-2">
                     <div className="flex-grow">

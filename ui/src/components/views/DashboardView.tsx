@@ -8,18 +8,39 @@ import {ActivityFeed} from '../widgets/ActivityFeed';
 import {
     CheckCircleIcon,
     CpuChipIcon,
-    MagicWandIcon,
+    LightBulbIcon,
     NetworkIcon,
     NoteIcon,
     PlusIcon,
     SparklesIcon
 } from '../common/icons';
 
+const TEMPLATES = {
+    task: {
+        title: 'New Task',
+        content: '<p>Describe task...</p>',
+        properties: [{key: 'status', operator: 'is', values: ['todo']}],
+        tags: ['task']
+    },
+    journal: {
+        title: () => new Date().toLocaleDateString(),
+        content: '<p>Thoughts...</p>',
+        properties: [{key: 'type', operator: 'is', values: ['journal']}],
+        tags: ['journal']
+    },
+    idea: {
+        title: 'New Idea',
+        content: '<p>Idea description...</p>',
+        properties: [{key: 'type', operator: 'is', values: ['idea']}],
+        tags: ['idea']
+    }
+};
+
 export function DashboardView() {
     const {notes, addNote} = useNotes();
     const {setActiveView, setSelectedNoteId} = useView();
     const {settings} = useSettings();
-    const [fixLifeInput, setFixLifeInput] = useState('');
+    const [quickCaptureInput, setQuickCaptureInput] = useState('');
     const [agentStatus, setAgentStatus] = useState(agentService.getStatus());
 
     useEffect(() => {
@@ -36,32 +57,41 @@ export function DashboardView() {
         setActiveView('notes');
     };
 
-    const handleFixLife = (e: React.FormEvent) => {
+    const handleQuickCapture = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!fixLifeInput.trim()) return;
+        if (!quickCaptureInput.trim()) return;
 
-        // Create a decomposition note
         const note = addNote({
-            title: 'Life Decomp: ' + fixLifeInput,
-            content: `<p>Goal: ${fixLifeInput}</p><p>Processing decomposition...</p>`,
-            tags: ['@sovereign', '@decomposition'],
-            properties: [
-                {key: 'intent', operator: 'is', values: ['fix-life']},
-                {key: 'status', operator: 'is', values: ['proposed']}
-            ]
+            title: 'Quick Note',
+            content: `<p>${quickCaptureInput}</p>`,
+            tags: ['quick-capture']
         });
 
         setSelectedNoteId(note.id);
         setActiveView('notes');
     };
 
-    const stats = {
-        total: notes.length,
-        public: notes.filter(n => n.privacy === 'public').length,
-        tasks: notes.filter(n => n.properties.some(p => p.key === 'intent' && p.values.includes('task'))).length,
-        skills: notes.filter(n => n.source?.type === 'skill').length,
-        relays: settings.nostr?.relays?.length || 0
+    const handleQuickTemplate = (type: keyof typeof TEMPLATES) => {
+        const template = TEMPLATES[type];
+        const title = typeof template.title === 'function' ? template.title() : template.title;
+
+        const note = addNote({
+            title,
+            content: template.content,
+            tags: template.tags,
+            properties: template.properties
+        });
+        setSelectedNoteId(note.id);
+        setActiveView('notes');
     };
+
+    const stats = notes.reduce((acc, n) => {
+        acc.total++;
+        if (n.privacy === 'public') acc.public++;
+        if (n.properties.some(p => p.key === 'status' && p.values.includes('todo'))) acc.tasks++;
+        if (n.source?.type === 'skill') acc.skills++;
+        return acc;
+    }, {total: 0, public: 0, tasks: 0, skills: 0, relays: settings.nostr?.relays?.length || 0});
 
     const recentNotes = [...notes]
         .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
@@ -72,51 +102,72 @@ export function DashboardView() {
         setActiveView('notes');
     };
 
+    const isConnected = agentStatus.status === 'connected';
+
     return (
         <div className="p-6 h-full overflow-y-auto bg-gray-900 text-white custom-scrollbar">
 
-            {/* Ignition / Fix My Life Section */}
             <div
                 className="mb-8 text-center py-10 bg-gradient-to-b from-gray-800/50 to-transparent rounded-2xl border border-gray-700/50 relative overflow-hidden group">
                 <div
                     className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-10 transition-opacity duration-1000"></div>
-                <h1 className="text-4xl font-black mb-4 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-                    What's on your mind?
+                <h1 className="text-3xl font-black mb-3 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+                    Quick Capture
                 </h1>
                 <p className="text-gray-400 text-sm mb-6 max-w-md mx-auto">
-                    Type a goal, a problem, or just a thought. We'll help you organize it.
+                    Capture thoughts instantly. Organize later.
                 </p>
 
-                <form onSubmit={handleFixLife} className="max-w-lg mx-auto relative z-10">
+                <form onSubmit={handleQuickCapture} className="max-w-lg mx-auto relative z-10 mb-4">
                     <input
                         type="text"
-                        value={fixLifeInput}
-                        onChange={(e) => setFixLifeInput(e.target.value)}
-                        placeholder="e.g., I need to find a new apartment..."
+                        value={quickCaptureInput}
+                        onChange={(e) => setQuickCaptureInput(e.target.value)}
+                        placeholder="Type a thought, task, or idea..."
                         className="w-full bg-gray-900 border border-gray-700 rounded-full py-3 px-6 pr-12 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all shadow-lg placeholder-gray-600"
                     />
                     <button
                         type="submit"
                         className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-blue-600 hover:bg-blue-500 rounded-full transition-colors"
+                        title="Create Note"
                     >
-                        <MagicWandIcon className="w-4 h-4 text-white"/>
+                        <PlusIcon className="w-4 h-4 text-white"/>
                     </button>
                 </form>
+
+                <div className="flex justify-center gap-3 relative z-10">
+                    <button
+                        onClick={() => handleQuickTemplate('task')}
+                        className="flex items-center gap-1 px-3 py-1.5 bg-gray-800 hover:bg-gray-700 rounded-full text-xs text-gray-300 border border-gray-700 transition-colors"
+                    >
+                        <CheckCircleIcon className="w-3 h-3 text-green-400"/> Task
+                    </button>
+                    <button
+                        onClick={() => handleQuickTemplate('journal')}
+                        className="flex items-center gap-1 px-3 py-1.5 bg-gray-800 hover:bg-gray-700 rounded-full text-xs text-gray-300 border border-gray-700 transition-colors"
+                    >
+                        <NoteIcon className="w-3 h-3 text-blue-400"/> Journal
+                    </button>
+                    <button
+                        onClick={() => handleQuickTemplate('idea')}
+                        className="flex items-center gap-1 px-3 py-1.5 bg-gray-800 hover:bg-gray-700 rounded-full text-xs text-gray-300 border border-gray-700 transition-colors"
+                    >
+                        <LightBulbIcon className="w-3 h-3 text-yellow-400"/> Idea
+                    </button>
+                </div>
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-8">
-                {/* Agent Status Card */}
                 <StatCard
                     label="Agent Status"
-                    value={agentStatus.status === 'connected' ? 'Online' : 'Offline'}
+                    value={isConnected ? 'Online' : 'Offline'}
                     icon={<CpuChipIcon
-                        className={`w-5 h-5 ${agentStatus.status === 'connected' ? 'text-green-400' : 'text-gray-500'}`}/>}
-                    className={agentStatus.status === 'connected' ? 'border-green-900/30 bg-green-900/5' : 'border-gray-700/50'}
-                    trend={agentStatus.status === 'connected' ? 'up' : 'neutral'}
-                    trendValue={agentStatus.status === 'connected' ? 'Ready' : 'Local Mode'}
+                        className={`w-5 h-5 ${isConnected ? 'text-green-400' : 'text-gray-500'}`}/>}
+                    className={isConnected ? 'border-green-900/30 bg-green-900/5' : 'border-gray-700/50'}
+                    trend={isConnected ? 'up' : 'neutral'}
+                    trendValue={isConnected ? 'Ready' : 'Local Mode'}
                 />
 
-                {/* Network Status Card */}
                 <StatCard
                     label="P2P Network"
                     value={`${stats.relays} Relays`}
