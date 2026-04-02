@@ -1,4 +1,4 @@
-import { OntologyNode, OntologyAttribute, Note, Property } from './types';
+import { OntologyNode, OntologyAttribute, Note, Property } from './types/index.js';
 
 /**
  * Pure functions for manipulating the Ontology tree.

@@ -1,6 +1,6 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import type { Note, Property } from '@notention/core';
-import { parseProperties, replacePropertyInString } from '@notention/core';
+import { parseProperties, replacePropertyInString, PropertyExtractor, getTextFromHtml } from '@notention/core';
 import { useDebouncedSave } from './useDebouncedSave';
 import { useView } from './useViewContext';
 import { useToast } from './useToast';
@@ -35,6 +35,9 @@ export const useEditorLogic = ({ note, onSave }: UseEditorLogicProps) => {
   }, [onSave, settings.developerMode, evolveOntology, addToast]);
 
   const { dirtyNote, setDirtyNote, saveStatus } = useDebouncedSave(note, handlePersist);
+
+  // Memoize property extractor
+  const propertyExtractor = useMemo(() => new PropertyExtractor(settings.ontology), [settings.ontology]);
 
   // Expose immediate save for Ctrl+S
   const saveImmediately = useCallback(() => {
@@ -83,15 +86,31 @@ export const useEditorLogic = ({ note, onSave }: UseEditorLogicProps) => {
 
   const handleContentSave = useCallback(
     (content: string) => {
-      // Parse properties from content and update note
-      const properties = parseProperties(content);
+      // 1. Parse explicit properties from content (bracket syntax)
+      const explicitProperties = parseProperties(content);
+
+      // 2. Extract implicit properties from plain text
+      const plainText = getTextFromHtml(content);
+      const implicitProperties = propertyExtractor.extractFromText(plainText);
+
+      // 3. Merge properties: Explicit overrides Implicit
+      // We only add implicit properties if their key is NOT present in explicit ones
+      const explicitKeys = new Set(explicitProperties.map(p => p.key));
+      const newImplicitProps = implicitProperties.filter(p => !explicitKeys.has(p.key));
+
+      const properties = [...explicitProperties, ...newImplicitProps];
 
       setDirtyNote((prev) => {
-          const updated = { ...prev, content, properties };
+          const updated = {
+              ...prev,
+              content,
+              properties,
+              priority: 1.0 // User edit promotes priority
+          };
           return updated;
       });
     },
-    [setDirtyNote]
+    [setDirtyNote, propertyExtractor]
   );
 
   const { handleMagic, handleAutoTag, isAutoTagging, isApiKeyAvailable } = useEditorMagic({

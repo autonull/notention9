@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { finalizeEvent } from 'nostr-tools';
 import { useSettings } from './useSettingsContext';
-import { pool, DEFAULT_RELAYS, hexToBytes, NetworkGate, PrivacyError, Logger } from '@notention/core';
+import { pool, DEFAULT_RELAYS, hexToBytes, publishNoteToNostr, Logger } from '@notention/core';
 import { getTextFromHtml } from '@notention/core';
 import type { Note } from '@notention/core';
 
@@ -10,56 +10,38 @@ export const usePublish = () => {
   const [isPublishing, setIsPublishing] = useState(false);
 
   const relays = settings.nostr.relays || DEFAULT_RELAYS;
-  const networkGate = new NetworkGate();
 
   const publishNote = useCallback(async (note: Note, promptUser?: (message: string) => Promise<boolean>) => {
-    if (!settings.nostr.privkey) {
-      throw new Error('No private key found in settings. Please configure your Nostr identity.');
-    }
+    // Check for privkey OR window.nostr (NIP-07)
+    // Core's publishNoteToNostr handles the specific check, but we do a preliminary check here
+    const hasNip07 = typeof window !== 'undefined' && !!(window as any).nostr;
 
-    // Privacy check - prevent publishing private notes
-    try {
-      const canTransmit = await networkGate.canTransmit(note, 'Nostr network', promptUser);
-      if (!canTransmit) {
-        throw new Error('Publishing cancelled - note is private');
-      }
-    } catch (error) {
-      if (error instanceof PrivacyError) {
-        throw new Error('Cannot publish private note. Enable public sharing first.');
-      }
-      throw error;
+    if (!settings.nostr.privkey && !hasNip07) {
+      throw new Error('No private key found in settings and no NIP-07 extension detected. Please configure your Nostr identity.');
     }
 
     setIsPublishing(true);
     try {
-      const privkeyBytes = hexToBytes(settings.nostr.privkey);
+      // Create a temporary note object for publishing
+      // 1. Convert content from HTML to text and prepend title
       const content = getTextFromHtml(note.content);
+      const formattedContent = `${note.title}\n\n${content}`;
 
-      const tags = note.tags.map(tag => ['t', tag]);
-
-      note.properties.forEach(prop => {
-        if (prop.values.length > 0) {
-          prop.values.forEach(val => {
-            tags.push(['property', prop.key, prop.operator, val]);
-          });
-        }
-      });
-
-      const created_at = Math.floor(Date.now() / 1000);
-
-      const eventTemplate = {
-        kind: 1,
-        created_at,
-        tags,
-        content: `${note.title}\n\n${content}`,
+      // 2. Clone the note to avoid mutating the original React state
+      const noteToPublish = {
+        ...note,
+        content: formattedContent
       };
 
-      const signedEvent = finalizeEvent(eventTemplate, privkeyBytes);
+      // 3. Delegate to core function which handles NetworkGate, NIP-07, and publishing
+      await publishNoteToNostr(
+        noteToPublish,
+        settings.nostr.privkey || undefined,
+        relays,
+        promptUser
+      );
 
-      const pubs = pool.publish(relays, signedEvent);
-      await Promise.any(pubs);
-
-      return signedEvent.id;
+      return noteToPublish.nostrEventId;
     } catch (error) {
       Logger.getInstance().error('Failed to publish note:', error as Error);
       throw error;

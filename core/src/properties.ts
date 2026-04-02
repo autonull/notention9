@@ -1,4 +1,4 @@
-import type { Property } from './types';
+import type { Property } from './types/index.js';
 
 export const TEMPORAL_KEYS = ['date', 'time', 'deadline', 'start', 'end', 'due'];
 export const SPATIAL_KEYS = ['location', 'geo', 'place', 'coords'];

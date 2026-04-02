@@ -1,7 +1,7 @@
 import type { Note, Property } from './types';
-import { generateId, safeDivide, clamp } from './utils/common';
-import { logInfo } from './utils/logging';
-import { BaseService } from './baseService';
+import { generateId, safeDivide, clamp } from './utils/common.js';
+import { logInfo } from './utils/logging.js';
+import { BaseService } from './baseService.js';
 import { DEFAULT_PATTERNS } from './patternRecognition/DefaultPatterns.js';
 
 export interface Pattern {
@@ -261,12 +261,15 @@ export class PatternRecognitionService extends BaseService {
       if (!matchingProp) return false;
 
       // Check if values match (at least one value should match)
-      return condition.values.some(conditionValue =>
-        matchingProp.values.some(propValue =>
+      return condition.values.some(conditionValue => {
+        // Special case: 'ANY' matches any value
+        if (conditionValue === 'ANY') return true;
+
+        return matchingProp.values.some(propValue =>
           propValue.toLowerCase().includes(conditionValue.toLowerCase()) ||
           conditionValue.toLowerCase().includes(propValue.toLowerCase())
-        )
-      );
+        );
+      });
     });
   }
 

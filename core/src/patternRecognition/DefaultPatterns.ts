@@ -47,11 +47,24 @@ export const DEFAULT_PATTERNS: Pattern[] = [
     conditions: [
       { key: 'intent', operator: 'is', values: ['task'] }
     ],
-    predictedActions: ['Create Task', 'Add to Todo List'],
+    predictedActions: ['Create Task', 'Add to Todo List', 'Add property [status:is:pending]'],
     confidence: 0.9,
     lastUsed: Date.now(),
     usageCount: 0,
     accuracyRate: 0.95
+  },
+  {
+    id: 'pattern_default_budget',
+    name: 'Budget Intent',
+    description: 'Detects financial intent and suggests adding priority',
+    conditions: [
+      { key: 'budget', operator: 'is', values: ['ANY'] } // 'ANY' is a placeholder logic handled in matching
+    ],
+    predictedActions: ['Add property [priority:is:high]'],
+    confidence: 0.8,
+    lastUsed: Date.now(),
+    usageCount: 0,
+    accuracyRate: 0.9
   },
   {
     id: 'pattern_default_shopping',
@@ -60,7 +73,7 @@ export const DEFAULT_PATTERNS: Pattern[] = [
     conditions: [
       { key: 'intent', operator: 'is', values: ['shopping'] }
     ],
-    predictedActions: ['Add to Shopping List', 'Order Online'],
+    predictedActions: ['Add to Shopping List', 'Order Online', 'Add property [status:is:pending]'],
     confidence: 0.9,
     lastUsed: Date.now(),
     usageCount: 0,

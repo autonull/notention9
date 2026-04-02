@@ -9,7 +9,7 @@ const INTENTS = [
     { key: 'reminder', regex: /remind.*me.*(to|about|that).*|set.*reminder/i },
     { key: 'schedule', regex: /schedule|book|plan|arrange.*for|appointment.*with/i },
     { key: 'communication', regex: /email|send.*message|text|call|contact.*about/i },
-    { key: 'task', regex: /todo|to-do|task|do.*later|need.*to.*do/i },
+    { key: 'task', regex: /todo|to-do|task|do.*later|need.*to|want.*to/i }, // Added broad "need/want to"
     { key: 'shopping', regex: /buy|purchase|order|get.*from|shop.*for/i },
     { key: 'health', regex: /medication|take.*pill|doctor.*appointment|exercise|workout/i }
 ];
@@ -43,6 +43,7 @@ export class PropertyExtractor {
             this.applyEmailStrategy,
             this.applyLocationStrategy,
             this.applyDateStrategy,
+            this.applyBudgetStrategy, // Added Budget strategy
             this.applyFuzzyMatchingStrategy
         ];
 
@@ -108,6 +109,18 @@ export class PropertyExtractor {
                 properties.push({ key: 'date', operator: 'is', values: [date.toISOString().split('T')[0]] });
                 break;
             }
+        }
+    }
+
+    private applyBudgetStrategy(text: string, properties: Property[]): void {
+        // Match $100, 100 USD, 100 dollars
+        const regex = /(?:\$|USD\s*)(\d+(?:,\d{3})*(?:\.\d+)?)|(\d+(?:,\d{3})*(?:\.\d+)?)\s*(?:USD|dollars?)/i;
+        const match = text.match(regex);
+        if (match) {
+            const amount = match[1] || match[2];
+            // Normalize amount by removing commas
+            const normalizedAmount = amount.replace(/,/g, '');
+            properties.push({ key: 'budget', operator: 'is', values: [normalizedAmount] });
         }
     }
 

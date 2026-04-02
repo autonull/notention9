@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { generateSecretKey, getPublicKey, nip19 } from 'nostr-tools';
-import { bytesToHex, hexToBytes } from '@noble/hashes/utils';
+import { bytesToHex, hexToBytes } from '@noble/hashes/utils.js';
 import { KeyIcon, UserPlusIcon } from '../common/icons';
 import type { AppSettings } from '@notention/core';
 import { CopyableField } from '../common/CopyableField';
