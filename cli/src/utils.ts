@@ -54,9 +54,9 @@ export const withSpinner = async <T>(text: string, action: () => Promise<T>): Pr
     const result = await action();
     spinner.succeed();
     return result;
-  } catch {
+  } catch (error) {
     spinner.fail();
-    throw;
+    throw error;
   }
 };
 

@@ -10,6 +10,38 @@ export const entityDomain: OntologyNode[] = [
         description: 'The base for all things that can be identified.',
         children: [
             {
+                id: 'product',
+                label: 'Product',
+                description: 'A product for sale or use.',
+                attributes: {
+                    name: {
+                        type: 'string',
+                        description: 'Product name',
+                        icon: 'shopping-cart',
+                        operators: { real: ['is'], imaginary: ['is not', 'contains'] },
+                    },
+                    price: {
+                        type: 'number',
+                        description: 'Product price',
+                        icon: 'cash',
+                        operators: { real: ['is'], imaginary: ['less than', 'greater than'] },
+                    },
+                    condition: {
+                        type: 'enum',
+                        options: ['new', 'used', 'refurbished'],
+                        description: 'Product condition',
+                        icon: 'star',
+                        operators: { real: ['is'], imaginary: ['is not'] },
+                    },
+                    category: {
+                        type: 'string',
+                        description: 'Product category',
+                        icon: 'tag',
+                        operators: { real: ['is'], imaginary: ['is not', 'contains'] },
+                    }
+                }
+            },
+            {
                 id: 'person',
                 label: 'Person',
                 description: 'An individual human being.',

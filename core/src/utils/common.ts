@@ -25,7 +25,7 @@ export const throttle = <T extends (...args: unknown[]) => unknown>(func: T, lim
   };
 };
 
-export const memoize = <T extends (...args: unknown[]) => unknown>(func: T): T => {
+export const memoize = <T extends (...args: any[]) => any>(func: T): T => {
   const cache = new Map<string, ReturnType<T>>();
   return ((thisArg: unknown, ...args: Parameters<T>): ReturnType<T> => {
     const key = JSON.stringify(args);
@@ -34,7 +34,7 @@ export const memoize = <T extends (...args: unknown[]) => unknown>(func: T): T =
     const result = func.apply(thisArg, args);
     cache.set(key, result);
     return result;
-  }) as T;
+  }) as unknown as T;
 };
 
 export const timeExecution = async <T>(fn: () => T | Promise<T>): Promise<[T, number]> => {

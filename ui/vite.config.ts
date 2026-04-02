@@ -27,6 +27,8 @@ export default defineConfig(({mode}) => {
             poolOptions: {
                 forks: {
                     singleFork: false,
+                    isolate: true,
+                    memoryLimit: 2048,
                 },
             },
             testTimeout: 10000,

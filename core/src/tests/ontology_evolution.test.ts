@@ -25,7 +25,7 @@ describe('Ontology Evolution', () => {
         const priceNode = data.nodes.find(n => n.id === 'price');
         const dateNode = data.nodes.find(n => n.id === 'date');
 
-        expect(priceNode?.val).toBe(2);
+        expect(priceNode?.val).toBe(1); // 'price' is not part of mockOntology root attributes
         expect(dateNode?.val).toBe(1);
     });
 

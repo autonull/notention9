@@ -5,7 +5,7 @@ import {createNote, haversineDistance, Logger, parseProperties, getCanonicalKey,
 import {agentService} from '../../services/AgentService';
 import {nostrService} from '../../services/NostrService';
 import {useSettings} from '../useSettingsContext';
-import {useMatching} from '../contexts/MatchingContext';
+import {useMatching} from '../../components/contexts/MatchingContext';
 import {augmentNote, NoteMetadata} from './noteUtils';
 
 export interface UseNotesDataResult {
