@@ -2,10 +2,12 @@ import { test, expect } from '@playwright/test';
 import { spawn } from 'child_process';
 import path from 'path';
 
+const __dirname = path.resolve();
+
 async function runSimulator(): Promise<string> {
     return new Promise((resolve, reject) => {
-        const simulator = spawn('npm', ['start', '-w', 'simulator'], {
-            cwd: path.resolve(__dirname, '../../'),
+        const simulator = spawn('npx', ['tsx', 'src/index.ts', '--scenario=gig-economy'], {
+            cwd: path.resolve(__dirname, '.'),
             env: { ...process.env, FORCE_COLOR: '0' } // Disable chalk colors for easier string matching
         });
 

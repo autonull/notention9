@@ -2,6 +2,8 @@ import { test, expect } from '@playwright/test';
 import { spawn } from 'child_process';
 import path from 'path';
 
+const __dirname = path.resolve();
+
 const AGENT_PORT = 3000;
 
 // Skip E2E tests in headless/CI mode - they require a running agent server
@@ -11,8 +13,8 @@ const isHeadless = isCI || process.env.HEADLESS === 'true' || process.env.playwr
 // Helper to run CLI command
 async function runCliCommand(args: string[]): Promise<string> {
     return new Promise((resolve, reject) => {
-        const cli = spawn('npm', ['start', '-w', '@notention/cli', '--', ...args], {
-            cwd: path.resolve(__dirname, '../../'),
+        const cli = spawn('npx', ['tsx', 'src/index.ts', ...args], {
+            cwd: path.resolve(__dirname, '../cli'),
             env: { ...process.env, PORT: String(AGENT_PORT) }
         });
 
