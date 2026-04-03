@@ -25,9 +25,11 @@ vi.mock('../../hooks/useToast', () => ({
 // Mock Gardener
 const mockAnalyzeOntology = vi.fn();
 vi.mock('../../services/gardener', () => ({
-    Gardener: vi.fn().mockImplementation(() => ({
-        evolveOntology: mockAnalyzeOntology,
-    })),
+    Gardener: class {
+        evolveOntology = mockAnalyzeOntology;
+        alignToOntology = vi.fn();
+        optimizeOntology = vi.fn();
+    }
 }));
 
 // Mock Remote/Local AI providers

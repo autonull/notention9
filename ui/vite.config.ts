@@ -28,7 +28,7 @@ export default defineConfig(({mode}) => {
                 forks: {
                     singleFork: false,
                     isolate: false,
-                    memoryLimit: 4096,
+                    memoryLimit: 16000,
                 },
             },
             testTimeout: 10000,
