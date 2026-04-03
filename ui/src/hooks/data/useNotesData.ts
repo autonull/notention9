@@ -59,7 +59,14 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
                         });
                     }
                 })
-                .catch((err) => logger.error('Failed to sync notes:', err as Error));
+                .catch((err) => {
+                    // Suppress expected offline errors in local Dev/Simulator mode where agent backend may not be running
+                    if (err instanceof Error && err.message === 'Offline') {
+                        logger.debug('Agent sync skipped: Agent service is offline');
+                    } else {
+                        logger.error('Failed to sync notes:', err as Error);
+                    }
+                });
         };
 
         if (agentService.isEnabled()) {
