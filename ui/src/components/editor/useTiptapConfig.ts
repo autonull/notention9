@@ -12,7 +12,6 @@ interface UseTiptapConfigProps {
     templates?: Template[];
     minimal?: boolean;
     notes?: Note[];
-    onOpenPropertyModal?: (key: string) => void;
     onMagic?: () => void;
     suggestions?: SuggestedAttribute[];
 }
@@ -24,7 +23,6 @@ export const useTiptapConfig = ({
                                     templates = [],
                                     minimal,
                                     notes = [],
-                                    onOpenPropertyModal,
                                     onMagic,
                                     suggestions = []
                                 }: UseTiptapConfigProps) => {
@@ -111,7 +109,6 @@ export const useTiptapConfig = ({
             allTags,
             getNotes, // Changed this
             templates,
-            onOpenPropertyModal,
             onMagic
         }),
         content: sanitizeHTML(content),
@@ -121,5 +118,5 @@ export const useTiptapConfig = ({
             },
         },
         onUpdate: ({editor}) => onUpdate(editor.getHTML()),
-    }, [ontology, minimal, onOpenPropertyModal, suggestions]);
+    }, [ontology, minimal, suggestions]);
 };
