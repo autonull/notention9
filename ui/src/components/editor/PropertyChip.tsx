@@ -32,6 +32,20 @@ export function PropertyChip(props: NodeViewProps) {
         return validatePropertyAgainstOntology(name, operator, value, definition);
     }, [name, operator, value, definition]);
 
+    const restoreFocus = () => {
+        setTimeout(() => {
+            if (editor && !editor.isDestroyed) {
+                if (typeof getPos === 'function') {
+                    const pos = getPos();
+                    // Set cursor right after the node
+                    editor.chain().focus().setTextSelection(pos + node.nodeSize).run();
+                } else {
+                    editor.commands.focus();
+                }
+            }
+        }, 10);
+    };
+
     const handleUpdate = (newKey: string, newOperator: string, newValue: string, isValid: boolean) => {
         updateAttributes({
             name: newKey,
@@ -40,29 +54,23 @@ export function PropertyChip(props: NodeViewProps) {
             isEditing: false
         });
 
-        // Return focus to the editor
-        setTimeout(() => {
-            if (editor && !editor.isDestroyed) {
-                editor.commands.focus();
-            }
-        }, 10);
+        restoreFocus();
     };
 
     const handleCancel = () => {
         if (!name && !value) {
             // It was a newly inserted empty node, so delete it if canceled
             deleteNode();
+            setTimeout(() => {
+                if (editor && !editor.isDestroyed) {
+                    editor.commands.focus();
+                }
+            }, 10);
         } else {
             // It was an existing node being edited, so just turn off editing
             updateAttributes({isEditing: false});
+            restoreFocus();
         }
-
-        // Return focus to the editor
-        setTimeout(() => {
-            if (editor && !editor.isDestroyed) {
-                editor.commands.focus();
-            }
-        }, 10);
     };
 
     const startEditing = () => {

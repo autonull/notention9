@@ -6,7 +6,8 @@ import {useSettings} from '../../hooks/useSettingsContext';
 import {useOntologyIndex} from '../../hooks/useOntologyIndex';
 import {getCanonicalKey, OntologyAttribute} from '@notention/core';
 import {validatePropertyAgainstOntology} from '../../utils/propertyValidation';
-import {PropertyValueInput} from './PropertyValueInput';
+import {useEditorActions} from '../../hooks/useEditorActions';
+import {MapIcon} from '../common/icons';
 
 interface InlinePropertyFormProps {
     initialKey: string;
@@ -36,10 +37,12 @@ export function InlinePropertyForm({
 
     const keyInputRef = useRef<HTMLInputElement>(null);
     const operatorSelectRef = useRef<HTMLSelectElement>(null);
+    const valueInputRef = useRef<HTMLInputElement>(null);
     const containerRef = useRef<HTMLSpanElement>(null);
 
     const {settings} = useSettings();
     const {propertyTypes} = useOntologyIndex(settings.ontology);
+    const {onPickLocation, suggestions = []} = useEditorActions();
 
     const canonicalKey = useMemo(() => {
         return getCanonicalKey(key, settings.ontology);
@@ -65,12 +68,14 @@ export function InlinePropertyForm({
         return validatePropertyAgainstOntology(key, operator, value, activeDef);
     }, [key, operator, value, activeDef]);
 
-    // Handle initial focus
+    // Handle focus changes dynamically
     useEffect(() => {
         if (focusedField === 'key') {
             keyInputRef.current?.focus();
         } else if (focusedField === 'operator') {
             operatorSelectRef.current?.focus();
+        } else if (focusedField === 'value') {
+            valueInputRef.current?.focus();
         }
     }, [focusedField]);
 
@@ -119,7 +124,31 @@ export function InlinePropertyForm({
             } else if (field === 'value') {
                 submit();
             }
+        } else if (e.key === 'Backspace') {
+            if (field === 'value' && value === '') {
+                e.preventDefault();
+                setFocusedField('operator');
+            } else if (field === 'operator') {
+                e.preventDefault();
+                setFocusedField('key');
+            } else if (field === 'key' && key === '') {
+                e.preventDefault();
+                onCancel();
+            }
+        } else if (e.key === ':' && field === 'key') {
+            e.preventDefault();
+            setFocusedField('operator');
+        } else if (e.key === ']' && field === 'value') {
+            e.preventDefault();
+            submit();
         }
+    };
+
+    // Prevent typing of property syntax brackets
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'key' | 'value') => {
+        const val = e.target.value.replace(/[\[\]:]/g, ''); // strip syntax chars
+        if (field === 'key') setKey(val);
+        else if (field === 'value') setValue(val);
     };
 
     // Close on click outside
@@ -131,11 +160,12 @@ export function InlinePropertyForm({
         };
 
         // Wait a frame so we don't catch the click that opened it
-        setTimeout(() => {
+        const timerId = setTimeout(() => {
             document.addEventListener('mousedown', handleClickOutside);
         }, 0);
 
         return () => {
+            clearTimeout(timerId);
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, [key, operator, value, validation.isValid]); // Re-bind when values change so submit gets latest state
@@ -144,7 +174,11 @@ export function InlinePropertyForm({
     const IconComponent = effectiveIcon && ICON_MAP[effectiveIcon] ? ICON_MAP[effectiveIcon] : TagIcon;
 
     // Convert property types map to list for datalist suggestions
-    const suggestionKeys = Array.from(propertyTypes.keys());
+    const suggestionKeys = useMemo(() => {
+        const keys = new Set(propertyTypes.keys());
+        suggestions.forEach(s => keys.add(s.key));
+        return Array.from(keys);
+    }, [propertyTypes, suggestions]);
 
     return (
         <span
@@ -159,7 +193,7 @@ export function InlinePropertyForm({
                     ref={keyInputRef}
                     type="text"
                     value={key}
-                    onChange={(e) => setKey(e.target.value)}
+                    onChange={(e) => handleInputChange(e, 'key')}
                     onKeyDown={(e) => handleKeyDown(e, 'key')}
                     onFocus={() => setFocusedField('key')}
                     placeholder="key"
@@ -196,16 +230,37 @@ export function InlinePropertyForm({
                         or a specialized inline version of PropertyValueInput if needed.
                         Let's start with a native input that looks like the font-mono box */}
                     <input
+                        ref={valueInputRef}
                         type="text"
                         value={value}
-                        onChange={(e) => setValue(e.target.value)}
+                        onChange={(e) => handleInputChange(e, 'value')}
                         onKeyDown={(e) => handleKeyDown(e, 'value')}
                         onFocus={() => setFocusedField('value')}
                         placeholder="value"
                         className="bg-blue-900/50 text-blue-200 font-mono px-1 rounded border-none outline-none p-0 focus:ring-1 focus:ring-blue-400 min-w-[40px]"
-                    style={{ width: `${Math.max(5, value.length)}ch` }}
-                        autoFocus={focusedField === 'value'}
+                        style={{ width: `${Math.max(5, value.length)}ch` }}
                     />
+                    {onPickLocation && activeDef?.type === 'geo' && (
+                        <button
+                            type="button"
+                            onClick={async (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                const result = onPickLocation();
+                                if (result instanceof Promise) {
+                                    const loc = await result;
+                                    if (loc) {
+                                        setValue(loc);
+                                        setFocusedField('value');
+                                    }
+                                }
+                            }}
+                            className="ml-1 text-blue-400 hover:text-blue-300 transition-colors focus:outline-none"
+                            title="Pick from Map"
+                        >
+                            <MapIcon className="w-3.5 h-3.5" />
+                        </button>
+                    )}
                 </span>
             </span>
         </span>

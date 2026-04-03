@@ -12,6 +12,7 @@ import {EditorStatusBar} from './EditorStatusBar';
 import {EditorBubbleMenu} from './EditorBubbleMenu';
 import {usePropertyInsertion} from '../../hooks/usePropertyInsertion';
 import {useOntologySuggestions} from '../../hooks/useOntologySuggestions';
+import {EditorActionsProvider} from '../../hooks/useEditorActions';
 
 interface TiptapEditorProps {
     note: Note;
@@ -103,9 +104,10 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
     });
 
     return (
-        <div className="flex flex-col h-full">
-            {!minimal && showToolbar && (
-                <TiptapToolbar
+        <EditorActionsProvider onPickLocation={onPickLocation} suggestions={suggestions}>
+            <div className="flex flex-col h-full">
+                {!minimal && showToolbar && (
+                    <TiptapToolbar
                     editor={editor}
                     viewMode={viewMode}
                     toggleViewMode={toggleViewMode}
@@ -129,10 +131,11 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
                         placeholder="Enter HTML..."
                     />
                 )}
-                {children}
+                    {children}
+                </div>
+                {!minimal && <EditorStatusBar editor={editor} saveStatus={saveStatus}/>}
             </div>
-            {!minimal && <EditorStatusBar editor={editor} saveStatus={saveStatus}/>}
-        </div>
+        </EditorActionsProvider>
     );
 });
 
