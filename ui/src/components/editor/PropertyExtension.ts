@@ -42,6 +42,12 @@ export const PropertyExtension = Node.create({
                     return {'data-icon': attributes.icon};
                 },
             },
+            isEditing: {
+                default: false,
+                // We typically don't want isEditing to be persisted in HTML output
+                parseHTML: () => false,
+                renderHTML: () => ({}),
+            },
         };
     },
 

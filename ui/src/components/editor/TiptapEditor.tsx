@@ -10,9 +10,9 @@ import {useToast} from '../../hooks/useToast';
 import {useEditorClick} from './useEditorClick';
 import {EditorStatusBar} from './EditorStatusBar';
 import {EditorBubbleMenu} from './EditorBubbleMenu';
-import {InsertPropertyModal} from './InsertPropertyModal';
 import {usePropertyInsertion} from '../../hooks/usePropertyInsertion';
 import {useOntologySuggestions} from '../../hooks/useOntologySuggestions';
+import {EditorActionsProvider} from '../../hooks/useEditorActions';
 
 interface TiptapEditorProps {
     note: Note;
@@ -56,22 +56,13 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
     const {addToast} = useToast();
 
     const {
-        isPropertyModalOpen,
-        setIsPropertyModalOpen,
-        setEditingPropertyPos,
-        initialModalData,
-        setInitialModalData,
-        handleOpenPropertyModal,
-        handleInsertProperty,
-        findAttributeDef,
-        handleClosePropertyModal,
         handlePrepareNewProperty
     } = usePropertyInsertion();
 
     const {suggestions} = useOntologySuggestions();
 
     useImperativeHandle(ref, () => ({
-        openPropertyModal: handleOpenPropertyModal,
+        openPropertyModal: () => handlePrepareNewProperty(editor),
         editor
     }));
 
@@ -82,7 +73,6 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
         templates,
         minimal,
         notes,
-        onOpenPropertyModal: handleOpenPropertyModal,
         onMagic,
         suggestions
     });
@@ -107,9 +97,6 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
 
     const handleEditorClick = useEditorClick({
         editor,
-        setEditingPropertyPos,
-        setInitialModalData,
-        setIsPropertyModalOpen,
         setSearchTerm,
         setActiveView,
         addToast,
@@ -117,30 +104,18 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
     });
 
     return (
-        <div className="flex flex-col h-full">
-            {!minimal && showToolbar && (
-                <TiptapToolbar
+        <EditorActionsProvider onPickLocation={onPickLocation} suggestions={suggestions}>
+            <div className="flex flex-col h-full">
+                {!minimal && showToolbar && (
+                    <TiptapToolbar
                     editor={editor}
                     viewMode={viewMode}
                     toggleViewMode={toggleViewMode}
                     onMagic={onMagic}
                     onTemplates={onTemplates}
-                    onInsertProperty={handlePrepareNewProperty}
+                    onInsertProperty={() => handlePrepareNewProperty(editor)}
                 />
             )}
-            <InsertPropertyModal
-                isOpen={isPropertyModalOpen}
-                onClose={handleClosePropertyModal}
-                onInsert={(key, op, val, icon) => handleInsertProperty(editor, key, op, val, icon)}
-                initialKey={initialModalData?.key}
-                initialOperator={initialModalData?.operator}
-                initialValue={initialModalData?.value}
-                attributeDef={initialModalData?.key ? findAttributeDef(initialModalData.key, ontology) : undefined}
-                ontology={ontology}
-                isEditing={!!initialModalData} // Check if we have initial data (editing) - or track pos
-                onPickLocation={onPickLocation}
-                suggestions={suggestions}
-            />
             <div className="flex-grow overflow-y-auto" onClick={handleEditorClick}>
                 {topContent}
                 {viewMode === 'rich' ? (
@@ -156,10 +131,11 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
                         placeholder="Enter HTML..."
                     />
                 )}
-                {children}
+                    {children}
+                </div>
+                {!minimal && <EditorStatusBar editor={editor} saveStatus={saveStatus}/>}
             </div>
-            {!minimal && <EditorStatusBar editor={editor} saveStatus={saveStatus}/>}
-        </div>
+        </EditorActionsProvider>
     );
 });
 

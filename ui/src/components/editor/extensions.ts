@@ -11,7 +11,6 @@ interface GetExtensionsProps {
     allTags: { id: string; label: string; description?: string }[];
     getNotes: () => Note[];
     templates: Template[];
-    onOpenPropertyModal?: (key: string) => void;
     onMagic?: () => void;
 }
 
@@ -25,7 +24,6 @@ export const getExtensions = ({
                                   allTags,
                                   getNotes,
                                   templates,
-                                  onOpenPropertyModal,
                                   onMagic
                               }: GetExtensionsProps) => {
     return [
@@ -58,14 +56,16 @@ export const getExtensions = ({
                     // Delete the trigger and query
                     editor.chain().focus().deleteRange(range).run();
 
-                    // Open modal if available to complete the property
-                    if (onOpenPropertyModal) {
-                        onOpenPropertyModal(props.label || '');
-                    } else {
-                        // Fallback: insert partial property and let user type
-                        // We use a text insertion here, not a node, to allow smooth typing
-                        editor.chain().focus().insertContent(`[${props.label}:is:]`).run();
-                    }
+                    // Insert the new inline editing property node
+                    editor.chain().focus().insertContent({
+                        type: 'property',
+                        attrs: {
+                            name: props.label || '',
+                            operator: 'is',
+                            value: '',
+                            isEditing: true
+                        }
+                    }).insertContent(' ').run();
                 }
             }
         }).extend({name: 'propertySuggestion'}),
@@ -204,8 +204,16 @@ export const getExtensions = ({
 
                     const slashProps = props as unknown as SlashCommandAttrs;
 
-                    if (slashProps.type === 'property' && onOpenPropertyModal) {
-                        onOpenPropertyModal(props.label || '');
+                    if (slashProps.type === 'property') {
+                        editor.chain().focus().insertContent({
+                            type: 'property',
+                            attrs: {
+                                name: props.label || '',
+                                operator: 'is',
+                                value: '',
+                                isEditing: true
+                            }
+                        }).insertContent(' ').run();
                         return;
                     }
 
