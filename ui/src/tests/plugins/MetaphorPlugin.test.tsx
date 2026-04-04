@@ -32,11 +32,11 @@ describe('MetaphorPlugin', () => {
 
     it('should log on deactivation', () => {
         const plugin = new MetaphorPlugin();
-        const consoleSpy = vi.spyOn(console, 'log');
+        const consoleSpy = vi.spyOn(console, 'info');
 
         plugin.deactivate();
 
-        expect(consoleSpy).toHaveBeenCalledWith('Metaphor Plugin Deactivated');
+        expect(consoleSpy).toHaveBeenCalledWith('[INFO] Metaphor Plugin Deactivated');
         consoleSpy.mockRestore();
     });
 });
