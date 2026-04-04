@@ -7,10 +7,10 @@ import {configureSuggestions} from './configureSuggestions';
 import type {Note, Template} from '@notention/core';
 
 interface GetExtensionsProps {
-    allProperties: { id: string; label: string; description?: string }[];
-    allTags: { id: string; label: string; description?: string }[];
+    getAllProperties: () => { id: string; label: string; description?: string }[];
+    getAllTags: () => { id: string; label: string; description?: string }[];
     getNotes: () => Note[];
-    templates: Template[];
+    getTemplates: () => Template[];
     onMagic?: () => void;
 }
 
@@ -20,10 +20,10 @@ interface SlashCommandAttrs extends MentionNodeAttrs {
 }
 
 export const getExtensions = ({
-                                  allProperties,
-                                  allTags,
+                                  getAllProperties,
+                                  getAllTags,
                                   getNotes,
-                                  templates,
+                                  getTemplates,
                                   onMagic
                               }: GetExtensionsProps) => {
     return [
@@ -39,7 +39,7 @@ export const getExtensions = ({
                 ...configureSuggestions((query) => {
                     const lower = query.toLowerCase();
                     // Prioritize exact matches
-                    const sorted = [...allProperties].sort((a, b) => {
+                    const sorted = [...getAllProperties()].sort((a, b) => {
                         const aStart = a.label.toLowerCase().startsWith(lower);
                         const bStart = b.label.toLowerCase().startsWith(lower);
                         if (aStart && !bStart) return -1;
@@ -76,7 +76,7 @@ export const getExtensions = ({
             },
             suggestion: configureSuggestions((query) => {
                 const lower = query.toLowerCase();
-                return allTags
+                return getAllTags()
                     .filter(t => t.label.toLowerCase().includes(lower))
                     .slice(0, 5)
                     .map(t => ({id: t.id, label: t.label, description: t.description}));
@@ -141,7 +141,7 @@ export const getExtensions = ({
 
                     // Sort templates: prioritize those matching content "keywords" if possible?
                     // For now, simple alphabetical or query match relevance
-                    const templateItems = templates
+                    const templateItems = getTemplates()
                         .filter(t => t.label.toLowerCase().includes(lower))
                         .sort((a, b) => {
                             // Prioritize templates starting with query
@@ -158,7 +158,7 @@ export const getExtensions = ({
                             type: 'template'
                         }));
 
-                    const propertyItems = allProperties
+                    const propertyItems = getAllProperties()
                         .filter(p => p.label.toLowerCase().includes(lower))
                         .map(p => ({
                             id: `[${p.label}:is:]`, // Updated default template

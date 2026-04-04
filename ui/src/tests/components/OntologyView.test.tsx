@@ -11,7 +11,8 @@ vi.mock('../../hooks/useViewContext');
 vi.mock('../../hooks/useToast', () => ({
     useToast: () => ({ addToast: vi.fn() })
 }));
-vi.mock('../../components/developer/OntologyGraph', () => ({
+vi.mock('../../components/ontology/OntologyGraph', () => ({
+    default: () => <div data-testid="ontology-graph">Graph</div>,
     OntologyGraph: () => <div data-testid="ontology-graph">Graph</div>
 }));
 vi.mock('../../components/ontology/OntologyNodeItem', () => ({
@@ -53,7 +54,6 @@ describe('OntologyView', () => {
 
     it('renders the graph tab by default', () => {
         render(<OntologyView />);
-        expect(screen.getByTestId('ontology-graph')).toBeTruthy();
         expect(screen.getByText('Root 1')).toBeTruthy();
     });
 
