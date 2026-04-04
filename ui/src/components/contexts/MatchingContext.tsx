@@ -1,20 +1,20 @@
 import React, { createContext, useContext, useMemo, ReactNode } from 'react';
-import { MatchEngine, MatchingService } from '@notention/core';
+import { MatchEngine } from '@notention/core';
 import { useSettings } from '../../hooks/useSettingsContext';
 
 interface MatchingContextType {
     engine: MatchEngine;
-    matchingService: MatchingService;
+    matchingService: MatchEngine; // Alias to minimize refactor changes at consumption points
 }
 
 const MatchingContext = createContext<MatchingContextType | undefined>(undefined);
 
 export function MatchingProvider({ children }: { children: ReactNode }) {
     const { settings } = useSettings();
-    const value = useMemo(() => ({
-        engine: new MatchEngine(settings.ontology),
-        matchingService: new MatchingService(settings.ontology),
-    }), [settings.ontology]);
+    const value = useMemo(() => {
+        const engine = new MatchEngine(settings.ontology);
+        return { engine, matchingService: engine };
+    }, [settings.ontology]);
 
     return <MatchingContext.Provider value={value}>{children}</MatchingContext.Provider>;
 }
@@ -22,7 +22,8 @@ export function MatchingProvider({ children }: { children: ReactNode }) {
 export function useMatching(): MatchingContextType {
     const ctx = useContext(MatchingContext);
     if (!ctx) {
-        return { engine: new MatchEngine([]), matchingService: new MatchingService([]) };
+        const engine = new MatchEngine([]);
+        return { engine, matchingService: engine };
     }
     return ctx;
 }

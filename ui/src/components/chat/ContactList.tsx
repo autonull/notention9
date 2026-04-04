@@ -1,6 +1,6 @@
 import React, {useMemo, useState} from 'react';
 import {nip19} from 'nostr-tools';
-import {useNostrProfile} from '../../hooks/useNostrProfile';
+import {useNostrProfile} from '../../hooks/index';
 import type {Contact} from '@notention/core';
 import {formatNpub, Logger} from '@notention/core';
 import {SearchIcon, UserPlusIcon} from '../common/icons';

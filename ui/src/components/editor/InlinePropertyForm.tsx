@@ -3,10 +3,10 @@ import {NodeViewWrapper} from '@tiptap/react';
 import {ICON_MAP} from '../layout/iconMap';
 import {TagIcon} from '../common/icons';
 import {useSettings} from '../../hooks/useSettingsContext';
-import {useOntologyIndex} from '../../hooks/useOntologyIndex';
+import {useOntologyIndex} from '../../hooks/index';
 import {getCanonicalKey, OntologyAttribute} from '@notention/core';
 import {validatePropertyAgainstOntology} from '../../utils/propertyValidation';
-import {useEditorActions} from '../../hooks/useEditorActions';
+import {useEditorActions} from '../../hooks/index';
 import {MapIcon} from '../common/icons';
 
 interface InlinePropertyFormProps {

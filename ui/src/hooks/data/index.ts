@@ -4,8 +4,8 @@
  * Hooks for data management, storage, and manipulation.
  */
 
-export { useNotesData } from './data/useNotesData.js';
-export type { UseNotesDataResult } from './data/useNotesData.js';
+export { useNotesData } from './useNotesData.js';
+export type { UseNotesDataResult } from './useNotesData.js';
 
-export { augmentNote } from './data/noteUtils.js';
-export type { NoteMetadata } from './data/noteUtils.js';
+export { augmentNote } from './noteUtils.js';
+export type { NoteMetadata } from './noteUtils.js';

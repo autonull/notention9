@@ -1,7 +1,6 @@
 import React from 'react';
-import {useNotes} from './useNotes';
-import {useView} from './useViewContext';
-import {useToast} from './useToast';
+import {useNotes, useView} from '../index';
+import {useToast} from '../useToast';
 import {
     ChatIcon,
     DocumentDuplicateIcon,
@@ -16,7 +15,7 @@ import {
     SettingsIcon,
     SidebarIcon,
     TrashIcon
-} from '../components/common/icons';
+} from '../../components/common/icons';
 
 interface UseCommandsProps {
     setIsHelpOpen: (isOpen: boolean) => void;

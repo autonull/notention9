@@ -1,5 +1,5 @@
 import React from 'react';
-import {useAgentStatus} from '../../hooks/useAgentStatus';
+import {useAgentStatus} from '../../hooks/index';
 
 export function ConnectionStatus() {
     const {isOnline, status, queueSize} = useAgentStatus();

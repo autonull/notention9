@@ -1,7 +1,7 @@
 import {useCallback, useState} from 'react';
 import type {Note} from '@notention/core';
-import {usePublish} from './usePublish';
-import {useToast} from './useToast';
+import {usePublish} from '../network/usePublish';
+import {useToast} from '../useToast';
 
 interface UseEditorPublishingProps {
     dirtyNote: Note;

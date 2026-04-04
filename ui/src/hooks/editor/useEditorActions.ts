@@ -1,5 +1,5 @@
 import {useCallback} from 'react';
-import {useToast} from './useToast';
+import {useToast} from '../useToast';
 import type {Note} from '@notention/core';
 
 export function useEditorActions(dirtyNote: Note) {

@@ -1,11 +1,12 @@
 import {useCallback} from 'react';
 import type {OntologyNode} from '@notention/core';
 import {parseNaturalDate, parseProperties, replacePropertyInString, DATE_PROPERTY_KEYS} from '@notention/core';
-import {useGardener} from './useGardener';
-import {useAutoTagging} from './useAutoTagging';
-import {useToast} from './useToast';
-import {useSuggestions} from '../components/contexts/SuggestionContext';
-import {getTextFromHtml} from '../utils/html';
+import { useGardener } from '../ontology/useGardener';
+import { useNoteAnalysis } from '../ontology/useNoteAnalysis';
+import { useAutoTagging } from '../ontology/useAutoTagging';
+import {useToast} from '../useToast';
+import {useSuggestions} from '../../components/contexts/SuggestionContext';
+import {getTextFromHtml} from '../../utils/html';
 
 interface UseEditorMagicProps {
     noteId: string;

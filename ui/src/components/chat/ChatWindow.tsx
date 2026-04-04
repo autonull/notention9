@@ -1,7 +1,7 @@
 import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {finalizeEvent, nip04, nip19} from 'nostr-tools';
 
-import {useNostrProfile} from '../../hooks/useNostrProfile';
+import {useNostrProfile} from '../../hooks/index';
 import {useNotes} from '../../hooks/useNotes';
 import {useToast} from '../../hooks/useToast';
 import type {Contact, NostrEvent} from '@notention/core';

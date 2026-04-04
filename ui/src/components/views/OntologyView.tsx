@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 
-import {useOntologyView} from '../../hooks/useOntologyView';
+import {useOntologyView} from '../../hooks/index';
 import {OntologyNodeItem} from '../ontology/OntologyNodeItem';
 import {OntologyConflicts} from '../ontology/OntologyConflicts';
 import {useView} from '../../hooks/useViewContext';

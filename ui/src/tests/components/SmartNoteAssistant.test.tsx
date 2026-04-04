@@ -12,8 +12,8 @@ vi.mock('../../hooks/useNotes', () => ({
     useNotes: () => ({ notes: [], addNote: vi.fn(), getSortedFilteredNotes: vi.fn().mockReturnValue([]) })
 }));
 
-vi.mock('../../hooks/useMatches', () => ({
-    useMatches: () => []
+vi.mock('../../hooks/useMatchDiscovery', () => ({
+    useMatchDiscovery: () => []
 }));
 
 vi.mock('../../hooks/useNetworkDiscovery', () => ({

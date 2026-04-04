@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { Note, ScoredMatch, OntologyNode } from '@notention/core';
-import { nostrService } from '../services/NostrService';
-import { useToast } from './useToast';
+import { nostrService } from '../../services/NostrService';
+import { useToast } from '../useToast';
 
 interface UseNetworkDiscoveryResult {
     matches: ScoredMatch[];

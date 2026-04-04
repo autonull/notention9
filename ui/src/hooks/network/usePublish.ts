@@ -1,10 +1,10 @@
 import {useCallback, useState} from 'react';
 import {finalizeEvent} from 'nostr-tools';
-import {useSettings} from './useSettingsContext.js';
+import {useSettings} from '../index.js';
 import type {Note} from '@notention/core';
 import {DEFAULT_RELAYS, hexToBytes, pool, publishNoteToNostr} from '@notention/core';
-import {getTextFromHtml} from '../utils/html.js';
-import {createScopedLogger} from './logging.js';
+import {getTextFromHtml} from '../../utils/html.js';
+import {createScopedLogger} from '../logging.js';
 
 const log = createScopedLogger('usePublish');
 

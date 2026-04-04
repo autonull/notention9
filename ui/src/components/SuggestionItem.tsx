@@ -1,6 +1,6 @@
 import React from 'react';
 import { CheckCircleIcon, InformationCircleIcon, LinkIcon, PlusIcon } from './common/icons';
-import { Suggestion } from '../hooks/useNoteAnalysis';
+import { Suggestion } from '../hooks/index';
 import { FeedbackWidget } from './common/FeedbackWidget';
 import { agentService } from '../services/AgentService';
 

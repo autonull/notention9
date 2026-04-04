@@ -10,9 +10,9 @@ import {useToast} from '../../hooks/useToast';
 import {useEditorClick} from './useEditorClick';
 import {EditorStatusBar} from './EditorStatusBar';
 import {EditorBubbleMenu} from './EditorBubbleMenu';
-import {usePropertyInsertion} from '../../hooks/usePropertyInsertion';
-import {useOntologySuggestions} from '../../hooks/useOntologySuggestions';
-import {EditorActionsProvider} from '../../hooks/useEditorActions';
+import {usePropertyInsertion} from '../../hooks/index';
+import {useOntologySuggestions} from '../../hooks/index';
+import {EditorActionsProvider} from '../../hooks/index';
 
 interface TiptapEditorProps {
     note: Note;

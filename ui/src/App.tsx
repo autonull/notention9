@@ -5,7 +5,7 @@ import {ErrorDisplay, ErrorHandlingProvider} from './components/common/ErrorHand
 import {ConfigSync} from './components/config/ConfigSync';
 import {AgentCursor} from './components/AgentCursor';
 import {AgentStatusIndicator} from './components/agent/AgentStatusIndicator';
-import {useNostrSync} from './hooks/useNostrSync';
+import {useNostrSync} from './hooks/index';
 
 function App() {
     return (

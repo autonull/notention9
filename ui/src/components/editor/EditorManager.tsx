@@ -1,11 +1,11 @@
 import React, {useRef, useState, useCallback} from 'react';
-import {useEditorLogic} from '../../hooks/useEditorLogic';
-import {useEditorModals} from '../../hooks/useEditorModals';
+import {useEditorLogic} from '../../hooks/index';
+import {useEditorModals} from '../../hooks/index';
 import {useView} from '../../hooks/useViewContext';
 import {useToast} from '../../hooks/useToast';
 import {useNotes} from '../../hooks/useNotes';
-import {useEditorActions} from '../../hooks/useEditorActions';
-import {useEditorShortcuts} from '../../hooks/useEditorShortcuts';
+import {useEditorActions} from '../../hooks/index';
+import {useEditorShortcuts} from '../../hooks/index';
 import type {Note, OntologyNode} from '@notention/core';
 import {metaphorMapper} from '@notention/core';
 import {EditorHeader} from './EditorHeader';
@@ -20,7 +20,7 @@ import {SmartNoteAssistant} from '../SmartNoteAssistant';
 import {MetaphorRenderer} from '../metaphor/MetaphorRenderer';
 import {PrivacyConfirmModal} from '../modals/PrivacyConfirmModal';
 import {MatchReplies} from '../match/MatchReplies';
-import {useMatches} from '../../hooks/useMatches';
+import {useMatchDiscovery} from '../../hooks/index';
 
 interface EditorManagerProps {
     note: Note;
@@ -123,7 +123,7 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
     };
 
     const activeMetaphor = metaphorMapper.mapToMetaphor(dirtyNote);
-    const matches = useMatches(dirtyNote);
+    const { localMatches: matches } = useMatchDiscovery(dirtyNote);
 
     const handleMatchClick = useCallback((match: any) => {
         // Navigate or preview match

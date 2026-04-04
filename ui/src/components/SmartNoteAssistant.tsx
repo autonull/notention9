@@ -10,17 +10,17 @@ import { ConfirmationModal } from './common/ConfirmationModal';
 import { agentService } from '../services/AgentService';
 import { nostrService } from '../services/NostrService';
 import { useSettings } from '../hooks/useSettingsContext';
-import { useNoteAnalysis, Suggestion } from '../hooks/useNoteAnalysis';
+import { useNoteAnalysis, Suggestion } from '../hooks/index';
 import { SuggestionItem } from './SuggestionItem';
 import { applyPropertySuggestion, applyTaskSuggestion } from '../utils/suggestionUtils';
 import { useView } from '../hooks/useViewContext';
 import { useContacts } from '../hooks/useContacts';
 import { Tabs } from './common/Tabs';
-import { useMatches } from '../hooks/useMatches';
+import { useMatchDiscovery } from '../hooks/index';
 import { MatchList } from './match/MatchList';
 import { OntologyAliasLinkModal } from './ontology/OntologyAliasLinkModal';
 import { AttributeEditorModal } from './ontology/AttributeEditorModal';
-import { useNetworkDiscovery } from '../hooks/useNetworkDiscovery';
+import { useNetworkDiscovery } from '../hooks/index';
 import { DiscoveredProperties } from './network/DiscoveredProperties';
 
 interface SmartNoteAssistantProps {
@@ -51,7 +51,7 @@ export function SmartNoteAssistant({
     const { suggestions, removeSuggestion } = useNoteAnalysis(note);
     const [activeSuggestion, setActiveSuggestion] = useState<number>(0);
 
-    const localMatches = useMatches(note);
+    const { localMatches } = useMatchDiscovery(note);
     const { matches: networkMatches, isSearching, discover: discoverMatches } = useNetworkDiscovery(note, settings.ontology);
 
     const [attributeModalOpen, setAttributeModalOpen] = useState(false);

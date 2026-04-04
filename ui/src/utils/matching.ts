@@ -1,7 +1,7 @@
-import { MatchEngine, MatchingService } from '@notention/core';
+import { MatchEngine } from '@notention/core';
 import type { Note, Property } from '@notention/core';
 
-const _service = new MatchingService();
+const _service = new MatchEngine([]);
 
 /**
  * Compute a match score between a request note and an offer note.
