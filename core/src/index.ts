@@ -45,7 +45,6 @@ export * from './ontologyService.js';
 export * from './ontologyServiceFactory.js';
 export * from './propertyExtractor.js';
 export * from './queryBuilder.js';
-export * from './matching/MatchingService.js';
 export * from './matching/MatchEngine.js';
 export * from './nostr/discovery.js';
 

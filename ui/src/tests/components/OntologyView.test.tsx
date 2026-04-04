@@ -2,11 +2,11 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { OntologyView } from '../../components/views/OntologyView';
-import { useOntologyView } from '../../hooks/useOntologyView';
+import { useOntologyView } from '../../hooks/index';
 import { useView } from '../../hooks/useViewContext';
 
 // Mock dependencies
-vi.mock('../../hooks/useOntologyView');
+vi.mock('../../hooks/index');
 vi.mock('../../hooks/useViewContext');
 vi.mock('../../hooks/useToast', () => ({
     useToast: () => ({ addToast: vi.fn() })

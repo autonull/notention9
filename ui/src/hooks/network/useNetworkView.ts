@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useRef, useState} from 'react';
+import {useCallback, useMemo, useState} from 'react';
 import {getPublicKey} from 'nostr-tools';
 import type {NostrEvent, Note, Property} from '@notention/core';
 import {
@@ -6,15 +6,15 @@ import {
     DEFAULT_RELAYS,
     extractPropertiesFromTags,
     hexToBytes,
-    pool,
     SEMANTIC_NOTE_KIND
 } from '@notention/core';
 import {useNostrProfile} from './useNostrProfile';
-import {useView} from './useViewContext';
-import {useSettings} from './useSettingsContext';
-import {useMatching} from '../components/contexts/MatchingContext';
-import {useGardener} from './useGardener';
+import {useView} from '../useViewContext';
+import {useSettings} from '../index';
+import {useMatching} from '../../components/contexts/MatchingContext';
+import {useGardener} from '../ontology/useGardener';
 import {useNetworkActions} from './useNetworkActions';
+import {useNostrSubscription} from './useNostrSubscription';
 
 interface UseNetworkViewProps {
     matchAgainst?: Note | null;
@@ -37,66 +37,24 @@ export function useNetworkView({matchAgainst}: UseNetworkViewProps = {}) {
                 : null,
         [settings.nostr?.privkey]
     );
-    const [events, setEvents] = useState<NostrEvent[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
     const [filter, setFilter] = useState('');
 
-    // Batching refs
-    const pendingEventsRef = useRef<NostrEvent[]>([]);
-    const seenEventIdsRef = useRef(new Set<string>());
-    const batchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const kinds = useMemo(() => [1, SEMANTIC_NOTE_KIND], []);
 
-    useEffect(() => {
-        if (!pubkey) return;
+    const onBatch = useCallback((newEvents: NostrEvent[]) => {
+        const allProps: Property[] = newEvents.flatMap(evt => extractPropertiesFromTags(evt.tags));
+        if (allProps.length > 0) {
+            learnFromProperties(allProps);
+        }
+    }, [learnFromProperties]);
 
-        setEvents([]); // Clear previous events
-        setIsLoading(true);
-        seenEventIdsRef.current = new Set();
-        pendingEventsRef.current = [];
-        if (batchTimeoutRef.current) clearTimeout(batchTimeoutRef.current);
-
-        const flushBatch = () => {
-            if (pendingEventsRef.current.length > 0) {
-                const newEvents = pendingEventsRef.current;
-                setEvents((prev) => [...prev, ...newEvents]);
-
-                // Passive Learning: Extract properties from new events
-                const allProps: Property[] = newEvents.flatMap(evt => extractPropertiesFromTags(evt.tags));
-
-                if (allProps.length > 0) {
-                    learnFromProperties(allProps);
-                }
-
-                pendingEventsRef.current = [];
-            }
-            batchTimeoutRef.current = null;
-        };
-
-        const sub = pool.subscribeMany(
-            relays,
-            {kinds: [1, SEMANTIC_NOTE_KIND], limit: 50},
-            {
-                onevent: (event) => {
-                    if (!seenEventIdsRef.current.has(event.id)) {
-                        seenEventIdsRef.current.add(event.id);
-                        pendingEventsRef.current.push(event);
-
-                        if (!batchTimeoutRef.current) {
-                            batchTimeoutRef.current = setTimeout(flushBatch, 500);
-                        }
-                    }
-                },
-            }
-        );
-
-        const timer = setTimeout(() => setIsLoading(false), 3000);
-
-        return () => {
-            clearTimeout(timer);
-            if (batchTimeoutRef.current) clearTimeout(batchTimeoutRef.current);
-            sub.close();
-        };
-    }, [pubkey, learnFromProperties, relays]);
+    const {events, isLoading} = useNostrSubscription({
+        relays,
+        kinds,
+        limit: 50,
+        enabled: !!pubkey,
+        onBatch
+    });
 
     const sortedEvents = useMemo(() => {
         let filtered = [...events];

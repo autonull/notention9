@@ -1,7 +1,7 @@
 import React, {useMemo, useState} from 'react';
 
-import {useNetworkView} from '../../hooks/useNetworkView';
 import type {Note} from '@notention/core';
+import {useNetworkView, useNotes} from '../../hooks/index';
 import {findNode, getSubtreeKeys, parseProperties} from '@notention/core';
 import {ProfileHeader} from '../network/ProfileHeader';
 import {ConnectIdentityPrompt} from '../network/ConnectIdentityPrompt';

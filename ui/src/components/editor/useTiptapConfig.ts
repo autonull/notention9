@@ -1,6 +1,6 @@
 import {useEditor} from '@tiptap/react';
 import {sanitizeHTML} from '../../utils/sanitize';
-import {useOntologyIndex} from '../../hooks/useOntologyIndex';
+import {useOntologyIndex} from '../../hooks/index';
 import type {Note, OntologyNode, Template, SuggestedAttribute} from '@notention/core';
 import {useEffect, useMemo, useRef} from 'react';
 import {getExtensions} from './extensions';

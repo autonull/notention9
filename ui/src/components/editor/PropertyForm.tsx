@@ -9,7 +9,7 @@ import {Button} from '../common/Button';
 import {IconButton} from '../common/IconButton';
 import {Select} from '../common/Select';
 import {Textarea} from '../common/Textarea';
-import {useGardener} from '../../hooks/useGardener';
+import {useGardener} from '../../hooks/index';
 import {PropertyValueInput} from './PropertyValueInput';
 
 interface PropertyFormProps {

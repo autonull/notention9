@@ -2,7 +2,7 @@ import React, {forwardRef, useCallback, useEffect, useMemo, useState} from 'reac
 import {TiptapEditor, TiptapEditorRef} from './TiptapEditor';
 import {PropertyPalette} from '../properties/PropertyPalette';
 import {useSettings} from '../../hooks/useSettingsContext';
-import {useOntologySuggestions} from '../../hooks/useOntologySuggestions';
+import {useOntologySuggestions} from '../../hooks/index';
 
 interface HybridEditorProps extends React.ComponentProps<typeof TiptapEditor> {
     onNoteUpdate?: (note: any) => void;

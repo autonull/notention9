@@ -1,7 +1,6 @@
 import {useEffect} from 'react';
-import {useNotes} from './useNotes';
-import {useSettings} from './useSettingsContext';
-import {nostrService} from '../services/NostrService';
+import {useNotes, useSettings} from '../index';
+import {nostrService} from '../../services/NostrService';
 
 export function useNostrSync() {
     const {upsertNote} = useNotes();

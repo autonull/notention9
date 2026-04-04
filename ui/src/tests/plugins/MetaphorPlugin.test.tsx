@@ -1,7 +1,7 @@
 import {describe, expect, it, vi} from 'vitest';
 import {METAPHOR_PLUGIN_MANIFEST, MetaphorPlugin} from '../../plugins/metaphor/MetaphorPlugin';
 import {PluginAPI} from '../../plugins/PluginSystem';
-import {MetaphorRenderer} from '../../../components/metaphor/MetaphorRenderer';
+import {MetaphorRenderer} from '../../components/metaphor/MetaphorRenderer';
 
 describe('MetaphorPlugin', () => {
     it('should have correct manifest', () => {

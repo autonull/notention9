@@ -1,9 +1,9 @@
 import {useCallback, useMemo, useState} from 'react';
-import {isGeminiApiKeyAvailable, RemoteAIProvider} from '../services/ai/RemoteProvider';
-import {LocalAIProvider} from '../services/ai/LocalProvider';
-import {getTextFromHtml} from '../utils/html';
-import {useSettings} from './useSettingsContext';
-import type {AIProvider} from '../services/ai/types';
+import {isGeminiApiKeyAvailable, RemoteAIProvider} from '../../services/ai/RemoteProvider';
+import {LocalAIProvider} from '../../services/ai/LocalProvider';
+import {getTextFromHtml} from '../../utils/html';
+import { useSettings } from '../index';
+import type {AIProvider} from '../../services/ai/types';
 
 interface UseAutoTaggingProps {
     content: string;

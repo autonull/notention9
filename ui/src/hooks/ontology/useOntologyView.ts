@@ -1,6 +1,5 @@
 import {useCallback, useMemo, useState} from 'react';
-import {useSettings} from './useSettingsContext';
-import {useNotes} from './useNotes';
+import {useSettings, useNotes} from '../index';
 import {useGardener} from './useGardener';
 import {addNode, deleteNode, detectConflicts, addAttribute, addAliasToAttribute, OntologyAttribute} from '@notention/core';
 import {useOntologySuggestions} from './useOntologySuggestions';

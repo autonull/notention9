@@ -5,7 +5,7 @@ import {KeyIcon, UserPlusIcon} from '../common/icons';
 import type {AppSettings} from '@notention/core';
 import {Logger} from '@notention/core';
 import {CopyableField} from '../common/CopyableField';
-import {usePublish} from '@/hooks/usePublish';
+import {usePublish} from '@/hooks/index';
 import {useToast} from '../../hooks/useToast';
 import {Input} from '../common/Input';
 import {Button} from '../common/Button';

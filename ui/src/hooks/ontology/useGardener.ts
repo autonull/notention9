@@ -1,11 +1,11 @@
 import {useCallback, useMemo} from 'react';
-import {capabilities} from '../config/Capabilities';
-import {useSettings} from './useSettingsContext';
-import {useToast} from './useToast';
-import {Gardener} from '../services/gardener';
-import {LocalAIProvider} from '../services/ai/LocalProvider';
-import {RemoteAIProvider} from '../services/ai/RemoteProvider';
-import {WebLLMProvider} from '../services/ai/WebLLMProvider';
+import {capabilities} from '../../config/Capabilities';
+import {useSettings} from '../index';
+import {useToast} from '../useToast';
+import {Gardener} from '../../services/gardener';
+import {LocalAIProvider} from '../../services/ai/LocalProvider';
+import {RemoteAIProvider} from '../../services/ai/RemoteProvider';
+import {WebLLMProvider} from '../../services/ai/WebLLMProvider';
 import {EMERGENT_NODE_ID, EMERGENT_NODE_LABEL} from '@notention/core';
 import type {Note, OntologyAttribute, OntologyNode, Property} from '@notention/core';
 

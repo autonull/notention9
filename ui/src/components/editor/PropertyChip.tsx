@@ -3,7 +3,7 @@ import {NodeViewProps, NodeViewWrapper} from '@tiptap/react';
 import {ExclamationTriangleIcon, TagIcon} from '../common/icons';
 import {ICON_MAP} from '../layout/iconMap';
 import {useSettings} from '../../hooks/useSettingsContext';
-import {useOntologyIndex} from '../../hooks/useOntologyIndex';
+import {useOntologyIndex} from '../../hooks/index';
 import {validatePropertyAgainstOntology} from '../../utils/propertyValidation';
 import {getCanonicalKey} from '@notention/core';
 import {InlinePropertyForm} from './InlinePropertyForm';

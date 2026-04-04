@@ -1,10 +1,9 @@
 import {useState} from 'react';
 import {Logger} from '@notention/core';
-import {useGardener} from './useGardener';
-import {useSettings} from './useSettingsContext';
-import {useNotes} from './useNotes';
-import {useView} from './useViewContext';
-import {useSuggestions} from '../components/contexts/SuggestionContext';
+import {useGardener} from '../ontology/useGardener';
+import {useSettings, useNotes} from '../index';
+import {useView} from '../useViewContext';
+import {useSuggestions} from '../../components/contexts/SuggestionContext';
 
 export function useSmartInput() {
     const [isProcessing, setIsProcessing] = useState(false);

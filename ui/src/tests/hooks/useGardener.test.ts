@@ -1,12 +1,12 @@
 import {act, renderHook} from '@testing-library/react';
-import {useGardener} from '../../hooks/useGardener';
-import {useSettings} from '../../hooks/useSettingsContext';
+import {useGardener} from '../../hooks/ontology/useGardener';
+import {useSettings} from '../../hooks/index';
 import {useView} from '../../hooks/useViewContext';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 import type {Note} from '@notention/core';
 
 // Mock useSettings
-vi.mock('../../hooks/useSettingsContext', () => ({
+vi.mock('../../hooks/context', () => ({
     useSettings: vi.fn(),
 }));
 

@@ -5,7 +5,7 @@ import {PlusIcon, SearchSparkleIcon, TagIcon, XIcon} from '../common/icons';
 import {PropertyForm} from './PropertyForm';
 import {PropertyBlock} from '../properties/PropertyBlock';
 import {IconButton} from '../common/IconButton';
-import {useGardener} from '../../hooks/useGardener';
+import {useGardener} from '../../hooks/index';
 import {Button} from '../common/Button';
 import {useToast} from '../../hooks/useToast';
 import {useNotes} from '../../hooks/useNotes';

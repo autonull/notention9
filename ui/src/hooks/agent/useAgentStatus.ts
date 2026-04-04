@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react';
-import {agentService} from '../services/AgentService';
+import {agentService} from '../../services/AgentService';
 
 export function useAgentStatus() {
     const [status, setStatus] = useState(agentService.getStatus());

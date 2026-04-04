@@ -64,11 +64,11 @@ const createProperty = (rawKey: string, operator: string, value: string, ontolog
   return { key, operator: operator.trim(), values: parseValues(value) };
 };
 
-export interface PropertyParserStrategy {
+interface PropertyParserStrategy {
   parse(content: string, ontology?: OntologyNode[]): Property | null;
 }
 
-export class ColonFormatStrategy implements PropertyParserStrategy {
+class ColonFormatStrategy implements PropertyParserStrategy {
   parse(content: string, ontology?: OntologyNode[]): Property | null {
     const parts = content.split(':');
     if (parts.length < 2) return null;
@@ -80,7 +80,7 @@ export class ColonFormatStrategy implements PropertyParserStrategy {
   }
 }
 
-export class SymbolicFormatStrategy implements PropertyParserStrategy {
+class SymbolicFormatStrategy implements PropertyParserStrategy {
   parse(content: string, ontology?: OntologyNode[]): Property | null {
     for (const { regex, op } of SYMBOLIC_REGEXES) {
       const match = content.match(regex);
@@ -90,7 +90,7 @@ export class SymbolicFormatStrategy implements PropertyParserStrategy {
   }
 }
 
-export class WordFormatStrategy implements PropertyParserStrategy {
+class WordFormatStrategy implements PropertyParserStrategy {
   parse(content: string, ontology?: OntologyNode[]): Property | null {
     const wordMatch = content.match(REGEX.WORD_OP);
     if (wordMatch) {

@@ -1,7 +1,7 @@
 import {useMemo, useEffect, useState} from 'react';
 import {OntologyService, SuggestedAttribute, SUGGESTION_THRESHOLD} from '@notention/core';
-import {useSettings} from './useSettingsContext';
-import {useNotes} from './useNotes';
+import {useSettings} from '../index';
+import {useNotes} from '../index';
 
 export function useOntologySuggestions(contextKeys?: string[]) {
     const {settings} = useSettings();

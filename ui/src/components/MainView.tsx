@@ -3,8 +3,7 @@ import type {Note} from '@notention/core';
 
 import {useNotes} from '../hooks/useNotes';
 import {useSettings} from '../hooks/useSettingsContext';
-import {useView} from '../hooks/useViewContext';
-import {useBackgroundMatcher} from '../hooks/useBackgroundMatcher';
+import {useMatchDiscovery} from '../hooks/index';
 import {useChatNotifications} from '../hooks/useChatNotifications';
 import {useMetaprogramming} from '../hooks/useMetaprogramming';
 import {LoadingSpinner} from './common/icons';
@@ -26,8 +25,8 @@ export function MainView({sortedNotes}: MainViewProps) {
     const {settingsLoading} = useSettings();
     const {notes, notesLoading} = useNotes();
 
-    // Run background matching
-    useBackgroundMatcher();
+    // Run background matching (global scope for now without active note)
+    useMatchDiscovery(null);
     useChatNotifications();
     useMetaprogramming();
 

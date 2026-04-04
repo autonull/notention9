@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import {agentService} from '../../services/AgentService';
-import {useAgentStatus} from '../../hooks/useAgentStatus';
+import {useAgentStatus} from '../../hooks/index';
 
 export function AgentStatusIndicator() {
     const agentStatus = useAgentStatus();

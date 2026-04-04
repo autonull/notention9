@@ -9,7 +9,7 @@ import {useNotes} from '../hooks/useNotes';
 import {useView} from '../hooks/useViewContext';
 import {useUrlRouting} from '../hooks/useUrlRouting';
 import {useKeyboardShortcuts} from '../hooks/useKeyboardShortcuts';
-import {useCommands} from '../hooks/useCommands';
+import {useCommands} from '../hooks/index';
 
 export function AppShell() {
     const {notes, addNote, getSortedFilteredNotes} = useNotes();

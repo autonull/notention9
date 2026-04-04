@@ -1,7 +1,7 @@
 import {useCallback} from 'react';
 import type {Note} from '@notention/core';
-import {useSettings} from './useSettingsContext';
-import {useToast} from './useToast';
+import {useSettings} from '../index';
+import {useToast} from '../useToast';
 
 interface UseEditorTemplatesProps {
     dirtyNote: Note;

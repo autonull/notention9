@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Note, patternRecognitionService, PropertyExtractor, OntologyNode, getCanonicalKey } from '@notention/core';
-import { useSettings } from './useSettingsContext';
-import { getTextFromHtml } from '../utils/html';
+import { useSettings } from '../index';
+import { getTextFromHtml } from '../../utils/html';
 
 export interface Suggestion {
     id: string;
