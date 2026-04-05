@@ -197,8 +197,8 @@ export function InlinePropertyForm({
                     onKeyDown={(e) => handleKeyDown(e, 'key')}
                     onFocus={() => setFocusedField('key')}
                     placeholder="key"
-                    className="bg-transparent border-none outline-none text-blue-300 font-semibold p-0 w-[60px] focus:ring-0 focus:w-auto min-w-[30px]"
-                    style={{ width: `${Math.max(3, key.length)}ch` }}
+                    className="bg-transparent border-none outline-none text-blue-300 font-semibold p-0 focus:ring-0"
+                    style={{ width: `calc(${Math.max(3, key.length)}ch + 12px)`, minWidth: '40px' }}
                     list="property-keys-list"
                 />
                 <datalist id="property-keys-list">
@@ -282,8 +282,8 @@ export function InlinePropertyForm({
                             onKeyDown={(e) => handleKeyDown(e, 'value')}
                             onFocus={() => setFocusedField('value')}
                             placeholder="0"
-                            className="bg-blue-900/50 text-blue-200 font-mono px-1 rounded border-none outline-none p-0 focus:ring-1 focus:ring-blue-400 min-w-[40px]"
-                            style={{ width: `${Math.max(5, value.length)}ch` }}
+                            className="bg-blue-900/50 text-blue-200 font-mono px-1 rounded border-none outline-none p-0 focus:ring-1 focus:ring-blue-400"
+                            style={{ width: `calc(${Math.max(5, value.length)}ch + 8px)`, minWidth: '40px' }}
                         />
                     ) : (
                         <input
@@ -294,8 +294,8 @@ export function InlinePropertyForm({
                             onKeyDown={(e) => handleKeyDown(e, 'value')}
                             onFocus={() => setFocusedField('value')}
                             placeholder="value"
-                            className="bg-blue-900/50 text-blue-200 font-mono px-1 rounded border-none outline-none p-0 focus:ring-1 focus:ring-blue-400 min-w-[40px]"
-                            style={{ width: `${Math.max(5, value.length)}ch` }}
+                            className="bg-blue-900/50 text-blue-200 font-mono px-1 rounded border-none outline-none p-0 focus:ring-1 focus:ring-blue-400"
+                            style={{ width: `calc(${Math.max(5, value.length)}ch + 8px)`, minWidth: '40px' }}
                         />
                     )}
 
