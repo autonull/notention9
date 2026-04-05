@@ -2,6 +2,7 @@ import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState, us
 import type { Note, OntologyNode, Template } from '@notention/core';
 import { prepareWithSegments, layoutWithLines, type LayoutLine } from '@chenglou/pretext';
 import { InlinePropertyForm } from '../InlinePropertyForm';
+import { EditorActionsProvider } from '../../../hooks/index';
 
 interface TiptapEditorProps {
     note: Note;
@@ -112,8 +113,13 @@ export const PretextEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
         setActiveToken(null);
         setPopupPos(null);
 
+        // Place cursor right after the newly updated property token
         setTimeout(() => {
-            textareaRef.current?.focus();
+            if (textareaRef.current) {
+                textareaRef.current.focus();
+                const newPos = token.start + replacement.length;
+                textareaRef.current.setSelectionRange(newPos, newPos);
+            }
         }, 10);
     }, [note.content, onSave]);
 
@@ -149,6 +155,28 @@ export const PretextEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
         if (!textareaRef.current) return;
 
         const caret = textareaRef.current.selectionStart;
+
+        // Tab navigation between properties
+        if (e.key === 'Tab' && !e.shiftKey) {
+            e.preventDefault();
+            // Find the next property after the current cursor
+            const nextToken = tokens.find(t => t.type === 'property' && t.start >= caret) as Extract<Token, {type: 'property'}> | undefined;
+            if (nextToken) {
+                // Place cursor just inside it to trigger edit mode
+                textareaRef.current.setSelectionRange(nextToken.start + 1, nextToken.start + 1);
+                handleCaretMove();
+                return;
+            }
+        } else if (e.key === 'Tab' && e.shiftKey) {
+            e.preventDefault();
+            // Find the previous property before the current cursor
+            const prevToken = [...tokens].reverse().find(t => t.type === 'property' && t.end <= caret) as Extract<Token, {type: 'property'}> | undefined;
+            if (prevToken) {
+                textareaRef.current.setSelectionRange(prevToken.end - 1, prevToken.end - 1);
+                handleCaretMove();
+                return;
+            }
+        }
 
         if (e.key === 'Backspace') {
             // Delete entire block if cursor is right after it
@@ -272,19 +300,21 @@ export const PretextEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
                             className="absolute z-50 shadow-xl min-w-max"
                             style={{ top: popupPos.top, left: popupPos.left }}
                         >
-                            <InlinePropertyForm
-                                initialKey={activeToken.key}
-                                initialOperator={activeToken.operator}
-                                initialValue={activeToken.value}
-                                onUpdate={(k, o, v) => handleUpdateProperty(activeToken, k, o, v)}
-                                onCancel={() => {
-                                    setActiveToken(null);
-                                    setPopupPos(null);
-                                    textareaRef.current?.focus();
-                                }}
-                                editor={null}
-                                getPos={() => 0}
-                            />
+                            <EditorActionsProvider onPickLocation={onPickLocation}>
+                                <InlinePropertyForm
+                                    initialKey={activeToken.key}
+                                    initialOperator={activeToken.operator}
+                                    initialValue={activeToken.value}
+                                    onUpdate={(k, o, v) => handleUpdateProperty(activeToken, k, o, v)}
+                                    onCancel={() => {
+                                        setActiveToken(null);
+                                        setPopupPos(null);
+                                        textareaRef.current?.focus();
+                                    }}
+                                    editor={null}
+                                    getPos={() => 0}
+                                />
+                            </EditorActionsProvider>
                         </div>
                     )}
                 </div>

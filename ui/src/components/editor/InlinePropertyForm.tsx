@@ -54,7 +54,7 @@ export function InlinePropertyForm({
         if (activeDef) {
             return [...(activeDef.operators.real || []), ...(activeDef.operators.imaginary || [])];
         }
-        return ['is', 'is not', 'greater than', 'less than', 'contains', 'between'];
+        return ['is', 'is not', 'greater than', 'less than', 'contains', 'between', '=', '!=', '>', '<', '>=', '<='];
     }, [activeDef]);
 
     // Ensure current operator is valid for the definition
@@ -117,12 +117,14 @@ export function InlinePropertyForm({
         } else if (e.key === 'Tab') {
             e.preventDefault();
             e.stopPropagation();
-            if (field === 'key') {
-                setFocusedField('operator');
-            } else if (field === 'operator') {
-                setFocusedField('value');
-            } else if (field === 'value') {
-                submit();
+            if (!e.shiftKey) {
+                if (field === 'key') setFocusedField('operator');
+                else if (field === 'operator') setFocusedField('value');
+                else submit();
+            } else {
+                if (field === 'value') setFocusedField('operator');
+                else if (field === 'operator') setFocusedField('key');
+                else submit();
             }
         } else if (e.key === 'Backspace') {
             if (field === 'value' && value === '') {
@@ -273,18 +275,20 @@ export function InlinePropertyForm({
                             <option value="true" className="bg-gray-800 text-white font-sans">true</option>
                             <option value="false" className="bg-gray-800 text-white font-sans">false</option>
                         </select>
-                    ) : activeDef?.type === 'number' ? (
-                        <input
-                            ref={valueInputRef}
-                            type="number"
-                            value={value}
-                            onChange={(e) => handleInputChange(e, 'value')}
-                            onKeyDown={(e) => handleKeyDown(e, 'value')}
-                            onFocus={() => setFocusedField('value')}
-                            placeholder="0"
-                            className="bg-blue-900/50 text-blue-200 font-mono px-1 rounded border-none outline-none p-0 focus:ring-1 focus:ring-blue-400"
-                            style={{ width: `calc(${Math.max(5, value.length)}ch + 8px)`, minWidth: '40px' }}
-                        />
+                    ) : (activeDef?.type === 'number' || activeDef?.type === 'quantity') ? (
+                        <span className="flex items-center">
+                            <input
+                                ref={valueInputRef}
+                                type="text" // Using text to allow units like "10kg"
+                                value={value}
+                                onChange={(e) => handleInputChange(e, 'value')}
+                                onKeyDown={(e) => handleKeyDown(e, 'value')}
+                                onFocus={() => setFocusedField('value')}
+                                placeholder="0 unit"
+                                className="bg-blue-900/50 text-blue-200 font-mono px-1 rounded border-none outline-none p-0 focus:ring-1 focus:ring-blue-400"
+                                style={{ width: `calc(${Math.max(5, value.length)}ch + 8px)`, minWidth: '40px' }}
+                            />
+                        </span>
                     ) : (
                         <input
                             ref={valueInputRef}
