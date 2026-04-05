@@ -23,6 +23,7 @@ export function SettingsProvider({
             aiEnabled: false,
             developerMode: false,
             theme: 'dark',
+            editorType: 'tiptap',
             nostr: {
                 privkey: null,
                 relays: DEFAULT_RELAYS,

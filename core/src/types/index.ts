@@ -97,6 +97,7 @@ export interface AppSettings {
     user?: {
         name?: string;
     };
+    editorType?: 'tiptap' | 'pretext';
     nostr?: {
         privkey?: string | null;
         relays?: string[];
