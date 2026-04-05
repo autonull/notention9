@@ -54,7 +54,7 @@ export function InlinePropertyForm({
         if (activeDef) {
             return [...(activeDef.operators.real || []), ...(activeDef.operators.imaginary || [])];
         }
-        return ['is', 'is not', 'greater than', 'less than', 'contains', 'between'];
+        return ['is', 'is not', 'greater than', 'less than', 'contains', 'between', '=', '!=', '>', '<', '>=', '<='];
     }, [activeDef]);
 
     // Ensure current operator is valid for the definition
@@ -117,12 +117,14 @@ export function InlinePropertyForm({
         } else if (e.key === 'Tab') {
             e.preventDefault();
             e.stopPropagation();
-            if (field === 'key') {
-                setFocusedField('operator');
-            } else if (field === 'operator') {
-                setFocusedField('value');
-            } else if (field === 'value') {
-                submit();
+            if (!e.shiftKey) {
+                if (field === 'key') setFocusedField('operator');
+                else if (field === 'operator') setFocusedField('value');
+                else submit();
+            } else {
+                if (field === 'value') setFocusedField('operator');
+                else if (field === 'operator') setFocusedField('key');
+                else submit();
             }
         } else if (e.key === 'Backspace') {
             if (field === 'value' && value === '') {
@@ -197,8 +199,8 @@ export function InlinePropertyForm({
                     onKeyDown={(e) => handleKeyDown(e, 'key')}
                     onFocus={() => setFocusedField('key')}
                     placeholder="key"
-                    className="bg-transparent border-none outline-none text-blue-300 font-semibold p-0 w-[60px] focus:ring-0 focus:w-auto min-w-[30px]"
-                    style={{ width: `${Math.max(3, key.length)}ch` }}
+                    className="bg-transparent border-none outline-none text-blue-300 font-semibold p-0 focus:ring-0"
+                    style={{ width: `calc(${Math.max(3, key.length)}ch + 12px)`, minWidth: '40px' }}
                     list="property-keys-list"
                 />
                 <datalist id="property-keys-list">
@@ -226,20 +228,81 @@ export function InlinePropertyForm({
 
                 {/* Value Input Container */}
                 <span className="flex items-center relative">
-                    {/* For value input we can use a simpler native input since it's inline,
-                        or a specialized inline version of PropertyValueInput if needed.
-                        Let's start with a native input that looks like the font-mono box */}
-                    <input
-                        ref={valueInputRef}
-                        type="text"
-                        value={value}
-                        onChange={(e) => handleInputChange(e, 'value')}
-                        onKeyDown={(e) => handleKeyDown(e, 'value')}
-                        onFocus={() => setFocusedField('value')}
-                        placeholder="value"
-                        className="bg-blue-900/50 text-blue-200 font-mono px-1 rounded border-none outline-none p-0 focus:ring-1 focus:ring-blue-400 min-w-[40px]"
-                        style={{ width: `${Math.max(5, value.length)}ch` }}
-                    />
+                    {activeDef?.type === 'enum' && activeDef.options ? (
+                        <select
+                            ref={valueInputRef as unknown as React.RefObject<HTMLSelectElement>}
+                            value={value}
+                            onChange={(e) => setValue(e.target.value)}
+                            onKeyDown={(e) => handleKeyDown(e, 'value')}
+                            onFocus={() => setFocusedField('value')}
+                            className="bg-blue-900/50 text-blue-200 font-mono px-1 rounded border-none outline-none p-0 focus:ring-1 focus:ring-blue-400 min-w-[40px] appearance-none cursor-pointer"
+                        >
+                            <option value="" disabled>Select {key}...</option>
+                            {activeDef.options.map(opt => (
+                                <option key={opt} value={opt} className="bg-gray-800 text-white font-sans">{opt}</option>
+                            ))}
+                        </select>
+                    ) : activeDef?.type === 'date' ? (
+                        <input
+                            ref={valueInputRef}
+                            type="date"
+                            value={value}
+                            onChange={(e) => setValue(e.target.value)}
+                            onKeyDown={(e) => handleKeyDown(e, 'value')}
+                            onFocus={() => setFocusedField('value')}
+                            className="bg-blue-900/50 text-blue-200 font-mono px-1 rounded border-none outline-none p-0 focus:ring-1 focus:ring-blue-400 min-w-[40px]"
+                        />
+                    ) : activeDef?.type === 'datetime' ? (
+                        <input
+                            ref={valueInputRef}
+                            type="datetime-local"
+                            value={value}
+                            onChange={(e) => setValue(e.target.value)}
+                            onKeyDown={(e) => handleKeyDown(e, 'value')}
+                            onFocus={() => setFocusedField('value')}
+                            className="bg-blue-900/50 text-blue-200 font-mono px-1 rounded border-none outline-none p-0 focus:ring-1 focus:ring-blue-400 min-w-[40px]"
+                        />
+                    ) : activeDef?.type === 'boolean' ? (
+                        <select
+                            ref={valueInputRef as unknown as React.RefObject<HTMLSelectElement>}
+                            value={value}
+                            onChange={(e) => setValue(e.target.value)}
+                            onKeyDown={(e) => handleKeyDown(e, 'value')}
+                            onFocus={() => setFocusedField('value')}
+                            className="bg-blue-900/50 text-blue-200 font-mono px-1 rounded border-none outline-none p-0 focus:ring-1 focus:ring-blue-400 min-w-[40px] appearance-none cursor-pointer"
+                        >
+                            <option value="" disabled>Select...</option>
+                            <option value="true" className="bg-gray-800 text-white font-sans">true</option>
+                            <option value="false" className="bg-gray-800 text-white font-sans">false</option>
+                        </select>
+                    ) : (activeDef?.type === 'number' || activeDef?.type === 'quantity') ? (
+                        <span className="flex items-center">
+                            <input
+                                ref={valueInputRef}
+                                type="text" // Using text to allow units like "10kg"
+                                value={value}
+                                onChange={(e) => handleInputChange(e, 'value')}
+                                onKeyDown={(e) => handleKeyDown(e, 'value')}
+                                onFocus={() => setFocusedField('value')}
+                                placeholder="0 unit"
+                                className="bg-blue-900/50 text-blue-200 font-mono px-1 rounded border-none outline-none p-0 focus:ring-1 focus:ring-blue-400"
+                                style={{ width: `calc(${Math.max(5, value.length)}ch + 8px)`, minWidth: '40px' }}
+                            />
+                        </span>
+                    ) : (
+                        <input
+                            ref={valueInputRef}
+                            type="text"
+                            value={value}
+                            onChange={(e) => handleInputChange(e, 'value')}
+                            onKeyDown={(e) => handleKeyDown(e, 'value')}
+                            onFocus={() => setFocusedField('value')}
+                            placeholder="value"
+                            className="bg-blue-900/50 text-blue-200 font-mono px-1 rounded border-none outline-none p-0 focus:ring-1 focus:ring-blue-400"
+                            style={{ width: `calc(${Math.max(5, value.length)}ch + 8px)`, minWidth: '40px' }}
+                        />
+                    )}
+
                     {onPickLocation && activeDef?.type === 'geo' && (
                         <button
                             type="button"

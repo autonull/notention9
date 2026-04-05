@@ -2,6 +2,7 @@ import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState, us
 import type { Note, OntologyNode, Template } from '@notention/core';
 import { prepareWithSegments, layoutWithLines, type LayoutLine } from '@chenglou/pretext';
 import { InlinePropertyForm } from '../InlinePropertyForm';
+import { EditorActionsProvider } from '../../../hooks/index';
 
 interface TiptapEditorProps {
     note: Note;
@@ -39,6 +40,10 @@ interface RenderedProperty {
     endIndex: number;
 }
 
+type Token =
+  | { type: 'text'; content: string }
+  | { type: 'property'; id: number; fullMatch: string; key: string; operator: string; value: string; start: number; end: number };
+
 export const PretextEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
     note,
     onSave,
@@ -58,135 +63,154 @@ export const PretextEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-    const [textWidth, setTextWidth] = useState(0);
-    const [textHeight, setTextHeight] = useState(0);
-    const [editingPropertyId, setEditingPropertyId] = useState<string | null>(null);
+    const [activeToken, setActiveToken] = useState<Token | null>(null);
+    const [popupPos, setPopupPos] = useState<{ top: number, left: number } | null>(null);
 
     const LINE_HEIGHT = 28;
-    const FONT = '16px "Inter", ui-sans-serif, system-ui, sans-serif';
 
     useImperativeHandle(ref, () => ({
         openPropertyModal: () => {},
         editor: null
     }));
 
-    useEffect(() => {
-        if (containerRef.current) {
-            const resizeObserver = new ResizeObserver(entries => {
-                for (let entry of entries) {
-                    setTextWidth(entry.contentRect.width - 32);
-                }
-            });
-            resizeObserver.observe(containerRef.current);
-            return () => resizeObserver.disconnect();
-        }
-    }, []);
-
-    // Calculate property geometry by pre-measuring the string.
-    // Instead of using Canvas or pretext lines to calculate where the widget should be,
-    // we use a DOM-based approach for accurate measurement matching the textarea,
-    // OR we use the layoutWithLines to measure. We'll use layoutWithLines for geometry
-    // and rely on exact textarea styling for alignment, fixing the index issue.
-    const renderedProperties = useMemo(() => {
-        if (textWidth <= 0) return [];
-
-        const prepared = prepareWithSegments(note.content, FONT, { whiteSpace: 'pre-wrap' });
-        const { height, lines } = layoutWithLines(prepared, textWidth, LINE_HEIGHT);
-
-        setTextHeight(height);
-
-        // Calculate exact string offsets from the original content
-        const matches = [];
-        let m;
+    // Tokenize text into inline segments
+    const tokens = useMemo(() => {
+        const t: Token[] = [];
+        let lastIndex = 0;
         PROPERTY_REGEX.lastIndex = 0;
-        while ((m = PROPERTY_REGEX.exec(note.content)) !== null) {
-            matches.push({
-                fullMatch: m[0],
-                key: m[1],
-                operator: m[2],
-                value: m[3],
-                index: m.index,
-                endIndex: m.index + m[0].length
-            });
-        }
+        let match;
+        let idCounter = 0;
 
-        const foundProps: RenderedProperty[] = [];
-
-        // We must map global string index to a specific line in layoutWithLines.
-        // Because pretext layout handles word wrapping, we map cursors accurately.
-        for (const match of matches) {
-             let startLineIndex = -1;
-             let currentGlobalIndex = 0;
-             let y = 0;
-             let x = 0;
-
-             for (let i = 0; i < lines.length; i++) {
-                 const line = lines[i];
-                 const lineLength = line.end.graphemeIndex - line.start.graphemeIndex; // roughly.
-                 // Actually layoutWithLines output gives us lines. We can just use standard text measurement
-                 // if pretext doesn't expose strict global indices easily.
-                 // But wait, the reviewer pointed out layoutWithLines strips whitespace.
-             }
-        }
-
-        // To perfectly align widgets over a textarea, the most robust way is a hidden div mirror
-        // or a canvas context that exactly measures up to the text.
-        // Let's create a temporary canvas to measure widths.
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return [];
-        ctx.font = FONT;
-
-        const domProps: RenderedProperty[] = [];
-        let yCursor = 0;
-
-        // Re-run pretext to get lines
-        for (const line of lines) {
-            let lineMatch;
-            PROPERTY_REGEX.lastIndex = 0;
-            while ((lineMatch = PROPERTY_REGEX.exec(line.text)) !== null) {
-                const textBefore = line.text.substring(0, lineMatch.index);
-                const xOffset = ctx.measureText(textBefore).width;
-                const propWidth = ctx.measureText(lineMatch[0]).width;
-
-                // Note: We're doing line-by-line index assuming simple editing for now,
-                // but we fix the mutation bug by doing a strict replace on the *full* note.content later
-                // based on the string value, or by using a unique ID.
-                domProps.push({
-                    id: `prop-${yCursor}-${lineMatch.index}`,
-                    key: lineMatch[1],
-                    operator: lineMatch[2],
-                    value: lineMatch[3],
-                    x: xOffset,
-                    y: yCursor,
-                    width: propWidth,
-                    height: LINE_HEIGHT,
-                    startIndex: -1, // Not used, we'll replace by text
-                    endIndex: -1
-                });
+        while ((match = PROPERTY_REGEX.exec(note.content)) !== null) {
+            if (match.index > lastIndex) {
+                t.push({ type: 'text', content: note.content.substring(lastIndex, match.index) });
             }
-            yCursor += LINE_HEIGHT;
+            t.push({
+                type: 'property',
+                id: idCounter++,
+                fullMatch: match[0],
+                key: match[1],
+                operator: match[2],
+                value: match[3],
+                start: match.index,
+                end: match.index + match[0].length
+            });
+            lastIndex = PROPERTY_REGEX.lastIndex;
         }
+        if (lastIndex < note.content.length) {
+            t.push({ type: 'text', content: note.content.substring(lastIndex) });
+        }
+        return t;
+    }, [note.content]);
 
-        return domProps;
-
-    }, [note.content, textWidth]);
-
-    const handleUpdateProperty = useCallback((prop: RenderedProperty, newKey: string, newOp: string, newVal: string) => {
+    const handleUpdateProperty = useCallback((token: Extract<Token, {type: 'property'}>, newKey: string, newOp: string, newVal: string) => {
         const replacement = `[${newKey}:${newOp}:${newVal}]`;
-        const oldStr = `[${prop.key}:${prop.operator}:${prop.value}]`;
-
-        // Since indices are tricky across word wraps, replace the first occurrence of the exact string.
-        // For a more robust editor, we'd use a stable ID or explicit AST.
-        const newContent = note.content.replace(oldStr, replacement);
+        const before = note.content.substring(0, token.start);
+        const after = note.content.substring(token.end);
+        const newContent = `${before}${replacement}${after}`;
 
         onSave(newContent);
-        setEditingPropertyId(null);
+        setActiveToken(null);
+        setPopupPos(null);
 
+        // Place cursor right after the newly updated property token
         setTimeout(() => {
-            textareaRef.current?.focus();
+            if (textareaRef.current) {
+                textareaRef.current.focus();
+                const newPos = token.start + replacement.length;
+                textareaRef.current.setSelectionRange(newPos, newPos);
+            }
         }, 10);
     }, [note.content, onSave]);
+
+    const handleCaretMove = useCallback(() => {
+        if (!textareaRef.current) return;
+        const caret = textareaRef.current.selectionStart;
+
+        // Find if cursor is strictly inside a property token
+        const token = tokens.find(t => t.type === 'property' && caret > t.start && caret < t.end) as Extract<Token, {type: 'property'}> | undefined;
+
+        if (token) {
+            const el = document.getElementById(`prop-${token.id}`);
+            const scrollContainer = scrollContainerRef.current;
+            if (el && scrollContainer) {
+                // Calculate position relative to scroll container
+                const elRect = el.getBoundingClientRect();
+                const containerRect = scrollContainer.getBoundingClientRect();
+
+                setPopupPos({
+                    top: elRect.top - containerRect.top + scrollContainer.scrollTop - 40, // Position above the element
+                    left: Math.max(0, elRect.left - containerRect.left + scrollContainer.scrollLeft - 10)
+                });
+                setActiveToken(token);
+            }
+        } else {
+            setActiveToken(null);
+            setPopupPos(null);
+        }
+    }, [tokens]);
+
+    // Handle block deletion of properties
+    const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (!textareaRef.current) return;
+
+        const caret = textareaRef.current.selectionStart;
+
+        // Tab navigation between properties
+        if (e.key === 'Tab' && !e.shiftKey) {
+            e.preventDefault();
+            // Find the next property after the current cursor
+            const nextToken = tokens.find(t => t.type === 'property' && t.start >= caret) as Extract<Token, {type: 'property'}> | undefined;
+            if (nextToken) {
+                // Place cursor just inside it to trigger edit mode
+                textareaRef.current.setSelectionRange(nextToken.start + 1, nextToken.start + 1);
+                handleCaretMove();
+                return;
+            }
+        } else if (e.key === 'Tab' && e.shiftKey) {
+            e.preventDefault();
+            // Find the previous property before the current cursor
+            const prevToken = [...tokens].reverse().find(t => t.type === 'property' && t.end <= caret) as Extract<Token, {type: 'property'}> | undefined;
+            if (prevToken) {
+                textareaRef.current.setSelectionRange(prevToken.end - 1, prevToken.end - 1);
+                handleCaretMove();
+                return;
+            }
+        }
+
+        if (e.key === 'Backspace') {
+            // Delete entire block if cursor is right after it
+            const tokenBeforeCaret = tokens.find(t => t.type === 'property' && caret === t.end) as Extract<Token, {type: 'property'}> | undefined;
+            if (tokenBeforeCaret && textareaRef.current.selectionStart === textareaRef.current.selectionEnd) {
+                e.preventDefault();
+                const before = note.content.substring(0, tokenBeforeCaret.start);
+                const after = note.content.substring(tokenBeforeCaret.end);
+                onSave(`${before}${after}`);
+
+                // Keep cursor at the deletion point
+                setTimeout(() => {
+                    if (textareaRef.current) {
+                        textareaRef.current.setSelectionRange(tokenBeforeCaret.start, tokenBeforeCaret.start);
+                    }
+                }, 0);
+            }
+        } else if (e.key === 'Delete') {
+             // Delete entire block if cursor is right before it
+             const tokenAfterCaret = tokens.find(t => t.type === 'property' && caret === t.start) as Extract<Token, {type: 'property'}> | undefined;
+             if (tokenAfterCaret && textareaRef.current.selectionStart === textareaRef.current.selectionEnd) {
+                 e.preventDefault();
+                 const before = note.content.substring(0, tokenAfterCaret.start);
+                 const after = note.content.substring(tokenAfterCaret.end);
+                 onSave(`${before}${after}`);
+
+                 setTimeout(() => {
+                     if (textareaRef.current) {
+                         textareaRef.current.setSelectionRange(tokenAfterCaret.start, tokenAfterCaret.start);
+                     }
+                 }, 0);
+             }
+        }
+    }, [note.content, tokens, onSave]);
 
     return (
         <div className="flex flex-col h-full bg-gray-900 text-gray-300 p-4 relative" ref={containerRef}>
@@ -196,17 +220,17 @@ export const PretextEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
                 className="flex-grow overflow-y-auto overflow-x-hidden relative"
                 style={{ minHeight: '300px' }}
                 onClick={() => {
-                    if (editingPropertyId === null) {
+                    if (!activeToken) {
                         textareaRef.current?.focus();
                     }
                 }}
             >
-                <div style={{ position: 'relative', width: textWidth > 0 ? textWidth : '100%', minHeight: '100%' }}>
+                <div style={{ position: 'relative', width: '100%', minHeight: '100%' }}>
 
                     {/* The actual visible textarea for native editing, selection, and cursor */}
                     <textarea
                        ref={textareaRef}
-                       className="absolute inset-0 w-full h-full bg-transparent text-gray-300 z-10"
+                       className="absolute inset-0 w-full h-full bg-transparent text-gray-300 z-10 pretext-textarea"
                        style={{
                            lineHeight: `${LINE_HEIGHT}px`,
                            fontFamily: '"Inter", ui-sans-serif, system-ui, sans-serif',
@@ -225,14 +249,13 @@ export const PretextEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
                        }}
                        value={note.content}
                        onChange={(e) => onSave(e.target.value)}
-                       onKeyDown={(e) => {
-                           // Allow autosuggest logic if needed, we listen via AutosuggestMenu.
-                           // Pretext Editor handles standard editing natively.
-                       }}
+                       onClick={handleCaretMove}
+                       onKeyUp={handleCaretMove}
+                       onKeyDown={handleKeyDown}
                        spellCheck={false}
                     />
 
-                    {/* Background text rendering (so we can hide the syntax behind widgets) */}
+                    {/* Background text rendering perfectly synced with textarea */}
                     <div
                         className="absolute top-0 left-0 w-full h-full pointer-events-none z-0"
                         style={{
@@ -243,62 +266,57 @@ export const PretextEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
                             whiteSpace: 'pre-wrap',
                             wordWrap: 'break-word',
                             wordBreak: 'normal',
-                            color: '#D1D5DB'
+                            color: '#D1D5DB' // Base text color
                         }}
                     >
-                        {/* We could render syntax highlighted text here, but for now just raw text
-                            Wait, if we render raw text here, the widgets will cover the syntax.
-                            Yes! This is the standard overlay pattern. */}
-                        {note.content}
-                    </div>
-
-                    {/* Overlay semantic widgets precisely over the text */}
-                    <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-20">
-                        {renderedProperties.map((prop) => (
-                            <div
-                                key={prop.id}
-                                className="absolute pointer-events-auto"
-                                style={{
-                                    left: prop.x,
-                                    top: prop.y,
-                                    width: prop.width,
-                                    height: prop.height,
-                                }}
-                            >
-                                {editingPropertyId === prop.id ? (
-                                    <div className="absolute left-0 top-1/2 -translate-y-1/2 z-50 bg-gray-900 rounded shadow-xl border border-blue-500 min-w-max">
-                                        <InlinePropertyForm
-                                            initialKey={prop.key}
-                                            initialOperator={prop.operator}
-                                            initialValue={prop.value}
-                                            onUpdate={(k, o, v) => handleUpdateProperty(prop, k, o, v)}
-                                            onCancel={() => {
-                                                setEditingPropertyId(null);
-                                                textareaRef.current?.focus();
-                                            }}
-                                            editor={null}
-                                            getPos={() => 0}
-                                        />
-                                    </div>
-                                ) : (
-                                    <div
-                                        className="h-full w-full flex items-center justify-center bg-gray-900 rounded px-1 border border-blue-500/50 cursor-pointer hover:border-blue-400 transition-colors shadow-sm"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            setEditingPropertyId(prop.id);
-                                        }}
-                                        style={{ marginTop: '2px', height: 'calc(100% - 4px)'}}
+                        {tokens.map((token, i) => {
+                            if (token.type === 'text') {
+                                return <span key={i}>{token.content}</span>;
+                            } else {
+                                const m = token;
+                                // We apply inline styling so it doesn't break horizontal sizing.
+                                // We use outlines instead of borders to prevent width recalculations.
+                                const isEditing = activeToken?.id === m.id;
+                                return (
+                                    <span
+                                        key={i}
+                                        id={`prop-${m.id}`}
+                                        className={`rounded-sm transition-colors ${isEditing ? 'bg-blue-800/60 outline outline-2 outline-blue-400' : 'bg-blue-900/40 outline outline-1 outline-blue-500/30'}`}
                                     >
-                                        <span className="text-sm font-medium text-blue-200">{prop.key}</span>
-                                        <span className="text-sm text-gray-400 mx-1 opacity-70">{prop.operator}</span>
-                                        <span className="text-sm font-semibold text-blue-300">{prop.value}</span>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
+                                        <span className="text-blue-400/80">[{m.key}</span>
+                                        <span className="text-gray-500/70">:{m.operator}:</span>
+                                        <span className="text-blue-300">{m.value}]</span>
+                                    </span>
+                                );
+                            }
+                        })}
+                        {/* Append a trailing space if the note ends with a newline to ensure the textarea scroll matches the div */}
+                        {note.content.endsWith('\n') ? <br /> : null}
                     </div>
 
+                    {/* Popups overlay layer */}
+                    {activeToken && popupPos && (
+                        <div
+                            className="absolute z-50 shadow-xl min-w-max"
+                            style={{ top: popupPos.top, left: popupPos.left }}
+                        >
+                            <EditorActionsProvider onPickLocation={onPickLocation}>
+                                <InlinePropertyForm
+                                    initialKey={activeToken.key}
+                                    initialOperator={activeToken.operator}
+                                    initialValue={activeToken.value}
+                                    onUpdate={(k, o, v) => handleUpdateProperty(activeToken, k, o, v)}
+                                    onCancel={() => {
+                                        setActiveToken(null);
+                                        setPopupPos(null);
+                                        textareaRef.current?.focus();
+                                    }}
+                                    editor={null}
+                                    getPos={() => 0}
+                                />
+                            </EditorActionsProvider>
+                        </div>
+                    )}
                 </div>
             </div>
             {children}
