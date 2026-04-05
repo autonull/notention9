@@ -38,7 +38,7 @@ export { useEditorShortcuts } from './editor/useEditorShortcuts.js';
 export { useEditorTemplates } from './editor/useEditorTemplates.js';
 export { useInsertMenuItems } from './editor/useInsertMenuItems.js';
 export { useOptimizedNoteEditing } from './editor/useOptimizedNoteEditing.js';
-export { usePerformanceOptimizedEditor } from './editor/usePerformanceOptimizedEditor.js';
+export { useOptimizedPropertyExtraction } from './editor/usePerformanceOptimizedEditor.js';
 export { usePropertyInsertion } from './editor/usePropertyInsertion.js';
 export { useSmartInput } from './editor/useSmartInput.js';
 

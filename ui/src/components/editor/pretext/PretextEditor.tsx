@@ -225,6 +225,10 @@ export const PretextEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
                        }}
                        value={note.content}
                        onChange={(e) => onSave(e.target.value)}
+                       onKeyDown={(e) => {
+                           // Allow autosuggest logic if needed, we listen via AutosuggestMenu.
+                           // Pretext Editor handles standard editing natively.
+                       }}
                        spellCheck={false}
                     />
 
