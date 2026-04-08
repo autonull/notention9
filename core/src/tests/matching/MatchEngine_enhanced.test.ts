@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { MatchEngine } from '../../matching/MatchEngine.js';
-import { Note, OntologyNode } from '../../matching/../types/index.js';
+import { Note, OntologyNode } from '../../types/index.js';
 
 describe('MatchEngine Enhanced', () => {
     const mockOntology: OntologyNode[] = [
@@ -9,7 +9,10 @@ describe('MatchEngine Enhanced', () => {
             label: 'Test',
             attributes: {
                 rate: { type: 'number', description: 'Rate', icon: 'cash', operators: { real: ['is'], imaginary: ['<', '>', '<=', '>=', 'between'] } },
+                price: { type: 'number', description: 'Price', icon: 'cash', operators: { real: ['is'], imaginary: ['<', '>', '<=', '>='] } },
                 score: { type: 'number', description: 'Score', icon: 'star', operators: { real: ['is'], imaginary: ['<', '>', '<=', '>='] } },
+                skill: { type: 'string', description: 'Skill', icon: 'code', operators: { real: ['is'], imaginary: ['contains'] } },
+                role: { type: 'string', description: 'Role', icon: 'user', operators: { real: ['is'], imaginary: ['contains'] } }
             }
         }
     ];
@@ -22,8 +25,11 @@ describe('MatchEngine Enhanced', () => {
             title: 'Note',
             content: '',
             properties: props.map(p => {
-                const [key, op, ...rest] = p.split(':');
-                return { key, operator: op, values: [rest.join(':')] };
+                const parts = p.split(':');
+                const key = parts[0];
+                const op = parts[1];
+                const val = parts.slice(2).join(':');
+                return { key, operator: op, values: [val] };
             }),
             author: '',
             createdAt: new Date().toISOString(),
@@ -88,5 +94,42 @@ describe('MatchEngine Enhanced', () => {
         expect(result.matches).toHaveLength(0);
         expect(result.conflicts).toHaveLength(1);
         expect(result.conflicts[0].reason).toContain('is outside 50-100');
+    });
+
+    // New tests from verification
+    it('should fuzzy match strings (Levenshtein)', () => {
+        const request = createNote('req1', ['skill:is:javascript']);
+        const offer = createNote('off1', ['skill:is:java script']);
+
+        const result = engine.calculateMatchScore(request, offer);
+        expect(result.matches).toHaveLength(1);
+        expect(result.matches[0].reason).toContain('Fuzzy match');
+    });
+
+    it('should match canonical synonyms', () => {
+        const request = createNote('req1', ['role:is:software engineer']);
+        const offer = createNote('off1', ['role:is:swe']);
+
+        const result = engine.calculateMatchScore(request, offer);
+        expect(result.matches).toHaveLength(1);
+        expect(result.matches[0].reason).toBe('Exact synonym match');
+    });
+
+    it('should handle units in numbers (suffix)', () => {
+        const request = createNote('req1', ['price:<:100']);
+        const offer = createNote('off1', ['price:is:50 USD']);
+
+        const result = engine.calculateMatchScore(request, offer);
+        expect(result.matches).toHaveLength(1);
+        expect(result.matches[0].reason).toContain('50 < 100');
+    });
+
+     it('should handle currency prefix', () => {
+        const request = createNote('req1', ['price:<:100']);
+        const offer = createNote('off1', ['price:is:$50']);
+
+        const result = engine.calculateMatchScore(request, offer);
+        expect(result.matches).toHaveLength(1);
+        expect(result.matches[0].reason).toContain('50 < 100');
     });
 });

@@ -71,6 +71,7 @@ export interface OntologyAttribute {
     };
     options?: string[]; // for enum
     referenceType?: string; // for relationship
+    aliases?: string[]; // Alternative keys for this attribute (e.g. 'loc' for 'location')
 }
 
 export interface Template {

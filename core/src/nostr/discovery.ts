@@ -51,10 +51,26 @@ export class NetworkDiscoveryService {
     ): Promise<Filter | null> {
         if (localNote.properties.length === 0) return null;
 
+        // Query for notes that have relevant properties (indexed via 't' tag with 'prop:' prefix)
+        // Expand property keys to include aliases
+        const propertyKeys = localNote.properties.flatMap(p => {
+             // Use engine to get aliases (if available on instance)
+             const aliases = this.engine.getAliases ? this.engine.getAliases(p.key) : [p.key];
+             return aliases.map(key => `prop:${key}`);
+        });
+
+        // Deduplicate keys
+        const uniqueKeys = Array.from(new Set(propertyKeys));
+
         const filter: Filter = {
             kinds: [35000],
             limit: 50
         };
+
+        // Only query public property keys if not in private mode
+        if (privacyMode !== 'private') {
+            filter['#t'] = uniqueKeys;
+        }
 
         if (privacyMode === 'private') {
             // Level 2: Secret

@@ -4,6 +4,7 @@ import { DEFAULT_ONTOLOGY } from './ontology.default.js';
 import { PropertyValidationError } from './errorTypes.js';
 import { parseQuantity } from './quantities.js';
 import { Logger } from './utils/logging.js';
+import { getCanonicalKey } from './ontologyHelpers.js';
 
 // Top-level Regex Constants
 const PATTERNS = {
@@ -73,7 +74,28 @@ export class PropertyExtractor {
         for (const strategy of this.strategies) {
             strategy(text, properties);
         }
-        return properties;
+
+        // Normalize properties to canonical keys
+        return this.normalizeProperties(properties);
+    }
+
+    /**
+     * Normalizes property keys to their canonical forms based on the ontology.
+     */
+    private normalizeProperties(properties: Property[]): Property[] {
+        const ontologyNodes = this.ontologyService.getAllNodes();
+
+        return properties.map(prop => {
+            const canonicalKey = getCanonicalKey(prop.key, ontologyNodes);
+            if (canonicalKey !== prop.key) {
+                // If mapping changed, we return a new property with canonical key
+                return {
+                    ...prop,
+                    key: canonicalKey
+                };
+            }
+            return prop;
+        });
     }
 
     private applyIntentStrategy(text: string, properties: Property[]): void {

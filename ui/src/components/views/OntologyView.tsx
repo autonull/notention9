@@ -7,7 +7,7 @@ import {useView} from '../../hooks/useViewContext';
 import {Tabs} from '../common/Tabs';
 import {Button} from '../common/Button';
 import {Toggle} from '../common/Toggle';
-import {EditIcon} from '../common/icons';
+import {EditIcon, SparklesIcon, PlusIcon} from '../common/icons';
 import {InputModal} from '../common/InputModal';
 import {ConfirmationModal} from '../common/ConfirmationModal';
 import {OntologyGraph} from '../developer/OntologyGraph';
@@ -24,7 +24,8 @@ export function OntologyView() {
         handleAddNode,
         handleDeleteNode,
         usageStats,
-        conflicts
+        conflicts,
+        suggestions
     } = useOntologyView();
 
     const {setSelectedNoteId, setActiveView} = useView();
@@ -74,6 +75,7 @@ export function OntologyView() {
 
     const tabs = [
         {id: 'graph', label: 'Graph'},
+        {id: 'suggestions', label: 'Learning', count: suggestions.length > 0 ? suggestions.length : undefined},
         {id: 'conflicts', label: 'Conflicts', count: conflicts.length}
     ];
 
@@ -136,6 +138,59 @@ export function OntologyView() {
             <div className="flex-grow overflow-y-auto">
                 {safeActiveTab === 'conflicts' ? (
                     <OntologyConflicts conflicts={conflicts} onSelectNote={handleSelectNote}/>
+                ) : safeActiveTab === 'suggestions' ? (
+                    <div className="space-y-4">
+                        <div className="bg-purple-900/20 border border-purple-900/50 p-4 rounded-lg flex gap-3">
+                            <SparklesIcon className="text-purple-400 w-6 h-6 flex-shrink-0" />
+                            <div>
+                                <h3 className="font-semibold text-purple-100">Learned Attributes</h3>
+                                <p className="text-sm text-purple-300">
+                                    The system observes your usage and suggests new attributes to add to the ontology.
+                                </p>
+                            </div>
+                        </div>
+
+                        {suggestions.length === 0 ? (
+                            <div className="text-center text-gray-500 py-12">
+                                No suggestions yet. Start using new properties in your notes!
+                            </div>
+                        ) : (
+                            <div className="grid gap-3">
+                                {suggestions.map((suggestion) => (
+                                    <div key={suggestion.key} className="bg-gray-800 p-4 rounded-lg border border-gray-700 flex justify-between items-center">
+                                        <div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-mono text-blue-300 font-bold">{suggestion.key}</span>
+                                                <span className="text-xs bg-gray-700 px-2 py-0.5 rounded text-gray-400">
+                                                    {suggestion.type}
+                                                </span>
+                                            </div>
+                                            <div className="text-sm text-gray-400 mt-1">
+                                                Used {suggestion.frequency} times •
+                                                Confidence: {Math.round(suggestion.confidence * 100)}%
+                                                {suggestion.parentContext && (
+                                                    <span className="ml-2 text-green-400">
+                                                        Likely belongs to: <strong>{suggestion.parentContext}</strong>
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <Button
+                                            size="sm"
+                                            variant="secondary"
+                                            icon={PlusIcon}
+                                            onClick={() => {
+                                                // Pre-fill Add Attribute logic would go here
+                                                alert(`TODO: Open Add Attribute modal for '${suggestion.key}' on '${suggestion.parentContext || 'Root'}'`);
+                                            }}
+                                        >
+                                            Add
+                                        </Button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 ) : (
                     <>
                         <div

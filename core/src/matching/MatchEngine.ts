@@ -1,5 +1,5 @@
 import { Note, Property, OntologyNode } from '../types/index.js';
-import { findAttributeDef } from '../ontologyHelpers.js';
+import { findAttributeDef, getAliases } from '../ontologyHelpers.js';
 import { PropertyMatchers, type PropertyMatch } from './matchers.js';
 
 export type { PropertyMatch };
@@ -15,11 +15,15 @@ export class MatchEngine {
 
     calculateMatchScore(request: Note, offer: Note): MatchResult {
         // Collect all evaluations
-        const results = request.properties.flatMap(reqProp =>
-            offer.properties
-                .filter(p => p.key === reqProp.key)
-                .map(offProp => this.evaluateConstraint(reqProp, offProp))
-        );
+        const results = request.properties.flatMap(reqProp => {
+            // Get all aliases for the request property key to match against offer
+            const aliases = getAliases(reqProp.key, this.ontology);
+            const keysToCheck = new Set(aliases);
+
+            return offer.properties
+                .filter(p => keysToCheck.has(p.key))
+                .map(offProp => this.evaluateConstraint(reqProp, offProp));
+        });
 
         const matches: PropertyMatch[] = [];
         const conflicts: PropertyMatch[] = [];
@@ -63,5 +67,12 @@ export class MatchEngine {
             default:
                 return PropertyMatchers.evaluateString(req, off);
         }
+    }
+
+    /**
+     * Expose alias lookup for discovery service
+     */
+    getAliases(key: string): string[] {
+        return getAliases(key, this.ontology);
     }
 }
