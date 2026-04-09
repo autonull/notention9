@@ -5,6 +5,7 @@ import {useNotes} from '../hooks/useNotes';
 import {useSettings} from '../hooks/useSettingsContext';
 import {useMatchDiscovery} from '../hooks/index';
 import {useChatNotifications} from '../hooks/useChatNotifications';
+import {useView} from '../hooks/useViewContext';
 import {useMetaprogramming} from '../hooks/useMetaprogramming';
 import {LoadingSpinner} from './common/icons';
 import {ChatView} from './views/ChatView';

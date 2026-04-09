@@ -1,5 +1,6 @@
 import React, {forwardRef, useCallback, useEffect, useMemo, useState} from 'react';
 import {TiptapEditor, TiptapEditorRef} from './TiptapEditor';
+import {PretextEditor} from './pretext/PretextEditor';
 import {PropertyPalette} from '../properties/PropertyPalette';
 import {useSettings} from '../../hooks/useSettingsContext';
 import {useOntologySuggestions} from '../../hooks/index';
@@ -58,7 +59,11 @@ export const HybridEditor = forwardRef<TiptapEditorRef, HybridEditorProps>((prop
         }}>
             {/* Main Editor Area */}
             <div className="flex-1 flex flex-col min-w-0 relative">
-                <TiptapEditor ref={ref} {...props} onSave={handleContentChange}/>
+                {settings.editorType === 'pretext' ? (
+                    <PretextEditor ref={ref} {...props} onSave={handleContentChange} />
+                ) : (
+                    <TiptapEditor ref={ref} {...props} onSave={handleContentChange} />
+                )}
 
                 <PropertyPalette
                     isOpen={isPropertyPaletteOpen}

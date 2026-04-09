@@ -12,6 +12,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@chenglou/pretext": "^0.0.4",
     "@google/genai": "^1.12.0",
     "@mlc-ai/web-llm": "^0.2.80",
     "@notention/core": "workspace:*",
