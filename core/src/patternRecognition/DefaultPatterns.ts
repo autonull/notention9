@@ -1,6 +1,6 @@
 import { Pattern } from './types.js';
 
-export const DEFAULT_PATTERNS: Pattern[] = [
+export const DEFAULT_PATTERNS: ReadonlyArray<Pattern> = [
   {
     id: 'pattern_default_reminder',
     name: 'Reminder Intent',

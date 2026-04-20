@@ -70,9 +70,7 @@ export class PropertyExtractor {
 
     extractFromText(text: string): Property[] {
         const properties: Property[] = [];
-        for (const strategy of this.strategies) {
-            strategy(text, properties);
-        }
+        this.strategies.forEach(strategy => strategy(text, properties));
         return properties;
     }
 
@@ -151,21 +149,18 @@ export class PropertyExtractor {
         const words = text.split(/\s+/);
         const existingKeys = new Set(properties.map(p => p.key));
 
-        for (let i = 0; i < words.length - 1; i++) {
-            const word = words[i];
-
-            if (word.length <= 3) continue;
+        words.slice(0, -1).forEach((word, i) => {
+            if (word.length <= 3) return;
 
             const [match] = this.ontologyService.getFuzzyMatches(word, 1);
+            if (!match || existingKeys.has(match)) return;
 
-            if (match && !existingKeys.has(match)) {
-                const nextWord = words[i + 1];
-                if (nextWord.length > 2 && !STOP_WORDS.has(nextWord.toLowerCase())) {
-                    properties.push({ key: match, operator: 'contains', values: [nextWord] });
-                    existingKeys.add(match);
-                }
+            const nextWord = words[i + 1];
+            if (nextWord.length > 2 && !STOP_WORDS.has(nextWord.toLowerCase())) {
+                properties.push({ key: match, operator: 'contains', values: [nextWord] });
+                existingKeys.add(match);
             }
-        }
+        });
     }
 
     inferType(value: string): PropertyType {

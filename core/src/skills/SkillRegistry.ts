@@ -57,19 +57,16 @@ export class SkillRegistry {
      * Find skills that match a note (generic Skill interface only)
      */
     findMatching(note: Note): Skill[] {
-        const matches: Skill[] = [];
-        for (const skill of this.skills.values()) {
-            if (this.isSkillInterface(skill)) {
+        return Array.from(this.skills.values())
+            .filter((skill): skill is Skill => {
+                if (!this.isSkillInterface(skill)) return false;
                 try {
-                    if (skill.canHandle(note) > 0) {
-                        matches.push(skill);
-                    }
+                    return skill.canHandle(note) > 0;
                 } catch (e) {
-                    console.error(`Error checking skill ${(skill as any).id}`, e);
+                    console.error(`Error checking skill ${skill.id}`, e);
+                    return false;
                 }
-            }
-        }
-        return matches;
+            });
     }
 
     protected isSkillInterface(skill: RegisteredSkill): skill is Skill {

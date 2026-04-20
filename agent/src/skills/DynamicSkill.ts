@@ -78,7 +78,7 @@ export class DynamicSkill implements Skill {
         };
     }
 
-    importFromData(data: any[], sourceNote: Note): Note[] {
+    importFromData(data: unknown[], sourceNote: Note): Note[] {
         // Generic import: just wrap the result
         return data.map((res, idx) => ({
             id: crypto.randomUUID(),

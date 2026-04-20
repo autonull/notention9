@@ -61,13 +61,11 @@ export class OntologyService {
         const traverse = (nodes: OntologyNode[]) => {
             for (const node of nodes) {
                 if (node.attributes) {
-                    for (const key in node.attributes) {
-                        if (Object.prototype.hasOwnProperty.call(node.attributes, key)) {
-                            if (!index.has(key)) {
-                                index.set(key, node.attributes[key]);
-                            }
+                    Object.entries(node.attributes).forEach(([key, value]) => {
+                        if (!index.has(key)) {
+                            index.set(key, value);
                         }
-                    }
+                    });
                 }
                 if (node.children) {
                     traverse(node.children);
@@ -249,22 +247,20 @@ export class OntologyService {
     inferType(key: string, values: any[]): PropertyType {
         if (!values?.length) return 'string';
 
-        let numberCount = 0;
-        let dateCount = 0;
-
-        for (const v of values) {
+        const counts = values.reduce((acc, v) => {
             if (typeof v === 'number') {
-                numberCount++;
+                acc.number++;
             } else {
                 const valStr = String(v);
-                if (!isNaN(parseFloat(valStr))) numberCount++;
-                if (ISODATE_REGEX.test(valStr) && !isNaN(Date.parse(valStr))) dateCount++;
+                if (!isNaN(parseFloat(valStr))) acc.number++;
+                if (ISODATE_REGEX.test(valStr) && !isNaN(Date.parse(valStr))) acc.date++;
             }
-        }
+            return acc;
+        }, { number: 0, date: 0 });
 
         const threshold = values.length * 0.8; // 80% confidence
-        if (numberCount >= threshold) return 'number';
-        if (dateCount >= threshold) return 'date';
+        if (counts.number >= threshold) return 'number';
+        if (counts.date >= threshold) return 'date';
 
         return 'string';
     }

@@ -11,13 +11,10 @@ export const generateNotesCSV = (notes: Note[]): string => {
     const headers = ['id', 'title', 'created_at', 'tags', 'content', ...propKeys];
 
     // Helper to escape CSV values
-    const escape = (val: string | undefined | null) => {
-        if (val === undefined || val === null) return '';
+    const escape = (val: string | undefined | null): string => {
+        if (val == null) return '';
         const str = String(val).replace(/"/g, '""'); // Escape double quotes
-        if (str.includes(',') || str.includes('\n') || str.includes('"')) {
-            return `"${str}"`;
-        }
-        return str;
+        return /[,\n"]/.test(str) ? `"${str}"` : str;
     };
 
     // 3. Build Rows
@@ -26,17 +23,17 @@ export const generateNotesCSV = (notes: Note[]): string => {
             note.id,
             note.title,
             note.createdAt,
-            note.tags.join(';'), // Semicolon separated tags
-            note.content.replace(/<[^>]*>/g, '').slice(0, 200), // Plain text preview
+            note.tags.join(';'),
+            note.content.replace(/<[^>]*>/g, '').slice(0, 200),
         ];
 
         // Map properties
-        propKeys.forEach(key => {
+        const props = propKeys.map(key => {
             const prop = note.properties.find(p => p.key === key);
-            rowData.push(prop ? prop.values.join(';') : '');
+            return prop ? prop.values.join(';') : '';
         });
 
-        return rowData.map(escape).join(',');
+        return [...rowData, ...props].map(escape).join(',');
     });
 
     return [headers.join(','), ...rows].join('\n');
