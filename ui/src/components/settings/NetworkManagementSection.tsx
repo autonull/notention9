@@ -10,7 +10,15 @@ import { TransportWebSerial } from "@meshtastic/transport-web-serial";
 import { networkRegistry, MeshtasticNetworkProvider } from '@notention/core';
 
 export function NetworkManagementSection() {
-    const { providers, toggleProvider, isPrivateMode, updateMeshtasticSettings, meshtasticSettings } = useNetworkManagement();
+    const {
+        providers,
+        toggleProvider,
+        isPrivateMode,
+        updateMeshtasticSettings,
+        meshtasticSettings,
+        updateNostrSettings,
+        nostrSettings
+    } = useNetworkManagement();
     const [meshPort, setMeshPort] = useState(meshtasticSettings.port || '/dev/ttyUSB0');
     const [connectionType, setConnectionType] = useState<'webserial' | 'server-proxy'>(meshtasticSettings.connectionType || 'webserial');
     const [isConnecting, setIsConnecting] = useState(false);
@@ -132,16 +140,35 @@ export function NetworkManagementSection() {
                                     <span className="text-xs text-gray-500 uppercase tracking-wider">{provider.id}</span>
                                 </div>
                             </div>
-                            <label className="relative inline-flex items-center cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    className="sr-only peer"
-                                    checked={provider.enabled}
-                                    onChange={(e) => toggleProvider(provider.id, e.target.checked)}
-                                    disabled={isPrivateMode}
-                                />
-                                <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                            </label>
+                            <div className="flex items-center gap-4">
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="checkbox"
+                                        id={`publish-${provider.id}`}
+                                        className="rounded border-gray-700 bg-gray-900 text-blue-600 focus:ring-blue-500"
+                                        checked={provider.id === 'nostr' ? (nostrSettings?.publishEnabled !== false) : (meshtasticSettings?.publishEnabled === true)}
+                                        onChange={(e) => {
+                                            const enabled = e.target.checked;
+                                            if (provider.id === 'nostr') {
+                                                updateNostrSettings({ publishEnabled: enabled });
+                                            } else {
+                                                updateMeshtasticSettings({ publishEnabled: enabled });
+                                            }
+                                        }}
+                                    />
+                                    <label htmlFor={`publish-${provider.id}`} className="text-xs text-gray-400 cursor-pointer">Publish Target</label>
+                                </div>
+                                <label className="relative inline-flex items-center cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        className="sr-only peer"
+                                        checked={provider.enabled}
+                                        onChange={(e) => toggleProvider(provider.id, e.target.checked)}
+                                        disabled={isPrivateMode}
+                                    />
+                                    <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                </label>
+                            </div>
                         </div>
 
                         {provider.id === 'meshtastic' && provider.enabled && (

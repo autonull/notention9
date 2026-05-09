@@ -13,6 +13,8 @@
   },
   "dependencies": {
     "@google/genai": "^1.12.0",
+    "@meshtastic/core": "^2.6.7",
+    "@meshtastic/transport-web-serial": "^0.2.5",
     "@mlc-ai/web-llm": "^0.2.80",
     "@notention/core": "*",
     "@tiptap/extension-bubble-menu": "^3.15.3",
