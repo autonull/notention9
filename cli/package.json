@@ -16,8 +16,8 @@
   "dependencies": {
     "@ai-sdk/openai": "^0.0.48",
     "@modelcontextprotocol/sdk": "^1.0.1",
-    "@notention/agent": "*",
-    "@notention/core": "*",
+    "@notention/agent": "workspace:*",
+    "@notention/core": "workspace:*",
     "@types/conf": "^2.1.0",
     "@types/cosmiconfig": "^5.0.3",
     "@types/dotenv": "^6.1.1",

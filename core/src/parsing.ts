@@ -72,11 +72,12 @@ export class ColonFormatStrategy implements PropertyParserStrategy {
   parse(content: string, ontology?: OntologyNode[]): Property | null {
     const parts = content.split(':');
     if (parts.length < 2) return null;
-    const rawKey = parts[0];
+    const rawKey = parts[0].trim();
+    if (!rawKey) return null;
     const hasOperator = parts.length >= 3;
     const operator = hasOperator ? parts[1] : 'is';
     const value = hasOperator ? parts.slice(2).join(':') : parts[1];
-    return createProperty(rawKey, operator, value, ontology, false);
+    return createProperty(rawKey, operator, value, ontology, true);
   }
 }
 
@@ -84,7 +85,7 @@ export class SymbolicFormatStrategy implements PropertyParserStrategy {
   parse(content: string, ontology?: OntologyNode[]): Property | null {
     for (const { regex, op } of SYMBOLIC_REGEXES) {
       const match = content.match(regex);
-      if (match) return createProperty(match[1], op, match[3], ontology, false);
+      if (match) return createProperty(match[1], op, match[3], ontology, true);
     }
     return null;
   }
@@ -127,12 +128,47 @@ const parserInstance = new PropertyBlockParser();
 const parsePropertyBlock = (content: string, ontology?: OntologyNode[]): Property | null =>
   parserInstance.parse(content, ontology);
 
-export const extractProperties = (text: string, ontology?: OntologyNode[]): ExtractedProperty[] =>
-  Array.from(text.matchAll(REGEX.BRACKET))
-    .flatMap<ExtractedProperty>(match => {
-      const parsed = parsePropertyBlock(match[1], ontology);
-      return parsed ? [{ property: parsed, index: match.index!, length: match[0].length, originalText: match[0] }] : [];
-    });
+export const extractProperties = (text: string, ontology?: OntologyNode[]): ExtractedProperty[] => {
+  const extracted: ExtractedProperty[] = [];
+  const regex = /\[([^\]]+)\]/g;
+  let match;
+
+  while ((match = regex.exec(text)) !== null) {
+      const content = match[1];
+      const parsed = parsePropertyBlock(content, ontology);
+      if (parsed) {
+          extracted.push({ property: parsed, index: match.index, length: match[0].length, originalText: match[0] });
+      } else {
+          // If it failed, it might be that we captured an extra [ at the beginning, like [[a:is:b]]
+          // Try finding the innermost bracket pair within this match
+          const innerMatch = content.match(/\[([^\[\]]+)\]/);
+          if (innerMatch) {
+              const innerParsed = parsePropertyBlock(innerMatch[1], ontology);
+              if (innerParsed) {
+                  extracted.push({
+                      property: innerParsed,
+                      index: match.index + innerMatch.index! + 1,
+                      length: innerMatch[0].length,
+                      originalText: innerMatch[0]
+                  });
+              }
+          } else if (content.startsWith('[')) {
+              // Simple [[case]]
+              const inner = content.substring(1);
+              const innerParsed = parsePropertyBlock(inner, ontology);
+              if (innerParsed) {
+                  extracted.push({
+                      property: innerParsed,
+                      index: match.index + 1,
+                      length: match[0].length - 1,
+                      originalText: match[0].substring(1)
+                  });
+              }
+          }
+      }
+  }
+  return extracted;
+};
 
 const extractMacros = (text: string): Property[] =>
   Array.from(text.matchAll(REGEX.MACRO)).flatMap(m => expandMacro(m[1]));

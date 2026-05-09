@@ -1,5 +1,5 @@
 import type { OntologyNode } from './types/index.js';
-import { entityDomain, communicationDomain, eventDomain, workDomain } from './ontology/domains/index.js';
+import { entityDomain, communicationDomain, eventDomain, workDomain, commerceDomain } from './ontology/domains/index.js';
 
 /**
  * Default Ontology - Combined from modular domain definitions
@@ -9,10 +9,12 @@ import { entityDomain, communicationDomain, eventDomain, workDomain } from './on
  * - communicationDomain: Messages and conversations  
  * - eventDomain: Meetings, conferences, scheduled events
  * - workDomain: Jobs, projects, tasks, freelance work
+ * - commerceDomain: Products, services, and transactions
  */
 export const DEFAULT_ONTOLOGY: OntologyNode[] = [
     ...entityDomain,
     ...communicationDomain,
     ...eventDomain,
-    ...workDomain
+    ...workDomain,
+    ...commerceDomain
 ];

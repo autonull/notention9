@@ -53,6 +53,21 @@ Publish your intent to the censorship-resistant Nostr network to find matches ou
 -   **Smart Matching:** Connect with peers offering exactly what you need, based on semantic compatibility, not keyword spam.
 -   **Privacy Controls:** Default-private with explicit consent for publishing.
 
+## Supported Networks
+
+Notention is designed to be transport-agnostic, supporting multiple decentralized networks for semantic coordination.
+
+<details>
+<summary><b>View Detailed Network Capabilities Table</b></summary>
+
+| Network | Semantic Discovery | P2P Matching | Offline Support | Use Case |
+| :--- | :---: | :---: | :---: | :--- |
+| **Nostr** | ✅ | ✅ | ⚠️ | Global coordination via censorship-resistant relays. |
+| **Meshtastic** | ✅ | ✅ | ✅ | Off-grid, long-range radio mesh for localized coordination. |
+| **Local-First** | ✅ | ✅ | ✅ | Private matching within your own device or local network. |
+
+</details>
+
 ## Getting Started
 
 1.  **Write:** Create a note. Type `[task:is:Research]` query: `best hiking boots 2026`.

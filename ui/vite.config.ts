@@ -15,6 +15,9 @@ export default defineConfig(({mode}) => {
             alias: {
                 '@': path.resolve(__dirname, './src'),
                 '@notention/core': path.resolve(__dirname, '../core/src/index.ts'),
+                'path': 'path-browserify',
+                'os': 'os-browserify/browser',
+                'util': 'util',
             },
         },
         test: {
