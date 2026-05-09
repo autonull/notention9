@@ -14,6 +14,7 @@ export * from './constants.js';
 export * from './quantities.js';
 export * from './templates.js';
 export * from './networkGate.js';
+export * from './network/index.js';
 export * from './skills/types.js';
 export * from './feedback/types.js';
 

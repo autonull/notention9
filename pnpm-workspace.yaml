@@ -1,0 +1,8 @@
+packages:
+  - 'ui'
+  - 'agent'
+  - 'agent/voltagent'
+  - 'core'
+  - 'cli'
+  - 'e2e'
+  - 'simulator'

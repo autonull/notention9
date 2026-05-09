@@ -12,11 +12,21 @@ Notention acts as a generic interface for decentralized coordination. It replace
 
 ---
 
-## 2. P2P Architecture (Nostr)
-We use Nostr as the transport layer.
--   **Events:** Notes are Kind 1 events.
--   **Properties:** Semantic data is serialized as tags: `["property", "key", "operator", "value"]`.
--   **Discovery:** Users subscribe to relays. The app locally filters/matches notes based on semantic compatibility.
+## 2. Multi-Network Architecture
+Notention is transport-agnostic, supporting multiple peer-to-peer and mesh protocols.
+
+### Network Providers
+-   **Nostr:** Default internet-scale transport.
+    -   **Events:** Notes are Kind 1 or Kind 35000 events.
+    -   **Properties:** Serialized as `["property", "key", "operator", "value"]` tags.
+-   **Meshtastic:** Off-grid LoRA mesh networking.
+    -   **Format:** Uses a highly compressed CBOR-based serialization for limited bandwidth mesh transmission.
+    -   **Connectivity:** Supports direct WebSerial (browser) or Agent-based (proxy) connections to local radio hardware.
+-   **Private Mode:** A global "local-only" switch that disables all network providers, ensuring zero data leakage.
+
+### Discovery & Identity
+-   **Unified Identity:** Author identities are represented as URIs (e.g., `nostr:<pubkey>` or `mesh:<nodeid>`).
+-   **Cross-Network Discovery:** The `NetworkRegistry` coordinates discovery across all active providers, aggregating semantic matches into a unified feed.
 
 ---
 

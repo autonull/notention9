@@ -21,6 +21,10 @@
   "license": "MIT",
   "dependencies": {
     "date-fns": "^4.1.0",
+    "@meshtastic/core": "^2.6.7",
+    "@meshtastic/transport-http": "^0.2.5",
+    "@meshtastic/transport-node-serial": "^0.0.2",
+    "cbor-x": "^1.6.4",
     "nostr-tools": "^2.20.0",
     "zod": "^3.25.76"
   },
