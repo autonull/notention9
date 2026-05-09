@@ -4,7 +4,7 @@ import type {GeoCoords, Note, SortOrder} from '@notention/core';
 import {createNote, haversineDistance, Logger, parseProperties, getCanonicalKey, normalizeNoteProperties, networkRegistry} from '@notention/core';
 import {agentService} from '../../services/AgentService';
 import {useSettings} from '../useSettingsContext';
-import {useMatching} from '../contexts/MatchingContext';
+import {useMatching} from '../../components/contexts/MatchingContext';
 import {augmentNote, NoteMetadata} from './noteUtils';
 
 export interface UseNotesDataResult {
@@ -70,28 +70,7 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
         }
     }, [setNotes]);
 
-    // --- CRUD Operations ---
-    const addNote = useCallback((overrides?: Partial<Note>) => {
-        let newNote = {...createNote(), ...overrides};
-        // Normalize properties to canonical keys on creation
-        newNote = normalizeNoteProperties(newNote, settings.ontology);
-
-        setNotes((prev) => [newNote, ...prev]);
-        agentService.saveNote(newNote);
-
-        // Use abstraction for all active network providers
-        networkRegistry.getActiveProviders().forEach(p => {
-            if (p.id === 'meshtastic' && (settings as any).meshtastic?.connectionType === 'server-proxy') {
-                agentService.meshSendNote(newNote);
-            } else {
-                p.sendNote(newNote, settings.ontology);
-            }
-        });
-
-        return newNote;
-    }, [setNotes, settings.ontology]);
-
-    const upsertNote = useCallback((note: Note) => {
+    const upsertNote = useCallback((note: Note, skipAgent: boolean = false) => {
         const normalizedNote = normalizeNoteProperties(note, settings.ontology);
 
         setNotes((prev) => {
@@ -108,8 +87,83 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
                 return [normalizedNote, ...prev];
             }
         });
-        agentService.saveNote(normalizedNote);
+
+        if (!skipAgent) {
+            agentService.saveNote(normalizedNote);
+        }
     }, [setNotes, settings.ontology]);
+
+    // --- Subscription Logic for Network Providers ---
+    useEffect(() => {
+        const handlers = networkRegistry.getActiveProviders().map(p => {
+            // If it's meshtastic and using agent-proxy, the agent is already saving it.
+            // We only need to skipAgent if connectionType is 'server-proxy'.
+            const meshSettings = (settings as any).meshtastic;
+            const isAgentProxy = p.id === 'meshtastic' && meshSettings?.connectionType === 'server-proxy';
+
+            const noteHandler = (note: Note) => {
+                if (p.id === 'meshtastic' && !meshSettings?.saveReceivedNotes) {
+                    return;
+                }
+                upsertNote(note, isAgentProxy);
+            };
+
+            const telemetryHandler = (data: { nodeId: string, telemetry: any }) => {
+                if (p.id === 'meshtastic') {
+                    const provider = p as any;
+                    const existingNote = notes.find(n => n.id === provider.getNodeNoteId(data.nodeId));
+                    const updatedNote = provider.mapTelemetryToNote(data.nodeId, data.telemetry, existingNote);
+                    upsertNote(updatedNote, isAgentProxy);
+                }
+            };
+
+            const positionHandler = (data: { nodeId: string, position: any }) => {
+                if (p.id === 'meshtastic') {
+                    const provider = p as any;
+                    const existingNote = notes.find(n => n.id === provider.getNodeNoteId(data.nodeId));
+                    const updatedNote = provider.mapPositionToNote(data.nodeId, data.position, existingNote);
+                    upsertNote(updatedNote, isAgentProxy);
+                }
+            };
+
+            p.on('note', noteHandler);
+            p.on('telemetry', telemetryHandler);
+            p.on('position', positionHandler);
+
+            return {
+                provider: p,
+                handlers: {
+                    note: noteHandler,
+                    telemetry: telemetryHandler,
+                    position: positionHandler
+                }
+            };
+        });
+
+        return () => handlers.forEach(({ provider, handlers }) => {
+            provider.off('note', handlers.note);
+            provider.off('telemetry', handlers.telemetry);
+            provider.off('position', handlers.position);
+        });
+    }, [upsertNote, settings, notes]);
+
+    // --- CRUD Operations ---
+    const addNote = useCallback((overrides?: Partial<Note>) => {
+        let newNote = {...createNote(), ...overrides};
+        // Normalize properties to canonical keys on creation
+        newNote = normalizeNoteProperties(newNote, settings.ontology);
+
+        setNotes((prev) => [newNote, ...prev]);
+        agentService.saveNote(newNote);
+
+        // Use abstraction for all active network providers
+        networkRegistry.getActiveProviders().forEach(p => {
+            p.sendNote(newNote, settings.ontology);
+        });
+
+        return newNote;
+    }, [setNotes, settings.ontology]);
+
 
     const updateNote = useCallback((updatedNote: Note) => {
         let noteWithTimestamp = {...updatedNote, updatedAt: new Date().toISOString()};
@@ -123,11 +177,7 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
 
         // Use abstraction for all active network providers
         networkRegistry.getActiveProviders().forEach(p => {
-            if (p.id === 'meshtastic' && (settings as any).meshtastic?.connectionType === 'server-proxy') {
-                agentService.meshSendNote(noteWithTimestamp);
-            } else {
-                p.sendNote(noteWithTimestamp, settings.ontology);
-            }
+            p.sendNote(noteWithTimestamp, settings.ontology);
         });
     }, [setNotes, settings.ontology]);
 

@@ -1,4 +1,4 @@
-import { NetworkProvider, NetworkTransport } from './types.js';
+import { NetworkProvider, NetworkTransport, NetworkStatus } from './types.js';
 import { Note, PrivacyLevel, OntologyNode } from '../types/index.js';
 import { ScoredMatch } from '../nostr/discovery.js';
 import { Logger } from '../utils/logging.js';
@@ -10,14 +10,16 @@ export interface MeshtasticConfig {
     httpUrl?: string;
     nodeId?: string;
     transport?: NetworkTransport;
+    saveReceivedNotes?: boolean;
+    agentService?: any; // To allow proxying via AgentService if available
 }
 
 export class MeshtasticNetworkProvider implements NetworkProvider {
     readonly id = 'meshtastic';
     readonly name = 'Meshtastic';
     private logger = Logger.getInstance();
-    private _onNote?: (note: Note) => void;
     private _transport: NetworkTransport | null = null;
+    private listeners: Record<string, ((...args: any[]) => void)[]> = {};
 
     constructor(private config: MeshtasticConfig = {}) {
         if (config.transport) {
@@ -25,9 +27,12 @@ export class MeshtasticNetworkProvider implements NetworkProvider {
         }
     }
 
-    setTransport(transport: NetworkTransport) {
+    setTransport(transport: NetworkTransport | null) {
         this._transport = transport;
-        this._transport.onData((data, from) => this.handleIncomingPacket(data, from));
+        if (this._transport) {
+            this._transport.onData((data, from) => this.handleIncomingPacket(data, from));
+        }
+        this.emit('status_change', this.getStatus());
     }
 
     get enabled() {
@@ -42,33 +47,62 @@ export class MeshtasticNetworkProvider implements NetworkProvider {
         this.logger.info("Initializing Meshtastic provider");
     }
 
+    getStatus(): NetworkStatus {
+        return {
+            connected: !!this._transport,
+            details: this.config.connectionType ? `Type: ${this.config.connectionType}` : undefined
+        };
+    }
+
     async sendNote(note: Note, ontology?: OntologyNode[]): Promise<void> {
         if (!this.enabled) return;
 
-        const compactData = this.serializeNote(note);
-        this.logger.info(`Sending compact note to Meshtastic mesh (${compactData.byteLength} bytes)`);
+        try {
+            const compactData = this.serializeNote(note);
+            if (compactData.byteLength > 200) {
+                this.logger.warn(`Note ${note.id} is large for mesh: ${compactData.byteLength} bytes`);
+            }
+            this.logger.info(`Sending compact note to Meshtastic mesh (${compactData.byteLength} bytes)`);
 
-        if (this._transport) {
-            await this._transport.send(compactData);
-        } else if (this.config.connectionType === 'server-proxy') {
-            // This is a special case where we might rely on the UI layer to bridge to AgentService
-            this.logger.info("Meshtastic: Delegating send to proxy transport");
+            if (this._transport) {
+                await this._transport.send(compactData);
+            } else if (this.config.connectionType === 'server-proxy' && this.config.agentService) {
+                this.logger.info("Meshtastic: Proxying send to AgentService");
+                await this.config.agentService.meshSendNote(note);
+            }
+        } catch (e) {
+            this.logger.error("Failed to send note over Meshtastic", e as Error);
+            this.emit('error', { message: (e as Error).message, action: 'sendNote' });
+            throw e;
         }
     }
 
     async discoverMatches(note: Note, ontology: OntologyNode[], privacyMode: PrivacyLevel): Promise<ScoredMatch[]> {
+        // For Meshtastic, we don't have a central index to query like Nostr.
+        // We rely on the local notes that have been received over the mesh.
+        // In the future, we could implement a "discovery request" broadcast.
         return [];
-    }
-
-    subscribe(onNote: (note: Note) => void): () => void {
-        this._onNote = onNote;
-        return () => {
-            this._onNote = undefined;
-        };
     }
 
     isSupported(): boolean {
         return true;
+    }
+
+    on(event: string, callback: (...args: any[]) => void): void {
+        if (!this.listeners[event]) this.listeners[event] = [];
+        this.listeners[event].push(callback);
+    }
+
+    off(event: string, callback: (...args: any[]) => void): void {
+        if (!this.listeners[event]) return;
+        this.listeners[event] = this.listeners[event].filter(l => l !== callback);
+    }
+
+    emit(event: string, ...args: any[]): void {
+        const eventListeners = this.listeners[event];
+        if (eventListeners) {
+            eventListeners.forEach(fn => fn(...args));
+        }
     }
 
     serializeNote(note: Note): Uint8Array {
@@ -87,12 +121,11 @@ export class MeshtasticNetworkProvider implements NetworkProvider {
             const decoded = decode(data);
             if (decoded && decoded.i && decoded.c) {
                 const note = this.mapToNote(decoded, fromNode);
-                if (this._onNote) {
-                    this._onNote(note);
-                }
+                this.emit('note', note);
             }
         } catch (e) {
             this.logger.error("Failed to decode Meshtastic packet", e as Error);
+            this.emit('error', { message: 'Packet decoding failed', from: fromNode });
         }
     }
 
@@ -122,23 +155,39 @@ export class MeshtasticNetworkProvider implements NetworkProvider {
         };
     }
 
-    mapTelemetryToNote(nodeId: string, telemetry: any): Note {
+    getNodeNoteId(nodeId: string): string {
+        return `mesh-node-${nodeId}`;
+    }
+
+    mapTelemetryToNote(nodeId: string, telemetry: any, existingNote?: Note): Note {
         const timestamp = new Date().toISOString();
+        const properties = [
+            { key: 'battery', operator: 'is', values: [String(telemetry.batteryLevel || '')] },
+            { key: 'voltage', operator: 'is', values: [String(telemetry.voltage || '')] },
+            { key: 'channel-utilization', operator: 'is', values: [String(telemetry.channelUtilization || '')] }
+        ].filter(p => p.values[0] !== '');
+
+        if (existingNote) {
+            // Update existing note properties
+            const newProps = [...existingNote.properties.filter(p => !['battery', 'voltage', 'channel-utilization'].includes(p.key)), ...properties];
+            return {
+                ...existingNote,
+                properties: newProps,
+                updatedAt: timestamp
+            };
+        }
+
         return {
-            id: `mesh-telemetry-${nodeId}-${Date.now()}`,
-            title: `Node ${nodeId} Telemetry`,
-            content: `Telemetry update from node ${nodeId}`,
-            tags: ['telemetry', 'meshtastic'],
-            properties: [
-                { key: 'battery', operator: 'is', values: [String(telemetry.batteryLevel || '')] },
-                { key: 'voltage', operator: 'is', values: [String(telemetry.voltage || '')] },
-                { key: 'channel-utilization', operator: 'is', values: [String(telemetry.channelUtilization || '')] }
-            ].filter(p => p.values[0] !== ''),
+            id: this.getNodeNoteId(nodeId),
+            title: `Node ${nodeId}`,
+            content: `Meshtastic Node ${nodeId}`,
+            tags: ['meshtastic', 'node'],
+            properties,
             createdAt: timestamp,
             updatedAt: timestamp,
             source: {
                 type: 'import',
-                identifier: `meshtastic-telemetry-${nodeId}`,
+                identifier: `meshtastic-node-${nodeId}`,
                 timestamp: Date.now()
             },
             privacy: 'public',
@@ -147,22 +196,33 @@ export class MeshtasticNetworkProvider implements NetworkProvider {
         };
     }
 
-    mapPositionToNote(nodeId: string, pos: { latitude: number, longitude: number, altitude?: number }): Note {
+    mapPositionToNote(nodeId: string, pos: { latitude: number, longitude: number, altitude?: number }, existingNote?: Note): Note {
         const timestamp = new Date().toISOString();
+        const properties = [
+            { key: 'location', operator: 'is', values: [`${pos.latitude},${pos.longitude}`] },
+            { key: 'altitude', operator: 'is', values: [String(pos.altitude || '')] }
+        ].filter(p => p.values[0] !== '');
+
+        if (existingNote) {
+            const newProps = [...existingNote.properties.filter(p => !['location', 'altitude'].includes(p.key)), ...properties];
+            return {
+                ...existingNote,
+                properties: newProps,
+                updatedAt: timestamp
+            };
+        }
+
         return {
-            id: `mesh-pos-${nodeId}-${Date.now()}`,
-            title: `Node ${nodeId} Position`,
-            content: `Position update from node ${nodeId}`,
-            tags: ['position', 'meshtastic'],
-            properties: [
-                { key: 'location', operator: 'is', values: [`${pos.latitude},${pos.longitude}`] },
-                { key: 'altitude', operator: 'is', values: [String(pos.altitude || '')] }
-            ].filter(p => p.values[0] !== ''),
+            id: this.getNodeNoteId(nodeId),
+            title: `Node ${nodeId}`,
+            content: `Meshtastic Node ${nodeId}`,
+            tags: ['meshtastic', 'node'],
+            properties,
             createdAt: timestamp,
             updatedAt: timestamp,
             source: {
                 type: 'import',
-                identifier: `meshtastic-pos-${nodeId}`,
+                identifier: `meshtastic-node-${nodeId}`,
                 timestamp: Date.now()
             },
             privacy: 'public',
