@@ -1,6 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Note, ScoredMatch, OntologyNode } from '@notention/core';
-import { nostrService } from '../services/NostrService';
+import { Note, ScoredMatch, OntologyNode, networkRegistry } from '@notention/core';
 import { useToast } from './useToast';
 
 interface UseNetworkDiscoveryResult {
@@ -21,9 +20,16 @@ export function useNetworkDiscovery(note: Note, ontology: OntologyNode[]): UseNe
         setIsSearching(true);
         setError(null);
         try {
-            const results = await nostrService.findMatches(note, ontology);
-            setMatches(results);
-            if (results.length === 0) {
+            // Aggregate matches from all active network providers
+            const providers = networkRegistry.getActiveProviders();
+            const allResults = await Promise.all(
+                providers.map(p => p.discoverMatches(note, ontology, note.privacy))
+            );
+
+            const flattened = allResults.flat().sort((a, b) => b.result.score - a.result.score);
+
+            setMatches(flattened);
+            if (flattened.length === 0) {
                 addToast('No matches found in the network', 'info');
             } else {
                 addToast(`Found ${results.length} matches!`, 'success');

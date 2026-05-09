@@ -5,6 +5,7 @@ import { PersistenceService } from '../persistence.js';
 import { FeedbackCollector } from '../feedback/FeedbackCollector.js';
 import { Note, Feedback } from '@notention/core';
 import { error, log } from '../core/utils.js';
+import { MeshtasticAgentManager } from '../network/MeshtasticAgentManager.js';
 
 interface SocketMessage {
   type: string;
@@ -14,12 +15,17 @@ interface SocketMessage {
 
 export class SocketController {
   private uiClients = new Set<WebSocket>();
+  private meshtasticManager: MeshtasticAgentManager;
 
   constructor(
     private agentRegistry: AgentRegistry,
     private skillExecutor: AgentWorkflowSkillExecutor,
     private feedbackCollector: FeedbackCollector
-  ) {}
+  ) {
+    this.meshtasticManager = new MeshtasticAgentManager((note) => {
+        this.broadcast({ type: 'note_created', payload: note });
+    });
+  }
 
   public addClient(ws: WebSocket): void {
     this.uiClients.add(ws);
@@ -103,6 +109,33 @@ export class SocketController {
             const feedback = message.payload as Feedback;
             await this.feedbackCollector.recordFeedback(feedback);
             ws.send(JSON.stringify({ type: 'response', id: message.id, success: true }));
+            break;
+        }
+
+        case 'mesh_connect': {
+            try {
+                const { port } = message.payload;
+                await this.meshtasticManager.connect(port);
+                ws.send(JSON.stringify({ type: 'response', id: message.id, success: true }));
+            } catch (e: any) {
+                ws.send(JSON.stringify({ type: 'error', message: e.message, id: message.id }));
+            }
+            break;
+        }
+
+        case 'mesh_status': {
+            const status = this.meshtasticManager.getStatus();
+            ws.send(JSON.stringify({ type: 'mesh_status', payload: status, id: message.id }));
+            break;
+        }
+
+        case 'mesh_send_note': {
+            try {
+                await this.meshtasticManager.sendNote(message.payload as Note);
+                ws.send(JSON.stringify({ type: 'response', id: message.id, success: true }));
+            } catch (e: any) {
+                ws.send(JSON.stringify({ type: 'error', message: e.message, id: message.id }));
+            }
             break;
         }
 
