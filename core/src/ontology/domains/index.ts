@@ -6,12 +6,14 @@
  * - communication: Messages and conversations
  * - event: Meetings, conferences, scheduled events
  * - work: Jobs, projects, tasks
+ * - commerce: Products, services, and transactions
  */
 
 export { entityDomain } from './entity.js';
 export { communicationDomain } from './communication.js';
 export { eventDomain } from './event.js';
 export { workDomain } from './work.js';
+export { commerceDomain } from './commerce.js';
 
 /**
  * Combine all domains into a single ontology array
