@@ -1,4 +1,5 @@
-import { Note, ScoredMatch, PrivacyLevel, OntologyNode } from '../types/index.js';
+import { Note, PrivacyLevel, OntologyNode } from '../types/index.js';
+import { ScoredMatch } from '../nostr/discovery.js';
 
 export interface NetworkProvider {
     id: string;
@@ -29,6 +30,11 @@ export interface NetworkProvider {
      * Check if provider is available in current environment
      */
     isSupported(): boolean;
+}
+
+export interface NetworkTransport {
+    send(data: Uint8Array): Promise<void>;
+    onData(callback: (data: Uint8Array, from: string) => void): void;
 }
 
 export interface NetworkRegistry {

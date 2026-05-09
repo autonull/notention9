@@ -10,7 +10,7 @@
     "ui:dev": "vite dev --config vite.config.ts"
   },
   "dependencies": {
-    "@notention/core": "workspace:*",
+    "@notention/core": "*",
     "@types/express": "^5.0.6",
     "chalk": "^4.1.2",
     "express": "^4.22.1",

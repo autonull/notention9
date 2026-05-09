@@ -18,10 +18,21 @@ export class MeshtasticAgentManager {
             const transport = await TransportNodeSerial.create(port);
             this.device = new MeshDevice(transport);
 
-            this.device.onTextPacket((packet) => {
-                log('Mesh', `Received text packet from ${packet.from}`);
-                if (packet.data.data) {
-                    this.provider.handleIncomingPacket(packet.data.data as Uint8Array, packet.from.toString());
+            // Register transport with provider
+            this.provider.setTransport({
+                send: async (data) => {
+                    await this.device?.sendPacket({
+                        data: { data, portnum: 120 },
+                        destination: 0xFFFFFFFF
+                    });
+                },
+                onData: (callback) => {
+                    this.device?.onTextPacket((packet) => {
+                        log('Mesh', `Received text packet from ${packet.from}`);
+                        if (packet.data.data) {
+                            callback(packet.data.data as Uint8Array, packet.from.toString());
+                        }
+                    });
                 }
             });
 
@@ -49,7 +60,16 @@ export class MeshtasticAgentManager {
             error('Mesh', 'Cannot send note: No device connected');
             return;
         }
+
         log('Mesh', `Sending note ${note.id} to mesh...`);
+
+        try {
+            await this.provider.sendNote(note);
+            log('Mesh', 'Note packet sent to mesh');
+        } catch (e) {
+            error('Mesh', 'Failed to send note to mesh', e as Error);
+            throw e;
+        }
     }
 
     getStatus() {

@@ -1,4 +1,4 @@
-import { NetworkProvider } from './types.js';
+import { NetworkProvider, NetworkTransport } from './types.js';
 import { Note, PrivacyLevel, OntologyNode } from '../types/index.js';
 import { ScoredMatch } from '../nostr/discovery.js';
 import { Logger } from '../utils/logging.js';
@@ -9,6 +9,7 @@ export interface MeshtasticConfig {
     connectionType?: 'webserial' | 'http' | 'server-proxy';
     httpUrl?: string;
     nodeId?: string;
+    transport?: NetworkTransport;
 }
 
 export class MeshtasticNetworkProvider implements NetworkProvider {
@@ -16,8 +17,18 @@ export class MeshtasticNetworkProvider implements NetworkProvider {
     readonly name = 'Meshtastic';
     private logger = Logger.getInstance();
     private _onNote?: (note: Note) => void;
+    private _transport: NetworkTransport | null = null;
 
-    constructor(private config: MeshtasticConfig = {}) {}
+    constructor(private config: MeshtasticConfig = {}) {
+        if (config.transport) {
+            this.setTransport(config.transport);
+        }
+    }
+
+    setTransport(transport: NetworkTransport) {
+        this._transport = transport;
+        this._transport.onData((data, from) => this.handleIncomingPacket(data, from));
+    }
 
     get enabled() {
         return this.config.enabled ?? false;
@@ -36,6 +47,13 @@ export class MeshtasticNetworkProvider implements NetworkProvider {
 
         const compactData = this.serializeNote(note);
         this.logger.info(`Sending compact note to Meshtastic mesh (${compactData.byteLength} bytes)`);
+
+        if (this._transport) {
+            await this._transport.send(compactData);
+        } else if (this.config.connectionType === 'server-proxy') {
+            // This is a special case where we might rely on the UI layer to bridge to AgentService
+            this.logger.info("Meshtastic: Delegating send to proxy transport");
+        }
     }
 
     async discoverMatches(note: Note, ontology: OntologyNode[], privacyMode: PrivacyLevel): Promise<ScoredMatch[]> {
@@ -53,7 +71,7 @@ export class MeshtasticNetworkProvider implements NetworkProvider {
         return true;
     }
 
-    private serializeNote(note: Note): Uint8Array {
+    serializeNote(note: Note): Uint8Array {
         const compact = {
             i: note.id.slice(0, 8),
             c: note.content,

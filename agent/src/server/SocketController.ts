@@ -129,6 +129,16 @@ export class SocketController {
             break;
         }
 
+        case 'mesh_send_note': {
+            try {
+                await this.meshtasticManager.sendNote(message.payload as Note);
+                ws.send(JSON.stringify({ type: 'response', id: message.id, success: true }));
+            } catch (e: any) {
+                ws.send(JSON.stringify({ type: 'error', message: e.message, id: message.id }));
+            }
+            break;
+        }
+
         default:
           ws.send(JSON.stringify({ type: 'error', message: `Unknown type: ${message.type}` }));
       }

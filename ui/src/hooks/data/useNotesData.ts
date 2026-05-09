@@ -1,9 +1,8 @@
 import {useCallback, useEffect, useRef} from 'react';
 import {useLocalForage} from '../useLocalForage';
 import type {GeoCoords, Note, SortOrder} from '@notention/core';
-import {createNote, haversineDistance, Logger, parseProperties, getCanonicalKey, normalizeNoteProperties} from '@notention/core';
+import {createNote, haversineDistance, Logger, parseProperties, getCanonicalKey, normalizeNoteProperties, networkRegistry} from '@notention/core';
 import {agentService} from '../../services/AgentService';
-import {nostrService} from '../../services/NostrService';
 import {useSettings} from '../useSettingsContext';
 import {useMatching} from '../contexts/MatchingContext';
 import {augmentNote, NoteMetadata} from './noteUtils';
@@ -79,7 +78,16 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
 
         setNotes((prev) => [newNote, ...prev]);
         agentService.saveNote(newNote);
-        nostrService.saveNote(newNote, settings.ontology);
+
+        // Use abstraction for all active network providers
+        networkRegistry.getActiveProviders().forEach(p => {
+            if (p.id === 'meshtastic' && (settings as any).meshtastic?.connectionType === 'server-proxy') {
+                agentService.meshSendNote(newNote);
+            } else {
+                p.sendNote(newNote, settings.ontology);
+            }
+        });
+
         return newNote;
     }, [setNotes, settings.ontology]);
 
@@ -112,7 +120,15 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
             prev.map((n) => (n.id === noteWithTimestamp.id ? noteWithTimestamp : n))
         );
         agentService.saveNote(noteWithTimestamp);
-        nostrService.saveNote(noteWithTimestamp, settings.ontology);
+
+        // Use abstraction for all active network providers
+        networkRegistry.getActiveProviders().forEach(p => {
+            if (p.id === 'meshtastic' && (settings as any).meshtastic?.connectionType === 'server-proxy') {
+                agentService.meshSendNote(noteWithTimestamp);
+            } else {
+                p.sendNote(noteWithTimestamp, settings.ontology);
+            }
+        });
     }, [setNotes, settings.ontology]);
 
     const deleteNote = useCallback((id: string) => {
