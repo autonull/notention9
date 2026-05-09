@@ -1,4 +1,4 @@
-import { NetworkProvider } from './types.js';
+import { NetworkProvider, NetworkStatus } from './types.js';
 import { Note, PrivacyLevel, OntologyNode } from '../types/index.js';
 import {
     publishNoteToNostr,
@@ -22,7 +22,7 @@ export class NostrNetworkProvider implements NetworkProvider {
     readonly id = 'nostr';
     readonly name = 'Nostr';
     private logger = Logger.getInstance();
-    private _onNote?: (note: Note) => void;
+    private listeners: Record<string, ((...args: any[]) => void)[]> = {};
 
     constructor(private config: NostrConfig = {}) {}
 
@@ -35,6 +35,13 @@ export class NostrNetworkProvider implements NetworkProvider {
     }
 
     async initialize(): Promise<void> {
+    }
+
+    getStatus(): NetworkStatus {
+        return {
+            connected: !!this.config.privkey && this.enabled,
+            details: this.config.privkey ? `Using ${this.config.relays?.length || 0} relays` : 'No private key'
+        };
     }
 
     async sendNote(note: Note, ontology?: OntologyNode[]): Promise<void> {
@@ -73,14 +80,24 @@ export class NostrNetworkProvider implements NetworkProvider {
         return await discovery.discoverMatches(note, relays, privacyMode);
     }
 
-    subscribe(onNote: (note: Note) => void): () => void {
-        this._onNote = onNote;
-        return () => {
-            this._onNote = undefined;
-        };
-    }
-
     isSupported(): boolean {
         return true;
+    }
+
+    on(event: string, callback: (...args: any[]) => void): void {
+        if (!this.listeners[event]) this.listeners[event] = [];
+        this.listeners[event].push(callback);
+    }
+
+    off(event: string, callback: (...args: any[]) => void): void {
+        if (!this.listeners[event]) return;
+        this.listeners[event] = this.listeners[event].filter(l => l !== callback);
+    }
+
+    private emit(event: string, ...args: any[]): void {
+        const eventListeners = this.listeners[event];
+        if (eventListeners) {
+            eventListeners.forEach(fn => fn(...args));
+        }
     }
 }

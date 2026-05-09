@@ -1,6 +1,12 @@
 import { Note, PrivacyLevel, OntologyNode } from '../types/index.js';
 import { ScoredMatch } from '../nostr/discovery.js';
 
+export interface NetworkStatus {
+    connected: boolean;
+    details?: string;
+    lastSeen?: number;
+}
+
 export interface NetworkProvider {
     id: string;
     name: string;
@@ -10,6 +16,11 @@ export interface NetworkProvider {
      * Initialize the provider
      */
     initialize(): Promise<void>;
+
+    /**
+     * Get current provider status
+     */
+    getStatus(): NetworkStatus;
 
     /**
      * Send a note over this network
@@ -22,14 +33,19 @@ export interface NetworkProvider {
     discoverMatches(note: Note, ontology: OntologyNode[], privacyMode: PrivacyLevel): Promise<ScoredMatch[]>;
 
     /**
-     * Subscribe to incoming notes/updates
-     */
-    subscribe(onNote: (note: Note) => void): () => void;
-
-    /**
      * Check if provider is available in current environment
      */
     isSupported(): boolean;
+
+    /**
+     * Register an event listener
+     */
+    on(event: string, callback: (...args: any[]) => void): void;
+
+    /**
+     * Unregister an event listener
+     */
+    off(event: string, callback: (...args: any[]) => void): void;
 }
 
 export interface NetworkTransport {

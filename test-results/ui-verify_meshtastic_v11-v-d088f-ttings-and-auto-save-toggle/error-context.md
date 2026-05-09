@@ -1,0 +1,128 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - generic:
+    - generic: Disconnected
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e5]:
+        - button "Close Sidebar" [ref=e7]:
+          - img [ref=e8]
+        - generic [ref=e11]:
+          - button "New Note" [ref=e12]:
+            - img [ref=e13]
+            - generic [ref=e15]: New Note
+          - button "More options" [ref=e16]:
+            - img [ref=e17]
+        - button "Search & Commands (Ctrl+K)" [ref=e20]:
+          - img [ref=e21]
+      - generic [ref=e23]:
+        - button "Dashboard" [ref=e25]:
+          - img [ref=e26]
+        - button "Notes" [ref=e29]:
+          - img [ref=e30]
+        - button "Map" [ref=e33]:
+          - img [ref=e34]
+        - button "Timeline" [ref=e37]:
+          - img [ref=e38]
+        - button "Network" [ref=e41]:
+          - img [ref=e42]
+        - button "Actions" [ref=e45]:
+          - img [ref=e46]
+        - button "Chat" [ref=e49]:
+          - img [ref=e50]
+        - button "Ontology" [ref=e53]:
+          - img [ref=e54]
+      - generic [ref=e56]:
+        - generic "Disconnected" [ref=e57]
+        - button "Settings" [pressed] [ref=e60]:
+          - img [ref=e61]
+    - generic [ref=e64]:
+      - generic [ref=e66]:
+        - generic [ref=e67]:
+          - generic [ref=e68]:
+            - generic [ref=e72]:
+              - generic:
+                - img
+              - textbox "Search notes... (Ctrl+/)" [ref=e73]
+            - button "New Note (Ctrl+N)" [ref=e75]:
+              - img [ref=e76]
+          - generic [ref=e78]:
+            - button "All" [ref=e79] [cursor=pointer]:
+              - img [ref=e80]
+              - text: All
+            - button "Tasks" [ref=e82] [cursor=pointer]:
+              - img [ref=e83]
+              - text: Tasks
+            - button "Journal" [ref=e85] [cursor=pointer]:
+              - img [ref=e86]
+              - text: Journal
+            - button "Ideas" [ref=e88] [cursor=pointer]:
+              - img [ref=e89]
+              - text: Ideas
+            - button "People" [ref=e91] [cursor=pointer]:
+              - img [ref=e92]
+              - text: People
+          - generic [ref=e94]:
+            - generic [ref=e97]:
+              - combobox [ref=e98]:
+                - 'option "Sort: Modified (Newest)" [selected]'
+                - 'option "Sort: Modified (Oldest)"'
+                - 'option "Sort: Created (Newest)"'
+                - 'option "Sort: Created (Oldest)"'
+                - 'option "Sort: Title (A-Z)"'
+                - 'option "Sort: Title (Z-A)"'
+                - 'option "Sort: Soonest (Date)"'
+                - 'option "Sort: Nearest (Location)"'
+                - 'option "Sort: Tags (Count)"'
+              - generic:
+                - img
+            - generic [ref=e99]:
+              - button "View as List" [pressed] [ref=e101]:
+                - img [ref=e102]
+              - button "View as Grid" [ref=e105]:
+                - img [ref=e106]
+              - button "View as Tag Cloud" [ref=e109]:
+                - img [ref=e110]
+        - generic [ref=e113]:
+          - img [ref=e115]
+          - heading "Your notebook is empty" [level=3] [ref=e117]
+          - generic [ref=e118]: Capture your ideas, daily tasks, and knowledge.
+          - button "Create First Note" [ref=e119]:
+            - img [ref=e120]
+            - text: Create First Note
+      - main [ref=e122]:
+        - generic [ref=e124]:
+          - generic [ref=e126]:
+            - heading "Settings" [level=2] [ref=e127]
+            - paragraph [ref=e128]: Manage your preferences and data.
+          - tablist [ref=e130]:
+            - tab "🤖 AI Assistant" [ref=e131]
+            - tab "⚡ Agent Status" [ref=e132]
+            - tab "🌐 Networks" [selected] [ref=e133]
+            - tab "🔑 Nostr Keys" [ref=e134]
+            - tab "📦 Data Management" [ref=e135]
+            - tab "🧬 Ontology Graph" [ref=e136]
+          - generic [ref=e138]:
+            - generic [ref=e140]:
+              - heading "Network Providers" [level=3] [ref=e141]:
+                - img [ref=e142]
+                - text: Network Providers
+              - paragraph [ref=e144]: Enable or disable external network protocols.
+            - generic [ref=e145]:
+              - generic [ref=e147]:
+                - generic [ref=e148]:
+                  - img [ref=e150]
+                  - generic [ref=e152]:
+                    - heading "Nostr" [level=4] [ref=e153]
+                    - text: nostr
+                - checkbox [active] [ref=e155]
+              - generic [ref=e158]:
+                - generic [ref=e159]:
+                  - img [ref=e161]
+                  - generic [ref=e163]:
+                    - heading "Meshtastic" [level=4] [ref=e164]
+                    - text: meshtastic
+                - checkbox [ref=e166]
+```

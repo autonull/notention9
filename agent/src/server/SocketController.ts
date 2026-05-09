@@ -123,6 +123,17 @@ export class SocketController {
             break;
         }
 
+        case 'mesh_config': {
+            try {
+                const { saveReceivedNotes } = message.payload;
+                this.meshtasticManager.updateConfig({ saveReceivedNotes });
+                ws.send(JSON.stringify({ type: 'response', id: message.id, success: true }));
+            } catch (e: any) {
+                ws.send(JSON.stringify({ type: 'error', message: e.message, id: message.id }));
+            }
+            break;
+        }
+
         case 'mesh_status': {
             const status = this.meshtasticManager.getStatus();
             ws.send(JSON.stringify({ type: 'mesh_status', payload: status, id: message.id }));

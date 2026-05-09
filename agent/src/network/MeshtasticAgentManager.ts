@@ -2,26 +2,47 @@ import { MeshDevice } from "@meshtastic/core";
 import { TransportNodeSerial } from "@meshtastic/transport-node-serial";
 import { MeshtasticNetworkProvider, Note } from "@notention/core";
 import { log, error } from "../core/utils.js";
+import { PersistenceService } from "../persistence.js";
 
 export class MeshtasticAgentManager {
     private device: MeshDevice | null = null;
     private provider: MeshtasticNetworkProvider;
+    private lastPort: string | null = null;
+    private reconnectTimeout: NodeJS.Timeout | null = null;
 
     constructor(private onNewNote: (note: Note) => void) {
         this.provider = new MeshtasticNetworkProvider({ enabled: true });
-        this.provider.subscribe(this.onNewNote);
+        this.provider.on('note', async (note: Note) => {
+            if (this.provider.config.saveReceivedNotes) {
+                await PersistenceService.saveNoteSafe(note);
+            }
+            this.onNewNote(note);
+        });
     }
 
     async connect(port: string): Promise<void> {
+        this.lastPort = port;
+        if (this.reconnectTimeout) {
+            clearTimeout(this.reconnectTimeout);
+            this.reconnectTimeout = null;
+        }
+
         try {
             log('Mesh', `Connecting to Meshtastic device on ${port}...`);
             const transport = await TransportNodeSerial.create(port);
             this.device = new MeshDevice(transport);
 
+            // Handle disconnection
+            transport.onClose(() => {
+                log('Mesh', 'Meshtastic transport closed');
+                this.handleDisconnect();
+            });
+
             // Register transport with provider
             this.provider.setTransport({
                 send: async (data) => {
-                    await this.device?.sendPacket({
+                    if (!this.device) throw new Error("No device connected");
+                    await this.device.sendPacket({
                         data: { data, portnum: 120 },
                         destination: 0xFFFFFFFF
                     });
@@ -36,22 +57,46 @@ export class MeshtasticAgentManager {
                 }
             });
 
-            this.device.onTelemetryPacket((packet) => {
+            this.device.onTelemetryPacket(async (packet) => {
                 log('Mesh', `Received telemetry from ${packet.from}`);
-                const note = this.provider.mapTelemetryToNote(packet.from.toString(), packet.data);
+                const nodeId = packet.from.toString();
+                const existingNote = await PersistenceService.getNoteSafe(this.provider.getNodeNoteId(nodeId));
+                const note = this.provider.mapTelemetryToNote(nodeId, packet.data, existingNote || undefined);
+                await PersistenceService.saveNoteSafe(note);
                 this.onNewNote(note);
             });
 
-            this.device.onPositionPacket((packet) => {
+            this.device.onPositionPacket(async (packet) => {
                 log('Mesh', `Received position from ${packet.from}`);
-                const note = this.provider.mapPositionToNote(packet.from.toString(), packet.data);
+                const nodeId = packet.from.toString();
+                const existingNote = await PersistenceService.getNoteSafe(this.provider.getNodeNoteId(nodeId));
+                const note = this.provider.mapPositionToNote(nodeId, packet.data, existingNote || undefined);
+                await PersistenceService.saveNoteSafe(note);
                 this.onNewNote(note);
             });
 
             log('Mesh', 'Connected to Meshtastic device');
         } catch (e) {
             error('Mesh', 'Failed to connect to Meshtastic device', e as Error);
+            this.handleDisconnect();
             throw e;
+        }
+    }
+
+    private handleDisconnect() {
+        this.device = null;
+        this.provider.setTransport(null);
+
+        if (this.lastPort && !this.reconnectTimeout) {
+            log('Mesh', `Scheduling reconnect to ${this.lastPort} in 5s...`);
+            this.reconnectTimeout = setTimeout(() => {
+                this.reconnectTimeout = null;
+                if (this.lastPort) {
+                    this.connect(this.lastPort).catch(() => {
+                        // Silent fail on auto-reconnect
+                    });
+                }
+            }, 5000);
         }
     }
 
@@ -72,9 +117,18 @@ export class MeshtasticAgentManager {
         }
     }
 
+    updateConfig(config: Partial<{ saveReceivedNotes: boolean }>) {
+        if (config.saveReceivedNotes !== undefined) {
+            this.provider.config.saveReceivedNotes = config.saveReceivedNotes;
+        }
+    }
+
     getStatus() {
         return {
             connected: !!this.device,
+            config: {
+                saveReceivedNotes: this.provider.config.saveReceivedNotes
+            }
         };
     }
 }

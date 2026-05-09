@@ -7,6 +7,7 @@ import {
 } from '@notention/core';
 import { useSettings } from './useSettingsContext';
 import { useNotes } from './useNotes';
+import { agentService } from '../services/AgentService';
 
 export function useNetworkManagement() {
     const { settings, setSettings } = useSettings();
@@ -25,7 +26,10 @@ export function useNetworkManagement() {
 
         if (!networkRegistry.getProvider('meshtastic')) {
             const mesh = new MeshtasticNetworkProvider({
-                enabled: settings.privacyMode !== 'local-only' && (settings as any).meshtastic?.enabled
+                enabled: settings.privacyMode !== 'local-only' && (settings as any).meshtastic?.enabled,
+                connectionType: (settings as any).meshtastic?.connectionType,
+                saveReceivedNotes: (settings as any).meshtastic?.saveReceivedNotes,
+                agentService: agentService
             });
             networkRegistry.registerProvider(mesh);
         }
@@ -62,9 +66,21 @@ export function useNetworkManagement() {
         }
     }, [setSettings]);
 
+    const updateMeshtasticSettings = useCallback((updates: any) => {
+        setSettings((prev: any) => ({
+            ...prev,
+            meshtastic: {
+                ...(prev.meshtastic || {}),
+                ...updates
+            }
+        }));
+    }, [setSettings]);
+
     return {
         providers,
         toggleProvider,
+        updateMeshtasticSettings,
+        meshtasticSettings: (settings as any).meshtastic || {},
         isPrivateMode: settings.privacyMode === 'local-only'
     };
 }

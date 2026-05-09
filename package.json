@@ -21,6 +21,9 @@
     "cli": "npm start -w @notention/cli --"
   },
   "dependencies": {
+    "@meshtastic/core": "^2.6.7",
+    "@meshtastic/transport-node-serial": "^0.0.2",
+    "@meshtastic/transport-web-serial": "^0.2.5",
     "date-fns": "^4.1.0",
     "uuid": "^9.0.1",
     "ws": "^8.19.0",

@@ -7,14 +7,26 @@ import { agentService } from '../../services/AgentService';
 import { useToast } from '../../hooks/useToast';
 import { MeshDevice } from "@meshtastic/core";
 import { TransportWebSerial } from "@meshtastic/transport-web-serial";
+import { networkRegistry, MeshtasticNetworkProvider } from '@notention/core';
 
 export function NetworkManagementSection() {
-    const { providers, toggleProvider, isPrivateMode } = useNetworkManagement();
-    const [meshPort, setMeshPort] = useState('/dev/ttyUSB0');
-    const [connectionType, setConnectionType] = useState<'webserial' | 'server-proxy'>('webserial');
+    const { providers, toggleProvider, isPrivateMode, updateMeshtasticSettings, meshtasticSettings } = useNetworkManagement();
+    const [meshPort, setMeshPort] = useState(meshtasticSettings.port || '/dev/ttyUSB0');
+    const [connectionType, setConnectionType] = useState<'webserial' | 'server-proxy'>(meshtasticSettings.connectionType || 'webserial');
     const [isConnecting, setIsConnecting] = useState(false);
     const [meshStatus, setMeshStatus] = useState<{connected: boolean}>({ connected: false });
     const { addToast } = useToast();
+
+    useEffect(() => {
+        const provider = networkRegistry.getProvider('meshtastic');
+        if (provider) {
+            const errorHandler = (err: any) => {
+                addToast(`Mesh Error: ${err.message}`, 'error');
+            };
+            provider.on('error', errorHandler);
+            return () => provider.off('error', errorHandler);
+        }
+    }, [addToast]);
 
     useEffect(() => {
         const interval = setInterval(async () => {
@@ -23,6 +35,11 @@ export function NetworkManagementSection() {
                     const status = await agentService.getMeshStatus();
                     setMeshStatus(status);
                 } catch (e) {}
+            } else if (connectionType === 'webserial') {
+                const provider = networkRegistry.getProvider('meshtastic') as MeshtasticNetworkProvider;
+                if (provider) {
+                    setMeshStatus({ connected: provider.getStatus().connected });
+                }
             }
         }, 5000);
         return () => clearInterval(interval);
@@ -30,6 +47,7 @@ export function NetworkManagementSection() {
 
     const handleConnect = async () => {
         setIsConnecting(true);
+        updateMeshtasticSettings({ connectionType, port: meshPort });
         try {
             if (connectionType === 'server-proxy') {
                 await agentService.meshConnect(meshPort);
@@ -55,6 +73,19 @@ export function NetworkManagementSection() {
                                 }
                             });
                         }
+                    });
+
+                    // Listen for telemetry/position in WebSerial mode as well
+                    device.onTelemetryPacket(async (packet) => {
+                        const nodeId = packet.from.toString();
+                        // This logic should ideally be consolidated into a hook or provider method
+                        // But for now we match what the Agent does
+                        provider.emit('telemetry', { nodeId, telemetry: packet.data });
+                    });
+
+                    device.onPositionPacket(async (packet) => {
+                        const nodeId = packet.from.toString();
+                        provider.emit('position', { nodeId, position: packet.data });
                     });
                 }
 
@@ -144,7 +175,23 @@ export function NetworkManagementSection() {
                                             {meshStatus.connected ? 'Connected to Mesh' : 'Disconnected'}
                                         </span>
                                     </div>
-                                    <div className="flex gap-2">
+                                    <div className="flex gap-4">
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="checkbox"
+                                                id="auto-save"
+                                                className="rounded border-gray-700 bg-gray-900 text-blue-600 focus:ring-blue-500"
+                                                checked={meshtasticSettings.saveReceivedNotes}
+                                                onChange={(e) => {
+                                                    const saveReceivedNotes = e.target.checked;
+                                                    updateMeshtasticSettings({ saveReceivedNotes });
+                                                    if (connectionType === 'server-proxy') {
+                                                        agentService.meshUpdateConfig({ saveReceivedNotes });
+                                                    }
+                                                }}
+                                            />
+                                            <label htmlFor="auto-save" className="text-xs text-gray-300 cursor-pointer">Auto-save received notes</label>
+                                        </div>
                                         <Button
                                             size="sm"
                                             variant="primary"
