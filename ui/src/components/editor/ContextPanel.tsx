@@ -42,76 +42,47 @@ export function ContextPanel({note, onPickLocation, onPickTime}: ContextPanelPro
     if (!context.location && !context.date) return null;
 
     return (
-        <div className="flex gap-4 p-4 bg-gray-900/30 border-b border-gray-800">
+        <div className="flex flex-wrap gap-2 px-8 py-3 bg-gray-900/50 border-b border-gray-700/30">
             {context.location && (
                 <div
-                    className="relative group flex items-start gap-3 p-3 bg-gray-800 rounded-lg border border-gray-700 min-w-[200px] hover:border-blue-500/50 transition-colors">
-                    <div className="p-2 bg-blue-900/30 rounded-full text-blue-400">
-                        <MapPinIcon className="w-5 h-5"/>
-                    </div>
-                    <div>
-                        <div className="text-xs text-gray-500 uppercase font-bold tracking-wider mb-1">Location</div>
-                        <div className="text-sm text-gray-200 font-mono">
-                            {context.location.lat.toFixed(4)}, {context.location.lng.toFixed(4)}
-                        </div>
-                        <a
-                            href={`https://www.openstreetmap.org/?mlat=${context.location.lat}&mlon=${context.location.lng}#map=15/${context.location.lat}/${context.location.lng}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-xs text-blue-400 hover:underline mt-1 block"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            Open Map ↗
-                        </a>
-                    </div>
-                    {onPickLocation && (
-                        <button
-                            onClick={onPickLocation}
-                            className="absolute top-2 right-2 p-1 text-gray-500 hover:text-white bg-gray-700/50 hover:bg-blue-600 rounded opacity-0 group-hover:opacity-100 transition-opacity"
-                            title="Edit Location"
-                        >
-                            <PencilIcon className="w-3 h-3"/>
-                        </button>
-                    )}
+                    className="group flex items-center gap-2 px-2.5 py-1.5 bg-blue-900/10 border border-blue-500/20 rounded-full hover:bg-blue-900/20 transition-all cursor-pointer"
+                    onClick={onPickLocation}
+                >
+                    <MapPinIcon className="w-3.5 h-3.5 text-blue-400"/>
+                    <span className="text-[11px] font-medium text-blue-200">
+                        {context.location.lat.toFixed(3)}, {context.location.lng.toFixed(3)}
+                    </span>
+                    <a
+                        href={`https://www.openstreetmap.org/?mlat=${context.location.lat}&mlon=${context.location.lng}#map=15/${context.location.lat}/${context.location.lng}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-0.5 text-blue-500 hover:text-blue-300 transition-colors"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <WorldIcon className="w-3 h-3"/>
+                    </a>
                 </div>
             )}
 
             {context.date && (
                 <div
-                    className="relative group flex items-start gap-3 p-3 bg-gray-800 rounded-lg border border-gray-700 min-w-[200px] hover:border-purple-500/50 transition-colors">
-                    <div className="p-2 bg-purple-900/30 rounded-full text-purple-400">
-                        <ClockIcon className="w-5 h-5"/>
-                    </div>
-                    <div>
-                        <div className="text-xs text-gray-500 uppercase font-bold tracking-wider mb-1">
-                            {context.dateLabel || 'Time'}
-                        </div>
-                        <div className="text-sm text-gray-200 font-medium">
-                            {context.date.toLocaleDateString()}
-                        </div>
-                        <div className="text-xs text-gray-400">
-                            {context.date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}
-                        </div>
-                        <div className="text-xs text-purple-400 mt-1">
-                            {(() => {
-                                const diff = context.date.getTime() - Date.now();
-                                const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-                                if (diff < 0) return `Passed`;
-                                if (days === 0) return 'Today';
-                                if (days === 1) return 'Tomorrow';
-                                return `In ${days} days`;
-                            })()}
-                        </div>
-                    </div>
-                    {onPickTime && (
-                        <button
-                            onClick={() => onPickTime(context.dateLabel)}
-                            className="absolute top-2 right-2 p-1 text-gray-500 hover:text-white bg-gray-700/50 hover:bg-purple-600 rounded opacity-0 group-hover:opacity-100 transition-opacity"
-                            title="Edit Time"
-                        >
-                            <PencilIcon className="w-3 h-3"/>
-                        </button>
-                    )}
+                    className="group flex items-center gap-2 px-2.5 py-1.5 bg-purple-900/10 border border-purple-500/20 rounded-full hover:bg-purple-900/20 transition-all cursor-pointer"
+                    onClick={() => onPickTime?.(context.dateLabel)}
+                >
+                    <ClockIcon className="w-3.5 h-3.5 text-purple-400"/>
+                    <span className="text-[11px] font-medium text-purple-200">
+                        {context.date.toLocaleDateString()}
+                    </span>
+                    <span className="text-[10px] text-purple-400/80 uppercase font-bold">
+                        {(() => {
+                            const diff = context.date.getTime() - Date.now();
+                            const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+                            if (diff < 0) return `Passed`;
+                            if (days === 0) return 'Today';
+                            if (days === 1) return 'Tomorrow';
+                            return `In ${days}d`;
+                        })()}
+                    </span>
                 </div>
             )}
         </div>
