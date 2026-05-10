@@ -15,6 +15,7 @@ import { SuggestionItem } from './SuggestionItem';
 import { applyPropertySuggestion, applyTaskSuggestion } from '../utils/suggestionUtils';
 import { useView } from '../hooks/useViewContext';
 import { useContacts } from '../hooks/useContacts';
+import { Badge } from './common/Badge';
 import { Tabs } from './common/Tabs';
 import { useMatches } from '../hooks/useMatches';
 import { MatchList } from './match/MatchList';
@@ -220,13 +221,13 @@ export function SmartNoteAssistant({
                 </div>
                 <div className="flex gap-1">
                      {suggestions.length > 0 && (
-                         <span className="text-[10px] px-1.5 py-0.5 bg-yellow-900/40 text-yellow-500 rounded-full">{suggestions.length}</span>
+                             <Badge variant="warning" size="sm" pill>{suggestions.length}</Badge>
                     )}
                     {localMatches.length > 0 && (
-                         <span className="text-[10px] px-1.5 py-0.5 bg-blue-900/40 text-blue-500 rounded-full">{localMatches.length}</span>
+                             <Badge variant="primary" size="sm" pill>{localMatches.length}</Badge>
                     )}
                     {networkMatches.length > 0 && (
-                         <span className="text-[10px] px-1.5 py-0.5 bg-green-900/40 text-green-500 rounded-full">{networkMatches.length}</span>
+                             <Badge variant="success" size="sm" pill>{networkMatches.length}</Badge>
                     )}
                 </div>
             </div>
