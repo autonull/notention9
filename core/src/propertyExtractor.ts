@@ -5,13 +5,11 @@ import { PropertyValidationError } from './errorTypes.js';
 import { parseQuantity } from './quantities.js';
 import { Logger } from './utils/logging.js';
 import { getCanonicalKey } from './ontologyHelpers.js';
+import { REGEX } from './parsing.js';
 
 const PATTERNS = {
   SEND_TO: /(?:send|message)\s+(?:to|)\s+([+\w@#-]+)/i,
   CHANNEL: /(?:via|using|on|through)\s+(\w+)/i,
-  PHONE: /(\+?\d{10,15})/,
-  EMAIL: /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/,
-  BUDGET: /(?:\$|USD\s*)(\d+(?:,\d{3})*(?:\.\d+)?)|(\d+(?:,\d{3})*(?:\.\d+)?)\s*(?:USD|dollars?)/i,
 } as const;
 
 const TYPE_CHECKERS = {
@@ -49,29 +47,99 @@ type ExtractionStrategy = (text: string, properties: Property[]) => void;
 export class PropertyExtractor {
   private readonly ontologyService: OntologyService;
   private readonly logger = Logger.getInstance();
-  private readonly strategies: ExtractionStrategy[];
 
   constructor(ontology = DEFAULT_ONTOLOGY) {
     this.ontologyService = new OntologyService(ontology);
-    this.strategies = [
-      this.applyIntentStrategy.bind(this),
-      this.applySendToStrategy.bind(this),
-      this.applyChannelStrategy.bind(this),
-      this.applyPhoneStrategy.bind(this),
-      this.applyEmailStrategy.bind(this),
-      this.applyLocationStrategy.bind(this),
-      this.applyDateStrategy.bind(this),
-      this.applyBudgetStrategy.bind(this),
-      this.applyFuzzyMatchingStrategy.bind(this),
-    ];
   }
 
   extractFromText(text: string): Property[] {
-    const properties: Property[] = [];
-    for (const strategy of this.strategies) {
-      strategy(text, properties);
-    }
+    const properties: Property[] = [
+      ...this.extractIntents(text),
+      ...this.extractRegexProps(text),
+      ...this.extractLocation(text),
+      ...this.extractDate(text),
+      ...this.extractFuzzy(text)
+    ];
+
     return this.normalizeProperties(properties);
+  }
+
+  private extractIntents(text: string): Property[] {
+    return INTENTS
+      .filter(intent => intent.regex.test(text))
+      .map(intent => ({ key: 'intent', operator: 'is', values: [intent.key] }));
+  }
+
+  private extractRegexProps(text: string): Property[] {
+    const props: Property[] = [];
+
+    const sendToMatch = text.match(PATTERNS.SEND_TO);
+    if (sendToMatch) props.push({ key: 'to', operator: 'send to', values: [sendToMatch[1]] });
+
+    const channelMatch = text.match(PATTERNS.CHANNEL);
+    if (channelMatch) {
+      const channel = channelMatch[1].toLowerCase();
+      if (this.ontologyService.getEnumOptions('channel')?.includes(channel)) {
+        props.push({ key: 'channel', operator: 'is', values: [channel] });
+      }
+    }
+
+    const phoneMatch = text.match(REGEX.PHONE);
+    if (phoneMatch && !props.some(p => p.key === 'to')) {
+      props.push({ key: 'from', operator: 'is', values: [phoneMatch[1]] });
+    }
+
+    const emailMatch = text.match(REGEX.EMAIL);
+    if (emailMatch) props.push({ key: 'email', operator: 'is', values: [emailMatch[1]] });
+
+    const budgetMatch = text.match(REGEX.BUDGET);
+    if (budgetMatch) {
+      const amount = (budgetMatch[1] || budgetMatch[2]).replace(/,/g, '');
+      props.push({ key: 'budget', operator: 'is', values: [amount] });
+    }
+
+    return props;
+  }
+
+  private extractLocation(text: string): Property[] {
+    for (const { regex, prefix } of LOCATION_PATTERNS) {
+      const matches = text.match(regex);
+      if (matches) {
+        const location = matches[0].replace(prefix, '').trim();
+        return [{ key: 'location', operator: 'is near', values: [location] }];
+      }
+    }
+    return [];
+  }
+
+  private extractDate(text: string): Property[] {
+    const pattern = DATE_PATTERNS.find(p => p.regex.test(text));
+    if (!pattern) return [];
+
+    const date = new Date();
+    date.setDate(date.getDate() + pattern.offset);
+    return [{ key: 'date', operator: 'is', values: [date.toISOString().split('T')[0]] }];
+  }
+
+  private extractFuzzy(text: string): Property[] {
+    const props: Property[] = [];
+    const words = text.split(/\s+/);
+    const existingKeys = new Set<string>();
+
+    words.slice(0, -1).forEach((word, i) => {
+      if (word.length <= 3) return;
+
+      const [match] = this.ontologyService.getFuzzyMatches(word, 1);
+      if (!match || existingKeys.has(match)) return;
+
+      const nextWord = words[i + 1];
+      if (nextWord.length > 2 && !STOP_WORDS.has(nextWord.toLowerCase())) {
+        props.push({ key: match, operator: 'contains', values: [nextWord] });
+        existingKeys.add(match);
+      }
+    });
+
+    return props;
   }
 
   private normalizeProperties(properties: Property[]): Property[] {
@@ -80,92 +148,6 @@ export class PropertyExtractor {
       const canonicalKey = getCanonicalKey(prop.key, ontologyNodes);
       return canonicalKey !== prop.key ? { ...prop, key: canonicalKey } : prop;
     });
-  }
-
-    private applyIntentStrategy(text: string, properties: Property[]): void {
-        for (const intent of INTENTS) {
-            if (intent.regex.test(text) && !properties.some(p => p.key === 'intent' && p.values.includes(intent.key))) {
-                properties.push({ key: 'intent', operator: 'is', values: [intent.key] });
-            }
-        }
-    }
-
-    private applySendToStrategy(text: string, properties: Property[]): void {
-        const match = text.match(PATTERNS.SEND_TO);
-        if (match) {
-            properties.push({ key: 'to', operator: 'send to', values: [match[1]] });
-        }
-    }
-
-    private applyChannelStrategy(text: string, properties: Property[]): void {
-        const match = text.match(PATTERNS.CHANNEL);
-        if (!match) return;
-
-        const channel = match[1].toLowerCase(); // Normalize to lowercase
-        const enumOptions = this.ontologyService.getEnumOptions('channel');
-        if (enumOptions?.includes(channel)) {
-            properties.push({ key: 'channel', operator: 'is', values: [channel] });
-        }
-    }
-
-    private applyPhoneStrategy(text: string, properties: Property[]): void {
-        const match = text.match(PATTERNS.PHONE);
-        if (match && !properties.some(p => p.key === 'to')) {
-            properties.push({ key: 'from', operator: 'is', values: [match[1]] });
-        }
-    }
-
-    private applyEmailStrategy(text: string, properties: Property[]): void {
-        const match = text.match(PATTERNS.EMAIL);
-        if (match) {
-            properties.push({ key: 'email', operator: 'is', values: [match[1]] });
-        }
-    }
-
-  private applyLocationStrategy(text: string, properties: Property[]): void {
-    for (const { regex, prefix } of LOCATION_PATTERNS) {
-      const matches = text.match(regex);
-      if (matches) {
-        const location = matches[0].replace(prefix, '').trim();
-        properties.push({ key: 'location', operator: 'is near', values: [location] });
-        return;
-      }
-    }
-  }
-
-  private applyDateStrategy(text: string, properties: Property[]): void {
-    const pattern = DATE_PATTERNS.find(p => p.regex.test(text));
-    if (!pattern) return;
-    const date = new Date();
-    date.setDate(date.getDate() + pattern.offset);
-    properties.push({ key: 'date', operator: 'is', values: [date.toISOString().split('T')[0]] });
-  }
-
-  private applyBudgetStrategy(text: string, properties: Property[]): void {
-    const match = text.match(PATTERNS.BUDGET);
-    if (!match) return;
-    const amount = match[1] || match[2];
-    properties.push({ key: 'budget', operator: 'is', values: [amount.replace(/,/g, '')] });
-  }
-
-  private applyFuzzyMatchingStrategy(text: string, properties: Property[]): void {
-    const words = text.split(/\s+/);
-    const existingKeys = new Set(properties.map(p => p.key));
-    const slice = words.slice(0, -1);
-
-    for (let i = 0; i < slice.length; i++) {
-      const word = slice[i];
-      if (word.length <= 3) continue;
-
-      const [match] = this.ontologyService.getFuzzyMatches(word, 1);
-      if (!match || existingKeys.has(match)) continue;
-
-      const nextWord = words[i + 1];
-      if (nextWord.length > 2 && !STOP_WORDS.has(nextWord.toLowerCase())) {
-        properties.push({ key: match, operator: 'contains', values: [nextWord] });
-        existingKeys.add(match);
-      }
-    }
   }
 
     inferType(value: string): PropertyType {
@@ -179,7 +161,8 @@ export class PropertyExtractor {
 
   validateProperty(property: Property): { valid: boolean; errors: string[] } {
     const { key, operator, values } = property;
-    if (!this.ontologyService.hasAttribute(key)) {
+    const attr = this.ontologyService.getAttribute(key);
+    if (!attr) {
       return { valid: false, errors: [`Attribute '${key}' not found in ontology`] };
     }
 
@@ -190,9 +173,9 @@ export class PropertyExtractor {
 
     const enumOptions = this.ontologyService.getEnumOptions(key);
     if (enumOptions) {
-      for (const v of values.filter(v => !enumOptions.includes(v))) {
+      values.filter(v => !enumOptions.includes(v)).forEach(v => {
         errors.push(`Value '${v}' not in enum options for '${key}'`);
-      }
+      });
     }
 
     return { valid: errors.length === 0, errors };

@@ -1,5 +1,7 @@
-import type { Note } from './types/index.js';
-import { arePropertyArraysEqual, isIndefiniteProperty } from './properties.js';
+import type { Note, Property, OntologyNode } from './types/index.js';
+import { arePropertyArraysEqual, isIndefiniteProperty, arePropertiesEqual } from './properties.js';
+import { formatPropertyTag, parseProperties, replacePropertyInString } from './parsing.js';
+import { NOTE_STATUS } from './constants.js';
 
 export type NoteIntent = 'Real' | 'Imaginary' | 'Ambiguous';
 
@@ -33,6 +35,9 @@ export const sortNotesByDate = (notes: Note[]): Note[] =>
 export const areStringArraysEqual = (a: string[], b: string[]): boolean =>
   a === b || (a.length === b.length && a.every((val, i) => val === b[i]));
 
+export const isNoteActive = (note: Note): boolean =>
+  note.properties.some(p => p.key === NOTE_STATUS.KEY && (p.values.includes(NOTE_STATUS.RUNNING) || p.values.includes(NOTE_STATUS.QUEUED)));
+
 export const areNotesEqual = (a: Note, b: Note): boolean =>
   a === b || (
     a.title === b.title &&
@@ -46,38 +51,59 @@ export const areNotesEqual = (a: Note, b: Note): boolean =>
  * Ensures consistent data updates across the application.
  */
 export const NotePipeline = {
-  updateContent: (note: Note, content: string): Note => {
+  updateContent: (note: Note, content: string, ontology?: OntologyNode[]): Note => {
     if (note.content === content) return note;
+
+    const properties = parseProperties(content, ontology);
+
     return {
       ...note,
       content,
+      properties,
       updatedAt: new Date().toISOString()
     };
   },
 
-  addProperty: (note: Note, propertyTag: string): Note => {
-    const separator = note.content.trim().endsWith('</p>') ? '' : '\n\n';
-    const content = note.content.trim().endsWith('</p>')
-      ? note.content.replace(/<\/p>$/, ` ${propertyTag}</p>`)
-      : `${note.content}${separator}${propertyTag}`;
+  upsertProperty: (note: Note, key: string, value: string, ontology?: OntologyNode[]): Note => {
+    const existingProp = note.properties.find(p => p.key === key);
+    const newProp: Property = {
+      key,
+      operator: 'is',
+      values: [value]
+    };
 
-    return NotePipeline.updateContent(note, content);
+    const newContent = replacePropertyInString(note.content, existingProp || null, newProp);
+    return NotePipeline.updateContent(note, newContent, ontology);
   },
 
-  setStatus: (note: Note, status: string): Note => {
-    const statusTag = `[status:is:${status}]`;
-    const hasStatus = note.content.includes('[status:');
+  removeProperty: (note: Note, key: string, ontology?: OntologyNode[]): Note => {
+    const existingProp = note.properties.find(p => p.key === key);
+    if (!existingProp) return note;
 
-    let newContent;
-    if (hasStatus) {
-      newContent = note.content.replace(/\[status:[^\]]+\]/g, statusTag);
+    const newContent = replacePropertyInString(note.content, existingProp, null);
+    return NotePipeline.updateContent(note, newContent, ontology);
+  },
+
+  toggleStatus: (note: Note, status: string, ontology?: OntologyNode[]): Note => {
+    const isCurrentlySet = note.properties.some(p => p.key === NOTE_STATUS.KEY && p.values.includes(status));
+
+    if (isCurrentlySet) {
+      // If the specific status is already there, we might want to remove it or replace it.
+      // For toggle, let's assume we remove it if it's the only value, or filter it out.
+      const existingProp = note.properties.find(p => p.key === NOTE_STATUS.KEY);
+      if (!existingProp) return note;
+
+      const newValues = existingProp.values.filter(v => v !== status);
+      if (newValues.length === 0) {
+        return NotePipeline.removeProperty(note, NOTE_STATUS.KEY, ontology);
+      } else {
+        const newProp = { ...existingProp, values: newValues };
+        const newContent = replacePropertyInString(note.content, existingProp, newProp);
+        return NotePipeline.updateContent(note, newContent, ontology);
+      }
     } else {
-      newContent = note.content.trim().endsWith('</p>')
-        ? note.content.replace(/<\/p>$/, ` ${statusTag}</p>`)
-        : `${note.content}\n\n${statusTag}`;
+      return NotePipeline.upsertProperty(note, NOTE_STATUS.KEY, status, ontology);
     }
-
-    return NotePipeline.updateContent(note, newContent);
   },
 
   setPriority: (note: Note, priority: number): Note => {
@@ -85,6 +111,16 @@ export const NotePipeline = {
     return {
       ...note,
       priority,
+      updatedAt: new Date().toISOString()
+    };
+  },
+
+  addTags: (note: Note, tags: string[]): Note => {
+    const newTags = [...new Set([...note.tags, ...tags])];
+    if (areStringArraysEqual(note.tags, newTags)) return note;
+    return {
+      ...note,
+      tags: newTags,
       updatedAt: new Date().toISOString()
     };
   }
