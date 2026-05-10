@@ -40,6 +40,7 @@ export { useEditorModals } from './useEditorModals.js';
 export { useEditorPublishing } from './useEditorPublishing.js';
 export { useEditorShortcuts } from './useEditorShortcuts.js';
 export { useEditorTemplates } from './useEditorTemplates.js';
+export { useEventSubscription } from './useEventSubscription.js';
 export { useFilteredNotes } from './useFilteredNotes.js';
 export { useGardener } from './useGardener.js';
 export { useInsertMenuItems } from './useInsertMenuItems.js';

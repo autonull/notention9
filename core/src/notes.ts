@@ -1,6 +1,6 @@
 import type { Note, Property, OntologyNode } from './types/index.js';
 import { arePropertyArraysEqual, isIndefiniteProperty, arePropertiesEqual } from './properties.js';
-import { formatPropertyTag, parseProperties, replacePropertyInString } from './parsing.js';
+import { formatPropertyTag, parseProperties, replacePropertyInString, appendPropertyToText } from './parsing.js';
 import { NOTE_STATUS } from './constants.js';
 import { PropertyExtractor } from './propertyExtractor.js';
 import { getTextFromHtml } from './utils/html.js';
@@ -135,5 +135,10 @@ export const NotePipeline = {
       tags: newTags,
       updatedAt: new Date().toISOString()
     };
+  },
+
+  addProperty: (note: Note, propertyTag: string, ontology?: OntologyNode[]): Note => {
+    const newContent = appendPropertyToText(note.content, propertyTag);
+    return NotePipeline.updateContent(note, newContent, ontology);
   }
 };

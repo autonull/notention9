@@ -12,8 +12,8 @@ import {
 import { NetworkDiscoveryService, ScoredMatch } from '../nostr/discovery.js';
 import { hexToBytes } from '../utils/encoding.js';
 import { MatchEngine } from '../matching/MatchEngine.js';
-import { Logger } from '../utils/logging.js';
 import { getAliases } from '../ontologyHelpers.js';
+import { BaseNetworkProvider } from './BaseNetworkProvider.js';
 
 export interface NostrConfig {
     privkey?: string | null;
@@ -21,15 +21,14 @@ export interface NostrConfig {
     enabled?: boolean;
 }
 
-export class NostrNetworkProvider implements NetworkProvider {
+export class NostrNetworkProvider extends BaseNetworkProvider implements NetworkProvider {
     readonly id = 'nostr';
     readonly name = 'Nostr';
-    private logger = Logger.getInstance();
-    private listeners: Record<string, ((...args: any[]) => void)[]> = {};
     private _sub: { close: () => void } | null = null;
     private _pubkey: string | null = null;
 
     constructor(private config: NostrConfig = {}) {
+        super();
         if (config.privkey) {
             this.updatePubkey(config.privkey);
         }
@@ -168,24 +167,4 @@ export class NostrNetworkProvider implements NetworkProvider {
         }
     }
 
-    isSupported(): boolean {
-        return true;
-    }
-
-    on(event: string, callback: (...args: any[]) => void): void {
-        if (!this.listeners[event]) this.listeners[event] = [];
-        this.listeners[event].push(callback);
-    }
-
-    off(event: string, callback: (...args: any[]) => void): void {
-        if (!this.listeners[event]) return;
-        this.listeners[event] = this.listeners[event].filter(l => l !== callback);
-    }
-
-    private emit(event: string, ...args: any[]): void {
-        const eventListeners = this.listeners[event];
-        if (eventListeners) {
-            eventListeners.forEach(fn => fn(...args));
-        }
-    }
 }
