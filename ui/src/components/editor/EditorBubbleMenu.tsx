@@ -20,15 +20,15 @@ const BubbleButton = ({
 }) => (
     <button
         onClick={onClick}
-        className={`p-2 text-sm transition-colors first:rounded-l-lg last:rounded-r-lg ${
+        className={`p-1.5 transition-all first:rounded-l-md last:rounded-r-md ${
             isActive
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700'
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
+                : 'bg-gray-900 text-gray-500 hover:text-gray-200 hover:bg-gray-800'
         }`}
         title={title}
         type="button"
     >
-        <Icon className="h-4 w-4"/>
+        <Icon className="h-3.5 w-3.5"/>
     </button>
 );
 
@@ -39,7 +39,7 @@ export function EditorBubbleMenu({editor}: EditorBubbleMenuProps) {
         <BubbleMenu
             editor={editor}
             tippyOptions={{duration: 100}}
-            className="flex items-center rounded-lg shadow-xl border border-gray-700 overflow-hidden"
+            className="flex items-center rounded-md shadow-2xl border border-gray-800 overflow-hidden bg-gray-900 ring-1 ring-white/5"
         >
             <BubbleButton
                 onClick={() => editor.chain().focus().toggleBold().run()}
