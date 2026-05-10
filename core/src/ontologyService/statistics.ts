@@ -46,7 +46,7 @@ export class UsageTracker {
         for (const prop of properties) {
             const key = prop.key;
             const canonical = getCanonicalKey(key, this.ontology);
-            const isKnown = canonical !== key;
+            const isKnown = this.ontology.some(node => node.attributes && (node.attributes[key] || Object.values(node.attributes).some(attr => attr.aliases?.includes(key))));
 
             if (isKnown) {
                 this.stats.known.set(canonical, (this.stats.known.get(canonical) || 0) + 1);

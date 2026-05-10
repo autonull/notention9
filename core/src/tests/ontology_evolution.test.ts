@@ -1,7 +1,7 @@
 import { OntologyService } from '../ontologyService.js';
 import { inferPropertyType } from '../utils/inference.js';
 import { OntologyNode } from '../types/index.js';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 
 const mockOntology: OntologyNode[] = [
     {
@@ -15,7 +15,11 @@ const mockOntology: OntologyNode[] = [
 ];
 
 describe('Ontology Evolution', () => {
-    const service = new OntologyService(mockOntology);
+    let service: OntologyService;
+
+    beforeEach(() => {
+        service = new OntologyService(mockOntology);
+    });
 
     it('should track usage stats', () => {
         service.recordUsage([{ key: 'price' }, { key: 'date' }]);

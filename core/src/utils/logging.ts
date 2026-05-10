@@ -15,9 +15,11 @@ export class Logger {
   private logLevel: LogLevel = 'info';
   private logHistory: LogEntry[] = [];
   private maxLogEntries = 1000;
+  private scope: string | null = null;
   private logHandler: (level: LogLevel, message: string, context?: unknown, error?: Error) => void;
 
-  private constructor() {
+  private constructor(scope: string | null = null) {
+    this.scope = scope;
     this.logHandler = this.defaultLogHandler;
   }
 
@@ -26,6 +28,17 @@ export class Logger {
       Logger.instance = new Logger();
     }
     return Logger.instance;
+  }
+
+  child(scope: string): Logger {
+    const childScope = this.scope ? `${this.scope}:${scope}` : scope;
+    const child = new Logger(childScope);
+    // Sync settings from parent
+    child.logLevel = this.logLevel;
+    child.logHandler = this.logHandler;
+    // Proxy log history to the root instance
+    child.logHistory = this.logHistory;
+    return child;
   }
 
   setLogLevel(level: LogLevel): void {
@@ -51,10 +64,12 @@ export class Logger {
   private log(level: LogLevel, message: string, context?: unknown, error?: Error): void {
     if (!this.shouldLog(level)) return;
 
+    const scopedMessage = this.scope ? `[${this.scope}] ${message}` : message;
+
     const entry: LogEntry = {
       timestamp: Date.now(),
       level,
-      message,
+      message: scopedMessage,
       context,
       error,
     };
@@ -64,7 +79,7 @@ export class Logger {
       this.logHistory.shift();
     }
 
-    this.logHandler(level, message, context, error);
+    this.logHandler(level, scopedMessage, context, error);
   }
 
   debug(message: string, context?: unknown): void {

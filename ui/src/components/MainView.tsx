@@ -23,8 +23,8 @@ interface MainViewProps {
 
 export function MainView({sortedNotes}: MainViewProps) {
     const {activeView, matchingNoteId} = useView();
-    const {settingsLoading} = useSettings();
-    const {notes, notesLoading} = useNotes();
+    const {loading: settingsLoading} = useSettings();
+    const {notes, loading: notesLoading} = useNotes();
 
     // Run background matching
     useBackgroundMatcher();

@@ -31,7 +31,7 @@ export class OntologyService {
     constructor(ontology: OntologyNode[]) {
         this.ontology = ontology;
         this.attributeIndex = this.buildAttributeIndex(this.ontology);
-        this.usageTracker = new UsageTracker();
+        this.usageTracker = new UsageTracker(this.ontology);
         this.fuzzyMatcher = new FuzzyMatcher();
     }
 
@@ -42,19 +42,15 @@ export class OntologyService {
         nodes: OntologyNode[],
         index = new Map<string, OntologyAttribute>()
     ): Map<string, OntologyAttribute> {
-        return nodes.reduce((acc, node) => {
+        for (const node of nodes) {
             if (node.attributes) {
                 for (const [key, value] of Object.entries(node.attributes)) {
-                    if (!acc.has(key)) {
-                        acc.set(key, value);
-                    }
+                    if (!index.has(key)) index.set(key, value);
                 }
             }
-            if (node.children) {
-                this.buildAttributeIndex(node.children, acc);
-            }
-            return acc;
-        }, index);
+            if (node.children) this.buildAttributeIndex(node.children, index);
+        }
+        return index;
     }
 
     /**
@@ -173,26 +169,25 @@ export class OntologyService {
      * Get graph data for visualization
      */
     getGraphData() {
+        const stats = this.usageTracker.getStats();
         const nodes = Array.from(this.attributeIndex.keys()).map(key => ({
             id: key,
-            val: (this.usageTracker.getStats().known.get(key) || 1),
+            val: stats.known.get(key) ?? 1,
             label: key,
-            group: this.attributeIndex.get(key)?.type || 'unknown'
+            group: this.attributeIndex.get(key)?.type ?? 'unknown'
         }));
 
-        const links: Array<{ source: string; target: string; value: number }> = [];
         const processedPairs = new Set<string>();
-        const coOccurrence = this.usageTracker.getCoOccurrenceData();
-
-        for (const [source, targets] of coOccurrence) {
-            for (const [target, count] of targets) {
-                const pairId = source < target ? `${source}-${target}` : `${target}-${source}`;
-                if (!processedPairs.has(pairId)) {
-                    links.push({ source, target, value: count });
+        const links = Array.from(this.usageTracker.getCoOccurrenceData().entries()).flatMap(([source, targets]) =>
+            Array.from(targets.entries())
+                .filter(([target]) => {
+                    const pairId = source < target ? `${source}-${target}` : `${target}-${source}`;
+                    if (processedPairs.has(pairId)) return false;
                     processedPairs.add(pairId);
-                }
-            }
-        }
+                    return true;
+                })
+                .map(([target, value]) => ({ source, target, value }))
+        );
 
         return { nodes, links };
     }

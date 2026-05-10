@@ -18,24 +18,27 @@ export const SYMBOL_TO_OP: Record<string, string> = {
 };
 
 const COMMON_WORDS = new Set([
-  'not', 'neither', 'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by',
+  'not', 'neither', 'the', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by',
   'is', 'are', 'was', 'were', 'be', 'been', 'have', 'has', 'had', 'do', 'does', 'did',
   'will', 'would', 'could', 'should', 'may', 'might', 'can',
   'this', 'that', 'these', 'those',
-  'i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 'her', 'us', 'them',
+  'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 'her', 'us', 'them',
 ]);
 
 export const REGEX = {
   WORD_OP: /^([^\s]+)\s+(is|contains|before|after|less than|greater than|between|range|not)\s+(.+)$/i,
   COLON: /^([^\s]+):(.+)$/,
   SPACE: /^([^\s]+)\s+(.+)$/,
-  VALID_KEY: /^[a-zA-Z][a-zA-Z0-9_.-]*$/,
+  VALID_KEY: /^[a-zA-Z[\]][a-zA-Z0-9_.[\]\s-]*$/,
   BRACKET: /\[([^\]]+)\]/g,
   MACRO: /@([a-zA-Z0-9_]+)/g,
   SPAN: /<span\s+[^>]*data-type=["']property["'][^>]*>/g,
   SPAN_ATTR_NAME: /data-name=["']([^"']+)["']/,
   SPAN_ATTR_OP: /data-operator=["']([^"']+)["']/,
   SPAN_ATTR_VAL: /data-value=["']([^"']+)["']/,
+  HTML_TAGS: /<[^>]+>/g,
+  BLOCK_TAGS: /<\/(p|div|h[1-6]|li|blockquote|pre)>/gi,
+  BR_TAGS: /<br\s*\/?>/gi,
 } as const;
 
 const SYMBOLIC_REGEXES = Object.entries(SYMBOL_TO_OP)
@@ -129,45 +132,42 @@ const parsePropertyBlock = (content: string, ontology?: OntologyNode[]): Propert
   parserInstance.parse(content, ontology);
 
 export const extractProperties = (text: string, ontology?: OntologyNode[]): ExtractedProperty[] => {
-  const extracted: ExtractedProperty[] = [];
-  const regex = /\[([^\]]+)\]/g;
-  let match;
+  const matches = Array.from(text.matchAll(REGEX.BRACKET));
 
-  while ((match = regex.exec(text)) !== null) {
-      const content = match[1];
-      const parsed = parsePropertyBlock(content, ontology);
-      if (parsed) {
-          extracted.push({ property: parsed, index: match.index, length: match[0].length, originalText: match[0] });
-      } else {
-          // If it failed, it might be that we captured an extra [ at the beginning, like [[a:is:b]]
-          // Try finding the innermost bracket pair within this match
-          const innerMatch = content.match(/\[([^\[\]]+)\]/);
-          if (innerMatch) {
-              const innerParsed = parsePropertyBlock(innerMatch[1], ontology);
-              if (innerParsed) {
-                  extracted.push({
-                      property: innerParsed,
-                      index: match.index + innerMatch.index! + 1,
-                      length: innerMatch[0].length,
-                      originalText: innerMatch[0]
-                  });
-              }
-          } else if (content.startsWith('[')) {
-              // Simple [[case]]
-              const inner = content.substring(1);
-              const innerParsed = parsePropertyBlock(inner, ontology);
-              if (innerParsed) {
-                  extracted.push({
-                      property: innerParsed,
-                      index: match.index + 1,
-                      length: match[0].length - 1,
-                      originalText: match[0].substring(1)
-                  });
-              }
-          }
+  return matches.flatMap((match) => {
+    const content = match[1];
+    const parsed = parsePropertyBlock(content, ontology);
+
+    if (parsed) {
+      return [{ property: parsed, index: match.index!, length: match[0].length, originalText: match[0] }];
+    }
+
+    // Handle nested or malformed brackets [[key:is:val]]
+    const innerMatch = content.match(/\[([^\[\]]+)\]/);
+    if (innerMatch) {
+      const innerParsed = parsePropertyBlock(innerMatch[1], ontology);
+      if (innerParsed) {
+        return [{
+          property: innerParsed,
+          index: match.index! + innerMatch.index! + 1,
+          length: innerMatch[0].length,
+          originalText: innerMatch[0]
+        }];
       }
-  }
-  return extracted;
+    } else if (content.startsWith('[')) {
+      const innerParsed = parsePropertyBlock(content.substring(1), ontology);
+      if (innerParsed) {
+        return [{
+          property: innerParsed,
+          index: match.index! + 1,
+          length: match[0].length - 1,
+          originalText: match[0].substring(1)
+        }];
+      }
+    }
+
+    return [];
+  });
 };
 
 const extractMacros = (text: string): Property[] =>
@@ -192,8 +192,14 @@ export const parseProperties = (text: string, ontology?: OntologyNode[]): Proper
   return properties;
 };
 
-export const formatPropertyTag = (prop: Property): string =>
-  `[${prop.key}:${prop.operator}:${prop.values.join(',')}]`;
+/**
+ * Macro to format a property into a semantic note tag.
+ * Single source of truth for semantic property syntax.
+ */
+export const formatPropertyTag = (prop: Property | { key: string; operator?: string; values: string[] }): string => {
+  const operator = prop.operator ?? 'is';
+  return `[${prop.key}:${operator}:${prop.values.join(',')}]`;
+};
 
 const findPropertyInText = (text: string, prop: Property): { index: number; length: number } | null => {
   const extracted = extractProperties(text);

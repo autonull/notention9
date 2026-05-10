@@ -1,10 +1,4 @@
-import {useContext} from 'react';
-import {ToastContext} from '../components/contexts/ToastContext';
+import { ToastContext } from '../components/contexts/ToastContext';
+import { createContextHook } from '../utils/ui';
 
-export function useToast() {
-    const context = useContext(ToastContext);
-    if (!context) {
-        throw new Error('useToast must be used within a ToastProvider');
-    }
-    return context;
-};
+export const useToast = createContextHook(ToastContext, 'useToast', 'ToastProvider');

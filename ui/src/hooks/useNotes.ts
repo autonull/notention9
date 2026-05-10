@@ -1,15 +1,8 @@
-import {useContext} from 'react';
-import {NotesContext} from '../components/contexts/NotesContext';
+import { NotesContext } from '../components/contexts/NotesContext';
+import { createContextHook } from '../utils/ui';
+
+const useNotesBase = createContextHook(NotesContext, 'useNotes', 'NotesProvider');
 
 export function useNotes() {
-    const context = useContext(NotesContext);
-    if (context === undefined) {
-        throw new Error('useNotes must be used within a NotesProvider');
-    }
-
-    // Backwards compatibility alias for notesLoading
-    return {
-        ...context,
-        notesLoading: context.loading
-    };
+    return useNotesBase();
 };
