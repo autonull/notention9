@@ -1,7 +1,7 @@
 import React, {useMemo} from 'react';
 import type {Note} from '@notention/core';
 import {parseGeoFromValues} from '@notention/core';
-import {ClockIcon, MapPinIcon, PencilIcon} from '../common/icons';
+import {ClockIcon, MapPinIcon, PencilIcon, GlobeIcon} from '../common/icons';
 
 // Simple "static" map preview using a placeholder or a very simple iframe/image if possible.
 // For now, we'll just show a visual representation of the coordinates.
@@ -59,7 +59,7 @@ export function ContextPanel({note, onPickLocation, onPickTime}: ContextPanelPro
                         className="p-0.5 text-blue-500 hover:text-blue-300 transition-colors"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <WorldIcon className="w-3 h-3"/>
+                        <GlobeIcon className="w-3 h-3"/>
                     </a>
                 </div>
             )}

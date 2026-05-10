@@ -27,21 +27,21 @@ export function SettingsView() {
     ];
 
     return (
-        <div className="p-4 md:p-8 h-full overflow-y-auto bg-gray-800/50 rounded-lg flex flex-col">
+        <div className="p-4 md:p-8 h-full overflow-y-auto bg-gray-950 flex flex-col">
             <div
-                className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 border-b border-gray-700 pb-4">
+                className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                 <div>
-                    <h2 className="text-2xl font-bold text-white mb-1">Settings</h2>
-                    <p className="text-gray-400 text-sm">Manage your preferences and data.</p>
+                    <h2 className="text-3xl font-bold text-white mb-1 tracking-tight">Settings</h2>
+                    <p className="text-gray-500 text-sm font-medium">Preferences and network data.</p>
                 </div>
             </div>
 
-            <div className="flex-shrink-0 mb-6 overflow-x-auto">
+            <div className="flex-shrink-0 mb-8 overflow-x-auto">
                 <Tabs
                     tabs={tabs}
                     activeTab={activeTab}
                     onChange={(id) => setActiveTab(id)}
-                    className="bg-gray-900/50 p-1 inline-flex min-w-max"
+                    className="bg-gray-900/30 p-1 inline-flex rounded-xl"
                 />
             </div>
 
