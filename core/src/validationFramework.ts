@@ -3,6 +3,7 @@ import { patternRecognitionService, Prediction } from './patternRecognition.js';
 import { predictionAccuracyTracker, AccuracyMetrics } from './predictionTracking.js';
 import { clamp, formatPercentage } from './utils/common.js';
 import { logInfo, logWarn } from './utils/logging.js';
+import { ValidationError } from './utils/errors.js';
 
 export interface ValidationConfig {
   targetAccuracyRate: number; // Target accuracy rate (e.g., 0.3 for 30% in Month 1)
@@ -134,9 +135,9 @@ export class ValidationFramework {
         recommendations,
         confidence
       };
-    } catch (error) {
-      logWarn(`Validation failed`, { error: (error as Error).message });
-      throw new Error('Failed to validate prediction system');
+    } catch (err) {
+      logWarn(`Validation failed`, { error: (err as Error).message });
+      throw new ValidationError('Failed to validate prediction system', { originalError: err });
     }
   }
 

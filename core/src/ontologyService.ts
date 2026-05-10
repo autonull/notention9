@@ -38,15 +38,10 @@ export class OntologyService {
     /**
      * Build index of all attributes across ontology for fast lookup
      */
-    private buildAttributeIndex(
-        nodes: OntologyNode[],
-        index = new Map<string, OntologyAttribute>()
-    ): Map<string, OntologyAttribute> {
+    private buildAttributeIndex(nodes: OntologyNode[], index = new Map<string, OntologyAttribute>()): Map<string, OntologyAttribute> {
         nodes.forEach(node => {
-            Object.entries(node.attributes ?? {}).forEach(([key, value]) => {
-                if (!index.has(key)) index.set(key, value);
-            });
-            if (node.children) this.buildAttributeIndex(node.children, index);
+            Object.entries(node.attributes ?? {}).forEach(([key, val]) => index.has(key) || index.set(key, val));
+            node.children && this.buildAttributeIndex(node.children, index);
         });
         return index;
     }
@@ -168,23 +163,21 @@ export class OntologyService {
      */
     getGraphData() {
         const stats = this.usageTracker.getStats();
-        const nodes = Array.from(this.attributeIndex.keys()).map(key => ({
+        const nodes = Array.from(this.attributeIndex.entries()).map(([key, attr]) => ({
             id: key,
             val: stats.known.get(key) ?? 1,
             label: key,
-            group: this.attributeIndex.get(key)?.type ?? 'unknown'
+            group: attr.type ?? 'unknown'
         }));
 
         const processedPairs = new Set<string>();
-        const links = Array.from(this.usageTracker.getCoOccurrenceData().entries()).flatMap(([source, targets]) =>
+        const links = Array.from(this.usageTracker.getCoOccurrenceData().entries()).flatMap(([src, targets]) =>
             Array.from(targets.entries())
                 .filter(([target]) => {
-                    const pairId = source < target ? `${source}-${target}` : `${target}-${source}`;
-                    if (processedPairs.has(pairId)) return false;
-                    processedPairs.add(pairId);
-                    return true;
+                    const pairId = src < target ? `${src}-${target}` : `${target}-${src}`;
+                    return !processedPairs.has(pairId) && processedPairs.add(pairId);
                 })
-                .map(([target, value]) => ({ source, target, value }))
+                .map(([target, value]) => ({ source: src, target, value }))
         );
 
         return { nodes, links };
