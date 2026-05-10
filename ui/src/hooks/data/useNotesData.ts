@@ -1,10 +1,10 @@
 import {useCallback, useEffect, useRef} from 'react';
 import {useLocalForage} from '../useLocalForage';
-import type {GeoCoords, Note, Property, SortOrder, OntologyNode} from '@notention/core';
-import {createNote, haversineDistance, Logger, parseProperties, getCanonicalKey, normalizeNoteProperties} from '@notention/core';
+import type {GeoCoords, Note, SortOrder} from '@notention/core';
+import {createNote, haversineDistance, Logger, parseProperties, getCanonicalKey, normalizeNoteProperties, networkRegistry} from '@notention/core';
 import {agentService} from '../../services/AgentService';
-import {nostrService} from '../../services/NostrService';
 import {useSettings} from '../useSettingsContext';
+import {useMatching} from '../../components/contexts/MatchingContext';
 import {augmentNote, NoteMetadata} from './noteUtils';
 
 export interface UseNotesDataResult {
@@ -24,39 +24,9 @@ export interface UseNotesDataResult {
     ) => Note[];
 }
 
-// Lightweight property check helper to avoid instantiating full MatchEngine in UI hook
-const checkPropertyMatch = (constraint: Property, note: Note, ontology: OntologyNode[]): boolean => {
-    const canonicalConstraint = getCanonicalKey(constraint.key, ontology);
-
-    return note.properties.some(p => {
-        const canonicalProp = getCanonicalKey(p.key, ontology);
-        if (canonicalProp !== canonicalConstraint) return false;
-
-        // Simple value check for now (string/number equality or inclusion)
-        // This restores the basic filtering capability
-        const pVal = p.values[0]?.toLowerCase().trim();
-        const cVal = constraint.values[0]?.toLowerCase().trim();
-
-        if (!pVal || !cVal) return false;
-
-        switch (constraint.operator) {
-            case 'is':
-            case '=':
-            case ':':
-                return pVal === cVal;
-            case 'contains':
-                return pVal.includes(cVal);
-            case 'excludes':
-                return !pVal.includes(cVal);
-            default:
-                // Fallback for other operators: just check key existence if operator matches
-                return p.operator === constraint.operator;
-        }
-    });
-};
-
-export const useNotesData = (driver?: LocalForage): UseNotesDataResult => {
+export function useNotesData(driver?: LocalForage): UseNotesDataResult {
     const { settings } = useSettings();
+    const { engine } = useMatching();
     const [notes, setNotes, loading] = useLocalForage<Note[]>(
         'notention-notes',
         [],
@@ -100,19 +70,7 @@ export const useNotesData = (driver?: LocalForage): UseNotesDataResult => {
         }
     }, [setNotes]);
 
-    // --- CRUD Operations ---
-    const addNote = useCallback((overrides?: Partial<Note>) => {
-        let newNote = {...createNote(), ...overrides};
-        // Normalize properties to canonical keys on creation
-        newNote = normalizeNoteProperties(newNote, settings.ontology);
-
-        setNotes((prev) => [newNote, ...prev]);
-        agentService.saveNote(newNote);
-        nostrService.saveNote(newNote, settings.ontology);
-        return newNote;
-    }, [setNotes, settings.ontology]);
-
-    const upsertNote = useCallback((note: Note) => {
+    const upsertNote = useCallback((note: Note, skipAgent: boolean = false) => {
         const normalizedNote = normalizeNoteProperties(note, settings.ontology);
 
         setNotes((prev) => {
@@ -129,8 +87,83 @@ export const useNotesData = (driver?: LocalForage): UseNotesDataResult => {
                 return [normalizedNote, ...prev];
             }
         });
-        agentService.saveNote(normalizedNote);
+
+        if (!skipAgent) {
+            agentService.saveNote(normalizedNote);
+        }
     }, [setNotes, settings.ontology]);
+
+    // --- Subscription Logic for Network Providers ---
+    useEffect(() => {
+        const handlers = networkRegistry.getActiveProviders().map(p => {
+            // If it's meshtastic and using agent-proxy, the agent is already saving it.
+            // We only need to skipAgent if connectionType is 'server-proxy'.
+            const meshSettings = (settings as any).meshtastic;
+            const isAgentProxy = p.id === 'meshtastic' && meshSettings?.connectionType === 'server-proxy';
+
+            const noteHandler = (note: Note) => {
+                if (p.id === 'meshtastic' && !meshSettings?.saveReceivedNotes) {
+                    return;
+                }
+                upsertNote(note, isAgentProxy);
+            };
+
+            const telemetryHandler = (data: { nodeId: string, telemetry: any }) => {
+                if (p.id === 'meshtastic') {
+                    const provider = p as any;
+                    const existingNote = notes.find(n => n.id === provider.getNodeNoteId(data.nodeId));
+                    const updatedNote = provider.mapTelemetryToNote(data.nodeId, data.telemetry, existingNote);
+                    upsertNote(updatedNote, isAgentProxy);
+                }
+            };
+
+            const positionHandler = (data: { nodeId: string, position: any }) => {
+                if (p.id === 'meshtastic') {
+                    const provider = p as any;
+                    const existingNote = notes.find(n => n.id === provider.getNodeNoteId(data.nodeId));
+                    const updatedNote = provider.mapPositionToNote(data.nodeId, data.position, existingNote);
+                    upsertNote(updatedNote, isAgentProxy);
+                }
+            };
+
+            p.on('note', noteHandler);
+            p.on('telemetry', telemetryHandler);
+            p.on('position', positionHandler);
+
+            return {
+                provider: p,
+                handlers: {
+                    note: noteHandler,
+                    telemetry: telemetryHandler,
+                    position: positionHandler
+                }
+            };
+        });
+
+        return () => handlers.forEach(({ provider, handlers }) => {
+            provider.off('note', handlers.note);
+            provider.off('telemetry', handlers.telemetry);
+            provider.off('position', handlers.position);
+        });
+    }, [upsertNote, settings, notes]);
+
+    // --- CRUD Operations ---
+    const addNote = useCallback((overrides?: Partial<Note>) => {
+        let newNote = {...createNote(), ...overrides};
+        // Normalize properties to canonical keys on creation
+        newNote = normalizeNoteProperties(newNote, settings.ontology);
+
+        setNotes((prev) => [newNote, ...prev]);
+        agentService.saveNote(newNote);
+
+        // Use abstraction for all active network providers
+        networkRegistry.getActiveProviders().forEach(p => {
+            p.sendNote(newNote, settings.ontology);
+        });
+
+        return newNote;
+    }, [setNotes, settings.ontology]);
+
 
     const updateNote = useCallback((updatedNote: Note) => {
         let noteWithTimestamp = {...updatedNote, updatedAt: new Date().toISOString()};
@@ -141,7 +174,11 @@ export const useNotesData = (driver?: LocalForage): UseNotesDataResult => {
             prev.map((n) => (n.id === noteWithTimestamp.id ? noteWithTimestamp : n))
         );
         agentService.saveNote(noteWithTimestamp);
-        nostrService.saveNote(noteWithTimestamp, settings.ontology);
+
+        // Use abstraction for all active network providers
+        networkRegistry.getActiveProviders().forEach(p => {
+            p.sendNote(noteWithTimestamp, settings.ontology);
+        });
     }, [setNotes, settings.ontology]);
 
     const deleteNote = useCallback((id: string) => {
@@ -211,9 +248,9 @@ export const useNotesData = (driver?: LocalForage): UseNotesDataResult => {
             });
 
             filtered = notesWithMetadata.filter((note) => {
-                // Check structured constraints [key:op:val]
+                // Check structured constraints [key:op:val] using MatchEngine
                 const semanticMatch = constraints.length > 0 ?
-                    constraints.every(c => checkPropertyMatch(c, note, settings.ontology)) : true;
+                    engine.calculateMatchScore({ properties: constraints } as Note, note).score > 0 : true;
 
                 if (!semanticMatch) return false;
 
@@ -279,7 +316,7 @@ export const useNotesData = (driver?: LocalForage): UseNotesDataResult => {
                     return b.updatedAt.localeCompare(a.updatedAt);
             }
         });
-    }, [notes]);
+    }, [notes, engine]);
 
     return {
         notes,

@@ -45,32 +45,22 @@ export function useOntologyMatching({tags, properties, ontology}: UseOntologyMat
 
     const actionLabel = matchingOntologyNode?.actionLabel || 'Publish';
 
-    const validationErrors = useMemo(() => {
-        const errors: string[] = [];
-        if (!matchingOntologyNode || !matchingOntologyNode.requiredAttributes) return errors;
-
-        matchingOntologyNode.requiredAttributes.forEach(req => {
-            const hasProp = properties.some(p => p.key.toLowerCase() === req.toLowerCase());
-            if (!hasProp) {
-                errors.push(`Missing required property: [${req}:...]`);
-            }
-        });
-
-        return errors;
-    }, [matchingOntologyNode, properties]);
-
     const missingProperties = useMemo(() => {
+        if (!matchingOntologyNode || !matchingOntologyNode.requiredAttributes) return [];
         const missing: string[] = [];
-        if (!matchingOntologyNode || !matchingOntologyNode.requiredAttributes) return missing;
-
-        matchingOntologyNode.requiredAttributes.forEach(req => {
+        for (const req of matchingOntologyNode.requiredAttributes) {
             const hasProp = properties.some(p => p.key.toLowerCase() === req.toLowerCase());
             if (!hasProp) {
                 missing.push(req);
             }
-        });
+        }
         return missing;
     }, [matchingOntologyNode, properties]);
+
+    const validationErrors = useMemo(() =>
+        missingProperties.map(req => `Missing required property: [${req}:...]`),
+        [missingProperties]
+    );
 
     return {
         matchingOntologyNode,

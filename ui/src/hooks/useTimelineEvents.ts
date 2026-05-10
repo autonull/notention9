@@ -7,7 +7,7 @@ export interface TimelineEvent {
     label: string;
 }
 
-export const useTimelineEvents = (notes: Note[]) => {
+export function useTimelineEvents(notes: Note[]) {
     return useMemo(() => {
         const upcoming: TimelineEvent[] = [];
         const past: TimelineEvent[] = [];

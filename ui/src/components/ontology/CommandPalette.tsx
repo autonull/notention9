@@ -17,12 +17,12 @@ interface CommandPaletteProps {
 
 const propertyExtractor = new PropertyExtractor(DEFAULT_ONTOLOGY);
 
-export const CommandPalette: React.FC<CommandPaletteProps> = ({
+export function CommandPalette({
                                                                   onCommand,
                                                                   onCancel,
                                                                   isOpen,
                                                                   placeholder = "Type a command... (e.g., 'send message to john via whatsapp')"
-                                                              }) => {
+                                                              }: CommandPaletteProps) {
     const [input, setInput] = useState('');
     const [extractedProps, setExtractedProps] = useState<Property[]>([]);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -148,4 +148,4 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
             </div>
         </div>
     );
-};
+}

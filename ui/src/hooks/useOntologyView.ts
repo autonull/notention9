@@ -7,7 +7,7 @@ import {useOntologySuggestions} from './useOntologySuggestions';
 
 export type OntologyTab = 'graph' | 'simulator' | 'conflicts' | 'suggestions';
 
-export const useOntologyView = () => {
+export function useOntologyView() {
     const {settings, setSettings} = useSettings();
     const ontology = settings.ontology;
     const {notes} = useNotes();

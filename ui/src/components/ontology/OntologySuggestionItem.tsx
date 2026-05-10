@@ -8,10 +8,10 @@ interface OntologySuggestionItemProps {
     onAdd: () => void;
 }
 
-export const OntologySuggestionItem: React.FC<OntologySuggestionItemProps> = ({
+export function OntologySuggestionItem({
     suggestion,
     onAdd
-}) => {
+}: OntologySuggestionItemProps) {
     return (
         <div className="bg-gray-800 p-4 rounded-lg border border-gray-700 flex justify-between items-center group hover:border-blue-500/50 transition-colors">
             <div>
@@ -51,4 +51,4 @@ export const OntologySuggestionItem: React.FC<OntologySuggestionItemProps> = ({
             </div>
         </div>
     );
-};
+}

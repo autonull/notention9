@@ -1,5 +1,5 @@
 import {useMemo, useEffect, useState} from 'react';
-import {OntologyService, SuggestedAttribute} from '@notention/core';
+import {OntologyService, SuggestedAttribute, SUGGESTION_THRESHOLD} from '@notention/core';
 import {useSettings} from './useSettingsContext';
 import {useNotes} from './useNotes';
 
@@ -25,7 +25,7 @@ export function useOntologySuggestions(contextKeys?: string[]) {
             setSuggestions(ontologyService.getContextualSuggestions(contextKeys));
         } else {
             // Global suggestions
-            const threshold = settings.developerMode ? 1 : 3;
+            const threshold = settings.developerMode ? SUGGESTION_THRESHOLD.DEV : SUGGESTION_THRESHOLD.PROD;
             setSuggestions(ontologyService.getSuggestedAttributes(threshold));
         }
     }, [notes, ontologyService, settings.developerMode, contextKeys]);

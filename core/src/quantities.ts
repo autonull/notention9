@@ -70,7 +70,7 @@ const parseSuffixUnits = (clean: string): Quantity | null => {
         value: val,
         unit,
         unitType: 'simple',
-        semanticType: (CATEGORIES[unit] as any) || 'other'
+        semanticType: CATEGORIES[unit] as SemanticType || 'other'
     };
 };
 
@@ -196,7 +196,7 @@ export const multiplyQuantities = (a: Quantity, b: Quantity): Quantity => {
     if (a.unit && b.unit) {
         if (a.unitType === 'simple' && b.unitType === 'simple') {
             if (a.unit === b.unit) {
-                return { value, unit: `${a.unit}²`, unitType: 'simple', semanticType: (a.semanticType || 'other') as any };
+                return { value, unit: `${a.unit}²`, unitType: 'simple', semanticType: a.semanticType || 'other' };
             }
             return { value, unit: `${a.unit}*${b.unit}`, unitType: 'compound', semanticType: 'other' };
         }
@@ -204,7 +204,7 @@ export const multiplyQuantities = (a: Quantity, b: Quantity): Quantity => {
     }
 
     const unit = a.unit || b.unit;
-    const semanticType = (a.semanticType || b.semanticType || 'other') as any;
+    const semanticType = a.semanticType || b.semanticType || 'other';
 
     return { value, unit, unitType: a.unit ? a.unitType : b.unitType, semanticType };
 };
@@ -223,10 +223,10 @@ export const divideQuantities = (a: Quantity, b: Quantity): Quantity => {
             value,
             unit: `${a.unit}/${b.unit}`,
             unitType: 'compound',
-            semanticType: semanticType as any
+            semanticType
         };
     } else if (a.unit) {
-        return { value, unit: a.unit, unitType: a.unitType, semanticType: (a.semanticType || 'other') as any };
+        return { value, unit: a.unit, unitType: a.unitType, semanticType: a.semanticType || 'other' };
     } else if (b.unit) {
         return { value, unit: `1/${b.unit}`, unitType: 'compound', semanticType: 'other' };
     }

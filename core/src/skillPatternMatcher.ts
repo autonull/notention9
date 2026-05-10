@@ -85,17 +85,10 @@ export class SkillPatternMatcher {
      * Returns skills sorted by confidence score
      */
     matchSkills(note: Note): SkillMatch[] {
-        const matches: SkillMatch[] = [];
-
-        for (const skill of this.skills.values()) {
-            const match = this.matchSkill(note, skill);
-            if (match.confidence > 0) {
-                matches.push(match);
-            }
-        }
-
-        // Sort by confidence descending
-        return matches.sort((a, b) => b.confidence - a.confidence);
+        return Array.from(this.skills.values())
+            .map(skill => this.matchSkill(note, skill))
+            .filter(match => match.confidence > 0)
+            .sort((a, b) => b.confidence - a.confidence);
     }
 
     /**
@@ -108,19 +101,22 @@ export class SkillPatternMatcher {
 
         // Check requiresAll (all must match)
         if (pattern.requiresAll) {
-            for (const requirement of pattern.requiresAll) {
+            const allMatched = pattern.requiresAll.every(requirement => {
                 const matches = this.matchRequirement(note.properties, requirement);
-                if (matches.length === 0) {
-                    // Required attribute not found - no match
-                    return { skill, confidence: 0, matchedAttributes: [] };
-                }
+                if (matches.length === 0) return false;
+
                 matchedAttributes.push(...matches);
                 score += 30; // Base score for required match
+                return true;
+            });
+
+            if (!allMatched) {
+                return { skill, confidence: 0, matchedAttributes: [] };
             }
         }
 
         // Check requiresAny (at least one must match)
-        if (pattern.requiresAny) {
+        if (pattern.requiresAny && pattern.requiresAny.length > 0) {
             let anyMatched = false;
             for (const requirement of pattern.requiresAny) {
                 const matches = this.matchRequirement(note.properties, requirement);
@@ -131,7 +127,7 @@ export class SkillPatternMatcher {
                 }
             }
 
-            if (!anyMatched && pattern.requiresAny.length > 0) {
+            if (!anyMatched) {
                 // None of the optional requirements matched
                 return { skill, confidence: 0, matchedAttributes: [] };
             }
@@ -191,23 +187,17 @@ export class SkillPatternMatcher {
     private isSimilarKey(key: string, targets: string[]): boolean {
         const lowerKey = key.toLowerCase();
 
-        for (const target of targets) {
+        return targets.some(target => {
             const lowerTarget = target.toLowerCase();
 
-            // Exact match
-            if (lowerKey === lowerTarget) return true;
-
-            // Contains
-            if (lowerKey.includes(lowerTarget) || lowerTarget.includes(lowerKey)) {
+            // Exact match or Contains
+            if (lowerKey === lowerTarget || lowerKey.includes(lowerTarget) || lowerTarget.includes(lowerKey)) {
                 return true;
             }
 
             // Fuzzy match via ontology
-            const fuzzy = this.ontologyService.getFuzzyMatches(target, 5);
-            if (fuzzy.includes(key)) return true;
-        }
-
-        return false;
+            return this.ontologyService.getFuzzyMatches(target, 5).includes(key);
+        });
     }
 
     /**
@@ -230,41 +220,36 @@ export class SkillPatternMatcher {
      * Map note properties to external API parameters using skill's exportMapping
      */
     mapToExternal(note: Note, skill: SkillDefinition): Record<string, any> {
-        const params: Record<string, any> = {};
-
-        for (const prop of note.properties) {
+        return note.properties.reduce((params, prop) => {
             const externalKey = skill.exportMapping[prop.key];
             if (externalKey) {
                 // Map to external parameter name
                 params[externalKey] = prop.values[0]; // Use first value
             }
-        }
-
-        return params;
+            return params;
+        }, {} as Record<string, any>);
     }
 
     /**
      * Map external data to ontology properties using skill's importMapping
      */
     mapFromExternal(externalData: Record<string, any>, skill: SkillDefinition): Property[] {
-        const properties: Property[] = [];
+        return Object.entries(skill.importMapping)
+            .map(([externalKey, ontologyKey]) => {
+                const value = this.extractValue(externalData, externalKey);
+                if (value === null || value === undefined) return null;
 
-        for (const [externalKey, ontologyKey] of Object.entries(skill.importMapping)) {
-            const value = this.extractValue(externalData, externalKey);
-            if (value !== null && value !== undefined) {
                 // Get default operator from ontology
                 const validOps = this.ontologyService.getValidOperators(ontologyKey);
                 const operator = validOps[0] || 'is'; // Use first valid operator
 
-                properties.push({
+                return {
                     key: ontologyKey,
                     operator,
                     values: Array.isArray(value) ? value : [String(value)]
-                });
-            }
-        }
-
-        return properties;
+                };
+            })
+            .filter((prop): prop is Property => prop !== null);
     }
 
     /**
@@ -278,16 +263,12 @@ export class SkillPatternMatcher {
         }
 
         // Dot notation path (e.g., 'job.title')
-        const parts = path.split('.');
-        let current = data;
-        for (const part of parts) {
+        return path.split('.').reduce((current, part) => {
             if (current && typeof current === 'object' && part in current) {
-                current = current[part];
-            } else {
-                return null;
+                return current[part];
             }
-        }
-        return current;
+            return null;
+        }, data);
     }
 
     /**

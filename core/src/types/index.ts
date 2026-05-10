@@ -44,11 +44,10 @@ export interface ExtractedProperty {
   originalText: string;
 }
 
-export type PrivacyLevel = 'private' | 'protected' | 'public';
-
-export type PropertyType = 'quantity' | 'number' | 'date' | 'datetime' | 'geo' | 'string';
-
 import type { Event as NostrToolsEvent } from 'nostr-tools';
+
+export type PrivacyLevel = 'private' | 'protected' | 'public';
+export type PropertyType = 'quantity' | 'number' | 'date' | 'datetime' | 'geo' | 'string';
 export type NostrEvent = NostrToolsEvent;
 
 export interface OntologyNode {
@@ -145,7 +144,7 @@ export interface Contact {
     isAgent?: boolean;
 }
 
-export type View = 'notes' | 'ontology' | 'network' | 'chat' | 'settings' | 'map' | 'time' | 'trash' | 'simulator' | 'dashboard';
+export type View = 'notes' | 'ontology' | 'network' | 'chat' | 'settings' | 'map' | 'timeline' | 'trash' | 'simulator' | 'dashboard' | 'actions';
 
 export interface AgentStatus {
     state: 'initializing' | 'ready' | 'running' | 'error' | 'stopped';

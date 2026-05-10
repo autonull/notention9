@@ -95,25 +95,23 @@ export class GitHubSkill implements Skill {
         }
 
         // Details
-        for (let i = 0; i < Math.min(repos.length, 5); i++) {
-            notes.push({
-                id: crypto.randomUUID(),
-                title: repos[i],
-                content: descriptions[i] || 'No description',
-                tags: ['@repo', '@github'],
-                properties: [],
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-                source: {
-                    type: 'skill',
-                    identifier: this.id,
-                    timestamp: Date.now()
-                },
-                privacy: 'private',
-                priority: 0.5
-            } as Note);
-        }
+        const repoNotes = repos.slice(0, 5).map((repo: string, i: number) => ({
+            id: crypto.randomUUID(),
+            title: repo,
+            content: descriptions[i] || 'No description',
+            tags: ['@repo', '@github'],
+            properties: [],
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            source: {
+                type: 'skill',
+                identifier: this.id,
+                timestamp: Date.now()
+            },
+            privacy: 'private',
+            priority: 0.5
+        }) as Note);
 
-        return notes;
+        return [...notes, ...repoNotes];
     }
 }

@@ -14,6 +14,7 @@ export * from './constants.js';
 export * from './quantities.js';
 export * from './templates.js';
 export * from './networkGate.js';
+export * from './network/index.js';
 export * from './skills/types.js';
 export * from './feedback/types.js';
 
@@ -36,6 +37,9 @@ export * from './patternRecognition.js';
 export * from './predictionTracking.js';
 export { ValidationFramework, validationFramework } from './validationFramework.js';
 export * from './autonomousTasks.js';
+
+// Tasks Module (modular)
+export * from './tasks/index.js';
 
 // Ontology-driven services (Phase 1.4 & 2)
 export * from './ontologyService.js';

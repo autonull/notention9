@@ -18,7 +18,7 @@ interface LogEntry {
     data?: any;
 }
 
-export const AgentFeedbackPanel: React.FC = () => {
+export function AgentFeedbackPanel() {
     const [logs, setLogs] = useState<LogEntry[]>([]);
     const scrollRef = useRef<HTMLDivElement>(null);
     const {notes} = useNotes();
@@ -194,4 +194,4 @@ export const AgentFeedbackPanel: React.FC = () => {
             </div>
         </div>
     );
-};
+}

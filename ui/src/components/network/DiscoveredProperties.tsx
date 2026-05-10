@@ -9,12 +9,12 @@ interface DiscoveredPropertiesProps {
     onLink: (key: string, inferredType: string) => void;
 }
 
-export const DiscoveredProperties: React.FC<DiscoveredPropertiesProps> = ({
+export function DiscoveredProperties({
     networkMatches,
     ontology,
     onAdd,
     onLink
-}) => {
+}: DiscoveredPropertiesProps) {
     const unknownProperties = useMemo(() => {
         if (networkMatches.length === 0) return [];
         const uniqueKeys = new Set<string>();
@@ -108,4 +108,4 @@ export const DiscoveredProperties: React.FC<DiscoveredPropertiesProps> = ({
             </div>
         </div>
     );
-};
+}

@@ -28,7 +28,6 @@ export interface ViewContextType {
     setMatchingNoteId: (id: string | null) => void;
     selectedChatPubkey: string | null;
     setSelectedChatPubkey: (pubkey: string | null) => void;
-    showToast: (msg: string) => void;
     notificationCount: number;
     matches: MatchResult[];
     addMatch: (match: MatchResult) => void;
@@ -73,10 +72,6 @@ export function ViewProvider({ children }: { children: ReactNode }) {
     const notificationCount = matches.length;
     const logger = Logger.getInstance();
 
-    const showToast = (msg: string) => {
-        addToast(msg);
-    };
-
     const addMatch = (match: MatchResult) => {
         setMatches(prev => {
             if (prev.some(m => m.event.id === match.event.id && m.localNoteId === match.localNoteId)) {
@@ -87,7 +82,7 @@ export function ViewProvider({ children }: { children: ReactNode }) {
     };
 
     const clearNotifications = () => {
-        // Placeholder for notification clearing logic
+        setMatches([]);
     };
 
     const incrementChatNotification = () => setChatNotificationCount(c => c + 1);
@@ -118,7 +113,6 @@ export function ViewProvider({ children }: { children: ReactNode }) {
                 setMatchingNoteId,
                 selectedChatPubkey,
                 setSelectedChatPubkey,
-                showToast,
                 notificationCount,
                 matches,
                 addMatch,

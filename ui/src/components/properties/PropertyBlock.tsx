@@ -27,13 +27,13 @@ interface PropertyBlockProps {
     autoFocus?: boolean;
 }
 
-export const PropertyBlock: React.FC<PropertyBlockProps> = ({
+export function PropertyBlock({
     property,
     onUpdate,
     onDelete,
     ontology,
     autoFocus
-}) => {
+}: PropertyBlockProps) {
     const [isEditing, setIsEditing] = useState(false);
     const [localValue, setLocalValue] = useState(property.values[0] || '');
     const [hasChanges, setHasChanges] = useState(false);
@@ -219,7 +219,7 @@ export const PropertyBlock: React.FC<PropertyBlockProps> = ({
             )}
         </div>
     );
-};
+}
 
 // Helpers
 const getPropertyIcon = (key: string): React.ComponentType<{ className?: string }> => {

@@ -2,7 +2,7 @@ import {useCallback, useEffect, useMemo, useRef} from 'react';
 import {Note} from '@notention/core';
 
 // Debounced save function to prevent excessive writes
-export const useDebouncedSave = (
+export function useDebouncedSave(
     saveCallback: (note: Note) => void,
     delay: number = 1000
 ) => {
@@ -40,7 +40,7 @@ export const useDebouncedSave = (
 };
 
 // Performance-optimized property extraction
-export const useOptimizedPropertyExtraction = (content: string) => {
+export function useOptimizedPropertyExtraction(content: string) {
     const extractedProperties = useMemo(() => {
         // Use a more efficient regex that avoids catastrophic backtracking
         const propertyRegex = /\[([^\]:]+):([^\]:]+):([^\]]+)\]|(\[[^\]]+\])/g;

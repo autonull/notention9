@@ -1,8 +1,8 @@
 import { Note, getCanonicalKey, OntologyServiceFactory } from '@notention/core';
-import { AgentSkillRegistry } from './AgentSkillRegistry';
-import { DynamicSkill } from './DynamicSkill';
-import type { DynamicSkillDefinition } from './DynamicSkill';
-import { log } from '../core/utils';
+import { AgentSkillRegistry } from './AgentSkillRegistry.js';
+import { DynamicSkill } from './DynamicSkill.js';
+import type { DynamicSkillDefinition } from './DynamicSkill.js';
+import { log } from '../core/utils.js';
 
 export class NoteSkillLoader {
     private registry: AgentSkillRegistry;
@@ -15,15 +15,11 @@ export class NoteSkillLoader {
      * Scans notes for the tag '@skill:definition' and registers them.
      */
     scanForSkills(notes: Note[]): void {
-        let count = 0;
-        for (const note of notes) {
-            if (note.tags.includes('@skill:definition')) {
-                this.loadSkillFromNote(note);
-                count++;
-            }
-        }
-        if (count > 0) {
-            log('SkillLoader', `Found ${count} skill definition notes.`);
+        const skillNotes = notes.filter(note => note.tags.includes('@skill:definition'));
+        skillNotes.forEach(note => this.loadSkillFromNote(note));
+
+        if (skillNotes.length > 0) {
+            log('SkillLoader', `Found ${skillNotes.length} skill definition notes.`);
         }
     }
 
@@ -41,7 +37,7 @@ export class NoteSkillLoader {
             // Load ontology for normalization
             const ontology = OntologyServiceFactory.createStandardService().getAllNodes();
 
-            for (const p of note.properties) {
+            note.properties.forEach(p => {
                 // [skill:trigger:tag:foo]
                 if (p.key === 'skill:trigger:tag' || p.key === 'trigger:tag') {
                     triggers.tags.push(...p.values);
@@ -50,15 +46,13 @@ export class NoteSkillLoader {
                 if (p.key.startsWith('trigger:prop:')) {
                     const parts = p.key.split(':');
                     if (parts.length >= 3) {
-                        let key = parts[2];
                         // Normalize trigger key to match normalized notes
-                        key = getCanonicalKey(key, ontology);
-
+                        const key = getCanonicalKey(parts[2], ontology);
                         const value = p.values.length > 0 ? p.values[0] : undefined;
                         triggers.properties.push({ key, value });
                     }
                 }
-            }
+            });
 
             // 2. Extract Action from Content
             // Expecting JSON block in content

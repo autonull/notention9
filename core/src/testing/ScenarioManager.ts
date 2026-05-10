@@ -37,6 +37,7 @@ export interface MultiAgentScenario {
 
 export class ScenarioManager {
     private scenarios = new Map<string, TestScenario>();
+    private multiAgentScenarios = new Map<string, MultiAgentScenario>();
 
     constructor() {
         this.registerDefaults();
@@ -44,6 +45,10 @@ export class ScenarioManager {
 
     register(scenario: TestScenario) {
         this.scenarios.set(scenario.id, scenario);
+    }
+
+    registerMultiAgent(scenario: MultiAgentScenario) {
+        this.multiAgentScenarios.set(scenario.id, scenario);
     }
 
     get(id: string): TestScenario | undefined {
@@ -82,7 +87,7 @@ export class ScenarioManager {
         });
 
         // Register Multi-Agent Default
-        this.register({
+        this.registerMultiAgent({
             id: 'marketplace-negotiation',
             name: 'Marketplace Negotiation',
             description: 'A Buyer and Seller negotiate the price of a service',
@@ -109,6 +114,6 @@ export class ScenarioManager {
                     }
                 }
             ]
-        } as any);
+        });
     }
 }

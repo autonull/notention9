@@ -23,7 +23,7 @@ interface ErrorHandlerContextType {
 
 const ErrorHandlerContext = createContext<ErrorHandlerContextType | undefined>(undefined);
 
-export const ErrorHandlingProvider: React.FC<{ children: ReactNode }> = ({children}) => {
+export function ErrorHandlingProvider({children}: { children: ReactNode }) {
     const [errors, setErrors] = useState<ErrorMessage[]>([]);
 
     const addError = (error: Omit<ErrorMessage, 'id' | 'timestamp'>): string => {
@@ -84,18 +84,18 @@ export const ErrorHandlingProvider: React.FC<{ children: ReactNode }> = ({childr
             {children}
         </ErrorHandlerContext.Provider>
     );
-};
+}
 
-export const useErrorHandler = (): ErrorHandlerContextType => {
+export function useErrorHandler() : ErrorHandlerContextType {
     const context = useContext(ErrorHandlerContext);
     if (!context) {
         throw new Error('useErrorHandler must be used within an ErrorHandlingProvider');
     }
     return context;
-};
+}
 
 // Component to display errors
-export const ErrorDisplay: React.FC = () => {
+export function ErrorDisplay() {
     const {errors, dismissError} = useErrorHandler();
 
     return (
@@ -134,4 +134,4 @@ export const ErrorDisplay: React.FC = () => {
             ))}
         </div>
     );
-};
+}

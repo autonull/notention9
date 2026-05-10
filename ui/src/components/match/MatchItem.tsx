@@ -23,14 +23,14 @@ interface MatchItemProps {
     onChat?: () => void;
 }
 
-export const MatchItem: React.FC<MatchItemProps> = ({
+export function MatchItem({
     match,
     isLocal,
     isContact = false,
     onClick,
     onConnect,
     onChat
-}) => {
+}: MatchItemProps) {
     const { note, result, direction } = match;
     const score = Math.round(result.score * 100);
 
@@ -145,7 +145,7 @@ export const MatchItem: React.FC<MatchItemProps> = ({
             )}
         </div>
     );
-};
+}
 
 const MatchBadge: React.FC<{ match: PropertyMatch }> = ({ match }) => {
     const type = match.details?.type || 'unknown';

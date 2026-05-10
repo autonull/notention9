@@ -20,7 +20,6 @@ export class PropertyIndex {
     rebuild(notes: Note[]) {
         this.keyIndex.clear();
         this.noteKeys.clear();
-
         for (const note of notes) {
             this.addNote(note);
         }
@@ -86,9 +85,9 @@ export class PropertyIndex {
     getCandidates(constraints: Property[]): Set<string> | null {
         if (constraints.length === 0) return null; // No constraints -> all notes are candidates (or let caller handle)
 
-        let candidateIds: Set<string> | null = null;
+        return constraints.reduce<Set<string> | null>((candidateIds, constraint) => {
+            if (candidateIds !== null && candidateIds.size === 0) return candidateIds;
 
-        for (const constraint of constraints) {
             const idsWithKey = this.keyIndex.get(constraint.key);
 
             if (!idsWithKey) {
@@ -97,20 +96,18 @@ export class PropertyIndex {
             }
 
             if (candidateIds === null) {
-                // Initialize with first set
-                candidateIds = new Set(idsWithKey);
-            } else {
-                // Intersect
-                for (const id of candidateIds) {
-                    if (!idsWithKey.has(id)) {
-                        candidateIds.delete(id);
-                    }
+                return new Set(idsWithKey);
+            }
+
+            // Intersect
+            const intersected = new Set<string>();
+            for (const id of candidateIds) {
+                if (idsWithKey.has(id)) {
+                    intersected.add(id);
                 }
             }
 
-            if (candidateIds.size === 0) return new Set();
-        }
-
-        return candidateIds || new Set();
+            return intersected;
+        }, null) || new Set();
     }
 }

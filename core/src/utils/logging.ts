@@ -1,14 +1,10 @@
-/**
- * Logging utilities for Notention system
- */
-
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 export interface LogEntry {
   timestamp: number;
   level: LogLevel;
   message: string;
-  context?: any;
+  context?: unknown;
   error?: Error;
 }
 
@@ -19,7 +15,7 @@ export class Logger {
   private logLevel: LogLevel = 'info';
   private logHistory: LogEntry[] = [];
   private maxLogEntries = 1000;
-  private logHandler: (level: LogLevel, message: string, context?: any, error?: Error) => void;
+  private logHandler: (level: LogLevel, message: string, context?: unknown, error?: Error) => void;
 
   private constructor() {
     this.logHandler = this.defaultLogHandler;
@@ -36,7 +32,7 @@ export class Logger {
     this.logLevel = level;
   }
 
-  setLogHandler(handler: (level: LogLevel, message: string, context?: any, error?: Error) => void): void {
+  setLogHandler(handler: (level: LogLevel, message: string, context?: unknown, error?: Error) => void): void {
     this.logHandler = handler;
   }
 
@@ -44,46 +40,46 @@ export class Logger {
     return LOG_LEVELS.indexOf(level) >= LOG_LEVELS.indexOf(this.logLevel);
   }
 
-  private defaultLogHandler(level: LogLevel, message: string, context?: any, error?: Error): void {
+  private defaultLogHandler(level: LogLevel, message: string, context?: unknown, error?: Error): void {
     const consoleArgs = [context].filter(arg => arg !== undefined);
     if (error) consoleArgs.push(error);
 
-    const logFn = console[level] || console.log;
+    const logFn = console[level] ?? console.log;
     logFn(`[${level.toUpperCase()}] ${message}`, ...consoleArgs);
   }
 
-  private log(level: LogLevel, message: string, context?: any, error?: Error): void {
-      if (!this.shouldLog(level)) return;
+  private log(level: LogLevel, message: string, context?: unknown, error?: Error): void {
+    if (!this.shouldLog(level)) return;
 
-      const entry: LogEntry = {
-          timestamp: Date.now(),
-          level,
-          message,
-          context,
-          error
-      };
+    const entry: LogEntry = {
+      timestamp: Date.now(),
+      level,
+      message,
+      context,
+      error,
+    };
 
-      this.logHistory.push(entry);
-      if (this.logHistory.length > this.maxLogEntries) {
-          this.logHistory.shift();
-      }
+    this.logHistory.push(entry);
+    if (this.logHistory.length > this.maxLogEntries) {
+      this.logHistory.shift();
+    }
 
-      this.logHandler(level, message, context, error);
+    this.logHandler(level, message, context, error);
   }
 
-  debug(message: string, context?: any): void {
+  debug(message: string, context?: unknown): void {
     this.log('debug', message, context);
   }
 
-  info(message: string, context?: any): void {
+  info(message: string, context?: unknown): void {
     this.log('info', message, context);
   }
 
-  warn(message: string, context?: any): void {
+  warn(message: string, context?: unknown): void {
     this.log('warn', message, context);
   }
 
-  error(message: string, error?: Error, context?: any): void {
+  error(message: string, error?: Error, context?: unknown): void {
     this.log('error', message, context, error);
   }
 
@@ -103,8 +99,7 @@ export class Logger {
   }
 }
 
-// Convenience functions
-export const logDebug = (message: string, context?: any) => Logger.getInstance().debug(message, context);
-export const logInfo = (message: string, context?: any) => Logger.getInstance().info(message, context);
-export const logWarn = (message: string, context?: any) => Logger.getInstance().warn(message, context);
-export const logError = (message: string, error?: Error, context?: any) => Logger.getInstance().error(message, error, context);
+export const logDebug = (message: string, context?: unknown) => Logger.getInstance().debug(message, context);
+export const logInfo = (message: string, context?: unknown) => Logger.getInstance().info(message, context);
+export const logWarn = (message: string, context?: unknown) => Logger.getInstance().warn(message, context);
+export const logError = (message: string, error?: Error, context?: unknown) => Logger.getInstance().error(message, error, context);

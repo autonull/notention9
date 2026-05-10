@@ -1,5 +1,6 @@
-import React, {useState} from 'react';
-import {DEFAULT_ONTOLOGY, OntologyService, Property, PropertyExtractor} from '@notention/core';
+import React, {useMemo, useState} from 'react';
+import {OntologyService, Property, PropertyExtractor} from '@notention/core';
+import {useSettings} from '../../hooks/useSettingsContext';
 import {PropertyInput} from './PropertyInput';
 
 /**
@@ -12,13 +13,15 @@ interface MessageComposerProps {
     onSend: (note: { content: string; properties: Property[] }) => void;
 }
 
-const propertyExtractor = new PropertyExtractor(DEFAULT_ONTOLOGY);
-const ontologyService = new OntologyService(DEFAULT_ONTOLOGY);
-
-export const MessageComposer: React.FC<MessageComposerProps> = ({onSend}) => {
+export function MessageComposer({onSend}: MessageComposerProps) {
+    const { settings } = useSettings();
     const [recipient, setRecipient] = useState('');
     const [channel, setChannel] = useState('whatsapp');
     const [message, setMessage] = useState('');
+
+    // Create services from user's current ontology
+    const ontologyService = useMemo(() => new OntologyService(settings.ontology), [settings.ontology]);
+    const propertyExtractor = useMemo(() => new PropertyExtractor(settings.ontology), [settings.ontology]);
 
     // Get channel options from ontology
     const channelOptions = ontologyService.getEnumOptions('channel') || ['whatsapp'];
@@ -134,4 +137,4 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({onSend}) => {
             </div>
         </div>
     );
-};
+}

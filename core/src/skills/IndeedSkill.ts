@@ -20,12 +20,10 @@ export class IndeedSkill implements Skill {
 
     canHandle(note: Note): number {
         // Pattern match
-        for (const pattern of this.patterns) {
-            const hasRequired = pattern.required.every(req =>
-                note.properties.some(p => p.key === req)
-            );
-            if (hasRequired) return 0.9;
-        }
+        const matchesPattern = this.patterns.some(pattern =>
+            pattern.required.every(req => note.properties.some(p => p.key === req))
+        );
+        if (matchesPattern) return 0.9;
 
         // Keyword fallback
         const content = note.content.toLowerCase();
@@ -125,12 +123,11 @@ export class IndeedSkill implements Skill {
         }
 
         // Job Notes (limit 5)
-        for (let i = 0; i < Math.min(titles.length, 5); i++) {
-            const title = titles[i];
+        const jobNotes = titles.slice(0, 5).map((title: string, i: number) => {
             const company = companies[i] || 'Unknown';
             const location = locations[i] || 'Unknown';
 
-            notes.push({
+            return {
                 id: crypto.randomUUID(),
                 title: `${title} at ${company}`,
                 content: `<p><strong>Company:</strong> ${company}</p><p><strong>Location:</strong> ${location}</p>`,
@@ -149,17 +146,14 @@ export class IndeedSkill implements Skill {
                 },
                 privacy: 'private',
                 priority: 0.5
-            } as Note);
-        }
+            } as Note;
+        });
 
-        return notes;
+        return [...notes, ...jobNotes];
     }
 
     private extractValue(note: Note, keys: string[]): string | undefined {
-        for (const key of keys) {
-            const prop = note.properties.find(p => p.key === key);
-            if (prop && prop.values.length > 0) return prop.values[0];
-        }
-        return undefined;
+        const foundProp = note.properties.find(p => keys.includes(p.key) && p.values.length > 0);
+        return foundProp?.values[0];
     }
 }

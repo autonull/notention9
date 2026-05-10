@@ -1,7 +1,6 @@
 import {useCallback, useState} from 'react';
 import type {Note} from '@notention/core';
 import {usePublish} from './usePublish';
-import {useGardener} from './useGardener';
 import {useToast} from './useToast';
 
 interface UseEditorPublishingProps {
@@ -12,15 +11,14 @@ interface UseEditorPublishingProps {
     actionLabel: string;
 }
 
-export const useEditorPublishing = ({
+export function useEditorPublishing({
                                         dirtyNote,
                                         setDirtyNote,
                                         onSave,
                                         validationErrors,
                                         actionLabel,
-                                    }: UseEditorPublishingProps) => {
+                                    }: UseEditorPublishingProps) {
     const {publishNote, isPublishing} = usePublish();
-    const {evolveOntology} = useGardener();
     const {addToast} = useToast();
 
     const [privacyConfirmation, setPrivacyConfirmation] = useState<{
@@ -28,7 +26,7 @@ export const useEditorPublishing = ({
         resolve: (value: boolean) => void;
     } | null>(null);
 
-    const promptUser = useCallback((_message: string) => {
+    const promptUser = useCallback(() => {
         return new Promise<boolean>((resolve) => {
             setPrivacyConfirmation({
                 isOpen: true,
@@ -55,7 +53,7 @@ export const useEditorPublishing = ({
         if (!dirtyNote.content) return;
 
         if (validationErrors.length > 0) {
-            alert(`Cannot ${actionLabel}:\n- ${validationErrors.join('\n- ')}`);
+            addToast(`Cannot ${actionLabel}: ${validationErrors.join(', ')}`, 'error');
             return;
         }
 
@@ -72,9 +70,6 @@ export const useEditorPublishing = ({
         // and only show modal for Private notes.
 
         try {
-            // Evolve ontology before publishing to ensure we capture semantics
-            await evolveOntology([dirtyNote]);
-
             const eventId = await publishNote(dirtyNote, promptUser);
             const now = new Date().toISOString();
             const updatedNote = {
@@ -102,7 +97,6 @@ export const useEditorPublishing = ({
         dirtyNote,
         validationErrors,
         actionLabel,
-        evolveOntology,
         publishNote,
         promptUser,
         setDirtyNote,

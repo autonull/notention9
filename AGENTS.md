@@ -20,7 +20,7 @@
       technical reason related to 'this' binding. Use arrow functions for callbacks and utility functions only.
     - Consider modern JavaScript language syntax
 
-- Few comments: rely on self-documenting code
+- Few comments: rely on self-documenting code.  Do not remove JSDocs containing essential Type details
 
 - Purpose: professional, not explanatory/educational
 
@@ -31,7 +31,7 @@
   handle errors at appropriate abstraction level
 
 - Performance: Avoid object creation in hot paths, use Set for membership, cache expensive operations, minimize I/O,
-  prefer for...of over forEach for performance-critical code, be mindful of deep copying
+  be mindful of deep copying
 
 - Naming: Use descriptive names, consistent patterns for similar concepts, avoid abbreviations, follow project
   conventions
@@ -40,9 +40,3 @@
 
 - Code structure: Keep functions focused (single responsibility), limit function length, organize methods logically,
   prefer composition over inheritance, maintain consistent class structure
-
-- Verification Scripts:
-    - Located in `verification/` directory.
-    - Use Playwright (sync API) for UI verification.
-    - Refer to existing scripts (e.g., `verify_essential.py`, `verify_shortcuts.py`) for patterns.
-    - Ensure tests are robust and handle timing (wait_for_selector) correctly.

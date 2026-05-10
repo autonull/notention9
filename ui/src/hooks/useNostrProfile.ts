@@ -5,9 +5,9 @@ import {DEFAULT_RELAYS, Logger, pool} from '@notention/core';
 const profileCache = new Map<string, NostrProfile>();
 const requestedPubkeys = new Set<string>();
 
-export const useNostrProfile = (
+export function useNostrProfile(
     pubkeys: string[]
-): Record<string, NostrProfile> => {
+): Record<string, NostrProfile> {
     // Use a stable key for dependency tracking to avoid loops if pubkeys is a new array literal with same content
     const pubkeysKey = useMemo(() => pubkeys.slice().sort().join(','), [pubkeys]);
 

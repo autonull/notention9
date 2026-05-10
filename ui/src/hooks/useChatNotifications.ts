@@ -4,7 +4,7 @@ import {useView} from './useViewContext';
 import {DEFAULT_RELAYS, hexToBytes, Logger, pool} from '@notention/core';
 import {getPublicKey} from 'nostr-tools';
 
-export const useChatNotifications = () => {
+export function useChatNotifications() {
     const {settings} = useSettings();
     const {incrementChatNotification, activeView} = useView();
     const seenEvents = useRef(new Set<string>());

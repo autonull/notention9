@@ -1,6 +1,6 @@
 import {useCallback, useMemo} from 'react';
 import type {Note, Property} from '@notention/core';
-import {parseProperties, PropertyExtractor, replacePropertyInString} from '@notention/core';
+import {parseProperties, PropertyExtractor, replacePropertyInString, NOTE_STATUS} from '@notention/core';
 import {getTextFromHtml} from '../utils/html';
 import {useDebouncedSave} from './useDebouncedSave';
 import {useView} from './useViewContext';
@@ -17,7 +17,7 @@ interface UseEditorLogicProps {
     onSave: (note: Note) => void;
 }
 
-export const useEditorLogic = ({note, onSave}: UseEditorLogicProps) => {
+export function useEditorLogic({note, onSave}: UseEditorLogicProps) {
     const {setActiveView, setMatchingNoteId} = useView();
     const {addToast} = useToast();
     const {settings} = useSettings();
@@ -71,6 +71,35 @@ export const useEditorLogic = ({note, onSave}: UseEditorLogicProps) => {
     });
 
     const {handleSaveTemplate} = useEditorTemplates({dirtyNote});
+
+    const isActive = dirtyNote.properties.some(p => p.key === NOTE_STATUS.KEY && (p.values.includes(NOTE_STATUS.RUNNING) || p.values.includes(NOTE_STATUS.QUEUED)));
+
+    const handleToggleActive = useCallback(() => {
+        setDirtyNote((prev) => {
+            const currentlyActive = prev.properties.some(p => p.key === NOTE_STATUS.KEY && (p.values.includes(NOTE_STATUS.RUNNING) || p.values.includes(NOTE_STATUS.QUEUED)));
+            const hasStatus = prev.properties.some(p => p.key === NOTE_STATUS.KEY);
+            let newProps = [...prev.properties];
+
+            if (currentlyActive) {
+                // Remove running/queued status
+                newProps = newProps.filter(p => !(p.key === NOTE_STATUS.KEY && (p.values.includes(NOTE_STATUS.RUNNING) || p.values.includes(NOTE_STATUS.QUEUED))));
+            } else {
+                if (hasStatus) {
+                    newProps = newProps.map(p => p.key === NOTE_STATUS.KEY ? {...p, values: [NOTE_STATUS.QUEUED]} : p);
+                } else {
+                    newProps.push({key: NOTE_STATUS.KEY, operator: 'is', values: [NOTE_STATUS.QUEUED]});
+                }
+            }
+
+            const updated = {...prev, properties: newProps};
+
+            // Note: handleContentSave expects string content and parses properties.
+            // Since we modified properties directly, we need to update the note state and trigger save.
+            // Using setTimeout to defer the side-effect outside the pure render/updater phase
+            setTimeout(() => onSave(updated), 0);
+            return updated;
+        });
+    }, [setDirtyNote, onSave]);
 
     const handleTitleChange = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -181,6 +210,8 @@ export const useEditorLogic = ({note, onSave}: UseEditorLogicProps) => {
         isApiKeyAvailable,
         settings, // needed for ontology
         isPublished: !!dirtyNote.nostrEventId,
+        isActive,
+        handleToggleActive,
         actionLabel,
         validationErrors,
         missingProperties,

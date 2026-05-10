@@ -6,7 +6,7 @@ import {useSettings} from './useSettingsContext';
 import {useView} from './useViewContext';
 import {useChat} from './useChat';
 
-export const useChatView = () => {
+export function useChatView() {
     const {settings} = useSettings();
     const {selectedChatPubkey, setSelectedChatPubkey} = useView();
 

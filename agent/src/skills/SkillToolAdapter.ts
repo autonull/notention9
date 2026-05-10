@@ -1,10 +1,10 @@
 import { z } from 'zod';
 import { createTool } from '@notention/core';
 import type { Tool, Note } from '@notention/core';
-import type { Skill } from './types';
-import { executeAction } from '../core/actionExecutor';
+import type { Skill } from './types.js';
+import { executeAction } from '../core/actionExecutor.js';
 
-import type { ActionSequence } from '@notention/core/src/skills/types';
+import type { ActionSequence } from '@notention/core';
 
 interface AgentAction {
     type: 'browser';
@@ -59,44 +59,26 @@ export class SkillToolAdapter {
     }
 
     public static convertToAgentAction(actions: ActionSequence['actions']): AgentAction | null {
-        let nav: any = null;
-        let scrape: any = null;
-        let screenshot: any = null;
-        const interactions: any[] = [];
-
-        for (const action of actions) {
-            switch (action.type) {
-                case 'navigate':
-                    if (!nav) nav = action;
-                    break;
-                case 'scrape':
-                    scrape = action;
-                    break;
-                case 'screenshot':
-                    screenshot = action;
-                    break;
-                case 'wait':
-                case 'click':
-                case 'type':
-                case 'hover':
-                case 'scroll':
-                    interactions.push({
-                        type: action.type,
-                        value: action.duration || action.value || action.text,
-                        selector: action.selector,
-                    });
-                    break;
-            }
-        }
-
+        const nav = actions.find((a: any) => a.type === 'navigate');
         if (!nav) return null;
+
+        const scrape = actions.find((a: any) => a.type === 'scrape');
+        const screenshot = actions.find((a: any) => a.type === 'screenshot');
+
+        const interactions = actions
+            .filter((a: any) => ['wait', 'click', 'type', 'hover', 'scroll'].includes(a.type))
+            .map((a: any) => ({
+                type: a.type,
+                value: a.duration || a.value || a.text,
+                selector: a.selector,
+            }));
 
         return {
             type: 'browser',
-            url: nav.url!,
-            extract: scrape ? (scrape.scrapeRules as any) : undefined,
+            url: (nav as any).url!,
+            extract: scrape ? ((scrape as any).scrapeRules as any) : undefined,
             interactions,
-            screenshot: screenshot ? (screenshot.fullPage ? 'full' : true) : undefined
+            screenshot: screenshot ? ((screenshot as any).fullPage ? 'full' : true) : undefined
         };
     }
 }

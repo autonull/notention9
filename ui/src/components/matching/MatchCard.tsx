@@ -7,7 +7,7 @@ interface MatchCardProps {
     onClick: () => void;
 }
 
-export const MatchCard: React.FC<MatchCardProps> = ({note, match, onClick}) => {
+export function MatchCard({note, match, onClick}: MatchCardProps) {
     return (
         <div
             className="p-3 bg-gray-800 border border-gray-700 rounded-lg hover:border-gray-500 transition-colors cursor-pointer group"
@@ -60,4 +60,4 @@ export const MatchCard: React.FC<MatchCardProps> = ({note, match, onClick}) => {
             </div>
         </div>
     );
-};
+}

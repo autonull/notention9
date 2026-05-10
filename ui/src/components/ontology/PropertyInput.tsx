@@ -1,5 +1,6 @@
 import React, {useMemo} from 'react';
-import {DEFAULT_ONTOLOGY, OntologyService} from '@notention/core';
+import {OntologyService} from '@notention/core';
+import {useSettings} from '../../hooks/useSettingsContext';
 
 /**
  * PropertyInput - Ontology-driven property input widget
@@ -16,19 +17,22 @@ interface PropertyInputProps {
     onOperatorChange?: (operator: string) => void;
 }
 
-const ontologyService = new OntologyService(DEFAULT_ONTOLOGY);
-
-export const PropertyInput: React.FC<PropertyInputProps> = ({
+export function PropertyInput({
                                                                 attributeKey,
                                                                 value,
                                                                 operator = 'is',
                                                                 onChange,
                                                                 onOperatorChange
-                                                            }) => {
+                                                            }: PropertyInputProps) {
+    const { settings } = useSettings();
+
+    // Create ontologyService from user's current ontology
+    const ontologyService = useMemo(() => new OntologyService(settings.ontology), [settings.ontology]);
+
     // Query ontology for widget metadata
     const metadata = useMemo(() => {
         return ontologyService.getWidgetMetadata(attributeKey);
-    }, [attributeKey]);
+    }, [attributeKey, ontologyService]);
 
     if (!metadata) {
         // Fallback to text input if attribute not found
@@ -160,4 +164,4 @@ export const PropertyInput: React.FC<PropertyInputProps> = ({
             </div>
         </div>
     );
-};
+}

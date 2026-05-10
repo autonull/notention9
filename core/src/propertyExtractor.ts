@@ -6,97 +6,81 @@ import { parseQuantity } from './quantities.js';
 import { Logger } from './utils/logging.js';
 import { getCanonicalKey } from './ontologyHelpers.js';
 
-// Top-level Regex Constants
 const PATTERNS = {
-    SEND_TO: /(?:send|message)\s+(?:to|)\s+([+\w@#-]+)/i,
-    CHANNEL: /(?:via|using|on|through)\s+(\w+)/i,
-    PHONE: /(\+?\d{10,15})/,
-    EMAIL: /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/,
-    BUDGET: /(?:\$|USD\s*)(\d+(?:,\d{3})*(?:\.\d+)?)|(\d+(?:,\d{3})*(?:\.\d+)?)\s*(?:USD|dollars?)/i
-};
+  SEND_TO: /(?:send|message)\s+(?:to|)\s+([+\w@#-]+)/i,
+  CHANNEL: /(?:via|using|on|through)\s+(\w+)/i,
+  PHONE: /(\+?\d{10,15})/,
+  EMAIL: /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/,
+  BUDGET: /(?:\$|USD\s*)(\d+(?:,\d{3})*(?:\.\d+)?)|(\d+(?:,\d{3})*(?:\.\d+)?)\s*(?:USD|dollars?)/i,
+} as const;
 
 const TYPE_CHECKERS = {
-    NUMBER: /^-?\d+(\.\d+)?$/,
-    DATE: /^\d{4}-\d{2}-\d{2}/,
-    DATETIME: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/,
-    GEO: /^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/
-};
+  NUMBER: /^-?\d+(\.\d+)?$/,
+  DATE: /^\d{4}-\d{2}-\d{2}/,
+  DATETIME: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/,
+  GEO: /^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/,
+} as const;
 
 const INTENTS = [
-    { key: 'reminder', regex: /remind.*me.*(to|about|that).*|set.*reminder/i },
-    { key: 'schedule', regex: /schedule|book|plan|arrange.*for|appointment.*with/i },
-    { key: 'communication', regex: /email|send.*message|text|call|contact.*about/i },
-    { key: 'task', regex: /todo|to-do|task|do.*later|need.*to|want.*to/i },
-    { key: 'shopping', regex: /buy|purchase|order|get.*from|shop.*for/i },
-    { key: 'health', regex: /medication|take.*pill|doctor.*appointment|exercise|workout/i }
-];
+  { key: 'reminder', regex: /remind.*me.*(to|about|that).*|set.*reminder/i },
+  { key: 'schedule', regex: /schedule|book|plan|arrange.*for|appointment.*with/i },
+  { key: 'communication', regex: /email|send.*message|text|call|contact.*about/i },
+  { key: 'task', regex: /todo|to-do|task|do.*later|need.*to|want.*to/i },
+  { key: 'shopping', regex: /buy|purchase|order|get.*from|shop.*for/i },
+  { key: 'health', regex: /medication|take.*pill|doctor.*appointment|exercise|workout/i },
+] as const;
 
 const LOCATION_KEYWORDS = ['near', 'in', 'at'];
 const LOCATION_PATTERNS = LOCATION_KEYWORDS.map(k => ({
-    regex: new RegExp(`${k}\\s+([A-Z][a-z]+(?:\\s+[A-Z][a-z]+)*)`, 'gi'),
-    prefix: new RegExp(`^${k}\\s+`, 'i')
+  regex: new RegExp(`${k}\\s+([A-Z][a-z]+(?:\\s+[A-Z][a-z]+)*)`, 'gi'),
+  prefix: new RegExp(`^${k}\\s+`, 'i'),
 }));
 
 const DATE_PATTERNS = [
-    { regex: /tomorrow/i, offset: 1 },
-    { regex: /today/i, offset: 0 },
-    { regex: /yesterday/i, offset: -1 }
-];
+  { regex: /tomorrow/i, offset: 1 },
+  { regex: /today/i, offset: 0 },
+  { regex: /yesterday/i, offset: -1 },
+] as const;
 
 const STOP_WORDS = new Set(['with', 'the', 'and', 'for', 'from', 'near', 'about', 'that', 'this']);
 
 type ExtractionStrategy = (text: string, properties: Property[]) => void;
 
 export class PropertyExtractor {
-    private ontologyService: OntologyService;
-    private logger: Logger;
-    private strategies: ExtractionStrategy[];
+  private readonly ontologyService: OntologyService;
+  private readonly logger = Logger.getInstance();
+  private readonly strategies: ExtractionStrategy[];
 
-    constructor(ontology = DEFAULT_ONTOLOGY) {
-        this.ontologyService = new OntologyService(ontology);
-        this.logger = Logger.getInstance();
+  constructor(ontology = DEFAULT_ONTOLOGY) {
+    this.ontologyService = new OntologyService(ontology);
+    this.strategies = [
+      this.applyIntentStrategy.bind(this),
+      this.applySendToStrategy.bind(this),
+      this.applyChannelStrategy.bind(this),
+      this.applyPhoneStrategy.bind(this),
+      this.applyEmailStrategy.bind(this),
+      this.applyLocationStrategy.bind(this),
+      this.applyDateStrategy.bind(this),
+      this.applyBudgetStrategy.bind(this),
+      this.applyFuzzyMatchingStrategy.bind(this),
+    ];
+  }
 
-        this.strategies = [
-            this.applyIntentStrategy.bind(this),
-            this.applySendToStrategy.bind(this),
-            this.applyChannelStrategy.bind(this),
-            this.applyPhoneStrategy.bind(this),
-            this.applyEmailStrategy.bind(this),
-            this.applyLocationStrategy.bind(this),
-            this.applyDateStrategy.bind(this),
-            this.applyBudgetStrategy.bind(this),
-            this.applyFuzzyMatchingStrategy.bind(this)
-        ];
+  extractFromText(text: string): Property[] {
+    const properties: Property[] = [];
+    for (const strategy of this.strategies) {
+      strategy(text, properties);
     }
+    return this.normalizeProperties(properties);
+  }
 
-    extractFromText(text: string): Property[] {
-        const properties: Property[] = [];
-        for (const strategy of this.strategies) {
-            strategy(text, properties);
-        }
-
-        // Normalize properties to canonical keys
-        return this.normalizeProperties(properties);
-    }
-
-    /**
-     * Normalizes property keys to their canonical forms based on the ontology.
-     */
-    private normalizeProperties(properties: Property[]): Property[] {
-        const ontologyNodes = this.ontologyService.getAllNodes();
-
-        return properties.map(prop => {
-            const canonicalKey = getCanonicalKey(prop.key, ontologyNodes);
-            if (canonicalKey !== prop.key) {
-                // If mapping changed, we return a new property with canonical key
-                return {
-                    ...prop,
-                    key: canonicalKey
-                };
-            }
-            return prop;
-        });
-    }
+  private normalizeProperties(properties: Property[]): Property[] {
+    const ontologyNodes = this.ontologyService.getAllNodes();
+    return properties.map(prop => {
+      const canonicalKey = getCanonicalKey(prop.key, ontologyNodes);
+      return canonicalKey !== prop.key ? { ...prop, key: canonicalKey } : prop;
+    });
+  }
 
     private applyIntentStrategy(text: string, properties: Property[]): void {
         for (const intent of INTENTS) {
@@ -138,53 +122,51 @@ export class PropertyExtractor {
         }
     }
 
-    private applyLocationStrategy(text: string, properties: Property[]): void {
-        for (const { regex, prefix } of LOCATION_PATTERNS) {
-            const matches = text.match(regex);
-            if (matches) {
-                const location = matches[0].replace(prefix, '').trim();
-                properties.push({ key: 'location', operator: 'is near', values: [location] });
-                break;
-            }
-        }
+  private applyLocationStrategy(text: string, properties: Property[]): void {
+    for (const { regex, prefix } of LOCATION_PATTERNS) {
+      const matches = text.match(regex);
+      if (matches) {
+        const location = matches[0].replace(prefix, '').trim();
+        properties.push({ key: 'location', operator: 'is near', values: [location] });
+        return;
+      }
     }
+  }
 
-    private applyDateStrategy(text: string, properties: Property[]): void {
-        const pattern = DATE_PATTERNS.find(p => p.regex.test(text));
-        if (pattern) {
-            const date = new Date();
-            date.setDate(date.getDate() + pattern.offset);
-            properties.push({ key: 'date', operator: 'is', values: [date.toISOString().split('T')[0]] });
-        }
+  private applyDateStrategy(text: string, properties: Property[]): void {
+    const pattern = DATE_PATTERNS.find(p => p.regex.test(text));
+    if (!pattern) return;
+    const date = new Date();
+    date.setDate(date.getDate() + pattern.offset);
+    properties.push({ key: 'date', operator: 'is', values: [date.toISOString().split('T')[0]] });
+  }
+
+  private applyBudgetStrategy(text: string, properties: Property[]): void {
+    const match = text.match(PATTERNS.BUDGET);
+    if (!match) return;
+    const amount = match[1] || match[2];
+    properties.push({ key: 'budget', operator: 'is', values: [amount.replace(/,/g, '')] });
+  }
+
+  private applyFuzzyMatchingStrategy(text: string, properties: Property[]): void {
+    const words = text.split(/\s+/);
+    const existingKeys = new Set(properties.map(p => p.key));
+    const slice = words.slice(0, -1);
+
+    for (let i = 0; i < slice.length; i++) {
+      const word = slice[i];
+      if (word.length <= 3) continue;
+
+      const [match] = this.ontologyService.getFuzzyMatches(word, 1);
+      if (!match || existingKeys.has(match)) continue;
+
+      const nextWord = words[i + 1];
+      if (nextWord.length > 2 && !STOP_WORDS.has(nextWord.toLowerCase())) {
+        properties.push({ key: match, operator: 'contains', values: [nextWord] });
+        existingKeys.add(match);
+      }
     }
-
-    private applyBudgetStrategy(text: string, properties: Property[]): void {
-        const match = text.match(PATTERNS.BUDGET);
-        if (match) {
-            const amount = match[1] || match[2];
-            const normalizedAmount = amount.replace(/,/g, '');
-            properties.push({ key: 'budget', operator: 'is', values: [normalizedAmount] });
-        }
-    }
-
-    private applyFuzzyMatchingStrategy(text: string, properties: Property[]): void {
-        const words = text.split(/\s+/);
-        const existingKeys = new Set(properties.map(p => p.key));
-
-        for (let i = 0; i < words.length - 1; i++) {
-            const word = words[i];
-            if (word.length <= 3) continue;
-
-            const [match] = this.ontologyService.getFuzzyMatches(word, 1);
-            if (!match || existingKeys.has(match)) continue;
-
-            const nextWord = words[i + 1];
-            if (nextWord.length > 2 && !STOP_WORDS.has(nextWord.toLowerCase())) {
-                properties.push({ key: match, operator: 'contains', values: [nextWord] });
-                existingKeys.add(match);
-            }
-        }
-    }
+  }
 
     inferType(value: string): PropertyType {
         if (parseQuantity(value)) return 'quantity';
@@ -195,27 +177,26 @@ export class PropertyExtractor {
         return 'string';
     }
 
-    validateProperty(property: Property): { valid: boolean; errors: string[] } {
-        const { key, operator, values } = property;
-        if (!this.ontologyService.hasAttribute(key)) {
-            return { valid: false, errors: [`Attribute '${key}' not found in ontology`] };
-        }
-
-        const errors: string[] = [];
-        if (!this.ontologyService.getValidOperators(key).includes(operator)) {
-            errors.push(`Operator '${operator}' not valid for '${key}'`);
-        }
-
-        const enumOptions = this.ontologyService.getEnumOptions(key);
-        if (enumOptions) {
-            const invalidValues = values.filter(v => !enumOptions.includes(v));
-            if (invalidValues.length > 0) {
-                 invalidValues.forEach(v => errors.push(`Value '${v}' not in enum options for '${key}'`));
-            }
-        }
-
-        return { valid: errors.length === 0, errors };
+  validateProperty(property: Property): { valid: boolean; errors: string[] } {
+    const { key, operator, values } = property;
+    if (!this.ontologyService.hasAttribute(key)) {
+      return { valid: false, errors: [`Attribute '${key}' not found in ontology`] };
     }
+
+    const errors: string[] = [];
+    if (!this.ontologyService.getValidOperators(key).includes(operator)) {
+      errors.push(`Operator '${operator}' not valid for '${key}'`);
+    }
+
+    const enumOptions = this.ontologyService.getEnumOptions(key);
+    if (enumOptions) {
+      for (const v of values.filter(v => !enumOptions.includes(v))) {
+        errors.push(`Value '${v}' not in enum options for '${key}'`);
+      }
+    }
+
+    return { valid: errors.length === 0, errors };
+  }
 
     validatePropertyOrThrow(property: Property): void {
         const { valid, errors } = this.validateProperty(property);
@@ -223,18 +204,17 @@ export class PropertyExtractor {
         if (property.quantity) this.validateQuantity(property.quantity, property.key);
     }
 
-    private validateQuantity(quantity: Quantity, propertyKey: string): void {
-        const isRate = propertyKey.includes('Rate');
-        const isPrice = propertyKey.includes('price') || propertyKey.includes('budget');
+  private validateQuantity(quantity: Quantity, propertyKey: string): void {
+    const isRate = propertyKey.includes('Rate');
+    const isPrice = propertyKey.includes('price') || propertyKey.includes('budget');
 
-        if (isPrice) {
-            if (quantity.unitType === 'compound' && !isRate) {
-                this.logger.warn(`Property ${propertyKey} appears to be a simple price but has a compound unit: ${quantity.unit}`);
-            } else if (quantity.unitType === 'simple' && isRate) {
-                this.logger.warn(`Property ${propertyKey} appears to be a rate but has a simple unit: ${quantity.unit}`);
-            }
-        }
+    if (isPrice && quantity.unitType === 'compound' && !isRate) {
+      this.logger.warn(`Property ${propertyKey} appears to be a simple price but has a compound unit: ${quantity.unit}`);
     }
+    if (isRate && quantity.unitType === 'simple') {
+      this.logger.warn(`Property ${propertyKey} appears to be a rate but has a simple unit: ${quantity.unit}`);
+    }
+  }
 
     expandContext(properties: Property[]): Property[] {
         const expanded = [...properties];

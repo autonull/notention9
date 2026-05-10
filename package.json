@@ -21,6 +21,9 @@
     "cli": "npm start -w @notention/cli --"
   },
   "dependencies": {
+    "@meshtastic/core": "^2.6.7",
+    "@meshtastic/transport-node-serial": "^0.0.2",
+    "@meshtastic/transport-web-serial": "^0.2.5",
     "date-fns": "^4.1.0",
     "uuid": "^9.0.1",
     "ws": "^8.19.0",
@@ -32,6 +35,8 @@
     "define-data-property": "^1.1.4",
     "estraverse": "^5.3.0",
     "has-property-descriptors": "^1.0.2",
-    "node-llama-cpp": "^3.15.1"
+    "node-llama-cpp": "^3.15.1",
+    "ts-morph": "^27.0.2",
+    "ts-node": "^10.9.2"
   }
 }

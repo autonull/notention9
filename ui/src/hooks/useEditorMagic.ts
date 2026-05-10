@@ -1,6 +1,6 @@
 import {useCallback} from 'react';
 import type {OntologyNode} from '@notention/core';
-import {parseNaturalDate, parseProperties, replacePropertyInString} from '@notention/core';
+import {parseNaturalDate, parseProperties, replacePropertyInString, DATE_PROPERTY_KEYS} from '@notention/core';
 import {useGardener} from './useGardener';
 import {useAutoTagging} from './useAutoTagging';
 import {useToast} from './useToast';
@@ -36,10 +36,10 @@ export function useEditorMagic({noteId, content, tags, onTagsChange, onContentSa
         let newContent = content;
         let convertedCount = 0;
 
-        existingProps.forEach(prop => {
-            if (['date', 'deadline', 'start', 'end'].some(k => prop.key.includes(k))) {
+        for (const prop of existingProps) {
+            if (DATE_PROPERTY_KEYS.some(k => prop.key.includes(k))) {
                 const val = prop.values[0];
-                if (!val) return;
+                if (!val) continue;
 
                 const parsed = parseNaturalDate(val);
                 if (parsed && parsed !== val) {
@@ -48,7 +48,7 @@ export function useEditorMagic({noteId, content, tags, onTagsChange, onContentSa
                     convertedCount++;
                 }
             }
-        });
+        }
 
         if (convertedCount > 0) {
             onContentSave(newContent);

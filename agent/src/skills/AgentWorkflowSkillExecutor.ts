@@ -1,6 +1,6 @@
 import { Agent, Note, SkillExecutionError, Logger } from '@notention/core';
-import { AgentSkillRegistry } from './AgentSkillRegistry';
-import { Skill } from './types';
+import { AgentSkillRegistry } from './AgentSkillRegistry.js';
+import { Skill } from './types.js';
 
 export class AgentWorkflowSkillExecutor {
     private onEvent?: (event: any) => void;
@@ -32,17 +32,16 @@ export class AgentWorkflowSkillExecutor {
 
         this.emit('skill_execution_started', {
             noteId: note.id,
-            skills: matches.map(m => m.skill.name)
+            skills: matches.map((m: any) => m.skill.name)
         });
 
-        const results: Note[] = [];
-
-        for (const { skill, confidence } of matches) {
-            if (confidence < 0.5) continue;
-
-            const resultNotes = await this.executeSingleSkill(skill, note);
-            results.push(...resultNotes);
-        }
+        const results = (
+            await Promise.all(
+                matches
+                    .filter((m: any) => m.confidence >= 0.5)
+                    .map((m: any) => this.executeSingleSkill(m.skill, note))
+            )
+        ).flat();
 
         this.emit('skill_execution_finished', {
             noteId: note.id,
@@ -78,15 +77,7 @@ export class AgentWorkflowSkillExecutor {
             });
 
             if (!(error instanceof SkillExecutionError)) {
-                // Log and swallow error to allow other skills to proceed,
-                // unless it is a critical SkillExecutionError
-                // But per original logic, it seemed to throw?
-                // Wait, original logic re-threw if NOT SkillExecutionError.
-                // Let's keep it consistent but safer.
-                // Actually, throwing here stops the reduce loop.
-                // We should probably catch it to let other skills run.
-                // But AGENTS.md says "handle errors at appropriate abstraction level".
-                // If one skill fails, others should probably still try.
+                this.logger.warn(`Non-critical error in skill ${skill.name}, continuing execution`);
             }
             return [];
         }

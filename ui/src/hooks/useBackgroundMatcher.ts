@@ -3,10 +3,12 @@ import {useSettings} from './useSettingsContext';
 import {useNotes} from './useNotes';
 import {useView} from './useViewContext';
 import {useToast} from './useToast';
-import {convertEventToNote, DEFAULT_RELAYS, matchingService, pool} from '@notention/core';
+import {useMatching} from '../components/contexts/MatchingContext';
+import {convertEventToNote, DEFAULT_RELAYS, pool} from '@notention/core';
 
-export const useBackgroundMatcher = () => {
+export function useBackgroundMatcher() {
     const {settings} = useSettings();
+    const {matchingService} = useMatching();
     const {notes} = useNotes(); // Local notes
     const {addMatch} = useView();
     const {addToast} = useToast();
@@ -60,5 +62,5 @@ export const useBackgroundMatcher = () => {
         return () => {
             sub.close();
         };
-    }, [notes, settings.nostr.relays, addMatch, addToast]);
+    }, [notes, settings.nostr.relays, addMatch, addToast, matchingService]);
 };

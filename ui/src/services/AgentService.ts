@@ -100,6 +100,24 @@ class AgentService extends RobustWebSocket {
         this.send({type: 'delete_note', payload: {id}});
     }
 
+    async meshSendNote(note: Note): Promise<void> {
+        if (!this._enabled) return;
+        this.send({type: 'mesh_send_note', payload: note});
+    }
+
+    async meshUpdateConfig(config: any): Promise<void> {
+        if (!this._enabled) return;
+        return this.request('mesh_config', config);
+    }
+
+    async meshConnect(port: string): Promise<void> {
+        return this.request('mesh_connect', {port});
+    }
+
+    async getMeshStatus(): Promise<any> {
+        return this.request('mesh_status');
+    }
+
     isEnabled(): boolean {
         return this._enabled;
     }

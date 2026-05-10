@@ -7,7 +7,7 @@ interface UseEditorTemplatesProps {
     dirtyNote: Note;
 }
 
-export const useEditorTemplates = ({dirtyNote}: UseEditorTemplatesProps) => {
+export function useEditorTemplates({dirtyNote}: UseEditorTemplatesProps) {
     const {setSettings} = useSettings();
     const {addToast} = useToast();
 

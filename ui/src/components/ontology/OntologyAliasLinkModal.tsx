@@ -21,13 +21,13 @@ interface SelectableAttribute {
     score?: number; // Similarity score (0-1)
 }
 
-export const OntologyAliasLinkModal: React.FC<OntologyAliasLinkModalProps> = ({
+export function OntologyAliasLinkModal({
     isOpen,
     onClose,
     onConfirm,
     aliasCandidate,
     ontology
-}) => {
+}: OntologyAliasLinkModalProps) {
     const [selectedAttribute, setSelectedAttribute] = useState<string>(''); // format: "nodeId:key"
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -186,4 +186,4 @@ export const OntologyAliasLinkModal: React.FC<OntologyAliasLinkModalProps> = ({
             </div>
         </Modal>
     );
-};
+}

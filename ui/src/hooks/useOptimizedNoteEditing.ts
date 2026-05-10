@@ -4,7 +4,7 @@ import {Note, PrivacyLevel} from '@notention/core';
 /**
  * Optimized hook for managing note editing state with performance considerations
  */
-export const useOptimizedNoteEditing = (initialNote?: Note | null) => {
+export function useOptimizedNoteEditing(initialNote?: Note | null) {
     const [currentNote, setCurrentNote] = useState<Note | null>(initialNote || null);
     const [isSaving, setIsSaving] = useState(false);
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);

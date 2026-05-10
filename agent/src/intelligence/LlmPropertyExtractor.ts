@@ -13,7 +13,7 @@ const extractionSchema = z.object({
 });
 
 export class LlmPropertyExtractor {
-    private model = openai('gpt-4o');
+    private model = openai('gpt-4o') as any;
 
     async extract(text: string): Promise<Property[]> {
         try {

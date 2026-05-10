@@ -13,8 +13,12 @@
   },
   "dependencies": {
     "@google/genai": "^1.12.0",
+    "@meshtastic/core": "^2.6.7",
+    "@meshtastic/transport-web-serial": "^0.2.5",
     "@mlc-ai/web-llm": "^0.2.80",
-    "@notention/core": "*",
+    "@noble/hashes": "^2.2.0",
+    "@notention/core": "workspace:*",
+    "@tiptap/core": "^3.23.1",
     "@tiptap/extension-bubble-menu": "^3.15.3",
     "@tiptap/extension-mention": "^3.15.3",
     "@tiptap/react": "^3.4.2",
@@ -25,11 +29,14 @@
     "leaflet": "1.9.4",
     "localforage": "^1.10.0",
     "nostr-tools": "^2.16.1",
+    "os-browserify": "^0.3.0",
+    "path-browserify": "^1.0.1",
     "react": "^18.3.1",
     "react-big-calendar": "^1.19.4",
     "react-dom": "^18.3.1",
     "react-force-graph-2d": "^1.29.1",
     "tippy.js": "^6.3.7",
+    "util": "^0.12.5",
     "xmlchars": "^2.2.0"
   },
   "devDependencies": {

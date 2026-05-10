@@ -9,7 +9,7 @@ interface PrivacyControlProps {
     onUpdate: (note: Note) => void;
 }
 
-export const PrivacyControl: React.FC<PrivacyControlProps> = ({note, onUpdate}) => {
+export function PrivacyControl({note, onUpdate}: PrivacyControlProps) {
     const {settings} = useSettings();
     const [pendingPrivacy, setPendingPrivacy] = useState<PrivacyLevel | null>(null);
     const [isPublishing, setIsPublishing] = useState(false);
@@ -138,4 +138,4 @@ export const PrivacyControl: React.FC<PrivacyControlProps> = ({note, onUpdate}) 
             )}
         </div>
     );
-};
+}

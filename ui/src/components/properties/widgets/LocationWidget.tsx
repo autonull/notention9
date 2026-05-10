@@ -6,7 +6,7 @@ interface WidgetProps {
     onKeyDown?: (e: React.KeyboardEvent) => void;
 }
 
-export const LocationWidget: React.FC<WidgetProps> = ({value, onChange, onKeyDown}) => {
+export function LocationWidget({value, onChange, onKeyDown}: WidgetProps) {
     const [suggestions, setSuggestions] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -56,4 +56,4 @@ export const LocationWidget: React.FC<WidgetProps> = ({value, onChange, onKeyDow
             )}
         </div>
     );
-};
+}

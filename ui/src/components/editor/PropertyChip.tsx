@@ -7,7 +7,7 @@ import {useOntologyIndex} from '../../hooks/useOntologyIndex';
 import {validatePropertyAgainstOntology} from '../../utils/propertyValidation';
 import {getCanonicalKey} from '@notention/core';
 
-export const PropertyChip = (props: NodeViewProps) => {
+export function PropertyChip(props: NodeViewProps) {
     const {node} = props;
     const {name, operator, value, icon} = node.attrs;
 
@@ -57,4 +57,4 @@ export const PropertyChip = (props: NodeViewProps) => {
             {!validation.isValid && <ExclamationTriangleIcon className="w-3.5 h-3.5 text-red-400 ml-1"/>}
         </NodeViewWrapper>
     );
-};
+}

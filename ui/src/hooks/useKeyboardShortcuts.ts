@@ -13,7 +13,7 @@ interface UseKeyboardShortcutsProps {
     onEscape?: () => void;
 }
 
-export const useKeyboardShortcuts = ({
+export function useKeyboardShortcuts({
                                          onNewNote,
                                          onSearch,
                                          onCommandPalette,
@@ -24,7 +24,7 @@ export const useKeyboardShortcuts = ({
                                          onBackToList,
                                          onToggleSidebar,
                                          onEscape
-                                     }: UseKeyboardShortcutsProps) => {
+                                     }: UseKeyboardShortcutsProps) {
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             const isMeta = e.metaKey || e.ctrlKey;

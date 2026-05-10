@@ -6,11 +6,12 @@ import {Gardener} from '../services/gardener';
 import {LocalAIProvider} from '../services/ai/LocalProvider';
 import {RemoteAIProvider} from '../services/ai/RemoteProvider';
 import {WebLLMProvider} from '../services/ai/WebLLMProvider';
+import {EMERGENT_NODE_ID, EMERGENT_NODE_LABEL} from '@notention/core';
 import type {Note, OntologyAttribute, OntologyNode, Property} from '@notention/core';
 
 // Helper to merge attributes into a target node (or "Emergent" if not found/specified)
 const mergeAttributesToNode = (ontology: OntologyNode[], newAttributes: Record<string, OntologyAttribute>, targetNodeId?: string): OntologyNode[] => {
-    const updatedOntology = JSON.parse(JSON.stringify(ontology)); // Deep clone for safety
+    const updatedOntology = structuredClone(ontology);
 
     const findAndMerge = (nodes: OntologyNode[]): boolean => {
         for (const node of nodes) {
@@ -29,11 +30,11 @@ const mergeAttributesToNode = (ontology: OntologyNode[], newAttributes: Record<s
     }
 
     // Fallback to "Emergent"
-    let emergentNode = updatedOntology.find((n: OntologyNode) => n.id === 'emergent');
+    let emergentNode = updatedOntology.find((n: OntologyNode) => n.id === EMERGENT_NODE_ID);
     if (!emergentNode) {
         emergentNode = {
-            id: 'emergent',
-            label: 'Emergent',
+            id: EMERGENT_NODE_ID,
+            label: EMERGENT_NODE_LABEL,
             description: 'Automatically inferred properties',
             attributes: {},
             children: []
@@ -45,7 +46,7 @@ const mergeAttributesToNode = (ontology: OntologyNode[], newAttributes: Record<s
     return updatedOntology;
 };
 
-export const useGardener = () => {
+export function useGardener() {
     const {settings, setSettings} = useSettings();
     const {addToast} = useToast();
 
@@ -88,7 +89,7 @@ export const useGardener = () => {
             const currentOntology = [...prev.ontology];
             const newAttrsMap: Record<string, OntologyAttribute> = {};
 
-            newAttributes.forEach(attr => {
+            for (const attr of newAttributes) {
                 newAttrsMap[attr.key] = {
                     type: attr.type,
                     description: attr.description,
@@ -99,7 +100,7 @@ export const useGardener = () => {
                             : ['contains']
                     }
                 };
-            });
+            }
 
             return {
                 ...prev,
@@ -122,7 +123,7 @@ export const useGardener = () => {
             const newAttrsMap: Record<string, OntologyAttribute> = {};
             let hasChanges = false;
 
-            properties.forEach(prop => {
+            for (const prop of properties) {
                 // Check if property key exists anywhere in the ontology
                 const keyExists = currentOntology.some(node =>
                     node.attributes && Object.keys(node.attributes).includes(prop.key)
@@ -149,7 +150,7 @@ export const useGardener = () => {
                     hasChanges = true;
                     addToast(`New concept discovered: ${prop.key}`, 'info');
                 }
-            });
+            }
 
             if (!hasChanges) return prev;
 

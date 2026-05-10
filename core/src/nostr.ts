@@ -4,10 +4,10 @@ import { NetworkGate, PrivacyError } from './networkGate.js';
 import { getPrivacyTags } from './nostr/privacy.js';
 import { hexToBytes } from './utils/encoding.js';
 import { Logger } from './utils/logging.js';
-import { DEFAULT_RELAYS } from './config/nostr.js';
+import { DEFAULT_RELAYS, resolveRelays } from './config/nostr.js';
 import { queryEventsWithTimeout } from './utils/nostrQuery.js';
 
-export { DEFAULT_RELAYS };
+export { DEFAULT_RELAYS, resolveRelays };
 export const KIND_TEXT_NOTE = 1;
 export const KIND_SEMANTIC_NOTE = 35000;
 
@@ -78,12 +78,57 @@ export const convertEventToNote = (event: NostrEvent): Note => {
 
 const networkGate = new NetworkGate();
 
+export interface NostrSigner {
+    signEvent(event: { kind: number; tags: string[][]; content: string; created_at: number }): Promise<NostrEvent>;
+}
+
+export class BrowserSigner implements NostrSigner {
+    async signEvent(event: { kind: number; tags: string[][]; content: string; created_at: number }): Promise<NostrEvent> {
+        const hasWindow = typeof window !== 'undefined';
+        const nostrWindow = hasWindow ? (window as unknown as NIP07Window) : undefined;
+
+        if (!nostrWindow?.nostr?.signEvent) {
+            throw new Error('NIP-07 extension not available');
+        }
+        return await nostrWindow.nostr.signEvent(event);
+    }
+}
+
+export class NodeSigner implements NostrSigner {
+    constructor(private privkeyHex: string) {
+        if (!privkeyHex) {
+            throw new Error('Private key must be provided for NodeSigner');
+        }
+    }
+
+    async signEvent(event: { kind: number; tags: string[][]; content: string; created_at: number }): Promise<NostrEvent> {
+        const sk = hexToBytes(this.privkeyHex);
+        return finalizeEvent(event, sk);
+    }
+}
+
+export class DefaultSignerFactory {
+    static getSigner(privkeyHex?: string): NostrSigner {
+        const hasWindow = typeof window !== 'undefined';
+        const nostrWindow = hasWindow ? (window as unknown as NIP07Window) : undefined;
+
+        if (nostrWindow?.nostr?.signEvent) {
+            return new BrowserSigner();
+        }
+        if (privkeyHex) {
+            return new NodeSigner(privkeyHex);
+        }
+        throw new Error('No private key provided and NIP-07 extension not available');
+    }
+}
+
 export async function publishNoteToNostr(
   note: Note,
   privkeyHex: string | undefined,
   relays: string[] = DEFAULT_RELAYS,
   promptUserCallback?: (msg: string) => Promise<boolean>,
-  privacyMode: PrivacyLevel = 'public'
+  privacyMode: PrivacyLevel = 'public',
+  signer?: NostrSigner
 ): Promise<void> {
   const canPublish = await networkGate.canTransmit(
     note,
@@ -95,7 +140,8 @@ export async function publishNoteToNostr(
     throw new PrivacyError('Publication cancelled - note is private');
   }
 
-  const signedEvent = await prepareAndSignEvent(note, privkeyHex, privacyMode);
+  const activeSigner = signer ?? DefaultSignerFactory.getSigner(privkeyHex);
+  const signedEvent = await prepareAndSignEvent(note, activeSigner, privacyMode);
 
   // Publish
   const pubs = pool.publish(relays, signedEvent);
@@ -113,24 +159,11 @@ export async function publishNoteToNostr(
 
 async function prepareAndSignEvent(
     note: Note,
-    privkeyHex: string | undefined,
+    signer: NostrSigner,
     privacyMode: PrivacyLevel
 ): Promise<NostrEvent> {
-    const { tags, kind, created_at, content } = await prepareEventPayload(note, privacyMode);
-
-    // Check for window.nostr (NIP-07)
-    const hasWindow = typeof window !== 'undefined';
-    const nostrWindow = hasWindow ? (window as unknown as NIP07Window) : undefined;
-
-    if (nostrWindow?.nostr?.signEvent) {
-        return await nostrWindow.nostr.signEvent({ kind, created_at, tags, content });
-    } else {
-        if (!privkeyHex) {
-            throw new Error('No private key provided and NIP-07 extension not available');
-        }
-        const sk = hexToBytes(privkeyHex);
-        return finalizeEvent({ kind, created_at, tags, content }, sk);
-    }
+    const payload = await prepareEventPayload(note, privacyMode);
+    return signer.signEvent(payload);
 }
 
 async function prepareEventPayload(note: Note, privacyMode: PrivacyLevel) {

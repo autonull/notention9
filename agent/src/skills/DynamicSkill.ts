@@ -1,5 +1,4 @@
-import { Note, PropertyPattern, ActionSequence, generateId } from '@notention/core';
-import { Skill } from '@notention/core/src/skills/types';
+import { Note, PropertyPattern, ActionSequence, generateId, Skill } from '@notention/core';
 
 export interface DynamicSkillDefinition {
     id: string;
@@ -15,6 +14,31 @@ export interface DynamicSkillDefinition {
     };
 }
 
+export type TriggerEvaluator = (note: Note, triggerDef: DynamicSkillDefinition['trigger']) => number;
+
+const evaluateTags: TriggerEvaluator = (note, trigger) => {
+    if (!trigger.tags) return 0;
+    for (const tag of trigger.tags) {
+        if (note.tags.includes(tag)) {
+            return 0.5;
+        }
+    }
+    return 0;
+};
+
+const evaluateProperties: TriggerEvaluator = (note, trigger) => {
+    if (!trigger.properties) return 0;
+    for (const p of trigger.properties) {
+        const hasMatch = note.properties.some(np =>
+            np.key === p.key && (!p.value || np.values.includes(p.value))
+        );
+        if (hasMatch) {
+            return 0.5;
+        }
+    }
+    return 0;
+};
+
 export class DynamicSkill implements Skill {
     id: string;
     name: string;
@@ -23,6 +47,9 @@ export class DynamicSkill implements Skill {
 
     patterns: PropertyPattern[] = [];
     private def: DynamicSkillDefinition;
+
+    // Extensible list of evaluators
+    private evaluators: TriggerEvaluator[] = [evaluateTags, evaluateProperties];
 
     constructor(def: DynamicSkillDefinition) {
         this.def = def;
@@ -33,28 +60,9 @@ export class DynamicSkill implements Skill {
 
     canHandle(note: Note): number {
         let score = 0;
-
-        if (this.def.trigger.tags) {
-            for (const tag of this.def.trigger.tags) {
-                if (note.tags.includes(tag)) {
-                    score += 0.5;
-                    break;
-                }
-            }
+        for (const evaluator of this.evaluators) {
+            score += evaluator(note, this.def.trigger);
         }
-
-        if (this.def.trigger.properties) {
-            for (const p of this.def.trigger.properties) {
-                const hasMatch = note.properties.some(np =>
-                    np.key === p.key && (!p.value || np.values.includes(p.value))
-                );
-                if (hasMatch) {
-                    score += 0.5;
-                    break;
-                }
-            }
-        }
-
         return Math.min(score, 1.0);
     }
 
