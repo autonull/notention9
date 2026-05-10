@@ -110,10 +110,7 @@ export class MatchingService {
     if (keysA.size === 0 || keysB.size === 0) return 0;
 
     // Intersection size
-    let overlap = 0;
-    for (const key of keysA) {
-      if (keysB.has(key)) overlap++;
-    }
+    const overlap = Array.from(keysA).filter(key => keysB.has(key)).length;
 
     // Jaccard index (base score)
     const unionSize = new Set([...keysA, ...keysB]).size;

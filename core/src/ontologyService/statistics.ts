@@ -43,47 +43,38 @@ export class UsageTracker {
     }
 
     private updateUsageStats(properties: Array<{ key: string; values?: unknown[] }>): void {
-        for (const prop of properties) {
-            const key = prop.key;
+        properties.forEach(prop => {
+            const { key, values } = prop;
             const canonical = getCanonicalKey(key, this.ontology);
             const isKnown = this.ontology.some(node => node.attributes && (node.attributes[key] || Object.values(node.attributes).some(attr => attr.aliases?.includes(key))));
 
             if (isKnown) {
-                this.stats.known.set(canonical, (this.stats.known.get(canonical) || 0) + 1);
+                this.stats.known.set(canonical, (this.stats.known.get(canonical) ?? 0) + 1);
             } else {
-                this.stats.unknown.set(key, (this.stats.unknown.get(key) || 0) + 1);
+                this.stats.unknown.set(key, (this.stats.unknown.get(key) ?? 0) + 1);
 
-                if (prop.values && prop.values.length > 0) {
-                    let samples = this.stats.unknownSamples.get(key);
-                    if (!samples) {
-                        samples = [];
-                        this.stats.unknownSamples.set(key, samples);
-                    }
+                if (values?.length) {
+                    const samples = this.stats.unknownSamples.get(key) ?? [];
                     if (samples.length < 20) {
-                        samples.push(...prop.values);
+                        samples.push(...values);
+                        if (!this.stats.unknownSamples.has(key)) this.stats.unknownSamples.set(key, samples);
                     }
                 }
             }
-        }
+        });
     }
 
     private updateCoOccurrenceStats(properties: Array<{ key: string; values?: unknown[] }>): void {
-        const uniqueKeys = Array.from(new Set(properties.map(p => p.key)));
-        const canonicals = uniqueKeys.map(k => getCanonicalKey(k, this.ontology));
+        const canonicals = Array.from(new Set(properties.map(p => getCanonicalKey(p.key, this.ontology))));
 
-        for (const src of canonicals) {
-            let coMap = this.coOccurrence.get(src);
-            if (!coMap) {
-                coMap = new Map();
-                this.coOccurrence.set(src, coMap);
-            }
+        canonicals.forEach(src => {
+            const coMap = this.coOccurrence.get(src) ?? new Map<string, number>();
+            if (!this.coOccurrence.has(src)) this.coOccurrence.set(src, coMap);
 
-            for (const target of canonicals) {
-                if (src !== target) {
-                    coMap.set(target, (coMap.get(target) || 0) + 1);
-                }
-            }
-        }
+            canonicals.filter(target => src !== target).forEach(target => {
+                coMap.set(target, (coMap.get(target) ?? 0) + 1);
+            });
+        });
     }
 
     /**

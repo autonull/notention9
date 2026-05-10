@@ -28,6 +28,9 @@ const COMMON_WORDS = new Set([
 export const REGEX = {
   WORD_OP: /^([^\s]+)\s+(is|contains|before|after|less than|greater than|between|range|not)\s+(.+)$/i,
   COLON: /^([^\s]+):(.+)$/,
+  PHONE: /(\+?\d{10,15})/,
+  EMAIL: /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/,
+  BUDGET: /(?:\$|USD\s*)(\d+(?:,\d{3})*(?:\.\d+)?)|(\d+(?:,\d{3})*(?:\.\d+)?)\s*(?:USD|dollars?)/i,
   SPACE: /^([^\s]+)\s+(.+)$/,
   VALID_KEY: /^[a-zA-Z[\]][a-zA-Z0-9_.[\]\s-]*$/,
   BRACKET: /\[([^\]]+)\]/g,

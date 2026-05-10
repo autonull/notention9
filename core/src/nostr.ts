@@ -37,16 +37,14 @@ export const formatNpub = (npub: string) =>
 export const extractPropertiesFromTags = (tags: string[][]): Property[] => {
     const propsMap = new Map<string, Property>();
 
-    for (const tag of tags) {
-        if (tag[0] === 'property') {
-            const [, key, op, val] = tag;
-            if (propsMap.has(key)) {
-                propsMap.get(key)!.values.push(val);
-            } else {
-                propsMap.set(key, { key, operator: op, values: [val] });
-            }
+    tags.filter(t => t[0] === 'property').forEach(([, key, op, val]) => {
+        const existing = propsMap.get(key);
+        if (existing) {
+            existing.values.push(val);
+        } else {
+            propsMap.set(key, { key, operator: op, values: [val] });
         }
-    }
+    });
     return Array.from(propsMap.values());
 };
 
@@ -187,14 +185,13 @@ async function prepareEventPayload(note: Note, privacyMode: PrivacyLevel) {
 
     // Add unique t-tags
     const seenT = new Set<string>();
-    const uniqueTags: string[][] = [];
-    for (const tag of tags) {
+    const uniqueTags = tags.filter(tag => {
         if (tag[0] === 't') {
-            if (seenT.has(tag[1])) continue;
+            if (seenT.has(tag[1])) return false;
             seenT.add(tag[1]);
         }
-        uniqueTags.push(tag);
-    }
+        return true;
+    });
 
     const created_at = Math.floor(Date.now() / 1000);
     const kind = note.properties.length > 0 ? KIND_SEMANTIC_NOTE : KIND_TEXT_NOTE;

@@ -4,14 +4,12 @@ export function generateTemplatesFromOntology(ontology: OntologyNode[]): Templat
     const templates: Template[] = [];
 
     function traverse(nodes: OntologyNode[]) {
-        for (const node of nodes) {
+        nodes.forEach(node => {
             if (node.actionLabel && node.attributes) {
                 templates.push(createTemplateFromNode(node));
             }
-            if (node.children) {
-                traverse(node.children);
-            }
-        }
+            if (node.children) traverse(node.children);
+        });
     }
 
     traverse(ontology);
@@ -46,12 +44,10 @@ function generateReferenceContent(node: OntologyNode): string {
         // For now let's just do required + maybe others later.
         // But we should prioritize required ones.
 
-        for (const key of Object.keys(node.attributes)) {
-            if (required.includes(key)) {
-                const attr = node.attributes[key];
-                content += `[${key} ${getDefaultOperator(attr)} ${getDefaultValue(attr)}]\n`;
-            }
-        }
+        Object.keys(node.attributes).filter(key => required.includes(key)).forEach(key => {
+            const attr = node.attributes![key];
+            content += `[${key} ${getDefaultOperator(attr)} ${getDefaultValue(attr)}]\n`;
+        });
     }
 
     content += '\n'; // Spacer

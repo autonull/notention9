@@ -13,5 +13,5 @@ export const ALIASES: Record<string, string> = {
 };
 
 export function resolveAlias(key: string): string {
-    return ALIASES[key.toLowerCase()] || key;
+    return ALIASES[key.toLowerCase()] ?? key;
 }
