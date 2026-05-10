@@ -8,9 +8,12 @@ import {
     HelpIcon,
     SearchSparkleIcon,
     TagIcon,
-    SparklesIcon
+    SparklesIcon,
+    EllipsisVerticalIcon,
+    ArrowUpTrayIcon
 } from '../common/icons';
 import {IconButton} from '../common/IconButton';
+import {DropdownMenu, DropdownMenuItem} from '../common/DropdownMenu';
 
 export interface EditorControlsProps {
     onNext?: () => void;
@@ -25,6 +28,7 @@ export interface EditorControlsProps {
     onToggleTags: () => void;
     onSaveTemplate?: () => void;
     onCopyContent?: () => void;
+    onExport?: () => void;
     missingProperties: string[];
     onAddProperty?: (key: string) => void;
     onFindMatches?: () => void;
@@ -47,6 +51,7 @@ export function EditorControls({
                                    onToggleTags,
                                    onSaveTemplate,
                                    onCopyContent,
+                                   onExport,
                                    missingProperties = [],
                                    onAddProperty,
                                    onFindMatches,
@@ -55,43 +60,55 @@ export function EditorControls({
                                    isPublished,
                                    actionLabel
                                }: EditorControlsProps) {
+    const menuItems: DropdownMenuItem[] = [
+        ...(onToggleToolbar ? [{
+            label: isToolbarVisible ? "Hide Toolbar" : "Show Toolbar",
+            icon: isToolbarVisible ? ChevronUpIcon : ChevronDownIcon,
+            onClick: onToggleToolbar
+        }] : []),
+        ...(onSaveTemplate ? [{
+            label: "Save as Template",
+            icon: DocumentDuplicateIcon,
+            onClick: onSaveTemplate
+        }] : []),
+        ...(onCopyContent ? [{
+            label: "Copy Content",
+            icon: EditIcon,
+            onClick: onCopyContent
+        }] : []),
+        ...(onExport ? [{
+            label: "Export Note",
+            icon: ArrowUpTrayIcon,
+            onClick: onExport
+        }] : []),
+    ];
+
     return (
         <div className="flex items-center gap-2 flex-shrink-0">
-            {/* Navigation */}
+            {/* Navigation - Condensed */}
             {(onNext || onPrevious) && (
-                <div className="hidden md:flex items-center bg-gray-800/50 rounded-lg border border-gray-700/50 mr-2">
+                <div className="hidden md:flex items-center bg-gray-800/50 rounded-lg border border-gray-700/50">
                     <button
                         onClick={onPrevious}
                         disabled={!hasPrevious}
-                        className="p-1.5 text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors rounded-l-lg hover:bg-gray-700/50"
+                        className="p-1.5 text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                         title="Previous Note (Alt+Up)"
                     >
-                        <ChevronUpIcon className="h-5 w-5"/>
+                        <ChevronUpIcon className="h-4 w-4"/>
                     </button>
-                    <div className="w-px h-4 bg-gray-700/50"></div>
                     <button
                         onClick={onNext}
                         disabled={!hasNext}
-                        className="p-1.5 text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors rounded-r-lg hover:bg-gray-700/50"
+                        className="p-1.5 text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                         title="Next Note (Alt+Down)"
                     >
-                        <ChevronDownIcon className="h-5 w-5"/>
+                        <ChevronDownIcon className="h-4 w-4"/>
                     </button>
                 </div>
             )}
 
-            {/* View/Tool Toggles */}
-            <div className="flex items-center gap-1 border-r border-gray-700/50 pr-2 mr-1">
-                {onToggleToolbar && (
-                    <IconButton
-                        onClick={onToggleToolbar}
-                        tooltip={isToolbarVisible ? "Hide Formatting Toolbar" : "Show Formatting Toolbar"}
-                        icon={isToolbarVisible ? ChevronUpIcon : ChevronDownIcon}
-                        variant="ghost"
-                        size="sm"
-                        className="hidden md:flex"
-                    />
-                )}
+            {/* Core Interaction Toggles */}
+            <div className="flex items-center gap-1">
                 {onToggleInspector && (
                     <IconButton
                         onClick={onToggleInspector}
@@ -112,60 +129,46 @@ export function EditorControls({
                 />
             </div>
 
-            {/* Note Actions */}
-            <div className="flex items-center gap-1 border-r border-gray-700/50 pr-2 mr-1 hidden sm:flex">
-                {onSaveTemplate && (
-                    <IconButton
-                        onClick={onSaveTemplate}
-                        tooltip="Save as Template"
-                        icon={DocumentDuplicateIcon}
-                        variant="ghost"
-                        size="sm"
-                    />
-                )}
-                {onCopyContent && (
-                    <IconButton
-                        onClick={onCopyContent}
-                        tooltip="Copy Content"
-                        icon={EditIcon}
-                        variant="ghost"
-                        size="sm"
-                        className="hidden md:flex"
-                    />
-                )}
-            </div>
-
-            {/* Network Actions */}
-            <div className="flex items-center gap-2">
-                {/* Property Hints */}
-                {missingProperties.length > 0 && onAddProperty && (
-                    <div className="hidden lg:flex items-center gap-1 mr-2 animate-fade-in">
-                        <span className="text-xs text-yellow-500 mr-1">Missing:</span>
-                        {missingProperties.map(prop => (
-                            <button
-                                key={prop}
-                                onClick={() => onAddProperty(prop)}
-                                className="px-2 py-0.5 text-xs bg-yellow-900/30 text-yellow-200 border border-yellow-700/50 rounded-full hover:bg-yellow-900/50 transition-colors"
-                                title={`Add property: ${prop}`}
-                            >
-                                + {prop}
-                            </button>
-                        ))}
-                    </div>
-                )}
-
+            {/* Primary Actions */}
+            <div className="flex items-center gap-2 border-l border-gray-700/50 pl-2 ml-1">
                 {onFindMatches && (
                     <IconButton
                         onClick={onFindMatches}
                         tooltip="Find matches in network"
                         icon={SearchSparkleIcon}
                         className="text-purple-400 hover:bg-purple-600 hover:text-white"
-                        size="lg"
+                        size="md"
                     />
                 )}
 
+                {/* More Menu */}
+                <DropdownMenu
+                    trigger={
+                        <IconButton
+                            icon={EllipsisVerticalIcon}
+                            variant="ghost"
+                            size="sm"
+                            tooltip="More actions"
+                        />
+                    }
+                    items={menuItems}
+                />
             </div>
 
+            {/* Property Hints - Subtle */}
+            {missingProperties.length > 0 && onAddProperty && (
+                <div className="hidden xl:flex items-center gap-1 ml-2">
+                    {missingProperties.slice(0, 2).map(prop => (
+                        <button
+                            key={prop}
+                            onClick={() => onAddProperty(prop)}
+                            className="px-2 py-0.5 text-[10px] uppercase tracking-wider bg-yellow-900/20 text-yellow-500/80 border border-yellow-700/30 rounded-md hover:bg-yellow-900/40 transition-colors"
+                        >
+                            + {prop}
+                        </button>
+                    ))}
+                </div>
+            )}
         </div>
     );
 };

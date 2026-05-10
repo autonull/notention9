@@ -60,7 +60,9 @@ export function SmartNoteAssistant({
     const [inferredType, setInferredType] = useState<string>('string');
 
     const [isOpen, setIsOpen] = useState(true);
-    const [activeTab, setActiveTab] = useState<'properties' | 'suggestions' | 'local' | 'network'>('properties');
+    const [activeTab, setActiveTab] = useState<'properties' | 'suggestions' | 'local' | 'network'>(
+        suggestions.length > 0 ? 'suggestions' : 'properties'
+    );
 
     const [isAddingProperty, setIsAddingProperty] = useState(false);
     const [editingPropertyIndex, setEditingPropertyIndex] = useState<number | null>(null);

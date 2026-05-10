@@ -23,6 +23,16 @@ export function LightBulbIcon(props: IconProps) { return (
     </OutlineIcon>
 ); }
 
+export function ArrowUpTrayIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
+        />
+    </OutlineIcon>
+); }
+
 export function GlobeIcon(props: IconProps) { return (
     <OutlineIcon {...props}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A11.952 11.952 0 0112 13.5c-2.998 0-5.74 1.1-7.843 2.918m7.843-2.918a11.952 11.952 0 00-7.843 2.918m15.686 0A8.959 8.959 0 0121 12c0-.778-.099-1.533-.284-2.253m0 0A11.952 11.952 0 0012 10.5c-2.998 0-5.74 1.1-7.843-2.918" />
@@ -48,6 +58,12 @@ export function QuestionMarkCircleIcon(props: IconProps) { return (
             strokeLinejoin="round"
             d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"
         />
+    </OutlineIcon>
+); }
+
+export function EllipsisVerticalIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
     </OutlineIcon>
 ); }
 
