@@ -1,6 +1,6 @@
 import {useCallback} from 'react';
 import type {NostrEvent, Note} from '@notention/core';
-import {convertEventToNote, extractPropertiesFromTags} from '@notention/core';
+import {convertEventToNote, extractPropertiesFromTags, formatPropertyTag, NotePipeline} from '@notention/core';
 import {useNotes} from './useNotes';
 import {useToast} from './useToast';
 import {useView} from './useViewContext';
@@ -17,17 +17,8 @@ export function useNetworkActions() {
             return;
         }
 
-        const tagsToAdd = props.map(p => {
-            // Flatten simple values
-            return p.values.map(v => `[${p.key}:${p.operator}:${v}]`).join('');
-        }).join('\n');
-
-        const newContent = targetNote.content + '\n\n' + tagsToAdd;
-
-        updateNote({
-            ...targetNote,
-            content: newContent,
-        });
+        const tagsToAdd = props.map(p => formatPropertyTag(p)).join('\n');
+        updateNote(NotePipeline.addProperty(targetNote, tagsToAdd));
 
         addToast(`Applied ${props.length} properties from match!`, 'success');
     }, [updateNote, addToast]);

@@ -174,27 +174,21 @@ export function TiptapToolbar({
 
                 <div className="w-px h-4 bg-gray-700/50 mx-1.5 flex-shrink-0"></div>
 
-                {actions.map((item, index) => {
-                    if (item.type === 'separator') {
-                        return (
-                            <div
-                                key={`sep-${index}`}
-                                className="w-px h-4 bg-gray-700/50 mx-1.5 hidden sm:block flex-shrink-0"
-                            ></div>
-                        );
-                    }
-                    return (
+                {actions.map((item, index) => (
+                    item.type === 'separator' ? (
+                        <div key={`sep-${index}`} className="w-px h-4 bg-gray-700/50 mx-1.5 hidden sm:block flex-shrink-0"></div>
+                    ) : (
                         <div key={item.title} className="flex-shrink-0">
                             <IconButton
                                 onClick={item.action}
-                                disabled={item.disabled ? item.disabled() : false}
-                                isActive={item.isActive ? item.isActive() : false}
+                                disabled={item.disabled?.()}
+                                isActive={item.isActive?.()}
                                 tooltip={item.title}
                                 icon={item.icon}
                             />
                         </div>
-                    );
-                })}
+                    )
+                ))}
             </div>
 
             <div className="border-l border-gray-700/50 pl-2 ml-1 flex-shrink-0">

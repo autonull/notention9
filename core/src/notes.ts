@@ -40,3 +40,52 @@ export const areNotesEqual = (a: Note, b: Note): boolean =>
     areStringArraysEqual(a.tags, b.tags) &&
     arePropertyArraysEqual(a.properties, b.properties)
   );
+
+/**
+ * Functional Note Pipeline for common mutations.
+ * Ensures consistent data updates across the application.
+ */
+export const NotePipeline = {
+  updateContent: (note: Note, content: string): Note => {
+    if (note.content === content) return note;
+    return {
+      ...note,
+      content,
+      updatedAt: new Date().toISOString()
+    };
+  },
+
+  addProperty: (note: Note, propertyTag: string): Note => {
+    const separator = note.content.trim().endsWith('</p>') ? '' : '\n\n';
+    const content = note.content.trim().endsWith('</p>')
+      ? note.content.replace(/<\/p>$/, ` ${propertyTag}</p>`)
+      : `${note.content}${separator}${propertyTag}`;
+
+    return NotePipeline.updateContent(note, content);
+  },
+
+  setStatus: (note: Note, status: string): Note => {
+    const statusTag = `[status:is:${status}]`;
+    const hasStatus = note.content.includes('[status:');
+
+    let newContent;
+    if (hasStatus) {
+      newContent = note.content.replace(/\[status:[^\]]+\]/g, statusTag);
+    } else {
+      newContent = note.content.trim().endsWith('</p>')
+        ? note.content.replace(/<\/p>$/, ` ${statusTag}</p>`)
+        : `${note.content}\n\n${statusTag}`;
+    }
+
+    return NotePipeline.updateContent(note, newContent);
+  },
+
+  setPriority: (note: Note, priority: number): Note => {
+    if (note.priority === priority) return note;
+    return {
+      ...note,
+      priority,
+      updatedAt: new Date().toISOString()
+    };
+  }
+};

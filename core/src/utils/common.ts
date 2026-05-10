@@ -25,16 +25,17 @@ export const throttle = <T extends (...args: unknown[]) => unknown>(func: T, lim
   };
 };
 
-export const memoize = <T extends (...args: unknown[]) => unknown>(func: T): T => {
+export const sleep = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
+
+export const memoize = <T extends (...args: any[]) => any>(func: T): T => {
   const cache = new Map<string, ReturnType<T>>();
-  return ((thisArg: unknown, ...args: Parameters<T>): ReturnType<T> => {
+  return (function(this: any, ...args: Parameters<T>): ReturnType<T> {
     const key = JSON.stringify(args);
-    const cached = cache.get(key);
-    if (cached !== undefined) return cached;
-    const result = func.apply(thisArg, args);
+    if (cache.has(key)) return cache.get(key)!;
+    const result = func.apply(this, args);
     cache.set(key, result);
     return result;
-  }) as T;
+  }) as unknown as T;
 };
 
 export const timeExecution = async <T>(fn: () => T | Promise<T>): Promise<[T, number]> => {
@@ -49,10 +50,10 @@ export const retryAsync = async <T>(fn: () => Promise<T>, retries = 3, delay = 1
       return await fn();
     } catch (error) {
       if (i === retries - 1) throw error;
-      await new Promise(resolve => setTimeout(resolve, delay * 2 ** i));
+      await sleep(delay * 2 ** i);
     }
   }
-  throw new Error('Retry function should not reach here');
+  throw new Error('Retry failed');
 };
 
 export const uniqueByKey = <T>(arr: T[], keyFn: (item: T) => unknown): T[] => {
@@ -103,4 +104,3 @@ export const chunk = <T>(array: T[], size: number): T[][] =>
 export const partition = <T>(array: T[], predicate: (value: T) => boolean): [T[], T[]] =>
   array.reduce<[T[], T[]]>((acc, item) => { acc[predicate(item) ? 0 : 1].push(item); return acc; }, [[], []]);
 
-export const sleep = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));

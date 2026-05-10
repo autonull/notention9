@@ -1,5 +1,6 @@
 import {useCallback, useMemo, useState} from 'react';
-import {Note, PrivacyLevel} from '@notention/core';
+import {Note, PrivacyLevel, NotePipeline} from '@notention/core';
+import {createUpdateHandler} from '../utils/ui';
 
 /**
  * Optimized hook for managing note editing state with performance considerations
@@ -9,58 +10,28 @@ export function useOptimizedNoteEditing(initialNote?: Note | null) {
     const [isSaving, setIsSaving] = useState(false);
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
+    const handleUpdate = useMemo(() => createUpdateHandler(setCurrentNote, setHasUnsavedChanges), []);
+
     // Memoize note properties to prevent unnecessary re-renders
     const noteData = useMemo(() => {
         if (!currentNote) return null;
-        return {
-            id: currentNote.id,
-            title: currentNote.title,
-            content: currentNote.content,
-            tags: [...currentNote.tags],
-            properties: [...currentNote.properties],
-            createdAt: currentNote.createdAt,
-            updatedAt: currentNote.updatedAt,
-            privacy: currentNote.privacy,
-            priority: currentNote.priority
-        };
+        return {...currentNote};
     }, [currentNote]);
 
-    // Efficient update functions
-    const updateNoteContent = useCallback((newContent: string) => {
-        setCurrentNote(prev => {
-            if (!prev) return prev;
-            setHasUnsavedChanges(true);
-            return {...prev, content: newContent, updatedAt: new Date().toISOString()};
-        });
-    }, []);
+    // Efficient update functions using NotePipeline
+    const updateNoteContent = useCallback((content: string) =>
+        handleUpdate(prev => NotePipeline.updateContent(prev, content)), [handleUpdate]);
 
-    const updateNoteTitle = useCallback((newTitle: string) => {
-        setCurrentNote(prev => {
-            if (!prev) return prev;
-            setHasUnsavedChanges(true);
-            return {...prev, title: newTitle, updatedAt: new Date().toISOString()};
-        });
-    }, []);
+    const updateNoteTitle = useCallback((title: string) =>
+        handleUpdate(prev => ({...prev, title, updatedAt: new Date().toISOString()})), [handleUpdate]);
 
-    const updateNoteTags = useCallback((newTags: string[]) => {
-        setCurrentNote(prev => {
-            if (!prev) return prev;
-            setHasUnsavedChanges(true);
-            return {...prev, tags: newTags, updatedAt: new Date().toISOString()};
-        });
-    }, []);
+    const updateNoteTags = useCallback((tags: string[]) =>
+        handleUpdate(prev => ({...prev, tags, updatedAt: new Date().toISOString()})), [handleUpdate]);
 
-    const updateNotePrivacy = useCallback((privacy: PrivacyLevel) => {
-        setCurrentNote(prev => {
-            if (!prev) return prev;
-            setHasUnsavedChanges(true);
-            return {...prev, privacy, updatedAt: new Date().toISOString()};
-        });
-    }, []);
+    const updateNotePrivacy = useCallback((privacy: PrivacyLevel) =>
+        handleUpdate(prev => ({...prev, privacy, updatedAt: new Date().toISOString()})), [handleUpdate]);
 
-    const resetUnsavedChanges = useCallback(() => {
-        setHasUnsavedChanges(false);
-    }, []);
+    const resetUnsavedChanges = useCallback(() => setHasUnsavedChanges(false), []);
 
     return {
         currentNote,

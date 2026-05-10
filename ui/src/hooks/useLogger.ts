@@ -20,16 +20,5 @@ export function useLogger(): Logger {
  * log.info('Component mounted'); // Logs: "[INFO] Component mounted"
  */
 export function createScopedLogger(context: string): Logger {
-    const logger = Logger.getInstance();
-    
-    return {
-        debug: (message: string, contextData?: any) => logger.debug(`[${context}] ${message}`, contextData),
-        info: (message: string, contextData?: any) => logger.info(`[${context}] ${message}`, contextData),
-        warn: (message: string, contextData?: any) => logger.warn(`[${context}] ${message}`, contextData),
-        error: (message: string, error?: Error, contextData?: any) => logger.error(`[${context}] ${message}`, error, contextData),
-        getLogs: (level?, limit?) => logger.getLogs(level, limit),
-        clearLogs: () => logger.clearLogs(),
-        setLogLevel: (level) => logger.setLogLevel(level),
-        setLogHandler: (handler) => logger.setLogHandler(handler)
-    };
+    return Logger.getInstance().child(context);
 }
