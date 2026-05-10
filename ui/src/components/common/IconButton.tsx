@@ -46,8 +46,8 @@ export function IconButton({
             case 'ghost':
             default:
                 return isActive
-                    ? "bg-blue-600/90 text-white shadow-sm"
-                    : "text-gray-400 hover:text-white hover:bg-gray-800";
+                    ? "bg-blue-900/40 text-blue-400 shadow-sm"
+                    : "text-gray-500 hover:text-gray-200 hover:bg-gray-800";
         }
     };
 

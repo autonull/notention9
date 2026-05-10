@@ -114,12 +114,12 @@ export function AppShell() {
     `.replace(/\s+/g, ' ').trim();
 
     const mainClasses = `
-        flex-1 p-3 overflow-hidden pb-20 md:pb-3
+        flex-1 overflow-hidden pb-20 md:pb-0
         ${isMobileNoteList ? 'hidden md:block' : 'block'}
     `.replace(/\s+/g, ' ').trim();
 
     return (
-        <div className="flex flex-col h-screen bg-gray-800 text-gray-200">
+        <div className="flex flex-col h-screen bg-gray-950 text-gray-200">
             <Header onNewNote={handleNewNote}/>
             <div className="flex flex-1 overflow-hidden">
                 <div className={sidebarClasses}>
