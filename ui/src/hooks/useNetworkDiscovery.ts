@@ -32,7 +32,7 @@ export function useNetworkDiscovery(note: Note, ontology: OntologyNode[]): UseNe
             if (flattened.length === 0) {
                 addToast('No matches found in the network', 'info');
             } else {
-                addToast(`Found ${results.length} matches!`, 'success');
+                addToast(`Found ${flattened.length} matches!`, 'success');
             }
         } catch (e) {
             const msg = e instanceof Error ? e.message : 'Unknown error';

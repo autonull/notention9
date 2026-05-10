@@ -5,7 +5,7 @@ import {ErrorDisplay, ErrorHandlingProvider} from './components/common/ErrorHand
 import {ConfigSync} from './components/config/ConfigSync';
 import {AgentCursor} from './components/AgentCursor';
 import {AgentStatusIndicator} from './components/agent/AgentStatusIndicator';
-import {useNostrSync} from './hooks/useNostrSync';
+import {useNetworkManagement} from './hooks/useNetworkManagement';
 
 function App() {
     return (
@@ -20,7 +20,7 @@ function App() {
 
 function AppContent() {
     // Enable P2P Sync
-    useNostrSync();
+    useNetworkManagement();
 
     return (
         <>

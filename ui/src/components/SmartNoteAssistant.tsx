@@ -52,7 +52,7 @@ export function SmartNoteAssistant({
     const [activeSuggestion, setActiveSuggestion] = useState<number>(0);
 
     const localMatches = useMatches(note);
-    const { matches: networkMatches, isSearching, discover: discoverMatches } = useNetworkDiscovery(note, settings.ontology);
+    const { matches: networkMatches, isSearching, discover: discoverMatches, clear: clearNetworkMatches } = useNetworkDiscovery(note, settings.ontology);
 
     const [attributeModalOpen, setAttributeModalOpen] = useState(false);
     const [aliasModalOpen, setAliasModalOpen] = useState(false);
@@ -66,11 +66,10 @@ export function SmartNoteAssistant({
     const [editingPropertyIndex, setEditingPropertyIndex] = useState<number | null>(null);
     const [propertyToDelete, setPropertyToDelete] = useState<Property | null>(null);
 
+    // Clear network matches when note properties change significantly
     useEffect(() => {
-        if (suggestions.length > 0 && activeTab === 'network' && networkMatches.length === 0) {
-            setActiveTab('suggestions');
-        }
-    }, [suggestions.length]);
+        clearNetworkMatches();
+    }, [note.properties.length, clearNetworkMatches]);
 
     const handleSaveProperty = (key: string, op: string, value: string) => {
         if (!onUpdateProperty) return;

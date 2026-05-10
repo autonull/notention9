@@ -236,13 +236,15 @@ export class MeshtasticNetworkProvider implements NetworkProvider {
 
     handleTelemetry(nodeId: string, telemetry: any) {
         this.emit('telemetry', { nodeId, telemetry });
+        this.emit('note', this.mapTelemetryToNote(nodeId, telemetry));
     }
 
     handlePosition(nodeId: string, position: any) {
         this.emit('position', { nodeId, position });
+        this.emit('note', this.mapPositionToNote(nodeId, position));
     }
 
-    mapTelemetryToNote(nodeId: string, telemetry: any, existingNote?: Note): Note {
+    mapTelemetryToNote(nodeId: string, telemetry: any, existingNote?: Note | null): Note {
         const timestamp = new Date().toISOString();
         const properties = [
             { key: 'battery', operator: 'is', values: [String(telemetry.batteryLevel || '')] },
@@ -278,7 +280,7 @@ export class MeshtasticNetworkProvider implements NetworkProvider {
         };
     }
 
-    mapPositionToNote(nodeId: string, pos: { latitude: number, longitude: number, altitude?: number }, existingNote?: Note): Note {
+    mapPositionToNote(nodeId: string, pos: { latitude: number, longitude: number, altitude?: number }, existingNote?: Note | null): Note {
         const timestamp = new Date().toISOString();
         const properties = [
             { key: 'location', operator: 'is', values: [`${pos.latitude},${pos.longitude}`] },

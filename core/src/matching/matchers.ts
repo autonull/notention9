@@ -56,7 +56,7 @@ const CANONICAL: Record<string, string> = {
 };
 
 const normalizeTerm = (term: string): string =>
-  term ? CANONICAL[term.toLowerCase().trim().replace(/[^a-z0-9\s]/g, '')] ?? term.toLowerCase().trim().replace(/[^a-z0-9\s]/g, '') : '';
+  term ? CANONICAL[term.toLowerCase().trim()] ?? term.toLowerCase().trim() : '';
 
 export const PropertyMatchers = {
     evaluateNumber: (request: Property, offer: Property): PropertyMatch => {

@@ -93,59 +93,6 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
         }
     }, [setNotes, settings.ontology]);
 
-    // --- Subscription Logic for Network Providers ---
-    useEffect(() => {
-        const handlers = networkRegistry.getActiveProviders().map(p => {
-            // If it's meshtastic and using agent-proxy, the agent is already saving it.
-            // We only need to skipAgent if connectionType is 'server-proxy'.
-            const meshSettings = (settings as any).meshtastic;
-            const isAgentProxy = p.id === 'meshtastic' && meshSettings?.connectionType === 'server-proxy';
-
-            const noteHandler = (note: Note) => {
-                if (p.id === 'meshtastic' && !meshSettings?.saveReceivedNotes) {
-                    return;
-                }
-                upsertNote(note, isAgentProxy);
-            };
-
-            const telemetryHandler = (data: { nodeId: string, telemetry: any }) => {
-                if (p.id === 'meshtastic') {
-                    const provider = p as any;
-                    const existingNote = notes.find(n => n.id === provider.getNodeNoteId(data.nodeId));
-                    const updatedNote = provider.mapTelemetryToNote(data.nodeId, data.telemetry, existingNote);
-                    upsertNote(updatedNote, isAgentProxy);
-                }
-            };
-
-            const positionHandler = (data: { nodeId: string, position: any }) => {
-                if (p.id === 'meshtastic') {
-                    const provider = p as any;
-                    const existingNote = notes.find(n => n.id === provider.getNodeNoteId(data.nodeId));
-                    const updatedNote = provider.mapPositionToNote(data.nodeId, data.position, existingNote);
-                    upsertNote(updatedNote, isAgentProxy);
-                }
-            };
-
-            p.on('note', noteHandler);
-            p.on('telemetry', telemetryHandler);
-            p.on('position', positionHandler);
-
-            return {
-                provider: p,
-                handlers: {
-                    note: noteHandler,
-                    telemetry: telemetryHandler,
-                    position: positionHandler
-                }
-            };
-        });
-
-        return () => handlers.forEach(({ provider, handlers }) => {
-            provider.off('note', handlers.note);
-            provider.off('telemetry', handlers.telemetry);
-            provider.off('position', handlers.position);
-        });
-    }, [upsertNote, settings, notes]);
 
     // --- CRUD Operations ---
     const addNote = useCallback((overrides?: Partial<Note>) => {

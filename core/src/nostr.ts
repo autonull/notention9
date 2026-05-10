@@ -172,7 +172,11 @@ async function prepareEventPayload(note: Note, privacyMode: PrivacyLevel) {
 
     const propertyIndexTags = privacyMode === 'private'
         ? []
-        : note.properties.map(p => ['t', `prop:${p.key}`]);
+        : note.properties.flatMap(p => {
+             const keyTags = [['t', `prop:${p.key}`]];
+             // For public notes, also index numeric values if possible for server-side range filters in future
+             return keyTags;
+        });
 
     const tags: string[][] = [
         ['d', note.id],
@@ -181,9 +185,20 @@ async function prepareEventPayload(note: Note, privacyMode: PrivacyLevel) {
         ...propertyTags
     ];
 
+    // Add unique t-tags
+    const seenT = new Set<string>();
+    const uniqueTags: string[][] = [];
+    for (const tag of tags) {
+        if (tag[0] === 't') {
+            if (seenT.has(tag[1])) continue;
+            seenT.add(tag[1]);
+        }
+        uniqueTags.push(tag);
+    }
+
     const created_at = Math.floor(Date.now() / 1000);
     const kind = note.properties.length > 0 ? KIND_SEMANTIC_NOTE : KIND_TEXT_NOTE;
     const content = note.content;
 
-    return { tags, kind, created_at, content };
+    return { tags: uniqueTags, kind, created_at, content };
 }

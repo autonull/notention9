@@ -53,7 +53,7 @@ export { useNetworkDiscovery } from './useNetworkDiscovery.js';
 export { useNetworkMatching } from './useNetworkMatching.js';
 export { useNetworkView } from './useNetworkView.js';
 export { useNostrProfile } from './useNostrProfile.js';
-export { useNostrSync } from './useNostrSync.js';
+export { useNetworkManagement } from './useNetworkManagement.js';
 export { useNoteActions } from './useNoteActions.js';
 export { useNoteAnalysis } from './useNoteAnalysis.js';
 export { useNotesView } from './useNotesView.js';
