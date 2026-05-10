@@ -2,6 +2,8 @@ import type { Note, Property, OntologyNode } from './types/index.js';
 import { arePropertyArraysEqual, isIndefiniteProperty, arePropertiesEqual } from './properties.js';
 import { formatPropertyTag, parseProperties, replacePropertyInString } from './parsing.js';
 import { NOTE_STATUS } from './constants.js';
+import { PropertyExtractor } from './propertyExtractor.js';
+import { getTextFromHtml } from './utils/html.js';
 
 export type NoteIntent = 'Real' | 'Imaginary' | 'Ambiguous';
 
@@ -54,7 +56,17 @@ export const NotePipeline = {
   updateContent: (note: Note, content: string, ontology?: OntologyNode[]): Note => {
     if (note.content === content) return note;
 
-    const properties = parseProperties(content, ontology);
+    const explicitProperties = parseProperties(content, ontology);
+    const plainText = getTextFromHtml(content);
+    const extractor = new PropertyExtractor(ontology);
+    const implicitProperties = extractor.extractFromText(plainText);
+
+    // Merge: Explicit overrides Implicit
+    const explicitKeys = new Set(explicitProperties.map(p => p.key));
+    const properties = [
+        ...explicitProperties,
+        ...implicitProperties.filter(p => !explicitKeys.has(p.key))
+    ];
 
     return {
       ...note,

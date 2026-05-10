@@ -55,16 +55,11 @@ export const addNode = (tree: OntologyNode[], parentId: string | null, newNode: 
 
 export const getSubtreeKeys = (node: OntologyNode): Set<string> => {
   const keys = new Set<string>();
-  const stack = [node];
-  while (stack.length > 0) {
-    const current = stack.pop()!;
-    if (current.attributes) {
-      for (const k of Object.keys(current.attributes)) {
-        keys.add(k);
-      }
-    }
-    stack.push(...(current.children ?? []));
-  }
+  const collect = (n: OntologyNode) => {
+    Object.keys(n.attributes ?? {}).forEach(k => keys.add(k));
+    n.children?.forEach(collect);
+  };
+  collect(node);
   return keys;
 };
 

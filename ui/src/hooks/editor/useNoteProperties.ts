@@ -18,26 +18,14 @@ export function useNoteProperties(
     const propertyExtractor = useMemo(() => new PropertyExtractor(ontology), [ontology]);
 
     const handleContentSave = useCallback((content: string) => {
-        // 1. Parse explicit properties from content (bracket syntax)
-        const explicitProperties = parseProperties(content, ontology);
-
-        // 2. Extract implicit properties from plain text
-        const plainText = getTextFromHtml(content);
-        const implicitProperties = propertyExtractor.extractFromText(plainText);
-
-        // 3. Merge properties: Explicit overrides Implicit
-        const explicitKeys = new Set(explicitProperties.map(p => p.key));
-        const newImplicitProps = implicitProperties.filter(p => !explicitKeys.has(p.key));
-
-        const properties = [...explicitProperties, ...newImplicitProps];
-
-        setDirtyNote(prev => ({
-            ...prev,
-            content,
-            properties,
-            priority: 1.0 // User edit promotes priority
-        }));
-    }, [setDirtyNote, propertyExtractor, ontology]);
+        setDirtyNote(prev => {
+            const updated = NotePipeline.updateContent(prev, content, ontology);
+            return {
+                ...updated,
+                priority: 1.0 // User edit promotes priority
+            };
+        });
+    }, [setDirtyNote, ontology]);
 
     const handleUpdateTextFromInspector = useCallback((oldProp: Property | null, newProp: Property | null) => {
         const newContent = replacePropertyInString(dirtyNote.content, oldProp, newProp);

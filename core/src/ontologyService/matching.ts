@@ -26,16 +26,9 @@ export class FuzzyMatcher {
             return this.cache.get(cacheKey)!;
         }
 
-        const matches: { key: string; score: number }[] = [];
-
-        for (const [key, attr] of attributeIndex) {
-            const score = calculateScore(input, key, attr);
-            if (score > 0) {
-                matches.push({ key, score });
-            }
-        }
-
-        const result = matches
+        const result = Array.from(attributeIndex.entries())
+            .map(([key, attr]) => ({ key, score: calculateScore(input, key, attr) }))
+            .filter(m => m.score > 0)
             .sort((a, b) => (b.score - a.score) || a.key.localeCompare(b.key))
             .slice(0, limit)
             .map(m => m.key);

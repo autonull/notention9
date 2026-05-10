@@ -42,14 +42,12 @@ export class OntologyService {
         nodes: OntologyNode[],
         index = new Map<string, OntologyAttribute>()
     ): Map<string, OntologyAttribute> {
-        for (const node of nodes) {
-            if (node.attributes) {
-                for (const [key, value] of Object.entries(node.attributes)) {
-                    if (!index.has(key)) index.set(key, value);
-                }
-            }
+        nodes.forEach(node => {
+            Object.entries(node.attributes ?? {}).forEach(([key, value]) => {
+                if (!index.has(key)) index.set(key, value);
+            });
             if (node.children) this.buildAttributeIndex(node.children, index);
-        }
+        });
         return index;
     }
 
