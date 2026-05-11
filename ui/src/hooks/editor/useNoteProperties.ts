@@ -3,12 +3,11 @@ import {
     Note,
     Property,
     PropertyExtractor,
-    parseProperties,
-    getTextFromHtml,
     NotePipeline,
     OntologyNode,
     replacePropertyInString
 } from '@notention/core';
+import { createUpdateHandler } from '../../utils/ui';
 
 export function useNoteProperties(
     dirtyNote: Note,
@@ -16,16 +15,14 @@ export function useNoteProperties(
     ontology?: OntologyNode[]
 ) {
     const propertyExtractor = useMemo(() => new PropertyExtractor(ontology), [ontology]);
+    const update = useMemo(() => createUpdateHandler(setDirtyNote), [setDirtyNote]);
 
     const handleContentSave = useCallback((content: string) => {
-        setDirtyNote(prev => {
-            const updated = NotePipeline.updateContent(prev, content, ontology);
-            return {
-                ...updated,
-                priority: 1.0 // User edit promotes priority
-            };
-        });
-    }, [setDirtyNote, ontology]);
+        update(prev => ({
+            ...NotePipeline.updateContent(prev, content, ontology),
+            priority: 1.0 // User edit promotes priority
+        }));
+    }, [update, ontology]);
 
     const handleUpdateTextFromInspector = useCallback((oldProp: Property | null, newProp: Property | null) => {
         const newContent = replacePropertyInString(dirtyNote.content, oldProp, newProp);
@@ -35,11 +32,8 @@ export function useNoteProperties(
     }, [dirtyNote.content, handleContentSave]);
 
     const handleUpdateProperty = useCallback((key: string, value: string) => {
-        setDirtyNote(prev => {
-            const updated = NotePipeline.upsertProperty(prev, key, value, ontology);
-            return updated;
-        });
-    }, [setDirtyNote, ontology]);
+        update(prev => NotePipeline.upsertProperty(prev, key, value, ontology));
+    }, [update, ontology]);
 
     const handleUpdateLocation = useCallback((latlng: string) => {
         handleUpdateProperty('location', latlng);

@@ -221,25 +221,7 @@ export class AutonomousTaskExecutor {
 
       const executionTime = task.endTime - task.startTime;
 
-      // Track prediction accuracy
-      const pattern: Pattern = {
-        id: 'autonomous',
-        name: 'Autonomous Task',
-        description: 'Auto-generated task from pattern recognition',
-        conditions: [],
-        predictedActions: [task.predictedAction],
-        confidence: task.confidence,
-        lastUsed: task.startTime!,
-        usageCount: 1,
-        accuracyRate: 0
-      };
-      predictionAccuracyTracker.recordPrediction(task.userId, {
-        pattern,
-        noteContext: task.noteContext,
-        predictedAction: task.predictedAction,
-        confidence: task.confidence,
-        timestamp: task.startTime!
-      });
+      this.trackAccuracy(task);
 
       logInfo(`Task completed successfully`, {
         taskId,
@@ -292,25 +274,7 @@ export class AutonomousTaskExecutor {
 
     this.activeExecutions.delete(taskId);
 
-    // Track prediction accuracy
-    const pattern: Pattern = {
-      id: 'autonomous',
-      name: 'Autonomous Task',
-      description: 'Auto-generated task from pattern recognition',
-      conditions: [],
-      predictedActions: [task.predictedAction],
-      confidence: task.confidence,
-      lastUsed: task.startTime!,
-      usageCount: 1,
-      accuracyRate: 0
-    };
-    predictionAccuracyTracker.recordPrediction(task.userId, {
-      pattern,
-      noteContext: task.noteContext,
-      predictedAction: task.predictedAction,
-      confidence: task.confidence,
-      timestamp: task.startTime!
-    });
+    this.trackAccuracy(task);
 
     logError(`Task failed after all retries: ${taskId}`, error, {
       retryCount: task.retryCount
@@ -322,6 +286,27 @@ export class AutonomousTaskExecutor {
       error: error.message,
       executionTime: task.endTime - task.startTime!
     };
+  }
+
+  private trackAccuracy(task: AutonomousTask): void {
+    const pattern: Pattern = {
+      id: 'autonomous',
+      name: 'Autonomous Task',
+      description: 'Auto-generated task from pattern recognition',
+      conditions: [],
+      predictedActions: [task.predictedAction],
+      confidence: task.confidence,
+      lastUsed: task.startTime || Date.now(),
+      usageCount: 1,
+      accuracyRate: 0
+    };
+    predictionAccuracyTracker.recordPrediction(task.userId, {
+      pattern,
+      noteContext: task.noteContext,
+      predictedAction: task.predictedAction,
+      confidence: task.confidence,
+      timestamp: task.startTime || Date.now()
+    });
   }
 
   /**

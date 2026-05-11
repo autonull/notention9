@@ -15,10 +15,15 @@ interface GetExtensionsProps {
     onMagic?: () => void;
 }
 
-// Extend default MentionNodeAttrs to include our custom type
 interface SlashCommandAttrs extends MentionNodeAttrs {
     type?: string;
 }
+
+const createMentionConfig = (name: string, className: string, trigger: string, resolver: (query: string) => any[], command?: any) =>
+    Mention.configure({
+        HTMLAttributes: { class: className },
+        suggestion: { ...configureSuggestions(resolver, trigger), ...(command ? { command } : {}) }
+    }).extend({ name });
 
 export const getExtensions = ({
                                   allProperties,
@@ -28,206 +33,67 @@ export const getExtensions = ({
                                   onOpenPropertyModal,
                                   onMagic
                               }: GetExtensionsProps) => {
+    const resolveProperties = (query: string) => {
+        const lower = query.toLowerCase();
+        return [...allProperties]
+            .sort((a, b) => (a.label.toLowerCase().startsWith(lower) ? -1 : 1))
+            .filter(p => p.label.toLowerCase().includes(lower))
+            .slice(0, 10)
+            .map(p => ({ id: p.id, label: p.label, description: p.description }));
+    };
+
+    const resolveNotes = (query: string) => {
+        const lower = query.toLowerCase();
+        return getNotes()
+            .filter(n => (n.title || 'Untitled').toLowerCase().includes(lower))
+            .slice(0, 5)
+            .map(n => ({ id: n.id, label: n.title || 'Untitled', description: 'Note' }));
+    };
+
     return [
-        StarterKit,
-        BubbleMenu,
-        PropertyExtension,
-        GhostTextExtension,
-        Mention.configure({
-            HTMLAttributes: {
-                class: 'suggestion-item',
-            },
-            suggestion: {
-                ...configureSuggestions((query) => {
-                    const lower = query.toLowerCase();
-                    // Prioritize exact matches
-                    const sorted = [...allProperties].sort((a, b) => {
-                        const aStart = a.label.toLowerCase().startsWith(lower);
-                        const bStart = b.label.toLowerCase().startsWith(lower);
-                        if (aStart && !bStart) return -1;
-                        if (!aStart && bStart) return 1;
-                        return 0;
-                    });
+        StarterKit, BubbleMenu, PropertyExtension, GhostTextExtension,
+        createMentionConfig('propertySuggestion', 'suggestion-item', '[', resolveProperties, ({ editor, range, props }: any) => {
+            editor.chain().focus().deleteRange(range).run();
+            onOpenPropertyModal ? onOpenPropertyModal(props.label || '') : editor.chain().focus().insertContent(`[${props.label}:is:]`).run();
+        }),
+        createMentionConfig('tagSuggestion', 'suggestion-tag', '#', (query) => {
+            const lower = query.toLowerCase();
+            return allTags.filter(t => t.label.toLowerCase().includes(lower)).slice(0, 5)
+                .map(t => ({ id: t.id, label: t.label, description: t.description }));
+        }),
+        createMentionConfig('noteSuggestion', 'suggestion-note', '@', resolveNotes),
+        createMentionConfig('wikiLinkSuggestion', 'suggestion-note', '[[', resolveNotes, ({ editor, range, props }: any) => {
+            editor.chain().focus().deleteRange(range).insertContent({
+                type: 'noteSuggestion',
+                attrs: { id: props.id, label: props.label }
+            }).insertContent(' ').run();
+        }),
+        createMentionConfig('slashCommand', 'suggestion-slash', '/', (query) => {
+            const lower = query.toLowerCase();
+            const templateItems = templates.filter(t => t.label.toLowerCase().includes(lower))
+                .sort((a, b) => (a.label.toLowerCase().startsWith(lower) ? -1 : 1))
+                .map(t => ({ id: t.content, label: t.label, description: 'Template', type: 'template' }));
 
-                    return sorted
-                        .filter(p => p.label.toLowerCase().includes(lower))
-                        .slice(0, 10) // Show more suggestions
-                        .map(p => ({id: p.id, label: p.label, description: p.description}));
-                }, '['),
-                command: ({editor, range, props}) => {
-                    // Delete the trigger and query
-                    editor.chain().focus().deleteRange(range).run();
+            const propertyItems = allProperties.filter(p => p.label.toLowerCase().includes(lower))
+                .map(p => ({ id: `[${p.label}:is:]`, label: p.label, description: 'Property', type: 'property' }));
 
-                    // Open modal if available to complete the property
-                    if (onOpenPropertyModal) {
-                        onOpenPropertyModal(props.label || '');
-                    } else {
-                        // Fallback: insert partial property and let user type
-                        // We use a text insertion here, not a node, to allow smooth typing
-                        editor.chain().focus().insertContent(`[${props.label}:is:]`).run();
-                    }
-                }
+            const commandItems = [];
+            if ('magic align'.includes(lower)) commandItems.push({ id: 'magic', label: 'Magic Align', description: 'Auto-detect properties', type: 'command' });
+            if ('current date'.includes(lower)) commandItems.push({ id: 'date', label: 'Current Date', description: new Date().toISOString().split('T')[0], type: 'command' });
+            if ('current time'.includes(lower)) commandItems.push({ id: 'time', label: 'Current Time', description: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), type: 'command' });
+
+            return [...commandItems, ...templateItems, ...propertyItems].slice(0, 10);
+        }, ({ editor, range, props }: any) => {
+            editor.chain().focus().deleteRange(range).run();
+            const p = props as SlashCommandAttrs;
+            if (p.type === 'property' && onOpenPropertyModal) return onOpenPropertyModal(p.label);
+            if (p.type === 'command') {
+                if (p.id === 'magic') onMagic?.();
+                else if (p.id === 'date') editor.chain().focus().insertContent(new Date().toISOString().split('T')[0]).run();
+                else if (p.id === 'time') editor.chain().focus().insertContent(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })).run();
+                return;
             }
-        }).extend({name: 'propertySuggestion'}),
-
-        Mention.configure({
-            HTMLAttributes: {
-                class: 'suggestion-tag',
-            },
-            suggestion: configureSuggestions((query) => {
-                const lower = query.toLowerCase();
-                return allTags
-                    .filter(t => t.label.toLowerCase().includes(lower))
-                    .slice(0, 5)
-                    .map(t => ({id: t.id, label: t.label, description: t.description}));
-            }, '#'),
-        }).extend({name: 'tagSuggestion'}),
-
-        Mention.configure({
-            HTMLAttributes: {
-                class: 'suggestion-note',
-            },
-            suggestion: configureSuggestions((query) => {
-                const lower = query.toLowerCase();
-                return getNotes()
-                    .filter(n => (n.title || 'Untitled').toLowerCase().includes(lower))
-                    .slice(0, 5)
-                    .map(n => ({
-                        id: n.id,
-                        label: n.title || 'Untitled',
-                        description: 'Note'
-                    }));
-            }, '@'),
-        }).extend({name: 'noteSuggestion'}),
-
-        Mention.configure({
-            HTMLAttributes: {
-                class: 'suggestion-note',
-            },
-            suggestion: {
-                ...configureSuggestions((query) => {
-                    const lower = query.toLowerCase();
-                    return getNotes()
-                        .filter(n => (n.title || 'Untitled').toLowerCase().includes(lower))
-                        .slice(0, 5)
-                        .map(n => ({
-                            id: n.id,
-                            label: n.title || 'Untitled',
-                            description: 'Note'
-                        }));
-                }, '[['), // Wiki-link style trigger
-                command: ({editor, range, props}) => {
-                    // Delete the trigger and query
-                    editor.chain().focus().deleteRange(range).run();
-                    // Insert the standard mention node
-                    editor.chain().focus().insertContent({
-                        type: 'noteSuggestion', // Use the existing note suggestion type
-                        attrs: {
-                            id: props.id,
-                            label: props.label
-                        }
-                    }).insertContent(' ').run();
-                }
-            }
-        }).extend({name: 'wikiLinkSuggestion'}),
-
-        Mention.configure({
-            HTMLAttributes: {
-                class: 'suggestion-slash',
-            },
-            suggestion: {
-                ...configureSuggestions((query) => {
-                    const lower = query.toLowerCase();
-
-                    // Sort templates: prioritize those matching content "keywords" if possible?
-                    // For now, simple alphabetical or query match relevance
-                    const templateItems = templates
-                        .filter(t => t.label.toLowerCase().includes(lower))
-                        .sort((a, b) => {
-                            // Prioritize templates starting with query
-                            const aStarts = a.label.toLowerCase().startsWith(lower);
-                            const bStarts = b.label.toLowerCase().startsWith(lower);
-                            if (aStarts && !bStarts) return -1;
-                            if (!aStarts && bStarts) return 1;
-                            return 0;
-                        })
-                        .map(t => ({
-                            id: t.content, // Insert content
-                            label: t.label,
-                            description: 'Template',
-                            type: 'template'
-                        }));
-
-                    const propertyItems = allProperties
-                        .filter(p => p.label.toLowerCase().includes(lower))
-                        .map(p => ({
-                            id: `[${p.label}:is:]`, // Updated default template
-                            label: p.label,
-                            description: 'Property',
-                            type: 'property'
-                        }));
-
-                    const commandItems = [];
-                    if ('magic align'.includes(lower)) {
-                        commandItems.push({
-                            id: 'magic',
-                            label: 'Magic Align',
-                            description: 'Auto-detect properties',
-                            type: 'command'
-                        });
-                    }
-                    if ('current date'.includes(lower)) {
-                        commandItems.push({
-                            id: 'date',
-                            label: 'Current Date',
-                            description: new Date().toISOString().split('T')[0],
-                            type: 'command'
-                        });
-                    }
-                    if ('current time'.includes(lower)) {
-                        commandItems.push({
-                            id: 'time',
-                            label: 'Current Time',
-                            description: new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}),
-                            type: 'command'
-                        });
-                    }
-
-                    return [...commandItems, ...templateItems, ...propertyItems].slice(0, 10).map(item => ({
-                        ...item,
-                        type: item.type as "tag" | "property" | "template" | undefined
-                    }));
-                }, '/'),
-                command: ({editor, range, props}) => {
-                    // Delete the slash command text
-                    editor.chain().focus().deleteRange(range).run();
-
-                    const slashProps = props as unknown as SlashCommandAttrs;
-
-                    if (slashProps.type === 'property' && onOpenPropertyModal) {
-                        onOpenPropertyModal(props.label || '');
-                        return;
-                    }
-
-                    if (slashProps.type === 'command') {
-                        if (props.id === 'magic' && onMagic) {
-                            onMagic();
-                        } else if (props.id === 'date') {
-                            editor.chain().focus().insertContent(new Date().toISOString().split('T')[0]).run();
-                        } else if (props.id === 'time') {
-                            editor.chain().focus().insertContent(new Date().toLocaleTimeString([], {
-                                hour: '2-digit',
-                                minute: '2-digit'
-                            })).run();
-                        }
-                        return;
-                    }
-
-                    // Insert the content
-                    const content = props.id || '';
-                    editor.chain().focus().insertContent(content).run();
-                },
-            }
-        }).extend({name: 'slashCommand'}),
+            editor.chain().focus().insertContent(p.id || '').run();
+        }),
     ];
 };

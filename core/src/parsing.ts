@@ -210,7 +210,7 @@ const findPropertyInText = (text: string, prop: Property): { index: number; leng
   return found ? { index: found.index, length: found.length } : null;
 };
 
-const appendPropertyToText = (text: string, tag: string): string => {
+export const appendPropertyToText = (text: string, tag: string): string => {
   if (!tag) return text;
   return text.trim().endsWith('</p>') ? text.replace(/<\/p>$/, ` ${tag}</p>`) : `${text} ${tag}`;
 };

@@ -1,34 +1,16 @@
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
 import {agentService} from '../services/AgentService';
+import {useEventSubscription} from './useEventSubscription';
 
 export function useAgentStatus() {
     const [status, setStatus] = useState(agentService.getStatus());
 
-    useEffect(() => {
-        const handleStatusChange = (newStatus: any) => {
-            setStatus(newStatus);
-        };
-
-        const handleQueueChange = () => {
-            setStatus(agentService.getStatus());
-        };
-
-        const handleError = () => {
-            setStatus(agentService.getStatus());
-        };
-
-        agentService.on('status_change', handleStatusChange);
-        agentService.on('queued', handleQueueChange);
-        agentService.on('sent', handleQueueChange);
-        agentService.on('error', handleError);
-
-        return () => {
-            agentService.off('status_change', handleStatusChange);
-            agentService.off('queued', handleQueueChange);
-            agentService.off('sent', handleQueueChange);
-            agentService.off('error', handleError);
-        };
-    }, []);
+    useEventSubscription(agentService, {
+        status_change: (newStatus) => setStatus(newStatus),
+        queued: () => setStatus(agentService.getStatus()),
+        sent: () => setStatus(agentService.getStatus()),
+        error: () => setStatus(agentService.getStatus())
+    });
 
     return status;
 }

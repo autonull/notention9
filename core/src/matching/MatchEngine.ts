@@ -51,20 +51,18 @@ export class MatchEngine {
     }
 
     private aggregateResults(results: PropertyMatch[]) {
-        const matches: PropertyMatch[] = [];
-        const conflicts: PropertyMatch[] = [];
         const matchedKeys = new Set<string>();
         const conflictKeys = new Set<string>();
 
+        const matches = results.filter(r => r.compatibility > 0);
+        const conflicts = results.filter(r => r.compatibility < 0);
+
         const totalScore = results.reduce((acc, r) => {
-            if (r.compatibility > 0) {
-                matches.push(r);
-                if (!matchedKeys.has(r.requestProp.key)) {
-                    matchedKeys.add(r.requestProp.key);
-                    return acc + r.compatibility;
-                }
-            } else if (r.compatibility < 0) {
-                conflicts.push(r);
+            if (r.compatibility > 0 && !matchedKeys.has(r.requestProp.key)) {
+                matchedKeys.add(r.requestProp.key);
+                return acc + r.compatibility;
+            }
+            if (r.compatibility < 0) {
                 conflictKeys.add(r.requestProp.key);
                 return acc + r.compatibility;
             }

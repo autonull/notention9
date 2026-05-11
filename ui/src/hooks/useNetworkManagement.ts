@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
     networkRegistry,
     NostrNetworkProvider,
@@ -8,47 +8,28 @@ import {
 import { useSettings } from './useSettingsContext';
 import { useNotes } from './useNotes';
 import { agentService } from '../services/AgentService';
+import { useEventSubscription } from './useEventSubscription';
 
 export function useNetworkManagement() {
     const { settings, setSettings } = useSettings() as { settings: any, setSettings: any };
     const { upsertNote } = useNotes();
     const [providers, setProviders] = useState(() => networkRegistry.getAllProviders());
 
-    // Nostr Provider Effects
-    useEffect(() => {
-        const nostr = networkRegistry.getProvider('nostr') as NostrNetworkProvider;
-        if (nostr) {
-            const handleNote = (note: Note) => {
-                upsertNote(note, true); // Always skipAgent for incoming network notes
-            };
-            nostr.on('note', handleNote);
-            return () => nostr.off('note', handleNote);
-        }
-    }, [upsertNote]);
+    const nostr = useMemo(() => networkRegistry.getProvider('nostr') as NostrNetworkProvider, [providers]);
+    const mesh = useMemo(() => networkRegistry.getProvider('meshtastic') as MeshtasticNetworkProvider, [providers]);
 
-    // Meshtastic Provider Effects
-    useEffect(() => {
-        const mesh = networkRegistry.getProvider('meshtastic') as MeshtasticNetworkProvider;
-        if (mesh) {
-            const handleNote = (note: Note) => {
-                if (settings.meshtastic?.saveReceivedNotes) {
-                    upsertNote(note, true);
-                }
-            };
+    useEventSubscription(nostr, {
+        note: (note: Note) => upsertNote(note, true)
+    });
 
-            const handleError = (err: any) => {
-                console.error('Mesh error:', err);
-            };
-
-            mesh.on('note', handleNote);
-            mesh.on('error', handleError);
-
-            return () => {
-                mesh.off('note', handleNote);
-                mesh.off('error', handleError);
-            };
-        }
-    }, [upsertNote, settings.meshtastic?.saveReceivedNotes]);
+    useEventSubscription(mesh, {
+        note: (note: Note) => {
+            if (settings.meshtastic?.saveReceivedNotes) {
+                upsertNote(note, true);
+            }
+        },
+        error: (err: any) => console.error('Mesh error:', err)
+    });
 
     useEffect(() => {
         let nostr = networkRegistry.getProvider('nostr') as NostrNetworkProvider;
