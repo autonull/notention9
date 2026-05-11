@@ -2,7 +2,7 @@ import React from 'react';
 
 export type BadgeVariant = 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'outline' | 'purple' | 'info';
 
-interface BadgeProps {
+interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
     children: React.ReactNode;
     variant?: BadgeVariant;
     className?: string;
@@ -17,7 +17,8 @@ export function Badge({
                           className = '',
                           size = 'md',
                           pill = false,
-                          icon: Icon
+                          icon: Icon,
+                          ...props
                       }: BadgeProps) {
     const baseStyles = `inline-flex items-center justify-center border font-medium ${pill ? 'rounded-full' : 'rounded'}`;
 
@@ -31,16 +32,19 @@ export function Badge({
         primary: "bg-blue-900/30 border-blue-800 text-blue-400",
         success: "bg-green-900/30 border-green-800 text-green-400",
         warning: "bg-yellow-900/30 border-yellow-800 text-yellow-500",
-        danger: "bg-red-900/30 border-red-800 text-red-400",
+        danger: "bg-red-500 border-red-600 text-white",
         outline: "bg-transparent border-gray-600 text-gray-400",
         purple: "bg-purple-900/30 border-purple-800 text-purple-300",
         info: "bg-blue-900/30 border-blue-800 text-blue-400"
     };
 
     return (
-        <span className={`${baseStyles} ${sizeStyles[size]} ${variantStyles[variant]} ${className}`}>
-      {Icon && <Icon className={`mr-1 ${size === 'sm' ? 'h-3 w-3' : 'h-3.5 w-3.5'}`}/>}
+        <span
+            className={`${baseStyles} ${sizeStyles[size]} ${variantStyles[variant]} ${className}`}
+            {...props}
+        >
+            {Icon && <Icon className={`mr-1 ${size === 'sm' ? 'h-3 w-3' : 'h-3.5 w-3.5'}`}/>}
             {children}
-    </span>
+        </span>
     );
 };

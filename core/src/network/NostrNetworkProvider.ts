@@ -41,11 +41,11 @@ export class NostrNetworkProvider extends BaseNetworkProvider implements Network
     set enabled(val: boolean) {
         const changed = this.config.enabled !== val;
         this.config.enabled = val;
-        if (val && changed) {
-            this.subscribe();
-        } else if (!val) {
-            this.unsubscribe();
-        }
+        if (changed) val ? this.subscribe() : this.unsubscribe();
+    }
+
+    private get relays() {
+        return this.config.relays || DEFAULT_RELAYS;
     }
 
     private updatePubkey(privkey: string) {
@@ -58,84 +58,59 @@ export class NostrNetworkProvider extends BaseNetworkProvider implements Network
     }
 
     setConfig(config: NostrConfig) {
-        const privkeyChanged = config.privkey !== this.config.privkey;
+        const keyChanged = config.privkey !== this.config.privkey;
         const relaysChanged = JSON.stringify(config.relays) !== JSON.stringify(this.config.relays);
 
         this.config = { ...this.config, ...config };
-
-        if (privkeyChanged && this.config.privkey) {
-            this.updatePubkey(this.config.privkey);
-        } else if (privkeyChanged) {
-            this._pubkey = null;
-        }
-
-        if ((privkeyChanged || relaysChanged || this.enabled) && this.enabled) {
-            this.subscribe(); // Re-subscribe or start subscribe with new config
-        }
+        if (keyChanged) this.config.privkey ? this.updatePubkey(this.config.privkey) : (this._pubkey = null);
+        if ((keyChanged || relaysChanged) && this.enabled) this.subscribe();
 
         this.emit('status_change', this.getStatus());
     }
 
     async initialize(): Promise<void> {
-        if (this.enabled) {
-            this.subscribe();
-        }
+        if (this.enabled) this.subscribe();
     }
 
     getStatus(): NetworkStatus {
+        const count = this.relays.length;
         return {
             connected: !!this.config.privkey && this.enabled,
-            details: this.config.privkey ? `Using ${this.config.relays?.length || 0} relays` : 'No private key'
+            details: this.config.privkey ? `Using ${count} relay${count === 1 ? '' : 's'}` : 'No private key'
         };
     }
 
     async sendNote(note: Note, ontology?: OntologyNode[]): Promise<void> {
         if (!this.config.privkey || !this.enabled) return;
 
-        const relays = this.config.relays || DEFAULT_RELAYS;
-
         const enhancedNote = { ...note, tags: [...note.tags] };
         if (ontology) {
-            const propertyTags = new Set<string>();
-            for (const prop of note.properties) {
-                const aliases = getAliases(prop.key, ontology);
-                aliases.forEach(alias => {
-                    if (alias !== prop.key) {
-                        propertyTags.add(`prop:${alias}`);
-                    }
-                });
-            }
-            propertyTags.forEach(tag => {
-                if (!enhancedNote.tags.includes(tag)) {
-                    enhancedNote.tags.push(tag);
-                }
-            });
+            const propertyTags = new Set(
+                note.properties.flatMap(p => getAliases(p.key, ontology))
+                    .filter(alias => !note.properties.some(p => p.key === alias))
+                    .map(alias => `prop:${alias}`)
+            );
+            propertyTags.forEach(tag => !enhancedNote.tags.includes(tag) && enhancedNote.tags.push(tag));
         }
 
-        await publishNoteToNostr(enhancedNote, this.config.privkey, relays);
+        await publishNoteToNostr(enhancedNote, this.config.privkey, this.relays);
     }
 
     async discoverMatches(note: Note, ontology: OntologyNode[], privacyMode: PrivacyLevel): Promise<ScoredMatch[]> {
         if (!this.enabled) return [];
-
-        const relays = this.config.relays || DEFAULT_RELAYS;
-        const engine = new MatchEngine(ontology);
-        const discovery = new NetworkDiscoveryService(engine);
-
-        return await discovery.discoverMatches(note, relays, privacyMode);
+        const discovery = new NetworkDiscoveryService(new MatchEngine(ontology));
+        return await discovery.discoverMatches(note, this.relays, privacyMode);
     }
 
     subscribe() {
         this.unsubscribe();
-
         if (!this.enabled || !this._pubkey) return;
 
-        const relays = this.config.relays || DEFAULT_RELAYS;
-        this.logger.info(`Subscribing to Nostr sync for ${this._pubkey} on ${relays.length} relays`);
+        this.logger.info(`Subscribing to Nostr sync for ${this._pubkey} on ${this.relays.length} relays`);
 
         try {
             this._sub = pool.subscribeMany(
-                relays,
+                this.relays,
                 [{ kinds: [KIND_TEXT_NOTE, KIND_SEMANTIC_NOTE], authors: [this._pubkey], limit: 100 }],
                 {
                     onevent: (event) => {

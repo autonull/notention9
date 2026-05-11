@@ -1,5 +1,6 @@
 import React from 'react';
 import {Tooltip} from '../common/Tooltip';
+import {Badge} from '../common/Badge';
 
 export interface NavButtonProps {
     icon: React.ReactElement<{ className?: string }>;
@@ -36,10 +37,14 @@ export function NavButton({
         >
             {React.cloneElement(icon, {className: 'h-5 w-5'})}
             {badgeCount !== undefined && badgeCount > 0 && (
-                <span
-                    className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-sm ring-1 ring-gray-900">
-          {badgeCount > 99 ? '99+' : badgeCount}
-        </span>
+                <Badge
+                    variant="danger"
+                    size="sm"
+                    pill
+                    className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 font-bold ring-1 ring-gray-900"
+                >
+                    {badgeCount > 99 ? '99+' : badgeCount}
+                </Badge>
             )}
         </button>
     );
