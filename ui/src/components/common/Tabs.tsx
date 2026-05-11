@@ -1,4 +1,5 @@
 import React from 'react';
+import { Badge } from './Badge';
 
 interface Tab {
     id: string;
@@ -38,15 +39,14 @@ export function Tabs({tabs, activeTab, onChange, className = ''}: TabsProps) {
                 >
                     {tab.label}
                     {tab.count !== undefined && tab.count > 0 && (
-                        <span
-                            className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
-                                activeTab === tab.id
-                                    ? 'bg-blue-800 text-white'
-                                    : 'bg-gray-700 text-gray-300'
-                            }`}
+                        <Badge
+                            variant={activeTab === tab.id ? 'primary' : 'default'}
+                            size="sm"
+                            pill
+                            className={activeTab === tab.id ? 'bg-blue-800 border-blue-700' : ''}
                         >
-              {tab.count}
-            </span>
+                            {tab.count}
+                        </Badge>
                     )}
                 </button>
             ))}

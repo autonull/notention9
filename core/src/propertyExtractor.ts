@@ -102,14 +102,10 @@ export class PropertyExtractor {
   }
 
   private extractLocation(text: string): Property[] {
-    for (const { regex, prefix } of LOCATION_PATTERNS) {
-      const matches = text.match(regex);
-      if (matches) {
-        const location = matches[0].replace(prefix, '').trim();
-        return [{ key: 'location', operator: 'is near', values: [location] }];
-      }
-    }
-    return [];
+    const match = LOCATION_PATTERNS.find(p => p.regex.test(text));
+    if (!match) return [];
+    const location = text.match(match.regex)![0].replace(match.prefix, '').trim();
+    return [{ key: 'location', operator: 'is near', values: [location] }];
   }
 
   private extractDate(text: string): Property[] {
@@ -122,24 +118,21 @@ export class PropertyExtractor {
   }
 
   private extractFuzzy(text: string): Property[] {
-    const props: Property[] = [];
     const words = text.split(/\s+/);
     const existingKeys = new Set<string>();
 
-    words.slice(0, -1).forEach((word, i) => {
-      if (word.length <= 3) return;
-
+    return words.slice(0, -1).flatMap((word, i) => {
+      if (word.length <= 3) return [];
       const [match] = this.ontologyService.getFuzzyMatches(word, 1);
-      if (!match || existingKeys.has(match)) return;
+      if (!match || existingKeys.has(match)) return [];
 
       const nextWord = words[i + 1];
       if (nextWord.length > 2 && !STOP_WORDS.has(nextWord.toLowerCase())) {
-        props.push({ key: match, operator: 'contains', values: [nextWord] });
         existingKeys.add(match);
+        return [{ key: match, operator: 'contains', values: [nextWord] }];
       }
+      return [];
     });
-
-    return props;
   }
 
   private normalizeProperties(properties: Property[]): Property[] {

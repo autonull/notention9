@@ -219,7 +219,7 @@ export function SmartNoteAssistant({
                         Assistant
                     </span>
                 </div>
-                <div className="flex gap-1">
+                <div className="flex gap-1 data-assistant-badges">
                      {suggestions.length > 0 && (
                              <Badge variant="warning" size="sm" pill>{suggestions.length}</Badge>
                     )}

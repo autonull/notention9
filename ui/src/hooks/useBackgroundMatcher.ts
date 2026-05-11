@@ -34,25 +34,20 @@ export function useBackgroundMatcher() {
                     const offerNote = convertEventToNote(event);
 
                     // Check against all local notes
-                    // This is O(N) per event.
-                    notes.forEach(localNote => {
-                        // Only match if local note has semantic properties?
-                        // Or if it has any content.
-                        const result = matchingService.matchNotes(localNote, offerNote);
-
-                        if (result.score > 0.6) { // Threshold
-                            addMatch({
-                                localNoteId: localNote.id,
-                                event,
-                                score: result.score,
-                                timestamp: Date.now(),
-                                satisfied: result.satisfied
-                            });
-                            // Optional: Toast for high relevance
-                            if (result.score > 0.8) {
-                                // Only toast if it's REALLY good, and the throttle in ViewContext handles spam
-                                addToast(`New match found for "${localNote.title || 'Note'}"!`, 'info');
-                            }
+                    notes.map(localNote => ({
+                        localNote,
+                        result: matchingService.matchNotes(localNote, offerNote)
+                    })).filter(m => m.result.score > 0.6)
+                      .forEach(({localNote, result}) => {
+                        addMatch({
+                            localNoteId: localNote.id,
+                            event,
+                            score: result.score,
+                            timestamp: Date.now(),
+                            satisfied: result.satisfied
+                        });
+                        if (result.score > 0.8) {
+                            addToast(`New match found for "${localNote.title || 'Note'}"!`, 'info');
                         }
                     });
                 },
