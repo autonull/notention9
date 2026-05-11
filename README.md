@@ -47,18 +47,15 @@ Powerful tools for architects and developers:
 -   **Matcher Tester:** Test matching between request and offer notes
 -   **Progressive Disclosure:** Developer features available in developer mode
 
-### 🌐 P2P Coordination (Nostr)
-Publish your intent to the censorship-resistant Nostr network to find matches outside your personal workspace.
+### 🌐 P2P Coordination
+Publish your intent to censorship-resistant networks to find matches outside your personal workspace.
 -   **Publish:** Turn a private request note into a public offer or job posting with one click.
 -   **Smart Matching:** Connect with peers offering exactly what you need, based on semantic compatibility, not keyword spam.
 -   **Privacy Controls:** Default-private with explicit consent for publishing.
 
-## Supported Networks
+## Networks
 
 Notention is designed to be transport-agnostic, supporting multiple decentralized networks for semantic coordination.
-
-<details>
-<summary><b>View Detailed Network Capabilities Table</b></summary>
 
 | Network | Semantic Discovery | P2P Matching | Offline Support | Use Case |
 | :--- | :---: | :---: | :---: | :--- |
@@ -66,7 +63,6 @@ Notention is designed to be transport-agnostic, supporting multiple decentralize
 | **Meshtastic** | ✅ | ✅ | ✅ | Off-grid, long-range radio mesh for localized coordination. |
 | **Local-First** | ✅ | ✅ | ✅ | Private matching within your own device or local network. |
 
-</details>
 
 ## Getting Started
 
@@ -78,7 +74,6 @@ Notention is designed to be transport-agnostic, supporting multiple decentralize
 ## Tech Stack
 -   **Frontend:** React, Vite, TailwindCSS
 -   **Agent Core:** VoltAgent SDK, Playwright (Browser Automation)
--   **Network:** Nostr (`nostr-tools`)
 -   **Storage:** LocalForage & LibSQL
 -   **AI:** OpenAI / custom LLM integrations
 
