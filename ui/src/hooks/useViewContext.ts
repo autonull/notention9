@@ -1,10 +1,4 @@
-import {useContext} from 'react';
-import {ViewContext} from '../components/contexts/ViewContext';
+import { ViewContext } from '../components/contexts/ViewContext';
+import { createContextHook } from '../utils/ui';
 
-export function useView() {
-    const context = useContext(ViewContext);
-    if (context === undefined) {
-        throw new Error('useView must be used within a ViewProvider');
-    }
-    return context;
-};
+export const useView = createContextHook(ViewContext, 'useView', 'ViewProvider');

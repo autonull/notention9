@@ -1,5 +1,6 @@
 import React from 'react';
 import {Tooltip} from '../common/Tooltip';
+import {Badge} from '../common/Badge';
 
 export interface NavButtonProps {
     icon: React.ReactElement<{ className?: string }>;
@@ -28,18 +29,22 @@ export function NavButton({
             onClick={onClick}
             aria-label={label}
             aria-pressed={isActive}
-            className={`relative p-2 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 ${
+            className={`relative p-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-1 focus:ring-blue-500/50 ${
                 isActive
-                    ? 'bg-blue-600/30 text-white shadow-sm'
-                    : 'text-gray-400 hover:bg-gray-700/50 hover:text-gray-200'
+                    ? 'bg-blue-900/40 text-blue-400 shadow-sm'
+                    : 'text-gray-500 hover:bg-gray-800 hover:text-gray-200'
             }`}
         >
-            {React.cloneElement(icon, {className: 'h-6 w-6'})}
+            {React.cloneElement(icon, {className: 'h-5 w-5'})}
             {badgeCount !== undefined && badgeCount > 0 && (
-                <span
-                    className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-sm ring-1 ring-gray-900">
-          {badgeCount > 99 ? '99+' : badgeCount}
-        </span>
+                <Badge
+                    variant="danger"
+                    size="sm"
+                    pill
+                    className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 font-bold ring-1 ring-gray-900"
+                >
+                    {badgeCount > 99 ? '99+' : badgeCount}
+                </Badge>
             )}
         </button>
     );

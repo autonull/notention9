@@ -1,6 +1,7 @@
 import React from 'react';
 import type {Editor} from '@tiptap/react';
 import {IconButton} from '../common/IconButton';
+import {DropdownMenu, DropdownMenuItem} from '../common/DropdownMenu';
 import {
     BoldIcon,
     CodeBlockIcon,
@@ -17,6 +18,7 @@ import {
     QuoteIcon,
     SparklesIcon,
     StrikethroughIcon,
+    ChevronDownIcon
 } from '../common/icons';
 
 interface TiptapToolbarProps {
@@ -73,25 +75,6 @@ export function TiptapToolbar({
         },
         {type: 'separator'},
         {
-            title: 'Heading 1',
-            icon: Heading1Icon,
-            action: () => editor.chain().focus().toggleHeading({level: 1}).run(),
-            isActive: () => editor.isActive('heading', {level: 1}),
-        },
-        {
-            title: 'Heading 2',
-            icon: Heading2Icon,
-            action: () => editor.chain().focus().toggleHeading({level: 2}).run(),
-            isActive: () => editor.isActive('heading', {level: 2}),
-        },
-        {
-            title: 'Heading 3',
-            icon: Heading3Icon,
-            action: () => editor.chain().focus().toggleHeading({level: 3}).run(),
-            isActive: () => editor.isActive('heading', {level: 3}),
-        },
-        {type: 'separator'},
-        {
             title: 'Bullet List',
             icon: ListUlIcon,
             action: () => editor.chain().focus().toggleBulletList().run(),
@@ -122,9 +105,27 @@ export function TiptapToolbar({
         },
     ];
 
+    const headingItems: DropdownMenuItem[] = [
+        {
+            label: 'Heading 1',
+            icon: Heading1Icon,
+            onClick: () => editor.chain().focus().toggleHeading({level: 1}).run(),
+        },
+        {
+            label: 'Heading 2',
+            icon: Heading2Icon,
+            onClick: () => editor.chain().focus().toggleHeading({level: 2}).run(),
+        },
+        {
+            label: 'Heading 3',
+            icon: Heading3Icon,
+            onClick: () => editor.chain().focus().toggleHeading({level: 3}).run(),
+        },
+    ];
+
     return (
         <div
-            className="flex-shrink-0 px-3 py-2 border-b border-gray-700/50 flex items-center gap-2 bg-gray-900/50 backdrop-blur-sm overflow-x-auto flex-nowrap md:flex-wrap">
+            className="flex-shrink-0 px-3 py-1.5 border-b border-gray-700/50 flex items-center gap-2 bg-gray-900/50 backdrop-blur-sm overflow-x-auto flex-nowrap md:flex-wrap">
             {(onMagic || onTemplates || onInsertProperty) && (
                 <div
                     className="flex items-center gap-1 bg-purple-900/20 p-0.5 rounded-lg border border-purple-500/20 mr-2 flex-shrink-0">
@@ -159,27 +160,35 @@ export function TiptapToolbar({
             )}
 
             <div className="flex items-center gap-0.5 flex-grow flex-nowrap md:flex-wrap">
-                {actions.map((item, index) => {
-                    if (item.type === 'separator') {
-                        return (
-                            <div
-                                key={`sep-${index}`}
-                                className="w-px h-4 bg-gray-700/50 mx-1.5 hidden sm:block flex-shrink-0"
-                            ></div>
-                        );
+                {/* Heading Dropdown */}
+                <DropdownMenu
+                    trigger={
+                        <button className="flex items-center gap-1 px-2 py-1.5 rounded-md hover:bg-gray-800 text-gray-400 hover:text-white transition-colors">
+                            <span className="text-[10px] uppercase tracking-wider font-bold">Text</span>
+                            <ChevronDownIcon className="w-3 h-3"/>
+                        </button>
                     }
-                    return (
+                    items={headingItems}
+                    align="left"
+                />
+
+                <div className="w-px h-4 bg-gray-700/50 mx-1.5 flex-shrink-0"></div>
+
+                {actions.map((item, index) => (
+                    item.type === 'separator' ? (
+                        <div key={`sep-${index}`} className="w-px h-4 bg-gray-700/50 mx-1.5 hidden sm:block flex-shrink-0"></div>
+                    ) : (
                         <div key={item.title} className="flex-shrink-0">
                             <IconButton
                                 onClick={item.action}
-                                disabled={item.disabled ? item.disabled() : false}
-                                isActive={item.isActive ? item.isActive() : false}
+                                disabled={item.disabled?.()}
+                                isActive={item.isActive?.()}
                                 tooltip={item.title}
                                 icon={item.icon}
                             />
                         </div>
-                    );
-                })}
+                    )
+                ))}
             </div>
 
             <div className="border-l border-gray-700/50 pl-2 ml-1 flex-shrink-0">

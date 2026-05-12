@@ -14,6 +14,8 @@ export const getLogStyle = (type: string) => {
 /**
  * Shared UI styles and classes
  */
+import { useContext } from 'react';
+
 export const UI_STYLES = {
     input: {
         base: "w-full bg-gray-900/50 border border-gray-700/50 rounded-lg text-white focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all placeholder-gray-500 disabled:opacity-50 disabled:cursor-not-allowed",
@@ -23,3 +25,38 @@ export const UI_STYLES = {
         errorText: "mt-1 text-xs text-red-500"
     }
 };
+
+/**
+ * Higher-order function (macro) to create a hook for consuming a React context.
+ * Reduces boilerplate and ensures consistent error handling.
+ */
+export function createContextHook<T>(
+    context: React.Context<T | undefined>,
+    hookName: string,
+    providerName: string
+): () => T {
+    return () => {
+        const value = useContext(context);
+        if (value === undefined) {
+            throw new Error(`${hookName} must be used within a ${providerName}`);
+        }
+        return value;
+    };
+}
+
+/**
+ * Macro to create a generic update function for note-related states.
+ * Reduces duplication in optimized editing hooks.
+ */
+export function createUpdateHandler<T>(
+    setter: React.Dispatch<React.SetStateAction<T | null>>,
+    changeNotifier?: (hasChanges: boolean) => void
+) {
+    return (updater: (prev: T) => T) => {
+        setter(prev => {
+            if (!prev) return prev;
+            if (changeNotifier) changeNotifier(true);
+            return updater(prev);
+        });
+    };
+}

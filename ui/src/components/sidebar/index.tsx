@@ -51,10 +51,9 @@ export function Sidebar({sortedNotes = []}: SidebarProps) {
 
     return (
         <div className="bg-gray-900 flex flex-col h-full">
-            <div className="flex-shrink-0 border-b border-gray-700/50 p-4 space-y-4 bg-gray-900/95 backdrop-blur-sm sticky top-0 z-10">
-                <div className="flex items-center gap-3">
+            <div className="flex-shrink-0 border-b border-gray-700/50 p-3 space-y-3 bg-gray-900/95 backdrop-blur-sm sticky top-0 z-10">
+                <div className="flex items-center gap-2">
                     <div className="flex-grow relative group">
-                        <div className="absolute inset-0 bg-blue-500/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
                         <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
                     </div>
                     <IconButton
@@ -63,18 +62,22 @@ export function Sidebar({sortedNotes = []}: SidebarProps) {
                         tooltipPosition="bottom"
                         icon={PlusIcon}
                         variant="primary"
-                        size="lg"
+                        size="md"
                         containerClassName="flex-shrink-0 shadow-lg shadow-blue-500/20"
                     />
                 </div>
 
-                <FilterBar searchTerm={searchTerm} onSetSearch={setSearchTerm}/>
-
-                <div className="flex gap-2 items-center justify-between">
-                    <div className="flex-grow max-w-[70%]">
-                        <SortSelector sortOrder={sortOrder} onSortChange={setSortOrder}/>
+                <div className="flex items-center gap-2 overflow-hidden">
+                    <div className="flex-grow min-w-0">
+                        <FilterBar searchTerm={searchTerm} onSetSearch={setSearchTerm}/>
                     </div>
-                    <ViewSelector viewMode={sidebarViewMode} onViewChange={setSidebarViewMode}/>
+                    <div className="flex items-center gap-1 border-l border-gray-700/50 pl-2">
+                        <ViewSelector viewMode={sidebarViewMode} onViewChange={setSidebarViewMode}/>
+                    </div>
+                </div>
+
+                <div className="flex items-center px-1">
+                    <SortSelector sortOrder={sortOrder} onSortChange={setSortOrder}/>
                 </div>
             </div>
 

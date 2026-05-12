@@ -31,30 +31,19 @@ export class OntologyService {
     constructor(ontology: OntologyNode[]) {
         this.ontology = ontology;
         this.attributeIndex = this.buildAttributeIndex(this.ontology);
-        this.usageTracker = new UsageTracker();
+        this.usageTracker = new UsageTracker(this.ontology);
         this.fuzzyMatcher = new FuzzyMatcher();
     }
 
     /**
      * Build index of all attributes across ontology for fast lookup
      */
-    private buildAttributeIndex(
-        nodes: OntologyNode[],
-        index = new Map<string, OntologyAttribute>()
-    ): Map<string, OntologyAttribute> {
-        return nodes.reduce((acc, node) => {
-            if (node.attributes) {
-                for (const [key, value] of Object.entries(node.attributes)) {
-                    if (!acc.has(key)) {
-                        acc.set(key, value);
-                    }
-                }
-            }
-            if (node.children) {
-                this.buildAttributeIndex(node.children, acc);
-            }
-            return acc;
-        }, index);
+    private buildAttributeIndex(nodes: OntologyNode[], index = new Map<string, OntologyAttribute>()): Map<string, OntologyAttribute> {
+        nodes.forEach(node => {
+            Object.entries(node.attributes ?? {}).forEach(([key, val]) => index.has(key) || index.set(key, val));
+            node.children && this.buildAttributeIndex(node.children, index);
+        });
+        return index;
     }
 
     /**
@@ -173,26 +162,23 @@ export class OntologyService {
      * Get graph data for visualization
      */
     getGraphData() {
-        const nodes = Array.from(this.attributeIndex.keys()).map(key => ({
+        const stats = this.usageTracker.getStats();
+        const nodes = Array.from(this.attributeIndex.entries()).map(([key, attr]) => ({
             id: key,
-            val: (this.usageTracker.getStats().known.get(key) || 1),
+            val: stats.known.get(key) ?? 1,
             label: key,
-            group: this.attributeIndex.get(key)?.type || 'unknown'
+            group: attr.type ?? 'unknown'
         }));
 
-        const links: Array<{ source: string; target: string; value: number }> = [];
         const processedPairs = new Set<string>();
-        const coOccurrence = this.usageTracker.getCoOccurrenceData();
-
-        for (const [source, targets] of coOccurrence) {
-            for (const [target, count] of targets) {
-                const pairId = source < target ? `${source}-${target}` : `${target}-${source}`;
-                if (!processedPairs.has(pairId)) {
-                    links.push({ source, target, value: count });
-                    processedPairs.add(pairId);
-                }
-            }
-        }
+        const links = Array.from(this.usageTracker.getCoOccurrenceData().entries()).flatMap(([src, targets]) =>
+            Array.from(targets.entries())
+                .filter(([target]) => {
+                    const pairId = src < target ? `${src}-${target}` : `${target}-${src}`;
+                    return !processedPairs.has(pairId) && processedPairs.add(pairId);
+                })
+                .map(([target, value]) => ({ source: src, target, value }))
+        );
 
         return { nodes, links };
     }

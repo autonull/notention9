@@ -2,7 +2,7 @@ import {useCallback} from 'react';
 import {useNotes} from './useNotes';
 import {useView} from './useViewContext';
 import type {Property} from '@notention/core';
-import {parseProperties} from '@notention/core';
+import {parseProperties, NotePipeline} from '@notention/core';
 
 export function useNoteActions() {
     const {addNote, updateNote, notes} = useNotes();
@@ -13,28 +13,28 @@ export function useNoteActions() {
         content: string,
         explicitProperties?: Property[]
     ) => {
-        const newNote = addNote({title: title || 'Untitled Note'});
+        const baseNote = addNote({title: title || 'Untitled Note'});
 
         // If properties are not explicitly provided, parse them from content
         const properties = explicitProperties ?? parseProperties(content);
 
-        updateNote({
-            ...newNote,
+        const updatedNote = NotePipeline.setPriority({
+            ...baseNote,
             content,
-            properties,
-            priority: 1.0 // New notes created by user action have high priority
-        });
+            properties
+        }, 1.0);
 
-        setSelectedNoteId(newNote.id);
+        updateNote(updatedNote);
+        setSelectedNoteId(updatedNote.id);
         setActiveView('notes');
 
-        return newNote;
+        return updatedNote;
     }, [addNote, updateNote, setSelectedNoteId, setActiveView]);
 
     const promoteNote = useCallback((noteId: string) => {
         const note = notes.find(n => n.id === noteId);
         if (note) {
-            updateNote({...note, priority: 1.0});
+            updateNote(NotePipeline.setPriority(note, 1.0));
         }
     }, [notes, updateNote]);
 

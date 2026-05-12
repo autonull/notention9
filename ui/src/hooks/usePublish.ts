@@ -14,11 +14,8 @@ export function usePublish() {
 
     const relays = settings.nostr?.relays || DEFAULT_RELAYS;
 
-    const publishNote = useCallback(async (note: Note, promptUser?: (message: string) => Promise<boolean>) => {
-        const hasNip07 = typeof window !== 'undefined' && !!(window as any).nostr;
-
+    const publishNote = useCallback(async (note: Note, _promptUser?: (message: string) => Promise<boolean>) => {
         setIsPublishing(true);
-        let eventId: string | undefined;
 
         try {
             const content = getTextFromHtml(note.content);
@@ -29,41 +26,16 @@ export function usePublish() {
                 content: formattedContent
             };
 
-            const publishTasks: Promise<any>[] = [];
-
-            // Nostr Publishing
-            const nostrEnabled = settings.nostr?.publishEnabled !== false;
-            if (nostrEnabled) {
-                if (!settings.nostr?.privkey && !hasNip07) {
-                    log.warn('Nostr publishing enabled but no key/extension found');
-                } else {
-                    publishTasks.push((async () => {
-                        eventId = await publishNoteToNostr(
-                            noteToPublish,
-                            settings.nostr?.privkey || undefined,
-                            relays,
-                            promptUser
-                        );
-                    })());
-                }
-            }
-
-            // Meshtastic Publishing
-            const meshEnabled = settings.meshtastic?.publishEnabled === true;
-            if (meshEnabled) {
-                const meshProvider = networkRegistry.getProvider('meshtastic');
-                if (meshProvider && meshProvider.enabled) {
-                    publishTasks.push(meshProvider.sendNote(noteToPublish));
-                }
-            }
+            const providers = networkRegistry.getActiveProviders();
+            const publishTasks = providers.map(p => p.sendNote(noteToPublish, settings.ontology));
 
             if (publishTasks.length === 0) {
-                throw new Error('No publishing targets enabled.');
+                throw new Error('No active network providers for publishing.');
             }
 
             await Promise.all(publishTasks);
 
-            return eventId || note.id;
+            return note.id;
         } catch (error) {
             log.error('Failed to publish note', error as Error);
             throw error;

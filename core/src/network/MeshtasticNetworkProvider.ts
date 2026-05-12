@@ -1,9 +1,9 @@
 import { NetworkProvider, NetworkTransport, NetworkStatus } from './types.js';
-import { Note, PrivacyLevel, OntologyNode } from '../types/index.js';
+import { Note, PrivacyLevel, OntologyNode, Property } from '../types/index.js';
 import { ScoredMatch } from '../nostr/discovery.js';
 import { MatchEngine } from '../matching/MatchEngine.js';
-import { Logger } from '../utils/logging.js';
 import { encode, decode } from 'cbor-x';
+import { BaseNetworkProvider } from './BaseNetworkProvider.js';
 
 export interface MeshtasticConfig {
     enabled?: boolean;
@@ -15,15 +15,14 @@ export interface MeshtasticConfig {
     agentService?: any; // To allow proxying via AgentService if available
 }
 
-export class MeshtasticNetworkProvider implements NetworkProvider {
+export class MeshtasticNetworkProvider extends BaseNetworkProvider implements NetworkProvider {
     readonly id = 'meshtastic';
     readonly name = 'Meshtastic';
-    private logger = Logger.getInstance();
     private _transport: NetworkTransport | null = null;
-    private listeners: Record<string, ((...args: any[]) => void)[]> = {};
     private seenNotes = new Map<string, Note>();
 
     constructor(private config: MeshtasticConfig = {}) {
+        super();
         if (config.transport) {
             this.setTransport(config.transport);
         }
@@ -112,26 +111,6 @@ export class MeshtasticNetworkProvider implements NetworkProvider {
         return matches.sort((a, b) => b.result.score - a.result.score);
     }
 
-    isSupported(): boolean {
-        return true;
-    }
-
-    on(event: string, callback: (...args: any[]) => void): void {
-        if (!this.listeners[event]) this.listeners[event] = [];
-        this.listeners[event].push(callback);
-    }
-
-    off(event: string, callback: (...args: any[]) => void): void {
-        if (!this.listeners[event]) return;
-        this.listeners[event] = this.listeners[event].filter(l => l !== callback);
-    }
-
-    emit(event: string, ...args: any[]): void {
-        const eventListeners = this.listeners[event];
-        if (eventListeners) {
-            eventListeners.forEach(fn => fn(...args));
-        }
-    }
 
     serializeNote(note: Note): Uint8Array {
         const maxProperties = 5;
@@ -236,25 +215,41 @@ export class MeshtasticNetworkProvider implements NetworkProvider {
 
     handleTelemetry(nodeId: string, telemetry: any) {
         this.emit('telemetry', { nodeId, telemetry });
+        this.emit('note', this.mapTelemetryToNote(nodeId, telemetry));
     }
 
     handlePosition(nodeId: string, position: any) {
         this.emit('position', { nodeId, position });
+        this.emit('note', this.mapPositionToNote(nodeId, position));
     }
 
-    mapTelemetryToNote(nodeId: string, telemetry: any, existingNote?: Note): Note {
-        const timestamp = new Date().toISOString();
-        const properties = [
-            { key: 'battery', operator: 'is', values: [String(telemetry.batteryLevel || '')] },
-            { key: 'voltage', operator: 'is', values: [String(telemetry.voltage || '')] },
-            { key: 'channel-utilization', operator: 'is', values: [String(telemetry.channelUtilization || '')] }
-        ].filter(p => p.values[0] !== '');
+    mapTelemetryToNote(nodeId: string, telemetry: any, existingNote?: Note | null): Note {
+        const props: Property[] = [
+            { key: 'battery', val: telemetry.batteryLevel },
+            { key: 'voltage', val: telemetry.voltage },
+            { key: 'channel-utilization', val: telemetry.channelUtilization }
+        ].filter(p => p.val != null && p.val !== '')
+         .map(p => ({ key: p.key, operator: 'is', values: [String(p.val)] }));
 
+        return this.mergeNodeProperties(nodeId, props, ['battery', 'voltage', 'channel-utilization'], existingNote);
+    }
+
+    mapPositionToNote(nodeId: string, pos: { latitude: number, longitude: number, altitude?: number }, existingNote?: Note | null): Note {
+        const props: Property[] = [
+            { key: 'location', val: `${pos.latitude},${pos.longitude}` },
+            { key: 'altitude', val: pos.altitude }
+        ].filter(p => p.val != null && p.val !== '')
+         .map(p => ({ key: p.key, operator: 'is', values: [String(p.val)] }));
+
+        return this.mergeNodeProperties(nodeId, props, ['location', 'altitude'], existingNote);
+    }
+
+    private mergeNodeProperties(nodeId: string, newProps: Property[], keysToRemove: string[], existingNote?: Note | null): Note {
+        const timestamp = new Date().toISOString();
         if (existingNote) {
-            const newProps = [...existingNote.properties.filter(p => !['battery', 'voltage', 'channel-utilization'].includes(p.key)), ...properties];
             return {
                 ...existingNote,
-                properties: newProps,
+                properties: [...existingNote.properties.filter(p => !keysToRemove.includes(p.key)), ...newProps],
                 updatedAt: timestamp
             };
         }
@@ -264,49 +259,10 @@ export class MeshtasticNetworkProvider implements NetworkProvider {
             title: `Node ${nodeId}`,
             content: `Meshtastic Node ${nodeId}`,
             tags: ['meshtastic', 'node'],
-            properties,
+            properties: newProps,
             createdAt: timestamp,
             updatedAt: timestamp,
-            source: {
-                type: 'import',
-                identifier: `meshtastic-node-${nodeId}`,
-                timestamp: Date.now()
-            },
-            privacy: 'public',
-            priority: 0.1,
-            author: `mesh:${nodeId}`
-        };
-    }
-
-    mapPositionToNote(nodeId: string, pos: { latitude: number, longitude: number, altitude?: number }, existingNote?: Note): Note {
-        const timestamp = new Date().toISOString();
-        const properties = [
-            { key: 'location', operator: 'is', values: [`${pos.latitude},${pos.longitude}`] },
-            { key: 'altitude', operator: 'is', values: [String(pos.altitude || '')] }
-        ].filter(p => p.values[0] !== '');
-
-        if (existingNote) {
-            const newProps = [...existingNote.properties.filter(p => !['location', 'altitude'].includes(p.key)), ...properties];
-            return {
-                ...existingNote,
-                properties: newProps,
-                updatedAt: timestamp
-            };
-        }
-
-        return {
-            id: this.getNodeNoteId(nodeId),
-            title: `Node ${nodeId}`,
-            content: `Meshtastic Node ${nodeId}`,
-            tags: ['meshtastic', 'node'],
-            properties,
-            createdAt: timestamp,
-            updatedAt: timestamp,
-            source: {
-                type: 'import',
-                identifier: `meshtastic-node-${nodeId}`,
-                timestamp: Date.now()
-            },
+            source: { type: 'import', identifier: `meshtastic-node-${nodeId}`, timestamp: Date.now() },
             privacy: 'public',
             priority: 0.1,
             author: `mesh:${nodeId}`

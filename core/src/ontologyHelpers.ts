@@ -13,27 +13,23 @@ const traverseTree = (nodes: OntologyNode[], predicate: (node: OntologyNode) => 
   return null;
 };
 
+const findNodeWithAttribute = (nodes: OntologyNode[], key: string): OntologyNode | null =>
+  traverseTree(nodes, n => {
+    if (!n.attributes) return false;
+    return !!(n.attributes[key] || Object.values(n.attributes).some(attr => attr.aliases?.includes(key)));
+  });
+
 export const findNode = (tree: OntologyNode[], nodeId: string): OntologyNode | null =>
   traverseTree(tree, node => node.id === nodeId);
 
 export const findAttributeDef = (key: string, nodes: OntologyNode[]): OntologyAttribute | undefined => {
-  const node = traverseTree(nodes, n => {
-    if (!n.attributes) return false;
-    if (n.attributes[key]) return true;
-    return Object.values(n.attributes).some(attr => attr.aliases?.includes(key));
-  });
+  const node = findNodeWithAttribute(nodes, key);
   if (!node?.attributes) return undefined;
-  const directMatch = node.attributes[key];
-  if (directMatch) return directMatch;
-  return Object.values(node.attributes).find(attr => attr.aliases?.includes(key));
+  return node.attributes[key] ?? Object.values(node.attributes).find(attr => attr.aliases?.includes(key));
 };
 
 export const getCanonicalKey = (key: string, nodes: OntologyNode[]): string => {
-  const node = traverseTree(nodes, n => {
-    if (!n.attributes) return false;
-    if (n.attributes[key]) return true;
-    return Object.values(n.attributes).some(attr => attr.aliases?.includes(key));
-  });
+  const node = findNodeWithAttribute(nodes, key);
   if (!node?.attributes) return key;
   if (node.attributes[key]) return key;
   const found = Object.entries(node.attributes).find(([, attr]) => attr.aliases?.includes(key));
@@ -59,16 +55,11 @@ export const addNode = (tree: OntologyNode[], parentId: string | null, newNode: 
 
 export const getSubtreeKeys = (node: OntologyNode): Set<string> => {
   const keys = new Set<string>();
-  const stack = [node];
-  while (stack.length > 0) {
-    const current = stack.pop()!;
-    if (current.attributes) {
-      for (const k of Object.keys(current.attributes)) {
-        keys.add(k);
-      }
-    }
-    stack.push(...(current.children ?? []));
-  }
+  const collect = (n: OntologyNode) => {
+    Object.keys(n.attributes ?? {}).forEach(k => keys.add(k));
+    n.children?.forEach(collect);
+  };
+  collect(node);
   return keys;
 };
 
@@ -85,14 +76,8 @@ export const renameNode = (tree: OntologyNode[], nodeId: string, newLabel: strin
   return newTree;
 };
 
-export const findNodeIdForAttribute = (nodes: OntologyNode[], key: string): string | null => {
-  const node = traverseTree(nodes, n => {
-    if (!n.attributes) return false;
-    if (n.attributes[key]) return true;
-    return Object.values(n.attributes).some(attr => attr.aliases?.includes(key));
-  });
-  return node?.id ?? null;
-};
+export const findNodeIdForAttribute = (nodes: OntologyNode[], key: string): string | null =>
+  findNodeWithAttribute(nodes, key)?.id ?? null;
 
 export const addAttribute = (tree: OntologyNode[], nodeId: string, key: string, attribute: OntologyAttribute): OntologyNode[] => {
   const newTree = cloneTree(tree);

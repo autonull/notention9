@@ -1,10 +1,4 @@
-import {useContext} from 'react';
-import {SettingsContext} from '../components/contexts/SettingsContext';
+import { SettingsContext } from '../components/contexts/SettingsContext';
+import { createContextHook } from '../utils/ui';
 
-export function useSettings() {
-    const context = useContext(SettingsContext);
-    if (context === undefined) {
-        throw new Error('useSettings must be used within a SettingsProvider');
-    }
-    return context;
-};
+export const useSettings = createContextHook(SettingsContext, 'useSettings', 'SettingsProvider');

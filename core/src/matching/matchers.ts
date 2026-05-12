@@ -56,7 +56,7 @@ const CANONICAL: Record<string, string> = {
 };
 
 const normalizeTerm = (term: string): string =>
-  term ? CANONICAL[term.toLowerCase().trim().replace(/[^a-z0-9\s]/g, '')] ?? term.toLowerCase().trim().replace(/[^a-z0-9\s]/g, '') : '';
+  term ? CANONICAL[term.toLowerCase().trim()] ?? term.toLowerCase().trim() : '';
 
 export const PropertyMatchers = {
     evaluateNumber: (request: Property, offer: Property): PropertyMatch => {
@@ -75,41 +75,25 @@ export const PropertyMatchers = {
         const requestValue = parseNumber(request.values[0]);
         if (requestValue === null) return createMatch(request, offer, 0, 'Invalid comparison value');
 
-        const NUMERIC_OP_ALIASES: Record<string, string> = {
-            'less than': '<',
-            'greater than': '>',
-            'less than or equal': '<=',
-            'greater than or equal': '>=',
-        };
-        const op = NUMERIC_OP_ALIASES[request.operator] ?? request.operator;
+        const op = {
+            'less than': '<', 'greater than': '>', 'less than or equal': '<=', 'greater than or equal': '>='
+        }[request.operator] ?? request.operator;
 
-        switch (op) {
-            case '<':
-                return offerValue < requestValue
-                    ? createMatch(request, offer, 1, `${offerValue} < ${requestValue}`, { type: 'exact', valueMatch: 'lt' })
-                    : createMatch(request, offer, -1, `${offerValue} >= ${requestValue}`, { type: 'exact', valueMatch: 'gte' });
-            case '<=':
-                return offerValue <= requestValue
-                    ? createMatch(request, offer, 1, `${offerValue} <= ${requestValue}`, { type: 'exact', valueMatch: 'lte' })
-                    : createMatch(request, offer, -1, `${offerValue} > ${requestValue}`, { type: 'exact', valueMatch: 'gt' });
-            case '>':
-                return offerValue > requestValue
-                    ? createMatch(request, offer, 1, `${offerValue} > ${requestValue}`, { type: 'exact', valueMatch: 'gt' })
-                    : createMatch(request, offer, -1, `${offerValue} <= ${requestValue}`, { type: 'exact', valueMatch: 'lte' });
-            case '>=':
-                return offerValue >= requestValue
-                    ? createMatch(request, offer, 1, `${offerValue} >= ${requestValue}`, { type: 'exact', valueMatch: 'gte' })
-                    : createMatch(request, offer, -1, `${offerValue} < ${requestValue}`, { type: 'exact', valueMatch: 'lt' });
-            case 'is':
-            case '=':
-                // Allow 5% tolerance
-                const isClose = Math.abs(offerValue - requestValue) < (requestValue * 0.05);
-                return isClose
-                    ? createMatch(request, offer, 1, `~= ${requestValue}`, { type: 'exact', valueMatch: 'close' })
-                    : createMatch(request, offer, -1, `${offerValue} != ${requestValue}`, { type: 'exact', valueMatch: 'diff' });
-            default:
-                return createMatch(request, offer, 0, `Unknown operator ${request.operator}`, { type: 'unknown' });
-        }
+        const results: Record<string, { ok: boolean; msg: string; vm: string; nokMsg: string; nvm: string }> = {
+            '<': { ok: offerValue < requestValue, msg: `${offerValue} < ${requestValue}`, vm: 'lt', nokMsg: `${offerValue} >= ${requestValue}`, nvm: 'gte' },
+            '<=': { ok: offerValue <= requestValue, msg: `${offerValue} <= ${requestValue}`, vm: 'lte', nokMsg: `${offerValue} > ${requestValue}`, nvm: 'gt' },
+            '>': { ok: offerValue > requestValue, msg: `${offerValue} > ${requestValue}`, vm: 'gt', nokMsg: `${offerValue} <= ${requestValue}`, nvm: 'lte' },
+            '>=': { ok: offerValue >= requestValue, msg: `${offerValue} >= ${requestValue}`, vm: 'gte', nokMsg: `${offerValue} < ${requestValue}`, nvm: 'lt' },
+            'is': { ok: Math.abs(offerValue - requestValue) < (requestValue * 0.05), msg: `~= ${requestValue}`, vm: 'close', nokMsg: `${offerValue} != ${requestValue}`, nvm: 'diff' },
+            '=': { ok: Math.abs(offerValue - requestValue) < (requestValue * 0.05), msg: `~= ${requestValue}`, vm: 'close', nokMsg: `${offerValue} != ${requestValue}`, nvm: 'diff' }
+        };
+
+        const res = results[op];
+        if (!res) return createMatch(request, offer, 0, `Unknown operator ${request.operator}`, { type: 'unknown' });
+
+        return res.ok
+            ? createMatch(request, offer, 1, res.msg, { type: 'exact', valueMatch: res.vm })
+            : createMatch(request, offer, -1, res.nokMsg, { type: 'exact', valueMatch: res.nvm });
     },
 
     evaluateNumberRange: (request: Property, offer: Property, offerValue: number): PropertyMatch => {

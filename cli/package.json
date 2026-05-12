@@ -10,6 +10,8 @@
   "scripts": {
     "start": "tsx src/index.ts",
     "build": "tsc",
+    "bundle": "esbuild src/index.ts --bundle --platform=node --target=node20 --outfile=dist/notention.cjs --format=cjs --external:fsevents --log-level=error --alias:@notention/core=../core/src/index.ts --alias:@notention/agent=../agent/src/index.ts --external:cosmiconfig --external:conf --external:dotenv --external:inquirer --external:ora --external:chalk --external:commander --external:ai --external:@ai-sdk/openai --external:eventsource --external:marked --external:marked-terminal --external:zod --external:nostr-tools --external:@modelcontextprotocol/sdk --external:@xenova/transformers --external:playwright --external:express --external:ws --external:boxen",
+    "package": "npm run bundle && pkg -t node18-linux-x64 --out-path bin dist/notention.cjs",
     "dev": "tsx watch src/index.ts",
     "test": "vitest run"
   },
@@ -44,6 +46,8 @@
     "@types/marked-terminal": "^6.1.1",
     "@types/node": "^20.11.0",
     "@types/ws": "^8.18.1",
+    "esbuild": "^0.28.0",
+    "pkg": "^5.8.1",
     "tsx": "^4.19.2",
     "typescript": "~5.9.2",
     "vitest": "^4.0.18"

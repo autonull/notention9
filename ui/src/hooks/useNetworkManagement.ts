@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
     networkRegistry,
     NostrNetworkProvider,
@@ -8,73 +8,57 @@ import {
 import { useSettings } from './useSettingsContext';
 import { useNotes } from './useNotes';
 import { agentService } from '../services/AgentService';
+import { useEventSubscription } from './useEventSubscription';
 
 export function useNetworkManagement() {
     const { settings, setSettings } = useSettings() as { settings: any, setSettings: any };
     const { upsertNote } = useNotes();
     const [providers, setProviders] = useState(() => networkRegistry.getAllProviders());
 
-    useEffect(() => {
-        const mesh = networkRegistry.getProvider('meshtastic') as MeshtasticNetworkProvider;
-        if (mesh) {
-            const handleNote = (note: Note) => {
-                if (settings.meshtastic?.saveReceivedNotes) {
-                    upsertNote(note, { skipAgent: true });
-                }
-            };
+    const nostr = useMemo(() => networkRegistry.getProvider('nostr') as NostrNetworkProvider, [providers]);
+    const mesh = useMemo(() => networkRegistry.getProvider('meshtastic') as MeshtasticNetworkProvider, [providers]);
 
-            const handleError = (err: any) => {
-                console.error('Mesh error:', err);
-            };
+    useEventSubscription(nostr, {
+        note: (note: Note) => upsertNote(note, true)
+    });
 
-            const handleTelemetry = async ({ nodeId, telemetry }: any) => {
-                if (settings.meshtastic?.saveReceivedNotes) {
-                    const provider = networkRegistry.getProvider('meshtastic') as MeshtasticNetworkProvider;
-                    const note = provider.mapTelemetryToNote(nodeId, telemetry);
-                    upsertNote(note, { skipAgent: true });
-                }
-            };
-
-            const handlePosition = async ({ nodeId, position }: any) => {
-                if (settings.meshtastic?.saveReceivedNotes) {
-                    const provider = networkRegistry.getProvider('meshtastic') as MeshtasticNetworkProvider;
-                    const note = provider.mapPositionToNote(nodeId, position);
-                    upsertNote(note, { skipAgent: true });
-                }
-            };
-
-            mesh.on('note', handleNote);
-            mesh.on('telemetry', handleTelemetry);
-            mesh.on('position', handlePosition);
-            mesh.on('error', handleError);
-
-            return () => {
-                mesh.off('note', handleNote);
-                mesh.off('telemetry', handleTelemetry);
-                mesh.off('position', handlePosition);
-                mesh.off('error', handleError);
-            };
-        }
-    }, [upsertNote, settings.meshtastic?.saveReceivedNotes]);
+    useEventSubscription(mesh, {
+        note: (note: Note) => {
+            if (settings.meshtastic?.saveReceivedNotes) {
+                upsertNote(note, true);
+            }
+        },
+        error: (err: any) => console.error('Mesh error:', err)
+    });
 
     useEffect(() => {
-        if (!networkRegistry.getProvider('nostr')) {
-            const nostr = new NostrNetworkProvider({
+        let nostr = networkRegistry.getProvider('nostr') as NostrNetworkProvider;
+        if (!nostr) {
+            nostr = new NostrNetworkProvider({
                 privkey: settings.nostr?.privkey,
                 relays: settings.nostr?.relays,
                 enabled: settings.privacyMode !== 'local-only'
             });
             networkRegistry.registerProvider(nostr);
+            nostr.initialize();
+        } else {
+            nostr.setConfig({
+                privkey: settings.nostr?.privkey,
+                relays: settings.nostr?.relays,
+                enabled: settings.privacyMode !== 'local-only'
+            });
         }
 
-        if (!networkRegistry.getProvider('meshtastic')) {
-            const mesh = new MeshtasticNetworkProvider({
+        let mesh = networkRegistry.getProvider('meshtastic') as MeshtasticNetworkProvider;
+        if (!mesh) {
+            mesh = new MeshtasticNetworkProvider({
                 enabled: settings.privacyMode !== 'local-only' && settings.meshtastic?.enabled,
                 connectionType: settings.meshtastic?.connectionType,
                 saveReceivedNotes: settings.meshtastic?.saveReceivedNotes,
                 agentService: agentService
             });
             networkRegistry.registerProvider(mesh);
+            mesh.initialize();
         }
 
         setProviders(networkRegistry.getAllProviders());
