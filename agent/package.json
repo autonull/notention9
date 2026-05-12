@@ -8,6 +8,8 @@
     "dev": "tsx watch src/start.ts",
     "start": "tsx src/start.ts",
     "build": "tsc",
+    "bundle": "esbuild src/start.ts --bundle --platform=node --target=node20 --outfile=dist/agent.cjs --format=cjs --external:fsevents --log-level=error --alias:@notention/core=../core/src/index.ts --alias:@notention/ui=../ui/src/index.tsx --alias:@notention/agent-voltagent=./voltagent/src/index.ts --external:express --external:ws --external:playwright --external:zod --external:dompurify --external:localforage --external:nostr-tools --external:@modelcontextprotocol/sdk --external:@google/genai --external:@mlc-ai/web-llm --external:@noble/hashes --external:date-fns --external:iconv-lite --external:leaflet --external:os-browserify --external:path-browserify --external:react --external:react-big-calendar --external:react-dom --external:react-force-graph-2d --external:tippy.js --external:util --external:xmlchars --external:@tiptap/core --external:@tiptap/extension-bubble-menu --external:@tiptap/extension-mention --external:@tiptap/starter-kit --external:chromium-bidi --external:@voltagent/core --external:@voltagent/libsql --external:@voltagent/logger --external:@voltagent/server-hono --external:@ai-sdk/openai --external:ai --external:@voltagent/mcp",
+    "package": "npm run bundle && pkg -t node18-linux-x64 --out-path bin dist/agent.cjs",
     "test": "vitest run"
   },
   "keywords": [
@@ -30,6 +32,8 @@
   "devDependencies": {
     "@types/express": "^5.0.0",
     "@types/ws": "^8.18.0",
+    "esbuild": "^0.28.0",
+    "pkg": "^5.8.1",
     "tsx": "^4.19.2",
     "typescript": "~5.9.2",
     "vitest": "^4.0.18"
