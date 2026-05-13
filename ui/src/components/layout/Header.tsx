@@ -75,6 +75,7 @@ export function Header({onNewNote}: HeaderProps) {
                     variant="ghost"
                     size="lg"
                     className="hidden md:flex"
+                    label="Ctrl+K"
                 />
 
                 <NewNoteButton

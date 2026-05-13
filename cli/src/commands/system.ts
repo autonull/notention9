@@ -1,8 +1,30 @@
 import chalk from 'chalk';
+import boxen from 'boxen';
 
 /**
- * System commands - exit, quit, help
+ * System commands - exit, quit, help, status
  */
+
+export const handleStatus = async (session: any, mcpUrl: string, enableSim: boolean): Promise<boolean> => {
+    const conf = session.getConfig();
+    const statusText = `
+${chalk.bold('Provider:')}    ${chalk.blue(conf.provider)}
+${chalk.bold('Model:')}       ${chalk.green(conf.model)}
+${chalk.bold('Server URL:')}  ${chalk.cyan(mcpUrl)}
+${chalk.bold('Simulation:')}  ${enableSim ? chalk.green('Enabled') : chalk.gray('Disabled')}
+${chalk.bold('Context:')}     ${session.getActiveContext() ? chalk.yellow(session.getActiveContext().title) : chalk.gray('None')}
+    `.trim();
+
+    console.log('\n' + boxen(statusText, {
+        padding: 1,
+        margin: 0,
+        borderStyle: 'round',
+        borderColor: 'blue',
+        title: chalk.bold('System Status'),
+        titleAlignment: 'center'
+    }));
+    return true;
+};
 
 export const handleExit = async (): Promise<boolean> => {
     console.warn("Goodbye.");

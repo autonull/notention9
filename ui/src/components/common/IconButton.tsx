@@ -9,6 +9,7 @@ export interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonEl
     tooltip?: string;
     tooltipPosition?: 'top' | 'bottom' | 'left' | 'right';
     containerClassName?: string;
+    label?: string;
 }
 
 export function IconButton({
@@ -22,6 +23,7 @@ export function IconButton({
                                tooltip,
                                tooltipPosition = 'top',
                                containerClassName,
+                               label,
                                ...props
                            }: IconButtonProps) {
     const baseClasses = "rounded-lg transition-all duration-200 flex items-center justify-center";
@@ -75,6 +77,11 @@ export function IconButton({
             {...props}
         >
             <Icon className={iconSizes[size]}/>
+            {label && (
+                <span className="ml-2 text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                    {label}
+                </span>
+            )}
         </button>
     );
 

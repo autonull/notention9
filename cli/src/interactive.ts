@@ -2,6 +2,7 @@ import * as readline from 'readline';
 import dotenv from 'dotenv';
 import { CliClient } from './client.js';
 import { handleSlashCommand, getSlashCommands } from './commands.js';
+import { handleStatus } from './commands/system.js';
 import { LlmSession, LLMProviderConfig } from './llm.js';
 import { getLocalTools } from './tools/index.js';
 import { log, withSpinner, setVerbose } from './utils.js';
@@ -193,7 +194,11 @@ export async function startInteractiveSession(options: {
 
     if (command) {
       if (command.startsWith('/')) {
-        await handleSlashCommand(command, cli, coreTools, session);
+        if (command === '/status') {
+           await handleStatus(session, mcpUrl, !!enableSim);
+        } else {
+           await handleSlashCommand(command, cli, coreTools, session);
+        }
       } else {
         await session.handleInteraction(command);
       }
@@ -228,14 +233,28 @@ export async function startInteractiveSession(options: {
         }
       });
 
-      console.log("\n" + "=".repeat(50));
-      log.info("Welcome to Notention CLI");
+      console.log("\n" + chalk.blue.bold(`
+  _   _       _                 _   _
+ | \\ | | ___ | |_ ___ _ __  _ _| |_(_) ___  _ __
+ |  \\| |/ _ \\| __/ _ \\ '_ \\| __| __| |/ _ \\| '_ \\
+ | |\\  | (_) | ||  __/ | | | |_| |_| | (_) | | | |
+ |_| \\_|\\___/ \\__\\___|_| |_|\\__\\__|_|\\___/|_| |_|
+      `));
+
       const sessionConfig = session.getConfig();
-      log.info(`Provider: ${sessionConfig.provider}`);
-      log.info(`Model: ${sessionConfig.model}`);
-      if (enableSim) log.info("Simulation Mode: ENABLED");
-      console.log("Type /help for commands, or just chat with the agent.");
-      console.log("=".repeat(50) + "\n");
+      console.log(boxen(
+        `${chalk.bold('Welcome to Notention CLI')}
+
+${chalk.blue('Provider:')} ${sessionConfig.provider}
+${chalk.green('Model:')}    ${sessionConfig.model}
+${enableSim ? chalk.yellow('Simulation Mode Active') : chalk.gray('Simulation Mode Inactive')}
+
+${chalk.bold('Quick Start:')}
+1. Type ${chalk.cyan('/help')} to see all commands
+2. Type ${chalk.cyan('/open <id>')} to focus on a note
+3. Type ${chalk.cyan('/status')} to view system health`,
+        {padding: 1, margin: 1, borderStyle: 'double', borderColor: 'blue'}
+      ));
 
       const ask = () => {
         const activeContext = session.getActiveContext();
@@ -255,13 +274,7 @@ export async function startInteractiveSession(options: {
 
           if (input.startsWith('/')) {
             if (input === '/status') {
-              log.info('--- System Status ---');
-              const conf = session.getConfig();
-              log.info(`Provider: ${conf.provider}`);
-              log.info(`Model: ${conf.model}`);
-              log.info(`Server URL: ${mcpUrl}`);
-              log.info(`Simulation: ${enableSim ? 'Enabled' : 'Disabled'}`);
-              log.info('---------------------');
+              await handleStatus(session, mcpUrl, !!enableSim);
             } else {
               await handleSlashCommand(input, cli, coreTools, session);
             }

@@ -6,7 +6,7 @@ import { handleConfig, handleProviders, handleProvider } from './config.js';
 import { handleTools, handleExtract } from './tools.js';
 import { handleOpen, handleClose } from './context.js';
 import { handleSecurity } from './security.js';
-import { handleExit, handleHelp } from './system.js';
+import { handleExit, handleHelp, handleStatus } from './system.js';
 import { handleSetup } from './setup.js';
 
 type CommandHandler = (args: string[], cli: CliClient, tools: any[], session?: LlmSession) => Promise<boolean>;
@@ -29,6 +29,13 @@ const COMMANDS: Record<string, CommandHandler> = {
   '/exit': (_args, _cli, _tools, _session) => handleExit(),
   '/quit': (_args, _cli, _tools, _session) => handleExit(),
   '/help': (_args, _cli, _tools, _session) => handleHelp(),
+  '/status': (_args, _cli, _tools, session) => {
+    // In handleSlashCommand, session is passed but we need mcpUrl and enableSim
+    // These might need to be passed through or extracted from environment
+    const mcpUrl = process.env.MCP_URL || 'http://localhost:3000/mcp/sse';
+    const enableSim = process.env.SIM_ENABLED === 'true';
+    return handleStatus(session, mcpUrl, enableSim);
+  },
   '/clear': (_args, _cli, _tools, session) => handleClear(_args, session),
 
   // Session
