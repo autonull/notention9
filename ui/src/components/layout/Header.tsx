@@ -75,7 +75,7 @@ export function Header({onNewNote}: HeaderProps) {
                     variant="ghost"
                     size="lg"
                     className="hidden md:flex"
-                    label="Ctrl+K"
+                    label="Ctrl+\"
                 />
 
                 <NewNoteButton
@@ -83,6 +83,7 @@ export function Header({onNewNote}: HeaderProps) {
                     onCreateIntent={handleCreateIntent}
                     templates={allTemplates}
                     onCreateFromTemplate={handleCreateFromTemplate}
+                    label="Ctrl+N"
                 />
 
                 <IconButton
@@ -93,6 +94,7 @@ export function Header({onNewNote}: HeaderProps) {
                     variant="ghost"
                     size="lg"
                     className="hidden md:flex"
+                    label="Ctrl+K"
                 />
             </div>
 

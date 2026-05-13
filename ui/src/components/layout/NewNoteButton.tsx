@@ -7,13 +7,15 @@ interface NewNoteButtonProps {
     onCreateIntent: (type: 'request' | 'offer') => void;
     templates?: Template[];
     onCreateFromTemplate?: (template: Template) => void;
+    label?: string;
 }
 
 export function NewNoteButton({
                                                                 onNewNote,
                                                                 onCreateIntent,
                                                                 templates = [],
-                                                                onCreateFromTemplate
+                                                                onCreateFromTemplate,
+                                                                label
                                                             }: NewNoteButtonProps) {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -41,7 +43,7 @@ export function NewNoteButton({
     }
 
     return (
-        <div className="relative ml-4" ref={dropdownRef}>
+        <div className="relative flex items-center gap-2 ml-4" ref={dropdownRef}>
             <div className="flex bg-blue-600 rounded-lg shadow-sm hover:bg-blue-700 transition-colors">
                 <button
                     onClick={onNewNote}
@@ -59,6 +61,12 @@ export function NewNoteButton({
                     <ChevronDownIcon className="w-4 h-4"/>
                 </button>
             </div>
+
+            {label && (
+                <span className="hidden lg:inline text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                    {label}
+                </span>
+            )}
 
             {isDropdownOpen && (
                 <div
