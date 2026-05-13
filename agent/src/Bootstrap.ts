@@ -1,5 +1,5 @@
 import { AgentRegistry } from './core/AgentRegistry.js';
-import { VoltAgentProvider } from '@notention/agent-voltagent';
+import { VoltAgentProvider } from './voltagent/index.js';
 import { AgentSkillRegistry } from './skills/AgentSkillRegistry.js';
 import { AgentWorkflowSkillExecutor } from './skills/AgentWorkflowSkillExecutor.js';
 import { loadAgentConfig } from './config/index.js';

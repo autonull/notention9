@@ -75,10 +75,10 @@ describe('Phase 2.3: Multi-Instance Coordination', () => {
         }));
 
         // 3. Import modules
-        const nostrModule = await import('../nostr.js');
+        const nostrModule = await import('../network/nostr/nostr.js');
         publishNoteToNostr = nostrModule.publishNoteToNostr;
 
-        const discoveryModule = await import('../nostr/discovery.js');
+        const discoveryModule = await import('../network/nostr/discovery.js');
         NetworkDiscoveryService = discoveryModule.NetworkDiscoveryService;
     });
 

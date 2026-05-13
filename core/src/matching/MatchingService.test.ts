@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { MatchingService } from './MatchingService';
-import { DEFAULT_ONTOLOGY } from '../ontology.default.js';
+import { DEFAULT_ONTOLOGY } from '../ontology/ontology.default.js';
 import { Note, Property } from '../types';
 
 const matchingService = new MatchingService(DEFAULT_ONTOLOGY);

@@ -1,4 +1,4 @@
-import { OntologyService } from '../ontologyService.js';
+import { OntologyService } from '../ontology/ontologyService.js';
 import { inferPropertyType } from '../utils/inference.js';
 import { OntologyNode } from '../types/index.js';
 import { describe, it, expect, beforeEach } from 'vitest';

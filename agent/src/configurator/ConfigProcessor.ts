@@ -2,7 +2,7 @@ import { parseConfigFromNote, mergeConfigs } from '@notention/core';
 import type { Note, AppSettings } from '@notention/core';
 import { log } from '../core/utils.js';
 import { Capabilities } from '../core/Capabilities.js';
-import { VoltAgentProvider } from '@notention/agent-voltagent';
+import { VoltAgentProvider } from '../voltagent/index.js';
 
 export class ConfigProcessor {
     private currentConfig: Partial<AppSettings> = {};

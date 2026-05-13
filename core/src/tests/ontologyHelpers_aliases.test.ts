@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest';
-import { findNodeIdForAttribute, addAliasToAttribute } from '../ontologyHelpers.js';
+import { findNodeIdForAttribute, addAliasToAttribute } from '../ontology/ontologyHelpers.js';
 import { OntologyNode } from '../types/index.js';
 
 describe('Ontology Helpers - Aliases', () => {

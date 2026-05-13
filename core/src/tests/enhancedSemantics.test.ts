@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { PropertyExtractor } from '../propertyExtractor';
-import { patternRecognitionService } from '../patternRecognition';
-import { Note } from '../types';
+import { PropertyExtractor } from '../notes/propertyExtractor.js';
+import { patternRecognitionService } from '../patternRecognition/patternRecognition.js';
+import { Note } from '../types/index.js';
 
 describe('Enhanced Semantic Capabilities (Phase 7)', () => {
   const extractor = new PropertyExtractor();

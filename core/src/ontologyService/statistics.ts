@@ -1,5 +1,5 @@
 import type { OntologyNode, OntologyAttribute } from '../types/index.js';
-import { getCanonicalKey, findNodeIdForAttribute, findNode } from '../ontologyHelpers.js';
+import { getCanonicalKey, findNodeIdForAttribute, findNode } from '../ontology/ontologyHelpers.js';
 import { inferPropertyType } from '../utils/inference.js';
 
 export interface SuggestedAttribute {

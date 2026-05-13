@@ -33,7 +33,7 @@ export class MeshtasticAgentManager {
             this.device = new MeshDevice(transport);
 
             // Handle disconnection
-            transport.onClose(() => {
+             (transport as any).onClose(() => {
                 log('Mesh', 'Meshtastic transport closed');
                 this.handleDisconnect();
             });
@@ -42,13 +42,13 @@ export class MeshtasticAgentManager {
             this.provider.setTransport({
                 send: async (data) => {
                     if (!this.device) throw new Error("No device connected");
-                    await this.device.sendPacket({
+                    await  (this.device as any).sendPacket({
                         data: { data, portnum: 120 },
                         destination: 0xFFFFFFFF
                     });
                 },
                 onData: (callback) => {
-                    this.device?.onTextPacket((packet) => {
+                     (this.device as any)?.onTextPacket((packet: any) => {
                         log('Mesh', `Received text packet from ${packet.from}`);
                         if (packet.data.data) {
                             callback(packet.data.data as Uint8Array, packet.from.toString());
@@ -57,7 +57,7 @@ export class MeshtasticAgentManager {
                 }
             });
 
-            this.device.onTelemetryPacket(async (packet) => {
+             (this.device as any).onTelemetryPacket(async (packet: any) => {
                 log('Mesh', `Received telemetry from ${packet.from}`);
                 const nodeId = packet.from.toString();
                 const existingNote = await PersistenceService.getNoteSafe(this.provider.getNodeNoteId(nodeId));
@@ -66,7 +66,7 @@ export class MeshtasticAgentManager {
                 this.onNewNote(note);
             });
 
-            this.device.onPositionPacket(async (packet) => {
+             (this.device as any).onPositionPacket(async (packet: any) => {
                 log('Mesh', `Received position from ${packet.from}`);
                 const nodeId = packet.from.toString();
                 const existingNote = await PersistenceService.getNoteSafe(this.provider.getNodeNoteId(nodeId));

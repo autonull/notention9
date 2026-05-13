@@ -1,6 +1,6 @@
 import { Note, Property, OntologyNode } from '../types/index.js';
 import { MatchEngine, MatchResult } from './MatchEngine.js';
-import { DEFAULT_ONTOLOGY } from '../ontology.default.js';
+import { DEFAULT_ONTOLOGY } from '../ontology/ontology.default.js';
 
 export interface MatchResultDetails {
   score: number;

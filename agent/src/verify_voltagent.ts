@@ -1,4 +1,4 @@
-import { VoltAgentProvider } from '@notention/agent-voltagent';
+import { VoltAgentProvider } from './voltagent/index.js';
 import { createNote } from '@notention/core';
 
 async function verify() {

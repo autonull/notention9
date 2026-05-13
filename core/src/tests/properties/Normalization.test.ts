@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseProperties } from '../../parsing.js';
+import { parseProperties } from '../../notes/parsing.js';
 import { OntologyNode } from '../../types/index.js';
 
 describe('Property Parsing Normalization', () => {

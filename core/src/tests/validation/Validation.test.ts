@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validateNote } from '../../validation.js';
+import { validateNote } from '../../utils/validation.js';
 import { Note, OntologyNode } from '../../types/index.js';
 
 describe('Validation Logic', () => {

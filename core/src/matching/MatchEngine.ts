@@ -1,5 +1,5 @@
 import { Note, Property, OntologyNode } from '../types/index.js';
-import { findAttributeDef, getAliases } from '../ontologyHelpers.js';
+import { findAttributeDef, getAliases } from '../ontology/ontologyHelpers.js';
 import { PropertyMatchers, type PropertyMatch } from './matchers.js';
 
 export type { PropertyMatch };
