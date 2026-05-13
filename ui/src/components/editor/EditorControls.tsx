@@ -141,6 +141,16 @@ export function EditorControls({
                     />
                 )}
 
+                <IconButton
+                    onClick={() => window.dispatchEvent(new CustomEvent('save-note'))}
+                    tooltip="Save Note"
+                    icon={EditIcon}
+                    variant="ghost"
+                    size="md"
+                    label="Ctrl+S"
+                    className="hidden lg:flex"
+                />
+
                 {/* More Menu */}
                 <DropdownMenu
                     trigger={

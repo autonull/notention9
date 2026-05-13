@@ -4,11 +4,11 @@ import {getTextFromHtml, prettyPrintHtml} from '../../utils/html';
 describe('parsing HTML utils', () => {
     describe('getTextFromHtml', () => {
         it('extracts text from simple HTML', () => {
-            expect(getTextFromHtml('<p>Hello</p>')).toBe('Hello\n');
+            expect(getTextFromHtml('<p>Hello</p>')).toBe('Hello');
         });
 
         it('extracts text from nested HTML', () => {
-            expect(getTextFromHtml('<div><p>Hello</p><span>World</span></div>')).toBe('Hello\nWorld\n');
+            expect(getTextFromHtml('<div><p>Hello</p><span>World</span></div>')).toBe('Hello\nWorld');
         });
 
         it('handles empty input', () => {

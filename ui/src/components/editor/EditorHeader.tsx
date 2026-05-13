@@ -88,6 +88,7 @@ export function EditorHeader({
                             title="Back to List"
                             icon={ArrowLeftIcon}
                             variant="secondary"
+                            label="Alt+←"
                         />
                     </div>
                 )}
