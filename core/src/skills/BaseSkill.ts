@@ -1,5 +1,5 @@
 import { Property, Note } from '../types/index.js';
-import { OntologyService } from '../ontologyService.js';
+import { OntologyService } from '../ontology/ontologyService.js';
 
 export interface SkillConfig {
   id: string;

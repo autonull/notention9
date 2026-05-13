@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { MatchEngine } from '../../matching/MatchEngine.js';
 import { Note, OntologyNode } from '../../types/index.js';
-import { getAliases, getCanonicalKey } from '../../ontologyHelpers.js';
+import { getAliases, getCanonicalKey } from '../../ontology/ontologyHelpers.js';
 
 describe('MatchEngine Aliases', () => {
     const mockOntology: OntologyNode[] = [

@@ -1,4 +1,4 @@
-import { validateProperty } from '../validation.js';
+import { validateProperty } from '../utils/validation.js';
 import { describe, it, expect } from 'vitest';
 
 describe('Property Validation', () => {

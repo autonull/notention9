@@ -5,7 +5,7 @@ import {
   multiplyQuantities,
   divideQuantities,
   createCompoundQuantity
-} from '../quantities.js';
+} from '../notes/quantities.js';
 import { describe, test, expect } from 'vitest';
 
 describe('Quantities System Tests', () => {

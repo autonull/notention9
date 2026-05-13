@@ -1,4 +1,4 @@
-import { parseProperties } from '../parsing.js';
+import { parseProperties } from '../notes/parsing.js';
 import { describe, it, expect } from 'vitest';
 
 describe('Property Composition (Macros)', () => {

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { MetaphorRegistry, metaphorRegistry } from '../metaphor/MetaphorRegistry';
-import { MetaphorMapper, metaphorMapper } from '../metaphor/MetaphorMapper';
+import { MetaphorRegistry, metaphorRegistry } from '../skills/metaphor/MetaphorRegistry';
+import { MetaphorMapper, metaphorMapper } from '../skills/metaphor/MetaphorMapper';
 import { UIMetaphor } from '../types/metaphor';
 import { Note } from '../types/index';
 import { generateId } from '../utils/common';

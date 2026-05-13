@@ -5,5 +5,5 @@ export const createTool = (config: Partial<Tool> & { name: string; description: 
   name: config.name,
   description: config.description,
   schema: config.schema ?? {},
-  execute: config.execute,
+  execute: config.execute as any,
 });

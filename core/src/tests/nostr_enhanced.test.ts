@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { publishNoteToNostr } from '../nostr.js';
+import { publishNoteToNostr } from '../network/nostr/nostr.js';
 import { Note, OntologyNode, NostrEvent } from '../types/index.js';
-import { getPrivacyTags, hashValue } from '../nostr/privacy.js';
-import { NetworkDiscoveryService } from '../nostr/discovery.js';
+import { getPrivacyTags, hashValue } from '../network/nostr/privacy.js';
+import { NetworkDiscoveryService } from '../network/nostr/discovery.js';
 import { MatchEngine } from '../matching/MatchEngine.js';
 
 // Hoist mocks

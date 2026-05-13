@@ -1,5 +1,5 @@
 import { createNote } from '@notention/core';
-import { VoltAgentProvider } from '@notention/agent-voltagent';
+import { VoltAgentProvider } from './voltagent/index.js';
 
 async function verify() {
     console.log('🧪 Starting Task Flow Verification...');

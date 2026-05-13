@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { OntologyService } from '../../ontologyService.js';
+import { OntologyService } from '../../ontology/ontologyService.js';
 import { OntologyNode } from '../../types/index.js';
 
 describe('Ontology Learning', () => {

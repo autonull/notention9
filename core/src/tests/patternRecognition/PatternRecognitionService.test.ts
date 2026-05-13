@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { PatternRecognitionService } from '../../patternRecognition.js';
+import { PatternRecognitionService } from '../../patternRecognition/patternRecognition.js';
 import { Note, OntologyNode } from '../../types/index.js';
 import { Pattern } from '../../patternRecognition/types.js';
 

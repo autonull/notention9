@@ -1,10 +1,10 @@
-import type { Note, SortOrder, GeoCoords, OntologyNode } from '../types/index.js';
-import { haversineDistance, parseGeoFromValues } from '../utils/geo.js';
-import { parseProperties } from '../parsing.js';
-import { getCanonicalKey } from '../ontologyHelpers.js';
+import type { Note, SortOrder, OntologyNode } from '../types/index.js';
+import { GeoCoords, haversineDistance, parseGeoFromValues } from '../utils/geo.js';
+import { parseProperties } from './parsing.js';
+import { getCanonicalKey } from '../ontology/ontologyHelpers.js';
 import { MatchEngine } from '../matching/MatchEngine.js';
-import { isSpatialKey, isTemporalKey } from '../properties.js';
-import { parseDateFromValues } from '../dateParsing.js';
+import { isSpatialKey, isTemporalKey } from './properties.js';
+import { parseDateFromValues } from '../utils/dateParsing.js';
 import { getTextFromHtml } from '../utils/html.js';
 
 export interface NoteMetadata {

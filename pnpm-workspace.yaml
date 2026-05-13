@@ -2,6 +2,5 @@ packages:
   - 'core'
   - 'ui'
   - 'agent'
-  - 'agent/voltagent'
   - 'cli'
   - 'simulator'

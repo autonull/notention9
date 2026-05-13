@@ -154,5 +154,5 @@ export const executeSkillTool = createTool({
 
 // Ontology query tool
 export const ontologyQueryTool = createOntologyQueryTool({
-    getOntology: () => getOntology()
+    getOntology: () => getOntology() as any
 });
