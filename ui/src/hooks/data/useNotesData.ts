@@ -1,10 +1,17 @@
 import {useCallback, useEffect, useMemo, useRef} from 'react';
 import {useLocalForage} from '../useLocalForage';
 import type {GeoCoords, Note, SortOrder} from '@notention/core';
-import {createNote, Logger, normalizeNoteProperties, networkRegistry, NoteFilter, NoteMetadata} from '@notention/core';
+import {
+    createNote,
+    normalizeNoteProperties,
+    networkRegistry,
+    NoteFilter,
+    NoteMetadata,
+    NotePipeline
+} from '@notention/core';
 import {agentService} from '../../services/AgentService';
 import {useSettings} from '../useSettingsContext';
-import {useEventSubscription} from '../useEventSubscription';
+import {useAgentSync} from './useAgentSync';
 
 export interface UseNotesDataResult {
     notes: Note[];
@@ -30,45 +37,12 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
         [],
         driver
     );
-    const logger = Logger.getInstance();
     const cacheRef = useRef<Record<string, NoteMetadata>>({});
 
     const noteFilter = useMemo(() => new NoteFilter(settings.ontology || []), [settings.ontology]);
 
     // --- Sync Logic ---
-    const handleConnected = useCallback(() => {
-        logger.info('Connected to agent, syncing notes...');
-        agentService.fetchNotes()
-            .then((remoteNotes) => {
-                if (remoteNotes && remoteNotes.length > 0) {
-                    setNotes((prev) => {
-                        const merged = [...prev];
-                        remoteNotes.forEach((rNote) => {
-                            const idx = merged.findIndex((l) => l.id === rNote.id);
-                            if (idx >= 0) {
-                                if (new Date(rNote.updatedAt) > new Date(merged[idx].updatedAt)) {
-                                    merged[idx] = rNote;
-                                }
-                            } else {
-                                merged.push(rNote);
-                            }
-                        });
-                        return merged.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
-                    });
-                }
-            })
-            .catch((err) => logger.error('Failed to sync notes:', err as Error));
-    }, [setNotes, logger]);
-
-    useEventSubscription(agentService, {
-        connected: handleConnected
-    });
-
-    useEffect(() => {
-        if (agentService.isEnabled() && agentService.isConnected()) {
-            handleConnected();
-        }
-    }, [handleConnected]);
+    useAgentSync(setNotes);
 
     const upsertNote = useCallback((note: Note, skipAgent: boolean = false) => {
         const normalizedNote = normalizeNoteProperties(note, settings.ontology);
@@ -130,9 +104,8 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
 
     const deleteNote = useCallback((id: string) => {
         setNotes((prev) => {
-            const now = new Date().toISOString();
             const newNotes = prev.map((n) =>
-                n.id === id ? {...n, deletedAt: now, updatedAt: now} : n
+                n.id === id ? NotePipeline.delete(n) : n
             );
             const deleted = newNotes.find((n) => n.id === id);
             if (deleted) agentService.saveNote(deleted);
@@ -143,7 +116,7 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
     const restoreNote = useCallback((id: string) => {
         setNotes((prev) => {
             const newNotes = prev.map((n) =>
-                n.id === id ? {...n, deletedAt: undefined, updatedAt: new Date().toISOString()} : n
+                n.id === id ? NotePipeline.restore(n) : n
             );
             const restored = newNotes.find((n) => n.id === id);
             if (restored) agentService.saveNote(restored);

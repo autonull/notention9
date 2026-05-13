@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { Note } from '../../types/index.js';
+import { createNote } from '../../notes/notes.js';
 import { metaphorMapper } from '../../skills/metaphor/MetaphorMapper.js';
 
 describe('Metaphor Performance', () => {
   it('should map metaphors efficiently', () => {
     // 1. Create a complex note
-    const note: Note = {
+    const note = createNote({
       id: 'perf-note',
       title: 'Performance Test',
       content: 'Testing speed',
@@ -17,13 +17,9 @@ describe('Metaphor Performance', () => {
         { key: 'author', operator: 'is', values: ['me'] },
         { key: 'status', operator: 'is', values: ['draft'] }
       ],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
       tags: ['test', 'performance'],
       source: { type: 'user', identifier: 'perf-test', timestamp: Date.now() },
-      privacy: 'private',
-      priority: 1.0
-    };
+    });
 
     const iterations = 10000;
     const start = performance.now();

@@ -2,11 +2,11 @@ import React from 'react';
 import {describe, expect, it} from 'vitest';
 import {render, screen} from '@testing-library/react';
 import {vi} from 'vitest';
-import {SmartNoteAssistant} from "@/components/SmartNoteAssistant";
-import {SettingsProvider} from "@/components/contexts/SettingsContext";
-import {ToastProvider} from "@/components/contexts/ToastProvider";
-import {ViewContext} from "@/components/contexts/ViewContext";
-import {Note} from '@notention/core';
+import {SmartNoteAssistant} from "../../components/SmartNoteAssistant";
+import {SettingsProvider} from "../../components/contexts/SettingsContext";
+import {ToastProvider} from "../../components/contexts/ToastProvider";
+import {ViewContext} from "../../components/contexts/ViewContext";
+import {createNote} from '@notention/core';
 
 vi.mock('../../hooks/useNotes', () => ({
     useNotes: () => ({ notes: [], addNote: vi.fn(), getSortedFilteredNotes: vi.fn().mockReturnValue([]) })
@@ -17,7 +17,7 @@ vi.mock('../../hooks/useMatches', () => ({
 }));
 
 vi.mock('../../hooks/useNetworkDiscovery', () => ({
-    useNetworkDiscovery: () => ({ matches: [], isSearching: false, discover: vi.fn() })
+    useNetworkDiscovery: () => ({ matches: [], isSearching: false, discover: vi.fn(), clear: vi.fn() })
 }));
 
 vi.mock('../../hooks/useNoteAnalysis', () => ({
@@ -25,6 +25,10 @@ vi.mock('../../hooks/useNoteAnalysis', () => ({
         suggestions: [{ id: '1', text: 'Suggestion 1', type: 'property' }],
         removeSuggestion: vi.fn()
     })
+}));
+
+vi.mock('../../hooks/useContacts', () => ({
+    useContacts: () => ({ contacts: [] })
 }));
 
 const mockViewContext = {
@@ -73,17 +77,11 @@ const MockProviders = ({children}: { children: React.ReactNode }) => (
 
 describe('SmartNoteAssistant', () => {
     it('renders simplified labels', async () => {
-        const note: Note = {
+        const note = createNote({
             id: 'test-note',
             title: 'Test',
-            content: 'need to buy milk',
-            type: 'note',
-            properties: [],
-            created_at: Date.now(),
-            modified_at: Date.now(),
-            tags: [],
-            stats: {viewCount: 0, readTime: 0}
-        };
+            content: 'need to buy milk'
+        });
 
         render(
             <MockProviders>

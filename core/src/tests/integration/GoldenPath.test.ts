@@ -4,30 +4,27 @@ import {
     networkRegistry,
     NostrNetworkProvider,
     MatchingService,
-    DEFAULT_ONTOLOGY
+    DEFAULT_ONTOLOGY,
+    createNote
 } from '../../index.js';
 
 // Mocking pool to avoid actual network traffic but keeping the flow
-vi.mock('../../nostr.js', async () => {
-    const actual = await vi.importActual('../../nostr.js') as any;
+vi.mock('../../network/nostr/nostr.js', async (importOriginal) => {
+    const actual = await importOriginal() as any;
     return {
         ...actual,
         pool: {
-            subscribeMany: vi.fn((relays, filters, handlers) => {
-                return { close: vi.fn() };
-            }),
-            publish: vi.fn(async (relays, event) => {
-                return [];
-            })
+            subscribeMany: vi.fn(() => ({ close: vi.fn() })),
+            publish: vi.fn(() => [])
         },
-        publishNoteToNostr: vi.fn(async (note, privkey, relays) => {
-            // Simulate the event coming back via subscription
-            const provider = networkRegistry.getProvider('nostr');
-            if (provider) {
-                // In a real scenario, the provider receives events from the pool
-                // Here we manually trigger the emit for the test
-                provider.emit('note', note);
-            }
+        publishNoteToNostr: vi.fn(async (note) => {
+            // Manual loopback for the test
+            setTimeout(() => {
+                const provider = networkRegistry.getProvider('nostr');
+                if (provider) {
+                    provider.emit('note', note);
+                }
+            }, 0);
         })
     };
 });
@@ -47,7 +44,6 @@ describe('Golden Path Integration', () => {
     });
 
     afterEach(() => {
-        // Manually clear providers
         const registry = networkRegistry as any;
         if (registry.providers) {
             registry.providers.clear();
@@ -62,37 +58,37 @@ describe('Golden Path Integration', () => {
         });
 
         // 1. User A creates and "publishes" a request note
-        const requestNote: Note = {
+        const requestNote = createNote({
             id: 'note-1',
             title: 'I need pizza',
             content: 'I need a pizza [pizza:is:needed]',
             properties: [{ key: 'pizza', operator: 'is', values: ['needed'] }],
             tags: ['prop:pizza'],
-            createdAt: Date.now(),
-            updatedAt: Date.now(),
             author: 'nostr:user-a',
             privacy: 'public'
-        };
+        });
 
         await nostrProvider.sendNote(requestNote);
+
+        // Wait for loopback
+        await new Promise(resolve => setTimeout(resolve, 10));
 
         // 2. Verify Note was "received" (simulated loopback)
         expect(receivedNotes.length).toBe(1);
 
         // 3. User B publishes an offer note
-        const offerNote: Note = {
+        const offerNote = createNote({
             id: 'note-2',
             title: 'I have pizza',
             content: 'I have a pizza [pizza:is:needed]',
             properties: [{ key: 'pizza', operator: 'is', values: ['needed'] }],
             tags: ['prop:pizza'],
-            createdAt: Date.now(),
-            updatedAt: Date.now(),
             author: 'nostr:user-b',
             privacy: 'public'
-        };
+        });
 
         await nostrProvider.sendNote(offerNote);
+        await new Promise(resolve => setTimeout(resolve, 10));
         expect(receivedNotes.length).toBe(2);
 
         // 4. Run Matching Service on the received notes

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { PropertyExtractor } from '../notes/propertyExtractor.js';
 import { patternRecognitionService } from '../patternRecognition/patternRecognition.js';
-import { Note } from '../types/index.js';
+import { createNote } from '../notes/notes.js';
 
 describe('Enhanced Semantic Capabilities (Phase 7)', () => {
   const extractor = new PropertyExtractor();
@@ -18,20 +18,15 @@ describe('Enhanced Semantic Capabilities (Phase 7)', () => {
 
   it('should predict actions based on extracted intents (Default Patterns)', () => {
     // 1. Simulate a note created from text
-    const note: Note = {
+    const note = createNote({
       id: 'test-note-intent',
       title: 'Call Mom',
       content: 'Remind me to call Mom',
       properties: [
         { key: 'intent', operator: 'is', values: ['reminder'] }
       ],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      tags: [],
       source: { type: 'user', identifier: userId, timestamp: Date.now() },
-      privacy: 'private',
-      priority: 1.0
-    };
+    });
 
     // 2. Predict
     const predictions = patternRecognitionService.predictUserNeeds(userId, note);
