@@ -1,26 +1,21 @@
 import React from 'react';
 import {describe, expect, it} from 'vitest';
 import {render, screen} from '@testing-library/react';
-import {metaphorMapper, Note} from '@notention/core';
+import {metaphorMapper, createNote} from '@notention/core';
 import {MetaphorRenderer} from '../../components/metaphor/MetaphorRenderer';
 
 describe('Metaphor System Integration', () => {
     it('should identify and render a Conditional Automation note', () => {
         // 1. Create a Note that should trigger the metaphor
-        const note: Note = {
+        const note = createNote({
             id: 'test-note-1',
             title: 'Auto Save',
             content: 'If I verify, then submit.',
-            type: 'note',
             properties: [
                 {key: 'if', operator: 'is', values: ['verification complete']},
                 {key: 'then', operator: 'is', values: ['submit changes']}
-            ],
-            created_at: Date.now(),
-            modified_at: Date.now(),
-            tags: [],
-            stats: {viewCount: 0, readTime: 0}
-        };
+            ]
+        });
 
         // 2. Use the Mapper to find the metaphor
         const metaphor = metaphorMapper.mapToMetaphor(note);

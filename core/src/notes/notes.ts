@@ -8,10 +8,28 @@ import { getTextFromHtml } from '../utils/html.js';
 export type NoteIntent = 'Real' | 'Imaginary' | 'Ambiguous';
 
 export const inferNoteIntent = (note: Note): NoteIntent => {
+  // Explicit signals in tags or content take highest precedence
   if (note.tags.includes('request') || note.content.includes('[intent:is:request]')) return 'Imaginary';
   if (note.tags.includes('offer') || note.content.includes('[intent:is:offer]')) return 'Real';
+
+  // If no properties, we can't be sure unless tags were present
   if (note.properties.length === 0) return 'Ambiguous';
-  return note.properties.some(isIndefiniteProperty) ? 'Imaginary' : 'Real';
+
+  // Check for specific intent-based property keys
+  const intentProp = note.properties.find(p => p.key === 'intent');
+  if (intentProp) {
+      if (intentProp.values.includes('request') || intentProp.values.includes('need') || intentProp.values.includes('want')) return 'Imaginary';
+      if (intentProp.values.includes('offer') || intentProp.values.includes('have') || intentProp.values.includes('provide')) return 'Real';
+  }
+
+  // Heuristic: Indefinite operators (e.g., <, >, contains, near) strongly imply a constraint (Imaginary)
+  if (note.properties.some(isIndefiniteProperty)) return 'Imaginary';
+
+  // Heuristic: "is" properties with placeholders like "?" suggest a template or request
+  if (note.properties.some(p => p.operator === 'is' && p.values.includes('?'))) return 'Imaginary';
+
+  // Default: If all properties are definite "is" assignments, it's likely a factual "Real" note
+  return 'Real';
 };
 
 export const createNote = (overrides?: Partial<Note>): Note => {
