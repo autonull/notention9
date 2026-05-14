@@ -10,7 +10,7 @@
     },
     "dependencies": {
         "@ai-sdk/openai": "^0.0.48",
-        "@notention/core": "*",
+        "@notention/core": "workspace:*",
         "@types/uuid": "^10.0.0",
         "@voltagent/core": "^2.2.2",
         "@voltagent/libsql": "^2.0.3",

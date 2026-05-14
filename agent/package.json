@@ -19,9 +19,9 @@
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.1",
-    "@notention/agent-voltagent": "*",
-    "@notention/core": "*",
-    "@notention/ui": "*",
+    "@notention/agent-voltagent": "workspace:*",
+    "@notention/core": "workspace:*",
+    "@notention/ui": "workspace:*",
     "express": "^4.21.2",
     "playwright": "^1.58.0",
     "ws": "^8.18.0",
