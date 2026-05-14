@@ -1,6 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { matchingService } from './MatchingService';
+import { MatchingService } from './MatchingService';
+import { DEFAULT_ONTOLOGY } from '../ontology.default.js';
 import { Note, Property } from '../types';
+
+const matchingService = new MatchingService(DEFAULT_ONTOLOGY);
 
 const createNote = (properties: Property[]): Note => ({
   id: 'test-note',

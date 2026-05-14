@@ -1,10 +1,11 @@
 import {useCallback, useEffect, useRef} from 'react';
 import {useLocalForage} from '../useLocalForage';
-import type {GeoCoords, Note, Property, SortOrder, OntologyNode} from '@notention/core';
+import type {GeoCoords, Note, SortOrder} from '@notention/core';
 import {createNote, haversineDistance, Logger, parseProperties, getCanonicalKey, normalizeNoteProperties} from '@notention/core';
 import {agentService} from '../../services/AgentService';
 import {nostrService} from '../../services/NostrService';
 import {useSettings} from '../useSettingsContext';
+import {useMatching} from '../contexts/MatchingContext';
 import {augmentNote, NoteMetadata} from './noteUtils';
 
 export interface UseNotesDataResult {
@@ -24,39 +25,9 @@ export interface UseNotesDataResult {
     ) => Note[];
 }
 
-// Lightweight property check helper to avoid instantiating full MatchEngine in UI hook
-const checkPropertyMatch = (constraint: Property, note: Note, ontology: OntologyNode[]): boolean => {
-    const canonicalConstraint = getCanonicalKey(constraint.key, ontology);
-
-    return note.properties.some(p => {
-        const canonicalProp = getCanonicalKey(p.key, ontology);
-        if (canonicalProp !== canonicalConstraint) return false;
-
-        // Simple value check for now (string/number equality or inclusion)
-        // This restores the basic filtering capability
-        const pVal = p.values[0]?.toLowerCase().trim();
-        const cVal = constraint.values[0]?.toLowerCase().trim();
-
-        if (!pVal || !cVal) return false;
-
-        switch (constraint.operator) {
-            case 'is':
-            case '=':
-            case ':':
-                return pVal === cVal;
-            case 'contains':
-                return pVal.includes(cVal);
-            case 'excludes':
-                return !pVal.includes(cVal);
-            default:
-                // Fallback for other operators: just check key existence if operator matches
-                return p.operator === constraint.operator;
-        }
-    });
-};
-
 export function useNotesData(driver?: LocalForage): UseNotesDataResult {
     const { settings } = useSettings();
+    const { engine } = useMatching();
     const [notes, setNotes, loading] = useLocalForage<Note[]>(
         'notention-notes',
         [],
@@ -211,9 +182,9 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
             });
 
             filtered = notesWithMetadata.filter((note) => {
-                // Check structured constraints [key:op:val]
+                // Check structured constraints [key:op:val] using MatchEngine
                 const semanticMatch = constraints.length > 0 ?
-                    constraints.every(c => checkPropertyMatch(c, note, settings.ontology)) : true;
+                    engine.calculateMatchScore({ properties: constraints } as Note, note).score > 0 : true;
 
                 if (!semanticMatch) return false;
 
@@ -279,7 +250,7 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
                     return b.updatedAt.localeCompare(a.updatedAt);
             }
         });
-    }, [notes]);
+    }, [notes, engine]);
 
     return {
         notes,

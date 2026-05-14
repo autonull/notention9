@@ -1,37 +1,34 @@
-// Simple singleton management for the agent module
-import { AgentRegistry } from './core/AgentRegistry';
-import { AgentSkillRegistry } from './skills/AgentSkillRegistry';
+import { AgentRegistry } from './core/AgentRegistry.js';
+import { AgentSkillRegistry } from './skills/AgentSkillRegistry.js';
 
 let agentRegistry: AgentRegistry | null = null;
 let skillRegistry: AgentSkillRegistry | null = null;
-let ontology: any | null = null;
+let ontology: unknown = null;
 
-export function getAgentRegistry(): AgentRegistry {
-    if (!agentRegistry) {
-        agentRegistry = new AgentRegistry();
-    }
-    return agentRegistry;
-}
+export const getAgentRegistry = (): AgentRegistry => {
+  if (!agentRegistry) {
+    agentRegistry = new AgentRegistry();
+  }
+  return agentRegistry;
+};
 
-export function setAgentRegistry(registry: AgentRegistry) {
-    agentRegistry = registry;
-}
+export const setAgentRegistry = (registry: AgentRegistry): void => {
+  agentRegistry = registry;
+};
 
-export function setSkillRegistry(registry: AgentSkillRegistry) {
-    skillRegistry = registry;
-}
+export const setSkillRegistry = (registry: AgentSkillRegistry): void => {
+  skillRegistry = registry;
+};
 
-export function getSkillRegistry(): AgentSkillRegistry {
-    if (!skillRegistry) {
-        throw new Error("SkillRegistry not initialized");
-    }
-    return skillRegistry;
-}
+export const getSkillRegistry = (): AgentSkillRegistry => {
+  if (!skillRegistry) {
+    throw new Error('SkillRegistry not initialized');
+  }
+  return skillRegistry;
+};
 
-export function setOntology(onto: any) {
-    ontology = onto;
-}
+export const setOntology = (onto: unknown): void => {
+  ontology = onto;
+};
 
-export function getOntology(): any {
-    return ontology;
-}
+export const getOntology = (): unknown => ontology;

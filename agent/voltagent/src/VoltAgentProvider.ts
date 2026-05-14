@@ -1,15 +1,15 @@
 import {
     Agent, AgentStatus, WorkflowInput, WorkflowResult, ToolInput, ToolResult, MemoryAdapter, Workflow, Tool, MCPServer, Document, SearchOptions, SearchResult, AgentCapabilities, AgentFeature, NoteSource
-} from '@notention/core/src/types';
-import { VoltAgentTransformer } from './VoltAgentTransformer';
-import { Note } from '@notention/core/src/types';
-import { propertyExtractionWorkflow, skillMatchingWorkflow, skillExecutionWorkflow } from './workflows';
+} from '@notention/core';
+import { VoltAgentTransformer } from './VoltAgentTransformer.js';
+import { Note } from '@notention/core';
+import { propertyExtractionWorkflow, skillMatchingWorkflow, skillExecutionWorkflow } from './workflows/index.js';
 import { VoltAgent, Agent as VAAgent, Memory, InMemoryVectorAdapter } from '@voltagent/core';
 import { LibSQLMemoryAdapter } from '@voltagent/libsql';
 import { createPinoLogger } from '@voltagent/logger';
 import { honoServer } from '@voltagent/server-hono';
 import { openai } from '@ai-sdk/openai';
-import { log } from './utils';
+import { log } from './utils.js';
 import { v4 as uuidv4 } from 'uuid';
 
 /**

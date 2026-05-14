@@ -1,9 +1,12 @@
 import {useCallback, useState} from 'react';
 import {finalizeEvent} from 'nostr-tools';
-import {useSettings} from './useSettingsContext';
+import {useSettings} from './useSettingsContext.js';
 import type {Note} from '@notention/core';
-import {DEFAULT_RELAYS, hexToBytes, Logger, pool, publishNoteToNostr} from '@notention/core';
-import {getTextFromHtml} from '../utils/html';
+import {DEFAULT_RELAYS, hexToBytes, pool, publishNoteToNostr} from '@notention/core';
+import {getTextFromHtml} from '../utils/html.js';
+import {createScopedLogger} from './logging.js';
+
+const log = createScopedLogger('usePublish');
 
 export function usePublish() {
     const {settings} = useSettings();
@@ -12,8 +15,6 @@ export function usePublish() {
     const relays = settings.nostr.relays || DEFAULT_RELAYS;
 
     const publishNote = useCallback(async (note: Note, promptUser?: (message: string) => Promise<boolean>) => {
-        // Check for privkey OR window.nostr (NIP-07)
-        // Core's publishNoteToNostr handles the specific check, but we do a preliminary check here
         const hasNip07 = typeof window !== 'undefined' && !!(window as any).nostr;
 
         if (!settings.nostr.privkey && !hasNip07) {
@@ -22,18 +23,14 @@ export function usePublish() {
 
         setIsPublishing(true);
         try {
-            // Create a temporary note object for publishing
-            // 1. Convert content from HTML to text and prepend title
             const content = getTextFromHtml(note.content);
             const formattedContent = `${note.title}\n\n${content}`;
 
-            // 2. Clone the note to avoid mutating the original React state
             const noteToPublish = {
                 ...note,
                 content: formattedContent
             };
 
-            // 3. Delegate to core function which handles NetworkGate, NIP-07, and publishing
             await publishNoteToNostr(
                 noteToPublish,
                 settings.nostr.privkey || undefined,
@@ -43,7 +40,7 @@ export function usePublish() {
 
             return noteToPublish.nostrEventId;
         } catch (error) {
-            Logger.getInstance().error('Failed to publish note:', error as Error);
+            log.error('Failed to publish note', error as Error);
             throw error;
         } finally {
             setIsPublishing(false);
@@ -72,7 +69,7 @@ export function usePublish() {
             await Promise.any(pubs);
 
         } catch (error) {
-            Logger.getInstance().error('Failed to publish profile:', error as Error);
+            log.error('Failed to publish profile', error as Error);
             throw error;
         } finally {
             setIsPublishing(false);

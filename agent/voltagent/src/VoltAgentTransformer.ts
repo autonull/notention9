@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Note, Property, NoteSource } from '@notention/core/src/types';
-import { WorkflowInput, WorkflowResult, ToolInput, ToolResult } from '@notention/core/src/types';
+import { Note, Property, NoteSource } from '@notention/core';
+import { WorkflowInput, WorkflowResult, ToolInput, ToolResult } from '@notention/core';
 
 export interface WorkflowInputWithMetadata extends WorkflowInput {
     noteId: string;
@@ -42,7 +42,7 @@ export class VoltAgentTransformer {
         // Check if result has items (array of potential notes)
         const items = result.items || [];
 
-        return items.map(item => ({
+        return items.map((item: any) => ({
             id: uuidv4(),
             title: item.title || 'Result',
             content: item.content || '',
@@ -63,7 +63,7 @@ export class VoltAgentTransformer {
     // Note → VoltAgent Tool Action
     async noteToAction(note: Note): Promise<ToolAction | null> {
         // Check for action-triggering properties (e.g., "send to", "search for")
-        const sendTo = note.properties.find(p => p.operator === 'send to');
+        const sendTo = note.properties.find((p: Property) => p.operator === 'send to');
         if (sendTo && sendTo.values.length > 0) {
             return {
                 toolId: 'send-message',

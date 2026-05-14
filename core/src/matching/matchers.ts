@@ -19,11 +19,10 @@ export interface PropertyMatch {
 }
 
 const parseNumber = (val: string): number | null => {
-    // Extract first number found in string to handle "100 USD", "$100", etc.
-    const match = val.match(/-?\d+(\.\d+)?/);
-    if (!match) return null;
-    const num = parseFloat(match[0]);
-    return isNaN(num) ? null : num;
+  const match = val.match(/-?\d+(\.\d+)?/);
+  if (!match) return null;
+  const num = parseFloat(match[0]);
+  return isNaN(num) ? null : num;
 };
 
 const createMatch = (
@@ -35,33 +34,29 @@ const createMatch = (
 ): PropertyMatch => ({ requestProp, offerProp, compatibility, reason, details });
 
 const CANONICAL: Record<string, string> = {
-    js: 'javascript',
-    javascript: 'javascript',
-    ts: 'typescript',
-    typescript: 'typescript',
-    py: 'python',
-    python: 'python',
-    react: 'react',
-    reactjs: 'react',
-    node: 'nodejs',
-    nodejs: 'nodejs',
-    dev: 'developer',
-    developer: 'developer',
-    engineer: 'developer',
-    eng: 'engineer',
-    swe: 'software engineer',
-    'software engineer': 'software engineer',
-    remote: 'remote',
-    wfh: 'remote',
-    distributed: 'remote',
+  js: 'javascript',
+  javascript: 'javascript',
+  ts: 'typescript',
+  typescript: 'typescript',
+  py: 'python',
+  python: 'python',
+  react: 'react',
+  reactjs: 'react',
+  node: 'nodejs',
+  nodejs: 'nodejs',
+  dev: 'developer',
+  developer: 'developer',
+  engineer: 'developer',
+  eng: 'engineer',
+  swe: 'software engineer',
+  'software engineer': 'software engineer',
+  remote: 'remote',
+  wfh: 'remote',
+  distributed: 'remote',
 };
 
-const normalizeTerm = (term: string): string => {
-    if (!term) return '';
-    const lower = term.toLowerCase().trim();
-    const clean = lower.replace(/[^a-z0-9\s]/g, '');
-    return CANONICAL[clean] || clean;
-};
+const normalizeTerm = (term: string): string =>
+  term ? CANONICAL[term.toLowerCase().trim().replace(/[^a-z0-9\s]/g, '')] ?? term.toLowerCase().trim().replace(/[^a-z0-9\s]/g, '') : '';
 
 export const PropertyMatchers = {
     evaluateNumber: (request: Property, offer: Property): PropertyMatch => {
@@ -80,7 +75,15 @@ export const PropertyMatchers = {
         const requestValue = parseNumber(request.values[0]);
         if (requestValue === null) return createMatch(request, offer, 0, 'Invalid comparison value');
 
-        switch (request.operator) {
+        const NUMERIC_OP_ALIASES: Record<string, string> = {
+            'less than': '<',
+            'greater than': '>',
+            'less than or equal': '<=',
+            'greater than or equal': '>=',
+        };
+        const op = NUMERIC_OP_ALIASES[request.operator] ?? request.operator;
+
+        switch (op) {
             case '<':
                 return offerValue < requestValue
                     ? createMatch(request, offer, 1, `${offerValue} < ${requestValue}`, { type: 'exact', valueMatch: 'lt' })
@@ -139,7 +142,7 @@ export const PropertyMatchers = {
     },
 
     evaluateGeo: (request: Property, offer: Property): PropertyMatch => {
-        if (request.operator !== 'near') {
+        if (request.operator !== 'near' && request.operator !== 'is near') {
             return createMatch(request, offer, 0, 'Geo operator not supported');
         }
 
@@ -164,7 +167,11 @@ export const PropertyMatchers = {
 
         if (isNaN(reqTime) || isNaN(offTime)) return createMatch(request, offer, 0, 'Invalid date');
 
-        switch (request.operator) {
+        const dateOp = request.operator === 'is before' ? 'before'
+            : request.operator === 'is after' ? 'after'
+            : request.operator;
+
+        switch (dateOp) {
             case 'before':
                 return offTime < reqTime
                     ? createMatch(request, offer, 1, 'Date check passed', { type: 'date', valueMatch: 'before' })
@@ -186,6 +193,20 @@ export const PropertyMatchers = {
 
         const normalizedOffer = normalizeTerm(offerVal);
         const normalizedReq = normalizeTerm(reqVal);
+
+        if (request.operator === 'is not') {
+            const exactMatch = normalizedOffer === normalizedReq;
+            if (exactMatch) return createMatch(request, offer, -1, `'${reqVal}' matches (is not violated)`, { type: 'exact' });
+            const dist = levenshteinDistance(normalizedOffer, normalizedReq);
+            const maxLen = Math.max(normalizedOffer.length, normalizedReq.length);
+            const allowedDist = maxLen > 7 ? 2 : maxLen > 3 ? 1 : 0;
+            const fuzzyOrSubstring = (allowedDist > 0 && dist <= allowedDist)
+                || normalizedOffer.includes(normalizedReq)
+                || normalizedReq.includes(normalizedOffer);
+            return fuzzyOrSubstring
+                ? createMatch(request, offer, -1, `'${reqVal}' soft-matches (is not violated)`, { type: 'fuzzy' })
+                : createMatch(request, offer, 1, `'${reqVal}' does not match`, { type: 'exact' });
+        }
 
         if (request.operator === 'contains') {
             // Check normalized contains

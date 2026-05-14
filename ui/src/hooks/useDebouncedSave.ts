@@ -1,8 +1,10 @@
 import {useEffect, useRef, useState} from 'react';
 import type {Note} from '@notention/core';
-import {areNotesEqual, Logger} from '@notention/core';
+import {areNotesEqual} from '@notention/core';
+import {createScopedLogger} from './logging.js';
 
 const SAVE_DEBOUNCE_MS = 1000;
+const log = createScopedLogger('useDebouncedSave');
 
 export function useDebouncedSave(note: Note, onSave: (note: Note) => void) {
     const [dirtyNote, setDirtyNote] = useState<Note>(note);
@@ -49,7 +51,7 @@ export function useDebouncedSave(note: Note, onSave: (note: Note) => void) {
                 onSave(dirtyNote);
                 setSaveStatus('saved');
             } catch (e) {
-                Logger.getInstance().error("Auto-save failed", e instanceof Error ? e : new Error(String(e)));
+                log.error('Auto-save failed', e instanceof Error ? e : new Error(String(e)));
                 setSaveStatus('error');
             }
         }, SAVE_DEBOUNCE_MS);

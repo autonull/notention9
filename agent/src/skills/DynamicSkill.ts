@@ -1,5 +1,4 @@
-import { Note, PropertyPattern, ActionSequence, generateId } from '@notention/core';
-import { Skill } from '@notention/core/src/skills/types';
+import { Note, PropertyPattern, ActionSequence, generateId, Skill } from '@notention/core';
 
 export interface DynamicSkillDefinition {
     id: string;

@@ -1,6 +1,6 @@
 import {useMemo} from 'react';
 import type {Note, Property} from '@notention/core';
-import {matchingService} from '@notention/core';
+import {useMatching} from '../components/contexts/MatchingContext';
 
 export interface MatchResult {
     source: Note;
@@ -10,6 +10,8 @@ export interface MatchResult {
 }
 
 export function useNetworkMatching(networkNotes: Note[]) {
+    const {matchingService} = useMatching();
+
     return useMemo(() => {
         const found: MatchResult[] = [];
 
@@ -29,5 +31,5 @@ export function useNetworkMatching(networkNotes: Note[]) {
             }
         }
         return found;
-    }, [networkNotes]);
+    }, [networkNotes, matchingService]);
 }

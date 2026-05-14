@@ -102,7 +102,7 @@ export class NetworkDiscoveryService {
 
             // Reveal Secret Properties if we matched them
             if (privacyMode === 'private' && event.tags) {
-                event.tags.forEach(t => {
+                for (const t of event.tags) {
                     if (t[0] === 'property-secret') {
                         const hash = t[1];
                         const original = secretHashToProp.get(hash);
@@ -110,7 +110,7 @@ export class NetworkDiscoveryService {
                             remoteNote.properties.push(original.p);
                         }
                     }
-                });
+                }
             }
 
             // Dual Direction Matching

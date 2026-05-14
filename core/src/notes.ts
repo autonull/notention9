@@ -22,18 +22,18 @@ export const createNote = (overrides?: Partial<Note>): Note => {
     updatedAt: now,
     source: { type: 'user', identifier: 'user-default', timestamp: Date.now() },
     privacy: 'private',
-    priority: 1.0,
+    priority: 1,
     ...overrides,
   };
 };
 
-export const sortNotesByDate = (notes: Note[]) =>
+export const sortNotesByDate = (notes: Note[]): Note[] =>
   [...notes].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 
-export const areStringArraysEqual = (a: string[], b: string[]) =>
+export const areStringArraysEqual = (a: string[], b: string[]): boolean =>
   a === b || (a.length === b.length && a.every((val, i) => val === b[i]));
 
-export const areNotesEqual = (a: Note, b: Note) =>
+export const areNotesEqual = (a: Note, b: Note): boolean =>
   a === b || (
     a.title === b.title &&
     a.content === b.content &&

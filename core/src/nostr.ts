@@ -4,10 +4,10 @@ import { NetworkGate, PrivacyError } from './networkGate.js';
 import { getPrivacyTags } from './nostr/privacy.js';
 import { hexToBytes } from './utils/encoding.js';
 import { Logger } from './utils/logging.js';
-import { DEFAULT_RELAYS } from './config/nostr.js';
+import { DEFAULT_RELAYS, resolveRelays } from './config/nostr.js';
 import { queryEventsWithTimeout } from './utils/nostrQuery.js';
 
-export { DEFAULT_RELAYS };
+export { DEFAULT_RELAYS, resolveRelays };
 export const KIND_TEXT_NOTE = 1;
 export const KIND_SEMANTIC_NOTE = 35000;
 

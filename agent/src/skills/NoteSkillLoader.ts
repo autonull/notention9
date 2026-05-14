@@ -1,8 +1,8 @@
 import { Note, getCanonicalKey, OntologyServiceFactory } from '@notention/core';
-import { AgentSkillRegistry } from './AgentSkillRegistry';
-import { DynamicSkill } from './DynamicSkill';
-import type { DynamicSkillDefinition } from './DynamicSkill';
-import { log } from '../core/utils';
+import { AgentSkillRegistry } from './AgentSkillRegistry.js';
+import { DynamicSkill } from './DynamicSkill.js';
+import type { DynamicSkillDefinition } from './DynamicSkill.js';
+import { log } from '../core/utils.js';
 
 export class NoteSkillLoader {
     private registry: AgentSkillRegistry;

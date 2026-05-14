@@ -1,17 +1,14 @@
 import {useEffect, useMemo, useState} from 'react';
-import {MatchEngine, Note, ScoredMatch} from '@notention/core';
-import {useSettings} from './useSettingsContext';
+import type {Note, ScoredMatch} from '@notention/core';
 import {useNotes} from './useNotes';
+import {useMatching} from '../components/contexts/MatchingContext';
 
 // Hook to find matches for a specific note against all other local notes
 export function useMatches(note: Note | null): ScoredMatch[] {
-    const {settings} = useSettings();
     const {notes} = useNotes();
+    const {engine} = useMatching();
 
     const [matches, setMatches] = useState<ScoredMatch[]>([]);
-
-    // Engine instance
-    const engine = useMemo(() => new MatchEngine(settings.ontology), [settings.ontology]);
 
     useEffect(() => {
         if (!note || !notes) {

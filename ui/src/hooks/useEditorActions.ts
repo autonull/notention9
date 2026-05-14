@@ -16,9 +16,13 @@ export function useEditorActions(dirtyNote: Note) {
         addToast('Note exported as JSON', 'success');
     }, [dirtyNote, addToast]);
 
-    const handleCopyContent = useCallback(() => {
-        navigator.clipboard.writeText(dirtyNote.content);
-        addToast('Content copied to clipboard', 'success');
+    const handleCopyContent = useCallback(async () => {
+        try {
+            await navigator.clipboard.writeText(dirtyNote.content);
+            addToast('Content copied to clipboard', 'success');
+        } catch (e) {
+            addToast('Failed to copy content to clipboard', 'error');
+        }
     }, [dirtyNote, addToast]);
 
     return {

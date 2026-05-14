@@ -1,4 +1,5 @@
 import { SkillDefinition, SkillMatch } from './skillPatternMatcher.js';
+import { logWarn } from './utils/logging.js';
 
 /**
  * SkillApprovalManager - One-time approval for skill execution
@@ -57,7 +58,7 @@ export class SkillApprovalManager {
 
         // No callback - cannot approve
         if (!this.onApprovalRequest) {
-            console.warn(`Skill ${skill.id} requires approval but no callback provided`);
+            logWarn(`Skill ${skill.id} requires approval but no callback provided`);
             return false;
         }
 

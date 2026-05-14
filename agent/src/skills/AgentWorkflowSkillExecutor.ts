@@ -1,6 +1,6 @@
 import { Agent, Note, SkillExecutionError, Logger } from '@notention/core';
-import { AgentSkillRegistry } from './AgentSkillRegistry';
-import { Skill } from './types';
+import { AgentSkillRegistry } from './AgentSkillRegistry.js';
+import { Skill } from './types.js';
 
 export class AgentWorkflowSkillExecutor {
     private onEvent?: (event: any) => void;
@@ -32,14 +32,14 @@ export class AgentWorkflowSkillExecutor {
 
         this.emit('skill_execution_started', {
             noteId: note.id,
-            skills: matches.map(m => m.skill.name)
+            skills: matches.map((m: any) => m.skill.name)
         });
 
         const results = (
             await Promise.all(
                 matches
-                    .filter((m) => m.confidence >= 0.5)
-                    .map((m) => this.executeSingleSkill(m.skill, note))
+                    .filter((m: any) => m.confidence >= 0.5)
+                    .map((m: any) => this.executeSingleSkill(m.skill, note))
             )
         ).flat();
 

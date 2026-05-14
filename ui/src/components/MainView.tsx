@@ -10,7 +10,7 @@ import {useMetaprogramming} from '../hooks/useMetaprogramming';
 import {LoadingSpinner} from './common/icons';
 import {ChatView} from './views/ChatView';
 import {MapView} from './views/MapView';
-import {TimeView} from './views/TimeView';
+import {TimelineView} from './views/TimelineView';
 import {NetworkView} from './views/NetworkView';
 import {NotesView} from './views/NotesView';
 import {OntologyView} from './views/OntologyView';
@@ -50,7 +50,7 @@ export function MainView({sortedNotes}: MainViewProps) {
             case 'map':
                 return <MapView/>;
             case 'time':
-                return <TimeView/>;
+                return <TimelineView/>;
             case 'network':
                 const matchNote = matchingNoteId
                     ? notes.find((n) => n.id === matchingNoteId)

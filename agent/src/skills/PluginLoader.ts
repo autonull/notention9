@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import { AgentSkillRegistry } from './AgentSkillRegistry';
-import { log } from '../core/utils';
+import { AgentSkillRegistry } from './AgentSkillRegistry.js';
+import { log } from '../core/utils.js';
 
 export class PluginLoader {
     private installedPath: string;

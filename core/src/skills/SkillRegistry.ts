@@ -3,6 +3,11 @@ import { SkillDefinition } from '../skillPatternMatcher.js';
 import { ValidationError } from '../utils/errors.js';
 import { Note } from '../types/index.js';
 import { Skill } from './types.js';
+import { logWarn, logError } from '../utils/logging.js';
+
+interface SkillWithId {
+    id: string;
+}
 
 // Union type for all supported skill types
 export type RegisteredSkill = BaseSkill | SkillDefinition | Skill;
@@ -14,13 +19,13 @@ export class SkillRegistry {
      * Register a skill
      */
     registerSkill(skill: RegisteredSkill): void {
-        const id = (skill as any).id;
+        const id = (skill as SkillWithId).id;
         if (!id) {
             throw new ValidationError('Skill must have an ID');
         }
 
         if (this.skills.has(id)) {
-            console.warn(`Skill with ID ${id} is already registered and will be overwritten`);
+            logWarn(`Skill with ID ${id} is already registered and will be overwritten`);
         }
 
         this.skills.set(id, skill);
@@ -63,14 +68,14 @@ export class SkillRegistry {
                 try {
                     return skill.canHandle(note) > 0;
                 } catch (e) {
-                    console.error(`Error checking skill ${skill.id}`, e);
+                    logError(`Error checking skill ${skill.id}`, e as Error);
                     return false;
                 }
             });
     }
 
     protected isSkillInterface(skill: RegisteredSkill): skill is Skill {
-        return 'canHandle' in skill && typeof (skill as any).canHandle === 'function';
+        return 'canHandle' in skill && typeof skill.canHandle === 'function';
     }
 
     /**

@@ -1,10 +1,10 @@
 import { z } from 'zod';
 import { createTool } from '@notention/core';
 import type { Tool, Note } from '@notention/core';
-import type { Skill } from './types';
-import { executeAction } from '../core/actionExecutor';
+import type { Skill } from './types.js';
+import { executeAction } from '../core/actionExecutor.js';
 
-import type { ActionSequence } from '@notention/core/src/skills/types';
+import type { ActionSequence } from '@notention/core';
 
 interface AgentAction {
     type: 'browser';
@@ -59,18 +59,18 @@ export class SkillToolAdapter {
     }
 
     public static convertToAgentAction(actions: ActionSequence['actions']): AgentAction | null {
-        const nav = actions.find(a => a.type === 'navigate');
+        const nav = actions.find((a: any) => a.type === 'navigate');
         if (!nav) return null;
 
-        const scrape = actions.find(a => a.type === 'scrape');
-        const screenshot = actions.find(a => a.type === 'screenshot');
+        const scrape = actions.find((a: any) => a.type === 'scrape');
+        const screenshot = actions.find((a: any) => a.type === 'screenshot');
 
         const interactions = actions
-            .filter(a => ['wait', 'click', 'type', 'hover', 'scroll'].includes(a.type))
-            .map(a => ({
+            .filter((a: any) => ['wait', 'click', 'type', 'hover', 'scroll'].includes(a.type))
+            .map((a: any) => ({
                 type: a.type,
-                value: (a as any).duration || (a as any).value || (a as any).text,
-                selector: (a as any).selector,
+                value: a.duration || a.value || a.text,
+                selector: a.selector,
             }));
 
         return {
