@@ -227,8 +227,8 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                     className={`
                         flex flex-col h-full bg-gray-900 border-l border-gray-700/50
                         transition-all duration-300 ease-in-out transform
-                        fixed inset-y-0 right-0 z-30 shadow-xl lg:shadow-none lg:z-0 lg:relative
-                        w-80
+                        fixed inset-y-0 right-0 z-30 shadow-2xl lg:shadow-none lg:z-0 lg:relative
+                        w-80 max-w-[85vw]
                         ${isInspectorOpen
                             ? 'translate-x-0'
                             : 'translate-x-full lg:w-0 lg:translate-x-0 lg:border-l-0 lg:overflow-hidden'}

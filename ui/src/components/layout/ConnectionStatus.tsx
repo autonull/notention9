@@ -19,12 +19,12 @@ export function ConnectionStatus() {
     }
 
     return (
-        <div className="flex items-center gap-2 px-2" title={title}>
-            <div className={`w-2 h-2 rounded-full ${colorClass}`}/>
+        <div className="flex items-center gap-1.5 px-2" title={title}>
+            <div className={`w-1.5 h-1.5 rounded-full ${colorClass}`}/>
             {queueSize > 0 && (
-                <span className="text-xs text-gray-400">
-          {queueSize} pending
-        </span>
+                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">
+                    {queueSize}
+                </span>
             )}
         </div>
     );

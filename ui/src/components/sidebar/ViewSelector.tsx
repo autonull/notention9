@@ -16,7 +16,7 @@ export function ViewSelector({viewMode, onViewChange}: ViewSelectorProps) {
     ];
 
     return (
-        <div className="flex items-center bg-gray-800 rounded-lg p-1 border border-gray-700">
+        <div className="flex items-center gap-0.5">
             {options.map((option) => (
                 <IconButton
                     key={option.mode}
@@ -25,7 +25,7 @@ export function ViewSelector({viewMode, onViewChange}: ViewSelectorProps) {
                     isActive={viewMode === option.mode}
                     tooltip={`View as ${option.label}`}
                     variant="ghost"
-                    className="flex-1"
+                    size="sm"
                 />
             ))}
         </div>

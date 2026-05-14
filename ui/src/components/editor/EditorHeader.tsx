@@ -135,6 +135,7 @@ export function EditorHeader({
                     onPublish={onPublish}
                     isPublishing={isPublishing}
                     isPublished={isPublished}
+                    onExport={onExport}
                     actionLabel={actionLabel}
                 />
             </div>

@@ -21,22 +21,21 @@ export function FilterBar({searchTerm, onSetSearch}: FilterBarProps) {
     };
 
     const getButtonClass = (isActive: boolean, isAll = false) => `
-        flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 flex-shrink-0 border select-none cursor-pointer
+        flex items-center gap-1 px-2 py-1 rounded-md text-[10px] uppercase tracking-wider font-bold transition-all duration-200 flex-shrink-0 select-none cursor-pointer
         ${isActive
         ? (isAll
-            ? 'bg-gray-700 text-white border-gray-600 shadow-sm'
-            : 'bg-blue-900/30 text-blue-300 border-blue-500/30 shadow-sm shadow-blue-900/20')
-        : 'bg-gray-800/30 text-gray-400 border-transparent hover:bg-gray-800 hover:text-gray-200 hover:border-gray-700/50'}
+            ? 'bg-gray-700 text-white shadow-sm'
+            : 'bg-blue-900/40 text-blue-400 shadow-sm shadow-blue-900/20')
+        : 'text-gray-600 hover:text-gray-400 hover:bg-gray-800/50'}
     `;
 
     return (
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 -mx-2 px-2 scrollbar-hide">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
             <button
                 onClick={() => onSetSearch('')}
                 className={getButtonClass(!searchTerm, true)}
                 title="All Notes"
             >
-                <ClockIcon className={`w-3.5 h-3.5 ${!searchTerm ? 'text-gray-200' : 'text-gray-500 group-hover:text-gray-400'}`}/>
                 All
             </button>
 
@@ -48,7 +47,6 @@ export function FilterBar({searchTerm, onSetSearch}: FilterBarProps) {
                         onClick={() => handleFilterClick(filter.query, filter.id)}
                         className={getButtonClass(isActive)}
                     >
-                        <filter.icon className={`w-3.5 h-3.5 ${isActive ? 'text-blue-400' : 'text-gray-500'}`}/>
                         {filter.label}
                     </button>
                 );
