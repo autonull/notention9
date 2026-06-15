@@ -105,8 +105,8 @@ export function useKeyboardShortcuts({
                 onBackToList?.();
             }
 
-            // Toggle sidebar: Ctrl+\
-            if (isMeta && e.key === '\\') {
+            // Toggle sidebar: Ctrl+\ or Ctrl+B
+            if (isMeta && (e.key === '\\' || e.key.toLowerCase() === 'b')) {
                 e.preventDefault();
                 onToggleSidebar?.();
             }

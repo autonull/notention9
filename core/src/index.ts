@@ -26,6 +26,7 @@ export * from './utils/logging.js';
 export * from './utils/encoding.js';
 export * from './utils/string.js';
 export * from './utils/tools.js';
+export * from './utils/commands.js';
 export * from './utils/csvExport.js';
 export * from './utils/agentLogging.js';
 export * from './utils/baseService.js';

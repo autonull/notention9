@@ -1,10 +1,12 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useMemo} from 'react';
 import {useNotes} from '../../hooks/useNotes';
 import {useView} from '../../hooks/useViewContext';
 import {useSettings} from '../../hooks/useSettingsContext';
 import {agentService} from '../../services/AgentService';
 import {StatCard} from '../widgets/StatCard';
 import {ActivityFeed} from '../widgets/ActivityFeed';
+import {Badge} from '../common/Badge';
+import {PropertyExtractor} from '@notention/core';
 import {
     CheckCircleIcon,
     CpuChipIcon,
@@ -15,7 +17,8 @@ import {
     SparklesIcon,
     PencilIcon,
     ArrowRightIcon,
-    ClockIcon
+    ClockIcon,
+    TagIcon
 } from '../common/icons';
 
 const TEMPLATES = {
@@ -58,6 +61,12 @@ export function DashboardView() {
     const [quickCaptureInput, setQuickCaptureInput] = useState('');
     const [agentStatus, setAgentStatus] = useState(agentService.getStatus());
 
+    const extractor = useMemo(() => new PropertyExtractor(settings.ontology), [settings.ontology]);
+    const extractedProps = useMemo(() => {
+        if (!quickCaptureInput.trim()) return [];
+        return extractor.extractFromText(quickCaptureInput);
+    }, [quickCaptureInput, extractor]);
+
     useEffect(() => {
         const handleStatusChange = (status: any) => setAgentStatus(status);
         agentService.on('status_change', handleStatusChange);
@@ -79,11 +88,13 @@ export function DashboardView() {
         const note = addNote({
             title: 'Quick Note',
             content: `<p>${quickCaptureInput}</p>`,
-            tags: ['quick-capture']
+            tags: ['quick-capture'],
+            properties: extractedProps
         });
 
         setSelectedNoteId(note.id);
         setActiveView('notes');
+        setQuickCaptureInput('');
     };
 
     const handleQuickTemplate = (type: keyof typeof TEMPLATES) => {
@@ -132,7 +143,7 @@ export function DashboardView() {
                         Instant notes, tasks, and ideas.
                     </p>
 
-                    <form onSubmit={handleQuickCapture} className="relative mb-8">
+                    <form onSubmit={handleQuickCapture} className="relative mb-4">
                         <input
                             type="text"
                             value={quickCaptureInput}
@@ -148,6 +159,34 @@ export function DashboardView() {
                             <ArrowRightIcon className="w-5 h-5 text-white"/>
                         </button>
                     </form>
+
+                    {/* Semantic Preview */}
+                    <div className="flex flex-wrap justify-center gap-2 mb-8 min-h-[24px]">
+                        {extractedProps.map((prop, idx) => (
+                            <Badge
+                                key={`${prop.key}-${idx}`}
+                                variant="purple"
+                                size="sm"
+                                pill
+                                className="animate-fade-in"
+                                icon={SparklesIcon}
+                            >
+                                {prop.key}: {prop.values.join(', ')}
+                            </Badge>
+                        ))}
+                        {quickCaptureInput.includes('#') && quickCaptureInput.split('#').slice(1).map((tag, idx) => (
+                            <Badge
+                                key={`tag-${idx}`}
+                                variant="info"
+                                size="sm"
+                                pill
+                                className="animate-fade-in"
+                                icon={TagIcon}
+                            >
+                                #{tag.split(' ')[0]}
+                            </Badge>
+                        ))}
+                    </div>
 
                     <div className="flex justify-center gap-3">
                         {(Object.entries(TEMPLATES) as [keyof typeof TEMPLATES, typeof TEMPLATES['task']][]).map(([type, t]) => (

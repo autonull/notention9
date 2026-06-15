@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Note} from '@notention/core';
-import {NoteIcon, PlusIcon, SearchIcon, TagIcon} from '../common/icons';
+import {Note, getTextFromHtml} from '@notention/core';
+import {ClockIcon, NoteIcon, PlusIcon, SearchIcon, TagIcon} from '../common/icons';
 
 interface CommandItem {
     id: string;
@@ -9,6 +9,7 @@ interface CommandItem {
     description?: string;
     icon?: React.ReactElement;
     action: () => void;
+    category?: string;
 }
 
 interface CommandPaletteProps {
@@ -85,6 +86,8 @@ export function CommandPalette({
         )
         : commands;
 
+    const recentNotes = !query ? notes.slice(0, 5) : [];
+
     const allItems: CommandItem[] = [
         ...(query && onCreateNote
             ? [
@@ -94,6 +97,7 @@ export function CommandPalette({
                     label: `Create new note: "${query}"`,
                     icon: <PlusIcon className="h-5 w-5"/>,
                     action: () => onCreateNote(query),
+                    category: 'Actions'
                 },
             ]
             : []),
@@ -103,14 +107,25 @@ export function CommandPalette({
             label: cmd.label,
             icon: cmd.icon,
             action: cmd.action,
+            category: cmd.label.toLowerCase().includes('go to') || ['Dashboard', 'Notes', 'Map', 'Network', 'Ontology', 'Chat', 'Settings', 'Trash', 'Timeline'].some(v => cmd.label.includes(v)) ? 'Navigation' : 'Actions'
+        })),
+        ...recentNotes.map((note) => ({
+            id: `recent-${note.id}`,
+            type: 'note' as const,
+            label: note.title || 'Untitled',
+            description: note.content.slice(0, 50).replace(/<[^>]*>/g, ''), // Strip HTML
+            icon: <ClockIcon className="h-5 w-5"/>,
+            action: () => onSelectNote(note.id),
+            category: 'Recent Notes'
         })),
         ...filteredNotes.map((note) => ({
             id: note.id,
             type: 'note' as const,
             label: note.title || 'Untitled',
-            description: note.content.slice(0, 50).replace(/<[^>]*>/g, ''), // Strip HTML
+            description: getTextFromHtml(note.content).slice(0, 50),
             icon: <NoteIcon className="h-5 w-5"/>,
             action: () => onSelectNote(note.id),
+            category: 'Notes'
         })),
     ];
 
@@ -162,30 +177,49 @@ export function CommandPalette({
 
                 <div className="overflow-y-auto flex-1 p-2 space-y-1 custom-scrollbar">
                     {allItems.length === 0 && query && (
-                        <div className="p-8 text-center text-gray-500">
-                            <p>No results found.</p>
+                        <div className="p-8 text-center flex flex-col items-center gap-4">
+                            <div className="text-gray-500">No results found for "{query}"</div>
+                            {onCreateNote && (
+                                <button
+                                    onClick={() => {
+                                        onCreateNote(query);
+                                        onClose();
+                                    }}
+                                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-lg shadow-blue-500/20"
+                                >
+                                    <PlusIcon className="h-5 w-5"/>
+                                    <span>Create new note: "{query}"</span>
+                                </button>
+                            )}
                         </div>
                     )}
 
                     {/* Default View: Show Shortcuts if no query */}
                     {allItems.length > 0 ? (
-                        allItems.map((item, index) => (
-                            <div
-                                key={item.id}
-                                className={`
-                        flex items-center p-3 rounded-lg cursor-pointer transition-colors
-                        ${index === selectedIndex ? 'bg-blue-600/20 border border-blue-500/50' : 'border border-transparent hover:bg-gray-700/50'}
-                    `}
-                                onClick={() => {
-                                    item.action();
-                                    onClose();
-                                }}
-                                onMouseEnter={() => setSelectedIndex(index)}
-                            >
-                                <div
-                                    className={`mr-4 flex-shrink-0 ${index === selectedIndex ? 'text-blue-400' : 'text-gray-400'}`}>
-                                    {item.icon}
-                                </div>
+                        allItems.map((item, index) => {
+                            const showCategory = item.category && (index === 0 || allItems[index - 1].category !== item.category);
+                            return (
+                                <React.Fragment key={item.id}>
+                                    {showCategory && (
+                                        <div className="px-3 pt-3 pb-1 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                                            {item.category}
+                                        </div>
+                                    )}
+                                    <div
+                                        className={`
+                                            flex items-center p-3 rounded-lg cursor-pointer transition-colors
+                                            ${index === selectedIndex ? 'bg-blue-600/20 border border-blue-500/50' : 'border border-transparent hover:bg-gray-700/50'}
+                                        `}
+                                        onClick={() => {
+                                            item.action();
+                                            onClose();
+                                        }}
+                                        onMouseEnter={() => setSelectedIndex(index)}
+                                    >
+                                        <div
+                                            className={`mr-4 flex-shrink-0 ${index === selectedIndex ? 'text-blue-400' : 'text-gray-400'}`}>
+                                            {item.icon}
+                                        </div>
                                 <div className="flex-1 min-w-0">
                                     <div
                                         className={`font-medium truncate ${index === selectedIndex ? 'text-white' : 'text-gray-200'}`}>
@@ -209,8 +243,10 @@ export function CommandPalette({
                                         NOTE
                                     </div>
                                 )}
-                            </div>
-                        ))
+                                    </div>
+                                </React.Fragment>
+                            );
+                        })
                     ) : (
                         !query && (
                             <div className="p-4 space-y-6">
@@ -231,7 +267,7 @@ export function CommandPalette({
                                         </div>
                                         <div className="flex justify-between text-gray-400">
                                             <span>Toggle Sidebar</span>
-                                            <code className="bg-gray-700/50 px-1.5 rounded text-gray-300 border border-gray-600/30">Ctrl+\</code>
+                                            <code className="bg-gray-700/50 px-1.5 rounded text-gray-300 border border-gray-600/30">Ctrl+\ or Ctrl+B</code>
                                         </div>
                                         <div className="flex justify-between text-gray-400">
                                             <span>Back to List</span>

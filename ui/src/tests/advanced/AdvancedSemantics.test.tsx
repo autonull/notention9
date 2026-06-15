@@ -1,5 +1,5 @@
 import {describe, expect, it, vi} from 'vitest';
-import {Note, patternRecognitionService} from '@notention/core';
+import {createNote, patternRecognitionService} from '@notention/core';
 
 // Mock the core service
 vi.mock('@notention/core', async (importOriginal) => {
@@ -15,19 +15,14 @@ vi.mock('@notention/core', async (importOriginal) => {
 describe('Advanced Semantics Integration', () => {
     it('should surface predictions based on semantic intent', () => {
         const userId = 'test-user';
-        const note: Note = {
+        const note = createNote({
             id: 'test-note-advanced',
             title: 'Reminder',
             content: 'Remind me to submit the report',
-            type: 'note',
             properties: [
                 {key: 'intent', operator: 'is', values: ['reminder']}
-            ],
-            created_at: Date.now(),
-            modified_at: Date.now(),
-            tags: [],
-            stats: {viewCount: 0, readTime: 0}
-        };
+            ]
+        });
 
         const mockPrediction = {
             pattern: {id: 'test-pattern', name: 'Test Pattern', confidence: 0.9},

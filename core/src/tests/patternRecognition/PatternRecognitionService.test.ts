@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { PatternRecognitionService } from '../../patternRecognition/patternRecognition.js';
-import { Note, OntologyNode } from '../../types/index.js';
+import { OntologyNode } from '../../types/index.js';
+import { createNote } from '../../notes/notes.js';
 import { Pattern } from '../../patternRecognition/types.js';
 
 describe('PatternRecognitionService', () => {
@@ -34,15 +35,13 @@ describe('PatternRecognitionService', () => {
         // Inject pattern
         (service as any).patterns.set('user1', { patterns: [pattern], userId: 'user1', lastUpdated: 0 });
 
-        const note = {
+        const note = createNote({
             id: 'n1',
             title: 'Note 1',
-            content: '',
             properties: [
                 { key: 'rate', operator: 'is', values: ['80'] }
-            ],
-            updatedAt: new Date().toISOString()
-        } as unknown as Note;
+            ]
+        });
 
         const predictions = service.predictUserNeeds('user1', note, mockOntology);
         expect(predictions).toHaveLength(1);
@@ -66,15 +65,13 @@ describe('PatternRecognitionService', () => {
 
         (service as any).patterns.set('user1', { patterns: [pattern], userId: 'user1', lastUpdated: 0 });
 
-        const note = {
+        const note = createNote({
             id: 'n1',
             title: 'Note 1',
-            content: '',
             properties: [
                 { key: 'rate', operator: 'is', values: ['80'] }
-            ],
-            updatedAt: new Date().toISOString()
-        } as unknown as Note;
+            ]
+        });
 
         // No ontology passed -> fallback
         const predictions = service.predictUserNeeds('user1', note);

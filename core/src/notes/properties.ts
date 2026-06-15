@@ -18,8 +18,8 @@ const SPATIAL_SUFFIXES = ['Location', 'Place', 'Address', 'Geo', 'Coords'];
 const SPATIAL_SNAKE_SUFFIXES = ['_location', '_place', '_address', '_geo', '_coords'];
 
 const INDEFINITE_OPS = new Set([
-  'greater than', 'less than', 'between', 'is not', 'contains', 'is near',
-  '<', '>', '!=', '≈', '∋',
+  'greater than', 'less than', 'less than or equal', 'greater than or equal', 'between', 'range', 'is not', 'contains', 'is near',
+  '<', '>', '<=', '>=', '!=', '≈', '∋',
 ]);
 
 const hasAnySuffix = (key: string, suffixes: string[]): boolean =>

@@ -30,6 +30,16 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
         console.error("Uncaught error:", error, errorInfo);
     }
 
+    copyErrorInfo = () => {
+        if (!this.state.error) return;
+        const errorInfo = `
+Message: ${this.state.error.message}
+Stack: ${this.state.error.stack}
+        `.trim();
+        navigator.clipboard.writeText(errorInfo);
+        alert('Error info copied to clipboard');
+    };
+
     render() {
         if (this.state.hasError) {
             return this.props.fallback || (
@@ -44,12 +54,21 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                                 {this.state.error?.message}
                             </code>
                         </div>
-                        <button
-                            onClick={() => window.location.reload()}
-                            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded transition-colors"
-                        >
-                            Reload Application
-                        </button>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => window.location.reload()}
+                                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded transition-colors"
+                            >
+                                Reload Application
+                            </button>
+                            <button
+                                onClick={this.copyErrorInfo}
+                                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-200 font-medium rounded transition-colors"
+                                title="Copy error info for debugging"
+                            >
+                                Copy Error
+                            </button>
+                        </div>
                     </div>
                 </div>
             );

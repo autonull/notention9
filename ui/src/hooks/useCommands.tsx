@@ -2,6 +2,7 @@ import React from 'react';
 import {useNotes} from './useNotes';
 import {useView} from './useViewContext';
 import {useToast} from './useToast';
+import {SHARED_COMMANDS} from '@notention/core';
 import {
     ChatIcon,
     DocumentDuplicateIcon,
@@ -42,7 +43,7 @@ export function useCommands({setIsHelpOpen}: UseCommandsProps) {
 
     const commands: any[] = [
         {
-            label: 'New Note',
+            ...SHARED_COMMANDS.NEW_NOTE,
             icon: <PlusIcon className="h-5 w-5"/>,
             action: handleNewNote
         },
@@ -52,17 +53,17 @@ export function useCommands({setIsHelpOpen}: UseCommandsProps) {
             action: () => setIsSidebarOpen(!isSidebarOpen)
         },
         {
-            label: 'Go to Dashboard',
+            ...SHARED_COMMANDS.DASHBOARD,
             icon: <HomeIcon className="h-5 w-5"/>,
             action: () => setActiveView('dashboard')
         },
         {
-            label: 'Go to Notes',
+            ...SHARED_COMMANDS.NOTES_LIST,
             icon: <span className="h-5 w-5 text-center">📝</span>,
             action: () => setActiveView('notes')
         },
         {
-            label: 'Go to Map',
+            ...SHARED_COMMANDS.MAP,
             icon: <MapIcon className="h-5 w-5"/>,
             action: () => setActiveView('map')
         },
@@ -72,31 +73,32 @@ export function useCommands({setIsHelpOpen}: UseCommandsProps) {
             action: () => setActiveView('actions')
         },
         {
-            label: 'Go to Network',
+            ...SHARED_COMMANDS.NETWORK,
             icon: <NetworkIcon className="h-5 w-5"/>,
             action: () => setActiveView('network')
         },
         {
-            label: 'Go to Ontology',
+            ...SHARED_COMMANDS.ONTOLOGY,
             icon: <OntologyIcon className="h-5 w-5"/>,
             action: () => setActiveView('ontology')
         },
         {
-            label: 'Go to Chat',
+            ...SHARED_COMMANDS.CHAT,
             icon: <ChatIcon className="h-5 w-5"/>,
             action: () => setActiveView('chat')
         },
         {
-            label: 'Go to Settings',
+            ...SHARED_COMMANDS.SETTINGS,
             icon: <SettingsIcon className="h-5 w-5"/>,
             action: () => setActiveView('settings')
         },
         {
-            label: 'Go to Trash',
+            ...SHARED_COMMANDS.TRASH,
             icon: <TrashIcon className="h-5 w-5"/>,
             action: () => setActiveView('trash')
         },
         {
+            ...SHARED_COMMANDS.HELP,
             label: 'Open Help & Shortcuts',
             icon: <HelpIcon className="h-5 w-5"/>,
             action: () => setIsHelpOpen(true)

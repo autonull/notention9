@@ -141,6 +141,16 @@ export function EditorControls({
                     />
                 )}
 
+                <IconButton
+                    onClick={() => window.dispatchEvent(new CustomEvent('save-note'))}
+                    tooltip="Save Note"
+                    icon={EditIcon}
+                    variant="ghost"
+                    size="md"
+                    label="Ctrl+S"
+                    className="hidden lg:flex"
+                />
+
                 {/* More Menu */}
                 <DropdownMenu
                     trigger={
@@ -161,8 +171,12 @@ export function EditorControls({
                     {missingProperties.slice(0, 2).map(prop => (
                         <button
                             key={prop}
-                            onClick={() => onAddProperty(prop)}
-                            className="px-2 py-0.5 text-[10px] uppercase tracking-wider bg-yellow-900/20 text-yellow-500/80 border border-yellow-700/30 rounded-md hover:bg-yellow-900/40 transition-colors"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                onAddProperty(prop);
+                            }}
+                            title={`Add ${prop} property`}
+                            className="px-2 py-0.5 text-[10px] uppercase tracking-wider bg-yellow-900/20 text-yellow-500/80 border border-yellow-700/30 rounded-md hover:bg-yellow-900/40 hover:text-yellow-400 hover:border-yellow-600/50 transition-all active:scale-95"
                         >
                             + {prop}
                         </button>
