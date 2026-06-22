@@ -14,7 +14,7 @@ const { mockQueryEvents, mockPublish } = vi.hoisted(() => {
 });
 
 // Mock nostr-tools pool
-vi.mock('../nostr.js', async (importOriginal) => {
+vi.mock('../network/nostr/nostr.js', async (importOriginal) => {
     const actual = await importOriginal() as any;
     return {
         ...actual,
