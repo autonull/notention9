@@ -1,5 +1,5 @@
 {
   "wsUrl": "ws://localhost:3000/ws/agent",
-  "name": "VoltAgent",
+  "name": "Agent",
   "version": "1.0.0"
 }

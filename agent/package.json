@@ -14,7 +14,6 @@
   },
   "keywords": [
     "notention",
-    "voltagent",
     "agent"
   ],
   "author": "",
@@ -23,10 +22,6 @@
     "ai": "^3.0.0",
     "@ai-sdk/openai": "^0.0.48",
     "@types/uuid": "^10.0.0",
-
-
-
-
     "uuid": "^9.0.1",
     "@modelcontextprotocol/sdk": "^1.0.1",
     "@notention/core": "workspace:*",
