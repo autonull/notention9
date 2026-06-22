@@ -7,7 +7,6 @@ import { Bootstrap } from './Bootstrap.js';
 import { SocketController } from './server/SocketController.js';
 import { ConfigManager } from './config/ConfigManager.js';
 import { setupMcpServer } from './server/McpServer.js';
-import { setAgentRegistry } from './globals.js';
 import { Server as HttpServer } from 'http';
 
 export class AgentServer {
@@ -57,7 +56,7 @@ export class AgentServer {
                 const addr = this.server?.address();
                 const realPort = typeof addr === 'object' && addr ? addr.port : port;
                 this.port = realPort;
-                log('Server', `Notention + VoltAgent running on http://localhost:${realPort}`);
+                log('Server', `Notention running on http://localhost:${realPort}`);
                 resolve();
             });
         });
@@ -105,7 +104,7 @@ export class AgentServer {
 
         ws.send(JSON.stringify({
             type: 'connection_established',
-            message: 'Connected to Notention Agent'
+            message: 'Connected to Notention MCP Server'
         }));
 
         ws.on('message', async (data) => {
@@ -129,17 +128,13 @@ export class AgentServer {
 
         // Initialize bootstrap asynchronously
         bootstrap.init((event: any) => {
-            // Event callback from Bootstrap (e.g. from VoltAgent)
             if (this.socketController) {
                 this.socketController.broadcast(event);
             }
         }).then((components: any) => {
             log('Init', 'Agent system initialized');
-            setAgentRegistry(components.agentRegistry);
 
             this.socketController = new SocketController(
-                components.agentRegistry,
-                components.skillExecutor,
                 components.feedbackCollector
             );
 

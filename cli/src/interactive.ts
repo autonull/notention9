@@ -11,6 +11,7 @@ import { ProviderFactory } from './providers/index.js';
 import { ServerManager } from './server-manager.js';
 import { loadHistory, appendHistory } from './history-manager.js';
 import chalk from 'chalk';
+import boxen from 'boxen';
 
 dotenv.config();
 

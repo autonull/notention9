@@ -146,48 +146,6 @@ export interface Contact {
 
 export type View = 'notes' | 'ontology' | 'network' | 'chat' | 'settings' | 'map' | 'timeline' | 'trash' | 'simulator' | 'dashboard' | 'actions';
 
-export interface AgentStatus {
-    state: 'initializing' | 'ready' | 'running' | 'error' | 'stopped';
-    uptime: number;
-    version: string;
-    capabilities: AgentCapabilities;
-    health: {
-        memory: {
-            used: number;
-            available: number;
-        };
-        activeWorkflows: number;
-        activeTools: number;
-    };
-}
-
-export interface AgentCapabilities {
-    memory: boolean;
-    rag: boolean;
-    mcp: boolean;
-    workflows: boolean;
-    tools: boolean;
-    voice: boolean;
-    streaming: boolean;
-    guardrails: boolean;
-    evals: boolean;
-    // From original AppSettings capabilities?
-    browser?: boolean;
-    files?: boolean;
-}
-
-export enum AgentFeature {
-    MEMORY = "memory",
-    RAG = "rag",
-    MCP = "mcp",
-    WORKFLOWS = "workflows",
-    TOOLS = "tools",
-    VOICE = "voice",
-    STREAMING = "streaming",
-    GUARDRAILS = "guardrails",
-    EVALS = "evals"
-}
-
 export interface MemoryAdapter {
     store(key: string, value: any): Promise<void>;
     retrieve(key: string): Promise<any>;
@@ -275,26 +233,3 @@ export interface SearchResult {
     score: number;
 }
 
-export interface Agent {
-    start(): Promise<void>;
-    stop(): Promise<void>;
-    getStatus(): Promise<AgentStatus>;
-    processNote(note: Note): Promise<Note[]>;
-    sendNote(note: Note): Promise<void>;
-    onNoteReceived(callback: (note: Note) => void): void;
-    getMemory(): Promise<MemoryAdapter>;
-    storeMemory(key: string, value: any): Promise<void>;
-    queryMemory(query: string): Promise<any[]>;
-    getWorkflows(): Promise<Workflow[]>;
-    executeWorkflow(workflowId: string, input: WorkflowInput): Promise<WorkflowResult>;
-    registerWorkflow(workflow: Workflow): Promise<void>;
-    getTools(): Promise<Tool[]>;
-    executeTool(toolId: string, input: ToolInput): Promise<ToolResult>;
-    registerTool(tool: Tool): Promise<void>;
-    getMCPServers(): Promise<MCPServer[]>;
-    ingestDocument(document: Document): Promise<void>;
-    search(query: string, options?: SearchOptions): Promise<SearchResult[]>;
-    getCapabilities(): AgentCapabilities;
-    supportsFeature(feature: AgentFeature): boolean;
-    generateText(prompt: string): Promise<string>;
-}

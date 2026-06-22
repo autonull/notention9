@@ -2,15 +2,9 @@ import { parseConfigFromNote, mergeConfigs } from '@notention/core';
 import type { Note, AppSettings } from '@notention/core';
 import { log } from '../core/utils.js';
 import { Capabilities } from '../core/Capabilities.js';
-import { VoltAgentProvider } from '../voltagent/index.js';
 
 export class ConfigProcessor {
     private currentConfig: Partial<AppSettings> = {};
-    private voltAgent: VoltAgentProvider | null = null;
-
-    setAgent(agent: VoltAgentProvider) {
-        this.voltAgent = agent;
-    }
 
     /**
      * Process a list of notes and apply configuration from any active config notes.
@@ -62,12 +56,6 @@ export class ConfigProcessor {
         }
 
         this.currentConfig = mergeConfigs(this.currentConfig as AppSettings, config);
-
-        // Persist config or notify system components
-        if (this.voltAgent) {
-             // In a real implementation, we would update the agent's config
-             // For now, we assume the agent reads from the shared config state or we add a method to update it
-        }
     }
 
     getConfig(): Partial<AppSettings> {
