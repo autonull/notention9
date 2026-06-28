@@ -15,7 +15,7 @@ export const CORE_FEATURES = {
 
 export const OPTIONAL_FEATURES = {
     SKILLS: false,            // External automation (Indeed, GitHub, etc.)
-    AGENT: false,             // VoltAgent automation
+    AGENT: false,             // Agent automation
     LLM_SUGGESTIONS: false,   // AI-powered property extraction
     ONTOLOGY_TOOLS: false,    // Developer Graph/Debugger views
     COLLABORATION: false,     // Real-time multi-user editing

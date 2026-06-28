@@ -1,6 +1,4 @@
 import { WebSocket } from 'ws';
-import { AgentRegistry } from '../core/AgentRegistry.js';
-import { AgentWorkflowSkillExecutor } from '../skills/AgentWorkflowSkillExecutor.js';
 import { PersistenceService } from '../persistence.js';
 import { FeedbackCollector } from '../feedback/FeedbackCollector.js';
 import { Note, Feedback } from '@notention/core';
@@ -18,8 +16,6 @@ export class SocketController {
   private meshtasticManager: MeshtasticAgentManager;
 
   constructor(
-    private agentRegistry: AgentRegistry,
-    private skillExecutor: AgentWorkflowSkillExecutor,
     private feedbackCollector: FeedbackCollector
   ) {
     this.meshtasticManager = new MeshtasticAgentManager((note) => {
@@ -41,48 +37,11 @@ export class SocketController {
   }
 
   public async handleMessage(message: SocketMessage, ws: WebSocket): Promise<void> {
-    const agent = this.agentRegistry.getDefault();
-    if (!agent) {
-      ws.send(JSON.stringify({ type: 'error', message: 'No agent available' }));
-      return;
-    }
-
-    const shouldExecuteSkills = async (_note: Note): Promise<boolean> => true;
 
     try {
       switch (message.type) {
-        case 'note_created': {
-          const notes = await this.skillExecutor.executeForNote(message.payload as Note);
-          for (const result of notes) {
-            this.broadcast({ type: 'note_created', payload: result });
-          }
-          break;
-        }
-
-        case 'note_updated':
-          if (await shouldExecuteSkills(message.payload as Note)) {
-            const results = await this.skillExecutor.executeForNote(message.payload as Note);
-            for (const result of results) {
-              this.broadcast({ type: 'note_created', payload: result });
-            }
-          }
-          break;
-
-        case 'execute_workflow': {
-          try {
-            const payload = message.payload as { workflowId: string; input: any };
-            const result = await agent.executeWorkflow(payload.workflowId, payload.input);
-            ws.send(JSON.stringify({ type: 'workflow_result', payload: result }));
-          } catch (e: unknown) {
-            const errorMessage = e instanceof Error ? e.message : 'Unknown error';
-            ws.send(JSON.stringify({ type: 'error', message: errorMessage }));
-          }
-          break;
-        }
-
         case 'get_agent_status': {
-          const status = await agent.getStatus();
-          ws.send(JSON.stringify({ type: 'agent_status', payload: status }));
+          ws.send(JSON.stringify({ type: 'agent_status', payload: { status: 'mcp-only' } }));
           break;
         }
 
@@ -149,6 +108,13 @@ export class SocketController {
             }
             break;
         }
+
+        // Catch-all for events that might have been removed
+        case 'note_created':
+        case 'note_updated':
+        case 'execute_workflow':
+            // No-op for now as these were handled by internal agent
+            break;
 
         default:
           ws.send(JSON.stringify({ type: 'error', message: `Unknown type: ${message.type}` }));

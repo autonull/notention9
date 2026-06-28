@@ -60,7 +60,7 @@ export function AgentCursor() {
                     fontSize: '12px',
                     whiteSpace: 'nowrap'
                 }}>
-                    VoltAgent: {action}
+                    Agent: {action}
                 </div>
             )}
         </div>

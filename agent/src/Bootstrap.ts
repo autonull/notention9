@@ -1,7 +1,4 @@
-import { AgentRegistry } from './core/AgentRegistry.js';
-import { VoltAgentProvider } from './voltagent/index.js';
 import { AgentSkillRegistry } from './skills/AgentSkillRegistry.js';
-import { AgentWorkflowSkillExecutor } from './skills/AgentWorkflowSkillExecutor.js';
 import { loadAgentConfig } from './config/index.js';
 import { IndeedSkill, CraigslistSkill, GitHubSkill, Note } from '@notention/core';
 import { ConfigSkill } from './skills/ConfigSkill.js';
@@ -13,34 +10,24 @@ import type { ConfigProcessor } from './configurator/ConfigProcessor.js';
 import type { NoteSkillLoader } from './skills/NoteSkillLoader.js';
 
 export interface BootstrapResult {
-	agentRegistry: AgentRegistry;
 	skillRegistry: AgentSkillRegistry;
 	feedbackCollector: FeedbackCollector;
-	skillExecutor: AgentWorkflowSkillExecutor;
-	voltagent: VoltAgentProvider;
 }
 
 export type AgentEvent = { type: string; payload: any };
 
 export class Bootstrap {
-	private agentRegistry = new AgentRegistry();
 	private skillRegistry = new AgentSkillRegistry();
 	private feedbackCollector = new FeedbackCollector();
-	private skillExecutor!: AgentWorkflowSkillExecutor;
 
 	public async init(onEvent: (event: AgentEvent) => void): Promise<BootstrapResult> {
-		const config = await loadAgentConfig();
-		const voltagent = new VoltAgentProvider(config.voltagent);
-		await voltagent.start();
-		log('Init', 'VoltAgent started');
+		await loadAgentConfig();
+		log('Init', 'MCP Server started');
 
-		this.agentRegistry.register('voltagent', voltagent);
-		this.agentRegistry.setDefault('voltagent');
-		this.skillRegistry.setAgent(voltagent);
 		this.initializeBuiltInSkills();
 
 		const configurator = await this.loadConfigurator();
-		const configProcessor = await this.loadConfigProcessor(voltagent);
+		const configProcessor = await this.loadConfigProcessor();
 		const noteSkillLoader = await this.loadNoteSkillLoader();
 		await this.loadPlugins();
 
@@ -54,12 +41,7 @@ export class Bootstrap {
 			log('Init', `Onboarding note created: ${onboardingNote.id}`);
 		}
 
-		this.skillExecutor = new AgentWorkflowSkillExecutor(voltagent, this.skillRegistry, onEvent);
-		await this.registerTools(voltagent);
-
-		voltagent.onNoteReceived((note: Note) => this.processIncomingNote(note, configProcessor, noteSkillLoader, onEvent));
-
-		return { agentRegistry: this.agentRegistry, skillRegistry: this.skillRegistry, feedbackCollector: this.feedbackCollector, skillExecutor: this.skillExecutor, voltagent };
+		return { skillRegistry: this.skillRegistry, feedbackCollector: this.feedbackCollector };
 	}
 
   private async loadConfigurator() {
@@ -67,10 +49,9 @@ export class Bootstrap {
     return new InitialConfigurator();
   }
 
-  private async loadConfigProcessor(voltagent: VoltAgentProvider) {
+  private async loadConfigProcessor() {
     const { ConfigProcessor } = await import('./configurator/ConfigProcessor.js');
     const processor = new ConfigProcessor();
-    processor.setAgent(voltagent);
     return processor;
   }
 
@@ -101,13 +82,5 @@ export class Bootstrap {
 		this.skillRegistry.register(new CraigslistSkill(), { tags: ['classifieds', 'search', 'craigslist'], domains: ['craigslist.org'] });
 		this.skillRegistry.register(new GitHubSkill(), { tags: ['code', 'repo', 'github'], domains: ['github.com'] });
 		this.skillRegistry.register(new ConfigSkill(), { tags: ['config', 'setting', 'system'], domains: [] });
-	}
-
-	private async registerTools(voltagent: VoltAgentProvider) {
-		const { querySkillRegistryTool, executeSkillTool, ontologyQueryTool } = await import('./tools.js');
-		await voltagent.registerTool(querySkillRegistryTool);
-		await voltagent.registerTool(executeSkillTool);
-		await voltagent.registerTool(ontologyQueryTool);
-		log('Init', 'Registered app-specific tools with VoltAgent');
 	}
 }

@@ -4,7 +4,6 @@ import { Note, PropertyExtractor, getTextFromHtml, OntologyNode, Property, Ontol
 import { McpToolRegistry } from '../McpToolRegistry.js';
 import { AgentPlugin } from '../AgentPlugin.js';
 import { PersistenceService } from '../../persistence.js';
-import { executeSkillTool, ontologyQueryTool } from '../../tools.js';
 import { Capabilities } from '../../core/Capabilities.js';
 
 export class CorePlugin implements AgentPlugin {
@@ -146,30 +145,6 @@ export class CorePlugin implements AgentPlugin {
         });
 
         // --- System Capability Tools ---
-
-        // Execute Skill
-        registry.register('execute_skill', {
-            description: 'Execute a skill',
-            schema: z.object({
-                skillId: z.string(),
-                noteData: z.object({
-                    properties: z.array(z.any()),
-                    content: z.string()
-                })
-            }),
-            handler: async (args) => {
-                return await executeSkillTool.execute(args);
-            }
-        });
-
-        // Query Ontology
-        registry.register('query_ontology', {
-            description: 'Query the ontology',
-            schema: z.object({ query: z.string() }),
-            handler: async (args) => {
-                return await ontologyQueryTool.execute(args);
-            }
-        });
 
         // Get Capabilities
         registry.register('get_capabilities', {

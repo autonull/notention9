@@ -98,7 +98,7 @@ export function SetupWizard({onComplete, service}: SetupWizardProps) {
                                 onChange={(e) => updateConfig({enableBrowserAutomation: e.target.checked})}
                                 className="form-checkbox"
                             />
-                            <span>Enable Browser Automation (VoltAgent Browser)</span>
+                            <span>Enable Browser Automation (Agent Browser)</span>
                         </label>
                         <label className="flex items-center space-x-2">
                             <input

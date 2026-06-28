@@ -23,7 +23,7 @@ Just type naturally. The editor automatically parses your intent.
 -   **Advanced Parsing:** Supports both canonical and symbolic formats
 
 ### ⚡️ Universal Action Agent
-Notention doesn't just store your tasks; it helps complete them. Powered by the **VoltAgent** architecture, the system acts as a digital extension of yourself.
+Notention doesn't just store your tasks; it helps complete them. Powered by the **Agent** architecture, the system acts as a digital extension of yourself.
 -   **Semantic Automation:** Write "Find 3-bedroom, 2-bath houses in Austin under $600k", and the agent will understand the criteria, search real estate platforms, and import the results as structured notes.
 -   **Browser Automations:** The agent can navigate the web, fill forms, and interact with sites to execute complex workflows like booking tickets or applying for jobs.
 -   **Real-Time Feedback:** Watch the agent work in real-time as it navigates, researches, and updates your workspace.
@@ -73,7 +73,7 @@ Notention is designed to be transport-agnostic, supporting multiple decentralize
 
 ## Tech Stack
 -   **Frontend:** React, Vite, TailwindCSS
--   **Agent Core:** VoltAgent SDK, Playwright (Browser Automation)
+-   **Agent Core:** Agent SDK, Playwright (Browser Automation)
 -   **Storage:** LocalForage & LibSQL
 -   **AI:** OpenAI / custom LLM integrations
 

@@ -151,7 +151,7 @@ export class MovieMaker {
 
             try {
                 await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
-                await page.evaluate(async (data) => {
+                await page.evaluate(async (data: any) => {
                     const { key, relayUrl } = data;
                     const settings = {
                         aiEnabled: false,

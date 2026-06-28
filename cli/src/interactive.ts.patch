@@ -1,0 +1,6 @@
+<<<<<<< SEARCH
+import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+=======
+import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import boxen from "boxen";
+>>>>>>> REPLACE

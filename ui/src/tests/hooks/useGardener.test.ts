@@ -25,9 +25,9 @@ vi.mock('../../hooks/useToast', () => ({
 // Mock Gardener
 const mockAnalyzeOntology = vi.fn();
 vi.mock('../../services/gardener', () => ({
-    Gardener: vi.fn().mockImplementation(() => ({
-        evolveOntology: mockAnalyzeOntology,
-    })),
+    Gardener: vi.fn().mockImplementation(function() {
+        return { evolveOntology: mockAnalyzeOntology };
+    })
 }));
 
 // Mock Remote/Local AI providers
@@ -83,8 +83,6 @@ describe('useGardener', () => {
         // called with mockNotes and undefined context
         expect(mockAnalyzeOntology).toHaveBeenCalledWith(mockNotes, undefined);
         expect(setSettingsMock).toHaveBeenCalled();
-        // Check if the update function logic is correct would require more complex mocking of setSettings behavior,
-        // but verifying it's called is a good first step.
     });
 
     it('should not update settings if no new attributes', async () => {

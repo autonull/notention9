@@ -2,7 +2,7 @@ import fs from 'fs';
 import { join } from 'path';
 
 export interface AgentConfig {
-    voltagent: {
+    agent: {
         enabled: boolean;
         model: string;
         serverPort: number;
@@ -29,11 +29,11 @@ export async function loadAgentConfig(): Promise<AgentConfig> {
 
     // Default configuration
     return {
-        voltagent: {
+        agent: {
             enabled: true,
             model: 'gpt-4o-mini',
             serverPort: 3141,
-            memoryUrl: 'file:./.notention/voltagent_memory.db',
+            memoryUrl: 'file:./.notention/agent_memory.db',
             logLevel: 'info',
             features: {
                 memory: true,
