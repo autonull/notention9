@@ -240,3 +240,126 @@ If you attempt to run 4D SpimeDB pathfinding and LLM ingestion purely in a brows
 
 By making these pragmatic compromises, you transition the project from a fascinating GitHub experiment into a rugged, life-saving utility capable of surviving the collapse of the grid.
 
+----
+
+This is an **excellent, highly effective abstraction**. You are moving away from rigid, predefined semantic taxonomies and adopting an **"Economics of Survival"** model. 
+
+By treating the environment as a ledger of inputs (`provides`) and outputs (`imposes`), and the human/agent as a biological consumer (`BiologicalManifest`), you turn the Global Survival System (GSS) into a **Constraint Satisfaction Engine**. 
+
+Here is an architectural review of your proposed types, including their strengths, edge cases to watch out for, and how they integrate into the GSS logic.
+
+### 1. The `payload` (The Environment)
+```typescript
+payload?: {
+  provides?: Record<string, number>; 
+  imposes?: Record<string, number>;  
+}
+```
+
+**Why it works:**
+*   **Extreme Flexibility:** It perfectly satisfies the requirement to "support any imaginable risks/benefits." You don't need to update the schema to add a new hazard like "Toxic_Spores" or a new benefit like "Edible_Flora_Kcal"; you just add a new string key.
+*   **Duality:** Separating `provides` from `imposes` cleanly maps to human psychology and survival logic (Resource Acquisition vs. Threat Avoidance).
+
+**Architectural Refinements (The "Stock vs. Flow" Problem):**
+A flat number is great for calculation, but survival depends on time. Does `H2O_liters: 50` mean a static cache of 50 liters (Stock), or a stream providing 50 liters per hour (Flow)? 
+*   *Solution:* Encode the temporal dimension into the string key or add a simple multiplier.
+    ```typescript
+    provides: { 
+      "H2O_liters_stock": 50,  // A static cache (depletes to 0)
+      "H2O_liters_per_hr": 10  // A continuous source (sustainable)
+    }
+    ```
+
+### 2. The `BiologicalManifest` (The Agent)
+```typescript
+interface BiologicalManifest {
+  needs: Record<string, number>;         
+  tolerances: Record<string, [number, number]>; 
+}
+```
+
+**Why it works:**
+*   **Decoupling:** This perfectly separates the *Agent State* from the *World State* (SpimeDB). A diabetic, a mountaineer, and an infant will all have different manifests, but they all query the exact same SpimeDB.
+*   **Threshold Logic:** Using a tuple `[number, number]` for `tolerances` elegantly handles environmental bands (e.g., ambient temperature, pH levels, atmospheric pressure) where both the floor and the ceiling are lethal.
+
+**Architectural Refinements (State-Dependent Needs):**
+Survival needs are rarely static; they are synergistic. High physical exertion increases `Water_liters` need; high altitude decreases `O2_percent` tolerance.
+*   *Solution:* Consider adding a `modifiers` array or a function that computes the *active* manifest based on current agent state.
+    ```typescript
+    interface BiologicalManifest {
+      baseNeeds: Record<string, number>;
+      tolerances: Record<string, [number, number]>;
+      // Dynamic rules: e.g., if Temp > 30C, Water need increases by 1.5x
+      modifiers?: Rule[]; 
+    }
+    ```
+
+---
+
+### 3. The GSS Matchmaking Engine (Where the two meet)
+
+The core "Viability Fix" (the GSS GPS equivalent) is now a mathematical intersection of these two types. The system must calculate the **Deficit** and the **Breach**.
+
+Here is how the GSS Viability Engine processes these specific types:
+
+```typescript
+// src/engine/gss-matchmaker.ts
+
+interface SurvivalDelta {
+  score: number; // 0.0 (Dead) to 1.0 (Thriving)
+  deficits: Record<string, number>; // What is missing?
+  breaches: Record<string, 'too_low' | 'too_high'>; // What is lethal?
+  surplus: Record<string, number>; // What can we hoard?
+}
+
+export function evaluateViability(
+  spimePayload: Spime['payload'],
+  manifest: BiologicalManifest
+): SurvivalDelta {
+  const deficits: Record<string, number> = {};
+  const breaches: Record<string, 'too_low' | 'too_high'> = {};
+  const surplus: Record<string, number> = {};
+  let score = 1.0;
+
+  const provides = spimePayload?.provides ?? {};
+  const imposes = spimePayload?.imposes ?? {};
+
+  // 1. Evaluate Needs (Resource Deficits)
+  for (const [resource, required] of Object.entries(manifest.needs)) {
+    const provided = provides[resource] ?? 0;
+    if (provided < required) {
+      deficits[resource] = required - provided;
+      // Degrade score based on severity of deficit
+      score *= (provided / required); 
+    } else {
+      surplus[resource] = provided - required;
+    }
+  }
+
+  // 2. Evaluate Tolerances (Environmental Breaches)
+  for (const [hazard, amount] of Object.entries(imposes)) {
+    const [min, max] = manifest.tolerances[hazard] ?? [-Infinity, Infinity];
+    if (amount < min) {
+      breaches[hazard] = 'too_low';
+      score = 0; // Instant lethality (e.g., absolute vacuum, 0% O2)
+    } else if (amount > max) {
+      breaches[hazard] = 'too_high';
+      score = 0; // Instant lethality (e.g., extreme radiation, extreme heat)
+    }
+  }
+
+  return { score, deficits, breaches, surplus };
+}
+```
+
+### 4. Integration with GeoLibre (The UI)
+
+With this data structure, visualizing survival conditions in GeoLibre becomes incredibly intuitive. Instead of abstract "Risk Heatmaps," you can now render **Actionable Deficit Maps**:
+
+1.  **The "Thirst" Layer:** Filter the map for `deficits["H2O_liters"] > 0`. GeoLibre renders a gradient showing how far the user must travel to find a Spime that `provides` enough water to meet their `manifest.needs`.
+2.  **The "Lethal Exclusion" Layer:** Filter for `breaches != empty`. GeoLibre renders hard red polygons representing "No-Go Zones" (e.g., areas where `Radiation_mSv` exceeds the manifest's `tolerances`).
+3.  **The "Cache" Layer:** Highlight Spimes where `surplus["Calories"]` is exceptionally high, directing the user to foraging or supply caches.
+
+### Summary
+Your proposed types strip away unnecessary semantic overhead and focus on the raw, mathematical reality of survival. By defining the environment as `provides/imposes` and the agent as `needs/tolerances`, you have created a highly scalable, game-loop-ready architecture that perfectly suits a mission-critical application where the "quality and length of lives are at stake."
+
