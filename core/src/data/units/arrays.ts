@@ -1,0 +1,47 @@
+export const arrays = {
+  TIME_UNITS: [
+    "s", "min", "h", "d", "wk", "mo", "yr", "decade", "century",
+    "second", "minute", "hour", "day", "week", "month", "year", "decades", "centuries"
+  ],
+  DISTANCE_UNITS: [
+    "m", "km", "cm", "mm", "μm", "nm", "in", "ft", "yd", "mi", "nmi", "au", "ly", "pc",
+    "meter", "kilometer", "centimeter", "millimeter", "micrometer", "nanometer",
+    "inch", "foot", "feet", "yard", "mile", "miles", "nautical-mile"
+  ],
+  MASS_UNITS: [
+    "kg", "g", "mg", "μg", "lb", "oz", "ton", "stone",
+    "kilogram", "gram", "milligram", "microgram", "pound", "ounce", "tons"
+  ],
+  VOLUME_UNITS: [
+    "l", "ml", "cl", "hl", "tsp", "tbsp", "floz", "cup", "pt", "qt", "gal",
+    "liter", "milliliter", "centiliter", "hectoliter", "teaspoon", "tablespoon",
+    "fluid-ounce", "pint", "quart", "gallon"
+  ],
+  AREA_UNITS: [
+    "m²", "km²", "ha", "a", "ft²", "mi²", "acre",
+    "square-meter", "square-kilometer", "hectare", "are", "square-foot", "square-mile", "acres"
+  ],
+  ENERGY_UNITS: [
+    "J", "kJ", "cal", "kcal", "Wh", "kWh",
+    "joule", "kilojoule", "calorie", "kilocalorie", "watt-hour", "kilowatt-hour"
+  ],
+  POWER_UNITS: [
+    "W", "kW", "MW", "hp",
+    "watt", "kilowatt", "megawatt", "horsepower"
+  ],
+  PRESSURE_UNITS: [
+    "Pa", "kPa", "bar", "psi", "atm",
+    "pascal", "kilopascal", "bar", "pound-per-square-inch", "atmosphere"
+  ],
+  FREQUENCY_UNITS: [
+    "Hz", "kHz", "MHz", "GHz",
+    "hertz", "kilohertz", "megahertz", "gigahertz"
+  ],
+  SPEED_UNITS: [
+    "m/s", "km/h", "mi/h", "knot",
+    "meters-per-second", "kilometers-per-hour", "miles-per-hour", "knots"
+  ],
+  TEMPERATURE_UNITS: [
+    "°C", "°F", "K", "celsius", "fahrenheit", "kelvin"
+  ]
+};

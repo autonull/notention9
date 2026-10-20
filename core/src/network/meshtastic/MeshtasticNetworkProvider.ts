@@ -70,6 +70,7 @@ export class MeshtasticNetworkProvider extends BaseNetworkProvider implements Ne
                 this.logger.info("Meshtastic: Proxying send to AgentService");
                 await this.config.agentService.meshSendNote(note);
             }
+            return undefined;
         } catch (e) {
             this.logger.error("Failed to send note over Meshtastic", e as Error);
             this.emit('error', { message: (e as Error).message, action: 'sendNote' });

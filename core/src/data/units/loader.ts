@@ -1,11 +1,3 @@
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-import { readFileSync } from 'fs';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const JSON_DIR = join(__dirname, 'json');
-
 interface UnitData {
   aliases: Record<string, string>;
   conversions: Record<string, number>;
@@ -35,44 +27,57 @@ interface UnitData {
 
 let cachedData: UnitData | null = null;
 
-function loadJson<T>(filename: string): T {
+async function loadJsonNode<T>(filename: string): Promise<T> {
+  const { fileURLToPath } = await import('url');
+  const { dirname, join } = await import('path');
+  const { readFileSync } = await import('fs');
+
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
+  const JSON_DIR = join(__dirname, 'json');
   const filepath = join(JSON_DIR, filename);
   const content = readFileSync(filepath, 'utf-8');
   return JSON.parse(content) as T;
 }
 
-export function loadUnits(): UnitData {
+export async function loadUnits(): Promise<UnitData> {
   if (cachedData) return cachedData;
 
-  cachedData = {
-    aliases: loadJson<Record<string, string>>('aliases.json'),
-    conversions: loadJson<Record<string, number>>('conversions.json'),
-    categories: loadJson<Record<string, string>>('categories.json'),
-    systems: loadJson<UnitData['systems']>('systems.json'),
-    arrays: loadJson<UnitData['arrays']>('arrays.json')
-  };
+  const [aliases, conversions, categories, systems, arrays] = await Promise.all([
+    loadJsonNode<Record<string, string>>('aliases.json'),
+    loadJsonNode<Record<string, number>>('conversions.json'),
+    loadJsonNode<Record<string, string>>('categories.json'),
+    loadJsonNode<UnitData['systems']>('systems.json'),
+    loadJsonNode<UnitData['arrays']>('arrays.json')
+  ]);
 
+  cachedData = { aliases, conversions, categories, systems, arrays };
   return cachedData;
 }
 
 export function getUnitAliases(): Record<string, string> {
-  return loadUnits().aliases;
+  if (!cachedData) throw new Error('Unit data not loaded. Call loadUnits() first.');
+  return cachedData.aliases;
 }
 
 export function getUnitConversions(): Record<string, number> {
-  return loadUnits().conversions;
+  if (!cachedData) throw new Error('Unit data not loaded. Call loadUnits() first.');
+  return cachedData.conversions;
 }
 
 export function getUnitCategories(): Record<string, string> {
-  return loadUnits().categories;
+  if (!cachedData) throw new Error('Unit data not loaded. Call loadUnits() first.');
+  return cachedData.categories;
 }
 
 export function getUnitSystems(): UnitData['systems'] {
-  return loadUnits().systems;
+  if (!cachedData) throw new Error('Unit data not loaded. Call loadUnits() first.');
+  return cachedData.systems;
 }
 
 export function getUnitArrays(): UnitData['arrays'] {
-  return loadUnits().arrays;
+  if (!cachedData) throw new Error('Unit data not loaded. Call loadUnits() first.');
+  return cachedData.arrays;
 }
 
 export function clearCache(): void {

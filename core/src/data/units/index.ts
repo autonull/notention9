@@ -1,6 +1,16 @@
-import { loadUnits } from './loader.js';
+import { aliases } from './aliases.js';
+import { conversions } from './conversions.js';
+import { categories } from './categories.js';
+import { systems } from './systems.js';
+import { arrays } from './arrays.js';
 
-const units = loadUnits();
+const units = {
+  aliases,
+  conversions,
+  categories,
+  systems,
+  arrays
+};
 
 export const UNIT_ALIASES = units.aliases;
 export const CONVERSIONS = units.conversions;

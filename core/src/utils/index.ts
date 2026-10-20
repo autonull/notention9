@@ -8,7 +8,6 @@ export * from './tools.js';
 export * from './commands.js';
 export * from './csvExport.js';
 export * from './baseService.js';
-export * from './autonomousTasks.js';
 export * from './validation.js';
 export * from './inference.js';
 export * from './matching.js';

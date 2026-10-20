@@ -68,7 +68,8 @@ export class NostrRelay {
         this.subscriptions.set(ws, new Map());
 
         ws.on('message', data => {
-            if (data.length > this.limits.maxEventBytes) {
+            const dataLength = data instanceof ArrayBuffer ? data.byteLength : Buffer.isBuffer(data) ? data.length : data.reduce((acc, buf) => acc + buf.length, 0);
+            if (dataLength > this.limits.maxEventBytes) {
                 send(ws, ['NOTICE', 'message too large']);
                 return;
             }
