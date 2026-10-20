@@ -71,5 +71,11 @@ export const SHARED_COMMANDS: Record<string, CommandDefinition> = {
         label: 'Open Help',
         description: 'View shortcuts and documentation',
         icon: 'help'
+    },
+    TIMELINE: {
+        id: 'timeline',
+        label: 'Go to Timeline',
+        description: 'View notes on a timeline',
+        icon: 'timeline'
     }
 } as const;

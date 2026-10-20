@@ -6,6 +6,7 @@ import {SHARED_COMMANDS} from '@notention/core';
 import {buildSingleNoteExport} from '@notention/core';
 import {
     ChatIcon,
+    ClockIcon,
     DocumentDuplicateIcon,
     DownloadIcon,
     HelpIcon,
@@ -67,6 +68,11 @@ export function useCommands({setIsHelpOpen}: UseCommandsProps) {
             ...SHARED_COMMANDS.MAP,
             icon: <MapIcon className="h-5 w-5"/>,
             action: () => setActiveView('map')
+        },
+        {
+            ...SHARED_COMMANDS.TIMELINE,
+            icon: <ClockIcon className="h-5 w-5"/>,
+            action: () => setActiveView('timeline')
         },
         {
             label: 'Go to Actions',
