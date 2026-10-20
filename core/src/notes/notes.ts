@@ -4,33 +4,7 @@ import { formatPropertyTag, parseProperties, replacePropertyInString, appendProp
 import { NOTE_STATUS } from '../utils/constants.js';
 import { PropertyExtractor } from './propertyExtractor/index.js';
 import { getTextFromHtml } from '../utils/html.js';
-
-export type NoteIntent = 'Real' | 'Imaginary' | 'Ambiguous';
-
-export const inferNoteIntent = (note: Note): NoteIntent => {
-  // Explicit signals in tags or content take highest precedence
-  if (note.tags.includes('request') || note.content.includes('[intent:is:request]')) return 'Imaginary';
-  if (note.tags.includes('offer') || note.content.includes('[intent:is:offer]')) return 'Real';
-
-  // If no properties, we can't be sure unless tags were present
-  if (note.properties.length === 0) return 'Ambiguous';
-
-  // Check for specific intent-based property keys
-  const intentProp = note.properties.find(p => p.key === 'intent');
-  if (intentProp) {
-      if (intentProp.values.includes('request') || intentProp.values.includes('need') || intentProp.values.includes('want')) return 'Imaginary';
-      if (intentProp.values.includes('offer') || intentProp.values.includes('have') || intentProp.values.includes('provide')) return 'Real';
-  }
-
-  // Heuristic: Indefinite operators (e.g., <, >, contains, near) strongly imply a constraint (Imaginary)
-  if (note.properties.some(isIndefiniteProperty)) return 'Imaginary';
-
-  // Heuristic: "is" properties with placeholders like "?" suggest a template or request
-  if (note.properties.some(p => p.operator === 'is' && p.values.includes('?'))) return 'Imaginary';
-
-  // Default: If all properties are definite "is" assignments, it's likely a factual "Real" note
-  return 'Real';
-};
+import { inferNoteIntent, type NoteIntent } from './NoteIntentInferencer.js';
 
 export const createNote = (overrides?: Partial<Note>): Note => {
   const now = new Date().toISOString();
@@ -66,6 +40,28 @@ export const areNotesEqual = (a: Note, b: Note): boolean =>
     arePropertyArraysEqual(a.properties, b.properties)
   );
 
+const extractorCache = new Map<string, PropertyExtractor>();
+const getExtractor = (ontology?: OntologyNode[]): PropertyExtractor => {
+  const key = ontology ? 'with-ontology' : 'no-ontology';
+  let extractor = extractorCache.get(key);
+  if (!extractor) {
+    extractor = new PropertyExtractor(ontology);
+    extractorCache.set(key, extractor);
+  }
+  return extractor;
+};
+
+const parsePropertiesCache = new Map<string, Property[]>();
+const getCachedProperties = (content: string, ontology?: OntologyNode[]): Property[] => {
+  const key = content + (ontology ? '-with-ontology' : '-no-ontology');
+  let props = parsePropertiesCache.get(key);
+  if (!props) {
+    props = parseProperties(content, ontology);
+    parsePropertiesCache.set(key, props);
+  }
+  return props;
+};
+
 /**
  * Functional Note Pipeline for common mutations.
  * Ensures consistent data updates across the application.
@@ -74,12 +70,11 @@ export const NotePipeline = {
   updateContent: (note: Note, content: string, ontology?: OntologyNode[]): Note => {
     if (note.content === content) return note;
 
-    const explicitProperties = parseProperties(content, ontology);
+    const explicitProperties = getCachedProperties(content, ontology);
     const plainText = getTextFromHtml(content);
-    const extractor = new PropertyExtractor(ontology);
+    const extractor = getExtractor(ontology);
     const implicitProperties = extractor.extractFromText(plainText);
 
-    // Merge: Explicit overrides Implicit
     const explicitKeys = new Set(explicitProperties.map(p => p.key));
     const properties = [
         ...explicitProperties,
@@ -118,8 +113,6 @@ export const NotePipeline = {
     const isCurrentlySet = note.properties.some(p => p.key === NOTE_STATUS.KEY && p.values.includes(status));
 
     if (isCurrentlySet) {
-      // If the specific status is already there, we might want to remove it or replace it.
-      // For toggle, let's assume we remove it if it's the only value, or filter it out.
       const existingProp = note.properties.find(p => p.key === NOTE_STATUS.KEY);
       if (!existingProp) return note;
 

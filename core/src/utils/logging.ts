@@ -118,3 +118,12 @@ export const logDebug = (message: string, context?: unknown) => Logger.getInstan
 export const logInfo = (message: string, context?: unknown) => Logger.getInstance().info(message, context);
 export const logWarn = (message: string, context?: unknown) => Logger.getInstance().warn(message, context);
 export const logError = (message: string, error?: Error, context?: unknown) => Logger.getInstance().error(message, error, context);
+
+export const log = (context: string, message: string, data?: unknown): void => {
+  Logger.getInstance().info(`[${context}] ${message}`, data);
+};
+
+export const error = (context: string, message: string, err?: unknown, data?: unknown): void => {
+  const errorObj = err instanceof Error ? err : (err ? new Error(String(err)) : undefined);
+  Logger.getInstance().error(`[${context}] ERROR: ${message}`, errorObj, { context, ...(data as any) });
+};

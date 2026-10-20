@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { inferNoteIntent, createNote } from '../notes/notes.js';
+import { inferNoteIntent, createNote } from '../notes/index.js';
 
 describe('Note Intent Inference', () => {
   it('identifies explicit request tag as Imaginary', () => {
