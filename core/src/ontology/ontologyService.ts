@@ -11,6 +11,7 @@ import {
 } from '../ontologyService/widgets.js';
 import { UsageTracker, type SuggestedAttribute } from '../ontologyService/statistics.js';
 import { FuzzyMatcher } from '../ontologyService/matching.js';
+import { buildAttributeIndex } from '../ontologyService/AttributeIndexBuilder.js';
 
 export type { SuggestedAttribute, WidgetMetadata, WidgetType };
 
@@ -30,20 +31,9 @@ export class OntologyService {
 
     constructor(ontology: OntologyNode[]) {
         this.ontology = ontology;
-        this.attributeIndex = this.buildAttributeIndex(this.ontology);
-        this.usageTracker = new UsageTracker(this.ontology);
+        this.attributeIndex = buildAttributeIndex(this.ontology);
+        this.usageTracker = new UsageTracker(this.ontology, this.attributeIndex);
         this.fuzzyMatcher = new FuzzyMatcher();
-    }
-
-    /**
-     * Build index of all attributes across ontology for fast lookup
-     */
-    private buildAttributeIndex(nodes: OntologyNode[], index = new Map<string, OntologyAttribute>()): Map<string, OntologyAttribute> {
-        nodes.forEach(node => {
-            Object.entries(node.attributes ?? {}).forEach(([key, val]) => index.has(key) || index.set(key, val));
-            node.children && this.buildAttributeIndex(node.children, index);
-        });
-        return index;
     }
 
     /**
@@ -162,24 +152,6 @@ export class OntologyService {
      * Get graph data for visualization
      */
     getGraphData() {
-        const stats = this.usageTracker.getStats();
-        const nodes = Array.from(this.attributeIndex.entries()).map(([key, attr]) => ({
-            id: key,
-            val: stats.known.get(key) ?? 1,
-            label: key,
-            group: attr.type ?? 'unknown'
-        }));
-
-        const processedPairs = new Set<string>();
-        const links = Array.from(this.usageTracker.getCoOccurrenceData().entries()).flatMap(([src, targets]) =>
-            Array.from(targets.entries())
-                .filter(([target]) => {
-                    const pairId = src < target ? `${src}-${target}` : `${target}-${src}`;
-                    return !processedPairs.has(pairId) && processedPairs.add(pairId);
-                })
-                .map(([target, value]) => ({ source: src, target, value }))
-        );
-
-        return { nodes, links };
+        return this.usageTracker.getGraphData();
     }
 }

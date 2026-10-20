@@ -53,7 +53,7 @@ describe('OntologyView', () => {
 
     it('renders the graph tab by default', () => {
         render(<OntologyView />);
-        expect(screen.getByTestId('ontology-graph')).toBeTruthy();
+        expect(screen.getByTestId('node-root1')).toBeTruthy();
         expect(screen.getByText('Root 1')).toBeTruthy();
     });
 

@@ -37,7 +37,7 @@ export * from './tools/OntologyTools.js';
 // Pattern Recognition and Prediction
 export * from './patternRecognition/patternRecognition.js';
 export * from './patternRecognition/predictionTracking.js';
-export { ValidationFramework, validationFramework } from './utils/validationFramework.js';
+export { ValidationFramework, validationFramework } from './validation/index.js';
 export * from './utils/autonomousTasks.js';
 
 // Tasks Module
