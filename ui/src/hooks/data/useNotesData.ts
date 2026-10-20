@@ -12,6 +12,7 @@ import {
 import {agentService} from '../../services/AgentService';
 import {useSettings} from '../useSettingsContext';
 import {useAgentSync} from './useAgentSync';
+import {STORAGE_KEYS} from '../../config/storageKeys';
 
 export interface UseNotesDataResult {
     notes: Note[];
@@ -33,7 +34,7 @@ export interface UseNotesDataResult {
 export function useNotesData(driver?: LocalForage): UseNotesDataResult {
     const { settings } = useSettings();
     const [notes, setNotes, loading] = useLocalForage<Note[]>(
-        'notention-notes',
+        STORAGE_KEYS.notes,
         [],
         driver
     );

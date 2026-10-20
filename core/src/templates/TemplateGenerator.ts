@@ -1,4 +1,5 @@
 import { OntologyNode, Template, OntologyAttribute } from '../types/index.js';
+import { propertyToHtml } from '../notes/serialization.js';
 
 export function generateTemplatesFromOntology(ontology: OntologyNode[]): Template[] {
     const templates: Template[] = [];
@@ -46,7 +47,11 @@ function generateReferenceContent(node: OntologyNode): string {
 
         Object.keys(node.attributes).filter(key => required.includes(key)).forEach(key => {
             const attr = node.attributes![key];
-            content += `[${key} ${getDefaultOperator(attr)} ${getDefaultValue(attr)}]\n`;
+            content += `<p>${propertyToHtml({
+                key,
+                operator: getDefaultOperator(attr),
+                values: [getDefaultValue(attr)],
+            }, attr.icon)}</p>\n`;
         });
     }
 

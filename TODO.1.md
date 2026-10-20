@@ -1,6 +1,23 @@
-# TODO.1 — Showcase screenshots and product-value work
+# TODO
 
 Status: active plan. Decisions from review are recorded inline.
+
+## Progress (2026-10-20)
+
+Landed: Phase 0 harness and scripts; Phase 1 seeding/capture/fixtures and 13 showcase scenes with generated index; B navigation/trash/help/actions; A demo workspace and offline match; E structured details through one adapter; C core journeys; D publish preview, storage-error toast, provider status; F validated export/import with key stripping; G in-memory relay with standalone and `--relay` embedded hosts; README hero/gallery.
+
+Remaining: 10 curated scenes; extraction-review UI; LM providers still emit bracket strings internally; discovery and relay-down journeys; offline/retry banners; full `ui` typecheck has pre-existing errors outside this work.
+
+Notes for the next pass:
+
+- Screenshot scenes are `ui/test/showcase/*.scene.ts`; `seed()` writes IndexedDB, `snap()` writes the PNG plus a JSON sidecar, and `ui/test/scripts/build-index.mjs` turns sidecars into `doc/screenshot/README.md` and `manifest.json`. Add a scene, not a bespoke script.
+- `ui/index.html` installs a small `window.process` shim. Core/node-shaped dependencies leak `process` into the Vite bundle; removing the shim blanks the app.
+- `TiptapEditor` previously read `editor` in an effect dependency before declaration, crashing every editor route. Keep the effect after `useTiptapEditor`.
+- The relay uses port 7000 in tests and screenshots. Seed `settings.nostr.relays = ['ws://localhost:7000']`.
+- Publish always opens the disclosure preview, then the network gate marks the note public. The journey generates a key at runtime.
+- Still open: extraction-review surface (heuristic suggestions with accept/reject), LM provider outputs as property objects, two-context discovery, relay-down/retry, offline banner, remaining scenes (`matching/explanation`, `network/feed`, `chat/thread`, `map/pins`, `timeline/month`, `ontology/graph`, `editor/property-inspector`, `editor/template-selector`, `editor/publish-panel`, `actions`).
+
+
 
 ## Goal
 
@@ -84,26 +101,26 @@ Status: active plan. Decisions from review are recorded inline.
 
 ## Phase 0 — Consolidate test entry points
 
-- [ ] Create `ui/test/playwright.config.ts`, `ui/test/fixtures/`,
+- [x] Create `ui/test/playwright.config.ts`, `ui/test/fixtures/`,
       `ui/test/support/`, `ui/test/journeys/`, `ui/test/showcase/`.
-- [ ] Add `ui/test/tsconfig.json` (extends `../tsconfig.json`, types
+- [x] Add `ui/test/tsconfig.json` (extends `../tsconfig.json`, types
       `@playwright/test`, includes `test`) and an `ui` script `typecheck:test`.
-- [ ] Exclude `test/**` from Vitest discovery in `ui/vite.config.ts`
+- [x] Exclude `test/**` from Vitest discovery in `ui/vite.config.ts`
       (`configDefaults.exclude` currently does not, so Playwright files would be
       collected as unit tests).
-- [ ] Delete `ui/verify_ui.spec.ts`, `ui/src/tests/visual/nostr-matching.spec.ts`,
+- [x] Delete `ui/verify_ui.spec.ts`, `ui/src/tests/visual/nostr-matching.spec.ts`,
       `ui/src/tests/tools/verify_simulator.py`; fold anything useful into
       `ui/test/journeys/`.
-- [ ] Untrack `test-results/` and `simulator/src/tests/e2e/test-results/`; add
+- [x] Untrack `test-results/` and `simulator/src/tests/e2e/test-results/`; add
       both to `.gitignore`.
-- [ ] Add `ui/src/config/storageKeys.ts` with the persistence keys and consume it
+- [x] Add `ui/src/config/storageKeys.ts` with the persistence keys and consume it
       from `useNotesData`, `SettingsContext`, `ViewContext`, and the seeder.
-- [ ] Add scripts: root and `ui` `screenshots` + `test:e2e`; `relay` and
+- [x] Add scripts: root and `ui` `screenshots` + `test:e2e`; `relay` and
       `dev:demo` arrive with G.
-- [ ] Add dependencies only as the editor work proves them: Radix popover/dialog
+- [ ] Add dependencies only as the editor work proves them (not needed for the delivered popup; Radix and chrono remain deferred): Radix popover/dialog
       for the add-detail and help surfaces; `chrono-node` behind a dynamic
       import. Do not add `cmdk` until `CommandPalette` is replaced.
-- [ ] Remove the phantom `e2e` entry from root `workspaces`.
+- [x] Remove the phantom `e2e` entry from root `workspaces`.
 
 ## Phase 1 — Harness
 
@@ -214,6 +231,9 @@ pnpm run test:e2e -- --ui  # debugging
 
 Optional if cheap: `network/local-relay.png` (after G).
 
+Delivered now: `dashboard/empty`, `dashboard/populated`, `notes/list-selected`, `notes/grid`, `notes/trash`, `editor/property-chips`, `editor/add-detail`, `matching/results`, `network/connect-identity`, `settings/networks`, `modals/command-palette`, `modals/help`, `mobile/notes`.
+
+
 Excluded from v1: simulator dashboard/movie frames, CLI TUI, agent MCP output.
 
 ## Sequencing
@@ -287,14 +307,14 @@ Future: `canonicalize` when signed export formats are designed,
 
 ### B. Navigation and help correctness
 
-- Add `trash` to `MainView` rendering `NotesView` with trash-sorted notes; expose
+- [x] Add `trash` to `MainView` rendering `NotesView` with trash-sorted notes; expose
   entry from `DataTab ("Recently deleted")` and the command palette. Restore is
   one action; permanent delete is explicit and confirmed. No automatic expiry.
-- Wire `ActionsView` into `MainView` for `actions`; make "+ New Task" create a
+- [x] Wire `ActionsView` into `MainView` for `actions`; make "+ New Task" create a
   note through the same structured property path as the editor. If that is not
   wanted, remove `actions` from `navigation.ts` and `useCommands` rather than
   leaving a blank screen.
-- Implement a help surface driven by `isHelpOpen`: shortcuts, concepts, and a
+- [x] Implement a help surface driven by `isHelpOpen`: shortcuts, concepts, and a
   pointer that opens the "add detail" UI. Do not teach bracket syntax. Close on
   `Esc`; do not leave focus orphaned.
 - Audit `ARCHITECTURE.md` drift (`SimulatorView.tsx`, `ui/plugins/`) and correct
@@ -302,51 +322,51 @@ Future: `canonicalize` when signed export formats are designed,
 
 ### A. Sample workspace
 
-- `core/src/fixtures/demoWorkspace.ts`: `buildDemoWorkspace(now)` returning ~10
+- [x] `core/src/fixtures/demoWorkspace.ts`: `buildDemoWorkspace(now)` returning ~10
   notes with stable IDs and relative timestamps (requests, offers, event, tasks,
   person, marketplace item), geo coordinates, tags, mixed privacy. The same
   builder feeds Settings import, the empty-state CTA, and the showcase fixture.
-- `useDemoWorkspace()` in UI: merge demo notes into storage idempotently (by
+- [x] `useDemoWorkspace()` in UI: merge demo notes into storage idempotently (by
   fixed ID), never overwrite user notes; expose "Load sample workspace" and
   "Remove sample data" from Settings → Data.
-- Empty states across Dashboard/Notes/Network link to "Load sample workspace".
+- [x] Empty states across Dashboard/Notes/Network link to "Load sample workspace".
   Do not preload sample data and do not add an onboarding wizard.
-- Showcase scenes use the demo builder, not hand-written notes.
+- [x] Showcase scenes use the demo builder, not hand-written notes.
 
 ### E. Note-editor ergonomics (no syntax exposure)
 
 Direction, not a fixed design. Any interaction may win; the invariant is that the
 user never authors or sees bracket syntax.
 
-- **Property insertion without text syntax.** The primary gesture is an inline
+- [x] **Property insertion without text syntax.** The primary gesture is an inline
   "add detail" affordance next to the note (and a keyboard alias) opening a
   type-aware popover. A slash command can mirror it later. The popover offers
   ontology-backed key suggestions, comparison chosen from "is / at most / at
   least / between" rather than typed, and controls per value type (enum select,
   date/time picker, number + comparison, location picker, person picker, free
   text fallback).
-- **Structured chips as the primary representation.** Clicking a chip opens the
+- [x] **Structured chips as the primary representation.** Clicking a chip opens the
   same popup for editing; removal is a chip action, not text surgery. Raw
   bracket text is never rendered. Note previews, cards, and lists render prose
   and chips, never raw syntax.
-- **Serialization boundary.** Editor components operate on property objects and
+- [x] **Serialization boundary.** Editor components operate on property objects and
   emit structured operations. One adapter turns those into the internal wire
   format and back on load/paste. No component constructs bracket strings, so the
   serialization format can change without touching the UI.
-- **Optional LM assistance, off by default.** No LM is configured on first run.
+- [ ] **Optional LM assistance, off by default.** (forms and heuristics work; LM providers still emit bracket strings internally) No LM is configured on first run.
   Forms, chips, and deterministic heuristics must cover the full workflow. When
   the user explicitly enables a local (WebLLM) or remote provider, a "describe
   it" composer can propose properties. Show confidence and a per-property
   accept/reject diff; never mutate the note silently. Remote calls require
   one-time consent. LM output is structured property data, never bracket syntax.
   With no LM configured, nothing should initialize a model or call a provider.
-- **Replace syntax-producing input rules.** `GhostTextExtension` currently
+- [x] **Replace syntax-producing input rules.** `GhostTextExtension` currently
   rewrites input into visible brackets, and `HybridEditor` inserts
   `[key:is:]` strings. Both must emit structured property nodes through the
   adapter. Keep bracket parsing for import/paste, but treat it as compatibility.
-- **Progressive disclosure.** Minimal default surface; ontology hints,
+- [x] **Progressive disclosure.** Minimal default surface; ontology hints,
   validation, confidence, and explanations appear on demand.
-- **Prove it.** Journeys must compose a request and an offer entirely through the
+- [ ] **Prove it.** (detail composition is covered; full request+offer via popover is not) Journeys must compose a request and an offer entirely through the
   inline add-detail popover, with a matching result, without entering bracket
   property syntax.
 - Later experiments: slash command as a keyboard alias, embedded form blocks,
@@ -355,25 +375,25 @@ user never authors or sees bracket syntax.
 
 ### C. Journey E2E
 
-- Compose a note through structured controls → match against a sample offer →
+- [ ] Compose a note through structured controls → match (detail composition covered; full request↔offer and no-LM assertion pending) against a sample offer →
   explanation contains satisfied/conflicting constraints. Repeat with no LM
   configured; assert no model or provider call occurs.
-- Basic export → clear storage → import → notes/settings/ontology/theme restored.
-- Publish against the local relay: privacy gate, published state, discovery.
+- [x] Basic export → clear storage → import → notes/settings/ontology/theme restored.
+- [ ] Publish against the local relay: privacy gate (published state covered; discovery and relay-down pending), published state, discovery.
   Simulate relay-down/timeout separately to assert the failure path.
-- Chat identity/thread happy path and empty state.
-- Settings changes persist and take effect (theme, developer mode, relays).
-- Navigation: every `NAV_ITEMS` entry and palette destination renders content.
+- [x] Chat identity/thread happy path and empty state.
+- [x] Settings changes persist and take effect (theme, developer mode, relays).
+- [x] Navigation: every `NAV_ITEMS` entry and palette destination renders content.
 
 ### D. Failure and trust UX
 
-- Offline and relay-down banners with retry; per-provider status in Network, not
+- [ ] Offline and relay-down banners with retry; (provider status landed in Network; banners not built) per-provider status in Network, not
   only the agent dot in `ConnectionStatus`.
-- Publish confirmation shows exactly what leaves the device: body, tags, hashed
+- [x] Publish confirmation shows exactly what leaves the device: body, tags, hashed
   tags, with a summary and a collapsed raw event. Same disclosure for private and
   public notes. Distinguish "private" from "not transmitted".
-- Storage/quota errors and agent sync failures surface as actionable toasts.
-- Reconcile privacy claims by documenting reality: local storage is not encrypted
+- [x] Storage/quota errors and agent sync failures surface as actionable toasts.
+- [x] Reconcile privacy claims by documenting reality: local storage is not encrypted
   at rest today, while README2 marks encryption as a normative target. README,
   README2, and UI copy must say this the same way.
 
@@ -382,17 +402,17 @@ user never authors or sees bracket syntax.
 Ship a basic working export; formats later. Keep the existing JSON shape unless a
 bug forces a change.
 
-- Extract one `buildExportEnvelope()` / `readExportEnvelope()` helper so the UI
+- [x] Extract one `buildExportEnvelope()` / `readExportEnvelope()` helper so the UI
   and tests share validation. Include `version`, `notes`, and settings without
   secrets.
-- **Never export `nostr.privkey` by default.** Strip it from backups; if key
+- [x] **Never export `nostr.privkey` by default.** Strip it from backups; if key
   backup is ever offered, make it a separate, explicit action with a warning.
-- Fix restore to write `notention-settings-v2` via `storageKeys.ts`; validate the
+- [x] Fix restore to write `notention-settings-v2` via `storageKeys.ts`; validate the
   envelope with `zod`; reject unknown or malformed input without overwriting.
-- Add single-note export from the editor menu using the already-supported
+- [x] Add single-note export from the editor menu using the already-supported
   `{id, content, ...}` import shape.
-- Keep CSV export as is.
-- Cover with a journey: export → clear storage → import → notes, settings,
+- [x] Keep CSV export as is.
+- [x] Cover with a journey: export → clear storage → import → notes, settings,
   ontology, and theme restored; assert no private key appears in the file.
 
 Signing, canonicalization, and alternative formats stay out of this plan.
@@ -402,17 +422,17 @@ Signing, canonicalization, and alternative formats stay out of this plan.
 One implementation, two hosts. A browser cannot accept WebSocket connections, so
 the UI stays a client; the relay lives in Node.
 
-- **Shared core** (`agent/src/relay/NostrRelay.ts`): in-memory event store, NIP-01
+- [x] **Shared core** (`agent/src/relay/NostrRelay.ts`): in-memory event store, NIP-01
   `REQ`/`EVENT`/`EOSE`/`CLOSE`, `OK`/`NOTICE`, generic `#<tag>` filters (including
   `#t` and `#property-secret`), `ids`, `authors`, `kinds`, `since`, `until`,
   `limit`; event size and subscription limits.
-- **Standalone host** (`agent/src/relay/start.ts`, exposed as
+- [x] **Standalone host** (`agent/src/relay/start.ts`, exposed as
   `pnpm run relay -- --port 7000`): deterministic backend for tests and demos.
-- **Embedded host** (optional `--relay` in `agent/src/Server.ts`): a second
+- [x] **Embedded host** (optional `--relay` in `agent/src/Server.ts`): a second
   `WebSocketServer` at `/relay` on the existing agent HTTP port. No extra
   process or port, and the URL is simply `ws://localhost:<agent-port>/relay`.
   Opt-in per run only; no settings toggle, no silent enable.
-- **Boundary:** bind `127.0.0.1` by default; `--host 0.0.0.0` must be explicit.
+- [x] **Boundary:** bind `127.0.0.1` by default; `--host 0.0.0.0` must be explicit.
   In-memory only: no persistence, no NIP-42 auth. Document as a development,
   testing, and demo facility, not an internet relay.
 

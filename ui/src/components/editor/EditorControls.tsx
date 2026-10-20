@@ -13,6 +13,7 @@ import {
     ArrowUpTrayIcon
 } from '../common/icons';
 import {IconButton} from '../common/IconButton';
+import {Button} from '../common/Button';
 import {DropdownMenu, DropdownMenuItem} from '../common/DropdownMenu';
 
 export interface EditorControlsProps {
@@ -140,6 +141,15 @@ export function EditorControls({
                         size="md"
                     />
                 )}
+
+                <Button
+                    onClick={onPublish}
+                    disabled={isPublishing}
+                    variant={isPublished ? 'secondary' : 'primary'}
+                    size="sm"
+                >
+                    {isPublishing ? 'Publishing…' : isPublished ? 'Published' : actionLabel}
+                </Button>
 
                 <IconButton
                     onClick={() => window.dispatchEvent(new CustomEvent('save-note'))}

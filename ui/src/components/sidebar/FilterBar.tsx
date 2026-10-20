@@ -7,10 +7,10 @@ interface FilterBarProps {
 }
 
 const FILTERS = [
-    {id: 'tasks', label: 'Tasks', icon: CheckCircleIcon, query: '[status:is:todo]'},
-    {id: 'journal', label: 'Journal', icon: NoteIcon, query: '[type:is:journal]'},
-    {id: 'ideas', label: 'Ideas', icon: LightBulbIcon, query: '[type:is:idea]'},
-    {id: 'people', label: 'People', icon: UserGroupIcon, query: '[type:is:person]'},
+    {id: 'tasks', label: 'Tasks', icon: CheckCircleIcon, query: 'status:todo'},
+    {id: 'journal', label: 'Journal', icon: NoteIcon, query: 'type:journal'},
+    {id: 'ideas', label: 'Ideas', icon: LightBulbIcon, query: 'type:idea'},
+    {id: 'people', label: 'People', icon: UserGroupIcon, query: 'type:person'},
 ] as const;
 
 export function FilterBar({searchTerm, onSetSearch}: FilterBarProps) {

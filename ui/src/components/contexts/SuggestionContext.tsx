@@ -1,5 +1,6 @@
 import React, {createContext, ReactNode, useContext} from 'react';
 import {useLocalForage} from '../../hooks/useLocalForage';
+import {STORAGE_KEYS} from '../../config/storageKeys';
 
 interface SuggestionContextType {
     suggestions: Record<string, string[]>;
@@ -14,7 +15,7 @@ const SuggestionContext = createContext<SuggestionContextType | undefined>(undef
 export function SuggestionProvider({children}: { children: ReactNode }) {
     // Persist suggestions to LocalForage so they survive reloads
     const [suggestions, setSuggestions, loading] = useLocalForage<Record<string, string[]>>(
-        'notention-suggestions',
+        STORAGE_KEYS.suggestions,
         {}
     );
 

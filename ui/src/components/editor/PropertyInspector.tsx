@@ -256,10 +256,8 @@ export function PropertyInspector({
                         </div>
                         <p className="font-medium text-sm mb-1 text-gray-300">No properties extracted</p>
                         <p className="text-xs max-w-[200px] mb-6 leading-relaxed">
-                            Properties make your note discoverable by the matching engine. <br/><br/>
-                            Type <code
-                            className="bg-gray-800 px-1.5 py-0.5 rounded text-blue-300 font-mono">[skill:is:React]</code> in
-                            the editor to start.
+                            Details make your note discoverable by the matching engine. <br/><br/>
+                            Use Add detail in the editor toolbar to attach a structured fact.
                         </p>
                         {currentNote && currentNote.content && currentNote.content.length > 10 && (
                             <Button

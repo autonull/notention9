@@ -1,7 +1,8 @@
 import React from 'react';
-import {NoteIcon, PlusIcon} from '../common/icons';
+import {NoteIcon, PlusIcon, SparklesIcon} from '../common/icons';
 import {Button} from '../common/Button';
 import {EmptyState} from '../common/EmptyState';
+import {useDemoWorkspace} from '../../hooks/useDemoWorkspace';
 
 interface SidebarEmptyStateProps {
     searchTerm: string;
@@ -10,6 +11,7 @@ interface SidebarEmptyStateProps {
 }
 
 export function SidebarEmptyState({searchTerm, isTrashView, onCreateNote}: SidebarEmptyStateProps) {
+    const {load} = useDemoWorkspace();
     return (
         <EmptyState
             icon={NoteIcon}
@@ -24,12 +26,19 @@ export function SidebarEmptyState({searchTerm, isTrashView, onCreateNote}: Sideb
                         Create note &apos;{searchTerm}&apos;
                     </Button>
                 ) : (
-                    <Button
-                        onClick={() => onCreateNote()}
-                        icon={PlusIcon}
-                    >
-                        Create First Note
-                    </Button>
+                    <div className="flex flex-col gap-2">
+                        <Button
+                            onClick={() => onCreateNote()}
+                            icon={PlusIcon}
+                        >
+                            Create First Note
+                        </Button>
+                        {!isTrashView && (
+                            <Button onClick={load} variant="secondary" icon={SparklesIcon}>
+                                Load sample workspace
+                            </Button>
+                        )}
+                    </div>
                 )
             }
         />

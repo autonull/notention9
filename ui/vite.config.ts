@@ -24,7 +24,7 @@ export default defineConfig(({mode}) => {
             globals: true,
             environment: 'jsdom',
             setupFiles: './src/tests/setup.ts',
-            exclude: [...configDefaults.exclude, '**/node_modules/**', '**/dist/**'],
+            exclude: [...configDefaults.exclude, '**/node_modules/**', '**/dist/**', 'test/**'],
             watch: false,
             pool: 'forks',
             poolOptions: {

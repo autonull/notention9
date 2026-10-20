@@ -57,20 +57,11 @@ export function useEditorPublishing({
             return;
         }
 
-        // We removed the generic confirm() in favor of NetworkGate's specific check
-        // OR we might still want a general confirm?
-        // The previous code had `confirm('Are you sure...')`.
-        // If the note is ALREADY public, NetworkGate won't trigger promptUser.
-        // So we lose the "Are you sure" check for public notes if we remove this.
-        // However, the promptUser is specifically for PRIVACY.
-        // Let's keep a generic confirm if the note is already public?
-        // Or just rely on the user clicking "Publish". Usually "Publish" actions are significant.
-        // For now, I will KEEP the generic confirm BUT rely on Privacy Modal for the privacy escalation.
-        // Actually, `confirm()` is ugly. Let's trust the button click for Public notes,
-        // and only show modal for Private notes.
+        const confirmed = await promptUser();
+        if (!confirmed) return;
 
         try {
-            const eventId = await publishNote(dirtyNote, promptUser);
+            const eventId = await publishNote(dirtyNote, async () => true);
             const now = new Date().toISOString();
             const updatedNote = {
                 ...dirtyNote,

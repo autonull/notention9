@@ -1,20 +1,33 @@
 import React from 'react';
-import { useNotes } from '../../hooks/useNotes';
-import { useView } from '../../hooks/useViewContext';
-import { Button } from '../common/Button';
-import { Card } from '../common/Card';
-import { Note } from '@notention/core';
+import {useNotes} from '../../hooks/useNotes';
+import {useView} from '../../hooks/useViewContext';
+import {Button} from '../common/Button';
+import {Card} from '../common/Card';
+import {Note} from '@notention/core';
 
 export function ActionsView() {
-    const { notes } = useNotes();
-    const { setSelectedNoteId, setActiveView } = useView();
+    const {notes, addNote} = useNotes();
+    const {setSelectedNoteId, setActiveView} = useView();
 
-    const runningNotes = notes.filter(n => n.properties.some(p => p.key === 'status' && p.values.includes('running')));
-    const queuedNotes = notes.filter(n => n.properties.some(p => p.key === 'status' && p.values.includes('queued')));
-    const completedNotes = notes.filter(n => n.properties.some(p => p.key === 'status' && p.values.includes('completed')));
+    const byStatus = (status: string) =>
+        notes.filter(n => n.properties.some(p => p.key === 'status' && p.values.includes(status)));
+
+    const runningNotes = byStatus('running');
+    const queuedNotes = byStatus('queued');
+    const completedNotes = byStatus('completed');
 
     const handleNoteClick = (id: string) => {
         setSelectedNoteId(id);
+        setActiveView('notes');
+    };
+
+    const handleNewTask = () => {
+        const note = addNote({
+            title: 'New Task',
+            properties: [{key: 'status', operator: 'is', values: ['queued']}],
+            tags: ['task'],
+        });
+        setSelectedNoteId(note.id);
         setActiveView('notes');
     };
 
@@ -31,7 +44,7 @@ export function ActionsView() {
                 <h1 className="text-2xl font-bold flex items-center gap-2">
                     <span className="text-yellow-400">⚡</span> Actions
                 </h1>
-                <Button variant="primary">
+                <Button variant="primary" onClick={handleNewTask}>
                     + New Task
                 </Button>
             </div>

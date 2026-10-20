@@ -73,6 +73,11 @@ export function useLocalForage<T>(
                 const storage = driver || localforage;
                 storage.setItem(key, valueToStore).catch((err) => {
                     log.error(`Error writing to localForage key "${key}"`, err);
+                    if (typeof window !== 'undefined') {
+                        window.dispatchEvent(new CustomEvent('storage-error', {
+                            detail: {key, message: err instanceof Error ? err.message : String(err)}
+                        }));
+                    }
                 });
 
                 return valueToStore;

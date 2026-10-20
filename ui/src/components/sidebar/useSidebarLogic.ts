@@ -75,11 +75,11 @@ export function useSidebarLogic(sortedNotes: Note[]) {
 <p>Notention is a tool for thought that evolves into a peer-to-peer network.</p>
 <ul>
     <li><strong>Quick Capture:</strong> Use the Dashboard to instantly create Tasks, Ideas, or Journal entries.</li>
-    <li><strong>Organize:</strong> Use the Assistant sidebar (✨) to manage properties like <code>[status:is:Active]</code>.</li>
+    <li><strong>Add details:</strong> Use the Add detail button in the editor to attach structured facts like a status, price, or deadline. Details render as chips.</li>
     <li><strong>Retrieve:</strong> Use the sidebar filters to quickly find Tasks or Ideas.</li>
     <li><strong>Network:</strong> Publish to Nostr to find matches in the P2P economy.</li>
 </ul>
-<p>Try it out! Create a note, add <code>[type:is:idea]</code>, and see it appear in the "Ideas" filter.</p>
+<p>Try it out! Create a note, add an "idea" detail, and see it appear in the Ideas filter.</p>
           `.trim();
         }
 

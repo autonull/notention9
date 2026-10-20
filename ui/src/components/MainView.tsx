@@ -13,9 +13,11 @@ import {MapView} from './views/MapView';
 import {TimelineView} from './views/TimelineView';
 import {NetworkView} from './views/NetworkView';
 import {NotesView} from './views/NotesView';
+import {TrashView} from './views/TrashView';
 import {OntologyView} from './views/OntologyView';
 import {SettingsView} from './views/SettingsView';
 import {DashboardView} from './views/DashboardView';
+import {ActionsView} from './views/ActionsView';
 
 interface MainViewProps {
     sortedNotes?: Note[];
@@ -23,7 +25,7 @@ interface MainViewProps {
 
 export function MainView({sortedNotes}: MainViewProps) {
     const {activeView, matchingNoteId} = useView();
-    const {loading: settingsLoading} = useSettings();
+    const {settingsLoading} = useSettings();
     const {notes, loading: notesLoading} = useNotes();
 
     // Run background matching
@@ -45,11 +47,15 @@ export function MainView({sortedNotes}: MainViewProps) {
                 return <DashboardView/>;
             case 'notes':
                 return <NotesView sortedNotes={sortedNotes}/>;
+            case 'trash':
+                return <TrashView/>;
+            case 'actions':
+                return <ActionsView/>;
             case 'ontology':
                 return <OntologyView/>;
             case 'map':
                 return <MapView/>;
-            case 'time':
+            case 'timeline':
                 return <TimelineView/>;
             case 'network':
                 const matchNote = matchingNoteId
@@ -61,7 +67,7 @@ export function MainView({sortedNotes}: MainViewProps) {
             case 'settings':
                 return <SettingsView/>;
             default:
-                return null;
+                return <NotesView sortedNotes={sortedNotes}/>;
         }
     };
 

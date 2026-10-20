@@ -41,13 +41,14 @@ export function Header({onNewNote}: HeaderProps) {
 
     const handleCreateIntent = (type: 'request' | 'offer') => {
         const isRequest = type === 'request';
-        const content = isRequest
-            ? `#request\n[intent:is:request]\n[status:is:open]\n\nI am looking for...`
-            : `#offer\n[intent:is:offer]\n[status:is:available]\n\nI can provide...`;
-
         createNoteAndNavigate(
             isRequest ? 'New Request' : 'New Offer',
-            content
+            `<p>${isRequest ? 'I am looking for...' : 'I can provide...'}</p>`,
+            [
+                {key: 'intent', operator: 'is', values: [type]},
+                {key: 'status', operator: 'is', values: [isRequest ? 'open' : 'available']},
+            ],
+            {tags: [type]}
         );
     };
 

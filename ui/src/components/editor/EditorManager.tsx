@@ -8,6 +8,7 @@ import {useEditorActions} from '../../hooks/useEditorActions';
 import {useEditorShortcuts} from '../../hooks/useEditorShortcuts';
 import type {Note, OntologyNode} from '@notention/core';
 import {metaphorMapper} from '@notention/core';
+import {propertyToHtml} from '@notention/core';
 import {EditorHeader} from './EditorHeader';
 import {TiptapEditorRef} from './TiptapEditor';
 import {HybridEditor} from './HybridEditor';
@@ -106,12 +107,16 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
 
     const handleInsertTemplate = (template: OntologyNode) => {
         const attributes = template.attributes || {};
-        const tags = Object.keys(attributes).map(key => `[${key}:is:?]`);
+        const properties = Object.keys(attributes).map(key => ({
+            key,
+            operator: 'is',
+            values: [''],
+        }));
         const content = [
             dirtyNote.content,
             dirtyNote.content ? '\n\n' : '',
             `<h2>${template.label}</h2>\n`,
-            tags.map(t => `<p>${t}</p>`).join('')
+            properties.map(p => `<p>${propertyToHtml(p)}</p>`).join('')
         ].join('');
 
         handleContentSave(content);
@@ -269,6 +274,7 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                     onConfirm={handlePrivacyConfirm}
                     noteTitle={dirtyNote.title}
                     destination="Nostr network"
+                    note={dirtyNote}
                 />
             )}
         </div>

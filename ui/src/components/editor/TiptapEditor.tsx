@@ -70,17 +70,6 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
 
     const {suggestions} = useOntologySuggestions();
 
-    useEffect(() => {
-        const handleSaveEvent = () => {
-            if (editor) {
-                onSave(editor.getHTML());
-                addToast('Note saved', 'success');
-            }
-        };
-        window.addEventListener('save-note', handleSaveEvent);
-        return () => window.removeEventListener('save-note', handleSaveEvent);
-    }, [editor, onSave, addToast]);
-
     useImperativeHandle(ref, () => ({
         openPropertyModal: handleOpenPropertyModal,
         editor
@@ -97,6 +86,17 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
         onMagic,
         suggestions
     });
+
+    useEffect(() => {
+        const handleSaveEvent = () => {
+            if (editor) {
+                onSave(editor.getHTML());
+                addToast('Note saved', 'success');
+            }
+        };
+        window.addEventListener('save-note', handleSaveEvent);
+        return () => window.removeEventListener('save-note', handleSaveEvent);
+    }, [editor, onSave, addToast]);
 
     // Sync content from parent
     useEffect(() => {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Header} from './layout/Header';
 import {MobileNavigation} from './layout/MobileNavigation';
 import {CommandPalette} from './common/CommandPalette';
@@ -10,6 +10,8 @@ import {useView} from '../hooks/useViewContext';
 import {useUrlRouting} from '../hooks/useUrlRouting';
 import {useKeyboardShortcuts} from '../hooks/useKeyboardShortcuts';
 import {useCommands} from '../hooks/useCommands';
+import {HelpDialog} from './modals/HelpDialog';
+import {useToast} from '../hooks/useToast';
 
 export function AppShell() {
     const {notes, addNote, getSortedFilteredNotes} = useNotes();
@@ -40,6 +42,16 @@ export function AppShell() {
     });
 
     const {commands, handleNewNote} = useCommands({setIsHelpOpen});
+    const {addToast} = useToast();
+
+    useEffect(() => {
+        const handleStorageError = (event: Event) => {
+            const detail = (event as CustomEvent<{key: string; message: string}>).detail;
+            addToast(`Could not save ${detail?.key ?? 'data'}. Storage may be full.`, 'error');
+        };
+        window.addEventListener('storage-error', handleStorageError);
+        return () => window.removeEventListener('storage-error', handleStorageError);
+    }, [addToast]);
 
     const handleCreateNote = (title: string) => {
         const newNote = addNote({title});
@@ -119,7 +131,7 @@ export function AppShell() {
     `.replace(/\s+/g, ' ').trim();
 
     return (
-        <div className="flex flex-col h-screen bg-gray-950 text-gray-200">
+        <div className="flex flex-col h-screen bg-gray-950 text-gray-200" data-ready>
             <Header onNewNote={handleNewNote}/>
             <div className="flex flex-1 overflow-hidden">
                 <div className={sidebarClasses}>
@@ -141,6 +153,14 @@ export function AppShell() {
                 }}
                 onCreateNote={handleCreateNote}
                 commands={commands}
+            />
+            <HelpDialog
+                isOpen={isHelpOpen}
+                onClose={() => setIsHelpOpen(false)}
+                onAddDetail={() => {
+                    setIsHelpOpen(false);
+                    window.dispatchEvent(new CustomEvent('open-property-palette'));
+                }}
             />
         </div>
     );

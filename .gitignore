@@ -20,3 +20,9 @@ ui/.vite/
 *.log
 .idea
 **/bin/
+
+# Test artifacts
+test-results/
+simulator/src/tests/e2e/test-results/
+playwright-report/
+blob-report/

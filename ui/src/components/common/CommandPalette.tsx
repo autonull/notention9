@@ -281,15 +281,15 @@ export function CommandPalette({
                                 </div>
 
                                 <div>
-                                    <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Semantic Syntax</h3>
+                                    <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Details</h3>
                                     <div className="space-y-2 text-sm text-gray-400">
                                         <div className="flex items-center gap-2">
-                                            <code className="text-blue-400 bg-blue-900/20 px-1.5 py-0.5 rounded">[key:is:value]</code>
-                                            <span>Define property</span>
+                                            <span className="text-blue-400">Add detail</span>
+                                            <span>Attach a structured fact to a note</span>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <code className="text-green-400 bg-green-900/20 px-1.5 py-0.5 rounded">#tag</code>
-                                            <span>Add tag</span>
+                                            <span className="text-green-400">#tag</span>
+                                            <span>Add a tag</span>
                                         </div>
                                     </div>
                                 </div>
@@ -301,9 +301,8 @@ export function CommandPalette({
                 <div
                     className="p-2 border-t border-gray-700/50 text-xs text-gray-500 flex justify-between px-4 py-2 bg-gray-900/30">
                     <div>
-                        <span className="font-semibold">ProTip:</span> Use <code
-                        className="bg-gray-700 px-1 rounded text-gray-300">#</code> for tags, <code
-                        className="bg-gray-700 px-1 rounded text-gray-300">key:value</code> for properties.
+                        <span className="font-semibold">Tip:</span> Use <code
+                        className="bg-gray-700 px-1 rounded text-gray-300">#</code> for tags, or add structured details from the editor.
                     </div>
                     <div className="flex gap-4">
                         <span><kbd className="font-sans">↑↓</kbd> navigate</span>

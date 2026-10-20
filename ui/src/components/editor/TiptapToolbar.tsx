@@ -148,13 +148,15 @@ export function TiptapToolbar({
                         />
                     )}
                     {onInsertProperty && (
-                        <IconButton
+                        <button
                             onClick={onInsertProperty}
-                            tooltip="Insert Property"
-                            icon={KeyIcon}
-                            isActive={false}
-                            className="text-purple-300 hover:text-white"
-                        />
+                            data-testid="add-detail"
+                            title="Add detail (Ctrl+Shift+P)"
+                            className="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-semibold text-purple-200 hover:bg-purple-900/40 hover:text-white transition-colors"
+                        >
+                            <KeyIcon className="w-4 h-4"/>
+                            Add detail
+                        </button>
                     )}
                 </div>
             )}

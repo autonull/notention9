@@ -1,0 +1,93 @@
+[
+  {
+    "area": "dashboard",
+    "state": "empty",
+    "file": "dashboard/empty.png",
+    "viewport": "desktop",
+    "description": "First run with an empty notebook and a sample-workspace affordance."
+  },
+  {
+    "area": "dashboard",
+    "state": "populated",
+    "file": "dashboard/populated.png",
+    "viewport": "desktop",
+    "description": "Stats, an offline match preview, recent activity, and tools."
+  },
+  {
+    "area": "editor",
+    "state": "add-detail",
+    "file": "editor/add-detail.png",
+    "viewport": "desktop",
+    "description": "Type-aware popup for adding a structured detail."
+  },
+  {
+    "area": "editor",
+    "state": "property-chips",
+    "file": "editor/property-chips.png",
+    "viewport": "desktop",
+    "description": "Prose with structured detail chips and no visible bracket syntax."
+  },
+  {
+    "area": "matching",
+    "state": "results",
+    "file": "matching/results.png",
+    "viewport": "desktop",
+    "description": "A request matched against a local offer with scores, computed offline."
+  },
+  {
+    "area": "mobile",
+    "state": "notes",
+    "file": "mobile/notes.png",
+    "viewport": "mobile",
+    "description": "Mobile list and bottom navigation."
+  },
+  {
+    "area": "modals",
+    "state": "command-palette",
+    "file": "modals/command-palette.png",
+    "viewport": "desktop",
+    "description": "Command palette with a query matching notes and commands."
+  },
+  {
+    "area": "modals",
+    "state": "help",
+    "file": "modals/help.png",
+    "viewport": "desktop",
+    "description": "Concept and shortcut reference, including a pointer to Add detail."
+  },
+  {
+    "area": "network",
+    "state": "connect-identity",
+    "file": "network/connect-identity.png",
+    "viewport": "desktop",
+    "description": "Network view before an identity exists, prompting setup."
+  },
+  {
+    "area": "notes",
+    "state": "grid",
+    "file": "notes/grid.png",
+    "viewport": "desktop",
+    "description": "Grid mode with pinned and private notes visible at a glance."
+  },
+  {
+    "area": "notes",
+    "state": "list-selected",
+    "file": "notes/list-selected.png",
+    "viewport": "desktop",
+    "description": "List mode with a note open in the editor."
+  },
+  {
+    "area": "notes",
+    "state": "trash",
+    "file": "notes/trash.png",
+    "viewport": "desktop",
+    "description": "Trash with restore and permanent-delete affordances."
+  },
+  {
+    "area": "settings",
+    "state": "networks",
+    "file": "settings/networks.png",
+    "viewport": "desktop",
+    "description": "Provider status and relay management."
+  }
+]

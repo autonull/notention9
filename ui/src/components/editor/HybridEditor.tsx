@@ -41,14 +41,7 @@ export const HybridEditor = forwardRef<TiptapEditorRef, HybridEditorProps>((prop
     }, []);
 
     const handleInsertProperty = (key: string) => {
-        const editor = ref && 'current' in ref ? ref.current?.editor : null;
-        if (editor) {
-            // Check ontology for default operator/values
-            // Ideally we'd look up the attribute definition.
-            // For now, insert empty block syntax
-            editor.chain().focus().insertContent(`[${key}:is:]`).run();
-            // Maybe move cursor inside the value?
-        }
+        ref && 'current' in ref ? ref.current?.openPropertyModal(key) : null;
         setIsPropertyPaletteOpen(false);
     };
 

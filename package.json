@@ -6,12 +6,15 @@
     "agent",
     "core",
     "cli",
-    "e2e",
     "simulator"
   ],
   "scripts": {
     "build": "npm run build --workspaces",
     "test": "npm run test --workspaces",
+    "screenshots": "pnpm --filter @notention/ui screenshots",
+    "test:e2e": "pnpm --filter @notention/ui test:e2e",
+    "relay": "pnpm --filter @notention/agent relay --",
+    "dev:demo": "node scripts/dev-demo.mjs",
     "ui:dev": "npm run dev -w @notention/ui",
     "ui:preview": "npm run preview -w @notention/ui",
     "agent": "npm start -w @notention/agent",

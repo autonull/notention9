@@ -3,6 +3,7 @@ import {useNotes} from './useNotes';
 import {useView} from './useViewContext';
 import {useToast} from './useToast';
 import {SHARED_COMMANDS} from '@notention/core';
+import {buildSingleNoteExport} from '@notention/core';
 import {
     ChatIcon,
     DocumentDuplicateIcon,
@@ -120,7 +121,7 @@ export function useCommands({setIsHelpOpen}: UseCommandsProps) {
             action: () => {
                 const note = notes.find(n => n.id === selectedNoteId);
                 if (note) {
-                    const blob = new Blob([JSON.stringify(note, null, 2)], {type: 'application/json'});
+                    const blob = new Blob([JSON.stringify(buildSingleNoteExport(note), null, 2)], {type: 'application/json'});
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;

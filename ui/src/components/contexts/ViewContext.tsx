@@ -4,6 +4,7 @@ import { useToast } from '../../hooks/useToast';
 import type { NostrEvent, Property, SidebarViewMode, SortOrder, View } from '@notention/core';
 import { GeoCoords, Logger } from '@notention/core';
 import { getCurrentPosition } from '../../utils/geolocation';
+import { STORAGE_KEYS } from '../../config/storageKeys';
 
 export interface MatchResult {
     localNoteId: string;
@@ -48,8 +49,8 @@ export interface ViewContextType {
 const ViewContext = createContext<ViewContextType | undefined>(undefined);
 
 export function ViewProvider({ children }: { children: ReactNode }) {
-    const [sortOrder, setSortOrder] = useLocalForage<SortOrder>('notention-sort-order', 'updatedAt_desc');
-    const [sidebarViewMode, setSidebarViewMode] = useLocalForage<SidebarViewMode>('notention-sidebar-view-mode', 'list');
+    const [sortOrder, setSortOrder] = useLocalForage<SortOrder>(STORAGE_KEYS.sortOrder, 'updatedAt_desc');
+    const [sidebarViewMode, setSidebarViewMode] = useLocalForage<SidebarViewMode>(STORAGE_KEYS.sidebarViewMode, 'list');
 
     // UI State
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);

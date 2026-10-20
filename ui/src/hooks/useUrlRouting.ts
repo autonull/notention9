@@ -38,12 +38,15 @@ export function useUrlRouting({
             const validViews: View[] = [
                 'notes',
                 'map',
-                'time',
+                'timeline',
                 'network',
                 'chat',
                 'ontology',
                 'settings',
                 'simulator',
+                'trash',
+                'actions',
+                'dashboard',
             ];
 
             const newView = validViews.includes(view as View) ? (view as View) : 'notes';

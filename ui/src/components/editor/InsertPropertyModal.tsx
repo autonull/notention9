@@ -1,6 +1,6 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {Modal} from '../common/Modal';
-import {InformationCircleIcon, TagIcon, ExclamationTriangleIcon, SparklesIcon, CodeBlockIcon} from '../common/icons';
+import {InformationCircleIcon, TagIcon, ExclamationTriangleIcon, SparklesIcon} from '../common/icons';
 import {ICON_MAP} from '../layout/iconMap';
 import type {OntologyAttribute, OntologyNode, SuggestedAttribute} from '@notention/core';
 import {findAttributeDef} from '@notention/core';
@@ -86,17 +86,17 @@ export function InsertPropertyModal({
         onClose();
     };
 
-    const preview = key && value ? `[${key}:${operator}:${value}]` : '...';
+    const preview = key && value ? `${key} ${operator} ${value}` : 'Choose a detail';
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title={isEditing ? "Edit Property" : "Insert Property"}>
+        <Modal isOpen={isOpen} onClose={onClose} title={isEditing ? "Edit detail" : "Add detail"}>
             <form onSubmit={handleSubmit} className="space-y-5">
 
                 {/* Key Field */}
                 <div>
                     <label className="block text-xs uppercase font-bold text-gray-500 mb-2 tracking-wider flex items-center gap-1">
                         {activeDef?.icon && ICON_MAP[activeDef.icon] && React.createElement(ICON_MAP[activeDef.icon], {className: "w-4 h-4 text-blue-400"})}
-                        Property Key
+                        Detail
                     </label>
                     <Input
                         type="text"
@@ -151,7 +151,7 @@ export function InsertPropertyModal({
                     {/* Operator Field */}
                     <div>
                         <label className="block text-xs uppercase font-bold text-gray-500 mb-2 tracking-wider">
-                            Operator
+                            Comparison
                         </label>
                         <select
                             className="w-full bg-gray-900/50 border border-gray-700/50 rounded-lg px-3 py-2.5 text-gray-300 text-sm focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all cursor-pointer hover:bg-gray-800/50"
@@ -189,17 +189,17 @@ export function InsertPropertyModal({
                     </div>
                 )}
 
-                {/* Preview */}
+                {/* Human-readable summary, never raw syntax */}
                 <div className={`mt-2 p-3 rounded-lg border flex items-center justify-between transition-colors ${
                     validation.isValid && key && value ? 'bg-gray-900/80 border-gray-700' : 'bg-gray-900/30 border-gray-800'
                 }`}>
                     <div className="flex items-center gap-2 text-gray-500">
-                        <CodeBlockIcon className="w-4 h-4" />
-                        <span className="text-xs uppercase font-semibold">Preview</span>
+                        <TagIcon className="w-4 h-4" />
+                        <span className="text-xs uppercase font-semibold">Summary</span>
                     </div>
-                    <code className={`${validation.isValid && key && value ? 'text-blue-300' : 'text-gray-600'} font-mono text-sm`}>
+                    <span className={`${validation.isValid && key && value ? 'text-blue-300' : 'text-gray-600'} text-sm`}>
                         {preview}
-                    </code>
+                    </span>
                 </div>
 
                 <div className="flex justify-end gap-3 pt-4 border-t border-gray-700/50">
@@ -216,7 +216,7 @@ export function InsertPropertyModal({
                         variant="primary"
                         icon={TagIcon}
                     >
-                        {isEditing ? "Update Property" : "Insert Property"}
+                        {isEditing ? "Save detail" : "Add detail"}
                     </Button>
                 </div>
             </form>

@@ -2,7 +2,7 @@ import {useCallback, useEffect, useMemo, useRef} from 'react';
 import {Note} from '@notention/core';
 
 // Debounced save function to prevent excessive writes
-export function useDebouncedSave(
+export const useDebouncedSave = (
     saveCallback: (note: Note) => void,
     delay: number = 1000
 ) => {

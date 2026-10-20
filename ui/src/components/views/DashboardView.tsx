@@ -7,6 +7,8 @@ import {StatCard} from '../widgets/StatCard';
 import {ActivityFeed} from '../widgets/ActivityFeed';
 import {Badge} from '../common/Badge';
 import {PropertyExtractor} from '@notention/core';
+import {MatchEngine} from '@notention/core';
+import {useDemoWorkspace} from '../../hooks/useDemoWorkspace';
 import {
     CheckCircleIcon,
     CpuChipIcon,
@@ -60,6 +62,7 @@ export function DashboardView() {
     const {settings} = useSettings();
     const [quickCaptureInput, setQuickCaptureInput] = useState('');
     const [agentStatus, setAgentStatus] = useState(agentService.getStatus());
+    const {load: loadSampleWorkspace} = useDemoWorkspace();
 
     const extractor = useMemo(() => new PropertyExtractor(settings.ontology), [settings.ontology]);
     const extractedProps = useMemo(() => {
@@ -122,6 +125,20 @@ export function DashboardView() {
     const recentNotes = [...notes]
         .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
         .slice(0, 5);
+
+    const localMatch = useMemo(() => {
+        if (notes.length < 2) return null;
+        const engine = new MatchEngine(settings.ontology || []);
+        return notes
+            .filter(note => note.properties.some(p => p.key === 'intent' && p.values.includes('request')))
+            .flatMap(request =>
+                notes
+                    .filter(note => note.id !== request.id)
+                    .map(note => ({request, note, result: engine.calculateMatchScore(request, note)}))
+            )
+            .filter(match => match.result.score > 0.4)
+            .sort((a, b) => b.result.score - a.result.score)[0] ?? null;
+    }, [notes, settings.ontology]);
 
     const handleSelectNote = (id: string) => {
         setSelectedNoteId(id);
@@ -202,6 +219,45 @@ export function DashboardView() {
                     </div>
                 </div>
             </div>
+
+            {/* First run sample workspace */}
+            {notes.length === 0 && (
+                <div className="mb-8 rounded-3xl border border-purple-500/20 bg-purple-500/5 p-6 flex flex-col sm:flex-row sm:items-center gap-5">
+                    <div className="rounded-2xl bg-purple-500/10 p-3 text-purple-300">
+                        <SparklesIcon className="w-7 h-7"/>
+                    </div>
+                    <div className="flex-1">
+                        <h2 className="text-lg font-bold text-white">Try a sample workspace</h2>
+                        <p className="text-sm text-gray-400">Ten local notes: a request and an offer that match, an event, places, and tasks. Nothing leaves your device.</p>
+                    </div>
+                    <button
+                        onClick={loadSampleWorkspace}
+                        className="rounded-xl bg-purple-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-purple-500 transition-colors"
+                    >
+                        Load sample workspace
+                    </button>
+                </div>
+            )}
+
+            {/* Offline match preview */}
+            {localMatch && (
+                <div className="mb-8 rounded-3xl border border-green-500/20 bg-green-500/5 p-6" data-testid="local-match">
+                    <div className="flex items-center gap-2 text-green-300 text-xs font-bold uppercase tracking-widest mb-3">
+                        <CheckCircleIcon className="w-4 h-4"/> Match found locally
+                    </div>
+                    <div className="flex flex-col md:flex-row md:items-center gap-4">
+                        <div className="flex-1 min-w-0">
+                            <div className="text-sm text-gray-400 truncate">{localMatch.request.title}</div>
+                            <div className="text-gray-500 text-xs my-1">matches</div>
+                            <div className="font-semibold text-white truncate">{localMatch.note.title}</div>
+                        </div>
+                        <div className="text-right">
+                            <div className="text-3xl font-bold text-green-300">{Math.round(localMatch.result.score * 100)}%</div>
+                            <div className="text-xs text-gray-500">{localMatch.result.matches.length} satisfied · {localMatch.result.conflicts.length} conflicting</div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Stats Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">

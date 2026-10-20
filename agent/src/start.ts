@@ -2,8 +2,9 @@ import { AgentServer } from './Server';
 import { error } from './core/utils';
 
 const server = new AgentServer();
+const relay = process.argv.includes('--relay');
 
-server.start().catch(err => {
+server.start(undefined, {relay}).catch(err => {
     error('System', 'Failed to start server', err);
     process.exit(1);
 });

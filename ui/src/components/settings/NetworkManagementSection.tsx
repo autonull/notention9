@@ -138,6 +138,10 @@ export function NetworkManagementSection() {
                                 <div>
                                     <h4 className="font-medium text-gray-100">{provider.name}</h4>
                                     <span className="text-xs text-gray-500 uppercase tracking-wider">{provider.id}</span>
+                                    <div className="mt-1 flex items-center gap-1.5 text-xs text-gray-500">
+                                        <span className={`h-1.5 w-1.5 rounded-full ${provider.getStatus().connected ? 'bg-green-500' : 'bg-gray-600'}`}/>
+                                        {provider.getStatus().details}
+                                    </div>
                                 </div>
                             </div>
                             <div className="flex items-center gap-4">

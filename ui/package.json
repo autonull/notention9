@@ -9,7 +9,10 @@
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives",
     "format": "prettier --write .",
-    "test": "vitest"
+    "test": "vitest",
+    "typecheck:test": "tsc -p test/tsconfig.json --noEmit",
+    "screenshots": "playwright test --config test/playwright.config.ts --project=showcase && node test/scripts/build-index.mjs",
+    "test:e2e": "playwright test --config test/playwright.config.ts --project=journeys"
   },
   "dependencies": {
     "@google/genai": "^1.12.0",

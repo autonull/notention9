@@ -202,7 +202,7 @@ export function OntologyView() {
                                 <h3 className="font-bold text-white mb-1">The Ontology</h3>
                                 <p className="text-sm text-gray-400">
                                     This graph represents the shared vocabulary of your network.
-                                    As you write notes with properties (e.g., <code>[price:is:100]</code>), the Semantic
+                                    As you add structured details to notes (for example a price or a skill), the Semantic
                                     Engine automatically updates this structure.
                                 </p>
                             </div>

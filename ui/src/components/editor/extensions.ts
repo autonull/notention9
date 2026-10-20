@@ -54,7 +54,7 @@ export const getExtensions = ({
         StarterKit, BubbleMenu, PropertyExtension, GhostTextExtension,
         createMentionConfig('propertySuggestion', 'suggestion-item', '[', resolveProperties, ({ editor, range, props }: any) => {
             editor.chain().focus().deleteRange(range).run();
-            onOpenPropertyModal ? onOpenPropertyModal(props.label || '') : editor.chain().focus().insertContent(`[${props.label}:is:]`).run();
+            onOpenPropertyModal?.(props.label || '');
         }),
         createMentionConfig('tagSuggestion', 'suggestion-tag', '#', (query) => {
             const lower = query.toLowerCase();
@@ -75,7 +75,7 @@ export const getExtensions = ({
                 .map(t => ({ id: t.content, label: t.label, description: 'Template', type: 'template' }));
 
             const propertyItems = allProperties.filter(p => p.label.toLowerCase().includes(lower))
-                .map(p => ({ id: `[${p.label}:is:]`, label: p.label, description: 'Property', type: 'property' }));
+                .map(p => ({ id: p.label, label: p.label, description: 'Detail', type: 'property' }));
 
             const commandItems = [];
             if ('magic align'.includes(lower)) commandItems.push({ id: 'magic', label: 'Magic Align', description: 'Auto-detect properties', type: 'command' });

@@ -1,7 +1,7 @@
 import {useCallback} from 'react';
 import {useNotes} from './useNotes';
 import {useView} from './useViewContext';
-import type {Property} from '@notention/core';
+import type {Note, Property} from '@notention/core';
 import {parseProperties, NotePipeline} from '@notention/core';
 
 export function useNoteActions() {
@@ -11,15 +11,17 @@ export function useNoteActions() {
     const createNoteAndNavigate = useCallback((
         title: string | undefined,
         content: string,
-        explicitProperties?: Property[]
+        explicitProperties?: Property[],
+        overrides?: Partial<Note>
     ) => {
-        const baseNote = addNote({title: title || 'Untitled Note'});
+        const baseNote = addNote({title: title || 'Untitled Note', ...overrides});
 
         // If properties are not explicitly provided, parse them from content
         const properties = explicitProperties ?? parseProperties(content);
 
         const updatedNote = NotePipeline.setPriority({
             ...baseNote,
+            ...overrides,
             content,
             properties
         }, 1.0);

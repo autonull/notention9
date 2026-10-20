@@ -3,6 +3,7 @@ import React, {createContext, ReactNode, useEffect} from 'react';
 import {useLocalForage} from '../../hooks/useLocalForage';
 import type {AppSettings} from '@notention/core';
 import {DEFAULT_ONTOLOGY, DEFAULT_RELAYS} from '@notention/core';
+import {STORAGE_KEYS} from '../../config/storageKeys';
 
 interface SettingsContextType {
     settings: AppSettings;
@@ -18,7 +19,7 @@ export function SettingsProvider({
                                      children,
                                  }: { children: ReactNode }) {
     const [settings, setSettings, settingsLoading] = useLocalForage<AppSettings>(
-        'notention-settings-v2',
+        STORAGE_KEYS.settings,
         {
             aiEnabled: false,
             developerMode: false,

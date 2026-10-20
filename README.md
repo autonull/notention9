@@ -8,6 +8,15 @@ Everything is a note: memory, queries, and an interface to automation.
 - embeddable semantic engine
 - decentralized coordination without platform gatekeepers
 
+## 📸 A look inside
+
+[![Dashboard populated](doc/screenshot/dashboard/populated.png)](doc/screenshot/README.md)
+[![Editor with structured details](doc/screenshot/editor/property-chips.png)](doc/screenshot/README.md)
+[![Add a structured detail](doc/screenshot/editor/add-detail.png)](doc/screenshot/README.md)
+[![Local match results](doc/screenshot/matching/results.png)](doc/screenshot/README.md)
+
+Browse the full generated gallery in [`doc/screenshot/README.md`](doc/screenshot/README.md).
+
 
 ## 🎯 Why?
 
@@ -40,7 +49,7 @@ Everything is a note: memory, queries, and an interface to automation.
                    local · Nostr · mesh transports
 ```
 
-A note contains rich text, semantic properties, tags, provenance, privacy, and priority. Properties are first-class: they can be written inline, parsed back out, normalized through aliases, validated against the ontology, and matched without losing the original prose.
+A note contains rich text, semantic properties, tags, provenance, privacy, and priority. Properties are first-class structured details: the editor adds and edits them through typed controls, renders them as chips, and keeps them normalized, validated, and matchable. The on-disk bracket form is an internal and import format only; no user flow requires writing it.
 
 The semantic model rests on four primitives:
 
@@ -57,7 +66,7 @@ The practical distinction is between the **real** and the **imaginary**: definit
 
 ### 📝 Semantic editor
 
-- Inline properties in canonical, symbolic, or word form, with aliases resolved to canonical ontology keys.
+- Structured details added through an inline popup with ontology-backed keys, comparisons, and value controls; chips edit in the same popup.
 - Property extraction from rich text and plain text; explicit properties take precedence over inferred ones.
 - Ontology-aware validation of types, operators, ranges, enums, dates, and coordinates.
 - Property suggestions, smart input, command palette, templates, quick capture, and keyboard-driven navigation.
@@ -176,6 +185,10 @@ Node.js 20 or newer and pnpm are expected. Install dependencies once, then choos
 | Terminal session | `pnpm run cli` |
 | Build everything | `pnpm run build` |
 | Run tests | `pnpm test` |
+| Journey E2E | `pnpm run test:e2e` |
+| Generate screenshots | `pnpm run screenshots` |
+| Local relay | `pnpm run relay -- --port 7000` |
+| UI plus agent and relay | `pnpm run dev:demo` |
 | Simulator | `pnpm run build -w simulator` then `pnpm start -w simulator -- --ui-server` |
 
 The UI is a PWA and can be installed; the terminal prints the addresses it binds. The CLI can start an embedded agent automatically when it cannot find one.
@@ -187,7 +200,7 @@ Environment switches:
 | `VITE_ENABLE_AGENT` | Enable or disable the UI's agent bridge |
 | `VITE_LLM_SOURCE` | Choose `browser`, `server`, or `none` for the UI |
 | `LLM_PROVIDER`, `LLM_API_KEY`, `LLM_MODEL` | Configure the CLI provider |
-| `NOSTR_RELAYS` | Override the default relay set |
+| `NOSTR_RELAYS` | Agent relay override (the UI reads `settings.nostr.relays`) |
 | `MESHTASTIC_PORT` | Select the serial device for mesh transport |
 
 ## 📚 Library usage

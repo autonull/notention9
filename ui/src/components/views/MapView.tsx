@@ -17,10 +17,9 @@ export function MapView() {
                         title="No Location Notes"
                         description={
                             <>
-                                Add location properties to your notes to see them here.
+                                Add a location detail to a note to see it here.
                                 <br/>
-                                Try: <code className="bg-gray-800 px-1 py-0.5 rounded text-blue-300">[location:is:New
-                                York]</code>
+                                Use Add detail in the editor and choose location.
                             </>
                         }
                     />

@@ -8,12 +8,18 @@ import { SocketController } from './server/SocketController.js';
 import { ConfigManager } from './config/ConfigManager.js';
 import { setupMcpServer } from './server/McpServer.js';
 import { Server as HttpServer } from 'http';
+import { NostrRelay } from './relay/NostrRelay.js';
+
+export interface AgentServerOptions {
+    relay?: boolean;
+}
 
 export class AgentServer {
     private app: express.Express;
     private server: HttpServer | null = null;
     private wss: WebSocketServer | null = null;
     private socketController: SocketController | null = null;
+    private relay: NostrRelay | null = null;
     private port: number = 0;
 
     constructor() {
@@ -24,7 +30,7 @@ export class AgentServer {
         return this.port;
     }
 
-    async start(port?: number) {
+    async start(port?: number, options: AgentServerOptions = {}) {
         const config = ConfigManager.getInstance().getConfig();
         const PORT = port !== undefined ? port : config.server.port;
 
@@ -34,11 +40,16 @@ export class AgentServer {
 
         await this.startHttpServer(PORT);
         this.setupWebsocket();
+        if (options.relay) this.setupRelay();
         await this.initAgentSystem();
     }
 
     async stop() {
         log('System', 'Shutting down...');
+        if (this.relay) {
+            await this.relay.close();
+            this.relay = null;
+        }
         if (!this.server) return;
 
         return new Promise<void>((resolve, reject) => {
@@ -83,14 +94,22 @@ export class AgentServer {
         }
     }
 
-    private setupWebsocket() {
-        if (!this.server) {
+    private setupWebsocket() {        if (!this.server) {
             error('WS', 'Server not initialized');
             return;
         }
 
         this.wss = new WebSocketServer({ server: this.server, path: '/ws/agent' });
         this.wss.on('connection', (ws) => this.handleClientConnection(ws));
+    }
+
+    private setupRelay() {
+        if (!this.server) {
+            error('Relay', 'Server not initialized');
+            return;
+        }
+        this.relay = new NostrRelay({server: this.server, path: '/relay'});
+        log('Relay', `Local relay available at ws://localhost:${this.port}/relay`);
     }
 
     private handleClientConnection(ws: WebSocket) {
