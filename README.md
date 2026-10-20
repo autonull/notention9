@@ -1,10 +1,15 @@
 # Notention
 
-Notention is a local-first semantic workspace for turning free-form notes into structured intent, matching that intent against structured offers, and — when you choose — handing the result to an agent that can act on it. Everything is a note: notes are the unit of storage, the query surface, and the interface to automation.
+Notention is a semantic matching network for free-form notes with structured intent.
 
-It works as a private thinking tool, an embeddable semantic engine, and a testbed for coordination without platform gatekeepers. The core does not require the UI, the agent, or a network; each is an optional layer.
+Everything is a note: memory, queries, and an interface to automation.
 
-## 🎯 Why it exists
+- private thinking tool
+- embeddable semantic engine
+- decentralized coordination without platform gatekeepers
+
+
+## 🎯 Why?
 
 | Common problem | Notention's move |
 | :--- | :--- |
@@ -14,7 +19,7 @@ It works as a private thinking tool, an embeddable semantic engine, and a testbe
 | Automation is opaque and over-permissioned | Actions are note-driven, capability-gated, and approval-oriented |
 | Platforms own identity and reach | Local-first workspace; keys are identity; transports are interchangeable |
 
-## 🧩 The model
+## 🧩 Architecture
 
 ```
                  ┌─────────────────────────────────┐
@@ -58,7 +63,7 @@ The practical distinction is between the **real** and the **imaginary**: definit
 - Property suggestions, smart input, command palette, templates, quick capture, and keyboard-driven navigation.
 - Notes remain readable prose; the semantic layer is additive, not a separate database view.
 
-### 🔎 Matching engine
+### 🔎 Matching
 
 - Treats request properties as constraints and offer properties as facts.
 - Handles strings, numbers, dates, enums, and geographic proximity, including alias-aware comparison.
@@ -67,7 +72,7 @@ The practical distinction is between the **real** and the **imaginary**: definit
 - Weighs results by priority and offers semantic-overlap scoring for related-note discovery.
 - Filters and sorts by text, tags, properties, dates, and location through a reusable note filter.
 
-### 🧬 Living ontology
+### 🧬 Ontology
 
 - A nested vocabulary of domains, note types, properties, value types, valid operators, aliases, enum options, and UI hints.
 - Built-in coverage for identity, communication, scheduling, work, and commerce, with room for custom domains.
@@ -75,7 +80,7 @@ The practical distinction is between the **real** and the **imaginary**: definit
 - AI is optional: use a remote model, an in-browser model, or the deterministic local heuristic provider.
 - Manual graph editing, learning suggestions, conflict detection, usage statistics, query building, and ontology-generated templates.
 
-### 🗂️ Workspace views
+### 🗂️ User interface
 
 - Notes, dashboard and quick capture, map, timeline, network, chat, and settings views.
 - Search and sort across text, tags, properties, dates, distance, relevance, and recency.
@@ -83,7 +88,7 @@ The practical distinction is between the **real** and the **imaginary**: definit
 - Nostr direct messages use encrypted events, with the same identity used for publishing.
 - Configuration can itself be note-based: semantic notes can drive theme, developer mode, AI settings, and capabilities.
 
-### 🤖 Agent and automation
+### 🤖 Agent automation
 
 - An optional agent server exposes MCP tools over SSE and a WebSocket bridge for the UI.
 - Built-in tools cover note creation, update, deletion, search, batch operations, capability inspection, and LLM-assisted semantic extraction.
@@ -105,6 +110,7 @@ A shared network registry coordinates providers. The network gate enforces priva
 
 ### 🧪 Simulator
 
+- Experiment and evolve Ontologies
 - Runs multi-agent scenarios to observe matching, publishing, and emergent coordination.
 - Provides a live dashboard with agent screens and system logs side by side.
 - Supports predefined and generated scenarios, plus recorded movie output for review and demonstration.
@@ -118,7 +124,9 @@ A shared network registry coordinates providers. The network gate enforces priva
 - Plugin hooks for UI metaphors and agent tools, with registries for skills and network providers.
 - Scenario manager and deterministic test environment for semantic and multi-agent behavior.
 
-## 🧱 Architecture
+## 🧱 System design
+
+The core does not require the UI, the agent, or a network; each is an optional layer.
 
 | Layer | Responsibility | Package |
 | :--- | :--- | :--- |
@@ -130,7 +138,7 @@ A shared network registry coordinates providers. The network gate enforces priva
 
 The dependency direction is deliberate: the core knows nothing about React or the agent; the UI can run without the agent; the agent can run headless; the CLI can start an embedded agent when none is available.
 
-## 🔍 Status, honestly
+## 🔍 Status
 
 | Area | State |
 | :--- | :--- |
@@ -172,7 +180,7 @@ Node.js 20 or newer and pnpm are expected. Install dependencies once, then choos
 
 The UI is a PWA and can be installed; the terminal prints the addresses it binds. The CLI can start an embedded agent automatically when it cannot find one.
 
-Useful environment switches:
+Environment switches:
 
 | Variable | Effect |
 | :--- | :--- |
@@ -182,7 +190,7 @@ Useful environment switches:
 | `NOSTR_RELAYS` | Override the default relay set |
 | `MESHTASTIC_PORT` | Select the serial device for mesh transport |
 
-## 📚 Using it as a library
+## 📚 Library usage
 
 `@notention/core` is the library surface. It is ESM, ships type declarations, and avoids React and browser-only assumptions where it can. The package root is the supported entry point. The core does not impose a persistence layer: bring your own store, or use the conventions in the UI and agent packages.
 
@@ -211,7 +219,7 @@ A typical integration follows the same shape as the application: parse or constr
 
 The seams are intentional. A new domain should not require a new matching engine; a new transport should not require changes to note semantics; a new skill should not require changes to the ontology core.
 
-## 🧭 Where it can go
+## 🧭 Possibilities
 
 The specification points beyond a notebook toward a semantic coordination layer: immutable content-addressed notes, signed attestations and transitions, sealed visibility, payment and escrow objects, service discovery, and synchronization across heterogeneous transports.
 
