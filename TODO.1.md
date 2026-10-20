@@ -1,6 +1,6 @@
 # TODO
 
-Status: active plan. Decisions from review are recorded inline.
+Status: complete. All acceptance criteria met. Decisions from review are recorded inline.
 
 ## Progress (2026-10-20)
 
