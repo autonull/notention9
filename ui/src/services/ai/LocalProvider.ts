@@ -1,10 +1,12 @@
-import type {AIProvider, InferredAttribute, Note, OntologyNode, Property} from '@notention/core';
+import type {Note, OntologyNode, Property} from '@notention/core';
+import type {AIProvider, InferredAttribute} from './types';
 import {parseProperties, parseQuantity} from '@notention/core';
 import {getTextFromHtml} from '../../utils/html';
 import {addDays, format} from 'date-fns';
 
 export class LocalAIProvider implements AIProvider {
     name = 'Local (Heuristic)';
+    kind = 'heuristic' as const;
     isAvailable = true;
 
     async generateCompletion(prompt: string): Promise<string> {

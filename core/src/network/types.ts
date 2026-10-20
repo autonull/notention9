@@ -24,8 +24,9 @@ export interface NetworkProvider {
 
     /**
      * Send a note over this network
+     * @returns the network event id, when the network assigns one
      */
-    sendNote(note: Note, ontology?: OntologyNode[]): Promise<void>;
+    sendNote(note: Note, ontology?: OntologyNode[]): Promise<string | undefined>;
 
     /**
      * Discover potential matches for a note on this network

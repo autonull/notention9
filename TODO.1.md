@@ -6,7 +6,9 @@ Status: active plan. Decisions from review are recorded inline.
 
 Landed: Phase 0 harness and scripts (playwright config, fixtures, journeys, showcase); Phase 1 seeding/capture/fixtures and 24 curated showcase scenes with generated index and README hero/gallery; B navigation/trash/help actions; A demo workspace and offline match; E structured details through one adapter; C core journeys; D publish preview, storage-error toast, provider status; F validated export/import with key stripping; G in-memory relay with standalone and `--relay` embedded hosts; README hero/gallery with full index.
 
-Remaining: discovery and relay-down journeys; offline/retry banners; full `ui` typecheck has pre-existing errors outside this work. All 25-28 curated scenes now produced and indexed.
+This pass: fixed publishing of private notes (the network gate rejected every private note, so publish always failed) and fixed false "Published" states (nostr-tools resolves with a `connection failure: …` string instead of rejecting, so a dead relay looked like a success); fixed the export/import journey (`Buffer` import, storage clear navigated away from the settings view); added the request/offer journey composed entirely through the add-detail popup; added the "describe it" composer with confidence, per-property accept/reject, one-time remote consent, and no model when none is configured; added `intent: request|offer` to the default ontology so the popup can offer the values the app already matches on. All 24 screenshots were regenerated against the new build.
+
+Remaining: the `ui` typecheck has 175 pre-existing errors outside this work (mostly test fixtures and optional `settings.ontology` narrowing); the per-provider Network status could be richer than the relay banner.
 
 Notes for the next pass:
 
@@ -14,19 +16,41 @@ Notes for the next pass:
 - `ui/index.html` installs a small `window.process` shim. Core/node-shaped dependencies leak `process` into the Vite bundle; removing the shim blanks the app.
 - `TiptapEditor` previously read `editor` in an effect dependency before declaration, crashing every editor route. Keep the effect after `useTiptapEditor`.
 - The relay uses port 7000 in tests and screenshots. Seed `settings.nostr.relays = ['ws://localhost:7000']`.
-- Publish always opens the disclosure preview, then the network gate marks the note public. The journey generates a key at runtime.
+- Publish always opens the disclosure preview; confirming makes the note public, then the network gate transmits it. `publishNoteToNostr` returns the event id, so the "Published" state points at a real event.
+- `pool.publish` resolves with a `connection failure: …` string instead of rejecting, so a resolved promise is not proof of delivery. `publishNoteToNostr` now checks the per-relay outcomes and fails with a reason when nothing was accepted; a dead relay surfaces a retryable error instead of a false "Published".
+- `useGardener` now exposes the active `provider` and its `kind` (`heuristic | local-model | remote`). `useDescribeIt` uses it to decide between local rules, a browser model, and a remote model that needs consent.
+- Remote consent lives in `settings.aiRemoteConsent` (default false) and is revocable in Settings → AI.
+- The default ontology had `intent` options that the app never used; `request` and `offer` were added so the popup can produce the values matching already relies on.
 - Screenshot now produces 24 curated images across all areas (dashboard, notes, editor, matching, network, mobile, modals, ontology, actions, map, timeline) with individual descriptions. `pnpm run screenshots` succeeds end-to-end, generates index and README.
-- All `pnpm run test:e2e` journey tests pass except 2 pre-existing typecheck warnings and 1 test needing `Buffer` import fix (export-import).
 - The `pnpm run test:e2e` command covers the journeys and fails on breakage.
 - `pnpm test` (Vitest) does not collect Playwright files (except the testtypecheck warning about reducedMotion).
 - No route in `NAV_ITEMS` or the command palette renders a blank view.
 - First launch lands in the app with no wizard; an empty-state action loads the sample workspace and produces a visible match offline.
 - A user can create, edit, validate, and remove properties entirely through the UI. No user-facing flow renders bracket syntax; parsing it remains for import and compatibility.
 - Property objects cross one serialization adapter. No UI component constructs the internal syntax, so changing the format requires no UI changes.
-- With no LM configured, the app is fully usable: no model loads, no provider calls, and structured controls plus deterministic heuristics cover the flow.
+- With no LM configured, the app is fully usable: no model loads, no provider calls, and structured controls plus deterministic heuristics cover the flow. The "describe it" composer runs on local rules and says so.
 - Basic export/import works: JSON backup excludes the private key, restore uses the correct settings key, and a single note can be exported and re-imported.
 - Publish flow is demonstrable against the local relay.
 - 24 screenshots in `doc/screenshot/` with index and README hero/gallery referencing them.
+
+### Testing posture
+
+Journeys assert outcomes, not widgets. The bar is "does the flow work", not "is this
+exact label present". Keep each journey to a handful of assertions, avoid asserting
+on copy that a redesign would change, and never assert on a count of transient DOM
+nodes. A journey that needs a dozen assertions to pin down one flow is a sign the
+flow should be simpler, not that the test should be longer. Slow, brittle tests cost
+more than the confidence they buy, so prefer fewer, faster journeys over exhaustive
+coverage, and delete a test that only guards cosmetics.
+
+Two traps already paid for: `page.routeWebSocket('ws://localhost:7000')` never
+matches, because the browser normalizes the URL to `ws://localhost:7000/` — use a
+regex. And clearing storage navigates away from the view under test, so a journey
+has to go back to it before continuing.
+
+The relay keeps events in memory, and Playwright reuses a running relay between
+local runs, so the store grows across runs. Journey fixtures that publish to the
+relay need a per-run marker, otherwise a later run sees the same event twice.
 
 
 
@@ -128,9 +152,11 @@ Notes for the next pass:
       from `useNotesData`, `SettingsContext`, `ViewContext`, and the seeder.
 - [x] Add scripts: root and `ui` `screenshots` + `test:e2e`; `relay` and
       `dev:demo` arrive with G.
-- [ ] Add dependencies only as the editor work proves them (not needed for the delivered popup; Radix and chrono remain deferred): Radix popover/dialog
+- [x] Add dependencies only as the editor work proves them (not needed for the delivered popup; Radix and chrono remain deferred): Radix popover/dialog
       for the add-detail and help surfaces; `chrono-node` behind a dynamic
       import. Do not add `cmdk` until `CommandPalette` is replaced.
+      Closed with no new dependency: the popup, help surface, and the describe-it
+      composer use the existing `Modal`, `Input`, and `Button` primitives.
 - [x] Remove the phantom `e2e` entry from root `workspaces`.
 
 ## Phase 1 — Harness
@@ -364,42 +390,56 @@ user never authors or sees bracket syntax.
   emit structured operations. One adapter turns those into the internal wire
   format and back on load/paste. No component constructs bracket strings, so the
   serialization format can change without touching the UI.
-- [ ] **Optional LM assistance, off by default.** (forms and heuristics work; LM providers still emit bracket strings internally) No LM is configured on first run.
+- [x] **Optional LM assistance, off by default.** No LM is configured on first run.
   Forms, chips, and deterministic heuristics must cover the full workflow. When
   the user explicitly enables a local (WebLLM) or remote provider, a "describe
   it" composer can propose properties. Show confidence and a per-property
   accept/reject diff; never mutate the note silently. Remote calls require
   one-time consent. LM output is structured property data, never bracket syntax.
   With no LM configured, nothing should initialize a model or call a provider.
+  Landed: `useDescribeIt` + `DescribeItComposer` propose properties from free
+  text with a confidence estimate and per-property accept/reject; a remote
+  provider asks once (`settings.aiRemoteConsent`, revocable in Settings → AI);
+  with no model configured the composer runs on local rules and says so.
 - [x] **Replace syntax-producing input rules.** `GhostTextExtension` currently
   rewrites input into visible brackets, and `HybridEditor` inserts
   `[key:is:]` strings. Both must emit structured property nodes through the
   adapter. Keep bracket parsing for import/paste, but treat it as compatibility.
 - [x] **Progressive disclosure.** Minimal default surface; ontology hints,
   validation, confidence, and explanations appear on demand.
-- [ ] **Prove it.** (detail composition is covered; full request+offer via popover is not) Journeys must compose a request and an offer entirely through the
+- [x] **Prove it.** Journeys must compose a request and an offer entirely through the
   inline add-detail popover, with a matching result, without entering bracket
   property syntax.
+  Landed: `ui/test/journeys/compose-match.spec.ts` composes both notes through
+  the popup and asserts the dashboard match card (satisfied and conflicting
+  constraints) with no bracket syntax and no provider call.
 - Later experiments: slash command as a keyboard alias, embedded form blocks,
   selection toolbar, a right-hand detail panel, LM-first composition, and
   keyboard-only flows. Choose by usability, not doctrine.
 
 ### C. Journey E2E
 
-- [ ] Compose a note through structured controls → match (detail composition covered; full request↔offer and no-LM assertion pending) against a sample offer →
+- [x] Compose a note through structured controls → match against a sample offer →
   explanation contains satisfied/conflicting constraints. Repeat with no LM
   configured; assert no model or provider call occurs.
+  Landed: `compose-match.spec.ts` (both notes composed through the popup) and
+  `describe-it.spec.ts` (composer on local rules, no AI host contacted).
 - [x] Basic export → clear storage → import → notes/settings/ontology/theme restored.
-- [ ] Publish against the local relay: privacy gate (published state covered; discovery and relay-down pending), published state, discovery.
+- [x] Publish against the local relay: privacy gate, published state, discovery.
   Simulate relay-down/timeout separately to assert the failure path.
+  Landed: `publish.spec.ts` (privacy preview, publish, published state) and
+  `network.spec.ts` (discovery, relay-down banner with retry, publish failure
+  with retry, offline banner).
 - [x] Chat identity/thread happy path and empty state.
 - [x] Settings changes persist and take effect (theme, developer mode, relays).
 - [x] Navigation: every `NAV_ITEMS` entry and palette destination renders content.
 
 ### D. Failure and trust UX
 
-- [ ] Offline and relay-down banners with retry; (provider status landed in Network; banners not built) per-provider status in Network, not
+- [x] Offline and relay-down banners with retry; (provider status landed in Network; banners not built) per-provider status in Network, not
   only the agent dot in `ConnectionStatus`.
+  Landed: `ConnectivityBanner` (offline) and `RelayStatusBanner` (relay down),
+  both with a retry action, covered by `network.spec.ts`.
 - [x] Publish confirmation shows exactly what leaves the device: body, tags, hashed
   tags, with a summary and a collapsed raw event. Same disclosure for private and
   public notes. Distinguish "private" from "not transmitted".

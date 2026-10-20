@@ -11,6 +11,7 @@ import {useEditorClick} from './useEditorClick';
 import {EditorStatusBar} from './EditorStatusBar';
 import {EditorBubbleMenu} from './EditorBubbleMenu';
 import {InsertPropertyModal} from './InsertPropertyModal';
+import {DescribeItComposer} from './DescribeItComposer';
 import {usePropertyInsertion} from '../../hooks/usePropertyInsertion';
 import {useOntologySuggestions} from '../../hooks/useOntologySuggestions';
 
@@ -51,6 +52,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
                                                                                 topContent
                                                                             }, ref) => {
     const [viewMode, setViewMode] = useState<'rich' | 'code'>('rich');
+    const [isDescribeOpen, setIsDescribeOpen] = useState(false);
 
     const {setSearchTerm, setActiveView, setSelectedNoteId} = useView();
     const {addToast} = useToast();
@@ -63,6 +65,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
         setInitialModalData,
         handleOpenPropertyModal,
         handleInsertProperty,
+        insertProperties,
         findAttributeDef,
         handleClosePropertyModal,
         handlePrepareNewProperty
@@ -137,8 +140,15 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
                     onMagic={onMagic}
                     onTemplates={onTemplates}
                     onInsertProperty={handlePrepareNewProperty}
+                    onDescribe={() => setIsDescribeOpen(true)}
                 />
             )}
+            <DescribeItComposer
+                isOpen={isDescribeOpen}
+                onClose={() => setIsDescribeOpen(false)}
+                onApply={properties => insertProperties(editor, properties)}
+                ontology={ontology}
+            />
             <InsertPropertyModal
                 isOpen={isPropertyModalOpen}
                 onClose={handleClosePropertyModal}

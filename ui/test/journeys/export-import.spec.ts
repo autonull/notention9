@@ -1,7 +1,17 @@
 import {test, expect} from '@playwright/test';
+import type {Page} from '@playwright/test';
+import {Buffer} from 'node:buffer';
 import {seed, clearStorage} from '../support/seed';
 import {isolateNetwork} from '../fixtures/routes';
 import {demoNotes, defaultSettings} from '../fixtures/workspace';
+
+const openDataTab = async (page: Page) => {
+    await page.evaluate(() => {
+        window.location.hash = '#settings';
+        window.dispatchEvent(new PopStateEvent('popstate'));
+    });
+    await page.getByRole('tab', {name: /Data Management/}).click();
+};
 
 test.beforeEach(async ({page}) => {
     await isolateNetwork(page);
@@ -9,7 +19,7 @@ test.beforeEach(async ({page}) => {
 
 test('export, clear, and restore a backup', async ({page}) => {
     await seed(page, {notes: demoNotes(), settings: defaultSettings(), hash: '#settings'});
-    await page.getByRole('tab', {name: /Data Management/}).click();
+    await openDataTab(page);
 
     const downloadPromise = page.waitForEvent('download');
     await page.getByRole('button', {name: 'Export JSON'}).click();
@@ -28,6 +38,7 @@ test('export, clear, and restore a backup', async ({page}) => {
     await clearStorage(page);
     await expect(page.getByTestId('local-match')).toHaveCount(0);
 
+    await openDataTab(page);
     await page.setInputFiles('input[type="file"]', {
         name: 'notention-backup.json',
         mimeType: 'application/json',
@@ -35,13 +46,16 @@ test('export, clear, and restore a backup', async ({page}) => {
     });
     await page.getByRole('button', {name: 'Restore & Overwrite'}).click();
 
-    await page.waitForTimeout(2500);
-    await expect(page.getByTestId('local-match')).toBeVisible();
+    await page.evaluate(() => {
+        window.location.hash = '#dashboard';
+        window.dispatchEvent(new PopStateEvent('popstate'));
+    });
+    await expect(page.getByTestId('local-match')).toBeVisible({timeout: 15_000});
 });
 
 test('malformed import is rejected without overwriting', async ({page}) => {
     await seed(page, {notes: demoNotes(), settings: defaultSettings(), hash: '#settings'});
-    await page.getByRole('tab', {name: /Data Management/}).click();
+    await openDataTab(page);
 
     await page.setInputFiles('input[type="file"]', {
         name: 'broken.json',

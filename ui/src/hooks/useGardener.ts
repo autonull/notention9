@@ -50,35 +50,27 @@ export function useGardener() {
     const {settings, setSettings} = useSettings();
     const {addToast} = useToast();
 
-    const gardener = useMemo(() => {
-        // Instantiate provider based on settings
+    const provider = useMemo(() => {
         // Instantiate provider based on capabilities and settings
-        let provider;
-
         if (capabilities.llm === 'none') {
-            provider = new LocalAIProvider();
-        } else if (capabilities.llm === 'browser') {
-            // Browser environment forces WebLLM if enabled, or Local if not
-            if (settings.aiEnabled) {
-                provider = new WebLLMProvider(settings.aiModel);
-            } else {
-                provider = new LocalAIProvider();
-            }
-        } else {
-            // Server capability allows full flexibility
-            if (settings.aiEnabled) {
-                if (settings.aiProvider === 'webllm') {
-                    provider = new WebLLMProvider(settings.aiModel);
-                } else {
-                    provider = new RemoteAIProvider(settings.googleGeminiApiKey);
-                }
-            } else {
-                provider = new LocalAIProvider();
-            }
+            return new LocalAIProvider();
         }
 
-        return new Gardener(provider);
+        if (capabilities.llm === 'browser') {
+            // Browser environment forces WebLLM if enabled, or Local if not
+            return settings.aiEnabled
+                ? new WebLLMProvider(settings.aiModel)
+                : new LocalAIProvider();
+        }
+
+        // Server capability allows full flexibility
+        if (!settings.aiEnabled) return new LocalAIProvider();
+        return settings.aiProvider === 'webllm'
+            ? new WebLLMProvider(settings.aiModel)
+            : new RemoteAIProvider(settings.googleGeminiApiKey);
     }, [settings.aiEnabled, settings.aiProvider, settings.aiModel, settings.googleGeminiApiKey]);
+
+    const gardener = useMemo(() => new Gardener(provider), [provider]);
 
     const evolveOntology = useCallback(async (notes: Note[], targetConceptId?: string) => {
         const newAttributes = await gardener.evolveOntology(notes, targetConceptId);
@@ -173,5 +165,5 @@ export function useGardener() {
         return result;
     }, [gardener, settings.ontology, addToast]);
 
-    return {evolveOntology, learnFromProperties, alignToOntology, optimizeOntology};
+    return {evolveOntology, learnFromProperties, alignToOntology, optimizeOntology, provider, providerKind: provider.kind};
 };

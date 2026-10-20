@@ -11,13 +11,15 @@ test('discovers a peer note from the local relay', async ({page}) => {
 
     const peer = identity();
     const viewer = identity();
-    const offer = 'React developer available for a focused two-week project.';
+    // The relay keeps events in memory across runs, so the peer note is unique per run.
+    const marker = `run-${Date.now()}`;
+    const offer = `React developer available for a focused two-week project. ${marker}`;
 
     await publish([event(peer, {
         kind: 35000,
         created_at: now - 60,
         tags: [
-            ['d', 'journey-discovery-offer'],
+            ['d', `journey-discovery-offer-${marker}`],
             ['t', 'offer'],
             ['property', 'intent', 'is', 'offer'],
             ['property', 'skill', 'is', 'React'],
@@ -32,14 +34,14 @@ test('discovers a peer note from the local relay', async ({page}) => {
         hash: '#network',
     });
 
-    await expect(page.getByText(offer)).toBeVisible({timeout: 15_000});
+    await expect(page.getByText(offer).first()).toBeVisible({timeout: 15_000});
     await expect(page.locator('main')).toContainText('skill');
     await expect(page.locator('main')).toContainText('React');
 });
 
 test('relay-down banner retries without losing local notes', async ({page}) => {
     await isolateNetwork(page);
-    await page.routeWebSocket(RELAY_URL, socket => socket.close());
+    await page.routeWebSocket(/ws:\/\/localhost:7000\/?/, socket => socket.close());
 
     const viewer = identity();
     const note = {
@@ -69,7 +71,7 @@ test('relay-down banner retries without losing local notes', async ({page}) => {
 
 test('publish failure surfaces a retryable error', async ({page}) => {
     await isolateNetwork(page);
-    await page.routeWebSocket(RELAY_URL, socket => socket.close());
+    await page.routeWebSocket(/ws:\/\/localhost:7000\/?/, socket => socket.close());
 
     const viewer = identity();
     const note = {

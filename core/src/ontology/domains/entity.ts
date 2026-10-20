@@ -67,7 +67,7 @@ export const entityDomain: OntologyNode[] = [
                     },
                     intent: {
                         type: 'enum',
-                        options: ['reminder', 'schedule', 'task', 'shopping', 'health', 'communication', 'monitor', 'automation'],
+                        options: ['request', 'offer', 'reminder', 'schedule', 'task', 'shopping', 'health', 'communication', 'monitor', 'automation'],
                         description: 'The inferred intent of the note',
                         icon: 'brain',
                         operators: { real: ['is'], imaginary: ['is not'] }

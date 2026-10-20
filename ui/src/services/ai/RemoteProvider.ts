@@ -1,4 +1,5 @@
-import type {AIProvider, InferredAttribute, Note, OntologyNode, Property} from '@notention/core';
+import type {Note, OntologyNode, Property} from '@notention/core';
+import type {AIProvider, InferredAttribute} from './types';
 import {Logger, parsePropertiesJson} from '@notention/core';
 import {GoogleGenAI} from '@google/genai';
 
@@ -9,6 +10,7 @@ export const isGeminiApiKeyAvailable = (userKey?: string): boolean => {
 
 export class RemoteAIProvider implements AIProvider {
     name = 'Google Gemini';
+    kind = 'remote' as const;
     isAvailable: boolean;
     private client: GoogleGenAI | null = null;
     private modelName = 'gemini-1.5-flash';

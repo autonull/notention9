@@ -13,6 +13,7 @@ import {
     HorizontalRuleIcon,
     ItalicIcon,
     KeyIcon,
+    LightBulbIcon,
     ListOlIcon,
     ListUlIcon,
     QuoteIcon,
@@ -28,6 +29,7 @@ interface TiptapToolbarProps {
     onMagic?: () => void;
     onTemplates?: () => void;
     onInsertProperty?: () => void;
+    onDescribe?: () => void;
 }
 
 type ToolbarItem =
@@ -48,6 +50,7 @@ export function TiptapToolbar({
                                   onMagic,
                                   onTemplates,
                                   onInsertProperty,
+                                  onDescribe,
                               }: TiptapToolbarProps) {
     if (!editor) return null;
 
@@ -126,7 +129,7 @@ export function TiptapToolbar({
     return (
         <div
             className="flex-shrink-0 px-3 py-1.5 border-b border-gray-700/50 flex items-center gap-2 bg-gray-900/50 backdrop-blur-sm overflow-x-auto flex-nowrap md:flex-wrap">
-            {(onMagic || onTemplates || onInsertProperty) && (
+            {(onMagic || onTemplates || onInsertProperty || onDescribe) && (
                 <div
                     className="flex items-center gap-1 bg-purple-900/20 p-0.5 rounded-lg border border-purple-500/20 mr-2 flex-shrink-0">
                     {onMagic && (
@@ -144,6 +147,16 @@ export function TiptapToolbar({
                             tooltip="Insert Template"
                             icon={CubeIcon}
                             isActive={false}
+                            className="text-purple-300 hover:text-white"
+                        />
+                    )}
+                    {onDescribe && (
+                        <IconButton
+                            onClick={onDescribe}
+                            tooltip="Describe it (suggest details from your own words)"
+                            icon={LightBulbIcon}
+                            isActive={false}
+                            data-testid="describe-it"
                             className="text-purple-300 hover:text-white"
                         />
                     )}

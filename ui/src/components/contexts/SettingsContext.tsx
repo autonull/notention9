@@ -22,6 +22,7 @@ export function SettingsProvider({
         STORAGE_KEYS.settings,
         {
             aiEnabled: false,
+            aiRemoteConsent: false,
             developerMode: false,
             theme: 'dark',
             nostr: {

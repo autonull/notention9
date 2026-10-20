@@ -39,5 +39,5 @@ test('publish against the local relay with a disclosure preview', async ({page})
 
     await page.reload();
     await page.waitForSelector('[data-ready]');
-    await expect(page.getByRole('button', {name: 'Published'})).toBeVisible();
+    await expect(page.getByRole('button', {name: 'Published', exact: true})).toBeVisible();
 });

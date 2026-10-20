@@ -1,6 +1,6 @@
 import {useCallback, useState} from 'react';
 import type {Editor} from '@tiptap/react';
-import type {OntologyAttribute, OntologyNode} from '@notention/core';
+import type {OntologyAttribute, OntologyNode, Property} from '@notention/core';
 
 export function usePropertyInsertion() {
     const [isPropertyModalOpen, setIsPropertyModalOpen] = useState(false);
@@ -53,6 +53,23 @@ export function usePropertyInsertion() {
         setInitialModalData(undefined);
     };
 
+    const insertProperties = (editor: Editor | null, properties: Property[]) => {
+        if (!editor || properties.length === 0) return;
+
+        properties.forEach(property => {
+            editor.chain().focus().insertContent({
+                type: 'property',
+                attrs: {
+                    name: property.key,
+                    operator: property.operator,
+                    value: property.values.join(', '),
+                },
+            }).run();
+        });
+
+        editor.chain().focus().insertContent(' ').run();
+    };
+
     const findAttributeDef = (key: string, nodes: OntologyNode[]): OntologyAttribute | undefined => {
         for (const node of nodes) {
             if (node.attributes && node.attributes[key]) {
@@ -87,6 +104,7 @@ export function usePropertyInsertion() {
         setInitialModalData,
         handleOpenPropertyModal,
         handleInsertProperty,
+        insertProperties,
         findAttributeDef,
         handleClosePropertyModal,
         handlePrepareNewProperty

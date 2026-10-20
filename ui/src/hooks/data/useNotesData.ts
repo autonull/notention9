@@ -13,6 +13,9 @@ import {agentService} from '../../services/AgentService';
 import {useSettings} from '../useSettingsContext';
 import {useAgentSync} from './useAgentSync';
 import {STORAGE_KEYS} from '../../config/storageKeys';
+import {createScopedLogger} from '../logging.js';
+
+const log = createScopedLogger('useNotesData');
 
 export interface UseNotesDataResult {
     notes: Note[];
@@ -80,7 +83,9 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
 
         // Use abstraction for all active network providers
         networkRegistry.getActiveProviders().forEach(p => {
-            p.sendNote(newNote, settings.ontology);
+            p.sendNote(newNote, settings.ontology).catch(error => {
+                log.warn('Background publish failed', error as Error);
+            });
         });
 
         return newNote;
@@ -99,7 +104,9 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
 
         // Use abstraction for all active network providers
         networkRegistry.getActiveProviders().forEach(p => {
-            p.sendNote(noteWithTimestamp, settings.ontology);
+            p.sendNote(noteWithTimestamp, settings.ontology).catch(error => {
+                log.warn('Background publish failed', error as Error);
+            });
         });
     }, [setNotes, settings.ontology]);
 

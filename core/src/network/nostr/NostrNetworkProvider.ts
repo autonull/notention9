@@ -80,8 +80,13 @@ export class NostrNetworkProvider extends BaseNetworkProvider implements Network
         };
     }
 
-    async sendNote(note: Note, ontology?: OntologyNode[]): Promise<void> {
-        if (!this.config.privkey || !this.enabled) return;
+    async sendNote(note: Note, ontology?: OntologyNode[]): Promise<string | undefined> {
+        if (!this.config.privkey) {
+            throw new Error('No Nostr private key configured. Add one in Settings → Nostr to publish.');
+        }
+        if (!this.enabled) {
+            throw new Error('Nostr publishing is disabled.');
+        }
 
         const enhancedNote = { ...note, tags: [...note.tags] };
         if (ontology) {
@@ -93,7 +98,7 @@ export class NostrNetworkProvider extends BaseNetworkProvider implements Network
             propertyTags.forEach(tag => !enhancedNote.tags.includes(tag) && enhancedNote.tags.push(tag));
         }
 
-        await publishNoteToNostr(enhancedNote, this.config.privkey, this.relays);
+        return await publishNoteToNostr(enhancedNote, this.config.privkey, this.relays);
     }
 
     async discoverMatches(note: Note, ontology: OntologyNode[], privacyMode: PrivacyLevel): Promise<ScoredMatch[]> {

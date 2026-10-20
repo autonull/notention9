@@ -1,7 +1,9 @@
-import type {AIProvider, InferredAttribute, OntologyNode, Property} from '@notention/core';
+import type {OntologyNode, Property} from '@notention/core';
+import type {AIProvider, InferredAttribute} from './types';
 
 export class MockLLMProvider implements AIProvider {
     name = 'Mock AI (Fallback)';
+    kind = 'local-model' as const;
     isAvailable = true;
 
     async generateCompletion(prompt: string): Promise<string> {

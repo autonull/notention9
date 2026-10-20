@@ -57,8 +57,8 @@ export class MeshtasticNetworkProvider extends BaseNetworkProvider implements Ne
         };
     }
 
-    async sendNote(note: Note, ontology?: OntologyNode[]): Promise<void> {
-        if (!this.enabled) return;
+    async sendNote(note: Note, ontology?: OntologyNode[]): Promise<string | undefined> {
+        if (!this.enabled) return undefined;
 
         try {
             const compactData = this.serializeNote(note);

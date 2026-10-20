@@ -76,6 +76,14 @@ export const convertEventToNote = (event: NostrEvent): Note => {
 
 const networkGate = new NetworkGate();
 
+const PUBLISH_TIMEOUT_MS = 10_000;
+
+const withTimeout = <T>(promise: Promise<T>, ms: number, message: string): Promise<T> =>
+    new Promise<T>((resolve, reject) => {
+        const timer = setTimeout(() => reject(new Error(message)), ms);
+        promise.then(resolve, reject).finally(() => clearTimeout(timer));
+    });
+
 export interface NostrSigner {
     signEvent(event: { kind: number; tags: string[][]; content: string; created_at: number }): Promise<NostrEvent>;
 }
@@ -127,7 +135,7 @@ export async function publishNoteToNostr(
   promptUserCallback?: (msg: string) => Promise<boolean>,
   privacyMode: PrivacyLevel = 'public',
   signer?: NostrSigner
-): Promise<void> {
+): Promise<string> {
   const canPublish = await networkGate.canTransmit(
     note,
     'Nostr network',
@@ -145,7 +153,29 @@ export async function publishNoteToNostr(
   const pubs = pool.publish(relays, signedEvent);
 
   try {
-    await Promise.any(pubs);
+    const outcomes = await withTimeout(
+      Promise.allSettled(pubs),
+      PUBLISH_TIMEOUT_MS,
+      'No relay accepted the note. Check the relay connection and try again.'
+    );
+
+    // nostr-tools resolves with a "connection failure" string instead of
+    // rejecting, so a resolved promise is not proof of a delivery.
+    const isConnectionFailure = (value: unknown): boolean =>
+        typeof value === 'string' && value.startsWith('connection failure');
+
+    const delivered = outcomes.filter(
+      outcome => outcome.status === 'fulfilled' && !isConnectionFailure(outcome.value)
+    );
+
+    if (delivered.length === 0) {
+      const reasons = outcomes.map(outcome =>
+        outcome.status === 'rejected'
+          ? (outcome.reason instanceof Error ? outcome.reason.message : String(outcome.reason))
+          : String(outcome.value)
+      );
+      throw new Error(reasons.filter(Boolean).join('; ') || 'No relay accepted the note');
+    }
   } catch (e: any) {
     Logger.getInstance().warn('Failed to publish to any relay', e);
     throw e;
@@ -153,6 +183,7 @@ export async function publishNoteToNostr(
 
   note.nostrEventId = signedEvent.id;
   note.publishedAt = new Date().toISOString();
+  return signedEvent.id;
 }
 
 async function prepareAndSignEvent(

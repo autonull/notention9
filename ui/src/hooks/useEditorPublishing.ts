@@ -63,12 +63,18 @@ export function useEditorPublishing({
         const confirmed = await promptUser();
         if (!confirmed) return;
 
+        // The disclosure preview is the consent step: publishing transmits the note,
+        // so a private note becomes public before it leaves the device.
+        const publishableNote: Note = dirtyNote.privacy === 'public'
+            ? dirtyNote
+            : {...dirtyNote, privacy: 'public'};
+
         try {
-            const eventId = await publishNote(dirtyNote, async () => true);
+            const eventId = await publishNote(publishableNote, async () => true);
             const now = new Date().toISOString();
             const updatedNote = {
-                ...dirtyNote,
-                nostrEventId: eventId,
+                ...publishableNote,
+                nostrEventId: eventId ?? publishableNote.id,
                 publishedAt: now,
             };
             setDirtyNote(updatedNote);

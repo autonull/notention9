@@ -46,6 +46,11 @@ export function PrivacyConfirmModal({
             <div className="space-y-5 overflow-y-auto custom-scrollbar pr-1">
                 <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/5 p-4 text-sm text-yellow-100">
                     This note will leave your device and be stored on <strong>{destination}</strong>. The same disclosure applies whether the note was private or public.
+                    {note && note.privacy !== 'public' && (
+                        <p className="mt-2 text-yellow-200/90">
+                            Publishing makes this note <strong>public</strong> on the network.
+                        </p>
+                    )}
                 </div>
 
                 <div>

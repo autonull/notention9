@@ -1,5 +1,6 @@
 import {CreateMLCEngine, MLCEngine} from "@mlc-ai/web-llm";
-import type {AIProvider, InferredAttribute, Note, OntologyAttribute, OntologyNode, Property} from '@notention/core';
+import type {Note, OntologyAttribute, OntologyNode, Property} from '@notention/core';
+import type {AIProvider, InferredAttribute} from './types';
 import {Logger, parsePropertiesJson} from '@notention/core';
 
 export const AVAILABLE_MODELS = [
@@ -10,6 +11,7 @@ export const AVAILABLE_MODELS = [
 
 export class WebLLMProvider implements AIProvider {
     name = 'WebLLM (In-Browser)';
+    kind = 'local-model' as const;
     isAvailable = true;
     private engine: MLCEngine | null = null;
     private modelId: string;

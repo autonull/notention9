@@ -161,6 +161,26 @@ export function AITab({settings, setSettings}: AITabProps) {
                     configured. AI features are disabled. Please enter a key above or switch to Local Browser Model.
                 </div>
             )}
+
+            {!isWebLLM && isEnabled && (
+                <div className="flex items-center justify-between pt-4 border-t border-gray-700">
+                    <div className="flex-grow">
+                        <label htmlFor="ai-remote-consent" className="font-medium text-gray-300">
+                            Allow sending note text to Google Gemini
+                        </label>
+                        <p className="text-sm text-gray-500 mt-1">
+                            Off by default. When allowed, the text you describe is sent to the remote provider once you
+                            confirm it in the composer.
+                        </p>
+                    </div>
+                    <Toggle
+                        id="ai-remote-consent"
+                        checked={!!settings.aiRemoteConsent}
+                        onChange={(checked) => setSettings((prev) => ({...prev, aiRemoteConsent: checked}))}
+                        ariaLabel="Allow sending note text to Google Gemini"
+                    />
+                </div>
+            )}
         </div>
     );
 };

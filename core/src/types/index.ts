@@ -90,6 +90,7 @@ export interface AppSettings {
     aiProvider?: string;
     aiModel?: string;
     googleGeminiApiKey?: string;
+    aiRemoteConsent?: boolean;
     capabilities?: {
         browser?: boolean;
         files?: boolean;

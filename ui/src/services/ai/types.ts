@@ -1,7 +1,16 @@
 import type {Note, OntologyAttribute, OntologyNode, Property} from '@notention/core';
 
+/**
+ * Where a provider runs and how much it can be trusted.
+ * - heuristic: deterministic rules, no model
+ * - local-model: a model running in this browser
+ * - remote: a model running on someone else's machine (text leaves the device)
+ */
+export type ProviderKind = 'heuristic' | 'local-model' | 'remote';
+
 export interface AIProvider {
     name: string;
+    kind: ProviderKind;
     isAvailable: boolean;
 
     /**
@@ -44,4 +53,14 @@ export interface InferredAttribute {
     description?: string;
     usageCount: number;
     sampleValues: string[];
+}
+
+/**
+ * A property a provider proposed, with the confidence of the proposal.
+ * The property is structured data; serialization stays with the caller.
+ */
+export interface PropertyProposal {
+    property: Property;
+    confidence: number;
+    source: ProviderKind;
 }

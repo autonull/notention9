@@ -33,9 +33,9 @@ export function usePublish() {
                 throw new Error('No active network providers for publishing.');
             }
 
-            await Promise.all(publishTasks);
+            const eventIds = await Promise.all(publishTasks);
 
-            return note.id;
+            return eventIds.find(Boolean);
         } catch (error) {
             log.error('Failed to publish note', error as Error);
             throw error;
