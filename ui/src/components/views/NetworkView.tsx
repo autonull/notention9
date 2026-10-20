@@ -67,7 +67,7 @@ export function NetworkView({matchAgainst}: NetworkViewProps) {
                 pubkey={pubkey}
                 profileCache={profiles}
             />
-            <RelayStatusBanner relays={settings.nostr.relays}/>
+            <RelayStatusBanner relays={settings.nostr.relays} detailed={true}/>
             <div className="p-4 md:p-6 flex-grow overflow-y-auto">
                 <NetworkFeedHeader
                     matchAgainstTitle={matchAgainst?.title}

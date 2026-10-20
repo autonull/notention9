@@ -3,45 +3,60 @@ import {resolveRelays} from '@notention/core';
 
 const PROBE_TIMEOUT = 2500;
 
-const probe = (url: string): Promise<boolean> => new Promise(resolve => {
+interface RelayStatus {
+    url: string;
+    reachable: boolean;
+    latency?: number;
+    lastChecked: number;
+    error?: string;
+}
+
+const probe = (url: string): Promise<RelayStatus> => new Promise(resolve => {
     let settled = false;
     let socket: WebSocket | null = null;
+    const start = Date.now();
 
-    const finish = (reachable: boolean) => {
+    const finish = (status: RelayStatus) => {
         if (settled) return;
         settled = true;
         socket?.close();
-        resolve(reachable);
+        resolve(status);
     };
 
-    const timer = setTimeout(() => finish(false), PROBE_TIMEOUT);
+    const timer = setTimeout(() => finish({url, reachable: false, lastChecked: Date.now(), error: 'timeout'}), PROBE_TIMEOUT);
 
     try {
         socket = new WebSocket(url);
         socket.onopen = () => {
             clearTimeout(timer);
-            finish(true);
+            finish({url, reachable: true, latency: Date.now() - start, lastChecked: Date.now()});
         };
-        socket.onerror = () => {
+        socket.onerror = (e) => {
             clearTimeout(timer);
-            finish(false);
+            finish({url, reachable: false, lastChecked: Date.now(), error: 'connection error'});
         };
-    } catch {
+        socket.onclose = (e) => {
+            if (!settled) {
+                clearTimeout(timer);
+                finish({url, reachable: false, lastChecked: Date.now(), error: e.reason || 'closed'});
+            }
+        };
+    } catch (e) {
         clearTimeout(timer);
-        finish(false);
+        finish({url, reachable: false, lastChecked: Date.now(), error: String(e)});
     }
 });
 
 export function useRelayStatus(relays?: string[]) {
     const relayList = useMemo(() => resolveRelays(relays), [relays]);
-    const [down, setDown] = useState<string[]>([]);
+    const [statuses, setStatuses] = useState<RelayStatus[]>([]);
     const [checking, setChecking] = useState(false);
 
     const check = useCallback(async () => {
         setChecking(true);
         try {
-            const results = await Promise.all(relayList.map(async url => ({url, reachable: await probe(url)})));
-            setDown(results.filter(result => !result.reachable).map(result => result.url));
+            const results = await Promise.all(relayList.map(url => probe(url)));
+            setStatuses(results);
         } finally {
             setChecking(false);
         }
@@ -51,5 +66,10 @@ export function useRelayStatus(relays?: string[]) {
         check();
     }, [check]);
 
-    return {down, checking, retry: check};
+    const down = useMemo(() => statuses.filter(s => !s.reachable).map(s => s.url), [statuses]);
+    const up = useMemo(() => statuses.filter(s => s.reachable), [statuses]);
+
+    return {statuses, down, up, checking, retry: check};
 }
+
+export type {RelayStatus};

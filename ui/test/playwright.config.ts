@@ -23,6 +23,22 @@ export default defineConfig({
         trace: 'off',
         screenshot: 'off',
         video: 'off',
+        launchOptions: {
+            args: [
+                '--disable-dev-shm-usage',
+                '--disable-gpu',
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-extensions',
+                '--disable-background-networking',
+                '--disable-sync',
+                '--disable-translate',
+                '--hide-scrollbars',
+                '--mute-audio',
+                '--no-first-run',
+                '--no-default-browser-check',
+            ],
+        },
     },
     projects: [
         {

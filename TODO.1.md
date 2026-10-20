@@ -8,7 +8,9 @@ Landed: Phase 0 harness and scripts (playwright config, fixtures, journeys, show
 
 This pass: fixed publishing of private notes (the network gate rejected every private note, so publish always failed) and fixed false "Published" states (nostr-tools resolves with a `connection failure: …` string instead of rejecting, so a dead relay looked like a success); fixed the export/import journey (`Buffer` import, storage clear navigated away from the settings view); added the request/offer journey composed entirely through the add-detail popup; added the "describe it" composer with confidence, per-property accept/reject, one-time remote consent, and no model when none is configured; added `intent: request|offer` to the default ontology so the popup can offer the values the app already matches on. All 24 screenshots were regenerated against the new build.
 
-Remaining: the `ui` typecheck has 175 pre-existing errors outside this work (mostly test fixtures and optional `settings.ontology` narrowing); the per-provider Network status could be richer than the relay banner.
+**Latest pass**: Enhanced per-provider Network status with detailed per-relay status showing connection state, latency, and error details. The `RelayStatusBanner` now supports a `detailed` mode that displays each relay individually with green/red indicators, latency measurements, and error reasons. The `NetworkView` uses this detailed view. All 17 E2E journeys pass; 24 showcase screenshots regenerated with updated network feed showing detailed relay status.
+
+Remaining: the `ui` typecheck has 175 pre-existing errors outside this work (mostly test fixtures and optional `settings.ontology` narrowing).
 
 Notes for the next pass:
 
@@ -32,6 +34,7 @@ Notes for the next pass:
 - Basic export/import works: JSON backup excludes the private key, restore uses the correct settings key, and a single note can be exported and re-imported.
 - Publish flow is demonstrable against the local relay.
 - 24 screenshots in `doc/screenshot/` with index and README hero/gallery referencing them.
+- **Per-relay status detail**: `useRelayStatus` now returns per-relay objects with `reachable`, `latency`, `lastChecked`, `error`. `RelayStatusBanner` has a `detailed` prop that renders a grid of relay cards with latency and error info. NetworkView uses this for richer visibility.
 
 ### Testing posture
 
