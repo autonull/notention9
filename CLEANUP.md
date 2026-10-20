@@ -4,6 +4,35 @@ This document outlines significant refactoring opportunities for future sessions
 
 ---
 
+## ✅ **Completed This Session (Oct 20, 2026)**
+
+| Task | Status | Commit |
+|------|--------|--------|
+| Split `types/index.ts` (236 lines) → `domain.ts`/`infra.ts`/`ui.ts` | ✅ Done | f4faa52 |
+| Remove duplicate `utils/errors` export from `core/src/index.ts` | ✅ Done | 455d4ea |
+
+---
+
+## ✅ **Completed Previously**
+
+| Task | Status |
+|------|--------|
+| `tasks/executor.ts` → 5 strategy modules (Scheduler, Runner, Retry, Queue, facade) | ✅ Done |
+| `utils/validationFramework.ts` → 5 modules (Config, Metrics, ABTest, Reporter, Facade) | ✅ Done |
+| `notes/quantities.ts` → modular pipeline (parsers, converters, operators, semantics) | ✅ Done |
+| `ontology/ontologyService.ts` → extracted index builders | ✅ Done |
+| `ontologyService/statistics.ts` → 7 separated modules | ✅ Done |
+| `notes/NoteFilter.ts` → Strategy pattern for search/sort | ✅ Done |
+| `patternRecognition/patternRecognition.ts` → extracted strategies | ✅ Done |
+| `data/units.ts` → JSON + loader (data-driven) | ✅ Done |
+| Error types → consolidated into `utils/errors/` hierarchy | ✅ Done |
+| `parsing.ts` / `propertyExtractor.ts` barrel files removed | ✅ Done |
+| 15 pre-existing test failures fixed | ✅ Done |
+| All 330 tests passing (307 core + 17 agent + 6 CLI) | ✅ Done |
+| Core builds cleanly with `tsc` | ✅ Done |
+
+---
+
 ## Generic Cleanup Strategies
 
 Apply these patterns systematically across the codebase before tackling specific files.
@@ -40,7 +69,7 @@ function process(type: string, data: any) { return processors[type].process(data
 IF you see: Large const objects (aliases, conversions, configs) OR magic strings scattered
 THEN: Move to JSON/YAML + loader, or centralized registry
 ```
-- **Targets**: `data/units.ts`, ontology domain files, feature flags, error codes
+- **Targets**: ontology domain files, feature flags, error codes
 - **Pattern**: `config/units.json` → `loadUnits(): UnitConfig` (cached, validated at build)
 - **Benefit**: Non-dev edits, smaller bundles, versionable data, easier testing with fixtures
 
@@ -73,7 +102,7 @@ core/
 - **Rule**: Each barrel exports ONE conceptual domain
 - **Enforcement**: `eslint-plugin-import` with `no-restricted-paths`
 
-### 6. **Error Type Hierarchy**
+### 6. **Error Type Hierarchy** ✅ **DONE**
 ```
 IF multiple error files with overlapping classes
 THEN: Single hierarchy with base class carrying context
@@ -132,79 +161,19 @@ grep -r "export " core/src --include="*.ts" | grep -v ".test.ts" | \
 
 ---
 
-## Core Package (High Impact)
+## Core Package (High Impact - Remaining)
 
-### 1. `tasks/executor.ts` (414 lines) → **Split into strategies**
-- **Current**: Monolithic `AutonomousTaskExecutor` with embedded scheduling, execution, retry logic
-- **Split into**:
-  - `TaskScheduler.ts` - cron/interval scheduling logic
-  - `TaskRunner.ts` - execution pipeline with hooks
-  - `RetryStrategy.ts` - exponential backoff, circuit breaker
-  - `TaskQueue.ts` - priority queue, concurrency control
-  - `executor/index.ts` - facade
-
-### 2. `utils/validationFramework.ts` (275 lines) → **Extract domain logic**
-- **Current**: A/B testing, metrics reporting, validation config all in one class
-- **Split into**:
-  - `ValidationConfig.ts` - types + defaults
-  - `MetricsCollector.ts` - accuracy tracking, time-series
-  - `ABTestManager.ts` - test lifecycle, statistical evaluation
-  - `ValidationReporter.ts` - report generation
-  - `ValidationFramework.ts` - thin orchestrator
-
-### 3. `notes/quantities.ts` (235 lines) → **Modular parsing pipeline**
-- **Current**: Single file with currency/suffix/simple parsing, conversions, comparisons
-- **Split into**:
-  - `parsers/currency.ts`, `parsers/suffix.ts`, `parsers/number.ts`
-  - `converters/temperature.ts`, `converters/linear.ts`
-  - `operators/compare.ts`, `operators/multiply.ts`, `operators/divide.ts`
-  - `semantics/determineType.ts`
-  - `quantities/index.ts` - facade
-
-### 4. `ontology/ontologyService.ts` (185 lines) → **Extract index builders**
-- **Current**: Builds attribute index, fuzzy matcher, usage tracker in constructor
-- **Split into**:
-  - `AttributeIndexBuilder.ts` - static buildIndex(ontology)
-  - `FuzzyMatcher.ts` - already exists in ontologyService/matching.ts (consolidate)
-  - `UsageTracker.ts` - already exists in ontologyService/statistics.ts (consolidate)
-  - `OntologyService.ts` - compose via DI
-
-### 5. `ontologyService/statistics.ts` (181 lines) → **Separate concerns**
-- **Current**: UsageTracker + co-occurrence + suggestions in one class
-- **Split into**:
-  - `UsageRecorder.ts` - record(property[])
-  - `FrequencyAnalyzer.ts` - getSuggestions(minFreq)
-  - `CoOccurrenceAnalyzer.ts` - getContextualSuggestions(keys)
-  - `GraphDataBuilder.ts` - getGraphData()
-
-### 6. `notes/notes.ts` (162 lines) → **Pipeline already clean, but...**
+### 1. `notes/notes.ts` (162 lines) → **Add memoization & extract inferencer**
 - **Opportunity**: `NotePipeline` methods each re-parse content → add memoization
 - **Extract**: `NoteIntentInferencer.ts` (33 lines) → own module
 
-### 7. `notes/NoteFilter.ts` (161 lines) → **Strategy pattern for search/sort**
-- **Current**: applySearch + applySort with hardcoded switch
-- **Split into**:
-  - `SearchStrategy.ts` - interface + SemanticSearch, TextSearch, TagSearch, PropSearch
-  - `SortStrategy.ts` - interface + UpdatedAtSort, CreatedAtSort, SoonestSort, NearestSort, TagsSort
-  - `NoteFilter.ts` - composes strategies
-
-### 8. `patternRecognition/patternRecognition.ts` (146 lines) → **Extract strategies**
-- **Current**: PatternRecognitionService with embedded sequential/co-occurrence
-- **Already has**: strategies/sequential.ts, strategies/coOccurrence.ts, strategies/matching.ts
-- **Finish**: Move remaining logic to strategies, make service a pure orchestrator
-
-### 9. `data/units.ts` (304 lines) → **Data-driven, not code-driven**
-- **Current**: Massive const objects (UNIT_ALIASES, CONVERSIONS, CATEGORIES)
-- **Replace with**: JSON/YAML files + `loadUnits()` at build time
-- **Benefit**: Non-devs can extend units, smaller bundle, easier testing
-
-### 10. `templates/TemplateGenerator.ts` (check size) → **Template engine**
+### 2. `templates/TemplateGenerator.ts` (99 lines) → **Template engine**
 - **Current**: String concatenation for HTML generation
 - **Replace with**: Tiny template function or tagged template literals
 
 ---
 
-## Cross-Cutting Concerns
+## Cross-Cutting Concerns (Remaining)
 
 ### Duplicate Utilities (Search & Consolidate)
 ```bash
@@ -215,26 +184,6 @@ grep -r "deepClone\|debounce\|throttle\|memoize\|groupBy\|partition\|chunk" core
 **Targets**:
 - `common.ts` has: deepClone, debounce, throttle, sleep, memoize, timeExecution, retryAsync, uniqueByKey, groupBy, pluck, sum/avg/max/min, round, formatPercentage, isEmpty, isDefined, isNotEmpty, flatten, chunk, partition, Mutex
 - Check UI/utils for duplicates (e.g., `ui/src/utils/performance.ts` has own PerformanceMonitor)
-
-### Error Type Consolidation
-**Current**: Two files with overlapping error classes:
-- `utils/errors.ts` (8 classes): PredictionError, ValidationError, TaskExecutionError, AuthorizationError, ConfigurationError, DataIntegrityError, RateLimitError, TimeoutError
-- `utils/errorTypes.ts` (4 classes): OntologyError, PropertyValidationError, SkillExecutionError, NetworkTransmissionError
-
-**Action**: Merge into single `errors/` directory with hierarchy:
-```
-errors/
-  base.ts          # NotentionError (base class with context, cause)
-  validation.ts    # ValidationError, PropertyValidationError
-  execution.ts     # TaskExecutionError, SkillExecutionError
-  auth.ts          # AuthorizationError
-  config.ts        # ConfigurationError
-  network.ts       # NetworkTransmissionError, RateLimitError, TimeoutError
-  data.ts          # DataIntegrityError
-  prediction.ts    # PredictionError
-  ontology.ts      # OntologyError
-  index.ts         # re-export all
-```
 
 ### Logging Abstraction
 - `utils/logging.ts` + `utils/agentLogging.ts` → consolidate
@@ -287,19 +236,12 @@ errors/
 
 ## Testing Improvements
 
-### 1. Fix Pre-existing Failures (15 tests)
-- `quantities`: compound unit semanticType expects "ratio" not "other"
-- `ontology`: attribute index missing price/product nodes
-- `propertyExtractor`: parseQuantityValue integration
-- `TemplateGenerator`: expects bracket syntax `[key is value]` but gets HTML spans
-- `string.test`: escapeAttribute expects HTML entities (fixed in core, test needs update)
-
-### 2. Add Integration Tests
+### 1. Add Integration Tests
 - NoteFilter + MatchEngine + OntologyService flow
 - PropertyExtractor → parsing → serialization roundtrip
 - TemplateGenerator → parsing → NotePipeline
 
-### 3. Property-Based Testing
+### 2. Property-Based Testing
 - `quantities.ts`: test parseQuantity/parseQuantity roundtrip
 - `matching`: test symmetry/transitivity properties
 - `parsing`: test formatPropertyTag/parseProperties roundtrip
@@ -316,12 +258,10 @@ utils/composition → notes/parsing? (check)
 - Audit import graph: `pnpm dlx madge --circular core/src`
 
 ### 2. Barrel File Explosion
-- `core/src/index.ts` exports 88+ items
+- `core/src/index.ts` exports 67+ items (down from 88)
 - Split into domain barrels: `core/notes`, `core/matching`, `core/ontology`, `core/network`, `core/skills`
 
-### 3. Type Definitions in Wrong Places
-- `types/index.ts` has 236 lines mixing domain types (Note, Property) with infra types (MCPServer, Workflow, Tool)
-- **Split**: `types/domain.ts`, `types/infra.ts`, `types/ui.ts`
+### 3. Type Definitions in Wrong Places ✅ **DONE** (split into domain/infra/ui)
 
 ### 4. Ontology Domain Files
 - `ontology/domains/*.ts` (5 files) → consider single `ontology/domains.ts` with named exports
@@ -332,25 +272,21 @@ utils/composition → notes/parsing? (check)
 
 | Task | Effort | Impact |
 |------|--------|--------|
-| Remove `core/src/notes/parsing.ts` barrel (now 1 line re-export) | 5m | Cleaner imports |
-| Remove `core/src/notes/propertyExtractor.ts` barrel | 5m | Cleaner imports |
-| Fix `string.test.ts` to match new escapeAttribute output | 10m | Green tests |
-| Fix `TemplateGenerator.test.ts` to match HTML output | 10m | Green tests |
-| Consolidate `utils/errors.ts` + `utils/errorTypes.ts` | 30m | Single source |
-| Move `data/units.ts` to JSON + loader | 30m | Extensible data |
-| Delete unused exports from `core/src/index.ts` | 20m | Smaller bundle |
+| Delete unused exports from `core/src/index.ts` (run ts-prune) | 20m | Smaller bundle |
+| Consolidate `utils/logging.ts` + `utils/agentLogging.ts` | 20m | Single source |
+| Merge ontology domain files | 30m | Simpler imports |
 
 ---
 
 ## Priority Order for Next Session
 
-1. **Fix failing tests** (30 min) - immediate confidence
-2. **Consolidate error types** (30 min) - cross-cutting
-3. **Split `tasks/executor.ts`** (2 hrs) - largest file, high churn
-4. **Modularize `notes/quantities.ts`** (1.5 hrs) - complex logic, many bugs
-5. **Strategy pattern for `NoteFilter`** (1 hr) - testable search/sort
-6. **Data-driven units** (1 hr) - remove 300 LOC of const objects
-7. **UI hook extraction** (2 hrs) - improves component testability
+1. **UI: Split `SmartNoteAssistant.tsx`** (2 hrs) - largest UI component, high churn
+2. **UI: Extract sub-hooks from 7 large hooks** (2 hrs) - improves testability
+3. **Core: Split `core/src/index.ts` into domain barrels** (1 hr) - reduces bundle, improves modularity
+4. **Core: Add memoization to `NotePipeline` + extract `NoteIntentInferencer`** (1 hr)
+5. **Core: Consolidate logging utilities** (30 min)
+6. **CLI: Command pattern + provider strategy** (2 hrs)
+7. **Add integration tests** (1 hr) - critical flow coverage
 
 ---
 
@@ -371,6 +307,9 @@ pnpm build && ls -lh core/dist/
 
 # Test coverage gaps
 pnpm test --coverage
+
+# Find unused exports
+pnpm dlx ts-prune
 ```
 
 ---
