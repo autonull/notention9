@@ -11,6 +11,7 @@ import {useUrlRouting} from '../hooks/useUrlRouting';
 import {useKeyboardShortcuts} from '../hooks/useKeyboardShortcuts';
 import {useCommands} from '../hooks/useCommands';
 import {HelpDialog} from './modals/HelpDialog';
+import {ConnectivityBanner} from './layout/ConnectivityBanner';
 import {useToast} from '../hooks/useToast';
 
 export function AppShell() {
@@ -133,6 +134,7 @@ export function AppShell() {
     return (
         <div className="flex flex-col h-screen bg-gray-950 text-gray-200" data-ready>
             <Header onNewNote={handleNewNote}/>
+            <ConnectivityBanner/>
             <div className="flex flex-1 overflow-hidden">
                 <div className={sidebarClasses}>
                     <Sidebar sortedNotes={sortedNotes}/>

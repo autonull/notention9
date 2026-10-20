@@ -13,7 +13,7 @@ test('compose a detail through the popup without bracket syntax', async ({page})
     await page.getByTestId('add-detail').click();
     await page.getByPlaceholder('e.g. status, price, deadline').fill('skill');
     await page.getByPlaceholder('e.g. Active, 100, 2024-01-01').fill('React');
-    await page.getByRole('button', {name: 'Add detail'}).click();
+    await page.getByRole('dialog').getByRole('button', {name: 'Add detail'}).click();
 
     await expect(page.locator('.node-property').last()).toContainText('skill');
     await expect(page.locator('.node-property').last()).toContainText('React');

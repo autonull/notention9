@@ -9,47 +9,37 @@ describe('LocalAIProvider.alignToOntology', () => {
             id: 'root',
             label: 'Root',
             attributes: {
-                'skill': {type: 'string', description: 'Skills'}
+                'skill': {type: 'string', description: 'Skills', operators: {real: ['is'], imaginary: []}}
             },
             children: []
         }
     ];
 
     it('detects price with symbol', async () => {
-        const text = 'The price is $50.00';
-        const props = await provider.alignToOntology(text, ontology);
-        // Code returns unit if detected or symbol, normalized via parseQuantity
-        expect(props).toContain('[price:is:50 USD]');
+        const properties = await provider.alignToOntology('The price is $50.00', ontology);
+        expect(properties).toContainEqual({key: 'price', operator: 'is', values: ['50 USD']});
     });
 
     it('detects price with USD suffix', async () => {
-        const text = 'It costs 100 USD';
-        const props = await provider.alignToOntology(text, ontology);
-        expect(props).toContain('[price:is:100 USD]');
+        const properties = await provider.alignToOntology('It costs 100 USD', ontology);
+        expect(properties).toContainEqual({key: 'price', operator: 'is', values: ['100 USD']});
     });
 
-    // Intent detection is done via properties analysis (inferNoteIntent), not explicit property insertion
-    // it('detects request intent', async () => {
-    //   const text = 'I am looking for a developer';
-    //   const props = await provider.alignToOntology(text, ontology);
-    //   expect(props).toContain('[intent:is:request]');
-    // });
-
-    // it('detects offer intent', async () => {
-    //   const text = 'I am selling a car';
-    //   const props = await provider.alignToOntology(text, ontology);
-    //   expect(props).toContain('[intent:is:offer]');
-    // });
-
     it('detects email', async () => {
-        const text = 'Contact me at test@example.com';
-        const props = await provider.alignToOntology(text, ontology);
-        expect(props).toContain('[email:is:test@example.com]');
+        const properties = await provider.alignToOntology('Contact me at test@example.com', ontology);
+        expect(properties).toContainEqual({key: 'email', operator: 'is', values: ['test@example.com']});
     });
 
     it('detects ontology keys', async () => {
-        const text = 'My skill is React';
-        const props = await provider.alignToOntology(text, ontology);
-        expect(props).toContain('[skill:is:React]');
+        const properties = await provider.alignToOntology('My skill is React', ontology);
+        expect(properties).toContainEqual({key: 'skill', operator: 'is', values: ['React']});
+    });
+
+    it('never returns serialized bracket strings', async () => {
+        const properties = await provider.alignToOntology('Price $50, skill is React', ontology);
+        properties.forEach(property => {
+            expect(property.key).not.toContain('[');
+            expect(property.values.join(',')).not.toContain('[');
+        });
     });
 });

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {CheckIcon, ClockIcon, InformationCircleIcon, MapPinIcon, SearchSparkleIcon, XIcon} from '../common/icons';
 import type {OntologyNode} from '@notention/core';
-import {Logger, parseProperties} from '@notention/core';
+import {Logger} from '@notention/core';
 import {getCurrentPosition} from '../../utils/geolocation';
 import {useToast} from '../../hooks/useToast';
 import {Input} from '../common/Input';
@@ -86,18 +86,12 @@ export function PropertyForm({
             const results = await alignToOntology(extractionText, ontology);
 
             if (results.length > 0) {
-                // Take the first one for now
-                const parsed = parseProperties(results[0]);
-                if (parsed.length > 0) {
-                    const p = parsed[0];
-                    setKey(p.key);
-                    setOp(p.operator);
-                    setValue(p.values.join(','));
-                    setShowExtraction(false);
-                    addToast('Property extracted!', 'success');
-                } else {
-                    addToast('Could not parse extracted property.', 'error');
-                }
+                const property = results[0];
+                setKey(property.key);
+                setOp(property.operator);
+                setValue(property.values.join(','));
+                setShowExtraction(false);
+                addToast('Property extracted!', 'success');
             } else {
                 addToast('No properties found in text.', 'info');
             }

@@ -32,7 +32,7 @@ test('publish against the local relay with a disclosure preview', async ({page})
 
     await page.getByRole('button', {name: 'Publish', exact: true}).click();
     await expect(page.getByText('Review before publishing')).toBeVisible();
-    await expect(page.getByText('Published to a relay running on this machine.')).toBeVisible();
+    await expect(page.getByRole('dialog').getByText('Published to a relay running on this machine.', {exact: true})).toBeVisible();
 
     await page.getByRole('button', {name: /Publish to Nostr network/}).click();
     await expect(page.getByText(/successful/i)).toBeVisible({timeout: 15_000});

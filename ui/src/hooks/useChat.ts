@@ -1,8 +1,9 @@
-import {useCallback, useEffect, useState} from 'react';
+import {useCallback, useEffect, useMemo, useState} from 'react';
 import {nip04} from 'nostr-tools';
 import type {Contact, NostrEvent} from '@notention/core';
-import {DEFAULT_RELAYS, pool} from '@notention/core';
+import {pool, resolveRelays} from '@notention/core';
 import { useContacts } from './useContacts';
+import { useSettings } from './useSettingsContext';
 
 interface UseChatProps {
     privkey: string | null;
@@ -12,6 +13,8 @@ interface UseChatProps {
 
 export function useChat({privkey, pubkey, selectedContact}: UseChatProps) {
     const { contacts, isLoading: contactsLoading, addContact } = useContacts();
+    const { settings } = useSettings();
+    const relays = useMemo(() => resolveRelays(settings.nostr.relays), [settings.nostr.relays]);
 
     const [messages, setMessages] = useState<
         Record<string, (NostrEvent & { content: string })[]>
@@ -61,7 +64,7 @@ export function useChat({privkey, pubkey, selectedContact}: UseChatProps) {
         if (!selectedContact || !pubkey || !privkey) return;
 
         const sub = pool.subscribeMany(
-            DEFAULT_RELAYS,
+            relays,
             {
                 kinds: [4],
                 authors: [pubkey, selectedContact.pubkey],
@@ -71,7 +74,7 @@ export function useChat({privkey, pubkey, selectedContact}: UseChatProps) {
         );
 
         return () => sub.close();
-    }, [selectedContact, pubkey, privkey, handleDecryption]);
+    }, [selectedContact, pubkey, privkey, handleDecryption, relays]);
 
     return {
         contacts,

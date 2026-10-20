@@ -1,5 +1,5 @@
-import type {AIProvider, InferredAttribute, Note, OntologyNode} from '@notention/core';
-import {Logger} from '@notention/core';
+import type {AIProvider, InferredAttribute, Note, OntologyNode, Property} from '@notention/core';
+import {Logger, parsePropertiesJson} from '@notention/core';
 import {GoogleGenAI} from '@google/genai';
 
 export const isGeminiApiKeyAvailable = (userKey?: string): boolean => {
@@ -92,7 +92,7 @@ ${propertySummary}`;
         }
     }
 
-    async alignToOntology(text: string, ontology: OntologyNode[]): Promise<string[]> {
+    async alignToOntology(text: string, ontology: OntologyNode[]): Promise<Property[]> {
         if (!this.client) throw new Error('AI Provider not configured');
 
         // Build definitions list with types
@@ -110,7 +110,7 @@ ${propertySummary}`;
         traverse(ontology);
         const definitionsStr = definitions.join('\n');
 
-        const prompt = `Analyze the text below and extract semantic properties in the format "[key:operator:value]".
+        const prompt = `Analyze the text below and extract semantic properties as structured JSON.
 
 Use the following known attributes (RESPECT THEIR TYPES):
 ${definitionsStr}
@@ -124,12 +124,9 @@ Guidelines:
 3. Valid operators: "is", "is not", "contains", "greater than", "less than".
    - Use "greater than" / "less than" for numbers/dates.
    - Use "contains" for text search or lists.
-4. For "location" or other "geo" type fields, try to output latitude and longitude in the format "lat,lng" if possible.
 
-Example output:
-- ["[skill:is:React]", "[location:is:40.7128,-74.0060]", "[experience:greater than:5]"]
-
-Return ONLY a valid JSON array of strings.
+Return ONLY a valid JSON array of objects with this shape:
+[{"key": "skill", "operator": "is", "values": ["React"]}]
 
 Text:
 ${text}`;
@@ -137,7 +134,7 @@ ${text}`;
         try {
             const result = await this.generateCompletion(prompt);
             const jsonStr = result.replace(/^```json\s*/, '').replace(/\s*```$/, '');
-            return JSON.parse(jsonStr);
+            return parsePropertiesJson(JSON.parse(jsonStr));
         } catch (e) {
             this.logger.error('Alignment Error:', e as Error);
             return [];

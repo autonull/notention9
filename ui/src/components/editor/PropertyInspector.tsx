@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import type {OntologyNode, Property} from '@notention/core';
-import {Logger, parseProperties} from '@notention/core';
+import {Logger} from '@notention/core';
 import {PlusIcon, SearchSparkleIcon, TagIcon, XIcon} from '../common/icons';
 import {PropertyForm} from './PropertyForm';
 import {PropertyBlock} from '../properties/PropertyBlock';
@@ -91,16 +91,15 @@ export function PropertyInspector({
         }
 
         let addedCount = 0;
-        results.forEach(tag => {
-            const parsed = parseProperties(tag);
-            if (parsed.length > 0) {
-                const p = parsed[0];
-                // Check for duplicate
-                const exists = properties.some(ex => ex.key === p.key && ex.operator === p.operator && ex.values.join(',') === p.values.join(','));
-                if (!exists) {
-                    onUpdateText(null, p);
-                    addedCount++;
-                }
+        results.forEach(property => {
+            const exists = properties.some(existing =>
+                existing.key === property.key
+                && existing.operator === property.operator
+                && existing.values.join(',') === property.values.join(',')
+            );
+            if (!exists) {
+                onUpdateText(null, property);
+                addedCount++;
             }
         });
 

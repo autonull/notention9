@@ -43,3 +43,36 @@ export const deletedNote = (): Note => ({
     title: 'Old draft',
     deletedAt: new Date(FIXED_NOW - 600_000).toISOString(),
 });
+
+const taskNote = (id: string, title: string, status: string, tags: string[] = ['task']): Note => ({
+    id,
+    title,
+    content: `<p>${title}</p>`,
+    tags,
+    properties: [property('type', ['task']), property('status', [status])],
+    createdAt: new Date(FIXED_NOW - 7 * 3600_000).toISOString(),
+    updatedAt: new Date(FIXED_NOW - 3600_000).toISOString(),
+    source: {type: 'user', identifier: 'scene', timestamp: FIXED_NOW},
+    privacy: 'private',
+    priority: 0.6,
+});
+
+export const taskNotes = (): Note[] => [
+    taskNote('scene-task-running', 'Print flyers for the meetup', 'running'),
+    taskNote('scene-task-queued', 'Collect tools for repair day', 'queued'),
+    taskNote('scene-task-queued-2', 'Ask Maya about the shared garden', 'queued', ['task', 'community']),
+    taskNote('scene-task-done', 'Book the community hall', 'completed'),
+];
+
+export const extractionNote = (): Note => ({
+    id: 'scene-extraction-note',
+    title: 'Frontend help wanted',
+    content: '<p>Looking for a React developer for a two-week project. Budget between 800 and 1200 USD. Due tomorrow.</p>',
+    tags: ['request'],
+    properties: [],
+    createdAt: new Date(FIXED_NOW - 2 * 3600_000).toISOString(),
+    updatedAt: new Date(FIXED_NOW - 1800_000).toISOString(),
+    source: {type: 'user', identifier: 'scene', timestamp: FIXED_NOW},
+    privacy: 'private',
+    priority: 0.7,
+});

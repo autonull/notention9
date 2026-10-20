@@ -22,6 +22,7 @@ import {MetaphorRenderer} from '../metaphor/MetaphorRenderer';
 import {PrivacyConfirmModal} from '../modals/PrivacyConfirmModal';
 import {MatchReplies} from '../match/MatchReplies';
 import {useMatches} from '../../hooks/useMatches';
+import {Button} from '../common/Button';
 
 interface EditorManagerProps {
     note: Note;
@@ -54,6 +55,7 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
         actionLabel,
         missingProperties,
         saveStatus,
+        publishError,
         privacyConfirmation,
         handlePrivacyConfirm,
         handlePrivacyCancel
@@ -170,6 +172,17 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                 missingProperties={missingProperties}
                 onAddProperty={handleAddPropertyHint}
             />
+            {publishError && (
+                <div
+                    data-testid="publish-error"
+                    className="flex flex-wrap items-center gap-3 border-b border-red-500/20 bg-red-500/10 px-4 py-2 text-xs text-red-200"
+                >
+                    <span>Publish failed: {publishError}</span>
+                    <Button size="xs" variant="secondary" onClick={handlePublish}>
+                        Retry
+                    </Button>
+                </div>
+            )}
             <div className="flex flex-1 overflow-hidden relative">
                 <div className="flex-1 flex flex-col relative transition-all duration-300">
                     <HybridEditor

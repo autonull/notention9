@@ -15,8 +15,7 @@ export interface SnapOptions {
     mask?: string[];
 }
 
-export async function snap(page: Page, options: SnapOptions) {
-    await settle(page);
+export async function snap(page: Page, options: SnapOptions) {    await settle(page);
     await disableMotion(page);
 
     const directory = path.join(OUTPUT, options.area);
@@ -38,9 +37,4 @@ export async function snap(page: Page, options: SnapOptions) {
         description: options.description,
     };
     await fs.writeFile(path.join(directory, `${options.state}.json`), JSON.stringify(manifest, null, 2));
-}
-
-export async function resetOutput() {
-    await fs.rm(OUTPUT, {recursive: true, force: true});
-    await fs.mkdir(OUTPUT, {recursive: true});
 }

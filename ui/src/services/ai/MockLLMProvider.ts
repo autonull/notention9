@@ -1,4 +1,4 @@
-import type {AIProvider, InferredAttribute, OntologyNode} from '@notention/core';
+import type {AIProvider, InferredAttribute, OntologyNode, Property} from '@notention/core';
 
 export class MockLLMProvider implements AIProvider {
     name = 'Mock AI (Fallback)';
@@ -57,25 +57,17 @@ export class MockLLMProvider implements AIProvider {
         const tags: string[] = [];
         const lowerText = text.toLowerCase();
 
-        // 1. Flywheel: Try to reuse existing keys
         ontologyKeys.forEach(key => {
-            if (lowerText.includes(key.toLowerCase())) {
-                // Determine operator/value heuristically for simulation
-                if (key === 'budget') tags.push(`[budget < 500]`);
-                else if (key === 'rate') tags.push(`[rate:is:50]`);
-                else tags.push(`[${key}:is:true]`); // Generic boolean/presence
-            }
+            if (lowerText.includes(key.toLowerCase())) tags.push(key);
         });
 
-        // 2. Evolution: If no existing keys found (or just to add variety), invent some
         if (tags.length === 0) {
-            if (lowerText.includes("react")) tags.push("[skill:is:React]");
-            if (lowerText.includes("developer")) tags.push("[role:is:Developer]");
-            // If we didn't find 'budget' in existing ontology but text has it, suggest it
-            if (lowerText.includes("budget") && !ontologyKeys.has('budget')) tags.push("[budget < 500]");
+            if (lowerText.includes("react")) tags.push("react");
+            if (lowerText.includes("developer")) tags.push("developer");
+            if (lowerText.includes("budget")) tags.push("budget");
         }
 
-        return tags;
+        return Array.from(new Set(tags));
     }
 
     async analyzeOntology(): Promise<InferredAttribute[]> {
@@ -100,8 +92,26 @@ export class MockLLMProvider implements AIProvider {
         }];
     }
 
-    async alignToOntology(text: string, ontology: OntologyNode[]): Promise<string[]> {
-        return this.suggestTags(text, ontology);
+    async alignToOntology(text: string, ontology: OntologyNode[]): Promise<Property[]> {
+        const lowerText = text.toLowerCase();
+        const properties: Property[] = [];
+        const keys = new Set<string>();
+        const traverse = (nodes: OntologyNode[]) => {
+            nodes.forEach(node => {
+                Object.keys(node.attributes ?? {}).forEach(key => keys.add(key));
+                if (node.children) traverse(node.children);
+            });
+        };
+        traverse(ontology);
+
+        keys.forEach(key => {
+            if (lowerText.includes(key.toLowerCase())) properties.push({key, operator: 'is', values: ['true']});
+        });
+        if (lowerText.includes('react')) properties.push({key: 'skill', operator: 'is', values: ['React']});
+        if (lowerText.includes('developer')) properties.push({key: 'role', operator: 'is', values: ['Developer']});
+        if (lowerText.includes('budget')) properties.push({key: 'budget', operator: 'less than', values: ['500']});
+
+        return properties;
     }
 
     async optimizeOntology(ontology: OntologyNode[]): Promise<{

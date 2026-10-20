@@ -2,7 +2,7 @@ import React, {useEffect, useMemo, useState} from 'react';
 import {finalizeEvent, nip19} from 'nostr-tools';
 
 import type {AppSettings, NostrProfile} from '@notention/core';
-import {DEFAULT_RELAYS, formatNpub, hexToBytes, Logger, pool} from '@notention/core';
+import {formatNpub, hexToBytes, Logger, pool, resolveRelays} from '@notention/core';
 import {EditIcon} from '../common/icons';
 import {Avatar} from '../common/Avatar';
 import {IconButton} from '../common/IconButton';
@@ -114,7 +114,7 @@ export function ProfileHeader({
             };
             const signedEvent = finalizeEvent(eventTemplate, privkeyUI8A);
 
-            await Promise.all(pool.publish(DEFAULT_RELAYS, signedEvent));
+            await Promise.all(pool.publish(resolveRelays(settings.nostr.relays), signedEvent));
             // Profile will be updated via the nostr subscription
         } catch (error) {
             Logger.getInstance().error('Failed to save profile:', error instanceof Error ? error : new Error(String(error)));

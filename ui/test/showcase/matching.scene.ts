@@ -18,6 +18,18 @@ test('matching results', async ({page}) => {
     });
 });
 
+test('matching explanation', async ({page}) => {
+    await seed(page, {notes: demoNotes(), settings: defaultSettings(), hash: '#notes/demo-request-react'});
+    await page.getByRole('button', {name: 'Toggle Assistant'}).click();
+    await page.getByRole('tab', {name: /Local/}).click();
+    await page.waitForSelector('text=Match');
+    await snap(page, {
+        area: 'matching',
+        state: 'explanation',
+        description: 'Satisfied and conflicting constraints for a local offer, computed offline.',
+    });
+});
+
 test('mobile notes', async ({page}) => {
     await page.setViewportSize({width: 390, height: 844});
     await seed(page, {notes: demoNotes(), settings: defaultSettings()});

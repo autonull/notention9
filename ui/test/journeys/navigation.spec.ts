@@ -10,8 +10,8 @@ test.beforeEach(async ({page}) => {
 const routes: Array<[string, string]> = [
     ['#dashboard', 'Quick Capture'],
     ['#notes', 'Quick Capture'],
-    ['#map', 'No Location Notes'],
-    ['#timeline', 'Timeline'],
+    ['#map', 'OpenStreetMap'],
+    ['#timeline', 'Spacetime Filter'],
     ['#network', 'Network'],
     ['#actions', 'Actions'],
     ['#chat', 'Chat Requires Nostr Account'],
@@ -35,14 +35,14 @@ test('trash restores and permanently deletes', async ({page}) => {
     await seed(page, {notes: demoNotes(), settings: defaultSettings()});
     await page.evaluate(() => { window.location.hash = '#trash'; window.dispatchEvent(new PopStateEvent('popstate')); });
     await expect(page.getByTestId('trash-view')).toBeVisible();
-    await expect(page.getByText('Trash is empty')).toBeVisible();
+    await expect(page.getByTestId('trash-view').getByRole('heading', {name: 'Trash is empty'}).first()).toBeVisible();
 });
 
 test('persistence survives reload', async ({page}) => {
     await seed(page, {notes: demoNotes(), settings: defaultSettings()});
-    await expect(page.getByText('Looking for a React developer')).toBeVisible();
+    await expect(page.getByTestId('local-match')).toBeVisible();
     await page.reload();
-    await expect(page.getByText('Looking for a React developer')).toBeVisible();
+    await expect(page.getByTestId('local-match')).toBeVisible();
     await clearStorage(page);
-    await expect(page.getByText('Looking for a React developer')).toHaveCount(0);
+    await expect(page.getByTestId('local-match')).toHaveCount(0);
 });

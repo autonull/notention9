@@ -1,4 +1,4 @@
-import type {Note, OntologyAttribute, OntologyNode} from '@notention/core';
+import type {Note, OntologyAttribute, OntologyNode, Property} from '@notention/core';
 
 export interface AIProvider {
     name: string;
@@ -32,10 +32,10 @@ export interface AIProvider {
     suggestTags(text: string, ontology?: OntologyNode[]): Promise<string[]>;
 
     /**
-     * Analyzes text and extracts semantic properties based on the ontology.
-     * Returns an array of formatted strings like "[key:operator:value]".
+     * Extracts structured properties from text, grounded in the ontology.
+     * Returns property objects; callers own serialization.
      */
-    alignToOntology(text: string, ontology: OntologyNode[]): Promise<string[]>;
+    alignToOntology(text: string, ontology: OntologyNode[]): Promise<Property[]>;
 }
 
 export interface InferredAttribute {

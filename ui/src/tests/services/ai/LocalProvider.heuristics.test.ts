@@ -14,13 +14,13 @@ describe('LocalAIProvider - Heuristics', () => {
         const text = 'This project is almost done';
         const tags = await provider.suggestTags(text);
         expect(tags).toContain('project');
-        expect(tags).toContain('[status:is:Active]');
+        expect(tags.every(tag => !tag.includes('['))).toBe(true);
     });
 
     it('suggests deadline for projects', async () => {
         const text = 'Project deadline is next week';
         const tags = await provider.suggestTags(text);
         expect(tags).toContain('project');
-        expect(tags).toContain('[deadline:is:?]');
+        expect(tags.every(tag => !tag.includes('['))).toBe(true);
     });
 });

@@ -1,6 +1,7 @@
 import {useEffect, useMemo, useRef, useState} from 'react';
 import type {NostrEvent, NostrProfile} from '@notention/core';
-import {DEFAULT_RELAYS, Logger, pool} from '@notention/core';
+import {Logger, pool, resolveRelays} from '@notention/core';
+import {useSettings} from './useSettingsContext';
 
 const profileCache = new Map<string, NostrProfile>();
 const requestedPubkeys = new Set<string>();
@@ -8,6 +9,8 @@ const requestedPubkeys = new Set<string>();
 export function useNostrProfile(
     pubkeys: string[]
 ): Record<string, NostrProfile> {
+    const {settings} = useSettings();
+    const relays = useMemo(() => resolveRelays(settings.nostr.relays), [settings.nostr.relays]);
     // Use a stable key for dependency tracking to avoid loops if pubkeys is a new array literal with same content
     const pubkeysKey = useMemo(() => pubkeys.slice().sort().join(','), [pubkeys]);
 
@@ -73,7 +76,7 @@ export function useNostrProfile(
         };
 
         const sub = pool.subscribeMany(
-            DEFAULT_RELAYS,
+            relays,
             {kinds: [0], authors: pubkeysToFetch},
             {
                 onevent: handleEvent,
@@ -83,7 +86,7 @@ export function useNostrProfile(
         return () => {
             sub.close();
         };
-    }, [pubkeysKey]);
+    }, [pubkeysKey, relays]);
 
     return profiles;
 };

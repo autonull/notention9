@@ -1,14 +1,8 @@
 import {test} from '@playwright/test';
 import {seed} from '../support/seed';
-import {snap, resetOutput} from '../support/capture';
+import {snap} from '../support/capture';
 import {isolateNetwork} from '../fixtures/routes';
 import {demoNotes, defaultSettings} from '../fixtures/workspace';
-
-test.describe.configure({mode: 'serial'});
-
-test.beforeAll(async () => {
-    await resetOutput();
-});
 
 test.beforeEach(async ({page}) => {
     await isolateNetwork(page);

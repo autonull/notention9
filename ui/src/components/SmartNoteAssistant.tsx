@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useToast } from '../hooks/useToast';
 import { Note, ScoredMatch, OntologyAttribute, addAttribute, addAliasToAttribute, Property, OntologyNode } from '@notention/core';
 import { SparklesIcon, SearchSparkleIcon, PlusIcon } from './common/icons';
@@ -12,7 +12,7 @@ import { nostrService } from '../services/NostrService';
 import { useSettings } from '../hooks/useSettingsContext';
 import { useNoteAnalysis, Suggestion } from '../hooks/useNoteAnalysis';
 import { SuggestionItem } from './SuggestionItem';
-import { applyPropertySuggestion, applyTaskSuggestion } from '../utils/suggestionUtils';
+import { applyTaskSuggestion } from '../utils/suggestionUtils';
 import { useView } from '../hooks/useViewContext';
 import { useContacts } from '../hooks/useContacts';
 import { Badge } from './common/Badge';
@@ -23,6 +23,8 @@ import { OntologyAliasLinkModal } from './ontology/OntologyAliasLinkModal';
 import { AttributeEditorModal } from './ontology/AttributeEditorModal';
 import { useNetworkDiscovery } from '../hooks/useNetworkDiscovery';
 import { DiscoveredProperties } from './network/DiscoveredProperties';
+import { usePropertyReview, type PropertyReviewItem } from '../hooks/usePropertyReview';
+import { ExtractionReview } from './editor/ExtractionReview';
 
 interface SmartNoteAssistantProps {
     note: Note;
@@ -54,6 +56,7 @@ export function SmartNoteAssistant({
 
     const localMatches = useMatches(note);
     const { matches: networkMatches, isSearching, discover: discoverMatches, clear: clearNetworkMatches } = useNetworkDiscovery(note, settings.ontology);
+    const propertyReview = usePropertyReview(note.content, properties, settings.ontology);
 
     const [attributeModalOpen, setAttributeModalOpen] = useState(false);
     const [aliasModalOpen, setAliasModalOpen] = useState(false);
@@ -91,6 +94,11 @@ export function SmartNoteAssistant({
             onUpdateProperty(null, newProp);
             setIsAddingProperty(false);
         }
+    };
+
+    const handleAcceptReview = (item: PropertyReviewItem) => {
+        onUpdateProperty?.(null, item.property);
+        propertyReview.accept(item);
     };
 
     const handleDeleteProperty = () => {
@@ -131,14 +139,6 @@ export function SmartNoteAssistant({
     };
 
     const handleApplySuggestion = (suggestion: Suggestion) => {
-        const propertyContent = applyPropertySuggestion(note.content, suggestion.text);
-        if (propertyContent) {
-            onNoteUpdate(propertyContent);
-            addToast('Suggestion applied', 'success');
-            removeSuggestion(suggestion.id);
-            return;
-        }
-
         const taskContent = applyTaskSuggestion(note.content, suggestion.text);
         if (taskContent) {
             onNoteUpdate(taskContent);
@@ -174,10 +174,6 @@ export function SmartNoteAssistant({
         }));
         addToast(`Linked alias '${targetKey}' to '${attributeKey}'`, 'success');
     };
-
-    const propertySuggestions = useMemo(() =>
-        suggestions.filter(s => s.type === 'property'),
-    [suggestions]);
 
     const toggleOpen = (e?: React.MouseEvent) => {
         e?.stopPropagation();
@@ -302,29 +298,12 @@ export function SmartNoteAssistant({
                                     </div>
                                 )}
 
-                                {propertySuggestions.length > 0 && !isAddingProperty && (
-                                    <div className="pt-3 border-t border-gray-800 mt-2">
-                                        <div className="flex items-center gap-2 mb-2 px-1">
-                                            <SparklesIcon className="w-3 h-3 text-purple-400"/>
-                                            <span className="text-xs font-bold text-gray-400 uppercase">Detected in Text</span>
-                                        </div>
-                                        <div className="space-y-2">
-                                            {propertySuggestions.map(s => (
-                                                <div key={s.id}
-                                                     className="bg-purple-900/10 border border-purple-500/20 rounded p-2 flex justify-between items-center group hover:bg-purple-900/20 transition-colors">
-                                                    <code className="text-xs text-purple-300 font-mono">{s.text}</code>
-                                                    <Button
-                                                        size="xs"
-                                                        variant="ghost"
-                                                        className="text-purple-400 hover:text-purple-200"
-                                                        onClick={() => handleApplySuggestion(s)}
-                                                    >
-                                                        Add
-                                                    </Button>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
+                                {!isAddingProperty && (
+                                    <ExtractionReview
+                                        items={propertyReview.items}
+                                        onAccept={handleAcceptReview}
+                                        onReject={propertyReview.reject}
+                                    />
                                 )}
                             </div>
                         )}

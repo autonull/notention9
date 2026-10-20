@@ -11,7 +11,7 @@
     "format": "prettier --write .",
     "test": "vitest",
     "typecheck:test": "tsc -p test/tsconfig.json --noEmit",
-    "screenshots": "playwright test --config test/playwright.config.ts --project=showcase && node test/scripts/build-index.mjs",
+    "screenshots": "node test/scripts/reset-screenshot.mjs && playwright test --config test/playwright.config.ts --project=showcase && node test/scripts/build-index.mjs",
     "test:e2e": "playwright test --config test/playwright.config.ts --project=journeys"
   },
   "dependencies": {

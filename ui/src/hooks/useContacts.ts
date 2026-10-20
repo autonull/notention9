@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 import { getPublicKey } from 'nostr-tools';
-import { Contact, DEFAULT_RELAYS, hexToBytes, pool } from '@notention/core';
+import { Contact, hexToBytes, pool, resolveRelays } from '@notention/core';
 import { useSettings } from './useSettingsContext';
 import { nostrService } from '../services/NostrService';
 
@@ -11,6 +11,7 @@ export function useContacts() {
 
     const privkey = settings.nostr.privkey;
     const pubkey = privkey ? getPublicKey(hexToBytes(privkey)) : null;
+    const relays = useMemo(() => resolveRelays(settings.nostr.relays), [settings.nostr.relays]);
 
     useEffect(() => {
         if (!pubkey) {
@@ -19,7 +20,7 @@ export function useContacts() {
         }
 
         const sub = pool.subscribeMany(
-            DEFAULT_RELAYS,
+            relays,
             { kinds: [3], authors: [pubkey], limit: 1 },
             {
                 onevent: (event) => {
@@ -41,7 +42,7 @@ export function useContacts() {
             clearTimeout(timer);
             sub.close();
         };
-    }, [pubkey]);
+    }, [pubkey, relays]);
 
     const addContact = useCallback(async (newPubkey: string) => {
         await nostrService.addContact(newPubkey);

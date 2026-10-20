@@ -26,7 +26,7 @@ test('export, clear, and restore a backup', async ({page}) => {
     expect(raw).not.toMatch(/"privkey"\s*:\s*"[0-9a-f]{16,}"/i);
 
     await clearStorage(page);
-    await expect(page.getByText('Looking for a React developer')).toHaveCount(0);
+    await expect(page.getByTestId('local-match')).toHaveCount(0);
 
     await page.setInputFiles('input[type="file"]', {
         name: 'notention-backup.json',
@@ -36,7 +36,7 @@ test('export, clear, and restore a backup', async ({page}) => {
     await page.getByRole('button', {name: 'Restore & Overwrite'}).click();
 
     await page.waitForTimeout(2500);
-    await expect(page.getByText('Looking for a React developer')).toBeVisible();
+    await expect(page.getByTestId('local-match')).toBeVisible();
 });
 
 test('malformed import is rejected without overwriting', async ({page}) => {

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Note, patternRecognitionService, PropertyExtractor, OntologyNode, getCanonicalKey } from '@notention/core';
+import { Note, patternRecognitionService, PropertyExtractor, OntologyNode } from '@notention/core';
 import { useSettings } from './useSettingsContext';
 import { getTextFromHtml } from '../utils/html';
 
@@ -49,34 +49,16 @@ export function useNoteAnalysis(note: Note) {
         const seenTexts = new Set<string>();
 
         const predictionSuggestions = predictions.reduce<Suggestion[]>((acc, p) => {
-            let predictedText = p.predictedAction;
-            let displayText = predictedText;
+            const predictedText = p.predictedAction;
 
-            // Normalize property keys in predictions if it looks like a property
-            const propMatch = predictedText.match(/^\[(.*?)\]$/);
-            if (propMatch) {
-                const parts = propMatch[1].split(':');
-                if (parts.length >= 2) {
-                    const key = parts[0];
-                    const canonicalKey = getCanonicalKey(key, settings.ontology);
-                    if (canonicalKey !== key) {
-                        parts[0] = canonicalKey;
-                        const canonicalText = `[${parts.join(':')}]`;
-                        displayText = `${canonicalText} (from alias '${key}')`;
-                        predictedText = canonicalText;
-                    }
-                }
-            }
-
+            if (predictedText.includes('[') && predictedText.includes(']')) return acc;
             if (seenTexts.has(predictedText)) return acc;
 
             seenTexts.add(predictedText);
-            const isProperty = predictedText.includes('[') && predictedText.includes(']');
-
             acc.push({
                 id: `pred-${p.pattern.id}-${predictedText}`,
-                text: displayText, // Show user context
-                type: isProperty ? 'property' : 'action',
+                text: predictedText,
+                type: 'action',
                 confidence: p.confidence
             });
             return acc;

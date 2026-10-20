@@ -1,4 +1,18 @@
+import {z} from 'zod';
 import type {Property} from '../types/index.js';
+
+const propertyJsonSchema = z.object({
+    key: z.string().min(1),
+    operator: z.string().min(1).default('is'),
+    values: z.array(z.string().min(1)).min(1),
+});
+
+const propertiesJsonSchema = z.array(propertyJsonSchema);
+
+export const parsePropertiesJson = (value: unknown): Property[] => {
+    const result = propertiesJsonSchema.safeParse(value);
+    return (result.success ? result.data : []).map(({key, operator, values}) => ({key, operator, values}));
+};
 
 export interface PropertyNodeAttrs {
     name: string;

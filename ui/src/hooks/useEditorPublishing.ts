@@ -20,6 +20,7 @@ export function useEditorPublishing({
                                     }: UseEditorPublishingProps) {
     const {publishNote, isPublishing} = usePublish();
     const {addToast} = useToast();
+    const [publishError, setPublishError] = useState<string | null>(null);
 
     const [privacyConfirmation, setPrivacyConfirmation] = useState<{
         isOpen: boolean;
@@ -52,6 +53,8 @@ export function useEditorPublishing({
     const handlePublish = useCallback(async () => {
         if (!dirtyNote.content) return;
 
+        setPublishError(null);
+
         if (validationErrors.length > 0) {
             addToast(`Cannot ${actionLabel}: ${validationErrors.join(', ')}`, 'error');
             return;
@@ -79,6 +82,7 @@ export function useEditorPublishing({
                 // User cancelled, do nothing
                 return;
             }
+            setPublishError(msg);
             addToast(
                 'Failed to publish: ' + msg,
                 'error'
@@ -98,6 +102,7 @@ export function useEditorPublishing({
     return {
         handlePublish,
         isPublishing,
+        publishError,
         privacyConfirmation,
         handlePrivacyConfirm,
         handlePrivacyCancel

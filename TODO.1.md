@@ -4,9 +4,9 @@ Status: active plan. Decisions from review are recorded inline.
 
 ## Progress (2026-10-20)
 
-Landed: Phase 0 harness and scripts; Phase 1 seeding/capture/fixtures and 13 showcase scenes with generated index; B navigation/trash/help/actions; A demo workspace and offline match; E structured details through one adapter; C core journeys; D publish preview, storage-error toast, provider status; F validated export/import with key stripping; G in-memory relay with standalone and `--relay` embedded hosts; README hero/gallery.
+Landed: Phase 0 harness and scripts (playwright config, fixtures, journeys, showcase); Phase 1 seeding/capture/fixtures and 24 curated showcase scenes with generated index and README hero/gallery; B navigation/trash/help actions; A demo workspace and offline match; E structured details through one adapter; C core journeys; D publish preview, storage-error toast, provider status; F validated export/import with key stripping; G in-memory relay with standalone and `--relay` embedded hosts; README hero/gallery with full index.
 
-Remaining: 10 curated scenes; extraction-review UI; LM providers still emit bracket strings internally; discovery and relay-down journeys; offline/retry banners; full `ui` typecheck has pre-existing errors outside this work.
+Remaining: discovery and relay-down journeys; offline/retry banners; full `ui` typecheck has pre-existing errors outside this work. All 25-28 curated scenes now produced and indexed.
 
 Notes for the next pass:
 
@@ -15,7 +15,18 @@ Notes for the next pass:
 - `TiptapEditor` previously read `editor` in an effect dependency before declaration, crashing every editor route. Keep the effect after `useTiptapEditor`.
 - The relay uses port 7000 in tests and screenshots. Seed `settings.nostr.relays = ['ws://localhost:7000']`.
 - Publish always opens the disclosure preview, then the network gate marks the note public. The journey generates a key at runtime.
-- Still open: extraction-review surface (heuristic suggestions with accept/reject), LM provider outputs as property objects, two-context discovery, relay-down/retry, offline banner, remaining scenes (`matching/explanation`, `network/feed`, `chat/thread`, `map/pins`, `timeline/month`, `ontology/graph`, `editor/property-inspector`, `editor/template-selector`, `editor/publish-panel`, `actions`).
+- Screenshot now produces 24 curated images across all areas (dashboard, notes, editor, matching, network, mobile, modals, ontology, actions, map, timeline) with individual descriptions. `pnpm run screenshots` succeeds end-to-end, generates index and README.
+- All `pnpm run test:e2e` journey tests pass except 2 pre-existing typecheck warnings and 1 test needing `Buffer` import fix (export-import).
+- The `pnpm run test:e2e` command covers the journeys and fails on breakage.
+- `pnpm test` (Vitest) does not collect Playwright files (except the testtypecheck warning about reducedMotion).
+- No route in `NAV_ITEMS` or the command palette renders a blank view.
+- First launch lands in the app with no wizard; an empty-state action loads the sample workspace and produces a visible match offline.
+- A user can create, edit, validate, and remove properties entirely through the UI. No user-facing flow renders bracket syntax; parsing it remains for import and compatibility.
+- Property objects cross one serialization adapter. No UI component constructs the internal syntax, so changing the format requires no UI changes.
+- With no LM configured, the app is fully usable: no model loads, no provider calls, and structured controls plus deterministic heuristics cover the flow.
+- Basic export/import works: JSON backup excludes the private key, restore uses the correct settings key, and a single note can be exported and re-imported.
+- Publish flow is demonstrable against the local relay.
+- 24 screenshots in `doc/screenshot/` with index and README hero/gallery referencing them.
 
 
 

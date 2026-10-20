@@ -61,6 +61,7 @@ export function useEditorLogic({ note, onSave }: UseEditorLogicProps) {
     const {
         handlePublish,
         isPublishing,
+        publishError,
         privacyConfirmation,
         handlePrivacyConfirm,
         handlePrivacyCancel
@@ -109,6 +110,7 @@ export function useEditorLogic({ note, onSave }: UseEditorLogicProps) {
         missingProperties,
         matchingOntologyNode,
         saveStatus,
+        publishError,
         privacyConfirmation,
         handlePrivacyConfirm,
         handlePrivacyCancel

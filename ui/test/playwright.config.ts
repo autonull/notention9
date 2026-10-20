@@ -20,7 +20,6 @@ export default defineConfig({
         serviceWorkers: 'block',
         deviceScaleFactor: 1,
         colorScheme: 'dark',
-        reducedMotion: 'reduce',
         trace: 'off',
         screenshot: 'off',
         video: 'off',

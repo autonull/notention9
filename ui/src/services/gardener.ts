@@ -1,5 +1,5 @@
 import type {AIProvider} from './ai/types';
-import type {Note, OntologyAttribute, OntologyNode} from '@notention/core';
+import type {Note, OntologyAttribute, OntologyNode, Property} from '@notention/core';
 import {Logger} from '@notention/core';
 
 export class Gardener {
@@ -22,7 +22,7 @@ export class Gardener {
         }
     }
 
-    async alignToOntology(text: string, ontology: OntologyNode[]): Promise<string[]> {
+    async alignToOntology(text: string, ontology: OntologyNode[]): Promise<Property[]> {
         try {
             return await this.provider.alignToOntology(text, ontology);
         } catch (e) {

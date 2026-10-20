@@ -48,17 +48,25 @@ export async function seed(page: Page, options: SeedOptions) {
 }
 
 export async function clearStorage(page: Page) {
-    await page.goto('about:blank');
+    await page.goto('/');
+    await page.waitForSelector('[data-ready]');
     await page.evaluate(async () => {
         localStorage.clear();
-        await new Promise<void>(resolve => {
-            const request = indexedDB.deleteDatabase('localforage');
-            request.onsuccess = () => resolve();
-            request.onerror = () => resolve();
-            request.onblocked = () => resolve();
+        const db = await new Promise<IDBDatabase>((resolve, reject) => {
+            const request = indexedDB.open('localforage');
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
         });
+        const tx = db.transaction('keyvaluepairs', 'readwrite');
+        tx.objectStore('keyvaluepairs').clear();
+        await new Promise<void>((resolve, reject) => {
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => reject(tx.error);
+            tx.onabort = () => reject(tx.error);
+        });
+        db.close();
     });
-    await page.goto('/');
+    await page.reload();
     await page.waitForSelector('[data-ready]');
     await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 250)));
 }

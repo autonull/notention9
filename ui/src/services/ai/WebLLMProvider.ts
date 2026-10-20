@@ -1,6 +1,6 @@
 import {CreateMLCEngine, MLCEngine} from "@mlc-ai/web-llm";
-import type {AIProvider, InferredAttribute, Note, OntologyAttribute, OntologyNode} from '@notention/core';
-import {Logger} from '@notention/core';
+import type {AIProvider, InferredAttribute, Note, OntologyAttribute, OntologyNode, Property} from '@notention/core';
+import {Logger, parsePropertiesJson} from '@notention/core';
 
 export const AVAILABLE_MODELS = [
     {id: "Llama-3.2-3B-Instruct-q4f16_1-MLC", label: "Llama 3.2 3B (Balanced)"},
@@ -57,7 +57,7 @@ export class WebLLMProvider implements AIProvider {
         }
 
         const prompt = `
-      Analyze the following text and suggest semantic tags in the format [key:op:value] or [key < value].
+      Analyze the following text and suggest up to five short lowercase tags.
       Return ONLY a JSON array of strings. Do not include markdown formatting or explanations.
       ${ontologyContext}
 
@@ -126,10 +126,42 @@ export class WebLLMProvider implements AIProvider {
         }
     }
 
-    async alignToOntology(text: string, ontology: OntologyNode[]): Promise<string[]> {
-        // Re-use suggestTags but with stricter ontology prompting if needed.
-        // For now, suggestTags already handles ontology context.
-        return this.suggestTags(text, ontology);
+    async alignToOntology(text: string, ontology: OntologyNode[]): Promise<Property[]> {
+        const engine = await this.getEngine();
+        if (!engine) throw new Error("WebLLM engine not available");
+
+        const keys = new Set<string>();
+        const traverse = (nodes: OntologyNode[]) => {
+            nodes.forEach(node => {
+                Object.keys(node.attributes ?? {}).forEach(key => keys.add(key));
+                if (node.children) traverse(node.children);
+            });
+        };
+        traverse(ontology);
+
+        const prompt = `
+      Extract semantic properties from the text as structured JSON.
+      Reuse these ontology keys when relevant: ${[...keys].join(', ') || 'none'}.
+      Return ONLY a JSON array of objects shaped like:
+      [{"key": "skill", "operator": "is", "values": ["React"]}]
+      Valid operators: is, is not, contains, greater than, less than.
+
+      Text: "${text}"
+    `;
+
+        const response = await engine.chat.completions.create({
+            messages: [{role: "user", content: prompt}],
+            temperature: 0.1,
+        });
+
+        const content = response.choices[0]?.message?.content || "[]";
+        try {
+            const jsonStr = content.replace(/```json/g, '').replace(/```/g, '').trim();
+            return parsePropertiesJson(JSON.parse(jsonStr));
+        } catch {
+            this.logger.warn("Failed to parse AI properties:", new Error(content));
+            return [];
+        }
     }
 
     async optimizeOntology(_ontology: OntologyNode[]): Promise<{

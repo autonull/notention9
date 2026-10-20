@@ -4,8 +4,9 @@ import {finalizeEvent, nip04, nip19} from 'nostr-tools';
 import {useNostrProfile} from '../../hooks/useNostrProfile';
 import {useNotes} from '../../hooks/useNotes';
 import {useToast} from '../../hooks/useToast';
+import {useSettings} from '../../hooks/useSettingsContext';
 import type {Contact, NostrEvent} from '@notention/core';
-import {DEFAULT_RELAYS, formatNpub, hexToBytes, Logger, parseProperties, pool} from '@notention/core';
+import {formatNpub, hexToBytes, Logger, parseProperties, pool, resolveRelays} from '@notention/core';
 import {ArrowLeftIcon, DocumentDuplicateIcon, SendIcon, SettingsIcon, TrashIcon} from '../common/icons';
 import {Avatar} from '../common/Avatar';
 import {IconButton} from '../common/IconButton';
@@ -39,6 +40,7 @@ export function ChatWindow({
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const {addNote} = useNotes();
     const {addToast} = useToast();
+    const {settings} = useSettings();
 
     const contactPubkey = useMemo(
         () => (selectedContact ? [selectedContact.pubkey] : []),
@@ -73,7 +75,7 @@ export function ChatWindow({
                 hexToBytes(privkey)
             );
 
-            await Promise.all(pool.publish(DEFAULT_RELAYS, event));
+            await Promise.all(pool.publish(resolveRelays(settings.nostr.relays), event));
             onSendMessage(selectedContact.pubkey, event, newMessage.trim());
             setNewMessage('');
         } catch (err) {
@@ -161,6 +163,11 @@ export function ChatWindow({
 
             {/* Messages */}
             <div className="flex-grow p-4 overflow-y-auto space-y-4">
+                {messages.length > 0 && (
+                    <div className="text-center text-[10px] uppercase tracking-wider text-gray-600">
+                        End-to-end encrypted
+                    </div>
+                )}
                 {messages.length === 0 && (
                     <div className="text-center text-gray-600 py-10">
                         <p>No messages yet.</p>

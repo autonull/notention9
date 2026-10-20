@@ -8,6 +8,7 @@ import {ConnectIdentityPrompt} from '../network/ConnectIdentityPrompt';
 import {NetworkFeedHeader} from '../network/NetworkFeedHeader';
 import {SuggestedMatches} from '../network/SuggestedMatches';
 import {NetworkFeedList} from '../network/NetworkFeedList';
+import {RelayStatusBanner} from '../network/RelayStatusBanner';
 
 interface NetworkViewProps {
     matchAgainst?: Note | null;
@@ -66,6 +67,7 @@ export function NetworkView({matchAgainst}: NetworkViewProps) {
                 pubkey={pubkey}
                 profileCache={profiles}
             />
+            <RelayStatusBanner relays={settings.nostr.relays}/>
             <div className="p-4 md:p-6 flex-grow overflow-y-auto">
                 <NetworkFeedHeader
                     matchAgainstTitle={matchAgainst?.title}

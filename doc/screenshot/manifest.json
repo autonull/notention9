@@ -1,5 +1,19 @@
 [
   {
+    "area": "actions",
+    "state": "board",
+    "file": "actions/board.png",
+    "viewport": "desktop",
+    "description": "Task board grouped by status, with a new-task action."
+  },
+  {
+    "area": "chat",
+    "state": "thread",
+    "file": "chat/thread.png",
+    "viewport": "desktop",
+    "description": "An encrypted conversation over the local relay, with the encryption notice."
+  },
+  {
     "area": "dashboard",
     "state": "empty",
     "file": "dashboard/empty.png",
@@ -22,10 +36,52 @@
   },
   {
     "area": "editor",
+    "state": "extraction-review",
+    "file": "editor/extraction-review.png",
+    "viewport": "desktop",
+    "description": "Deterministic suggestions with confidence and accept/reject, no model configured."
+  },
+  {
+    "area": "editor",
     "state": "property-chips",
     "file": "editor/property-chips.png",
     "viewport": "desktop",
     "description": "Prose with structured detail chips and no visible bracket syntax."
+  },
+  {
+    "area": "editor",
+    "state": "property-inspector",
+    "file": "editor/property-inspector.png",
+    "viewport": "desktop",
+    "description": "Inspector with typed widgets, ontology hints, and validation."
+  },
+  {
+    "area": "editor",
+    "state": "publish-panel",
+    "file": "editor/publish-panel.png",
+    "viewport": "desktop",
+    "description": "Publish disclosure with a human summary and a collapsed raw event."
+  },
+  {
+    "area": "editor",
+    "state": "template-selector",
+    "file": "editor/template-selector.png",
+    "viewport": "desktop",
+    "description": "Ontology-derived templates for requests, offers, and events."
+  },
+  {
+    "area": "map",
+    "state": "pins",
+    "file": "map/pins.png",
+    "viewport": "desktop",
+    "description": "Geographic notes on the map with a selected note popup."
+  },
+  {
+    "area": "matching",
+    "state": "explanation",
+    "file": "matching/explanation.png",
+    "viewport": "desktop",
+    "description": "Satisfied and conflicting constraints for a local offer, computed offline."
   },
   {
     "area": "matching",
@@ -63,6 +119,13 @@
     "description": "Network view before an identity exists, prompting setup."
   },
   {
+    "area": "network",
+    "state": "feed",
+    "file": "network/feed.png",
+    "viewport": "desktop",
+    "description": "Public feed with signed notes from a local relay, including structured details."
+  },
+  {
     "area": "notes",
     "state": "grid",
     "file": "notes/grid.png",
@@ -84,10 +147,24 @@
     "description": "Trash with restore and permanent-delete affordances."
   },
   {
+    "area": "ontology",
+    "state": "graph",
+    "file": "ontology/graph.png",
+    "viewport": "desktop",
+    "description": "Ontology tree with domains, attributes, and usage counts."
+  },
+  {
     "area": "settings",
     "state": "networks",
     "file": "settings/networks.png",
     "viewport": "desktop",
     "description": "Provider status and relay management."
+  },
+  {
+    "area": "timeline",
+    "state": "month",
+    "file": "timeline/month.png",
+    "viewport": "desktop",
+    "description": "Month calendar with dated notes and deadlines."
   }
 ]

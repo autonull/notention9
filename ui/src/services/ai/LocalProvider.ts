@@ -1,4 +1,4 @@
-import type {AIProvider, InferredAttribute, Note, OntologyNode} from '@notention/core';
+import type {AIProvider, InferredAttribute, Note, OntologyNode, Property} from '@notention/core';
 import {parseProperties, parseQuantity} from '@notention/core';
 import {getTextFromHtml} from '../../utils/html';
 import {addDays, format} from 'date-fns';
@@ -42,12 +42,6 @@ export class LocalAIProvider implements AIProvider {
 
         if (lower.includes('project')) {
             tags.add('project');
-            if (lower.includes('done') || lower.includes('wip') || lower.includes('blocked')) {
-                tags.add('[status:is:Active]');
-            }
-            if (lower.includes('due') || lower.includes('deadline')) {
-                tags.add('[deadline:is:?]');
-            }
         }
 
         return Array.from(tags);
@@ -96,150 +90,124 @@ export class LocalAIProvider implements AIProvider {
         return attributes;
     }
 
-    async alignToOntology(text: string, ontology: OntologyNode[]): Promise<string[]> {
-        const properties = new Set<string>();
+    async alignToOntology(text: string, ontology: OntologyNode[]): Promise<Property[]> {
+        const properties = new Map<string, Property>();
+
+        const add = (key: string, operator: string, value: string) => {
+            const values = value.split(',').map(part => part.trim()).filter(Boolean);
+            if (values.length === 0) return;
+            const id = `${key}\u0000${operator}`;
+            const existing = properties.get(id);
+            if (existing) {
+                values.forEach(v => existing.values.includes(v) || existing.values.push(v));
+                return;
+            }
+            properties.set(id, {key, operator, values});
+        };
+
         const lowerText = text.toLowerCase();
 
         // --- Price / Cost (Refined) ---
-        // "under 500", "below 500"
         const lessThanMatch = text.match(/(?:under|below|less than)\s*([$€£])?\s*(\d+(?:,\d{3})*(?:\.\d{1,2})?)(?:\s*(usd|eur|gbp|sats))?/i);
         if (lessThanMatch) {
             const symbol = lessThanMatch[1] || '';
-            const amount = lessThanMatch[2];
             const suffix = lessThanMatch[3] || '';
-            const raw = `${symbol}${amount} ${suffix}`.trim();
-            const q = parseQuantity(raw);
-            const val = q ? `${q.value} ${q.unit}` : amount;
-            properties.add(`[price:less than:${val.trim()}]`);
+            const quantity = parseQuantity(`${symbol}${lessThanMatch[2]} ${suffix}`.trim());
+            add('price', 'less than', quantity ? `${quantity.value} ${quantity.unit}` : lessThanMatch[2]);
         }
 
-        // "over 500", "above 500"
         const greaterThanMatch = text.match(/(?:over|above|more than)\s*([$€£])?\s*(\d+(?:,\d{3})*(?:\.\d{1,2})?)(?:\s*(usd|eur|gbp|sats))?/i);
         if (greaterThanMatch) {
             const symbol = greaterThanMatch[1] || '';
-            const amount = greaterThanMatch[2];
             const suffix = greaterThanMatch[3] || '';
-            const raw = `${symbol}${amount} ${suffix}`.trim();
-            const q = parseQuantity(raw);
-            const val = q ? `${q.value} ${q.unit}` : amount;
-            properties.add(`[price:greater than:${val.trim()}]`);
+            const quantity = parseQuantity(`${symbol}${greaterThanMatch[2]} ${suffix}`.trim());
+            add('price', 'greater than', quantity ? `${quantity.value} ${quantity.unit}` : greaterThanMatch[2]);
         }
 
-        // Exact price: "$500", "500 USD"
         if (!lessThanMatch && !greaterThanMatch) {
             const priceMatch = text.match(/([$€£])\s*(\d+(?:,\d{3})*(?:\.\d{1,2})?)/);
             if (priceMatch) {
-                const q = parseQuantity(`${priceMatch[1]}${priceMatch[2]}`);
-                const val = q ? `${q.value} ${q.unit}` : priceMatch[2];
-                properties.add(`[price:is:${val}]`);
+                const quantity = parseQuantity(`${priceMatch[1]}${priceMatch[2]}`);
+                add('price', 'is', quantity ? `${quantity.value} ${quantity.unit}` : priceMatch[2]);
             } else {
                 const currencyMatch = text.match(/(\d+(?:,\d{3})*(?:\.\d{1,2})?)\s*(USD|EUR|GBP|sats)/i);
                 if (currencyMatch) {
-                    const q = parseQuantity(`${currencyMatch[1]} ${currencyMatch[2]}`);
-                    const val = q ? `${q.value} ${q.unit}` : currencyMatch[1];
-                    properties.add(`[price:is:${val}]`);
+                    const quantity = parseQuantity(`${currencyMatch[1]} ${currencyMatch[2]}`);
+                    add('price', 'is', quantity ? `${quantity.value} ${quantity.unit}` : currencyMatch[1]);
                 }
             }
         }
 
         // --- Intent & Role ---
-        // "looking for X" -> [role contains X]
-        const roleReqMatch = text.match(/(?:looking for|hiring|need) (?:a|an)\s+([a-zA-Z\s]+?)(?=(?:[\.,]|\s+(?:for|in|to|with)|$))/i);
-        if (roleReqMatch) {
-            const role = roleReqMatch[1].trim();
-            if (role.split(' ').length < 5) {
-                properties.add(`[role:contains:${role}]`);
-            }
+        const roleRequestMatch = text.match(/(?:looking for|hiring|need) (?:a|an)\s+([a-zA-Z\s]+?)(?=(?:[\.,]|\s+(?:for|in|to|with)|$))/i);
+        if (roleRequestMatch) {
+            const role = roleRequestMatch[1].trim();
+            if (role.split(' ').length < 5) add('role', 'contains', role);
         }
 
-        // "I am a X" -> [role is X]
         const roleOfferMatch = text.match(/i am (?:a|an)\s+([a-zA-Z\s]+?)(?=(?:[\.,]|\s+(?:who|with|looking)|$))/i);
         if (roleOfferMatch) {
             const role = roleOfferMatch[1].trim();
-            if (role.split(' ').length < 5) {
-                properties.add(`[role:is:${role}]`);
-            }
+            if (role.split(' ').length < 5) add('role', 'is', role);
         }
 
         // --- Range ---
         const rangeMatch = text.match(/(?:between|from)?\s*(\$|€|£)?\s*(\d+)\s*(?:and|to|-)\s*(\$|€|£)?\s*(\d+)\s*(?:usd|eur|gbp)?/i);
         if (rangeMatch) {
-            const min = rangeMatch[2];
-            const max = rangeMatch[4];
-            if (min && max && Number(max) > Number(min)) {
-                properties.add(`[price:between:${min},${max}]`);
-            }
+            const [, , min, , max] = rangeMatch;
+            if (min && max && Number(max) > Number(min)) add('price', 'between', `${min},${max}`);
         }
 
         // --- Dates (Enhanced) ---
         const today = new Date();
         if (lowerText.includes('due tomorrow') || lowerText.includes('deadline tomorrow')) {
-            const d = addDays(today, 1);
-            properties.add(`[deadline:is:${format(d, 'yyyy-MM-dd')}]`);
+            add('deadline', 'is', format(addDays(today, 1), 'yyyy-MM-dd'));
         }
         if (lowerText.includes('due today') || lowerText.includes('deadline today')) {
-            properties.add(`[deadline:is:${format(today, 'yyyy-MM-dd')}]`);
+            add('deadline', 'is', format(today, 'yyyy-MM-dd'));
         }
         if (lowerText.includes('next week')) {
-            const d = addDays(today, 7);
-            properties.add(`[deadline:is:${format(d, 'yyyy-MM-dd')}]`);
+            add('deadline', 'is', format(addDays(today, 7), 'yyyy-MM-dd'));
         }
 
         const inDaysMatch = lowerText.match(/(?:in|within) (\d+) days/);
         if (inDaysMatch) {
-            const d = addDays(today, parseInt(inDaysMatch[1]));
-            properties.add(`[deadline:is:${format(d, 'yyyy-MM-dd')}]`);
+            add('deadline', 'is', format(addDays(today, parseInt(inDaysMatch[1])), 'yyyy-MM-dd'));
         }
 
         // --- Email ---
         const emailMatch = text.match(/[\w.-]+@[\w.-]+\.\w+/);
-        if (emailMatch) {
-            properties.add(`[email:is:${emailMatch[0]}]`);
-        }
+        if (emailMatch) add('email', 'is', emailMatch[0]);
 
         // --- Ontology-based Extraction (Enhanced) ---
-        const allKeys: string[] = [];
+        const allKeys = new Set<string>();
         const traverse = (nodes: OntologyNode[]) => {
-            nodes.forEach(n => {
-                if (n.attributes) {
-                    Object.keys(n.attributes).forEach(k => allKeys.push(k));
-                }
-                if (n.children) traverse(n.children);
+            nodes.forEach(node => {
+                Object.keys(node.attributes ?? {}).forEach(key => allKeys.add(key));
+                if (node.children) traverse(node.children);
             });
         };
         traverse(ontology);
-        allKeys.sort((a, b) => b.length - a.length);
-        const uniqueKeys = new Set(allKeys);
 
-        uniqueKeys.forEach(key => {
-            // Look for: Key: Value, Key is Value, Key under Value, Key over Value
-            // We use a broader regex to capture operators
+        [...allKeys].sort((a, b) => b.length - a.length).forEach(key => {
             const regex = new RegExp(`${key}\\s*(is|:|contains|under|below|over|above|less than|more than|greater than)\\s*([\\w\\s@.:/\\-]+)`, 'i');
             const match = text.match(regex);
+            if (!match) return;
 
-            if (match) {
-                const operatorStr = match[1].toLowerCase();
-                let val = match[2].trim();
-                val = val.replace(/[.,!?;:]$/, '');
+            const operatorStr = match[1].toLowerCase();
+            const value = match[2].trim().replace(/[.,!?;:]$/, '');
+            if (!value || value.length >= 50) return;
 
-                if (val && val.length < 50) {
-                    let op = 'is';
-                    if (operatorStr.includes('contains')) op = 'contains';
-                    else if (['under', 'below', 'less than'].some(s => operatorStr.includes(s))) op = 'less than';
-                    else if (['over', 'above', 'more than', 'greater than'].some(s => operatorStr.includes(s))) op = 'greater than';
+            let operator = 'is';
+            if (operatorStr.includes('contains')) operator = 'contains';
+            else if (['under', 'below', 'less than'].some(part => operatorStr.includes(part))) operator = 'less than';
+            else if (['over', 'above', 'more than', 'greater than'].some(part => operatorStr.includes(part))) operator = 'greater than';
 
-                    // Try to normalize quantity
-                    const q = parseQuantity(val);
-                    if (q && q.unit) {
-                        val = `${q.value} ${q.unit}`;
-                    }
-
-                    properties.add(`[${key}:${op}:${val}]`);
-                }
-            }
+            const quantity = parseQuantity(value);
+            add(key, operator, quantity?.unit ? `${quantity.value} ${quantity.unit}` : value);
         });
 
-        return Array.from(properties);
+        return Array.from(properties.values());
     }
 
     async optimizeOntology(_ontology: OntologyNode[]): Promise<{
