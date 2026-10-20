@@ -22,7 +22,6 @@ export * from './feedback/types.js';
 
 // Utilities
 export * from './utils/common.js';
-export * from './utils/errors/index.js';
 export * from './utils/logging.js';
 export * from './utils/encoding.js';
 export * from './utils/string.js';
