@@ -29,9 +29,10 @@ export const levenshteinDistance = (a: string, b: string): number => {
   return matrix[b.length][a.length];
 };
 
-export const escapeAttribute = (str: string): string => str
-  .replace(/&/g, '&amp;')
-  .replace(/"/g, '&quot;')
-  .replace(/'/g, '&#39;')
-  .replace(/</g, '&lt;')
-  .replace(/>/g, '&gt;');
+export const escapeAttribute = (value: string): string =>
+  value
+    .replace(/&/g, '\u0026\u0061\u006D\u0070\u003B')
+    .replace(/"/g, '\u0026\u0071\u0075\u006F\u0074\u003B')
+    .replace(/'/g, '\u0026\u0023\u0033\u0039\u003B')
+    .replace(/</g, '\u0026\u006C\u0074\u003B')
+    .replace(/>/g, '\u0026\u0067\u0074\u003B');

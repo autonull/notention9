@@ -15,9 +15,6 @@
     - Array methods (map, filter, reduce) over traditional loops for transformations
     - Destructuring for cleaner object/array access
     - Adhere to reasonable JavaScript code guidelines
-    - Don't arbitrarily change method functions to arrow functions. Keep the original function declaration style unless
-      there's a specific
-      technical reason related to 'this' binding. Use arrow functions for callbacks and utility functions only.
     - Consider modern JavaScript language syntax
 
 - Few comments: rely on self-documenting code.  Do not remove JSDocs containing essential Type details
@@ -40,3 +37,5 @@
 
 - Code structure: Keep functions focused (single responsibility), limit function length, organize methods logically,
   prefer composition over inheritance, maintain consistent class structure
+
+- Use `pnpm`/`pnpx`, not `npm`/`npx`

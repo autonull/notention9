@@ -1,5 +1,6 @@
 import {z} from 'zod';
 import type {Property} from '../types/index.js';
+import { escapeAttribute } from '../utils/string.js';
 
 const propertyJsonSchema = z.object({
     key: z.string().min(1),
@@ -20,13 +21,6 @@ export interface PropertyNodeAttrs {
     value: string;
     icon?: string;
 }
-
-const escapeAttribute = (value: string): string =>
-    value
-        .replace(/&/g, '&amp;')
-        .replace(/"/g, '&quot;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
 
 export const propertyToNodeAttrs = (property: Property, icon?: string): PropertyNodeAttrs => ({
     name: property.key,

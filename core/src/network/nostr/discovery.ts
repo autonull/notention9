@@ -1,5 +1,6 @@
 import { Note, PrivacyLevel, Property, NostrEvent } from '../../types/index.js';
-import { MatchEngine, MatchResult } from '../../matching/MatchEngine.js';
+import { MatchEngine } from '../../matching/MatchEngine.js';
+import { MatchResult } from '../../matching/index.js';
 import { pool, DEFAULT_RELAYS, convertEventToNote, queryEvents } from './nostr.js';
 import { Filter } from 'nostr-tools';
 import { hashValue } from './privacy.js';
