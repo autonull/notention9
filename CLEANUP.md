@@ -10,6 +10,9 @@ This document outlines significant refactoring opportunities for future sessions
 |------|--------|--------|
 | Split `types/index.ts` (236 lines) → `domain.ts`/`infra.ts`/`ui.ts` | ✅ Done | f4faa52 |
 | Remove duplicate `utils/errors` export from `core/src/index.ts` | ✅ Done | 455d4ea |
+| Consolidate `utils/logging.ts` + `utils/agentLogging.ts` | ✅ Done | bb5a46c |
+| Split `core/src/index.ts` (87 exports) → 14 domain barrels | ✅ Done | bb5a46c |
+| Extract `NoteIntentInferencer` + memoize `NotePipeline` | ✅ Done | bb5a46c |
 
 ---
 
