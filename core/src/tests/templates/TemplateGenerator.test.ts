@@ -61,8 +61,14 @@ describe('TemplateGenerator', () => {
         const jobTemplate = templates.find(t => t.id === 'tpl-job-request');
 
         expect(jobTemplate?.content).toContain('#job-request');
-        expect(jobTemplate?.content).toContain('[role is text]'); // Default value for string 'text', default operator 'is'
-        expect(jobTemplate?.content).toContain('[rate < 0]');     // Default value for number '0', default operator '<'
+        expect(jobTemplate?.content).toContain('data-name="role"'); // Default value for string 'text', default operator 'is'
+        expect(jobTemplate?.content).toContain('data-operator="is"');
+        expect(jobTemplate?.content).toContain('data-value="text"');
+        expect(jobTemplate?.content).toContain('data-icon="briefcase"');
+        expect(jobTemplate?.content).toContain('data-name="rate"'); // Default value for number '0', default operator '<'
+        expect(jobTemplate?.content).toContain('data-operator="&lt;"');
+        expect(jobTemplate?.content).toContain('data-value="0"');
+        expect(jobTemplate?.content).toContain('data-icon="cash"');
     });
 
     it('should traverse children', () => {

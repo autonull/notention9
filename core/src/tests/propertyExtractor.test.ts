@@ -1,4 +1,4 @@
-import { PropertyExtractor } from '../notes/propertyExtractor.js';
+import { PropertyExtractor } from '../notes/propertyExtractor/index.js';
 import { describe, test, expect, beforeEach } from 'vitest';
 
 describe('PropertyExtractor Tests', () => {

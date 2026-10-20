@@ -1,6 +1,6 @@
 import type { Note, SortOrder, OntologyNode } from '../types/index.js';
 import { GeoCoords, haversineDistance, parseGeoFromValues } from '../utils/geo.js';
-import { parseProperties } from './parsing.js';
+import { parseProperties } from './parsing/index.js';
 import { getCanonicalKey } from '../ontology/ontologyHelpers.js';
 import { MatchEngine } from '../matching/MatchEngine.js';
 import { isSpatialKey, isTemporalKey } from './properties.js';

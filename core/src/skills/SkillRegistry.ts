@@ -1,6 +1,6 @@
 import { BaseSkill } from './BaseSkill.js';
 import { SkillDefinition } from './skillPatternMatcher.js';
-import { ValidationError } from '../utils/errors.js';
+import { ValidationError } from '../utils/errors/index.js';
 import { Note } from '../types/index.js';
 import { Skill } from './types.js';
 import { logWarn, logError } from '../utils/logging.js';

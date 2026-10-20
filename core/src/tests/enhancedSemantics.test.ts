@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { PropertyExtractor } from '../notes/propertyExtractor.js';
+import { PropertyExtractor } from '../notes/propertyExtractor/index.js';
 import { patternRecognitionService } from '../patternRecognition/patternRecognition.js';
 import { createNote } from '../notes/notes.js';
 

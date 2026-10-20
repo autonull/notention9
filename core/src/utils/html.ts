@@ -6,7 +6,7 @@ const HTML_ENTITY_MAP: Record<string, string> = {
   '&quot;': '"',
 };
 
-import { REGEX } from '../notes/parsing.js';
+import { REGEX } from '../notes/parsing/index.js';
 
 /**
  * Extracts plain text from an HTML string using an environment-agnostic approach.

@@ -372,3 +372,216 @@ pnpm build && ls -lh core/dist/
 # Test coverage gaps
 pnpm test --coverage
 ```
+
+---
+
+## Batch Refactoring Techniques (For Future Sessions)
+
+### 1. **Automated Multi-File Edits with Codemods**
+Use `ts-morph` or `jscodeshift` for systematic transformations:
+
+```bash
+# Example: Replace all barrel imports with explicit paths
+# jscodeshift -t codemods/fix-barrel-imports.js core/src/
+
+# Example: Convert all switch-on-type to strategy pattern
+# jscodeshift -t codemods/switch-to-strategy.js core/src/
+```
+
+**Prepared codemods to write:**
+- `fix-barrel-imports.ts` - Replace `from './foo.js'` with `from './foo/index.js'` for directories
+- `consolidate-errors.ts` - Batch update imports from old error files to new hierarchy
+- `extract-interface.ts` - Generate interfaces from class public methods
+- `add-missing-exports.ts` - Auto-add exports to barrel files
+
+### 2. **AST-Based Bulk Refactoring with ts-morph**
+```typescript
+// scripts/refactor.ts
+import { Project, SyntaxKind } from 'ts-morph';
+
+const project = new Project({ tsConfigFilePath: 'tsconfig.json' });
+
+// 1. Find all switch statements on string literals (strategy candidates)
+const switches = project.getSourceFiles()
+  .flatMap(f => f.getDescendantsOfKind(SyntaxKind.SwitchStatement))
+  .filter(s => s.getExpression().getKind() === SyntaxKind.Identifier);
+
+// 2. Find all classes with >5 public methods (SRP violations)
+const largeClasses = project.getSourceFiles()
+  .flatMap(f => f.getClasses())
+  .filter(c => c.getMethods().filter(m => m.hasModifier(SyntaxKind.PublicKeyword)).length > 5);
+
+// 3. Find duplicate function signatures across files
+const funcSignatures = new Map<string, string[]>();
+project.getSourceFiles().forEach(f => {
+  f.getFunctions().forEach(fn => {
+    const sig = `${fn.getName()}(${fn.getParameters().map(p => p.getType().getText()).join(',')})`;
+    funcSignatures.set(sig, [...(funcSignatures.get(sig) || []), f.getFilePath()]);
+  });
+});
+```
+
+### 3. **Regex-Based Batch Edits (Quick & Dirty)**
+```bash
+# Rename all imports from old error modules
+find core/src -name "*.ts" -exec sed -i "s|from '../utils/errors.js'|from '../utils/errors/index.js'|g" {} +
+
+# Convert all 'const X = ' exports to 'export const X = '
+sed -i 's/^const \(.*\) = /export const \1 = /' core/src/utils/*.ts
+
+# Add barrel exports automatically
+for f in core/src/notes/parsing/*.ts; do
+  name=$(basename "$f" .ts)
+  echo "export * from './$name.js';" >> core/src/notes/parsing/index.ts
+done
+```
+
+### 4. **Structural Search & Replace (SSR) with IDE/Tooling**
+- **VS Code**: Multi-cursor editing + "Replace in Files" with regex
+- **WebStorm/IntelliJ**: Structural Search Replace (SSR) templates
+- **Command**: `pnpm dlx @typescript-eslint/typescript-eslint` for rule-based fixes
+
+### 5. **Graph-Driven Refactoring**
+```bash
+# 1. Generate dependency graph
+pnpm dlx madge --json core/src > deps.json
+
+# 2. Find god modules (high fan-out)
+node -e "
+const deps = require('./deps.json');
+Object.entries(deps).forEach(([file, imports]) => {
+  if (imports.length > 10) console.log(file, imports.length);
+});
+"
+
+# 3. Find circular deps
+pnpm dlx madge --circular core/src
+
+# 4. Plan extraction order: leaf nodes first, then inward
+```
+
+### 6. **Test-Generation for Refactoring Safety**
+```bash
+# Generate characterization tests before refactoring
+# 1. Run all tests, capture JSON output
+pnpm test --reporter=json > test-baseline.json
+
+# 2. For each function to extract, generate test with current behavior
+# Use vitest's test.each with real inputs from fixtures
+
+# 3. After refactor, compare outputs
+pnpm test --reporter=json > test-after.json
+diff test-baseline.json test-after.json
+```
+
+### 7. **Parallel File Operations**
+```bash
+# Use GNU parallel for independent edits
+ls core/src/notes/*.ts | parallel -j4 "sed -i 's/old/new/g' {}"
+
+# Batch create directory structures
+mkdir -p core/src/errors/{validation,execution,auth,config,network,data,prediction,ontology}
+mkdir -p core/src/quantities/{parsers,converters,operators,semantics}
+mkdir -p core/src/executor/{scheduler,runner,retry,queue}
+
+# Batch create index.ts barrels
+for d in core/src/*/; do
+  [ -f "${d}index.ts" ] || echo "export * from './module.js';" > "${d}index.ts"
+done
+```
+
+### 8. **Validation Gates (Pre-Commit / CI)**
+```yaml
+# .github/workflows/refactor-check.yml
+- name: Check for circular deps
+  run: pnpm dlx madge --circular core/src || exit 1
+
+- name: Check fan-out limits
+  run: |
+    pnpm dlx madge --json core/src | node scripts/check-fanout.js
+
+- name: Check no barrel file > 20 exports
+  run: |
+    for f in core/src/**/index.ts; do
+      count=$(grep -c "^export " "$f")
+      [ $count -gt 20 ] && echo "$f has $count exports" && exit 1
+    done
+```
+
+### 9. **Documentation-Driven Refactoring**
+```markdown
+# REFACTOR_PLAN.md template for each session
+## Target: tasks/executor.ts (414 lines)
+
+### Phase 1: Characterization Tests
+- [ ] Run existing tests → baseline
+- [ ] Add tests for each private method to be extracted
+- [ ] Snapshot outputs for complex methods
+
+### Phase 2: Extract Strategies (in parallel)
+- [ ] TaskScheduler.ts - all cron/interval logic
+- [ ] TaskRunner.ts - execute pipeline
+- [ ] RetryStrategy.ts - backoff/circuit breaker
+- [ ] TaskQueue.ts - priority/concurrency
+
+### Phase 3: Compose & Verify
+- [ ] executor/index.ts facade
+- [ ] Update imports in dependent files
+- [ ] Run full test suite
+
+### Phase 4: Cleanup
+- [ ] Delete original executor.ts
+- [ ] Update barrel exports
+- [ ] Verify bundle size reduction
+```
+
+### 10. **Incremental Migration Pattern**
+For large changes (e.g., data-driven units):
+```
+Phase 1: Add JSON loader alongside existing code
+Phase 2: Switch one consumer at a time (quantities.ts first)
+Phase 3: Add build-time validation of JSON
+Phase 4: Remove old constants file
+Phase 5: Add CI check for JSON schema compliance
+```
+
+---
+
+## Automation Scripts to Create
+
+| Script | Purpose | Est. Time |
+|--------|---------|-----------|
+| `scripts/find-god-modules.ts` | Identify files with fan-out > 10 | 15m |
+| `scripts/extract-strategy.ts` | Auto-generate strategy classes from switch | 30m |
+| `scripts/consolidate-barrels.ts` | Audit and fix barrel file exports | 20m |
+| `scripts/generate-characterization-tests.ts` | Create tests from runtime behavior | 45m |
+| `scripts/check-duplicate-logic.ts` | Find similar functions across codebase | 30m |
+
+### Run All Analysis at Once
+```bash
+# One-command audit
+pnpm run audit:cleanup
+
+# Where audit:cleanup = "
+#   pnpm dlx madge --circular core/src &&
+#   pnpm dlx ts-prune &&
+#   wc -l core/src/**/*.ts | sort -rn | head -20 &&
+#   node scripts/find-god-modules.ts &&
+#   node scripts/check-duplicate-logic.ts
+# "
+```
+
+---
+
+## Key Principle: **Batch, Don't Drip**
+
+> ❌ **Bad**: Edit one file, run tests, commit, repeat 20 times
+> ✅ **Good**: Plan all 20 edits, write codemod, run once, verify, commit
+
+**For each cleanup session:**
+1. **Analyze** (15m) - Run audit scripts, identify targets
+2. **Plan** (10m) - Write REFACTOR_PLAN.md with phases
+3. **Automate** (30m) - Write codemod/regex for repetitive changes
+4. **Execute** (5m) - Run batch transformation
+5. **Verify** (10m) - Run full test suite, check bundle size
+6. **Commit** (1m) - Single commit with clear message

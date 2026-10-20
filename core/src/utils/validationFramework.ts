@@ -3,7 +3,7 @@ import { patternRecognitionService, Prediction } from '../patternRecognition/pat
 import { predictionAccuracyTracker, AccuracyMetrics } from '../patternRecognition/predictionTracking.js';
 import { clamp, formatPercentage } from './common.js';
 import { logInfo, logWarn } from './logging.js';
-import { ValidationError } from './errors.js';
+import { ValidationError } from './errors/index.js';
 
 export interface ValidationConfig {
   targetAccuracyRate: number; // Target accuracy rate (e.g., 0.3 for 30% in Month 1)

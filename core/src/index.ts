@@ -1,11 +1,11 @@
 export * from './types/index.js';
-export * from './utils/errorTypes.js';
+export * from './utils/errors/index.js';
 export * from './network/nostr/nostr.js';
 export * from './network/nostr/privacy.js';
 export * from './ontology/ontology.default.js';
 export * from './ontology/ontologyHelpers.js';
 export * from './notes/properties.js';
-export * from './notes/parsing.js';
+export * from './notes/parsing/index.js';
 export * from './notes/serialization.js';
 export * from './utils/dateParsing.js';
 export * from './notes/notes.js';
@@ -22,7 +22,7 @@ export * from './feedback/types.js';
 
 // Utilities
 export * from './utils/common.js';
-export * from './utils/errors.js';
+export * from './utils/errors/index.js';
 export * from './utils/logging.js';
 export * from './utils/encoding.js';
 export * from './utils/string.js';
@@ -46,7 +46,7 @@ export * from './tasks/index.js';
 // Ontology-driven services
 export * from './ontology/ontologyService.js';
 export * from './ontology/ontologyServiceFactory.js';
-export * from './notes/propertyExtractor.js';
+export * from './notes/propertyExtractor/index.js';
 export * from './notes/queryBuilder.js';
 export * from './fixtures/demoWorkspace.js';
 export * from './export/exportEnvelope.js';

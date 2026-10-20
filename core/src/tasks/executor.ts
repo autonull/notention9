@@ -2,7 +2,7 @@ import type { Note, Property } from '../types/index.js';
 import { patternRecognitionService } from '../patternRecognition/patternRecognition.js';
 import { predictionAccuracyTracker } from '../patternRecognition/predictionTracking.js';
 import { generateId, safeDivide, clamp } from '../utils/common.js';
-import { TaskExecutionError } from '../utils/errors.js';
+import { TaskExecutionError } from '../utils/errors/index.js';
 import { logInfo, logError, logWarn } from '../utils/logging.js';
 import {
   TaskStatus,
