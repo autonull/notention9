@@ -59,7 +59,8 @@ interface FocusNote {
   type: "focus";
   role: "profile";
   author: PeerID;
-  affinities: Property[];  // tag affinities, peer affinities, domain weights
+  affinities: Property[];  // tag affinities, peer affinities, domain weights (EXPLICIT)
+  implicitAffinities?: Property[];  // derived from peer affinities (IMPLICIT, separate)
   filters: Property[];     // active filters (e.g., [domain:is:work], [priority:gte:0.7])
   updated: number;
 }
@@ -68,32 +69,37 @@ interface FocusNote {
 **Tasks:**
 - [ ] Add `focus` note type to ontology (domain: `identity`, class: `FocusProfile`)
 - [ ] Add focus note CRUD in `notes.ts` (get/set user focus profile)
-- [ ] Add focus-aware matching weight adjustment in `MatchingService.ts`
+- [ ] Add focus-aware matching weight adjustment in `MatchingService.ts` (uses explicit affinities only)
+- [ ] Add `implicitAffinities` computation: traverse peer affinities → tag affinities (PageRank-style, depth 2, decay 0.5)
+- [ ] Add contextual action "Propagate Affinities" → preview implicit boosts → user confirms to merge into explicit
 - [ ] Persist focus note in local storage (separate from regular notes)
-- [ ] Tests: focus note creation, matching integration
+- [ ] Tests: focus note creation, matching integration, implicit computation, propagation action
 
 ### 1.3 Real/Imaginary Modality (`core/src/ontology/ontology.default.ts`, `core/src/notes/parsing.ts`)
 
-**Terminology change:** Replace `request`/`offer` with `desired`/`actual` (or `intent`/`fact`) at ontology level. Keep `request`/`offer` as aliases for backward compat.
+**Terminology:** Internal = `actual` / `desired` (stable, binary). UI labels = configurable (default: "Is" / "Could"). Legacy `request`/`offer` = aliases.
 
 ```typescript
 // Ontology update
 const modalityProperty = {
   key: "dsn:modality",
   type: "enum",
-  enum: ["actual", "desired", "hypothetical"],  // "hypothetical" for planning
+  enum: ["actual", "desired"],
   default: "actual",
-  aliases: { "request": "desired", "offer": "actual" }
+  aliases: { "request": "desired", "offer": "actual" },
+  uiLabels: { actual: "Is", desired: "Could" }  // overridable
 };
 ```
 
+**Migration:** Dual-mode matcher reads `modality` OR legacy `role`; both work during transition. No big-bang.
+
 **Tasks:**
-- [ ] Add `dsn:modality` property to default ontology
+- [ ] Add `dsn:modality` property to default ontology with configurable `uiLabels`
 - [ ] Update parser to recognize `modality` shorthand (`[modality:is:desired]`)
-- [ ] Update matcher: desired notes constrain actual notes (existing logic works, just terminology)
-- [ ] Update UI labels: "Request" → "Desired", "Offer" → "Actual" (configurable)
+- [ ] Update matcher: dual-mode — reads `modality` first, falls back to `role` (`request`/`offer`)
+- [ ] Add UI label config in Settings → Terminology (preset: Is/Could, Fact/Intent, Actual/Desired, custom)
 - [ ] Add modality to note filter and query builder
-- [ ] Tests: modality parsing, matching, filtering
+- [ ] Tests: modality parsing, dual-mode matching, filtering, label config
 
 ### 1.4 Tag Hierarchy / Extend (`core/src/ontology/ontologyService.ts`)
 
@@ -194,7 +200,14 @@ interface SelectorProps {
 - Layout modes: force, hierarchical (by ontology), temporal, geographic
 - Export: PNG, SVG, GraphML
 
+**Shared Dependency:** `core/src/graph/NoteGraphService.ts` — single source for:
+- Backlink index (incremental, updated on note change)
+- Edge computation (matches, references, ontology, affinity)
+- Layout algorithms (force, hierarchical, temporal, geographic)
+- Graph queries (neighbors, paths, clusters, centrality)
+
 **Tasks:**
+- [ ] Create `NoteGraphService` in core: incremental index, edge types, layout algorithms
 - [ ] Create `GraphView` component with route `/graph`
 - [ ] Add to sidebar navigation (icon: git-branch)
 - [ ] Implement force-directed layout with Web Worker for large graphs
@@ -238,29 +251,32 @@ interface SelectorProps {
 - "Random note" button for serendipity
 - Keyboard navigation (j/k, enter, backspace)
 
+**Shared Dependency:** Consumes `NoteGraphService` for backlink index, outgoing links, graph minimap.
+
 **Tasks:**
 - [ ] Create `WikiView` component with route `/wiki`
 - [ ] Add to sidebar (icon: book-open)
 - [ ] Add wiki-link parser (`[[note title]]` → NoteID lookup)
 - [ ] Add wiki-link renderer (hover preview, click navigation)
-- [ ] Build backlink index (incremental, updated on note change)
 - [ ] Implement three-pane layout (resizable)
-- [ ] Add graph minimap (small force graph of local neighborhood)
+- [ ] Add graph minimap (uses `NoteGraphService.getNeighborhood()`)
 - [ ] Tests: link parsing, backlink index, navigation
 
 ### 3.4 Self View (`ui/src/components/views/SelfView.tsx`)
 
-**Spec:**
-- Identity management: keys (Nostr, Mesh, local), key rotation UI
-- Circles: create, manage members, circle keys
-- Focus Profile: visual affinity editor (tag cloud with sliders)
-- Reputation: received endorsements, given endorsements, blocks
-- Capabilities: granted/received delegations, expiry
-- Transport status: connected relays, mesh nodes, sync status
-- Export/Import: keys, focus, circles (encrypted backup)
+**Spec:** Single "My Identity" hub with modular tabs (architected for future extraction).
+
+| Tab | Content | Future Extraction Target |
+|-----|---------|--------------------------|
+| **Keys** | Nostr/Mesh/local keys, rotation, backup, NIP-07 | Settings → Identity |
+| **Circles** | Create, manage members, circle keys, rotation | Settings → Circles |
+| **Focus** | Visual affinity editor (tag cloud + peer sliders) | Dedicated Focus View |
+| **Reputation** | Endorsements given/received, blocks, trust graph | Trust View |
+| **Capabilities** | Delegations granted/received, scope, expiry | Agent View |
+| **Transport** | Relay/mesh status, sync indicators | Network View |
 
 **Tasks:**
-- [ ] Create `SelfView` component with route `/self`
+- [ ] Create `SelfView` component with route `/self` (modular tab components)
 - [ ] Add to sidebar (icon: user) — replaces avatar menu depth
 - [ ] Key management UI (generate, rotate, backup, NIP-07 connect)
 - [ ] Circle manager (create, invite, revoke, key rotation)
@@ -297,9 +313,11 @@ interface SelectorProps {
 
 **Tasks:**
 - [ ] Settings → "Advanced Selectors" toggle (enables niche selectors)
-- [ ] Settings → "Terminology": Request/Offer vs Desired/Actual vs Custom
-- [ ] Settings → Focus Profile editor link (opens Self View)
-- [ ] Settings → Graph/Trends/Wiki view toggles
+- [ ] Settings → "Terminology": preset labels (Is/Could, Fact/Intent, Actual/Desired, custom)
+- [ ] Settings → Focus Profile editor link (opens Self View → Focus tab)
+- [ ] Settings → Graph/Trends/Wiki/Self view toggles
+- [ ] **Ontology View → Add "Templates" tab:** user-friendly template gallery (one-click instantiate)
+- [ ] **Editor → "New from Template" picker** (reads same template registry)
 - [ ] Tests: settings persist, affect UI correctly
 
 ### 4.4 Migration & Backward Compat
@@ -342,9 +360,9 @@ Phase 2 (Selectors)
 ├── 2.3 Niche Selectors ────────────────┘
 
 Phase 3 (Views) — Independent, can parallelize
-├── 3.1 Graph View
+├── 3.1 Graph View ← NoteGraphService
 ├── 3.2 Trends View
-├── 3.3 Wiki View
+├── 3.3 Wiki View ← NoteGraphService
 └── 3.4 Self View
 
 Phase 4 (Integration)
@@ -352,6 +370,9 @@ Phase 4 (Integration)
 ├── 4.2 Editor Integration ← Phase 2
 ├── 4.3 Settings Integration ← Phase 1,2,3
 └── 4.4 Migration ← Phase 1,3
+
+Core Infrastructure (Phase 3 enabler):
+└── NoteGraphService (core/src/graph/) ← builds once, serves Graph + Wiki + future views
 ```
 
 ---
@@ -408,22 +429,31 @@ Phase 4 (Integration)
 
 | Layer | Tool | Coverage Target |
 |-------|------|-----------------|
-| Core (types, matching, ontology) | vitest | 90%+ |
+| Core (types, matching, ontology, graph) | vitest | 90%+ |
 | UI Components | vitest + React Testing Library | 80%+ |
 | E2E Journeys | Playwright | 10 critical paths |
 | Visual Regression | Playwright + pixelmatch | All 4 new views + editor |
 | Performance | Custom benchmarks | Graph 1000 nodes < 100ms layout |
+
+**Critical Test Cases:**
+- Affinity: parsing, matching, serialization, implicit computation, propagation action
+- Modality: dual-mode matching (modality + legacy role), label config
+- NoteGraphService: incremental index, edge types, layout algorithms, backlinks
+- Graph/Wiki Views: shared service consumption, filter/layout sync
+- Self View: each tab functional, export/import roundtrip
 
 ---
 
 ## 📝 Notes for Implementers
 
 1. **Affinity = bipolar** (-1..+1) is the key differentiator from simple weight. Enables trust network (Phase 5).
-2. **Modality terminology** is user-configurable. Default to "Actual/Desired" but allow "Fact/Intent", "Is/Should", "Real/Imaginary".
-3. **Graph View performance** is the highest technical risk. Use Web Worker + canvas from day 1.
-4. **Wiki View backlinks** need incremental index — don't recompute on every render.
-5. **Self View** touches security-critical code (keys, circles). Review by 2nd pair of eyes.
-6. **Migration** must be idempotent and reversible (backup first).
+2. **Implicit vs Explicit affinity** are separate. Implicit = computed from peer affinities (depth 2, decay 0.5). User must explicitly invoke "Propagate Affinities" to promote implicit → explicit. No silent inference.
+3. **Modality = binary** (`actual`/`desired`). Internal stable, UI labels configurable (default "Is"/"Could"). Legacy `request`/`offer` = aliases, dual-mode matcher. No "hypothetical" — planning uses `desired` with `priority` or `status:planning`.
+4. **Graph View performance** is the highest technical risk. Use Web Worker + canvas from day 1. `NoteGraphService` is shared with Wiki View — build it first.
+5. **Wiki View backlinks** need incremental index — don't recompute on every render. `NoteGraphService` provides this.
+6. **Self View** touches security-critical code (keys, circles). Review by 2nd pair of eyes. Tabs are modular components for future extraction.
+7. **Templates** live in Ontology View (Templates tab) + Editor "New from Template" picker. Same template registry.
+8. **Migration** must be idempotent and reversible (backup first).
 
 ---
 
