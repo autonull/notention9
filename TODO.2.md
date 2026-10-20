@@ -404,6 +404,63 @@ Likely candidates (pick 3-5):
 
 ---
 
+## APPENDIX L: LEGACY NETENTION (netjs) — CONCEPTS WORTH RECONSIDERING
+
+*The previous incarnation (2013-2017, 681 commits, AGPL-3.0) had sophisticated features that may inspire TODO.2+ decisions. Not a port — a salvage operation.*
+
+### Core Concepts
+
+| Concept | Description | Current Status | Revisit For |
+|---------|-------------|----------------|-------------|
+| **Focus** | Semantic ADC — machine-readable mental state vector (tags + strengths + filters). Used for relevance ranking, prototype creation, attention dynamics. | Partial (matching context) | Q3 ambient matching; P2 transitions |
+| **nobject** | Canonical semantic unit: UUID, name, author, subject, timestamps, scope, value[] (tag/property + strength 0-1), in/out/with edges (directed/undirected relationships). | Note + properties + matching | P1 content-addressing; graph views |
+| **Variable-strength tagging** | Every tag/property value has strength 0-100%. Enables fuzzy correlation, not binary matching. | Matching scores only | Q3 match confidence UI; ontology learning |
+| **Real vs Imaginary** | "Is" (factual/definite) vs "Should be" (desired/indefinite). Matching = lock/key between imaginary desires and real facts. | Request/offer intent | P2 signed transitions; Q3 matching metaphor |
+| **Sharing scopes** | Private (author only) / Trusted (explicit trust list) / Public / Anonymous (no author). | Public/Private only | P3 sealed visibility; Q5 network presence |
+| **Multiple identities per account** | One login → many "Selves" with independent data. Switch via "become". | Single identity per key | P5 transport pluralism; team workspaces |
+| **WebRTC direct browser↔browser** | Text/audio/video/file transfer without server relay. | Not implemented | P5 transport pluralism; local-first sync |
+
+### Ontology & Data Types (Notably Rich)
+
+| Type | netjs Features | Current Gap |
+|------|----------------|-------------|
+| **Tag hierarchy** | `extend` array → super-tag inheritance | Flat ontology only |
+| **Property types** | boolean, integer, real (units, precision, min/max, slider), url (iframe), text, html, image, markdown, spacepoint (lat/lng/alt/heading/planet), spaceregion, timepoint, timerange, timeduration, sketch, object ref (tag restrictions), timeseries, tagcloud, select (options, min/max) | Basic string/number/date/enum |
+| **Arity constraints** | `min`/`max` per property (cardinality) | Not enforced |
+| **Read-only properties** | `readonly` flag | Not supported |
+
+### UI/UX Patterns
+
+| Pattern | netjs Approach | Current Equivalent | Idea |
+|---------|----------------|-------------------|------|
+| **Tag Selectors** | Tree Tagger, Wiki Tagger, Emotion Tagger, User Tagger, Need Tagger, URL Tagger, Favorites Tagger | Single property popup | Domain-specific pickers (Q2) |
+| **Focus Editor** | Dedicated UI for mental-state vector | "Describe it" composer | Q6 invisible AI |
+| **Views** | Browse (List/Grid/Slides), Chat, Time, Map, Self, Share, Trends, Templates, Wiki, Graph, Main Menu, Plugin | Dashboard, Notes, Map, Timeline, Network, Chat, Ontology, Settings | View taxonomy (H) |
+| **Actions** | Contextual ops on selected objects, relevance-determined | Command palette, editor menu | Q3 ambient actions |
+| **Avatar Menu** | Identity, focus display, view switcher, common actions | Header + sidebar | Mobile bottom nav (J) |
+| **Hotkeys + Voice Input** | First-class | Keyboard shortcuts only | Accessibility (J) |
+| **Offline/Local mode** | localStorage + static ontology + PHP scripts | Full PWA + IndexedDB | Already ahead |
+
+### Architecture
+
+| Layer | netjs | Current |
+|-------|-------|---------|
+| **Client** | HTML5/JS (jQuery + jQueryUI), responsive, themes, rebrandable | React PWA, Tailwind |
+| **Server** | Node.js + Express + socket.io + WebRTC | Agent (MCP) + Local relay |
+| **Database** | MongoDB (native NoSQL) | IndexedDB (localforage) |
+| **P2P** | Telehash, Kademlia, Gnutella, BitTorrent, Yacy, GnuNET (planned) | Nostr, Meshtastic, Local |
+| **Plugins** | Runtime activate/deactivate, standard interface | Agent skills (MCP tools) |
+| **Config** | options.js (server), client_configuration.js (local) | SettingsContext + storageKeys |
+
+### Philosophy Quotes (from README.technical.md)
+
+> "Don't 'search' — simply describe what you want to happen."
+> "Netention works at the thought level, to elicit descriptions of 'something' you're thinking about."
+> "A hypothetical (desired) object can become an actual object... like ice undergoing a state change from solid to liquid."
+> "The term Netention is a portmanteau of Network, and Attention or Intention. It refers to a community's collective abilities."
+
+---
+
 ## APPENDIX K: DECISION LOG (Append-Only)
 
 *Record of team decisions for accountability*
