@@ -14,7 +14,7 @@
 | **Variable Strength** | New `Affinity` property type: bipolar -1..+1 (enables like/dislike, trust) |
 | **Real vs Imaginary** | Core metaphor: `Is` (actual) vs `Should be` (desired). Replace `request/offer` terminology. |
 | **Tag Selectors** | General-purpose default + extensible selector registry for niche domains |
-| **Views to Add** | Graph, Trends, Wiki, Self (Templates = Ontology view) |
+| **Views to Add** | Graph (+ Analytics), Wiki, Self (Templates = Ontology view) |
 | **Contextual Actions** | Keep current (command palette + editor toolbar) |
 
 ---
@@ -33,15 +33,29 @@ interface AffinityValue {
   target: string;   // NoteID, tag IRI, or PeerID this affinity applies to
 }
 
-// PropertyOptions extension
+// PropertyOptions extensions
 interface PropertyOptions {
   // ...existing
   affinity?: {
     bipolar: boolean;        // true = -1..+1, false = 0..1
     targetType: "note" | "tag" | "peer" | "ontology_class";
   };
+  readonly?: boolean;        // computed/derived; editor shows but no edit
+  arity?: { min: number; max: number };  // soft constraints: UI hints only
+  numeric?: {                  // for number/quantity unification
+    unit?: string;             // "count", "USD", "m", "kg", etc.
+    precision?: number;        // 0 = integer, >0 = decimal places
+    min?: number; max?: number; // soft range for slider
+  };
+  selectOptions?: string[];    // for select/enum UI
 }
 ```
+
+**Property Type Changes:**
+- Merge `integer` into `number` with `precision: 0`
+- `quantity` = `number` + `unit` (kept separate for unit handling)
+- Add `boolean`, `duration`, `select` as new types
+- Add `url`, `markdown`, `timepoint`, `timerange` as display-only types (no matching)
 
 **Tasks:**
 - [ ] Add `affinity` to `TypedValue` union in `properties.ts`
@@ -49,7 +63,12 @@ interface PropertyOptions {
 - [ ] Add affinity matcher in `matching/matchers.ts` (cosine similarity for tag vectors, direct compare for peer affinity)
 - [ ] Add affinity to ontology property types (`ontology.default.ts`: `dsn:affinity`)
 - [ ] Update canonicalization for affinity type
-- [ ] Tests: affinity parsing, matching, serialization
+- [ ] Add `boolean`, `duration`, `select` to `PropertyType` union
+- [ ] Add `url`, `markdown`, `timepoint`, `timerange` as display-only types
+- [ ] Merge `integer` → `number` with `precision: 0` in inference/parser
+- [ ] Add `PropertyOptions.readonly`, `arity`, `numeric`, `selectOptions`
+- [ ] Update UnifiedSelector to render readonly, arity hints, numeric slider, select dropdown
+- [ ] Tests: affinity parsing, matching, serialization; new types; readonly/arity UI
 
 ### 1.2 Focus Profile Note (`core/src/notes/notes.ts`, `core/src/ontology/ontology.default.ts`)
 
@@ -153,19 +172,31 @@ interface SelectorProps {
 **Current `PropertyPopup` enhanced:**
 - Tree view for hierarchical properties (uses `extend`)
 - Search/filter across all values
-- Strength/affinity slider for affinity properties
+- Strength/affinity slider for affinity properties (-1..+1 bipolar)
+- Boolean toggle for boolean properties
+- Duration picker for duration properties
+- Select dropdown for select properties (uses `selectOptions`)
+- Numeric slider for number/quantity (uses `numeric.unit`, `numeric.precision`, `numeric.min/max`)
 - Enum pills for enum properties
 - Date/time picker for temporal
 - Map picker for geo
+- URL input for url properties
+- Markdown editor for markdown properties
+- Readonly indicator (lock icon, no edit controls)
+- Arity hints: required badge (min>0), max chips warning (max set)
 - Multi-select with chips
 
 **Tasks:**
 - [ ] Refactor `PropertyPopup` → `UnifiedSelector` component
 - [ ] Add tree/hierarchy mode (collapsible ontology tree)
 - [ ] Add affinity slider (-1..+1 bipolar, 0..1 unipolar)
+- [ ] Add boolean toggle, duration picker, select dropdown
+- [ ] Add numeric slider with unit/precision/min/max
+- [ ] Add URL input, markdown editor
+- [ ] Add readonly indicator, arity hints
 - [ ] Add "recent values" and "suggested values" sections
 - [ ] Keyboard navigation (arrow keys, enter, escape)
-- [ ] Tests: all property types, keyboard, hierarchy
+- [ ] Tests: all property types, keyboard, hierarchy, readonly, arity
 
 ### 2.3 Niche Selectors (Register but Hidden by Default)
 
@@ -176,6 +207,8 @@ interface SelectorProps {
 | `EmotionSelector` | `dsn:feeling`, `dsn:mood`, `type:affinity` | Visual emoji/scale for subjective affinity |
 | `LocationSelector` | `dsn:location`, `type:geo` | Map-based place picker |
 | `TemplateSelector` | `dsn:template`, `role:template` | One-click template instantiation |
+| `TimeRangeSelector` | `type:timerange`, `type:timepoint` | Visual timeline picker for scheduling |
+| `MarkdownSelector` | `type:markdown` | Rich text editor with live preview |
 
 **Tasks:**
 - [ ] Implement each selector as separate component
@@ -191,13 +224,14 @@ interface SelectorProps {
 
 ### 3.1 Graph View (`ui/src/components/views/GraphView.tsx`)
 
-**Spec:**
+**Spec:** Unified exploration + analytics view.
 - Force-directed graph (d3-force or react-force-graph)
 - Nodes = notes (filterable by tag, type, date, modality)
 - Edges = matches (solid), references/parents (dashed), ontology links (dotted)
 - Click node → detail panel; double-click → open in Editor
 - Filters: modality, tag, date range, match score threshold
 - Layout modes: force, hierarchical (by ontology), temporal, geographic
+- **Analytics Panel (collapsible sidebar):** Tag frequency, match rates, affinity distribution, modality balance, property type distribution, top matchers
 - Export: PNG, SVG, GraphML
 
 **Shared Dependency:** `core/src/graph/NoteGraphService.ts` — single source for:
@@ -205,47 +239,24 @@ interface SelectorProps {
 - Edge computation (matches, references, ontology, affinity)
 - Layout algorithms (force, hierarchical, temporal, geographic)
 - Graph queries (neighbors, paths, clusters, centrality)
+- Analytics aggregations (for panel)
 
 **Tasks:**
-- [ ] Create `NoteGraphService` in core: incremental index, edge types, layout algorithms
+- [ ] Create `NoteGraphService` in core: incremental index, edge types, layout algorithms, analytics
 - [ ] Create `GraphView` component with route `/graph`
 - [ ] Add to sidebar navigation (icon: git-branch)
 - [ ] Implement force-directed layout with Web Worker for large graphs
 - [ ] Add filter toolbar (modality chips, tag multi-select, date range, score slider)
 - [ ] Add layout mode selector
-- [ ] Add node detail panel (side drawer)
+- [ ] Add node detail panel (side drawer) — **also serves as analytics panel when no node selected**
 - [ ] Add "Open in Editor" action
 - [ ] Performance: virtualize >500 nodes; canvas rendering
-- [ ] Tests: rendering, filtering, layout modes, performance
+- [ ] Tests: rendering, filtering, layout modes, analytics panel, performance
 
-### 3.2 Trends/Analytics View (`ui/src/components/views/TrendsView.tsx`)
+### 3.2 Wiki View (`ui/src/components/views/WikiView.tsx`)
 
-**Spec:**
-- Tag frequency over time (area chart)
-- Match rate trends (line chart: matches/day, success rate)
-- Activity heatmap (calendar view: notes created, matches found, notes published)
-- Ontology growth (new classes, properties, aliases over time)
-- Modality balance (actual vs desired ratio)
-- Affinity distribution (histogram of affinity values)
-- Top matchers (which notes match most often)
-- Time range picker (7d, 30d, 90d, 1y, all)
-
-**Tasks:**
-- [ ] Create `TrendsView` component with route `/trends`
-- [ ] Add to sidebar (icon: trending-up)
-- [ ] Implement analytics engine (`core/src/analytics/trends.ts`) — computes aggregations from local notes
-- [ ] Use recharts or chart.js for visualizations
-- [ ] Add time range picker + modality filter
-- [ ] Add "Export CSV" for each chart
-- [ ] Tests: analytics calculations, chart rendering, time filtering
-
-### 3.3 Wiki View (`ui/src/components/views/WikiView.tsx`)
-
-**Spec:**
-- Interlinked note browser (like Obsidian/Roam graph but read-optimized)
-- Left: search + tag filter + backlinks panel
-- Center: rendered note content (rich text + property chips)
-- Right: outgoing links + incoming backlinks + graph minimap
+**Spec:** Interlinked note browser (read-optimized). **Architected to share NoteGraphService with Graph View; can merge later as Graph View "wiki layout mode".**
+- Three-pane layout (resizable): Left (search + tag filter + backlinks), Center (rendered content + property chips), Right (outgoing links + incoming backlinks + graph minimap)
 - `[[wiki-link]]` syntax support in notes (parser + renderer)
 - Click link → navigate; Ctrl+click → open in new pane
 - "Random note" button for serendipity
@@ -260,9 +271,10 @@ interface SelectorProps {
 - [ ] Add wiki-link renderer (hover preview, click navigation)
 - [ ] Implement three-pane layout (resizable)
 - [ ] Add graph minimap (uses `NoteGraphService.getNeighborhood()`)
+- [ ] **Architect for future merge:** Wiki components import from shared `GraphComponents`; layout mode switchable
 - [ ] Tests: link parsing, backlink index, navigation
 
-### 3.4 Self View (`ui/src/components/views/SelfView.tsx`)
+### 3.3 Self View (`ui/src/components/views/SelfView.tsx`)
 
 **Spec:** Single "My Identity" hub with modular tabs (architected for future extraction).
 
@@ -298,16 +310,22 @@ interface SelectorProps {
 - [ ] Wire focus profile into matching weights (focus tags boost matching)
 - [ ] Wire modality into match explanations ("Desired X matches Actual Y")
 - [ ] Add affinity to match result explanations
-- [ ] Tests: end-to-end matching with affinity + focus + modality
+- [ ] Arity constraints: missing required (min>0) = unsatisfied constraint; excess over max = ignored (soft)
+- [ ] Read-only properties: included in matching if present; never user-editable
+- [ ] Tests: end-to-end matching with affinity + focus + modality + arity + readonly
 
 ### 4.2 Editor Integration
 
 **Tasks:**
 - [ ] PropertyPopup → UnifiedSelector (Phase 2.2)
-- [ ] Add modality chip in editor (shows Actual/Desired/Hypothetical)
-- [ ] Add affinity slider for affinity properties
+- [ ] Add modality chip in editor (shows Actual/Desired)
+- [ ] Add affinity slider for affinity properties (-1..+1 bipolar)
+- [ ] Add readonly display (chips with lock icon, no edit)
+- [ ] Add arity hints (required badge, max chips warning)
+- [ ] Add numeric slider for number/quantity with unit + precision
+- [ ] Add select dropdown for select properties
 - [ ] Add "Convert to Desired/Actual" action in editor menu
-- [ ] Tests: editor with new property types, modality toggle
+- [ ] Tests: editor with new property types, modality toggle, readonly, arity, numeric, select
 
 ### 4.3 Settings Integration
 
@@ -330,6 +348,22 @@ interface SelectorProps {
 
 ---
 
+## 📦 Phase 4.5: Mobile Polish (Week 6-7)
+
+*Separate phase: desktop-first views → mobile-responsive + touch + PWA.*
+
+**Tasks:**
+- [ ] Bottom navigation bar (replaces sidebar on <640px): Notes, Graph, Wiki, Self, + (capture)
+- [ ] Touch targets: 48dp minimum; swipe gestures (swipe back, swipe between views)
+- [ ] Responsive layouts: Graph View (touch pan/zoom), Wiki View (collapsible panes), Self View (tabbed mobile)
+- [ ] PWA install prompt, offline indicator, sync status badge
+- [ ] Voice input: Web Speech API in Editor/Composer; fallback to WebLLM Whisper (offline)
+- [ ] Global hotkey system: configurable shortcuts (new note, quick capture, find matches, toggle views, publish)
+- [ ] Accessibility: ARIA labels, focus management, screen reader support, high contrast mode
+- [ ] Tests: mobile viewports, touch interactions, PWA install, voice/hotkeys, a11y audit
+
+---
+
 ## 📦 Phase 5: Stretch (Post-TODO.3)
 
 *Not in immediate plan but designed for:*
@@ -339,9 +373,12 @@ interface SelectorProps {
 | Sealed visibility (P3) | Phase 1 affinity + focus for trust scoring |
 | Signed transitions (P2) | Phase 1 modality for transition typing |
 | Content-addressed notes (P1) | Independent; enables dedupe in Graph view |
-| WebRTC transport (Netention) | Phase 3 Self View transport status |
+| WebRTC transport (Netention) | Direct browser P2P (text/audio/video/file); signaling via Nostr/mesh |
 | Agent autonomy | Phase 1 focus + affinity for intent prediction |
 | CRDT sync | Phase 3 Wiki view backlink index structure |
+| Anonymous scope | Cryptographic anonymity guarantees (ZK, mixnets) |
+| Multiple identities/personas | If circles + subkeys prove insufficient |
+| Advanced property types (sketch, timeseries, tagcloud, object ref) | User demand; plugin-extensible |
 
 ---
 
@@ -360,10 +397,9 @@ Phase 2 (Selectors)
 ├── 2.3 Niche Selectors ────────────────┘
 
 Phase 3 (Views) — Independent, can parallelize
-├── 3.1 Graph View ← NoteGraphService
-├── 3.2 Trends View
-├── 3.3 Wiki View ← NoteGraphService
-└── 3.4 Self View
+├── 3.1 Graph View (+ Analytics Panel) ← NoteGraphService
+├── 3.2 Wiki View ← NoteGraphService (architected for future merge as Graph layout mode)
+└── 3.3 Self View
 
 Phase 4 (Integration)
 ├── 4.1 Matching Integration ← Phase 1
@@ -384,6 +420,9 @@ Core Infrastructure (Phase 3 enabler):
 - [ ] Focus note creates, persists, influences matching weights
 - [ ] Modality property works: notes tagged `desired`/`actual`, matcher respects it
 - [ ] Tag hierarchy: child tags match parent constraints
+- [ ] New property types: boolean, duration, select, url, markdown, timepoint, timerange parse/display
+- [ ] Numeric unification: integer → number (precision=0); quantity = number+unit
+- [ ] PropertyOptions: readonly (editor shows, no edit), arity (UI hints), numeric (slider/unit), selectOptions (dropdown)
 - [ ] All Phase 1 tests pass (`pnpm test --filter=core`)
 
 ### Phase 2 Complete When:
@@ -394,11 +433,10 @@ Core Infrastructure (Phase 3 enabler):
 - [ ] All Phase 2 tests pass (`pnpm test --filter=ui`)
 
 ### Phase 3 Complete When:
-- [ ] Graph View: renders 1000 notes @ 60fps, filters work, export works
-- [ ] Trends View: charts render, time filtering works, CSV export works
-- [ ] Wiki View: wiki-links parse/render, backlinks accurate, navigation works
+- [ ] Graph View: renders 1000 notes @ 60fps, filters work, export works, analytics panel shows tag freq/match rates/affinity dist/modality balance
+- [ ] Wiki View: wiki-links parse/render, backlinks accurate, navigation works, three-pane layout responsive
 - [ ] Self View: key/circle/focus/reputation/capability/transport all functional
-- [ ] All four views accessible from sidebar, responsive on mobile
+- [ ] All three views accessible from sidebar, responsive on mobile
 - [ ] All Phase 3 tests pass (`pnpm test --filter=ui`)
 
 ### Phase 4 Complete When:
@@ -415,13 +453,14 @@ Core Infrastructure (Phase 3 enabler):
 
 | Phase | Dev Days | Risk |
 |-------|----------|------|
-| 1: Data Model | 8 | Low (core types, well-tested patterns) |
-| 2: Selectors | 5 | Medium (editor refactor, plugin API) |
-| 3: Views | 15 | Medium-High (Graph perf, Wiki complexity) |
+| 1: Data Model | 10 | Low-Medium (core types, new property system, matcher updates) |
+| 2: Selectors | 6 | Medium (editor refactor, plugin API, 7 niche selectors) |
+| 3: Views | 12 | Medium-High (Graph perf, Wiki complexity) |
 | 4: Integration | 5 | Low (wiring existing pieces) |
-| **Total** | **~33 days** | **~6-7 weeks solo** |
+| 4.5: Mobile Polish | 8 | Medium (touch, PWA, voice, hotkeys, a11y) |
+| **Total** | **~41 days** | **~8-9 weeks solo** |
 
-**Parallelization:** Phase 3 views are independent — can split across 2-3 devs.
+**Parallelization:** Phase 3 views (Graph, Wiki, Self) independent — can split across 2-3 devs. Mobile Polish can start after Graph View desktop works.
 
 ---
 
@@ -449,11 +488,21 @@ Core Infrastructure (Phase 3 enabler):
 1. **Affinity = bipolar** (-1..+1) is the key differentiator from simple weight. Enables trust network (Phase 5).
 2. **Implicit vs Explicit affinity** are separate. Implicit = computed from peer affinities (depth 2, decay 0.5). User must explicitly invoke "Propagate Affinities" to promote implicit → explicit. No silent inference.
 3. **Modality = binary** (`actual`/`desired`). Internal stable, UI labels configurable (default "Is"/"Could"). Legacy `request`/`offer` = aliases, dual-mode matcher. No "hypothetical" — planning uses `desired` with `priority` or `status:planning`.
-4. **Graph View performance** is the highest technical risk. Use Web Worker + canvas from day 1. `NoteGraphService` is shared with Wiki View — build it first.
-5. **Wiki View backlinks** need incremental index — don't recompute on every render. `NoteGraphService` provides this.
-6. **Self View** touches security-critical code (keys, circles). Review by 2nd pair of eyes. Tabs are modular components for future extraction.
-7. **Templates** live in Ontology View (Templates tab) + Editor "New from Template" picker. Same template registry.
-8. **Migration** must be idempotent and reversible (backup first).
+4. **Property type simplification**: `integer` merged into `number` (precision=0). `quantity` = `number` + `unit` (kept separate for unit handling). New types: `boolean`, `duration`, `select`, `url`, `markdown`, `timepoint`, `timerange` (display-only).
+5. **Arity = soft constraints only**. `PropertyOptions.arity.min/max` → UI hints (required badge, max warning). Matcher: missing required = unsatisfied; excess = ignored. No hard validation.
+6. **Read-only = property option**. `PropertyOptions.readonly=true` → editor shows chips with lock icon, no edit. Matcher can still use.
+7. **Graph View = exploration + analytics**. Analytics panel (collapsible sidebar) replaces separate Trends View. Shows tag freq, match rates, affinity dist, modality balance, property types, top matchers.
+8. **Wiki View architected for merge**. Components shared with Graph View; can become Graph View "wiki layout mode" later. `NoteGraphService` provides backlinks, minimap.
+9. **Graph View performance** is the highest technical risk. Use Web Worker + canvas from day 1. `NoteGraphService` shared with Wiki — build first.
+10. **Self View** touches security-critical code (keys, circles). Review by 2nd pair of eyes. Tabs modular for future extraction.
+11. **Templates** in Ontology View (Templates tab) + Editor "New from Template" picker. Same registry.
+12. **Multiple identities skipped**. Circles + subkeys cover persona contexts.
+13. **Anonymous scope deferred**. Requires crypto guarantees (ZK, mixnets).
+14. **Plugin/skill systems kept separate but consistent**: Agent skills (MCP), UI plugins (metaphors), note-defined skills — three registries with shared base interface.
+15. **Voice input**: Web Speech API (online) + WebLLM Whisper (offline) in Editor/Composer. Phase 4.5.
+16. **Global hotkeys**: Configurable shortcuts for capture, matching, views, publish. Phase 4.5.
+17. **Mobile Polish = separate Phase 4.5**: Bottom nav, touch targets, swipe gestures, PWA install, offline sync UI, a11y.
+18. **Migration** must be idempotent and reversible (backup first).
 
 ---
 
