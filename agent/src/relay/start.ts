@@ -1,4 +1,4 @@
-import {NostrRelay} from './NostrRelay.js';
+import {NostrRelay} from '@notention/core';
 
 const argValue = (name: string): string | undefined => {
     const index = process.argv.indexOf(`--${name}`);

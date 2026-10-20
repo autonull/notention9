@@ -1,6 +1,6 @@
-import {WebSocketServer, WebSocket} from 'ws';
-import type {Server as HttpServer} from 'http';
-import {matchFilters, verifyEvent, type Event, type Filter} from 'nostr-tools';
+import { WebSocketServer, WebSocket } from 'ws';
+import type { Server as HttpServer } from 'http';
+import { matchFilters, verifyEvent, type Event, type Filter } from 'nostr-tools';
 
 export interface RelayLimits {
     maxEventBytes: number;
@@ -20,7 +20,7 @@ interface Subscription {
     filters: Filter[];
 }
 
-interface RelayOptions {
+export interface RelayOptions {
     port?: number;
     host?: string;
     path?: string;
@@ -43,17 +43,17 @@ export class NostrRelay {
     readonly url: string;
 
     constructor(options: RelayOptions = {}) {
-        this.limits = {...DEFAULT_LIMITS, ...options.limits};
+        this.limits = { ...DEFAULT_LIMITS, ...options.limits };
         const path = options.path ?? '/';
         this.ownsServer = !options.server;
 
         this.wss = options.server
-            ? new WebSocketServer({server: options.server, path})
-            : new WebSocketServer({port: options.port ?? 7000, host: options.host ?? '127.0.0.1', path});
+            ? new WebSocketServer({ server: options.server, path })
+            : new WebSocketServer({ port: options.port ?? 7000, host: options.host ?? '127.0.0.1', path });
 
         this.wss.on('connection', ws => this.handleConnection(ws));
 
-        const port = options.port ?? (this.wss.address() as {port?: number})?.port ?? 7000;
+        const port = options.port ?? (this.wss.address() as { port?: number })?.port ?? 7000;
         const host = options.host ?? '127.0.0.1';
         this.url = `ws://${host}:${port}${path === '/' ? '' : path}`;
     }
@@ -62,6 +62,10 @@ export class NostrRelay {
         this.subscriptions.clear();
         for (const client of this.wss.clients) client.close(1001, 'relay shutting down');
         await new Promise<void>(resolve => this.wss.close(() => resolve()));
+    }
+
+    stop(): void {
+        this.close();
     }
 
     private handleConnection(ws: WebSocket) {
@@ -144,7 +148,7 @@ export class NostrRelay {
             return;
         }
 
-        own.set(subId, {filters});
+        own.set(subId, { filters });
 
         const matching = [...this.events.values()]
             .filter(event => matchFilters(filters, event))
@@ -157,7 +161,7 @@ export class NostrRelay {
 
     private broadcast(event: Event) {
         for (const [ws, subs] of this.subscriptions) {
-            for (const [subId, {filters}] of subs) {
+            for (const [subId, { filters }] of subs) {
                 if (matchFilters(filters, event)) send(ws, ['EVENT', subId, event]);
             }
         }

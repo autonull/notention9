@@ -8,7 +8,7 @@ import { SocketController } from './server/SocketController.js';
 import { ConfigManager } from './config/ConfigManager.js';
 import { setupMcpServer } from './server/McpServer.js';
 import { Server as HttpServer } from 'http';
-import { NostrRelay } from './relay/NostrRelay.js';
+import { NostrRelay } from '@notention/core';
 
 export interface AgentServerOptions {
     relay?: boolean;

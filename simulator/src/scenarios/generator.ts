@@ -25,15 +25,8 @@ export function generateScenario(agentCount: number, duration: number): Scenario
     const configs: AgentConfig[] = [];
     const events: EventConfig[] = [];
 
-    // We will generate `agentCount` unique agents.
-    // To fit `AgentConfig` structure (which groups by role), we can create separate configs per agent
-    // OR group them. For maximum variety, let's create one config per agent with count=1.
-
-    const usedRoles = new Set<string>();
-
     for (let i = 0; i < agentCount; i++) {
         const role = randomElement(ROLES);
-        usedRoles.add(role);
 
         const skills = randomElements(SKILLS, 2);
         const location = randomElement(LOCATIONS);

@@ -1,5 +1,0 @@
-<<<<<<< SEARCH
-                await page.evaluate(async (data) => {
-=======
-                await page.evaluate(async (data: any) => {
->>>>>>> REPLACE

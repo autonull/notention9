@@ -5,9 +5,10 @@ import { ConfigSkill } from './skills/ConfigSkill.js';
 import { log, error } from './core/utils.js';
 import { PersistenceService } from './persistence.js';
 import { FeedbackCollector } from './feedback/FeedbackCollector.js';
-
-import type { ConfigProcessor } from './configurator/ConfigProcessor.js';
-import type { NoteSkillLoader } from './skills/NoteSkillLoader.js';
+import { InitialConfigurator } from './configurator/InitialConfigurator.js';
+import { ConfigProcessor } from './configurator/ConfigProcessor.js';
+import { NoteSkillLoader } from './skills/NoteSkillLoader.js';
+import { PluginLoader } from './skills/PluginLoader.js';
 
 export interface BootstrapResult {
 	skillRegistry: AgentSkillRegistry;
@@ -26,10 +27,10 @@ export class Bootstrap {
 
 		this.initializeBuiltInSkills();
 
-		const configurator = await this.loadConfigurator();
-		const configProcessor = await this.loadConfigProcessor();
-		const noteSkillLoader = await this.loadNoteSkillLoader();
-		await this.loadPlugins();
+		const configurator = new InitialConfigurator();
+		const configProcessor = new ConfigProcessor();
+		const noteSkillLoader = new NoteSkillLoader(this.skillRegistry);
+		await new PluginLoader(this.skillRegistry).loadPlugins();
 
 		const currentNotes = await PersistenceService.getNotesSafe();
 		configProcessor.scanForConfigs(currentNotes);
@@ -44,39 +45,7 @@ export class Bootstrap {
 		return { skillRegistry: this.skillRegistry, feedbackCollector: this.feedbackCollector };
 	}
 
-  private async loadConfigurator() {
-    const { InitialConfigurator } = await import('./configurator/InitialConfigurator.js');
-    return new InitialConfigurator();
-  }
-
-  private async loadConfigProcessor() {
-    const { ConfigProcessor } = await import('./configurator/ConfigProcessor.js');
-    const processor = new ConfigProcessor();
-    return processor;
-  }
-
-  private async loadNoteSkillLoader() {
-    const { NoteSkillLoader } = await import('./skills/NoteSkillLoader.js');
-    return new NoteSkillLoader(this.skillRegistry);
-  }
-
-  private async loadPlugins() {
-    const { PluginLoader } = await import('./skills/PluginLoader.js');
-    await new PluginLoader(this.skillRegistry).loadPlugins();
-  }
-
-  private processIncomingNote(note: Note, configProcessor: ConfigProcessor, noteSkillLoader: NoteSkillLoader, onEvent: (event: AgentEvent) => void) {
-    log('Agent', `Note received: ${note.id}`);
-    try {
-      configProcessor.processNote(note);
-      if (note.tags.includes('@skill:definition')) noteSkillLoader.scanForSkills([note]);
-      onEvent({ type: 'note_created', payload: note });
-    } catch (err) {
-      error('Agent', `Error processing note ${note.id}`, err);
-    }
-  }
-
-  private initializeBuiltInSkills() {
+	private initializeBuiltInSkills() {
 		log('Init', 'Initializing standard skills...');
 		this.skillRegistry.register(new IndeedSkill(), { tags: ['job', 'search', 'indeed'], domains: ['indeed.com'] });
 		this.skillRegistry.register(new CraigslistSkill(), { tags: ['classifieds', 'search', 'craigslist'], domains: ['craigslist.org'] });

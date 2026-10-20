@@ -38,3 +38,4 @@ export * from './feedback/index.js';
 export * from './network/nostr/nostr.js';
 export * from './network/nostr/privacy.js';
 export * from './network/nostr/discovery.js';
+export * from './network/nostr/relay.js';

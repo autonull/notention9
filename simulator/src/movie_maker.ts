@@ -1,5 +1,4 @@
 import { chromium, Browser, BrowserContext } from 'playwright';
-import { spawn, ChildProcess } from 'child_process';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -10,6 +9,7 @@ import { Agent } from './agent.js';
 import { DEFAULT_ONTOLOGY } from '@notention/core';
 import ffmpeg from 'fluent-ffmpeg';
 import ffmpegPath from 'ffmpeg-static';
+import { UIServer } from './ui_server.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -32,7 +32,7 @@ export interface MovieOptions {
 export class MovieMaker {
     private browser: Browser | null = null;
     private context: BrowserContext | null = null;
-    private uiProcess: ChildProcess | null = null;
+    private uiServer: UIServer | null = null;
     private dashboardServer: any | null = null;
     private runner: ScenarioRunner | null = null;
     private recording: boolean = false;
@@ -55,6 +55,7 @@ export class MovieMaker {
         this.cancelled = true;
         this.recording = false;
         this.log("Cancellation requested...");
+        if (this.uiServer) this.uiServer.stop();
         await this.cleanup();
     }
 
@@ -96,41 +97,8 @@ export class MovieMaker {
 
     private async startUIServer() {
         this.log("Starting UI Server (Vite)...");
-        const uiPath = path.resolve(__dirname, '../../ui');
-
-        if (!fs.existsSync(path.join(uiPath, 'node_modules')) && !fs.existsSync(path.join(uiPath, '../../node_modules'))) {
-             console.warn(chalk.yellow("Warning: node_modules not found in UI or root. UI server may fail."));
-        }
-
-        return new Promise<void>((resolve, reject) => {
-            this.uiProcess = spawn('npm', ['run', 'dev', '--', '--host', '--port', String(this.options.uiPort)], {
-                cwd: uiPath,
-                stdio: 'ignore',
-                env: { ...process.env, VITE_PORT: String(this.options.uiPort) }
-            });
-
-            const checkServer = async () => {
-                if (this.cancelled) {
-                    reject(new Error("Cancelled"));
-                    return;
-                }
-                try {
-                    const res = await fetch(`http://localhost:${this.options.uiPort}`);
-                    if (res.ok) {
-                        this.log("UI Server Ready.");
-                        resolve();
-                        return;
-                    }
-                } catch {}
-                setTimeout(checkServer, 1000);
-            };
-            checkServer();
-
-            this.uiProcess.on('error', (err) => {
-                this.error(new Error(`Failed to start UI server: ${err.message}`));
-                reject(err);
-            });
-        });
+        this.uiServer = new UIServer({ port: this.options.uiPort });
+        await this.uiServer.start();
     }
 
     private async setupBrowser(agents: Agent[]) {
@@ -266,9 +234,9 @@ export class MovieMaker {
         this.log("Cleaning up...");
         if (this.browser) await this.browser.close();
         if (this.dashboardServer) this.dashboardServer.close();
-        if (this.uiProcess) this.uiProcess.kill();
+        if (this.uiServer) this.uiServer.stop();
         this.browser = null;
         this.dashboardServer = null;
-        this.uiProcess = null;
+        this.uiServer = null;
     }
 }
