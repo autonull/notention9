@@ -6,7 +6,7 @@ import {
   divideQuantities,
   createCompoundQuantity,
   convertTemperature
-} from '../notes/quantities.js';
+} from '../notes/quantities/index.js';
 import { describe, test, expect } from 'vitest';
 
 describe('Enhanced Quantities System Tests', () => {
@@ -234,9 +234,11 @@ describe('Enhanced Quantities System Tests', () => {
       
       expect(rate).toEqual({
         value: 50,
+        unit: 'USD/h',
+        unitType: 'compound',
         numerator: 'USD',
         denominator: 'h',
-        semanticType: 'rate'
+        semanticType: 'rate',
       });
     });
 

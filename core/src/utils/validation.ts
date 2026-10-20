@@ -1,5 +1,5 @@
 import { Property, Note, OntologyNode, OntologyAttribute } from '../types/index.js';
-import { parseQuantity } from '../notes/quantities.js';
+import { parseQuantity } from '../notes/quantities/index.js';
 import { getCanonicalKey } from '../ontology/ontologyHelpers.js';
 
 export interface ValidationResult {

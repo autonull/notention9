@@ -2,7 +2,7 @@ import { Property, Quantity, PropertyType } from '../../types/index.js';
 import { OntologyService } from '../../ontology/ontologyService.js';
 import { DEFAULT_ONTOLOGY } from '../../ontology/ontology.default.js';
 import { PropertyValidationError } from '../../utils/errors/index.js';
-import { parseQuantity } from '../quantities.js';
+import { parseQuantity } from '../quantities/index.js';
 import { Logger } from '../../utils/logging.js';
 import { getCanonicalKey } from '../../ontology/ontologyHelpers.js';
 import {

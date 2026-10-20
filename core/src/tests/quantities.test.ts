@@ -5,7 +5,7 @@ import {
   multiplyQuantities,
   divideQuantities,
   createCompoundQuantity
-} from '../notes/quantities.js';
+} from '../notes/quantities/index.js';
 import { describe, test, expect } from 'vitest';
 
 describe('Quantities System Tests', () => {
@@ -171,9 +171,11 @@ describe('Quantities System Tests', () => {
 
       expect(result).toEqual({
         value: 5,
+        unit: 'USD/h',
+        unitType: 'compound',
         numerator: 'USD',
         denominator: 'h',
-        semanticType: 'rate'
+        semanticType: 'rate',
       });
     });
   });

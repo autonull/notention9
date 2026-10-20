@@ -16,5 +16,21 @@ export {
 
 export {
   AutonomousTaskExecutor,
-  autonomousTaskExecutor
-} from './executor.js';
+  autonomousTaskExecutor,
+  TaskRunner,
+  createTaskRunner,
+  TaskScheduler,
+  createTaskScheduler,
+  TaskQueue,
+  createTaskQueue,
+  RetryStrategy,
+  defaultRetryStrategy,
+} from './executor/index.js';
+
+export type {
+  TaskRunnerConfig,
+  TaskRunnerHooks,
+  RetryConfig,
+  RetryContext,
+  ScheduledTask,
+} from './executor/index.js';

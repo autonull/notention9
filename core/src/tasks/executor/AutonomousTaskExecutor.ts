@@ -1,47 +1,56 @@
-import type { Note, Property } from '../types/index.js';
-import { patternRecognitionService } from '../patternRecognition/patternRecognition.js';
-import { predictionAccuracyTracker } from '../patternRecognition/predictionTracking.js';
-import { generateId, safeDivide, clamp } from '../utils/common.js';
-import { TaskExecutionError } from '../utils/errors/index.js';
-import { logInfo, logError, logWarn } from '../utils/logging.js';
 import {
+  AutonomousTask,
+  TaskAuthorization,
+  TaskExecutionResult,
+  TaskSchedulerConfig,
   TaskStatus,
   TaskPriority,
-  type TaskAuthorization,
-  type AutonomousTask,
-  type TaskExecutionResult,
-  type TaskSchedulerConfig
-} from './types.js';
-import type { Pattern } from '../patternRecognition/types.js';
+} from '../types.js';
+import { TaskExecutionError } from '../../utils/errors/index.js';
+import { logInfo, logError, logWarn } from '../../utils/logging.js';
+import { generateId, safeDivide, clamp } from '../../utils/common.js';
+import { patternRecognitionService } from '../../patternRecognition/patternRecognition.js';
+import { predictionAccuracyTracker } from '../../patternRecognition/predictionTracking.js';
+import type { Pattern } from '../../patternRecognition/types.js';
+import { TaskRunner, TaskRunnerConfig } from './TaskRunner.js';
+import { TaskScheduler, ScheduledTask } from './TaskScheduler.js';
+import { RetryStrategy } from './RetryStrategy.js';
 
-/**
- * AutonomousTaskExecutor - Manages creation, approval, and execution of autonomous tasks
- * 
- * Autonomous tasks are created from pattern recognition predictions and can execute
- * automatically based on confidence levels and user authorization settings.
- */
+export interface AutonomousTaskExecutorConfig extends TaskSchedulerConfig {
+  runner?: Partial<TaskRunnerConfig>;
+}
+
 export class AutonomousTaskExecutor {
-  private tasks: Map<string, AutonomousTask> = new Map();
-  private config: TaskSchedulerConfig;
-  private activeExecutions: Set<string> = new Set();
+  private readonly tasks: Map<string, AutonomousTask> = new Map();
+  private readonly runner: TaskRunner;
+  private readonly scheduler: TaskScheduler;
+  private readonly config: TaskSchedulerConfig;
 
-  constructor(config?: Partial<TaskSchedulerConfig>) {
+  constructor(config: Partial<AutonomousTaskExecutorConfig> = {}) {
     this.config = {
-      maxConcurrentTasks: 3,
-      taskRetryLimit: 3,
-      defaultPriority: TaskPriority.MEDIUM,
-      autoApprovalEnabled: false,
-      confirmationRequiredThreshold: 0.8,
-      ...config
+      maxConcurrentTasks: config.maxConcurrentTasks ?? 3,
+      taskRetryLimit: config.taskRetryLimit ?? 3,
+      defaultPriority: config.defaultPriority ?? TaskPriority.MEDIUM,
+      autoApprovalEnabled: config.autoApprovalEnabled ?? false,
+      confirmationRequiredThreshold: config.confirmationRequiredThreshold ?? 0.8,
     };
+
+    const retryStrategy = new RetryStrategy({
+      maxRetries: this.config.taskRetryLimit,
+    });
+
+    this.runner = new TaskRunner({
+      maxConcurrentTasks: this.config.maxConcurrentTasks,
+      retryStrategy,
+      hooks: config.runner?.hooks,
+    });
+
+    this.scheduler = new TaskScheduler(this.config);
   }
 
-  /**
-   * Creates an autonomous task based on a prediction
-   */
   createAutonomousTask(
     userId: string,
-    note: Note,
+    note: AutonomousTask['noteContext'],
     predictedAction: string,
     confidence: number,
     authorization: TaskAuthorization
@@ -51,7 +60,7 @@ export class AutonomousTaskExecutor {
         id: generateId('autotask_'),
         userId,
         title: `Autonomous: ${predictedAction}`,
-        description: `Automatically created task based on pattern recognition`,
+        description: 'Automatically created task based on pattern recognition',
         noteContext: note,
         predictedAction,
         confidence,
@@ -60,12 +69,11 @@ export class AutonomousTaskExecutor {
         authorization,
         retryCount: 0,
         maxRetries: this.config.taskRetryLimit,
-        requiresUserConfirmation: confidence >= this.config.confirmationRequiredThreshold
+        requiresUserConfirmation: confidence >= this.config.confirmationRequiredThreshold,
       };
 
       this.tasks.set(task.id, task);
 
-      // If auto-approval is enabled and confidence is high enough, approve automatically
       if (this.config.autoApprovalEnabled &&
           confidence >= authorization.autoApproveThreshold &&
           !task.requiresUserConfirmation) {
@@ -76,7 +84,7 @@ export class AutonomousTaskExecutor {
         taskId: task.id,
         userId,
         confidence,
-        action: predictedAction
+        action: predictedAction,
       });
 
       return task;
@@ -86,9 +94,6 @@ export class AutonomousTaskExecutor {
     }
   }
 
-  /**
-   * Determines task priority based on confidence
-   */
   private determinePriority(confidence: number): TaskPriority {
     if (confidence >= 0.9) return TaskPriority.CRITICAL;
     if (confidence >= 0.7) return TaskPriority.HIGH;
@@ -96,9 +101,6 @@ export class AutonomousTaskExecutor {
     return TaskPriority.LOW;
   }
 
-  /**
-   * Approves a task for execution
-   */
   approveTask(taskId: string): boolean {
     try {
       const task = this.tasks.get(taskId);
@@ -125,9 +127,6 @@ export class AutonomousTaskExecutor {
     }
   }
 
-  /**
-   * Rejects a task
-   */
   rejectTask(taskId: string): boolean {
     try {
       const task = this.tasks.get(taskId);
@@ -142,9 +141,6 @@ export class AutonomousTaskExecutor {
     }
   }
 
-  /**
-   * Confirms a task (for tasks that require user confirmation)
-   */
   confirmTask(taskId: string): boolean {
     try {
       const task = this.tasks.get(taskId);
@@ -167,82 +163,48 @@ export class AutonomousTaskExecutor {
     }
   }
 
-  /**
-   * Checks if user is authorized to perform the task
-   */
   private isUserAuthorized(task: AutonomousTask): boolean {
     return task.authorization.authorizedActions.some(action =>
       task.predictedAction.toLowerCase().includes(action.toLowerCase())
     );
   }
 
-  /**
-   * Checks if a task can be executed
-   */
   private canExecuteTask(task: AutonomousTask): boolean {
     return task.status === TaskStatus.APPROVED &&
            (!task.requiresUserConfirmation || !!task.confirmationReceived) &&
            task.retryCount < task.maxRetries;
   }
 
-  /**
-   * Executes a task
-   */
   async executeTask(taskId: string): Promise<TaskExecutionResult> {
+    const task = this.tasks.get(taskId);
+    if (!task || !this.canExecuteTask(task)) {
+      throw new TaskExecutionError(`Task ${taskId} cannot be executed`, taskId);
+    }
+
+    task.status = TaskStatus.EXECUTING;
+    task.startTime = Date.now();
+
     try {
-      const task = this.tasks.get(taskId);
-      if (!task || !this.canExecuteTask(task)) {
-        throw new TaskExecutionError(`Task ${taskId} cannot be executed`, taskId);
-      }
-
-      if (this.activeExecutions.size >= this.config.maxConcurrentTasks) {
-        setTimeout(() => this.executeTask(taskId), 1000);
-        logInfo(`Task queued due to concurrency limits`, { taskId });
-        return {
-          taskId,
-          success: false,
-          error: 'Task queued due to concurrency limits',
-          executionTime: 0
-        };
-      }
-
-      task.status = TaskStatus.EXECUTING;
-      task.startTime = Date.now();
-
-      this.activeExecutions.add(taskId);
-
-      const result = await this.performPredictedAction(task);
+      const result = await this.runner.execute(task);
 
       task.status = TaskStatus.COMPLETED;
-      task.result = result;
+      task.result = result.result;
       task.endTime = Date.now();
-
-      this.activeExecutions.delete(taskId);
-
-      const executionTime = task.endTime - task.startTime;
 
       this.trackAccuracy(task);
 
       logInfo(`Task completed successfully`, {
         taskId,
-        executionTime,
-        result: JSON.stringify(result).slice(0, 100)
+        executionTime: result.executionTime,
+        result: JSON.stringify(result.result).slice(0, 100),
       });
 
-      return {
-        taskId,
-        success: true,
-        result,
-        executionTime
-      };
-    } catch (error: any) {
-      return this.handleTaskExecutionError(taskId, error);
+      return result;
+    } catch (error) {
+      return this.handleTaskExecutionError(taskId, error as Error);
     }
   }
 
-  /**
-   * Handles task execution errors with retry logic
-   */
   private async handleTaskExecutionError(taskId: string, error: Error): Promise<TaskExecutionResult> {
     const task = this.tasks.get(taskId);
     if (!task) {
@@ -254,17 +216,17 @@ export class AutonomousTaskExecutor {
     const willRetry = task.retryCount < task.maxRetries;
 
     if (willRetry) {
-      const delay = this.calculateRetryDelay(task.retryCount);
+      task.status = TaskStatus.PENDING;
+      const delay = this.runner['retryStrategy'].calculateDelay(task.retryCount);
       logWarn(`Task execution failed, will retry in ${delay}ms (attempt ${task.retryCount}/${task.maxRetries})`, error);
 
-      task.status = TaskStatus.PENDING;
       setTimeout(() => this.executeTask(taskId), delay);
 
       return {
         taskId,
         success: false,
         error: `Retry scheduled: ${error.message}`,
-        executionTime: 0
+        executionTime: 0,
       };
     }
 
@@ -272,19 +234,17 @@ export class AutonomousTaskExecutor {
     task.error = error.message;
     task.endTime = Date.now();
 
-    this.activeExecutions.delete(taskId);
-
     this.trackAccuracy(task);
 
     logError(`Task failed after all retries: ${taskId}`, error, {
-      retryCount: task.retryCount
+      retryCount: task.retryCount,
     });
 
     return {
       taskId,
       success: false,
       error: error.message,
-      executionTime: task.endTime - task.startTime!
+      executionTime: task.endTime - (task.startTime ?? 0),
     };
   }
 
@@ -298,75 +258,36 @@ export class AutonomousTaskExecutor {
       confidence: task.confidence,
       lastUsed: task.startTime || Date.now(),
       usageCount: 1,
-      accuracyRate: 0
+      accuracyRate: 0,
     };
     predictionAccuracyTracker.recordPrediction(task.userId, {
       pattern,
       noteContext: task.noteContext,
       predictedAction: task.predictedAction,
       confidence: task.confidence,
-      timestamp: task.startTime || Date.now()
+      timestamp: task.startTime || Date.now(),
     });
   }
 
-  /**
-   * Calculates exponential backoff delay for retries
-   */
-  private calculateRetryDelay(retryCount: number): number {
-    const baseDelay = 1000;
-    const maxDelay = 30000;
-    return Math.min(baseDelay * Math.pow(2, retryCount), maxDelay);
-  }
-
-  /**
-   * Performs the predicted action (placeholder for actual implementation)
-   */
-  private async performPredictedAction(task: AutonomousTask): Promise<any> {
-    // Placeholder - in real implementation, this would:
-    // 1. Parse the predicted action
-    // 2. Select appropriate skill/agent
-    // 3. Execute with note context
-    // 4. Return structured result
-
-    await new Promise(resolve => setTimeout(resolve, 100));
-
-    return {
-      action: task.predictedAction,
-      noteId: task.noteContext.id,
-      timestamp: Date.now()
-    };
-  }
-
-  /**
-   * Gets task by ID
-   */
   getTask(taskId: string): AutonomousTask | undefined {
     return this.tasks.get(taskId);
   }
 
-  /**
-   * Gets all tasks for a user
-   */
   getUserTasks(userId: string): AutonomousTask[] {
     return Array.from(this.tasks.values()).filter(task => task.userId === userId);
   }
 
-  /**
-   * Gets active tasks
-   */
   getActiveTasks(): AutonomousTask[] {
     return Array.from(this.tasks.values()).filter(task =>
       [TaskStatus.PENDING, TaskStatus.APPROVED, TaskStatus.EXECUTING].includes(task.status)
     );
   }
 
-  /**
-   * Gets task statistics
-   */
   getTaskStats(): {
     total: number;
     byStatus: Record<string, number>;
     activeExecutions: number;
+    queuedTasks: number;
   } {
     const byStatus: Record<string, number> = {};
     for (const task of this.tasks.values()) {
@@ -376,13 +297,11 @@ export class AutonomousTaskExecutor {
     return {
       total: this.tasks.size,
       byStatus,
-      activeExecutions: this.activeExecutions.size
+      activeExecutions: this.runner.getActiveCount(),
+      queuedTasks: this.runner.getQueuedCount(),
     };
   }
 
-  /**
-   * Cancels a task
-   */
   cancelTask(taskId: string): boolean {
     const task = this.tasks.get(taskId);
     if (!task || [TaskStatus.COMPLETED, TaskStatus.FAILED].includes(task.status)) {
@@ -392,23 +311,36 @@ export class AutonomousTaskExecutor {
     task.status = TaskStatus.CANCELLED;
     task.endTime = Date.now();
 
-    if (this.activeExecutions.has(taskId)) {
-      // In real implementation, this would abort the execution
-      this.activeExecutions.delete(taskId);
-    }
+    this.runner.getQueue().remove(taskId);
 
     logInfo(`Task cancelled`, { taskId });
     return true;
   }
 
-  /**
-   * Updates task configuration
-   */
   updateConfig(config: Partial<TaskSchedulerConfig>): void {
-    this.config = { ...this.config, ...config };
+    Object.assign(this.config, config);
     logInfo(`Task executor config updated`, { config: this.config });
+  }
+
+  scheduleTask(task: AutonomousTask, cronExpression: string): string {
+    return this.scheduler.scheduleTask(task, cronExpression);
+  }
+
+  scheduleInterval(task: AutonomousTask, intervalMs: number): string {
+    return this.scheduler.scheduleInterval(task, intervalMs);
+  }
+
+  unschedule(scheduledId: string): boolean {
+    return this.scheduler.unschedule(scheduledId);
+  }
+
+  getScheduled(scheduledId: string): ScheduledTask | undefined {
+    return this.scheduler.getScheduled(scheduledId);
+  }
+
+  getAllScheduled(): ScheduledTask[] {
+    return this.scheduler.getAllScheduled();
   }
 }
 
-// Export singleton instance
 export const autonomousTaskExecutor = new AutonomousTaskExecutor();
