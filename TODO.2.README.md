@@ -32,6 +32,8 @@ This meeting picks **3–5 for next cycle (TODO.2)**. Rest = parking lot.
 | **Engineering / Protocol** | **P1–P5** (Protocol) | Content-addressing, signed transitions, sealed envelopes, economic primitives, transports |
 | **Leadership / Strategy** | **North Star** (below) | Differentiation, risk, roadmap, team capacity |
 | **Research / Crypto / AI** | **Appendix H** (Open Questions) | CRDTs, private matching, sandboxing, model sizing, NIP coverage |
+| **Talent / Community** | **Self-Recruiting** | Hiring *through* the protocol — the ultimate dogfood test |
+| **Dev Team** | **Dogfooding Menu** | 15 workflows the team runs daily — sprint planning, code review, bug triage, releases, hiring... all as request/offer matching |
 
 ---
 
@@ -69,6 +71,9 @@ This meeting picks **3–5 for next cycle (TODO.2)**. Rest = parking lot.
 - **Q4** Ontology: user-owned / system-owned / shared?
 - **Q5** Network: "Go public" button / progressive / hidden?
 - **Q6** AI: invisible magic / explicit copilot / hybrid?
+
+**Meta (Dogfooding → Priority):**
+- **15 workflows** (sprint planning, code review, bug triage, releases, hiring...) all map to P2, P3, Q3, Q5, Q6 — see [Dogfooding Menu in `TODO.2.md`](#)
 
 ---
 

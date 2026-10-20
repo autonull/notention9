@@ -47,6 +47,151 @@ Before any protocol/product decision, ask:
 
 ---
 
+## 🔄 SELF-RECRUITING: THE TOOL THAT BUILDS ITS OWN TEAM
+
+### The Meta-Loop
+
+> **Notention recruits its developers *through* Notention.**
+
+If semantic notes are the atomic unit of coordination, then *hiring* is just matching: **developer offers** (skills, availability, values) ↔ **project requests** (needs, culture, compensation). The system should demonstrate its own power by coordinating its own growth.
+
+### How It Works
+
+| Layer | Representation in Notention |
+|-------|-----------------------------|
+| **Project needs** | `intent: request` notes with properties: `role`, `skills[]`, `commitment`, `values[]`, `compensation`, `location` |
+| **Developer offers** | `intent: offer` notes with properties: `skills[]`, `experience`, `availability`, `values[]`, `rate`, `location`, `portfolio` |
+| **Matching** | Same engine that matches tasks → people. Scores, explanations, satisfied/conflicting constraints. |
+| **Onboarding** | Accepted match → transition note (`type: acceptance`) → creates team workspace, shares ontology, grants capabilities. |
+| **Reputation** | Completed work → attestation notes (signed by peers) → builds trust graph. |
+
+### The Recruitment Funnel as Notes
+
+```
+1. PROJECT REQUEST (published to network)
+   ├─ role: "Protocol Engineer"
+   ├─ skills: [Rust, Nostr, CRDT, cryptography]
+   ├─ values: [local-first, no-capture, protocol>product]
+   ├─ commitment: "part-time"
+   └─ compensation: "equity + token allocation"
+
+2. DEVELOPER OFFER (published or direct)
+   ├─ skills: [Rust, libp2p, WASM, formal verification]
+   ├─ experience: "3yrs P2P, 1yr Nostr relays"
+   ├─ values: [open-source, user-sovereignty, simplicity]
+   ├─ availability: "20hrs/week"
+   └─ portfolio: [link to GitHub, blog, prior work]
+
+3. MATCH (auto-discovered or intentional)
+   ├─ score: 87%
+   ├─ satisfied: [Rust, P2P, values-alignment, part-time]
+   ├─ conflicting: [Nostr vs libp2p focus]
+   └─ explanation: "Strong technical fit; transport philosophy differs — discuss in chat"
+
+4. CHAT (encrypted, NIP-17)
+   → negotiate scope, timeline, equity
+
+5. ACCEPTANCE TRANSITION (signed by both)
+   → creates shared workspace
+   → grants agent capabilities
+   → adds to team ontology
+
+6. ATTESTATIONS (ongoing)
+   → "Delivered P1 content-addressing spec" — signed by lead
+   → "Reviewed Q3 matching UX" — signed by designer
+   → builds developer reputation across network
+```
+
+### Why This Matters
+
+| Reason | Explanation |
+|--------|-------------|
+| **Dogfooding at the meta-level** | If Notention can't coordinate its own team, why would anyone else use it? |
+| **Living documentation** | The ontology *is* the job description. The matching *is* the interview. |
+| **Network-native hiring** | No platform (LinkedIn, Upwork). Keys = identity. Reputation = attestations. |
+| **Values filtering** | `values[]` property matches culture before skills — crucial for protocol projects. |
+| **Composability** | A developer's "offer" note travels with them. One note, many project matches. |
+| **Onboarding = workspace creation** | Accept match → instant shared context (ontology, keys, capabilities, history). |
+
+### Implementation Path (Post-TODO.2)
+
+| Phase | Scope |
+|-------|-------|
+| **Seed** | Encode TODO.2.README.md as `intent: request` notes (one per role). Publish to local relay. |
+| **Match** | Developers import/author `intent: offer` notes. Matching runs locally. |
+| **Chat** | Encrypted DM via Network view. No email, no platform. |
+| **Transition** | Acceptance = signed transition note (P2). Creates team workspace. |
+| **Reputation** | Attestation notes for delivered work. Portable across projects. |
+
+### The Recursive Test
+
+> **Can a stranger find this project, match their offer, chat, join, and contribute — all inside Notention, without leaving the app?**
+
+If yes: the protocol works. If no: the protocol has gaps.
+
+This *is* the product demo. The ultimate showcase screenshot.
+
+---
+
+## 🐕 DOGFOODING MENU: EATING OUR OWN COOKING
+
+*Every row is a real workflow the team runs. If it hurts, the protocol has a gap.*
+
+| # | Workflow | Notes as... | Matching Triggers | Success = |
+|---|----------|-------------|-------------------|-----------|
+| **1** | **Self-Recruiting** (above) | Job reqs ↔ dev offers | Skills, values, availability | Stranger → contributor in-app |
+| **2** | **Sprint Planning** | Tasks (`intent: request`) + capacity (`intent: offer`) | Skills, bandwidth, priority | Auto-assign, no meeting |
+| **3** | **Code Review** | PR = `intent: request` (needs review) | Reviewer expertise, availability | Match → chat → signed `approval` transition |
+| **4** | **Bug Triage** | Bug = `intent: request` (needs fix) | Fixer skills, severity, area | Match → assign → `fix` transition |
+| **5** | **Feature Spec** | Spec = `intent: request` (needs impl) | Implementer skills, dependencies | Match → chat → `acceptance` transition |
+| **6** | **Architecture Decision** | ADR = note + `intent: request` (consensus) | Stakeholder `intent: offer` (review) | Quorum → signed `ratified` transition |
+| **7** | **Release Cut** | Release note = `intent: request` (blockers) | Owner `intent: offer` (clear) | All matched → `release` transition |
+| **8** | **Dependency Update** | Dep = `intent: request` (upgrade needed) | Maintainer `intent: offer` (capacity) | Match → `updated` transition |
+| **9** | **Documentation** | Doc gap = `intent: request` | Writer `intent: offer` (domain knowledge) | Match → `published` transition |
+| **10** | **Design Review** | Design = `intent: request` (feedback) | Designer `intent: offer` (bandwidth) | Match → chat → `approved` transition |
+| **11** | **Security Audit** | Audit = `intent: request` (scope) | Auditor `intent: offer` (expertise) | Match → `finding` notes → `resolved` transitions |
+| **12** | **Community Support** | Question = `intent: request` (help) | Expert `intent: offer` (knowledge) | Match → answer → `resolved` transition |
+| **13** | **Translation** | Locale = `intent: request` (missing) | Translator `intent: offer` (language) | Match → `translated` transition |
+| **14** | **Testing** | Test case = `intent: request` (coverage) | Tester `intent: offer` (env, time) | Match → `passed`/`failed` transition |
+| **15** | **On-Call Handoff** | Shift = `intent: offer` (availability) | Incident = `intent: request` (needs response) | Match → `acknowledged` transition |
+
+### The Pattern
+
+```
+EVERY coordination point in software development
+= Request (what's needed) + Offer (who can do it) + Match (fit) + Transition (done)
+```
+
+**Current Notention covers:** Matching (✅), Chat (✅), Basic transitions via `status` property (🟡)
+**Missing for full dogfooding:** Signed transitions (P2), Sealed private coordination (P3), Ambient matching (Q3), Team workspaces (Q5), Values-based matching (Self-Recruiting)
+
+### Dogfood-Driven Priority
+
+| If this workflow hurts... | Prioritize |
+|---------------------------|------------|
+| Sprint planning → manual assignment | P2 (signed transitions), Q3 (ambient matching) |
+| Code review → lost in GitHub | P3 (sealed visibility), Q5 (network presence) |
+| Bug triage → noisy Slack | Q3 (ambient), Q6 (AI triage assist) |
+| Spec → implementation gap | P2 (transitions), Q4 (shared ontology) |
+| Release → manual checklist | P2 (state inference), P4 (value transfer for bounties) |
+| Hiring → LinkedIn/email | **Self-Recruiting** (all of the above) |
+
+### The Ultimate Dogfood Test
+
+> **Run the entire Notention project inside Notention for 30 days. Zero external tools (no GitHub Issues, no Slack, no Notion, no Linear).**
+
+**Measure:**
+- % of coordination points handled in-app
+- Match accuracy (false positives/negatives)
+- Time saved vs. previous workflow
+- Team satisfaction (NPS)
+- Gaps that forced fallback to external tools
+
+**If it works:** Ship the dogfood setup as a "Team Workspace Template" — instant product-market fit for dev teams.
+**If it fails:** The failures *are* the TODO.3 roadmap.
+
+---
+
 ## PILLAR 1: PROTOCOL — What the network *is*
 
 The protocol spec (README2.md) describes a semantic coordination layer. Current implementation covers ~40%. Key design choices:
