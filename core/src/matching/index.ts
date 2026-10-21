@@ -3,6 +3,7 @@ export * from './constants.js';
 export * from './helpers.js';
 export * from './MatchEngine.js';
 export * from './MatchingService.js';
+export * from './PropertyIndex.js';
 export * from './numberMatcher.js';
 export * from './geoMatcher.js';
 export * from './dateMatcher.js';
