@@ -5,6 +5,8 @@ import { McpToolRegistry } from '../McpToolRegistry.js';
 import { AgentPlugin } from '../AgentPlugin.js';
 import { PersistenceService } from '../../persistence.js';
 import { Capabilities } from '../../core/Capabilities.js';
+import { tryCatch, tryCatchSync, createSuccessResponse } from '../../utils/errorHandling.js';
+import { log } from '../../core/utils.js';
 
 export class CorePlugin implements AgentPlugin {
     name = 'core';
@@ -15,10 +17,13 @@ export class CorePlugin implements AgentPlugin {
 
     async initialize(registry: McpToolRegistry): Promise<void> {
         // Load ontology asynchronously on init
-        this.loadOntology().catch(err => console.warn('[CorePlugin] Failed to load ontology', err));
+        await tryCatch(() => this.loadOntology(), 'CorePlugin', undefined);
 
-        // --- Note Management Tools ---
+        this.registerNoteManagementTools(registry);
+        this.registerSystemCapabilityTools(registry);
+    }
 
+    private registerNoteManagementTools(registry: McpToolRegistry): void {
         // Create Note
         registry.register('create_note', {
             description: 'Create a new note',
@@ -34,42 +39,21 @@ export class CorePlugin implements AgentPlugin {
             }),
             handler: async (args) => {
                 const { title, content, tags, properties } = args;
-                console.log('[CorePlugin] create_note args:', JSON.stringify(args, null, 2));
 
                 let finalProperties: Property[] = (properties as any) ?? [];
 
                 // Auto-extract properties if not provided or to augment
-                // We attempt to extract from content to "smart tag" the note
-                try {
-                    // Refresh ontology if empty (lazy load retry)
+                await tryCatch(async () => {
                     if (this.ontology.length === 0) await this.loadOntology();
 
                     const extractor = new PropertyExtractor(this.ontology);
                     const extracted = extractor.extractFromText(getTextFromHtml(content));
                     if (extracted.length > 0) {
-                        // Merge extracted properties
                         finalProperties = [...finalProperties, ...extracted];
                     }
-                } catch (e) {
-                    console.warn('[CorePlugin] Failed to auto-extract properties', e);
-                }
+                }, 'CorePlugin.create_note');
 
-                let note: Note = {
-                    id: randomUUID(),
-                    title,
-                    content,
-                    tags: tags ?? [],
-                    properties: finalProperties,
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
-                    source: { type: 'user', identifier: 'cli', timestamp: Date.now() },
-                    privacy: 'private',
-                    priority: 1.0
-                };
-
-                // Canonicalize keys to ensure database consistency
-                note = normalizeNoteProperties(note, this.ontology);
-
+                const note = this.createNote(title, content, tags, finalProperties);
                 await PersistenceService.saveNoteSafe(note);
                 return `Note created with ID: ${note.id}`;
             }
@@ -90,22 +74,24 @@ export class CorePlugin implements AgentPlugin {
                 })).optional()
             }),
             handler: async ({ id, title, content, tags, properties }) => {
-                const notes = await PersistenceService.getNotesSafe();
-                const existingNote = notes.find(n => n.id === id);
+                return tryCatch(async () => {
+                    const notes = await PersistenceService.getNotesSafe();
+                    const existingNote = notes.find(n => n.id === id);
 
-                if (!existingNote) throw new Error(`Note with ID ${id} not found`);
+                    if (!existingNote) throw new Error(`Note with ID ${id} not found`);
 
-                const updatedNote: Note = {
-                    ...existingNote,
-                    ...(title !== undefined && { title }),
-                    ...(content !== undefined && { content }),
-                    ...(tags !== undefined && { tags }),
-                    ...(properties !== undefined && { properties: properties as any }),
-                    updatedAt: new Date().toISOString()
-                };
+                    const updatedNote: Note = {
+                        ...existingNote,
+                        ...(title !== undefined && { title }),
+                        ...(content !== undefined && { content }),
+                        ...(tags !== undefined && { tags }),
+                        ...(properties !== undefined && { properties: properties as any }),
+                        updatedAt: new Date().toISOString()
+                    };
 
-                await PersistenceService.saveNoteSafe(updatedNote);
-                return `Note updated with ID: ${id}`;
+                    await PersistenceService.saveNoteSafe(updatedNote);
+                    return `Note updated with ID: ${id}`;
+                }, 'CorePlugin.update_note', `Note updated with ID: ${id}`);
             }
         });
 
@@ -114,8 +100,10 @@ export class CorePlugin implements AgentPlugin {
             description: 'Delete a note by ID',
             schema: z.object({ id: z.string() }),
             handler: async ({ id }) => {
-                await PersistenceService.deleteNoteSafe(id);
-                return `Note deleted with ID: ${id}`;
+                return tryCatch(async () => {
+                    await PersistenceService.deleteNoteSafe(id);
+                    return `Note deleted with ID: ${id}`;
+                }, 'CorePlugin.delete_note', `Note deleted with ID: ${id}`);
             }
         });
 
@@ -127,7 +115,11 @@ export class CorePlugin implements AgentPlugin {
                 tags: z.array(z.string()).optional()
             }),
             handler: async ({ query, tags }) => {
-                return await PersistenceService.searchNotesSafe(query || '', tags);
+                return tryCatch(
+                    () => PersistenceService.searchNotesSafe(query || '', tags),
+                    'CorePlugin.search_notes',
+                    []
+                );
             }
         });
 
@@ -139,32 +131,53 @@ export class CorePlugin implements AgentPlugin {
                 offset: z.number().optional().default(0)
             }),
             handler: async ({ limit, offset }) => {
-                const notes = await PersistenceService.getNotesSafe();
-                return notes.slice(offset, offset + limit);
+                return tryCatch(async () => {
+                    const notes = await PersistenceService.getNotesSafe();
+                    return notes.slice(offset, offset + limit);
+                }, 'CorePlugin.read_notes', []);
             }
         });
+    }
 
-        // --- System Capability Tools ---
-
+    private registerSystemCapabilityTools(registry: McpToolRegistry): void {
         // Get Capabilities
         registry.register('get_capabilities', {
             description: 'Get system capabilities',
             schema: z.object({}),
             handler: async () => {
-                const caps = Capabilities.getInstance();
-                return {
-                    browser: caps.isEnabled('browser'),
-                    files: caps.isEnabled('files'),
-                    api: caps.isEnabled('api')
-                };
+                return tryCatchSync(() => {
+                    const caps = Capabilities.getInstance();
+                    return {
+                        browser: caps.isEnabled('browser'),
+                        files: caps.isEnabled('files'),
+                        api: caps.isEnabled('api')
+                    };
+                }, 'CorePlugin.get_capabilities', { browser: false, files: false, api: true });
             }
         });
     }
 
-    private async loadOntology() {
-        // Attempt to load from default service which usually has defaults
-        // In a real scenario, we might want to fetch a specific 'ontology' note from PersistenceService
-        // For now, we use the standard factory to get defaults + structure
+    private createNote(
+        title: string,
+        content: string,
+        tags: string[] | undefined,
+        properties: Property[]
+    ): Note {
+        return {
+            id: randomUUID(),
+            title,
+            content,
+            tags: tags ?? [],
+            properties,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            source: { type: 'user', identifier: 'cli', timestamp: Date.now() },
+            privacy: 'private',
+            priority: 1.0
+        };
+    }
+
+    private async loadOntology(): Promise<void> {
         const service = OntologyServiceFactory.createStandardService();
         this.ontology = service.getAllNodes();
     }

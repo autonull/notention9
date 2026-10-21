@@ -1,9 +1,6 @@
 import { Note, generateId, PropertyPattern, getCanonicalKey, OntologyNode } from '@notention/core';
 import { Skill, ActionSequence } from '@notention/core';
-
-// Centralized configuration keys for O(1) lookup
-const DIRECT_CONFIG_KEYS = new Set(['llm_model', 'llm_provider', 'debug_mode', 'voice_enabled']);
-const META_CONFIG_KEYS = new Set(['config', 'setting']);
+import { CONFIG_KEYS } from '../constants.js';
 
 export class ConfigSkill implements Skill {
     id = 'skill-config-manager';
@@ -37,13 +34,13 @@ export class ConfigSkill implements Skill {
     }
 
     canHandle(note: Note): number {
-        if (note.tags.some(tag => META_CONFIG_KEYS.has(tag))) {
+        if (note.tags.some(tag => CONFIG_KEYS.META.has(tag))) {
             return 1.0;
         }
 
         const hasConfigProp = note.properties.some(p => {
             const canonicalKey = getCanonicalKey(p.key, this.ontology);
-            return META_CONFIG_KEYS.has(canonicalKey) || DIRECT_CONFIG_KEYS.has(canonicalKey);
+            return CONFIG_KEYS.META.has(canonicalKey) || CONFIG_KEYS.DIRECT.has(canonicalKey);
         });
 
         return hasConfigProp ? 1.0 : 0;
@@ -56,7 +53,7 @@ export class ConfigSkill implements Skill {
             const canonicalKey = getCanonicalKey(p.key, this.ontology);
 
             // Direct config keys: [llm_model:is:gpt-4]
-            if (DIRECT_CONFIG_KEYS.has(canonicalKey) && p.values.length > 0) {
+            if (CONFIG_KEYS.DIRECT.has(canonicalKey) && p.values.length > 0) {
                 const val = p.values[0];
                 this.configUpdater(canonicalKey, val);
                 applied++;
@@ -64,7 +61,7 @@ export class ConfigSkill implements Skill {
             }
 
             // Meta config keys: [config:is:debug_mode=true] or [setting:is:voice_enabled=false]
-            if (META_CONFIG_KEYS.has(canonicalKey)) {
+            if (CONFIG_KEYS.META.has(canonicalKey)) {
                  p.values.forEach(val => {
                      const splitIndex = val.indexOf('=');
                      if (splitIndex !== -1) {

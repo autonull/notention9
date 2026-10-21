@@ -9,6 +9,7 @@ import { ConfigManager } from './config/ConfigManager.js';
 import { setupMcpServer } from './server/McpServer.js';
 import { Server as HttpServer } from 'http';
 import { NostrRelay } from '@notention/core';
+import { MCP_PATHS } from './constants.js';
 
 export interface AgentServerOptions {
     relay?: boolean;
@@ -94,12 +95,13 @@ export class AgentServer {
         }
     }
 
-    private setupWebsocket() {        if (!this.server) {
+    private setupWebsocket() {
+        if (!this.server) {
             error('WS', 'Server not initialized');
             return;
         }
 
-        this.wss = new WebSocketServer({ server: this.server, path: '/ws/agent' });
+        this.wss = new WebSocketServer({ server: this.server, path: MCP_PATHS.WS_AGENT });
         this.wss.on('connection', (ws) => this.handleClientConnection(ws));
     }
 
@@ -108,8 +110,8 @@ export class AgentServer {
             error('Relay', 'Server not initialized');
             return;
         }
-        this.relay = new NostrRelay({server: this.server, path: '/relay'});
-        log('Relay', `Local relay available at ws://localhost:${this.port}/relay`);
+        this.relay = new NostrRelay({ server: this.server, path: MCP_PATHS.RELAY });
+        log('Relay', `Local relay available at ws://localhost:${this.port}${MCP_PATHS.RELAY}`);
     }
 
     private handleClientConnection(ws: WebSocket) {

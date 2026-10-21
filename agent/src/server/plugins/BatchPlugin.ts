@@ -2,6 +2,9 @@ import { z } from 'zod';
 import { McpToolRegistry } from '../McpToolRegistry.js';
 import { AgentPlugin } from '../AgentPlugin.js';
 import { PersistenceService } from '../../persistence.js';
+import { Note, Property } from '@notention/core';
+import { tryCatch } from '../../utils/errorHandling.js';
+import { log } from '../../core/utils.js';
 
 export class BatchPlugin implements AgentPlugin {
     name = 'batch';
@@ -15,22 +18,14 @@ export class BatchPlugin implements AgentPlugin {
                 ids: z.array(z.string()).describe('List of Note IDs to delete')
             }),
             handler: async ({ ids }) => {
-                let deletedCount = 0;
-                const errors: string[] = [];
-
-                for (const id of ids) {
-                    try {
-                        await PersistenceService.deleteNoteSafe(id);
-                        deletedCount++;
-                    } catch (e: any) {
-                        errors.push(`Failed to delete ${id}: ${e.message}`);
-                    }
-                }
+                const results = await this.executeBatch(ids, async (id) => {
+                    await PersistenceService.deleteNoteSafe(id);
+                }, 'delete');
 
                 return {
-                    deletedCount,
-                    errors: errors.length > 0 ? errors : undefined,
-                    message: `Deleted ${deletedCount} notes.`
+                    deletedCount: results.successCount,
+                    errors: results.errors.length > 0 ? results.errors : undefined,
+                    message: `Deleted ${results.successCount} notes.`
                 };
             }
         });
@@ -47,42 +42,57 @@ export class BatchPlugin implements AgentPlugin {
                 }).describe('Properties to apply to all notes')
             }),
             handler: async ({ ids, updates }) => {
-                let updatedCount = 0;
-                const errors: string[] = [];
+                const results = await this.executeBatch(ids, async (id) => {
+                    const note = await PersistenceService.getNoteSafe(id);
+                    if (!note) throw new Error(`Note ${id} not found`);
 
-                for (const id of ids) {
-                    try {
-                        const note = await PersistenceService.getNoteSafe(id);
-                        if (note) {
-                            // Apply updates (simplified logic)
-                            if (updates.tags) {
-                                note.tags = [...new Set([...note.tags, ...updates.tags])];
-                            }
-                            if (updates.priority !== undefined) note.priority = updates.priority;
-
-                            // For properties like status, we'd need to manipulate the property array.
-                            // Assuming 'status' is a property:
-                            if (updates.status) {
-                                // Remove old status
-                                note.properties = note.properties.filter(p => p.key !== 'status');
-                                // Add new status
-                                note.properties.push({ key: 'status', operator: 'is', values: [updates.status] });
-                            }
-
-                            await PersistenceService.saveNoteSafe(note);
-                            updatedCount++;
-                        }
-                    } catch (e: any) {
-                        errors.push(`Failed to update ${id}: ${e.message}`);
-                    }
-                }
+                    this.applyUpdates(note, updates);
+                    await PersistenceService.saveNoteSafe(note);
+                }, 'update');
 
                 return {
-                    updatedCount,
-                    errors: errors.length > 0 ? errors : undefined,
-                    message: `Updated ${updatedCount} notes.`
+                    updatedCount: results.successCount,
+                    errors: results.errors.length > 0 ? results.errors : undefined,
+                    message: `Updated ${results.successCount} notes.`
                 };
             }
         });
+    }
+
+    private async executeBatch(
+        ids: string[],
+        operation: (id: string) => Promise<void>,
+        operationName: string
+    ): Promise<{ successCount: number; errors: string[] }> {
+        let successCount = 0;
+        const errors: string[] = [];
+
+        for (const id of ids) {
+            const result = await tryCatch(
+                () => operation(id),
+                `BatchPlugin.batch_${operationName}_notes.${id}`,
+                undefined
+            );
+
+            if (result !== undefined) {
+                successCount++;
+            } else {
+                errors.push(`Failed to ${operationName} ${id}`);
+            }
+        }
+
+        return { successCount, errors };
+    }
+
+    private applyUpdates(note: Note, updates: { tags?: string[]; priority?: number; status?: string }): void {
+        if (updates.tags) {
+            note.tags = [...new Set([...note.tags, ...updates.tags])];
+        }
+        if (updates.priority !== undefined) note.priority = updates.priority;
+
+        if (updates.status) {
+            note.properties = note.properties.filter(p => p.key !== 'status');
+            note.properties.push({ key: 'status', operator: 'is', values: [updates.status] } as Property);
+        }
     }
 }

@@ -1,5 +1,6 @@
 import fs from 'fs';
 import { join } from 'path';
+import { DATA_PATHS } from '../constants.js';
 
 export interface AgentConfig {
     agent: {
@@ -20,7 +21,7 @@ export interface AgentConfig {
 }
 
 export async function loadAgentConfig(): Promise<AgentConfig> {
-    const configPath = join(process.cwd(), 'config/agents.json');
+    const configPath = join(process.cwd(), DATA_PATHS.CONFIG_FILE);
 
     if (fs.existsSync(configPath)) {
         const raw = await fs.promises.readFile(configPath, 'utf-8');

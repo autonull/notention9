@@ -4,11 +4,16 @@ import { FeedbackCollector } from '../feedback/FeedbackCollector.js';
 import { Note, Feedback } from '@notention/core';
 import { error, log } from '../core/utils.js';
 import { MeshtasticAgentManager } from '../network/MeshtasticAgentManager.js';
+import { tryCatch } from '../utils/errorHandling.js';
 
 interface SocketMessage {
   type: string;
   payload?: any;
   id?: string;
+}
+
+function sendResponse(ws: WebSocket, id: string | undefined, success: boolean, data?: any): void {
+    ws.send(JSON.stringify({ type: success ? 'response' : 'error', id, success, ...data }));
 }
 
 export class SocketController {
@@ -37,91 +42,74 @@ export class SocketController {
   }
 
   public async handleMessage(message: SocketMessage, ws: WebSocket): Promise<void> {
+    const { type, payload, id } = message;
 
-    try {
-      switch (message.type) {
-        case 'get_agent_status': {
-          ws.send(JSON.stringify({ type: 'agent_status', payload: { status: 'mcp-only' } }));
-          break;
-        }
+    const handlers: Record<string, () => Promise<void>> = {
+      get_agent_status: async () => {
+        sendResponse(ws, id, true, { type: 'agent_status', payload: { status: 'mcp-only' } });
+      },
 
-        case 'get_notes': {
-          const notes = await PersistenceService.getNotesSafe();
-          ws.send(JSON.stringify({ type: 'notes_list', payload: notes, id: message.id }));
-          break;
-        }
+      get_notes: async () => {
+        const notes = await PersistenceService.getNotesSafe();
+        sendResponse(ws, id, true, { type: 'notes_list', payload: notes });
+      },
 
-        case 'save_note': {
-          await PersistenceService.saveNoteSafe(message.payload as Note);
-          ws.send(JSON.stringify({ type: 'response', id: message.id, success: true }));
-          break;
-        }
+      save_note: async () => {
+        await PersistenceService.saveNoteSafe(payload as Note);
+        sendResponse(ws, id, true);
+      },
 
-        case 'delete_note': {
-          const payload = message.payload as { id: string };
-          await PersistenceService.deleteNoteSafe(payload.id);
-          ws.send(JSON.stringify({ type: 'response', id: message.id, success: true }));
-          break;
-        }
+      delete_note: async () => {
+        await PersistenceService.deleteNoteSafe((payload as { id: string }).id);
+        sendResponse(ws, id, true);
+      },
 
-        case 'feedback': {
-            const feedback = message.payload as Feedback;
-            await this.feedbackCollector.recordFeedback(feedback);
-            ws.send(JSON.stringify({ type: 'response', id: message.id, success: true }));
-            break;
-        }
+      feedback: async () => {
+        await this.feedbackCollector.recordFeedback(payload as Feedback);
+        sendResponse(ws, id, true);
+      },
 
-        case 'mesh_connect': {
-            try {
-                const { port } = message.payload;
-                await this.meshtasticManager.connect(port);
-                ws.send(JSON.stringify({ type: 'response', id: message.id, success: true }));
-            } catch (e: any) {
-                ws.send(JSON.stringify({ type: 'error', message: e.message, id: message.id }));
-            }
-            break;
-        }
+      mesh_connect: async () => {
+        await this.meshtasticManager.connect(payload.port);
+        sendResponse(ws, id, true);
+      },
 
-        case 'mesh_config': {
-            try {
-                const { saveReceivedNotes } = message.payload;
-                this.meshtasticManager.updateConfig({ saveReceivedNotes });
-                ws.send(JSON.stringify({ type: 'response', id: message.id, success: true }));
-            } catch (e: any) {
-                ws.send(JSON.stringify({ type: 'error', message: e.message, id: message.id }));
-            }
-            break;
-        }
+      mesh_config: async () => {
+        this.meshtasticManager.updateConfig({ saveReceivedNotes: payload.saveReceivedNotes });
+        sendResponse(ws, id, true);
+      },
 
-        case 'mesh_status': {
-            const status = this.meshtasticManager.getStatus();
-            ws.send(JSON.stringify({ type: 'mesh_status', payload: status, id: message.id }));
-            break;
-        }
+      mesh_status: async () => {
+        const status = this.meshtasticManager.getStatus();
+        sendResponse(ws, id, true, { type: 'mesh_status', payload: status });
+      },
 
-        case 'mesh_send_note': {
-            try {
-                await this.meshtasticManager.sendNote(message.payload as Note);
-                ws.send(JSON.stringify({ type: 'response', id: message.id, success: true }));
-            } catch (e: any) {
-                ws.send(JSON.stringify({ type: 'error', message: e.message, id: message.id }));
-            }
-            break;
-        }
+      mesh_send_note: async () => {
+        await this.meshtasticManager.sendNote(payload as Note);
+        sendResponse(ws, id, true);
+      },
 
-        // Catch-all for events that might have been removed
-        case 'note_created':
-        case 'note_updated':
-        case 'execute_workflow':
-            // No-op for now as these were handled by internal agent
-            break;
+      // No-op handlers
+      note_created: async () => {},
+      note_updated: async () => {},
+      execute_workflow: async () => {},
+    };
 
-        default:
-          ws.send(JSON.stringify({ type: 'error', message: `Unknown type: ${message.type}` }));
+    const handler = handlers[type];
+    if (handler) {
+      const result = await tryCatch(
+        () => handler(),
+        `WS.${type}`,
+        undefined
+      );
+      // If handler failed, send error response
+      if (result === undefined && id !== undefined) {
+        // Check if the error was already handled (no response sent yet)
+        // The tryCatch logs the error but doesn't send response, so we send it here
+        sendResponse(ws, id, false, { message: 'Operation failed' });
       }
-    } catch (e: unknown) {
-      error('WS', 'Error handling message', e as Error);
-      ws.send(JSON.stringify({ type: 'error', message: 'Internal error' }));
+    } else {
+      sendResponse(ws, id, false, { message: `Unknown type: ${type}` });
     }
   }
 }

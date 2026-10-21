@@ -2,24 +2,25 @@ import fs from 'fs';
 import path from 'path';
 import { AgentSkillRegistry } from './AgentSkillRegistry.js';
 import { log } from '../core/utils.js';
+import { DATA_PATHS } from '../constants.js';
 
 export class PluginLoader {
     private installedPath: string;
 
     constructor(private registry: AgentSkillRegistry) {
-        this.installedPath = path.join(process.cwd(), 'src/skills/installed');
+        this.installedPath = path.join(process.cwd(), DATA_PATHS.SKILLS_DIR);
         this.ensureDirectory();
     }
 
-    private async ensureDirectory() {
+    private async ensureDirectory(): Promise<void> {
         try {
             await fs.promises.mkdir(this.installedPath, { recursive: true });
-        } catch (e) {
+        } catch {
             // Ignore if exists
         }
     }
 
-    async loadPlugins() {
+    async loadPlugins(): Promise<void> {
         log('PluginLoader', 'Scanning for installed skills...');
 
         try {

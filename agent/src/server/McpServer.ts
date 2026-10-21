@@ -8,6 +8,7 @@ import { CorePlugin } from './plugins/CorePlugin.js';
 import { IntelligencePlugin } from './plugins/IntelligencePlugin.js';
 import { BatchPlugin } from './plugins/BatchPlugin.js';
 import { ConfigManager } from '../config/ConfigManager.js';
+import { MCP_PATHS } from '../constants.js';
 
 export async function setupMcpServer(app: Express) {
     const config = ConfigManager.getInstance().getConfig();
@@ -48,8 +49,8 @@ export async function setupMcpServer(app: Express) {
 
     const transports: Record<string, SSEServerTransport> = {};
 
-    app.get('/mcp/sse', async (req, res) => {
-        const transport = new SSEServerTransport('/mcp/message', res);
+    app.get(MCP_PATHS.SSE, async (req, res) => {
+        const transport = new SSEServerTransport(MCP_PATHS.MESSAGE, res);
         const sessionId = transport.sessionId;
         transports[sessionId] = transport;
 
@@ -60,7 +61,7 @@ export async function setupMcpServer(app: Express) {
         await server.connect(transport);
     });
 
-    app.post('/mcp/message', async (req, res) => {
+    app.post(MCP_PATHS.MESSAGE, async (req, res) => {
         const sessionId = req.query.sessionId as string;
         if (!sessionId || !transports[sessionId]) {
             res.status(404).send('Session not found');

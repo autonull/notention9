@@ -1,9 +1,10 @@
 import fs from 'fs/promises';
 import { join } from 'path';
 import { Note, Mutex, Logger } from '@notention/core';
+import { DATA_PATHS } from './constants.js';
 
-const DATA_DIR = join(process.cwd(), 'data');
-const NOTES_FILE = join(DATA_DIR, 'notes.json');
+const DATA_DIR = join(process.cwd(), DATA_PATHS.NOTES_DIR);
+const NOTES_FILE = join(DATA_DIR, DATA_PATHS.NOTES_FILE);
 const persistenceMutex = new Mutex();
 const logger = Logger.getInstance();
 

@@ -9,6 +9,7 @@ import { InitialConfigurator } from './configurator/InitialConfigurator.js';
 import { ConfigProcessor } from './configurator/ConfigProcessor.js';
 import { NoteSkillLoader } from './skills/NoteSkillLoader.js';
 import { PluginLoader } from './skills/PluginLoader.js';
+import { SYSTEM_TAGS } from './constants.js';
 
 export interface BootstrapResult {
 	skillRegistry: AgentSkillRegistry;

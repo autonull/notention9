@@ -2,6 +2,7 @@ import { parseConfigFromNote, mergeConfigs } from '@notention/core';
 import type { Note, AppSettings } from '@notention/core';
 import { log } from '../core/utils.js';
 import { Capabilities } from '../core/Capabilities.js';
+import { SYSTEM_TAGS } from '../constants.js';
 
 export class ConfigProcessor {
     private currentConfig: Partial<AppSettings> = {};
@@ -11,7 +12,7 @@ export class ConfigProcessor {
      * Useful for restoring state on startup.
      */
     scanForConfigs(notes: Note[]): void {
-        const configNotes = notes.filter(n => n.tags.includes('@config:active'));
+        const configNotes = notes.filter(n => n.tags.includes(SYSTEM_TAGS.CONFIG_ACTIVE));
         if (configNotes.length > 0) {
             log('Config', `Found ${configNotes.length} active configuration notes. Restoring state...`);
             // Process in order (by priority or creation date? creation date for now)
@@ -27,7 +28,7 @@ export class ConfigProcessor {
      * If so, parse it and update the system configuration.
      */
     processNote(note: Note): void {
-        if (note.tags.includes('@config:active')) {
+        if (note.tags.includes(SYSTEM_TAGS.CONFIG_ACTIVE)) {
             log('Config', `Processing configuration note: ${note.title}`);
             const newConfig = parseConfigFromNote(note);
             this.applyConfig(newConfig);

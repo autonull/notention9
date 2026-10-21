@@ -3,6 +3,7 @@ import { AgentSkillRegistry } from './AgentSkillRegistry.js';
 import { DynamicSkill } from './DynamicSkill.js';
 import type { DynamicSkillDefinition } from './DynamicSkill.js';
 import { log } from '../core/utils.js';
+import { SYSTEM_TAGS } from '../constants.js';
 
 export class NoteSkillLoader {
     private registry: AgentSkillRegistry;
@@ -15,7 +16,7 @@ export class NoteSkillLoader {
      * Scans notes for the tag '@skill:definition' and registers them.
      */
     scanForSkills(notes: Note[]): void {
-        const skillNotes = notes.filter(note => note.tags.includes('@skill:definition'));
+        const skillNotes = notes.filter(note => note.tags.includes(SYSTEM_TAGS.SKILL_DEFINITION));
         skillNotes.forEach(note => this.loadSkillFromNote(note));
 
         if (skillNotes.length > 0) {

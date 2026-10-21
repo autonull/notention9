@@ -1,4 +1,5 @@
 import { Note, createNote } from '@notention/core';
+import { SYSTEM_TAGS } from '../constants.js';
 
 export class InitialConfigurator {
     /**
@@ -6,7 +7,7 @@ export class InitialConfigurator {
      * In a real implementation, this might query the database for @config:active notes.
      */
     async isInitialized(notes: Note[]): Promise<boolean> {
-        return notes.some(note => note.tags.includes('@config:active'));
+        return notes.some(note => note.tags.includes(SYSTEM_TAGS.CONFIG_ACTIVE));
     }
 
     /**
@@ -16,7 +17,7 @@ export class InitialConfigurator {
         return createNote({
             title: 'Welcome to Notention',
             content: 'Click here to start the setup wizard.\n\n[action:setup_wizard]',
-            tags: ['@onboarding:setup'],
+            tags: [SYSTEM_TAGS.ONBOARDING_SETUP],
             source: {
                 type: 'import',
                 identifier: 'initial-configurator',
@@ -48,13 +49,13 @@ export class InitialConfigurator {
             title: 'Base Ontology',
             content: `
 # Base Ontology
-@ontology:base
+${SYSTEM_TAGS.ONTOLOGY_BASE}
 @version:1.0
 
 [field:status:options:todo,in-progress,done]
 [field:priority:range:0-1]
       `.trim(),
-            tags: ['@ontology:base'],
+            tags: [SYSTEM_TAGS.ONTOLOGY_BASE],
             source: {
                 type: 'import',
                 identifier: 'initial-configurator',
