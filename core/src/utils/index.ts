@@ -16,3 +16,4 @@ export * from './constants.js';
 export * from './geo.js';
 export * from './composition.js';
 export * from './nostrQuery.js';
+export * from './cache.js';

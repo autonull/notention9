@@ -1,7 +1,7 @@
 import { OntologyNode, OntologyAttribute } from '../types/index.js';
 import { deepClone } from '../utils/common.js';
 
-const traverseTree = (nodes: OntologyNode[], predicate: (node: OntologyNode) => boolean): OntologyNode | null => {
+export const traverseTree = (nodes: OntologyNode[], predicate: (node: OntologyNode) => boolean): OntologyNode | null => {
   const stack = [...nodes];
   while (stack.length > 0) {
     const node = stack.pop()!;

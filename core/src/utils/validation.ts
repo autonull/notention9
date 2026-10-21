@@ -1,6 +1,6 @@
 import { Property, Note, OntologyNode, OntologyAttribute } from '../types/index.js';
 import { parseQuantity } from '../notes/quantities/index.js';
-import { getCanonicalKey } from '../ontology/ontologyHelpers.js';
+import { getCanonicalKey, traverseTree } from '../ontology/ontologyHelpers.js';
 import { OntologyService } from '../ontology/ontologyService.js';
 
 export interface ValidationResult {
@@ -225,9 +225,7 @@ export const validateNote = (note: Note, ontology: OntologyNode[]): ValidationRe
 
 	const noteCanonicalKeys = new Set(note.properties.map(p => getCanonicalKey(p.key, ontology)));
 
-	const stack = [...ontology];
-	while (stack.length > 0) {
-		const node = stack.pop()!;
+	traverseTree(ontology, node => {
 		if (node.requiredAttributes?.length) {
 			const nodeKeys = Object.keys(node.attributes ?? {});
 			if (nodeKeys.some(key => noteCanonicalKeys.has(key))) {
@@ -238,8 +236,8 @@ export const validateNote = (note: Note, ontology: OntologyNode[]): ValidationRe
 				}
 			}
 		}
-		stack.push(...(node.children ?? []));
-	}
+		return false;
+	});
 
 	return { isValid: errors.length === 0, errors, warnings };
 };

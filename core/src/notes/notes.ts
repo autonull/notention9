@@ -5,6 +5,7 @@ import { NOTE_STATUS } from '../utils/constants.js';
 import { PropertyExtractor } from './propertyExtractor/index.js';
 import { getTextFromHtml } from '../utils/html.js';
 import { inferNoteIntent, type NoteIntent } from './NoteIntentInferencer.js';
+import { memoize2 } from '../utils/cache.js';
 
 export const createNote = (overrides?: Partial<Note>): Note => {
   const now = new Date().toISOString();
@@ -40,27 +41,9 @@ export const areNotesEqual = (a: Note, b: Note): boolean =>
     arePropertyArraysEqual(a.properties, b.properties)
   );
 
-const extractorCache = new Map<string, PropertyExtractor>();
-const getExtractor = (ontology?: OntologyNode[]): PropertyExtractor => {
-  const key = ontology ? 'with-ontology' : 'no-ontology';
-  let extractor = extractorCache.get(key);
-  if (!extractor) {
-    extractor = new PropertyExtractor(ontology);
-    extractorCache.set(key, extractor);
-  }
-  return extractor;
-};
+const getExtractor = memoize2((ontology: OntologyNode[] | undefined): PropertyExtractor => new PropertyExtractor(ontology));
 
-const parsePropertiesCache = new Map<string, Property[]>();
-const getCachedProperties = (content: string, ontology?: OntologyNode[]): Property[] => {
-  const key = content + (ontology ? '-with-ontology' : '-no-ontology');
-  let props = parsePropertiesCache.get(key);
-  if (!props) {
-    props = parseProperties(content, ontology);
-    parsePropertiesCache.set(key, props);
-  }
-  return props;
-};
+const getCachedProperties = memoize2((content: string, ontology: OntologyNode[] | undefined): Property[] => parseProperties(content, ontology));
 
 /**
  * Functional Note Pipeline for common mutations.
