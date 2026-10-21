@@ -56,11 +56,18 @@ export class ServerManager {
     async shutdown() {
         if (this.isShuttingDown) return;
         this.isShuttingDown = true;
-        console.log(chalk.yellow("\n🛑 Shutting down servers..."));
+        console.log(chalk.yellow('\n🛑 Shutting down servers...'));
 
         if (this.relayServer) await this.relayServer.close();
         if (this.dashboardServer) this.dashboardServer.close();
         if (this.uiServer) this.uiServer.stop();
+    }
+
+    closeDashboard() {
+        if (this.dashboardServer) {
+            this.dashboardServer.close();
+            this.dashboardServer = null;
+        }
     }
 
     private findFreePort(startPort: number): Promise<number> {

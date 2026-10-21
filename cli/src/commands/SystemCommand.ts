@@ -1,6 +1,7 @@
 import { createCommand, commandRegistry, CommandContext } from './command.js';
 import chalk from 'chalk';
 import boxen from 'boxen';
+import { log } from '../utils.js';
 
 export const StatusCommand = createCommand({
     name: '/status',
@@ -10,12 +11,14 @@ export const StatusCommand = createCommand({
         const mcpUrl = process.env.MCP_URL || 'http://localhost:3000/mcp/sse';
         const enableSim = process.env.SIM_ENABLED === 'true';
         const conf = context.session!.getConfig();
+        const activeCtx = context.session!.getActiveContext();
+
         const statusText = `
 ${chalk.bold('Provider:')}    ${chalk.blue(conf.provider)}
 ${chalk.bold('Model:')}       ${chalk.green(conf.model)}
 ${chalk.bold('Server URL:')}  ${chalk.cyan(mcpUrl)}
 ${chalk.bold('Simulation:')}  ${enableSim ? chalk.green('Enabled') : chalk.gray('Disabled')}
-${chalk.bold('Context:')}     ${context.session!.getActiveContext() ? chalk.yellow(context.session!.getActiveContext()!.title) : chalk.gray('None')}
+${chalk.bold('Context:')}     ${activeCtx ? chalk.yellow(activeCtx.title) : chalk.gray('None')}
         `.trim();
 
         console.log('\n' + boxen(statusText, {
@@ -36,7 +39,7 @@ export const ExitCommand = createCommand({
     description: 'Exit the CLI',
     usage: '/exit',
     run: async () => {
-        console.warn("Goodbye.");
+        console.warn('Goodbye.');
         process.exit(0);
     }
 });
@@ -49,7 +52,7 @@ export const HelpCommand = createCommand({
         const commands = commandRegistry.getAll();
         console.log(chalk.gray('Commands:'));
         commands.forEach(cmd => {
-            const aliases = cmd.aliases && cmd.aliases.length > 0 ? `, ${cmd.aliases.join(', ')}` : '';
+            const aliases = cmd.aliases?.length ? `, ${cmd.aliases.join(', ')}` : '';
             console.log(`  ${chalk.white(cmd.name)}${aliases.padEnd(25)} - ${cmd.description}`);
         });
         return true;
