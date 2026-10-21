@@ -29,3 +29,8 @@ export const SUGGESTION_THRESHOLD = {
   DEV: 1,
   PROD: 3,
 } as const;
+
+// Shared regex constants
+export const ISODATE_REGEX = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2})?/;
+export const GEO_REGEX = /^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/;
+export const RANGE_REGEX = /^\d+(\.\d+)?\s*-\s*\d+(\.\d+)?$/;

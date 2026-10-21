@@ -2,6 +2,7 @@ import { Property, Note, OntologyNode, OntologyAttribute } from '../types/index.
 import { parseQuantity } from '../notes/quantities/index.js';
 import { getCanonicalKey, traverseTree } from '../ontology/ontologyHelpers.js';
 import { OntologyService } from '../ontology/ontologyService.js';
+import { ISODATE_REGEX, GEO_REGEX, RANGE_REGEX } from './constants.js';
 
 export interface ValidationResult {
 	isValid: boolean;
@@ -15,9 +16,6 @@ export interface AttributeValidationResult {
 }
 
 const NUMERIC_OPERATORS = new Set(['less than', 'greater than', 'less than or equal', 'greater than or equal', 'range', 'between']);
-const ISODATE_REGEX = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2})?/;
-const GEO_REGEX = /^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/;
-const RANGE_REGEX = /^\d+(\.\d+)?\s*-\s*\d+(\.\d+)?$/;
 
 const validateOperator = (name: string, operator: string, definition: OntologyAttribute): AttributeValidationResult => {
 	const validOperators = [...(definition.operators.real ?? []), ...(definition.operators.imaginary ?? [])];

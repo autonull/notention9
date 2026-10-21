@@ -1,11 +1,10 @@
 import type { Property, OntologyNode } from '../../types/index.js';
-import { resolveAlias } from '../../ontology/propertyAliases.js';
-import { getCanonicalKey } from '../../ontology/ontologyHelpers.js';
+import { getCanonicalKey, resolveSimpleAlias } from '../../ontology/ontologyHelpers.js';
 import { Logger } from '../../utils/logging.js';
 import { REGEX, COMMON_WORDS } from './constants.js';
 
 const resolveKey = (key: string, ontology?: OntologyNode[]): string =>
-  ontology ? getCanonicalKey(key, ontology) : resolveAlias(key);
+  ontology ? getCanonicalKey(key, ontology) : resolveSimpleAlias(key);
 
 const isValidKey = (key: string): boolean => REGEX.VALID_KEY.test(key) && !COMMON_WORDS.has(key.toLowerCase());
 

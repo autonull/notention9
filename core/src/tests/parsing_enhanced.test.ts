@@ -1,12 +1,12 @@
 import { parseProperties } from '../notes/parsing/index.js';
-import { resolveAlias } from '../ontology/propertyAliases.js';
+import { resolveSimpleAlias } from '../ontology/ontologyHelpers.js';
 import { describe, it, expect } from 'vitest';
 
 describe('Enhanced Property Parsing', () => {
 
     describe('Aliases', () => {
         it('should resolve "loc" to "location"', () => {
-            const key = resolveAlias('loc');
+            const key = resolveSimpleAlias('loc');
             expect(key).toBe('location');
         });
 

@@ -1,6 +1,5 @@
 import type { PropertyType } from '../types/index.js';
-
-const ISODATE_REGEX = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2})?/;
+import { ISODATE_REGEX } from './constants.js';
 
 interface TypeCounts {
   number: number;
