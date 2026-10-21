@@ -1,12 +1,56 @@
 import React from 'react';
-import {describe, expect, it} from 'vitest';
+import {describe, expect, it, vi} from 'vitest';
 import {render, screen} from '@testing-library/react';
-import {vi} from 'vitest';
 import {SmartNoteAssistant} from "../../components/SmartNoteAssistant";
 import {SettingsProvider} from "../../components/contexts/SettingsContext";
 import {ToastProvider} from "../../components/contexts/ToastProvider";
 import {ViewContext} from "../../components/contexts/ViewContext";
 import {createNote} from '@notention/core';
+
+vi.mock('../../hooks/useSmartNoteAssistant', () => ({
+    useSmartNoteAssistant: () => ({
+        isOpen: true,
+        setIsOpen: vi.fn(),
+        activeTab: 'suggestions',
+        setActiveTab: vi.fn(),
+        activeSuggestion: 0,
+        setActiveSuggestion: vi.fn(),
+        suggestions: [{ id: '1', text: 'Suggestion 1', type: 'property' }],
+        removeSuggestion: vi.fn(),
+        localMatches: [],
+        networkMatches: [],
+        isSearching: false,
+        discoverMatches: vi.fn(),
+        clearNetworkMatches: vi.fn(),
+        propertyReview: { items: [], accept: vi.fn(), reject: vi.fn() },
+        isAddingProperty: false,
+        setIsAddingProperty: vi.fn(),
+        editingPropertyIndex: null,
+        setEditingPropertyIndex: vi.fn(),
+        propertyToDelete: null,
+        setPropertyToDelete: vi.fn(),
+        attributeModalOpen: false,
+        setAttributeModalOpen: vi.fn(),
+        aliasModalOpen: false,
+        setAliasModalOpen: vi.fn(),
+        targetKey: '',
+        setTargetKey: vi.fn(),
+        inferredType: 'string',
+        setInferredType: vi.fn(),
+        handleSaveProperty: vi.fn(),
+        handleAcceptReview: vi.fn(),
+        handleDeleteProperty: vi.fn(),
+        handleCancelEdit: vi.fn(),
+        handleConnect: vi.fn(),
+        handleChat: vi.fn(),
+        handleFindMatches: vi.fn(),
+        handleApplySuggestion: vi.fn(),
+        handleConfirmAddAttribute: vi.fn(),
+        handleConfirmAddAlias: vi.fn(),
+        handleKeyDown: vi.fn(),
+        toggleOpen: vi.fn()
+    })
+}));
 
 vi.mock('../../hooks/useNotes', () => ({
     useNotes: () => ({ notes: [], addNote: vi.fn(), getSortedFilteredNotes: vi.fn().mockReturnValue([]) })
@@ -31,49 +75,54 @@ vi.mock('../../hooks/useContacts', () => ({
     useContacts: () => ({ contacts: [] })
 }));
 
-const mockViewContext = {
-    activeView: 'notes',
-    setActiveView: () => {},
-    selectedNoteId: null,
-    setSelectedNoteId: () => {},
-    matchingNoteId: null,
-    setMatchingNoteId: () => {},
-    selectedChatPubkey: null,
-    setSelectedChatPubkey: () => {},
-    showToast: () => {},
-    notificationCount: 0,
-    matches: [],
-    addMatch: () => {},
-    clearNotifications: () => {},
-    searchTerm: '',
-    setSearchTerm: () => {},
-    sortOrder: 'updatedAt_desc',
-    setSortOrder: () => {},
-    isSidebarOpen: true,
-    setIsSidebarOpen: () => {},
-    chatNotificationCount: 0,
-    incrementChatNotification: () => {},
-    resetChatNotification: () => {},
-    isPaletteOpen: false,
-    setIsPaletteOpen: () => {},
-    isHelpOpen: false,
-    setIsHelpOpen: () => {},
-    userLocation: null,
-    refreshUserLocation: async () => {},
-    sidebarViewMode: 'list',
-    setSidebarViewMode: () => {}
-};
+vi.mock('../../hooks/useSettingsContext', () => ({
+    useSettings: () => ({ settings: { ontology: [] }, setSettings: vi.fn() })
+}));
 
-// Mock contexts
-const MockProviders = ({children}: { children: React.ReactNode }) => (
-    <ViewContext.Provider value={mockViewContext as any}>
-        <SettingsProvider>
-            <ToastProvider>
-                {children}
-            </ToastProvider>
-        </SettingsProvider>
-    </ViewContext.Provider>
-);
+vi.mock('../../hooks/usePropertyReview', () => ({
+    usePropertyReview: () => ({ items: [], accept: vi.fn(), reject: vi.fn() })
+}));
+
+vi.mock('../../hooks/useViewContext', () => ({
+    useView: () => ({
+        activeView: 'notes',
+        setActiveView: vi.fn(),
+        selectedNoteId: null,
+        setSelectedNoteId: vi.fn(),
+        matchingNoteId: null,
+        setMatchingNoteId: vi.fn(),
+        selectedChatPubkey: null,
+        setSelectedChatPubkey: vi.fn(),
+        showToast: vi.fn(),
+        notificationCount: 0,
+        matches: [],
+        addMatch: vi.fn(),
+        clearNotifications: vi.fn(),
+        searchTerm: '',
+        setSearchTerm: vi.fn(),
+        sortOrder: 'updatedAt_desc',
+        setSortOrder: vi.fn(),
+        isSidebarOpen: true,
+        setIsSidebarOpen: vi.fn(),
+        chatNotificationCount: 0,
+        incrementChatNotification: vi.fn(),
+        resetChatNotification: vi.fn(),
+        isPaletteOpen: false,
+        setIsPaletteOpen: vi.fn(),
+        isHelpOpen: false,
+        setIsHelpOpen: vi.fn(),
+        userLocation: null,
+        refreshUserLocation: async () => {},
+        sidebarViewMode: 'list',
+        setSidebarViewMode: vi.fn()
+    })
+}));
+
+vi.mock('../../hooks/useToast', () => ({
+    useToast: () => ({
+        addToast: vi.fn()
+    })
+}));
 
 describe('SmartNoteAssistant', () => {
     it('renders simplified labels', async () => {
@@ -84,10 +133,7 @@ describe('SmartNoteAssistant', () => {
         });
 
         render(
-            <MockProviders>
-                <SmartNoteAssistant note={note} onNoteUpdate={() => {
-                }}/>
-            </MockProviders>
+            <SmartNoteAssistant note={note} onNoteUpdate={() => {}}/>
         );
 
         // Wait for async analysis (debounce is 1000ms, so we need >1000ms timeout)

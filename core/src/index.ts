@@ -11,7 +11,6 @@ export * from './skills/index.js';
 export * from './utils/errors/index.js';
 export * from './utils/common.js';
 export * from './utils/logging.js';
-export * from './utils/agentLogging.js';
 export * from './utils/encoding.js';
 export * from './utils/string.js';
 export * from './utils/tools.js';

@@ -157,6 +157,52 @@ vi.mock('../../hooks/useEditorTemplates', () => ({
     }),
 }));
 
+// Mock useSmartNoteAssistant
+vi.mock('../../hooks/useSmartNoteAssistant', () => ({
+    useSmartNoteAssistant: () => ({
+        isOpen: true,
+        setIsOpen: vi.fn(),
+        activeTab: 'properties',
+        setActiveTab: vi.fn(),
+        activeSuggestion: 0,
+        setActiveSuggestion: vi.fn(),
+        suggestions: [],
+        removeSuggestion: vi.fn(),
+        localMatches: [],
+        networkMatches: [],
+        isSearching: false,
+        discoverMatches: vi.fn(),
+        clearNetworkMatches: vi.fn(),
+        propertyReview: { items: [], accept: vi.fn(), reject: vi.fn() },
+        isAddingProperty: false,
+        setIsAddingProperty: vi.fn(),
+        editingPropertyIndex: null,
+        setEditingPropertyIndex: vi.fn(),
+        propertyToDelete: null,
+        setPropertyToDelete: vi.fn(),
+        attributeModalOpen: false,
+        setAttributeModalOpen: vi.fn(),
+        aliasModalOpen: false,
+        setAliasModalOpen: vi.fn(),
+        targetKey: '',
+        setTargetKey: vi.fn(),
+        inferredType: 'string',
+        setInferredType: vi.fn(),
+        handleSaveProperty: vi.fn(),
+        handleAcceptReview: vi.fn(),
+        handleDeleteProperty: vi.fn(),
+        handleCancelEdit: vi.fn(),
+        handleConnect: vi.fn(),
+        handleChat: vi.fn(),
+        handleFindMatches: vi.fn(),
+        handleApplySuggestion: vi.fn(),
+        handleConfirmAddAttribute: vi.fn(),
+        handleConfirmAddAlias: vi.fn(),
+        handleKeyDown: vi.fn(),
+        toggleOpen: vi.fn()
+    })
+}));
+
 // Mock useDebouncedSave
 vi.mock('../../hooks/useDebouncedSave', () => ({
     useDebouncedSave: () => ({
