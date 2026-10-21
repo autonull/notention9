@@ -1,4 +1,4 @@
-import { BaseCommand, Command } from './command.js';
+import { BaseCommand } from './command.js';
 import { LlmSession } from '../llm.js';
 import { ProviderFactory } from '../providers/factory.js';
 import { configManager } from '../config-manager.js';
@@ -13,14 +13,8 @@ export class ConfigCommand extends BaseCommand {
     usage = '/config';
 
     protected async run(_args: string[]): Promise<boolean> {
-        const session = this.session;
-        if (!session) {
-            log.error("Session unavailable in this context.");
-            return true;
-        }
-
-        const config = session.getConfig();
-        const provider = session.getProvider();
+        const config = this.session!.getConfig();
+        const provider = this.session!.getProvider();
         const capabilities = provider.getCapabilities();
 
         log.info("Current Configuration:");
@@ -39,13 +33,7 @@ export class ProvidersCommand extends BaseCommand {
     usage = '/providers';
 
     protected async run(_args: string[]): Promise<boolean> {
-        const session = this.session;
-        if (!session) {
-            log.error("Session unavailable in this context.");
-            return true;
-        }
-
-        const currentConfig = session.getConfig();
+        const currentConfig = this.session!.getConfig();
         const supported = ProviderFactory.getSupportedProviders();
 
         log.info("Supported Providers:");
@@ -75,13 +63,7 @@ export class ProviderCommand extends BaseCommand {
     }
 
     protected async run(args: string[]): Promise<boolean> {
-        const session = this.session;
-        if (!session) {
-            log.error("Session unavailable in this context.");
-            return true;
-        }
-
-        await this.switchProvider(args[0], args.length > 1 ? args[1] : undefined, session);
+        await this.switchProvider(args[0], args.length > 1 ? args[1] : undefined, this.session!);
         return true;
     }
 

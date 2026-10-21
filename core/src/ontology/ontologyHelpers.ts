@@ -1,8 +1,6 @@
 import { OntologyNode, OntologyAttribute } from '../types/index.js';
 import { deepClone } from '../utils/common.js';
 
-const cloneTree = (tree: OntologyNode[]): OntologyNode[] => deepClone(tree);
-
 const traverseTree = (nodes: OntologyNode[], predicate: (node: OntologyNode) => boolean): OntologyNode | null => {
   const stack = [...nodes];
   while (stack.length > 0) {
@@ -43,7 +41,7 @@ export const getAliases = (key: string, nodes: OntologyNode[]): string[] => {
 };
 
 export const addNode = (tree: OntologyNode[], parentId: string | null, newNode: OntologyNode): OntologyNode[] => {
-	const newTree = cloneTree(tree);
+	const newTree = deepClone(tree);
 	if (!parentId) {
 		newTree.push(newNode);
 		return newTree;
@@ -70,7 +68,7 @@ export const deleteNode = (tree: OntologyNode[], nodeId: string): OntologyNode[]
 };
 
 export const renameNode = (tree: OntologyNode[], nodeId: string, newLabel: string): OntologyNode[] => {
-  const newTree = cloneTree(tree);
+  const newTree = deepClone(tree);
   const node = findNode(newTree, nodeId);
   if (node) node.label = newLabel;
   return newTree;
@@ -80,20 +78,20 @@ export const findNodeIdForAttribute = (nodes: OntologyNode[], key: string): stri
   findNodeWithAttribute(nodes, key)?.id ?? null;
 
 export const addAttribute = (tree: OntologyNode[], nodeId: string, key: string, attribute: OntologyAttribute): OntologyNode[] => {
-  const newTree = cloneTree(tree);
+  const newTree = deepClone(tree);
   const node = findNode(newTree, nodeId);
   if (node) node.attributes ??= {}, node.attributes[key] = attribute;
   return newTree;
 };
 
 export const deleteAttribute = (tree: OntologyNode[], nodeId: string, key: string): OntologyNode[] => {
-  const newTree = cloneTree(tree);
+  const newTree = deepClone(tree);
   delete findNode(newTree, nodeId)?.attributes?.[key];
   return newTree;
 };
 
 export const renameAttribute = (tree: OntologyNode[], nodeId: string, oldKey: string, newKey: string): OntologyNode[] => {
-  const newTree = cloneTree(tree);
+  const newTree = deepClone(tree);
   const node = findNode(newTree, nodeId);
   if (node?.attributes?.[oldKey]) {
     if (node.attributes[newKey]) throw new Error(`Attribute '${newKey}' already exists.`);
@@ -104,7 +102,7 @@ export const renameAttribute = (tree: OntologyNode[], nodeId: string, oldKey: st
 };
 
 export const addAliasToAttribute = (tree: OntologyNode[], nodeId: string, attributeKey: string, alias: string): OntologyNode[] => {
-  const newTree = cloneTree(tree);
+  const newTree = deepClone(tree);
   const node = findNode(newTree, nodeId);
   if (node?.attributes?.[attributeKey]) {
     const aliases = new Set(node.attributes[attributeKey].aliases ?? []);
@@ -115,7 +113,7 @@ export const addAliasToAttribute = (tree: OntologyNode[], nodeId: string, attrib
 };
 
 export const mergeAttributes = (tree: OntologyNode[], nodeId: string, sourceKey: string, targetKey: string): OntologyNode[] => {
-  const newTree = cloneTree(tree);
+  const newTree = deepClone(tree);
   const node = findNode(newTree, nodeId);
   if (node?.attributes?.[sourceKey] && node.attributes[targetKey]) delete node.attributes[sourceKey];
   return newTree;

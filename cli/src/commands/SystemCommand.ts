@@ -1,8 +1,6 @@
 import { BaseCommand } from './command.js';
-import { LlmSession } from '../llm.js';
 import chalk from 'chalk';
 import boxen from 'boxen';
-import { log } from '../utils.js';
 import { commandRegistry } from './command.js';
 
 export class StatusCommand extends BaseCommand {
@@ -11,21 +9,15 @@ export class StatusCommand extends BaseCommand {
     usage = '/status';
 
     protected async run(_args: string[]): Promise<boolean> {
-        const session = this.session as any;
-        if (!session) {
-            log.error("Session unavailable in this context.");
-            return true;
-        }
-
         const mcpUrl = process.env.MCP_URL || 'http://localhost:3000/mcp/sse';
         const enableSim = process.env.SIM_ENABLED === 'true';
-        const conf = session.getConfig();
+        const conf = this.session!.getConfig();
         const statusText = `
 ${chalk.bold('Provider:')}    ${chalk.blue(conf.provider)}
 ${chalk.bold('Model:')}       ${chalk.green(conf.model)}
 ${chalk.bold('Server URL:')}  ${chalk.cyan(mcpUrl)}
 ${chalk.bold('Simulation:')}  ${enableSim ? chalk.green('Enabled') : chalk.gray('Disabled')}
-${chalk.bold('Context:')}     ${session.getActiveContext() ? chalk.yellow(session.getActiveContext().title) : chalk.gray('None')}
+${chalk.bold('Context:')}     ${this.session!.getActiveContext() ? chalk.yellow(this.session!.getActiveContext()!.title) : chalk.gray('None')}
         `.trim();
 
         console.log('\n' + boxen(statusText, {
@@ -74,10 +66,7 @@ export class ClearCommand extends BaseCommand {
     usage = '/clear';
 
     protected async run(_args: string[]): Promise<boolean> {
-        const session = this.session;
-        if (session) {
-            session.clearHistory();
-        }
+        this.session?.clearHistory();
         console.clear();
         return true;
     }

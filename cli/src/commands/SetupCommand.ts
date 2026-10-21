@@ -1,5 +1,4 @@
 import { BaseCommand } from './command.js';
-import { CliClient } from '../client.js';
 import { SetupManager } from '../setup-manager.js';
 
 export class SetupCommand extends BaseCommand {
@@ -8,8 +7,7 @@ export class SetupCommand extends BaseCommand {
     usage = '/setup';
 
     protected async run(_args: string[]): Promise<boolean> {
-        const cli = this.cli;
-        await SetupManager.runSetup(cli);
+        await SetupManager.runSetup(this.cli);
         return true;
     }
 }

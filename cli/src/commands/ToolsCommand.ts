@@ -9,8 +9,7 @@ export class ToolsCommand extends BaseCommand {
     usage = '/tools';
 
     protected async run(_args: string[]): Promise<boolean> {
-        const tools = this.tools;
-        log.info(`Tools: ${tools.map(t => chalk.cyan(t.name)).join(", ")}`);
+        log.info(`Tools: ${this.tools.map(t => chalk.cyan(t.name)).join(", ")}`);
         return true;
     }
 }
@@ -29,10 +28,9 @@ export class ExtractCommand extends BaseCommand {
     }
 
     protected async run(args: string[]): Promise<boolean> {
-        const cli = this.cli;
         const text = args.join(' ');
         try {
-            const result = await withSpinner("Extracting semantics...", () => cli.callTool('extract_semantics', { text }));
+            const result = await withSpinner("Extracting semantics...", () => this.cli.callTool('extract_semantics', { text }));
             const content = (result as any).content;
             const extraction = JSON.parse((content[0] as any).text);
 

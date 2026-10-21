@@ -17,23 +17,17 @@ export class OpenCommand extends BaseCommand {
     }
 
     protected async run(args: string[]): Promise<boolean> {
-        const cli = this.cli;
-        const session = this.session;
-        if (!session) {
-            log.error("Session unavailable in this context.");
-            return true;
-        }
         const noteId = args[0];
 
         try {
-            const result = await withSpinner(`Fetching note '${noteId}'...`, () => cli.callTool('read_notes', { query: noteId }));
+            const result = await withSpinner(`Fetching note '${noteId}'...`, () => this.cli.callTool('read_notes', { query: noteId }));
             const content = (result as any).content;
             const notes = JSON.parse((content[0] as any).text);
 
             const note = notes.find((n: any) => n.id === noteId);
 
             if (note) {
-                session.setActiveContext({ id: note.id, title: note.title });
+                this.session!.setActiveContext({ id: note.id, title: note.title });
                 log.success(`Context set to: ${chalk.bold(note.title)}`);
             } else {
                 log.warn(`Note '${noteId}' not found.`);
@@ -51,13 +45,7 @@ export class CloseCommand extends BaseCommand {
     usage = '/close';
 
     protected async run(_args: string[]): Promise<boolean> {
-        const session = this.session;
-        if (!session) {
-            log.error("Session unavailable in this context.");
-            return true;
-        }
-
-        session.setActiveContext(null);
+        this.session!.setActiveContext(null);
         log.success("Context closed.");
         return true;
     }

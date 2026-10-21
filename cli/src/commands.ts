@@ -7,5 +7,6 @@
 
 export {
     handleSlashCommand,
-    getSlashCommands
+    getSlashCommands,
+    commandRegistry
 } from './commands/index.js';

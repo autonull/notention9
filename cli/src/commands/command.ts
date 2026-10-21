@@ -1,5 +1,6 @@
 import { CliClient } from '../client.js';
 import { LlmSession } from '../llm.js';
+import { log } from '../utils.js';
 
 export interface CommandContext {
     cli: CliClient;
@@ -31,7 +32,16 @@ export abstract class BaseCommand implements Command {
             this.showHelp();
             return true;
         }
+        if (!this.ensureSession()) return true;
         return this.run(args);
+    }
+
+    protected ensureSession(): boolean {
+        if (!this.session) {
+            log.error("Session unavailable in this context.");
+            return false;
+        }
+        return true;
     }
 
     protected abstract run(args: string[]): Promise<boolean>;

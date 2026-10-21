@@ -32,6 +32,8 @@ function registerCommands(): void {
 
 registerCommands();
 
+export { commandRegistry };
+
 export async function handleSlashCommand(input: string, cli: CliClient, tools: any[], session?: LlmSession): Promise<boolean> {
     const [cmd, ...args] = input.split(' ');
     const command = commandRegistry.get(cmd);

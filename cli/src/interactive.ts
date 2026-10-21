@@ -1,8 +1,7 @@
 import * as readline from 'readline';
 import dotenv from 'dotenv';
 import { CliClient } from './client.js';
-import { handleSlashCommand, getSlashCommands } from './commands.js';
-import { handleStatus } from './commands/system.js';
+import { handleSlashCommand, getSlashCommands, commandRegistry } from './commands.js';
 import { LlmSession, LLMProviderConfig } from './llm.js';
 import { getLocalTools } from './tools/index.js';
 import { log, withSpinner, setVerbose } from './utils.js';
@@ -196,7 +195,10 @@ export async function startInteractiveSession(options: {
     if (command) {
       if (command.startsWith('/')) {
         if (command === '/status') {
-           await handleStatus(session, mcpUrl, !!enableSim);
+           const statusCmd = commandRegistry.get('/status');
+           if (statusCmd) {
+              await statusCmd.execute([], { cli, tools: coreTools, session });
+           }
         } else {
            await handleSlashCommand(command, cli, coreTools, session);
         }
@@ -275,7 +277,10 @@ ${chalk.bold('Quick Start:')}
 
           if (input.startsWith('/')) {
             if (input === '/status') {
-              await handleStatus(session, mcpUrl, !!enableSim);
+              const statusCmd = commandRegistry.get('/status');
+              if (statusCmd) {
+                await statusCmd.execute([], { cli, tools: coreTools, session });
+              }
             } else {
               await handleSlashCommand(input, cli, coreTools, session);
             }

@@ -1,5 +1,4 @@
 import { BaseCommand } from './command.js';
-import { CliClient } from '../client.js';
 import { log, withSpinner } from '../utils.js';
 import chalk from 'chalk';
 
@@ -17,11 +16,10 @@ export class SecurityCommand extends BaseCommand {
     }
 
     protected async run(args: string[]): Promise<boolean> {
-        const cli = this.cli;
         log.info("Starting security scan...");
         try {
             const result = await withSpinner("Scanning notes for secrets...", async () => {
-                const notesResult = await cli.callTool('read_notes', { limit: 1000 });
+                const notesResult = await this.cli.callTool('read_notes', { limit: 1000 });
                 const content = (notesResult as any).content?.[0]?.text;
                 if (!content) return [];
                 return JSON.parse(content);
