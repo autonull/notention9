@@ -5,10 +5,10 @@
  * - widgets: Widget metadata generation
  * - statistics: Usage and co-occurrence tracking
  * - matching: Fuzzy matching utilities
- * - index: Attribute index building
  * - recording: Usage recording
  * - analysis: Frequency and co-occurrence analysis
  * - graph: Graph data building
+ * - helpers: Core ontology traversal and indexing
  */
 
 export {
@@ -32,7 +32,7 @@ export {
 
 export {
     buildAttributeIndex
-} from './AttributeIndexBuilder.js';
+} from '../ontology/ontologyHelpers.js';
 
 export {
     UsageRecorder

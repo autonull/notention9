@@ -11,8 +11,8 @@ export interface SearchStrategy {
 export class SemanticSearchStrategy implements SearchStrategy {
   private engine: MatchEngine;
 
-  constructor(ontology: OntologyNode[]) {
-    this.engine = new MatchEngine(ontology);
+  constructor(engine: MatchEngine) {
+    this.engine = engine;
   }
 
   search(notes: (Note & NoteMetadata)[], searchTerm: string, ontology: OntologyNode[]): (Note & NoteMetadata)[] {

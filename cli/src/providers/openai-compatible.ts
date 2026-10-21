@@ -3,9 +3,9 @@ import { createOpenAI } from '@ai-sdk/openai';
 import {
     LLMProvider,
     LLMProviderConfig,
-    ProviderCapabilities,
     GenerateResult,
     GenerateOptions,
+    ProviderHealthConfig,
 } from './base.js';
 
 /**
@@ -20,7 +20,13 @@ export class OpenAICompatibleProvider extends LLMProvider {
     private model!: any;
 
     constructor(config: LLMProviderConfig) {
-        super(config);
+        const healthConfig: ProviderHealthConfig = {
+            requiresApiKey: ['openai'],
+            requiresServerCheck: ['ollama', 'local'],
+            defaultServerUrl: 'http://localhost:11434/v1',
+            healthCheckPrefix: 'Ollama/Local server',
+        };
+        super(config, { multiModal: false }, healthConfig);
         this.configureSDK();
     }
 
@@ -50,54 +56,6 @@ export class OpenAICompatibleProvider extends LLMProvider {
         return this.config.provider || 'openai-compatible';
     }
 
-    getCapabilities(): ProviderCapabilities {
-        return {
-            streaming: true,
-            functionCalling: true,
-            systemMessages: true,
-            multiModal: false, // Could be true for OpenAI/GPT-4V
-        };
-    }
-
-    async healthCheck(): Promise<{ healthy: boolean; message?: string }> {
-        try {
-            // Check API key for OpenAI
-            if (this.config.provider === 'openai' && !this.config.apiKey) {
-                return {
-                    healthy: false,
-                    message: 'Missing API Key. Set LLM_API_KEY or OPENAI_API_KEY environment variable.'
-                };
-            }
-
-            // For Ollama/Local, check if server is reachable
-            if (this.config.provider === 'ollama' || this.config.provider === 'local') {
-                try {
-                    const baseUrl = this.config.baseURL || 'http://localhost:11434/v1';
-                    // Strip /v1 for health check if possible, or just try models endpoint
-                    const checkUrl = baseUrl.endsWith('/v1') ? baseUrl.replace('/v1', '') : baseUrl;
-                    const res = await fetch(checkUrl);
-                    if (!res.ok && res.status !== 404) { // 404 might just mean root not found but server up
-                        // Try models endpoint as backup
-                        const modelsRes = await fetch(`${baseUrl}/models`);
-                        if (!modelsRes.ok) throw new Error(`Server returned ${modelsRes.status}`);
-                    }
-                } catch (e: any) {
-                    const isOllama = this.config.provider === 'ollama';
-                    const msg = isOllama
-                        ? `Ollama not reachable at ${this.config.baseURL}. Run 'ollama serve'.`
-                        : `Local server not reachable at ${this.config.baseURL}. Run 'npm run cli:local'.`;
-                    return { healthy: false, message: msg };
-                }
-            }
-
-            // Basic generation check (optional, implies cost for OpenAI)
-            // For now, just assume config is valid if we passed above checks
-            return { healthy: true, message: `${this.getName()} ready (${this.config.model})` };
-        } catch (e: any) {
-            return { healthy: false, message: e.message };
-        }
-    }
-
     async generate(
         messages: CoreMessage[],
         options?: GenerateOptions
@@ -106,8 +64,8 @@ export class OpenAICompatibleProvider extends LLMProvider {
             const result = await streamText({
                 model: this.model,
                 messages,
-                temperature: options?.temperature ?? this.config.temperature,
-                maxTokens: options?.maxTokens ?? this.config.maxTokens,
+                temperature: this.getTemperature(options),
+                maxTokens: this.getMaxTokens(options),
             });
 
             let fullText = '';
@@ -138,8 +96,8 @@ export class OpenAICompatibleProvider extends LLMProvider {
         const result = await streamText({
             model: this.model,
             messages,
-            temperature: options?.temperature ?? this.config.temperature,
-            maxTokens: options?.maxTokens ?? this.config.maxTokens,
+            temperature: this.getTemperature(options),
+            maxTokens: this.getMaxTokens(options),
         });
 
         for await (const chunk of result.textStream) {
@@ -147,8 +105,9 @@ export class OpenAICompatibleProvider extends LLMProvider {
         }
     }
 
-    updateConfig(newConfig: Partial<LLMProviderConfig>): void {
-        super.updateConfig(newConfig);
-        this.configureSDK();
+    protected onConfigUpdate(newConfig: Partial<LLMProviderConfig>): void {
+        if (newConfig.provider || newConfig.baseURL || newConfig.apiKey || newConfig.model) {
+            this.configureSDK();
+        }
     }
 }

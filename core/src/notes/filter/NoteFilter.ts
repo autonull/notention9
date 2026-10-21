@@ -74,7 +74,7 @@ export class NoteFilter {
         this.engine = new MatchEngine(ontology);
 
         this.searchStrategy = new CompositeSearchStrategy([
-            new SemanticSearchStrategy(ontology),
+            new SemanticSearchStrategy(this.engine),
             new TextSearchStrategy(),
             new TagSearchStrategy(),
             new PropertySearchStrategy(),

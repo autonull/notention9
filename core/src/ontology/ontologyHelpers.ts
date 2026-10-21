@@ -11,6 +11,23 @@ const traverseTree = (nodes: OntologyNode[], predicate: (node: OntologyNode) => 
   return null;
 };
 
+/**
+ * Builds attribute index from ontology nodes
+ * Pure static function for testability and reusability
+ */
+export function buildAttributeIndex(
+    nodes: OntologyNode[],
+    index = new Map<string, OntologyAttribute>()
+): Map<string, OntologyAttribute> {
+    nodes.forEach(node => {
+        Object.entries(node.attributes ?? {}).forEach(([key, val]) => {
+            if (!index.has(key)) index.set(key, val);
+        });
+        node.children && buildAttributeIndex(node.children, index);
+    });
+    return index;
+}
+
 const findNodeWithAttribute = (nodes: OntologyNode[], key: string): OntologyNode | null =>
   traverseTree(nodes, n => {
     if (!n.attributes) return false;

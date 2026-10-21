@@ -1,8 +1,7 @@
-import { CoreMessage, streamText } from 'ai';
+import { CoreMessage } from 'ai';
 import {
     LLMProvider,
     LLMProviderConfig,
-    ProviderCapabilities,
     GenerateResult,
     GenerateOptions,
 } from './base.js';
@@ -22,20 +21,14 @@ export class TransformersProvider extends LLMProvider {
     private env: any;
 
     constructor(config: LLMProviderConfig) {
-        super(config);
+        super(config, {
+            functionCalling: false,
+            multiModal: false,
+        });
     }
 
     getName(): string {
         return 'transformers.js';
-    }
-
-    getCapabilities(): ProviderCapabilities {
-        return {
-            streaming: true,
-            functionCalling: false, // Not supported by most small local models yet
-            systemMessages: true,   // Handled by chat template
-            multiModal: false,
-        };
     }
 
     async healthCheck(): Promise<{ healthy: boolean; message?: string }> {
@@ -105,8 +98,8 @@ export class TransformersProvider extends LLMProvider {
         const prompt = this.formatMessages(messages);
 
         const result = await (pipe as any)(prompt, {
-            max_new_tokens: options?.maxTokens ?? this.config.maxTokens ?? 100,
-            temperature: options?.temperature ?? this.config.temperature ?? 0.7,
+            max_new_tokens: this.getMaxTokens(options),
+            temperature: this.getTemperature(options),
             return_full_text: false,
         });
 
