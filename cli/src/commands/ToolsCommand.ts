@@ -1,36 +1,33 @@
-import { BaseCommand } from './command.js';
+import { createCommand, CommandContext } from './command.js';
 import { CliClient } from '../client.js';
 import { log, withSpinner } from '../utils.js';
 import chalk from 'chalk';
 
-export class ToolsCommand extends BaseCommand {
-    name = '/tools';
-    description = 'List available MCP tools';
-    usage = '/tools';
-
-    protected async run(_args: string[]): Promise<boolean> {
-        log.info(`Tools: ${this.tools.map(t => chalk.cyan(t.name)).join(", ")}`);
+export const ToolsCommand = createCommand({
+    name: '/tools',
+    description: 'List available MCP tools',
+    usage: '/tools',
+    run: async (_args: string[], context: CommandContext) => {
+        log.info(`Tools: ${context.tools.map(t => chalk.cyan(t.name)).join(", ")}`);
         return true;
     }
-}
+});
 
-export class ExtractCommand extends BaseCommand {
-    name = '/extract';
-    description = 'Extract semantic properties from text';
-    usage = '/extract <text>';
-
-    validate(args: string[]): boolean {
+export const ExtractCommand = createCommand({
+    name: '/extract',
+    description: 'Extract semantic properties from text',
+    usage: '/extract <text>',
+    validate: (args: string[]): boolean => {
         if (args.length === 0) {
             log.warn("Usage: /extract <text>");
             return false;
         }
         return true;
-    }
-
-    protected async run(args: string[]): Promise<boolean> {
+    },
+    run: async (args: string[], context: CommandContext) => {
         const text = args.join(' ');
         try {
-            const result = await withSpinner("Extracting semantics...", () => this.cli.callTool('extract_semantics', { text }));
+            const result = await withSpinner("Extracting semantics...", () => context.cli.callTool('extract_semantics', { text }));
             const content = (result as any).content;
             const extraction = JSON.parse((content[0] as any).text);
 
@@ -47,4 +44,4 @@ export class ExtractCommand extends BaseCommand {
         }
         return true;
     }
-}
+});

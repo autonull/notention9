@@ -1,23 +1,21 @@
-import { BaseCommand } from './command.js';
+import { createCommand, commandRegistry, CommandContext } from './command.js';
 import chalk from 'chalk';
 import boxen from 'boxen';
-import { commandRegistry } from './command.js';
 
-export class StatusCommand extends BaseCommand {
-    name = '/status';
-    description = 'Show current system status';
-    usage = '/status';
-
-    protected async run(_args: string[]): Promise<boolean> {
+export const StatusCommand = createCommand({
+    name: '/status',
+    description: 'Show current system status',
+    usage: '/status',
+    run: async (_args: string[], context: CommandContext) => {
         const mcpUrl = process.env.MCP_URL || 'http://localhost:3000/mcp/sse';
         const enableSim = process.env.SIM_ENABLED === 'true';
-        const conf = this.session!.getConfig();
+        const conf = context.session!.getConfig();
         const statusText = `
 ${chalk.bold('Provider:')}    ${chalk.blue(conf.provider)}
 ${chalk.bold('Model:')}       ${chalk.green(conf.model)}
 ${chalk.bold('Server URL:')}  ${chalk.cyan(mcpUrl)}
 ${chalk.bold('Simulation:')}  ${enableSim ? chalk.green('Enabled') : chalk.gray('Disabled')}
-${chalk.bold('Context:')}     ${this.session!.getActiveContext() ? chalk.yellow(this.session!.getActiveContext()!.title) : chalk.gray('None')}
+${chalk.bold('Context:')}     ${context.session!.getActiveContext() ? chalk.yellow(context.session!.getActiveContext()!.title) : chalk.gray('None')}
         `.trim();
 
         console.log('\n' + boxen(statusText, {
@@ -30,26 +28,24 @@ ${chalk.bold('Context:')}     ${this.session!.getActiveContext() ? chalk.yellow(
         }));
         return true;
     }
-}
+});
 
-export class ExitCommand extends BaseCommand {
-    name = '/exit';
-    aliases = ['/quit'];
-    description = 'Exit the CLI';
-    usage = '/exit';
-
-    protected async run(_args: string[]): Promise<boolean> {
+export const ExitCommand = createCommand({
+    name: '/exit',
+    aliases: ['/quit'],
+    description: 'Exit the CLI',
+    usage: '/exit',
+    run: async () => {
         console.warn("Goodbye.");
         process.exit(0);
     }
-}
+});
 
-export class HelpCommand extends BaseCommand {
-    name = '/help';
-    description = 'Show help message';
-    usage = '/help';
-
-    protected async run(_args: string[]): Promise<boolean> {
+export const HelpCommand = createCommand({
+    name: '/help',
+    description: 'Show help message',
+    usage: '/help',
+    run: async () => {
         const commands = commandRegistry.getAll();
         console.log(chalk.gray('Commands:'));
         commands.forEach(cmd => {
@@ -58,16 +54,15 @@ export class HelpCommand extends BaseCommand {
         });
         return true;
     }
-}
+});
 
-export class ClearCommand extends BaseCommand {
-    name = '/clear';
-    description = 'Clear the screen and history';
-    usage = '/clear';
-
-    protected async run(_args: string[]): Promise<boolean> {
-        this.session?.clearHistory();
+export const ClearCommand = createCommand({
+    name: '/clear',
+    description: 'Clear the screen and history',
+    usage: '/clear',
+    run: async (_args: string[], context: CommandContext) => {
+        context.session?.clearHistory();
         console.clear();
         return true;
     }
-}
+});

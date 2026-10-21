@@ -1,16 +1,15 @@
-import * as readline from 'readline';
 import dotenv from 'dotenv';
 import { CliClient } from './client.js';
-import { handleSlashCommand, getSlashCommands, commandRegistry } from './commands/index.js';
-import { LlmSession, LLMProviderConfig } from './llm.js';
-import { getLocalTools } from './tools/index.js';
-import { log, withSpinner, setVerbose } from './utils.js';
+import { commandRegistry, handleSlashCommand } from './commands/index.js';
 import { configManager } from './config-manager.js';
-import { ProviderFactory } from './providers/index.js';
 import { ServerManager } from './server-manager.js';
-import { loadHistory, appendHistory } from './history-manager.js';
-import chalk from 'chalk';
-import boxen from 'boxen';
+import { getLocalTools } from './tools/index.js';
+import { log } from './utils.js';
+import { connectToServers, connectCliClient, loadSimTools, loadCoreTools } from './server-connection.js';
+import { aggregateTools } from './tool-executor.js';
+import { initializeSession } from './session-init.js';
+import { createCompleter, createReadlineInterface, runRepl } from './repl.js';
+import type { LLMProviderConfig, AppConfig } from './config-manager.js';
 
 dotenv.config();
 
@@ -19,284 +18,75 @@ const SIM_MCP_URL = process.env.SIM_MCP_URL || 'http://localhost:3000/mcp/simula
 
 // Main function that can accept options from the CLI commander
 export async function startInteractiveSession(options: {
-  provider?: string;
-  model?: string;
-  url?: string;
-  key?: string;
-  temperature?: number;
-  maxTokens?: number;
-  sim?: boolean;
-  simulation?: boolean;
-  command?: string;
-  verbose?: boolean;
+    provider?: string;
+    model?: string;
+    url?: string;
+    key?: string;
+    temperature?: number;
+    maxTokens?: number;
+    sim?: boolean;
+    simulation?: boolean;
+    command?: string;
+    verbose?: boolean;
 } = {}) {
-  const command = options.command;
-  const interactive = !command;
+    const command = options.command;
+    const interactive = !command;
+    const enableSim = Boolean(options.sim || options.simulation);
 
-  if (options.verbose) {
-    setVerbose(true);
-    log.info('Verbose logging enabled');
-  }
+    // Connect to servers
+    const { mcpUrl, simMcpUrl, serverManager } = await connectToServers(interactive);
 
-  // Prepare config overrides from options
-  const configOverrides: Partial<LLMProviderConfig> = {};
-  if (options.provider) configOverrides.provider = options.provider;
-  if (options.model) configOverrides.model = options.model;
-  if (options.url) configOverrides.baseURL = options.url;
-  if (options.key) configOverrides.apiKey = options.key;
-  if (options.temperature !== undefined) configOverrides.temperature = options.temperature;
-  if (options.maxTokens !== undefined) configOverrides.maxTokens = options.maxTokens;
+    const cli = await connectCliClient(mcpUrl, interactive, 'Notention Agent');
+    const simCli = await connectCliClient(simMcpUrl, false, 'Simulation Agent');
 
-  // Load configuration using the new config manager
-  const config = await configManager.loadConfig(configOverrides);
-
-  // Ensure model is set if not provided
-  const finalConfig = {
-    ...config,
-    model: config.model || configManager.getDefaultModel(config.provider)
-  };
-
-  const validation = configManager.validateConfig(finalConfig);
-
-  if (!validation.valid) {
-    log.error('Configuration validation failed:');
-    validation.errors.forEach(err => log.error(`  - ${err}`));
-    process.exit(1);
-  }
-
-  // Create provider
-  const provider = ProviderFactory.create(finalConfig);
-
-  // Initialize Server Manager
-  const serverManager = new ServerManager();
-  let mcpUrl = MCP_URL;
-  let simMcpUrl = SIM_MCP_URL;
-
-  try {
-    if (interactive) log.info("Checking server status...");
-    const serverInfo = await serverManager.ensureServer(mcpUrl);
-    if (serverInfo.started) {
-      mcpUrl = serverInfo.url;
-
-      // Update SIM URL to match new port
-      try {
-        const mcpUrlObj = new URL(mcpUrl);
-        const simUrlObj = new URL(simMcpUrl);
-        simUrlObj.port = mcpUrlObj.port;
-        simMcpUrl = simUrlObj.toString();
-      } catch (e) {
-        // Ignore URL parsing errors
-      }
-    }
-  } catch (e) {
-    log.error("Failed to ensure server is running", e);
-    process.exit(1);
-  }
-
-  const cli = new CliClient(mcpUrl);
-  const simCli = new CliClient(simMcpUrl);
-  const enableSim = options.sim || options.simulation;
-
-
-  const cleanup = async () => {
-    await serverManager.stop();
-    await cli.close();
-    await simCli.close();
-  };
-
-  try {
-    if (interactive) log.info("Connecting to Notention Agent...");
-
-    // Connection retry logic
-    let connected = false;
-    let retries = 3;
-    while (!connected && retries > 0) {
-      try {
-        await cli.connect();
-        connected = true;
-        if (interactive) log.success(`Connected to Notention Agent at ${mcpUrl}`);
-      } catch (e) {
-        retries--;
-        if (retries > 0) {
-          if (interactive) log.warn(`Connection failed, retrying... (${retries} attempts left)`);
-          await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds before retry
-        } else {
-          throw new Error(`Failed to connect to Notention Agent after 3 attempts: ${e}`);
-        }
-      }
-    }
-
-    let simTools: any[] = [];
-
-    if (enableSim) {
-      try {
-        if (interactive) log.info("Connecting to Simulation Agent...");
-        await simCli.connect();
-        const simToolsResult = await withSpinner('Loading simulation tools...', () => simCli.listTools());
-        simTools = simToolsResult.tools;
-        if (interactive) log.success(`Connected to Simulation Agent at ${simMcpUrl}`);
-      } catch (e) {
-        if (interactive) log.warn(`Simulation Agent unavailable (skipping)`);
-      }
-    }
-
-    const toolsResult = await cli.listTools();
-    const coreTools = toolsResult.tools;
-
-    // Initialize local tools
-    const localTools = getLocalTools(cli);
-
-    // Aggregate Tools
-    const allTools = [
-      ...coreTools,
-      ...simTools,
-      ...localTools.map(t => ({
-        name: t.name,
-        description: t.description,
-        inputSchema: t.inputSchema
-      }))
-    ];
-
-    // Create Tool Executor Strategy
-    const toolExecutor = async (name: string, args: any) => {
-      const localTool = localTools.find(t => t.name === name);
-      if (localTool) return await localTool.execute(args);
-
-      const isSimTool = simTools.some((t: any) => t.name === name);
-      if (isSimTool && simCli.connected) {
-        return await simCli.callTool(name, args);
-      }
-
-      return await cli.callTool(name, args);
+    const cleanup = async () => {
+        await serverManager.stop();
+        await cli.close();
+        await simCli.close();
     };
 
-    const session = new LlmSession(allTools, toolExecutor, provider);
+    try {
+        // Load tools
+        const coreTools = await loadCoreTools(cli);
+        const localTools = getLocalTools(cli);
+        const simTools = enableSim ? await loadSimTools(simCli, interactive) : [];
 
-    // Perform health check
-    if (interactive) {
-      try {
-        const healthResult: any = await withSpinner(
-          'Checking LLM provider connection...',
-          () => provider.healthCheck()
+        const aggregatedTools = aggregateTools(coreTools, simTools, localTools);
+
+        // Initialize session
+        const { session, config, coreTools: sessionCoreTools } = await initializeSession(
+            options,
+            aggregatedTools,
+            cli,
+            simCli
         );
 
-        if (!healthResult.healthy) {
-          log.warn(`Provider health check failed: ${healthResult.message}`);
-          log.warn('Continuing anyway, but you may encounter errors...');
-        } else if (healthResult.message) {
-          log.success(healthResult.message);
-        }
-      } catch (healthError: any) {
-        log.warn(`Provider health check failed: ${healthError.message || healthError}`);
-        log.warn('Continuing anyway, but you may encounter errors...');
-      }
-    }
-
-    if (command) {
-      if (command.startsWith('/')) {
-        if (command === '/status') {
-           const statusCmd = commandRegistry.get('/status');
-           if (statusCmd) {
-              await statusCmd.execute([], { cli, tools: coreTools, session });
-           }
-        } else {
-           await handleSlashCommand(command, cli, coreTools, session);
-        }
-      } else {
-        await session.handleInteraction(command);
-      }
-      await cleanup();
-      process.exit(0);
-    } else {
-      // Setup Completer
-      const completer = (line: string) => {
-        if (!line.startsWith('/')) return [[], line];
-        const hits = getSlashCommands().filter((c) => c.startsWith(line));
-        // Show all completions if none found
-        return [hits.length ? hits : getSlashCommands(), line];
-      };
-
-      const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-        history: loadHistory().reverse(), // RL expects most recent first
-        historySize: 1000,
-        completer
-      });
-
-      // Handle exit signals
-      rl.on('SIGINT', async () => {
-        if (rl.line.length > 0) {
-          (rl as any).clearLine(0);
-          rl.prompt(true);
-        } else {
-          console.log('\nExiting...');
-          await cleanup();
-          process.exit(0);
-        }
-      });
-
-      console.log("\n" + chalk.blue.bold(`
-  _   _       _                 _   _
- | \\ | | ___ | |_ ___ _ __  _ _| |_(_) ___  _ __
- |  \\| |/ _ \\| __/ _ \\ '_ \\| __| __| |/ _ \\| '_ \\
- | |\\  | (_) | ||  __/ | | | |_| |_| | (_) | | | |
- |_| \\_|\\___/ \\__\\___|_| |_|\\__\\__|_|\\___/|_| |_|
-      `));
-
-      const sessionConfig = session.getConfig();
-      console.log(boxen(
-        `${chalk.bold('Welcome to Notention CLI')}
-
-${chalk.blue('Provider:')} ${sessionConfig.provider}
-${chalk.green('Model:')}    ${sessionConfig.model}
-${enableSim ? chalk.yellow('Simulation Mode Active') : chalk.gray('Simulation Mode Inactive')}
-
-${chalk.bold('Quick Start:')}
-1. Type ${chalk.cyan('/help')} to see all commands
-2. Type ${chalk.cyan('/open <id>')} to focus on a note
-3. Type ${chalk.cyan('/status')} to view system health`,
-        {padding: 1, margin: 1, borderStyle: 'double', borderColor: 'blue'}
-      ));
-
-      const ask = () => {
-        const activeContext = session.getActiveContext();
-        const prompt = activeContext
-          ? `${chalk.green('Notention')} [${chalk.yellow(activeContext.title)}] > `
-          : chalk.green('Notention > ');
-
-        rl.question(prompt, async (rawInput) => {
-          const input = rawInput.trim();
-
-          if (!input) {
-            ask();
-            return;
-          }
-
-          appendHistory(input);
-
-          if (input.startsWith('/')) {
-            if (input === '/status') {
-              const statusCmd = commandRegistry.get('/status');
-              if (statusCmd) {
-                await statusCmd.execute([], { cli, tools: coreTools, session });
-              }
+        if (command) {
+            if (command.startsWith('/')) {
+                if (command === '/status') {
+                    const statusCmd = commandRegistry.get('/status');
+                    if (statusCmd) {
+                        await statusCmd.execute([], { cli, tools: sessionCoreTools, session });
+                    }
+                } else {
+                    await handleSlashCommand(command, cli, sessionCoreTools, session);
+                }
             } else {
-              await handleSlashCommand(input, cli, coreTools, session);
+                await session.handleInteraction(command);
             }
-          } else {
-            await session.handleInteraction(input);
-          }
+            await cleanup();
+            process.exit(0);
+        } else {
+            // Setup REPL
+            const completer = createCompleter();
+            const rl = createReadlineInterface(completer);
 
-          ask();
-        });
-      };
+            await runRepl(rl, session, cli, sessionCoreTools, enableSim, config, cleanup);
+        }
 
-      ask();
+    } catch (e) {
+        log.error("Failed to connect", e);
+        await cleanup();
+        process.exit(1);
     }
-
-  } catch (e) {
-    log.error("Failed to connect", e);
-    process.exit(1);
-  }
 }

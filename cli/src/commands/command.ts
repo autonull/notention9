@@ -72,6 +72,30 @@ export abstract class BaseCommand implements Command {
     }
 }
 
+/**
+ * Factory function to create simple commands with minimal boilerplate
+ */
+export function createCommand(config: {
+    name: string;
+    description: string;
+    aliases?: string[];
+    usage?: string;
+    validate?: (args: string[]) => boolean;
+    run: (args: string[], context: CommandContext) => Promise<boolean>;
+}): Command {
+    return {
+        name: config.name,
+        aliases: config.aliases,
+        description: config.description,
+        usage: config.usage,
+        validate: config.validate ?? (() => true),
+        async execute(args: string[], context: CommandContext) {
+            if (config.validate && !config.validate(args)) return true;
+            return config.run(args, context);
+        }
+    };
+}
+
 export class CommandRegistry {
     private commands = new Map<string, Command>();
 

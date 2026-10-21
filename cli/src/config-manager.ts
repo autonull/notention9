@@ -6,6 +6,8 @@ import Conf from 'conf';
 import { z } from 'zod';
 import { LLMProviderConfig } from './providers/base.js';
 
+export type { LLMProviderConfig };
+
 // Define configuration schema
 const ConfigSchema = z.object({
   provider: z.string().default('ollama'),

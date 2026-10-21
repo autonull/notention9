@@ -5,7 +5,7 @@ import { NOTE_STATUS } from '../utils/constants.js';
 import { PropertyExtractor } from './propertyExtractor/index.js';
 import { getTextFromHtml } from '../utils/html.js';
 import { inferNoteIntent, type NoteIntent } from './NoteIntentInferencer.js';
-import { memoize2 } from '../utils/cache.js';
+import { memoize1, memoize2 } from '../utils/cache.js';
 
 export const createNote = (overrides?: Partial<Note>): Note => {
   const now = new Date().toISOString();
@@ -41,7 +41,7 @@ export const areNotesEqual = (a: Note, b: Note): boolean =>
     arePropertyArraysEqual(a.properties, b.properties)
   );
 
-const getExtractor = memoize2((ontology: OntologyNode[] | undefined): PropertyExtractor => new PropertyExtractor(ontology));
+const getExtractor = memoize1((ontology: OntologyNode[] | undefined): PropertyExtractor => new PropertyExtractor(ontology));
 
 const getCachedProperties = memoize2((content: string, ontology: OntologyNode[] | undefined): Property[] => parseProperties(content, ontology));
 

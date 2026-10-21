@@ -43,13 +43,13 @@ export class Logger {
   readonly scope: string | null;
   private readonly config: LoggerConfig;
 
-  private constructor(scope: string | null, config: LoggerConfig) {
+  constructor(scope: string | null, config: LoggerConfig) {
     this.scope = scope;
     this.config = config;
   }
 
   static create(scope?: string): Logger {
-    return createLogger(scope ?? null, defaultConfig);
+    return new Logger(scope ?? null, defaultConfig);
   }
 
   static getInstance(): Logger {

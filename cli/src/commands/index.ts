@@ -2,7 +2,7 @@ import { CliClient } from '../client.js';
 import { LlmSession } from '../llm.js';
 import { commandRegistry, CommandContext } from './command.js';
 
-// Import command classes
+// Import command instances
 import { ConfigCommand, ProvidersCommand, ProviderCommand } from './ConfigCommand.js';
 import { StatusCommand, ExitCommand, HelpCommand, ClearCommand } from './SystemCommand.js';
 import { SaveCommand, LoadCommand } from './SessionCommand.js';
@@ -13,21 +13,21 @@ import { SetupCommand } from './SetupCommand.js';
 
 // Register all commands
 function registerCommands(): void {
-    commandRegistry.register(new ConfigCommand());
-    commandRegistry.register(new ProvidersCommand());
-    commandRegistry.register(new ProviderCommand());
-    commandRegistry.register(new StatusCommand());
-    commandRegistry.register(new ExitCommand());
-    commandRegistry.register(new HelpCommand());
-    commandRegistry.register(new ClearCommand());
-    commandRegistry.register(new SaveCommand());
-    commandRegistry.register(new LoadCommand());
-    commandRegistry.register(new ToolsCommand());
-    commandRegistry.register(new ExtractCommand());
-    commandRegistry.register(new OpenCommand());
-    commandRegistry.register(new CloseCommand());
-    commandRegistry.register(new SecurityCommand());
-    commandRegistry.register(new SetupCommand());
+    commandRegistry.register(ConfigCommand);
+    commandRegistry.register(ProvidersCommand);
+    commandRegistry.register(ProviderCommand);
+    commandRegistry.register(StatusCommand);
+    commandRegistry.register(ExitCommand);
+    commandRegistry.register(HelpCommand);
+    commandRegistry.register(ClearCommand);
+    commandRegistry.register(SaveCommand);
+    commandRegistry.register(LoadCommand);
+    commandRegistry.register(ToolsCommand);
+    commandRegistry.register(ExtractCommand);
+    commandRegistry.register(OpenCommand);
+    commandRegistry.register(CloseCommand);
+    commandRegistry.register(SecurityCommand);
+    commandRegistry.register(SetupCommand);
 }
 
 registerCommands();

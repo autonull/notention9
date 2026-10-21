@@ -1,4 +1,4 @@
-import { BaseCommand } from './command.js';
+import { createCommand, CommandContext } from './command.js';
 import { LlmSession } from '../llm.js';
 import { ProviderFactory } from '../providers/factory.js';
 import { configManager } from '../config-manager.js';
@@ -7,15 +7,14 @@ import chalk from 'chalk';
 import { log } from '../utils.js';
 import { switchProvider, listProviders } from '../provider-switcher.js';
 
-export class ConfigCommand extends BaseCommand {
-    name = '/config';
-    aliases = ['/cfg'];
-    description = 'Show current configuration';
-    usage = '/config';
-
-    protected async run(_args: string[]): Promise<boolean> {
-        const config = this.session!.getConfig();
-        const provider = this.session!.getProvider();
+export const ConfigCommand = createCommand({
+    name: '/config',
+    aliases: ['/cfg'],
+    description: 'Show current configuration',
+    usage: '/config',
+    run: async (_args: string[], context: CommandContext) => {
+        const config = context.session!.getConfig();
+        const provider = context.session!.getProvider();
         const capabilities = provider.getCapabilities();
 
         log.info("Current Configuration:");
@@ -26,15 +25,14 @@ export class ConfigCommand extends BaseCommand {
         console.log(`  Functions:   ${capabilities.functionCalling ? chalk.green('✓') : chalk.red('✗')}`);
         return true;
     }
-}
+});
 
-export class ProvidersCommand extends BaseCommand {
-    name = '/providers';
-    description = 'List available LLM providers';
-    usage = '/providers';
-
-    protected async run(_args: string[]): Promise<boolean> {
-        const currentConfig = this.session!.getConfig();
+export const ProvidersCommand = createCommand({
+    name: '/providers',
+    description: 'List available LLM providers',
+    usage: '/providers',
+    run: async (_args: string[], context: CommandContext) => {
+        const currentConfig = context.session!.getConfig();
         const supported = ProviderFactory.getSupportedProviders();
 
         log.info("Supported Providers:");
@@ -47,26 +45,24 @@ export class ProvidersCommand extends BaseCommand {
         console.log(chalk.gray("\nUse /provider <name> to switch providers"));
         return true;
     }
-}
+});
 
-export class ProviderCommand extends BaseCommand {
-    name = '/provider';
-    description = 'Switch LLM provider';
-    usage = '/provider <name> [model]';
-
-    validate(args: string[]): boolean {
+export const ProviderCommand = createCommand({
+    name: '/provider',
+    description: 'Switch LLM provider',
+    usage: '/provider <name> [model]',
+    validate: (args: string[]): boolean => {
         if (args.length === 0) {
             log.warn("Usage: /provider <name> [model]");
             log.info("Use /providers to see available providers");
             return false;
         }
         return true;
-    }
-
-    protected async run(args: string[]): Promise<boolean> {
+    },
+    run: async (args: string[], context: CommandContext) => {
         const providerName = args[0];
         const modelOverride = args.length > 1 ? args[1] : undefined;
-        const currentConfig = this.session!.getConfig();
+        const currentConfig = context.session!.getConfig();
 
         await switchProvider({
             providerName,
@@ -77,4 +73,4 @@ export class ProviderCommand extends BaseCommand {
         });
         return true;
     }
-}
+});
