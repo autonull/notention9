@@ -10,59 +10,67 @@ export interface LogEntry {
 
 const LOG_LEVELS: LogLevel[] = ['debug', 'info', 'warn', 'error'];
 
-export class Logger {
-  private static instance: Logger;
-  private logLevel: LogLevel = 'info';
-  private logHistory: LogEntry[] = [];
-  private maxLogEntries = 1000;
-  private scope: string | null = null;
-  private logHandler: (level: LogLevel, message: string, context?: unknown, error?: Error) => void;
+interface LoggerConfig {
+  logLevel: LogLevel;
+  logHandler: (level: LogLevel, message: string, context?: unknown, error?: Error) => void;
+  logHistory: LogEntry[];
+  maxLogEntries: number;
+}
 
-  private constructor(scope: string | null = null) {
+const defaultConfig: LoggerConfig = {
+  logLevel: 'info',
+  logHandler: defaultLogHandler,
+  logHistory: [],
+  maxLogEntries: 1000,
+};
+
+function defaultLogHandler(level: LogLevel, message: string, context?: unknown, error?: Error): void {
+  const consoleArgs = [context].filter(arg => arg !== undefined);
+  if (error) consoleArgs.push(error);
+  const logFn = console[level] ?? console.log;
+  logFn(`[${level.toUpperCase()}] ${message}`, ...consoleArgs);
+}
+
+function shouldLog(level: LogLevel, config: LoggerConfig): boolean {
+  return LOG_LEVELS.indexOf(level) >= LOG_LEVELS.indexOf(config.logLevel);
+}
+
+function createLogger(scope: string | null, config: LoggerConfig): Logger {
+  return new Logger(scope, config);
+}
+
+export class Logger {
+  readonly scope: string | null;
+  private readonly config: LoggerConfig;
+
+  private constructor(scope: string | null, config: LoggerConfig) {
     this.scope = scope;
-    this.logHandler = this.defaultLogHandler;
+    this.config = config;
+  }
+
+  static create(scope?: string): Logger {
+    return createLogger(scope ?? null, defaultConfig);
   }
 
   static getInstance(): Logger {
-    if (!Logger.instance) {
-      Logger.instance = new Logger();
-    }
-    return Logger.instance;
+    return rootLogger;
   }
 
   child(scope: string): Logger {
     const childScope = this.scope ? `${this.scope}:${scope}` : scope;
-    const child = new Logger(childScope);
-    // Sync settings from parent
-    child.logLevel = this.logLevel;
-    child.logHandler = this.logHandler;
-    // Proxy log history to the root instance
-    child.logHistory = this.logHistory;
-    return child;
+    return createLogger(childScope, this.config);
   }
 
   setLogLevel(level: LogLevel): void {
-    this.logLevel = level;
+    this.config.logLevel = level;
   }
 
   setLogHandler(handler: (level: LogLevel, message: string, context?: unknown, error?: Error) => void): void {
-    this.logHandler = handler;
-  }
-
-  private shouldLog(level: LogLevel): boolean {
-    return LOG_LEVELS.indexOf(level) >= LOG_LEVELS.indexOf(this.logLevel);
-  }
-
-  private defaultLogHandler(level: LogLevel, message: string, context?: unknown, error?: Error): void {
-    const consoleArgs = [context].filter(arg => arg !== undefined);
-    if (error) consoleArgs.push(error);
-
-    const logFn = console[level] ?? console.log;
-    logFn(`[${level.toUpperCase()}] ${message}`, ...consoleArgs);
+    this.config.logHandler = handler;
   }
 
   private log(level: LogLevel, message: string, context?: unknown, error?: Error): void {
-    if (!this.shouldLog(level)) return;
+    if (!shouldLog(level, this.config)) return;
 
     const scopedMessage = this.scope ? `[${this.scope}] ${message}` : message;
 
@@ -74,12 +82,12 @@ export class Logger {
       error,
     };
 
-    this.logHistory.push(entry);
-    if (this.logHistory.length > this.maxLogEntries) {
-      this.logHistory.shift();
+    this.config.logHistory.push(entry);
+    if (this.config.logHistory.length > this.config.maxLogEntries) {
+      this.config.logHistory.shift();
     }
 
-    this.logHandler(level, scopedMessage, context, error);
+    this.config.logHandler(level, scopedMessage, context, error);
   }
 
   debug(message: string, context?: unknown): void {
@@ -99,7 +107,7 @@ export class Logger {
   }
 
   getLogs(level?: LogLevel, limit?: number): LogEntry[] {
-    let logs = this.logHistory;
+    let logs = this.config.logHistory;
     if (level) {
       logs = logs.filter(log => log.level === level);
     }
@@ -110,20 +118,24 @@ export class Logger {
   }
 
   clearLogs(): void {
-    this.logHistory = [];
+    this.config.logHistory.length = 0;
   }
 }
 
-export const logDebug = (message: string, context?: unknown) => Logger.getInstance().debug(message, context);
-export const logInfo = (message: string, context?: unknown) => Logger.getInstance().info(message, context);
-export const logWarn = (message: string, context?: unknown) => Logger.getInstance().warn(message, context);
-export const logError = (message: string, error?: Error, context?: unknown) => Logger.getInstance().error(message, error, context);
+const rootLogger = Logger.create();
+
+export const logDebug = (message: string, context?: unknown) => rootLogger.debug(message, context);
+export const logInfo = (message: string, context?: unknown) => rootLogger.info(message, context);
+export const logWarn = (message: string, context?: unknown) => rootLogger.warn(message, context);
+export const logError = (message: string, error?: Error, context?: unknown) => rootLogger.error(message, error, context);
 
 export const log = (context: string, message: string, data?: unknown): void => {
-  Logger.getInstance().info(`[${context}] ${message}`, data);
+  rootLogger.info(`[${context}] ${message}`, data);
 };
 
 export const error = (context: string, message: string, err?: unknown, data?: unknown): void => {
   const errorObj = err instanceof Error ? err : (err ? new Error(String(err)) : undefined);
-  Logger.getInstance().error(`[${context}] ERROR: ${message}`, errorObj, { context, ...(data as any) });
+  rootLogger.error(`[${context}] ERROR: ${message}`, errorObj, { context, ...(data as any) });
 };
+
+export const getRootLogger = () => rootLogger;

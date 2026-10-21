@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath, pathToFileURL } from 'url';
 import { cosmiconfig } from 'cosmiconfig';
 import Conf from 'conf';
 import { z } from 'zod';
@@ -22,7 +23,6 @@ export type AppConfig = z.infer<typeof ConfigSchema>;
 // Configuration manager class
 export class ConfigManager {
   private static readonly CONFIG_NAME = 'notention';
-  private static readonly CONFIG_FILE_EXTENSIONS = ['json', 'yaml', 'yml', 'js', 'ts'];
   
   private store: Conf<AppConfig>;
   private explorer: ReturnType<typeof cosmiconfig>;
@@ -38,43 +38,25 @@ export class ConfigManager {
       },
     });
 
-    // Initialize cosmiconfig for file-based configs
+    // Initialize cosmiconfig for file-based configs (JSON/JS/TS only - no YAML dependency)
     this.explorer = cosmiconfig(ConfigManager.CONFIG_NAME, {
-      searchPlaces: ConfigManager.CONFIG_FILE_EXTENSIONS.map(ext => 
-        `${ConfigManager.CONFIG_NAME}.config.${ext}`
-      ).concat([
+      searchPlaces: [
+        `${ConfigManager.CONFIG_NAME}.config.json`,
+        `${ConfigManager.CONFIG_NAME}.config.js`,
+        `${ConfigManager.CONFIG_NAME}.config.ts`,
         'config.json',
         '.notentionrc',
         '.notentionrc.json',
-        '.notentionrc.yaml',
-        '.notentionrc.yml',
-      ]),
+      ],
       loaders: {
         '.json': (filepath: string) => {
           const content = fs.readFileSync(filepath, 'utf8');
           return JSON.parse(content);
         },
-        '.yaml': (filepath: string) => {
-          const content = fs.readFileSync(filepath, 'utf8');
-          // Using a simple YAML parser - in production, use js-yaml
-          return this.parseYaml(content);
-        },
-        '.yml': (filepath: string) => {
-          const content = fs.readFileSync(filepath, 'utf8');
-          return this.parseYaml(content);
-        },
+        '.js': (filepath: string) => import(pathToFileURL(filepath).href),
+        '.ts': (filepath: string) => import(pathToFileURL(filepath).href),
       },
     });
-  }
-
-  private parseYaml(content: string): any {
-    // Simplified YAML parsing - in production, use js-yaml
-    try {
-      // Basic YAML to JSON conversion for simple cases
-      return JSON.parse(content.replace(/(\w+):\s*(.*)/g, '"$1": "$2"'));
-    } catch {
-      throw new Error('Invalid YAML format');
-    }
   }
 
   /**

@@ -1,25 +1,40 @@
-import { Scenario, AgentConfig, EventConfig, InputMethod } from '../scenario.js';
-import { p, randomElement, randomElements, ROLES, SKILLS, LOCATIONS, INPUT_METHODS, Role, Skill, Location, InputMethodType } from './utils.js';
+import { Scenario, AgentConfig, EventConfig, InputMethod, Property } from '../scenario.js';
+
+const prop = (key: string, operator: string, ...values: string[]): Property => ({ key, operator, values });
+const randomElement = <T>(arr: readonly T[]): T => arr[Math.floor(Math.random() * arr.length)];
+const randomElements = <T>(arr: readonly T[], count: number): T[] => [...arr].sort(() => 0.5 - Math.random()).slice(0, count);
+
+const ROLES = ['Developer', 'Designer', 'Client', 'Manager', 'Analyst'] as const;
+type Role = typeof ROLES[number];
+
+const SKILLS = ['react', 'typescript', 'python', 'design', 'management', 'sql', 'figma'] as const;
+type Skill = typeof SKILLS[number];
+
+const LOCATIONS = ['Remote', 'New York', 'London', 'Berlin', 'San Francisco'] as const;
+type Location = typeof LOCATIONS[number];
+
+const INPUT_METHODS = ['raw', 'autocomplete', 'form'] as const;
+type InputMethodType = typeof INPUT_METHODS[number];
 
 export function generateScenario(agentCount: number, duration: number): Scenario {
     const configs: AgentConfig[] = [];
     const events: EventConfig[] = [];
 
     for (let i = 0; i < agentCount; i++) {
-        const role = randomElement(ROLES) as Role;
+        const role = randomElement(ROLES);
 
-        const skills = randomElements(SKILLS, 2) as Skill[];
-        const location = randomElement(LOCATIONS) as Location;
+        const skills = randomElements(SKILLS, 2);
+        const location = randomElement(LOCATIONS);
 
         const isSeeker = role === 'Client' || role === 'Manager';
 
         const properties = isSeeker
-            ? [p('budget', 'greater than', '500'), p('location', 'is', location)]
-            : [p('role', 'is', role.toLowerCase()), p('skills', 'contains', ...skills), p('rate', 'is', '100')];
+            ? [prop('budget', 'greater than', '500'), prop('location', 'is', location)]
+            : [prop('role', 'is', role.toLowerCase()), prop('skills', 'contains', ...skills), prop('rate', 'is', '100')];
 
         const interests = isSeeker
-            ? [p('role', 'is', 'developer'), p('skills', 'contains', skills[0])]
-            : [p('budget', 'greater than', '50'), p('location', 'is', location)];
+            ? [prop('role', 'is', 'developer'), prop('skills', 'contains', skills[0])]
+            : [prop('budget', 'greater than', '50'), prop('location', 'is', location)];
 
         configs.push({
             role,
@@ -39,7 +54,7 @@ export function generateScenario(agentCount: number, duration: number): Scenario
 
         const isSeeker = actorRole === 'Client' || actorRole === 'Manager';
         const action = isSeeker ? 'publish_job' : 'publish_offer';
-        const method = randomElement(INPUT_METHODS) as InputMethodType;
+        const method = randomElement(INPUT_METHODS);
 
         events.push({
             at: time,

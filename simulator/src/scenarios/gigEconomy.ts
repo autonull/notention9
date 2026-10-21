@@ -1,17 +1,18 @@
-import { Scenario, AgentConfig } from '../scenario.js';
-import { p } from './utils.js';
+import { Scenario, AgentConfig, Property } from '../scenario.js';
+
+const prop = (key: string, operator: string, ...values: string[]): Property => ({ key, operator, values });
 
 const freelancers: AgentConfig = {
     role: 'Freelancer',
     count: 5,
     properties: [
-        p('role', 'is', 'developer'),
-        p('skills', 'contains', 'react', 'typescript'),
-        p('rate', 'is', '100')
+        prop('role', 'is', 'developer'),
+        prop('skills', 'contains', 'react', 'typescript'),
+        prop('rate', 'is', '100')
     ],
     interests: [
-        p('job', 'is', 'developer'),
-        p('budget', 'greater than', '50')
+        prop('job', 'is', 'developer'),
+        prop('budget', 'greater than', '50')
     ],
     traits: ['hardworking']
 };
@@ -20,13 +21,13 @@ const clients: AgentConfig = {
     role: 'Client',
     count: 3,
     properties: [
-        p('job', 'is', 'developer'),
-        p('budget', 'is', '500'),
-        p('remote', 'is', 'true')
+        prop('job', 'is', 'developer'),
+        prop('budget', 'is', '500'),
+        prop('remote', 'is', 'true')
     ],
     interests: [
-        p('role', 'is', 'developer'),
-        p('skills', 'contains', 'react')
+        prop('role', 'is', 'developer'),
+        prop('skills', 'contains', 'react')
     ],
     traits: ['demanding']
 };

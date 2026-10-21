@@ -10,6 +10,17 @@ export interface MatchResultDetails {
   explanation: string;
 }
 
+interface MatchDirection {
+  request: Note;
+  offer: Note;
+}
+
+interface MatchOutcome {
+  satisfied: Property[];
+  failed: Property[];
+  totalConstraints: number;
+}
+
 export class MatchingService {
   private matchEngine: MatchEngine;
 
@@ -30,20 +41,8 @@ export class MatchingService {
    * Score = (Satisfied Constraints) / (Total Constraints)
    */
   matchNotes(request: Note, offer: Note): MatchResultDetails {
-    const { score, matches, conflicts, missing } = this.matchEngine.calculateMatchScore(request, offer);
-
-    // Weight by target note priority
-    const priority = offer.priority ?? 1.0;
-    const weightedScore = score * priority;
-
-    const explanation = `Matched ${matches.length}/${request.properties.length}. Missing: ${missing.map(p => p.key).join(', ') || 'None'}`;
-
-    return {
-      score: weightedScore,
-      satisfied: matches.map(m => m.requestProp),
-      failed: [...conflicts.map(c => c.requestProp), ...missing],
-      explanation
-    };
+    const outcome = this.matchDirectional({ request, offer });
+    return this.buildResult(outcome, offer.priority ?? 1.0);
   }
 
   /**
@@ -54,31 +53,29 @@ export class MatchingService {
    * Imaginary (Constraints): Properties with other operators represent requirements
    */
   matchNotesWithRealVsImaginary(request: Note, offer: Note): MatchResultDetails {
-    // 1. Check Request Constraints vs Offer Facts
+    // 1. Request Constraints vs Offer Facts
     const offerFacts = offer.properties.filter(p => p.operator === 'is');
+    const reqToOffer = this.matchDirectional({ request, offer: { ...offer, properties: offerFacts } });
 
-    // Request -> Offer match
-    const reqToOffer = this.matchEngine.calculateMatchScore(
-      request,
-      { ...offer, properties: offerFacts }
-    );
-
-    let satisfied: Property[] = reqToOffer.matches.map(m => m.requestProp);
-    let failed: Property[] = [...reqToOffer.conflicts.map(c => c.requestProp), ...reqToOffer.missing];
-
-    // 2. Check Offer Constraints vs Request Facts
+    // 2. Offer Constraints vs Request Facts
     const offerConstraints = offer.properties.filter(p => p.operator !== 'is');
+    let totalSatisfied = reqToOffer.satisfied.length;
+    let totalConstraints = request.properties.length;
+    let satisfied = [...reqToOffer.satisfied];
+    let failed = [...reqToOffer.failed];
 
     if (offerConstraints.length > 0) {
-      const { matches, conflicts, missing } = this.calculateReverseMatch(request, offer, offerConstraints);
+      const requestFacts = request.properties.filter(p => p.operator === 'is');
+      const offerToRequest = this.matchDirectional({
+        request: { ...offer, properties: offerConstraints },
+        offer: { ...request, properties: requestFacts }
+      });
 
-      satisfied = [...satisfied, ...matches.map(m => m.requestProp)];
-      failed = [...failed, ...conflicts.map(c => c.requestProp), ...missing];
+      totalSatisfied += offerToRequest.satisfied.length;
+      totalConstraints += offerConstraints.length;
+      satisfied = [...satisfied, ...offerToRequest.satisfied];
+      failed = [...failed, ...offerToRequest.failed];
     }
-
-    // Total constraints = Request Constraints + Offer Constraints
-    const totalConstraints = request.properties.length + offerConstraints.length;
-    const totalSatisfied = satisfied.length;
 
     const baseScore = totalConstraints > 0 ? totalSatisfied / totalConstraints : 1;
     const priority = offer.priority ?? 1.0;
@@ -91,14 +88,25 @@ export class MatchingService {
     };
   }
 
-  private calculateReverseMatch(request: Note, offer: Note, offerConstraints: Property[]): MatchResult {
-      const requestFacts = request.properties.filter(p => p.operator === 'is');
-      const offerAsRequest: Note = { ...offer, properties: offerConstraints };
-      const reqAsOffer: Note = { ...request, properties: requestFacts };
+  private matchDirectional({ request, offer }: MatchDirection): MatchOutcome {
+    const { matches, conflicts, missing } = this.matchEngine.calculateMatchScore(request, offer);
 
-      return this.matchEngine.calculateMatchScore(offerAsRequest, reqAsOffer);
+    return {
+      satisfied: matches.map(m => m.requestProp),
+      failed: [...conflicts.map(c => c.requestProp), ...missing],
+      totalConstraints: request.properties.length
+    };
   }
 
+  private buildResult(outcome: MatchOutcome, priority: number): MatchResultDetails {
+    const baseScore = outcome.totalConstraints > 0 ? outcome.satisfied.length / outcome.totalConstraints : 1;
+    return {
+      score: baseScore * priority,
+      satisfied: outcome.satisfied,
+      failed: outcome.failed,
+      explanation: `Matched ${outcome.satisfied.length}/${outcome.totalConstraints}. Missing: ${outcome.failed.filter(f => !outcome.satisfied.some(s => s.key === f.key)).map(f => f.key).join(', ') || 'None'}`
+    };
+  }
 
   /**
    * Calculates a semantic overlap score between two notes based on shared property keys.

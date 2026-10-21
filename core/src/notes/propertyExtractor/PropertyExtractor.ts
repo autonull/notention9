@@ -5,7 +5,7 @@ import { PropertyValidationError } from '../../utils/errors/index.js';
 import { parseQuantity } from '../quantities/index.js';
 import { Logger } from '../../utils/logging.js';
 import { normalizeNoteProperties } from '../properties.js';
-import { validatePropertyWithOntology } from '../../utils/validation.js';
+import { validateProperty } from '../../utils/validation.js';
 import {
   extractIntents,
   extractRegexProps,
@@ -51,7 +51,7 @@ export class PropertyExtractor {
   }
 
   validateProperty(property: Property): { valid: boolean; errors: string[] } {
-    const result = validatePropertyWithOntology(property, this.ontologyService);
+    const result = validateProperty(property, this.ontologyService);
     return { valid: result.isValid, errors: result.errors };
   }
 

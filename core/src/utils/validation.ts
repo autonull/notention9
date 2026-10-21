@@ -109,26 +109,84 @@ const validateNumericValues = (property: Property): string[] => {
 		.map(value => `Operator "${property.operator}" requires numeric values. Got "${value}".`);
 };
 
-export const validatePropertyWithOntology = (
+interface ValidationContext {
+	getAttribute(key: string): OntologyAttribute | null;
+	getValidOperators(key: string): string[];
+	getEnumOptions(key: string): string[] | null;
+}
+
+function createValidationContext(ontology: OntologyNode[] | OntologyService): ValidationContext {
+	if (ontology instanceof OntologyService) {
+		return {
+			getAttribute: (key) => ontology.getAttribute(key),
+			getValidOperators: (key) => ontology.getValidOperators(key),
+			getEnumOptions: (key) => ontology.getEnumOptions(key),
+		};
+	}
+	const attrIndex = new Map<string, OntologyAttribute>();
+	const buildIndex = (nodes: OntologyNode[]) => {
+		for (const node of nodes) {
+			if (node.attributes) {
+				for (const [key, attr] of Object.entries(node.attributes)) {
+					attrIndex.set(key, attr);
+					// Also add aliases as keys pointing to the same attribute
+					if (attr.aliases) {
+						for (const alias of attr.aliases) {
+							attrIndex.set(alias, attr);
+						}
+					}
+				}
+			}
+			if (node.children) buildIndex(node.children);
+		}
+	};
+	buildIndex(ontology);
+	return {
+		getAttribute: (key) => attrIndex.get(key) ?? null,
+		getValidOperators: (key) => {
+			const attr = attrIndex.get(key);
+			if (!attr) return [];
+			return [...(attr.operators.real ?? []), ...(attr.operators.imaginary ?? [])];
+		},
+		getEnumOptions: (key) => {
+			const attr = attrIndex.get(key);
+			return attr?.options ?? null;
+		},
+	};
+}
+
+function validatePropertyCore(
 	property: Property,
-	ontologyService: OntologyService
-): ValidationResult => {
+	context: ValidationContext,
+	checkAlias: boolean = false,
+	ontologyForAlias?: OntologyNode[],
+	requireAttribute: boolean = true
+): ValidationResult {
 	const errors: string[] = [];
 	const warnings: string[] = [];
 
 	if (!property.key?.trim()) errors.push('Property key is required.');
 	if (!property.values?.length) errors.push('Property must have at least one value.');
 
-	const attr = ontologyService.getAttribute(property.key);
+	if (checkAlias && ontologyForAlias) {
+		const canonical = getCanonicalKey(property.key, ontologyForAlias);
+		if (canonical !== property.key) {
+			warnings.push(`Property key '${property.key}' is an alias for '${canonical}'. Consider using the canonical key.`);
+		}
+	}
+
+	const attr = context.getAttribute(property.key);
 	if (!attr) {
-		errors.push(`Attribute '${property.key}' not found in ontology`);
+		if (requireAttribute) {
+			errors.push(`Attribute '${property.key}' not found in ontology`);
+		}
 	} else {
-		const validOperators = ontologyService.getValidOperators(property.key);
+		const validOperators = context.getValidOperators(property.key);
 		if (validOperators.length > 0 && !validOperators.includes(property.operator)) {
 			errors.push(`Operator '${property.operator}' not valid for '${property.key}'`);
 		}
 
-		const enumOptions = ontologyService.getEnumOptions(property.key);
+		const enumOptions = context.getEnumOptions(property.key);
 		if (enumOptions) {
 			property.values
 				.filter(v => !enumOptions.includes(v))
@@ -141,34 +199,27 @@ export const validatePropertyWithOntology = (
 	}
 
 	return { isValid: errors.length === 0, errors, warnings };
-};
+}
 
-export const validateProperty = (property: Property, ontology?: OntologyNode[]): ValidationResult => {
-	const errors: string[] = [];
-	const warnings: string[] = [];
-
-	if (!property.key?.trim()) errors.push('Property key is required.');
-	if (!property.values?.length) errors.push('Property must have at least one value.');
-
-	if (ontology) {
-		const canonical = getCanonicalKey(property.key, ontology);
-		if (canonical !== property.key) {
-			warnings.push(`Property key '${property.key}' is an alias for '${canonical}'. Consider using the canonical key.`);
-		}
-	}
-
-	if (NUMERIC_OPERATORS.has(property.operator)) {
-		errors.push(...validateNumericValues(property));
-	}
-
-	return { isValid: errors.length === 0, errors, warnings };
+export const validateProperty = (
+	property: Property,
+	ontology?: OntologyNode[] | OntologyService
+): ValidationResult => {
+	const context = ontology ? createValidationContext(ontology) : {
+		getAttribute: () => null,
+		getValidOperators: () => [],
+		getEnumOptions: () => null,
+	};
+	return validatePropertyCore(property, context, !!ontology, Array.isArray(ontology) ? ontology : undefined, !!ontology);
 };
 
 export const validateNote = (note: Note, ontology: OntologyNode[]): ValidationResult => {
 	const errors: string[] = [];
 	const warnings: string[] = [];
 
-	const propertyResults = note.properties.map(p => validateProperty(p, ontology));
+	const context = createValidationContext(ontology);
+	// Use requireAttribute: false for property validation since required attributes are checked at node level
+	const propertyResults = note.properties.map(p => validatePropertyCore(p, context, true, ontology, false));
 	errors.push(...propertyResults.flatMap((r, i) => r.isValid ? [] : r.errors.map(e => `Property '${note.properties[i].key}': ${e}`)));
 	warnings.push(...propertyResults.flatMap(r => r.warnings ?? []));
 
