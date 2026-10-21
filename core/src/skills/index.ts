@@ -1,6 +1,7 @@
 export * from '../types/index.js';
 export * from './types.js';
 export * from './BaseSkill.js';
+export * from './SkillBase.js';
 export * from './IndeedSkill.js';
 export * from './CraigslistSkill.js';
 export * from './GitHubSkill.js';

@@ -1,7 +1,7 @@
 import * as readline from 'readline';
 import dotenv from 'dotenv';
 import { CliClient } from './client.js';
-import { handleSlashCommand, getSlashCommands, commandRegistry } from './commands.js';
+import { handleSlashCommand, getSlashCommands, commandRegistry } from './commands/index.js';
 import { LlmSession, LLMProviderConfig } from './llm.js';
 import { getLocalTools } from './tools/index.js';
 import { log, withSpinner, setVerbose } from './utils.js';
