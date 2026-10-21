@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Modal } from '../common/Modal';
 import { Button } from '../common/Button';
 import { OntologyNode } from '@notention/core';
-import { levenshteinDistance } from '../../utils/stringUtils';
+import { levenshteinDistance } from '@notention/core';
 import { SparklesIcon } from '../common/icons';
 
 interface OntologyAliasLinkModalProps {
