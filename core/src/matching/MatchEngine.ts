@@ -1,12 +1,7 @@
 import { Note, Property, OntologyNode } from '../types/index.js';
 import { findAttributeDef, getAliases } from '../ontology/ontologyHelpers.js';
 import { type PropertyMatch, type MatchResult } from './types.js';
-import { NUMERIC_OPS, DATE_OPS, GEO_OPS } from './constants.js';
-import { evaluateNumber, evaluateNumberRange } from './numberMatcher.js';
-import { evaluateGeo } from './geoMatcher.js';
-import { evaluateDate } from './dateMatcher.js';
-import { evaluateString } from './stringMatcher.js';
-import { evaluateEnum } from './enumMatcher.js';
+import { evaluateProperty } from './matchers.js';
 
 export class MatchEngine {
   constructor(private ontology: OntologyNode[]) { }
@@ -71,29 +66,7 @@ export class MatchEngine {
 
   private evaluateConstraint(req: Property, off: Property): PropertyMatch {
     const attributeDef = findAttributeDef(req.key, this.ontology);
-    let type = attributeDef?.type ?? 'string';
-
-    // Infer type from operator when ontology doesn't provide it
-    if (type === 'string') {
-      if (NUMERIC_OPS.has(req.operator)) type = 'number';
-      else if (DATE_OPS.has(req.operator)) type = 'date';
-      else if (GEO_OPS.has(req.operator)) type = 'geo';
-    }
-
-    switch (type) {
-      case 'number':
-        return evaluateNumber(req, off);
-      case 'geo':
-        return evaluateGeo(req, off);
-      case 'date':
-      case 'datetime':
-        return evaluateDate(req, off);
-      case 'enum':
-        return evaluateEnum(req, off);
-      case 'string':
-      default:
-        return evaluateString(req, off);
-    }
+    return evaluateProperty(req, off, attributeDef);
   }
 
   getAliases(key: string): string[] {
