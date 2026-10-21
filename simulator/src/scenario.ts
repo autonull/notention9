@@ -2,6 +2,8 @@ import { Agent, AgentProfile } from './agent.js';
 import { Property, OntologyNode } from '@notention/core';
 import chalk from 'chalk';
 
+export type { Property };
+
 export interface AgentConfig {
     readonly role: string;
     readonly count: number;
