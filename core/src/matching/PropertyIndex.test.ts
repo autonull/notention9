@@ -1,19 +1,9 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { PropertyIndex } from './PropertyIndex';
-import { Note, Property } from '../types';
+import { Property } from '../types';
+import { createNote as createTestNote } from '../notes/notes.js';
 
-const createNote = (id: string, properties: Property[]): Note => ({
-  id,
-  title: 'Test Note',
-  content: 'Content',
-  tags: [],
-  properties,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-  source: { type: 'user', identifier: 'test', timestamp: Date.now() },
-  privacy: 'public',
-  priority: 1.0,
-});
+const createNote = (id: string, properties: Property[]) => createTestNote({ id, properties });
 
 const prop = (key: string): Property => ({
   key,

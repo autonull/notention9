@@ -1,10 +1,5 @@
 import React, {useState} from 'react';
-
-interface WidgetProps {
-    value: string;
-    onChange: (val: string) => void;
-    onKeyDown?: (e: React.KeyboardEvent) => void;
-}
+import type {WidgetProps} from './types';
 
 export function CurrencyWidget({value, onChange, onKeyDown}: WidgetProps) {
     const [numValue, setNumValue] = useState(parseFloat(value) || 0);

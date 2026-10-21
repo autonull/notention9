@@ -1,6 +1,17 @@
 import { describe, it, expect } from 'vitest';
 import { MatchEngine } from '../../matching/MatchEngine.js';
-import { Note, OntologyNode } from '../../types/index.js';
+import { OntologyNode } from '../../types/index.js';
+import { createNote } from '../../notes/notes.js';
+
+const noteFromProps = (id: string, props: string[]) =>
+    createNote({
+        id,
+        properties: props.map(p => {
+            const parts = p.split(':');
+            const [key, op] = parts;
+            return { key, operator: op, values: [parts.slice(2).join(':')] };
+        }),
+    });
 
 describe('MatchEngine Enhanced', () => {
     const mockOntology: OntologyNode[] = [
@@ -19,28 +30,9 @@ describe('MatchEngine Enhanced', () => {
 
     const engine = new MatchEngine(mockOntology);
 
-    function createNote(id: string, props: string[]): Note {
-        return {
-            id,
-            title: 'Note',
-            content: '',
-            properties: props.map(p => {
-                const parts = p.split(':');
-                const key = parts[0];
-                const op = parts[1];
-                const val = parts.slice(2).join(':');
-                return { key, operator: op, values: [val] };
-            }),
-            author: '',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            priority: 1
-        } as unknown as Note;
-    }
-
     it('should match <= operator', () => {
-        const request = createNote('req1', ['rate:<=:100']);
-        const offer = createNote('off1', ['rate:is:80']);
+        const request = noteFromProps('req1', ['rate:<=:100']);
+        const offer = noteFromProps('off1', ['rate:is:80']);
 
         const result = engine.calculateMatchScore(request, offer);
         expect(result.matches).toHaveLength(1);
@@ -48,8 +40,8 @@ describe('MatchEngine Enhanced', () => {
     });
 
     it('should fail <= operator', () => {
-        const request = createNote('req1', ['rate:<=:50']);
-        const offer = createNote('off1', ['rate:is:80']);
+        const request = noteFromProps('req1', ['rate:<=:50']);
+        const offer = noteFromProps('off1', ['rate:is:80']);
 
         const result = engine.calculateMatchScore(request, offer);
         expect(result.matches).toHaveLength(0);
@@ -57,8 +49,8 @@ describe('MatchEngine Enhanced', () => {
     });
 
     it('should match >= operator', () => {
-        const request = createNote('req1', ['rate:>=:50']);
-        const offer = createNote('off1', ['rate:is:80']);
+        const request = noteFromProps('req1', ['rate:>=:50']);
+        const offer = noteFromProps('off1', ['rate:is:80']);
 
         const result = engine.calculateMatchScore(request, offer);
         expect(result.matches).toHaveLength(1);
@@ -66,8 +58,8 @@ describe('MatchEngine Enhanced', () => {
     });
 
     it('should fail >= operator', () => {
-        const request = createNote('req1', ['rate:>=:100']);
-        const offer = createNote('off1', ['rate:is:80']);
+        const request = noteFromProps('req1', ['rate:>=:100']);
+        const offer = noteFromProps('off1', ['rate:is:80']);
 
         const result = engine.calculateMatchScore(request, offer);
         expect(result.matches).toHaveLength(0);
@@ -76,8 +68,8 @@ describe('MatchEngine Enhanced', () => {
 
     it('should match range when operator is "is" (implicit range)', () => {
         // [rate:is:50-100] matching [rate:is:80]
-        const request = createNote('req1', ['rate:is:50-100']);
-        const offer = createNote('off1', ['rate:is:80']);
+        const request = noteFromProps('req1', ['rate:is:50-100']);
+        const offer = noteFromProps('off1', ['rate:is:80']);
 
         const result = engine.calculateMatchScore(request, offer);
         expect(result.matches).toHaveLength(1);
@@ -87,8 +79,8 @@ describe('MatchEngine Enhanced', () => {
 
     it('should fail range when operator is "is" (implicit range)', () => {
         // [rate:is:50-100] matching [rate:is:120]
-        const request = createNote('req1', ['rate:is:50-100']);
-        const offer = createNote('off1', ['rate:is:120']);
+        const request = noteFromProps('req1', ['rate:is:50-100']);
+        const offer = noteFromProps('off1', ['rate:is:120']);
 
         const result = engine.calculateMatchScore(request, offer);
         expect(result.matches).toHaveLength(0);
@@ -98,8 +90,8 @@ describe('MatchEngine Enhanced', () => {
 
     // New tests from verification
     it('should fuzzy match strings (Levenshtein)', () => {
-        const request = createNote('req1', ['skill:is:javascript']);
-        const offer = createNote('off1', ['skill:is:java script']);
+        const request = noteFromProps('req1', ['skill:is:javascript']);
+        const offer = noteFromProps('off1', ['skill:is:java script']);
 
         const result = engine.calculateMatchScore(request, offer);
         expect(result.matches).toHaveLength(1);
@@ -107,8 +99,8 @@ describe('MatchEngine Enhanced', () => {
     });
 
     it('should match canonical synonyms', () => {
-        const request = createNote('req1', ['role:is:software engineer']);
-        const offer = createNote('off1', ['role:is:swe']);
+        const request = noteFromProps('req1', ['role:is:software engineer']);
+        const offer = noteFromProps('off1', ['role:is:swe']);
 
         const result = engine.calculateMatchScore(request, offer);
         expect(result.matches).toHaveLength(1);
@@ -116,8 +108,8 @@ describe('MatchEngine Enhanced', () => {
     });
 
     it('should handle units in numbers (suffix)', () => {
-        const request = createNote('req1', ['price:<:100']);
-        const offer = createNote('off1', ['price:is:50 USD']);
+        const request = noteFromProps('req1', ['price:<:100']);
+        const offer = noteFromProps('off1', ['price:is:50 USD']);
 
         const result = engine.calculateMatchScore(request, offer);
         expect(result.matches).toHaveLength(1);
@@ -125,8 +117,8 @@ describe('MatchEngine Enhanced', () => {
     });
 
      it('should handle currency prefix', () => {
-        const request = createNote('req1', ['price:<:100']);
-        const offer = createNote('off1', ['price:is:$50']);
+        const request = noteFromProps('req1', ['price:<:100']);
+        const offer = noteFromProps('off1', ['price:is:$50']);
 
         const result = engine.calculateMatchScore(request, offer);
         expect(result.matches).toHaveLength(1);
@@ -135,8 +127,8 @@ describe('MatchEngine Enhanced', () => {
 
     it('should handle explicit ranges in number evaluation', () => {
         // Note: Using createNote helper
-        const request = createNote('req1', ['price:range:10-50']);
-        const offer = createNote('off1', ['price:is:30']);
+        const request = noteFromProps('req1', ['price:range:10-50']);
+        const offer = noteFromProps('off1', ['price:is:30']);
 
         const result = engine.calculateMatchScore(request, offer);
         expect(result.matches).toHaveLength(1);
@@ -163,8 +155,8 @@ describe('MatchEngine Enhanced', () => {
 
         const enumEngine = new MatchEngine(enumOntology);
 
-        const req = createNote('req1', ['status:is:active']);
-        const offerCorrect = createNote('off1', ['status:is:active']);
+        const req = noteFromProps('req1', ['status:is:active']);
+        const offerCorrect = noteFromProps('off1', ['status:is:active']);
         const offerWrong = createNote('off2', ['status:is:inactive']);
 
         const res1 = enumEngine.calculateMatchScore(req, offerCorrect);

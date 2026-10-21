@@ -1,4 +1,3 @@
-import { BaseSkill } from './BaseSkill.js';
 import { SkillDefinition } from './skillPatternMatcher.js';
 import { ValidationError } from '../utils/errors/index.js';
 import { Note } from '../types/index.js';
@@ -10,7 +9,7 @@ interface SkillWithId {
 }
 
 // Union type for all supported skill types
-export type RegisteredSkill = BaseSkill | SkillDefinition | Skill;
+export type RegisteredSkill = SkillDefinition | Skill;
 
 export class SkillRegistry {
     protected skills: Map<string, RegisteredSkill> = new Map();

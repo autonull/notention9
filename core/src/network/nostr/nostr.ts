@@ -6,6 +6,7 @@ import { hexToBytes } from '../../utils/encoding.js';
 import { Logger } from '../../utils/logging.js';
 import { DEFAULT_RELAYS, resolveRelays } from '../../config/nostr.js';
 import { queryEventsWithTimeout } from '../../utils/nostrQuery.js';
+import { withTimeout } from '../../utils/async.js';
 
 export { DEFAULT_RELAYS, resolveRelays };
 export const KIND_TEXT_NOTE = 1;
@@ -77,12 +78,6 @@ export const convertEventToNote = (event: NostrEvent): Note => {
 const networkGate = new NetworkGate();
 
 const PUBLISH_TIMEOUT_MS = 10_000;
-
-const withTimeout = <T>(promise: Promise<T>, ms: number, message: string): Promise<T> =>
-    new Promise<T>((resolve, reject) => {
-        const timer = setTimeout(() => reject(new Error(message)), ms);
-        promise.then(resolve, reject).finally(() => clearTimeout(timer));
-    });
 
 export interface NostrSigner {
     signEvent(event: { kind: number; tags: string[][]; content: string; created_at: number }): Promise<NostrEvent>;

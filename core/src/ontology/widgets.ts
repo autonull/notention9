@@ -40,7 +40,7 @@ export function buildWidgetMetadata(
         type: widgetType,
         icon: attribute.icon,
         options: attribute.type === 'enum' ? attribute.options : undefined,
-        operators: [...attribute.operators.real, ...attribute.operators.imaginary]
+        operators: [...(attribute.operators?.real ?? []), ...(attribute.operators?.imaginary ?? [])]
     };
 }
 

@@ -1,12 +1,7 @@
 import React from 'react';
+import type {EnumWidgetProps} from './types';
 
-interface WidgetProps {
-    value: string;
-    onChange: (val: string) => void;
-    options?: string[];
-}
-
-export function EnumWidget({value, onChange, options = []}: WidgetProps) {
+export function EnumWidget({value, onChange, options = []}: EnumWidgetProps) {
     return (
         <select
             value={value}

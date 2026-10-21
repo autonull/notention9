@@ -1,5 +1,6 @@
 import { CliClient } from './client.js';
 import { ServerManager } from './server-manager.js';
+import { retry } from '@notention/core';
 import { log, withSpinner } from './utils.js';
 
 const MCP_URL = process.env.MCP_URL || 'http://localhost:3000/mcp/sse';
@@ -42,24 +43,20 @@ export async function connectToServers(interactive: boolean): Promise<ServerConn
 
 export async function connectCliClient(url: string, interactive: boolean, label: string): Promise<CliClient> {
     const cli = new CliClient(url);
-    let connected = false;
-    let retries = 3;
 
-    while (!connected && retries > 0) {
-        try {
-            await cli.connect();
-            connected = true;
-            if (interactive) log.success(`Connected to ${label} at ${url}`);
-        } catch (e) {
-            retries--;
-            if (retries > 0) {
-                if (interactive) log.warn(`Connection failed, retrying... (${retries} attempts left)`);
-                await new Promise(resolve => setTimeout(resolve, 2000));
-            } else {
-                throw new Error(`Failed to connect to ${label} after 3 attempts: ${e}`);
+    await retry(() => cli.connect(), {
+        attempts: 3,
+        delayMs: 2000,
+        onRetry: (attempt, error) => {
+            if (interactive) {
+                log.warn(`Connection failed, retrying... (${3 - attempt} attempts left)`, error);
             }
-        }
-    }
+        },
+    }).catch((error) => {
+        throw new Error(`Failed to connect to ${label} after 3 attempts: ${error}`);
+    });
+
+    if (interactive) log.success(`Connected to ${label} at ${url}`);
 
     return cli;
 }

@@ -1,10 +1,5 @@
 import React, {useState} from 'react';
-
-interface WidgetProps {
-    value: string;
-    onChange: (val: string) => void;
-    onKeyDown?: (e: React.KeyboardEvent) => void;
-}
+import type {WidgetProps} from './types';
 
 export function LocationWidget({value, onChange, onKeyDown}: WidgetProps) {
     const [suggestions, setSuggestions] = useState<string[]>([]);

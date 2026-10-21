@@ -1,4 +1,4 @@
-import { getCanonicalKey } from '../ontology/ontologyHelpers.js';
+import { getCanonicalKey } from './ontologyHelpers.js';
 
 /**
  * Tracks co-occurrence of property keys

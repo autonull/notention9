@@ -1,7 +1,7 @@
 import {CreateMLCEngine, MLCEngine} from "@mlc-ai/web-llm";
 import type {Note, OntologyAttribute, OntologyNode, Property} from '@notention/core';
 import type {AIProvider, InferredAttribute} from './types';
-import {Logger, parsePropertiesJson} from '@notention/core';
+import {Logger, collectOntologyKeys, parsePropertiesJson, stripJsonFence} from '@notention/core';
 
 export const AVAILABLE_MODELS = [
     {id: "Llama-3.2-3B-Instruct-q4f16_1-MLC", label: "Llama 3.2 3B (Balanced)"},
@@ -42,16 +42,7 @@ export class WebLLMProvider implements AIProvider {
         }
 
         // Extract ontology keys for context
-        const ontologyKeys = new Set<string>();
-        if (ontology) {
-            const traverse = (nodes: OntologyNode[]) => {
-                nodes.forEach(n => {
-                    if (n.attributes) Object.keys(n.attributes).forEach(k => ontologyKeys.add(k));
-                    if (n.children) traverse(n.children);
-                });
-            };
-            traverse(ontology);
-        }
+        const ontologyKeys = ontology ? collectOntologyKeys(ontology) : new Set<string>();
 
         let ontologyContext = "";
         if (ontologyKeys.size > 0) {
@@ -73,8 +64,7 @@ export class WebLLMProvider implements AIProvider {
 
         const content = response.choices[0]?.message?.content || "[]";
         try {
-            const jsonStr = content.replace(/```json/g, '').replace(/```/g, '').trim();
-            return JSON.parse(jsonStr);
+            return JSON.parse(stripJsonFence(content));
         } catch {
             this.logger.warn("Failed to parse AI tags:", new Error(content));
             return [];
@@ -105,7 +95,7 @@ export class WebLLMProvider implements AIProvider {
 
         const content = response.choices[0]?.message?.content || "[]";
         try {
-            const jsonStr = content.replace(/```json/g, '').replace(/```/g, '').trim();
+            const jsonStr = stripJsonFence(content);
 
             interface RawAttribute {
                 key: string;
@@ -132,14 +122,7 @@ export class WebLLMProvider implements AIProvider {
         const engine = await this.getEngine();
         if (!engine) throw new Error("WebLLM engine not available");
 
-        const keys = new Set<string>();
-        const traverse = (nodes: OntologyNode[]) => {
-            nodes.forEach(node => {
-                Object.keys(node.attributes ?? {}).forEach(key => keys.add(key));
-                if (node.children) traverse(node.children);
-            });
-        };
-        traverse(ontology);
+        const keys = collectOntologyKeys(ontology);
 
         const prompt = `
       Extract semantic properties from the text as structured JSON.
@@ -158,8 +141,7 @@ export class WebLLMProvider implements AIProvider {
 
         const content = response.choices[0]?.message?.content || "[]";
         try {
-            const jsonStr = content.replace(/```json/g, '').replace(/```/g, '').trim();
-            return parsePropertiesJson(JSON.parse(jsonStr));
+            return parsePropertiesJson(JSON.parse(stripJsonFence(content)));
         } catch {
             this.logger.warn("Failed to parse AI properties:", new Error(content));
             return [];

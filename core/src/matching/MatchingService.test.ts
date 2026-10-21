@@ -1,22 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import { MatchingService } from './MatchingService';
 import { DEFAULT_ONTOLOGY } from '../ontology/ontology.default.js';
-import { Note, Property } from '../types';
+import { Property } from '../types';
+import { createNote as createTestNote } from '../notes/notes.js';
 
 const matchingService = new MatchingService(DEFAULT_ONTOLOGY);
 
-const createNote = (properties: Property[]): Note => ({
-  id: 'test-note',
-  title: 'Test Note',
-  content: 'Content',
-  tags: [],
-  properties,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-  source: { type: 'user', identifier: 'test', timestamp: Date.now() },
-  privacy: 'public',
-  priority: 1.0,
-});
+const createNote = (properties: Property[]) => createTestNote({ properties });
 
 const prop = (key: string, operator: string, val: string): Property => ({
   key,

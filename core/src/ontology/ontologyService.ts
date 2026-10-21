@@ -8,9 +8,9 @@ import {
     getValidOperators,
     type WidgetMetadata,
     type WidgetType
-} from '../ontologyService/widgets.js';
-import { UsageTracker, type SuggestedAttribute } from '../ontologyService/statistics.js';
-import { FuzzyMatcher } from '../ontologyService/matching.js';
+} from './widgets.js';
+import { UsageTracker, type SuggestedAttribute } from './statistics.js';
+import { FuzzyMatcher } from './matching.js';
 
 export type { SuggestedAttribute, WidgetMetadata, WidgetType };
 

@@ -2,6 +2,7 @@ import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {OntologyNode, SuggestedAttribute} from '@notention/core';
 import {SearchIcon, SparklesIcon, PlusIcon, TagIcon} from '../common/icons';
 import {Input} from '../common/Input';
+import {useListNavigation} from '../../hooks/useListNavigation';
 
 interface PropertyPaletteProps {
     isOpen: boolean;
@@ -27,16 +28,7 @@ export function PropertyPalette({
     suggestions = []
 }: PropertyPaletteProps) {
     const [filter, setFilter] = useState('');
-    const [selectedIndex, setSelectedIndex] = useState(0);
     const inputRef = useRef<HTMLInputElement>(null);
-
-    useEffect(() => {
-        if (isOpen) {
-            setFilter('');
-            setSelectedIndex(0);
-            setTimeout(() => inputRef.current?.focus(), 50);
-        }
-    }, [isOpen]);
 
     const propertyOptions = useMemo(() => {
         const defaults = [
@@ -93,26 +85,27 @@ export function PropertyPalette({
         onClose();
     };
 
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-        const totalItems = filtered.length + (filter ? 1 : 0);
+    const totalItems = filtered.length + (filter ? 1 : 0);
 
-        if (e.key === 'ArrowDown') {
-            e.preventDefault();
-            setSelectedIndex((prev) => (prev + 1) % totalItems);
-        } else if (e.key === 'ArrowUp') {
-            e.preventDefault();
-            setSelectedIndex((prev) => (prev - 1 + totalItems) % totalItems);
-        } else if (e.key === 'Enter') {
-            e.preventDefault();
-            if (filter && selectedIndex === filtered.length) {
+    const {selectedIndex, setSelectedIndex, handleKeyDown} = useListNavigation({
+        itemCount: totalItems,
+        onSelect: (index) => {
+            if (filter && index === filtered.length) {
                 handleSelect(filter);
-            } else if (filtered[selectedIndex]) {
-                handleSelect(filtered[selectedIndex].key);
+            } else if (filtered[index]) {
+                handleSelect(filtered[index].key);
             }
-        } else if (e.key === 'Escape') {
-            onClose();
+        },
+        onClose,
+    });
+
+    useEffect(() => {
+        if (isOpen) {
+            setFilter('');
+            setSelectedIndex(0);
+            setTimeout(() => inputRef.current?.focus(), 50);
         }
-    };
+    }, [isOpen]);
 
     if (!isOpen) return null;
 

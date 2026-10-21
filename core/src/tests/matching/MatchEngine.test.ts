@@ -1,6 +1,16 @@
 import { describe, it, expect } from 'vitest';
 import { MatchEngine } from '../../matching/MatchEngine.js';
-import { Note, OntologyNode } from '../../matching/../types/index.js';
+import { OntologyNode } from '../../matching/../types/index.js';
+import { createNote } from '../../notes/notes.js';
+
+const noteFromProps = (id: string, props: string[]) =>
+    createNote({
+        id,
+        properties: props.map(p => {
+            const [key, op, ...rest] = p.split(':');
+            return { key, operator: op, values: [rest.join(':')] };
+        }),
+    });
 
 describe('MatchEngine', () => {
     const mockOntology: OntologyNode[] = [
@@ -17,25 +27,9 @@ describe('MatchEngine', () => {
 
     const engine = new MatchEngine(mockOntology);
 
-    function createNote(id: string, props: string[]): Note {
-        return {
-            id,
-            title: 'Note',
-            content: '',
-            properties: props.map(p => {
-                const [key, op, ...rest] = p.split(':');
-                return { key, operator: op, values: [rest.join(':')] };
-            }),
-            author: '',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            priority: 1
-        } as unknown as Note;
-    }
-
     it('should match numeric constraints', () => {
-        const request = createNote('req1', ['rate:<:100']);
-        const offer = createNote('off1', ['rate:is:80']);
+        const request = noteFromProps('req1', ['rate:<:100']);
+        const offer = noteFromProps('off1', ['rate:is:80']);
 
         const result = engine.calculateMatchScore(request, offer);
         expect(result.matches).toHaveLength(1);
@@ -44,8 +38,8 @@ describe('MatchEngine', () => {
     });
 
     it('should match numeric between constraint (hyphen format)', () => {
-        const request = createNote('req1', ['rate:between:50-100']);
-        const offer = createNote('off1', ['rate:is:80']);
+        const request = noteFromProps('req1', ['rate:between:50-100']);
+        const offer = noteFromProps('off1', ['rate:is:80']);
 
         const result = engine.calculateMatchScore(request, offer);
         expect(result.matches).toHaveLength(1);
@@ -55,10 +49,10 @@ describe('MatchEngine', () => {
 
     it('should match numeric between constraint (multi-value format)', () => {
         const request = {
-            ...createNote('req1', []),
+            ...noteFromProps('req1', []),
             properties: [{ key: 'rate', operator: 'between', values: ['50', '100'] }]
         };
-        const offer = createNote('off1', ['rate:is:80']);
+        const offer = noteFromProps('off1', ['rate:is:80']);
 
         const result = engine.calculateMatchScore(request, offer);
         expect(result.matches).toHaveLength(1);
@@ -66,8 +60,8 @@ describe('MatchEngine', () => {
     });
 
     it('should fail numeric between constraint', () => {
-        const request = createNote('req1', ['rate:between:50-100']);
-        const offer = createNote('off1', ['rate:is:120']);
+        const request = noteFromProps('req1', ['rate:between:50-100']);
+        const offer = noteFromProps('off1', ['rate:is:120']);
 
         const result = engine.calculateMatchScore(request, offer);
         expect(result.matches).toHaveLength(0);
@@ -76,8 +70,8 @@ describe('MatchEngine', () => {
     });
 
     it('should detect numeric conflicts', () => {
-        const request = createNote('req1', ['rate:<:50']);
-        const offer = createNote('off1', ['rate:is:80']);
+        const request = noteFromProps('req1', ['rate:<:50']);
+        const offer = noteFromProps('off1', ['rate:is:80']);
 
         const result = engine.calculateMatchScore(request, offer);
         expect(result.conflicts).toHaveLength(1);
@@ -85,8 +79,8 @@ describe('MatchEngine', () => {
     });
 
     it('should match geo constraints (near)', () => {
-        const request = createNote('req1', ['location:near:40.7128,-74.0060']); // NYC
-        const offer = createNote('off1', ['location:is:40.7306,-73.9352']); // Long Island City (~5km away)
+        const request = noteFromProps('req1', ['location:near:40.7128,-74.0060']); // NYC
+        const offer = noteFromProps('off1', ['location:is:40.7306,-73.9352']); // Long Island City (~5km away)
 
         const result = engine.calculateMatchScore(request, offer);
         expect(result.matches).toHaveLength(1);
@@ -96,12 +90,12 @@ describe('MatchEngine', () => {
     it('should support configurable radius for geo constraints', () => {
         // Create note manually to pass 2 values
         const request = {
-            ...createNote('req1', []),
+            ...noteFromProps('req1', []),
             properties: [{ key: 'location', operator: 'near', values: ['40.7128,-74.0060', '100'] }] // 100km radius
         };
 
         // A point ~80km away (Trenton, NJ area)
-        const offer = createNote('off1', ['location:is:40.2171,-74.7429']);
+        const offer = noteFromProps('off1', ['location:is:40.2171,-74.7429']);
 
         const result = engine.calculateMatchScore(request, offer);
         expect(result.matches).toHaveLength(1);
@@ -110,8 +104,8 @@ describe('MatchEngine', () => {
     });
 
     it('should fail geo constraints (too far)', () => {
-        const request = createNote('req1', ['location:near:40.7128,-74.0060']); // NYC
-        const offer = createNote('off1', ['location:is:34.0522,-118.2437']); // LA
+        const request = noteFromProps('req1', ['location:near:40.7128,-74.0060']); // NYC
+        const offer = noteFromProps('off1', ['location:is:34.0522,-118.2437']); // LA
 
         const result = engine.calculateMatchScore(request, offer);
         expect(result.matches).toHaveLength(0);
@@ -121,8 +115,8 @@ describe('MatchEngine', () => {
     });
 
     it('should match string contains', () => {
-        const request = createNote('req1', ['role:contains:dev']);
-        const offer = createNote('off1', ['role:is:senior developer']);
+        const request = noteFromProps('req1', ['role:contains:dev']);
+        const offer = noteFromProps('off1', ['role:is:senior developer']);
 
         const result = engine.calculateMatchScore(request, offer);
         expect(result.matches).toHaveLength(1);
@@ -131,8 +125,8 @@ describe('MatchEngine', () => {
     });
 
     it('should fail string contains', () => {
-        const request = createNote('req1', ['role:contains:dev']);
-        const offer = createNote('off1', ['role:is:manager']);
+        const request = noteFromProps('req1', ['role:contains:dev']);
+        const offer = noteFromProps('off1', ['role:is:manager']);
 
         const result = engine.calculateMatchScore(request, offer);
         expect(result.matches).toHaveLength(0);
@@ -140,8 +134,8 @@ describe('MatchEngine', () => {
     });
 
     it('should match string excludes', () => {
-        const request = createNote('req1', ['role:excludes:manager']);
-        const offer = createNote('off1', ['role:is:developer']);
+        const request = noteFromProps('req1', ['role:excludes:manager']);
+        const offer = noteFromProps('off1', ['role:is:developer']);
 
         const result = engine.calculateMatchScore(request, offer);
         expect(result.matches).toHaveLength(1);
@@ -149,8 +143,8 @@ describe('MatchEngine', () => {
     });
 
     it('should fail string excludes', () => {
-        const request = createNote('req1', ['role:excludes:manager']);
-        const offer = createNote('off1', ['role:is:project manager']);
+        const request = noteFromProps('req1', ['role:excludes:manager']);
+        const offer = noteFromProps('off1', ['role:is:project manager']);
 
         const result = engine.calculateMatchScore(request, offer);
         expect(result.matches).toHaveLength(0);

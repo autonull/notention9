@@ -1,6 +1,6 @@
 import type {Note, OntologyNode, Property} from '@notention/core';
 import type {AIProvider, InferredAttribute} from './types';
-import {Logger, parsePropertiesJson} from '@notention/core';
+import {buildAttributeIndex, collectOntologyKeys, Logger, parsePropertiesJson, stripJsonFence} from '@notention/core';
 import {GoogleGenAI} from '@google/genai';
 
 export const isGeminiApiKeyAvailable = (userKey?: string): boolean => {
@@ -51,8 +51,7 @@ ${text}`;
 
         try {
             const result = await this.generateCompletion(prompt);
-            const jsonStr = result.replace(/^```json\s*/, '').replace(/\s*```$/, '');
-            return JSON.parse(jsonStr);
+            return JSON.parse(stripJsonFence(result));
         } catch (e) {
             this.logger.error('Tag Suggestion Error:', e as Error);
             return [];
@@ -86,8 +85,7 @@ ${propertySummary}`;
 
         try {
             const result = await this.generateCompletion(prompt);
-            const jsonStr = result.replace(/^```json\s*/, '').replace(/\s*```$/, '');
-            return JSON.parse(jsonStr);
+            return JSON.parse(stripJsonFence(result));
         } catch (e) {
             this.logger.error('Ontology Analysis Error:', e as Error);
             return [];
@@ -98,18 +96,8 @@ ${propertySummary}`;
         if (!this.client) throw new Error('AI Provider not configured');
 
         // Build definitions list with types
-        const definitions: string[] = [];
-        const traverse = (nodes: OntologyNode[]) => {
-            nodes.forEach(n => {
-                if (n.attributes) {
-                    Object.entries(n.attributes).forEach(([k, attr]) => {
-                        definitions.push(`- ${k} (${attr.type}): ${attr.description || 'No description'}`);
-                    });
-                }
-                if (n.children) traverse(n.children);
-            });
-        };
-        traverse(ontology);
+        const definitions = Array.from(buildAttributeIndex(ontology).entries())
+            .map(([key, attr]) => `- ${key} (${attr.type}): ${attr.description || 'No description'}`);
         const definitionsStr = definitions.join('\n');
 
         const prompt = `Analyze the text below and extract semantic properties as structured JSON.
@@ -135,8 +123,7 @@ ${text}`;
 
         try {
             const result = await this.generateCompletion(prompt);
-            const jsonStr = result.replace(/^```json\s*/, '').replace(/\s*```$/, '');
-            return parsePropertiesJson(JSON.parse(jsonStr));
+            return parsePropertiesJson(JSON.parse(stripJsonFence(result)));
         } catch (e) {
             this.logger.error('Alignment Error:', e as Error);
             return [];
@@ -149,14 +136,7 @@ ${text}`;
     }> {
         if (!this.client) throw new Error('AI Provider not configured');
 
-        const knownKeys = new Set<string>();
-        const traverse = (nodes: OntologyNode[]) => {
-            nodes.forEach(n => {
-                if (n.attributes) Object.keys(n.attributes).forEach(k => knownKeys.add(k));
-                if (n.children) traverse(n.children);
-            });
-        };
-        traverse(ontology);
+        const knownKeys = collectOntologyKeys(ontology);
         const keys = Array.from(knownKeys);
 
         if (keys.length === 0) return {merged: [], pruned: []};
@@ -175,8 +155,7 @@ ${keys.join(', ')}`;
 
         try {
             const result = await this.generateCompletion(prompt);
-            const jsonStr = result.replace(/^```json\s*/, '').replace(/\s*```$/, '');
-            return JSON.parse(jsonStr);
+            return JSON.parse(stripJsonFence(result));
         } catch (e) {
             this.logger.error('Optimization Error:', e as Error);
             return {merged: [], pruned: []};

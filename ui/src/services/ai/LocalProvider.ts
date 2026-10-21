@@ -1,6 +1,6 @@
 import type {Note, OntologyNode, Property} from '@notention/core';
 import type {AIProvider, InferredAttribute} from './types';
-import {parseProperties, parseQuantity} from '@notention/core';
+import {collectOntologyKeys, parseProperties, parseQuantity} from '@notention/core';
 import {getTextFromHtml} from '../../utils/html';
 import {addDays, format} from 'date-fns';
 
@@ -182,14 +182,7 @@ export class LocalAIProvider implements AIProvider {
         if (emailMatch) add('email', 'is', emailMatch[0]);
 
         // --- Ontology-based Extraction (Enhanced) ---
-        const allKeys = new Set<string>();
-        const traverse = (nodes: OntologyNode[]) => {
-            nodes.forEach(node => {
-                Object.keys(node.attributes ?? {}).forEach(key => allKeys.add(key));
-                if (node.children) traverse(node.children);
-            });
-        };
-        traverse(ontology);
+        const allKeys = collectOntologyKeys(ontology);
 
         [...allKeys].sort((a, b) => b.length - a.length).forEach(key => {
             const regex = new RegExp(`${key}\\s*(is|:|contains|under|below|over|above|less than|more than|greater than)\\s*([\\w\\s@.:/\\-]+)`, 'i');

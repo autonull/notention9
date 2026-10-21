@@ -4,18 +4,10 @@ import { categories } from './categories.js';
 import { systems } from './systems.js';
 import { arrays } from './arrays.js';
 
-const units = {
-  aliases,
-  conversions,
-  categories,
-  systems,
-  arrays
-};
-
-export const UNIT_ALIASES = units.aliases;
-export const CONVERSIONS = units.conversions;
-export const CATEGORIES = units.categories;
-export const UNIT_SYSTEMS = units.systems;
+export const UNIT_ALIASES = aliases;
+export const CONVERSIONS = conversions;
+export const CATEGORIES = categories;
+export const UNIT_SYSTEMS = systems;
 
 export const {
   TIME_UNITS,
@@ -29,6 +21,4 @@ export const {
   FREQUENCY_UNITS,
   SPEED_UNITS,
   TEMPERATURE_UNITS
-} = units.arrays;
-
-export { loadUnits, getUnitAliases, getUnitConversions, getUnitCategories, getUnitSystems, getUnitArrays, clearCache } from './loader.js';
+} = arrays;

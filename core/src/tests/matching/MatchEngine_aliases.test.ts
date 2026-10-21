@@ -1,6 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import { MatchEngine } from '../../matching/MatchEngine.js';
-import { Note, OntologyNode } from '../../types/index.js';
+import { OntologyNode } from '../../types/index.js';
+import { createNote } from '../../notes/notes.js';
+
+const noteFromProp = (id: string, propStr: string) => {
+    const [key, operator, ...rest] = propStr.split(':');
+    return createNote({ id, properties: [{ key, operator, values: [rest.join(':')] }] });
+};
 import { getAliases, getCanonicalKey } from '../../ontology/ontologyHelpers.js';
 
 describe('MatchEngine Aliases', () => {
@@ -28,27 +34,6 @@ describe('MatchEngine Aliases', () => {
     ];
     const engine = new MatchEngine(mockOntology);
 
-    function createNote(id: string, propStr: string): Note {
-        const parts = propStr.split(':');
-        const key = parts[0];
-        const op = parts[1];
-        const val = parts.slice(2).join(':');
-
-        return {
-            id,
-            title: 'Note',
-            content: '',
-            properties: [{ key, operator: op, values: [val] }],
-            author: '',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            priority: 1,
-            tags: [],
-            source: { type: 'manual', identifier: 'test', timestamp: Date.now() },
-            privacy: 'public'
-        } as unknown as Note;
-    }
-
     it('should resolve aliases to canonical key', () => {
         expect(getCanonicalKey('loc', mockOntology)).toBe('location');
         expect(getCanonicalKey('geo', mockOntology)).toBe('location');
@@ -67,8 +52,8 @@ describe('MatchEngine Aliases', () => {
     it('should match request with canonical key against offer with alias', () => {
         // Request: location:near:NYC
         // Offer: loc:is:NYC
-        const request = createNote('req1', 'location:near:40.7128,-74.0060');
-        const offer = createNote('off1', 'loc:is:40.7128,-74.0060');
+        const request = noteFromProp('req1', 'location:near:40.7128,-74.0060');
+        const offer = noteFromProp('off1', 'loc:is:40.7128,-74.0060');
 
         const result = engine.calculateMatchScore(request, offer);
         expect(result.matches).toHaveLength(1);
@@ -78,8 +63,8 @@ describe('MatchEngine Aliases', () => {
     it('should match request with alias against offer with canonical key', () => {
         // Request: cost:<:100
         // Offer: price:is:50
-        const request = createNote('req1', 'cost:<:100');
-        const offer = createNote('off1', 'price:is:50');
+        const request = noteFromProp('req1', 'cost:<:100');
+        const offer = noteFromProp('off1', 'price:is:50');
 
         const result = engine.calculateMatchScore(request, offer);
         expect(result.matches).toHaveLength(1);
@@ -89,8 +74,8 @@ describe('MatchEngine Aliases', () => {
     it('should match request with alias against offer with different alias', () => {
         // Request: budget:<:100
         // Offer: $:is:50
-        const request = createNote('req1', 'budget:<:100');
-        const offer = createNote('off1', '$:is:50');
+        const request = noteFromProp('req1', 'budget:<:100');
+        const offer = noteFromProp('off1', '$:is:50');
 
         const result = engine.calculateMatchScore(request, offer);
         expect(result.matches).toHaveLength(1);

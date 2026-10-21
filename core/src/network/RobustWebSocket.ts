@@ -1,3 +1,5 @@
+import { Logger } from '../utils/logging.js';
+
 export interface RobustWebSocketOptions {
   url?: string;
   maxReconnectAttempts?: number;
@@ -14,6 +16,7 @@ export class RobustWebSocket {
   private readonly maxReconnectAttempts: number;
   private readonly reconnectInterval: number;
   private reconnectAttempts = 0;
+  protected readonly logger = Logger.getInstance();
   private readonly handlers: {
     onOpen?: (event: Event) => void;
     onClose?: (event: CloseEvent) => void;

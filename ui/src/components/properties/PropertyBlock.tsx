@@ -1,10 +1,6 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {findAttributeDef, OntologyNode, Property} from '@notention/core';
-import {CurrencyWidget} from './widgets/CurrencyWidget';
-import {LocationWidget} from './widgets/LocationWidget';
-import {DateWidget} from './widgets/DateWidget';
-import {EnumWidget} from './widgets/EnumWidget';
-import {TextWidget} from './widgets/TextWidget';
+import {AttributeWidget} from './widgets/registry';
 import {OperatorDropdown} from './OperatorDropdown';
 import {
     ClockIcon,
@@ -80,30 +76,16 @@ export function PropertyBlock({
 
     const getWidget = () => {
         const attributeDef = findAttributeDef(property.key, ontology);
-        const attributeType = attributeDef?.type || 'string';
 
-        const widgetProps = {
-            value: localValue,
-            onChange: handleChange,
-            onKeyDown: handleKeyDown,
-            operator: property.operator,
-            options: attributeDef?.options || []
-        };
-
-        switch (attributeType) {
-            case 'number':
-                return <CurrencyWidget {...widgetProps} />;
-            case 'geo':
-                return <LocationWidget {...widgetProps} />;
-            case 'date':
-            case 'datetime':
-                return <DateWidget {...widgetProps} type={attributeType}/>;
-            case 'enum':
-                return <EnumWidget {...widgetProps} />;
-            case 'string':
-            default:
-                return <TextWidget {...widgetProps} />;
-        }
+        return (
+            <AttributeWidget
+                attribute={attributeDef}
+                value={localValue}
+                onChange={handleChange}
+                onKeyDown={handleKeyDown}
+                operator={property.operator}
+            />
+        );
     };
 
     const getValidOperators = (key: string, ontology: OntologyNode[]): string[] => {

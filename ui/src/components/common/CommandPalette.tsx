@@ -1,6 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Note, getTextFromHtml} from '@notention/core';
 import {ClockIcon, NoteIcon, PlusIcon, SearchIcon, TagIcon} from '../common/icons';
+import {useListNavigation} from '../../hooks/useListNavigation';
 
 interface CommandItem {
     id: string;
@@ -34,19 +35,7 @@ export function CommandPalette({
                                    commands,
                                }: CommandPaletteProps) {
     const [query, setQuery] = useState('');
-    const [selectedIndex, setSelectedIndex] = useState(0);
     const inputRef = useRef<HTMLInputElement>(null);
-
-    useEffect(() => {
-        if (isOpen) {
-            setQuery('');
-            setSelectedIndex(0);
-            // Small timeout to ensure render
-            setTimeout(() => inputRef.current?.focus(), 50);
-        }
-    }, [isOpen]);
-
-    if (!isOpen) return null;
 
     const filteredNotes = query ? notes
         .filter((note) => {
@@ -129,25 +118,27 @@ export function CommandPalette({
         })),
     ];
 
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'ArrowDown') {
-            e.preventDefault();
-            setSelectedIndex((prev) => (prev + 1) % allItems.length);
-        } else if (e.key === 'ArrowUp') {
-            e.preventDefault();
-            setSelectedIndex(
-                (prev) => (prev - 1 + allItems.length) % allItems.length
-            );
-        } else if (e.key === 'Enter') {
-            e.preventDefault();
-            if (allItems[selectedIndex]) {
-                allItems[selectedIndex].action();
+    const {selectedIndex, setSelectedIndex, handleKeyDown} = useListNavigation({
+        itemCount: allItems.length,
+        onSelect: (index) => {
+            if (allItems[index]) {
+                allItems[index].action();
                 onClose();
             }
-        } else if (e.key === 'Escape') {
-            onClose();
+        },
+        onClose,
+    });
+
+    useEffect(() => {
+        if (isOpen) {
+            setQuery('');
+            setSelectedIndex(0);
+            // Small timeout to ensure render
+            setTimeout(() => inputRef.current?.focus(), 50);
         }
-    };
+    }, [isOpen]);
+
+    if (!isOpen) return null;
 
     return (
         <div

@@ -1,12 +1,7 @@
 import React from 'react';
+import type {DateWidgetProps} from './types';
 
-interface WidgetProps {
-    value: string;
-    onChange: (val: string) => void;
-    type?: string;
-}
-
-export function DateWidget({value, onChange, type = 'date'}: WidgetProps) {
+export function DateWidget({value, onChange, type = 'date'}: DateWidgetProps) {
     return (
         <input
             type={type === 'datetime' ? 'datetime-local' : 'date'}

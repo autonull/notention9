@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { Note } from '../types/index.js';
 import { MatchEngine } from '../matching/MatchEngine.js';
+import { createNote } from '../notes/notes.js';
 
 describe('Phase 2.3: Multi-Instance Coordination', () => {
     // Shared state
@@ -82,28 +83,24 @@ describe('Phase 2.3: Multi-Instance Coordination', () => {
         NetworkDiscoveryService = discoveryModule.NetworkDiscoveryService;
     });
 
-    const createNote = (id: string, role: string, level: any): Note => ({
-        id,
-        title: `${id} Note`,
-        content: `I am a ${role}`,
-        tags: [],
-        properties: [{ key: 'role', operator: 'is', values: [role] }],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        source: { type: 'user', identifier: id, timestamp: Date.now() },
-        privacy: 'public',
-        priority: 1
-    });
+    const roleNote = (id: string, role: string) =>
+        createNote({
+            id,
+            title: `${id} Note`,
+            content: `I am a ${role}`,
+            properties: [{ key: 'role', operator: 'is', values: [role] }],
+            privacy: 'public',
+        });
 
     const DUMMY_PRIVKEY = '0000000000000000000000000000000000000000000000000000000000000001';
 
     it('Scenario 1: Public-Public Match', async () => {
-        const aliceNote = createNote('alice1', 'freelancer', 'public');
+        const aliceNote = roleNote('alice1', 'freelancer');
         await publishNoteToNostr(aliceNote, DUMMY_PRIVKEY, ['wss://dummy'], undefined, 'public');
 
         const bobEngine = new MatchEngine([]);
         const bobDiscovery = new NetworkDiscoveryService(bobEngine);
-        const bobInterests = createNote('bob1', 'freelancer', 'public');
+        const bobInterests = roleNote('bob1', 'freelancer');
         const matches = await bobDiscovery.discoverMatches(bobInterests, ['wss://dummy'], 'public');
 
         expect(matches.length).toBeGreaterThan(0);
@@ -111,12 +108,12 @@ describe('Phase 2.3: Multi-Instance Coordination', () => {
     });
 
     it('Scenario 2: Secret-Secret Match', async () => {
-        const aliceNote = createNote('alice_spy', 'spy', 'private');
+        const aliceNote = roleNote('alice_spy', 'spy');
         await publishNoteToNostr(aliceNote, DUMMY_PRIVKEY, ['wss://dummy'], undefined, 'private');
 
         const bobEngine = new MatchEngine([]);
         const bobDiscovery = new NetworkDiscoveryService(bobEngine);
-        const bobInterests = createNote('bob_spy', 'spy', 'private');
+        const bobInterests = roleNote('bob_spy', 'spy');
         const matches = await bobDiscovery.discoverMatches(bobInterests, ['wss://dummy'], 'private');
 
         expect(matches.length).toBeGreaterThan(0);
@@ -125,12 +122,12 @@ describe('Phase 2.3: Multi-Instance Coordination', () => {
     });
 
     it('Scenario 3: Eve cannot find Secret note', async () => {
-        const aliceNote = createNote('alice_secret', 'spy', 'private');
+        const aliceNote = roleNote('alice_secret', 'spy');
         await publishNoteToNostr(aliceNote, DUMMY_PRIVKEY, ['wss://dummy'], undefined, 'private');
 
         const eveEngine = new MatchEngine([]);
         const eveDiscovery = new NetworkDiscoveryService(eveEngine);
-        const eveNote = createNote('eve', 'something_else', 'public');
+        const eveNote = roleNote('eve', 'something_else');
         const matches = await eveDiscovery.discoverMatches(eveNote, ['wss://dummy'], 'public');
 
         const spyMatches = matches.filter((m: any) => m.note.id === 'alice_secret');

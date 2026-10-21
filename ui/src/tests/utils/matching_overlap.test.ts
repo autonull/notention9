@@ -1,18 +1,11 @@
 import {describe, expect, it} from 'vitest';
 import {MatchingService} from '@notention/core';
-import type {Note} from '@notention/core';
+import {createNote as createTestNote} from '@notention/core';
 
 const service = new MatchingService();
 
-const createNote = (keys: string[]): Note => ({
-    id: '1',
-    title: 'Test',
-    content: '',
-    tags: [],
-    properties: keys.map(k => ({key: k, operator: 'is', values: []})),
-    createdAt: '',
-    updatedAt: ''
-});
+const createNote = (keys: string[]) =>
+    createTestNote({ id: '1', properties: keys.map(k => ({key: k, operator: 'is', values: []})) });
 
 describe('calculateSemanticOverlap (via MatchingService)', () => {
     it('returns 1 for identical property sets', () => {

@@ -1,27 +1,14 @@
 import {describe, expect, it} from 'vitest';
 import {MatchingService, MatchEngine} from '@notention/core';
-import type {Note, Property} from '@notention/core';
+import type {Property} from '@notention/core';
+import {createNote as createTestNote} from '@notention/core';
 
 // Use empty ontology for testing to match old behavior (type inference from operators)
 const service = new MatchingService([]);
 const engine = new MatchEngine([]);
 
-const createNote = (properties: Property[], priority: number = 1.0): Note => ({
-    id: '1',
-    title: 'Test',
-    content: '',
-    tags: [],
-    properties,
-    createdAt: '',
-    updatedAt: '',
-    source: {
-        type: 'user',
-        identifier: 'test-user',
-        timestamp: Date.now()
-    },
-    public: false,
-    priority
-});
+const createNote = (properties: Property[], priority: number = 1.0) =>
+    createTestNote({ id: '1', properties, priority });
 
 describe('matchNotes (via MatchingService)', () => {
     it('matches exact real property', () => {

@@ -1,6 +1,5 @@
 export * from '../types/index.js';
 export * from './types.js';
-export * from './BaseSkill.js';
 export * from './SkillBase.js';
 export * from './IndeedSkill.js';
 export * from './CraigslistSkill.js';
@@ -9,6 +8,5 @@ export * from './ReminderSkill.js';
 export * from './SkillRegistry.js';
 export * from './skillPatternMatcher.js';
 export * from './skillApprovalManager.js';
-export * from './skillExecutor/index.js';
 export * from './metaphor/MetaphorRegistry.js';
 export * from './metaphor/MetaphorMapper.js';

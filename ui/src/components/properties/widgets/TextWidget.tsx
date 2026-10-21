@@ -1,15 +1,7 @@
 import React from 'react';
+import type {TextWidgetProps} from './types';
 
-interface WidgetProps {
-    value: string;
-    onChange: (val: string) => void;
-    onKeyDown?: (e: React.KeyboardEvent) => void;
-    operator?: string;
-    options?: string[];
-    placeholder?: string;
-}
-
-export function TextWidget({value, onChange, onKeyDown, placeholder}: WidgetProps) {
+export function TextWidget({value, onChange, onKeyDown, placeholder}: TextWidgetProps) {
     return (
         <input
             type="text"

@@ -1,6 +1,13 @@
 import { describe, it, expect } from 'vitest';
 import { validateNote } from '../../utils/validation.js';
-import { Note, OntologyNode } from '../../types/index.js';
+import { OntologyNode } from '../../types/index.js';
+import { createNote as createTestNote } from '../../notes/notes.js';
+
+const createNote = (props: { key: string; value: string }[]) =>
+    createTestNote({
+        id: '1',
+        properties: props.map(p => ({ key: p.key, operator: 'is', values: [p.value] })),
+    });
 
 describe('Validation Logic', () => {
     const mockOntology: OntologyNode[] = [
@@ -15,21 +22,6 @@ describe('Validation Logic', () => {
             }
         }
     ];
-
-    function createNote(props: { key: string; value: string }[]): Note {
-        return {
-            id: '1',
-            title: '',
-            content: '',
-            properties: props.map(p => ({ key: p.key, operator: 'is', values: [p.value] })),
-            source: { type: 'user', identifier: 'test', timestamp: Date.now() },
-            privacy: 'public',
-            priority: 1,
-            tags: [],
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-        };
-    }
 
     it('should validate valid note with canonical keys', () => {
         const note = createNote([
