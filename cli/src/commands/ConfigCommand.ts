@@ -5,6 +5,7 @@ import { configManager } from '../config-manager.js';
 import { withSpinner } from '../utils.js';
 import chalk from 'chalk';
 import { log } from '../utils.js';
+import { switchProvider, listProviders } from '../provider-switcher.js';
 
 export class ConfigCommand extends BaseCommand {
     name = '/config';
@@ -63,55 +64,17 @@ export class ProviderCommand extends BaseCommand {
     }
 
     protected async run(args: string[]): Promise<boolean> {
-        await this.switchProvider(args[0], args.length > 1 ? args[1] : undefined, this.session!);
+        const providerName = args[0];
+        const modelOverride = args.length > 1 ? args[1] : undefined;
+        const currentConfig = this.session!.getConfig();
+
+        await switchProvider({
+            providerName,
+            modelOverride,
+            currentConfig,
+            onSuccess: (name) => log.success(`Switched to ${name}`),
+            onError: (err) => log.error('Provider switch failed', err)
+        });
         return true;
-    }
-
-    private async switchProvider(
-        providerName: string,
-        modelOverride: string | undefined,
-        session: LlmSession
-    ): Promise<void> {
-        try {
-            const currentConfig = configManager.getAll();
-            const newConfigData = {
-                provider: providerName,
-                model: modelOverride || currentConfig.model || configManager.getDefaultModel(providerName),
-                baseURL: currentConfig.baseURL,
-                apiKey: currentConfig.apiKey,
-                temperature: currentConfig.temperature ?? 0.7,
-                maxTokens: currentConfig.maxTokens ?? 2000
-            };
-
-            const validation = configManager.validateConfig(newConfigData);
-            if (!validation.valid) {
-                log.error('Configuration validation failed:');
-                validation.errors.forEach(err => log.error(`  - ${err}`));
-                return;
-            }
-
-            const newProvider = ProviderFactory.create(newConfigData);
-
-            const healthResult: any = await withSpinner(
-                `Connecting to ${providerName}...`,
-                () => newProvider.healthCheck()
-            );
-
-            if (!healthResult.healthy) {
-                log.error(`Provider health check failed: ${healthResult.message}`);
-                log.warn("Provider not switched.");
-                return;
-            }
-
-            session.updateProvider(newProvider);
-            configManager.saveConfig({
-                provider: providerName,
-                model: newConfigData.model
-            });
-
-            log.success(healthResult.message || `Switched to ${providerName}`);
-        } catch (e: unknown) {
-            log.error("Failed to switch provider", e);
-        }
     }
 }

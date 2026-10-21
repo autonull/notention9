@@ -1,6 +1,10 @@
 import {describe, expect, it} from 'vitest';
-import {calculateSemanticOverlap, matchNotes} from '../../utils/matching';
+import {MatchingService, MatchEngine} from '@notention/core';
 import type {Note, Property} from '@notention/core';
+
+// Use empty ontology for testing to match old behavior (type inference from operators)
+const service = new MatchingService([]);
+const engine = new MatchEngine([]);
 
 const createNote = (properties: Property[], priority: number = 1.0): Note => ({
     id: '1',
@@ -19,45 +23,44 @@ const createNote = (properties: Property[], priority: number = 1.0): Note => ({
     priority
 });
 
-describe('matchNotes', () => {
+describe('matchNotes (via MatchingService)', () => {
     it('matches exact real property', () => {
         const req = createNote([{key: 'role', operator: 'is', values: ['Engineer']}]);
         const offer = createNote([{key: 'role', operator: 'is', values: ['Engineer']}]);
-        expect(matchNotes(req, offer).score).toBe(1);
+        expect(service.matchNotes(req, offer).score).toBe(1);
     });
 
     it('fails mismatch real property', () => {
         const req = createNote([{key: 'role', operator: 'is', values: ['Engineer']}]);
         const offer = createNote([{key: 'role', operator: 'is', values: ['Designer']}]);
-        expect(matchNotes(req, offer).score).toBe(0);
+        expect(service.matchNotes(req, offer).score).toBe(0);
     });
 
     it('matches numeric constraint (less than)', () => {
         const req = createNote([{key: 'price', operator: 'less than', values: ['100']}]);
         const offer = createNote([{key: 'price', operator: 'is', values: ['50']}]);
-        expect(matchNotes(req, offer).score).toBe(1);
+        expect(service.matchNotes(req, offer).score).toBe(1);
     });
 
     it('fails numeric constraint (less than)', () => {
         const req = createNote([{key: 'price', operator: 'less than', values: ['100']}]);
         const offer = createNote([{key: 'price', operator: 'is', values: ['150']}]);
-        expect(matchNotes(req, offer).score).toBe(0);
+        expect(service.matchNotes(req, offer).score).toBe(0);
     });
 
-    it('calculates partial match score', () => {
+    it('calculates match score with conflict penalty', () => {
         const req = createNote([
-            {key: 'role', operator: 'is', values: ['Dev']},
-            {key: 'exp', operator: 'greater than', values: ['5']}
+            {key: 'role', operator: 'is', values: ['Dev']},        // Match (+1)
+            {key: 'exp', operator: 'greater than', values: ['5']}   // Conflict (-1)
         ]);
         const offer = createNote([
-            {key: 'role', operator: 'is', values: ['Dev']}, // Match
-            {key: 'exp', operator: 'is', values: ['3']}     // Fail (3 !> 5)
+            {key: 'role', operator: 'is', values: ['Dev']},        // Match
+            {key: 'exp', operator: 'is', values: ['3']}            // 3 !> 5 = conflict
         ]);
 
-        // In matchNotes, we iterate *constraints*.
-        // Here both are constraints (is is also checked).
-        // 1 match out of 2 = 0.5
-        expect(matchNotes(req, offer).score).toBe(0.5);
+        // Core algorithm: totalScore = sum of compatibility (+1 for match, -1 for conflict)
+        // = 1 + (-1) = 0, normalized = 0 / 2 = 0
+        expect(service.matchNotes(req, offer).score).toBe(0);
     });
 
     // NEW: Priority weighting tests
@@ -70,7 +73,7 @@ describe('matchNotes', () => {
 
         // Base score = 1.0 (perfect match)
         // Weighted score = 1.0 * 0.2 = 0.2
-        expect(matchNotes(req, offer).score).toBe(0.2);
+        expect(service.matchNotes(req, offer).score).toBe(0.2);
     });
 
     it('weights match score by target note priority (high priority)', () => {
@@ -82,29 +85,28 @@ describe('matchNotes', () => {
 
         // Base score = 1.0 (perfect match)
         // Weighted score = 1.0 * 1.0 = 1.0
-        expect(matchNotes(req, offer).score).toBe(1.0);
+        expect(service.matchNotes(req, offer).score).toBe(1.0);
     });
 
     it('weights partial match score by priority', () => {
         const req = createNote([
-            {key: 'role', operator: 'is', values: ['Dev']},
-            {key: 'exp', operator: 'greater than', values: ['3']}
+            {key: 'role', operator: 'is', values: ['Dev']},        // Match (+1)
+            {key: 'exp', operator: 'greater than', values: ['3']}   // Conflict (-1)
         ]);
         const offer = createNote(
             [
-                {key: 'role', operator: 'is', values: ['Dev']}, // Match
-                {key: 'exp', operator: 'is', values: ['2']}     // Fail
+                {key: 'role', operator: 'is', values: ['Dev']},    // Match
+                {key: 'exp', operator: 'is', values: ['2']}        // 2 !> 3 = conflict
             ],
             0.5 // Medium priority
         );
 
-        // Base score = 0.5 (1 out of 2 constraints)
-        // Weighted score = 0.5 * 0.5 = 0.25
-        expect(matchNotes(req, offer).score).toBe(0.25);
+        // totalScore = 1 + (-1) = 0, normalized = 0, weighted = 0 * 0.5 = 0
+        expect(service.matchNotes(req, offer).score).toBe(0);
     });
 });
 
-describe('calculateSemanticOverlap', () => {
+describe('calculateSemanticOverlap (via MatchingService)', () => {
     it('weights overlap by average priority of both notes', () => {
         const noteA = createNote(
             [
@@ -125,7 +127,7 @@ describe('calculateSemanticOverlap', () => {
         // Base overlap = 2/2 = 1.0 (Jaccard index)
         // Average priority = (1.0 + 0.2) / 2 = 0.6
         // Weighted score = 1.0 * 0.6 = 0.6
-        expect(calculateSemanticOverlap(noteA, noteB)).toBe(0.6);
+        expect(service.calculateSemanticOverlap(noteA, noteB)).toBe(0.6);
     });
 
     it('gives full score for high-priority notes with perfect overlap', () => {
@@ -141,7 +143,7 @@ describe('calculateSemanticOverlap', () => {
 
         // Base overlap = 1.0, average priority = 1.0
         // Weighted score = 1.0 * 1.0 = 1.0
-        expect(calculateSemanticOverlap(noteA, noteB)).toBe(1.0);
+        expect(service.calculateSemanticOverlap(noteA, noteB)).toBe(1.0);
     });
 });
 

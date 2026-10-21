@@ -2,40 +2,32 @@ import chalk from 'chalk';
 import ora from 'ora';
 import path from 'path';
 import fs from 'fs/promises';
-import { Logger } from '@notention/core';
+import { Logger, type LogLevel } from '@notention/core';
 
-const logger = Logger.getInstance();
 let isVerbose = false;
-const suppressedContexts = ['Server', 'WS', 'Init', 'MCP'];
+const suppressedContexts = new Set(['Server', 'WS', 'Init', 'MCP']);
 
 export const setVerbose = (v: boolean): void => { isVerbose = v; };
 
-logger.setLogHandler((level, message, context, error) => {
-  if (!isVerbose && typeof context === 'string' && suppressedContexts.includes(context)) return;
-  const shouldShowContext = context && (isVerbose || !suppressedContexts.includes(context as string));
+const logger = Logger.getInstance();
 
-  switch (level) {
-    case 'info':
-      console.log(chalk.blue('ℹ'), message);
-      if (shouldShowContext) console.log(context);
-      break;
-    case 'warn':
-      console.log(chalk.yellow('⚠'), message);
-      if (shouldShowContext) console.log(context);
-      break;
-    case 'error':
-      console.error(chalk.red('✖'), message);
-      if (error) console.error(chalk.dim(error instanceof Error ? error.message : String(error)));
-      if (context) console.error(context);
-      break;
-    case 'debug':
-      if (process.env.DEBUG || isVerbose) {
-        console.debug(chalk.gray('🐛'), message);
-        if (context) console.debug(context);
-      }
-      break;
-  }
-});
+const createCliLogHandler = (verbose: boolean) => (
+  level: LogLevel,
+  message: string,
+  context?: unknown,
+  error?: Error
+): void => {
+  if (!verbose && typeof context === 'string' && suppressedContexts.has(context)) return;
+  const showContext = verbose || (context && !suppressedContexts.has(context as string));
+
+  const prefix = { info: chalk.blue('ℹ'), warn: chalk.yellow('⚠'), error: chalk.red('✖'), debug: chalk.gray('🐛') }[level];
+
+  console[level === 'error' ? 'error' : level === 'debug' ? 'debug' : 'log'](prefix, message);
+  if (showContext && context) console[level === 'error' ? 'error' : 'log'](context);
+  if (error) console.error(chalk.dim(error.message));
+};
+
+logger.setLogHandler(createCliLogHandler(isVerbose));
 
 export const log = {
   info: (msg: string, context?: unknown) => logger.info(msg, context),

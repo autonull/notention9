@@ -3,11 +3,10 @@ import {Modal} from '../common/Modal';
 import {InformationCircleIcon, TagIcon, ExclamationTriangleIcon, SparklesIcon} from '../common/icons';
 import {ICON_MAP} from '../layout/iconMap';
 import type {OntologyAttribute, OntologyNode, SuggestedAttribute} from '@notention/core';
-import {findAttributeDef} from '@notention/core';
+import {findAttributeDef, validateAttributeValue} from '@notention/core';
 import {Input} from '../common/Input';
 import {Button} from '../common/Button';
 import {PropertyValueInput} from './PropertyValueInput';
-import {validatePropertyAgainstOntology} from '../../utils/propertyValidation';
 
 interface InsertPropertyModalProps {
     isOpen: boolean;
@@ -59,7 +58,7 @@ export function InsertPropertyModal({
     }, [isOpen, initialKey, initialOperator, initialValue]);
 
     const validation = useMemo(() => {
-        return validatePropertyAgainstOntology(key, operator, value, activeDef);
+        return validateAttributeValue(key, operator, value, activeDef);
     }, [key, operator, value, activeDef]);
 
     const availableOperators = useMemo(() => {

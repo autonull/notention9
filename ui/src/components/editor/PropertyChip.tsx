@@ -4,8 +4,7 @@ import {ExclamationTriangleIcon, TagIcon} from '../common/icons';
 import {ICON_MAP} from '../layout/iconMap';
 import {useSettings} from '../../hooks/useSettingsContext';
 import {useOntologyIndex} from '../../hooks/useOntologyIndex';
-import {validatePropertyAgainstOntology} from '../../utils/propertyValidation';
-import {getCanonicalKey} from '@notention/core';
+import {validateAttributeValue, getCanonicalKey} from '@notention/core';
 
 export function PropertyChip(props: NodeViewProps) {
     const {node} = props;
@@ -28,7 +27,7 @@ export function PropertyChip(props: NodeViewProps) {
     const isAlias = canonicalKey !== name;
 
     const validation = useMemo(() => {
-        return validatePropertyAgainstOntology(name, operator, value, definition);
+        return validateAttributeValue(name, operator, value, definition);
     }, [name, operator, value, definition]);
 
     // Styling

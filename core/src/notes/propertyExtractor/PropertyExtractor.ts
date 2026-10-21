@@ -4,7 +4,8 @@ import { DEFAULT_ONTOLOGY } from '../../ontology/ontology.default.js';
 import { PropertyValidationError } from '../../utils/errors/index.js';
 import { parseQuantity } from '../quantities/index.js';
 import { Logger } from '../../utils/logging.js';
-import { getCanonicalKey } from '../../ontology/ontologyHelpers.js';
+import { normalizeNoteProperties } from '../properties.js';
+import { validatePropertyWithOntology } from '../../utils/validation.js';
 import {
   extractIntents,
   extractRegexProps,
@@ -35,11 +36,9 @@ export class PropertyExtractor {
   }
 
   private normalizeProperties(properties: Property[]): Property[] {
-    const ontologyNodes = this.ontologyService.getAllNodes();
-    return properties.map(prop => {
-      const canonicalKey = getCanonicalKey(prop.key, ontologyNodes);
-      return canonicalKey !== prop.key ? { ...prop, key: canonicalKey } : prop;
-    });
+    const note = { id: '', title: '', content: '', properties, createdAt: '', updatedAt: '', tags: [] } as any;
+    const normalized = normalizeNoteProperties(note, this.ontologyService.getAllNodes());
+    return normalized.properties;
   }
 
   inferType(value: string): PropertyType {
@@ -52,25 +51,8 @@ export class PropertyExtractor {
   }
 
   validateProperty(property: Property): { valid: boolean; errors: string[] } {
-    const { key, operator, values } = property;
-    const attr = this.ontologyService.getAttribute(key);
-    if (!attr) {
-      return { valid: false, errors: [`Attribute '${key}' not found in ontology`] };
-    }
-
-    const errors: string[] = [];
-    if (!this.ontologyService.getValidOperators(key).includes(operator)) {
-      errors.push(`Operator '${operator}' not valid for '${key}'`);
-    }
-
-    const enumOptions = this.ontologyService.getEnumOptions(key);
-    if (enumOptions) {
-      values.filter(v => !enumOptions.includes(v)).forEach(v => {
-        errors.push(`Value '${v}' not in enum options for '${key}'`);
-      });
-    }
-
-    return { valid: errors.length === 0, errors };
+    const result = validatePropertyWithOntology(property, this.ontologyService);
+    return { valid: result.isValid, errors: result.errors };
   }
 
   validatePropertyOrThrow(property: Property): void {

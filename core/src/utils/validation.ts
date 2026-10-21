@@ -1,6 +1,7 @@
 import { Property, Note, OntologyNode, OntologyAttribute } from '../types/index.js';
 import { parseQuantity } from '../notes/quantities/index.js';
 import { getCanonicalKey } from '../ontology/ontologyHelpers.js';
+import { OntologyService } from '../ontology/ontologyService.js';
 
 export interface ValidationResult {
 	isValid: boolean;
@@ -106,6 +107,40 @@ const validateNumericValues = (property: Property): string[] => {
 	return property.values
 		.filter(value => isNaN(parseFloat(value)) && !parseQuantity(value))
 		.map(value => `Operator "${property.operator}" requires numeric values. Got "${value}".`);
+};
+
+export const validatePropertyWithOntology = (
+	property: Property,
+	ontologyService: OntologyService
+): ValidationResult => {
+	const errors: string[] = [];
+	const warnings: string[] = [];
+
+	if (!property.key?.trim()) errors.push('Property key is required.');
+	if (!property.values?.length) errors.push('Property must have at least one value.');
+
+	const attr = ontologyService.getAttribute(property.key);
+	if (!attr) {
+		errors.push(`Attribute '${property.key}' not found in ontology`);
+	} else {
+		const validOperators = ontologyService.getValidOperators(property.key);
+		if (validOperators.length > 0 && !validOperators.includes(property.operator)) {
+			errors.push(`Operator '${property.operator}' not valid for '${property.key}'`);
+		}
+
+		const enumOptions = ontologyService.getEnumOptions(property.key);
+		if (enumOptions) {
+			property.values
+				.filter(v => !enumOptions.includes(v))
+				.forEach(v => errors.push(`Value '${v}' not in enum options for '${property.key}'`));
+		}
+	}
+
+	if (NUMERIC_OPERATORS.has(property.operator)) {
+		errors.push(...validateNumericValues(property));
+	}
+
+	return { isValid: errors.length === 0, errors, warnings };
 };
 
 export const validateProperty = (property: Property, ontology?: OntologyNode[]): ValidationResult => {

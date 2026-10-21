@@ -1,8 +1,9 @@
 import { Command } from 'commander';
 import { configManager, AppConfig } from './config-manager.js';
-import { ProviderFactory } from './providers/factory.js';
-import { LLMProviderConfig } from './providers/base.js';
 import { SetupManager } from './setup-manager.js';
+import { LLMProviderConfig } from './providers/base.js';
+import { log } from './utils.js';
+import { switchProvider, listProviders, showCurrentProvider } from './provider-switcher.js';
 
 interface ConfigOptions {
     get?: string;
@@ -89,23 +90,19 @@ export class CLICommander {
       .option('-s, --switch <provider>', 'Switch to a different provider')
       .action(async (options: ProviderOptions) => {
         if (options.list) {
-            this.listProviders();
+            listProviders();
         } else if (options.switch) {
-            console.log('Launching setup wizard for provider switch...');
-            await SetupManager.runSetup();
+            const currentConfig = configManager.getAll();
+            await switchProvider({
+              providerName: options.switch,
+              currentConfig,
+              onSuccess: (name) => log.success(`Switched to ${name}`),
+              onError: (err) => log.error('Provider switch failed', err)
+            });
         } else {
-            const { provider } = configManager.getAll();
-            console.log(`Current provider: ${provider || 'default'}`);
+            const config = configManager.getAll();
+            showCurrentProvider(config);
         }
-      });
-  }
-
-  private listProviders() {
-      const providers = ProviderFactory.getSupportedProviders();
-      console.log('Supported providers:');
-      providers.forEach(provider => {
-          const desc = ProviderFactory.getProviderDescription(provider);
-          console.log(`  ${provider}: ${desc}`);
       });
   }
 

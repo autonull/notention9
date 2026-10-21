@@ -1,6 +1,17 @@
 import {describe, expect, it} from 'vitest';
-import {checkConstraint} from '../../utils/matching';
-import type {Note} from '@notention/core';
+import {MatchEngine} from '@notention/core';
+import type {Note, Property} from '@notention/core';
+
+const engine = new MatchEngine([]);
+
+const checkConstraint = (constraint: Property, note: Note): boolean => {
+    const matchingProp = note.properties.find(p => p.key === constraint.key);
+    if (!matchingProp) return constraint.operator === 'is not';
+    const req = { ...note, properties: [constraint] };
+    const off = { ...note, properties: [matchingProp] };
+    const result = engine.calculateMatchScore(req, off);
+    return result.score > 0;
+};
 
 describe('checkConstraint - Soft Matching', () => {
     const targetNote: Note = {
