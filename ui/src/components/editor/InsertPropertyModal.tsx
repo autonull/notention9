@@ -1,12 +1,12 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {Modal} from '../common/Modal';
-import {InformationCircleIcon, TagIcon, ExclamationTriangleIcon, SparklesIcon} from '../common/icons';
+import {InformationCircleIcon, TagIcon, ExclamationTriangleIcon, SparklesIcon, SparklesIcon as MagicIcon} from '../common/icons';
 import {ICON_MAP} from '../layout/iconMap';
 import type {OntologyAttribute, OntologyNode, SuggestedAttribute} from '@notention/core';
 import {findAttributeDef, validateAttributeValue} from '@notention/core';
 import {Input} from '../common/Input';
 import {Button} from '../common/Button';
-import {PropertyValueInput} from './PropertyValueInput';
+import {EnhancedPropertyValueInput} from '../properties/EnhancedPropertyValueInput';
 
 interface InsertPropertyModalProps {
     isOpen: boolean;
@@ -168,13 +168,14 @@ export function InsertPropertyModal({
                         <label className="block text-xs uppercase font-bold text-gray-500 mb-2 tracking-wider">
                             Value
                         </label>
-                        <PropertyValueInput
+                        <EnhancedPropertyValueInput
                             value={value}
                             onChange={(val) => {
                                 setValue(val);
                                 setTouched(true);
                             }}
                             attributeDef={activeDef}
+                            operator={operator}
                             onPickLocation={onPickLocation}
                         />
                     </div>

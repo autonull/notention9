@@ -4,6 +4,7 @@ import {MobileNavigation} from './layout/MobileNavigation';
 import {CommandPalette} from './common/CommandPalette';
 import {Sidebar} from './sidebar';
 import {MainView} from './MainView';
+import {SelectorRegistryProvider} from '../properties/SelectorRegistry';
 
 import {useNotes} from '../hooks/useNotes';
 import {useView} from '../hooks/useViewContext';
@@ -132,38 +133,40 @@ export function AppShell() {
     `.replace(/\s+/g, ' ').trim();
 
     return (
-        <div className="flex flex-col h-screen bg-gray-950 text-gray-200" data-ready>
-            <Header onNewNote={handleNewNote}/>
-            <ConnectivityBanner/>
-            <div className="flex flex-1 overflow-hidden">
-                <div className={sidebarClasses}>
-                    <Sidebar sortedNotes={sortedNotes}/>
-                </div>
+        <SelectorRegistryProvider>
+            <div className="flex flex-col h-screen bg-gray-950 text-gray-200" data-ready>
+                <Header onNewNote={handleNewNote}/>
+                <ConnectivityBanner/>
+                <div className="flex flex-1 overflow-hidden">
+                    <div className={sidebarClasses}>
+                        <Sidebar sortedNotes={sortedNotes}/>
+                    </div>
 
-                <main className={mainClasses}>
-                    <MainView sortedNotes={sortedNotes}/>
-                </main>
+                    <main className={mainClasses}>
+                        <MainView sortedNotes={sortedNotes}/>
+                    </main>
+                </div>
+                <MobileNavigation/>
+                <CommandPalette
+                    isOpen={isPaletteOpen}
+                    onClose={() => setIsPaletteOpen(false)}
+                    notes={sortedNotes}
+                    onSelectNote={(id) => {
+                        setSelectedNoteId(id);
+                        setActiveView('notes');
+                    }}
+                    onCreateNote={handleCreateNote}
+                    commands={commands}
+                />
+                <HelpDialog
+                    isOpen={isHelpOpen}
+                    onClose={() => setIsHelpOpen(false)}
+                    onAddDetail={() => {
+                        setIsHelpOpen(false);
+                        window.dispatchEvent(new CustomEvent('open-property-palette'));
+                    }}
+                />
             </div>
-            <MobileNavigation/>
-            <CommandPalette
-                isOpen={isPaletteOpen}
-                onClose={() => setIsPaletteOpen(false)}
-                notes={sortedNotes}
-                onSelectNote={(id) => {
-                    setSelectedNoteId(id);
-                    setActiveView('notes');
-                }}
-                onCreateNote={handleCreateNote}
-                commands={commands}
-            />
-            <HelpDialog
-                isOpen={isHelpOpen}
-                onClose={() => setIsHelpOpen(false)}
-                onAddDetail={() => {
-                    setIsHelpOpen(false);
-                    window.dispatchEvent(new CustomEvent('open-property-palette'));
-                }}
-            />
-        </div>
+        </SelectorRegistryProvider>
     );
 }
