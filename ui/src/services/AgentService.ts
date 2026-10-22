@@ -122,6 +122,34 @@ class AgentService extends RobustWebSocket {
         return this._enabled;
     }
 
+    getStatus(): {status: string; queueSize: number; lastError: string | undefined; connected: boolean; enabled: boolean} {
+        if (!this._enabled) {
+            return {
+                status: 'offline',
+                queueSize: 0,
+                lastError: undefined,
+                connected: false,
+                enabled: false
+            };
+        }
+        if (this.isConnected) {
+            return {
+                status: 'connected',
+                queueSize: 0,
+                lastError: undefined,
+                connected: true,
+                enabled: true
+            };
+        }
+        return {
+            status: 'offline',
+            queueSize: 0,
+            lastError: undefined,
+            connected: false,
+            enabled: true
+        };
+    }
+
     private async resolveUrl(url?: string): Promise<string | null> {
         if (url) return url;
 

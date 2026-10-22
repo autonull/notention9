@@ -1,0 +1,170 @@
+[
+  {
+    "area": "actions",
+    "state": "board",
+    "file": "actions/board.png",
+    "viewport": "desktop",
+    "description": "Task board grouped by status, with a new-task action."
+  },
+  {
+    "area": "chat",
+    "state": "thread",
+    "file": "chat/thread.png",
+    "viewport": "desktop",
+    "description": "An encrypted conversation over the local relay, with the encryption notice."
+  },
+  {
+    "area": "dashboard",
+    "state": "empty",
+    "file": "dashboard/empty.png",
+    "viewport": "desktop",
+    "description": "First run with an empty notebook and a sample-workspace affordance."
+  },
+  {
+    "area": "dashboard",
+    "state": "populated",
+    "file": "dashboard/populated.png",
+    "viewport": "desktop",
+    "description": "Stats, an offline match preview, recent activity, and tools."
+  },
+  {
+    "area": "editor",
+    "state": "add-detail",
+    "file": "editor/add-detail.png",
+    "viewport": "desktop",
+    "description": "Type-aware popup for adding a structured detail."
+  },
+  {
+    "area": "editor",
+    "state": "extraction-review",
+    "file": "editor/extraction-review.png",
+    "viewport": "desktop",
+    "description": "Deterministic suggestions with confidence and accept/reject, no model configured."
+  },
+  {
+    "area": "editor",
+    "state": "property-chips",
+    "file": "editor/property-chips.png",
+    "viewport": "desktop",
+    "description": "Prose with structured detail chips and no visible bracket syntax."
+  },
+  {
+    "area": "editor",
+    "state": "property-inspector",
+    "file": "editor/property-inspector.png",
+    "viewport": "desktop",
+    "description": "Inspector with typed widgets, ontology hints, and validation."
+  },
+  {
+    "area": "editor",
+    "state": "publish-panel",
+    "file": "editor/publish-panel.png",
+    "viewport": "desktop",
+    "description": "Publish disclosure with a human summary and a collapsed raw event."
+  },
+  {
+    "area": "editor",
+    "state": "template-selector",
+    "file": "editor/template-selector.png",
+    "viewport": "desktop",
+    "description": "Ontology-derived templates for requests, offers, and events."
+  },
+  {
+    "area": "map",
+    "state": "pins",
+    "file": "map/pins.png",
+    "viewport": "desktop",
+    "description": "Geographic notes on the map with a selected note popup."
+  },
+  {
+    "area": "matching",
+    "state": "explanation",
+    "file": "matching/explanation.png",
+    "viewport": "desktop",
+    "description": "Satisfied and conflicting constraints for a local offer, computed offline."
+  },
+  {
+    "area": "matching",
+    "state": "results",
+    "file": "matching/results.png",
+    "viewport": "desktop",
+    "description": "A request matched against a local offer with scores, computed offline."
+  },
+  {
+    "area": "mobile",
+    "state": "notes",
+    "file": "mobile/notes.png",
+    "viewport": "mobile",
+    "description": "Mobile list and bottom navigation."
+  },
+  {
+    "area": "modals",
+    "state": "command-palette",
+    "file": "modals/command-palette.png",
+    "viewport": "desktop",
+    "description": "Command palette with a query matching notes and commands."
+  },
+  {
+    "area": "modals",
+    "state": "help",
+    "file": "modals/help.png",
+    "viewport": "desktop",
+    "description": "Concept and shortcut reference, including a pointer to Add detail."
+  },
+  {
+    "area": "network",
+    "state": "connect-identity",
+    "file": "network/connect-identity.png",
+    "viewport": "desktop",
+    "description": "Network view before an identity exists, prompting setup."
+  },
+  {
+    "area": "network",
+    "state": "feed",
+    "file": "network/feed.png",
+    "viewport": "desktop",
+    "description": "Public feed with signed notes from a local relay, including structured details."
+  },
+  {
+    "area": "notes",
+    "state": "grid",
+    "file": "notes/grid.png",
+    "viewport": "desktop",
+    "description": "Grid mode with pinned and private notes visible at a glance."
+  },
+  {
+    "area": "notes",
+    "state": "list-selected",
+    "file": "notes/list-selected.png",
+    "viewport": "desktop",
+    "description": "List mode with a note open in the editor."
+  },
+  {
+    "area": "notes",
+    "state": "trash",
+    "file": "notes/trash.png",
+    "viewport": "desktop",
+    "description": "Trash with restore and permanent-delete affordances."
+  },
+  {
+    "area": "ontology",
+    "state": "graph",
+    "file": "ontology/graph.png",
+    "viewport": "desktop",
+    "description": "Ontology tree with domains, attributes, and usage counts."
+  },
+  {
+    "area": "settings",
+    "state": "networks",
+    "file": "settings/networks.png",
+    "viewport": "desktop",
+    "description": "Provider status and relay management."
+  },
+  {
+    "area": "timeline",
+    "state": "month",
+    "file": "timeline/month.png",
+    "viewport": "desktop",
+    "description": "Month calendar with dated notes and deadlines."
+  }
+]
