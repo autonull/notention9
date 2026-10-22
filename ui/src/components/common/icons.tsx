@@ -856,3 +856,53 @@ export function ChartBarIcon(props: IconProps) { return (
         />
     </OutlineIcon>
 ); }
+
+export function GridIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M3.75 3.75v4.5h4.5V3.75h-4.5zm7.5 0v4.5h4.5V3.75h-4.5zm7.5 0v4.5h4.5V3.75h-4.5zM3.75 15.75v4.5h4.5v-4.5h-4.5zm7.5 0v4.5h4.5v-4.5h-4.5zm7.5 0v4.5h4.5v-4.5h-4.5z"
+        />
+    </OutlineIcon>
+); }
+
+export function ListIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M4 6h16M4 12h16M4 18h16M3 6v12a1 1 0 001 1h16a1 1 0 001-1V6a1 1 0 00-1-1H4a1 1 0 00-1 1z"
+        />
+    </OutlineIcon>
+); }
+
+export function ArrowUpDownIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18"
+        />
+    </OutlineIcon>
+); }
+
+export function QrCodeIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M3 3h7v7H3V3zm0 10h7v7H3v-7zm10 0h7v7h-7v-7zm10-10h7v7h-7V3zM14 14h1v1h-1v-1zm2 0h1v1h-1v-1zm4 0h1v1h-1v-1zm2 0h1v1h-1v-1zm-6 2h1v1h-1v-1zm0 2h1v1h-1v-1zm-2 0h1v1h-1v-1zm-2 0h1v1h-1v-1z"
+        />
+    </OutlineIcon>
+); }
+
+export function MicrophoneIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M12 19.5a2.5 2.5 0 01-2.5-2.5V11a2.5 2.5 0 015 0v6A2.5 2.5 0 0112 19.5zM19 12c0 3.866-3.134 7-7 7s-7-3.134-7-7M12 5v-.5a2.5 2.5 0 015 0V5"
+        />
+    </OutlineIcon>
+); }

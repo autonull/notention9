@@ -433,6 +433,18 @@ export interface CommandPaletteItem {
     keywords?: string[];
 }
 
+const DEFAULT_SHORTCUTS = [
+    {label: 'New Note', keys: ['Ctrl', 'N']},
+    {label: 'Command Palette', keys: ['Ctrl', 'K']},
+    {label: 'Search Notes', keys: ['Ctrl', 'F']},
+    {label: 'Toggle Sidebar', keys: ['Ctrl', '\\']},
+    {label: 'Save Note', keys: ['Ctrl', 'S']},
+    {label: 'Next Note', keys: ['Ctrl', 'J']},
+    {label: 'Previous Note', keys: ['Ctrl', 'K']},
+    {label: 'Back to List', keys: ['Esc']},
+    {label: 'Open Help', keys: ['?']},
+];
+
 export interface CommandPaletteProps {
     isOpen: boolean;
     onClose: () => void;
@@ -528,6 +540,23 @@ export function CommandPalette({
                 <div className="overflow-y-auto flex-1 p-2 space-y-1 custom-scrollbar">
                     {filteredItems.length === 0 && query && (
                         <div className="p-8 text-center text-gray-500">No results found for "{query}"</div>
+                    )}
+                    {filteredItems.length === 0 && !query && (
+                        <div className="p-4 space-y-4">
+                            <div className="px-3 pt-3 pb-1 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                                Keyboard Shortcuts
+                            </div>
+                            <div className="space-y-2 px-3">
+                                {DEFAULT_SHORTCUTS.map((shortcut) => (
+                                    <div key={shortcut.keys.join('+')} className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-700/50 transition-colors">
+                                        <span className="text-sm text-gray-300">{shortcut.label}</span>
+                                        <kbd className="text-[10px] font-mono px-1.5 py-0.5 bg-gray-700 text-gray-400 rounded uppercase tracking-wider">
+                                            {shortcut.keys.join(' + ')}
+                                        </kbd>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     )}
                     {filteredItems.map((item, index) => {
                         const showCategory = item.category && (index === 0 || filteredItems[index - 1].category !== item.category);

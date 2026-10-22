@@ -9,7 +9,7 @@ import {ViewSelector} from './ViewSelector';
 import {NoteGridItem} from './NoteGridItem';
 import {TagCloud} from './TagCloud';
 import {SidebarEmptyState} from './SidebarEmptyState';
-import {PlusIcon, ChevronLeftIcon} from '../common/icons';
+import {PlusIcon, ChevronLeftIcon, GridIcon, ListIcon, TagIcon} from '../common/icons';
 import {useSidebarLogic} from './useSidebarLogic';
 import {IconButton} from '../common/IconButton';
 import {cn} from '../../utils/ui';
@@ -71,14 +71,20 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
         firstItem?.focus();
     }, []);
 
+    const viewModeIcons = {
+        list: ListIcon,
+        grid: GridIcon,
+        tags: TagIcon,
+    };
+
     return (
-        <div className={cn('bg-gray-900 flex flex-col h-full transition-all duration-300')}>
+        <div className={cn('bg-gray-900 flex flex-col h-full transition-all duration-300 ease-in-out')}>
             <div className={cn(
-                'flex-shrink-0 border-b border-gray-700/50 p-3 space-y-3 bg-gray-900/95 backdrop-blur-sm sticky top-0 z-10',
-                !isSidebarOpen && 'p-2 space-y-2'
+                'flex-shrink-0 border-b border-gray-700/50 bg-gray-900/95 backdrop-blur-sm sticky top-0 z-10',
+                isSidebarOpen ? 'p-3 space-y-3' : 'p-2 space-y-2'
             )}>
                 <div className="flex items-center gap-2">
-                    <div className={cn('flex-grow relative group', !isSidebarOpen && 'w-10')}>
+                    <div className={cn('flex-grow relative group transition-all duration-200', !isSidebarOpen && 'w-10')}>
                         <Search
                             ref={searchInputRef}
                             searchTerm={searchTerm}
@@ -116,7 +122,7 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
 
                 {isSidebarOpen && (
                     <>
-                        <div className="flex items-center gap-2 overflow-hidden">
+                        <div className="flex items-center gap-2 overflow-hidden" role="group" aria-label="View and filter options">
                             <div className="flex-grow min-w-0">
                                 <FilterBar searchTerm={searchTerm} onSetSearch={setSearchTerm}/>
                             </div>
@@ -125,7 +131,7 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
                             </div>
                         </div>
 
-                        <div className="flex items-center px-1">
+                        <div className="flex items-center gap-2 px-1" role="group" aria-label="Sort options">
                             <SortSelector sortOrder={sortOrder} onSortChange={setSortOrder}/>
                         </div>
                     </>

@@ -1,5 +1,5 @@
 import React from 'react';
-import {CheckCircleIcon, ClockIcon, LightBulbIcon, NoteIcon, UserGroupIcon} from '../common/icons';
+import {CheckCircleIcon, ClockIcon, LightBulbIcon, NoteIcon, UserGroupIcon, TrashIcon, PlusIcon} from '../common/icons';
 
 interface FilterBarProps {
     searchTerm: string;
@@ -20,21 +20,32 @@ export function FilterBar({searchTerm, onSetSearch}: FilterBarProps) {
         onSetSearch(activeFilterId === id ? '' : query);
     };
 
+    const handleKeyDown = (e: React.KeyboardEvent, query: string, id: string) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleFilterClick(query, id);
+        }
+    };
+
     const getButtonClass = (isActive: boolean, isAll = false) => `
         flex items-center gap-1 px-2 py-1 rounded-md text-[10px] uppercase tracking-wider font-bold transition-all duration-200 flex-shrink-0 select-none cursor-pointer
         ${isActive
-        ? (isAll
-            ? 'bg-gray-700 text-white shadow-sm'
-            : 'bg-blue-900/40 text-blue-400 shadow-sm shadow-blue-900/20')
-        : 'text-gray-600 hover:text-gray-400 hover:bg-gray-800/50'}
+            ? (isAll
+                ? 'bg-gray-700 text-white shadow-sm'
+                : 'bg-blue-900/40 text-blue-400 shadow-sm shadow-blue-900/20')
+            : 'text-gray-600 hover:text-gray-400 hover:bg-gray-800/50'}
     `;
 
     return (
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-hide" role="group" aria-label="Quick filters">
             <button
                 onClick={() => onSetSearch('')}
+                onKeyDown={(e) => handleKeyDown(e, '', 'all')}
                 className={getButtonClass(!searchTerm, true)}
                 title="All Notes"
+                role="tab"
+                aria-selected={!searchTerm}
+                aria-controls="sidebar-note-list"
             >
                 All
             </button>
@@ -45,7 +56,11 @@ export function FilterBar({searchTerm, onSetSearch}: FilterBarProps) {
                     <button
                         key={filter.id}
                         onClick={() => handleFilterClick(filter.query, filter.id)}
+                        onKeyDown={(e) => handleKeyDown(e, filter.query, filter.id)}
                         className={getButtonClass(isActive)}
+                        role="tab"
+                        aria-selected={isActive}
+                        aria-controls="sidebar-note-list"
                     >
                         {filter.label}
                     </button>

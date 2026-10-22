@@ -13,8 +13,8 @@ vi.mock('../common/icons', () => ({
 
 describe('CommandPalette', () => {
     const mockNotes: Note[] = [
-        { id: '1', title: 'Note 1', content: 'Content 1', tags: [], properties: [], created_at: 0, modified_at: 0, type: 'note', stats: { viewCount: 0, readTime: 0 } },
-        { id: '2', title: 'Note 2', content: 'Content 2', tags: ['important'], properties: [], created_at: 0, modified_at: 0, type: 'note', stats: { viewCount: 0, readTime: 0 } },
+        { id: '1', title: 'Note 1', content: 'Content 1', tags: [], properties: [], createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', source: { type: 'user', identifier: 'test', timestamp: 0 }, privacy: 'private', priority: 0, author: 'test' },
+        { id: '2', title: 'Note 2', content: 'Content 2', tags: ['important'], properties: [], createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', source: { type: 'user', identifier: 'test', timestamp: 0 }, privacy: 'private', priority: 0, author: 'test' },
     ];
 
     const mockCommands = [
@@ -70,7 +70,7 @@ describe('CommandPalette', () => {
             />
         );
         expect(screen.getByText(/Keyboard Shortcuts/i)).toBeTruthy();
-        expect(screen.getByText('Ctrl+N')).toBeTruthy();
+        expect(screen.getByText('Ctrl + N')).toBeTruthy();
     });
 
     it('filters notes based on query', () => {

@@ -1,8 +1,9 @@
-import React, {useEffect, useRef, useState, useMemo} from 'react';
+import React, {useEffect, useState, useMemo} from 'react';
 import {Note, getTextFromHtml} from '@notention/core';
-import {PlusIcon, ClockIcon, NoteIcon, SearchIcon} from '../common/icons';
-import {useListNavigation} from '../../hooks/useListNavigation';
+import {PlusIcon, ClockIcon, NoteIcon, SearchIcon, SettingsIcon, HomeIcon, MapIcon, NetworkIcon, ChatIcon, LightBulbIcon, OntologyIcon, TrashIcon, CpuChipIcon} from '../common/icons';
 import {CommandPalette as CommandPalettePrimitive, CommandPaletteItem} from '../ui';
+import {SHARED_COMMANDS} from '@notention/core';
+import {cn} from '../../utils/ui';
 
 interface CommandPaletteProps {
     isOpen: boolean;
@@ -14,6 +15,7 @@ interface CommandPaletteProps {
         label: string;
         icon: React.ReactElement;
         action: () => void;
+        shortcut?: string;
     }[];
 }
 
@@ -39,100 +41,82 @@ export function CommandPalette({
                 action: () => onCreateNote(query),
                 category: 'Actions',
                 shortcut: 'Enter',
+                keywords: ['new', 'create', 'note', 'add', query.toLowerCase()],
             });
         }
 
         commands.forEach((cmd) => {
-            const isNav = ['Dashboard', 'Notes', 'Map', 'Network', 'Ontology', 'Chat', 'Settings', 'Trash', 'Timeline', 'Actions', 'Sidebar', 'Help'].some(v => cmd.label.includes(v));
+            const isNav = ['Dashboard', 'Notes', 'Map', 'Network', 'Ontology', 'Chat', 'Settings', 'Trash', 'Timeline', 'Actions', 'Sidebar', 'Help', 'Graph', 'Self'].some(v => cmd.label.includes(v));
             items.push({
                 id: `cmd-${cmd.label}`,
                 label: cmd.label,
                 icon: cmd.icon,
                 action: cmd.action,
                 category: isNav ? 'Navigation' : 'Actions',
-                shortcut: cmd.label.includes('Ctrl') ? cmd.label.match(/Ctrl\+[A-Z]/)?.[0] : undefined,
+                shortcut: cmd.shortcut,
+                keywords: cmd.label.toLowerCase().split(' '),
             });
         });
 
-        if (!query) {
-            notes.slice(0, 5).forEach((note) => {
-                items.push({
-                    id: `recent-${note.id}`,
-                    label: note.title || 'Untitled',
-                    description: note.content.slice(0, 60).replace(/<[^>]*>/g, ''),
-                    icon: <ClockIcon className="h-5 w-5"/>,
-                    action: () => onSelectNote(note.id),
-                    category: 'Recent Notes',
-                });
+        // Always include all notes with enhanced keywords for tag/property search
+        notes.forEach((note) => {
+            const tagKeywords = note.tags.map(tag => `#${tag.toLowerCase()}`);
+            const propertyKeywords = note.properties.flatMap(p =>
+                p.values.map(v => `${p.key.toLowerCase()}:${v.toLowerCase()}`)
+            );
+            items.push({
+                id: note.id,
+                label: note.title || 'Untitled',
+                description: getTextFromHtml(note.content).slice(0, 60),
+                icon: <NoteIcon className="h-5 w-5"/>,
+                action: () => onSelectNote(note.id),
+                category: 'Notes',
+                keywords: [
+                    note.title.toLowerCase(),
+                    ...tagKeywords,
+                    ...propertyKeywords,
+                ],
             });
-        }
-
-        if (query) {
-            const filteredNotes = notes
-                .filter((note) => {
-                    const q = query.toLowerCase();
-
-                    if (q.startsWith('#')) {
-                        const tagQuery = q.slice(1);
-                        return note.tags.some(tag => tag.toLowerCase().includes(tagQuery));
-                    }
-
-                    if (q.includes(':')) {
-                        const [key, value] = q.split(':').map(s => s.trim());
-                        if (key && value) {
-                            return note.properties.some(p =>
-                                p.key.toLowerCase().includes(key) &&
-                                p.values.some(v => v.toLowerCase().includes(value))
-                            );
-                        }
-                        if (key && !value) {
-                            return note.properties.some(p => p.key.toLowerCase().includes(key));
-                        }
-                    }
-
-                    return (
-                        note.title.toLowerCase().includes(q) ||
-                        note.content.toLowerCase().includes(q)
-                    );
-                })
-                .slice(0, 10);
-
-            filteredNotes.forEach((note) => {
-                items.push({
-                    id: note.id,
-                    label: note.title || 'Untitled',
-                    description: getTextFromHtml(note.content).slice(0, 60),
-                    icon: <NoteIcon className="h-5 w-5"/>,
-                    action: () => onSelectNote(note.id),
-                    category: 'Notes',
-                });
-            });
-        }
+        });
 
         return items;
-    }, [query, notes, commands, onCreateNote, onSelectNote]);
+    }, [notes, commands, onCreateNote, onSelectNote]);
 
-    const {selectedIndex, setSelectedIndex, handleKeyDown} = useListNavigation({
-        itemCount: paletteItems.length,
-        onSelect: (index) => {
-            if (paletteItems[index]) {
-                paletteItems[index].action();
-                onClose();
-            }
-        },
-        onClose,
-    });
+    const [selectedIndex, setSelectedIndex] = useState(0);
 
     useEffect(() => {
         if (isOpen) {
             setQuery('');
             setSelectedIndex(0);
-            setTimeout(() => {
-                const input = document.querySelector('[data-cmd-input]') as HTMLInputElement;
-                input?.focus();
-            }, 50);
         }
     }, [isOpen]);
+
+    useEffect(() => {
+        setSelectedIndex(0);
+    }, [query]);
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        switch (e.key) {
+            case 'ArrowDown':
+                e.preventDefault();
+                setSelectedIndex(i => Math.min(i + 1, paletteItems.length - 1));
+                break;
+            case 'ArrowUp':
+                e.preventDefault();
+                setSelectedIndex(i => Math.max(i - 1, 0));
+                break;
+            case 'Enter':
+                e.preventDefault();
+                if (paletteItems[selectedIndex]) {
+                    paletteItems[selectedIndex].action();
+                    onClose();
+                }
+                break;
+            case 'Escape':
+                onClose();
+                break;
+        }
+    };
 
     if (!isOpen) return null;
 

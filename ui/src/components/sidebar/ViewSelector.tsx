@@ -1,6 +1,6 @@
 import React from 'react';
 import type {SidebarViewMode} from '@notention/core';
-import {CubeIcon, ListUlIcon, TagIcon} from '../common/icons';
+import {GridIcon, ListIcon, TagIcon} from '../common/icons';
 import {IconButton} from '../common/IconButton';
 
 interface ViewSelectorProps {
@@ -10,13 +10,13 @@ interface ViewSelectorProps {
 
 export function ViewSelector({viewMode, onViewChange}: ViewSelectorProps) {
     const options: { mode: SidebarViewMode; icon: React.FC<any>; label: string }[] = [
-        {mode: 'list', icon: ListUlIcon, label: 'List'},
-        {mode: 'grid', icon: CubeIcon, label: 'Grid'},
+        {mode: 'list', icon: ListIcon, label: 'List View'},
+        {mode: 'grid', icon: GridIcon, label: 'Grid View'},
         {mode: 'cloud', icon: TagIcon, label: 'Tag Cloud'},
     ];
 
     return (
-        <div className="flex items-center gap-0.5">
+        <div className="flex items-center gap-0.5" role="group" aria-label="Sidebar view mode">
             {options.map((option) => (
                 <IconButton
                     key={option.mode}
@@ -26,8 +26,9 @@ export function ViewSelector({viewMode, onViewChange}: ViewSelectorProps) {
                     tooltip={`View as ${option.label}`}
                     variant="ghost"
                     size="sm"
+                    aria-pressed={viewMode === option.mode}
                 />
             ))}
         </div>
     );
-};
+}
