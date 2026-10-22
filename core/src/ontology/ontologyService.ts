@@ -1,5 +1,5 @@
 import type { OntologyNode, OntologyAttribute, PropertyType } from '../types/index.js';
-import { findNode, getCanonicalKey, buildAttributeIndex } from './ontologyHelpers.js';
+import { findNode, getCanonicalKey, buildAttributeIndex } from './ontologyCore.js';
 import {
     buildWidgetMetadata,
     getAttributesByOperator,
@@ -10,7 +10,7 @@ import {
     type WidgetType
 } from './widgets.js';
 import { UsageTracker, type SuggestedAttribute } from './statistics.js';
-import { FuzzyMatcher } from './matching.js';
+import { FuzzyMatcher } from '../utils/matching.js';
 
 export type { SuggestedAttribute, WidgetMetadata, WidgetType };
 

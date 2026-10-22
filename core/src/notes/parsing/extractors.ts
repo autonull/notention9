@@ -1,9 +1,26 @@
 import type { Property, OntologyNode } from '../../types/index.js';
-import { expandMacro } from '../../utils/composition.js';
 import { parseValues } from './helpers.js';
 import { parsePropertyBlock } from './strategies.js';
 import { REGEX, SYMBOLIC_REGEXES } from './constants.js';
 import type { ExtractedProperty } from './types.js';
+
+const MACROS: Record<string, Property[]> = {
+    'freelancer': [
+        { key: 'role', operator: 'is', values: ['freelancer'] },
+        { key: 'available', operator: 'is', values: ['true'] }
+    ],
+    'urgent': [
+        { key: 'priority', operator: 'is', values: ['high'] },
+        { key: 'status', operator: 'is', values: ['active'] }
+    ],
+    'meeting': [
+        { key: 'type', operator: 'is', values: ['meeting'] },
+        { key: 'participants', operator: 'is', values: ['required'] }
+    ]
+};
+
+const expandMacro = (macroName: string): Property[] =>
+    MACROS[macroName.toLowerCase()] || [];
 
 const extractMacros = (text: string): Property[] =>
   Array.from(text.matchAll(REGEX.MACRO)).flatMap(m => expandMacro(m[1]));

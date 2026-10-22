@@ -1,5 +1,5 @@
 import type { OntologyNode, OntologyAttribute } from '../types/index.js';
-import { getCanonicalKey } from './ontologyHelpers.js';
+import { getCanonicalKey } from './ontologyCore.js';
 
 /**
  * Records property usage for tracking frequency

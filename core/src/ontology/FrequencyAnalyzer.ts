@@ -1,6 +1,6 @@
 import type { OntologyNode, OntologyAttribute } from '../types/index.js';
 import { inferPropertyType } from '../utils/inference.js';
-import { findNodeIdForAttribute, findNode } from './ontologyHelpers.js';
+import { findNodeIdForAttribute, findNode } from './ontologyCore.js';
 import type { SuggestedAttribute } from './statistics.js';
 import { UsageRecorder } from './UsageRecorder.js';
 import { CoOccurrenceRecorder } from './CoOccurrenceRecorder.js';

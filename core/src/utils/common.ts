@@ -6,6 +6,9 @@ export const deepClone = <T>(obj: T): T => structuredClone(obj);
 
 export const average = (numbers: number[]): number => (numbers.length > 0 ? numbers.reduce((a, b) => a + b, 0) / numbers.length : 0);
 
+export const areStringArraysEqual = (a: string[], b: string[]): boolean =>
+  a === b || (a.length === b.length && a.every((val, i) => val === b[i]));
+
 export class Mutex {
     private mutex = Promise.resolve();
 

@@ -1,5 +1,5 @@
 import type { OntologyNode, OntologyAttribute } from '../types/index.js';
-import { getCanonicalKey } from './ontologyHelpers.js';
+import { getCanonicalKey } from './ontologyCore.js';
 import { inferPropertyType } from '../utils/inference.js';
 import type { SuggestedAttribute } from './statistics.js';
 import { CoOccurrenceRecorder } from './CoOccurrenceRecorder.js';

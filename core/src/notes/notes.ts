@@ -6,6 +6,7 @@ import { PropertyExtractor } from './propertyExtractor/index.js';
 import { getTextFromHtml } from '../utils/html.js';
 import { inferNoteIntent, type NoteIntent } from './NoteIntentInferencer.js';
 import { memoize1, memoize2 } from '../utils/cache.js';
+import { areStringArraysEqual } from '../utils/common.js';
 
 export const createNote = (overrides?: Partial<Note>): Note => {
   const now = new Date().toISOString();
@@ -26,9 +27,6 @@ export const createNote = (overrides?: Partial<Note>): Note => {
 
 export const sortNotesByDate = (notes: Note[]): Note[] =>
   [...notes].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
-
-export const areStringArraysEqual = (a: string[], b: string[]): boolean =>
-  a === b || (a.length === b.length && a.every((val, i) => val === b[i]));
 
 export const isNoteActive = (note: Note): boolean =>
   note.properties.some(p => p.key === NOTE_STATUS.KEY && (p.values.includes(NOTE_STATUS.RUNNING) || p.values.includes(NOTE_STATUS.QUEUED)));
