@@ -1,14 +1,9 @@
 @import "tailwindcss";
+@import './styles/design-system.css';
 @import './styles/property-blocks.css';
 
 @source "../index.html";
 @source "../src";
-
-body {
-    font-family: 'Inter', sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
 
 /* General Editor Styles */
 .ProseMirror {

@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Header} from './layout/Header';
 import {MobileNavigation} from './layout/MobileNavigation';
 import {CommandPalette} from './common/CommandPalette';
@@ -14,6 +14,7 @@ import {useCommands} from '../hooks/useCommands';
 import {HelpDialog} from './modals/HelpDialog';
 import {ConnectivityBanner} from './layout/ConnectivityBanner';
 import {useToast} from '../hooks/useToast';
+import {cn} from '../utils/ui';
 
 export function AppShell() {
     const {addNote, getSortedFilteredNotes} = useNotes();
@@ -33,7 +34,6 @@ export function AppShell() {
         setIsHelpOpen
     } = useView();
 
-    // Use optimized selector from unified hook
     const sortedNotes = getSortedFilteredNotes(searchTerm, sortOrder, activeView === 'trash', userLocation);
 
     useUrlRouting({
@@ -45,6 +45,8 @@ export function AppShell() {
 
     const {commands, handleNewNote} = useCommands({setIsHelpOpen});
     const {addToast} = useToast();
+
+    const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
     useEffect(() => {
         const handleStorageError = (event: Event) => {
@@ -77,10 +79,7 @@ export function AppShell() {
             window.dispatchEvent(new CustomEvent('open-property-palette'));
         },
         onSave: () => {
-            // Trigger save if in note editor
             window.dispatchEvent(new CustomEvent('save-note'));
-
-            // Fallback
             setTimeout(() => {
                 const saveButton = document.querySelector('button[data-action="save"]');
                 if (saveButton) {
@@ -110,37 +109,63 @@ export function AppShell() {
                 setActiveView('notes');
             }
         },
-        onToggleSidebar: () => setIsSidebarOpen(!isSidebarOpen),
+        onToggleSidebar: () => {
+            if (window.innerWidth < 768) {
+                setMobileSidebarOpen(!mobileSidebarOpen);
+            } else {
+                setIsSidebarOpen(!isSidebarOpen);
+            }
+        },
         onEscape: () => {
             setIsPaletteOpen(false);
             setIsHelpOpen(false);
+            setMobileSidebarOpen(false);
         }
     });
 
     const isMobileNoteList = activeView === 'notes' && !selectedNoteId;
+    const isMobile = window.innerWidth < 768;
 
-    // Streamlined layout logic
-    const sidebarClasses = `
-        flex-shrink-0 bg-gray-900 border-r border-gray-700/50
-        transition-all duration-300 ease-in-out
-        ${isMobileNoteList ? 'w-full block' : 'hidden md:block'}
-        ${isSidebarOpen ? 'md:w-[320px]' : 'md:w-0 md:border-r-0 overflow-hidden'}
-    `.replace(/\s+/g, ' ').trim();
+    const sidebarClasses = cn(
+        'flex-shrink-0 bg-gray-900 border-r border-gray-700/50 transition-all duration-300 ease-in-out',
+        isMobileNoteList ? 'w-full block' : 'hidden md:block',
+        isMobile ? (mobileSidebarOpen ? 'w-[320px]' : 'w-0 border-r-0 overflow-hidden') : (isSidebarOpen ? 'md:w-[320px]' : 'md:w-0 md:border-r-0 overflow-hidden')
+    );
 
-    const mainClasses = `
-        flex-1 overflow-hidden pb-20 md:pb-0
-        ${isMobileNoteList ? 'hidden md:block' : 'block'}
-    `.replace(/\s+/g, ' ').trim();
+    const mainClasses = cn(
+        'flex-1 overflow-hidden pb-20 md:pb-0',
+        isMobileNoteList ? 'hidden md:block' : 'block'
+    );
+
+    const toggleSidebar = () => {
+        if (isMobile) {
+            setMobileSidebarOpen(!mobileSidebarOpen);
+        } else {
+            setIsSidebarOpen(!isSidebarOpen);
+        }
+    };
 
     return (
         <SelectorRegistryProvider>
             <div className="flex flex-col h-screen bg-gray-950 text-gray-200" data-ready>
                 <Header onNewNote={handleNewNote}/>
                 <ConnectivityBanner/>
-                <div className="flex flex-1 overflow-hidden">
+                <div className="flex flex-1 overflow-hidden relative">
                     <div className={sidebarClasses}>
-                        <Sidebar sortedNotes={sortedNotes}/>
+                        <Sidebar
+                            sortedNotes={sortedNotes}
+                            onToggleSidebar={toggleSidebar}
+                            isSidebarOpen={isMobile ? mobileSidebarOpen : isSidebarOpen}
+                        />
                     </div>
+
+                    {isMobile && mobileSidebarOpen && (
+                        <div
+                            className="fixed inset-0 bg-black/50 z-40 md:hidden"
+                            onClick={() => setMobileSidebarOpen(false)}
+                            aria-hidden="true"
+                        />
+                    )}
 
                     <main className={mainClasses}>
                         <MainView sortedNotes={sortedNotes}/>

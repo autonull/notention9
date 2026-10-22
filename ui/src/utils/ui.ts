@@ -12,6 +12,19 @@ export const getLogStyle = (type: string) => {
 };
 
 /**
+ * Utility to conditionally join class names
+ */
+export function cn(...classes: (string | undefined | null | false | Record<string, boolean>)[]): string {
+    return classes
+        .flatMap(c => {
+            if (!c) return [];
+            if (typeof c === 'string') return c.split(' ');
+            return Object.entries(c).filter(([, v]) => v).map(([k]) => k);
+        })
+        .join(' ');
+}
+
+/**
  * Shared UI styles and classes
  */
 import { useContext } from 'react';
