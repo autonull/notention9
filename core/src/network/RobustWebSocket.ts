@@ -10,6 +10,8 @@ export interface RobustWebSocketOptions {
   onMessage?: (event: MessageEvent) => void;
 }
 
+type EventHandler = (event: any) => void;
+
 export class RobustWebSocket {
   private ws: WebSocket | null = null;
   private readonly url: string;
@@ -24,6 +26,7 @@ export class RobustWebSocket {
     onMessage?: (event: MessageEvent) => void;
   };
   private shouldReconnect = true;
+  private eventListeners: Map<string, Set<EventHandler>> = new Map();
 
   constructor(options: RobustWebSocketOptions) {
     this.url = options.url || '';
@@ -57,11 +60,13 @@ export class RobustWebSocket {
     this.ws.onopen = (event) => {
       this.reconnectAttempts = 0;
       this.handlers.onOpen?.(event);
+      this.emit('open', event);
       resolve();
     };
 
     this.ws.onclose = (event) => {
       this.handlers.onClose?.(event);
+      this.emit('close', event);
       if (this.shouldReconnect && this.reconnectAttempts < this.maxReconnectAttempts) {
         this.reconnectAttempts++;
         setTimeout(() => this.connect(), this.reconnectInterval * this.reconnectAttempts);
@@ -70,11 +75,13 @@ export class RobustWebSocket {
 
     this.ws.onerror = (event) => {
       this.handlers.onError?.(event);
+      this.emit('error', event);
       reject(new Error('WebSocket error'));
     };
 
     this.ws.onmessage = (event) => {
       this.handlers.onMessage?.(event);
+      this.emit('message', event);
     };
   }
 
@@ -91,5 +98,35 @@ export class RobustWebSocket {
 
   get readyState(): number {
     return this.ws?.readyState ?? WebSocket.CLOSED;
+  }
+
+  get isConnected(): boolean {
+    return this.ws?.readyState === WebSocket.OPEN;
+  }
+
+  get isOnlineMode(): boolean {
+    return this.isConnected;
+  }
+
+  on(event: string, handler: EventHandler): void {
+    if (!this.eventListeners.has(event)) {
+      this.eventListeners.set(event, new Set());
+    }
+    this.eventListeners.get(event)!.add(handler);
+  }
+
+  off(event: string, handler: EventHandler): void {
+    this.eventListeners.get(event)?.delete(handler);
+  }
+
+  private emit(event: string, data: any): void {
+    this.eventListeners.get(event)?.forEach(handler => handler(data));
+  }
+
+  reconnect(): void {
+    this.close();
+    this.shouldReconnect = true;
+    this.reconnectAttempts = 0;
+    this.connect();
   }
 }

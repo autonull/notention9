@@ -4,7 +4,7 @@ import {MobileNavigation} from './layout/MobileNavigation';
 import {CommandPalette} from './common/CommandPalette';
 import {Sidebar} from './sidebar';
 import {MainView} from './MainView';
-import {SelectorRegistryProvider} from '../properties/SelectorRegistry';
+import {SelectorRegistryProvider} from './properties/SelectorRegistry';
 
 import {useNotes} from '../hooks/useNotes';
 import {useView} from '../hooks/useViewContext';
@@ -16,7 +16,7 @@ import {ConnectivityBanner} from './layout/ConnectivityBanner';
 import {useToast} from '../hooks/useToast';
 
 export function AppShell() {
-    const {notes, addNote, getSortedFilteredNotes} = useNotes();
+    const {addNote, getSortedFilteredNotes} = useNotes();
     const {
         activeView,
         setActiveView,

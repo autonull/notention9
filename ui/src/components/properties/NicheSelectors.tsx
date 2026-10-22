@@ -12,7 +12,7 @@ export const NeedSelector: PropertySelector = {
     description: 'For composing requests and requirements',
     priority: 100,
     matches: (key, def) => {
-        return key === 'need' || key === 'requirement' || key === 'want' || def.type === 'enum' && def.options?.some(o => ['request', 'offer', 'need'].includes(o));
+        return key === 'need' || key === 'requirement' || key === 'want' || (def.type === 'enum' && def.options?.some(o => ['request', 'offer', 'need'].includes(o))) || false;
     },
     render: ({propertyKey, propertyDef, currentValue, onChange, ontology}) => (
         <div className="space-y-3">
@@ -178,7 +178,7 @@ export const TemplateSelector: PropertySelector = {
     description: 'One-click template instantiation',
     priority: 70,
     matches: (key, def) => {
-        return key === 'template' || key === 'type' || def.type === 'enum' && def.options?.some(o => ['task', 'meeting', 'note', 'event'].includes(o));
+        return key === 'template' || key === 'type' || (def.type === 'enum' && def.options?.some(o => ['task', 'meeting', 'note', 'event'].includes(o))) || false;
     },
     render: ({propertyKey, propertyDef, currentValue, onChange, ontology}) => (
         <div className="space-y-3">
@@ -270,7 +270,7 @@ export const MarkdownSelector: PropertySelector = {
     description: 'Rich text editor with live preview',
     priority: 60,
     matches: (key, def) => {
-        return def.type === 'markdown' || def.type === 'string' && def.description?.toLowerCase().includes('markdown');
+        return def.type === 'markdown' || (def.type === 'string' && def.description?.toLowerCase().includes('markdown')) || false;
     },
     render: ({propertyKey, propertyDef, currentValue, onChange}) => (
         <div className="space-y-2">

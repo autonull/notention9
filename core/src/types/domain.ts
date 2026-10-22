@@ -70,6 +70,9 @@ export interface OntologyAttribute {
   options?: string[];
   referenceType?: string;
   aliases?: string[];
+  numericOptions?: {unit?: string; precision?: number; min?: number; max?: number};
+  affinityOptions?: {bipolar?: boolean; targetType?: 'tag' | 'ontology_class' | 'peer'};
+  arity?: {min: number; max: number};
 }
 
 export interface Template {
@@ -77,6 +80,31 @@ export interface Template {
   label: string;
   icon?: string;
   content: string;
+}
+
+export interface AgentStatus {
+  state: 'running' | 'stopped' | 'starting' | 'error';
+  version: string;
+  uptime: number;
+  health: {
+    activeWorkflows: number;
+    activeTools: number;
+    memory: {
+      used: number;
+      available: number;
+    };
+  };
+  capabilities: Record<string, boolean>;
+}
+
+export interface Suggestion {
+  id: string;
+  type: 'property' | 'tag' | 'template' | 'contact' | 'location' | 'link' | 'action';
+  label?: string;
+  text?: string;
+  description?: string;
+  confidence?: number;
+  data?: any;
 }
 
 export interface Quantity {

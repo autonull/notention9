@@ -10,7 +10,7 @@ import {IconButton} from '../common/IconButton';
 import {Select} from '../common/Select';
 import {Textarea} from '../common/Textarea';
 import {useGardener} from '../../hooks/useGardener';
-import {EnhancedPropertyValueInput} from './EnhancedPropertyValueInput';
+import {EnhancedPropertyValueInput} from '../properties/EnhancedPropertyValueInput';
 
 interface PropertyFormProps {
     initialKey: string;
@@ -19,7 +19,7 @@ interface PropertyFormProps {
     isAdding: boolean;
     onSave: (key: string, op: string, value: string) => void;
     onCancel: () => void;
-    onPickLocation?: () => void;
+    onPickLocation?: () => Promise<string> | void;
     onPickTime?: (key: string) => void;
     ontology: OntologyNode[];
     readonly?: boolean;
@@ -54,6 +54,7 @@ export function PropertyForm({
         type: string;
         description?: string;
         options?: string[];
+        operators?: {real: string[]; imaginary: string[]};
         numericOptions?: {unit?: string; precision?: number; min?: number; max?: number};
         affinityOptions?: {bipolar?: boolean; targetType?: 'tag' | 'ontology_class' | 'peer'};
         readonly?: boolean;
@@ -67,6 +68,7 @@ export function PropertyForm({
                     type: attr.type,
                     description: attr.description,
                     options: attr.options,
+                    operators: attr.operators,
                     numericOptions: (attr as any).numericOptions,
                     affinityOptions: (attr as any).affinityOptions,
                     readonly: (attr as any).readonly,
@@ -215,7 +217,7 @@ export function PropertyForm({
                     )}
                     {currentAttr?.readonly && (
                         <span className="text-xs text-yellow-400 bg-yellow-900/20 px-2 py-0.5 rounded border border-yellow-700/30 flex items-center gap-1">
-                            <span className="w-3 h-3" style={{background: 'url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22%3E%3Crect x=%223%22 y=%2211%22 width=%2218%22 height=%2211%22 rx=%222%22 ry=%222%22%3E%3C/rect%3E%3Cpath d=%22M7 11V7a5 5 0 0 1 10 0v4%22%3E%3C/path%3E%3C/svg%22')}} />
+                            <span className="w-3 h-3" style={{background: `url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22%3E%3Crect x=%223%22 y=%2211%22 width=%2218%22 height=%2211%22 rx=%222%22 ry=%222%22%3E%3C/rect%3E%3Cpath d=%22M7 11V7a5 5 0 0 1 10 0v4%22%3E%3C/path%3E%3C/svg%22")`}} />
                             Read-only
                         </span>
                     )}
@@ -285,10 +287,14 @@ export function PropertyForm({
                 onChange={setValue}
                 attributeDef={currentAttr as any}
                 operator={op}
-                onPickLocation={onPickLocation ? async () => {
+                onPickLocation={onPickLocation ? async (): Promise<string> => {
                     if (isAdding && !key) setKey('location');
-                    onPickLocation();
-                    return undefined;
+                    const result = onPickLocation();
+                    if (result instanceof Promise) {
+                        const loc = await result;
+                        return loc ?? '';
+                    }
+                    return '';
                 } : undefined}
                 onPickTime={onPickTime}
                 readonly={readonly || !!currentAttr?.readonly}
@@ -300,7 +306,7 @@ export function PropertyForm({
 
             {currentAttr?.arity && (
                 <div className="text-xs text-gray-500 flex items-center gap-1">
-                    <span className="w-3 h-3" style={{background: 'url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%2210%22%3E%3C/circle%3E%3Cline x1=%2212%22 y1=%228%22 x2=%2212%22 y2=%2216%22%3E%3C/line%3E%3Cline x1=%228%22 y1=%2212%22 x2=%2216%22 y2=%2212%22%3E%3C/line%3E%3C/svg%22')}} />
+                    <span className="w-3 h-3" style={{background: `url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%2210%22%3E%3C/circle%3E%3Cline x1=%2212%22 y1=%228%22 x2=%2212%22 y2=%2216%22%3E%3C/line%3E%3Cline x1=%228%22 y1=%2212%22 x2=%2216%22 y2=%2212%22%3E%3C/line%3E%3C/svg%22")`}} />
                     {currentAttr.arity.min > 0 && <span className="text-red-400">Required</span>}
                     {currentAttr.arity.max && <span>Max {currentAttr.arity.max} values</span>}
                 </div>

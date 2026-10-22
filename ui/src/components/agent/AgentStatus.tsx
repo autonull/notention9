@@ -19,8 +19,8 @@ export function AgentStatus() {
         agentService.on('message', handler);
 
         const fetchStatus = () => {
-            if (agentService.isConnected()) {
-                agentService.send({type: 'get_agent_status'});
+            if (agentService.isConnected) {
+                agentService.send(JSON.stringify({type: 'get_agent_status'}));
             }
         };
 

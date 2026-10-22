@@ -3,7 +3,8 @@ import { useToast } from './useToast';
 import { useSettings } from './useSettingsContext';
 import { useView } from './useViewContext';
 import { useContacts } from './useContacts';
-import { useNoteAnalysis, Suggestion } from './useNoteAnalysis';
+import { useNoteAnalysis } from './useNoteAnalysis';
+import { Suggestion } from '@notention/core';
 import { useMatches } from './useMatches';
 import { useNetworkDiscovery } from './useNetworkDiscovery';
 import { usePropertyReview, type PropertyReviewItem } from './usePropertyReview';
@@ -30,7 +31,7 @@ interface UseSmartNoteAssistantReturn {
     isOpen: boolean;
     setIsOpen: (open: boolean) => void;
     activeTab: AssistantTab;
-    setActiveTab: (tab: AssistantTab) => void;
+    setActiveTab: (tab: string) => void;
     activeSuggestion: number;
     setActiveSuggestion: (index: number) => void;
 

@@ -1,9 +1,5 @@
 import React, {useEffect, useState} from 'react';
 
-interface AgentCursorProps {
-    // In a real implementation this would accept a WebSocket connection or event emitter
-}
-
 export function AgentCursor() {
     const [position, setPosition] = useState<{ x: number, y: number } | null>(null);
     const [action, setAction] = useState<string | null>(null);
@@ -23,8 +19,8 @@ export function AgentCursor() {
             }
         };
 
-        window.addEventListener('agent-event' as any, handleAgentEvent as any);
-        return () => window.removeEventListener('agent-event' as any, handleAgentEvent as any);
+        window.addEventListener('agent-event', handleAgentEvent as EventListener);
+        return () => window.removeEventListener('agent-event', handleAgentEvent as EventListener);
     }, []);
 
     if (!position) return null;

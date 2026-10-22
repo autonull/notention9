@@ -1,5 +1,5 @@
 import React from 'react';
-import { Note, Property, ScoredMatch, OntologyNode, Suggestion } from '@notention/core';
+import { Note, Property, OntologyNode } from '@notention/core';
 import { useSmartNoteAssistant } from '../../hooks/useSmartNoteAssistant';
 import { AssistantHeader } from './AssistantHeader';
 import { AssistantContent } from './AssistantContent';

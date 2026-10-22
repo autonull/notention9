@@ -45,7 +45,7 @@ export function SuggestionsPanel({
                     entityId={`suggestions-${noteId}`}
                     entityType="suggestion"
                     onFeedback={(type, val) => {
-                        agentService.send({
+                        agentService.send(JSON.stringify({
                             type: 'feedback',
                             payload: {
                                 id: crypto.randomUUID(),
@@ -55,7 +55,7 @@ export function SuggestionsPanel({
                                 context: { details: val },
                                 timestamp: Date.now()
                             }
-                        });
+                        }));
                         addToast('Feedback sent', 'success');
                     }}
                 />

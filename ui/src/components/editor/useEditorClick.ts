@@ -8,13 +8,15 @@ interface InitialModalData {
     icon?: string;
 }
 
+import {View} from '@notention/core';
+
 interface UseEditorClickProps {
     editor: Editor | null;
     setEditingPropertyPos: (pos: number) => void;
     setInitialModalData: (data: InitialModalData | undefined) => void;
     setIsPropertyModalOpen: (open: boolean) => void;
     setSearchTerm: (term: string) => void;
-    setActiveView: (view: string) => void;
+    setActiveView: (view: View) => void;
     addToast: (msg: string, type: 'info' | 'error' | 'success') => void;
     setSelectedNoteId: (id: string) => void;
 }

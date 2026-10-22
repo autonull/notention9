@@ -12,8 +12,8 @@ const MatchingContext = createContext<MatchingContextType | undefined>(undefined
 export function MatchingProvider({ children }: { children: ReactNode }) {
     const { settings } = useSettings();
     const value = useMemo(() => ({
-        engine: new MatchEngine(settings.ontology),
-        matchingService: new MatchingService(settings.ontology),
+        engine: new MatchEngine(settings.ontology ?? []),
+        matchingService: new MatchingService(settings.ontology ?? []),
     }), [settings.ontology]);
 
     return <MatchingContext.Provider value={value}>{children}</MatchingContext.Provider>;

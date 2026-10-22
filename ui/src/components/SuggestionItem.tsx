@@ -1,6 +1,6 @@
 import React from 'react';
 import { CheckCircleIcon, InformationCircleIcon, LinkIcon, PlusIcon } from './common/icons';
-import { Suggestion } from '../hooks/useNoteAnalysis';
+import { Suggestion } from '@notention/core';
 import { FeedbackWidget } from './common/FeedbackWidget';
 import { agentService } from '../services/AgentService';
 
@@ -25,17 +25,17 @@ export function SuggestionItem({ suggestion, isActive, onApply, onMouseEnter }: 
     };
 
     const handleFeedback = (type: 'positive' | 'negative' | 'comment', val: string) => {
-        agentService.send({
+        agentService.send(JSON.stringify({
             type: 'feedback',
             payload: {
                 id: crypto.randomUUID(),
                 entityId: suggestion.id,
                 entityType: 'suggestion',
                 value: type === 'positive' ? 1 : -1,
-                context: { details: val, text: suggestion.text },
+                context: { details: val, text: suggestion.text ?? suggestion.label },
                 timestamp: Date.now()
             }
-        });
+        }));
         // FeedbackWidget handles the 'Thanks' state
     };
 
@@ -60,7 +60,7 @@ export function SuggestionItem({ suggestion, isActive, onApply, onMouseEnter }: 
 
             <div className="flex-1 min-w-0 pr-8">
                 <p className={`text-sm font-medium truncate transition-colors ${isActive ? 'text-white' : 'text-gray-300 group-hover:text-white'}`}>
-                    {suggestion.text}
+                    {suggestion.text ?? suggestion.label ?? 'Untitled suggestion'}
                 </p>
 
                 {suggestion.confidence && (

@@ -57,7 +57,7 @@ export const HybridEditor = forwardRef<TiptapEditorRef, HybridEditorProps>((prop
                         isOpen={isPropertyPaletteOpen}
                         onClose={() => setIsPropertyPaletteOpen(false)}
                         onInsert={handleInsertProperty}
-                        ontology={settings.ontology}
+                        ontology={settings.ontology ?? []}
                         suggestions={suggestions}
                         recentKeys={recentKeys}
                     />

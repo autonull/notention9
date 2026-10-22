@@ -21,9 +21,9 @@ export interface AppSettings {
   user?: {
     name?: string;
   };
-  nostr?: {
+  nostr: {
     privkey?: string | null;
-    relays?: string[];
+    relays: string[];
   };
   ontology?: any[];
   customTemplates?: Template[];

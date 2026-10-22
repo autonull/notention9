@@ -11,10 +11,10 @@ export function PropertyChip(props: NodeViewProps) {
     const {name, operator, value, icon} = node.attrs;
 
     const {settings} = useSettings();
-    const {propertyTypes} = useOntologyIndex(settings.ontology);
+    const {propertyTypes} = useOntologyIndex(settings.ontology ?? []);
 
     const canonicalKey = useMemo(() => {
-        return getCanonicalKey(name, settings.ontology);
+        return getCanonicalKey(name, settings.ontology ?? []);
     }, [name, settings.ontology]);
 
     // Enhanced Validation Logic - Use canonical key to look up definition

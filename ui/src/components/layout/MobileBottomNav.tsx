@@ -1,11 +1,12 @@
 import React from 'react';
 import {useView} from '../../hooks/useViewContext';
-import {HomeIcon, GitBranchIcon, UserIcon, PlusIcon, MenuIcon, XIcon} from '../common/icons';
+import {View} from '@notention/core';
+import {HomeIcon, GitBranchIcon, UsersIcon, PlusIcon, MenuIcon, XIcon} from '../common/icons';
 
 const MOBILE_NAV_ITEMS = [
     {id: 'notes', label: 'Notes', icon: HomeIcon, badge: 'notes'},
     {id: 'graph', label: 'Graph', icon: GitBranchIcon},
-    {id: 'self', label: 'Self', icon: UserIcon},
+    {id: 'self', label: 'Self', icon: UsersIcon},
 ] as const;
 
 interface MobileBottomNavProps {
@@ -17,7 +18,7 @@ export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps
     const {activeView, setActiveView, isPaletteOpen, setIsPaletteOpen} = useView();
 
     const handleSelect = (viewId: string) => {
-        setActiveView(viewId);
+        setActiveView(viewId as View);
         if (isPaletteOpen) setIsPaletteOpen(false);
     };
 

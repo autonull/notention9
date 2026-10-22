@@ -104,13 +104,13 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
     // Sync content from parent
     useEffect(() => {
         if (editor && !editor.isFocused && editor.getHTML() !== note.content) {
-            editor.commands.setContent(sanitizeHTML(note.content), false);
+            editor.commands.setContent(sanitizeHTML(note.content), {emitUpdate: false});
         }
     }, [note.content, editor]);
 
     const toggleViewMode = () => {
         if (viewMode === 'code' && editor && editor.getHTML() !== note.content) {
-            editor.commands.setContent(sanitizeHTML(note.content), false);
+            editor.commands.setContent(sanitizeHTML(note.content), {emitUpdate: false});
         }
         setViewMode((prev) => (prev === 'rich' ? 'code' : 'rich'));
     };

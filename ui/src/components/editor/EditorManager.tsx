@@ -191,7 +191,7 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                         note={dirtyNote}
                         onSave={handleContentSave}
                         onNoteUpdate={handleNoteUpdate}
-                        ontology={settings.ontology}
+                        ontology={settings.ontology ?? []}
                         templates={settings.customTemplates}
                         showToolbar={isToolbarVisible}
                         onMagic={() => {
@@ -220,7 +220,7 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
 
                     {isTemplateSelectorOpen && (
                         <TemplateSelector
-                            ontology={settings.ontology}
+                            ontology={settings.ontology ?? []}
                             onSelect={handleInsertTemplate}
                             onClose={() => setIsTemplateSelectorOpen(false)}
                         />

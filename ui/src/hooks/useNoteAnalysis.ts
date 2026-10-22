@@ -1,14 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Note, patternRecognitionService, PropertyExtractor, OntologyNode } from '@notention/core';
+import { Note, patternRecognitionService, PropertyExtractor, OntologyNode, Suggestion } from '@notention/core';
 import { useSettings } from './useSettingsContext';
 import { getTextFromHtml } from '../utils/html';
-
-export interface Suggestion {
-    id: string;
-    text: string;
-    type: 'property' | 'link' | 'action';
-    confidence?: number;
-}
 
 const generateOntologySuggestions = (content: string, ontology: OntologyNode[], seenTexts: Set<string>): Suggestion[] => {
     const contentLower = content.toLowerCase();

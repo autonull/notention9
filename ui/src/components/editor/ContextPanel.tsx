@@ -14,9 +14,15 @@ interface ContextPanelProps {
     onPickTime?: (key: string) => void;
 }
 
+interface ContextData {
+    location: { lat: number; lng: number } | null;
+    date: Date | null;
+    dateLabel: string;
+}
+
 export function ContextPanel({note, onPickLocation, onPickTime}: ContextPanelProps) {
-    const context = useMemo(() => {
-        let location: { lat: number, lng: number } | null = null;
+    const context = useMemo<ContextData>(() => {
+        let location: { lat: number; lng: number } | null = null;
         let date: Date | null = null;
         let dateLabel = '';
 

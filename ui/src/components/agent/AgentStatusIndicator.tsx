@@ -7,7 +7,7 @@ export function AgentStatusIndicator() {
 
     useEffect(() => {
         // Attempt initial connection if enabled
-        if (agentService.isEnabled() && !agentService.isConnected()) {
+        if (agentService.isEnabled() && !agentService.isConnected) {
             agentService.connect();
         }
 

@@ -19,7 +19,7 @@ interface PropertyFormProps {
     isAdding: boolean;
     onSave: (key: string, op: string, value: string) => void;
     onCancel: () => void;
-    onPickLocation?: () => void;
+    onPickLocation?: () => Promise<string> | void;
     onPickTime?: (key: string) => void;
     ontology: OntologyNode[];
 }
@@ -51,12 +51,14 @@ export function PropertyForm({
 
     const getAttributeDetails = (k: string, nodes: OntologyNode[]): {
         type: string,
-        description?: string
+        description?: string,
+        operators: {real: string[]; imaginary: string[]}
     } | undefined => {
         if (!nodes) return undefined;
         for (const node of nodes) {
             if (node.attributes && node.attributes[k]) {
-                return {type: node.attributes[k].type, description: node.attributes[k].description};
+                const attr = node.attributes[k];
+                return {type: attr.type, description: attr.description, operators: attr.operators};
             }
             if (node.children) {
                 const found = getAttributeDetails(k, node.children);
@@ -242,10 +244,14 @@ export function PropertyForm({
                 value={value}
                 onChange={setValue}
                 attributeDef={currentAttr}
-                onPickLocation={onPickLocation ? async () => {
+                onPickLocation={onPickLocation ? async (): Promise<string> => {
                     if (isAdding && !key) setKey('location');
-                    onPickLocation();
-                    return undefined; // onPickLocation in inspector might be void or return promise, we wrap it safely
+                    const result = onPickLocation();
+                    if (result instanceof Promise) {
+                        const loc = await result;
+                        return loc ?? '';
+                    }
+                    return '';
                 } : undefined}
             />
             <div className="flex justify-end gap-2 pt-1">

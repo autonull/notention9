@@ -57,11 +57,11 @@ export function Header({onNewNote}: HeaderProps) {
     };
 
     const generatedTemplates = useMemo(() => {
-        return generateTemplatesFromOntology(settings.ontology);
+        return generateTemplatesFromOntology(settings.ontology ?? []);
     }, [settings.ontology]);
 
     // Combine generated templates with custom ones
-    const allTemplates = [...generatedTemplates, ...settings.customTemplates];
+    const allTemplates = [...generatedTemplates, ...(settings.customTemplates ?? [])];
 
     return (
         <header

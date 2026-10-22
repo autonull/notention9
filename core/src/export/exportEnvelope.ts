@@ -38,7 +38,7 @@ export const singleNoteSchema = noteSchema;
 const withoutPrivateKey = (settings: AppSettings): AppSettings => {
     const nostr = settings.nostr
         ? {...settings.nostr, privkey: null}
-        : undefined;
+        : {privkey: null, relays: []};
     return {...settings, nostr};
 };
 
