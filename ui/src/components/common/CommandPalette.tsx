@@ -1,9 +1,11 @@
-import React, {useEffect, useState, useMemo} from 'react';
+import React, {useCallback, useMemo, useState, useRef} from 'react';
 import {Note, getTextFromHtml} from '@notention/core';
-import {PlusIcon, ClockIcon, NoteIcon, SearchIcon, SettingsIcon, HomeIcon, MapIcon, NetworkIcon, ChatIcon, LightBulbIcon, OntologyIcon, TrashIcon, CpuChipIcon} from '../common/icons';
-import {CommandPalette as CommandPalettePrimitive, CommandPaletteItem} from '../ui';
+import {PlusIcon, ClockIcon, NoteIcon, SearchIcon, SettingsIcon, HomeIcon, MapIcon, NetworkIcon, ChatIcon, LightBulbIcon, OntologyIcon, TrashIcon, CpuChipIcon, ZapIcon, KeyIcon} from '../common/icons';
+import {EnhancedCommandPalette, CommandPaletteItem} from '../ui/EnhancedCommandPalette';
 import {SHARED_COMMANDS} from '@notention/core';
 import {cn} from '../../utils/ui';
+import {useLocalForage} from '../../hooks/useLocalForage';
+import {STORAGE_KEYS} from '../../config/storageKeys';
 
 interface CommandPaletteProps {
     isOpen: boolean;
@@ -19,29 +21,33 @@ interface CommandPaletteProps {
     }[];
 }
 
+const RECENT_STORAGE_KEY = 'command-palette-recent';
+const MAX_RECENT = 10;
+
 export function CommandPalette({
-                                    isOpen,
-                                    onClose,
-                                    notes,
-                                    onSelectNote,
-                                    onCreateNote,
-                                    commands,
-                                }: CommandPaletteProps) {
-    const [query, setQuery] = useState('');
+    isOpen,
+    onClose,
+    notes,
+    onSelectNote,
+    onCreateNote,
+    commands,
+}: CommandPaletteProps) {
+    const [recentItems, setRecentItems] = useLocalForage<CommandPaletteItem[]>(RECENT_STORAGE_KEY, []);
+    const [lastQuery, setLastQuery] = useState('');
 
     const paletteItems = useMemo((): CommandPaletteItem[] => {
         const items: CommandPaletteItem[] = [];
 
-        if (query && onCreateNote) {
+        if (lastQuery && onCreateNote) {
             items.push({
                 id: 'create-note',
-                label: `Create new note: "${query}"`,
+                label: `Create new note: "${lastQuery}"`,
                 description: 'Create a new note with this title',
                 icon: <PlusIcon className="h-5 w-5"/>,
-                action: () => onCreateNote(query),
+                action: () => onCreateNote(lastQuery),
                 category: 'Actions',
                 shortcut: 'Enter',
-                keywords: ['new', 'create', 'note', 'add', query.toLowerCase()],
+                keywords: ['new', 'create', 'note', 'add', lastQuery.toLowerCase()],
             });
         }
 
@@ -58,7 +64,6 @@ export function CommandPalette({
             });
         });
 
-        // Always include all notes with enhanced keywords for tag/property search
         notes.forEach((note) => {
             const tagKeywords = note.tags.map(tag => `#${tag.toLowerCase()}`);
             const propertyKeywords = note.properties.flatMap(p =>
@@ -80,53 +85,35 @@ export function CommandPalette({
         });
 
         return items;
-    }, [notes, commands, onCreateNote, onSelectNote]);
+    }, [notes, commands, onCreateNote, onSelectNote, lastQuery]);
 
-    const [selectedIndex, setSelectedIndex] = useState(0);
+    const handleItemAction = useCallback((item: CommandPaletteItem) => {
+        if (item.id.startsWith('recent-') || item.id === 'create-note') return;
 
-    useEffect(() => {
-        if (isOpen) {
-            setQuery('');
-            setSelectedIndex(0);
-        }
-    }, [isOpen]);
+        setRecentItems(prev => {
+            const filtered = prev.filter(r => r.id !== item.id);
+            return [item, ...filtered].slice(0, MAX_RECENT);
+        });
+    }, [setRecentItems]);
 
-    useEffect(() => {
-        setSelectedIndex(0);
-    }, [query]);
-
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-        switch (e.key) {
-            case 'ArrowDown':
-                e.preventDefault();
-                setSelectedIndex(i => Math.min(i + 1, paletteItems.length - 1));
-                break;
-            case 'ArrowUp':
-                e.preventDefault();
-                setSelectedIndex(i => Math.max(i - 1, 0));
-                break;
-            case 'Enter':
-                e.preventDefault();
-                if (paletteItems[selectedIndex]) {
-                    paletteItems[selectedIndex].action();
-                    onClose();
-                }
-                break;
-            case 'Escape':
-                onClose();
-                break;
-        }
-    };
-
-    if (!isOpen) return null;
+    const handleClose = useCallback(() => {
+        onClose();
+        setLastQuery('');
+    }, [onClose]);
 
     return (
-        <CommandPalettePrimitive
+        <EnhancedCommandPalette
             isOpen={isOpen}
-            onClose={onClose}
+            onClose={handleClose}
             items={paletteItems}
-            placeholder="Type a command or search notes..."
+            placeholder="Type a command or search notes... (#tag, key:value)"
             title="Command Palette"
+            showShortcuts={true}
+            showRecent={true}
+            recentItems={recentItems}
+            maxRecent={5}
+            onRecentChange={setRecentItems}
+            fuzzySearch={true}
         />
     );
 }

@@ -1,4 +1,4 @@
-import React, {useRef, useEffect, useCallback} from 'react';
+import React, {useRef, useEffect, useCallback, useMemo, useState} from 'react';
 import type {Note} from '@notention/core';
 import {ConfirmationModal} from '../common/ConfirmationModal';
 import {NoteListItem} from './NoteListItem';
@@ -13,12 +13,16 @@ import {PlusIcon, ChevronLeftIcon, GridIcon, ListIcon, TagIcon} from '../common/
 import {useSidebarLogic} from './useSidebarLogic';
 import {IconButton} from '../common/IconButton';
 import {cn} from '../../utils/ui';
+import {VirtualizedList} from '../ui/VirtualizedList';
+import {useTouchGestures} from '../../hooks/useTouchGestures';
 
 interface SidebarProps {
     sortedNotes?: Note[];
     onToggleSidebar?: () => void;
     isSidebarOpen?: boolean;
 }
+
+const ITEM_HEIGHT = 84;
 
 export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true}: SidebarProps) {
     const {
@@ -44,6 +48,16 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
 
     const listRef = useRef<HTMLDivElement>(null);
     const searchInputRef = useRef<HTMLInputElement>(null);
+    const virtualListRef = useRef<{scrollToIndex: (index: number, align?: 'start' | 'center' | 'end') => void}>(null);
+    const [focusedIndex, setFocusedIndex] = useState(-1);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     useEffect(() => {
         if (sortOrder === 'nearest' && !userLocation) {
@@ -66,16 +80,42 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
         searchInputRef.current?.focus();
     }, []);
 
-    const focusFirstNote = useCallback(() => {
-        const firstItem = listRef.current?.querySelector('[data-note-item]') as HTMLElement;
-        firstItem?.focus();
-    }, []);
-
     const viewModeIcons = {
         list: ListIcon,
         grid: GridIcon,
         tags: TagIcon,
     };
+
+    const getItemKey = useCallback((note: Note, index: number) => note.id, []);
+    const renderItem = useCallback((note: Note, index: number, isSelected: boolean) => (
+        <NoteListItem
+            key={note.id}
+            note={note}
+            isSelected={isSelected}
+            onSelect={() => setSelectedNoteId(note.id)}
+            onDelete={() => handleDeleteRequest(note.id)}
+            onPin={!isTrashView ? () => handleTogglePin(note) : undefined}
+            isTrash={isTrashView}
+            onRestore={() => handleRestore(note.id)}
+        />
+    ), [selectedNoteId, setSelectedNoteId, handleDeleteRequest, handleTogglePin, isTrashView, handleRestore]);
+
+    const {ref: touchRef, isPulling, pullDistance, pullProgress} = useTouchGestures({
+        onPullToRefresh: async () => {
+            refreshUserLocation();
+        },
+        onSwipeLeft: () => {
+            if (isMobile && isSidebarOpen && onToggleSidebar) {
+                onToggleSidebar();
+            }
+        },
+        disabled: !isMobile,
+    });
+
+    const containerHeight = useMemo(() => {
+        if (isMobile) return window.innerHeight - 200;
+        return window.innerHeight - 180;
+    }, [isMobile]);
 
     return (
         <div className={cn('bg-gray-900 flex flex-col h-full transition-all duration-300 ease-in-out')}>
@@ -89,7 +129,7 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
                             ref={searchInputRef}
                             searchTerm={searchTerm}
                             setSearchTerm={setSearchTerm}
-                            onFocus={focusFirstNote}
+                            onFocus={focusSearch}
                             placeholder={isSidebarOpen ? 'Search notes...' : ''}
                             aria-label="Search notes"
                         />
@@ -139,28 +179,27 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
             </div>
 
             <div
-                ref={listRef}
-                className="flex-grow px-2 py-3 overflow-y-auto custom-scrollbar space-y-1"
+                ref={touchRef}
+                className="flex-grow px-2 py-3 overflow-hidden custom-scrollbar"
                 role="list"
                 aria-label={isTrashView ? 'Trash notes' : 'Notes'}
                 onKeyDown={handleKeyDown}
             >
                 {sortedNotes.length > 0 ? (
                     sidebarViewMode === 'list' ? (
-                        sortedNotes.map((note) => (
-                            <NoteListItem
-                                key={note.id}
-                                note={note}
-                                isSelected={selectedNoteId === note.id}
-                                onSelect={() => setSelectedNoteId(note.id)}
-                                onDelete={() => handleDeleteRequest(note.id)}
-                                onPin={!isTrashView ? () => handleTogglePin(note) : undefined}
-                                isTrash={isTrashView}
-                                onRestore={() => handleRestore(note.id)}
-                            />
-                        ))
+                        <VirtualizedList<Note>
+                            ref={virtualListRef}
+                            items={sortedNotes}
+                            itemHeight={ITEM_HEIGHT}
+                            containerHeight={containerHeight}
+                            getItemKey={getItemKey}
+                            renderItem={renderItem}
+                            selectedKey={selectedNoteId}
+                            overscan={8}
+                            className="h-full"
+                        />
                     ) : sidebarViewMode === 'grid' ? (
-                        <div className="grid grid-cols-2 gap-2" role="list">
+                        <div className="grid grid-cols-2 gap-2 h-full overflow-y-auto custom-scrollbar" role="list">
                             {sortedNotes.map((note) => (
                                 <NoteGridItem
                                     key={note.id}
@@ -181,6 +220,15 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
                     />
                 )}
             </div>
+
+            {isMobile && isPulling && (
+                <div className="flex items-center justify-center px-4 py-2 text-sm text-gray-500">
+                    <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"/>
+                        <span>Pull to refresh...</span>
+                    </div>
+                </div>
+            )}
 
             <ConfirmationModal
                 isOpen={isDeleteModalOpen}
