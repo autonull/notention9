@@ -4,6 +4,8 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { MovieMaker, MovieOptions } from './movie_maker.js';
 import { SCENARIOS, generateScenario } from './scenarios/index.js';
+import { startDashboard } from './dashboard/server.js';
+import { MOVIE_SERVER_CONFIG } from './constants.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -67,7 +69,7 @@ export class MovieServer {
             const logs: string[] = [];
             const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
             const outputDir = path.resolve(process.cwd(), 'movies', `${scenario.name}-${timestamp}`);
-            const dashboardPort = 4000 + Math.floor(Math.random() * 1000);
+            const dashboardPort = MOVIE_SERVER_CONFIG.dashboardPortBase + Math.floor(Math.random() * MOVIE_SERVER_CONFIG.dashboardPortRange);
 
             const options: MovieOptions = {
                 framerate: 24,

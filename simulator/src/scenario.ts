@@ -1,39 +1,22 @@
 import { Agent, AgentProfile } from './agent.js';
-import { Property, OntologyNode } from '@notention/core';
+import type { Property, OntologyNode } from '@notention/core';
 import chalk from 'chalk';
+import { SIMULATION_CONFIG, AGENT_COLORS } from './constants.js';
+import type { Scenario, AgentConfig, EventConfig, InputMethod } from './types.js';
 
-export type { Property };
+export type { Property, Scenario, AgentConfig, EventConfig, InputMethod };
 
-export interface AgentConfig {
-    readonly role: string;
-    readonly count: number;
-    readonly properties: Property[];
-    readonly interests: Property[];
-    readonly traits: string[];
-}
+type ActionHandler = (agent: Agent, inputMethod: string, targetId?: string) => Promise<void>;
 
-export type InputMethod = 'raw' | 'autocomplete' | 'form';
-
-export interface EventConfig {
-    readonly at: number;
-    readonly action: string;
-    readonly actorRole: string;
-    readonly inputMethod?: InputMethod;
-    readonly targetAgentId?: string;
-    readonly cameraFocus?: string;
-}
-
-export interface Scenario {
-    readonly name: string;
-    readonly description: string;
-    readonly agents: AgentConfig[];
-    readonly events: EventConfig[];
-    readonly duration: number;
-}
+const ACTION_HANDLERS: Record<string, ActionHandler> = {
+    publish_job: (agent, inputMethod) => agent.publishJob(inputMethod),
+    publish_offer: (agent, inputMethod) => agent.publishOffer(inputMethod),
+    send_message: (agent, _inputMethod, targetId) => targetId ? agent.sendMessage(targetId, 'Hello!') : Promise.resolve(),
+};
 
 export class ScenarioRunner {
     public readonly agents: Agent[] = [];
-    #colors = [chalk.red, chalk.green, chalk.yellow, chalk.blue, chalk.magenta, chalk.cyan];
+    #colors = AGENT_COLORS.map(c => chalk[c] as chalk.Chalk);
     #onEvent?: (event: EventConfig) => void;
 
     constructor(
@@ -69,7 +52,7 @@ export class ScenarioRunner {
                     role: config.role,
                     properties: config.properties,
                     interests: config.interests,
-                    traits: config.traits
+                    traits: config.traits,
                 };
 
                 const agent = new Agent(
@@ -80,7 +63,7 @@ export class ScenarioRunner {
                 );
 
                 this.agents.push(agent);
-                await new Promise(resolve => setTimeout(resolve, 100));
+                await new Promise(resolve => setTimeout(resolve, SIMULATION_CONFIG.agentSpawnDelay));
             }
         }
         console.log(chalk.white(`Spawned ${this.agents.length} agents.\n`));
@@ -109,15 +92,11 @@ export class ScenarioRunner {
 
     async #executeAction(role: string, action: string, inputMethod: string = 'raw', targetId?: string) {
         const actors = this.agents.filter(a => a.profile.role === role);
+        const handler = ACTION_HANDLERS[action];
 
-        const tasks = actors.map(actor => {
-            switch (action) {
-                case 'publish_job': return actor.publishJob(inputMethod);
-                case 'publish_offer': return actor.publishOffer(inputMethod);
-                case 'send_message': return targetId ? actor.sendMessage(targetId, 'Hello!') : Promise.resolve();
-                default: return Promise.resolve();
-            }
-        });
+        if (!handler) return;
+
+        const tasks = actors.map(actor => handler(actor, inputMethod, targetId));
         await Promise.all(tasks);
     }
 }

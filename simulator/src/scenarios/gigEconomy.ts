@@ -1,4 +1,4 @@
-import { Scenario, AgentConfig, Property } from '../scenario.js';
+import { Scenario, AgentConfig, Property } from '../types.js';
 
 const prop = (key: string, operator: string, ...values: string[]): Property => ({ key, operator, values });
 

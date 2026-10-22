@@ -12,7 +12,7 @@ export interface DashboardAgent {
     role: string;
 }
 
-export function startDashboard(port: number, uiPort: number, agents: DashboardAgent[]) {
+export function startDashboard(port: number, uiPort: number, agents: DashboardAgent[], relayUrl: string = 'ws://localhost:4444') {
     const app = express();
     const server = http.createServer(app);
 
@@ -24,7 +24,7 @@ export function startDashboard(port: number, uiPort: number, agents: DashboardAg
         <script>
             window.AGENTS = ${JSON.stringify(agents)};
             window.UI_PORT = ${uiPort};
-            window.RELAY_URL = 'ws://localhost:4444'; // Hardcoded for now
+            window.RELAY_URL = '${relayUrl}';
         </script>
     `;
 

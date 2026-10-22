@@ -1,4 +1,4 @@
-import { Scenario } from '../scenario.js';
+import { Scenario } from '../types.js';
 import { GigEconomyScenario } from './gigEconomy.js';
 
 export const SCENARIOS: Record<string, Scenario> = {

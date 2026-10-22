@@ -11,6 +11,7 @@ import {
     formatPropertyTag
 } from '@notention/core';
 import { finalizeEvent, generateSecretKey, getPublicKey } from 'nostr-tools';
+import { SIMULATION_CONFIG, AGENT_COLORS } from './constants.js';
 
 export interface AgentProfile {
     name: string;
@@ -19,6 +20,27 @@ export interface AgentProfile {
     interests: Property[];
     traits: string[];
 }
+
+type PublishType = 'job' | 'offer' | 'chat';
+
+interface PublishConfig {
+    contentPrefix: string;
+    properties: Property[];
+    inputMethod: string;
+}
+
+const PUBLISH_CONFIGS: Record<Exclude<PublishType, 'chat'>, (profile: AgentProfile) => PublishConfig> = {
+    job: (profile) => ({
+        contentPrefix: `Job: ${profile.role} needed. `,
+        properties: profile.interests,
+        inputMethod: 'raw',
+    }),
+    offer: (profile) => ({
+        contentPrefix: `Offer: I am a ${profile.role}. `,
+        properties: profile.properties,
+        inputMethod: 'raw',
+    }),
+};
 
 export class Agent {
     public readonly id: string;
@@ -72,8 +94,8 @@ export class Agent {
         if (this.#relay.readyState !== WebSocket.OPEN) return;
 
         const filter = {
-            kinds: [1, 35000],
-            limit: 50
+            kinds: SIMULATION_CONFIG.kinds,
+            limit: SIMULATION_CONFIG.subscriptionLimit,
         };
         this.#relay.send(JSON.stringify(['REQ', `sub-${this.id}`, filter]));
     }
@@ -93,12 +115,12 @@ export class Agent {
         const myInterestsNote: Note = {
             ...note,
             id: `interest-${this.id}`,
-            properties: this.profile.interests
+            properties: this.profile.interests,
         };
 
         const { score, matches } = this.#engine.calculateMatchScore(myInterestsNote, note);
 
-        if (score > 0.5) {
+        if (score > SIMULATION_CONFIG.eventMatchThreshold) {
             this.#log(`Matched event from ${event.pubkey.slice(0, 8)} (Score: ${score.toFixed(2)})`);
             matches.forEach(m => {
                 this.#log(`  - Matched: ${m.requestProp.key} ${m.requestProp.operator} ${m.offerProp.values.join(', ')}`);
@@ -109,20 +131,22 @@ export class Agent {
     }
 
     public async publishJob(inputMethod: string = 'raw') {
-        const content = `Job: ${this.profile.role} needed. ` +
-            this.profile.interests.map(formatPropertyTag).join(' ');
-        await this.#publish(content, this.profile.interests, inputMethod);
+        await this.#publishWithConfig('job', inputMethod);
     }
 
     public async publishOffer(inputMethod: string = 'raw') {
-        const content = `Offer: I am a ${this.profile.role}. ` +
-            this.profile.properties.map(formatPropertyTag).join(' ');
-        await this.#publish(content, this.profile.properties, inputMethod);
+        await this.#publishWithConfig('offer', inputMethod);
     }
 
     public async sendMessage(targetId: string, message: string) {
         const content = `[@${targetId}] ${message}`;
         await this.#publish(content, [], 'chat');
+    }
+
+    async #publishWithConfig(type: Exclude<PublishType, 'chat'>, inputMethod: string) {
+        const config = PUBLISH_CONFIGS[type](this.profile);
+        const content = config.contentPrefix + config.properties.map(formatPropertyTag).join(' ');
+        await this.#publish(content, config.properties, inputMethod);
     }
 
     async #createEvent(
@@ -149,7 +173,7 @@ export class Agent {
             details: details.map(d => ({
                 request: `${d.requestProp.key} ${d.requestProp.operator}`,
                 offer: d.offerProp.values.join(', '),
-                score: d.score
+                score: d.score,
             }))
         };
 

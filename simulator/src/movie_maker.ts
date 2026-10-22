@@ -10,6 +10,7 @@ import { DEFAULT_ONTOLOGY } from '@notention/core';
 import ffmpeg from 'fluent-ffmpeg';
 import ffmpegPath from 'ffmpeg-static';
 import { UIServer } from './ui_server.js';
+import { SIMULATION_CONFIG, FILE_PATTERNS } from './constants.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -76,7 +77,7 @@ export class MovieMaker {
                 name: a.profile.name,
                 role: a.profile.role
             }));
-            this.dashboardServer = startDashboard(this.options.dashboardPort, this.options.uiPort, agents);
+            this.dashboardServer = startDashboard(this.options.dashboardPort, this.options.uiPort, agents, this.relayUrl);
             this.log(`Dashboard server started on port ${this.options.dashboardPort}`);
 
             if (this.cancelled) return;
@@ -173,7 +174,7 @@ export class MovieMaker {
         const recordingPromise = (async () => {
             while (this.recording && !this.cancelled) {
                 const start = Date.now();
-                const framePath = path.join(framesDir, `frame_${String(frameCount).padStart(5, '0')}.png`);
+                const framePath = path.join(framesDir, FILE_PATTERNS.frameFile(frameCount));
                 try {
                     await page.screenshot({ path: framePath, fullPage: true });
                     frameCount++;
@@ -198,7 +199,7 @@ export class MovieMaker {
         };
 
         if (this.runner) await this.runner.execute(scenario);
-        await new Promise(r => setTimeout(r, 2000));
+        await new Promise(r => setTimeout(r, SIMULATION_CONFIG.postSimulationDelay));
 
         this.recording = false;
         await recordingPromise;
@@ -213,7 +214,7 @@ export class MovieMaker {
 
         return new Promise<void>((resolve, reject) => {
             ffmpeg()
-                .input(path.join(framesDir, 'frame_%05d.png'))
+                .input(path.join(framesDir, FILE_PATTERNS.frame))
                 .inputFPS(this.options.framerate)
                 .output(outputPath)
                 .videoCodec('libx264')

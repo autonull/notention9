@@ -1,7 +1,11 @@
 import { spawn, ChildProcess } from 'child_process';
 import path from 'path';
 import fs from 'fs';
+import { fileURLToPath } from 'url';
 import chalk from 'chalk';
+import { UI_SERVER_CONFIG } from './constants.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export interface UIServerOptions {
     port: number;
@@ -25,7 +29,7 @@ export class UIServer {
     }
 
     async start(): Promise<void> {
-        if (!fs.existsSync(path.join(this.uiPath, 'node_modules')) && 
+        if (!fs.existsSync(path.join(this.uiPath, 'node_modules')) &&
             !fs.existsSync(path.join(this.uiPath, '../../node_modules'))) {
             console.warn(chalk.yellow("Warning: node_modules not found in UI or root. UI server may fail."));
         }
@@ -47,7 +51,7 @@ export class UIServer {
                         return;
                     }
                 } catch {}
-                setTimeout(checkServer, 1000);
+                setTimeout(checkServer, UI_SERVER_CONFIG.checkInterval);
             };
             checkServer();
 

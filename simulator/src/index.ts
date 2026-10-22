@@ -1,14 +1,16 @@
 import { ServerManager } from './server_manager.js';
-import { ScenarioRunner, Scenario } from './scenario.js';
+import { ScenarioRunner } from './scenario.js';
 import { SCENARIOS, generateScenario } from './scenarios/index.js';
-import { MovieMaker, MovieOptions } from './movie_maker.js';
+import { MovieMaker, type MovieOptions } from './movie_maker.js';
 import { MovieServer } from './movie_server.js';
 import { DEFAULT_ONTOLOGY } from '@notention/core';
+import type { Scenario } from './types.js';
 import chalk from 'chalk';
 import ora from 'ora';
 import path from 'path';
 import fs from 'fs';
 import { pathToFileURL } from 'url';
+import { DEFAULT_PORTS, DEFAULT_MOVIE_OPTIONS, SCENARIO_DEFAULTS } from './constants.js';
 
 function parseArg(args: string[], prefix: string): string | undefined {
     const arg = args.find(a => a.startsWith(prefix));
@@ -29,17 +31,17 @@ async function main() {
 Usage: node dist/index.js [options]
 
 Options:
-  --port=<number>       Port for the local relay (default: 4444)
+  --port=<number>       Port for the local relay (default: ${DEFAULT_PORTS.relay})
   --scenario=<name>     Name of the scenario to run (default: gig-economy)
   --generate=<count>    Generate a random scenario with <count> agents
-  --duration=<seconds>  Duration for generated scenario (default: 30)
+  --duration=<seconds>  Duration for generated scenario (default: ${SCENARIO_DEFAULTS.generatedDuration})
   --script=<path>       Path to a JS/TS script exporting a Scenario object
   --list-scenarios      List available scenarios
   --movie               Run in Movie Maker mode (visual simulation)
-  --fps=<number>        Framerate for movie (default: 2)
-  --width=<number>      Video width (default: 1920)
-  --height=<number>     Video height (default: 1080)
-  --ui-port=<number>    Requested Port for UI server (default: 5173, auto-finds free port)
+  --fps=<number>        Framerate for movie (default: ${DEFAULT_MOVIE_OPTIONS.framerate})
+  --width=<number>      Video width (default: ${DEFAULT_MOVIE_OPTIONS.resolution.width})
+  --height=<number>     Video height (default: ${DEFAULT_MOVIE_OPTIONS.resolution.height})
+  --ui-port=<number>    Requested Port for UI server (default: ${DEFAULT_PORTS.ui}, auto-finds free port)
   --ui-server           Start the Movie UI Server (Web Interface)
   --help                Show this help message
 `);
@@ -56,7 +58,7 @@ Options:
 
     if (parseArg(args, '--generate=')) {
         const count = parseIntArg(args, '--generate=', 0);
-        const duration = parseIntArg(args, '--duration=', 30);
+        const duration = parseIntArg(args, '--duration=', SCENARIO_DEFAULTS.generatedDuration);
         scenario = generateScenario(count, duration);
         console.log(chalk.magenta(`Generated scenario with ${count} agents over ${duration}s`));
     } else if (parseArg(args, '--script=')) {
@@ -93,7 +95,7 @@ Options:
     }
 
     const serverManager = new ServerManager();
-    const requestedUiPort = parseIntArg(args, '--ui-port=', 5173);
+    const requestedUiPort = parseIntArg(args, '--ui-port=', DEFAULT_PORTS.ui);
 
     let ports;
     try {
@@ -107,7 +109,7 @@ Options:
     spinner.succeed(`Ontology Loaded (${DEFAULT_ONTOLOGY.length} root nodes)`);
 
     if (args.includes('--ui-server')) {
-        const movieServerPort = 3000;
+        const movieServerPort = DEFAULT_PORTS.movieUI;
         new MovieServer(serverManager.relayUrl, ports.ui).start(movieServerPort);
         console.log(chalk.green(`\n🎬 Movie UI available at http://localhost:${movieServerPort}`));
         await new Promise(() => {});
@@ -119,15 +121,15 @@ Options:
 
         if (args.includes('--movie')) {
             const options: MovieOptions = {
-                framerate: parseIntArg(args, '--fps=', 2),
+                framerate: parseIntArg(args, '--fps=', DEFAULT_MOVIE_OPTIONS.framerate),
                 resolution: {
-                    width: parseIntArg(args, '--width=', 1920),
-                    height: parseIntArg(args, '--height=', 1080)
+                    width: parseIntArg(args, '--width=', DEFAULT_MOVIE_OPTIONS.resolution.width),
+                    height: parseIntArg(args, '--height=', DEFAULT_MOVIE_OPTIONS.resolution.height)
                 },
                 uiPort: ports.ui,
                 dashboardPort: ports.dashboard,
                 outputDir: path.resolve(process.cwd(), 'movies'),
-                view: (parseArg(args, '--view=') ?? 'dashboard') as 'dashboard' | 'ontology'
+                view: (parseArg(args, '--view=') ?? DEFAULT_MOVIE_OPTIONS.view) as 'dashboard' | 'ontology'
             };
 
             const movieMaker = new MovieMaker(serverManager.relayUrl, options);

@@ -9,6 +9,7 @@ import chalk from 'chalk';
 import { NostrRelay } from '@notention/core';
 import { startDashboard, DashboardAgent } from './dashboard/server.js';
 import { UIServer } from './ui_server.js';
+import { DEFAULT_PORTS } from './constants.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -27,10 +28,10 @@ export class ServerManager {
 
     constructor() {}
 
-    async start(agents: DashboardAgent[], requestedUiPort: number = 5173): Promise<ServerPorts> {
+    async start(agents: DashboardAgent[], requestedUiPort: number = DEFAULT_PORTS.ui): Promise<ServerPorts> {
         // 1. Find Ports
-        this.ports.relay = await this.findFreePort(4444);
-        this.ports.dashboard = await this.findFreePort(8000);
+        this.ports.relay = await this.findFreePort(DEFAULT_PORTS.relay);
+        this.ports.dashboard = await this.findFreePort(DEFAULT_PORTS.dashboard);
         this.ports.ui = await this.findFreePort(requestedUiPort);
 
         console.log(chalk.gray(`Selected Ports - Relay: ${this.ports.relay}, Dashboard: ${this.ports.dashboard}, UI: ${this.ports.ui}`));
@@ -39,7 +40,7 @@ export class ServerManager {
         this.relayServer = new NostrRelay({ port: this.ports.relay });
 
         // 3. Start Dashboard
-        this.dashboardServer = startDashboard(this.ports.dashboard, this.ports.ui, agents);
+        this.dashboardServer = startDashboard(this.ports.dashboard, this.ports.ui, agents, this.relayUrl);
 
         // 4. Start UI Server
         this.uiServer = new UIServer({ port: this.ports.ui });

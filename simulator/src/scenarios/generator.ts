@@ -1,22 +1,16 @@
-import { Scenario, AgentConfig, EventConfig, InputMethod, Property } from '../scenario.js';
+import { Scenario, AgentConfig, EventConfig, InputMethod, Property } from '../types.js';
+import { SCENARIO_DEFAULTS, ROLES, SKILLS, LOCATIONS, INPUT_METHODS } from '../constants.js';
 
 const prop = (key: string, operator: string, ...values: string[]): Property => ({ key, operator, values });
 const randomElement = <T>(arr: readonly T[]): T => arr[Math.floor(Math.random() * arr.length)];
 const randomElements = <T>(arr: readonly T[], count: number): T[] => [...arr].sort(() => 0.5 - Math.random()).slice(0, count);
 
-const ROLES = ['Developer', 'Designer', 'Client', 'Manager', 'Analyst'] as const;
 type Role = typeof ROLES[number];
-
-const SKILLS = ['react', 'typescript', 'python', 'design', 'management', 'sql', 'figma'] as const;
 type Skill = typeof SKILLS[number];
-
-const LOCATIONS = ['Remote', 'New York', 'London', 'Berlin', 'San Francisco'] as const;
 type Location = typeof LOCATIONS[number];
-
-const INPUT_METHODS = ['raw', 'autocomplete', 'form'] as const;
 type InputMethodType = typeof INPUT_METHODS[number];
 
-export function generateScenario(agentCount: number, duration: number): Scenario {
+export function generateScenario(agentCount: number = SCENARIO_DEFAULTS.generatedAgentCount, duration: number = SCENARIO_DEFAULTS.generatedDuration): Scenario {
     const configs: AgentConfig[] = [];
     const events: EventConfig[] = [];
 
@@ -45,7 +39,7 @@ export function generateScenario(agentCount: number, duration: number): Scenario
         });
     }
 
-    const eventCount = Math.floor(duration / 2);
+    const eventCount = Math.floor(duration / SCENARIO_DEFAULTS.eventInterval);
     for (let i = 0; i < eventCount; i++) {
         const time = Math.floor(Math.random() * (duration - 4)) + 2;
 
