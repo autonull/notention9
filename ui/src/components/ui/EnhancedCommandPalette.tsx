@@ -120,7 +120,7 @@ export function EnhancedCommandPalette({
         if (!query) {
             const result: CommandPaletteItem[] = [];
             if (showRecent && recentItems.length > 0) {
-                result.push(...recentItems.slice(0, maxRecent).map((item, i) => ({
+                result.push(...recentItems.slice(0, maxRecent).map((item, _i) => ({
                     ...item,
                     id: `recent-${item.id}`,
                     category: 'Recent',
@@ -154,9 +154,11 @@ export function EnhancedCommandPalette({
 
                 return includes ? {...item, _fuzzyMatch: null, _matchText: searchText} : null;
             })
-            .filter((item): item is CommandPaletteItem & {_fuzzyMatch?: FuzzyMatch; _matchText?: string} => item !== null);
+            .filter((item): item is NonNullable<typeof item> => item !== null);
 
-        scored.sort((a, b) => {
+        const scoredWithMatches = scored as (CommandPaletteItem & {_fuzzyMatch?: FuzzyMatch; _matchText?: string})[];
+
+        scoredWithMatches.sort((a, b) => {
             if (a._fuzzyMatch && b._fuzzyMatch) {
                 return b._fuzzyMatch.score - a._fuzzyMatch.score;
             }
@@ -165,7 +167,7 @@ export function EnhancedCommandPalette({
             return 0;
         });
 
-        return scored;
+        return scoredWithMatches;
     }, [items, query, fuzzySearch, showRecent, recentItems, maxRecent]);
 
     useEffect(() => {
@@ -281,7 +283,7 @@ export function EnhancedCommandPalette({
                     aria-label="Commands and notes"
                 >
                     {filteredItems.length === 0 && query && (
-                        <div className="p-8 text-center text-gray-500">No results found for "{query}"</div>
+                        <div className="p-8 text-center text-gray-500">No results found for &#34;{query}&#34;</div>
                     )}
 
                     {filteredItems.length === 0 && !query && !showHelp && (
@@ -368,7 +370,7 @@ export function EnhancedCommandPalette({
                         </div>
                     )}
 
-                    {filteredItems.filter(item => !item.id.startsWith('recent-')).map((item, index) => {
+                    {filteredItems.filter((item): item is CommandPaletteItem & {_fuzzyMatch?: FuzzyMatch; _matchText?: string} => !item.id.startsWith('recent-')).map((item, index) => {
                         const displayIndex = recentItems.length > 0 && showRecent && !query ? index + recentItems.length : index;
                         const showCategory = item.category && (index === 0 || filteredItems[index - 1].category !== item.category);
                         const match = item._fuzzyMatch;

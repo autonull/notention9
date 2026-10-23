@@ -23,6 +23,7 @@ import {
     PencilIcon,
     SearchIcon,
     HelpIcon,
+    NoteIcon,
 } from '../common/icons';
 import {IconButton} from '../ui/Primitives';
 import {cn} from '../../utils/ui';
@@ -53,7 +54,7 @@ interface MobileBottomNavProps {
 }
 
 export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps) {
-    const {activeView, setActiveView, isPaletteOpen, setIsPaletteOpen} = useView();
+    const {activeView, setActiveView, isPaletteOpen, setIsPaletteOpen, setSelectedNoteId} = useView();
     const {addNote} = useNotes();
     const {addToast} = useToast();
     const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
@@ -124,14 +125,12 @@ export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps
         setIsActionMenuOpen(false);
     }, [addNote, setActiveView, setSelectedNoteId, setIsActionMenuOpen]);
 
-    const {setSelectedNoteId} = useView();
-
     const actionItems = useMemo(() => [
         {label: 'Quick Capture', icon: PencilIcon, action: handleQuickCapture, shortcut: '⌘N'},
         {label: 'New Request', icon: DownloadIcon, action: handleNewRequest, shortcut: '⌘R'},
         {label: 'New Offer', icon: NoteIcon, action: handleNewOffer, shortcut: '⌘O'},
         {label: 'From Template', icon: DocumentDuplicateIcon, action: handleNewFromTemplate, shortcut: '⌘T'},
-    ], [addNote, setActiveView, setSelectedNoteId, setIsPaletteOpen]);
+    ], [handleQuickCapture, handleNewRequest, handleNewOffer, handleNewFromTemplate]);
 
     const primaryNavItems = MOBILE_NAV_ITEMS.filter(item => item.showInMobile && item.priority <= 5);
     const secondaryNavItems = MOBILE_NAV_ITEMS.filter(item => item.showInMobile && item.priority > 5);
@@ -145,7 +144,7 @@ export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps
                     isOpen ? 'translate-y-0' : 'translate-y-full'
                 )}
             >
-                <div className="bg-gray-900/95 backdrop-blur-sm border-t border-gray-700/50 rounded-t-2xl shadow-2xl overflow-hidden">
+                <div className="card glass rounded-t-2xl shadow-2xl overflow-hidden border-t border-gray-700/50">
                     {/* Primary Navigation - Always Visible */}
                     <div className="flex items-center justify-around px-2 py-2.5">
                         {primaryNavItems.map(item => {
@@ -156,7 +155,7 @@ export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps
                                     key={item.id}
                                     onClick={() => handleSelect(item.id)}
                                     className={cn(
-                                        'flex flex-col items-center gap-1 px-4 py-2.5 rounded-xl transition-all duration-200 min-w-[60px]',
+                                        'btn btn-ghost btn-xs flex flex-col items-center gap-1 px-3 py-2.5 rounded-xl min-w-[60px] touch-target transition-all duration-200',
                                         isActive
                                             ? 'bg-indigo-600/20 text-indigo-400'
                                             : 'text-gray-500 hover:text-gray-300 hover:bg-gray-800/50 active:bg-gray-700/50'
@@ -186,11 +185,12 @@ export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps
                                 aria-label="Create New"
                                 aria-expanded={isActionMenuOpen}
                                 aria-haspopup="menu"
+                                className="touch-target"
                             />
 
                             {isActionMenuOpen && (
                                 <div
-                                    className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl overflow-hidden animate-scale-in z-50"
+                                    className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 card glass shadow-2xl overflow-hidden animate-scale-in z-50"
                                     role="menu"
                                 >
                                     {actionItems.map((item, _index) => (
@@ -198,11 +198,11 @@ export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps
                                             key={item.label}
                                             onClick={item.action}
                                             role="menuitem"
-                                            className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-200 hover:bg-gray-800 transition-colors"
+                                            className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-200 hover:bg-gray-800 transition-colors touch-target"
                                         >
                                             <item.icon className="w-5 h-5 text-gray-400 flex-shrink-0" />
                                             <span className="flex-1 text-sm font-medium">{item.label}</span>
-                                            <span className="text-[10px] text-gray-500 font-mono px-2 py-0.5 bg-gray-800 rounded">
+                                            <span className="text-[10px] text-gray-500 font-mono px-2 py-0.5 bg-gray-800 rounded badge badge-sm badge-gray">
                                                 {item.shortcut}
                                             </span>
                                         </button>
@@ -232,7 +232,7 @@ export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps
                                             }
                                         }}
                                         className={cn(
-                                            'p-2.5 rounded-xl transition-all duration-200 min-w-[44px] min-h-[44px] flex items-center justify-center',
+                                            'btn btn-ghost btn-md p-2.5 rounded-xl min-w-[44px] min-h-[44px] flex items-center justify-center touch-target transition-all duration-200',
                                             'text-gray-500 hover:text-gray-300 hover:bg-gray-800/50 active:bg-gray-700/50'
                                         )}
                                         aria-label={item.label}
@@ -255,6 +255,7 @@ export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps
                                 tooltipPosition="top"
                                 aria-label={showMore ? 'Show Less Views' : 'More Views'}
                                 aria-expanded={showMore}
+                                className="touch-target"
                             />
                         )}
 
@@ -266,13 +267,14 @@ export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps
                             tooltip="Command Palette (Ctrl+K)"
                             tooltipPosition="top"
                             aria-label="Command Palette"
+                            className="touch-target"
                         />
                     </div>
 
                     {/* Expandable Secondary Navigation */}
                     {showMore && (secondaryNavItems.length > 0 || hiddenNavItems.length > 0) && (
                         <div className="px-3 pb-3 animate-slide-in-up">
-                            <div className="flex items-center justify-center gap-2 overflow-x-auto pb-2 scrollbar-hide" role="tablist">
+                            <div className="flex items-center justify-center gap-2 overflow-x-auto pb-2 custom-scrollbar" role="tablist">
                                 {[...secondaryNavItems, ...hiddenNavItems].map(item => {
                                     const Icon = item.icon;
                                     const isActive = activeView === item.id;
@@ -284,7 +286,7 @@ export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps
                                                 setShowMore(false);
                                             }}
                                             className={cn(
-                                                'flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all duration-200 min-w-[56px] flex-shrink-0',
+                                                'btn btn-ghost btn-xs flex flex-col items-center gap-1 px-3 py-2 rounded-xl min-w-[56px] flex-shrink-0 touch-target transition-all duration-200',
                                                 isActive
                                                     ? 'bg-indigo-600/20 text-indigo-400'
                                                     : 'text-gray-500 hover:text-gray-300 hover:bg-gray-800/50'
@@ -308,7 +310,7 @@ export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps
 
             {isOpen && (
                 <div
-                    className="fixed inset-0 z-40 md:hidden bg-black/50"
+                    className="fixed inset-0 z-40 md:hidden modal-backdrop"
                     onClick={onToggle}
                     aria-hidden="true"
                 />

@@ -1,11 +1,9 @@
-import React, {useCallback, useMemo, useState, useRef} from 'react';
+import React, {useCallback, useMemo, useState} from 'react';
 import {Note, getTextFromHtml} from '@notention/core';
-import {PlusIcon, ClockIcon, NoteIcon, SearchIcon, SettingsIcon, HomeIcon, MapIcon, NetworkIcon, ChatIcon, LightBulbIcon, OntologyIcon, TrashIcon, CpuChipIcon, ZapIcon, KeyIcon} from '../common/icons';
-import {EnhancedCommandPalette, CommandPaletteItem} from '../ui/EnhancedCommandPalette';
-import {SHARED_COMMANDS} from '@notention/core';
-import {cn} from '../../utils/ui';
+import {PlusIcon, NoteIcon} from '../common/icons';
+import {EnhancedCommandPalette} from '../ui/EnhancedCommandPalette';
+import {CommandPaletteItem} from '../ui/Overlay';
 import {useLocalForage} from '../../hooks/useLocalForage';
-import {STORAGE_KEYS} from '../../config/storageKeys';
 
 interface CommandPaletteProps {
     isOpen: boolean;
@@ -22,7 +20,6 @@ interface CommandPaletteProps {
 }
 
 const RECENT_STORAGE_KEY = 'command-palette-recent';
-const MAX_RECENT = 10;
 
 export function CommandPalette({
     isOpen,
@@ -86,15 +83,6 @@ export function CommandPalette({
 
         return items;
     }, [notes, commands, onCreateNote, onSelectNote, lastQuery]);
-
-    const handleItemAction = useCallback((item: CommandPaletteItem) => {
-        if (item.id.startsWith('recent-') || item.id === 'create-note') return;
-
-        setRecentItems(prev => {
-            const filtered = prev.filter(r => r.id !== item.id);
-            return [item, ...filtered].slice(0, MAX_RECENT);
-        });
-    }, [setRecentItems]);
 
     const handleClose = useCallback(() => {
         onClose();

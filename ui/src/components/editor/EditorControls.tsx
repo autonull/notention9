@@ -1,19 +1,17 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {
     ChevronDownIcon,
     ChevronUpIcon,
-    CodeBracketsIcon,
     DocumentDuplicateIcon,
     EditIcon,
-    HelpIcon,
     SearchSparkleIcon,
     TagIcon,
     SparklesIcon,
     EllipsisVerticalIcon,
     ArrowUpTrayIcon
 } from '../common/icons';
-import {IconButton} from '../common/IconButton';
-import {Button} from '../common/Button';
+import {IconButton} from '../ui/Primitives';
+import {Button} from '../ui/Primitives';
 import {DropdownMenu, DropdownMenuItem} from '../common/DropdownMenu';
 
 export interface EditorControlsProps {
@@ -40,27 +38,27 @@ export interface EditorControlsProps {
 }
 
 export function EditorControls({
-                                   onNext,
-                                   onPrevious,
-                                   hasNext,
-                                   hasPrevious,
-                                   isToolbarVisible = true,
-                                   onToggleToolbar,
-                                   isInspectorOpen,
-                                   onToggleInspector,
-                                   isTagInputVisible,
-                                   onToggleTags,
-                                   onSaveTemplate,
-                                   onCopyContent,
-                                   onExport,
-                                   missingProperties = [],
-                                   onAddProperty,
-                                   onFindMatches,
-                                   onPublish,
-                                   isPublishing,
-                                   isPublished,
-                                   actionLabel
-                               }: EditorControlsProps) {
+    onNext,
+    onPrevious,
+    hasNext,
+    hasPrevious,
+    isToolbarVisible = true,
+    onToggleToolbar,
+    isInspectorOpen,
+    onToggleInspector,
+    isTagInputVisible,
+    onToggleTags,
+    onSaveTemplate,
+    onCopyContent,
+    onExport,
+    missingProperties = [],
+    onAddProperty,
+    onFindMatches,
+    onPublish,
+    isPublishing,
+    isPublished,
+    actionLabel
+}: EditorControlsProps) {
     const menuItems: DropdownMenuItem[] = [
         ...(onToggleToolbar ? [{
             label: isToolbarVisible ? "Hide Toolbar" : "Show Toolbar",
@@ -88,11 +86,11 @@ export function EditorControls({
         <div className="flex items-center gap-2 flex-shrink-0">
             {/* Navigation - Condensed */}
             {(onNext || onPrevious) && (
-                <div className="hidden md:flex items-center bg-gray-800/50 rounded-lg border border-gray-700/50">
+                <div className="hidden md:flex items-center card p-1">
                     <button
                         onClick={onPrevious}
                         disabled={!hasPrevious}
-                        className="p-1.5 text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                        className="btn btn-ghost btn-xs p-1.5 text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
                         title="Previous Note (Alt+Up)"
                     >
                         <ChevronUpIcon className="h-4 w-4"/>
@@ -100,7 +98,7 @@ export function EditorControls({
                     <button
                         onClick={onNext}
                         disabled={!hasNext}
-                        className="p-1.5 text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                        className="btn btn-ghost btn-xs p-1.5 text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
                         title="Next Note (Alt+Down)"
                     >
                         <ChevronDownIcon className="h-4 w-4"/>
@@ -137,8 +135,9 @@ export function EditorControls({
                         onClick={onFindMatches}
                         tooltip="Find matches in network"
                         icon={SearchSparkleIcon}
-                        className="text-purple-400 hover:bg-purple-600 hover:text-white"
+                        variant="ghost"
                         size="md"
+                        className="text-purple-400 hover:bg-purple-900/30 hover:text-purple-300"
                     />
                 )}
 
@@ -147,18 +146,19 @@ export function EditorControls({
                     disabled={isPublishing}
                     variant={isPublished ? 'secondary' : 'primary'}
                     size="sm"
+                    className="touch-target"
                 >
                     {isPublishing ? 'Publishing…' : isPublished ? 'Published' : actionLabel}
                 </Button>
 
                 <IconButton
                     onClick={() => window.dispatchEvent(new CustomEvent('save-note'))}
-                    tooltip="Save Note"
+                    tooltip="Save Note (Ctrl+S)"
                     icon={EditIcon}
                     variant="ghost"
                     size="md"
                     label="Ctrl+S"
-                    className="hidden lg:flex"
+                    className="hidden lg:flex touch-target"
                 />
 
                 {/* More Menu */}
@@ -186,7 +186,7 @@ export function EditorControls({
                                 onAddProperty(prop);
                             }}
                             title={`Add ${prop} property`}
-                            className="px-2 py-0.5 text-[10px] uppercase tracking-wider bg-yellow-900/20 text-yellow-500/80 border border-yellow-700/30 rounded-md hover:bg-yellow-900/40 hover:text-yellow-400 hover:border-yellow-600/50 transition-all active:scale-95"
+                            className="btn btn-ghost btn-xs px-2 py-0.5 text-[10px] uppercase tracking-wider bg-yellow-900/20 text-yellow-500/80 border border-yellow-700/30 hover:bg-yellow-900/40 hover:text-yellow-400 hover:border-yellow-600/50 active:scale-95"
                         >
                             + {prop}
                         </button>

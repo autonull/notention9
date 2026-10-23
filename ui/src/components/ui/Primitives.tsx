@@ -23,27 +23,13 @@ export function Button({
     children,
     ...props
 }: ButtonProps) {
-    const baseStyles = 'inline-flex items-center justify-center gap-2 font-medium transition-all duration-150 ease-out rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 disabled:opacity-40 disabled:cursor-not-allowed select-none whitespace-nowrap';
-
-    const variantStyles = {
-        primary: 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 shadow-sm shadow-blue-500/20 border border-transparent',
-        secondary: 'bg-gray-800 text-gray-100 hover:bg-gray-700 active:bg-gray-600 border border-gray-700',
-        ghost: 'bg-transparent text-gray-400 hover:bg-gray-800 hover:text-gray-100 active:bg-gray-700 border border-transparent',
-        danger: 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 shadow-sm shadow-red-500/20 border border-transparent',
-        success: 'bg-green-600 text-white hover:bg-green-700 active:bg-green-800 shadow-sm shadow-green-500/20 border border-transparent',
-        outline: 'bg-transparent text-gray-300 hover:bg-gray-800 hover:text-white border border-gray-700',
-    };
-
-    const sizeStyles = {
-        xs: 'px-2 py-1 text-[11px] gap-1',
-        sm: 'px-3 py-1.5 text-sm',
-        md: 'px-4 py-2 text-sm',
-        lg: 'px-6 py-3 text-base',
-    };
+    const baseStyles = 'btn';
+    const variantClass = `btn-${variant}`;
+    const sizeClass = `btn-${size}`;
 
     return (
         <button
-            className={cn(baseStyles, variantStyles[variant], sizeStyles[size], fullWidth && 'w-full', className)}
+            className={cn(baseStyles, variantClass, sizeClass, fullWidth && 'w-full', className)}
             disabled={disabled || loading}
             {...props}
         >
@@ -86,32 +72,22 @@ export function IconButton({
     label,
     ...props
 }: IconButtonProps) {
-    const baseClasses = 'rounded-lg transition-all duration-200 flex items-center justify-center';
-
-    const sizeClasses = {
-        xs: 'p-1 min-w-[32px] min-h-[32px]',
-        sm: 'p-1.5 min-w-[36px] min-h-[36px]',
-        md: 'p-2 min-w-[40px] min-h-[40px]',
-        lg: 'p-2.5 min-w-[48px] min-h-[48px]',
+    const baseClasses = 'btn';
+    const variantMap: Record<string, string> = {
+        primary: 'btn-primary',
+        secondary: 'btn-secondary',
+        success: 'btn-success',
+        danger: 'btn-danger',
+        ghost: isActive ? 'btn-primary' : 'btn-ghost',
     };
-
-    const getVariantClasses = () => {
-        switch (variant) {
-            case 'primary':
-                return 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm';
-            case 'secondary':
-                return 'bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700';
-            case 'success':
-                return 'bg-transparent text-gray-400 hover:text-green-400 hover:bg-green-900/30';
-            case 'danger':
-                return 'bg-transparent text-gray-400 hover:text-red-400 hover:bg-red-900/30';
-            case 'ghost':
-            default:
-                return isActive
-                    ? 'bg-blue-900/40 text-blue-400 shadow-sm'
-                    : 'text-gray-500 hover:text-gray-200 hover:bg-gray-800';
-        }
+    const variantClass = variantMap[variant];
+    const sizeMap: Record<string, string> = {
+        xs: 'btn-xs',
+        sm: 'btn-sm',
+        md: 'btn-md',
+        lg: 'btn-lg',
     };
+    const sizeClass = sizeMap[size];
 
     const iconSizes = {
         xs: 'h-3 w-3',
@@ -124,8 +100,8 @@ export function IconButton({
         <button
             className={cn(
                 baseClasses,
-                sizeClasses[size],
-                getVariantClasses(),
+                variantClass,
+                sizeClass,
                 disabled && 'opacity-40 cursor-not-allowed',
                 className
             )}
@@ -170,11 +146,11 @@ export function Card({
     children,
     ...props
 }: CardProps) {
-    const variantStyles = {
-        default: 'bg-gray-900 border border-gray-700/50',
-        elevated: 'bg-gray-900 border border-gray-700/50 shadow-xl shadow-black/20',
-        outlined: 'bg-transparent border border-gray-700',
-        glass: 'bg-gray-900/80 backdrop-blur-md border border-gray-700/30',
+    const variantStyles: Record<string, string> = {
+        default: 'card',
+        elevated: 'card card-elevated',
+        outlined: 'card',
+        glass: 'card glass',
     };
 
     const paddingStyles = {
@@ -184,13 +160,14 @@ export function Card({
         lg: 'p-6 md:p-8',
     };
 
+    const hoverClass = hover ? 'card-hover' : '';
+
     return (
         <div
             className={cn(
-                'rounded-2xl transition-all duration-200',
                 variantStyles[variant],
                 paddingStyles[padding],
-                hover && 'hover:border-gray-600 hover:shadow-lg hover:shadow-black/30',
+                hoverClass,
                 className
             )}
             {...props}
@@ -244,15 +221,10 @@ export function Input({
                 <input
                     id={inputId}
                     className={cn(
-                        'w-full bg-gray-950/50 border border-gray-700/50 rounded-xl',
-                        'text-white placeholder-gray-600',
-                        'focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20',
-                        'transition-all duration-150',
-                        'disabled:opacity-50 disabled:cursor-not-allowed',
-                        leftIcon ? 'pl-10' : 'px-4',
-                        rightIcon ? 'pr-10' : 'px-4',
-                        'py-3 text-sm',
-                        error && 'border-red-500/50 focus:border-red-500 focus:ring-red-500/20',
+                        'input',
+                        leftIcon ? 'pl-10' : '',
+                        rightIcon ? 'pr-10' : '',
+                        error && 'field-error',
                         className
                     )}
                     aria-invalid={error ? 'true' : 'false'}
@@ -299,28 +271,24 @@ export function Badge({
     children,
     ...props
 }: BadgeProps) {
-    const variantStyles = {
-        primary: 'bg-blue-900/50 text-blue-300 border border-blue-800/50',
-        success: 'bg-green-900/50 text-green-300 border border-green-800/50',
-        warning: 'bg-yellow-900/50 text-yellow-300 border border-yellow-800/50',
-        danger: 'bg-red-900/50 text-red-300 border border-red-800/50',
-        info: 'bg-cyan-900/50 text-cyan-300 border border-cyan-800/50',
-        purple: 'bg-purple-900/50 text-purple-300 border border-purple-800/50',
-        gray: 'bg-gray-800 text-gray-300 border border-gray-700',
+    const variantClassMap: Record<string, string> = {
+        primary: 'badge-primary',
+        success: 'badge-success',
+        warning: 'badge-warning',
+        danger: 'badge-danger',
+        info: 'badge-info',
+        purple: 'badge-purple',
+        gray: 'badge-gray',
     };
-
-    const sizeStyles = {
-        sm: 'px-2 py-0.5 text-[11px]',
-        md: 'px-2.5 py-1 text-xs',
-    };
+    const variantClass = variantClassMap[variant];
+    const sizeClass = size === 'sm' ? 'badge-sm' : '';
 
     return (
         <span
             className={cn(
-                'inline-flex items-center gap-1.5 font-medium border',
-                'rounded-full',
-                variantStyles[variant],
-                sizeStyles[size],
+                'badge',
+                variantClass,
+                sizeClass,
                 pill && 'px-3',
                 className
             )}
@@ -524,7 +492,7 @@ export function Modal({
         >
             <div
                 ref={overlayRef}
-                className="absolute inset-0 bg-black/70 backdrop-blur-sm animate-fade-in"
+                className="modal-backdrop animate-fade-in"
                 onClick={closeOnOverlayClick ? onClose : undefined}
                 aria-hidden="true"
             />
@@ -532,7 +500,7 @@ export function Modal({
                 ref={contentRef}
                 tabIndex={-1}
                 className={cn(
-                    'relative w-full bg-gray-900 rounded-2xl border border-gray-700',
+                    'card glass',
                     'shadow-2xl animate-scale-in',
                     'overflow-hidden flex flex-col max-h-[90vh]',
                     sizeStyles[size]
@@ -555,7 +523,7 @@ export function Modal({
                         {showCloseButton && (
                             <button
                                 onClick={onClose}
-                                className="p-1 text-gray-500 hover:text-gray-200 hover:bg-gray-800 rounded-lg transition-colors flex-shrink-0"
+                                className="btn btn-ghost btn-sm p-1 text-gray-500 hover:text-gray-200 hover:bg-gray-800 rounded-lg transition-colors flex-shrink-0"
                                 aria-label="Close"
                             >
                                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -621,8 +589,8 @@ export function Toast({id, message, type = 'info', duration = 4000, onClose, act
     return (
         <div
             className={cn(
-                'flex items-start gap-3 p-4 rounded-xl border shadow-lg',
-                'animate-slide-in-up',
+                'card',
+                'flex items-start gap-3 p-4 shadow-lg animate-slide-in-up',
                 typeStyles[type]
             )}
             role="alert"
@@ -635,14 +603,14 @@ export function Toast({id, message, type = 'info', duration = 4000, onClose, act
             {action && (
                 <button
                     onClick={action.onClick}
-                    className="flex-shrink-0 text-sm font-medium underline hover:no-underline transition-colors"
+                    className="btn btn-ghost btn-sm flex-shrink-0"
                 >
                     {action.label}
                 </button>
             )}
             <button
                 onClick={() => onClose(id)}
-                className="flex-shrink-0 p-1 text-gray-400 hover:text-gray-200 transition-colors"
+                className="btn btn-ghost btn-xs flex-shrink-0"
                 aria-label="Dismiss"
             >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

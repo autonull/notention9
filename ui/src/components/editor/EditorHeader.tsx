@@ -1,15 +1,15 @@
 import React, {useState} from 'react';
 import {ArrowLeftIcon, LockIcon} from '../common/icons';
 import {TagInput} from './TagInput';
-import {IconButton} from '../common/IconButton';
+import {IconButton} from '../ui/Primitives';
 import {EditorControls} from './EditorControls';
 import {SkillExecutionIndicator} from '../notes/SkillExecutionIndicator';
 import {PrivacyControl} from '../publish/PrivacyControl';
 import type {Note} from '@notention/core';
 
 interface EditorHeaderProps {
-    note: Note; // Pass full note for privacy control
-    id?: string; // Add ID to props to track skill execution for current note
+    note: Note;
+    id?: string;
     title: string;
     onTitleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onPublish: () => void;
@@ -41,37 +41,37 @@ interface EditorHeaderProps {
 }
 
 export function EditorHeader({
-                                 note,
-                                 id,
-                                 title,
-                                 onTitleChange,
-                                 onPublish,
-                                 isPublishing,
-                                 isPublished,
-                                 tags,
-                                 onTagsChange,
-                                 onAutoTag,
-                                 isAutoTagging,
-                                 isApiKeyAvailable,
-                                 onFindMatches,
-                                 onBack,
-                                 isInspectorOpen,
-                                 onToggleInspector,
-                                 onSaveTemplate,
-                                 onNext,
-                                 onPrevious,
-                                 hasNext,
-                                 hasPrevious,
-                                 onExport,
-                                 onCopyContent,
-                                 readOnly = false,
-                                 isToolbarVisible = true,
-                                 onToggleToolbar,
-                                 actionLabel = 'Publish',
-                                 missingProperties = [],
-                                 onAddProperty,
-                                 onUpdateNote
-                             }: EditorHeaderProps) {
+    note,
+    id,
+    title,
+    onTitleChange,
+    onPublish,
+    isPublishing,
+    isPublished,
+    tags,
+    onTagsChange,
+    onAutoTag,
+    isAutoTagging,
+    isApiKeyAvailable,
+    onFindMatches,
+    onBack,
+    isInspectorOpen,
+    onToggleInspector,
+    onSaveTemplate,
+    onNext,
+    onPrevious,
+    hasNext,
+    hasPrevious,
+    onExport,
+    onCopyContent,
+    readOnly = false,
+    isToolbarVisible = true,
+    onToggleToolbar,
+    actionLabel = 'Publish',
+    missingProperties = [],
+    onAddProperty,
+    onUpdateNote
+}: EditorHeaderProps) {
     const [isTagInputVisible, setIsTagInputVisible] = useState(tags.length > 0);
 
     const handleToggleTags = () => {
@@ -79,13 +79,13 @@ export function EditorHeader({
     };
 
     return (
-        <div className="flex-shrink-0 bg-gray-900 border-b border-gray-700/50">
+        <header className="flex-shrink-0 bg-gray-900 border-b border-gray-700/50 sticky top-0 z-10">
             <div className="flex items-center gap-3 p-3">
                 {onBack && (
                     <div className="md:hidden mr-1">
                         <IconButton
                             onClick={onBack}
-                            title="Back to List"
+                            tooltip="Back to List"
                             icon={ArrowLeftIcon}
                             variant="secondary"
                             label="Alt+←"
@@ -104,7 +104,7 @@ export function EditorHeader({
                             autoFocus={!title && !readOnly}
                             readOnly={readOnly}
                             disabled={readOnly}
-                            className={`w-full bg-transparent text-white text-xl font-bold focus:outline-none placeholder-gray-700 transition-colors focus:placeholder-gray-600 py-1 ${readOnly ? 'cursor-not-allowed opacity-75' : ''}`}
+                            className="input w-full bg-transparent text-xl font-bold py-1 focus:ring-0 focus:border-transparent"
                         />
                     </div>
                     {readOnly && <LockIcon className="h-4 w-4 text-gray-500 ml-2 flex-shrink-0"/>}
@@ -149,10 +149,10 @@ export function EditorHeader({
                         onAutoTag={isApiKeyAvailable ? onAutoTag : undefined}
                         isAutoTagging={isAutoTagging}
                         autoFocus={true}
-                        className="p-1.5 bg-gray-900/50 rounded-md border border-gray-700/30"
+                        className="input"
                     />
                 </div>
             )}
-        </div>
+        </header>
     );
 };
