@@ -175,7 +175,7 @@ export function EmptyState({
             ) : icon ? (
                 <div className="mb-6 text-gray-500 flex-shrink-0">
                     {typeof icon === 'object' && 'type' in icon
-                        ? React.cloneElement(icon as React.ReactElement<any>, {className: 'w-16 h-16'} as any)
+                        ? React.cloneElement(icon as React.ReactElement<React.SVGProps<SVGSVGElement>>, {className: 'w-16 h-16'})
                         : icon}
                 </div>
             ) : null}
@@ -225,7 +225,7 @@ export function ErrorState({
                 {icon ? (
                     <div className="text-red-400 flex-shrink-0">
                         {typeof icon === 'object' && 'type' in icon
-                            ? React.cloneElement(icon as React.ReactElement<any>, {className: 'w-16 h-16'} as any)
+                            ? React.cloneElement(icon as React.ReactElement<React.SVGProps<SVGSVGElement>>, {className: 'w-16 h-16'})
                             : icon}
                     </div>
                 ) : (

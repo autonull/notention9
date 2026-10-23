@@ -1,4 +1,4 @@
-import React, {useRef, useEffect, useState, useMemo} from 'react';
+import React, {useRef, useEffect, useState, useMemo, useCallback} from 'react';
 import {useView} from '../../hooks/useViewContext';
 import {useNotes} from '../../hooks/useNotes';
 import {useToast} from '../../hooks/useToast';
@@ -54,7 +54,7 @@ interface MobileBottomNavProps {
 
 export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps) {
     const {activeView, setActiveView, isPaletteOpen, setIsPaletteOpen} = useView();
-    const {addNote, notes} = useNotes();
+    const {addNote} = useNotes();
     const {addToast} = useToast();
     const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
     const actionMenuRef = useRef<HTMLDivElement>(null);
@@ -72,29 +72,29 @@ export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [isActionMenuOpen]);
 
-    const handleSelect = (viewId: string) => {
+    const handleSelect = useCallback((viewId: string) => {
         setActiveView(viewId as View);
         if (isPaletteOpen) setIsPaletteOpen(false);
-    };
+    }, [isPaletteOpen, setIsPaletteOpen, setActiveView]);
 
-    const handleQuickCapture = () => {
-        const newNote = addNote({title: 'Quick Capture'});
+    const handleQuickCapture = useCallback(() => {
+        addNote({title: 'Quick Capture'});
         setActiveView('notes');
         setTimeout(() => {
             window.dispatchEvent(new CustomEvent('open-property-palette'));
         }, 100);
         addToast('Quick capture created', 'success');
         setIsActionMenuOpen(false);
-    };
+    }, [addNote, addToast, setActiveView, setIsActionMenuOpen]);
 
-    const handleNewFromTemplate = () => {
+    const handleNewFromTemplate = useCallback(() => {
         setActiveView('notes');
         setIsPaletteOpen(true);
         addToast('Command palette opened — search for templates', 'info');
         setIsActionMenuOpen(false);
-    };
+    }, [addToast, setActiveView, setIsActionMenuOpen, setIsPaletteOpen]);
 
-    const handleNewRequest = () => {
+    const handleNewRequest = useCallback(() => {
         const note = addNote({
             title: 'New Request',
             content: '<p>I am looking for...</p>',
@@ -107,9 +107,9 @@ export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps
         setSelectedNoteId(note.id);
         setActiveView('notes');
         setIsActionMenuOpen(false);
-    };
+    }, [addNote, setActiveView, setSelectedNoteId, setIsActionMenuOpen]);
 
-    const handleNewOffer = () => {
+    const handleNewOffer = useCallback(() => {
         const note = addNote({
             title: 'New Offer',
             content: '<p>I can provide...</p>',
@@ -122,7 +122,7 @@ export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps
         setSelectedNoteId(note.id);
         setActiveView('notes');
         setIsActionMenuOpen(false);
-    };
+    }, [addNote, setActiveView, setSelectedNoteId, setIsActionMenuOpen]);
 
     const {setSelectedNoteId} = useView();
 
@@ -193,7 +193,7 @@ export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps
                                     className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl overflow-hidden animate-scale-in z-50"
                                     role="menu"
                                 >
-                                    {actionItems.map((item, index) => (
+                                    {actionItems.map((item, _index) => (
                                         <button
                                             key={item.label}
                                             onClick={item.action}

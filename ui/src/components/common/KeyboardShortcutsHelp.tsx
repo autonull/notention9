@@ -79,6 +79,13 @@ export function KeyboardShortcutsHelp({
     onClose,
     groups = DEFAULT_GROUPS,
 }: KeyboardShortcutsHelpProps) {
+    const platform = useMemo(() => {
+        if (typeof navigator !== 'undefined') {
+            return navigator.platform.includes('Mac') ? 'mac' : 'win';
+        }
+        return 'win';
+    }, []);
+
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (!isOpen) return;
@@ -99,13 +106,6 @@ export function KeyboardShortcutsHelp({
     }, [isOpen]);
 
     if (!isOpen) return null;
-
-    const platform = useMemo(() => {
-        if (typeof navigator !== 'undefined') {
-            return navigator.platform.includes('Mac') ? 'mac' : 'win';
-        }
-        return 'win';
-    }, []);
 
     const formatKeys = (keys: string[]) => {
         if (platform === 'mac') {
@@ -157,7 +157,7 @@ export function KeyboardShortcutsHelp({
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
-                    {groups.map((group, groupIndex) => (
+                    {groups.map((group) => (
                         <div key={group.category} className="mb-8">
                             <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-4 px-2">
                                 {group.category}
