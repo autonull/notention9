@@ -1,4 +1,4 @@
-import React, {useRef, useEffect, useState} from 'react';
+import React, {useRef, useEffect, useState, useMemo} from 'react';
 import {useView} from '../../hooks/useViewContext';
 import {useNotes} from '../../hooks/useNotes';
 import {useToast} from '../../hooks/useToast';
@@ -20,26 +20,31 @@ import {
     TrashIcon,
     DocumentDuplicateIcon,
     DownloadIcon,
-    MicrophoneIcon,
-    QrCodeIcon,
+    PencilIcon,
+    SearchIcon,
+    HelpIcon,
 } from '../common/icons';
 import {IconButton} from '../ui/Primitives';
 import {cn} from '../../utils/ui';
-import {SHARED_COMMANDS} from '@notention/core';
 
 const MOBILE_NAV_ITEMS = [
-    {id: 'dashboard', label: 'Dashboard', icon: HomeIcon, showInMobile: true},
-    {id: 'notes', label: 'Notes', icon: HomeIcon, showInMobile: true},
-    {id: 'map', label: 'Map', icon: MapIcon, showInMobile: true},
-    {id: 'timeline', label: 'Timeline', icon: ClockIcon, showInMobile: true},
-    {id: 'network', label: 'Network', icon: NetworkIcon, showInMobile: true},
-    {id: 'actions', label: 'Actions', icon: LightBulbIcon, showInMobile: true},
-    {id: 'chat', label: 'Chat', icon: ChatIcon, showInMobile: true},
-    {id: 'graph', label: 'Graph', icon: GitBranchIcon, showInMobile: true},
-    {id: 'ontology', label: 'Ontology', icon: OntologyIcon, showInMobile: true},
-    {id: 'trash', label: 'Trash', icon: TrashIcon, showInMobile: true},
-    {id: 'self', label: 'Self', icon: UsersIcon, showInMobile: true},
-    {id: 'settings', label: 'Settings', icon: SettingsIcon, showInMobile: true},
+    {id: 'dashboard', label: 'Dashboard', icon: HomeIcon, showInMobile: true, priority: 1},
+    {id: 'notes', label: 'Notes', icon: NoteIcon, showInMobile: true, priority: 2},
+    {id: 'map', label: 'Map', icon: MapIcon, showInMobile: true, priority: 3},
+    {id: 'timeline', label: 'Timeline', icon: ClockIcon, showInMobile: true, priority: 4},
+    {id: 'network', label: 'Network', icon: NetworkIcon, showInMobile: true, priority: 5},
+    {id: 'chat', label: 'Chat', icon: ChatIcon, showInMobile: true, priority: 6},
+    {id: 'actions', label: 'Actions', icon: LightBulbIcon, showInMobile: false, priority: 7},
+    {id: 'graph', label: 'Graph', icon: GitBranchIcon, showInMobile: false, priority: 8},
+    {id: 'ontology', label: 'Ontology', icon: OntologyIcon, showInMobile: false, priority: 9},
+    {id: 'trash', label: 'Trash', icon: TrashIcon, showInMobile: false, priority: 10},
+    {id: 'self', label: 'Self', icon: UsersIcon, showInMobile: false, priority: 11},
+    {id: 'settings', label: 'Settings', icon: SettingsIcon, showInMobile: false, priority: 12},
+] as const;
+
+const MOBILE_ACTION_ITEMS = [
+    {id: 'search', label: 'Search', icon: SearchIcon, priority: 1, shortcut: '⌘F'},
+    {id: 'shortcuts', label: 'Shortcuts', icon: HelpIcon, priority: 2, shortcut: '?'},
 ] as const;
 
 interface MobileBottomNavProps {
@@ -48,11 +53,12 @@ interface MobileBottomNavProps {
 }
 
 export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps) {
-    const {activeView, setActiveView, isPaletteOpen, setIsPaletteOpen, searchTerm, setSearchTerm} = useView();
-    const {addNote} = useNotes();
+    const {activeView, setActiveView, isPaletteOpen, setIsPaletteOpen} = useView();
+    const {addNote, notes} = useNotes();
     const {addToast} = useToast();
     const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
     const actionMenuRef = useRef<HTMLDivElement>(null);
+    const [showMore, setShowMore] = useState(false);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -84,28 +90,52 @@ export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps
     const handleNewFromTemplate = () => {
         setActiveView('notes');
         setIsPaletteOpen(true);
-        addToast('Command palette opened - search for templates', 'info');
+        addToast('Command palette opened — search for templates', 'info');
         setIsActionMenuOpen(false);
     };
 
-    const handleScanQR = () => {
-        addToast('QR scanning coming soon', 'info');
+    const handleNewRequest = () => {
+        const note = addNote({
+            title: 'New Request',
+            content: '<p>I am looking for...</p>',
+            properties: [
+                {key: 'intent', operator: 'is', values: ['request']},
+                {key: 'status', operator: 'is', values: ['open']},
+            ],
+            tags: ['request'],
+        });
+        setSelectedNoteId(note.id);
+        setActiveView('notes');
         setIsActionMenuOpen(false);
     };
 
-    const handleVoiceNote = () => {
-        addToast('Voice input coming soon', 'info');
+    const handleNewOffer = () => {
+        const note = addNote({
+            title: 'New Offer',
+            content: '<p>I can provide...</p>',
+            properties: [
+                {key: 'intent', operator: 'is', values: ['offer']},
+                {key: 'status', operator: 'is', values: ['available']},
+            ],
+            tags: ['offer'],
+        });
+        setSelectedNoteId(note.id);
+        setActiveView('notes');
         setIsActionMenuOpen(false);
     };
 
-    const actionItems = [
-        {label: 'Quick Capture', icon: PlusIcon, action: handleQuickCapture, shortcut: 'Ctrl+N'},
-        {label: 'New from Template', icon: DocumentDuplicateIcon, action: handleNewFromTemplate, shortcut: 'Ctrl+T'},
-        {label: 'Scan QR Code', icon: QrCodeIcon, action: handleScanQR, shortcut: 'Ctrl+Shift+Q'},
-        {label: 'Voice Note', icon: MicrophoneIcon, action: handleVoiceNote, shortcut: 'Ctrl+Shift+V'},
-    ];
+    const {setSelectedNoteId} = useView();
 
-    const visibleNavItems = MOBILE_NAV_ITEMS.filter(item => item.showInMobile);
+    const actionItems = useMemo(() => [
+        {label: 'Quick Capture', icon: PencilIcon, action: handleQuickCapture, shortcut: '⌘N'},
+        {label: 'New Request', icon: DownloadIcon, action: handleNewRequest, shortcut: '⌘R'},
+        {label: 'New Offer', icon: NoteIcon, action: handleNewOffer, shortcut: '⌘O'},
+        {label: 'From Template', icon: DocumentDuplicateIcon, action: handleNewFromTemplate, shortcut: '⌘T'},
+    ], [addNote, setActiveView, setSelectedNoteId, setIsPaletteOpen]);
+
+    const primaryNavItems = MOBILE_NAV_ITEMS.filter(item => item.showInMobile && item.priority <= 5);
+    const secondaryNavItems = MOBILE_NAV_ITEMS.filter(item => item.showInMobile && item.priority > 5);
+    const hiddenNavItems = MOBILE_NAV_ITEMS.filter(item => !item.showInMobile);
 
     return (
         <>
@@ -116,8 +146,9 @@ export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps
                 )}
             >
                 <div className="bg-gray-900/95 backdrop-blur-sm border-t border-gray-700/50 rounded-t-2xl shadow-2xl overflow-hidden">
-                    <div className="flex items-center justify-around px-2 py-2">
-                        {visibleNavItems.map(item => {
+                    {/* Primary Navigation - Always Visible */}
+                    <div className="flex items-center justify-around px-2 py-2.5">
+                        {primaryNavItems.map(item => {
                             const Icon = item.icon;
                             const isActive = activeView === item.id;
                             return (
@@ -125,16 +156,16 @@ export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps
                                     key={item.id}
                                     onClick={() => handleSelect(item.id)}
                                     className={cn(
-                                        'flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all duration-200',
+                                        'flex flex-col items-center gap-1 px-4 py-2.5 rounded-xl transition-all duration-200 min-w-[60px]',
                                         isActive
                                             ? 'bg-indigo-600/20 text-indigo-400'
-                                            : 'text-gray-500 hover:text-gray-300 hover:bg-gray-800/50'
+                                            : 'text-gray-500 hover:text-gray-300 hover:bg-gray-800/50 active:bg-gray-700/50'
                                     )}
                                     aria-label={item.label}
                                     aria-current={isActive ? 'page' : undefined}
                                 >
-                                    <Icon className={cn('w-5 h-5', isActive ? 'text-indigo-400' : '')} />
-                                    <span className="text-[10px] font-medium uppercase tracking-wider truncate max-w-[48px]">
+                                    <Icon className={cn('w-6 h-6', isActive ? 'text-indigo-400' : '')} />
+                                    <span className="text-[10px] font-medium uppercase tracking-wider truncate max-w-[56px] text-center">
                                         {item.label}
                                     </span>
                                 </button>
@@ -142,6 +173,7 @@ export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps
                         })}
                     </div>
 
+                    {/* Action Bar - FAB + Quick Actions + More + Command Palette */}
                     <div className="flex items-center justify-between px-3 pb-3 border-t border-gray-700/30">
                         <div className="relative" ref={actionMenuRef}>
                             <IconButton
@@ -149,9 +181,9 @@ export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps
                                 icon={PlusIcon}
                                 variant="primary"
                                 size="lg"
-                                tooltip="Quick Actions"
+                                tooltip="Create New"
                                 tooltipPosition="top"
-                                aria-label="Quick Actions"
+                                aria-label="Create New"
                                 aria-expanded={isActionMenuOpen}
                                 aria-haspopup="menu"
                             />
@@ -179,9 +211,56 @@ export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps
                             )}
                         </div>
 
+                        {/* Quick Actions - Search & Shortcuts */}
+                        <div className="flex items-center gap-1.5">
+                            {MOBILE_ACTION_ITEMS.map((item) => {
+                                const Icon = item.icon;
+                                return (
+                                    <button
+                                        key={item.id}
+                                        onClick={() => {
+                                            if (item.id === 'search') {
+                                                const searchInput = document.getElementById('sidebar-search-input');
+                                                if (searchInput) {
+                                                    searchInput.focus();
+                                                    if (activeView !== 'notes') {
+                                                        setActiveView('notes');
+                                                    }
+                                                }
+                                            } else if (item.id === 'shortcuts') {
+                                                window.dispatchEvent(new CustomEvent('open-shortcuts-help'));
+                                            }
+                                        }}
+                                        className={cn(
+                                            'p-2.5 rounded-xl transition-all duration-200 min-w-[44px] min-h-[44px] flex items-center justify-center',
+                                            'text-gray-500 hover:text-gray-300 hover:bg-gray-800/50 active:bg-gray-700/50'
+                                        )}
+                                        aria-label={item.label}
+                                        aria-keyshortcuts={item.shortcut}
+                                    >
+                                        <Icon className="w-6 h-6" />
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        {/* More Navigation Toggle */}
+                        {(secondaryNavItems.length > 0 || hiddenNavItems.length > 0) && (
+                            <IconButton
+                                onClick={() => setShowMore(!showMore)}
+                                icon={MenuIcon}
+                                variant="secondary"
+                                size="lg"
+                                tooltip={showMore ? 'Show Less' : 'More Views'}
+                                tooltipPosition="top"
+                                aria-label={showMore ? 'Show Less Views' : 'More Views'}
+                                aria-expanded={showMore}
+                            />
+                        )}
+
                         <IconButton
                             onClick={() => setIsPaletteOpen(true)}
-                            icon={MenuIcon}
+                            icon={XIcon}
                             variant="secondary"
                             size="lg"
                             tooltip="Command Palette (Ctrl+K)"
@@ -189,6 +268,41 @@ export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps
                             aria-label="Command Palette"
                         />
                     </div>
+
+                    {/* Expandable Secondary Navigation */}
+                    {showMore && (secondaryNavItems.length > 0 || hiddenNavItems.length > 0) && (
+                        <div className="px-3 pb-3 animate-slide-in-up">
+                            <div className="flex items-center justify-center gap-2 overflow-x-auto pb-2 scrollbar-hide" role="tablist">
+                                {[...secondaryNavItems, ...hiddenNavItems].map(item => {
+                                    const Icon = item.icon;
+                                    const isActive = activeView === item.id;
+                                    return (
+                                        <button
+                                            key={item.id}
+                                            onClick={() => {
+                                                handleSelect(item.id);
+                                                setShowMore(false);
+                                            }}
+                                            className={cn(
+                                                'flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all duration-200 min-w-[56px] flex-shrink-0',
+                                                isActive
+                                                    ? 'bg-indigo-600/20 text-indigo-400'
+                                                    : 'text-gray-500 hover:text-gray-300 hover:bg-gray-800/50'
+                                            )}
+                                            role="tab"
+                                            aria-label={item.label}
+                                            aria-selected={isActive}
+                                        >
+                                            <Icon className={cn('w-5 h-5', isActive ? 'text-indigo-400' : '')} />
+                                            <span className="text-[9px] font-medium uppercase tracking-wider truncate max-w-[48px] text-center">
+                                                {item.label}
+                                            </span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 

@@ -7,16 +7,16 @@ import {event, identity, publish, RELAY_URL} from '../support/relay';
 
 const now = Math.floor(Date.now() / 1000);
 
-const maya = identity();
+const john = identity();
 const jonas = identity();
 const viewer = identity();
 
 const feedEvents = () => [
-    event(maya, {
+    event(john, {
         kind: 0,
         created_at: now - 7200,
         tags: [],
-        content: JSON.stringify({name: 'Maya', about: 'Neighbourhood gardener', picture: ''}),
+        content: JSON.stringify({name: 'John', about: 'Neighbourhood gardener', picture: ''}),
     }),
     event(jonas, {
         kind: 0,
@@ -24,11 +24,11 @@ const feedEvents = () => [
         tags: [],
         content: JSON.stringify({name: 'Jonas', about: 'Runs the community hall', picture: ''}),
     }),
-    event(maya, {
+    event(john, {
         kind: 35000,
         created_at: now - 900,
         tags: [
-            ['d', 'feed-maya-garden'],
+            ['d', 'feed-john-garden'],
             ['t', 'offer'],
             ['t', 'neighbourhood'],
             ['property', 'intent', 'is', 'offer'],
@@ -50,7 +50,7 @@ const feedEvents = () => [
         ],
         content: 'Monthly meetup at the community hall. Bring something you are working on and meet your neighbours.',
     }),
-    event(maya, {
+    event(john, {
         kind: 1,
         created_at: now - 5400,
         tags: [['t', 'request'], ['t', 'tools']],

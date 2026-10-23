@@ -46,7 +46,7 @@ export function LoadingState({
 }
 
 export interface SkeletonProps {
-    variant?: 'text' | 'circular' | 'rectangular' | 'card';
+    variant?: 'text' | 'circular' | 'rectangular' | 'card' | 'note' | 'avatar' | 'list-item' | 'dashboard-stat' | 'activity-item';
     width?: string | number;
     height?: string | number;
     className?: string;
@@ -67,13 +67,75 @@ export function Skeleton({
         circular: 'rounded-full',
         rectangular: 'rounded-lg',
         card: 'rounded-xl',
+        note: 'rounded-xl bg-gray-800/50',
+        avatar: 'rounded-full',
+        'list-item': 'rounded-lg bg-gray-800/50',
+        'dashboard-stat': 'rounded-xl bg-gray-800/50',
+        'activity-item': 'rounded-lg bg-gray-800/50',
     };
+
+    // Pre-defined skeleton templates for common UI patterns
+    if (variant === 'note') {
+        return (
+            <div className={cn('animate-pulse space-y-3 p-4 bg-gray-900/50 rounded-xl border border-gray-700/30', className)}>
+                <div className="h-6 w-3/4 bg-gray-800 rounded" />
+                <div className="h-4 w-1/2 bg-gray-800 rounded" />
+                <div className="h-4 w-5/6 bg-gray-800 rounded" />
+                <div className="flex gap-2 mt-4">
+                    <div className="h-5 w-16 bg-gray-800 rounded-full" />
+                    <div className="h-5 w-20 bg-gray-800 rounded-full" />
+                </div>
+            </div>
+        );
+    }
+
+    if (variant === 'list-item') {
+        return (
+            <div className={cn('animate-pulse p-3 bg-gray-900/50 rounded-lg border border-gray-700/30 space-y-2', className)}>
+                <div className="flex items-center justify-between">
+                    <div className="h-5 w-2/5 bg-gray-800 rounded" />
+                    <div className="h-4 w-12 bg-gray-800 rounded-full" />
+                </div>
+                <div className="h-3 w-3/5 bg-gray-800 rounded" />
+                <div className="flex gap-2">
+                    <div className="h-4 w-14 bg-gray-800 rounded-full" />
+                    <div className="h-4 w-14 bg-gray-800 rounded-full" />
+                </div>
+            </div>
+        );
+    }
+
+    if (variant === 'dashboard-stat') {
+        return (
+            <div className={cn('animate-pulse p-6 bg-gray-900/50 rounded-2xl border border-gray-700/30 space-y-3', className)}>
+                <div className="flex items-center justify-between">
+                    <div className="h-4 w-1/3 bg-gray-800 rounded" />
+                    <div className="h-10 w-10 bg-gray-800 rounded-xl" />
+                </div>
+                <div className="h-8 w-1/4 bg-gray-800 rounded" />
+                <div className="h-3 w-1/2 bg-gray-800 rounded" />
+            </div>
+        );
+    }
+
+    if (variant === 'activity-item') {
+        return (
+            <div className={cn('animate-pulse flex items-start gap-3 p-3 bg-gray-900/50 rounded-lg border border-gray-700/30', className)}>
+                <div className="h-10 w-10 bg-gray-800 rounded-xl flex-shrink-0" />
+                <div className="flex-1 space-y-2 min-w-0">
+                    <div className="h-4 w-1/2 bg-gray-800 rounded" />
+                    <div className="h-3 w-3/4 bg-gray-800 rounded" />
+                    <div className="h-3 w-1/3 bg-gray-800 rounded" />
+                </div>
+            </div>
+        );
+    }
 
     const items = Array.from({length: count}, (_, i) => (
         <div
             key={i}
             className={cn(baseStyles, variantStyles[variant], className)}
-            style={{width, height: height || (variant === 'text' ? '1rem' : variant === 'circular' ? width : undefined)}}
+            style={{width, height: height || (variant === 'text' ? '1rem' : variant === 'circular' ? width : variant === 'avatar' ? width : undefined)}}
             aria-hidden="true"
         />
     ));

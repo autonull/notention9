@@ -115,9 +115,9 @@ const DEMO_NOTES: DemoNoteInput[] = [
         offsetHours: 20,
     },
     {
-        id: 'demo-person-maya',
-        title: 'Maya — neighbourhood gardener',
-        content: '<p>Maya looks after the shared garden and knows everyone on the street. Reach out for plant swaps.</p>',
+        id: 'demo-person-john',
+        title: 'John — neighbourhood gardener',
+        content: '<p>John looks after the shared garden and knows everyone on the street. Reach out for plant swaps.</p>',
         tags: ['person', 'community'],
         properties: [
             property('type', ['person']),

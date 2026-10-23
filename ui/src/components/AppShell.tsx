@@ -5,6 +5,7 @@ import {CommandPalette} from './common/CommandPalette';
 import {Sidebar} from './sidebar';
 import {MainView} from './MainView';
 import {SelectorRegistryProvider} from './properties/SelectorRegistry';
+import {KeyboardShortcutsHelp} from './common/KeyboardShortcutsHelp';
 
 import {useNotes} from '../hooks/useNotes';
 import {useView} from '../hooks/useViewContext';
@@ -47,15 +48,21 @@ export function AppShell() {
     const {addToast} = useToast();
 
     const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+    const [isShortcutsHelpOpen, setIsShortcutsHelpOpen] = useState(false);
 
     useEffect(() => {
         const handleStorageError = (event: Event) => {
             const detail = (event as CustomEvent<{key: string; message: string}>).detail;
             addToast(`Could not save ${detail?.key ?? 'data'}. Storage may be full.`, 'error');
         };
+        const handleOpenShortcutsHelp = () => setIsShortcutsHelpOpen(true);
         window.addEventListener('storage-error', handleStorageError);
-        return () => window.removeEventListener('storage-error', handleStorageError);
-    }, [addToast]);
+        window.addEventListener('open-shortcuts-help', handleOpenShortcutsHelp);
+        return () => {
+            window.removeEventListener('storage-error', handleStorageError);
+            window.removeEventListener('open-shortcuts-help', handleOpenShortcutsHelp);
+        };
+    }, [addToast, setIsShortcutsHelpOpen]);
 
     const handleCreateNote = (title: string) => {
         const newNote = addNote({title});
@@ -119,8 +126,10 @@ export function AppShell() {
         onEscape: () => {
             setIsPaletteOpen(false);
             setIsHelpOpen(false);
+            setIsShortcutsHelpOpen(false);
             setMobileSidebarOpen(false);
-        }
+        },
+        onShortcutsHelp: () => setIsShortcutsHelpOpen(true),
     });
 
     const isMobileNoteList = activeView === 'notes' && !selectedNoteId;
@@ -190,6 +199,10 @@ export function AppShell() {
                         setIsHelpOpen(false);
                         window.dispatchEvent(new CustomEvent('open-property-palette'));
                     }}
+                />
+                <KeyboardShortcutsHelp
+                    isOpen={isShortcutsHelpOpen}
+                    onClose={() => setIsShortcutsHelpOpen(false)}
                 />
             </div>
         </SelectorRegistryProvider>

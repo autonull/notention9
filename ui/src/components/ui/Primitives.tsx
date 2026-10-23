@@ -23,16 +23,7 @@ export function Button({
     children,
     ...props
 }: ButtonProps) {
-    const baseStyles = `
-        inline-flex items-center justify-center gap-2
-        font-medium transition-all duration-150 ease-out
-        rounded-xl focus-visible:outline-none focus-visible:ring-2
-        focus-visible:ring-blue-500 focus-visible:ring-offset-2
-        focus-visible:ring-offset-gray-950
-        disabled:opacity-40 disabled:cursor-not-allowed
-        select-none whitespace-nowrap
-        ${fullWidth ? 'w-full' : ''}
-    `;
+    const baseStyles = 'inline-flex items-center justify-center gap-2 font-medium transition-all duration-150 ease-out rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 disabled:opacity-40 disabled:cursor-not-allowed select-none whitespace-nowrap';
 
     const variantStyles = {
         primary: 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 shadow-sm shadow-blue-500/20 border border-transparent',
@@ -52,12 +43,12 @@ export function Button({
 
     return (
         <button
-            className={cn(baseStyles, variantStyles[variant], sizeStyles[size], className)}
+            className={cn(baseStyles, variantStyles[variant], sizeStyles[size], fullWidth && 'w-full', className)}
             disabled={disabled || loading}
             {...props}
         >
             {loading ? (
-                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
                 </svg>
@@ -98,10 +89,10 @@ export function IconButton({
     const baseClasses = 'rounded-lg transition-all duration-200 flex items-center justify-center';
 
     const sizeClasses = {
-        xs: 'p-1',
-        sm: 'p-1.5',
-        md: 'p-2',
-        lg: 'p-2.5',
+        xs: 'p-1 min-w-[32px] min-h-[32px]',
+        sm: 'p-1.5 min-w-[36px] min-h-[36px]',
+        md: 'p-2 min-w-[40px] min-h-[40px]',
+        lg: 'p-2.5 min-w-[48px] min-h-[48px]',
     };
 
     const getVariantClasses = () => {

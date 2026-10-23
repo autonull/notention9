@@ -8,14 +8,14 @@ import {directMessage, event, identity, publish, RELAY_URL} from '../support/rel
 const now = Math.floor(Date.now() / 1000);
 
 const viewer = identity();
-const maya = identity();
+const john = identity();
 
 const chatEvents = async () => [
-    event(maya, {
+    event(john, {
         kind: 0,
         created_at: now - 7200,
         tags: [],
-        content: JSON.stringify({name: 'Maya', about: 'Neighbourhood gardener', picture: ''}),
+        content: JSON.stringify({name: 'John', about: 'Neighbourhood gardener', picture: ''}),
     }),
     event(viewer, {
         kind: 3,
@@ -23,8 +23,8 @@ const chatEvents = async () => [
         tags: [['p', maya.pubkey]],
         content: '',
     }),
-    await directMessage(maya, viewer, 'The repair day is still on. I can bring the long ladder.', now - 420),
-    await directMessage(maya, viewer, 'Perfect. I will ask around for soup and tools.', now - 240),
+    await directMessage(john, viewer, 'The repair day is still on. I can bring the long ladder.', now - 420),
+    await directMessage(john, viewer, 'Perfect. I will ask around for soup and tools.', now - 240),
 ];
 
 test.beforeAll(async () => {
@@ -41,7 +41,7 @@ test('chat thread', async ({page}) => {
         settings: defaultSettings({nostr: {privkey: Buffer.from(viewer.secret).toString('hex'), relays: [RELAY_URL]}}),
         hash: '#chat',
     });
-    await page.getByText('Maya', {exact: true}).click();
+    await page.getByText('John', {exact: true}).click();
     await page.waitForSelector('text=End-to-end encrypted');
     await page.waitForSelector('text=I can bring the long ladder');
     await snap(page, {

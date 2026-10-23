@@ -60,7 +60,7 @@ const taskNote = (id: string, title: string, status: string, tags: string[] = ['
 export const taskNotes = (): Note[] => [
     taskNote('scene-task-running', 'Print flyers for the meetup', 'running'),
     taskNote('scene-task-queued', 'Collect tools for repair day', 'queued'),
-    taskNote('scene-task-queued-2', 'Ask Maya about the shared garden', 'queued', ['task', 'community']),
+    taskNote('scene-task-queued-2', 'Ask John about the shared garden', 'queued', ['task', 'community']),
     taskNote('scene-task-done', 'Book the community hall', 'completed'),
 ];
 
