@@ -11,6 +11,7 @@ import {
 } from './widgets.js';
 import { UsageTracker, type SuggestedAttribute } from './statistics.js';
 import { FuzzyMatcher } from '../utils/matching.js';
+import { DEFAULT_ONTOLOGY } from './ontology.default.js';
 
 export type { SuggestedAttribute, WidgetMetadata, WidgetType };
 
@@ -33,6 +34,20 @@ export class OntologyService {
         this.attributeIndex = buildAttributeIndex(this.ontology);
         this.usageTracker = new UsageTracker(this.ontology, this.attributeIndex);
         this.fuzzyMatcher = new FuzzyMatcher();
+    }
+
+    /**
+     * Create a standard ontology service with default ontology
+     */
+    static createStandard(): OntologyService {
+        return new OntologyService(DEFAULT_ONTOLOGY);
+    }
+
+    /**
+     * Create an ontology service with custom ontology
+     */
+    static createCustom(ontology: OntologyNode[]): OntologyService {
+        return new OntologyService(ontology);
     }
 
     /**

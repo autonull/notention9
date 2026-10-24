@@ -1,4 +1,5 @@
-import { Note, getCanonicalKey, OntologyServiceFactory } from '@notention/core';
+import { Note, getCanonicalKey } from '@notention/core';
+import { OntologyService } from '@notention/core';
 import { AgentSkillRegistry } from './AgentSkillRegistry.js';
 import { DynamicSkill } from './DynamicSkill.js';
 import type { DynamicSkillDefinition } from './DynamicSkill.js';
@@ -36,7 +37,7 @@ export class NoteSkillLoader {
             const triggers: { tags: string[], properties: {key:string, value?:string}[] } = { tags: [], properties: [] };
 
             // Load ontology for normalization
-            const ontology = OntologyServiceFactory.createStandardService().getAllNodes();
+            const ontology = OntologyService.createStandard().getAllNodes();
 
             note.properties.forEach(p => {
                 // [skill:trigger:tag:foo]

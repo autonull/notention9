@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { randomUUID } from 'crypto';
-import { Note, PropertyExtractor, getTextFromHtml, OntologyNode, Property, OntologyServiceFactory, normalizeNoteProperties } from '@notention/core';
+import { Note, PropertyExtractor, getTextFromHtml, OntologyNode, Property, OntologyService, normalizeNoteProperties } from '@notention/core';
 import { McpToolRegistry } from '../McpToolRegistry.js';
 import { AgentPlugin } from '../AgentPlugin.js';
 import { PersistenceService } from '../../persistence.js';
@@ -178,7 +178,7 @@ export class CorePlugin implements AgentPlugin {
     }
 
     private async loadOntology(): Promise<void> {
-        const service = OntologyServiceFactory.createStandardService();
+        const service = OntologyService.createStandard();
         this.ontology = service.getAllNodes();
     }
 }
