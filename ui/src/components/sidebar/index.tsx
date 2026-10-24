@@ -16,6 +16,7 @@ import {useTouchGestures} from '../../hooks/useTouchGestures';
 import {useIsMobile} from '../../hooks/useMediaQuery';
 import {SidebarSkeleton} from '../ui/Skeleton';
 import {EmptyState, NotesEmptyIllustration, EmptyStatePreset} from '../common/EmptyState';
+import {useDemoWorkspace} from '../../hooks/useDemoWorkspace';
 
 interface SidebarProps {
     sortedNotes?: Note[];
@@ -54,6 +55,7 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
     const searchInputRef = useRef<HTMLInputElement>(null);
     const virtualListRef = useRef<{scrollToIndex: (index: number, align?: 'start' | 'center' | 'end') => void; scrollToTop: () => void; scrollToBottom: () => void; focusIndex: (index: number) => void}>(null);
     const isMobile = useIsMobile();
+    const {load: loadSampleWorkspace} = useDemoWorkspace();
     const [showPinnedOnly, setShowPinnedOnly] = useState(false);
 
     useEffect(() => {
@@ -251,6 +253,7 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
                             keyboardNavigation
                             role="listbox"
                             aria-label={isTrashView ? 'Trash notes' : 'Notes'}
+                            onItemClick={(note) => setSelectedNoteId(note.id)}
                             collapsedTooltip={!showFullContent ? renderCollapsedTooltip : undefined}
                         >
                             {renderItem}
@@ -261,9 +264,17 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
                         {isTrashView ? (
                             <EmptyStatePreset type="emptyTrash" />
                         ) : searchTerm ? (
-                            <EmptyStatePreset type="noMatches" searchTerm={searchTerm} />
+                            <EmptyStatePreset
+                                type="noMatches"
+                                searchTerm={searchTerm}
+                                onClearSearch={() => setSearchTerm('')}
+                            />
                         ) : sortedNotes.length === 0 ? (
-                            <EmptyStatePreset type="firstNote" />
+                            <EmptyStatePreset
+                                type="firstNote"
+                                onCreateNote={() => handleCreateNote()}
+                                onLoadSample={loadSampleWorkspace}
+                            />
                         ) : (
                             <EmptyState
                                 variant="illustrated"

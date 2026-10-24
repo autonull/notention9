@@ -1,9 +1,8 @@
 import React, {useRef, useMemo, useState, useEffect, useCallback} from 'react';
 import type {Note} from '@notention/core';
-import {ClockIcon, DocumentDuplicateIcon, MapPinIcon, PinIcon, TrashIcon, WorldIcon, ChevronLeftIcon, ChevronRightIcon} from '../common/icons';
+import {DocumentDuplicateIcon, PinIcon, TrashIcon} from '../common/icons';
 import {getTextFromHtml} from '../../utils/html';
 import {IconButton} from '../ui/Primitives';
-import {Badge} from '../common/Badge';
 import {formatDistanceToNow} from 'date-fns';
 import {cn} from '../../utils/ui';
 import {useSwipeActions, SwipeActionItem} from '../../hooks/useTouchGestures';
@@ -116,36 +115,20 @@ export const NoteListItem = React.memo(({
         },
     ] : [];
 
-    const {ref: swipeRef, style: swipeStyle, offset, activeSide, handleTouchStart, handleTouchMove, handleTouchEnd, close} = useSwipeActions({
+    const {ref: swipeRef, style: swipeStyle, offset, activeSide, handleTouchStart, handleTouchMove, handleTouchEnd} = useSwipeActions({
         leftActions: [],
         rightActions: swipeActions,
         threshold: 80,
     });
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'ArrowDown') {
+        if (e.key === 'Delete' || e.key === 'Backspace') {
             e.preventDefault();
-            const next = itemRef.current?.nextElementSibling as HTMLElement;
-            if (next && next.classList.contains('note-list-item')) {
-                next.focus();
-            }
-        } else if (e.key === 'ArrowUp') {
-            e.preventDefault();
-            const prev = itemRef.current?.previousElementSibling as HTMLElement;
-            if (prev && prev.classList.contains('note-list-item')) {
-                prev.focus();
-            } else {
-                const searchInput = document.getElementById('sidebar-search-input');
-                if (searchInput) searchInput.focus();
-            }
-        } else if (e.key === 'Enter') {
-            e.preventDefault();
-            onSelect();
-        } else if (e.key === 'Delete' || e.key === 'Backspace') {
-            e.preventDefault();
+            e.stopPropagation();
             onDelete();
         } else if (e.key.toLowerCase() === 'p' && onPin) {
             e.preventDefault();
+            e.stopPropagation();
             onPin();
         }
     };

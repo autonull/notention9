@@ -5,8 +5,9 @@ import {useView} from '../../hooks/useViewContext';
 import {useSettings} from '../../hooks/useSettingsContext';
 import {agentService} from '../../services/AgentService';
 import {ActivityFeed} from '../widgets/ActivityFeed';
-import {PropertyExtractor} from '@notention/core';
+import {getTextFromHtml, PropertyExtractor} from '@notention/core';
 import {MatchEngine} from '@notention/core';
+import {sanitizeHTML} from '../../utils/sanitize';
 import {useDemoWorkspace} from '../../hooks/useDemoWorkspace';
 import {
     CheckCircleIcon,
@@ -81,6 +82,11 @@ const QUICK_ACTIONS = [
     {id: 'settings', label: 'Settings', description: 'Preferences', icon: SettingsIcon, gradient: 'gradient-gray', action: 'settings'},
 ];
 
+const QUICK_CAPTURE_MARKUP = /(?:^|\s)(?:#[\w-]+|\b[\w.-]+:\S+)/g;
+
+const deriveQuickNoteTitle = (input: string): string =>
+    getTextFromHtml(input).replace(QUICK_CAPTURE_MARKUP, ' ').replace(/\s+/g, ' ').trim().slice(0, 80) || 'Quick Note';
+
 const FEATURE_HIGHLIGHTS = [
     {icon: BoltIcon, title: 'Semantic Extraction', desc: 'Auto-detect properties from natural language'},
     {icon: MagicWandIcon, title: 'Smart Matching', desc: 'Discover connections between requests & offers'},
@@ -119,8 +125,8 @@ export function DashboardView() {
         if (!quickCaptureInput.trim()) return;
 
         const note = addNote({
-            title: 'Quick Note',
-            content: `<p>${quickCaptureInput}</p>`,
+            title: deriveQuickNoteTitle(quickCaptureInput),
+            content: sanitizeHTML(`<p>${quickCaptureInput}</p>`),
             tags: ['quick-capture'],
             properties: extractedProps
         });
@@ -469,6 +475,22 @@ export function DashboardView() {
                             <div className="text-center md:text-right flex-shrink-0">
                                 <div className="text-3xl font-bold text-green-300">{Math.round(localMatch.result.score * 100)}%</div>
                                 <div className="text-xs text-gray-500">{localMatch.result.matches.length} satisfied · {localMatch.result.conflicts.length} conflicting</div>
+                                <div className="mt-3 flex flex-wrap justify-center md:justify-end gap-2">
+                                    <Button
+                                        size="sm"
+                                        variant="secondary"
+                                        onClick={() => handleSelectNote(localMatch.request.id)}
+                                    >
+                                        Open request
+                                    </Button>
+                                    <Button
+                                        size="sm"
+                                        variant="primary"
+                                        onClick={() => handleSelectNote(localMatch.note.id)}
+                                    >
+                                        Open match
+                                    </Button>
+                                </div>
                             </div>
                         </div>
                     </section>

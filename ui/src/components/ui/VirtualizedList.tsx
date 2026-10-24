@@ -68,13 +68,33 @@ function VirtualizedListInner<T>(
         const listRef = useRef<HTMLDivElement>(null);
         const [focusedIndex, setFocusedIndex] = React.useState(-1);
         const [tooltipItem, setTooltipItem] = useState<{item: T; index: number} | null>(null);
+        const previousSelectedKey = useRef<string | null | undefined>(undefined);
+
+        const setListRef = useCallback((element: HTMLDivElement | null) => {
+            listRef.current = element;
+            virtualized.containerRef.current = element;
+        }, [virtualized.containerRef]);
 
         const focusItem = useCallback((index: number) => {
             if (index >= 0 && index < items.length) {
                 setFocusedIndex(index);
                 virtualized.scrollToIndex(index, 'center');
+                requestAnimationFrame(() => {
+                    listRef.current?.querySelector<HTMLElement>(`[data-index="${index}"]`)?.focus();
+                });
             }
         }, [items.length, virtualized]);
+
+        React.useEffect(() => {
+            if (selectedKey === previousSelectedKey.current) return;
+            previousSelectedKey.current = selectedKey;
+            if (!selectedKey) return;
+            const index = items.findIndex((item, itemIndex) => getItemKey(item, itemIndex) === selectedKey);
+            if (index !== -1) {
+                setFocusedIndex(index);
+                virtualized.scrollToIndex(index, 'center');
+            }
+        }, [selectedKey, items, getItemKey, virtualized]);
 
         useImperativeHandle(ref, () => ({
             scrollToIndex: virtualized.scrollToIndex,
@@ -128,7 +148,7 @@ function VirtualizedListInner<T>(
         if (loading) {
             return (
                 <div
-                    ref={listRef}
+                    ref={setListRef}
                     className={cn('relative overflow-hidden', className)}
                     style={{height: containerHeight}}
                     role={role}
@@ -159,7 +179,7 @@ function VirtualizedListInner<T>(
         if (items.length === 0) {
             return (
                 <div
-                    ref={listRef}
+                    ref={setListRef}
                     className={cn('relative overflow-hidden flex items-center justify-center', className)}
                     style={{height: containerHeight}}
                     role={role}
@@ -177,20 +197,10 @@ function VirtualizedListInner<T>(
             );
         }
 
-        // Sync focusedIndex with selectedKey
-        React.useEffect(() => {
-            if (selectedKey) {
-                const index = items.findIndex(item => getItemKey(item, 0) === selectedKey);
-                if (index !== -1 && index !== focusedIndex) {
-                    setFocusedIndex(index);
-                }
-            }
-        }, [selectedKey, items, getItemKey, focusedIndex]);
-
         return (
             <>
                 <div
-                    ref={listRef}
+                    ref={setListRef}
                     className={cn('relative overflow-auto', className)}
                     style={{height: containerHeight}}
                     onScroll={virtualized.handleScroll}
@@ -203,6 +213,7 @@ function VirtualizedListInner<T>(
                         {virtualized.visibleItems.map(({item, index, key, style}) => (
                             <div
                                 key={key}
+                                data-index={index}
                                 style={style}
                                 className="w-full"
                                 onClick={() => onItemClick?.(item, index)}
@@ -216,6 +227,7 @@ function VirtualizedListInner<T>(
                                 onKeyDown={(e) => {
                                     if ((e.key === 'Enter' || e.key === ' ') && onItemClick) {
                                         e.preventDefault();
+                                        e.stopPropagation();
                                         onItemClick(item, index);
                                     }
                                 }}

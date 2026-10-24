@@ -23,8 +23,17 @@ export function NoteGridItem({note, isSelected, onSelect}: NoteGridItemProps) {
     return (
         <div
             onClick={onSelect}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onSelect();
+                }
+            }}
+            role="button"
+            tabIndex={0}
+            aria-current={isSelected ? 'true' : undefined}
             className={`
-        relative aspect-square flex flex-col items-center justify-center p-2 rounded-lg cursor-pointer transition-all border
+        relative aspect-square flex flex-col items-center justify-center p-2 rounded-lg cursor-pointer transition-all border focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50
         ${isSelected
                 ? 'bg-blue-900/30 border-blue-500/50 text-blue-100 shadow-md shadow-blue-900/20'
                 : 'bg-gray-800/50 text-gray-400 hover:bg-gray-800 hover:text-gray-200'

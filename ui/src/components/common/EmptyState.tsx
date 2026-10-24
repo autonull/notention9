@@ -1,6 +1,6 @@
 import React from 'react';
 import {cn} from '../../utils/ui';
-import {SearchIcon, SparklesIcon, ArrowRightIcon, HelpIcon, KeyboardIcon} from '../common/icons';
+import {SearchIcon, SparklesIcon, ArrowRightIcon, HelpIcon} from '../common/icons';
 import {Button} from '../ui/Primitives';
 
 interface EmptyStateProps {
@@ -34,7 +34,9 @@ export function EmptyState({
     secondaryAction,
     showSearchSuggestion = false,
     searchTerm,
-    hint
+    hint,
+    showShortcuts = false,
+    shortcutContext
 }: EmptyStateProps) {
     const variantStyles = {
         default: 'flex flex-col items-center justify-center py-12 px-4 text-center',
@@ -229,9 +231,21 @@ interface EmptyStatePresetProps {
     type: 'firstNote' | 'noMatches' | 'emptyTrash' | 'noNetwork' | 'noResults';
     searchTerm?: string;
     query?: string;
+    onCreateNote?: () => void;
+    onLoadSample?: () => void;
+    onClearSearch?: () => void;
+    onConfigureRelays?: () => void;
 }
 
-export function EmptyStatePreset({type, searchTerm, query}: EmptyStatePresetProps) {
+export function EmptyStatePreset({
+    type,
+    searchTerm,
+    query,
+    onCreateNote,
+    onLoadSample,
+    onClearSearch,
+    onConfigureRelays
+}: EmptyStatePresetProps) {
     switch (type) {
         case 'firstNote':
             return (
@@ -240,26 +254,28 @@ export function EmptyStatePreset({type, searchTerm, query}: EmptyStatePresetProp
                     illustration={<NotesEmptyIllustration/>}
                     title="Start your knowledge graph"
                     description="Create your first note to begin building connections. Notes can be tasks, ideas, journal entries, or anything you want to remember."
-                    action={
+                    action={onCreateNote && (
                         <Button
                             variant="primary"
                             size="lg"
                             leftIcon={<SparklesIcon className="w-4 h-4"/>}
                             className="touch-target-48"
+                            onClick={onCreateNote}
                         >
                             Create your first note
                         </Button>
-                    }
-                    secondaryAction={
+                    )}
+                    secondaryAction={onLoadSample && (
                         <Button
                             variant="ghost"
                             size="md"
                             leftIcon={<ArrowRightIcon className="w-4 h-4"/>}
                             className="touch-target-48"
+                            onClick={onLoadSample}
                         >
                             Load sample workspace
                         </Button>
-                    }
+                    )}
                 />
             );
         case 'noMatches':
@@ -270,16 +286,17 @@ export function EmptyStatePreset({type, searchTerm, query}: EmptyStatePresetProp
                     title="No matching notes"
                     description={`Your search for "${searchTerm}" didn't match any notes.`}
                     hint="Try: #tag for tags, key:value for properties, or broader terms"
-                    action={
+                    action={onClearSearch && (
                         <Button
                             variant="secondary"
                             size="md"
                             leftIcon={<SearchIcon className="w-4 h-4"/>}
                             className="touch-target-48"
+                            onClick={onClearSearch}
                         >
                             Clear search
                         </Button>
-                    }
+                    )}
                 />
             );
         case 'emptyTrash':
@@ -298,16 +315,17 @@ export function EmptyStatePreset({type, searchTerm, query}: EmptyStatePresetProp
                     illustration={<NetworkEmptyIllustration/>}
                     title="No network connections"
                     description="Connect to Nostr relays to discover and share notes with others. Your data stays local until you choose to share."
-                    action={
+                    action={onConfigureRelays && (
                         <Button
                             variant="primary"
                             size="md"
                             leftIcon={<SparklesIcon className="w-4 h-4"/>}
                             className="touch-target-48"
+                            onClick={onConfigureRelays}
                         >
                             Configure relays
                         </Button>
-                    }
+                    )}
                 />
             );
         case 'noResults':
@@ -317,16 +335,17 @@ export function EmptyStatePreset({type, searchTerm, query}: EmptyStatePresetProp
                     illustration={<SearchEmptyIllustration/>}
                     title={`No results for "${query}"`}
                     description="Try a different search term or check your spelling."
-                    action={
+                    action={onClearSearch && (
                         <Button
                             variant="secondary"
                             size="md"
                             leftIcon={<SearchIcon className="w-4 h-4"/>}
                             className="touch-target-48"
+                            onClick={onClearSearch}
                         >
                             Clear search
                         </Button>
-                    }
+                    )}
                 />
             );
         default:
