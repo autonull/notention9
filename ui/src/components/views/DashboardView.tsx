@@ -30,6 +30,7 @@ import {Button} from '../ui';
 import {Input} from '../ui';
 import {Badge} from '../ui';
 import {cn} from '../../utils/ui';
+import {Skeleton, DashboardStatSkeleton, ActivityFeedSkeleton, QuickActionsSkeleton} from '../ui/Skeleton';
 
 const TEMPLATES = {
     task: {
@@ -165,6 +166,62 @@ export function DashboardView() {
     }, [setSelectedNoteId, setActiveView]);
 
     const isConnected = agentStatus.status === 'connected';
+
+    // Show skeleton while loading
+    if (notesLoading) {
+        return (
+            <div className="h-full overflow-y-auto bg-gray-950 text-white custom-scrollbar p-4 md:p-6 lg:p-8">
+                <div className="max-w-7xl mx-auto space-y-8 animate-fade-in">
+                    {/* Welcome Header Skeleton */}
+                    <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in">
+                        <div>
+                            <Skeleton variant="text" width="40%" className="text-3xl md:text-4xl font-bold mb-2"/>
+                            <Skeleton variant="text" width="60%" className="text-gray-400"/>
+                        </div>
+                        <Skeleton variant="rectangular" height={48} width={160} className="rounded-lg w-full sm:w-auto"/>
+                    </header>
+
+                    {/* Quick Capture Section Skeleton */}
+                    <section className="relative overflow-hidden rounded-3xl border border-gray-800 bg-gradient-to-br from-gray-900/50 to-gray-900/80 p-6 md:p-8 animate-fade-in">
+                        <div className="relative z-10 max-w-2xl mx-auto text-center">
+                            <Skeleton variant="text" width="50%" className="text-2xl md:text-3xl font-bold mb-2 mx-auto"/>
+                            <Skeleton variant="text" width="70%" className="text-gray-500 text-sm mb-6 mx-auto"/>
+                            <Skeleton variant="rectangular" height={56} width="100%" className="rounded-lg mb-6 mx-auto max-w-md"/>
+                            <Skeleton variant="text" lines={1} className="mb-6 justify-center"/>
+                            <div className="flex flex-wrap justify-center gap-2">
+                                <Skeleton variant="rectangular" height={36} width={80} className="rounded-lg"/>
+                                <Skeleton variant="rectangular" height={36} width={80} className="rounded-lg"/>
+                                <Skeleton variant="rectangular" height={36} width={80} className="rounded-lg"/>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Stats Grid Skeleton */}
+                    <section aria-label="Statistics" className="animate-fade-in">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <DashboardStatSkeleton/>
+                            <DashboardStatSkeleton/>
+                            <DashboardStatSkeleton/>
+                            <DashboardStatSkeleton/>
+                        </div>
+                    </section>
+
+                    {/* Main Content Grid Skeleton */}
+                    <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in">
+                        <article className="lg:col-span-2 bg-gray-900/50 rounded-3xl border border-gray-700/30 overflow-hidden flex flex-col backdrop-blur-sm shadow-xl">
+                            <header className="p-6 border-b border-gray-700/30 flex justify-between items-center bg-gray-800/20">
+                                <Skeleton variant="text" width="40%" className="text-xl font-bold"/>
+                                <Skeleton variant="rectangular" height={32} width={80} className="rounded-lg"/>
+                            </header>
+                            <ActivityFeedSkeleton/>
+                        </article>
+
+                        <QuickActionsSkeleton/>
+                    </section>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="h-full overflow-y-auto bg-gray-950 text-white custom-scrollbar p-4 md:p-6 lg:p-8">

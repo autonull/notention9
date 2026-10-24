@@ -9,6 +9,7 @@ import {NetworkFeedHeader} from '../network/NetworkFeedHeader';
 import {SuggestedMatches} from '../network/SuggestedMatches';
 import {NetworkFeedList} from '../network/NetworkFeedList';
 import {RelayStatusBanner} from '../network/RelayStatusBanner';
+import {Skeleton, NetworkEventSkeleton} from '../ui/Skeleton';
 
 interface NetworkViewProps {
     matchAgainst?: Note | null;
@@ -58,6 +59,27 @@ export function NetworkView({matchAgainst}: NetworkViewProps) {
 
     if (!pubkey) {
         return <ConnectIdentityPrompt onNavigateToSettings={onNavigateToSettings}/>;
+    }
+
+    if (isLoading) {
+        return (
+            <div className="h-full flex flex-col bg-gray-800/50 rounded-lg overflow-hidden">
+                <div className="p-4 border-b border-gray-700/50">
+                    <Skeleton variant="rectangular" height={60} width="100%" className="rounded-lg"/>
+                </div>
+                <div className="p-4 border-b border-gray-700/50">
+                    <Skeleton variant="rectangular" height={40} width="100%" className="rounded-lg"/>
+                </div>
+                <div className="p-4 md:p-6 flex-grow overflow-y-auto">
+                    <Skeleton variant="rectangular" height={60} width="100%" className="rounded-lg mb-6"/>
+                    <div className="space-y-4">
+                        {Array.from({length: 5}).map((_, i) => (
+                            <NetworkEventSkeleton key={i}/>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
     }
 
     return (

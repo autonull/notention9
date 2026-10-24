@@ -18,7 +18,7 @@ import {useToast} from '../hooks/useToast';
 import {cn} from '../utils/ui';
 
 export function AppShell() {
-    const {addNote, getSortedFilteredNotes} = useNotes();
+    const {addNote, getSortedFilteredNotes, loading: notesLoading} = useNotes();
     const {
         activeView,
         setActiveView,
@@ -165,6 +165,7 @@ export function AppShell() {
                             sortedNotes={sortedNotes}
                             onToggleSidebar={toggleSidebar}
                             isSidebarOpen={isMobile ? mobileSidebarOpen : isSidebarOpen}
+                            isLoading={notesLoading}
                         />
                     </div>
 

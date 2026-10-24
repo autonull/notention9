@@ -1,7 +1,7 @@
 import React from 'react';
-import {NoteIcon, PlusIcon, SparklesIcon} from '../common/icons';
+import {NoteIcon, PlusIcon, SparklesIcon, TrashIcon, SearchIcon} from '../common/icons';
 import {Button} from '../ui/Primitives';
-import {EmptyState} from '../common/EmptyState';
+import {EmptyState, NotesEmptyIllustration, SearchEmptyIllustration, TrashEmptyIllustration} from '../common/EmptyState';
 import {useDemoWorkspace} from '../../hooks/useDemoWorkspace';
 
 interface SidebarEmptyStateProps {
@@ -12,38 +12,70 @@ interface SidebarEmptyStateProps {
 
 export function SidebarEmptyState({searchTerm, isTrashView, onCreateNote}: SidebarEmptyStateProps) {
     const {load} = useDemoWorkspace();
-    return (
-        <EmptyState
-            variant="card"
-            icon={NoteIcon}
-            title={searchTerm ? 'No matching notes found' : (isTrashView ? 'Trash is empty' : 'Your notebook is empty')}
-            description={searchTerm ? `Try adjusting your search for &#34;${searchTerm}&#34;` : 'Capture your ideas, daily tasks, and knowledge.'}
-            action={
-                searchTerm ? (
+
+    if (searchTerm) {
+        return (
+            <EmptyState
+                variant="illustrated"
+                illustration={<SearchEmptyIllustration/>}
+                title="No matching notes found"
+                description={`No notes match "${searchTerm}". Try broadening your search or creating a new note.`}
+                showSearchSuggestion
+                searchTerm={searchTerm}
+                action={
                     <Button
                         onClick={() => onCreateNote(searchTerm)}
                         leftIcon={<PlusIcon className="w-4 h-4"/>}
-                        size="sm"
+                        size="md"
                     >
-                        Create note &#34;{searchTerm}&#34;
+                        Create note "{searchTerm}"
                     </Button>
-                ) : (
-                    <div className="flex flex-col gap-2 w-full">
-                        <Button
-                            onClick={() => onCreateNote()}
-                            leftIcon={<PlusIcon className="w-4 h-4"/>}
-                            fullWidth
-                            size="sm"
-                        >
-                            Create First Note
-                        </Button>
-                        {!isTrashView && (
-                            <Button onClick={load} variant="secondary" leftIcon={<SparklesIcon className="w-4 h-4"/>} fullWidth size="sm">
-                                Load sample workspace
-                            </Button>
-                        )}
-                    </div>
-                )
+                }
+            />
+        );
+    }
+
+    if (isTrashView) {
+        return (
+            <EmptyState
+                variant="illustrated"
+                illustration={<TrashEmptyIllustration/>}
+                title="Trash is empty"
+                description="Deleted notes would appear here. Notes stay in trash for 30 days before being permanently removed."
+                action={
+                    <Button variant="ghost" size="sm" onClick={() => onCreateNote()}>
+                        <PlusIcon className="w-4 h-4"/> Create a note instead
+                    </Button>
+                }
+            />
+        );
+    }
+
+    return (
+        <EmptyState
+            variant="illustrated"
+            illustration={<NotesEmptyIllustration/>}
+            title="Your notebook is empty"
+            description="Capture your ideas, daily tasks, and knowledge. Everything you add becomes searchable and matchable."
+            action={
+                <div className="flex flex-col gap-2 w-full max-w-xs">
+                    <Button
+                        onClick={() => onCreateNote()}
+                        leftIcon={<PlusIcon className="w-4 h-4"/>}
+                        fullWidth
+                        size="md"
+                    >
+                        Create First Note
+                    </Button>
+                    <Button onClick={load} variant="secondary" leftIcon={<SparklesIcon className="w-4 h-4"/>} fullWidth size="md">
+                        Load sample workspace
+                    </Button>
+                </div>
+            }
+            secondaryAction={
+                <Button variant="ghost" size="sm" onClick={() => onCreateNote('Quick capture')}>
+                    <SearchIcon className="w-4 h-4"/> Try quick capture
+                </Button>
             }
         />
     );

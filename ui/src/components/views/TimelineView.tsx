@@ -8,6 +8,7 @@ import {useNotes} from '../../hooks/useNotes';
 import {useView} from '../../hooks/useViewContext';
 import {MapPinIcon} from '../common/icons';
 import {haversineDistance, parseGeoFromValues} from '@notention/core';
+import {Skeleton} from '../ui/Skeleton';
 
 const locales = {
     'en-US': enUS,
@@ -32,7 +33,7 @@ interface CalendarEvent {
 }
 
 export function TimelineView() {
-    const {notes} = useNotes();
+    const {notes, loading} = useNotes();
     const {setSelectedNoteId, setActiveView} = useView();
     const [locationFilterId, setLocationFilterId] = useState<string>('');
     const [filterRadius, setFilterRadius] = useState<number>(50); // km
@@ -116,6 +117,25 @@ export function TimelineView() {
         setSelectedNoteId(event.id);
         setActiveView('notes');
     };
+
+    if (loading) {
+        return (
+            <div className="h-full bg-gray-900 p-4 flex flex-col overflow-hidden">
+                <div className="flex flex-wrap items-center gap-4 mb-4 bg-gray-800 p-2 rounded-lg border border-gray-700">
+                    <Skeleton variant="rectangular" height={40} width={120} className="rounded-lg"/>
+                    <Skeleton variant="rectangular" height={40} width={160} className="rounded-lg"/>
+                    <Skeleton variant="rectangular" height={40} width={100} className="rounded-lg"/>
+                </div>
+                <div className="flex-1 bg-gray-800/50 rounded-lg p-4 animate-pulse-subtle">
+                    <div className="space-y-3">
+                        {Array.from({length: 6}).map((_, i) => (
+                            <div key={i} className="h-8 bg-gray-700/50 rounded animate-shimmer"/>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="h-full bg-gray-900 p-4 flex flex-col overflow-hidden">

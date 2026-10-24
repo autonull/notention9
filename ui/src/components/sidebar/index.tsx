@@ -15,16 +15,18 @@ import {IconButton} from '../common/IconButton';
 import {cn} from '../../utils/ui';
 import {VirtualizedList} from '../ui/VirtualizedList';
 import {useTouchGestures} from '../../hooks/useTouchGestures';
+import {Skeleton, NoteItemSkeleton, SidebarSkeleton} from '../ui/Skeleton';
 
 interface SidebarProps {
     sortedNotes?: Note[];
     onToggleSidebar?: () => void;
     isSidebarOpen?: boolean;
+    isLoading?: boolean;
 }
 
 const ITEM_HEIGHT = 84;
 
-export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true}: SidebarProps) {
+export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true, isLoading = false}: SidebarProps) {
     const {
         searchTerm,
         setSearchTerm,
@@ -51,6 +53,10 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
     const virtualListRef = useRef<{scrollToIndex: (index: number, align?: 'start' | 'center' | 'end') => void}>(null);
     const [focusedIndex, setFocusedIndex] = useState(-1);
     const [isMobile, setIsMobile] = useState(false);
+
+    if (isLoading) {
+        return <SidebarSkeleton/>;
+    }
 
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
