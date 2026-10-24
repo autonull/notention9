@@ -1,6 +1,8 @@
 import React, {useEffect, useMemo, useRef, useState, useCallback} from 'react';
 import {cn} from '../../utils/ui';
 import {CommandPaletteItem} from './Overlay';
+import {useFocusTrap} from './Overlay';
+import {SearchSparkleIcon, XIcon, ArrowRightIcon, ClockIcon} from '../common/icons';
 
 const RECENT_STORAGE_KEY = 'notention-command-palette-recent';
 
@@ -113,7 +115,7 @@ const DEFAULT_SHORTCUTS = [
     {label: 'Toggle Sidebar', keys: ['⌘', '\\']},
     {label: 'Save Note', keys: ['⌘', 'S']},
     {label: 'Next Note', keys: ['⌘', 'J']},
-    {label: 'Previous Note', keys: ['⌘', 'K']},
+    {label: 'Previous Note', keys: ['⌘', 'Shift', 'K']},
     {label: 'Back to List', keys: ['Esc']},
     {label: 'Open Help', keys: ['?']},
 ];
@@ -122,13 +124,13 @@ export function EnhancedCommandPalette({
     isOpen,
     onClose,
     items,
-    placeholder = 'Type a command or search...',
+    placeholder = 'Type a command or search... (#tag, key:value)',
     title,
     className = '',
     showShortcuts = true,
     showRecent = true,
     recentItems: initialRecentItems = [],
-    maxRecent = 5,
+    maxRecent = 8,
     onRecentChange,
     fuzzySearch = true,
     persistRecent = true,
@@ -142,14 +144,14 @@ export function EnhancedCommandPalette({
         persistRecent ? loadRecentItems() : initialRecentItems
     );
 
-    // Sync with external recent items if provided
+    const contentRef = useFocusTrap(isOpen, onClose);
+
     useEffect(() => {
         if (initialRecentItems.length > 0 && !persistRecent) {
             setRecentItems(initialRecentItems);
         }
     }, [initialRecentItems, persistRecent]);
 
-    // Persist recent items to localStorage
     useEffect(() => {
         if (persistRecent && recentItems.length > 0) {
             saveRecentItems(recentItems);
@@ -242,9 +244,6 @@ export function EnhancedCommandPalette({
                 e.preventDefault();
                 if (filteredItems[selectedIndex]) {
                     const item = filteredItems[selectedIndex];
-                    if (showRecent && recentItems.length > 0 && selectedIndex < recentItems.length) {
-                        // Recent item selected
-                    }
                     item.action();
                     if (showRecent && !recentItems.some(r => r.id === item.id)) {
                         handleRecentChange([item, ...recentItems].slice(0, maxRecent));
@@ -281,6 +280,10 @@ export function EnhancedCommandPalette({
 
     if (!isOpen) return null;
 
+    const hasResults = filteredItems.length > 0;
+    const isEmptyQuery = !query.trim();
+    const showEmptyState = isEmptyQuery && !showHelp && (!showRecent || recentItems.length === 0);
+
     return (
         <div
             className="fixed inset-0 z-[600] flex items-start justify-center pt-[10vh] bg-black/70 backdrop-blur-sm animate-fade-in"
@@ -290,7 +293,8 @@ export function EnhancedCommandPalette({
             aria-label={title || 'Command Palette'}
         >
             <div
-                ref={listRef}
+                ref={contentRef}
+                tabIndex={-1}
                 className={cn(
                     'bg-gray-800 rounded-xl shadow-2xl border border-gray-700 w-full max-w-3xl overflow-hidden flex flex-col max-h-[70vh] animate-slide-in-up',
                     className
@@ -306,7 +310,7 @@ export function EnhancedCommandPalette({
                         <input
                             ref={inputRef}
                             type="text"
-                            className="w-full bg-transparent pl-10 pr-4 py-2.5 text-lg text-white placeholder-gray-500 focus:outline-none"
+                            className="w-full bg-transparent pl-10 pr-12 py-2.5 text-lg text-white placeholder-gray-500 focus:outline-none"
                             placeholder={placeholder}
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
@@ -317,7 +321,16 @@ export function EnhancedCommandPalette({
                             aria-controls="command-palette-list"
                             aria-activedescendant={filteredItems[selectedIndex]?.id}
                         />
-                        <kbd className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-500 bg-gray-700 px-1.5 rounded">Esc</kbd>
+                        {query && (
+                            <button
+                                onClick={() => setQuery('')}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-500 hover:text-gray-200 rounded-full hover:bg-gray-700 transition-colors"
+                                aria-label="Clear search"
+                            >
+                                <XIcon className="w-4 h-4" />
+                            </button>
+                        )}
+                        <kbd className="absolute right-10 top-1/2 -translate-y-1/2 text-xs text-gray-500 bg-gray-700 px-1.5 rounded">Esc</kbd>
                     </div>
                 </div>
 
@@ -327,14 +340,50 @@ export function EnhancedCommandPalette({
                     role="listbox"
                     aria-label="Commands and notes"
                 >
-                    {filteredItems.length === 0 && query && (
-                        <div className="p-8 text-center text-gray-500">No results found for &#34;{query}&#34;</div>
+                    {showEmptyState && (
+                        <div className="p-8 text-center animate-fade-in">
+                            <div className="p-3 bg-gray-700/50 rounded-xl w-fit mx-auto mb-4 text-gray-400">
+                                <SearchSparkleIcon className="w-8 h-8" />
+                            </div>
+                            <h3 className="text-lg font-semibold text-white mb-2">Welcome to Command Palette</h3>
+                            <p className="text-gray-400 mb-6 max-w-xs mx-auto">
+                                Press <kbd className="px-1.5 py-0.5 bg-gray-700 rounded text-xs font-mono">⌘K</kbd> to open, type to search commands, notes, tags (<kbd className="px-1.5 py-0.5 bg-gray-700 rounded text-xs font-mono">#tag</kbd>), or properties (<kbd className="px-1.5 py-0.5 bg-gray-700 rounded text-xs font-mono">key:value</kbd>).
+                            </p>
+                            <div className="flex flex-wrap justify-center gap-2 mx-auto max-w-xs">
+                                <button
+                                    onClick={() => setShowHelp(true)}
+                                    className="btn btn-ghost btn-sm w-full sm:w-auto touch-target-48"
+                                >
+                                    <ClockIcon className="w-4 h-4 mr-2" />
+                                    View Shortcuts
+                                </button>
+                            </div>
+                        </div>
                     )}
 
-                    {filteredItems.length === 0 && !query && !showHelp && (
+                    {!showEmptyState && filteredItems.length === 0 && query && (
+                        <div className="p-8 text-center animate-fade-in">
+                            <div className="p-3 bg-gray-700/50 rounded-xl w-fit mx-auto mb-4 text-gray-400">
+                                <SearchSparkleIcon className="w-8 h-8" />
+                            </div>
+                            <h3 className="text-lg font-semibold text-white mb-2">No results for "{query}"</h3>
+                            <p className="text-gray-400 mb-4">Try a different search term or check your spelling.</p>
+                            <div className="flex flex-wrap justify-center gap-2 mx-auto max-w-xs">
+                                <button
+                                    onClick={() => setQuery('')}
+                                    className="btn btn-secondary btn-sm touch-target-48"
+                                >
+                                    <XIcon className="w-4 h-4 mr-2" />
+                                    Clear Search
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {!showEmptyState && filteredItems.length === 0 && !query && !showHelp && (
                         <>
                             {showRecent && recentItems.length > 0 && (
-                                <div className="space-y-2">
+                                <div className="space-y-2 animate-fade-in">
                                     <div className="px-3 pt-3 pb-1 text-[10px] font-bold text-gray-500 uppercase tracking-widest flex items-center justify-between">
                                         <span>Recent ({recentItems.length})</span>
                                         <button
@@ -380,7 +429,7 @@ export function EnhancedCommandPalette({
                                 </div>
                             )}
                             {showShortcuts && (
-                                <div className="pt-4 space-y-4">
+                                <div className="pt-4 space-y-4 animate-fade-in">
                                     <div className="px-3 pt-3 pb-1 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
                                         Keyboard Shortcuts
                                     </div>

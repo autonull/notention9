@@ -94,7 +94,7 @@ export function IconButton({
         lg: 'btn-lg',
     };
     const sizeClass = sizeMap[size];
-    const touchClass = touchTarget ? 'touch-target-44' : '';
+    const touchClass = touchTarget ? 'touch-target-48' : '';
 
     const iconSizes = {
         xs: 'h-3 w-3',

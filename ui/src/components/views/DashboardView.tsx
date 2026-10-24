@@ -373,7 +373,7 @@ export function DashboardView() {
                                     onClick={() => handleQuickTemplate(type)}
                                     variant="outline"
                                     size="sm"
-                                    className={cn('gap-2', t.borderColor, 'hover:scale-105 active:scale-95 touch-target-44')}
+                                    className={cn('gap-2', t.borderColor, 'hover:scale-105 active:scale-95 touch-target-48')}
                                     leftIcon={
                                         <div className={cn('p-2 rounded-xl', t.gradient, 'text-white')}>
                                             <t.icon className="w-4 h-4" />
@@ -585,7 +585,7 @@ export function DashboardView() {
                                 onClick={() => setActiveView('dashboard')}
                                 variant="ghost"
                                 size="sm"
-                                className="w-full justify-start gap-3 touch-target-44"
+                                className="w-full justify-start gap-3 touch-target-48"
                                 leftIcon={<HomeIcon className="w-5 h-5 text-gray-400" />}
                             >
                                 <div>

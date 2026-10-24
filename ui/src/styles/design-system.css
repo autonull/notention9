@@ -307,28 +307,6 @@ body {
   font-size: var(--text-base);
 }
 
-/* Sizes */
-.btn-xs {
-  padding: var(--space-1) var(--space-2);
-  font-size: var(--text-xs);
-  gap: var(--space-1);
-}
-
-.btn-sm {
-  padding: var(--space-1.5) var(--space-3);
-  font-size: var(--text-sm);
-}
-
-.btn-md {
-  padding: var(--space-2) var(--space-4);
-  font-size: var(--text-sm);
-}
-
-.btn-lg {
-  padding: var(--space-3) var(--space-6);
-  font-size: var(--text-base);
-}
-
 /* Card */
 .card {
   background-color: var(--color-bg-card);
@@ -717,16 +695,6 @@ body {
   transition: transform 50ms ease;
 }
 
-/* Staggered animation delays */
-.stagger-1 { animation-delay: 50ms; }
-.stagger-2 { animation-delay: 100ms; }
-.stagger-3 { animation-delay: 150ms; }
-.stagger-4 { animation-delay: 200ms; }
-.stagger-5 { animation-delay: 250ms; }
-.stagger-6 { animation-delay: 300ms; }
-.stagger-7 { animation-delay: 350ms; }
-.stagger-8 { animation-delay: 400ms; }
-
 /* Layout utilities */
 .flex-center {
   display: flex;
@@ -848,60 +816,6 @@ body {
 }
 
 /* ============================================================================
-   ADDITIONAL ANIMATIONS
-   ============================================================================ */
-
-@keyframes slide-in-left {
-  from {
-    opacity: 0;
-    transform: translateX(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes slide-in-right {
-  from {
-    opacity: 0;
-    transform: translateX(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.animate-slide-in-left {
-  animation: slide-in-left var(--transition-base) ease-out forwards;
-}
-
-.animate-slide-in-right {
-  animation: slide-in-right var(--transition-base) ease-out forwards;
-}
-
-.animate-shimmer {
-  background: linear-gradient(90deg, var(--color-bg-tertiary) 25%, var(--color-bg-elevated) 50%, var(--color-bg-tertiary) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-}
-
-.animate-spin {
-  animation: spin 1s linear infinite;
-}
-
-/* ============================================================================
    RESPONSIVE UTILITIES
    ============================================================================ */
 
@@ -1014,24 +928,7 @@ body {
   box-shadow: var(--focus-ring);
 }
 
-/* Skip link for keyboard navigation */
-.skip-link {
-  position: absolute;
-  top: -100%;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 9999;
-  padding: var(--space-3) var(--space-6);
-  background: var(--color-brand-primary);
-  color: white;
-  border-radius: var(--radius-lg);
-  font-weight: var(--font-medium);
-  text-decoration: none;
-}
 
-.skip-link:focus {
-  top: var(--space-4);
-}
 
 /* ============================================================================
    FORM ENHANCEMENTS
@@ -1486,32 +1383,3 @@ body {
 .inline-gap-3 { gap: var(--space-3); }
 .inline-gap-4 { gap: var(--space-4); }
 .inline-gap-6 { gap: var(--space-6); }
-
-/* ============================================================================
-   REDUCED MOTION
-   ============================================================================ */
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-  
-  .animate-fade-in-up,
-  .animate-fade-in-down,
-  .animate-fade-in-left,
-  .animate-fade-in-right,
-  .animate-scale-in-bounce,
-  .animate-slide-in-from-top,
-  .animate-slide-in-from-bottom,
-  .animate-pulse-ring::after,
-  .animate-shimmer-wave {
-    animation: none !important;
-    opacity: 1;
-    transform: none;
-  }
-}

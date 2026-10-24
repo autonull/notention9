@@ -24,28 +24,28 @@ import {
     SearchIcon,
     HelpIcon,
     NoteIcon,
+    EllipsisVerticalIcon,
+    ChevronDownIcon,
 } from '../common/icons';
 import {IconButton} from '../ui/Primitives';
 import {cn} from '../../utils/ui';
 
-const MOBILE_NAV_ITEMS = [
-    {id: 'dashboard', label: 'Dashboard', icon: HomeIcon, shortcut: '⌘1', showInMobile: true, priority: 1},
-    {id: 'notes', label: 'Notes', icon: NoteIcon, shortcut: '⌘2', showInMobile: true, priority: 2},
-    {id: 'map', label: 'Map', icon: MapIcon, shortcut: '⌘3', showInMobile: true, priority: 3},
-    {id: 'timeline', label: 'Timeline', icon: ClockIcon, shortcut: '⌘4', showInMobile: true, priority: 4},
-    {id: 'network', label: 'Network', icon: NetworkIcon, shortcut: '⌘5', showInMobile: true, priority: 5},
-    {id: 'chat', label: 'Chat', icon: ChatIcon, shortcut: '⌘6', showInMobile: true, priority: 6},
-    {id: 'actions', label: 'Actions', icon: LightBulbIcon, shortcut: '⌘7', showInMobile: true, priority: 7},
-    {id: 'graph', label: 'Graph', icon: GitBranchIcon, shortcut: '⌘8', showInMobile: true, priority: 8},
-    {id: 'ontology', label: 'Ontology', icon: OntologyIcon, shortcut: '⌘9', showInMobile: true, priority: 9},
-    {id: 'trash', label: 'Trash', icon: TrashIcon, shortcut: '⌘0', showInMobile: true, priority: 10},
-    {id: 'self', label: 'Self', icon: UsersIcon, showInMobile: true, priority: 11},
-    {id: 'settings', label: 'Settings', icon: SettingsIcon, showInMobile: true, priority: 12},
+const PRIMARY_NAV_ITEMS = [
+    {id: 'dashboard', label: 'Dashboard', icon: HomeIcon, shortcut: '⌘1', priority: 1},
+    {id: 'notes', label: 'Notes', icon: NoteIcon, shortcut: '⌘2', priority: 2},
+    {id: 'map', label: 'Map', icon: MapIcon, shortcut: '⌘3', priority: 3},
+    {id: 'timeline', label: 'Timeline', icon: ClockIcon, shortcut: '⌘4', priority: 4},
+    {id: 'chat', label: 'Chat', icon: ChatIcon, shortcut: '⌘5', priority: 5},
 ] as const;
 
-const MOBILE_ACTION_ITEMS = [
-    {id: 'search', label: 'Search', icon: SearchIcon, shortcut: '⌘F'},
-    {id: 'shortcuts', label: 'Shortcuts', icon: HelpIcon, shortcut: '?'},
+const MORE_NAV_ITEMS = [
+    {id: 'network', label: 'Network', icon: NetworkIcon, shortcut: '⌘6'},
+    {id: 'actions', label: 'Actions', icon: LightBulbIcon, shortcut: '⌘7'},
+    {id: 'graph', label: 'Graph', icon: GitBranchIcon, shortcut: '⌘8'},
+    {id: 'ontology', label: 'Ontology', icon: OntologyIcon, shortcut: '⌘9'},
+    {id: 'trash', label: 'Trash', icon: TrashIcon, shortcut: '⌘0'},
+    {id: 'self', label: 'Self', icon: UsersIcon},
+    {id: 'settings', label: 'Settings', icon: SettingsIcon},
 ] as const;
 
 interface MobileBottomNavProps {
@@ -58,20 +58,24 @@ export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps
     const {addNote} = useNotes();
     const {addToast} = useToast();
     const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
-    const actionMenuRef = useRef<HTMLDivElement>(null);
     const [showMore, setShowMore] = useState(false);
+    const actionMenuRef = useRef<HTMLDivElement>(null);
+    const moreMenuRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (actionMenuRef.current && !actionMenuRef.current.contains(event.target as Node)) {
                 setIsActionMenuOpen(false);
             }
+            if (moreMenuRef.current && !moreMenuRef.current.contains(event.target as Node)) {
+                setShowMore(false);
+            }
         };
-        if (isActionMenuOpen) {
+        if (isActionMenuOpen || showMore) {
             document.addEventListener('mousedown', handleClickOutside);
         }
         return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, [isActionMenuOpen]);
+    }, [isActionMenuOpen, showMore]);
 
     const handleSelect = useCallback((viewId: string) => {
         setActiveView(viewId as View);
@@ -132,13 +136,7 @@ export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps
         {label: 'From Template', icon: DocumentDuplicateIcon, action: handleNewFromTemplate, shortcut: '⌘T'},
     ], [handleQuickCapture, handleNewRequest, handleNewOffer, handleNewFromTemplate]);
 
-    const allNavItems = MOBILE_NAV_ITEMS.filter(item => item.showInMobile);
-
-    const getBadgeCount = (item: typeof MOBILE_NAV_ITEMS[0]) => {
-        if (item.badgeCountKey === 'notificationCount') return notificationCount;
-        if (item.badgeCountKey === 'chatNotificationCount') return chatNotificationCount;
-        return undefined;
-    };
+    const getChatBadgeCount = () => chatNotificationCount;
 
     return (
         <>
@@ -149,12 +147,11 @@ export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps
                 )}
             >
                 <div className="card glass rounded-t-2xl shadow-2xl overflow-hidden border-t border-gray-700/50">
-                    {/* Primary Navigation - All views accessible */}
-                    <div className="flex items-center justify-around px-2 py-2.5 overflow-x-auto custom-scrollbar pb-1">
-                        {allNavItems.map(item => {
+                    {/* Primary Navigation - 5 core views */}
+                    <div className="flex items-center justify-around px-2 py-2.5 pb-1">
+                        {PRIMARY_NAV_ITEMS.map(item => {
                             const Icon = item.icon;
                             const isActive = activeView === item.id;
-                            const badgeCount = getBadgeCount(item);
                             return (
                                 <button
                                     key={item.id}
@@ -171,9 +168,9 @@ export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps
                                 >
                                     <div className="relative flex items-center justify-center">
                                         <Icon className={cn('w-6 h-6', isActive ? 'text-indigo-400' : '')} />
-                                        {badgeCount && badgeCount > 0 && (
+                                        {item.id === 'chat' && getChatBadgeCount() > 0 && (
                                             <span className="absolute -top-1 -right-1 w-5 h-5 min-w-[16px] bg-red-500 text-[10px] font-bold rounded-full flex items-center justify-center text-white">
-                                                {badgeCount > 9 ? '9+' : badgeCount}
+                                                {getChatBadgeCount() > 9 ? '9+' : getChatBadgeCount()}
                                             </span>
                                         )}
                                     </div>
@@ -188,6 +185,56 @@ export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps
                                 </button>
                             );
                         })}
+                        {/* More Menu */}
+                        <div className="relative" ref={moreMenuRef}>
+                            <button
+                                onClick={() => setShowMore(!showMore)}
+                                className={cn(
+                                    'btn btn-ghost btn-xs flex flex-col items-center gap-1 px-3 py-2.5 rounded-xl min-w-[60px] flex-shrink-0 touch-target transition-all duration-200',
+                                    showMore ? 'bg-gray-800/50 text-gray-200' : 'text-gray-500 hover:text-gray-300 hover:bg-gray-800/50 active:bg-gray-700/50'
+                                )}
+                                aria-label="More views"
+                                aria-expanded={showMore}
+                                aria-haspopup="menu"
+                            >
+                                <EllipsisVerticalIcon className="w-6 h-6 text-gray-400" />
+                                <span className="text-[10px] font-medium uppercase tracking-wider truncate max-w-[56px] text-center">
+                                    More
+                                </span>
+                            </button>
+                            {showMore && (
+                                <div
+                                    className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-40 card glass shadow-2xl overflow-hidden animate-scale-in z-50"
+                                    role="menu"
+                                >
+                                    {MORE_NAV_ITEMS.map(item => {
+                                        const Icon = item.icon;
+                                        const isActive = activeView === item.id;
+                                        return (
+                                            <button
+                                                key={item.id}
+                                                onClick={() => { handleSelect(item.id); setShowMore(false); }}
+                                                role="menuitem"
+                                                className={cn(
+                                                    'w-full flex items-center gap-3 px-4 py-3 text-left text-gray-200 hover:bg-gray-800 transition-colors touch-target',
+                                                    isActive && 'bg-indigo-600/20 text-indigo-400'
+                                                )}
+                                                aria-keyshortcuts={item.shortcut}
+                                                aria-current={isActive ? 'page' : undefined}
+                                            >
+                                                <Icon className={cn('w-5 h-5 flex-shrink-0', isActive ? 'text-indigo-400' : 'text-gray-400')} />
+                                                <span className="flex-1 text-sm font-medium">{item.label}</span>
+                                                {item.shortcut && (
+                                                    <span className="text-[10px] text-gray-500 font-mono px-2 py-0.5 bg-gray-800 rounded badge badge-sm badge-gray">
+                                                        {item.shortcut}
+                                                    </span>
+                                                )}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     {/* Action Bar - FAB + Quick Actions + Command Palette */}

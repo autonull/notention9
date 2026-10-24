@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { EnhancedCommandPalette } from '../../components/ui/EnhancedCommandPalette';
 import { Note } from '@notention/core';
 
@@ -9,6 +9,9 @@ vi.mock('../common/icons', () => ({
     NoteIcon: () => <span>NoteIcon</span>,
     PlusIcon: () => <span>PlusIcon</span>,
     SearchIcon: () => <span>SearchIcon</span>,
+    SearchSparkleIcon: () => <span>SearchSparkleIcon</span>,
+    XIcon: () => <span>XIcon</span>,
+    ClockIcon: () => <span>ClockIcon</span>,
 }));
 
 describe('EnhancedCommandPalette', () => {
@@ -36,7 +39,7 @@ describe('EnhancedCommandPalette', () => {
         expect(screen.getByPlaceholderText(/Type a command/)).toBeTruthy();
     });
 
-    it('shows shortcuts when query is empty', () => {
+    it('shows welcome empty state when no recent items', () => {
         render(
             <EnhancedCommandPalette
                 isOpen={true}
@@ -45,10 +48,32 @@ describe('EnhancedCommandPalette', () => {
                 placeholder="Type a command or search..."
                 title="Command Palette"
                 showShortcuts={true}
+                showRecent={false}
             />
         );
-        expect(screen.getByText(/Keyboard Shortcuts/i)).toBeTruthy();
-        expect(screen.getByText('Ctrl + N')).toBeTruthy();
+        expect(screen.getByText(/Welcome to Command Palette/i)).toBeTruthy();
+        expect(screen.getByText(/View Shortcuts/i)).toBeTruthy();
+    });
+
+    it('shows shortcuts when help is opened', async () => {
+        render(
+            <EnhancedCommandPalette
+                isOpen={true}
+                onClose={mockOnClose}
+                items={[]}
+                placeholder="Type a command or search..."
+                title="Command Palette"
+                showShortcuts={true}
+                showRecent={false}
+            />
+        );
+        // Click the "View Shortcuts" button
+        fireEvent.click(screen.getByText(/View Shortcuts/i));
+        // Wait for help state to update - shows "Help & Shortcuts"
+        await waitFor(() => {
+            expect(screen.getByText(/Help & Shortcuts/i)).toBeTruthy();
+        });
+        expect(screen.getByText('⌘ + N')).toBeTruthy();
     });
 
     it('filters items based on query', () => {
@@ -66,7 +91,9 @@ describe('EnhancedCommandPalette', () => {
         const input = screen.getByPlaceholderText(/Type a command/);
         fireEvent.change(input, { target: { value: 'Test' } });
 
-        expect(screen.getByText('Test Command')).toBeTruthy();
+        // Find the button by its id since text is broken up by mark elements
+        const button = screen.getByRole('option', { name: /command/i });
+        expect(button).toBeTruthy();
         expect(screen.queryByText('Keyboard Shortcuts')).toBeNull();
     });
 
