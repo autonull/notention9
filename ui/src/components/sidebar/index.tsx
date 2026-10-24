@@ -52,8 +52,7 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
     } = useSidebarLogic(sortedNotes);
 
     const searchInputRef = useRef<HTMLInputElement>(null);
-    const virtualListRef = useRef<{scrollToIndex: (index: number, align?: 'start' | 'center' | 'end') => void}>(null);
-    const [focusedIndex] = useState(-1);
+    const virtualListRef = useRef<{scrollToIndex: (index: number, align?: 'start' | 'center' | 'end') => void; scrollToTop: () => void; scrollToBottom: () => void; focusIndex: (index: number) => void}>(null);
     const [isMobile, setIsMobile] = useState(false);
     const [showPinnedOnly, setShowPinnedOnly] = useState(false);
 
@@ -75,24 +74,15 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
             searchInputRef.current?.blur();
             setSearchTerm('');
         }
-        if (e.key === 'ArrowDown' && e.ctrlKey) {
-            e.preventDefault();
-            const list = virtualListRef.current;
-            if (list) list.scrollToIndex((focusedIndex + 1) % sortedNotes.length, 'center');
-        }
-        if (e.key === 'ArrowUp' && e.ctrlKey) {
-            e.preventDefault();
-            const list = virtualListRef.current;
-            if (list) list.scrollToIndex((focusedIndex - 1 + sortedNotes.length) % sortedNotes.length, 'center');
-        }
-    }, [setSearchTerm, focusedIndex, sortedNotes.length]);
+        // Let VirtualizedList handle arrow keys when focused
+    }, [setSearchTerm]);
 
     const focusSearch = useCallback(() => {
         searchInputRef.current?.focus();
     }, []);
 
     const getItemKey = useCallback((note: Note, _index: number) => note.id, []);
-    const renderItem = useCallback((note: Note, _index: number, isSelected: boolean) => (
+    const renderItem = useCallback((note: Note, _index: number, isSelected: boolean): React.ReactNode => (
         <NoteListItem
             key={note.id}
             note={note}
@@ -106,7 +96,8 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
         />
     ), [setSelectedNoteId, handleDeleteRequest, handleTogglePin, isTrashView, handleRestore, searchTerm]);
 
-    const {ref: touchRef, isPulling, pullDistance, pullProgress} = useTouchGestures({
+    const touchElementRef = useRef<HTMLDivElement>(null);
+    const {isPulling, pullDistance, pullProgress} = useTouchGestures({
         onPullToRefresh: async () => {
             refreshUserLocation();
         },
@@ -117,6 +108,11 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
         },
         disabled: !isMobile,
     });
+    
+    // Bridge the touch gesture ref to our div ref
+    const touchRef = useCallback((el: HTMLDivElement | null) => {
+        touchElementRef.current = el;
+    }, []);
 
     const containerHeight = useMemo(() => {
         if (isMobile) return window.innerHeight - 200;
@@ -217,16 +213,19 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
             >
                 {filteredNotes.length > 0 ? (
                     sidebarViewMode === 'list' ? (
-                        <VirtualizedList<Note>
+                        <VirtualizedList
                             ref={virtualListRef}
                             items={filteredNotes}
                             itemHeight={ITEM_HEIGHT}
                             containerHeight={containerHeight}
                             getItemKey={getItemKey}
-                            renderItem={renderItem}
+                            children={renderItem}
                             selectedKey={selectedNoteId}
                             overscan={8}
                             className="h-full"
+                            keyboardNavigation
+                            role="listbox"
+                            aria-label={isTrashView ? 'Trash notes' : 'Notes'}
                         />
                     ) : sidebarViewMode === 'grid' ? (
                         <div className="grid grid-cols-2 gap-2 h-full overflow-y-auto custom-scrollbar" role="list">
@@ -249,9 +248,9 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
                                 : isTrashView
                                     ? 'Deleted notes will appear here.'
                                     : 'Create your first note to get started.'}
-                            actions={!isTrashView && !searchTerm ? (
+                            action={!isTrashView && !searchTerm ? (
                                 <button
-                                    onClick={handleCreateNote}
+                                    onClick={() => handleCreateNote()}
                                     className="w-full max-w-xs inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-500 transition-colors touch-target"
                                 >
                                     <PlusIcon className="w-4 h-4"/>

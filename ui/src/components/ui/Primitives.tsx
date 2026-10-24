@@ -11,6 +11,8 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
     rightIcon?: React.ReactNode;
     fullWidth?: boolean;
     touchTarget?: boolean;
+    /** Use focus-visible ring instead of default outline */
+    focusRing?: boolean;
 }
 
 export function Button({
@@ -24,16 +26,18 @@ export function Button({
     disabled,
     children,
     touchTarget = true,
+    focusRing = true,
     ...props
 }: ButtonProps) {
     const baseStyles = 'btn';
     const variantClass = `btn-${variant}`;
     const sizeClass = `btn-${size}`;
     const touchClass = touchTarget ? 'touch-target-48' : '';
+    const focusClass = focusRing ? 'focus-ring-high-contrast' : '';
 
     return (
         <button
-            className={cn(baseStyles, variantClass, sizeClass, fullWidth && 'w-full', touchClass, className)}
+            className={cn(baseStyles, variantClass, sizeClass, fullWidth && 'w-full', touchClass, focusClass, className)}
             disabled={disabled || loading}
             {...props}
         >
@@ -95,6 +99,7 @@ export function IconButton({
     };
     const sizeClass = sizeMap[size];
     const touchClass = touchTarget ? 'touch-target-48' : '';
+    const focusClass = 'focus-ring-high-contrast';
 
     const iconSizes = {
         xs: 'h-3 w-3',
@@ -110,6 +115,7 @@ export function IconButton({
                 variantClass,
                 sizeClass,
                 touchClass,
+                focusClass,
                 disabled && 'opacity-40 cursor-not-allowed',
                 className,
                 'active:scale-[0.95] transition-transform duration-50'
@@ -529,13 +535,45 @@ export interface ToastProps {
     duration?: number;
     onClose: (id: string) => void;
     action?: {label: string; onClick: () => void};
+    /** If true, toast won't auto-dismiss */
+    persistent?: boolean;
+    /** Custom title for the toast */
+    title?: string;
 }
 
-export function Toast({id, message, type = 'info', duration = 4000, onClose, action}: ToastProps) {
+export function Toast({id, message, type = 'info', duration = 4000, onClose, action, persistent = false, title}: ToastProps) {
+    const [isHovered, setIsHovered] = React.useState(false);
+    const [progress, setProgress] = React.useState(100);
+
     React.useEffect(() => {
-        const timer = setTimeout(() => onClose(id), duration);
+        if (persistent) return;
+        
+        const startTime = Date.now();
+        const endTime = startTime + duration;
+        
+        const animateProgress = () => {
+            const now = Date.now();
+            const remaining = Math.max(0, endTime - now);
+            const progressPercent = (remaining / duration) * 100;
+            setProgress(progressPercent);
+            
+            if (remaining > 0 && !isHovered) {
+                requestAnimationFrame(animateProgress);
+            } else if (remaining <= 0) {
+                onClose(id);
+            }
+        };
+        
+        const timer = setTimeout(() => {
+            if (!isHovered) onClose(id);
+        }, duration);
+        
+        if (!isHovered) {
+            requestAnimationFrame(animateProgress);
+        }
+        
         return () => clearTimeout(timer);
-    }, [id, duration, onClose]);
+    }, [id, duration, onClose, persistent, isHovered]);
 
     const typeStyles = {
         info: 'bg-blue-900/50 border-blue-800/50 text-blue-100',
@@ -570,15 +608,33 @@ export function Toast({id, message, type = 'info', duration = 4000, onClose, act
     return (
         <div
             className={cn(
-                'card',
+                'card relative overflow-hidden',
                 'flex items-start gap-3 p-4 shadow-lg animate-slide-in-up',
                 typeStyles[type]
             )}
             role="alert"
-            aria-live="polite"
+            aria-live={persistent ? 'assertive' : 'polite'}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
         >
+            {/* Progress bar for auto-dismiss */}
+            {!persistent && duration > 0 && (
+                <div
+                    className="absolute bottom-0 left-0 h-1 transition-all duration-100"
+                    style={{
+                        width: `${progress}%`,
+                        backgroundColor: type === 'error' ? '#ef4444' : 
+                                       type === 'success' ? '#22c55e' : 
+                                       type === 'warning' ? '#eab308' : '#3b82f6'
+                    }}
+                />
+            )}
+            
             <div className="flex-shrink-0 mt-0.5">{icons[type]}</div>
             <div className="flex-1 min-w-0">
+                {title && (
+                    <p className="text-sm font-semibold mb-1">{title}</p>
+                )}
                 <p className="text-sm font-medium">{message}</p>
             </div>
             {action && (
@@ -603,12 +659,16 @@ export function Toast({id, message, type = 'info', duration = 4000, onClose, act
 }
 
 export interface ToastContainerProps {
-    toasts: Array<{id: string; message: string; type?: 'info' | 'success' | 'warning' | 'error'; duration?: number; action?: {label: string; onClick: () => void}}>;
+    toasts: Array<{id: string; message: string; type?: 'info' | 'success' | 'warning' | 'error'; duration?: number; action?: {label: string; onClick: () => void}; persistent?: boolean; title?: string}>;
     onClose: (id: string) => void;
     position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' | 'top-center' | 'bottom-center';
+    /** Maximum number of toasts to show at once */
+    maxToasts?: number;
+    /** Gap between toasts */
+    gap?: number;
 }
 
-export function ToastContainer({toasts, onClose, position = 'top-right'}: ToastContainerProps) {
+export function ToastContainer({toasts, onClose, position = 'top-right', maxToasts = 5, gap = 8}: ToastContainerProps) {
     const positionStyles = {
         'top-right': 'top-4 right-4',
         'top-left': 'top-4 left-4',
@@ -618,16 +678,19 @@ export function ToastContainer({toasts, onClose, position = 'top-right'}: ToastC
         'bottom-center': 'bottom-4 left-1/2 -translate-x-1/2',
     };
 
+    const visibleToasts = toasts.slice(-maxToasts);
+
     return (
         <div
             className={cn(
-                'fixed z-[600] flex flex-col gap-2 pointer-events-none',
+                'fixed z-[600] flex flex-col pointer-events-none',
                 positionStyles[position]
             )}
+            style={{gap: `${gap}px`}}
             aria-live="polite"
             aria-atomic="true"
         >
-            {toasts.map(toast => (
+            {visibleToasts.map(toast => (
                 <div key={toast.id} className="pointer-events-auto w-full max-w-sm">
                     <Toast {...toast} onClose={onClose} />
                 </div>

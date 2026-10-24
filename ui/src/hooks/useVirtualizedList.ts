@@ -1,6 +1,6 @@
 import {useCallback, useMemo, useRef, useState, useEffect} from 'react';
 
-interface UseVirtualizedListOptions<T> {
+export interface UseVirtualizedListOptions<T> {
     items: T[];
     itemHeight: number | ((item: T, index: number) => number);
     containerHeight: number;
@@ -173,7 +173,7 @@ export function useVirtualizedListAutoHeight<T>(
         setItemHeights(prev => {
             const next = new Map(prev);
             next.set(index, height);
-            if (height !== defaultHeight && itemHeats.size > 10) {
+            if (height !== defaultHeight && itemHeights.size > 10) {
                 const avg = Array.from(next.values()).reduce((a, b) => a + b, 0) / next.size;
                 setDefaultHeight(Math.round(avg));
             }

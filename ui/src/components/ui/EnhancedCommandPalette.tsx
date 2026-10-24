@@ -2,10 +2,11 @@ import React, {useEffect, useMemo, useRef, useState, useCallback} from 'react';
 import {cn} from '../../utils/ui';
 import {CommandPaletteItem} from './Overlay';
 import {useFocusTrap} from './Overlay';
-import {SearchSparkleIcon, XIcon, ClockIcon, SparklesIcon, ZapIcon, SearchIcon, HashIcon, KeyIcon, SettingsIcon} from '../common/icons';
+import {SearchSparkleIcon, XIcon, ClockIcon, SparklesIcon, SearchIcon, KeyIcon, SettingsIcon} from '../common/icons';
 import {Button} from './Primitives';
 
 const RECENT_STORAGE_KEY = 'notention-command-palette-recent';
+const RECENT_SEARCHES_KEY = 'notention-command-palette-searches';
 
 function loadRecentItems(): CommandPaletteItem[] {
     if (typeof window === 'undefined') return [];
@@ -21,6 +22,25 @@ function saveRecentItems(items: CommandPaletteItem[]) {
     if (typeof window === 'undefined') return;
     try {
         localStorage.setItem(RECENT_STORAGE_KEY, JSON.stringify(items));
+    } catch {
+        // Ignore storage errors
+    }
+}
+
+function loadRecentSearches(): string[] {
+    if (typeof window === 'undefined') return [];
+    try {
+        const stored = localStorage.getItem(RECENT_SEARCHES_KEY);
+        return stored ? JSON.parse(stored) : [];
+    } catch {
+        return [];
+    }
+}
+
+function saveRecentSearches(searches: string[]) {
+    if (typeof window === 'undefined') return;
+    try {
+        localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(searches));
     } catch {
         // Ignore storage errors
     }
@@ -160,6 +180,9 @@ export function EnhancedCommandPalette({
     const [recentItems, setRecentItems] = useState<CommandPaletteItem[]>(() => 
         persistRecent ? loadRecentItems() : initialRecentItems
     );
+    const [recentSearches, setRecentSearches] = useState<string[]>(() => 
+        persistRecent ? loadRecentSearches() : []
+    );
     const [isMobile, setIsMobile] = useState(false);
 
     const contentRef = useFocusTrap(isOpen, onClose);
@@ -182,6 +205,17 @@ export function EnhancedCommandPalette({
             saveRecentItems(recentItems);
         }
     }, [recentItems, persistRecent]);
+
+    // Save recent searches when query changes and user submits
+    const addRecentSearch = useCallback((search: string) => {
+        if (!search.trim()) return;
+        setRecentSearches(prev => {
+            const filtered = prev.filter(s => s !== search);
+            const updated = [search, ...filtered].slice(0, 10);
+            if (persistRecent) saveRecentSearches(updated);
+            return updated;
+        });
+    }, [persistRecent]);
 
     const handleRecentChange = useCallback((items: CommandPaletteItem[]) => {
         setRecentItems(items);
@@ -273,6 +307,10 @@ export function EnhancedCommandPalette({
                     if (showRecent && !recentItems.some(r => r.id === item.id)) {
                         handleRecentChange([item, ...recentItems].slice(0, maxRecent));
                     }
+                    onClose();
+                } else if (query.trim()) {
+                    // Add to recent searches when submitting a custom query
+                    addRecentSearch(query);
                     onClose();
                 }
                 break;
@@ -440,6 +478,50 @@ export function EnhancedCommandPalette({
 
                     {!showEmptyState && filteredItems.length === 0 && !query && !showHelp && (
                         <>
+                            {/* Recent Searches */}
+                            {showRecent && recentSearches.length > 0 && (
+                                <div className="space-y-2 animate-fade-in">
+                                    <div className="px-3 pt-3 pb-1 text-[10px] font-bold text-gray-500 uppercase tracking-widest flex items-center justify-between">
+                                        <span>Recent Searches ({recentSearches.length})</span>
+                                        <Button
+                                            onClick={() => setRecentSearches([])}
+                                            variant="ghost"
+                                            size="xs"
+                                            className="text-xs text-gray-500 hover:text-gray-300 px-2 py-0.5 rounded transition-colors touch-target"
+                                            aria-label="Clear recent searches"
+                                        >
+                                            Clear
+                                        </Button>
+                                    </div>
+                                    {recentSearches.slice(0, maxRecent).map((search, index) => (
+                                        <button
+                                            key={`recent-search-${index}`}
+                                            onClick={() => {
+                                                setQuery(search);
+                                                inputRef.current?.focus();
+                                            }}
+                                            onMouseEnter={() => setSelectedIndex(index)}
+                                            className={cn(
+                                                'w-full flex items-center touch-target transition-colors text-left',
+                                                selectedIndex === index ? 'bg-blue-600/20 border border-blue-500/50' : 'hover:bg-gray-700/50'
+                                            )}
+                                            role="option"
+                                            aria-selected={selectedIndex === index}
+                                        >
+                                            <div className={cn('mr-4 flex-shrink-0 w-6 h-6', selectedIndex === index ? 'text-blue-400' : 'text-gray-400')}>
+                                                <SearchIcon className="w-5 h-5" />
+                                            </div>
+                                            <div className="flex-1 min-w-0 text-left">
+                                                <div className={cn('font-medium truncate', selectedIndex === index ? 'text-white' : 'text-gray-200')}>
+                                                    {search}
+                                                </div>
+                                            </div>
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Recent Items */}
                             {showRecent && recentItems.length > 0 && (
                                 <div className="space-y-2 animate-fade-in">
                                     <div className="px-3 pt-3 pb-1 text-[10px] font-bold text-gray-500 uppercase tracking-widest flex items-center justify-between">
