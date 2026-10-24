@@ -1903,7 +1903,29 @@ body {
   outline: none;
 }
 
-/* Skip link already defined above */
+/* ============================================================================
+   SKIP LINKS
+   ============================================================================ */
+
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  padding: var(--space-3) var(--space-6);
+  background: var(--color-brand-primary);
+  color: white;
+  border-radius: var(--radius-lg);
+  font-weight: var(--font-medium);
+  text-decoration: none;
+  box-shadow: var(--shadow-xl);
+  transition: top var(--transition-base) ease;
+}
+
+.skip-link:focus {
+  top: var(--space-4);
+}
 
 /* ============================================================================
    VIEW TRANSITIONS (for supported browsers)
@@ -1920,3 +1942,260 @@ body {
     animation-timing-function: ease-in-out;
   }
 }
+
+/* ============================================================================
+   FOCUS MANAGEMENT UTILITIES
+   ============================================================================ */
+
+/* Focus visible ring */
+.focus-ring:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* Focus ring inset for buttons/inputs */
+.focus-ring-inset:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--color-brand-primary);
+}
+
+/* Focus ring for dark backgrounds */
+.focus-ring-high-contrast:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-bg), 0 0 0 4px var(--color-brand-primary-light);
+}
+
+/* Focus trap boundary */
+.focus-trap-boundary {
+  position: relative;
+}
+
+.focus-trap-boundary:focus-within {
+  outline: none;
+}
+
+/* Remove focus outline for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ============================================================================
+   TOUCH TARGET UTILITIES
+   ============================================================================ */
+
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.touch-target-48 {
+  min-height: 48px;
+  min-width: 48px;
+}
+
+.touch-target-lg {
+  min-height: 56px;
+  min-width: 56px;
+}
+
+/* ============================================================================
+   ANIMATION UTILITIES
+   ============================================================================ */
+
+.animate-in {
+  animation: fade-in var(--transition-base) ease-out forwards;
+}
+
+.animate-out {
+  animation: fade-out var(--transition-fast) ease-in forwards;
+}
+
+.animate-slide-up {
+  animation: slide-in-up var(--transition-base) ease-out forwards;
+}
+
+.animate-slide-down {
+  animation: slide-in-down var(--transition-base) ease-out forwards;
+}
+
+.animate-scale {
+  animation: scale-in var(--transition-fast) ease-out forwards;
+}
+
+/* Stagger delays */
+.stagger-1 { animation-delay: 50ms; }
+.stagger-2 { animation-delay: 100ms; }
+.stagger-3 { animation-delay: 150ms; }
+.stagger-4 { animation-delay: 200ms; }
+.stagger-5 { animation-delay: 250ms; }
+.stagger-6 { animation-delay: 300ms; }
+.stagger-7 { animation-delay: 350ms; }
+.stagger-8 { animation-delay: 400ms; }
+
+/* ============================================================================
+   LOADING STATES
+   ============================================================================ */
+
+.skeleton {
+  background: linear-gradient(90deg, var(--color-bg-tertiary) 25%, var(--color-bg-elevated) 50%, var(--color-bg-tertiary) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-md);
+}
+
+.skeleton-text {
+  height: 1rem;
+  margin-bottom: var(--space-2);
+}
+
+.skeleton-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+}
+
+.skeleton-card {
+  padding: var(--space-4);
+}
+
+/* ============================================================================
+   EMPTY STATE UTILITIES
+   ============================================================================ */
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  padding: var(--space-12) var(--space-4);
+  text-align: center;
+}
+
+.empty-state-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--radius-full);
+  background: var(--color-bg-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-quiet);
+}
+
+.empty-state-title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--color-text);
+}
+
+.empty-state-description {
+  font-size: var(--text-sm);
+  color: var(--color-text-quiet);
+  max-width: 300px;
+}
+
+/* ============================================================================
+   RESPONSIVE UTILITIES
+   ============================================================================ */
+
+.container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+@media (min-width: 640px) {
+  .container { padding: 0 var(--space-6); }
+}
+
+@media (min-width: 1024px) {
+  .container { padding: 0 var(--space-8); }
+}
+
+/* ============================================================================
+   HIGH CONTRAST MODE
+   ============================================================================ */
+
+@media (prefers-contrast: high) {
+  :root {
+    --color-border: var(--color-border-strong);
+    --color-text-dim: var(--color-text-primary);
+    --color-text-quiet: var(--color-text-secondary);
+  }
+  
+  .btn-ghost:hover:not(:disabled) {
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+  }
+  
+  .focus-ring:focus-visible {
+    box-shadow: 0 0 0 3px white, 0 0 0 5px var(--color-brand-primary);
+  }
+}
+
+/* ============================================================================
+   REDUCED MOTION
+   ============================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .stagger-children > * {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+}
+
+/* ============================================================================
+   PRINT STYLES
+   ============================================================================ */
+
+@media print {
+  .no-print { display: none !important; }
+  .print-only { display: block !important; }
+  
+  body {
+    background: white;
+    color: black;
+  }
+  
+  .btn, .card, .input {
+    border-color: #ccc !important;
+    box-shadow: none !important;
+  }
+  
+  .skip-link { display: none !important; }
+  .fixed { position: static !important; }
+  
+  .animate-fade-in,
+  .animate-slide-in-up,
+  .animate-scale-in {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* ============================================================================
+   Z-INDEX SCALE (Reference)
+   ============================================================================ */
+/*
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 300;
+  --z-modal-backdrop: 400;
+  --z-modal: 500;
+  --z-popover: 600;
+  --z-tooltip: 700;
+  --z-toast: 800;
+  --z-skip-link: 9999;
+*/

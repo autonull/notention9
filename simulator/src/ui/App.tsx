@@ -144,6 +144,12 @@ const AppContent = () => {
 
   return (
     <>
+      <a
+        href="#main-content"
+        className="skip-link"
+      >
+        Skip to main content
+      </a>
       <HelpModal isOpen={showHelp} onClose={() => setShowHelp(false)} />
       <CommandPalette
         isOpen={showCommandPalette}
@@ -214,7 +220,7 @@ const AppContent = () => {
           </div>
         </nav>
 
-        <main className="flex-1 overflow-hidden bg-gray-950 p-4 lg:p-8 lg:ml-0">
+        <main id="main-content" className="flex-1 overflow-hidden bg-gray-950 p-4 lg:p-8 lg:ml-0">
           {/* Mobile menu button */}
           <button
             onClick={() => setSidebarOpen(true)}

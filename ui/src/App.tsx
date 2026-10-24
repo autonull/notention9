@@ -6,6 +6,7 @@ import {ConfigSync} from './components/config/ConfigSync';
 import {AgentCursor} from './components/AgentCursor';
 import {AgentStatusIndicator} from './components/agent/AgentStatusIndicator';
 import {useNetworkManagement} from './hooks/useNetworkManagement';
+import {SkipLink} from './components/common/SkipLink';
 
 function App() {
     return (
@@ -24,6 +25,7 @@ function AppContent() {
 
     return (
         <>
+            <SkipLink targetId="main-content" />
             <AgentStatusIndicator/>
             <AgentCursor/>
             <AppShell/>
