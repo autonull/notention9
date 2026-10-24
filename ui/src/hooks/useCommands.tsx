@@ -12,9 +12,17 @@ import {
     SidebarIcon,
 } from '../components/common/icons';
 import {NAV_ITEMS, SETTINGS_VIEW} from '../utils/navigation';
+import {modShortcut} from '../utils/platform';
 
 interface UseCommandsProps {
     setIsHelpOpen: (isOpen: boolean) => void;
+}
+
+interface PaletteCommand {
+    label: string;
+    icon: React.ReactNode;
+    action: () => void;
+    shortcut?: string;
 }
 
 export function useCommands({setIsHelpOpen}: UseCommandsProps) {
@@ -45,18 +53,18 @@ export function useCommands({setIsHelpOpen}: UseCommandsProps) {
         };
     });
 
-    const commands = [
+    const commands: PaletteCommand[] = [
         {
             ...SHARED_COMMANDS.NEW_NOTE,
             icon: <PlusIcon className="h-5 w-5"/>,
             action: handleNewNote,
-            shortcut: 'Ctrl+N',
+            shortcut: modShortcut('N'),
         },
         {
             label: isSidebarOpen ? 'Hide Sidebar' : 'Show Sidebar',
             icon: <SidebarIcon className="h-5 w-5"/>,
             action: () => setIsSidebarOpen(!isSidebarOpen),
-            shortcut: 'Ctrl+\\',
+            shortcut: modShortcut('\\'),
         },
         ...viewCommands,
         {
@@ -96,7 +104,6 @@ export function useCommands({setIsHelpOpen}: UseCommandsProps) {
                     addToast('Note downloaded', 'success');
                 }
             },
-            shortcut: 'Ctrl+S',
         });
     }
 

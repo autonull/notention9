@@ -1,6 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import type {Template} from '@notention/core';
 import {ChevronDownIcon, CubeTransparentIcon, PlusIcon, SparklesIcon} from '../common/icons';
+import {modShortcut} from '../../utils/platform';
 
 interface NewNoteButtonProps {
     onNewNote: () => void;
@@ -26,9 +27,19 @@ export function NewNoteButton({
                 setIsDropdownOpen(false);
             }
         };
+        const handleEscape = (event: KeyboardEvent) => {
+            if (event.key === 'Escape' && isDropdownOpen) {
+                setIsDropdownOpen(false);
+                dropdownRef.current?.querySelector<HTMLElement>('button')?.focus();
+            }
+        };
         document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
+        document.addEventListener('keydown', handleEscape);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('keydown', handleEscape);
+        };
+    }, [isDropdownOpen]);
 
     const handleIntentClick = (type: 'request' | 'offer') => {
         onCreateIntent(type);
@@ -48,7 +59,7 @@ export function NewNoteButton({
                 <button
                     onClick={onNewNote}
                     className="flex items-center gap-2 px-3 py-2 text-white font-medium border-r border-blue-500 rounded-l-lg hover:bg-blue-800/20 touch-target"
-                    title="New Note (Ctrl+N)"
+                    title={`New Note (${modShortcut('N')})`}
                 >
                     <PlusIcon className="w-5 h-5"/>
                     <span className="hidden sm:inline">New Note</span>
@@ -57,6 +68,9 @@ export function NewNoteButton({
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     className="px-2 py-2 text-white hover:bg-blue-800/20 rounded-r-lg touch-target"
                     title="More options"
+                    aria-haspopup="menu"
+                    aria-expanded={isDropdownOpen}
+                    aria-label="More note options"
                 >
                     <ChevronDownIcon className="w-4 h-4"/>
                 </button>
@@ -70,8 +84,11 @@ export function NewNoteButton({
 
             {isDropdownOpen && (
                 <div
+                    role="menu"
+                    aria-label="New note options"
                     className="absolute top-full left-0 mt-2 w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-50 overflow-hidden animate-fade-in">
                     <button
+                        role="menuitem"
                         onClick={() => handleIntentClick('request')}
                         className="w-full text-left px-4 py-3 hover:bg-gray-700 flex items-center gap-3 group touch-target"
                     >
@@ -84,6 +101,7 @@ export function NewNoteButton({
                         </div>
                     </button>
                     <button
+                        role="menuitem"
                         onClick={() => handleIntentClick('offer')}
                         className="w-full text-left px-4 py-3 hover:bg-gray-700 flex items-center gap-3 group touch-target"
                     >
@@ -103,6 +121,7 @@ export function NewNoteButton({
                             {templates.map(template => (
                                 <button
                                     key={template.id}
+                                    role="menuitem"
                                     onClick={() => handleTemplateClick(template)}
                                     className="w-full text-left px-4 py-2 hover:bg-gray-700 flex items-center gap-3 group text-sm text-gray-300 hover:text-white touch-target"
                                 >

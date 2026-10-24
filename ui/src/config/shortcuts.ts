@@ -1,3 +1,5 @@
+import {MOD_LABEL} from '../utils/platform';
+
 export interface ShortcutItem {
     label: string;
     keys: string[];
@@ -11,7 +13,7 @@ export interface ShortcutGroup {
     shortcuts: ShortcutItem[];
 }
 
-const MOD = '⌘';
+const MOD = MOD_LABEL;
 
 const viewShortcuts = (label: string, key: string): ShortcutItem => ({
     label,

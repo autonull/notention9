@@ -141,7 +141,6 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
                     onTemplates={onTemplates}
                     onInsertProperty={handlePrepareNewProperty}
                     onDescribe={() => setIsDescribeOpen(true)}
-                    saveStatus={saveStatus}
                 />
             )}
             <DescribeItComposer

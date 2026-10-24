@@ -11,6 +11,7 @@ import {SearchIcon, SidebarIcon} from '../common/icons';
 import {NewNoteButton} from './NewNoteButton';
 import {ConnectionStatus} from './ConnectionStatus';
 import {NAV_ITEMS, SETTINGS_VIEW} from '../../utils/navigation';
+import {modShortcut} from '../../utils/platform';
 
 interface HeaderProps {
     onNewNote: () => void;
@@ -76,7 +77,7 @@ export function Header({onNewNote, onToggleSidebar}: HeaderProps) {
                     variant="ghost"
                     size="lg"
                     className="hidden md:flex"
-                    label="Ctrl+\"
+                    label={modShortcut('\\')}
                 />
 
                 <NewNoteButton
@@ -84,18 +85,18 @@ export function Header({onNewNote, onToggleSidebar}: HeaderProps) {
                     onCreateIntent={handleCreateIntent}
                     templates={allTemplates}
                     onCreateFromTemplate={handleCreateFromTemplate}
-                    label="Ctrl+N"
+                    label={modShortcut('N')}
                 />
 
                 <IconButton
                     onClick={() => setIsPaletteOpen(true)}
-                    tooltip="Search & Commands (Ctrl+K)"
+                    tooltip={`Search & Commands (${modShortcut('K')})`}
                     tooltipPosition="bottom"
                     icon={SearchIcon}
                     variant="ghost"
                     size="lg"
                     className="hidden md:flex"
-                    label="Ctrl+K"
+                    label={modShortcut('K')}
                 />
             </div>
 

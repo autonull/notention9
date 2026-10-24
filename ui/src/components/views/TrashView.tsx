@@ -1,8 +1,9 @@
-import React, {useMemo} from 'react';
+import React, {useMemo, useState} from 'react';
 import {getTextFromHtml, type Note} from '@notention/core';
 import {useNotes} from '../../hooks/useNotes';
 import {useToast} from '../../hooks/useToast';
 import {Button} from '../common/Button';
+import {ConfirmationModal} from '../common/ConfirmationModal';
 import {EmptyState} from '../common/EmptyState';
 import {TrashIcon, DocumentDuplicateIcon} from '../common/icons';
 import {Skeleton} from '../ui/Skeleton';
@@ -10,6 +11,12 @@ import {Skeleton} from '../ui/Skeleton';
 export function TrashView() {
     const {notes, loading, restoreNote, permanentlyDeleteNote} = useNotes();
     const {addToast} = useToast();
+    const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
+
+    const deletedNotes = useMemo(
+        () => notes.filter(note => note.deletedAt).sort((a, b) => (b.deletedAt ?? '').localeCompare(a.deletedAt ?? '')),
+        [notes]
+    );
 
     if (loading) {
         return (
@@ -35,21 +42,16 @@ export function TrashView() {
         );
     }
 
-    const deletedNotes = useMemo(
-        () => notes.filter(note => note.deletedAt).sort((a, b) => (b.deletedAt ?? '').localeCompare(a.deletedAt ?? '')),
-        [notes]
-    );
-
     const handleRestore = (note: Note) => {
         restoreNote(note.id);
         addToast('Note restored', 'success');
     };
 
-    const handleDelete = (note: Note) => {
-        if (window.confirm(`Permanently delete "${note.title || 'Untitled Note'}"? This cannot be undone.`)) {
-            permanentlyDeleteNote(note.id);
-            addToast('Note permanently deleted', 'success');
-        }
+    const handleDeleteConfirm = () => {
+        if (!noteToDelete) return;
+        permanentlyDeleteNote(noteToDelete.id);
+        addToast('Note permanently deleted', 'success');
+        setNoteToDelete(null);
     };
 
     return (
@@ -85,7 +87,7 @@ export function TrashView() {
                                 <Button variant="secondary" size="sm" icon={DocumentDuplicateIcon} onClick={() => handleRestore(note)}>
                                     Restore
                                 </Button>
-                                <Button variant="danger" size="sm" icon={TrashIcon} onClick={() => handleDelete(note)}>
+                                <Button variant="danger" size="sm" icon={TrashIcon} onClick={() => setNoteToDelete(note)}>
                                     Delete forever
                                 </Button>
                             </div>
@@ -93,6 +95,15 @@ export function TrashView() {
                     </div>
                 )}
             </div>
+            <ConfirmationModal
+                isOpen={!!noteToDelete}
+                onClose={() => setNoteToDelete(null)}
+                onConfirm={handleDeleteConfirm}
+                title="Delete note permanently?"
+                message={`"${noteToDelete?.title || 'Untitled Note'}" will be removed forever. This cannot be undone.`}
+                confirmLabel="Delete forever"
+                isDestructive
+            />
         </div>
     );
 }

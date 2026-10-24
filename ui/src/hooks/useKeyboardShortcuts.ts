@@ -70,9 +70,10 @@ export function useKeyboardShortcuts({
 					e.target.tagName === 'TEXTAREA' ||
 					e.target.contentEditable === 'true')) {
 
-				// Allow Ctrl+S to work even in inputs
+				// Allow save, property palette, and command palette while editing
 				if ((isMeta && e.key.toLowerCase() === 's') ||
-					(isMeta && e.key === 'Enter')) {
+					(isMeta && e.key === 'Enter') ||
+					(isMeta && isShift && e.key.toLowerCase() === 'p')) {
 				} else if (isMeta && e.key.toLowerCase() === 'k') {
 					// Allow command palette in inputs too
 				} else if (!isMeta && !isAlt && !isShift && e.key === '?') {

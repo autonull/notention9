@@ -3,6 +3,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { EnhancedCommandPalette } from '../../components/ui/EnhancedCommandPalette';
 import { Note } from '@notention/core';
+import { MOD_LABEL } from '../../utils/platform';
 
 // Mock icons
 vi.mock('../common/icons', () => ({
@@ -73,7 +74,7 @@ describe('EnhancedCommandPalette', () => {
         await waitFor(() => {
             expect(screen.getByText(/Help & Shortcuts/i)).toBeTruthy();
         });
-        expect(screen.getByText('⌘ + N')).toBeTruthy();
+        expect(screen.getByText(`${MOD_LABEL} + N`)).toBeTruthy();
     });
 
     it('filters items based on query', () => {

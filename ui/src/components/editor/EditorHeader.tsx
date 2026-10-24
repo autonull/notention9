@@ -100,6 +100,12 @@ export function EditorHeader({
                             type="text"
                             value={title || ''}
                             onChange={onTitleChange}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    document.querySelector<HTMLElement>('.ProseMirror')?.focus();
+                                }
+                            }}
                             placeholder="Untitled Note"
                             autoFocus={!title && !readOnly}
                             readOnly={readOnly}

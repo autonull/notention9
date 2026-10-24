@@ -36,6 +36,7 @@ import {Badge} from '../ui';
 import {cn} from '../../utils/ui';
 import {Skeleton, DashboardStatSkeleton, ActivityFeedSkeleton, QuickActionsSkeleton} from '../ui/Skeleton';
 import {EmptyState} from '../common/EmptyState';
+import {modShortcut} from '../../utils/platform';
 
 const TEMPLATES = {
     task: {
@@ -74,7 +75,7 @@ const TEMPLATES = {
 };
 
 const QUICK_ACTIONS = [
-    {id: 'new-note', label: 'New Note', description: 'Start writing', icon: PencilIcon, gradient: 'gradient-primary', action: 'new-note', shortcut: '⌘N'},
+    {id: 'new-note', label: 'New Note', description: 'Start writing', icon: PencilIcon, gradient: 'gradient-primary', action: 'new-note', shortcut: modShortcut('N')},
     {id: 'map', label: 'Map View', description: 'Browse notes spatially', icon: MapIcon, gradient: 'gradient-purple', action: 'map'},
     {id: 'chat', label: 'Chat', description: 'Messages & contacts', icon: ChatIcon, gradient: 'gradient-teal', action: 'chat'},
     {id: 'network', label: 'Network', description: 'P2P connections', icon: NetworkIcon, gradient: 'gradient-warning', action: 'network'},
@@ -86,6 +87,9 @@ const QUICK_CAPTURE_MARKUP = /(?:^|\s)(?:#[\w-]+|\b[\w.-]+:\S+)/g;
 
 const deriveQuickNoteTitle = (input: string): string =>
     getTextFromHtml(input).replace(QUICK_CAPTURE_MARKUP, ' ').replace(/\s+/g, ' ').trim().slice(0, 80) || 'Quick Note';
+
+const deriveQuickTags = (input: string): string[] =>
+    [...new Set(Array.from(input.matchAll(/#([\w-]+)/g), match => match[1].toLowerCase()))];
 
 const FEATURE_HIGHLIGHTS = [
     {icon: BoltIcon, title: 'Semantic Extraction', desc: 'Auto-detect properties from natural language'},
@@ -127,7 +131,7 @@ export function DashboardView() {
         const note = addNote({
             title: deriveQuickNoteTitle(quickCaptureInput),
             content: sanitizeHTML(`<p>${quickCaptureInput}</p>`),
-            tags: ['quick-capture'],
+            tags: ['quick-capture', ...deriveQuickTags(quickCaptureInput)],
             properties: extractedProps
         });
 

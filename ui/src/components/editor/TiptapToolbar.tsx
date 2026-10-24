@@ -1,10 +1,9 @@
-import React, {useMemo, useEffect, useState} from 'react';
+import React, {useMemo} from 'react';
 import type {Editor} from '@tiptap/react';
 import {IconButton} from '../ui/Primitives';
 import {DropdownMenu, DropdownMenuItem} from '../common/DropdownMenu';
 import {
     BoldIcon,
-    CheckCircleIcon,
     CodeBlockIcon,
     CodeBracketsIcon,
     CubeIcon,
@@ -17,12 +16,10 @@ import {
     LightBulbIcon,
     ListOlIcon,
     ListUlIcon,
-    LoadingSpinner,
     QuoteIcon,
     SparklesIcon,
     StrikethroughIcon,
-    ChevronDownIcon,
-    ExclamationTriangleIcon
+    ChevronDownIcon
 } from '../common/icons';
 
 interface TiptapToolbarProps {
@@ -33,8 +30,6 @@ interface TiptapToolbarProps {
     onTemplates?: () => void;
     onInsertProperty?: () => void;
     onDescribe?: () => void;
-    saveStatus?: 'saved' | 'saving' | 'error' | 'idle';
-    lastSavedAt?: Date | null;
 }
 
 type ToolbarItem =
@@ -49,7 +44,11 @@ type ToolbarItem =
     primary?: boolean;
 };
 
-export function TiptapToolbar({
+export function TiptapToolbar(props: TiptapToolbarProps) {
+    return props.editor ? <TiptapToolbarContent {...props} editor={props.editor}/> : null;
+}
+
+function TiptapToolbarContent({
                                   editor,
                                   viewMode,
                                   toggleViewMode,
@@ -57,13 +56,7 @@ export function TiptapToolbar({
                                   onTemplates,
                                   onInsertProperty,
                                   onDescribe,
-                                  saveStatus = 'idle',
-                                  lastSavedAt = null,
-                              }: TiptapToolbarProps) {
-    if (!editor) return null;
-
-    const [showSaveTooltip, setShowSaveTooltip] = useState(false);
-
+                              }: TiptapToolbarProps & { editor: Editor }) {
     const actions = useMemo<ToolbarItem[]>(() => [
         {
             title: 'Bold',
@@ -235,60 +228,12 @@ export function TiptapToolbar({
                 ))}
             </div>
 
-            {/* Save Status Indicator */}
-            <div className="border-l border-gray-700/50 pl-2 ml-1 flex-shrink-0 flex items-center gap-2">
-                <div
-                    className={`flex items-center gap-1.5 transition-all duration-300 ${
-                        saveStatus === 'saving' ? 'text-blue-400' :
-                        saveStatus === 'saved' ? 'text-green-500/80' :
-                        saveStatus === 'error' ? 'text-red-400' :
-                        'text-gray-500/50'
-                    }`}
-                    onMouseEnter={() => setShowSaveTooltip(true)}
-                    onMouseLeave={() => setShowSaveTooltip(false)}
-                >
-                    {saveStatus === 'saving' && (
-                        <LoadingSpinner className="w-4 h-4" aria-hidden="true"/>
-                    )}
-                    {saveStatus === 'saved' && (
-                        <CheckCircleIcon className="w-4 h-4" aria-hidden="true"/>
-                    )}
-                    {saveStatus === 'error' && (
-                        <ExclamationTriangleIcon className="w-4 h-4" aria-hidden="true"/>
-                    )}
-                    {saveStatus === 'idle' && (
-                        <span className="text-[10px] uppercase tracking-wider font-medium text-gray-500">Saved</span>
-                    )}
-                    {(saveStatus === 'saved' || saveStatus === 'error') && lastSavedAt && (
-                        <span className="text-xs text-gray-500 hidden md:inline-block">
-                            {lastSavedAt.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}
-                        </span>
-                    )}
-                </div>
-                <Tooltip
-                    content={
-                        <div className="p-2 text-xs text-center">
-                            <p>{saveStatus === 'saving' ? 'Saving changes...' : 
-                                saveStatus === 'saved' ? 'All changes saved' : 
-                                saveStatus === 'error' ? 'Save failed - click to retry' : 'No pending changes'}</p>
-                            {lastSavedAt && saveStatus !== 'saving' && (
-                                <p className="text-gray-500 mt-0.5">Last saved: {lastSavedAt.toLocaleTimeString()}</p>
-                            )}
-                        </div>
-                    }
-                    position="top"
-                    className="max-w-xs"
-                >
-                    <div className="w-full" />
-                </Tooltip>
-            </div>
-
             <div className="border-l border-gray-700/50 pl-2 ml-1 flex-shrink-0">
                 <IconButton
                     onClick={toggleViewMode}
                     isActive={viewMode === 'code'}
                     tooltip={
-                        viewMode === 'code' ? 'Switch to Rich Text' : 'Switch to HTML Code (Ctrl+Shift+C)'
+                        viewMode === 'code' ? 'Switch to Rich Text' : 'Switch to HTML Code'
                     }
                     tooltipPosition="left"
                     icon={CodeBracketsIcon}

@@ -200,7 +200,14 @@ export function AppShell() {
                 setActiveView('notes');
             },
             category: 'Notes',
-            keywords: [note.title.toLowerCase(), ...note.tags.map(t => `#${t.toLowerCase()}`)],
+            keywords: [
+                note.title.toLowerCase(),
+                ...note.tags.map(t => `#${t.toLowerCase()}`),
+                ...note.properties.flatMap(({key, values}) => [
+                    key.toLowerCase(),
+                    ...values.map(value => `${key.toLowerCase()}:${value.toLowerCase()}`),
+                ]),
+            ],
         })),
     ], [commands, sortedNotes, setActiveView, setSelectedNoteId]);
 

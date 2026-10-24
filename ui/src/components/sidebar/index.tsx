@@ -17,6 +17,7 @@ import {useIsMobile} from '../../hooks/useMediaQuery';
 import {SidebarSkeleton} from '../ui/Skeleton';
 import {EmptyState, NotesEmptyIllustration, EmptyStatePreset} from '../common/EmptyState';
 import {useDemoWorkspace} from '../../hooks/useDemoWorkspace';
+import {modShortcut} from '../../utils/platform';
 
 interface SidebarProps {
     sortedNotes?: Note[];
@@ -179,7 +180,7 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
                     {showFullContent && (
                         <IconButton
                             onClick={() => handleCreateNote()}
-                            tooltip="New Note (Ctrl+N)"
+                            tooltip={`New Note (${modShortcut('N')})`}
                             tooltipPosition="bottom"
                             icon={PlusIcon}
                             variant="primary"

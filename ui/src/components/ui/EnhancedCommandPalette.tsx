@@ -118,12 +118,9 @@ function highlightMatch(text: string, indices: [number, number][]): React.ReactN
 
 
 const SEARCH_SYNTAX_HINTS = [
-    {syntax: '#tag', description: 'Filter by tag'},
-    {syntax: 'key:value', description: 'Filter by property (e.g. type:task)'},
-    {syntax: 'key:>value', description: 'Greater than (numbers, dates)'},
-    {syntax: 'key:<value', description: 'Less than (numbers, dates)'},
-    {syntax: 'key:~value', description: 'Contains text (fuzzy)'},
-    {syntax: '-key:value', description: 'Exclude (negation)'},
+    {syntax: '#tag', description: 'Find notes by tag'},
+    {syntax: 'key:value', description: 'Find notes by property (e.g. type:task)'},
+    {syntax: 'word', description: 'Search note titles and content'},
 ];
 
 export interface EnhancedCommandPaletteProps {
@@ -322,6 +319,7 @@ export function EnhancedCommandPalette({
 
     const isEmptyQuery = !query.trim();
     const showEmptyState = isEmptyQuery && !showHelp && (!showRecent || recentItems.length === 0);
+    const regularItems = filteredItems.filter(item => !item.id.startsWith('recent-'));
 
     const containerStyle = isMobile ? 'fixed inset-0 z-[600] bg-black/70 backdrop-blur-sm animate-fade-in' : 'fixed inset-0 z-[600] flex items-start justify-center pt-[10vh] bg-black/70 backdrop-blur-sm animate-fade-in';
     const dialogStyle = isMobile ? 'bg-gray-800 rounded-t-2xl shadow-2xl border border-gray-700 w-full overflow-hidden flex flex-col h-full animate-slide-in-up' : 'bg-gray-800 rounded-xl shadow-2xl border border-gray-700 w-full max-w-3xl overflow-hidden flex flex-col max-h-[70vh] animate-slide-in-up';
@@ -491,19 +489,15 @@ export function EnhancedCommandPalette({
                                                 setQuery(search);
                                                 inputRef.current?.focus();
                                             }}
-                                            onMouseEnter={() => setSelectedIndex(index)}
-                                            className={cn(
-                                                'w-full flex items-center touch-target transition-colors text-left',
-                                                selectedIndex === index ? 'bg-blue-600/20 border border-blue-500/50' : 'hover:bg-gray-700/50'
-                                            )}
+                                            className="w-full flex items-center touch-target transition-colors text-left hover:bg-gray-700/50"
                                             role="option"
-                                            aria-selected={selectedIndex === index}
+                                            aria-selected={false}
                                         >
-                                            <div className={cn('mr-4 flex-shrink-0 w-6 h-6', selectedIndex === index ? 'text-blue-400' : 'text-gray-400')}>
+                                            <div className="mr-4 flex-shrink-0 w-6 h-6 text-gray-400">
                                                 <SearchIcon className="w-5 h-5" />
                                             </div>
                                             <div className="flex-1 min-w-0 text-left">
-                                                <div className={cn('font-medium truncate', selectedIndex === index ? 'text-white' : 'text-gray-200')}>
+                                                <div className="font-medium truncate text-gray-200">
                                                     {search}
                                                 </div>
                                             </div>
@@ -578,11 +572,11 @@ export function EnhancedCommandPalette({
                         </div>
                     )}
 
-                    {filteredItems.filter((item): item is CommandPaletteItem & {_fuzzyMatch?: FuzzyMatch; _matchText?: string} => !item.id.startsWith('recent-')).map((item, index) => {
+                    {regularItems.map((item, index) => {
                         const displayIndex = recentItems.length > 0 && showRecent && !query ? index + recentItems.length : index;
-                        const showCategory = item.category && (index === 0 || filteredItems[index - 1].category !== item.category);
-                        const match = item._fuzzyMatch;
-                        const matchText = item._matchText;
+                        const showCategory = item.category && (index === 0 || regularItems[index - 1].category !== item.category);
+                        const match = (item as CommandPaletteItem & {_fuzzyMatch?: FuzzyMatch})._fuzzyMatch;
+                        const matchText = (item as CommandPaletteItem & {_matchText?: string})._matchText;
 
                         return (
                             <React.Fragment key={item.id}>

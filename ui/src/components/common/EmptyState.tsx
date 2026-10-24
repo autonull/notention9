@@ -1,6 +1,7 @@
 import React from 'react';
 import {cn} from '../../utils/ui';
 import {SearchIcon, SparklesIcon, ArrowRightIcon, HelpIcon} from '../common/icons';
+import {modShortcut} from '../../utils/platform';
 import {Button} from '../ui/Primitives';
 
 interface EmptyStateProps {
@@ -76,21 +77,21 @@ export function EmptyState({
 
     const shortcutContexts: Record<string, {keys: string; label: string}[]> = {
         notes: [
-            {keys: '⌘N', label: 'New note'},
-            {keys: '⌘K', label: 'Command palette'},
-            {keys: '⌘/', label: 'Search notes'},
+            {keys: modShortcut('N'), label: 'New note'},
+            {keys: modShortcut('K'), label: 'Command palette'},
+            {keys: modShortcut('/'), label: 'Search notes'},
         ],
         dashboard: [
-            {keys: '⌘N', label: 'New note'},
-            {keys: '⌘K', label: 'Command palette'},
+            {keys: modShortcut('N'), label: 'New note'},
+            {keys: modShortcut('K'), label: 'Command palette'},
         ],
         map: [
-            {keys: '⌘N', label: 'New note'},
-            {keys: '⌘K', label: 'Command palette'},
+            {keys: modShortcut('N'), label: 'New note'},
+            {keys: modShortcut('K'), label: 'Command palette'},
         ],
         network: [
-            {keys: '⌘N', label: 'New note'},
-            {keys: '⌘K', label: 'Command palette'},
+            {keys: modShortcut('N'), label: 'New note'},
+            {keys: modShortcut('K'), label: 'Command palette'},
         ],
     };
 
