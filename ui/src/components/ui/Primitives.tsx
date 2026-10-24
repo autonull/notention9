@@ -9,6 +9,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
     leftIcon?: React.ReactNode;
     rightIcon?: React.ReactNode;
     fullWidth?: boolean;
+    touchTarget?: boolean;
 }
 
 export function Button({
@@ -21,15 +22,17 @@ export function Button({
     className = '',
     disabled,
     children,
+    touchTarget = true,
     ...props
 }: ButtonProps) {
     const baseStyles = 'btn';
     const variantClass = `btn-${variant}`;
     const sizeClass = `btn-${size}`;
+    const touchClass = touchTarget ? 'touch-target-48' : '';
 
     return (
         <button
-            className={cn(baseStyles, variantClass, sizeClass, fullWidth && 'w-full', className)}
+            className={cn(baseStyles, variantClass, sizeClass, fullWidth && 'w-full', touchClass, className)}
             disabled={disabled || loading}
             {...props}
         >
@@ -56,6 +59,7 @@ export interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonEl
     tooltipPosition?: 'top' | 'bottom' | 'left' | 'right';
     containerClassName?: string;
     label?: string;
+    touchTarget?: boolean;
 }
 
 export function IconButton({
@@ -70,6 +74,7 @@ export function IconButton({
     tooltipPosition = 'top',
     containerClassName,
     label,
+    touchTarget = true,
     ...props
 }: IconButtonProps) {
     const baseClasses = 'btn';
@@ -88,6 +93,7 @@ export function IconButton({
         lg: 'btn-lg',
     };
     const sizeClass = sizeMap[size];
+    const touchClass = touchTarget ? 'touch-target-44' : '';
 
     const iconSizes = {
         xs: 'h-3 w-3',
@@ -102,6 +108,7 @@ export function IconButton({
                 baseClasses,
                 variantClass,
                 sizeClass,
+                touchClass,
                 disabled && 'opacity-40 cursor-not-allowed',
                 className,
                 'active:scale-[0.95] transition-transform duration-50'
@@ -185,6 +192,7 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
     leftIcon?: React.ReactNode;
     rightIcon?: React.ReactNode;
     fullWidth?: boolean;
+    touchTarget?: boolean;
 }
 
 export function Input({
@@ -196,6 +204,7 @@ export function Input({
     fullWidth = true,
     className = '',
     id,
+    touchTarget = false,
     ...props
 }: InputProps) {
     const generatedId = React.useId();
@@ -226,6 +235,7 @@ export function Input({
                         leftIcon ? 'pl-10' : '',
                         rightIcon ? 'pr-10' : '',
                         error && 'field-error',
+                        touchTarget && 'py-3 text-base',
                         className
                     )}
                     aria-invalid={error ? 'true' : 'false'}

@@ -9,13 +9,14 @@ import {ViewSelector} from './ViewSelector';
 import {NoteGridItem} from './NoteGridItem';
 import {TagCloud} from './TagCloud';
 import {SidebarEmptyState} from './SidebarEmptyState';
-import {PlusIcon, ChevronLeftIcon, GridIcon, ListIcon, TagIcon} from '../common/icons';
+import {PlusIcon, ChevronLeftIcon, GridIcon, ListIcon, TagIcon, ChevronDownIcon, ChevronUpIcon} from '../common/icons';
 import {useSidebarLogic} from './useSidebarLogic';
 import {IconButton} from '../ui/Primitives';
 import {cn} from '../../utils/ui';
 import {VirtualizedList} from '../ui/VirtualizedList';
 import {useTouchGestures} from '../../hooks/useTouchGestures';
 import {Skeleton, NoteItemSkeleton, SidebarSkeleton} from '../ui/Skeleton';
+import {EmptyState} from '../common/EmptyState';
 
 interface SidebarProps {
     sortedNotes?: Note[];
@@ -25,6 +26,25 @@ interface SidebarProps {
 }
 
 const ITEM_HEIGHT = 84;
+
+interface TagGroup {
+    tag: string;
+    count: number;
+    notes: Note[];
+}
+
+function groupNotesByTag(notes: Note[]): TagGroup[] {
+    const tagMap = new Map<string, Note[]>();
+    notes.forEach(note => {
+        note.tags?.forEach(tag => {
+            if (!tagMap.has(tag)) tagMap.set(tag, []);
+            tagMap.get(tag)!.push(note);
+        });
+    });
+    return Array.from(tagMap.entries())
+        .map(([tag, notes]) => ({tag, count: notes.length, notes}))
+        .sort((a, b) => b.count - a.count);
+}
 
 export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true, isLoading = false}: SidebarProps) {
     const {
@@ -53,6 +73,8 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
     const virtualListRef = useRef<{scrollToIndex: (index: number, align?: 'start' | 'center' | 'end') => void}>(null);
     const [focusedIndex, setFocusedIndex] = useState(-1);
     const [isMobile, setIsMobile] = useState(false);
+    const [expandedTags, setExpandedTags] = useState<Set<string>>(new Set());
+    const [showPinnedOnly, setShowPinnedOnly] = useState(false);
 
     if (isLoading) {
         return <SidebarSkeleton/>;
@@ -75,12 +97,31 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
         setSearchTerm(`#${tag}`);
     }, [setSearchTerm]);
 
+    const toggleTagExpand = useCallback((tag: string) => {
+        setExpandedTags(prev => {
+            const next = new Set(prev);
+            if (next.has(tag)) next.delete(tag);
+            else next.add(tag);
+            return next;
+        });
+    }, []);
+
     const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
         if (e.key === 'Escape') {
             searchInputRef.current?.blur();
             setSearchTerm('');
         }
-    }, [setSearchTerm]);
+        if (e.key === 'ArrowDown' && e.ctrlKey) {
+            e.preventDefault();
+            const list = virtualListRef.current;
+            if (list) list.scrollToIndex((focusedIndex + 1) % sortedNotes.length, 'center');
+        }
+        if (e.key === 'ArrowUp' && e.ctrlKey) {
+            e.preventDefault();
+            const list = virtualListRef.current;
+            if (list) list.scrollToIndex((focusedIndex - 1 + sortedNotes.length) % sortedNotes.length, 'center');
+        }
+    }, [setSearchTerm, focusedIndex, sortedNotes.length]);
 
     const focusSearch = useCallback(() => {
         searchInputRef.current?.focus();
@@ -124,6 +165,20 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
         return window.innerHeight - 180;
     }, [isMobile]);
 
+    const filteredNotes = useMemo(() => {
+        if (!showPinnedOnly) return sortedNotes;
+        return sortedNotes.filter(note => note.pinned);
+    }, [sortedNotes, showPinnedOnly]);
+
+    const tagGroups = useMemo(() => groupNotesByTag(filteredNotes), [filteredNotes]);
+
+    const isExpanded = (tag: string) => expandedTags.has(tag);
+    const getVisibleNotesForTag = (tag: string) => {
+        const group = tagGroups.find(g => g.tag === tag);
+        if (!group) return [];
+        return isExpanded(tag) ? group.notes : group.notes.slice(0, 3);
+    };
+
     return (
         <div className={cn('bg-gray-900 flex flex-col h-full transition-all duration-300 ease-in-out')}>
             <div className={cn(
@@ -149,7 +204,7 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
                             icon={ChevronLeftIcon}
                             variant="ghost"
                             size="md"
-                            className="flex-shrink-0"
+                            className="flex-shrink-0 touch-target-44"
                             aria-label="Expand sidebar"
                         />
                     )}
@@ -178,8 +233,21 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-2 px-1" role="group" aria-label="Sort options">
+                        <div className="flex items-center gap-2 px-1" role="group" aria-label="Sort and filter options">
                             <SortSelector sortOrder={sortOrder} onSortChange={setSortOrder}/>
+                            {sortedNotes.some(n => n.pinned) && (
+                                <label className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-200 cursor-pointer touch-target-44">
+                                    <input
+                                        type="checkbox"
+                                        checked={showPinnedOnly}
+                                        onChange={(e) => setShowPinnedOnly(e.target.checked)}
+                                        className="w-4 h-4 accent-blue-500 rounded border-gray-700 bg-gray-800 focus:ring-2 focus:ring-blue-500"
+                                        aria-label="Show pinned only"
+                                    />
+                                    <span className="hidden sm:inline">Pinned only</span>
+                                    <span className="sm:hidden" aria-hidden="true">📌</span>
+                                </label>
+                            )}
                         </div>
                     </>
                 )}
@@ -192,11 +260,11 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
                 aria-label={isTrashView ? 'Trash notes' : 'Notes'}
                 onKeyDown={handleKeyDown}
             >
-                {sortedNotes.length > 0 ? (
+                {filteredNotes.length > 0 ? (
                     sidebarViewMode === 'list' ? (
                         <VirtualizedList<Note>
                             ref={virtualListRef}
-                            items={sortedNotes}
+                            items={filteredNotes}
                             itemHeight={ITEM_HEIGHT}
                             containerHeight={containerHeight}
                             getItemKey={getItemKey}
@@ -207,7 +275,7 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
                         />
                     ) : sidebarViewMode === 'grid' ? (
                         <div className="grid grid-cols-2 gap-2 h-full overflow-y-auto custom-scrollbar" role="list">
-                            {sortedNotes.map((note) => (
+                            {filteredNotes.map((note) => (
                                 <NoteGridItem
                                     key={note.id}
                                     note={note}
@@ -217,13 +285,65 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
                             ))}
                         </div>
                     ) : (
-                        <TagCloud notes={sortedNotes} onTagClick={handleTagClick}/>
+                        <div className="space-y-3" role="list">
+                            {tagGroups.map((group, groupIndex) => (
+                                <div key={group.tag} className="animate-fade-in-up" style={{animationDelay: `${groupIndex * 30}ms`}}>
+                                    <button
+                                        onClick={() => toggleTagExpand(group.tag)}
+                                        className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-left hover:bg-gray-800/50 transition-colors touch-target-44"
+                                        aria-expanded={isExpanded(group.tag)}
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            <TagIcon className="w-4 h-4 text-gray-400"/>
+                                            <span className="font-medium text-white truncate">#{group.tag}</span>
+                                            <span className="text-xs bg-gray-800 text-gray-300 px-2 py-0.5 rounded-full">{group.count}</span>
+                                        </div>
+                                        {isExpanded(group.tag) ? (
+                                            <ChevronUpIcon className="w-4 h-4 text-gray-400 transition-transform"/>
+                                        ) : (
+                                            <ChevronDownIcon className="w-4 h-4 text-gray-400 transition-transform"/>
+                                        )}
+                                    </button>
+                                    {isExpanded(group.tag) && (
+                                        <div className="mt-1 ml-8 space-y-1 border-l border-gray-700/50 pl-3 animate-fade-in">
+                                            {getVisibleNotesForTag(group.tag).map((note) => (
+                                                <NoteListItem
+                                                    key={note.id}
+                                                    note={note}
+                                                    isSelected={selectedNoteId === note.id}
+                                                    onSelect={() => setSelectedNoteId(note.id)}
+                                                    onDelete={() => handleDeleteRequest(note.id)}
+                                                    onPin={!isTrashView ? () => handleTogglePin(note) : undefined}
+                                                    isTrash={isTrashView}
+                                                    onRestore={() => handleRestore(note.id)}
+                                                    searchTerm={searchTerm}
+                                                    className="text-sm"
+                                                />
+                                            ))}
+                                            {group.notes.length > 3 && !isExpanded(group.tag) && (
+                                                <div className="text-xs text-gray-500 py-1 px-1">
+                                                    +{group.notes.length - 3} more...
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
                     )
                 ) : (
-                    <SidebarEmptyState
-                        searchTerm={searchTerm}
-                        isTrashView={isTrashView}
-                        onCreateNote={handleCreateNote}
+                    <EmptyState
+                        icon={isTrashView ? TagIcon : TagIcon}
+                        title={isTrashView ? 'Trash is empty' : searchTerm ? 'No matching notes' : 'No notes yet'}
+                        description={searchTerm
+                            ? 'Try adjusting your search or filters.'
+                            : isTrashView
+                                ? 'Deleted notes will appear here.'
+                                : 'Create your first note to get started.'}
+                        actions={!isTrashView && !searchTerm ? [
+                            {label: 'Create note', onClick: handleCreateNote, variant: 'primary', leftIcon: <PlusIcon className="w-4 h-4"/>},
+                        ] : undefined}
+                        className="h-full flex-grow"
                     />
                 )}
             </div>

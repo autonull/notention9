@@ -1,6 +1,27 @@
-import React, {useEffect, useMemo, useRef, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState, useCallback} from 'react';
 import {cn} from '../../utils/ui';
 import {CommandPaletteItem} from './Overlay';
+
+const RECENT_STORAGE_KEY = 'notention-command-palette-recent';
+
+function loadRecentItems(): CommandPaletteItem[] {
+    if (typeof window === 'undefined') return [];
+    try {
+        const stored = localStorage.getItem(RECENT_STORAGE_KEY);
+        return stored ? JSON.parse(stored) : [];
+    } catch {
+        return [];
+    }
+}
+
+function saveRecentItems(items: CommandPaletteItem[]) {
+    if (typeof window === 'undefined') return;
+    try {
+        localStorage.setItem(RECENT_STORAGE_KEY, JSON.stringify(items));
+    } catch {
+        // Ignore storage errors
+    }
+}
 
 interface FuzzyMatch {
     score: number;
@@ -82,6 +103,7 @@ export interface EnhancedCommandPaletteProps {
     maxRecent?: number;
     onRecentChange?: (items: CommandPaletteItem[]) => void;
     fuzzySearch?: boolean;
+    persistRecent?: boolean;
 }
 
 const DEFAULT_SHORTCUTS = [
@@ -105,16 +127,39 @@ export function EnhancedCommandPalette({
     className = '',
     showShortcuts = true,
     showRecent = true,
-    recentItems = [],
+    recentItems: initialRecentItems = [],
     maxRecent = 5,
     onRecentChange,
     fuzzySearch = true,
+    persistRecent = true,
 }: EnhancedCommandPaletteProps) {
     const [query, setQuery] = useState('');
     const [selectedIndex, setSelectedIndex] = useState(0);
     const inputRef = useRef<HTMLInputElement>(null);
     const listRef = useRef<HTMLDivElement>(null);
     const [showHelp, setShowHelp] = useState(false);
+    const [recentItems, setRecentItems] = useState<CommandPaletteItem[]>(() => 
+        persistRecent ? loadRecentItems() : initialRecentItems
+    );
+
+    // Sync with external recent items if provided
+    useEffect(() => {
+        if (initialRecentItems.length > 0 && !persistRecent) {
+            setRecentItems(initialRecentItems);
+        }
+    }, [initialRecentItems, persistRecent]);
+
+    // Persist recent items to localStorage
+    useEffect(() => {
+        if (persistRecent && recentItems.length > 0) {
+            saveRecentItems(recentItems);
+        }
+    }, [recentItems, persistRecent]);
+
+    const handleRecentChange = useCallback((items: CommandPaletteItem[]) => {
+        setRecentItems(items);
+        onRecentChange?.(items);
+    }, [onRecentChange]);
 
     const filteredItems = useMemo(() => {
         if (!query) {
@@ -201,8 +246,8 @@ export function EnhancedCommandPalette({
                         // Recent item selected
                     }
                     item.action();
-                    if (showRecent && onRecentChange && !recentItems.some(r => r.id === item.id)) {
-                        onRecentChange([item, ...recentItems].slice(0, maxRecent));
+                    if (showRecent && !recentItems.some(r => r.id === item.id)) {
+                        handleRecentChange([item, ...recentItems].slice(0, maxRecent));
                     }
                     onClose();
                 }
@@ -228,8 +273,8 @@ export function EnhancedCommandPalette({
 
     const handleItemClick = (item: CommandPaletteItem) => {
         item.action();
-        if (showRecent && onRecentChange && !recentItems.some(r => r.id === item.id)) {
-            onRecentChange([item, ...recentItems].slice(0, maxRecent));
+        if (showRecent && !recentItems.some(r => r.id === item.id)) {
+            handleRecentChange([item, ...recentItems].slice(0, maxRecent));
         }
         onClose();
     };
@@ -290,8 +335,15 @@ export function EnhancedCommandPalette({
                         <>
                             {showRecent && recentItems.length > 0 && (
                                 <div className="space-y-2">
-                                    <div className="px-3 pt-3 pb-1 text-[10px] font-bold text-gray-500 uppercase tracking-widest flex items-center gap-2">
+                                    <div className="px-3 pt-3 pb-1 text-[10px] font-bold text-gray-500 uppercase tracking-widest flex items-center justify-between">
                                         <span>Recent ({recentItems.length})</span>
+                                        <button
+                                            onClick={() => handleRecentChange([])}
+                                            className="text-xs text-gray-500 hover:text-gray-300 px-2 py-0.5 rounded transition-colors"
+                                            aria-label="Clear recent items"
+                                        >
+                                            Clear
+                                        </button>
                                     </div>
                                     {recentItems.slice(0, maxRecent).map((item, index) => (
                                         <button
@@ -418,9 +470,19 @@ export function EnhancedCommandPalette({
                     })}
                 </div>
 
-                <div className="p-2 border-t border-gray-700/50 text-xs text-gray-500 flex justify-between px-4 py-2 bg-gray-900/30">
+                <div className="p-2 border-t border-gray-700/50 text-xs text-gray-500 flex flex-wrap gap-4 justify-between px-4 py-2 bg-gray-900/30">
                     <span>↑↓ navigate · ↵ select · Esc close · ? help</span>
-                    {query && <span>{filteredItems.length} result{filteredItems.length !== 1 ? 's' : ''}</span>}
+                    <div className="flex items-center gap-4">
+                        {query && <span>{filteredItems.length} result{filteredItems.length !== 1 ? 's' : ''}</span>}
+                        {showRecent && recentItems.length > 0 && !query && (
+                            <button
+                                onClick={() => handleRecentChange([])}
+                                className="text-gray-400 hover:text-gray-200 underline transition-colors"
+                            >
+                                Clear recent
+                            </button>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

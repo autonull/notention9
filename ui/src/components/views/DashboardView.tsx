@@ -24,6 +24,9 @@ import {
     ChatIcon,
     SettingsIcon,
     SearchIcon,
+    BoltIcon,
+    ShieldIcon,
+    MagicWandIcon,
 } from '../common/icons';
 import {StatItem} from '../ui';
 import {Button} from '../ui';
@@ -31,6 +34,7 @@ import {Input} from '../ui';
 import {Badge} from '../ui';
 import {cn} from '../../utils/ui';
 import {Skeleton, DashboardStatSkeleton, ActivityFeedSkeleton, QuickActionsSkeleton} from '../ui/Skeleton';
+import {EmptyState} from '../common/EmptyState';
 
 const TEMPLATES = {
     task: {
@@ -69,21 +73,30 @@ const TEMPLATES = {
 };
 
 const QUICK_ACTIONS = [
-    {id: 'note', label: 'New Note', description: 'Start writing', icon: PencilIcon, gradient: 'gradient-primary', action: 'notes'},
+    {id: 'note', label: 'New Note', description: 'Start writing', icon: PencilIcon, gradient: 'gradient-primary', action: 'notes', shortcut: '⌘N'},
     {id: 'map', label: 'Map View', description: 'Browse notes spatially', icon: MapIcon, gradient: 'gradient-purple', action: 'map'},
     {id: 'chat', label: 'Chat', description: 'Messages & contacts', icon: ChatIcon, gradient: 'gradient-teal', action: 'chat'},
     {id: 'network', label: 'Network', description: 'P2P connections', icon: NetworkIcon, gradient: 'gradient-warning', action: 'network'},
+    {id: 'timeline', label: 'Timeline', description: 'Chronological view', icon: ClockIcon, gradient: 'gradient-info', action: 'timeline'},
     {id: 'settings', label: 'Settings', description: 'Preferences', icon: SettingsIcon, gradient: 'gradient-gray', action: 'settings'},
 ];
 
+const FEATURE_HIGHLIGHTS = [
+    {icon: BoltIcon, title: 'Semantic Extraction', desc: 'Auto-detect properties from natural language'},
+    {icon: MagicWandIcon, title: 'Smart Matching', desc: 'Discover connections between requests & offers'},
+    {icon: ShieldIcon, title: 'Local-First', desc: 'Your data stays on your device by default'},
+];
+
 export function DashboardView() {
-    const {notes, addNote} = useNotes();
+    const {notes, addNote, loading: notesLoading} = useNotes();
     const {setActiveView, setSelectedNoteId} = useView();
     const {settings} = useSettings();
     const [quickCaptureInput, setQuickCaptureInput] = useState('');
     const [agentStatus, setAgentStatus] = useState({status: 'offline'});
     const {load: loadSampleWorkspace} = useDemoWorkspace();
     const [focused, setFocused] = useState(false);
+    const [showFeatures, setShowFeatures] = useState(false);
+    const [quickCaptureExpanded, setQuickCaptureExpanded] = useState(false);
 
     const extractor = useMemo(() => new PropertyExtractor(settings.ontology), [settings.ontology]);
     const extractedProps = useMemo(() => {
@@ -231,7 +244,7 @@ export function DashboardView() {
             <div className="max-w-7xl mx-auto space-y-8 animate-fade-in">
 
                 {/* Welcome Header */}
-                <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in-down">
                     <div>
                         <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white">
                             Welcome back
@@ -240,18 +253,55 @@ export function DashboardView() {
                             Capture thoughts, discover connections, build knowledge.
                         </p>
                     </div>
-                    <Button
-                        onClick={handleCreateNote}
-                        leftIcon={<PlusIcon className="w-5 h-5"/>}
-                        size="lg"
-                        className="w-full sm:w-auto"
-                    >
-                        New Note
-                    </Button>
+                    <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+                        <Button
+                            onClick={handleCreateNote}
+                            leftIcon={<PlusIcon className="w-5 h-5"/>}
+                            size="lg"
+                            className="touch-target-48"
+                        >
+                            New Note
+                        </Button>
+                        <Button
+                            onClick={() => setShowFeatures(!showFeatures)}
+                            variant="ghost"
+                            size="lg"
+                            leftIcon={<BoltIcon className="w-5 h-5"/>}
+                            className="touch-target-48 hidden sm:inline-flex"
+                        >
+                            Features
+                        </Button>
+                    </div>
                 </header>
 
+                {/* Feature Highlights (expandable) */}
+                {showFeatures && (
+                    <section className="rounded-3xl border border-purple-500/20 bg-purple-500/5 p-6 animate-fade-in-up stagger-1">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="p-2 bg-purple-500/10 rounded-xl text-purple-300">
+                                <BoltIcon className="w-6 h-6"/>
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-white">What makes Notention different</h3>
+                                <p className="text-sm text-gray-400">Powerful features for knowledge capture</p>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {FEATURE_HIGHLIGHTS.map((feature, i) => (
+                                <div key={feature.title} className="p-4 bg-gray-900/50 rounded-xl border border-gray-700/50 animate-fade-in-up" style={{animationDelay: `${(i + 2) * 50}ms`}}>
+                                    <div className="p-2 bg-gray-800 rounded-lg text-purple-400 mb-3">
+                                        <feature.icon className="w-5 h-5" />
+                                    </div>
+                                    <h4 className="font-semibold text-white mb-1">{feature.title}</h4>
+                                    <p className="text-sm text-gray-400">{feature.desc}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                )}
+
                 {/* Quick Capture Section */}
-                <section className="relative overflow-hidden rounded-3xl border border-gray-800 bg-gradient-to-br from-gray-900/50 to-gray-900/80 p-6 md:p-8">
+                <section className="relative overflow-hidden rounded-3xl border border-gray-800 bg-gradient-to-br from-gray-900/50 to-gray-900/80 p-6 md:p-8 animate-fade-in-up stagger-1">
                     <div className="relative z-10 max-w-2xl mx-auto text-center">
                         <h2 className="text-2xl md:text-3xl font-bold mb-2 tracking-tight text-white">
                             Quick Capture
@@ -261,24 +311,30 @@ export function DashboardView() {
                         </p>
 
                         <form onSubmit={handleQuickCapture} className="relative mb-6">
-                            <Input
-                                value={quickCaptureInput}
-                                onChange={(e) => setQuickCaptureInput(e.target.value)}
-                                placeholder={`What's on your mind? Try: "Buy milk #shopping" or "Meeting at 3pm"`}
-                                leftIcon={<SearchIcon className="w-5 h-5" />}
-                                className="text-lg py-4"
-                                onFocus={() => setFocused(true)}
-                                onBlur={() => setFocused(false)}
-                            />
-                            <Button
-                                type="submit"
-                                disabled={!quickCaptureInput.trim()}
-                                size="lg"
-                                className="absolute right-2 top-1/2 -translate-y-1/2"
-                                aria-label="Create note"
-                            >
-                                <ArrowRightIcon className="w-5 h-5"/>
-                            </Button>
+                            <div className="relative">
+                                <Input
+                                    value={quickCaptureInput}
+                                    onChange={(e) => {
+                                        setQuickCaptureInput(e.target.value);
+                                        setQuickCaptureExpanded(true);
+                                    }}
+                                    placeholder={`What's on your mind? Try: "Buy milk #shopping" or "Meeting at 3pm"`}
+                                    leftIcon={<SearchIcon className="w-5 h-5" />}
+                                    className="text-lg py-4 pr-16"
+                                    onFocus={() => { setFocused(true); setQuickCaptureExpanded(true); }}
+                                    onBlur={() => setFocused(false)}
+                                    autoComplete="off"
+                                />
+                                <Button
+                                    type="submit"
+                                    disabled={!quickCaptureInput.trim()}
+                                    size="lg"
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 touch-target-48"
+                                    aria-label="Create note"
+                                >
+                                    <ArrowRightIcon className="w-5 h-5"/>
+                                </Button>
+                            </div>
                         </form>
 
                         {/* Semantic Preview */}
@@ -310,14 +366,14 @@ export function DashboardView() {
                         )}
 
                         {/* Quick Templates */}
-                        <div className="flex flex-wrap justify-center gap-2">
+                        <div className="flex flex-wrap justify-center gap-2 mb-6">
                             {(Object.entries(TEMPLATES) as [keyof typeof TEMPLATES, typeof TEMPLATES['task']][]).map(([type, t]) => (
                                 <Button
                                     key={type}
                                     onClick={() => handleQuickTemplate(type)}
                                     variant="outline"
                                     size="sm"
-                                    className={cn('gap-2', t.borderColor, 'hover:scale-105 active:scale-95')}
+                                    className={cn('gap-2', t.borderColor, 'hover:scale-105 active:scale-95 touch-target-44')}
                                     leftIcon={
                                         <div className={cn('p-2 rounded-xl', t.gradient, 'text-white')}>
                                             <t.icon className="w-4 h-4" />
@@ -330,6 +386,22 @@ export function DashboardView() {
                                 </Button>
                             ))}
                         </div>
+
+                        {/* Tips */}
+                        <details className="group text-left max-w-md mx-auto">
+                            <summary className="flex items-center justify-center gap-2 text-gray-500 text-sm cursor-pointer select-none">
+                                <span>Capture tips</span>
+                                <svg className="w-4 h-4 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </summary>
+                            <div className="mt-4 p-4 bg-gray-900/50 rounded-xl border border-gray-700/50 text-sm text-gray-400 space-y-2 animate-fade-in">
+                                <div className="flex items-center gap-2"><kbd className="px-1.5 py-0.5 bg-gray-800 rounded text-xs">#tag</kbd><span>Add tags inline</span></div>
+                                <div className="flex items-center gap-2"><kbd className="px-1.5 py-0.5 bg-gray-800 rounded text-xs">key:value</kbd><span>Add properties</span></div>
+                                <div className="flex items-center gap-2"><kbd className="px-1.5 py-0.5 bg-gray-800 rounded text-xs">@mention</kbd><span>Reference other notes</span></div>
+                                <div className="flex items-center gap-2"><kbd className="px-1.5 py-0.5 bg-gray-800 rounded text-xs">[link]</kbd><span>Create wiki-links</span></div>
+                            </div>
+                        </details>
                     </div>
 
                     {/* Background decoration */}
@@ -341,7 +413,7 @@ export function DashboardView() {
 
                 {/* First run sample workspace */}
                 {notes.length === 0 && (
-                    <section className="rounded-3xl border border-purple-500/20 bg-purple-500/5 p-6 animate-slide-in-up">
+                    <section className="rounded-3xl border border-purple-500/20 bg-purple-500/5 p-6 animate-slide-in-up stagger-2">
                         <div className="flex flex-col sm:flex-row sm:items-center gap-5">
                             <div className="rounded-2xl bg-purple-500/10 p-3 text-purple-300 flex-shrink-0">
                                 <SparklesIcon className="w-7 h-7"/>
@@ -356,7 +428,7 @@ export function DashboardView() {
                                 onClick={loadSampleWorkspace}
                                 variant="primary"
                                 size="md"
-                                className="w-full sm:w-auto flex-shrink-0"
+                                className="w-full sm:w-auto flex-shrink-0 touch-target-48"
                             >
                                 Load sample workspace
                             </Button>
@@ -364,9 +436,30 @@ export function DashboardView() {
                     </section>
                 )}
 
+                {/* Empty state for users with notes but no recent activity */}
+                {notes.length > 0 && recentNotes.length === 0 && (
+                    <section className="rounded-3xl border border-gray-700/50 bg-gray-900/50 p-8 animate-fade-in-up">
+                        <EmptyState
+                            icon={NoteIcon}
+                            title="No recent activity"
+                            description="Your notes will appear here as you create and edit them."
+                            action={
+                                <Button
+                                    onClick={handleCreateNote}
+                                    variant="primary"
+                                    leftIcon={<PlusIcon className="w-4 h-4"/>}
+                                    className="touch-target-48"
+                                >
+                                    Create your first note
+                                </Button>
+                            }
+                        />
+                    </section>
+                )}
+
                 {/* Offline match preview */}
                 {localMatch && (
-                    <section className="rounded-3xl border border-green-500/20 bg-green-500/5 p-6 animate-slide-in-up" data-testid="local-match">
+                    <section className="rounded-3xl border border-green-500/20 bg-green-500/5 p-6 animate-slide-in-up stagger-2" data-testid="local-match">
                         <div className="flex items-center gap-2 text-green-300 text-xs font-bold uppercase tracking-widest mb-4">
                             <CheckCircleIcon className="w-4 h-4"/> Match found locally
                         </div>
@@ -385,14 +478,14 @@ export function DashboardView() {
                 )}
 
                 {/* Stats Grid */}
-                <section aria-label="Statistics">
+                <section aria-label="Statistics" className="animate-fade-in-up stagger-3">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <StatItem
                             label="Agent Status"
                             value={isConnected ? 'Online' : 'Offline'}
                             icon={<CpuChipIcon className={cn('w-5 h-5', isConnected ? 'text-green-400' : 'text-gray-500')} />}
                             trend={isConnected ? 'up' : 'neutral'}
-                            trendValue={isConnected ? 'Ready' : 'Local'}
+                            trendValue={isConnected ? 'Ready' : 'Local only'}
                             variant={isConnected ? 'success' : 'default'}
                         />
 
@@ -409,6 +502,8 @@ export function DashboardView() {
                             label="Notes"
                             value={stats.total}
                             icon={<NoteIcon className="w-5 h-5 text-blue-400" />}
+                            trend={stats.total > 0 ? 'up' : 'neutral'}
+                            trendValue={`${stats.public} public`}
                             variant="primary"
                         />
 
@@ -426,7 +521,7 @@ export function DashboardView() {
                 {/* Main Content Grid */}
                 <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Recent Activity */}
-                    <article className="lg:col-span-2 bg-gray-900/50 rounded-3xl border border-gray-700/30 overflow-hidden flex flex-col backdrop-blur-sm shadow-xl animate-fade-in">
+                    <article className="lg:col-span-2 bg-gray-900/50 rounded-3xl border border-gray-700/30 overflow-hidden flex flex-col backdrop-blur-sm shadow-xl animate-fade-in-up stagger-4">
                         <header className="p-6 border-b border-gray-700/30 flex justify-between items-center bg-gray-800/20">
                             <h2 className="text-xl font-bold flex items-center gap-3 text-white">
                                 <div className="p-2 bg-gray-800 rounded-lg text-gray-300">
@@ -444,30 +539,44 @@ export function DashboardView() {
                             </Button>
                         </header>
                         <div className="p-6 flex-1">
-                            <ActivityFeed recentNotes={recentNotes} onSelectNote={handleSelectNote}/>
+                            {recentNotes.length > 0 ? (
+                                <ActivityFeed recentNotes={recentNotes} onSelectNote={handleSelectNote}/>
+                            ) : (
+                                <EmptyState
+                                    icon={ClockIcon}
+                                    title="No recent activity"
+                                    description="Your recently updated notes will appear here."
+                                    className="h-full"
+                                />
+                            )}
                         </div>
                     </article>
 
                     {/* Quick Actions */}
-                    <aside className="bg-gray-900/50 rounded-3xl border border-gray-700/30 p-6 flex flex-col gap-3 backdrop-blur-sm shadow-xl animate-fade-in">
+                    <aside className="bg-gray-900/50 rounded-3xl border border-gray-700/30 p-6 flex flex-col gap-3 backdrop-blur-sm shadow-xl animate-fade-in-up stagger-5">
                         <h2 className="text-lg font-bold text-white mb-2">Quick Actions</h2>
 
-                        {QUICK_ACTIONS.map((action) => (
+                        {QUICK_ACTIONS.map((action, i) => (
                             <Button
                                 key={action.id}
                                 onClick={() => handleNavigate(action.action)}
                                 variant="outline"
-                                className="w-full text-left gap-4 justify-start hover:shadow-lg transition-all duration-200"
+                                className="w-full text-left gap-4 justify-start hover:shadow-lg transition-all duration-200 touch-target-48"
                                 leftIcon={
                                     <div className={cn('p-2 rounded-xl', action.gradient, 'text-white')}>
                                         <action.icon className="w-5 h-5" />
                                     </div>
                                 }
                             >
-                                <div>
+                                <div className="flex-1 min-w-0">
                                     <div className="font-semibold text-white">{action.label}</div>
                                     <div className="text-sm text-gray-400">{action.description}</div>
                                 </div>
+                                {action.shortcut && (
+                                    <kbd className="text-[10px] font-mono px-2 py-0.5 bg-gray-800 text-gray-400 rounded uppercase tracking-wider">
+                                        {action.shortcut}
+                                    </kbd>
+                                )}
                             </Button>
                         ))}
 
@@ -476,7 +585,7 @@ export function DashboardView() {
                                 onClick={() => setActiveView('dashboard')}
                                 variant="ghost"
                                 size="sm"
-                                className="w-full justify-start gap-3"
+                                className="w-full justify-start gap-3 touch-target-44"
                                 leftIcon={<HomeIcon className="w-5 h-5 text-gray-400" />}
                             >
                                 <div>
