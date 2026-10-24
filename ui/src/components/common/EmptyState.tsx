@@ -1,5 +1,7 @@
 import React from 'react';
 import {cn} from '../../utils/ui';
+import {SearchIcon, SparklesIcon, ArrowRightIcon} from '../common/icons';
+import {Button} from '../ui/Primitives';
 
 interface EmptyStateProps {
     icon?: React.ComponentType<{ className?: string }>;
@@ -8,11 +10,12 @@ interface EmptyStateProps {
     action?: React.ReactNode;
     className?: string;
     iconClassName?: string;
-    variant?: 'default' | 'card' | 'minimal' | 'illustrated' | 'onboarding';
+    variant?: 'default' | 'card' | 'minimal' | 'illustrated' | 'onboarding' | 'actionable';
     illustration?: React.ReactNode;
     secondaryAction?: React.ReactNode;
     showSearchSuggestion?: boolean;
     searchTerm?: string;
+    hint?: string;
 }
 
 export function EmptyState({
@@ -26,7 +29,8 @@ export function EmptyState({
     illustration,
     secondaryAction,
     showSearchSuggestion = false,
-    searchTerm
+    searchTerm,
+    hint
 }: EmptyStateProps) {
     const variantStyles = {
         default: 'flex flex-col items-center justify-center py-12 px-4 text-center',
@@ -34,6 +38,7 @@ export function EmptyState({
         minimal: 'flex flex-col items-center justify-center py-6 px-4 text-center',
         illustrated: 'flex flex-col items-center justify-center py-16 px-6 text-center max-w-md mx-auto',
         onboarding: 'flex flex-col items-center justify-center py-20 px-6 text-center max-w-lg mx-auto',
+        actionable: 'empty-state-actionable',
     };
 
     const iconContainerStyles = {
@@ -42,6 +47,7 @@ export function EmptyState({
         minimal: 'flex items-center justify-center rounded-full mb-3 bg-gray-800 p-3',
         illustrated: 'flex items-center justify-center rounded-full mb-6 w-20 h-20 bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30',
         onboarding: 'flex items-center justify-center rounded-full mb-8 w-24 h-24 bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30 animate-pulse-subtle',
+        actionable: 'empty-state-icon',
     };
 
     const titleStyles = {
@@ -50,6 +56,7 @@ export function EmptyState({
         minimal: 'font-medium text-gray-300 text-base mb-1',
         illustrated: 'font-semibold text-white text-xl mb-3',
         onboarding: 'font-bold text-white text-2xl mb-4',
+        actionable: 'empty-state-title',
     };
 
     const descriptionStyles = {
@@ -58,6 +65,7 @@ export function EmptyState({
         minimal: 'text-sm max-w-xs text-gray-500 mb-4',
         illustrated: 'text-base max-w-md text-gray-400 mb-8 leading-relaxed',
         onboarding: 'text-lg max-w-lg text-gray-300 mb-10 leading-relaxed',
+        actionable: 'empty-state-description',
     };
 
     return (
@@ -77,8 +85,13 @@ export function EmptyState({
                     {description}
                 </div>
             )}
+            {hint && (
+                <div className="mb-6 p-3 bg-gray-800/50 rounded-lg border border-gray-700/50 max-w-xs text-left animate-fade-in-up">
+                    <p className="text-xs text-gray-500 mb-1">{hint}</p>
+                </div>
+            )}
             {showSearchSuggestion && searchTerm && (
-                <div className="mb-6 p-3 bg-gray-800/50 rounded-lg border border-gray-700/50 max-w-xs text-left animate-slide-in-up">
+                <div className="mb-6 p-3 bg-gray-800/50 rounded-lg border border-gray-700/50 max-w-xs text-left animate-fade-in-up">
                     <p className="text-xs text-gray-500 mb-1">Try searching for:</p>
                     <code className="text-sm text-blue-400 font-mono">#{searchTerm}</code>
                     <p className="text-xs text-gray-500 mt-1">or</p>
@@ -86,14 +99,14 @@ export function EmptyState({
                 </div>
             )}
             {action && (
-                <div className="w-full max-w-xs flex flex-col gap-2">{action}</div>
+                <div className="empty-state-actions">{action}</div>
             )}
             {secondaryAction && (
-                <div className="mt-4 w-full max-w-xs flex flex-col gap-2">{secondaryAction}</div>
+                <div className="empty-state-actions">{secondaryAction}</div>
             )}
         </div>
     );
-};
+}
 
 export function EmptyStateIllustration({children}: {children: React.ReactNode}) {
     return (
@@ -168,4 +181,114 @@ export function TrashEmptyIllustration() {
             <circle cx="0" cy="10" r="5" fill="#3b82f6" opacity="0.6"/>
         </EmptyStateIllustration>
     );
+}
+
+/* Actionable empty state presets */
+interface EmptyStatePresetProps {
+    type: 'firstNote' | 'noMatches' | 'emptyTrash' | 'noNetwork' | 'noResults';
+    searchTerm?: string;
+    query?: string;
+}
+
+export function EmptyStatePreset({type, searchTerm, query}: EmptyStatePresetProps) {
+    switch (type) {
+        case 'firstNote':
+            return (
+                <EmptyState
+                    variant="actionable"
+                    illustration={<NotesEmptyIllustration/>}
+                    title="Start your knowledge graph"
+                    description="Create your first note to begin building connections. Notes can be tasks, ideas, journal entries, or anything you want to remember."
+                    action={
+                        <Button
+                            variant="primary"
+                            size="lg"
+                            leftIcon={<SparklesIcon className="w-4 h-4"/>}
+                            className="touch-target-48"
+                        >
+                            Create your first note
+                        </Button>
+                    }
+                    secondaryAction={
+                        <Button
+                            variant="ghost"
+                            size="md"
+                            leftIcon={<ArrowRightIcon className="w-4 h-4"/>}
+                            className="touch-target-48"
+                        >
+                            Load sample workspace
+                        </Button>
+                    }
+                />
+            );
+        case 'noMatches':
+            return (
+                <EmptyState
+                    variant="illustrated"
+                    illustration={<SearchEmptyIllustration/>}
+                    title="No matching notes"
+                    description={`Your search for "${searchTerm}" didn't match any notes.`}
+                    hint="Try: #tag for tags, key:value for properties, or broader terms"
+                    action={
+                        <Button
+                            variant="secondary"
+                            size="md"
+                            leftIcon={<SearchIcon className="w-4 h-4"/>}
+                            className="touch-target-48"
+                        >
+                            Clear search
+                        </Button>
+                    }
+                />
+            );
+        case 'emptyTrash':
+            return (
+                <EmptyState
+                    variant="actionable"
+                    illustration={<TrashEmptyIllustration/>}
+                    title="Trash is empty"
+                    description="Deleted notes would appear here. Notes stay in trash for 30 days before permanent deletion."
+                />
+            );
+        case 'noNetwork':
+            return (
+                <EmptyState
+                    variant="illustrated"
+                    illustration={<NetworkEmptyIllustration/>}
+                    title="No network connections"
+                    description="Connect to Nostr relays to discover and share notes with others. Your data stays local until you choose to share."
+                    action={
+                        <Button
+                            variant="primary"
+                            size="md"
+                            leftIcon={<SparklesIcon className="w-4 h-4"/>}
+                            className="touch-target-48"
+                        >
+                            Configure relays
+                        </Button>
+                    }
+                />
+            );
+        case 'noResults':
+            return (
+                <EmptyState
+                    variant="illustrated"
+                    illustration={<SearchEmptyIllustration/>}
+                    title={`No results for "${query}"`}
+                    description="Try a different search term or check your spelling."
+                    action={
+                        <Button
+                            variant="secondary"
+                            size="md"
+                            leftIcon={<SearchIcon className="w-4 h-4"/>}
+                            className="touch-target-48"
+                        >
+                            Clear search
+                        </Button>
+                    }
+                />
+            );
+        default:
+            return null;
+    }
 }

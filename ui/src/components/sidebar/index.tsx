@@ -7,14 +7,15 @@ import {FilterBar} from './FilterBar';
 import {SortSelector} from './SortSelector';
 import {ViewSelector} from './ViewSelector';
 import {NoteGridItem} from './NoteGridItem';
-import {PlusIcon, ChevronLeftIcon, ChevronRightIcon} from '../common/icons';
+import {PlusIcon, ChevronLeftIcon, ChevronRightIcon, SparklesIcon, SearchIcon, ArrowRightIcon} from '../common/icons';
 import {useSidebarLogic} from './useSidebarLogic';
 import {IconButton} from '../ui/Primitives';
 import {cn} from '../../utils/ui';
 import {VirtualizedList} from '../ui/VirtualizedList';
 import {useTouchGestures} from '../../hooks/useTouchGestures';
 import {SidebarSkeleton} from '../ui/Skeleton';
-import {EmptyState, NotesEmptyIllustration, SearchEmptyIllustration, TrashEmptyIllustration} from '../common/EmptyState';
+import {EmptyState, NotesEmptyIllustration, SearchEmptyIllustration, TrashEmptyIllustration, EmptyStatePreset} from '../common/EmptyState';
+import {Button} from '../ui/Primitives';
 
 interface SidebarProps {
     sortedNotes?: Note[];
@@ -261,31 +262,28 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
                         />
                     )
                 ) : (
-                    <EmptyState
-                        variant="illustrated"
-                        illustration={searchTerm ? <SearchEmptyIllustration/> : isTrashView ? <TrashEmptyIllustration/> : <NotesEmptyIllustration/>}
-                        title={isTrashView ? 'Trash is empty' : searchTerm ? 'No matching notes' : 'No notes yet'}
-                        description={searchTerm
-                            ? 'Try adjusting your search or filters.'
-                            : isTrashView
-                                ? 'Deleted notes will appear here.'
-                                : 'Create your first note to get started.'}
-                        actions={!isTrashView && !searchTerm ? (
-                            <button
-                                onClick={handleCreateNote}
-                                className="w-full max-w-xs inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-500 transition-colors touch-target"
-                            >
-                                <PlusIcon className="w-4 h-4"/>
-                                Create note
-                            </button>
-                        ) : undefined}
-                        className="h-full flex-grow"
-                    />
+                    <>
+                        {isTrashView ? (
+                            <EmptyStatePreset type="emptyTrash" />
+                        ) : searchTerm ? (
+                            <EmptyStatePreset type="noMatches" searchTerm={searchTerm} />
+                        ) : sortedNotes.length === 0 ? (
+                            <EmptyStatePreset type="firstNote" />
+                        ) : (
+                            <EmptyState
+                                variant="illustrated"
+                                illustration={<NotesEmptyIllustration/>}
+                                title="No notes match your filters"
+                                description="Try adjusting your filters or sort order."
+                                hint="Press ⌘/ to search, or use filters to narrow results"
+                            />
+                        )}
+                    </>
                 )}
             </div>
 
             {isMobile && isPulling && (
-                <div className="flex items-center justify-center px-4 py-3 text-sm" style={{height: Math.max(60, pullDistance)}}>
+                <div className="pull-to-refresh flex items-center justify-center px-4 py-3 text-sm" style={{height: Math.max(60, pullDistance)}}>
                     <div className="flex flex-col items-center gap-2 transition-all duration-200">
                         <div className={cn(
                             'w-8 h-8 border-2 rounded-full transition-all duration-200 flex items-center justify-center',
@@ -304,7 +302,7 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
                             )}
                         </div>
                         <span className={cn('transition-colors duration-200', pullProgress >= 1 ? 'text-blue-400 font-medium' : 'text-gray-500')}>
-                            {pullProgress >= 1 ? 'Refreshing...' : 'Pull to refresh'}
+                            {pullProgress >= 1 ? 'Refreshing...' : pullProgress > 0.5 ? 'Release to refresh' : 'Pull to refresh'}
                         </span>
                         <div className="w-32 h-0.5 bg-gray-700 rounded-full overflow-hidden">
                             <div className="h-full bg-blue-500 rounded-full transition-all duration-100 ease-out" style={{width: `${pullProgress * 100}%`}}/>

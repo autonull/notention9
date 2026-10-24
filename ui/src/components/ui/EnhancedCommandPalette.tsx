@@ -2,7 +2,8 @@ import React, {useEffect, useMemo, useRef, useState, useCallback} from 'react';
 import {cn} from '../../utils/ui';
 import {CommandPaletteItem} from './Overlay';
 import {useFocusTrap} from './Overlay';
-import {SearchSparkleIcon, XIcon, ClockIcon} from '../common/icons';
+import {SearchSparkleIcon, XIcon, ClockIcon, SparklesIcon, ZapIcon, SearchIcon, HashIcon, KeyIcon, SettingsIcon} from '../common/icons';
+import {Button} from './Primitives';
 
 const RECENT_STORAGE_KEY = 'notention-command-palette-recent';
 
@@ -92,6 +93,35 @@ function highlightMatch(text: string, indices: [number, number][]): React.ReactN
     return parts;
 }
 
+const SHORTCUT_CATEGORIES = [
+    {
+        category: 'Navigation',
+        shortcuts: [
+            {label: 'Command Palette', keys: ['⌘', 'K']},
+            {label: 'Search Notes', keys: ['⌘', 'F']},
+            {label: 'Toggle Sidebar', keys: ['⌘', '\\']},
+            {label: 'Back to List', keys: ['Esc']},
+        ]
+    },
+    {
+        category: 'Editing',
+        shortcuts: [
+            {label: 'New Note', keys: ['⌘', 'N']},
+            {label: 'Save Note', keys: ['⌘', 'S']},
+            {label: 'Property Palette', keys: ['⌘', 'Shift', 'P']},
+            {label: 'Next Note', keys: ['⌘', 'J']},
+            {label: 'Previous Note', keys: ['⌘', 'Shift', 'K']},
+        ]
+    },
+    {
+        category: 'Help',
+        shortcuts: [
+            {label: 'Open Help', keys: ['?']},
+            {label: 'Shortcuts Help', keys: ['⌘', 'Shift', '?']},
+        ]
+    },
+];
+
 export interface EnhancedCommandPaletteProps {
     isOpen: boolean;
     onClose: () => void;
@@ -107,18 +137,6 @@ export interface EnhancedCommandPaletteProps {
     fuzzySearch?: boolean;
     persistRecent?: boolean;
 }
-
-const DEFAULT_SHORTCUTS = [
-    {label: 'New Note', keys: ['⌘', 'N']},
-    {label: 'Command Palette', keys: ['⌘', 'K']},
-    {label: 'Search Notes', keys: ['⌘', 'F']},
-    {label: 'Toggle Sidebar', keys: ['⌘', '\\']},
-    {label: 'Save Note', keys: ['⌘', 'S']},
-    {label: 'Next Note', keys: ['⌘', 'J']},
-    {label: 'Previous Note', keys: ['⌘', 'Shift', 'K']},
-    {label: 'Back to List', keys: ['Esc']},
-    {label: 'Open Help', keys: ['?']},
-];
 
 export function EnhancedCommandPalette({
     isOpen,
@@ -294,6 +312,34 @@ export function EnhancedCommandPalette({
     const dialogStyle = isMobile ? 'bg-gray-800 rounded-t-2xl shadow-2xl border border-gray-700 w-full overflow-hidden flex flex-col h-full animate-slide-in-up' : 'bg-gray-800 rounded-xl shadow-2xl border border-gray-700 w-full max-w-3xl overflow-hidden flex flex-col max-h-[70vh] animate-slide-in-up';
     const contentPadding = isMobile ? 'p-4' : 'p-2';
 
+    // Render shortcut categories
+    const renderShortcuts = () => (
+        <div className="space-y-4 animate-fade-in stagger-children">
+            {SHORTCUT_CATEGORIES.map((group, groupIndex) => (
+                <div key={group.category} className="stagger-children" style={{animationDelay: `${groupIndex * 50}ms`}}>
+                    <div className="px-3 pt-3 pb-1 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                        {group.category}
+                    </div>
+                    <div className="space-y-2 px-3">
+                        {group.shortcuts.map((shortcut) => (
+                            <div key={shortcut.keys.join('+')} className="flex items-center justify-between px-3 py-3 rounded-lg hover:bg-gray-700/50 transition-colors touch-target">
+                                <span className="text-sm text-gray-300">{shortcut.label}</span>
+                                <kbd className="text-[10px] font-mono px-1.5 py-0.5 bg-gray-700 text-gray-400 rounded uppercase tracking-wider">
+                                    {shortcut.keys.join(' + ')}
+                                </kbd>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            ))}
+            <div className="pt-2 border-t border-gray-700/50">
+                <div className="flex items-center justify-between px-3 py-2 text-sm text-gray-400">
+                    <span>Type to search commands, notes, tags (<kbd className="px-1.5 py-0.5 bg-gray-700 rounded text-xs font-mono">#tag</kbd>), properties (<kbd className="px-1.5 py-0.5 bg-gray-700 rounded text-xs font-mono">key:value</kbd>)</span>
+                </div>
+            </div>
+        </div>
+    );
+
     return (
         <div
             className={containerStyle}
@@ -358,13 +404,15 @@ export function EnhancedCommandPalette({
                                 Press <kbd className="px-1.5 py-0.5 bg-gray-700 rounded text-xs font-mono">⌘K</kbd> to open, type to search commands, notes, tags (<kbd className="px-1.5 py-0.5 bg-gray-700 rounded text-xs font-mono">#tag</kbd>), or properties (<kbd className="px-1.5 py-0.5 bg-gray-700 rounded text-xs font-mono">key:value</kbd>).
                             </p>
                             <div className="flex flex-wrap justify-center gap-2 mx-auto max-w-xs">
-                                <button
+                                <Button
                                     onClick={() => setShowHelp(true)}
-                                    className="btn btn-ghost btn-sm w-full sm:w-auto touch-target-48"
+                                    variant="ghost"
+                                    size="sm"
+                                    leftIcon={<SettingsIcon className="w-4 h-4"/>}
+                                    className="touch-target-48"
                                 >
-                                    <ClockIcon className="w-4 h-4 mr-2" />
                                     View Shortcuts
-                                </button>
+                                </Button>
                             </div>
                         </div>
                     )}
@@ -374,17 +422,18 @@ export function EnhancedCommandPalette({
                             <div className="p-3 bg-gray-700/50 rounded-xl w-fit mx-auto mb-4 text-gray-400">
                                 <SearchSparkleIcon className="w-8 h-8" />
                             </div>
-                            {/* eslint-disable react/no-unescaped-entities */}
                             <h3 className="text-lg font-semibold text-white mb-2">No results for "{query}"</h3>
                             <p className="text-gray-400 mb-4">Try a different search term or check your spelling.</p>
                             <div className="flex flex-wrap justify-center gap-2 mx-auto max-w-xs">
-                                <button
+                                <Button
                                     onClick={() => setQuery('')}
-                                    className="btn btn-secondary btn-sm touch-target-48"
+                                    variant="secondary"
+                                    size="sm"
+                                    leftIcon={<XIcon className="w-4 h-4"/>}
+                                    className="touch-target-48"
                                 >
-                                    <XIcon className="w-4 h-4 mr-2" />
                                     Clear Search
-                                </button>
+                                </Button>
                             </div>
                         </div>
                     )}
@@ -395,13 +444,15 @@ export function EnhancedCommandPalette({
                                 <div className="space-y-2 animate-fade-in">
                                     <div className="px-3 pt-3 pb-1 text-[10px] font-bold text-gray-500 uppercase tracking-widest flex items-center justify-between">
                                         <span>Recent ({recentItems.length})</span>
-                                        <button
+                                        <Button
                                             onClick={() => handleRecentChange([])}
+                                            variant="ghost"
+                                            size="xs"
                                             className="text-xs text-gray-500 hover:text-gray-300 px-2 py-0.5 rounded transition-colors touch-target"
                                             aria-label="Clear recent items"
                                         >
                                             Clear
-                                        </button>
+                                        </Button>
                                     </div>
                                     {recentItems.slice(0, maxRecent).map((item, index) => (
                                         <button
@@ -439,44 +490,18 @@ export function EnhancedCommandPalette({
                             )}
                             {showShortcuts && (
                                 <div className="pt-4 space-y-4 animate-fade-in">
-                                    <div className="px-3 pt-3 pb-1 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-                                        Keyboard Shortcuts
-                                    </div>
-                                    <div className="space-y-2 px-3">
-                                        {DEFAULT_SHORTCUTS.map((shortcut) => (
-                                            <div key={shortcut.keys.join('+')} className="flex items-center justify-between px-3 py-3 rounded-lg hover:bg-gray-700/50 transition-colors touch-target">
-                                                <span className="text-sm text-gray-300">{shortcut.label}</span>
-                                                <kbd className="text-[10px] font-mono px-1.5 py-0.5 bg-gray-700 text-gray-400 rounded uppercase tracking-wider">
-                                                    {shortcut.keys.join(' + ')}
-                                                </kbd>
-                                            </div>
-                                        ))}
-                                    </div>
+                                    {renderShortcuts()}
                                 </div>
                             )}
                         </>
                     )}
 
                     {showHelp && !query && (
-                        <div className="p-4 space-y-4 animate-fade-in">
+                        <div className="p-4 space-y-4 animate-fade-in stagger-children">
                             <div className="px-3 pt-3 pb-1 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
                                 Help & Shortcuts
                             </div>
-                            <div className="space-y-3 px-3">
-                                {DEFAULT_SHORTCUTS.map((shortcut) => (
-                                    <div key={shortcut.keys.join('+')} className="flex items-center justify-between px-3 py-3 rounded-lg hover:bg-gray-700/50 transition-colors touch-target">
-                                        <span className="text-sm text-gray-300">{shortcut.label}</span>
-                                        <kbd className="text-[10px] font-mono px-1.5 py-0.5 bg-gray-700 text-gray-400 rounded uppercase tracking-wider">
-                                            {shortcut.keys.join(' + ')}
-                                        </kbd>
-                                    </div>
-                                ))}
-                                <div className="pt-2 border-t border-gray-700/50">
-                                    <div className="flex items-center justify-between px-3 py-2 text-sm text-gray-400">
-                                        <span>Type to search commands, notes, tags (#), properties (key:value)</span>
-                                    </div>
-                                </div>
-                            </div>
+                            {renderShortcuts()}
                         </div>
                     )}
 
@@ -533,12 +558,14 @@ export function EnhancedCommandPalette({
                     <div className="flex items-center gap-4">
                         {query && <span>{filteredItems.length} result{filteredItems.length !== 1 ? 's' : ''}</span>}
                         {showRecent && recentItems.length > 0 && !query && (
-                            <button
+                            <Button
                                 onClick={() => handleRecentChange([])}
+                                variant="ghost"
+                                size="xs"
                                 className="text-gray-400 hover:text-gray-200 underline transition-colors touch-target"
                             >
                                 Clear recent
-                            </button>
+                            </Button>
                         )}
                     </div>
                 </div>

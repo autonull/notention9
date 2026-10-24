@@ -47,6 +47,19 @@ export function useKeyboardShortcuts({
 				}
 			}
 
+			// Accessibility: Skip to main content (Ctrl+Alt+S)
+			if (isMeta && isAlt && e.key.toLowerCase() === 's') {
+				const target = e.target as HTMLElement;
+				if (!(target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.contentEditable === 'true')) {
+					e.preventDefault();
+					const mainContent = document.getElementById('main-content');
+					if (mainContent) {
+						mainContent.focus();
+						mainContent.scrollIntoView({behavior: 'smooth'});
+					}
+				}
+			}
+
 			// Skip if focusing on input elements (except specific shortcuts)
 			if (e.target instanceof HTMLElement &&
 				(e.target.tagName === 'INPUT' ||
@@ -60,6 +73,8 @@ export function useKeyboardShortcuts({
 					// Allow command palette in inputs too
 				} else if (!isMeta && !isAlt && !isShift && e.key === '?') {
 					// Allow help in inputs
+				} else if (isMeta && isAlt && e.key.toLowerCase() === 's') {
+					// Allow accessibility skip link
 				} else {
 					return;
 				}

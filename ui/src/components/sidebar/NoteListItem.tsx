@@ -1,11 +1,12 @@
-import React, {useRef, useMemo} from 'react';
+import React, {useRef, useMemo, useState, useEffect, useCallback} from 'react';
 import type {Note} from '@notention/core';
-import {ClockIcon, DocumentDuplicateIcon, MapPinIcon, PinIcon, TrashIcon, WorldIcon} from '../common/icons';
+import {ClockIcon, DocumentDuplicateIcon, MapPinIcon, PinIcon, TrashIcon, WorldIcon, ChevronLeftIcon, ChevronRightIcon} from '../common/icons';
 import {getTextFromHtml} from '../../utils/html';
 import {IconButton} from '../ui/Primitives';
 import {Badge} from '../common/Badge';
 import {formatDistanceToNow} from 'date-fns';
 import {cn} from '../../utils/ui';
+import {useSwipeActions, SwipeActionItem} from '../../hooks/useTouchGestures';
 
 interface NoteListItemProps {
     note: Note;
@@ -29,6 +30,14 @@ export const NoteListItem = React.memo(({
     searchTerm = ''
 }: NoteListItemProps) => {
     const itemRef = useRef<HTMLDivElement>(null);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     const contentPreview = useMemo(() => {
         return getTextFromHtml(note.content) || 'No content';
@@ -79,6 +88,40 @@ export const NoteListItem = React.memo(({
         );
     }, [contentPreview, searchTerm]);
 
+    // Swipe actions for mobile
+    const swipeActions: SwipeActionItem[] = isMobile ? [
+        ...(!isTrash && onPin ? [{
+            id: 'pin',
+            label: note.pinned ? 'Unpin' : 'Pin',
+            icon: <PinIcon className="w-5 h-5"/>,
+            onClick: () => onPin!(),
+            variant: note.pinned ? 'default' : 'primary',
+            backgroundColor: note.pinned ? '#3b82f6' : '#22c55e',
+        }] : []),
+        ...(isTrash && onRestore ? [{
+            id: 'restore',
+            label: 'Restore',
+            icon: <DocumentDuplicateIcon className="w-5 h-5 transform rotate-180"/>,
+            onClick: () => onRestore!(),
+            variant: 'primary',
+            backgroundColor: '#16a34a',
+        }] : []),
+        {
+            id: 'delete',
+            label: isTrash ? 'Delete' : 'Trash',
+            icon: <TrashIcon className="w-5 h-5"/>,
+            onClick: () => onDelete(),
+            variant: 'destructive',
+            backgroundColor: '#dc2626',
+        },
+    ] : [];
+
+    const {ref: swipeRef, style: swipeStyle, offset, activeSide, handleTouchStart, handleTouchMove, handleTouchEnd, close} = useSwipeActions({
+        leftActions: [],
+        rightActions: swipeActions,
+        threshold: 80,
+    });
+
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'ArrowDown') {
             e.preventDefault();
@@ -107,9 +150,18 @@ export const NoteListItem = React.memo(({
         }
     };
 
+    const combinedRef = useCallback((el: HTMLDivElement | null) => {
+        itemRef.current = el;
+        swipeRef.current = el;
+    }, [swipeRef]);
+
     return (
         <div
-            ref={itemRef}
+            ref={combinedRef}
+            style={swipeStyle as React.CSSProperties}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
             role="button"
             tabIndex={0}
             onClick={onSelect}
@@ -167,43 +219,64 @@ export const NoteListItem = React.memo(({
                     )}
                 </div>
 
-                {/* Hover Actions */}
-                <div className={cn(
-                    'flex items-center gap-0.5 transition-all duration-200',
-                    isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-                )}>
-                    {isTrash && onRestore && (
+                {/* Hover Actions - Desktop */}
+                {!isMobile && (
+                    <div className={cn(
+                        'flex items-center gap-0.5 transition-all duration-200',
+                        isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                    )}>
+                        {isTrash && onRestore && (
+                            <IconButton
+                                onClick={(e) => { e.stopPropagation(); onRestore(); }}
+                                tabIndex={-1}
+                                className="text-gray-500 hover:text-green-400 p-0.5"
+                                icon={() => <DocumentDuplicateIcon className="h-3 w-3 transform rotate-180"/>}
+                                size="sm"
+                                variant="ghost"
+                                aria-label="Restore note"
+                            />
+                        )}
+                        {onPin && !isTrash && (
+                            <IconButton
+                                onClick={(e) => { e.stopPropagation(); onPin(); }}
+                                tabIndex={-1}
+                                className={cn(note.pinned ? 'text-blue-400' : 'text-gray-500 hover:text-white p-0.5', note.pinned && 'animate-pulse-subtle')}
+                                icon={PinIcon}
+                                size="sm"
+                                variant="ghost"
+                                aria-label={note.pinned ? 'Unpin note' : 'Pin note'}
+                            />
+                        )}
                         <IconButton
-                            onClick={(e) => { e.stopPropagation(); onRestore(); }}
+                            onClick={(e) => { e.stopPropagation(); onDelete(); }}
                             tabIndex={-1}
-                            className="text-gray-500 hover:text-green-400 p-0.5"
-                            icon={() => <DocumentDuplicateIcon className="h-3 w-3 transform rotate-180"/>}
+                            className="text-gray-500 hover:text-red-400 p-0.5"
+                            icon={TrashIcon}
                             size="sm"
                             variant="ghost"
-                            aria-label="Restore note"
+                            aria-label={isTrash ? 'Delete permanently' : 'Move to trash'}
                         />
-                    )}
-                    {onPin && !isTrash && (
-                        <IconButton
-                            onClick={(e) => { e.stopPropagation(); onPin(); }}
-                            tabIndex={-1}
-                            className={cn(note.pinned ? 'text-blue-400' : 'text-gray-500 hover:text-white p-0.5', note.pinned && 'animate-pulse-subtle')}
-                            icon={PinIcon}
-                            size="sm"
-                            variant="ghost"
-                            aria-label={note.pinned ? 'Unpin note' : 'Pin note'}
-                        />
-                    )}
-                    <IconButton
-                        onClick={(e) => { e.stopPropagation(); onDelete(); }}
-                        tabIndex={-1}
-                        className="text-gray-500 hover:text-red-400 p-0.5"
-                        icon={TrashIcon}
-                        size="sm"
-                        variant="ghost"
-                        aria-label={isTrash ? 'Delete permanently' : 'Move to trash'}
-                    />
-                </div>
+                    </div>
+                )}
+
+                {/* Swipe Action Indicators - Mobile */}
+                {isMobile && activeSide && (
+                    <div className="absolute inset-0 flex items-center justify-end pr-4 pointer-events-none" aria-hidden="true">
+                        {swipeActions.slice(-3).map((action, idx) => (
+                            <div
+                                key={action.id}
+                                className="flex items-center justify-center w-12 h-12 rounded-lg mr-1 text-white font-medium text-xs transition-opacity"
+                                style={{
+                                    backgroundColor: action.backgroundColor,
+                                    opacity: Math.min(Math.abs(offset) / 180, 1),
+                                    transform: `translateX(${offset > 0 ? 0 : Math.min(Math.abs(offset) - idx * 60, 60)}px)`
+                                }}
+                            >
+                                {action.icon}
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     );
