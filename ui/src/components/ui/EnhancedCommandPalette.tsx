@@ -2,8 +2,10 @@ import React, {useEffect, useMemo, useRef, useState, useCallback} from 'react';
 import {cn} from '../../utils/ui';
 import {CommandPaletteItem} from './Overlay';
 import {useFocusTrap} from './Overlay';
-import {SearchSparkleIcon, XIcon, ClockIcon, SparklesIcon, SearchIcon, KeyIcon, SettingsIcon} from '../common/icons';
+import {SearchSparkleIcon, XIcon, SearchIcon, SettingsIcon} from '../common/icons';
 import {Button} from './Primitives';
+import {COMMAND_PALETTE_SHORTCUTS} from '../../config/shortcuts';
+import {useIsMobile} from '../../hooks/useMediaQuery';
 
 const RECENT_STORAGE_KEY = 'notention-command-palette-recent';
 const RECENT_SEARCHES_KEY = 'notention-command-palette-searches';
@@ -113,34 +115,7 @@ function highlightMatch(text: string, indices: [number, number][]): React.ReactN
     return parts;
 }
 
-const SHORTCUT_CATEGORIES = [
-    {
-        category: 'Navigation',
-        shortcuts: [
-            {label: 'Command Palette', keys: ['⌘', 'K']},
-            {label: 'Search Notes', keys: ['⌘', 'F']},
-            {label: 'Toggle Sidebar', keys: ['⌘', '\\']},
-            {label: 'Back to List', keys: ['Esc']},
-        ]
-    },
-    {
-        category: 'Editing',
-        shortcuts: [
-            {label: 'New Note', keys: ['⌘', 'N']},
-            {label: 'Save Note', keys: ['⌘', 'S']},
-            {label: 'Property Palette', keys: ['⌘', 'Shift', 'P']},
-            {label: 'Next Note', keys: ['⌘', 'J']},
-            {label: 'Previous Note', keys: ['⌘', 'Shift', 'K']},
-        ]
-    },
-    {
-        category: 'Help',
-        shortcuts: [
-            {label: 'Open Help', keys: ['?']},
-            {label: 'Shortcuts Help', keys: ['⌘', 'Shift', '?']},
-        ]
-    },
-];
+
 
 const SEARCH_SYNTAX_HINTS = [
     {syntax: '#tag', description: 'Filter by tag'},
@@ -192,16 +167,9 @@ export function EnhancedCommandPalette({
     const [recentSearches, setRecentSearches] = useState<string[]>(() => 
         persistRecent ? loadRecentSearches() : []
     );
-    const [isMobile, setIsMobile] = useState(false);
+    const isMobile = useIsMobile();
 
     const contentRef = useFocusTrap(isOpen, onClose);
-
-    useEffect(() => {
-        const checkMobile = () => setIsMobile(window.innerWidth < 768);
-        checkMobile();
-        window.addEventListener('resize', checkMobile);
-        return () => window.removeEventListener('resize', checkMobile);
-    }, []);
 
     useEffect(() => {
         if (initialRecentItems.length > 0 && !persistRecent) {
@@ -362,7 +330,7 @@ export function EnhancedCommandPalette({
     // Render shortcut categories
     const renderShortcuts = () => (
         <div className="space-y-4 animate-fade-in stagger-children">
-            {SHORTCUT_CATEGORIES.map((group, groupIndex) => (
+            {COMMAND_PALETTE_SHORTCUTS.map((group, groupIndex) => (
                 <div key={group.category} className="stagger-children" style={{animationDelay: `${groupIndex * 50}ms`}}>
                     <div className="px-3 pt-3 pb-1 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
                         {group.category}
@@ -483,7 +451,7 @@ export function EnhancedCommandPalette({
                             <div className="p-3 bg-gray-700/50 rounded-xl w-fit mx-auto mb-4 text-gray-400">
                                 <SearchSparkleIcon className="w-8 h-8" />
                             </div>
-                            <h3 className="text-lg font-semibold text-white mb-2">No results for "{query}"</h3>
+                            <h3 className="text-lg font-semibold text-white mb-2">No results for &ldquo;{query}&rdquo;</h3>
                             <p className="text-gray-400 mb-4">Try a different search term or check your spelling.</p>
                             <div className="flex flex-wrap justify-center gap-2 mx-auto max-w-xs">
                                 <Button

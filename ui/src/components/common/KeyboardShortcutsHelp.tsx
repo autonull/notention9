@@ -1,20 +1,9 @@
 import React, {useEffect, useMemo} from 'react';
 import {IconButton} from '../ui/Primitives';
+import {useFocusTrap} from '../ui/Overlay';
 import {XIcon, HelpIcon} from '../common/icons';
 import {cn} from '../../utils/ui';
-
-export interface ShortcutGroup {
-    category: string;
-    shortcuts: ShortcutItem[];
-}
-
-export interface ShortcutItem {
-    label: string;
-    keys: string[];
-    description?: string;
-    action?: () => void;
-    global?: boolean;
-}
+import {SHORTCUT_GROUPS, type ShortcutGroup} from '../../config/shortcuts';
 
 interface KeyboardShortcutsHelpProps {
     isOpen: boolean;
@@ -22,79 +11,18 @@ interface KeyboardShortcutsHelpProps {
     groups?: ShortcutGroup[];
 }
 
-const DEFAULT_GROUPS: ShortcutGroup[] = [
-    {
-        category: 'Navigation',
-        shortcuts: [
-            {label: 'Dashboard', keys: ['G', 'D'], description: 'Go to dashboard'},
-            {label: 'Notes', keys: ['G', 'N'], description: 'Go to notes list'},
-            {label: 'Map', keys: ['G', 'M'], description: 'Open map view'},
-            {label: 'Timeline', keys: ['G', 'T'], description: 'Open timeline view'},
-            {label: 'Network', keys: ['G', 'W'], description: 'Open network view'},
-            {label: 'Chat', keys: ['G', 'C'], description: 'Open chat view'},
-            {label: 'Settings', keys: ['G', 'S'], description: 'Open settings'},
-            {label: 'Trash', keys: ['G', 'X'], description: 'Open trash'},
-        ],
-    },
-    {
-        category: 'Editor',
-        shortcuts: [
-            {label: 'New Note', keys: ['⌘', 'N'], description: 'Create a new note', global: true},
-            {label: 'Save Note', keys: ['⌘', 'S'], description: 'Save current note', global: true},
-            {label: 'Previous Note', keys: ['⌘', '↑'], description: 'Navigate to previous note'},
-            {label: 'Next Note', keys: ['⌘', '↓'], description: 'Navigate to next note'},
-            {label: 'Back to List', keys: ['Esc'], description: 'Return to notes list'},
-            {label: 'Toggle Inspector', keys: ['⌘', 'I'], description: 'Show/hide property panel'},
-            {label: 'Toggle Toolbar', keys: ['⌘', 'B'], description: 'Show/hide editor toolbar'},
-            {label: 'Open Property Palette', keys: ['⌘', 'P'], description: 'Add structured property'},
-        ],
-    },
-    {
-        category: 'Search & Commands',
-        shortcuts: [
-            {label: 'Command Palette', keys: ['⌘', 'K'], description: 'Open command palette', global: true},
-            {label: 'Search Notes', keys: ['⌘', 'F'], description: 'Focus search in sidebar', global: true},
-            {label: 'Toggle Sidebar', keys: ['⌘', '\\'], description: 'Show/hide sidebar', global: true},
-        ],
-    },
-    {
-        category: 'Quick Capture',
-        shortcuts: [
-            {label: 'New Request', keys: ['⌘', 'R'], description: 'Create a new request note'},
-            {label: 'New Offer', keys: ['⌘', 'O'], description: 'Create a new offer note'},
-            {label: 'From Template', keys: ['⌘', 'T'], description: 'Create from template'},
-        ],
-    },
-    {
-        category: 'Help & Meta',
-        shortcuts: [
-            {label: 'Show This Help', keys: ['?'], description: 'Open keyboard shortcuts help', global: true},
-            {label: 'Close Dialog', keys: ['Esc'], description: 'Close any open modal or dialog', global: true},
-        ],
-    },
-];
-
 export function KeyboardShortcutsHelp({
     isOpen,
     onClose,
-    groups = DEFAULT_GROUPS,
+    groups = SHORTCUT_GROUPS,
 }: KeyboardShortcutsHelpProps) {
+    const contentRef = useFocusTrap(isOpen, onClose);
     const platform = useMemo(() => {
         if (typeof navigator !== 'undefined') {
             return navigator.platform.includes('Mac') ? 'mac' : 'win';
         }
         return 'win';
     }, []);
-
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (!isOpen) return;
-            if (e.key === 'Escape') onClose();
-        };
-
-        document.addEventListener('keydown', handleKeyDown);
-        return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [isOpen, onClose]);
 
     useEffect(() => {
         if (isOpen) {
@@ -135,7 +63,9 @@ export function KeyboardShortcutsHelp({
             aria-labelledby="keyboard-shortcuts-title"
         >
             <div
-                className="bg-gray-800 rounded-2xl shadow-2xl border border-gray-700 w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col animate-scale-in"
+                ref={contentRef}
+                tabIndex={-1}
+                className="bg-gray-800 rounded-2xl shadow-2xl border border-gray-700 w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col animate-scale-in focus:outline-none"
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="flex items-center justify-between p-4 border-b border-gray-700/50 bg-gray-900/50">

@@ -1,4 +1,6 @@
 import {useEffect} from 'react';
+import type {View} from '@notention/core';
+import {VIEW_SHORTCUTS} from '../utils/navigation';
 
 interface UseKeyboardShortcutsProps {
 	onNewNote: () => void;
@@ -12,6 +14,7 @@ interface UseKeyboardShortcutsProps {
 	onToggleSidebar?: () => void;
 	onEscape?: () => void;
 	onShortcutsHelp?: () => void;
+	onNavigateView?: (view: View) => void;
 }
 
 export function useKeyboardShortcuts({
@@ -26,6 +29,7 @@ export function useKeyboardShortcuts({
 	onToggleSidebar,
 	onEscape,
 	onShortcutsHelp,
+	onNavigateView,
 }: UseKeyboardShortcutsProps) {
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
@@ -116,6 +120,16 @@ export function useKeyboardShortcuts({
 				onSearch();
 			}
 
+			// View switching: Alt+1..9, Alt+0
+			const digit = e.code.match(/^(?:Digit|Numpad)(\d)$/)?.[1] ?? e.key;
+			if (isAlt && !isMeta && !isShift && /^\d$/.test(digit)) {
+				const view = VIEW_SHORTCUTS[digit];
+				if (view) {
+					e.preventDefault();
+					onNavigateView?.(view);
+				}
+			}
+
 			// Navigation shortcuts
 			if (isAlt && e.key === 'ArrowUp') {
 				e.preventDefault();
@@ -153,5 +167,6 @@ export function useKeyboardShortcuts({
 		onToggleSidebar,
 		onEscape,
 		onShortcutsHelp,
+		onNavigateView,
 	]);
 };

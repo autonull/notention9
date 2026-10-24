@@ -7,16 +7,15 @@ import {FilterBar} from './FilterBar';
 import {SortSelector} from './SortSelector';
 import {ViewSelector} from './ViewSelector';
 import {NoteGridItem} from './NoteGridItem';
-import {PlusIcon, ChevronLeftIcon, ChevronRightIcon, SparklesIcon, SearchIcon, ArrowRightIcon} from '../common/icons';
+import {PlusIcon, ChevronLeftIcon, ChevronRightIcon} from '../common/icons';
 import {useSidebarLogic} from './useSidebarLogic';
 import {IconButton} from '../ui/Primitives';
 import {cn} from '../../utils/ui';
 import {VirtualizedList} from '../ui/VirtualizedList';
 import {useTouchGestures} from '../../hooks/useTouchGestures';
+import {useIsMobile} from '../../hooks/useMediaQuery';
 import {SidebarSkeleton} from '../ui/Skeleton';
-import {EmptyState, NotesEmptyIllustration, SearchEmptyIllustration, TrashEmptyIllustration, EmptyStatePreset} from '../common/EmptyState';
-import {Button} from '../ui/Primitives';
-import {Tooltip} from '../ui/Overlay';
+import {EmptyState, NotesEmptyIllustration, EmptyStatePreset} from '../common/EmptyState';
 
 interface SidebarProps {
     sortedNotes?: Note[];
@@ -54,15 +53,8 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
 
     const searchInputRef = useRef<HTMLInputElement>(null);
     const virtualListRef = useRef<{scrollToIndex: (index: number, align?: 'start' | 'center' | 'end') => void; scrollToTop: () => void; scrollToBottom: () => void; focusIndex: (index: number) => void}>(null);
-    const [isMobile, setIsMobile] = useState(false);
+    const isMobile = useIsMobile();
     const [showPinnedOnly, setShowPinnedOnly] = useState(false);
-
-    useEffect(() => {
-        const checkMobile = () => setIsMobile(window.innerWidth < 768);
-        checkMobile();
-        window.addEventListener('resize', checkMobile);
-        return () => window.removeEventListener('resize', checkMobile);
-    }, []);
 
     useEffect(() => {
         if (sortOrder === 'nearest' && !userLocation) {
@@ -81,9 +73,6 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
     const focusSearch = useCallback(() => {
         searchInputRef.current?.focus();
     }, []);
-
-    // Tooltip state for collapsed sidebar
-    const [hoveredNoteId, setHoveredNoteId] = useState<string | null>(null);
 
     const getItemKey = useCallback((note: Note, _index: number) => note.id, []);
     const renderItem = useCallback((note: Note, _index: number, isSelected: boolean): React.ReactNode => (
@@ -238,23 +227,7 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
                 onKeyDown={handleKeyDown}
             >
                 {filteredNotes.length > 0 ? (
-                    sidebarViewMode === 'list' ? (
-                        <VirtualizedList
-                            ref={virtualListRef}
-                            items={filteredNotes}
-                            itemHeight={ITEM_HEIGHT}
-                            containerHeight={containerHeight}
-                            getItemKey={getItemKey}
-                            children={renderItem}
-                            selectedKey={selectedNoteId}
-                            overscan={8}
-                            className="h-full"
-                            keyboardNavigation
-                            role="listbox"
-                            aria-label={isTrashView ? 'Trash notes' : 'Notes'}
-                            collapsedTooltip={!showFullContent ? renderCollapsedTooltip : undefined}
-                        />
-                    ) : sidebarViewMode === 'grid' ? (
+                    sidebarViewMode === 'grid' ? (
                         <div className="grid grid-cols-2 gap-2 h-full overflow-y-auto custom-scrollbar" role="list">
                             {filteredNotes.map((note) => (
                                 <NoteGridItem
@@ -266,28 +239,22 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
                             ))}
                         </div>
                     ) : (
-                        <EmptyState
-                            variant="illustrated"
-                            illustration={searchTerm ? <SearchEmptyIllustration/> : isTrashView ? <TrashEmptyIllustration/> : <NotesEmptyIllustration/>}
-                            title={isTrashView ? 'Trash is empty' : searchTerm ? 'No matching notes' : 'No notes yet'}
-                            description={searchTerm
-                                ? 'Try adjusting your search or filters.'
-                                : isTrashView
-                                    ? 'Deleted notes will appear here.'
-                                    : 'Create your first note to get started.'}
-                            action={!isTrashView && !searchTerm ? (
-                                <button
-                                    onClick={() => handleCreateNote()}
-                                    className="w-full max-w-xs inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-500 transition-colors touch-target"
-                                >
-                                    <PlusIcon className="w-4 h-4"/>
-                                    Create note
-                                </button>
-                            ) : undefined}
-                            showShortcuts
-                            shortcutContext="notes"
-                            className="h-full flex-grow"
-                        />
+                        <VirtualizedList
+                            ref={virtualListRef}
+                            items={filteredNotes}
+                            itemHeight={ITEM_HEIGHT}
+                            containerHeight={containerHeight}
+                            getItemKey={getItemKey}
+                            selectedKey={selectedNoteId}
+                            overscan={8}
+                            className="h-full"
+                            keyboardNavigation
+                            role="listbox"
+                            aria-label={isTrashView ? 'Trash notes' : 'Notes'}
+                            collapsedTooltip={!showFullContent ? renderCollapsedTooltip : undefined}
+                        >
+                            {renderItem}
+                        </VirtualizedList>
                     )
                 ) : (
                     <>

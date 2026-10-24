@@ -1,4 +1,5 @@
 import React, {useEffect, useState, useMemo, useCallback} from 'react';
+import type {View} from '@notention/core';
 import {useNotes} from '../../hooks/useNotes';
 import {useView} from '../../hooks/useViewContext';
 import {useSettings} from '../../hooks/useSettingsContext';
@@ -19,7 +20,6 @@ import {
     ArrowRightIcon,
     ClockIcon,
     TagIcon,
-    HomeIcon,
     MapIcon,
     ChatIcon,
     SettingsIcon,
@@ -73,7 +73,7 @@ const TEMPLATES = {
 };
 
 const QUICK_ACTIONS = [
-    {id: 'note', label: 'New Note', description: 'Start writing', icon: PencilIcon, gradient: 'gradient-primary', action: 'notes', shortcut: '⌘N'},
+    {id: 'new-note', label: 'New Note', description: 'Start writing', icon: PencilIcon, gradient: 'gradient-primary', action: 'new-note', shortcut: '⌘N'},
     {id: 'map', label: 'Map View', description: 'Browse notes spatially', icon: MapIcon, gradient: 'gradient-purple', action: 'map'},
     {id: 'chat', label: 'Chat', description: 'Messages & contacts', icon: ChatIcon, gradient: 'gradient-teal', action: 'chat'},
     {id: 'network', label: 'Network', description: 'P2P connections', icon: NetworkIcon, gradient: 'gradient-warning', action: 'network'},
@@ -94,9 +94,7 @@ export function DashboardView() {
     const [quickCaptureInput, setQuickCaptureInput] = useState('');
     const [agentStatus, setAgentStatus] = useState({status: 'offline'});
     const {load: loadSampleWorkspace} = useDemoWorkspace();
-    const [focused, setFocused] = useState(false);
     const [showFeatures, setShowFeatures] = useState(false);
-    const [quickCaptureExpanded, setQuickCaptureExpanded] = useState(false);
 
     const extractor = useMemo(() => new PropertyExtractor(settings.ontology), [settings.ontology]);
     const extractedProps = useMemo(() => {
@@ -105,7 +103,7 @@ export function DashboardView() {
     }, [quickCaptureInput, extractor]);
 
     useEffect(() => {
-        const handleStatusChange = (status: any) => setAgentStatus(status);
+        const handleStatusChange = (status: {status: string}) => setAgentStatus(status);
         agentService.on('status_change', handleStatusChange);
         return () => agentService.off('status_change', handleStatusChange);
     }, []);
@@ -146,9 +144,13 @@ export function DashboardView() {
         setActiveView('notes');
     }, [addNote, setSelectedNoteId, setActiveView]);
 
-    const handleNavigate = useCallback((view: string) => {
-        setActiveView(view as any);
-    }, [setActiveView]);
+    const handleQuickAction = useCallback((action: string) => {
+        if (action === 'new-note') {
+            handleCreateNote();
+            return;
+        }
+        setActiveView(action as View);
+    }, [handleCreateNote, setActiveView]);
 
     const stats = useMemo(() => notes.reduce((acc, n) => {
         acc.total++;
@@ -314,15 +316,10 @@ export function DashboardView() {
                             <div className="relative">
                                 <Input
                                     value={quickCaptureInput}
-                                    onChange={(e) => {
-                                        setQuickCaptureInput(e.target.value);
-                                        setQuickCaptureExpanded(true);
-                                    }}
+                                    onChange={(e) => setQuickCaptureInput(e.target.value)}
                                     placeholder={`What's on your mind? Try: "Buy milk #shopping" or "Meeting at 3pm"`}
                                     leftIcon={<SearchIcon className="w-5 h-5" />}
                                     className="text-lg py-4 pr-16"
-                                    onFocus={() => { setFocused(true); setQuickCaptureExpanded(true); }}
-                                    onBlur={() => setFocused(false)}
                                     autoComplete="off"
                                 />
                                 <Button
@@ -529,14 +526,6 @@ export function DashboardView() {
                                 </div>
                                 Recent Activity
                             </h2>
-                            <Button
-                                onClick={() => setActiveView('notes')}
-                                variant="ghost"
-                                size="sm"
-                                rightIcon={<ArrowRightIcon className="w-3 h-3"/>}
-                            >
-                                View All
-                            </Button>
                         </header>
                         <div className="p-6 flex-1">
                             {recentNotes.length > 0 ? (
@@ -556,10 +545,10 @@ export function DashboardView() {
                     <aside className="bg-gray-900/50 rounded-3xl border border-gray-700/30 p-6 flex flex-col gap-3 backdrop-blur-sm shadow-xl animate-fade-in-up stagger-5">
                         <h2 className="text-lg font-bold text-white mb-2">Quick Actions</h2>
 
-                        {QUICK_ACTIONS.map((action, i) => (
+                        {QUICK_ACTIONS.map((action) => (
                             <Button
                                 key={action.id}
-                                onClick={() => handleNavigate(action.action)}
+                                onClick={() => handleQuickAction(action.action)}
                                 variant="outline"
                                 className="w-full text-left gap-4 justify-start hover:shadow-lg transition-all duration-200 touch-target-48"
                                 leftIcon={
@@ -579,21 +568,6 @@ export function DashboardView() {
                                 )}
                             </Button>
                         ))}
-
-                        <div className="pt-2 border-t border-gray-700/50">
-                            <Button
-                                onClick={() => setActiveView('dashboard')}
-                                variant="ghost"
-                                size="sm"
-                                className="w-full justify-start gap-3 touch-target-48"
-                                leftIcon={<HomeIcon className="w-5 h-5 text-gray-400" />}
-                            >
-                                <div>
-                                    <div className="font-medium text-gray-300">Dashboard</div>
-                                    <div className="text-xs text-gray-500">Overview & stats</div>
-                                </div>
-                            </Button>
-                        </div>
                     </aside>
                 </section>
 

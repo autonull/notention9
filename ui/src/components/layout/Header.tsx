@@ -14,15 +14,15 @@ import {NAV_ITEMS, SETTINGS_VIEW} from '../../utils/navigation';
 
 interface HeaderProps {
     onNewNote: () => void;
+    onToggleSidebar: () => void;
 }
 
-export function Header({onNewNote}: HeaderProps) {
+export function Header({onNewNote, onToggleSidebar}: HeaderProps) {
     const {
         activeView,
         setActiveView,
         notificationCount,
         isSidebarOpen,
-        setIsSidebarOpen,
         chatNotificationCount,
         selectedNoteId,
         setSelectedNoteId,
@@ -69,7 +69,7 @@ export function Header({onNewNote}: HeaderProps) {
             {/* Left Section */}
             <div className="flex items-center gap-4">
                 <IconButton
-                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                    onClick={onToggleSidebar}
                     tooltip={isSidebarOpen ? "Close Sidebar" : "Open Sidebar"}
                     tooltipPosition="bottom"
                     icon={SidebarIcon}
@@ -110,7 +110,7 @@ export function Header({onNewNote}: HeaderProps) {
                             key={item.id}
                             icon={<item.icon/>}
                             label={item.label}
-                            tooltip={item.label}
+                            tooltip={item.shortcut ? `${item.label} (Alt+${item.shortcut})` : item.label}
                             isActive={activeView === item.id}
                             onClick={() => handleNavClick(item.id)}
                             badgeCount={badgeCount}

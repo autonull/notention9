@@ -5,24 +5,13 @@ import {useToast} from './useToast';
 import {SHARED_COMMANDS} from '@notention/core';
 import {buildSingleNoteExport} from '@notention/core';
 import {
-    ChatIcon,
-    ClockIcon,
     DocumentDuplicateIcon,
     DownloadIcon,
     HelpIcon,
-    HomeIcon,
-    MapIcon,
-    LightBulbIcon,
-    NetworkIcon,
-    NoteIcon,
-    OntologyIcon,
     PlusIcon,
-    SettingsIcon,
     SidebarIcon,
-    TrashIcon,
-    GitBranchIcon,
-    UsersIcon
 } from '../components/common/icons';
+import {NAV_ITEMS, SETTINGS_VIEW} from '../utils/navigation';
 
 interface UseCommandsProps {
     setIsHelpOpen: (isOpen: boolean) => void;
@@ -46,6 +35,16 @@ export function useCommands({setIsHelpOpen}: UseCommandsProps) {
         setActiveView('notes');
     };
 
+    const viewCommands = [...NAV_ITEMS, SETTINGS_VIEW].map((item) => {
+        const Icon = item.icon;
+        return {
+            label: `Go to ${item.label}`,
+            icon: <Icon className="h-5 w-5"/>,
+            action: () => setActiveView(item.id),
+            shortcut: item.shortcut ? `Alt+${item.shortcut}` : undefined,
+        };
+    });
+
     const commands = [
         {
             ...SHARED_COMMANDS.NEW_NOTE,
@@ -59,77 +58,7 @@ export function useCommands({setIsHelpOpen}: UseCommandsProps) {
             action: () => setIsSidebarOpen(!isSidebarOpen),
             shortcut: 'Ctrl+\\',
         },
-        {
-            ...SHARED_COMMANDS.DASHBOARD,
-            icon: <HomeIcon className="h-5 w-5"/>,
-            action: () => setActiveView('dashboard'),
-            shortcut: 'Ctrl+1',
-        },
-        {
-            ...SHARED_COMMANDS.NOTES_LIST,
-            icon: <NoteIcon className="h-5 w-5"/>,
-            action: () => setActiveView('notes'),
-            shortcut: 'Ctrl+2',
-        },
-        {
-            ...SHARED_COMMANDS.MAP,
-            icon: <MapIcon className="h-5 w-5"/>,
-            action: () => setActiveView('map'),
-            shortcut: 'Ctrl+3',
-        },
-        {
-            ...SHARED_COMMANDS.TIMELINE,
-            icon: <ClockIcon className="h-5 w-5"/>,
-            action: () => setActiveView('timeline'),
-            shortcut: 'Ctrl+4',
-        },
-        {
-            label: 'Go to Actions',
-            icon: <LightBulbIcon className="h-5 w-5"/>,
-            action: () => setActiveView('actions'),
-            shortcut: 'Ctrl+5',
-        },
-        {
-            ...SHARED_COMMANDS.NETWORK,
-            icon: <NetworkIcon className="h-5 w-5"/>,
-            action: () => setActiveView('network'),
-            shortcut: 'Ctrl+6',
-        },
-        {
-            ...SHARED_COMMANDS.CHAT,
-            icon: <ChatIcon className="h-5 w-5"/>,
-            action: () => setActiveView('chat'),
-            shortcut: 'Ctrl+7',
-        },
-        {
-            label: 'Go to Graph',
-            icon: <GitBranchIcon className="h-5 w-5"/>,
-            action: () => setActiveView('graph'),
-            shortcut: 'Ctrl+8',
-        },
-        {
-            ...SHARED_COMMANDS.ONTOLOGY,
-            icon: <OntologyIcon className="h-5 w-5"/>,
-            action: () => setActiveView('ontology'),
-            shortcut: 'Ctrl+9',
-        },
-        {
-            label: 'Go to Self',
-            icon: <UsersIcon className="h-5 w-5"/>,
-            action: () => setActiveView('self'),
-            shortcut: 'Ctrl+0',
-        },
-        {
-            ...SHARED_COMMANDS.TRASH,
-            icon: <TrashIcon className="h-5 w-5"/>,
-            action: () => setActiveView('trash'),
-        },
-        {
-            ...SHARED_COMMANDS.SETTINGS,
-            icon: <SettingsIcon className="h-5 w-5"/>,
-            action: () => setActiveView('settings'),
-            shortcut: 'Ctrl+,',
-        },
+        ...viewCommands,
         {
             ...SHARED_COMMANDS.HELP,
             label: 'Open Help & Shortcuts',
