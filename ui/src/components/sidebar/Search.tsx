@@ -1,6 +1,6 @@
 import React, {forwardRef} from 'react';
 import {SearchIcon, XCircleIcon} from '../common/icons';
-import {IconButton} from '../common/IconButton';
+import {IconButton} from '../ui/Primitives';
 import {Input} from '../common/Input';
 
 interface SearchProps {

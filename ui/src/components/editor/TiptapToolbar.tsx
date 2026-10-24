@@ -1,6 +1,6 @@
 import React, {useMemo} from 'react';
 import type {Editor} from '@tiptap/react';
-import {IconButton} from '../common/IconButton';
+import {IconButton} from '../ui/Primitives';
 import {DropdownMenu, DropdownMenuItem} from '../common/DropdownMenu';
 import {
     BoldIcon,

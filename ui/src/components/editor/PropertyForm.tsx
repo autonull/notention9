@@ -6,7 +6,7 @@ import {getCurrentPosition} from '../../utils/geolocation';
 import {useToast} from '../../hooks/useToast';
 import {Input} from '../common/Input';
 import {Button} from '../common/Button';
-import {IconButton} from '../common/IconButton';
+import {IconButton} from '../ui/Primitives';
 import {Select} from '../common/Select';
 import {Textarea} from '../common/Textarea';
 import {useGardener} from '../../hooks/useGardener';

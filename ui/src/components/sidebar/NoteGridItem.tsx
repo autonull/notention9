@@ -58,7 +58,7 @@ export function NoteGridItem({note, isSelected, onSelect}: NoteGridItemProps) {
 
             {isLowPriority && (
                 <div className="absolute bottom-2">
-                    <Badge variant="ghost" size="xs" className="text-[9px] px-1 py-0 h-auto opacity-70">
+                    <Badge variant="outline" size="xs" className="text-[9px] px-1 py-0 h-auto opacity-70">
                         Low Prio
                     </Badge>
                 </div>

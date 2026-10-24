@@ -9,7 +9,7 @@ import type {Contact, NostrEvent} from '@notention/core';
 import {formatNpub, hexToBytes, Logger, parseProperties, pool, resolveRelays} from '@notention/core';
 import {ArrowLeftIcon, DocumentDuplicateIcon, SendIcon, SettingsIcon, TrashIcon} from '../common/icons';
 import {Avatar} from '../common/Avatar';
-import {IconButton} from '../common/IconButton';
+import {IconButton} from '../ui/Primitives';
 
 interface ChatWindowProps {
     privkey: string;

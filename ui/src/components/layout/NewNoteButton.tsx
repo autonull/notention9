@@ -47,15 +47,15 @@ export function NewNoteButton({
             <div className="flex bg-blue-600 rounded-lg shadow-sm hover:bg-blue-700 transition-colors">
                 <button
                     onClick={onNewNote}
-                    className="flex items-center gap-2 px-3 py-2 text-white font-medium border-r border-blue-500 rounded-l-lg hover:bg-blue-800/20"
-                    title="New Note"
+                    className="flex items-center gap-2 px-3 py-2 text-white font-medium border-r border-blue-500 rounded-l-lg hover:bg-blue-800/20 touch-target"
+                    title="New Note (Ctrl+N)"
                 >
                     <PlusIcon className="w-5 h-5"/>
                     <span className="hidden sm:inline">New Note</span>
                 </button>
                 <button
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className="px-2 py-2 text-white hover:bg-blue-800/20 rounded-r-lg"
+                    className="px-2 py-2 text-white hover:bg-blue-800/20 rounded-r-lg touch-target"
                     title="More options"
                 >
                     <ChevronDownIcon className="w-4 h-4"/>
@@ -73,7 +73,7 @@ export function NewNoteButton({
                     className="absolute top-full left-0 mt-2 w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-50 overflow-hidden animate-fade-in">
                     <button
                         onClick={() => handleIntentClick('request')}
-                        className="w-full text-left px-4 py-3 hover:bg-gray-700 flex items-center gap-3 group"
+                        className="w-full text-left px-4 py-3 hover:bg-gray-700 flex items-center gap-3 group touch-target"
                     >
                         <div className="p-1.5 bg-purple-900/50 rounded-md group-hover:bg-purple-900 transition-colors">
                             <SparklesIcon className="w-4 h-4 text-purple-400"/>
@@ -85,7 +85,7 @@ export function NewNoteButton({
                     </button>
                     <button
                         onClick={() => handleIntentClick('offer')}
-                        className="w-full text-left px-4 py-3 hover:bg-gray-700 flex items-center gap-3 group"
+                        className="w-full text-left px-4 py-3 hover:bg-gray-700 flex items-center gap-3 group touch-target"
                     >
                         <div className="p-1.5 bg-green-900/50 rounded-md group-hover:bg-green-900 transition-colors">
                             <CubeTransparentIcon className="w-4 h-4 text-green-400"/>
@@ -104,7 +104,7 @@ export function NewNoteButton({
                                 <button
                                     key={template.id}
                                     onClick={() => handleTemplateClick(template)}
-                                    className="w-full text-left px-4 py-2 hover:bg-gray-700 flex items-center gap-3 group text-sm text-gray-300 hover:text-white"
+                                    className="w-full text-left px-4 py-2 hover:bg-gray-700 flex items-center gap-3 group text-sm text-gray-300 hover:text-white touch-target"
                                 >
                                     <span>{template.icon || '📄'}</span>
                                     <span>{template.label}</span>

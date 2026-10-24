@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {MessageIcon, ThumbsDownIcon, ThumbsUpIcon} from './icons';
-import {IconButton} from './IconButton';
+import {IconButton} from '../ui/Primitives';
 import {InputModal} from './InputModal';
 
 interface FeedbackWidgetProps {

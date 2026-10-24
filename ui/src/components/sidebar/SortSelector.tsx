@@ -1,6 +1,6 @@
 import React from 'react';
 import type {SortOrder} from '@notention/core';
-import {IconButton} from '../common/IconButton';
+import {IconButton} from '../ui/Primitives';
 import {ArrowUpDownIcon, ArrowUpIcon, ArrowDownIcon, CalendarIcon, MapPinIcon, TagIcon} from '../common/icons';
 
 const SORT_OPTIONS: {value: SortOrder; label: string; icon: React.FC<any>; description: string}[] = [

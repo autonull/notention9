@@ -11,7 +11,7 @@ import {TagCloud} from './TagCloud';
 import {SidebarEmptyState} from './SidebarEmptyState';
 import {PlusIcon, ChevronLeftIcon, GridIcon, ListIcon, TagIcon} from '../common/icons';
 import {useSidebarLogic} from './useSidebarLogic';
-import {IconButton} from '../common/IconButton';
+import {IconButton} from '../ui/Primitives';
 import {cn} from '../../utils/ui';
 import {VirtualizedList} from '../ui/VirtualizedList';
 import {useTouchGestures} from '../../hooks/useTouchGestures';

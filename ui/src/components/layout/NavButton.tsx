@@ -1,5 +1,5 @@
 import React from 'react';
-import {Tooltip} from '../common/Tooltip';
+import {Tooltip} from '../ui/Overlay';
 import {Badge} from '../common/Badge';
 
 export interface NavButtonProps {
@@ -29,7 +29,7 @@ export function NavButton({
             onClick={onClick}
             aria-label={label}
             aria-pressed={isActive}
-            className={`relative p-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-1 focus:ring-blue-500/50 ${
+            className={`relative p-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-1 focus:ring-blue-500/50 touch-target ${
                 isActive
                     ? 'bg-blue-900/40 text-blue-400 shadow-sm'
                     : 'text-gray-500 hover:bg-gray-800 hover:text-gray-200'

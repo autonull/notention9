@@ -90,7 +90,7 @@ export function EditorControls({
                     <button
                         onClick={onPrevious}
                         disabled={!hasPrevious}
-                        className="btn btn-ghost btn-xs p-1.5 text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
+                        className="btn btn-ghost btn-xs p-1.5 text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed touch-target"
                         title="Previous Note (Alt+Up)"
                     >
                         <ChevronUpIcon className="h-4 w-4"/>
@@ -98,7 +98,7 @@ export function EditorControls({
                     <button
                         onClick={onNext}
                         disabled={!hasNext}
-                        className="btn btn-ghost btn-xs p-1.5 text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
+                        className="btn btn-ghost btn-xs p-1.5 text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed touch-target"
                         title="Next Note (Alt+Down)"
                     >
                         <ChevronDownIcon className="h-4 w-4"/>
@@ -186,7 +186,7 @@ export function EditorControls({
                                 onAddProperty(prop);
                             }}
                             title={`Add ${prop} property`}
-                            className="btn btn-ghost btn-xs px-2 py-0.5 text-[10px] uppercase tracking-wider bg-yellow-900/20 text-yellow-500/80 border border-yellow-700/30 hover:bg-yellow-900/40 hover:text-yellow-400 hover:border-yellow-600/50 active:scale-95"
+                            className="btn btn-ghost btn-xs px-2 py-0.5 text-[10px] uppercase tracking-wider bg-yellow-900/20 text-yellow-500/80 border border-yellow-700/30 hover:bg-yellow-900/40 hover:text-yellow-400 hover:border-yellow-600/50 active:scale-95 touch-target"
                         >
                             + {prop}
                         </button>

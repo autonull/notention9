@@ -1,7 +1,7 @@
 import React from 'react';
 import type {NostrEvent, OntologyNode} from '@notention/core';
 import {ArrowLeftIcon} from '../common/icons';
-import {IconButton} from '../common/IconButton';
+import {IconButton} from '../ui/Primitives';
 import {Input} from '../common/Input';
 
 interface NetworkFeedHeaderProps {

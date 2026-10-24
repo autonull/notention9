@@ -41,7 +41,8 @@ const TEMPLATES = {
         icon: CheckCircleIcon,
         color: 'text-green-400',
         bgColor: 'bg-green-900/20',
-        borderColor: 'border-green-500/30'
+        borderColor: 'border-green-500/30',
+        gradient: 'gradient-success'
     },
     journal: {
         title: () => new Date().toLocaleDateString(),
@@ -51,7 +52,8 @@ const TEMPLATES = {
         icon: NoteIcon,
         color: 'text-blue-400',
         bgColor: 'bg-blue-900/20',
-        borderColor: 'border-blue-500/30'
+        borderColor: 'border-blue-500/30',
+        gradient: 'gradient-primary'
     },
     idea: {
         title: 'New Idea',
@@ -61,16 +63,17 @@ const TEMPLATES = {
         icon: LightBulbIcon,
         color: 'text-yellow-400',
         bgColor: 'bg-yellow-900/20',
-        borderColor: 'border-yellow-500/30'
+        borderColor: 'border-yellow-500/30',
+        gradient: 'gradient-warning'
     }
 };
 
 const QUICK_ACTIONS = [
-    {id: 'note', label: 'New Note', description: 'Start writing', icon: PencilIcon, color: 'from-blue-600 to-indigo-600', action: 'notes'},
-    {id: 'map', label: 'Map View', description: 'Browse notes spatially', icon: MapIcon, color: 'from-purple-600 to-pink-600', action: 'map'},
-    {id: 'chat', label: 'Chat', description: 'Messages & contacts', icon: ChatIcon, color: 'from-green-600 to-teal-600', action: 'chat'},
-    {id: 'network', label: 'Network', description: 'P2P connections', icon: NetworkIcon, color: 'from-orange-600 to-red-600', action: 'network'},
-    {id: 'settings', label: 'Settings', description: 'Preferences', icon: SettingsIcon, color: 'from-gray-600 to-gray-700', action: 'settings'},
+    {id: 'note', label: 'New Note', description: 'Start writing', icon: PencilIcon, gradient: 'gradient-primary', action: 'notes'},
+    {id: 'map', label: 'Map View', description: 'Browse notes spatially', icon: MapIcon, gradient: 'gradient-purple', action: 'map'},
+    {id: 'chat', label: 'Chat', description: 'Messages & contacts', icon: ChatIcon, gradient: 'gradient-teal', action: 'chat'},
+    {id: 'network', label: 'Network', description: 'P2P connections', icon: NetworkIcon, gradient: 'gradient-warning', action: 'network'},
+    {id: 'settings', label: 'Settings', description: 'Preferences', icon: SettingsIcon, gradient: 'gradient-gray', action: 'settings'},
 ];
 
 export function DashboardView() {
@@ -315,7 +318,11 @@ export function DashboardView() {
                                     variant="outline"
                                     size="sm"
                                     className={cn('gap-2', t.borderColor, 'hover:scale-105 active:scale-95')}
-                                    leftIcon={<t.icon className={cn('w-4 h-4', t.color)} />}
+                                    leftIcon={
+                                        <div className={cn('p-2 rounded-xl', t.gradient, 'text-white')}>
+                                            <t.icon className="w-4 h-4" />
+                                        </div>
+                                    }
                                 >
                                     <span className={cn('text-[10px] font-bold uppercase tracking-widest', t.color)}>
                                         {type}
@@ -452,7 +459,7 @@ export function DashboardView() {
                                 variant="outline"
                                 className="w-full text-left gap-4 justify-start hover:shadow-lg transition-all duration-200"
                                 leftIcon={
-                                    <div className={cn('p-2 rounded-xl', `bg-gradient-to-br ${action.color}`, 'text-white')}>
+                                    <div className={cn('p-2 rounded-xl', action.gradient, 'text-white')}>
                                         <action.icon className="w-5 h-5" />
                                     </div>
                                 }

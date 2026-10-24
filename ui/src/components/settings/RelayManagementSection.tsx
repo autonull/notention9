@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {NetworkIcon, PlusIcon, TrashIcon} from '../common/icons';
 import {Button} from '../common/Button';
-import {IconButton} from '../common/IconButton';
+import {IconButton} from '../ui/Primitives';
 import {Input} from '../common/Input';
 import {ConfirmationModal} from '../common/ConfirmationModal';
 import {useToast} from '../../hooks/useToast';

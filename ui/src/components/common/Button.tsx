@@ -1,5 +1,5 @@
 import React from 'react';
-import {Tooltip} from './Tooltip';
+import {Tooltip} from '../ui/Overlay';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline' | 'success';

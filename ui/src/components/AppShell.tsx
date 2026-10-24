@@ -157,6 +157,12 @@ export function AppShell() {
     return (
         <SelectorRegistryProvider>
             <div className="flex flex-col h-screen bg-gray-950 text-gray-200" data-ready>
+                <a
+                    href="#main-content"
+                    className="skip-link"
+                >
+                    Skip to main content
+                </a>
                 <Header onNewNote={handleNewNote}/>
                 <ConnectivityBanner/>
                 <div className="flex flex-1 overflow-hidden relative">
@@ -177,7 +183,7 @@ export function AppShell() {
                         />
                     )}
 
-                    <main className={mainClasses}>
+                    <main id="main-content" className={mainClasses}>
                         <MainView sortedNotes={sortedNotes}/>
                     </main>
                 </div>

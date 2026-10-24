@@ -6,7 +6,7 @@ import {useNoteActions} from '../../hooks/useNoteActions';
 import type {Template, View} from '@notention/core';
 import {generateTemplatesFromOntology} from '@notention/core';
 import {NavButton} from './NavButton';
-import {IconButton} from '../common/IconButton';
+import {IconButton} from '../ui/Primitives';
 import {SearchIcon, SidebarIcon} from '../common/icons';
 import {NewNoteButton} from './NewNoteButton';
 import {ConnectionStatus} from './ConnectionStatus';

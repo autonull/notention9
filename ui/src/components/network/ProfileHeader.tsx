@@ -5,7 +5,7 @@ import type {AppSettings, NostrProfile} from '@notention/core';
 import {formatNpub, hexToBytes, Logger, pool, resolveRelays} from '@notention/core';
 import {EditIcon} from '../common/icons';
 import {Avatar} from '../common/Avatar';
-import {IconButton} from '../common/IconButton';
+import {IconButton} from '../ui/Primitives';
 import {Button} from '../common/Button';
 import {Input} from '../common/Input';
 import {Textarea} from '../common/Textarea';

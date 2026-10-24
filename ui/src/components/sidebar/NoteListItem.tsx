@@ -2,7 +2,7 @@ import React, {useRef, useMemo} from 'react';
 import type {Note} from '@notention/core';
 import {ClockIcon, DocumentDuplicateIcon, MapPinIcon, PinIcon, TrashIcon, WorldIcon} from '../common/icons';
 import {getTextFromHtml} from '../../utils/html';
-import {IconButton} from '../common/IconButton';
+import {IconButton} from '../ui/Primitives';
 import {Badge} from '../common/Badge';
 import {formatDistanceToNow} from 'date-fns';
 import {cn} from '../../utils/ui';

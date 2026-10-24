@@ -5,7 +5,7 @@ import type {Contact} from '@notention/core';
 import {formatNpub, Logger} from '@notention/core';
 import {SearchIcon, UserPlusIcon} from '../common/icons';
 import {Avatar} from '../common/Avatar';
-import {IconButton} from '../common/IconButton';
+import {IconButton} from '../ui/Primitives';
 import {Button} from '../common/Button';
 import {Input} from '../common/Input';
 
