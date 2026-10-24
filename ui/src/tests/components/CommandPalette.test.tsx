@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { CommandPalette } from '../../components/common/CommandPalette';
+import { EnhancedCommandPalette } from '../../components/ui/EnhancedCommandPalette';
 import { Note } from '@notention/core';
 
 // Mock icons
@@ -11,29 +11,26 @@ vi.mock('../common/icons', () => ({
     SearchIcon: () => <span>SearchIcon</span>,
 }));
 
-describe('CommandPalette', () => {
+describe('EnhancedCommandPalette', () => {
     const mockNotes: Note[] = [
         { id: '1', title: 'Note 1', content: 'Content 1', tags: [], properties: [], createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', source: { type: 'user', identifier: 'test', timestamp: 0 }, privacy: 'private', priority: 0, author: 'test' },
         { id: '2', title: 'Note 2', content: 'Content 2', tags: ['important'], properties: [], createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', source: { type: 'user', identifier: 'test', timestamp: 0 }, privacy: 'private', priority: 0, author: 'test' },
     ];
 
-    const mockCommands = [
-        { label: 'Test Command', icon: <span>CmdIcon</span>, action: vi.fn() },
+    const mockItems = [
+        { id: 'cmd-1', label: 'Test Command', icon: <span>CmdIcon</span>, action: vi.fn(), category: 'Actions', shortcut: 'Ctrl+T', keywords: ['test', 'command'] },
     ];
 
-    const mockOnSelectNote = vi.fn();
-    const mockOnCreateNote = vi.fn();
     const mockOnClose = vi.fn();
 
     it('renders when open', () => {
         render(
-            <CommandPalette
+            <EnhancedCommandPalette
                 isOpen={true}
                 onClose={mockOnClose}
-                notes={mockNotes}
-                onSelectNote={mockOnSelectNote}
-                onCreateNote={mockOnCreateNote}
-                commands={mockCommands}
+                items={mockItems}
+                placeholder="Type a command or search..."
+                title="Command Palette"
             />
         );
         expect(screen.getByPlaceholderText(/Type a command/)).toBeTruthy();
@@ -41,67 +38,57 @@ describe('CommandPalette', () => {
 
     it('shows shortcuts when query is empty', () => {
         render(
-            <CommandPalette
+            <EnhancedCommandPalette
                 isOpen={true}
                 onClose={mockOnClose}
-                notes={mockNotes}
-                onSelectNote={mockOnSelectNote}
-                onCreateNote={mockOnCreateNote}
-                commands={mockCommands}
-            />
-        );
-        // Notes are rendered first, so we might not see shortcuts if notes exist and query is empty
-        // Wait, the logic is: "Default View: Show Shortcuts if no query" AND "allItems.length > 0 ? map items : show shortcuts"
-        // Since mockNotes has items, allItems > 0, so it shows items, NOT shortcuts.
-        // We need to test with empty notes/commands or verify it shows items.
-        // Or update component logic if we WANT shortcuts always visible (probably not if list is full).
-        // Let's test the "no items" case to see shortcuts, or force empty list.
-    });
-
-    it('shows shortcuts when query is empty and no items', () => {
-         render(
-            <CommandPalette
-                isOpen={true}
-                onClose={mockOnClose}
-                notes={[]}
-                onSelectNote={mockOnSelectNote}
-                onCreateNote={mockOnCreateNote}
-                commands={[]}
+                items={[]}
+                placeholder="Type a command or search..."
+                title="Command Palette"
+                showShortcuts={true}
             />
         );
         expect(screen.getByText(/Keyboard Shortcuts/i)).toBeTruthy();
         expect(screen.getByText('Ctrl + N')).toBeTruthy();
     });
 
-    it('filters notes based on query', () => {
+    it('filters items based on query', () => {
         render(
-            <CommandPalette
+            <EnhancedCommandPalette
                 isOpen={true}
                 onClose={mockOnClose}
-                notes={mockNotes}
-                onSelectNote={mockOnSelectNote}
-                onCreateNote={mockOnCreateNote}
-                commands={mockCommands}
+                items={mockItems}
+                placeholder="Type a command or search..."
+                title="Command Palette"
+                fuzzySearch={true}
             />
         );
 
         const input = screen.getByPlaceholderText(/Type a command/);
-        fireEvent.change(input, { target: { value: 'Note 1' } });
+        fireEvent.change(input, { target: { value: 'Test' } });
 
-        expect(screen.getByText('Note 1')).toBeTruthy();
-        expect(screen.queryByText('Note 2')).toBeNull();
+        expect(screen.getByText('Test Command')).toBeTruthy();
         expect(screen.queryByText('Keyboard Shortcuts')).toBeNull();
     });
 
-    it('handles tag search', () => {
+    it('shows notes with tag search', () => {
+        const noteItems = mockNotes.map(note => ({
+            id: note.id,
+            label: note.title || 'Untitled',
+            description: note.content,
+            icon: <span>NoteIcon</span>,
+            action: vi.fn(),
+            category: 'Notes',
+            keywords: [note.title.toLowerCase(), ...note.tags.map(t => `#${t.toLowerCase()}`)],
+        }));
+
         render(
-            <CommandPalette
+            <EnhancedCommandPalette
                 isOpen={true}
                 onClose={mockOnClose}
-                notes={mockNotes}
-                onSelectNote={mockOnSelectNote}
-                onCreateNote={mockOnCreateNote}
-                commands={mockCommands}
+                items={noteItems}
+                placeholder="Type a command or search..."
+                title="Command Palette"
+                fuzzySearch={true}
             />
         );
 

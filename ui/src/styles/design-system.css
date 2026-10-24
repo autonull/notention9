@@ -486,6 +486,17 @@ body {
   }
 }
 
+@keyframes fade-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
 @keyframes slide-in-up {
   from {
     opacity: 0;
@@ -508,6 +519,72 @@ body {
   }
 }
 
+@keyframes slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-out-up {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes slide-out-down {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes slide-out-left {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+}
+
+@keyframes slide-out-right {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+}
+
 @keyframes scale-in {
   from {
     opacity: 0;
@@ -516,6 +593,17 @@ body {
   to {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+@keyframes scale-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
   }
 }
 
@@ -549,6 +637,10 @@ body {
   animation: fade-in var(--transition-base) ease-out forwards;
 }
 
+.animate-fade-out {
+  animation: fade-out var(--transition-fast) ease-in forwards;
+}
+
 .animate-slide-in-up {
   animation: slide-in-up var(--transition-base) ease-out forwards;
 }
@@ -557,8 +649,36 @@ body {
   animation: slide-in-down var(--transition-base) ease-out forwards;
 }
 
+.animate-slide-in-left {
+  animation: slide-in-left var(--transition-base) ease-out forwards;
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right var(--transition-base) ease-out forwards;
+}
+
+.animate-slide-out-up {
+  animation: slide-out-up var(--transition-fast) ease-in forwards;
+}
+
+.animate-slide-out-down {
+  animation: slide-out-down var(--transition-fast) ease-in forwards;
+}
+
+.animate-slide-out-left {
+  animation: slide-out-left var(--transition-fast) ease-in forwards;
+}
+
+.animate-slide-out-right {
+  animation: slide-out-right var(--transition-fast) ease-in forwards;
+}
+
 .animate-scale-in {
   animation: scale-in var(--transition-fast) ease-out forwards;
+}
+
+.animate-scale-out {
+  animation: scale-out var(--transition-fast) ease-in forwards;
 }
 
 .animate-pulse-subtle {

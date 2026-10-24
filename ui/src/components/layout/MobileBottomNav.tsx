@@ -29,23 +29,23 @@ import {IconButton} from '../ui/Primitives';
 import {cn} from '../../utils/ui';
 
 const MOBILE_NAV_ITEMS = [
-    {id: 'dashboard', label: 'Dashboard', icon: HomeIcon, showInMobile: true, priority: 1},
-    {id: 'notes', label: 'Notes', icon: NoteIcon, showInMobile: true, priority: 2},
-    {id: 'map', label: 'Map', icon: MapIcon, showInMobile: true, priority: 3},
-    {id: 'timeline', label: 'Timeline', icon: ClockIcon, showInMobile: true, priority: 4},
-    {id: 'network', label: 'Network', icon: NetworkIcon, showInMobile: true, priority: 5},
-    {id: 'chat', label: 'Chat', icon: ChatIcon, showInMobile: true, priority: 6},
-    {id: 'actions', label: 'Actions', icon: LightBulbIcon, showInMobile: false, priority: 7},
-    {id: 'graph', label: 'Graph', icon: GitBranchIcon, showInMobile: false, priority: 8},
-    {id: 'ontology', label: 'Ontology', icon: OntologyIcon, showInMobile: false, priority: 9},
-    {id: 'trash', label: 'Trash', icon: TrashIcon, showInMobile: false, priority: 10},
-    {id: 'self', label: 'Self', icon: UsersIcon, showInMobile: false, priority: 11},
-    {id: 'settings', label: 'Settings', icon: SettingsIcon, showInMobile: false, priority: 12},
+    {id: 'dashboard', label: 'Dashboard', icon: HomeIcon, shortcut: '⌘1', showInMobile: true, priority: 1},
+    {id: 'notes', label: 'Notes', icon: NoteIcon, shortcut: '⌘2', showInMobile: true, priority: 2},
+    {id: 'map', label: 'Map', icon: MapIcon, shortcut: '⌘3', showInMobile: true, priority: 3},
+    {id: 'timeline', label: 'Timeline', icon: ClockIcon, shortcut: '⌘4', showInMobile: true, priority: 4},
+    {id: 'network', label: 'Network', icon: NetworkIcon, shortcut: '⌘5', showInMobile: true, priority: 5},
+    {id: 'chat', label: 'Chat', icon: ChatIcon, shortcut: '⌘6', showInMobile: true, priority: 6},
+    {id: 'actions', label: 'Actions', icon: LightBulbIcon, shortcut: '⌘7', showInMobile: true, priority: 7},
+    {id: 'graph', label: 'Graph', icon: GitBranchIcon, shortcut: '⌘8', showInMobile: true, priority: 8},
+    {id: 'ontology', label: 'Ontology', icon: OntologyIcon, shortcut: '⌘9', showInMobile: true, priority: 9},
+    {id: 'trash', label: 'Trash', icon: TrashIcon, shortcut: '⌘0', showInMobile: true, priority: 10},
+    {id: 'self', label: 'Self', icon: UsersIcon, showInMobile: true, priority: 11},
+    {id: 'settings', label: 'Settings', icon: SettingsIcon, showInMobile: true, priority: 12},
 ] as const;
 
 const MOBILE_ACTION_ITEMS = [
-    {id: 'search', label: 'Search', icon: SearchIcon, priority: 1, shortcut: '⌘F'},
-    {id: 'shortcuts', label: 'Shortcuts', icon: HelpIcon, priority: 2, shortcut: '?'},
+    {id: 'search', label: 'Search', icon: SearchIcon, shortcut: '⌘F'},
+    {id: 'shortcuts', label: 'Shortcuts', icon: HelpIcon, shortcut: '?'},
 ] as const;
 
 interface MobileBottomNavProps {
@@ -54,7 +54,7 @@ interface MobileBottomNavProps {
 }
 
 export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps) {
-    const {activeView, setActiveView, isPaletteOpen, setIsPaletteOpen, setSelectedNoteId} = useView();
+    const {activeView, setActiveView, isPaletteOpen, setIsPaletteOpen, setSelectedNoteId, notificationCount, chatNotificationCount} = useView();
     const {addNote} = useNotes();
     const {addToast} = useToast();
     const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
@@ -132,9 +132,13 @@ export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps
         {label: 'From Template', icon: DocumentDuplicateIcon, action: handleNewFromTemplate, shortcut: '⌘T'},
     ], [handleQuickCapture, handleNewRequest, handleNewOffer, handleNewFromTemplate]);
 
-    const primaryNavItems = MOBILE_NAV_ITEMS.filter(item => item.showInMobile && item.priority <= 5);
-    const secondaryNavItems = MOBILE_NAV_ITEMS.filter(item => item.showInMobile && item.priority > 5);
-    const hiddenNavItems = MOBILE_NAV_ITEMS.filter(item => !item.showInMobile);
+    const allNavItems = MOBILE_NAV_ITEMS.filter(item => item.showInMobile);
+
+    const getBadgeCount = (item: typeof MOBILE_NAV_ITEMS[0]) => {
+        if (item.badgeCountKey === 'notificationCount') return notificationCount;
+        if (item.badgeCountKey === 'chatNotificationCount') return chatNotificationCount;
+        return undefined;
+    };
 
     return (
         <>
@@ -145,34 +149,48 @@ export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps
                 )}
             >
                 <div className="card glass rounded-t-2xl shadow-2xl overflow-hidden border-t border-gray-700/50">
-                    {/* Primary Navigation - Always Visible */}
-                    <div className="flex items-center justify-around px-2 py-2.5">
-                        {primaryNavItems.map(item => {
+                    {/* Primary Navigation - All views accessible */}
+                    <div className="flex items-center justify-around px-2 py-2.5 overflow-x-auto custom-scrollbar pb-1">
+                        {allNavItems.map(item => {
                             const Icon = item.icon;
                             const isActive = activeView === item.id;
+                            const badgeCount = getBadgeCount(item);
                             return (
                                 <button
                                     key={item.id}
                                     onClick={() => handleSelect(item.id)}
                                     className={cn(
-                                        'btn btn-ghost btn-xs flex flex-col items-center gap-1 px-3 py-2.5 rounded-xl min-w-[60px] touch-target transition-all duration-200',
+                                        'btn btn-ghost btn-xs flex flex-col items-center gap-1 px-3 py-2.5 rounded-xl min-w-[60px] flex-shrink-0 touch-target transition-all duration-200',
                                         isActive
                                             ? 'bg-indigo-600/20 text-indigo-400'
                                             : 'text-gray-500 hover:text-gray-300 hover:bg-gray-800/50 active:bg-gray-700/50'
                                     )}
                                     aria-label={item.label}
                                     aria-current={isActive ? 'page' : undefined}
+                                    aria-keyshortcuts={item.shortcut}
                                 >
-                                    <Icon className={cn('w-6 h-6', isActive ? 'text-indigo-400' : '')} />
+                                    <div className="relative flex items-center justify-center">
+                                        <Icon className={cn('w-6 h-6', isActive ? 'text-indigo-400' : '')} />
+                                        {badgeCount && badgeCount > 0 && (
+                                            <span className="absolute -top-1 -right-1 w-5 h-5 min-w-[16px] bg-red-500 text-[10px] font-bold rounded-full flex items-center justify-center text-white">
+                                                {badgeCount > 9 ? '9+' : badgeCount}
+                                            </span>
+                                        )}
+                                    </div>
                                     <span className="text-[10px] font-medium uppercase tracking-wider truncate max-w-[56px] text-center">
                                         {item.label}
                                     </span>
+                                    {item.shortcut && (
+                                        <span className="text-[8px] text-gray-500 font-mono px-1.5 py-0.5 bg-gray-800 rounded badge badge-xs">
+                                            {item.shortcut}
+                                        </span>
+                                    )}
                                 </button>
                             );
                         })}
                     </div>
 
-                    {/* Action Bar - FAB + Quick Actions + More + Command Palette */}
+                    {/* Action Bar - FAB + Quick Actions + Command Palette */}
                     <div className="flex items-center justify-between px-3 pb-3 border-t border-gray-700/30">
                         <div className="relative" ref={actionMenuRef}>
                             <IconButton
@@ -180,7 +198,7 @@ export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps
                                 icon={PlusIcon}
                                 variant="primary"
                                 size="lg"
-                                tooltip="Create New"
+                                tooltip="Create New (⌘N)"
                                 tooltipPosition="top"
                                 aria-label="Create New"
                                 aria-expanded={isActionMenuOpen}
@@ -199,6 +217,7 @@ export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps
                                             onClick={item.action}
                                             role="menuitem"
                                             className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-200 hover:bg-gray-800 transition-colors touch-target"
+                                            aria-keyshortcuts={item.shortcut}
                                         >
                                             <item.icon className="w-5 h-5 text-gray-400 flex-shrink-0" />
                                             <span className="flex-1 text-sm font-medium">{item.label}</span>
@@ -244,67 +263,18 @@ export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps
                             })}
                         </div>
 
-                        {/* More Navigation Toggle */}
-                        {(secondaryNavItems.length > 0 || hiddenNavItems.length > 0) && (
-                            <IconButton
-                                onClick={() => setShowMore(!showMore)}
-                                icon={MenuIcon}
-                                variant="secondary"
-                                size="lg"
-                                tooltip={showMore ? 'Show Less' : 'More Views'}
-                                tooltipPosition="top"
-                                aria-label={showMore ? 'Show Less Views' : 'More Views'}
-                                aria-expanded={showMore}
-                                className="touch-target"
-                            />
-                        )}
-
                         <IconButton
                             onClick={() => setIsPaletteOpen(true)}
                             icon={XIcon}
                             variant="secondary"
                             size="lg"
-                            tooltip="Command Palette (Ctrl+K)"
+                            tooltip="Command Palette (⌘K)"
                             tooltipPosition="top"
                             aria-label="Command Palette"
+                            aria-keyshortcuts="⌘K"
                             className="touch-target"
                         />
                     </div>
-
-                    {/* Expandable Secondary Navigation */}
-                    {showMore && (secondaryNavItems.length > 0 || hiddenNavItems.length > 0) && (
-                        <div className="px-3 pb-3 animate-slide-in-up">
-                            <div className="flex items-center justify-center gap-2 overflow-x-auto pb-2 custom-scrollbar" role="tablist">
-                                {[...secondaryNavItems, ...hiddenNavItems].map(item => {
-                                    const Icon = item.icon;
-                                    const isActive = activeView === item.id;
-                                    return (
-                                        <button
-                                            key={item.id}
-                                            onClick={() => {
-                                                handleSelect(item.id);
-                                                setShowMore(false);
-                                            }}
-                                            className={cn(
-                                                'btn btn-ghost btn-xs flex flex-col items-center gap-1 px-3 py-2 rounded-xl min-w-[56px] flex-shrink-0 touch-target transition-all duration-200',
-                                                isActive
-                                                    ? 'bg-indigo-600/20 text-indigo-400'
-                                                    : 'text-gray-500 hover:text-gray-300 hover:bg-gray-800/50'
-                                            )}
-                                            role="tab"
-                                            aria-label={item.label}
-                                            aria-selected={isActive}
-                                        >
-                                            <Icon className={cn('w-5 h-5', isActive ? 'text-indigo-400' : '')} />
-                                            <span className="text-[9px] font-medium uppercase tracking-wider truncate max-w-[48px] text-center">
-                                                {item.label}
-                                            </span>
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    )}
                 </div>
             </div>
 

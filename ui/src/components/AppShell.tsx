@@ -1,11 +1,12 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useMemo, useCallback} from 'react';
 import {Header} from './layout/Header';
 import {MobileNavigation} from './layout/MobileNavigation';
-import {CommandPalette} from './common/CommandPalette';
+import {EnhancedCommandPalette} from './ui/EnhancedCommandPalette';
 import {Sidebar} from './sidebar';
 import {MainView} from './MainView';
 import {SelectorRegistryProvider} from './properties/SelectorRegistry';
 import {KeyboardShortcutsHelp} from './common/KeyboardShortcutsHelp';
+import {PlusIcon, NoteIcon} from './common/icons';
 
 import {useNotes} from '../hooks/useNotes';
 import {useView} from '../hooks/useViewContext';
@@ -64,11 +65,11 @@ export function AppShell() {
         };
     }, [addToast, setIsShortcutsHelpOpen]);
 
-    const handleCreateNote = (title: string) => {
+    const handleCreateNote = useCallback((title: string) => {
         const newNote = addNote({title});
         setSelectedNoteId(newNote.id);
         setActiveView('notes');
-    };
+    }, [addNote, setSelectedNoteId, setActiveView]);
 
     useKeyboardShortcuts({
         onNewNote: handleNewNote,
@@ -188,16 +189,47 @@ export function AppShell() {
                     </main>
                 </div>
                 <MobileNavigation/>
-                <CommandPalette
+                <EnhancedCommandPalette
                     isOpen={isPaletteOpen}
                     onClose={() => setIsPaletteOpen(false)}
-                    notes={sortedNotes}
-                    onSelectNote={(id) => {
-                        setSelectedNoteId(id);
-                        setActiveView('notes');
-                    }}
-                    onCreateNote={handleCreateNote}
-                    commands={commands}
+                    items={useMemo(() => [
+                        ...commands.map((cmd) => ({
+                            id: `cmd-${cmd.label}`,
+                            label: cmd.label,
+                            icon: cmd.icon,
+                            action: cmd.action,
+                            category: 'Navigation',
+                            shortcut: cmd.shortcut,
+                            keywords: cmd.label.toLowerCase().split(' '),
+                        })),
+                        ...sortedNotes.map((note) => ({
+                            id: note.id,
+                            label: note.title || 'Untitled',
+                            description: note.content ? note.content.replace(/<[^>]*>/g, '').slice(0, 60) : '',
+                            icon: <NoteIcon className="h-5 w-5"/>,
+                            action: () => {
+                                setSelectedNoteId(note.id);
+                                setActiveView('notes');
+                            },
+                            category: 'Notes',
+                            keywords: [note.title.toLowerCase(), ...note.tags.map(t => `#${t.toLowerCase()}`)],
+                        })),
+                        {
+                            id: 'create-note',
+                            label: 'Create new note',
+                            description: 'Create a new note',
+                            icon: <PlusIcon className="h-5 w-5"/>,
+                            action: () => handleCreateNote('New Note'),
+                            category: 'Actions',
+                            shortcut: 'Ctrl+N',
+                            keywords: ['new', 'create', 'note', 'add'],
+                        },
+                    ], [commands, sortedNotes, handleCreateNote, setActiveView, setSelectedNoteId])}
+                    placeholder="Type a command or search notes... (#tag, key:value)"
+                    title="Command Palette"
+                    showShortcuts={true}
+                    showRecent={true}
+                    fuzzySearch={true}
                 />
                 <HelpDialog
                     isOpen={isHelpOpen}

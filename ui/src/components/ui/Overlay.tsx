@@ -4,6 +4,55 @@ import {Modal as ModalPrimitive, ModalProps} from './Primitives';
 
 export {ModalPrimitive as Modal};
 
+/**
+ * Reusable focus trap hook for modals, drawers, and other overlay components.
+ * Traps focus within the given container when active.
+ */
+export function useFocusTrap(isActive: boolean, onEscape?: () => void) {
+    const contentRef = useRef<HTMLDivElement>(null);
+    const previousActiveElement = useRef<HTMLElement | null>(null);
+
+    useEffect(() => {
+        if (isActive) {
+            previousActiveElement.current = document.activeElement as HTMLElement;
+            // Focus the container after a brief delay to ensure it's mounted
+            setTimeout(() => contentRef.current?.focus(), 0);
+        } else {
+            previousActiveElement.current?.focus();
+        }
+        return () => {
+            previousActiveElement.current?.focus();
+        };
+    }, [isActive]);
+
+    useEffect(() => {
+        if (!isActive) return;
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') onEscape?.();
+            if (e.key === 'Tab') {
+                const focusableElements = contentRef.current?.querySelectorAll(
+                    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+                );
+                if (focusableElements?.length) {
+                    const firstElement = focusableElements[0] as HTMLElement;
+                    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+                    if (e.shiftKey && document.activeElement === firstElement) {
+                        e.preventDefault();
+                        lastElement.focus();
+                    } else if (!e.shiftKey && document.activeElement === lastElement) {
+                        e.preventDefault();
+                        firstElement.focus();
+                    }
+                }
+            }
+        };
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [isActive, onEscape]);
+
+    return contentRef;
+}
+
 export interface DrawerProps {
     isOpen: boolean;
     onClose: () => void;
@@ -29,47 +78,18 @@ export function Drawer({
     closeOnOverlayClick = true,
     className = '',
 }: DrawerProps) {
-    const contentRef = useRef<HTMLDivElement>(null);
-    const previousActiveElement = useRef<HTMLElement | null>(null);
+    const contentRef = useFocusTrap(isOpen, onClose);
 
     useEffect(() => {
         if (isOpen) {
-            previousActiveElement.current = document.activeElement as HTMLElement;
             document.body.style.overflow = 'hidden';
-            contentRef.current?.focus();
         } else {
             document.body.style.overflow = '';
-            previousActiveElement.current?.focus();
         }
         return () => {
             document.body.style.overflow = '';
         };
     }, [isOpen]);
-
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (!isOpen) return;
-            if (e.key === 'Escape') onClose();
-            if (e.key === 'Tab') {
-                const focusableElements = contentRef.current?.querySelectorAll(
-                    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-                );
-                if (focusableElements?.length) {
-                    const firstElement = focusableElements[0] as HTMLElement;
-                    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
-                    if (e.shiftKey && document.activeElement === firstElement) {
-                        e.preventDefault();
-                        lastElement.focus();
-                    } else if (!e.shiftKey && document.activeElement === lastElement) {
-                        e.preventDefault();
-                        firstElement.focus();
-                    }
-                }
-            }
-        };
-        document.addEventListener('keydown', handleKeyDown);
-        return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [isOpen, onClose]);
 
     if (!isOpen) return null;
 

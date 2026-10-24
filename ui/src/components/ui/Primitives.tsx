@@ -1,6 +1,7 @@
 import React from 'react';
 import {cn} from '../../utils/ui';
 import {Tooltip} from './Overlay';
+import {useFocusTrap} from './Overlay';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'success' | 'outline';
@@ -440,48 +441,18 @@ export function Modal({
     closeOnOverlayClick = true,
     showCloseButton = true,
 }: ModalProps) {
-    const overlayRef = React.useRef<HTMLDivElement>(null);
-    const contentRef = React.useRef<HTMLDivElement>(null);
-    const previousActiveElement = React.useRef<HTMLElement | null>(null);
+    const contentRef = useFocusTrap(isOpen, onClose);
 
     React.useEffect(() => {
         if (isOpen) {
-            previousActiveElement.current = document.activeElement as HTMLElement;
             document.body.style.overflow = 'hidden';
-            contentRef.current?.focus();
         } else {
             document.body.style.overflow = '';
-            previousActiveElement.current?.focus();
         }
         return () => {
             document.body.style.overflow = '';
         };
     }, [isOpen]);
-
-    React.useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (!isOpen) return;
-            if (e.key === 'Escape') onClose();
-            if (e.key === 'Tab') {
-                const focusableElements = contentRef.current?.querySelectorAll(
-                    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-                );
-                if (focusableElements?.length) {
-                    const firstElement = focusableElements[0] as HTMLElement;
-                    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
-                    if (e.shiftKey && document.activeElement === firstElement) {
-                        e.preventDefault();
-                        lastElement.focus();
-                    } else if (!e.shiftKey && document.activeElement === lastElement) {
-                        e.preventDefault();
-                        firstElement.focus();
-                    }
-                }
-            }
-        };
-        document.addEventListener('keydown', handleKeyDown);
-        return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [isOpen, onClose]);
 
     if (!isOpen) return null;
 
@@ -502,7 +473,6 @@ export function Modal({
             aria-describedby={description ? 'modal-description' : undefined}
         >
             <div
-                ref={overlayRef}
                 className="modal-backdrop animate-fade-in"
                 onClick={closeOnOverlayClick ? onClose : undefined}
                 aria-hidden="true"
