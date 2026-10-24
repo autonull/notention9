@@ -10,6 +10,7 @@ import {formatNpub, hexToBytes, Logger, parseProperties, pool, resolveRelays} fr
 import {ArrowLeftIcon, DocumentDuplicateIcon, SendIcon, SettingsIcon, TrashIcon} from '../common/icons';
 import {Avatar} from '../common/Avatar';
 import {IconButton} from '../ui/Primitives';
+import {Skeleton} from '../ui/Skeleton';
 
 interface ChatWindowProps {
     privkey: string;
@@ -17,6 +18,7 @@ interface ChatWindowProps {
     selectedContact: Contact | null;
     onBack: () => void;
     messages: (NostrEvent & { content: string })[];
+    isLoading: boolean;
     onSendMessage: (
         peerPubkey: string,
         event: NostrEvent,
@@ -32,6 +34,7 @@ export function ChatWindow({
                                selectedContact,
                                onBack,
                                messages,
+                               isLoading,
                                onSendMessage,
                                onOpenSettings,
                                onClearChat,
@@ -163,18 +166,20 @@ export function ChatWindow({
 
             {/* Messages */}
             <div className="flex-grow p-4 overflow-y-auto space-y-4">
-                {messages.length > 0 && (
-                    <div className="text-center text-[10px] uppercase tracking-wider text-gray-600">
-                        End-to-end encrypted
-                    </div>
-                )}
-                {messages.length === 0 && (
+                {messages.length === 0 && !isLoading && (
                     <div className="text-center text-gray-600 py-10">
                         <p>No messages yet.</p>
                         <p className="text-xs">Say hello! 👋</p>
                     </div>
                 )}
-                {messages.map((msg, idx) => {
+                {isLoading && (
+                    <div className="space-y-4">
+                        <Skeleton variant="rectangular" height={80} width="60%" className="rounded-2xl mx-auto"/>
+                        <Skeleton variant="rectangular" height={80} width="70%" className="rounded-2xl ml-auto"/>
+                        <Skeleton variant="rectangular" height={80} width="50%" className="rounded-2xl mx-auto"/>
+                    </div>
+                )}
+                {!isLoading && messages.length > 0 && messages.map((msg, idx) => {
                     const isMe = msg.pubkey === pubkey;
                     const showTime = idx === messages.length - 1 || (idx < messages.length - 1 && messages[idx + 1].pubkey !== msg.pubkey);
 

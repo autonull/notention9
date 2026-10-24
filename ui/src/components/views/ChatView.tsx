@@ -71,6 +71,7 @@ export function ChatView() {
                     selectedContact={fullSelectedContact}
                     onBack={() => handleSelectContact(null)}
                     messages={displayMessages}
+                    isLoading={isLoading}
                     onSendMessage={async (peerPubkey, event, decryptedContent) => {
                         addMessage(peerPubkey, event, decryptedContent);
                     }}

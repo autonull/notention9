@@ -14,6 +14,7 @@ import {OntologySuggestionItem} from '../ontology/OntologySuggestionItem';
 import {ConfirmationModal} from '../common/ConfirmationModal';
 import {useToast} from '../../hooks/useToast';
 import {OntologyAttribute} from '@notention/core';
+import {Skeleton} from '../ui/Skeleton';
 
 export function OntologyView() {
     const {addToast} = useToast();

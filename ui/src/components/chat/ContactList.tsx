@@ -8,6 +8,7 @@ import {Avatar} from '../common/Avatar';
 import {IconButton} from '../ui/Primitives';
 import {Button} from '../common/Button';
 import {Input} from '../common/Input';
+import {Skeleton} from '../ui/Skeleton';
 
 interface ContactListProps {
     privkey: string;
@@ -175,12 +176,16 @@ export function ContactList({
 
             <div className="flex-grow overflow-y-auto">
                 {isLoading && (
-                    <div className="p-4 text-center text-gray-500 text-sm">
-                        Loading...
+                    <div className="p-4 space-y-3">
+                        <Skeleton variant="rectangular" height={56} width="100%" className="rounded-lg"/>
+                        <Skeleton variant="rectangular" height={56} width="100%" className="rounded-lg"/>
+                        <Skeleton variant="rectangular" height={56} width="100%" className="rounded-lg"/>
+                        <Skeleton variant="rectangular" height={56} width="100%" className="rounded-lg"/>
+                        <Skeleton variant="rectangular" height={56} width="100%" className="rounded-lg"/>
                     </div>
                 )}
 
-                {filteredContacts.map(renderContactItem)}
+                {!isLoading && filteredContacts.map(renderContactItem)}
 
                 {!isLoading && contacts.length === 0 && (
                     <div className="p-8 text-center text-gray-500 text-sm">
