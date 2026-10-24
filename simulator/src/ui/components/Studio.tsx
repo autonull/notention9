@@ -1,7 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Play, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from './Toast';
+
+const Skeleton = ({ className = '' }: { className?: string }) => (
+    <div className={`animate-pulse bg-gray-800 rounded ${className}`} />
+);
 
 const Studio = () => {
     const [scenarios, setScenarios] = useState<string[]>([]);
@@ -9,17 +13,26 @@ const Studio = () => {
     const [agentCount, setAgentCount] = useState(5);
     const [duration, setDuration] = useState(30);
     const [loading, setLoading] = useState(false);
+    const [scenariosLoading, setScenariosLoading] = useState(true);
     const { addToast } = useToast();
     const navigate = useNavigate();
 
+    const loadScenarios = useCallback(async () => {
+        setScenariosLoading(true);
+        try {
+            const res = await fetch('/api/scenarios');
+            const data = await res.json();
+            setScenarios(['generate', ...data]);
+        } catch (err) {
+            addToast('Failed to load scenarios', 'error');
+        } finally {
+            setScenariosLoading(false);
+        }
+    }, [addToast]);
+
     useEffect(() => {
-        fetch('/api/scenarios')
-            .then(res => res.json())
-            .then(data => {
-                 setScenarios(['generate', ...data]);
-            })
-            .catch(err => addToast("Failed to load scenarios", "error"));
-    }, []);
+        loadScenarios();
+    }, [loadScenarios]);
 
     const startJob = async () => {
         setLoading(true);
@@ -56,20 +69,24 @@ const Studio = () => {
                 <div className="space-y-6">
                     <div>
                         <label className="block text-sm font-medium text-gray-400 mb-2">Scenario</label>
-                        <select
-                            value={selectedScenario}
-                            onChange={e => setSelectedScenario(e.target.value)}
-                            className="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:ring-2 focus:ring-indigo-500 outline-none"
-                        >
-                            {scenarios.map(s => (
-                                <option key={s} value={s}>
-                                    {s === 'generate' ? '✨ Random Generation' : s}
-                                </option>
-                            ))}
-                        </select>
+                        {scenariosLoading ? (
+                            <Skeleton className="w-full h-12" />
+                        ) : (
+                            <select
+                                value={selectedScenario}
+                                onChange={e => setSelectedScenario(e.target.value)}
+                                className="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:ring-2 focus:ring-indigo-500 outline-none"
+                            >
+                                {scenarios.map(s => (
+                                    <option key={s} value={s}>
+                                        {s === 'generate' ? '✨ Random Generation' : s}
+                                    </option>
+                                ))}
+                            </select>
+                        )}
                     </div>
 
-                    {selectedScenario === 'generate' && (
+                    {selectedScenario === 'generate' && !scenariosLoading && (
                         <div className="grid grid-cols-2 gap-6">
                             <div>
                                 <label className="block text-sm font-medium text-gray-400 mb-2">Agent Count</label>
@@ -97,11 +114,11 @@ const Studio = () => {
                     <div className="pt-4 border-t border-gray-700">
                         <button
                             onClick={startJob}
-                            disabled={loading}
+                            disabled={loading || scenariosLoading}
                             className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 rounded-lg flex items-center justify-center gap-3 transition-all transform active:scale-95"
                         >
                             {loading ? <Loader2 className="animate-spin" /> : <Play fill="currentColor" />}
-                            Start Production
+                            {loading ? 'Starting...' : scenariosLoading ? 'Loading...' : 'Start Production'}
                         </button>
                     </div>
                 </div>

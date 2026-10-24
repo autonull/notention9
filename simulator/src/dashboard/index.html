@@ -23,9 +23,14 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         h1 { margin: 0; font-size: 1.2rem; font-weight: 600; }
-        .stats { font-size: 0.9rem; color: #aaa; display: flex; gap: 20px; }
+        .stats { font-size: 0.9rem; color: #aaa; display: flex; gap: 20px; flex-wrap: wrap; }
+        .status-connected { color: #4CAF50; }
+        .status-disconnected { color: #f44336; }
+        .status-connecting { color: #FFC107; }
 
         #main-container {
             display: flex;
@@ -42,6 +47,7 @@
             padding: 10px;
             overflow-y: auto;
             background-color: #111;
+            min-width: 0;
         }
 
         .agent-frame-container {
@@ -84,12 +90,32 @@
             border-bottom: 1px solid #333;
             display: flex;
             justify-content: space-between;
+            align-items: center;
+        }
+
+        .agent-name {
+            font-weight: 600;
+            color: #e0e0e0;
         }
 
         .agent-role {
             font-weight: bold;
             color: #4CAF50;
+            font-size: 0.7rem;
+            background: rgba(76, 175, 80, 0.15);
+            padding: 2px 8px;
+            border-radius: 4px;
         }
+
+        .agent-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #555;
+            transition: background 0.3s;
+        }
+        .agent-status.online { background: #4CAF50; box-shadow: 0 0 8px #4CAF50; }
+        .agent-status.active { background: #FFC107; box-shadow: 0 0 8px #FFC107; }
 
         iframe {
             flex: 1;
@@ -114,7 +140,49 @@
             border-bottom: 1px solid #333;
             font-weight: bold;
             background: #252525;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
         }
+
+        .feed-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .search-box {
+            padding: 4px 10px;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: #e0e0e0;
+            font-size: 0.8rem;
+            width: 180px;
+            outline: none;
+        }
+        .search-box:focus {
+            border-color: #4CAF50;
+        }
+
+        .btn {
+            padding: 4px 10px;
+            background: #333;
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: #e0e0e0;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn:hover { background: #444; border-color: #555; }
+        .btn:active { transform: scale(0.98); }
+        .btn.primary { background: #4CAF50; border-color: #4CAF50; }
+        .btn.primary:hover { background: #45a049; }
+        .btn.danger { background: #d32f2f; border-color: #d32f2f; }
+        .btn.danger:hover { background: #c62828; }
 
         #events-list {
             flex: 1;
@@ -132,31 +200,34 @@
             border-left: 3px solid #666;
             animation: fadeIn 0.3s ease;
         }
-        .event-item.kind-1 { border-color: #2196F3; } /* Note */
-        .event-item.kind-35000 { border-color: #9C27B0; } /* Semantic */
-        .event-item.kind-35001 { border-color: #FFC107; background: #332b00; } /* Explanation */
+        .event-item.kind-1 { border-color: #2196F3; }
+        .event-item.kind-35000 { border-color: #9C27B0; }
+        .event-item.kind-35001 { border-color: #FFC107; background: #332b00; }
+        .event-item.hidden { display: none; }
 
         .timestamp { color: #888; font-size: 0.7rem; float: right; }
-        .content { margin-top: 4px; word-break: break-word; }
+        .event-kind { font-weight: bold; font-size: 0.8rem; margin-bottom: 2px; }
+        .content { margin-top: 4px; word-break: break-word; line-height: 1.4; }
 
         #caption-overlay {
             position: absolute;
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             color: white;
-            padding: 10px 20px;
+            padding: 12px 24px;
             border-radius: 30px;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 500;
             pointer-events: none;
             opacity: 0;
             transition: opacity 0.5s;
             text-align: center;
             max-width: 80%;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
             z-index: 100;
+            backdrop-filter: blur(10px);
         }
 
         #explanation-modal {
@@ -184,9 +255,42 @@
             padding: 10px;
             overflow: auto;
             border-radius: 4px;
+            max-height: 400px;
         }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Mobile responsive */
+        @media (max-width: 1024px) {
+            #main-container {
+                flex-direction: column;
+            }
+            #activity-feed {
+                max-width: none;
+                min-width: 0;
+                border-left: none;
+                border-top: 1px solid #333;
+                max-height: 40vh;
+            }
+            #agent-grid {
+                grid-template-columns: 1fr;
+                min-height: 60vh;
+            }
+            .stats { font-size: 0.8rem; gap: 10px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .event-item, .agent-frame-container, #caption-overlay, #explanation-modal {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
     </style>
 </head>
 <body>
@@ -195,13 +299,21 @@
         <div class="stats">
             <span id="event-count">Events: 0</span>
             <span id="agent-count">Agents: 0</span>
-            <span id="status">Connecting...</span>
+            <span id="status" class="status-connecting">Connecting...</span>
         </div>
     </header>
     <div id="main-container">
         <div id="agent-grid"></div>
         <div id="activity-feed">
-            <div class="feed-header">Relay Activity</div>
+            <div class="feed-header">
+                <span>Relay Activity</span>
+                <div class="feed-controls">
+                    <input type="text" class="search-box" id="event-search" placeholder="Filter events..." aria-label="Filter events">
+                    <button class="btn" id="clear-events" title="Clear event log">Clear</button>
+                    <button class="btn primary" id="export-events" title="Export events as JSON">Export</button>
+                    <button class="btn" id="pause-events" title="Pause/Resume event updates">Pause</button>
+                </div>
+            </div>
             <div id="events-list"></div>
         </div>
         <div id="caption-overlay"></div>
@@ -223,6 +335,7 @@
 
         // Map pubkey (first 8 chars) to DOM element for highlighting
         const agentElements = {};
+        const agentStatusElements = {};
 
         agents.forEach((agent, index) => {
             const container = document.createElement('div');
@@ -234,13 +347,17 @@
 
             container.innerHTML = `
                 <div class="agent-header">
-                    <span class="agent-name">${agent.name}</span>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="agent-status" id="status-${agent.id}"></span>
+                        <span class="agent-name">${agent.name}</span>
+                    </div>
                     <span class="agent-role">${agent.role}</span>
                 </div>
                 <iframe src="${url}" title="${agent.name}"></iframe>
             `;
             grid.appendChild(container);
             agentElements[agent.id] = container;
+            agentStatusElements[agent.id] = document.getElementById(`status-${agent.id}`);
         });
 
         // Audio Context for SFX
@@ -258,7 +375,6 @@
             const now = audioCtx.currentTime;
 
             if (type === 'publish') {
-                // High pitch beep
                 osc.type = 'sine';
                 osc.frequency.setValueAtTime(600, now);
                 osc.frequency.exponentialRampToValueAtTime(300, now + 0.1);
@@ -267,7 +383,6 @@
                 osc.start(now);
                 osc.stop(now + 0.1);
             } else if (type === 'match') {
-                // Major chord arpeggio
                 [440, 554, 659].forEach((freq, i) => {
                     const o = audioCtx.createOscillator();
                     const g = audioCtx.createGain();
@@ -296,17 +411,15 @@
             const target = document.getElementById(`agent-${agentId}`);
 
             if (!agentId || agentId === 'grid' || !target) {
-                // Reset to Grid
                 all.forEach(el => {
                     el.classList.remove('focused', 'hidden');
-                    el.style.display = ''; // Reset flex/grid
+                    el.style.display = '';
                 });
                 grid.style.display = 'grid';
                 showCaption("Camera: Grid View");
                 return;
             }
 
-            // Focus Mode
             showCaption(`Camera: Focused on ${agentId}`);
             all.forEach(el => {
                 if (el.id === `agent-${agentId}`) {
@@ -336,27 +449,76 @@
             clearTimeout(explanationTimeout);
             explanationTimeout = setTimeout(() => {
                 explanationEl.style.opacity = '0';
-            }, 6000); // Show for 6 seconds
+            }, 6000);
         }
 
-        // Connect to Relay
+        // Event Feed Logic
         const statusEl = document.getElementById('status');
         const countEl = document.getElementById('event-count');
         const listEl = document.getElementById('events-list');
-        let eventCount = 0;
+        const searchBox = document.getElementById('event-search');
+        const clearBtn = document.getElementById('clear-events');
+        const exportBtn = document.getElementById('export-events');
+        const pauseBtn = document.getElementById('pause-events');
 
+        let eventCount = 0;
+        let allEvents = [];
+        let paused = false;
+        let searchQuery = '';
+
+        clearBtn.addEventListener('click', () => {
+            allEvents = [];
+            listEl.innerHTML = '';
+            eventCount = 0;
+            countEl.innerText = `Events: 0`;
+        });
+
+        exportBtn.addEventListener('click', () => {
+            const blob = new Blob([JSON.stringify(allEvents, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `simulator-events-${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        pauseBtn.addEventListener('click', () => {
+            paused = !paused;
+            pauseBtn.textContent = paused ? 'Resume' : 'Pause';
+            pauseBtn.classList.toggle('primary', !paused);
+        });
+
+        searchBox.addEventListener('input', (e) => {
+            searchQuery = e.target.value.toLowerCase();
+            filterEvents();
+        });
+
+        function filterEvents() {
+            const items = listEl.querySelectorAll('.event-item');
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.classList.toggle('hidden', !text.includes(searchQuery));
+            });
+        }
+
+        // Connect to Relay
         function connect() {
             const ws = new WebSocket(relayUrl);
 
             ws.onopen = () => {
                 statusEl.innerText = 'Connected';
-                statusEl.style.color = '#4CAF50';
+                statusEl.className = 'status-connected';
                 ws.send(JSON.stringify(['REQ', 'monitor', { limit: 50 }]));
             };
 
             ws.onclose = () => {
                 statusEl.innerText = 'Disconnected';
-                statusEl.style.color = '#f44336';
+                statusEl.className = 'status-disconnected';
+                // Mark all agents as offline
+                Object.values(agentStatusElements).forEach(el => {
+                    if (el) el.className = 'agent-status';
+                });
                 setTimeout(connect, 3000);
             };
 
@@ -370,15 +532,26 @@
         }
 
         function handleEvent(event) {
-            addToList(event);
+            if (!paused) {
+                addToList(event);
+            }
 
             const shortId = event.pubkey.slice(0, 8);
             const el = agentElements[shortId];
+            const statusEl = agentStatusElements[shortId];
 
             // Highlight Agent
             if (el) {
                 el.classList.add('active');
                 setTimeout(() => el.classList.remove('active'), 1000);
+            }
+
+            // Update agent status indicator
+            if (statusEl) {
+                statusEl.className = 'agent-status active';
+                setTimeout(() => {
+                    statusEl.className = 'agent-status online';
+                }, 2000);
             }
 
             // Determine Agent Name
@@ -387,13 +560,11 @@
 
             // Logic by Kind
             if (event.kind === 35000) {
-                // Publish Intent
                 playSound('publish');
                 const inputMethodTag = event.tags.find(t => t[0] === 'input-method');
                 const method = inputMethodTag ? inputMethodTag[1] : 'raw';
                 showCaption(`${name} published an intent via ${method} input.`);
             } else if (event.kind === 35001) {
-                // Explanation Log
                 playSound('match');
                 const explanation = JSON.parse(event.content);
                 showCaption(`${name} found a match!`);
@@ -405,6 +576,10 @@
             eventCount++;
             countEl.innerText = `Events: ${eventCount}`;
 
+            // Store event for export
+            allEvents.push(event);
+            if (allEvents.length > 500) allEvents.shift();
+
             const item = document.createElement('div');
             item.className = `event-item kind-${event.kind}`;
 
@@ -414,20 +589,28 @@
             if (event.kind === 35000) {
                 content = content.length > 100 ? content.slice(0, 100) + '...' : content;
             } else if (event.kind === 35001) {
-                 content = "Match Explanation Details...";
+                content = "Match Explanation Details...";
             }
+
+            const kindLabels = { 1: 'Note', 35000: 'Intent', 35001: 'Match' };
+            const kindLabel = kindLabels[event.kind] || `Kind ${event.kind}`;
 
             item.innerHTML = `
                 <span class="timestamp">${time}</span>
-                <div style="font-weight:bold; font-size:0.8rem">${event.pubkey.slice(0,8)} (Kind ${event.kind})</div>
+                <div class="event-kind">${event.pubkey.slice(0,8)} (${kindLabel})</div>
                 <div class="content">${content}</div>
             `;
 
             listEl.prepend(item);
-            if (listEl.children.length > 50) {
+            if (listEl.children.length > 100) {
                 listEl.lastElementChild.remove();
             }
         }
+
+        // Initialize agent statuses as offline
+        Object.values(agentStatusElements).forEach(el => {
+            if (el) el.className = 'agent-status';
+        });
 
         connect();
     </script>
