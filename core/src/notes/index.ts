@@ -6,5 +6,4 @@ export * from './filter/index.js';
 export * from './conflicts.js';
 export * from './quantities/index.js';
 export * from './propertyExtractor/index.js';
-export * from './queryBuilder.js';
 export * from './NoteIntentInferencer.js';

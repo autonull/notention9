@@ -41,10 +41,6 @@ function generateReferenceContent(node: OntologyNode): string {
         const required = node.requiredAttributes || [];
         const relevantKeys = [...required];
 
-        // Also add a few non-required ones if they seem important? 
-        // For now let's just do required + maybe others later.
-        // But we should prioritize required ones.
-
         Object.keys(node.attributes).filter(key => required.includes(key)).forEach(key => {
             const attr = node.attributes![key];
             content += `<p>${propertyToHtml({
@@ -60,16 +56,6 @@ function generateReferenceContent(node: OntologyNode): string {
 }
 
 function getNodeIcon(node: OntologyNode): string {
-    // Try to find an icon in attributes (sometimes stored there in current ontology)
-    // Or just use a default
-    // In the updated Ontology definition, nodes don't strictly have icons, but attributes do.
-    // However, the example usage implies nodes have icons or we infer them.
-    // Let's check if the node has an icon property we missed in types or just use a default.
-
-    // Re-checking types: OntologyNode doesn't explicitly have 'icon' in the interface I read earlier,
-    // but the DEFAULT_ONTOLOGY might have them or we can infer from label.
-
-    // Quick heuristic map
     const iconMap: Record<string, string> = {
         'Job Request': '💼',
         'Post Job': '💼',
