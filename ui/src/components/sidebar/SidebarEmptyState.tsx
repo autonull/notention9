@@ -1,5 +1,5 @@
 import React from 'react';
-import {NoteIcon, PlusIcon, SparklesIcon, TrashIcon, SearchIcon} from '../common/icons';
+import {PlusIcon, SparklesIcon, SearchIcon} from '../common/icons';
 import {Button} from '../ui/Primitives';
 import {EmptyState, NotesEmptyIllustration, SearchEmptyIllustration, TrashEmptyIllustration} from '../common/EmptyState';
 import {useDemoWorkspace} from '../../hooks/useDemoWorkspace';

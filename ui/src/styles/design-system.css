@@ -184,6 +184,12 @@ body {
   box-shadow: var(--focus-ring);
 }
 
+/* Active/Pressed state */
+.btn:active:not(:disabled) {
+  transform: scale(0.98);
+  transition: transform 50ms ease;
+}
+
 /* Variants */
 .btn-primary {
   background-color: var(--color-brand-primary);
@@ -194,6 +200,11 @@ body {
 .btn-primary:hover:not(:disabled) {
   background-color: var(--color-brand-primary-hover);
   border-color: var(--color-brand-primary-hover);
+  box-shadow: 0 4px 12px -2px var(--color-brand-primary);
+}
+
+.btn-primary:active:not(:disabled) {
+  background-color: var(--color-brand-primary-muted);
 }
 
 .btn-secondary {
@@ -207,6 +218,10 @@ body {
   border-color: var(--color-border-strong);
 }
 
+.btn-secondary:active:not(:disabled) {
+  background-color: var(--color-border);
+}
+
 .btn-ghost {
   background-color: transparent;
   color: var(--color-text-muted);
@@ -218,6 +233,10 @@ body {
   color: var(--color-text);
 }
 
+.btn-ghost:active:not(:disabled) {
+  background-color: var(--color-bg-elevated);
+}
+
 .btn-danger {
   background-color: var(--color-brand-danger);
   color: white;
@@ -227,6 +246,11 @@ body {
 .btn-danger:hover:not(:disabled) {
   background-color: #b91c1c;
   border-color: #b91c1c;
+  box-shadow: 0 4px 12px -2px var(--color-brand-danger);
+}
+
+.btn-danger:active:not(:disabled) {
+  background-color: #991b1b;
 }
 
 .btn-success {
@@ -238,6 +262,49 @@ body {
 .btn-success:hover:not(:disabled) {
   background-color: #15803d;
   border-color: #15803d;
+  box-shadow: 0 4px 12px -2px var(--color-brand-success);
+}
+
+.btn-success:active:not(:disabled) {
+  background-color: #166534;
+}
+
+/* Outline variant */
+.btn-outline {
+  background-color: transparent;
+  color: var(--color-brand-primary);
+  border-color: var(--color-brand-primary);
+}
+
+.btn-outline:hover:not(:disabled) {
+  background-color: var(--color-brand-primary);
+  color: white;
+}
+
+.btn-outline:active:not(:disabled) {
+  background-color: var(--color-brand-primary-hover);
+}
+
+/* Sizes */
+.btn-xs {
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-xs);
+  gap: var(--space-1);
+}
+
+.btn-sm {
+  padding: var(--space-1.5) var(--space-3);
+  font-size: var(--text-sm);
+}
+
+.btn-md {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-sm);
+}
+
+.btn-lg {
+  padding: var(--space-3) var(--space-6);
+  font-size: var(--text-base);
 }
 
 /* Sizes */
@@ -275,8 +342,30 @@ body {
   box-shadow: var(--shadow-lg);
 }
 
+.card-hover:active {
+  transform: scale(0.99);
+  transition: transform 50ms ease;
+}
+
 .card-elevated {
   box-shadow: var(--shadow-xl);
+}
+
+/* Interactive card with press state */
+.card-interactive {
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.card-interactive:hover {
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.card-interactive:active {
+  transform: translateY(0) scale(0.995);
+  transition: transform 30ms ease;
 }
 
 /* Input */
@@ -435,6 +524,27 @@ body {
   50% { opacity: 0.6; }
 }
 
+@keyframes ripple {
+  from {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 .animate-fade-in {
   animation: fade-in var(--transition-base) ease-out forwards;
 }
@@ -454,6 +564,48 @@ body {
 .animate-pulse-subtle {
   animation: pulse-subtle 2s ease-in-out infinite;
 }
+
+.animate-shimmer {
+  background: linear-gradient(90deg, var(--color-bg-tertiary) 25%, var(--color-bg-elevated) 50%, var(--color-bg-tertiary) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Ripple effect for touch feedback */
+.ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.15;
+  pointer-events: none;
+  animation: ripple 600ms ease-out;
+}
+
+/* Press state for touch devices */
+.pressable:active {
+  transform: scale(0.98);
+  transition: transform 50ms ease;
+}
+
+/* Staggered animation delays */
+.stagger-1 { animation-delay: 50ms; }
+.stagger-2 { animation-delay: 100ms; }
+.stagger-3 { animation-delay: 150ms; }
+.stagger-4 { animation-delay: 200ms; }
+.stagger-5 { animation-delay: 250ms; }
+.stagger-6 { animation-delay: 300ms; }
+.stagger-7 { animation-delay: 350ms; }
+.stagger-8 { animation-delay: 400ms; }
 
 /* Layout utilities */
 .flex-center {

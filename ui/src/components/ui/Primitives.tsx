@@ -103,7 +103,8 @@ export function IconButton({
                 variantClass,
                 sizeClass,
                 disabled && 'opacity-40 cursor-not-allowed',
-                className
+                className,
+                'active:scale-[0.95] transition-transform duration-50'
             )}
             disabled={disabled}
             title={tooltip ? undefined : title}
