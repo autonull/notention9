@@ -8,6 +8,8 @@ export * from './Overlay';
 export * from './VirtualizedList';
 export * from './EnhancedCommandPalette';
 export * from './SmartSearch';
+export * from './ContextualHint';
+export * from './Skeleton';
 
 // Re-export commonly used types
 export type {ButtonProps, IconButtonProps, CardProps, InputProps, BadgeProps, AvatarProps, ModalProps, ToastProps, ToastContainerProps} from './Primitives';

@@ -8,25 +8,28 @@ import {SortSelector} from './SortSelector';
 import {ViewSelector} from './ViewSelector';
 import {NoteGridItem} from './NoteGridItem';
 import {SidebarEmptyState} from './SidebarEmptyState';
-import {PlusIcon, ChevronLeftIcon, GridIcon, ListIcon, NoteIcon, TrashIcon} from '../common/icons';
+import {PlusIcon, ChevronLeftIcon, ChevronRightIcon, GridIcon, ListIcon, NoteIcon, TrashIcon, GripVerticalIcon, SearchIcon, SparklesIcon, FilterIcon} from '../common/icons';
 import {useSidebarLogic} from './useSidebarLogic';
 import {IconButton} from '../ui/Primitives';
 import {cn} from '../../utils/ui';
 import {VirtualizedList} from '../ui/VirtualizedList';
 import {useTouchGestures} from '../../hooks/useTouchGestures';
 import {Skeleton, NoteItemSkeleton, SidebarSkeleton} from '../ui/Skeleton';
-import {EmptyState} from '../common/EmptyState';
+import {EmptyState, NotesEmptyIllustration, SearchEmptyIllustration, TrashEmptyIllustration} from '../common/EmptyState';
 
 interface SidebarProps {
     sortedNotes?: Note[];
     onToggleSidebar?: () => void;
     isSidebarOpen?: boolean;
     isLoading?: boolean;
+    sidebarWidth?: number;
+    isCollapsed?: boolean;
 }
 
 const ITEM_HEIGHT = 84;
+const SIDEBAR_COLLAPSED_WIDTH = 48;
 
-export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true, isLoading = false}: SidebarProps) {
+export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true, isLoading = false, sidebarWidth = 320, isCollapsed = false}: SidebarProps) {
     const {
         searchTerm,
         setSearchTerm,
@@ -134,36 +137,38 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
         return sortedNotes.filter(note => note.pinned);
     }, [sortedNotes, showPinnedOnly]);
 
+    const showFullContent = isSidebarOpen && !isCollapsed && sidebarWidth > SIDEBAR_COLLAPSED_WIDTH;
+
     return (
         <div className={cn('bg-gray-900 flex flex-col h-full transition-all duration-300 ease-in-out')}>
             <div className={cn(
-                'flex-shrink-0 border-b border-gray-700/50 bg-gray-900/95 backdrop-blur-sm sticky top-0 z-10',
-                isSidebarOpen ? 'p-3 space-y-3' : 'p-2 space-y-2'
+                'flex-shrink-0 border-b border-gray-700/50 bg-gray-900/95 backdrop-blur-sm sticky top-0 z-10 transition-all duration-200',
+                showFullContent ? 'p-3 space-y-3' : 'p-2 space-y-2 items-center'
             )}>
-                <div className="flex items-center gap-2">
-                    <div className={cn('flex-grow relative group transition-all duration-200', !isSidebarOpen && 'w-10')}>
+                <div className={cn('flex items-center gap-2 w-full', showFullContent ? '' : 'justify-center')}>
+                    <div className={cn('flex-grow relative group transition-all duration-200', !showFullContent && 'w-10')}>
                         <Search
                             ref={searchInputRef}
                             searchTerm={searchTerm}
                             setSearchTerm={setSearchTerm}
                             onFocus={focusSearch}
-                            placeholder={isSidebarOpen ? 'Search notes...' : ''}
+                            placeholder={showFullContent ? 'Search notes...' : ''}
                             aria-label="Search notes"
                         />
                     </div>
-                    {!isSidebarOpen && onToggleSidebar && (
+                    {!showFullContent && onToggleSidebar && (
                         <IconButton
                             onClick={onToggleSidebar}
-                            tooltip="Expand Sidebar"
+                            tooltip={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
                             tooltipPosition="right"
-                            icon={ChevronLeftIcon}
+                            icon={isCollapsed ? ChevronRightIcon : ChevronLeftIcon}
                             variant="ghost"
                             size="md"
                             className="flex-shrink-0 touch-target-48"
-                            aria-label="Expand sidebar"
+                            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
                         />
                     )}
-                    {isSidebarOpen && (
+                    {showFullContent && (
                         <IconButton
                             onClick={() => handleCreateNote()}
                             tooltip="New Note (Ctrl+N)"
@@ -177,11 +182,11 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
                     )}
                 </div>
 
-                {isSidebarOpen && (
+                {showFullContent && (
                     <>
                         <div className="flex items-center gap-2 overflow-hidden" role="group" aria-label="View and filter options">
                             <div className="flex-grow min-w-0">
-                                <FilterBar searchTerm={searchTerm} onSetSearch={setSearchTerm}/>
+                                <FilterBar searchTerm={searchTerm} onSetSearch={setSearchTerm} notes={sortedNotes}/>
                             </div>
                             <div className="flex items-center gap-1 border-l border-gray-700/50 pl-2">
                                 <ViewSelector viewMode={sidebarViewMode} onViewChange={setSidebarViewMode}/>
@@ -241,31 +246,45 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
                         </div>
                     ) : (
                         <EmptyState
-                            icon={isTrashView ? TrashIcon : NoteIcon}
+                            variant="illustrated"
+                            illustration={searchTerm ? <SearchEmptyIllustration/> : isTrashView ? <TrashEmptyIllustration/> : <NotesEmptyIllustration/>}
                             title={isTrashView ? 'Trash is empty' : searchTerm ? 'No matching notes' : 'No notes yet'}
                             description={searchTerm
                                 ? 'Try adjusting your search or filters.'
                                 : isTrashView
                                     ? 'Deleted notes will appear here.'
                                     : 'Create your first note to get started.'}
-                            actions={!isTrashView && !searchTerm ? [
-                                {label: 'Create note', onClick: handleCreateNote, variant: 'primary', leftIcon: <PlusIcon className="w-4 h-4"/>},
-                            ] : undefined}
+                            actions={!isTrashView && !searchTerm ? (
+                                <button
+                                    onClick={handleCreateNote}
+                                    className="w-full max-w-xs inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-500 transition-colors touch-target"
+                                >
+                                    <PlusIcon className="w-4 h-4"/>
+                                    Create note
+                                </button>
+                            ) : undefined}
                             className="h-full flex-grow"
                         />
                     )
                 ) : (
                     <EmptyState
-                        icon={isTrashView ? TrashIcon : NoteIcon}
+                        variant="illustrated"
+                        illustration={searchTerm ? <SearchEmptyIllustration/> : isTrashView ? <TrashEmptyIllustration/> : <NotesEmptyIllustration/>}
                         title={isTrashView ? 'Trash is empty' : searchTerm ? 'No matching notes' : 'No notes yet'}
                         description={searchTerm
                             ? 'Try adjusting your search or filters.'
                             : isTrashView
                                 ? 'Deleted notes will appear here.'
                                 : 'Create your first note to get started.'}
-                        actions={!isTrashView && !searchTerm ? [
-                            {label: 'Create note', onClick: handleCreateNote, variant: 'primary', leftIcon: <PlusIcon className="w-4 h-4"/>},
-                        ] : undefined}
+                        actions={!isTrashView && !searchTerm ? (
+                            <button
+                                onClick={handleCreateNote}
+                                className="w-full max-w-xs inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-500 transition-colors touch-target"
+                            >
+                                <PlusIcon className="w-4 h-4"/>
+                                Create note
+                            </button>
+                        ) : undefined}
                         className="h-full flex-grow"
                     />
                 )}

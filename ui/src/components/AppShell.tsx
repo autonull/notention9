@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useMemo, useCallback} from 'react';
+import React, {useEffect, useState, useMemo, useCallback, useRef} from 'react';
 import {Header} from './layout/Header';
 import {MobileNavigation} from './layout/MobileNavigation';
 import {EnhancedCommandPalette} from './ui/EnhancedCommandPalette';
@@ -6,6 +6,7 @@ import {Sidebar} from './sidebar';
 import {MainView} from './MainView';
 import {SelectorRegistryProvider} from './properties/SelectorRegistry';
 import {KeyboardShortcutsHelp} from './common/KeyboardShortcutsHelp';
+import {ContextualHint} from './ui/ContextualHint';
 import {PlusIcon, NoteIcon} from './common/icons';
 
 import {useNotes} from '../hooks/useNotes';
@@ -17,6 +18,9 @@ import {HelpDialog} from './modals/HelpDialog';
 import {ConnectivityBanner} from './layout/ConnectivityBanner';
 import {useToast} from '../hooks/useToast';
 import {cn} from '../utils/ui';
+
+const SIDEBAR_WIDTH = 320;
+const SIDEBAR_COLLAPSED_WIDTH = 48;
 
 export function AppShell() {
     const {addNote, getSortedFilteredNotes, loading: notesLoading} = useNotes();
@@ -50,6 +54,10 @@ export function AppShell() {
 
     const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
     const [isShortcutsHelpOpen, setIsShortcutsHelpOpen] = useState(false);
+    const [sidebarWidth, setSidebarWidth] = useState(SIDEBAR_WIDTH);
+    const [isResizing, setIsResizing] = useState(false);
+    const resizeStartRef = useRef({x: 0, width: SIDEBAR_WIDTH});
+    const mainContentRef = useRef<HTMLMainElement>(null);
 
     useEffect(() => {
         const handleStorageError = (event: Event) => {
@@ -70,6 +78,44 @@ export function AppShell() {
         setSelectedNoteId(newNote.id);
         setActiveView('notes');
     }, [addNote, setSelectedNoteId, setActiveView]);
+
+    const handleResizeMoveRef = useRef<(e: MouseEvent) => void>();
+    const handleResizeEndRef = useRef<() => void>();
+
+    const handleResizeStart = useCallback((e: React.MouseEvent) => {
+        e.preventDefault();
+        setIsResizing(true);
+        resizeStartRef.current = {x: e.clientX, width: sidebarWidth};
+        document.addEventListener('mousemove', handleResizeMoveRef.current!);
+        document.addEventListener('mouseup', handleResizeEndRef.current!);
+    }, [sidebarWidth]);
+
+    handleResizeMoveRef.current = useCallback((e: MouseEvent) => {
+        if (!isResizing) return;
+        const newWidth = Math.min(Math.max(resizeStartRef.current.width - (e.clientX - resizeStartRef.current.x), SIDEBAR_COLLAPSED_WIDTH), 600);
+        setSidebarWidth(newWidth);
+    }, [isResizing]);
+
+    handleResizeEndRef.current = useCallback(() => {
+        if (!isResizing) return;
+        setIsResizing(false);
+        document.removeEventListener('mousemove', handleResizeMoveRef.current!);
+        document.removeEventListener('mouseup', handleResizeEndRef.current!);
+    }, [isResizing]);
+
+    const toggleSidebar = useCallback(() => {
+        if (window.innerWidth < 768) {
+            setMobileSidebarOpen(!mobileSidebarOpen);
+        } else {
+            if (isSidebarOpen && sidebarWidth > SIDEBAR_COLLAPSED_WIDTH) {
+                setSidebarWidth(SIDEBAR_COLLAPSED_WIDTH);
+                setIsSidebarOpen(false);
+            } else {
+                setSidebarWidth(SIDEBAR_WIDTH);
+                setIsSidebarOpen(true);
+            }
+        }
+    }, [isSidebarOpen, sidebarWidth, mobileSidebarOpen, setIsSidebarOpen, setMobileSidebarOpen]);
 
     useKeyboardShortcuts({
         onNewNote: handleNewNote,
@@ -117,13 +163,7 @@ export function AppShell() {
                 setActiveView('notes');
             }
         },
-        onToggleSidebar: () => {
-            if (window.innerWidth < 768) {
-                setMobileSidebarOpen(!mobileSidebarOpen);
-            } else {
-                setIsSidebarOpen(!isSidebarOpen);
-            }
-        },
+        onToggleSidebar: toggleSidebar,
         onEscape: () => {
             setIsPaletteOpen(false);
             setIsHelpOpen(false);
@@ -135,25 +175,21 @@ export function AppShell() {
 
     const isMobileNoteList = activeView === 'notes' && !selectedNoteId;
     const isMobile = window.innerWidth < 768;
+    const effectiveSidebarOpen = isMobile ? mobileSidebarOpen : isSidebarOpen;
+    const effectiveSidebarWidth = isMobile ? (mobileSidebarOpen ? SIDEBAR_WIDTH : 0) : (isSidebarOpen ? sidebarWidth : 0);
 
     const sidebarClasses = cn(
         'flex-shrink-0 bg-gray-900 border-r border-gray-700/50 transition-all duration-300 ease-in-out',
         isMobileNoteList ? 'w-full block' : 'hidden md:block',
-        isMobile ? (mobileSidebarOpen ? 'w-[320px]' : 'w-0 border-r-0 overflow-hidden') : (isSidebarOpen ? 'md:w-[320px]' : 'md:w-0 md:border-r-0 overflow-hidden')
+        `w-[${effectiveSidebarWidth}px]`,
+        effectiveSidebarWidth === 0 && 'border-r-0 overflow-hidden',
+        isResizing && 'select-none'
     );
 
     const mainClasses = cn(
         'flex-1 overflow-hidden pb-20 md:pb-0',
         isMobileNoteList ? 'hidden md:block' : 'block'
     );
-
-    const toggleSidebar = () => {
-        if (isMobile) {
-            setMobileSidebarOpen(!mobileSidebarOpen);
-        } else {
-            setIsSidebarOpen(!isSidebarOpen);
-        }
-    };
 
     return (
         <SelectorRegistryProvider>
@@ -167,14 +203,34 @@ export function AppShell() {
                 <Header onNewNote={handleNewNote}/>
                 <ConnectivityBanner/>
                 <div className="flex flex-1 overflow-hidden relative">
-                    <div className={sidebarClasses}>
+                    <div className={sidebarClasses} style={{width: `${effectiveSidebarWidth}px`}}>
                         <Sidebar
                             sortedNotes={sortedNotes}
                             onToggleSidebar={toggleSidebar}
-                            isSidebarOpen={isMobile ? mobileSidebarOpen : isSidebarOpen}
+                            isSidebarOpen={effectiveSidebarOpen}
                             isLoading={notesLoading}
+                            sidebarWidth={sidebarWidth}
+                            isCollapsed={!isSidebarOpen && !isMobile}
                         />
                     </div>
+
+                    {!isMobile && isSidebarOpen && sidebarWidth > SIDEBAR_COLLAPSED_WIDTH && (
+                        <div
+                            className="absolute top-16 bottom-0 w-1 cursor-col-resize z-10 hover:bg-blue-500/30 transition-colors"
+                            style={{left: `${sidebarWidth}px`}}
+                            onMouseDown={handleResizeStart}
+                            aria-label="Resize sidebar"
+                            role="separator"
+                            tabIndex={0}
+                            onKeyDown={(e) => {
+                                if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                                    e.preventDefault();
+                                    const newWidth = Math.min(Math.max(sidebarWidth + (e.key === 'ArrowRight' ? 20 : -20), SIDEBAR_COLLAPSED_WIDTH), 600);
+                                    setSidebarWidth(newWidth);
+                                }
+                            }}
+                        />
+                    )}
 
                     {isMobile && mobileSidebarOpen && (
                         <div
@@ -184,7 +240,7 @@ export function AppShell() {
                         />
                     )}
 
-                    <main id="main-content" className={mainClasses}>
+                    <main id="main-content" ref={mainContentRef} className={mainClasses}>
                         <MainView sortedNotes={sortedNotes}/>
                     </main>
                 </div>
@@ -231,6 +287,7 @@ export function AppShell() {
                     showRecent={true}
                     fuzzySearch={true}
                 />
+                <ContextualHint/>
                 <HelpDialog
                     isOpen={isHelpOpen}
                     onClose={() => setIsHelpOpen(false)}

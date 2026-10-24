@@ -2,7 +2,7 @@ import React, {useEffect, useMemo, useRef, useState, useCallback} from 'react';
 import {cn} from '../../utils/ui';
 import {CommandPaletteItem} from './Overlay';
 import {useFocusTrap} from './Overlay';
-import {SearchSparkleIcon, XIcon, ArrowRightIcon, ClockIcon} from '../common/icons';
+import {SearchSparkleIcon, XIcon, ArrowRightIcon, ClockIcon, ChevronDownIcon} from '../common/icons';
 
 const RECENT_STORAGE_KEY = 'notention-command-palette-recent';
 
@@ -143,8 +143,16 @@ export function EnhancedCommandPalette({
     const [recentItems, setRecentItems] = useState<CommandPaletteItem[]>(() => 
         persistRecent ? loadRecentItems() : initialRecentItems
     );
+    const [isMobile, setIsMobile] = useState(false);
 
     const contentRef = useFocusTrap(isOpen, onClose);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     useEffect(() => {
         if (initialRecentItems.length > 0 && !persistRecent) {
@@ -284,9 +292,15 @@ export function EnhancedCommandPalette({
     const isEmptyQuery = !query.trim();
     const showEmptyState = isEmptyQuery && !showHelp && (!showRecent || recentItems.length === 0);
 
+    const containerStyle = isMobile ? 'fixed inset-0 z-[600] bg-black/70 backdrop-blur-sm animate-fade-in' : 'fixed inset-0 z-[600] flex items-start justify-center pt-[10vh] bg-black/70 backdrop-blur-sm animate-fade-in';
+    const dialogStyle = isMobile ? 'bg-gray-800 rounded-t-2xl shadow-2xl border border-gray-700 w-full overflow-hidden flex flex-col h-full animate-slide-in-up' : 'bg-gray-800 rounded-xl shadow-2xl border border-gray-700 w-full max-w-3xl overflow-hidden flex flex-col max-h-[70vh] animate-slide-in-up';
+    const contentPadding = isMobile ? 'p-4' : 'p-2';
+    const itemPadding = isMobile ? 'p-4' : 'p-3';
+    const fontSize = isMobile ? 'text-base' : 'text-sm';
+
     return (
         <div
-            className="fixed inset-0 z-[600] flex items-start justify-center pt-[10vh] bg-black/70 backdrop-blur-sm animate-fade-in"
+            className={containerStyle}
             onClick={onClose}
             role="dialog"
             aria-modal="true"
@@ -295,10 +309,7 @@ export function EnhancedCommandPalette({
             <div
                 ref={contentRef}
                 tabIndex={-1}
-                className={cn(
-                    'bg-gray-800 rounded-xl shadow-2xl border border-gray-700 w-full max-w-3xl overflow-hidden flex flex-col max-h-[70vh] animate-slide-in-up',
-                    className
-                )}
+                className={cn(dialogStyle, className)}
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="flex items-center p-4 border-b border-gray-700/50">
@@ -310,7 +321,7 @@ export function EnhancedCommandPalette({
                         <input
                             ref={inputRef}
                             type="text"
-                            className="w-full bg-transparent pl-10 pr-12 py-2.5 text-lg text-white placeholder-gray-500 focus:outline-none"
+                            className="w-full bg-transparent pl-10 pr-12 py-3 text-lg text-white placeholder-gray-500 focus:outline-none"
                             placeholder={placeholder}
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
@@ -320,23 +331,24 @@ export function EnhancedCommandPalette({
                             aria-autocomplete="list"
                             aria-controls="command-palette-list"
                             aria-activedescendant={filteredItems[selectedIndex]?.id}
+                            autoFocus
                         />
                         {query && (
                             <button
                                 onClick={() => setQuery('')}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-500 hover:text-gray-200 rounded-full hover:bg-gray-700 transition-colors"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-gray-500 hover:text-gray-200 rounded-full hover:bg-gray-700 transition-colors touch-target"
                                 aria-label="Clear search"
                             >
-                                <XIcon className="w-4 h-4" />
+                                <XIcon className="w-5 h-5" />
                             </button>
                         )}
-                        <kbd className="absolute right-10 top-1/2 -translate-y-1/2 text-xs text-gray-500 bg-gray-700 px-1.5 rounded">Esc</kbd>
+                        <kbd className="absolute right-12 top-1/2 -translate-y-1/2 text-xs text-gray-500 bg-gray-700 px-2 py-1 rounded touch-target">Esc</kbd>
                     </div>
                 </div>
 
                 <div
                     id="command-palette-list"
-                    className="overflow-y-auto flex-1 p-2 space-y-1 custom-scrollbar"
+                    className={`${contentPadding} overflow-y-auto flex-1 space-y-1 custom-scrollbar`}
                     role="listbox"
                     aria-label="Commands and notes"
                 >
@@ -388,7 +400,7 @@ export function EnhancedCommandPalette({
                                         <span>Recent ({recentItems.length})</span>
                                         <button
                                             onClick={() => handleRecentChange([])}
-                                            className="text-xs text-gray-500 hover:text-gray-300 px-2 py-0.5 rounded transition-colors"
+                                            className="text-xs text-gray-500 hover:text-gray-300 px-2 py-0.5 rounded transition-colors touch-target"
                                             aria-label="Clear recent items"
                                         >
                                             Clear
@@ -400,13 +412,13 @@ export function EnhancedCommandPalette({
                                             onClick={() => handleItemClick(item)}
                                             onMouseEnter={() => setSelectedIndex(index)}
                                             className={cn(
-                                                'w-full flex items-center p-3 rounded-lg transition-colors',
+                                                'w-full flex items-center touch-target transition-colors',
                                                 selectedIndex === index ? 'bg-blue-600/20 border border-blue-500/50' : 'hover:bg-gray-700/50'
                                             )}
                                             role="option"
                                             aria-selected={selectedIndex === index}
                                         >
-                                            <div className={cn('mr-4 flex-shrink-0 w-5 h-5', selectedIndex === index ? 'text-blue-400' : 'text-gray-400')}>
+                                            <div className={cn('mr-4 flex-shrink-0 w-6 h-6', selectedIndex === index ? 'text-blue-400' : 'text-gray-400')}>
                                                 {item.icon}
                                             </div>
                                             <div className="flex-1 min-w-0 text-left">
@@ -435,7 +447,7 @@ export function EnhancedCommandPalette({
                                     </div>
                                     <div className="space-y-2 px-3">
                                         {DEFAULT_SHORTCUTS.map((shortcut) => (
-                                            <div key={shortcut.keys.join('+')} className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-700/50 transition-colors">
+                                            <div key={shortcut.keys.join('+')} className="flex items-center justify-between px-3 py-3 rounded-lg hover:bg-gray-700/50 transition-colors touch-target">
                                                 <span className="text-sm text-gray-300">{shortcut.label}</span>
                                                 <kbd className="text-[10px] font-mono px-1.5 py-0.5 bg-gray-700 text-gray-400 rounded uppercase tracking-wider">
                                                     {shortcut.keys.join(' + ')}
@@ -455,7 +467,7 @@ export function EnhancedCommandPalette({
                             </div>
                             <div className="space-y-3 px-3">
                                 {DEFAULT_SHORTCUTS.map((shortcut) => (
-                                    <div key={shortcut.keys.join('+')} className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-700/50 transition-colors">
+                                    <div key={shortcut.keys.join('+')} className="flex items-center justify-between px-3 py-3 rounded-lg hover:bg-gray-700/50 transition-colors touch-target">
                                         <span className="text-sm text-gray-300">{shortcut.label}</span>
                                         <kbd className="text-[10px] font-mono px-1.5 py-0.5 bg-gray-700 text-gray-400 rounded uppercase tracking-wider">
                                             {shortcut.keys.join(' + ')}
@@ -488,14 +500,14 @@ export function EnhancedCommandPalette({
                                     onClick={() => handleItemClick(item)}
                                     onMouseEnter={() => setSelectedIndex(displayIndex)}
                                     className={cn(
-                                        'w-full flex items-center p-3 rounded-lg transition-colors',
+                                        'w-full flex items-center touch-target transition-colors',
                                         displayIndex === selectedIndex ? 'bg-blue-600/20 border border-blue-500/50' : 'hover:bg-gray-700/50'
                                     )}
                                     role="option"
                                     aria-selected={displayIndex === selectedIndex}
                                     id={item.id}
                                 >
-                                    <div className={cn('mr-4 flex-shrink-0 w-5 h-5', displayIndex === selectedIndex ? 'text-blue-400' : 'text-gray-400')}>
+                                    <div className={cn('mr-4 flex-shrink-0 w-6 h-6', displayIndex === selectedIndex ? 'text-blue-400' : 'text-gray-400')}>
                                         {item.icon}
                                     </div>
                                     <div className="flex-1 min-w-0 text-left">
@@ -519,14 +531,14 @@ export function EnhancedCommandPalette({
                     })}
                 </div>
 
-                <div className="p-2 border-t border-gray-700/50 text-xs text-gray-500 flex flex-wrap gap-4 justify-between px-4 py-2 bg-gray-900/30">
+                <div className={`p-2 border-t border-gray-700/50 text-xs text-gray-500 flex flex-wrap gap-4 justify-between ${isMobile ? 'px-4 py-3' : 'px-4 py-2'} bg-gray-900/30`}>
                     <span>↑↓ navigate · ↵ select · Esc close · ? help</span>
                     <div className="flex items-center gap-4">
                         {query && <span>{filteredItems.length} result{filteredItems.length !== 1 ? 's' : ''}</span>}
                         {showRecent && recentItems.length > 0 && !query && (
                             <button
                                 onClick={() => handleRecentChange([])}
-                                className="text-gray-400 hover:text-gray-200 underline transition-colors"
+                                className="text-gray-400 hover:text-gray-200 underline transition-colors touch-target"
                             >
                                 Clear recent
                             </button>
