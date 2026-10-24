@@ -1,6 +1,7 @@
 import React, {useMemo} from 'react';
-import {CheckCircleIcon, ClockIcon, LightBulbIcon, NoteIcon, UserGroupIcon, TrashIcon, PlusIcon, TagIcon} from '../common/icons';
+import {CheckCircleIcon, ClockIcon, LightBulbIcon, NoteIcon, UserGroupIcon, PlusIcon, TagIcon, DownloadIcon} from '../common/icons';
 import type {Note} from '@notention/core';
+import type {ComponentType} from 'react';
 import {cn} from '../../utils/ui';
 
 interface FilterBarProps {
@@ -16,7 +17,7 @@ const BASE_FILTERS = [
     {id: 'people', label: 'People', icon: UserGroupIcon, query: 'type:person'},
 ] as const;
 
-function getDynamicFilters(notes: Note[] = []): {id: string; label: string; icon: React.FC<any>; query: string}[] {
+function getDynamicFilters(notes: Note[] = []): {id: string; label: string; icon: ComponentType<{className?: string}>; query: string}[] {
     if (!notes.length) return [];
 
     const typeCounts = new Map<string, number>();
@@ -35,7 +36,7 @@ function getDynamicFilters(notes: Note[] = []): {id: string; label: string; icon
         }
     }
 
-    const dynamicFilters: {id: string; label: string; icon: React.FC<any>; query: string}[] = [];
+    const dynamicFilters: {id: string; label: string; icon: ComponentType<{className?: string}>; query: string}[] = [];
 
     // Add type-based filters that have notes
     for (const [type, count] of typeCounts.entries()) {

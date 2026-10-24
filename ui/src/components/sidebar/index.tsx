@@ -7,14 +7,13 @@ import {FilterBar} from './FilterBar';
 import {SortSelector} from './SortSelector';
 import {ViewSelector} from './ViewSelector';
 import {NoteGridItem} from './NoteGridItem';
-import {SidebarEmptyState} from './SidebarEmptyState';
-import {PlusIcon, ChevronLeftIcon, ChevronRightIcon, GridIcon, ListIcon, NoteIcon, TrashIcon, GripVerticalIcon, SearchIcon, SparklesIcon, FilterIcon} from '../common/icons';
+import {PlusIcon, ChevronLeftIcon, ChevronRightIcon} from '../common/icons';
 import {useSidebarLogic} from './useSidebarLogic';
 import {IconButton} from '../ui/Primitives';
 import {cn} from '../../utils/ui';
 import {VirtualizedList} from '../ui/VirtualizedList';
 import {useTouchGestures} from '../../hooks/useTouchGestures';
-import {Skeleton, NoteItemSkeleton, SidebarSkeleton} from '../ui/Skeleton';
+import {SidebarSkeleton} from '../ui/Skeleton';
 import {EmptyState, NotesEmptyIllustration, SearchEmptyIllustration, TrashEmptyIllustration} from '../common/EmptyState';
 
 interface SidebarProps {
@@ -51,16 +50,11 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
         refreshUserLocation
     } = useSidebarLogic(sortedNotes);
 
-    const listRef = useRef<HTMLDivElement>(null);
     const searchInputRef = useRef<HTMLInputElement>(null);
     const virtualListRef = useRef<{scrollToIndex: (index: number, align?: 'start' | 'center' | 'end') => void}>(null);
-    const [focusedIndex, setFocusedIndex] = useState(-1);
+    const [focusedIndex] = useState(-1);
     const [isMobile, setIsMobile] = useState(false);
     const [showPinnedOnly, setShowPinnedOnly] = useState(false);
-
-    if (isLoading) {
-        return <SidebarSkeleton/>;
-    }
 
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -74,10 +68,6 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
             refreshUserLocation();
         }
     }, [sortOrder, userLocation, refreshUserLocation]);
-
-    const handleTagClick = useCallback((tag: string) => {
-        setSearchTerm(`#${tag}`);
-    }, [setSearchTerm]);
 
     const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
         if (e.key === 'Escape') {
@@ -100,8 +90,8 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
         searchInputRef.current?.focus();
     }, []);
 
-    const getItemKey = useCallback((note: Note, index: number) => note.id, []);
-    const renderItem = useCallback((note: Note, index: number, isSelected: boolean) => (
+    const getItemKey = useCallback((note: Note, _index: number) => note.id, []);
+    const renderItem = useCallback((note: Note, _index: number, isSelected: boolean) => (
         <NoteListItem
             key={note.id}
             note={note}
@@ -113,7 +103,7 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
             onRestore={() => handleRestore(note.id)}
             searchTerm={searchTerm}
         />
-    ), [selectedNoteId, setSelectedNoteId, handleDeleteRequest, handleTogglePin, isTrashView, handleRestore, searchTerm]);
+    ), [setSelectedNoteId, handleDeleteRequest, handleTogglePin, isTrashView, handleRestore, searchTerm]);
 
     const {ref: touchRef, isPulling, pullDistance, pullProgress} = useTouchGestures({
         onPullToRefresh: async () => {
@@ -138,6 +128,10 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
     }, [sortedNotes, showPinnedOnly]);
 
     const showFullContent = isSidebarOpen && !isCollapsed && sidebarWidth > SIDEBAR_COLLAPSED_WIDTH;
+
+    if (isLoading) {
+        return <SidebarSkeleton/>;
+    }
 
     return (
         <div className={cn('bg-gray-900 flex flex-col h-full transition-all duration-300 ease-in-out')}>

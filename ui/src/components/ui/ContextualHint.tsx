@@ -73,7 +73,7 @@ const GLOBAL_SHORTCUTS: ContextualShortcut[] = [
 ];
 
 export function ContextualHint({compact = false}: {compact?: boolean}) {
-    const {activeView, selectedNoteId} = useView();
+    const {activeView} = useView();
     const [isVisible, setIsVisible] = useState(false);
     const [showAll, setShowAll] = useState(false);
 

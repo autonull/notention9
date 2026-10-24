@@ -2,7 +2,7 @@ import React, {useEffect, useMemo, useRef, useState, useCallback} from 'react';
 import {cn} from '../../utils/ui';
 import {CommandPaletteItem} from './Overlay';
 import {useFocusTrap} from './Overlay';
-import {SearchSparkleIcon, XIcon, ArrowRightIcon, ClockIcon, ChevronDownIcon} from '../common/icons';
+import {SearchSparkleIcon, XIcon, ClockIcon} from '../common/icons';
 
 const RECENT_STORAGE_KEY = 'notention-command-palette-recent';
 
@@ -138,7 +138,6 @@ export function EnhancedCommandPalette({
     const [query, setQuery] = useState('');
     const [selectedIndex, setSelectedIndex] = useState(0);
     const inputRef = useRef<HTMLInputElement>(null);
-    const listRef = useRef<HTMLDivElement>(null);
     const [showHelp, setShowHelp] = useState(false);
     const [recentItems, setRecentItems] = useState<CommandPaletteItem[]>(() => 
         persistRecent ? loadRecentItems() : initialRecentItems
@@ -288,15 +287,12 @@ export function EnhancedCommandPalette({
 
     if (!isOpen) return null;
 
-    const hasResults = filteredItems.length > 0;
     const isEmptyQuery = !query.trim();
     const showEmptyState = isEmptyQuery && !showHelp && (!showRecent || recentItems.length === 0);
 
     const containerStyle = isMobile ? 'fixed inset-0 z-[600] bg-black/70 backdrop-blur-sm animate-fade-in' : 'fixed inset-0 z-[600] flex items-start justify-center pt-[10vh] bg-black/70 backdrop-blur-sm animate-fade-in';
     const dialogStyle = isMobile ? 'bg-gray-800 rounded-t-2xl shadow-2xl border border-gray-700 w-full overflow-hidden flex flex-col h-full animate-slide-in-up' : 'bg-gray-800 rounded-xl shadow-2xl border border-gray-700 w-full max-w-3xl overflow-hidden flex flex-col max-h-[70vh] animate-slide-in-up';
     const contentPadding = isMobile ? 'p-4' : 'p-2';
-    const itemPadding = isMobile ? 'p-4' : 'p-3';
-    const fontSize = isMobile ? 'text-base' : 'text-sm';
 
     return (
         <div
@@ -378,6 +374,7 @@ export function EnhancedCommandPalette({
                             <div className="p-3 bg-gray-700/50 rounded-xl w-fit mx-auto mb-4 text-gray-400">
                                 <SearchSparkleIcon className="w-8 h-8" />
                             </div>
+                            {/* eslint-disable react/no-unescaped-entities */}
                             <h3 className="text-lg font-semibold text-white mb-2">No results for "{query}"</h3>
                             <p className="text-gray-400 mb-4">Try a different search term or check your spelling.</p>
                             <div className="flex flex-wrap justify-center gap-2 mx-auto max-w-xs">

@@ -1,4 +1,4 @@
-import React, {useRef, useEffect, useState, useMemo, useCallback} from 'react';
+import React, {useRef, useEffect, useState, useCallback} from 'react';
 import {useView} from '../../hooks/useViewContext';
 import {useNotes} from '../../hooks/useNotes';
 import {useToast} from '../../hooks/useToast';
@@ -6,9 +6,7 @@ import {View} from '@notention/core';
 import {
     HomeIcon,
     GitBranchIcon,
-    UsersIcon,
     PlusIcon,
-    MenuIcon,
     XIcon,
     ClockIcon,
     MapIcon,
@@ -24,8 +22,6 @@ import {
     SearchIcon,
     HelpIcon,
     NoteIcon,
-    EllipsisVerticalIcon,
-    ChevronDownIcon,
 } from '../common/icons';
 import {IconButton} from '../ui/Primitives';
 import {cn} from '../../utils/ui';
@@ -44,13 +40,6 @@ const NAV_ITEMS = [
     {id: 'settings', label: 'Settings', icon: SettingsIcon, priority: 11},
 ] as const;
 
-const ACTION_ITEMS = [
-    {label: 'Quick Capture', icon: PencilIcon, shortcut: '⌘N', id: 'quick-capture'},
-    {label: 'New Request', icon: DownloadIcon, shortcut: '⌘R', id: 'new-request'},
-    {label: 'New Offer', icon: NoteIcon, shortcut: '⌘O', id: 'new-offer'},
-    {label: 'From Template', icon: DocumentDuplicateIcon, shortcut: '⌘T', id: 'from-template'},
-] as const;
-
 const QUICK_ACTIONS = [
     {id: 'search', label: 'Search', icon: SearchIcon, shortcut: '⌘K'},
     {id: 'shortcuts', label: 'Shortcuts', icon: HelpIcon, shortcut: '?'},
@@ -62,7 +51,7 @@ interface MobileBottomNavProps {
 }
 
 export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps) {
-    const {activeView, setActiveView, isPaletteOpen, setIsPaletteOpen, setSelectedNoteId, notificationCount, chatNotificationCount} = useView();
+    const {activeView, setActiveView, isPaletteOpen, setIsPaletteOpen, setSelectedNoteId, chatNotificationCount} = useView();
     const {addNote} = useNotes();
     const {addToast} = useToast();
     const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
@@ -132,12 +121,12 @@ export function MobileBottomNav({isOpen = false, onToggle}: MobileBottomNavProps
         setIsActionMenuOpen(false);
     }, [addNote, setActiveView, setSelectedNoteId, setIsActionMenuOpen]);
 
-    const actionItems = useMemo(() => [
+    const actionItems = [
         {label: 'Quick Capture', icon: PencilIcon, action: handleQuickCapture, shortcut: '⌘N'},
         {label: 'New Request', icon: DownloadIcon, action: handleNewRequest, shortcut: '⌘R'},
         {label: 'New Offer', icon: NoteIcon, action: handleNewOffer, shortcut: '⌘O'},
         {label: 'From Template', icon: DocumentDuplicateIcon, action: handleNewFromTemplate, shortcut: '⌘T'},
-    ], [handleQuickCapture, handleNewRequest, handleNewOffer, handleNewFromTemplate]);
+    ];
 
     const getChatBadgeCount = () => chatNotificationCount;
 
