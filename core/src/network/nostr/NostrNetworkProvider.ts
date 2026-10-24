@@ -13,12 +13,11 @@ import { NetworkDiscoveryService, ScoredMatch } from './discovery.js';
 import { hexToBytes } from '../../utils/encoding.js';
 import { MatchEngine } from '../../matching/MatchEngine.js';
 import { getAliases } from '../../ontology/ontologyCore.js';
-import { BaseNetworkProvider } from '../BaseNetworkProvider.js';
+import { BaseNetworkProvider, type NetworkProviderConfig } from '../BaseNetworkProvider.js';
 
-export interface NostrConfig {
+export interface NostrConfig extends NetworkProviderConfig {
     privkey?: string | null;
     relays?: string[];
-    enabled?: boolean;
 }
 
 export class NostrNetworkProvider extends BaseNetworkProvider implements NetworkProvider {
@@ -27,21 +26,14 @@ export class NostrNetworkProvider extends BaseNetworkProvider implements Network
     private _sub: { close: () => void } | null = null;
     private _pubkey: string | null = null;
 
-    constructor(private config: NostrConfig = {}) {
+    declare config: NostrConfig;
+
+    constructor(config: NostrConfig = {}) {
         super();
+        this.config = config;
         if (config.privkey) {
             this.updatePubkey(config.privkey);
         }
-    }
-
-    get enabled() {
-        return this.config.enabled ?? !!this.config.privkey;
-    }
-
-    set enabled(val: boolean) {
-        const changed = this.config.enabled !== val;
-        this.config.enabled = val;
-        if (changed) val ? this.subscribe() : this.unsubscribe();
     }
 
     private get relays() {
@@ -57,19 +49,18 @@ export class NostrNetworkProvider extends BaseNetworkProvider implements Network
         }
     }
 
-    setConfig(config: NostrConfig) {
+    override setConfig(config: NostrConfig) {
         const keyChanged = config.privkey !== this.config.privkey;
         const relaysChanged = JSON.stringify(config.relays) !== JSON.stringify(this.config.relays);
 
-        this.config = { ...this.config, ...config };
-        if (keyChanged) this.config.privkey ? this.updatePubkey(this.config.privkey) : (this._pubkey = null);
-        if ((keyChanged || relaysChanged) && this.enabled) this.subscribe();
+        super.setConfig(config);
 
-        this.emit('status_change', this.getStatus());
-    }
-
-    async initialize(): Promise<void> {
-        if (this.enabled) this.subscribe();
+        if (keyChanged) {
+            this.config.privkey ? this.updatePubkey(this.config.privkey) : (this._pubkey = null);
+        }
+        if ((keyChanged || relaysChanged) && this.enabled) {
+            this.subscribe();
+        }
     }
 
     getStatus(): NetworkStatus {
@@ -146,5 +137,4 @@ export class NostrNetworkProvider extends BaseNetworkProvider implements Network
             this._sub = null;
         }
     }
-
 }

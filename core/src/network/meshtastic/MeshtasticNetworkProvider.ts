@@ -3,10 +3,9 @@ import { Note, PrivacyLevel, OntologyNode, Property } from '../../types/index.js
 import { ScoredMatch } from '../nostr/discovery.js';
 import { MatchEngine } from '../../matching/MatchEngine.js';
 import { encode, decode } from 'cbor-x';
-import { BaseNetworkProvider } from '../BaseNetworkProvider.js';
+import { BaseNetworkProvider, type NetworkProviderConfig } from '../BaseNetworkProvider.js';
 
-export interface MeshtasticConfig {
-    enabled?: boolean;
+export interface MeshtasticConfig extends NetworkProviderConfig {
     connectionType?: 'webserial' | 'http' | 'server-proxy';
     httpUrl?: string;
     nodeId?: string;
@@ -19,7 +18,7 @@ export class MeshtasticNetworkProvider extends BaseNetworkProvider implements Ne
     readonly id = 'meshtastic';
     readonly name = 'Meshtastic';
     private _transport: NetworkTransport | null = null;
-    public config: MeshtasticConfig;
+    declare config: MeshtasticConfig;
     private seenNotes = new Map<string, Note>();
 
     constructor(config: MeshtasticConfig = {}) {
@@ -38,23 +37,19 @@ export class MeshtasticNetworkProvider extends BaseNetworkProvider implements Ne
         this.emit('status_change', this.getStatus());
     }
 
-    get enabled() {
-        return this.config.enabled ?? false;
-    }
-
-    set enabled(val: boolean) {
-        this.config.enabled = val;
-    }
-
-    async initialize(): Promise<void> {
-        this.logger.info("Initializing Meshtastic provider");
-    }
-
     getStatus(): NetworkStatus {
         return {
             connected: !!this._transport,
             details: this.config.connectionType ? `Type: ${this.config.connectionType}` : undefined
         };
+    }
+
+    subscribe() {
+        // Meshtastic uses transport-based push, no explicit subscription needed
+    }
+
+    unsubscribe() {
+        // Meshtastic uses transport-based push, no explicit unsubscription needed
     }
 
     async sendNote(note: Note, ontology?: OntologyNode[]): Promise<string | undefined> {
