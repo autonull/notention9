@@ -12,7 +12,7 @@ import {
 import { NetworkDiscoveryService, ScoredMatch } from './discovery.js';
 import { hexToBytes } from '../../utils/encoding.js';
 import { MatchEngine } from '../../matching/MatchEngine.js';
-import { getAliases } from '../../ontology/ontologyHelpers.js';
+import { getAliases } from '../../ontology/ontologyCore.js';
 import { BaseNetworkProvider } from '../BaseNetworkProvider.js';
 
 export interface NostrConfig {

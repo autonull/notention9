@@ -1,5 +1,5 @@
 import type { Property, OntologyNode } from '../../types/index.js';
-import { getCanonicalKey, resolveSimpleAlias } from '../../ontology/ontologyHelpers.js';
+import { getCanonicalKey, resolveSimpleAlias } from '../../ontology/ontologyCore.js';
 import { Logger } from '../../utils/logging.js';
 import { REGEX, COMMON_WORDS } from './constants.js';
 

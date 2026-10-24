@@ -2,7 +2,7 @@ import type { Property, OntologyNode } from '../types/index.js';
 import type { OntologyService } from '../ontology/ontologyService.js';
 import { parseQuantity } from '../notes/quantities/index.js';
 import { validateAttributeValue, NUMERIC_OPERATORS } from './attributeValidation.js';
-import { getCanonicalKey } from '../ontology/ontologyHelpers.js';
+import { getCanonicalKey } from '../ontology/ontologyCore.js';
 import type { ValidationContext } from './validationContext.js';
 import { createValidationContext } from './validationContext.js';
 import type { ValidationResult } from './validationTypes.js';

@@ -1,5 +1,5 @@
 import { parseProperties } from '../notes/parsing/index.js';
-import { resolveSimpleAlias } from '../ontology/ontologyHelpers.js';
+import { resolveSimpleAlias } from '../ontology/ontologyCore.js';
 import { describe, it, expect } from 'vitest';
 
 describe('Enhanced Property Parsing', () => {

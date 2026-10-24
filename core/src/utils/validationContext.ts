@@ -1,6 +1,6 @@
 import type { OntologyNode, OntologyAttribute } from '../types/index.js';
 import { OntologyService } from '../ontology/ontologyService.js';
-import { findAttributeDef } from '../ontology/ontologyHelpers.js';
+import { findAttributeDef, buildAttributeIndex } from '../ontology/ontologyCore.js';
 
 export interface ValidationContext {
   getAttribute(key: string): OntologyAttribute | null;
@@ -16,23 +16,7 @@ export function createValidationContext(ontology: OntologyNode[] | OntologyServi
       getEnumOptions: (key) => ontology.getEnumOptions(key),
     };
   }
-  const attrIndex = new Map<string, OntologyAttribute>();
-  const buildIndex = (nodes: OntologyNode[]) => {
-    for (const node of nodes) {
-      if (node.attributes) {
-        for (const [key, attr] of Object.entries(node.attributes)) {
-          attrIndex.set(key, attr);
-          if (attr.aliases) {
-            for (const alias of attr.aliases) {
-              attrIndex.set(alias, attr);
-            }
-          }
-        }
-      }
-      if (node.children) buildIndex(node.children);
-    }
-  };
-  buildIndex(ontology);
+  const attrIndex = buildAttributeIndex(ontology);
   return {
     getAttribute: (key) => attrIndex.get(key) ?? null,
     getValidOperators: (key) => {

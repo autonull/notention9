@@ -7,7 +7,7 @@ const noteFromProp = (id: string, propStr: string) => {
     const [key, operator, ...rest] = propStr.split(':');
     return createNote({ id, properties: [{ key, operator, values: [rest.join(':')] }] });
 };
-import { getAliases, getCanonicalKey } from '../../ontology/ontologyHelpers.js';
+import { getAliases, getCanonicalKey } from '../../ontology/ontologyCore.js';
 
 describe('MatchEngine Aliases', () => {
     const mockOntology: OntologyNode[] = [

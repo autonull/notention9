@@ -2,7 +2,7 @@ import type { Note, OntologyNode } from '../../types/index.js';
 import type { NoteMetadata } from './NoteFilter.js';
 import { MatchEngine } from '../../matching/MatchEngine.js';
 import { parseProperties } from '../parsing/index.js';
-import { getCanonicalKey } from '../../ontology/ontologyHelpers.js';
+import { getCanonicalKey } from '../../ontology/ontologyCore.js';
 
 export interface SearchStrategy {
   search(notes: (Note & NoteMetadata)[], searchTerm: string, ontology: OntologyNode[]): (Note & NoteMetadata)[];

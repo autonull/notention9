@@ -1,5 +1,5 @@
 import type { Property, Note, OntologyNode } from '../types/index.js';
-import { getCanonicalKey } from '../ontology/ontologyHelpers.js';
+import { getCanonicalKey } from '../ontology/ontologyCore.js';
 
 const TEMPORAL_KEYS = new Set([
   'date', 'time', 'deadline', 'start', 'end', 'due',

@@ -47,7 +47,7 @@ export const findNodeWithAttribute = (nodes: OntologyNode[], key: string): Ontol
   });
 
 /**
- * Builds attribute index from ontology nodes
+ * Builds attribute index from ontology nodes (includes aliases)
  * Pure static function for testability and reusability
  */
 export function buildAttributeIndex(
@@ -57,6 +57,11 @@ export function buildAttributeIndex(
     nodes.forEach(node => {
         Object.entries(node.attributes ?? {}).forEach(([key, val]) => {
             if (!index.has(key)) index.set(key, val);
+            if (val.aliases) {
+                for (const alias of val.aliases) {
+                    if (!index.has(alias)) index.set(alias, val);
+                }
+            }
         });
         node.children && buildAttributeIndex(node.children, index);
     });
@@ -85,7 +90,7 @@ export const getCanonicalKey = (key: string, nodes: OntologyNode[]): string => {
 export const getAliases = (key: string, nodes: OntologyNode[]): string[] => {
   const canonical = getCanonicalKey(key, nodes);
   const attr = findAttributeDef(canonical, nodes);
-  return Array.from(new Set([canonical, ...(attr?.aliases ?? [])]));
+  return Array.from(new Set([key, canonical, ...(attr?.aliases ?? [])]));
 };
 
 export const addNode = (tree: OntologyNode[], parentId: string | null, newNode: OntologyNode): OntologyNode[] => {

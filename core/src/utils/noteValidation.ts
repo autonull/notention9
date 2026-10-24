@@ -1,5 +1,5 @@
 import type { Note, OntologyNode } from '../types/index.js';
-import { getCanonicalKey, traverseTree } from '../ontology/ontologyHelpers.js';
+import { getCanonicalKey, traverseTree } from '../ontology/ontologyCore.js';
 import { validatePropertyCore } from './propertyValidation.js';
 import { createValidationContext } from './validationContext.js';
 import type { ValidationResult } from './validationTypes.js';
