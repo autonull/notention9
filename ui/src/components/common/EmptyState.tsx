@@ -1,6 +1,6 @@
 import React from 'react';
 import {cn} from '../../utils/ui';
-import {SearchIcon, SparklesIcon, ArrowRightIcon} from '../common/icons';
+import {SearchIcon, SparklesIcon, ArrowRightIcon, HelpIcon, KeyboardIcon} from '../common/icons';
 import {Button} from '../ui/Primitives';
 
 interface EmptyStateProps {
@@ -16,6 +16,10 @@ interface EmptyStateProps {
     showSearchSuggestion?: boolean;
     searchTerm?: string;
     hint?: string;
+    /** Show contextual keyboard shortcuts */
+    showShortcuts?: boolean;
+    /** Context for shortcuts (view name) */
+    shortcutContext?: string;
 }
 
 export function EmptyState({
@@ -68,6 +72,28 @@ export function EmptyState({
         actionable: 'empty-state-description',
     };
 
+    const shortcutContexts: Record<string, {keys: string; label: string}[]> = {
+        notes: [
+            {keys: '⌘N', label: 'New note'},
+            {keys: '⌘K', label: 'Command palette'},
+            {keys: '⌘/', label: 'Search notes'},
+        ],
+        dashboard: [
+            {keys: '⌘N', label: 'New note'},
+            {keys: '⌘K', label: 'Command palette'},
+        ],
+        map: [
+            {keys: '⌘N', label: 'New note'},
+            {keys: '⌘K', label: 'Command palette'},
+        ],
+        network: [
+            {keys: '⌘N', label: 'New note'},
+            {keys: '⌘K', label: 'Command palette'},
+        ],
+    };
+
+    const contextShortcuts = shortcutContexts[shortcutContext || ''] || [];
+
     return (
         <div className={cn(variantStyles[variant], className)}>
             {illustration ? (
@@ -103,6 +129,21 @@ export function EmptyState({
             )}
             {secondaryAction && (
                 <div className="empty-state-actions">{secondaryAction}</div>
+            )}
+            {showShortcuts && contextShortcuts.length > 0 && (
+                <div className="mt-6 pt-6 border-t border-gray-700/50 w-full max-w-xs animate-fade-in-up">
+                    <p className="text-xs text-gray-500 mb-2 flex items-center gap-1">
+                        <HelpIcon className="w-3 h-3" /> Quick shortcuts:
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                        {contextShortcuts.map((sc, i) => (
+                            <kbd key={i} className="text-[10px] font-mono px-2 py-1 bg-gray-800 text-gray-300 rounded border border-gray-700/50 whitespace-nowrap">
+                                {sc.keys}
+                                <span className="ml-1 text-gray-500">{sc.label}</span>
+                            </kbd>
+                        ))}
+                    </div>
+                </div>
             )}
         </div>
     );

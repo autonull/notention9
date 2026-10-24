@@ -287,7 +287,7 @@ export function AppShell() {
                     showRecent={true}
                     fuzzySearch={true}
                 />
-                <ContextualHint/>
+                <ContextualHint compact persistent position="bottom-left"/>
                 <HelpDialog
                     isOpen={isHelpOpen}
                     onClose={() => setIsHelpOpen(false)}

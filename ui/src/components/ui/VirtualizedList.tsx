@@ -1,6 +1,7 @@
-import React, {useRef, useImperativeHandle, forwardRef, useCallback} from 'react';
+import React, {useRef, useImperativeHandle, forwardRef, useCallback, useState} from 'react';
 import {cn} from '../../utils/ui';
 import {useVirtualizedList, UseVirtualizedListOptions} from '../../hooks/useVirtualizedList';
+import {Tooltip} from './Overlay';
 
 export interface VirtualizedListProps<T> extends Omit<UseVirtualizedListOptions<T>, 'getItemKey' | 'onScroll'> {
     children: (item: T, index: number, isSelected: boolean) => React.ReactNode;
@@ -18,6 +19,8 @@ export interface VirtualizedListProps<T> extends Omit<UseVirtualizedListOptions<
     overscan?: number;
     /** Enable keyboard navigation (arrow keys, home, end) */
     keyboardNavigation?: boolean;
+    /** Render function for tooltip when sidebar is collapsed */
+    collapsedTooltip?: (item: T, index: number) => React.ReactNode;
 }
 
 export interface VirtualizedListRef {
@@ -50,6 +53,7 @@ function VirtualizedListInner<T>(
         onScroll,
         overscan = 5,
         keyboardNavigation = true,
+        collapsedTooltip,
     } = props;
 
     const virtualized = useVirtualizedList<T>({
@@ -63,6 +67,7 @@ function VirtualizedListInner<T>(
 
         const listRef = useRef<HTMLDivElement>(null);
         const [focusedIndex, setFocusedIndex] = React.useState(-1);
+        const [tooltipItem, setTooltipItem] = useState<{item: T; index: number} | null>(null);
 
         const focusItem = useCallback((index: number) => {
             if (index >= 0 && index < items.length) {
@@ -183,40 +188,53 @@ function VirtualizedListInner<T>(
         }, [selectedKey, items, getItemKey, focusedIndex]);
 
         return (
-            <div
-                ref={listRef}
-                className={cn('relative overflow-auto', className)}
-                style={{height: containerHeight}}
-                onScroll={virtualized.handleScroll}
-                role={role}
-                aria-label={ariaLabel}
-                tabIndex={0}
-                onKeyDown={handleKeyDown}
-            >
-                <div style={{height: virtualized.totalHeight, position: 'relative', minHeight: containerHeight}}>
-                    {virtualized.visibleItems.map(({item, index, key, style}) => (
-                        <div
-                            key={key}
-                            style={style}
-                            className="w-full"
-                            onClick={() => onItemClick?.(item, index)}
-                            onDoubleClick={() => onItemDoubleClick?.(item, index)}
-                            role={role === 'list' ? 'listitem' : role === 'listbox' ? 'option' : undefined}
-                            aria-selected={selectedKey === getItemKey(item, index)}
-                            tabIndex={index === focusedIndex ? 0 : -1}
-                            onFocus={() => setFocusedIndex(index)}
-                            onKeyDown={(e) => {
-                                if ((e.key === 'Enter' || e.key === ' ') && onItemClick) {
-                                    e.preventDefault();
-                                    onItemClick(item, index);
-                                }
-                            }}
-                        >
-                            {children(item, index, selectedKey === getItemKey(item, index))}
-                        </div>
-                    ))}
+            <>
+                <div
+                    ref={listRef}
+                    className={cn('relative overflow-auto', className)}
+                    style={{height: containerHeight}}
+                    onScroll={virtualized.handleScroll}
+                    role={role}
+                    aria-label={ariaLabel}
+                    tabIndex={0}
+                    onKeyDown={handleKeyDown}
+                >
+                    <div style={{height: virtualized.totalHeight, position: 'relative', minHeight: containerHeight}}>
+                        {virtualized.visibleItems.map(({item, index, key, style}) => (
+                            <div
+                                key={key}
+                                style={style}
+                                className="w-full"
+                                onClick={() => onItemClick?.(item, index)}
+                                onDoubleClick={() => onItemDoubleClick?.(item, index)}
+                                role={role === 'list' ? 'listitem' : role === 'listbox' ? 'option' : undefined}
+                                aria-selected={selectedKey === getItemKey(item, index)}
+                                tabIndex={index === focusedIndex ? 0 : -1}
+                                onFocus={() => setFocusedIndex(index)}
+                                onMouseEnter={() => collapsedTooltip && setTooltipItem({item, index})}
+                                onMouseLeave={() => setTooltipItem(null)}
+                                onKeyDown={(e) => {
+                                    if ((e.key === 'Enter' || e.key === ' ') && onItemClick) {
+                                        e.preventDefault();
+                                        onItemClick(item, index);
+                                    }
+                                }}
+                            >
+                                {children(item, index, selectedKey === getItemKey(item, index))}
+                            </div>
+                        ))}
+                    </div>
                 </div>
-            </div>
+                {collapsedTooltip && tooltipItem && (
+                    <Tooltip
+                        content={collapsedTooltip(tooltipItem.item, tooltipItem.index)}
+                        position="right"
+                        className="z-50"
+                    >
+                        <div className="invisible fixed inset-0 pointer-events-none" />
+                    </Tooltip>
+                )}
+            </>
         );
     }
 

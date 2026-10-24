@@ -16,6 +16,7 @@ import {useTouchGestures} from '../../hooks/useTouchGestures';
 import {SidebarSkeleton} from '../ui/Skeleton';
 import {EmptyState, NotesEmptyIllustration, SearchEmptyIllustration, TrashEmptyIllustration, EmptyStatePreset} from '../common/EmptyState';
 import {Button} from '../ui/Primitives';
+import {Tooltip} from '../ui/Overlay';
 
 interface SidebarProps {
     sortedNotes?: Note[];
@@ -81,6 +82,9 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
         searchInputRef.current?.focus();
     }, []);
 
+    // Tooltip state for collapsed sidebar
+    const [hoveredNoteId, setHoveredNoteId] = useState<string | null>(null);
+
     const getItemKey = useCallback((note: Note, _index: number) => note.id, []);
     const renderItem = useCallback((note: Note, _index: number, isSelected: boolean): React.ReactNode => (
         <NoteListItem
@@ -95,6 +99,28 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
             searchTerm={searchTerm}
         />
     ), [setSelectedNoteId, handleDeleteRequest, handleTogglePin, isTrashView, handleRestore, searchTerm]);
+
+    // Collapsed sidebar tooltip render function
+    const renderCollapsedTooltip = useCallback((note: Note) => {
+        const preview = note.content ? note.content.replace(/<[^>]*>/g, '').slice(0, 120) : 'No content';
+        return (
+            <div className="p-3 max-w-xs">
+                <p className="font-medium text-white text-sm mb-1 truncate">{note.title || 'Untitled'}</p>
+                {note.pinned && <span className="inline-block px-1.5 py-0.5 text-[10px] bg-blue-900/30 text-blue-300 rounded border border-blue-800/50 mb-1">Pinned</span>}
+                <p className="text-gray-400 text-xs line-clamp-2">{preview}</p>
+                <div className="flex items-center gap-2 mt-2 text-[10px] text-gray-500">
+                    <span>{new Date(note.updatedAt).toLocaleDateString()}</span>
+                    {note.tags.length > 0 && (
+                        <span className="flex gap-1">
+                            {note.tags.slice(0, 3).map((tag, i) => (
+                                <span key={i} className="px-1.5 py-0.5 bg-gray-800 rounded text-gray-400">#{tag}</span>
+                            ))}
+                        </span>
+                    )}
+                </div>
+            </div>
+        );
+    }, []);
 
     const touchElementRef = useRef<HTMLDivElement>(null);
     const {isPulling, pullDistance, pullProgress} = useTouchGestures({
@@ -226,6 +252,7 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
                             keyboardNavigation
                             role="listbox"
                             aria-label={isTrashView ? 'Trash notes' : 'Notes'}
+                            collapsedTooltip={!showFullContent ? renderCollapsedTooltip : undefined}
                         />
                     ) : sidebarViewMode === 'grid' ? (
                         <div className="grid grid-cols-2 gap-2 h-full overflow-y-auto custom-scrollbar" role="list">
@@ -257,6 +284,8 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
                                     Create note
                                 </button>
                             ) : undefined}
+                            showShortcuts
+                            shortcutContext="notes"
                             className="h-full flex-grow"
                         />
                     )
@@ -275,6 +304,8 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
                                 title="No notes match your filters"
                                 description="Try adjusting your filters or sort order."
                                 hint="Press ⌘/ to search, or use filters to narrow results"
+                                showShortcuts
+                                shortcutContext="notes"
                             />
                         )}
                     </>

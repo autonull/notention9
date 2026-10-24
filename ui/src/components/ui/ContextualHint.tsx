@@ -9,6 +9,12 @@ interface ContextualShortcut {
     description?: string;
 }
 
+interface ContextualHintProps {
+    compact?: boolean;
+    persistent?: boolean;
+    position?: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left';
+}
+
 const VIEW_SHORTCUTS: Record<string, ContextualShortcut[]> = {
     dashboard: [
         {keys: ['⌘', 'N'], label: 'New Note', description: 'Create a new note'},
@@ -72,7 +78,7 @@ const GLOBAL_SHORTCUTS: ContextualShortcut[] = [
     {keys: ['?'], label: 'Show All Shortcuts', description: 'Open keyboard help'},
 ];
 
-export function ContextualHint({compact = false}: {compact?: boolean}) {
+export function ContextualHint({compact = false, persistent = false, position = 'bottom-right'}: ContextualHintProps) {
     const {activeView} = useView();
     const [isVisible, setIsVisible] = useState(false);
     const [showAll, setShowAll] = useState(false);
@@ -97,22 +103,34 @@ export function ContextualHint({compact = false}: {compact?: boolean}) {
     };
 
     useEffect(() => {
-        const timer = setTimeout(() => setIsVisible(true), 3000);
-        return () => clearTimeout(timer);
-    }, [activeView]);
+        if (persistent) {
+            setIsVisible(true);
+        } else {
+            const timer = setTimeout(() => setIsVisible(true), 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [activeView, persistent]);
 
     if (!isVisible || shortcuts.length === 0) return null;
+
+    const positionStyles = {
+        'bottom-right': 'bottom-24 right-4',
+        'bottom-left': 'bottom-24 left-4',
+        'top-right': 'top-24 right-4',
+        'top-left': 'top-24 left-4',
+    };
 
     return (
         <div
             className={cn(
-                'fixed bottom-24 right-4 z-40 animate-slide-in-up pointer-events-none',
+                'fixed z-40 animate-slide-in-up pointer-events-none',
+                positionStyles[position],
                 compact && 'md:hidden'
             )}
             role="status"
             aria-live="polite"
         >
-            <div className="pointer-events-auto card glass rounded-xl shadow-xl border border-gray-700/50 overflow-hidden">
+            <div className="pointer-events-auto card glass rounded-xl shadow-xl border border-gray-700/50 overflow-hidden min-w-[280px] max-w-[360px]">
                 <div className="flex items-center gap-2 px-4 py-3 bg-gray-900/50 border-b border-gray-700/50">
                     <HelpIcon className="w-5 h-5 text-gray-400" />
                     <span className="text-sm font-semibold text-gray-200">

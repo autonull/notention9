@@ -142,6 +142,15 @@ const SHORTCUT_CATEGORIES = [
     },
 ];
 
+const SEARCH_SYNTAX_HINTS = [
+    {syntax: '#tag', description: 'Filter by tag'},
+    {syntax: 'key:value', description: 'Filter by property (e.g. type:task)'},
+    {syntax: 'key:>value', description: 'Greater than (numbers, dates)'},
+    {syntax: 'key:<value', description: 'Less than (numbers, dates)'},
+    {syntax: 'key:~value', description: 'Contains text (fuzzy)'},
+    {syntax: '-key:value', description: 'Exclude (negation)'},
+];
+
 export interface EnhancedCommandPaletteProps {
     isOpen: boolean;
     onClose: () => void;
@@ -370,6 +379,20 @@ export function EnhancedCommandPalette({
                     </div>
                 </div>
             ))}
+            {/* Search Syntax Hints */}
+            <div className="stagger-children">
+                <div className="px-3 pt-3 pb-1 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                    Search Syntax
+                </div>
+                <div className="space-y-1 px-3">
+                    {SEARCH_SYNTAX_HINTS.map((hint, index) => (
+                        <div key={index} className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-700/30 transition-colors touch-target">
+                            <code className="text-sm font-mono text-blue-300 bg-gray-800/50 px-2 py-0.5 rounded">{hint.syntax}</code>
+                            <span className="text-sm text-gray-400 ml-3">{hint.description}</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
             <div className="pt-2 border-t border-gray-700/50">
                 <div className="flex items-center justify-between px-3 py-2 text-sm text-gray-400">
                     <span>Type to search commands, notes, tags (<kbd className="px-1.5 py-0.5 bg-gray-700 rounded text-xs font-mono">#tag</kbd>), properties (<kbd className="px-1.5 py-0.5 bg-gray-700 rounded text-xs font-mono">key:value</kbd>)</span>
