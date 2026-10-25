@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import type {Note} from '@notention/core';
 import {areNotesEqual} from '@notention/core';
 import {createScopedLogger} from './logging.js';
@@ -6,41 +6,48 @@ import {createScopedLogger} from './logging.js';
 const SAVE_DEBOUNCE_MS = 1000;
 const log = createScopedLogger('useDebouncedSave');
 
-export function useDebouncedSave(note: Note, onSave: (note: Note) => void) {
-    const [dirtyNote, setDirtyNote] = useState<Note>(note);
+export interface UseDebouncedSaveOptions {
+    debounceMs?: number;
+    onSave?: (note: Note) => void;
+    onError?: (error: Error) => void;
+    compareFn?: (a: Note, b: Note) => boolean;
+}
+
+export interface UseDebouncedSaveResult<NoteType extends Note = Note> {
+    dirtyNote: NoteType;
+    setDirtyNote: React.Dispatch<React.SetStateAction<NoteType>>;
+    saveStatus: 'saved' | 'saving' | 'error';
+    saveImmediately: () => void;
+}
+
+export function useDebouncedSave<NoteType extends Note = Note>(
+    note: NoteType,
+    onSave: (note: NoteType) => void,
+    options: UseDebouncedSaveOptions = {}
+): UseDebouncedSaveResult<NoteType> {
+    const { debounceMs = SAVE_DEBOUNCE_MS, onError, compareFn = areNotesEqual } = options;
+    const [dirtyNote, setDirtyNote] = useState<NoteType>(note);
     const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'error'>('saved');
 
-    // Refs for unmount safety
     const dirtyNoteRef = useRef(dirtyNote);
     const noteRef = useRef(note);
     const onSaveRef = useRef(onSave);
 
-    useEffect(() => {
-        dirtyNoteRef.current = dirtyNote;
-    }, [dirtyNote]);
-
-    useEffect(() => {
-        noteRef.current = note;
-    }, [note]);
-
-    useEffect(() => {
-        onSaveRef.current = onSave;
-    }, [onSave]);
+    useEffect(() => { dirtyNoteRef.current = dirtyNote; }, [dirtyNote]);
+    useEffect(() => { noteRef.current = note; }, [note]);
+    useEffect(() => { onSaveRef.current = onSave; }, [onSave]);
 
     // Sync state when note prop changes
     useEffect(() => {
         setDirtyNote((prev) => {
-            // If ID changed, switch to new note
             if (note.id !== prev.id) return note;
-            // If content matches upstream, sync reference to avoid unnecessary diffs
-            return areNotesEqual(note, prev) ? note : prev;
+            return compareFn(note, prev) ? note : prev;
         });
-    }, [note]);
+    }, [note, compareFn]);
 
     // Debounced save effect
     useEffect(() => {
-        // Only save if dirtyNote differs from the current upstream note
-        if (areNotesEqual(dirtyNote, note)) {
+        if (compareFn(dirtyNote, note)) {
             setSaveStatus('saved');
             return;
         }
@@ -48,25 +55,33 @@ export function useDebouncedSave(note: Note, onSave: (note: Note) => void) {
         setSaveStatus('saving');
         const handler = setTimeout(() => {
             try {
-                onSave(dirtyNote);
+                onSaveRef.current(dirtyNote);
                 setSaveStatus('saved');
             } catch (e) {
-                log.error('Auto-save failed', e instanceof Error ? e : new Error(String(e)));
+                const err = e instanceof Error ? e : new Error(String(e));
+                log.error('Auto-save failed', err);
+                onError?.(err);
                 setSaveStatus('error');
             }
-        }, SAVE_DEBOUNCE_MS);
+        }, debounceMs);
 
         return () => clearTimeout(handler);
-    }, [dirtyNote, onSave, note]);
+    }, [dirtyNote, note, debounceMs, compareFn]);
 
     // Save on unmount
     useEffect(() => {
         return () => {
-            if (!areNotesEqual(dirtyNoteRef.current, noteRef.current)) {
+            if (!compareFn(dirtyNoteRef.current, noteRef.current)) {
                 onSaveRef.current(dirtyNoteRef.current);
             }
         };
+    }, [compareFn]);
+
+    const saveImmediately = useCallback(() => {
+        if (onSaveRef.current) {
+            onSaveRef.current(dirtyNoteRef.current);
+        }
     }, []);
 
-    return {dirtyNote, setDirtyNote, saveStatus};
-};
+    return { dirtyNote, setDirtyNote, saveStatus, saveImmediately };
+}

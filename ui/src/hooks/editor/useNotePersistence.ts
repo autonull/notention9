@@ -1,11 +1,11 @@
 import { useCallback } from 'react';
 import { Note } from '@notention/core';
-import { useDebouncedSave } from '../useDebouncedSave';
+import { useDebouncedSave, UseDebouncedSaveResult } from '../useDebouncedSave';
 import { useSettings } from '../useSettingsContext';
 import { useGardener } from '../useGardener';
 import { useToast } from '../useToast';
 
-export function useNotePersistence(note: Note, onSave: (note: Note) => void) {
+export function useNotePersistence(note: Note, onSave: (note: Note) => void): UseDebouncedSaveResult<Note> {
     const { settings } = useSettings();
     const { evolveOntology } = useGardener();
     const { addToast } = useToast();
@@ -22,16 +22,5 @@ export function useNotePersistence(note: Note, onSave: (note: Note) => void) {
         }
     }, [onSave, settings.developerMode, evolveOntology, addToast]);
 
-    const { dirtyNote, setDirtyNote, saveStatus } = useDebouncedSave(note, handlePersist);
-
-    const saveImmediately = useCallback(() => {
-        handlePersist(dirtyNote);
-    }, [handlePersist, dirtyNote]);
-
-    return {
-        dirtyNote,
-        setDirtyNote,
-        saveStatus,
-        saveImmediately
-    };
+    return useDebouncedSave(note, handlePersist);
 }
