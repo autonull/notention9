@@ -2,18 +2,13 @@ import { createCommand, CommandContext } from './command.js';
 import { CliClient } from '../client.js';
 import { log, withSpinner } from '../utils.js';
 import chalk from 'chalk';
+import { validators } from './validators.js';
 
 export const OpenCommand = createCommand({
     name: '/open',
     description: 'Set active context to a note',
     usage: '/open <note_id>',
-    validate: (args: string[]): boolean => {
-        if (args.length === 0) {
-            log.warn("Usage: /open <note_id>");
-            return false;
-        }
-        return true;
-    },
+    validate: validators.minArgs(1),
     run: async (args: string[], context: CommandContext) => {
         const noteId = args[0];
 

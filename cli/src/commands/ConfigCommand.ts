@@ -53,6 +53,11 @@ export const ProviderCommand = createCommand({
             log.info('Use /providers to see available providers');
             return false;
         }
+        const supported = ProviderFactory.getSupportedProviders();
+        if (!supported.includes(args[0])) {
+            log.warn(`Provider must be one of: ${supported.join(', ')}`);
+            return false;
+        }
         return true;
     },
     run: async (args: string[], context: CommandContext) => {

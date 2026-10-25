@@ -2,6 +2,7 @@ import { createCommand, CommandContext } from './command.js';
 import { CliClient } from '../client.js';
 import { log, withSpinner } from '../utils.js';
 import chalk from 'chalk';
+import { validators } from './validators.js';
 
 export const ToolsCommand = createCommand({
     name: '/tools',
@@ -17,13 +18,7 @@ export const ExtractCommand = createCommand({
     name: '/extract',
     description: 'Extract semantic properties from text',
     usage: '/extract <text>',
-    validate: (args: string[]): boolean => {
-        if (args.length === 0) {
-            log.warn("Usage: /extract <text>");
-            return false;
-        }
-        return true;
-    },
+    validate: validators.minArgs(1),
     run: async (args: string[], context: CommandContext) => {
         const text = args.join(' ');
         try {
