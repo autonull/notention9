@@ -1,6 +1,6 @@
 import { NetworkProvider, NetworkTransport, NetworkStatus } from '../types.js';
 import { Note, PrivacyLevel, OntologyNode, Property } from '../../types/index.js';
-import { ScoredMatch } from '../nostr/discovery.js';
+import { ScoredMatch } from '../../matching/bidirectional.js';
 import { encode, decode } from 'cbor-x';
 import { BaseNetworkProvider, type NetworkProviderConfig, type DiscoveryOptions } from '../BaseNetworkProvider.js';
 

@@ -9,7 +9,8 @@ import {
     KIND_SEMANTIC_NOTE,
     KIND_TEXT_NOTE
 } from './nostr.js';
-import { NetworkDiscoveryService, ScoredMatch } from './discovery.js';
+import { NetworkDiscoveryService } from './discovery.js';
+import { ScoredMatch } from '../../matching/bidirectional.js';
 import { hexToBytes } from '../../utils/encoding.js';
 import { MatchEngine } from '../../matching/MatchEngine.js';
 import { getAliases } from '../../ontology/ontologyCore.js';

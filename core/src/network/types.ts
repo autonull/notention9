@@ -1,5 +1,5 @@
 import { Note, PrivacyLevel, OntologyNode } from '../types/index.js';
-import { ScoredMatch } from './nostr/discovery.js';
+import { ScoredMatch } from '../matching/bidirectional.js';
 
 export interface NetworkStatus {
     connected: boolean;

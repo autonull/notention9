@@ -1,7 +1,7 @@
 import { Logger } from '../utils/logging.js';
 import type { NetworkStatus } from './types.js';
 import type { OntologyNode, Note, PrivacyLevel } from '../types/index.js';
-import type { ScoredMatch } from './nostr/discovery.js';
+import type { ScoredMatch } from '../matching/bidirectional.js';
 import { MatchEngine } from '../matching/MatchEngine.js';
 
 export interface NetworkProviderConfig {
