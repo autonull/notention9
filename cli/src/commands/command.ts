@@ -1,6 +1,5 @@
 import { CliClient } from '../client.js';
 import { LlmSession } from '../llm.js';
-import { log } from '../utils.js';
 
 export interface CommandContext {
     cli: CliClient;
@@ -15,65 +14,10 @@ export interface Command {
     usage?: string;
     execute(args: string[], context: CommandContext): Promise<boolean>;
     validate?(args: string[]): boolean;
-    help?(): string;
-}
-
-export abstract class BaseCommand implements Command {
-    abstract name: string;
-    abstract description: string;
-    aliases: string[] = [];
-    usage?: string;
-
-    protected context!: CommandContext;
-
-    async execute(args: string[], context: CommandContext): Promise<boolean> {
-        this.context = context;
-        if (this.validate && !this.validate(args)) {
-            this.showHelp();
-            return true;
-        }
-        if (!this.ensureSession()) return true;
-        return this.run(args);
-    }
-
-    protected ensureSession(): boolean {
-        if (!this.session) {
-            log.error("Session unavailable in this context.");
-            return false;
-        }
-        return true;
-    }
-
-    protected abstract run(args: string[]): Promise<boolean>;
-
-    validate(args: string[]): boolean {
-        return true;
-    }
-
-    protected showHelp(): void {
-        const usage = this.usage || `${this.name} [args]`;
-        console.log(`Usage: ${usage}`);
-        console.log(this.description);
-        if (this.aliases.length > 0) {
-            console.log(`Aliases: ${this.aliases.join(', ')}`);
-        }
-    }
-
-    protected get cli(): CliClient {
-        return this.context.cli;
-    }
-
-    protected get tools(): any[] {
-        return this.context.tools;
-    }
-
-    protected get session(): LlmSession | undefined {
-        return this.context.session;
-    }
 }
 
 /**
- * Factory function to create simple commands with minimal boilerplate
+ * Factory function to create commands with minimal boilerplate
  */
 export function createCommand(config: {
     name: string;

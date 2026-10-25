@@ -3,7 +3,12 @@ import fsPromises from 'fs/promises';
 import path from 'path';
 import readline from 'readline';
 import {LocalTool} from '../llm.js';
-import {resolveSafePath, isBinary} from '../utils.js';
+import {
+    resolveSafePath,
+    isBinary,
+    searchFiles,
+    IGNORED_DIRS
+} from '../fs-utils.js';
 
 export const fsTools: LocalTool[] = [
     {
@@ -68,7 +73,6 @@ export const fsTools: LocalTool[] = [
             if (!args.path || args.content === undefined) throw new Error("Path and content are required");
             try {
                 const resolvedPath = resolveSafePath(args.path);
-                // Ensure directory exists
                 await fsPromises.mkdir(path.dirname(resolvedPath), {recursive: true});
                 await fsPromises.writeFile(resolvedPath, args.content, 'utf-8');
                 return `File created at ${args.path}`;
@@ -111,51 +115,10 @@ export const fsTools: LocalTool[] = [
         },
         execute: async (args: any) => {
             if (!args.query) throw new Error("Query is required");
-            const dirPath = args.path || '.';
-            const query = args.query;
-            const results: string[] = [];
-
             try {
-                const startPath = resolveSafePath(dirPath);
-
-                async function search(currentPath: string) {
-                    const entries = await fsPromises.readdir(currentPath, {withFileTypes: true});
-                    for (const entry of entries) {
-                        const fullPath = path.join(currentPath, entry.name);
-
-                        if (entry.isDirectory()) {
-                            if (['.git', 'node_modules', 'dist', 'build', 'coverage', '.DS_Store'].includes(entry.name)) continue;
-                            await search(fullPath);
-                        } else if (entry.isFile()) {
-                            try {
-                                if (await isBinary(fullPath)) continue;
-
-                                const fileStream = fs.createReadStream(fullPath);
-                                const rl = readline.createInterface({
-                                    input: fileStream,
-                                    crlfDelay: Infinity
-                                });
-
-                                let lineNum = 0;
-                                for await (const line of rl) {
-                                    lineNum++;
-                                    if (line.includes(query)) {
-                                        const truncated = line.length > 100 ? line.substring(0, 100) + '...' : line;
-                                        results.push(`${path.relative(process.cwd(), fullPath)}:${lineNum}: ${truncated.trim()}`);
-                                        // Stop after 5 matches per file to avoid spam?
-                                        if (lineNum > 10000) break; // Safety break for huge files
-                                    }
-                                }
-                            } catch (e) {
-                                // Ignore read errors
-                            }
-                        }
-                    }
-                }
-
-                await search(startPath);
+                const startPath = resolveSafePath(args.path || '.');
+                const results = await searchFiles(startPath, args.query);
                 return results.length > 0 ? results.join('\n') : "No matches found.";
-
             } catch (e: any) {
                 return `Error searching files: ${e.message}`;
             }

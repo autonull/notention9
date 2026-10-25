@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import * as ingest from '../../tools/ingest.js';
-import fs from 'fs/promises';
+import * as fs from 'fs/promises';
 import { CliClient } from '../../client.js';
-import * as utils from '../../utils.js';
+import * as fsUtils from '../../fs-utils.js';
 
 vi.mock('fs/promises');
 vi.mock('../../client.js');
-vi.mock('../../utils.js');
+vi.mock('../../fs-utils.js');
 
 describe('ingest tools', () => {
     let mockCli: CliClient;
@@ -16,8 +16,24 @@ describe('ingest tools', () => {
         vi.mocked(mockCli.callTool).mockResolvedValue({
             content: [{ text: JSON.stringify({ id: 'note-123' }) }]
         } as any);
-        vi.mocked(utils.isBinary).mockResolvedValue(false);
-        vi.mocked(utils.resolveSafePath).mockImplementation((p) => p);
+        vi.mocked(fsUtils.isBinary).mockResolvedValue(false);
+        vi.mocked(fsUtils.resolveSafePath).mockImplementation((p) => p);
+        vi.mocked(fsUtils.getTagsForFile).mockImplementation((ext) => {
+            const map: Record<string, string[]> = {
+                '.ts': ['code', 'typescript'],
+                '.js': ['code', 'javascript'],
+                '.tsx': ['code', 'typescript', 'react'],
+                '.jsx': ['code', 'javascript', 'react'],
+                '.md': ['document'],
+                '.txt': ['document'],
+                '.py': ['code', 'python'],
+                '.json': ['data', 'json'],
+                '.html': ['code', 'web'],
+                '.css': ['code', 'web'],
+                '.scss': ['code', 'web'],
+            };
+            return ['ingested', 'cli', ...(map[ext] || [])];
+        });
         vi.mocked(fs.readFile).mockResolvedValue('file content');
         vi.mocked(fs.stat).mockResolvedValue({ isFile: () => true, isDirectory: () => false } as any);
         vi.mocked(fs.readdir).mockResolvedValue([]);
@@ -38,7 +54,7 @@ describe('ingest tools', () => {
         });
 
         it('should skip binary files', async () => {
-            vi.mocked(utils.isBinary).mockResolvedValue(true);
+            vi.mocked(fsUtils.isBinary).mockResolvedValue(true);
             const result = await ingest.ingestFile('image.png', mockCli, false);
             expect(result).toBeNull();
             expect(mockCli.callTool).not.toHaveBeenCalled();

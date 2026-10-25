@@ -1,8 +1,18 @@
 import { Logger } from '../utils/logging.js';
 import type { NetworkStatus } from './types.js';
+import type { OntologyNode, Note, PrivacyLevel } from '../types/index.js';
+import type { ScoredMatch } from './nostr/discovery.js';
+import { MatchEngine } from '../matching/MatchEngine.js';
 
 export interface NetworkProviderConfig {
     enabled?: boolean;
+}
+
+export interface DiscoveryOptions {
+    note: Note;
+    ontology: OntologyNode[];
+    privacyMode: PrivacyLevel;
+    threshold?: number;
 }
 
 export abstract class BaseNetworkProvider {
@@ -59,5 +69,39 @@ export abstract class BaseNetworkProvider {
             this.enabled ? this.subscribe() : this.unsubscribe();
         }
         this.emit('status_change', this.getStatus());
+    }
+
+    /**
+     * Creates a MatchEngine instance for this provider's discovery operations.
+     * Override to customize ontology or add provider-specific matching logic.
+     */
+    protected createMatchEngine(ontology: OntologyNode[]): MatchEngine {
+        return new MatchEngine(ontology);
+    }
+
+    /**
+     * Common discovery logic using MatchEngine.
+     * Subclasses can override for provider-specific behavior.
+     */
+    protected async discoverWithEngine(
+        options: DiscoveryOptions,
+        localNotes: Note[]
+    ): Promise<ScoredMatch[]> {
+        if (!this.enabled || localNotes.length === 0) return [];
+
+        const { note, ontology, privacyMode, threshold = 0.3 } = options;
+        const engine = this.createMatchEngine(ontology);
+        const matches: ScoredMatch[] = [];
+
+        for (const seenNote of localNotes) {
+            if (seenNote.id === note.id) continue;
+
+            const result = engine.calculateMatchScore(note, seenNote);
+            if (result.score > threshold) {
+                matches.push({ note: seenNote, result, direction: 'outgoing' });
+            }
+        }
+
+        return matches.sort((a, b) => b.result.score - a.result.score);
     }
 }

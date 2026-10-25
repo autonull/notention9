@@ -20,32 +20,28 @@ export class OpenAICompatibleProvider extends LLMProvider {
     private model!: any;
 
     constructor(config: LLMProviderConfig) {
+        const isOllama = config.provider === 'ollama' ||
+            config.baseURL?.includes('11434');
+        const isLocal = config.provider === 'local';
+
         const healthConfig: ProviderHealthConfig = {
-            requiresApiKey: ['openai'],
+            requiresApiKey: ['openai', 'groq', 'together'],
             requiresServerCheck: ['ollama', 'local'],
             defaultServerUrl: 'http://localhost:11434/v1',
             healthCheckPrefix: 'Ollama/Local server',
         };
+
         super(config, { multiModal: false }, healthConfig);
         this.configureSDK();
     }
 
     private configureSDK() {
-        // Special handling for known provider types
-        const isOllama = this.config.provider === 'ollama' ||
-            this.config.baseURL?.includes('11434');
-
-        // Auto-configure Ollama defaults
-        if (isOllama && !this.config.baseURL) {
-            this.config.baseURL = 'http://localhost:11434/v1';
-        }
-
-        // Auto-configure API key for local providers
-        const apiKey = this.config.apiKey ||
-            (isOllama ? 'ollama' : 'sk-dummy');
+        // Use configured values (with defaults applied by factory)
+        const baseURL = this.config.baseURL;
+        const apiKey = this.config.apiKey || 'sk-dummy';
 
         this.sdk = createOpenAI({
-            baseURL: this.config.baseURL,
+            baseURL,
             apiKey,
         });
 

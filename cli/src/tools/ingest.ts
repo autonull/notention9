@@ -2,46 +2,23 @@ import { CliClient } from '../client.js';
 import { LocalTool } from '../llm.js';
 import fs from 'fs/promises';
 import path from 'path';
-import { resolveSafePath, isBinary, log } from '../utils.js';
+import { resolveSafePath, isBinary, getTagsForFile, IGNORED_DIRS, IGNORED_EXTS } from '../fs-utils.js';
+import { log } from '../utils.js';
 
-// Common ignore patterns
-const IGNORED_DIRS = new Set(['.git', 'node_modules', 'dist', 'build', 'coverage', '.DS_Store', '__pycache__']);
-const IGNORED_EXTS = new Set(['.exe', '.dll', '.so', '.dylib', '.bin', '.png', '.jpg', '.jpeg', '.gif', '.ico', '.zip', '.tar', '.gz']);
-
-const TAG_MAP: Record<string, string[]> = {
-    '.ts': ['code', 'typescript'],
-    '.js': ['code', 'javascript'],
-    '.tsx': ['code', 'typescript', 'react'],
-    '.jsx': ['code', 'javascript', 'react'],
-    '.md': ['document'],
-    '.txt': ['document'],
-    '.py': ['code', 'python'],
-    '.json': ['data', 'json'],
-    '.html': ['code', 'web'],
-    '.css': ['code', 'web'],
-    '.scss': ['code', 'web']
-};
+// Re-export for backward compatibility
+export { IGNORED_DIRS, IGNORED_EXTS };
 
 interface WalkOptions {
     maxDepth: number;
     currentDepth: number;
     maxFiles: number;
-    processedCount: number; // accumulated count (mutated or returned)
+    processedCount: number;
     dryRun: boolean;
 }
 
-// We return the updated count and any notes created
 interface WalkResult {
     processedCount: number;
     notes: string[];
-}
-
-function getTagsForFile(ext: string): string[] {
-    const tags = ['ingested', 'cli'];
-    if (TAG_MAP[ext]) {
-        tags.push(...TAG_MAP[ext]);
-    }
-    return tags;
 }
 
 /**
@@ -51,7 +28,6 @@ function getTagsForFile(ext: string): string[] {
 export async function ingestFile(filePath: string, cli: CliClient, dryRun: boolean): Promise<string | null> {
     try {
         if (await isBinary(filePath)) {
-            // log.warn(`Skipping binary file: ${filePath}`);
             return null;
         }
 
@@ -65,7 +41,6 @@ export async function ingestFile(filePath: string, cli: CliClient, dryRun: boole
             return `[DryRun] ${filename}`;
         }
 
-        // Call the remote MCP tool to create the note
         const result = await cli.callTool('create_note', {
             title,
             content: `Source File: ${filePath}\n\n\`\`\`${ext.replace('.', '')}\n${fileContent}\n\`\`\``,
@@ -77,18 +52,13 @@ export async function ingestFile(filePath: string, cli: CliClient, dryRun: boole
             ]
         });
 
-        // Parse result to get ID
         const mcpContent = (result as any).content;
         const resultText = (mcpContent && mcpContent[0]) ? (mcpContent[0] as any).text : "Unknown ID";
 
-        // Attempt to extract ID if the tool returns "Note created with ID: ..."
-        // The create_note tool usually returns just the note object or a success message
-        // If it returns JSON (the note), we parse it.
         try {
             const note = JSON.parse(resultText);
             if (note.id) return note.id;
         } catch (e) {
-            // Not JSON, try regex
             const match = resultText.match(/ID: ([\w-]+)/);
             if (match) return match[1];
         }
@@ -127,14 +97,12 @@ async function walkDirectory(
                 processedCount: currentProcessedCount
             });
 
-            // Update our local tracking with the result from recursion
             currentProcessedCount = result.processedCount;
             createdNotes.push(...result.notes);
         } else if (entry.isFile()) {
             const ext = path.extname(entry.name).toLowerCase();
             if (IGNORED_EXTS.has(ext)) continue;
 
-            // Ingest file (ingestFile now handles binary check and error logging)
             const noteId = await ingestFile(fullPath, cli, options.dryRun);
             if (noteId) {
                 createdNotes.push(noteId);

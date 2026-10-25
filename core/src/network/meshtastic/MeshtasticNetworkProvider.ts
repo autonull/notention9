@@ -1,9 +1,8 @@
 import { NetworkProvider, NetworkTransport, NetworkStatus } from '../types.js';
 import { Note, PrivacyLevel, OntologyNode, Property } from '../../types/index.js';
 import { ScoredMatch } from '../nostr/discovery.js';
-import { MatchEngine } from '../../matching/MatchEngine.js';
 import { encode, decode } from 'cbor-x';
-import { BaseNetworkProvider, type NetworkProviderConfig } from '../BaseNetworkProvider.js';
+import { BaseNetworkProvider, type NetworkProviderConfig, type DiscoveryOptions } from '../BaseNetworkProvider.js';
 
 export interface MeshtasticConfig extends NetworkProviderConfig {
     connectionType?: 'webserial' | 'http' | 'server-proxy';
@@ -74,41 +73,11 @@ export class MeshtasticNetworkProvider extends BaseNetworkProvider implements Ne
     }
 
     async discoverMatches(note: Note, ontology: OntologyNode[], privacyMode: PrivacyLevel): Promise<ScoredMatch[]> {
-        if (!this.enabled) return [];
-
-        const engine = new MatchEngine(ontology);
-        const matches: ScoredMatch[] = [];
-
-        for (const seenNote of this.seenNotes.values()) {
-            if (seenNote.id === note.id || seenNote.id === `mesh-${seenNote.author}-${note.id.slice(0, 8)}`) continue;
-
-            const result = engine.calculateMatchScore(note, seenNote);
-            if (result.score > 0.3) {
-                matches.push({
-                    note: seenNote,
-                    result,
-                    direction: 'outgoing'
-                });
-            }
-        }
-
-        this.logger.info(`Broadcasting discovery request for note ${note.id} over Meshtastic`);
-        try {
-            const request = this.serializeDiscoveryRequest(note);
-            if (this._transport) {
-                await this._transport.send(request);
-            } else if (this.config.connectionType === 'server-proxy' && this.config.agentService) {
-                if (this.config.agentService.meshSendPacket) {
-                    await this.config.agentService.meshSendPacket(request);
-                }
-            }
-        } catch (e) {
-            this.logger.error("Failed to broadcast discovery request", e as Error);
-        }
-
-        return matches.sort((a, b) => b.result.score - a.result.score);
+        return this.discoverWithEngine(
+            { note, ontology, privacyMode, threshold: 0.3 },
+            Array.from(this.seenNotes.values())
+        );
     }
-
 
     serializeNote(note: Note): Uint8Array {
         const maxProperties = 5;

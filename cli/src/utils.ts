@@ -1,8 +1,7 @@
 import chalk from 'chalk';
 import ora from 'ora';
-import path from 'path';
-import fs from 'fs/promises';
 import { Logger, type LogLevel } from '@notention/core';
+import { resolveSafePath, isBinary } from './fs-utils.js';
 
 let isVerbose = false;
 const suppressedContexts = new Set(['Server', 'WS', 'Init', 'MCP']);
@@ -52,24 +51,5 @@ export const withSpinner = async <T>(text: string, action: () => Promise<T>): Pr
   }
 };
 
-export const resolveSafePath = (userPath: string): string => {
-  const cwd = process.cwd();
-  const resolvedPath = path.resolve(cwd, userPath);
-  const rel = path.relative(cwd, resolvedPath);
-  if (rel.startsWith('..') || path.isAbsolute(rel)) {
-    throw new Error(`Access denied: Path '${userPath}' is outside the working directory.`);
-  }
-  return resolvedPath;
-};
-
-export const isBinary = async (filePath: string): Promise<boolean> => {
-  try {
-    const handle = await fs.open(filePath, 'r');
-    const buffer = Buffer.alloc(1024);
-    const { bytesRead } = await handle.read(buffer, 0, 1024, 0);
-    await handle.close();
-    return Array.from(buffer).slice(0, bytesRead).some(byte => byte === 0);
-  } catch {
-    return true;
-  }
-};
+// Re-export for backward compatibility
+export { resolveSafePath, isBinary };
