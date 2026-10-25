@@ -5,66 +5,6 @@ import { ProviderFactory } from './providers/factory.js';
 import { log, withSpinner } from './utils.js';
 import { CliClient } from './client.js';
 
-// Define provider-specific questions
-const PROVIDER_QUESTIONS: Record<string, any[]> = {
-  openai: [
-    {
-      type: 'input',
-      name: 'model',
-      message: 'Enter OpenAI model (e.g., gpt-4o):',
-      default: 'gpt-4o',
-    },
-    {
-      type: 'input',
-      name: 'apiKey',
-      message: 'Enter OpenAI API key:',
-      mask: '*',
-    },
-  ],
-  ollama: [
-    {
-      type: 'input',
-      name: 'model',
-      message: 'Enter Ollama model (e.g., llama3.2):',
-      default: 'llama3.2',
-    },
-    {
-      type: 'input',
-      name: 'baseURL',
-      message: 'Enter Ollama base URL:',
-      default: 'http://localhost:11434/v1',
-    },
-  ],
-  transformers: [
-    {
-      type: 'input',
-      name: 'model',
-      message: 'Enter Transformers.js model (e.g., onnx-community/Qwen2.5-0.5B-Instruct):',
-      default: 'onnx-community/Qwen2.5-0.5B-Instruct',
-    },
-  ],
-  local: [
-    {
-      type: 'input',
-      name: 'model',
-      message: 'Enter local model name:',
-      default: 'local-model',
-    },
-    {
-      type: 'input',
-      name: 'baseURL',
-      message: 'Enter local server base URL:',
-      default: 'http://localhost:3000/v1',
-    },
-    {
-      type: 'input',
-      name: 'apiKey',
-      message: 'Enter API key (if required):',
-      mask: '*',
-    },
-  ],
-};
-
 export class SetupManager {
   static async runSetup(cli?: CliClient) {
     console.log('\n' + chalk.bold.blue('Welcome to Notention Setup Wizard! 🧙‍♂️') + '\n');
@@ -101,10 +41,8 @@ export class SetupManager {
     ]);
     const provider = providerAnswer.provider;
 
-    // 3. Provider Specific Questions
-    const providerKey = provider;
-    const questions = PROVIDER_QUESTIONS[providerKey] ?
-      [...PROVIDER_QUESTIONS[providerKey]] : [];
+    // 3. Provider Specific Questions (from ProviderFactory)
+    const questions = ProviderFactory.getSetupQuestions(provider);
 
     // Add common options if not already asked
     if (!questions.some(q => q.name === 'temperature')) {

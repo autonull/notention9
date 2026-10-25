@@ -5,6 +5,7 @@ import { cosmiconfig } from 'cosmiconfig';
 import Conf from 'conf';
 import { z } from 'zod';
 import { LLMProviderConfig } from './providers/base.js';
+import { ProviderFactory } from './providers/factory.js';
 
 export type { LLMProviderConfig };
 
@@ -109,6 +110,11 @@ export class ConfigManager {
       }
     });
 
+    // Apply provider default model if not set
+    if (!config.model && config.provider) {
+      config.model = ProviderFactory.getDefaultModel(config.provider);
+    }
+
     // Validate the final configuration
     try {
       return ConfigSchema.parse(config);
@@ -147,17 +153,10 @@ export class ConfigManager {
   }
 
   /**
-   * Get default model for a provider
+   * Get default model for a provider (delegates to ProviderFactory)
    */
   getDefaultModel(provider: string): string {
-    const defaults: Record<string, string> = {
-      openai: 'gpt-4o',
-      ollama: 'llama3.2',
-      transformers: 'Xenova/Qwen1.5-0.5B-Chat',
-      local: 'local-model',
-    };
-
-    return defaults[provider] || 'gpt-4o';
+    return ProviderFactory.getDefaultModel(provider);
   }
 
   /**
