@@ -1,5 +1,6 @@
 import type { Note, Property, OntologyNode } from '../../types/index.js';
 import { MatchEngine } from '../../matching/MatchEngine.js';
+import { matchBidirectional } from '../../matching/bidirectional.js';
 
 /**
  * Pattern Matching Utilities
@@ -114,4 +115,17 @@ export function calculatePatternMatchScore(
     ).length;
 
     return matchedCount / conditions.length;
+}
+
+/**
+ * Perform bidirectional pattern matching between two notes
+ * Uses the common MatchEngine for ontology-aware scoring
+ */
+export function matchBidirectionalPattern(
+    engine: MatchEngine,
+    noteA: Note,
+    noteB: Note
+): { score: number; direction: 'outgoing' | 'incoming' } {
+    const { result, direction } = matchBidirectional(engine, noteA, noteB);
+    return { score: result.score, direction };
 }
