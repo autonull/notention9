@@ -3,6 +3,7 @@ import {OntologyNode, SuggestedAttribute} from '@notention/core';
 import {SearchIcon, SparklesIcon, PlusIcon, TagIcon} from '../common/icons';
 import {Input} from '../common/Input';
 import {useListNavigation} from '../../hooks/useListNavigation';
+import {buildPropertyOptions, filterPropertyOptions, renderPropertyOption} from './propertyUtils';
 
 interface PropertyPaletteProps {
     isOpen: boolean;
@@ -12,13 +13,13 @@ interface PropertyPaletteProps {
     suggestions?: SuggestedAttribute[];
 }
 
-interface PropertyOption {
-    key: string;
-    icon?: string;
-    description?: string;
-    isLearned?: boolean;
-    frequency?: number;
-}
+const DEFAULT_PROPERTIES = [
+    {key: 'role', icon: '💼', description: 'Add a role or skill'},
+    {key: 'rate', icon: '💰', description: 'Hourly or daily rate'},
+    {key: 'location', icon: '📍', description: 'Geographic location'},
+    {key: 'deadline', icon: '📅', description: 'Due date or time'},
+    {key: 'skill', icon: '⚡', description: 'Technical skill'}
+];
 
 export function PropertyPalette({
     isOpen,
@@ -30,55 +31,20 @@ export function PropertyPalette({
     const [filter, setFilter] = useState('');
     const inputRef = useRef<HTMLInputElement>(null);
 
-    const propertyOptions = useMemo(() => {
-        const defaults = [
-            {key: 'role', icon: '💼', description: 'Add a role or skill'},
-            {key: 'rate', icon: '💰', description: 'Hourly or daily rate'},
-            {key: 'location', icon: '📍', description: 'Geographic location'},
-            {key: 'deadline', icon: '📅', description: 'Due date or time'},
-            {key: 'skill', icon: '⚡', description: 'Technical skill'}
-        ];
+    const propertyOptions = useMemo(() => 
+        buildPropertyOptions({
+            defaults: DEFAULT_PROPERTIES,
+            ontology,
+            suggestions,
+            includeDefaults: true
+        }), 
+        [ontology, suggestions]
+    );
 
-        const options: PropertyOption[] = [...defaults];
-        const existingKeys = new Set(defaults.map(d => d.key));
-
-        // Add learned suggestions
-        suggestions.forEach(s => {
-            if (!existingKeys.has(s.key)) {
-                options.push({
-                    key: s.key,
-                    description: `Learned`,
-                    isLearned: true,
-                    frequency: s.frequency
-                });
-                existingKeys.add(s.key);
-            }
-        });
-
-        ontology.forEach(node => {
-            if (!node.attributes) return;
-            Object.entries(node.attributes).forEach(([key, attr]) => {
-                if (!existingKeys.has(key)) {
-                    options.push({
-                        key,
-                        icon: attr.icon,
-                        description: attr.description || node.label
-                    });
-                    existingKeys.add(key);
-                }
-            });
-        });
-        return options;
-    }, [ontology, suggestions]);
-
-    const filtered = useMemo(() => {
-        if (!filter) return propertyOptions;
-        const lowerFilter = filter.toLowerCase();
-        return propertyOptions.filter(p =>
-            p.key.toLowerCase().includes(lowerFilter) ||
-            p.description?.toLowerCase().includes(lowerFilter)
-        );
-    }, [filter, propertyOptions]);
+    const filtered = useMemo(() => 
+        filterPropertyOptions({filter, options: propertyOptions}), 
+        [filter, propertyOptions]
+    );
 
     const handleSelect = (key: string) => {
         onInsert(key);
