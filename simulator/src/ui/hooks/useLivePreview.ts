@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { useToast } from '../components/Toast';
+import { useToast } from '../components/ui';
 import { useNavigate } from 'react-router-dom';
 
 export interface JobStatus {

@@ -2,7 +2,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { Play, Loader2, Info, HelpCircle, AlertTriangle, CheckCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useScenarios, useScenarioDetails, SCENARIO_DETAILS } from '../hooks/useScenarios';
-import { useToast } from '../components/Toast';
+import { useToast } from '../components/ui';
 import { Button, Input, Kbd, Skeleton } from '../components/ui';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../components/ui';
 import { Badge } from '../components/ui';

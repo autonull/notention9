@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback, useMemo } from 'react';
 import { Trash2, Film, PlayCircle, Download, Loader2, Search, X, ChevronUp, ChevronDown, Filter, Check, CheckSquare, Square, List, Grid, Video, Clock, FileText, MoreVertical } from 'lucide-react';
 import { useMovies, useMovieSelection, useMovieFilters, useMovieActions, formatBytes, formatDuration, formatDate, type Movie, type ViewMode, type SortField, type SortDirection } from '../hooks/useMovies';
-import { useToast } from '../components/Toast';
+import { useToast } from '../components/ui';
 import { Button, IconButton, Input, Kbd, Skeleton } from '../components/ui';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui';
 import { Badge } from '../components/ui';

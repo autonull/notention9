@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useToast } from '../components/Toast';
+import { useToast } from '../components/ui';
 
 export interface Movie {
   name: string;

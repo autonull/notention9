@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { Loader2, AlertTriangle, CheckCircle, StopCircle, RefreshCw, Search, X, Copy, Trash2, Filter, PauseCircle, PlayCircle, Wifi, WifiOff, Activity, Terminal, Download, Maximize2, Minimize2, MonitorPlay } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useJobStatus, useDashboardConnection, useLogs, type JobStatus, type ConnectionState, STATUS_CONFIG } from '../hooks/useLivePreview';
-import { useToast } from '../components/Toast';
+import { useToast } from '../components/ui';
 import { Button, IconButton, Kbd, Skeleton, Select } from '../components/ui';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui';
 import { Badge } from '../components/ui';

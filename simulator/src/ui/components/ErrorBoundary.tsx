@@ -1,6 +1,6 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
-import { useToast } from './Toast';
+import { useToast } from '../components/ui';
 import { Button } from './ui/Button';
 import { Card } from './ui/Card';
 
