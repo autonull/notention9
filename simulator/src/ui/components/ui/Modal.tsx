@@ -2,6 +2,8 @@ import React, { Fragment, ReactNode, useEffect, useRef, useCallback } from 'reac
 import { X } from 'lucide-react';
 import { Button, IconButton } from './Button';
 import { Card } from './Card';
+import { DesignTokens } from './DesignTokens';
+import { cn } from '../../utils';
 
 export interface ModalProps {
   isOpen: boolean;
@@ -38,19 +40,7 @@ export const Modal = ({
         onClose();
       }
       if (e.key === 'Tab') {
-        const focusableElements = modalRef.current?.querySelectorAll<HTMLElement>(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        );
-        if (!focusableElements?.length) return;
-        const firstElement = focusableElements[0];
-        const lastElement = focusableElements[focusableElements.length - 1];
-        if (e.shiftKey && document.activeElement === firstElement) {
-          e.preventDefault();
-          lastElement.focus();
-        } else if (!e.shiftKey && document.activeElement === lastElement) {
-          e.preventDefault();
-          firstElement.focus();
-        }
+        trapFocus(modalRef.current!, e);
       }
     },
     [closeOnEscape, onClose]
@@ -75,23 +65,19 @@ export const Modal = ({
   if (!isOpen) return null;
 
   const sizeStyles = {
-    sm: 'max-w-sm',
-    md: 'max-w-md',
-    lg: 'max-w-lg',
-    xl: 'max-w-xl',
-    full: 'max-w-4xl',
+    sm: DesignTokens.modal.sizes.sm,
+    md: DesignTokens.modal.sizes.md,
+    lg: DesignTokens.modal.sizes.lg,
+    xl: DesignTokens.modal.sizes.xl,
+    full: DesignTokens.modal.sizes.full,
   };
 
   return (
     <Fragment>
-      <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 animate-fade-in"
-        onClick={closeOnOverlayClick ? onClose : undefined}
-        aria-hidden="true"
-      />
+      <div className={DesignTokens.modal.overlay} onClick={closeOnOverlayClick ? onClose : undefined} aria-hidden="true" />
       <div
         ref={modalRef}
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-slide-in-up"
+        className={cn(DesignTokens.modal.container, 'on-click-stop-propagation')}
         onClick={(e) => e.stopPropagation()}
         tabIndex={-1}
         role="dialog"
@@ -99,17 +85,17 @@ export const Modal = ({
         aria-labelledby={title ? 'modal-title' : undefined}
         aria-describedby={description ? 'modal-description' : undefined}
       >
-        <Card variant="elevated" className={`${sizeStyles[size]} w-full max-h-[85vh] flex flex-col`}>
+        <Card variant="elevated" className={cn(sizeStyles[size], 'w-full max-h-[85vh] flex flex-col')}>
           {(title || showCloseButton) && (
             <div className="flex items-start justify-between gap-4 p-4 border-b border-gray-700/50 flex-shrink-0">
               <div className="flex-1 min-w-0">
                 {title && (
-                  <h2 id="modal-title" className="text-xl font-bold text-white">
+                  <h2 id="modal-title" className={cn(DesignTokens.typography.heading3, 'text-white')}>
                     {title}
                   </h2>
                 )}
                 {description && (
-                  <p id="modal-description" className="text-sm text-gray-400 mt-1">
+                  <p id="modal-description" className={cn(DesignTokens.typography.bodySm, DesignTokens.colors.text.muted, 'mt-1')}>
                     {description}
                   </p>
                 )}
@@ -140,6 +126,23 @@ export const Modal = ({
   );
 };
 
+const trapFocus = (container: HTMLElement, event: KeyboardEvent): void => {
+  if (event.key !== 'Tab') return;
+  const focusable = container.querySelectorAll<HTMLElement>(
+    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+  );
+  if (!focusable.length) return;
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
+};
+
 export interface ConfirmModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -164,7 +167,7 @@ export const ConfirmModal = ({
   loading = false,
 }: ConfirmModalProps) => (
   <Modal isOpen={isOpen} onClose={onClose} title={title} size="sm">
-    <p className="text-gray-300">{message}</p>
+    <p className={cn(DesignTokens.typography.body, DesignTokens.colors.text.secondary)}>{message}</p>
     <div className="flex justify-end gap-3 mt-6" slot="footer">
       <Button variant="ghost" onClick={onClose} disabled={loading}>
         {cancelLabel}
@@ -196,7 +199,7 @@ export const AlertModal = ({
   <Modal isOpen={isOpen} onClose={onClose} title={title} size="sm">
     <div className="flex items-start gap-4">
       {icon && <div className="flex-shrink-0 mt-1">{icon}</div>}
-      <p className="text-gray-300 flex-1">{message}</p>
+      <p className={cn(DesignTokens.typography.body, DesignTokens.colors.text.secondary, 'flex-1')}>{message}</p>
     </div>
     <div className="flex justify-end mt-6" slot="footer">
       <Button variant="primary" onClick={onClose} autoFocus>

@@ -1,12 +1,14 @@
 import React, { useState, useRef, useCallback, useMemo } from 'react';
 import { Trash2, Film, PlayCircle, Download, Loader2, Search, X, ChevronUp, ChevronDown, Filter, Check, CheckSquare, Square, List, Grid, Video, Clock, FileText, MoreVertical } from 'lucide-react';
-import { useMovies, useMovieSelection, useMovieFilters, useMovieActions, formatBytes, formatDuration, formatDate, type Movie, type ViewMode, type SortField, type SortDirection } from '../hooks/useMovies';
+import { useMovies, useMovieSelection, useMovieFilters, useMovieActions, type Movie, type ViewMode, type SortField, type SortDirection } from '../hooks/useMovies';
 import { useToast } from '../components/ui';
 import { Button, IconButton, Input, Kbd, Skeleton } from '../components/ui';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui';
 import { Badge } from '../components/ui';
-import { Dropdown, DropdownTrigger } from '../components/ui';
+import { Dropdown } from '../components/ui';
 import { Modal, ConfirmModal } from '../components/ui';
+import { DesignTokens } from '../components/ui';
+import { cn, formatBytes, formatDuration, formatDate } from '../utils';
 
 const MovieSkeleton = () => <Skeleton className="h-4 bg-gray-700 rounded w-3/4" />;
 const MovieGridSkeleton = () => <Skeleton className="aspect-video bg-gray-800 rounded-lg" />;
@@ -22,11 +24,12 @@ const MovieListItem = ({ movie, isSelected, isChecked, onClick, onToggleSelect, 
 }) => (
   <div
     onClick={onClick}
-    className={`
-      group relative p-3 rounded-xl cursor-pointer transition-all duration-150 flex items-center gap-3
-      ${isSelected ? 'bg-indigo-900/30 border border-indigo-500/50' : 'hover:bg-gray-700/50'}
-      ${isChecked && !isSelected ? 'bg-indigo-900/10' : ''}
-    `}
+    className={cn(
+      'group relative p-3 rounded-xl cursor-pointer flex items-center gap-3',
+      DesignTokens.colors.state.transitionFast,
+      isSelected ? 'bg-indigo-900/30 border border-indigo-500/50' : 'hover:bg-gray-700/50',
+      isChecked && !isSelected && 'bg-indigo-900/10'
+    )}
     role="option"
     aria-selected={isSelected}
     aria-checked={isChecked}
@@ -45,7 +48,7 @@ const MovieListItem = ({ movie, isSelected, isChecked, onClick, onToggleSelect, 
     <div className="flex-1 min-w-0">
       <div className="flex items-center gap-2 truncate">
         <Video size={16} className="text-gray-500 flex-shrink-0" />
-        <span className={`font-medium truncate ${isSelected ? 'text-white' : 'text-gray-200'}`}>
+        <span className={cn('font-medium truncate', isSelected ? 'text-white' : 'text-gray-200')}>
           {movie.name}
         </span>
       </div>
@@ -78,11 +81,12 @@ const MovieGridItem = ({ movie, isSelected, isChecked, onClick, onToggleSelect, 
 }) => (
   <div
     onClick={onClick}
-    className={`
-      relative aspect-video rounded-xl overflow-hidden cursor-pointer transition-all duration-150 group
-      ${isSelected ? 'ring-2 ring-indigo-500 bg-indigo-900/20' : 'hover:ring-1 ring-gray-600'}
-      ${isChecked && !isSelected ? 'ring-1 ring-indigo-500/50' : ''}
-    `}
+    className={cn(
+      'relative aspect-video rounded-xl overflow-hidden cursor-pointer group',
+      DesignTokens.colors.state.transitionFast,
+      isSelected ? 'ring-2 ring-indigo-500 bg-indigo-900/20' : 'hover:ring-1 ring-gray-600',
+      isChecked && !isSelected && 'ring-1 ring-indigo-500/50'
+    )}
     role="option"
     aria-selected={isSelected}
     aria-checked={isChecked}
@@ -108,7 +112,7 @@ const MovieGridItem = ({ movie, isSelected, isChecked, onClick, onToggleSelect, 
         <Button
           variant="ghost"
           size="sm"
-          className={`${isChecked ? 'bg-indigo-500 text-white' : 'bg-black/50 text-white hover:bg-black/70'}`}
+          className={cn(isChecked ? 'bg-indigo-500 text-white' : 'bg-black/50 text-white hover:bg-black/70')}
           onClick={onToggleSelect}
           aria-label={isChecked ? 'Deselect' : 'Select'}
           aria-pressed={isChecked}
@@ -161,7 +165,7 @@ const PreviewPane = ({ selectedMovie, onClose, onDownload }: {
 
   return (
     <div className="w-full h-full flex flex-col relative">
-      <div className="bg-gray-900/50 p-3 border-b border-gray-700/50 font-medium flex items-center justify-between">
+      <div className={cn('bg-gray-900/50 p-3 border-b', DesignTokens.colors.border.muted, 'font-medium flex items-center justify-between')}>
         <div className="flex items-center gap-3 mr-2">
           <Video size={18} className="text-indigo-400" />
           <span className="truncate">{selectedMovie.name}</span>
@@ -300,9 +304,14 @@ export const MovieLibrary = () => {
   return (
     <div className="flex h-full gap-6" onKeyDown={handleKeyDown}>
       {/* Sidebar - Movie List */}
-      <div className="w-full lg:w-1/3 bg-gray-800/50 rounded-2xl overflow-hidden border border-gray-700/50 flex flex-col backdrop-blur-sm shadow-xl">
+      <div className={cn(
+        'w-full lg:w-1/3 rounded-2xl overflow-hidden flex flex-col',
+        DesignTokens.card.elevated,
+        DesignTokens.shadows.card,
+        'backdrop-blur-sm'
+      )}>
         {/* Header */}
-        <CardHeader className="p-4 bg-gray-900/50 border-b border-gray-700/50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <CardHeader className={cn('p-4', DesignTokens.colors.background.panel, 'border-b', DesignTokens.colors.border.muted, 'flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4')}>
           <div className="flex items-center gap-3">
             <Film className="text-indigo-400" size={24} />
             <div>
@@ -313,7 +322,7 @@ export const MovieLibrary = () => {
 
           <div className="flex items-center gap-2 flex-wrap">
             {/* View Mode Toggle */}
-            <div className="flex bg-gray-900 rounded-lg p-1 border border-gray-700" role="group" aria-label="View mode">
+            <div className={cn('flex bg-gray-900 rounded-lg p-1 border', DesignTokens.colors.border.muted)} role="group" aria-label="View mode">
               <Button
                 variant={viewMode === 'list' ? 'primary' : 'ghost'}
                 size="sm"
@@ -336,39 +345,32 @@ export const MovieLibrary = () => {
 
             {/* Sort Dropdown */}
             <Dropdown align="right">
-              <DropdownTrigger aria-label="Sort and filter options">
-                <Button variant="ghost" size="sm" icon={<Filter size={16} />} className={showFilters ? 'text-indigo-400' : ''}>
-                  Sort: {sortField}
-                  <span className="text-gray-500 ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
-                </Button>
-              </DropdownTrigger>
               <Dropdown.Item
-                label="Sort by Name"
-                onClick={() => { handleSort('name'); setShowFilters(false); }}
-                icon={sortField === 'name' ? (sortDirection === 'asc' ? <ChevronUp size={16} /> : <ChevronDown size={16} />) : null}
+                trigger={
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    icon={<Filter size={16} />}
+                    className={cn(showFilters && 'text-indigo-400')}
+                  >
+                    Sort: {sortField}
+                    <span className="text-gray-500 ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                  </Button>
+                }
+                items={[
+                  { label: 'Sort by Name', onClick: () => { handleSort('name'); setShowFilters(false); }, icon: sortField === 'name' ? (sortDirection === 'asc' ? <ChevronUp size={16} /> : <ChevronDown size={16} />) : null },
+                  { label: 'Sort by Date', onClick: () => { handleSort('createdAt'); setShowFilters(false); }, icon: sortField === 'createdAt' ? (sortDirection === 'asc' ? <ChevronUp size={16} /> : <ChevronDown size={16} />) : null },
+                  { label: 'Sort by Size', onClick: () => { handleSort('size'); setShowFilters(false); }, icon: sortField === 'size' ? (sortDirection === 'asc' ? <ChevronUp size={16} /> : <ChevronDown size={16} />) : null },
+                  { label: 'Sort by Duration', onClick: () => { handleSort('duration'); setShowFilters(false); }, icon: sortField === 'duration' ? (sortDirection === 'asc' ? <ChevronUp size={16} /> : <ChevronDown size={16} />) : null },
+                  { label: 'Clear Filters', onClick: clearFilters, icon: <X size={16} />, dividerAfter: true },
+                ]}
               />
-              <Dropdown.Item
-                label="Sort by Date"
-                onClick={() => { handleSort('createdAt'); setShowFilters(false); }}
-                icon={sortField === 'createdAt' ? (sortDirection === 'asc' ? <ChevronUp size={16} /> : <ChevronDown size={16} />) : null}
-              />
-              <Dropdown.Item
-                label="Sort by Size"
-                onClick={() => { handleSort('size'); setShowFilters(false); }}
-                icon={sortField === 'size' ? (sortDirection === 'asc' ? <ChevronUp size={16} /> : <ChevronDown size={16} />) : null}
-              />
-              <Dropdown.Item
-                label="Sort by Duration"
-                onClick={() => { handleSort('duration'); setShowFilters(false); }}
-                icon={sortField === 'duration' ? (sortDirection === 'asc' ? <ChevronUp size={16} /> : <ChevronDown size={16} />) : null}
-              />
-              <Dropdown.Item dividerAfter label="Clear Filters" onClick={clearFilters} icon={<X size={16} />} />
             </Dropdown>
           </div>
         </CardHeader>
 
         {/* Search Bar */}
-        <div className="p-3 bg-gray-900/30 border-b border-gray-700/50">
+        <div className={cn('p-3', DesignTokens.colors.background.panel, 'border-b', DesignTokens.colors.border.muted)}>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
             <Input
@@ -388,7 +390,7 @@ export const MovieLibrary = () => {
 
         {/* Bulk Actions Bar */}
         {selectedMovies.size > 0 && (
-          <div className="p-3 bg-indigo-900/20 border-b border-indigo-500/30 flex items-center gap-3 animate-slide-in-down">
+          <div className={cn('p-3 flex items-center gap-3 animate-slide-in-down', DesignTokens.colors.status.connecting.bg, 'border-b', DesignTokens.colors.status.connecting.border)}>
             <Badge variant="primary" size="sm">{selectedMovies.size} selected</Badge>
             <div className="flex-1" />
             <Button variant="danger" size="sm" onClick={handleDeleteSelected} icon={<Trash2 size={14} />}>
@@ -401,7 +403,7 @@ export const MovieLibrary = () => {
         )}
 
         {/* Movie List/Grid */}
-        <CardContent className="p-3 flex-1 overflow-auto custom-scrollbar" ref={listRef} role="listbox" aria-label="Movies">
+        <CardContent className={cn('p-3 flex-1 overflow-auto custom-scrollbar')} ref={listRef} role="listbox" aria-label="Movies">
           {loading ? (
             viewMode === 'list' ? (
               Array.from({ length: 5 }).map((_, i) => <MovieSkeleton key={i} />)
@@ -455,7 +457,7 @@ export const MovieLibrary = () => {
       </div>
 
       {/* Preview Pane */}
-      <div className="flex-1 bg-black/50 rounded-2xl overflow-hidden border border-gray-800 relative flex flex-col backdrop-blur-sm shadow-xl">
+      <div className={cn('flex-1 rounded-2xl overflow-hidden flex flex-col', DesignTokens.card.elevated, DesignTokens.shadows.card, 'backdrop-blur-sm')}>
         <PreviewPane selectedMovie={selectedMovie} onClose={clearSelection} onDownload={() => {}} />
       </div>
 

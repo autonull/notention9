@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
 import { Button } from './Button';
 import { CheckCircle, AlertTriangle, Info } from 'lucide-react';
+import { DesignTokens } from './DesignTokens';
+import { cn } from '../../utils';
 
 interface ToastAction {
   label: string;
@@ -27,6 +29,13 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
 const MAX_TOASTS = 5;
 const DEFAULT_DURATION = 4000;
+
+const typeStyles = {
+  success: { bg: 'bg-green-600', icon: <CheckCircle size={18} /> },
+  error: { bg: 'bg-red-600', icon: <AlertTriangle size={18} /> },
+  info: { bg: 'bg-blue-600', icon: <Info size={18} /> },
+  warning: { bg: 'bg-yellow-600', icon: <AlertTriangle size={18} /> },
+};
 
 const ToastItem: React.FC<{ toast: Toast; onRemove: (id: number) => void }> = ({ toast, onRemove }) => {
   const [progress, setProgress] = useState(100);
@@ -63,31 +72,24 @@ const ToastItem: React.FC<{ toast: Toast; onRemove: (id: number) => void }> = ({
     return () => cancelAnimationFrame(animationFrameRef.current!);
   }, [toast.id, onRemove, toast.persistent, toast.duration, hovered]);
 
-  const bgColor = {
-    success: 'bg-green-600',
-    error: 'bg-red-600',
-    info: 'bg-blue-600',
-    warning: 'bg-yellow-600',
-  }[toast.type];
-
-  const iconMap = {
-    success: <CheckCircle size={18} />,
-    error: <AlertTriangle size={18} />,
-    info: <Info size={18} />,
-    warning: <AlertTriangle size={18} />,
-  };
+  const { bg, icon } = typeStyles[toast.type];
 
   return (
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className={`relative px-4 py-3 rounded-xl shadow-xl text-white text-sm font-medium animate-slide-in-right flex items-start gap-3 overflow-hidden ${bgColor} border border-white/10`}
+      className={cn(
+        'relative px-4 py-3 rounded-xl text-white text-sm font-medium animate-slide-in-right flex items-start gap-3 overflow-hidden',
+        DesignTokens.shadows.card,
+        bg,
+        'border border-white/10'
+      )}
       style={{ minWidth: '320px', maxWidth: '480px' }}
       role="alert"
       aria-live={toast.type === 'error' ? 'assertive' : 'polite'}
     >
       <div className="flex-shrink-0 mt-0.5 text-white/90">
-        {iconMap[toast.type]}
+        {icon}
       </div>
       <div className="flex-1 min-w-0 pr-2">
         <p className="break-words">{toast.message}</p>

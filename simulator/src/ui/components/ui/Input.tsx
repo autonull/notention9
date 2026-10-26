@@ -1,4 +1,6 @@
 import React, { forwardRef, InputHTMLAttributes, TextareaHTMLAttributes } from 'react';
+import { DesignTokens } from './DesignTokens';
+import { cn } from '../../utils';
 
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
   label?: string;
@@ -31,22 +33,16 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const hintId = hint ? `${inputId}-hint` : undefined;
     const describedBy = [errorId, hintId].filter(Boolean).join(' ') || undefined;
 
-    const sizeStyles = {
-      sm: 'px-2.5 py-1.5 text-sm',
-      md: 'px-3 py-2 text-base',
-      lg: 'px-4 py-3 text-lg',
-    };
-
     const iconSizeStyles = {
-      sm: 'size-4',
-      md: 'size-5',
-      lg: 'size-6',
+      sm: DesignTokens.sizing.iconSm,
+      md: DesignTokens.sizing.iconMd,
+      lg: DesignTokens.sizing.iconLg,
     };
 
     return (
-      <div className={`${fullWidth ? 'w-full' : ''}`}>
+      <div className={cn(fullWidth && 'w-full')}>
         {label && (
-          <label htmlFor={inputId} className="block text-sm font-medium text-gray-300 mb-1.5">
+          <label htmlFor={inputId} className={cn(DesignTokens.typography.label, 'mb-1.5')}>
             {label}
           </label>
         )}
@@ -61,15 +57,15 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             id={inputId}
             aria-invalid={error ? 'true' : 'false'}
             aria-describedby={describedBy}
-            className={`
-              w-full bg-gray-900 border rounded-lg text-white
-              focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-colors
-              ${iconPosition === 'left' ? 'pl-10' : ''}
-              ${iconPosition === 'right' ? 'pr-10' : ''}
-              ${error ? 'border-red-500/50 focus:ring-red-500' : 'border-gray-700 hover:border-gray-600'}
-              ${sizeStyles[size]}
-              ${className}
-            `}
+            className={cn(
+              'w-full rounded-lg text-white outline-none',
+              DesignTokens.colors.input.base,
+              DesignTokens.sizing.input[size],
+              iconPosition === 'left' && 'pl-10',
+              iconPosition === 'right' && 'pr-10',
+              error ? DesignTokens.colors.input.error : DesignTokens.colors.input.default,
+              className
+            )}
             {...props}
           />
           {icon && iconPosition === 'right' && (
@@ -88,12 +84,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           )}
         </div>
         {error && (
-          <p id={errorId} className="mt-1.5 text-sm text-red-400" role="alert">
+          <p id={errorId} className={cn(DesignTokens.typography.error, 'mt-1.5', 'role-alert')} role="alert">
             {error}
           </p>
         )}
         {hint && !error && (
-          <p id={hintId} className="mt-1.5 text-xs text-gray-500">
+          <p id={hintId} className={cn(DesignTokens.typography.hint, 'mt-1.5')}>
             {hint}
           </p>
         )}
@@ -133,16 +129,10 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     const hintId = hint ? `${textareaId}-hint` : undefined;
     const describedBy = [errorId, hintId].filter(Boolean).join(' ') || undefined;
 
-    const sizeStyles = {
-      sm: 'px-2.5 py-1.5 text-sm',
-      md: 'px-3 py-2 text-base',
-      lg: 'px-4 py-3 text-lg',
-    };
-
     return (
-      <div className={`${fullWidth ? 'w-full' : ''}`}>
+      <div className={cn(fullWidth && 'w-full')}>
         {label && (
-          <label htmlFor={textareaId} className="block text-sm font-medium text-gray-300 mb-1.5">
+          <label htmlFor={textareaId} className={cn(DesignTokens.typography.label, 'mb-1.5')}>
             {label}
           </label>
         )}
@@ -152,22 +142,22 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           rows={rows}
           aria-invalid={error ? 'true' : 'false'}
           aria-describedby={describedBy}
-          className={`
-            w-full bg-gray-900 border rounded-lg text-white resize-y
-            focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-colors
-            ${error ? 'border-red-500/50 focus:ring-red-500' : 'border-gray-700 hover:border-gray-600'}
-            ${sizeStyles[size]}
-            ${className}
-          `}
+          className={cn(
+            'w-full rounded-lg text-white resize-y outline-none',
+            DesignTokens.colors.input.base,
+            DesignTokens.sizing.input[size],
+            error ? DesignTokens.colors.input.error : DesignTokens.colors.input.default,
+            className
+          )}
           {...props}
         />
         {error && (
-          <p id={errorId} className="mt-1.5 text-sm text-red-400" role="alert">
+          <p id={errorId} className={cn(DesignTokens.typography.error, 'mt-1.5')} role="alert">
             {error}
           </p>
         )}
         {hint && !error && (
-          <p id={hintId} className="mt-1.5 text-xs text-gray-500">
+          <p id={hintId} className={cn(DesignTokens.typography.hint, 'mt-1.5')}>
             {hint}
           </p>
         )}
@@ -209,16 +199,10 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     const hintId = hint ? `${selectId}-hint` : undefined;
     const describedBy = [errorId, hintId].filter(Boolean).join(' ') || undefined;
 
-    const sizeStyles = {
-      sm: 'px-2.5 py-1.5 text-sm',
-      md: 'px-3 py-2 text-base',
-      lg: 'px-4 py-3 text-lg',
-    };
-
     return (
-      <div className={`${fullWidth ? 'w-full' : ''}`}>
+      <div className={cn(fullWidth && 'w-full')}>
         {label && (
-          <label htmlFor={selectId} className="block text-sm font-medium text-gray-300 mb-1.5">
+          <label htmlFor={selectId} className={cn(DesignTokens.typography.label, 'mb-1.5')}>
             {label}
           </label>
         )}
@@ -227,13 +211,13 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           id={selectId}
           aria-invalid={error ? 'true' : 'false'}
           aria-describedby={describedBy}
-          className={`
-            w-full bg-gray-900 border rounded-lg text-white appearance-none
-            focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-colors
-            ${error ? 'border-red-500/50 focus:ring-red-500' : 'border-gray-700 hover:border-gray-600'}
-            ${sizeStyles[size]}
-            ${className}
-          `}
+          className={cn(
+            'w-full rounded-lg text-white appearance-none outline-none',
+            DesignTokens.colors.input.base,
+            DesignTokens.sizing.input[size],
+            error ? DesignTokens.colors.input.error : DesignTokens.colors.input.default,
+            className
+          )}
           {...props}
         >
           {placeholder && (
@@ -248,12 +232,12 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           ))}
         </select>
         {error && (
-          <p id={errorId} className="mt-1.5 text-sm text-red-400" role="alert">
+          <p id={errorId} className={cn(DesignTokens.typography.error, 'mt-1.5')} role="alert">
             {error}
           </p>
         )}
         {hint && !error && (
-          <p id={hintId} className="mt-1.5 text-xs text-gray-500">
+          <p id={hintId} className={cn(DesignTokens.typography.hint, 'mt-1.5')}>
             {hint}
           </p>
         )}

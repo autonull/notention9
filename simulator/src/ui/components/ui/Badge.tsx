@@ -1,4 +1,6 @@
 import React, { HTMLAttributes, forwardRef } from 'react';
+import { DesignTokens } from './DesignTokens';
+import { cn } from '../../utils';
 
 export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   variant?: 'default' | 'primary' | 'success' | 'warning' | 'error' | 'info';
@@ -9,12 +11,12 @@ export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
 export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
   ({ variant = 'default', size = 'md', dot = false, className = '', children, ...props }, ref) => {
     const variantStyles = {
-      default: 'bg-gray-700 text-gray-400 border border-gray-600',
-      primary: 'bg-indigo-900/30 text-indigo-300 border border-indigo-500/30',
-      success: 'bg-green-900/30 text-green-300 border border-green-500/30',
-      warning: 'bg-yellow-900/30 text-yellow-300 border border-yellow-500/30',
-      error: 'bg-red-900/30 text-red-300 border border-red-500/30',
-      info: 'bg-blue-900/30 text-blue-300 border border-blue-500/30',
+      default: DesignTokens.colors.badge.default,
+      primary: DesignTokens.colors.badge.primary,
+      success: DesignTokens.colors.badge.success,
+      warning: DesignTokens.colors.badge.warning,
+      error: DesignTokens.colors.badge.error,
+      info: DesignTokens.colors.badge.info,
     };
 
     const sizeStyles = {
@@ -26,12 +28,12 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
     return (
       <span
         ref={ref}
-        className={`
-          inline-flex items-center gap-1.5 font-medium rounded-full border
-          ${variantStyles[variant]}
-          ${sizeStyles[size]}
-          ${className}
-        `}
+        className={cn(
+          'inline-flex items-center gap-1.5 font-medium rounded-full border',
+          variantStyles[variant],
+          sizeStyles[size],
+          className
+        )}
         {...props}
       >
         {dot && (
@@ -60,13 +62,13 @@ export const Kbd = forwardRef<HTMLElement, KbdProps>(
     return (
       <kbd
         ref={ref}
-        className={`
-          inline-flex items-center justify-center font-mono
-          bg-gray-700 border border-gray-600 rounded
-          text-gray-200 whitespace-nowrap
-          ${sizeStyles[size]}
-          ${className}
-        `}
+        className={cn(
+          'inline-flex items-center justify-center font-mono',
+          'bg-gray-700 border border-gray-600 rounded',
+          'text-gray-200 whitespace-nowrap',
+          sizeStyles[size],
+          className
+        )}
         {...props}
       >
         {children}
@@ -86,7 +88,7 @@ export interface SkeletonProps extends HTMLAttributes<HTMLDivElement> {
 
 export const Skeleton = forwardRef<HTMLDivElement, SkeletonProps>(
   ({ variant = 'rectangular', width, height, lines = 1, className = '', ...props }, ref) => {
-    const baseStyles = 'animate-pulse bg-gray-800 rounded';
+    const baseStyles = cn('animate-pulse bg-gray-800 rounded');
 
     if (variant === 'text') {
       return (
@@ -94,7 +96,7 @@ export const Skeleton = forwardRef<HTMLDivElement, SkeletonProps>(
           {Array.from({ length: lines }).map((_, i) => (
             <div
               key={i}
-              className={`${baseStyles} h-4 ${i === lines - 1 ? 'w-3/4' : 'w-full'} mb-2`}
+              className={cn(baseStyles, 'h-4', i === lines - 1 ? 'w-3/4' : 'w-full', 'mb-2')}
               style={{ width: i === lines - 1 && width ? width : undefined }}
             />
           ))}
@@ -105,7 +107,7 @@ export const Skeleton = forwardRef<HTMLDivElement, SkeletonProps>(
     return (
       <div
         ref={ref}
-        className={`${baseStyles} ${className}`}
+        className={cn(baseStyles, className)}
         style={{
           width: width || '100%',
           height: height || (variant === 'circular' ? '100%' : '100%'),
@@ -148,7 +150,7 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
       return (
         <div
           ref={ref}
-          className={`${sizeStyles[size]} ${shapeStyles[shape]} overflow-hidden bg-gray-700 ${className}`}
+          className={cn(sizeStyles[size], shapeStyles[shape], 'overflow-hidden bg-gray-700', className)}
           {...props}
         >
           <img
@@ -164,7 +166,7 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
     return (
       <div
         ref={ref}
-        className={`${sizeStyles[size]} ${shapeStyles[shape]} bg-gray-700 flex items-center justify-center text-gray-500 ${className}`}
+        className={cn(sizeStyles[size], shapeStyles[shape], 'bg-gray-700 flex items-center justify-center text-gray-500', className)}
         {...props}
       >
         {fallback || (

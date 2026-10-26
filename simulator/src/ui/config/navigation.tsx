@@ -1,4 +1,5 @@
 import { Clapperboard, Film, MonitorPlay, HelpCircle, Keyboard, Command, Menu, X, Search, Settings } from 'lucide-react';
+import { formatShortcut, isMac } from '../utils';
 
 export interface NavItem {
   path: string;
@@ -125,7 +126,7 @@ export const createCommandItems = (
     id: 'shortcuts',
     label: 'Keyboard Shortcuts',
     description: 'View all available keyboard shortcuts',
-    shortcut: '⌘K',
+    shortcut: isMac() ? '⌘K' : 'Ctrl+K',
     icon: <Keyboard size={18} />,
     action: () => setShowCommandPalette(true),
     keywords: ['shortcuts', 'keys', 'hotkeys', 'keyboard'],
@@ -155,20 +156,20 @@ export const COMMAND_PALETTE_SHORTCUTS = [
   {
     category: 'Actions',
     shortcuts: [
-      { label: 'Command Palette', keys: ['⌘', 'K'] },
+      { label: 'Command Palette', keys: isMac() ? ['⌘', 'K'] : ['Ctrl', 'K'] },
       { label: 'Show Help', keys: ['?'] },
       { label: 'Close Modals', keys: ['Esc'] },
     ],
   },
 ];
 
-export const formatShortcut = (shortcut: { key: string; ctrl?: boolean; shift?: boolean; alt?: boolean; meta?: boolean }): string => {
-  const parts: string[] = [];
-  if (shortcut.meta || shortcut.ctrl) parts.push(navigator.platform.includes('Mac') ? '⌘' : 'Ctrl');
-  if (shortcut.shift) parts.push('Shift');
-  if (shortcut.alt) parts.push(navigator.platform.includes('Mac') ? '⌥' : 'Alt');
-  parts.push(shortcut.key.toUpperCase());
-  return parts.join(' + ');
+export const formatNavShortcut = (shortcut: { key: string; ctrl?: boolean; shift?: boolean; alt?: boolean; meta?: boolean }): string => {
+  return formatShortcut([
+    ...(shortcut.meta || shortcut.ctrl ? [isMac() ? '⌘' : 'Ctrl'] : []),
+    ...(shortcut.shift ? ['Shift'] : []),
+    ...(shortcut.alt ? [isMac() ? '⌥' : 'Alt'] : []),
+    shortcut.key.toUpperCase(),
+  ]);
 };
 
 export const MOBILE_MENU_BUTTON = {
@@ -183,5 +184,5 @@ export const SIDEBAR_CLOSE_BUTTON = {
 
 export const COMMAND_PALETTE_HINT = {
   icon: Command,
-  shortcut: navigator.platform.includes('Mac') ? '⌘K' : 'Ctrl+K',
+  shortcut: isMac() ? '⌘K' : 'Ctrl+K',
 };

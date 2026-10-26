@@ -17,7 +17,6 @@ export function useJobStatus() {
   const [loading, setLoading] = useState(true);
   const [connectionState, setConnectionState] = useState<ConnectionState>('disconnected');
   const { addToast } = useToast();
-  const navigate = useNavigate();
 
   const checkStatus = useCallback(async () => {
     try {
@@ -122,20 +121,25 @@ export function useLogs(job: JobStatus | null) {
     }
   }, [job?.logs, paused]);
 
+  const detectLogLevel = useCallback((log: string): LogLevel => {
+    const lower = log.toLowerCase();
+    if (lower.includes('error') || lower.includes('fail')) return 'error';
+    if (lower.includes('warn')) return 'warn';
+    if (lower.includes('debug')) return 'debug';
+    return 'info';
+  }, []);
+
   const filteredLogs = useMemo(() =>
     job?.logs
       .filter((log) => {
         if (logFilter !== 'all') {
-          const lower = log.toLowerCase();
-          const detected = lower.includes('error') || lower.includes('fail') ? 'error' :
-            lower.includes('warn') ? 'warn' :
-            lower.includes('debug') ? 'debug' : 'info';
+          const detected = detectLogLevel(log);
           return detected === logFilter;
         }
         return true;
       })
       .filter((log) => !logSearch || log.toLowerCase().includes(logSearch.toLowerCase())),
-    [job?.logs, logFilter, logSearch]
+    [job?.logs, logFilter, logSearch, detectLogLevel]
   );
 
   const copyLogs = useCallback(() => {
@@ -203,14 +207,6 @@ export function useLogs(job: JobStatus | null) {
         break;
     }
   }, [showLogPanel, paused]);
-
-  const detectLogLevel = useCallback((log: string): LogLevel => {
-    const lower = log.toLowerCase();
-    if (lower.includes('error') || lower.includes('fail')) return 'error';
-    if (lower.includes('warn')) return 'warn';
-    if (lower.includes('debug')) return 'debug';
-    return 'info';
-  }, []);
 
   return {
     logFilter,

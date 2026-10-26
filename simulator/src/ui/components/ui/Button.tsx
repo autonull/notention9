@@ -1,4 +1,6 @@
 import React, { forwardRef, ButtonHTMLAttributes } from 'react';
+import { DesignTokens } from './DesignTokens';
+import { cn } from '../../utils';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline';
@@ -25,34 +27,35 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
-    const baseStyles = `
-      inline-flex items-center justify-center font-bold rounded-xl
-      transition-all duration-200 active:scale-[0.98]
-      focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900
-      touch-target-48
-      ${fullWidth ? 'w-full' : ''}
-      ${disabled || loading ? 'opacity-50 cursor-not-allowed' : ''}
-    `;
+    const baseStyles = cn(
+      'inline-flex items-center justify-center font-bold rounded-xl',
+      DesignTokens.colors.state.transition,
+      DesignTokens.colors.state.active,
+      DesignTokens.colors.state.focus,
+      DesignTokens.colors.state.disabled,
+      DesignTokens.sizing.touchTarget,
+      fullWidth && 'w-full'
+    );
 
     const variantStyles = {
-      primary: 'bg-indigo-600 hover:bg-indigo-500 text-white',
-      secondary: 'bg-gray-700 hover:bg-gray-600 text-white',
-      danger: 'bg-red-600 hover:bg-red-500 text-white',
-      ghost: 'text-gray-300 hover:bg-gray-700 hover:text-white',
-      outline: 'border border-gray-600 text-gray-300 hover:bg-gray-700 hover:border-gray-500',
+      primary: DesignTokens.colors.accent.primary,
+      secondary: DesignTokens.colors.accent.secondary,
+      danger: DesignTokens.colors.accent.danger,
+      ghost: DesignTokens.colors.accent.ghost,
+      outline: DesignTokens.colors.accent.outline,
     };
 
     const sizeStyles = {
-      sm: 'px-3 py-1.5 text-sm gap-1.5',
-      md: 'px-4 py-2.5 text-base gap-2',
-      lg: 'px-6 py-3.5 text-lg gap-2.5',
+      sm: DesignTokens.sizing.button.sm,
+      md: DesignTokens.sizing.button.md,
+      lg: DesignTokens.sizing.button.lg,
     };
 
     return (
       <button
         ref={ref}
         disabled={disabled || loading}
-        className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
+        className={cn(baseStyles, variantStyles[variant], sizeStyles[size], className)}
         {...props}
       >
         {loading ? (
@@ -83,16 +86,21 @@ export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>
 export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
   ({ size = 'md', 'aria-label': ariaLabel, children, className = '', ...props }, ref) => {
     const sizeStyles = {
-      sm: 'p-1.5 size-8',
-      md: 'p-2 size-10',
-      lg: 'p-2.5 size-12',
+      sm: DesignTokens.sizing.iconButton.sm,
+      md: DesignTokens.sizing.iconButton.md,
+      lg: DesignTokens.sizing.iconButton.lg,
     };
 
     return (
       <button
         ref={ref}
         aria-label={ariaLabel}
-        className={`inline-flex items-center justify-center rounded-lg text-gray-400 hover:text-white hover:bg-gray-700 transition-colors touch-target ${sizeStyles[size]} ${className}`}
+        className={cn(
+          'inline-flex items-center justify-center rounded-lg text-gray-400 hover:text-white hover:bg-gray-700 transition-colors',
+          'touch-target',
+          sizeStyles[size],
+          className
+        )}
         {...props}
       >
         {children}

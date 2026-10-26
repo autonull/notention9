@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback, ReactNode } from 'react';
-import { Button, IconButton } from './Button';
+import { Button } from './Button';
 import { Card } from './Card';
+import { DesignTokens } from './DesignTokens';
+import { cn } from '../../utils';
 
 export interface DropdownItem {
   label: string;
@@ -89,17 +91,17 @@ export const Dropdown = ({ trigger, items, align = 'right', closeOnSelect = true
         <Card
           variant="elevated"
           padding="none"
-          className={`
-            absolute top-full mt-2 z-50 min-w-[200px] animate-slide-in-down
-            ${align === 'right' ? 'right-0' : 'left-0'}
-          `}
+          className={cn(
+            DesignTokens.dropdown.container,
+            align === 'right' ? 'right-0' : 'left-0'
+          )}
           role="menu"
         >
           <div className="py-1">
             {items.map((item, index) => (
               <React.Fragment key={item.label}>
                 {index > 0 && items[index - 1].dividerAfter && (
-                  <div className="border-t border-gray-700 my-1" role="separator" />
+                  <div className={DesignTokens.dropdown.divider} role="separator" />
                 )}
                 <button
                   id={`dropdown-item-${item.label}`}
@@ -109,12 +111,11 @@ export const Dropdown = ({ trigger, items, align = 'right', closeOnSelect = true
                   }}
                   onKeyDown={handleKeyDown}
                   disabled={item.disabled}
-                  className={`
-                    w-full flex items-center gap-3 px-3 py-2 text-sm text-left transition-colors
-                    ${item.danger ? 'text-red-400 hover:bg-red-900/30' : 'text-gray-300 hover:bg-gray-700'}
-                    ${item.disabled ? 'opacity-50 cursor-not-allowed' : ''}
-                    focus:outline-none focus:bg-gray-700
-                  `}
+                  className={cn(
+                    DesignTokens.dropdown.item,
+                    item.danger ? DesignTokens.dropdown.itemDanger : DesignTokens.dropdown.itemDefault,
+                    item.disabled && 'opacity-50 cursor-not-allowed'
+                  )}
                   role="menuitem"
                   tabIndex={-1}
                   aria-disabled={item.disabled}

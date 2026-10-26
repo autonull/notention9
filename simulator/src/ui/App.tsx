@@ -9,8 +9,8 @@ import CommandPalette from './components/CommandPalette';
 import { ToastProvider } from './components/ui';
 import ErrorBoundary from './components/ErrorBoundary';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
-import { formatShortcut, SHORTCUT_CATEGORIES } from './config/navigation';
-import { NAV_ITEMS, createCommandItems, COMMAND_PALETTE_SHORTCUTS, formatShortcut as formatNavShortcut, MOBILE_MENU_BUTTON, SIDEBAR_CLOSE_BUTTON } from './config/navigation';
+import { formatShortcut } from './utils';
+import { SHORTCUT_CATEGORIES, NAV_ITEMS, createCommandItems, COMMAND_PALETTE_SHORTCUTS, formatNavShortcut, MOBILE_MENU_BUTTON, SIDEBAR_CLOSE_BUTTON } from './config/navigation';
 import { Button, IconButton, Kbd } from './components/ui';
 import { Card } from './components/ui';
 
