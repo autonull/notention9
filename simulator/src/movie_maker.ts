@@ -1,22 +1,11 @@
-import { chromium, Browser, BrowserContext } from 'playwright';
-import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
-import chalk from 'chalk';
 import { Scenario, ScenarioRunner } from './scenario.js';
-import { startDashboard } from './dashboard/server.js';
 import { Agent } from './agent.js';
 import { DEFAULT_ONTOLOGY } from '@notention/core';
-import ffmpeg from 'fluent-ffmpeg';
-import ffmpegPath from 'ffmpeg-static';
 import { UIServer } from './ui_server.js';
-import { SIMULATION_CONFIG, FILE_PATTERNS } from './constants.js';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-if (ffmpegPath) {
-    ffmpeg.setFfmpegPath(ffmpegPath as unknown as string);
-}
+import { SIMULATION_CONFIG } from './constants.js';
+import { BrowserManager } from './browser_manager.js';
+import { RecordingManager } from './recording_manager.js';
+import { DashboardManager } from './dashboard_manager.js';
 
 export interface MovieOptions {
     framerate: number;
@@ -31,13 +20,12 @@ export interface MovieOptions {
 }
 
 export class MovieMaker {
-    private browser: Browser | null = null;
-    private context: BrowserContext | null = null;
     private uiServer: UIServer | null = null;
-    private dashboardServer: any | null = null;
     private runner: ScenarioRunner | null = null;
-    private recording: boolean = false;
-    private cancelled: boolean = false;
+    private browserManager: BrowserManager | null = null;
+    private recordingManager: RecordingManager | null = null;
+    private dashboardManager: DashboardManager | null = null;
+    private cancelled = false;
 
     constructor(
         private readonly relayUrl: string,
@@ -45,17 +33,17 @@ export class MovieMaker {
     ) {}
 
     private log(message: string) {
-        this.options.onProgress?.(message) ?? console.log(chalk.blue(`[MovieMaker] ${message}`));
+        this.options.onProgress?.(message) ?? console.log(`[MovieMaker] ${message}`);
     }
 
     private error(err: Error) {
-        this.options.onError?.(err) ?? console.error(chalk.red(`[MovieMaker Error]`), err);
+        this.options.onError?.(err) ?? console.error(`[MovieMaker Error]`, err);
     }
 
     async cancel() {
         this.cancelled = true;
-        this.recording = false;
-        this.log("Cancellation requested...");
+        this.recordingManager?.cancel();
+        this.log('Cancellation requested...');
         if (this.uiServer) this.uiServer.stop();
         await this.cleanup();
     }
@@ -72,17 +60,25 @@ export class MovieMaker {
             await this.runner.prepare(scenario);
             if (this.cancelled) return;
 
-            const agents = this.runner.agents.map(a => ({
-                id: a.id,
-                name: a.profile.name,
-                role: a.profile.role
-            }));
-            this.dashboardServer = startDashboard(this.options.dashboardPort, this.options.uiPort, agents, this.relayUrl);
-            this.log(`Dashboard server started on port ${this.options.dashboardPort}`);
+            this.dashboardManager = new DashboardManager({
+                dashboardPort: this.options.dashboardPort,
+                uiPort: this.options.uiPort,
+                relayUrl: this.relayUrl,
+                onProgress: this.options.onProgress,
+                onError: this.options.onError
+            });
+            this.dashboardManager.start(this.runner.agents);
 
             if (this.cancelled) return;
 
-            await this.setupBrowser(this.runner.agents);
+            this.browserManager = new BrowserManager({
+                resolution: this.options.resolution,
+                uiPort: this.options.uiPort,
+                relayUrl: this.relayUrl
+            });
+            await this.browserManager.start();
+            await this.browserManager.configureAgents(this.runner.agents);
+
             if (this.cancelled) return;
 
             await this.recordAndRun(scenario);
@@ -97,147 +93,57 @@ export class MovieMaker {
     }
 
     private async startUIServer() {
-        this.log("Starting UI Server (Vite)...");
+        this.log('Starting UI Server (Vite)...');
         this.uiServer = new UIServer({ port: this.options.uiPort });
         await this.uiServer.start();
     }
 
-    private async setupBrowser(agents: Agent[]) {
-        this.log("Launching Browser...");
-        this.browser = await chromium.launch({ headless: true });
-        this.context = await this.browser.newContext({
-            viewport: this.options.resolution,
-            bypassCSP: true,
-            ignoreHTTPSErrors: true
+    private async recordAndRun(scenario: Scenario) {
+        if (!this.browserManager || !this.runner) return;
+
+        this.log('Starting Dashboard & Recording...');
+        const page = await this.browserManager.createPage();
+        await this.browserManager.navigateToDashboard(page, this.options.dashboardPort, this.options.view);
+
+        this.recordingManager = new RecordingManager({
+            outputDir: this.options.outputDir,
+            framerate: this.options.framerate,
+            resolution: this.options.resolution,
+            onProgress: this.options.onProgress,
+            onError: this.options.onError
         });
 
-        this.log(`Configuring ${agents.length} agent sessions...`);
-        const page = await this.context.newPage();
+        await this.recordingManager.startRecording(page);
 
-        for (const agent of agents) {
-            if (this.cancelled) break;
-            const url = `http://${agent.id}.lvh.me:${this.options.uiPort}`;
-
-            try {
-                await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
-                await page.evaluate(async (data: any) => {
-                    const { key, relayUrl } = data;
-                    const settings = {
-                        aiEnabled: false,
-                        developerMode: false,
-                        theme: 'dark',
-                        nostr: { privkey: key, relays: [relayUrl] },
-                        ontology: []
-                    };
-                    return new Promise<void>((resolve, reject) => {
-                        const request = indexedDB.open('localforage');
-                        request.onerror = () => reject(request.error);
-                        request.onupgradeneeded = (e: any) => {
-                            e.target.result.createObjectStore('keyvaluepairs');
-                        };
-                        request.onsuccess = (e: any) => {
-                            const store = e.target.result.transaction(['keyvaluepairs'], 'readwrite').objectStore('keyvaluepairs');
-                            const putReq = store.put(settings, 'notention-settings-v2');
-                            putReq.onsuccess = () => resolve();
-                            putReq.onerror = () => reject(putReq.error);
-                        };
-                    });
-                }, { key: agent.secretKey, relayUrl: this.relayUrl });
-
-            } catch (e) {
-                const message = e instanceof Error ? e.message : String(e);
-                this.error(new Error(`Failed to configure agent ${agent.profile.name}: ${message}`));
-            }
-        }
-        await page.close();
-    }
-
-    private async recordAndRun(scenario: Scenario) {
-        if (!this.context || !this.runner) return;
-
-        this.log("Starting Dashboard & Recording...");
-        const page = await this.context.newPage();
-        const url = `http://localhost:${this.options.dashboardPort}${this.options.view === 'ontology' ? '/ontology' : ''}`;
-
-        await page.goto(url, { waitUntil: 'networkidle' });
-
-        const framesDir = path.join(this.options.outputDir, 'frames');
-        if (fs.existsSync(framesDir)) fs.rmSync(framesDir, { recursive: true, force: true });
-        fs.mkdirSync(framesDir, { recursive: true });
-
-        this.log("🎥 Recording started...");
-
-        const intervalMs = 1000 / this.options.framerate;
-        let frameCount = 0;
-        this.recording = true;
-
-        const recordingPromise = (async () => {
-            while (this.recording && !this.cancelled) {
-                const start = Date.now();
-                const framePath = path.join(framesDir, FILE_PATTERNS.frameFile(frameCount));
-                try {
-                    await page.screenshot({ path: framePath, fullPage: true });
-                    frameCount++;
-                } catch { break; }
-
-                const duration = Date.now() - start;
-                await new Promise(r => setTimeout(r, Math.max(0, intervalMs - duration)));
-            }
-        })();
-
-        this.log("Starting Simulation Execution...");
+        this.log('Starting Simulation Execution...');
         this.runner.onEvent = (event) => {
             if (event.action === 'camera' && event.cameraFocus) {
                 let targetId = event.cameraFocus;
                 if (targetId !== 'grid') {
-                     const agent = this.runner?.agents.find(a => a.profile.name === targetId || a.id === targetId);
-                     if (agent) targetId = agent.id;
+                    const agent = this.runner?.agents.find(a => a.profile.name === targetId || a.id === targetId);
+                    if (agent) targetId = agent.id;
                 }
-                // @ts-ignore
-                page.evaluate((focusId) => window.setCameraFocus && window.setCameraFocus(focusId), targetId).catch(() => {});
+                page.evaluate((focusId: string) => (window as any).setCameraFocus?.(focusId), targetId).catch(() => {});
             }
         };
 
         if (this.runner) await this.runner.execute(scenario);
         await new Promise(r => setTimeout(r, SIMULATION_CONFIG.postSimulationDelay));
 
-        this.recording = false;
-        await recordingPromise;
-        this.log(`🎥 Recording finished. captured ${frameCount} frames.`);
+        this.recordingManager.stopRecording();
+        this.log(`🎥 Recording finished. captured ${this.recordingManager.getFrameCount()} frames.`);
 
-        if (!this.cancelled) await this.encodeVideo(framesDir, frameCount);
-    }
-
-    private async encodeVideo(framesDir: string, frameCount: number) {
-        this.log("Encoding Video...");
-        const outputPath = path.join(this.options.outputDir, 'simulation.mp4');
-
-        return new Promise<void>((resolve, reject) => {
-            ffmpeg()
-                .input(path.join(framesDir, FILE_PATTERNS.frame))
-                .inputFPS(this.options.framerate)
-                .output(outputPath)
-                .videoCodec('libx264')
-                .outputOptions('-pix_fmt yuv420p')
-                .on('end', () => {
-                    this.log(`✅ Video saved to: ${outputPath}`);
-                    resolve();
-                })
-                .on('error', (err) => {
-                    this.error(new Error(`FFmpeg error: ${err}`));
-                    reject(err);
-                })
-                .run();
-        });
+        if (!this.cancelled) await this.recordingManager.encodeVideo();
     }
 
     private async cleanup() {
-        this.log("Cleaning up...");
-        if (this.browser) await this.browser.close();
-        if (this.dashboardServer) this.dashboardServer.close();
+        this.log('Cleaning up...');
+        this.browserManager?.cleanup();
+        this.dashboardManager?.stop();
         if (this.uiServer) this.uiServer.stop();
-        this.browser = null;
-        this.dashboardServer = null;
+        this.browserManager = null;
+        this.dashboardManager = null;
         this.uiServer = null;
+        this.recordingManager = null;
     }
 }
