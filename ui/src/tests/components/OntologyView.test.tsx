@@ -80,8 +80,8 @@ describe('OntologyView', () => {
 
         fireEvent.click(screen.getByText('Add Root Node'));
 
-        // Modal should appear
-        expect(screen.getByText('Add Root Node', { selector: 'h3' })).toBeTruthy();
+        // Modal should appear - check for modal title specifically (h2 with id modal-title)
+        expect(screen.getByRole('heading', { name: 'Add Root Node' })).toBeTruthy();
 
         // Input name
         const input = screen.getByPlaceholderText('e.g. Project, Task, Person');
@@ -102,8 +102,8 @@ describe('OntologyView', () => {
         const addBtn = screen.getAllByText('Add Child')[0];
         fireEvent.click(addBtn);
 
-        // Modal appears
-        expect(screen.getByText('Add Child Node', { selector: 'h3' })).toBeTruthy();
+        // Modal appears - check for modal title specifically
+        expect(screen.getByRole('heading', { name: 'Add Child Node' })).toBeTruthy();
 
         const input = screen.getByPlaceholderText('e.g. Project, Task, Person');
         fireEvent.change(input, { target: { value: 'Child Node' } });
@@ -123,17 +123,10 @@ describe('OntologyView', () => {
         // Confirm modal
         expect(screen.getByText('Delete Concept')).toBeTruthy();
 
-        // Use getAllByText and pick the second one (the button in modal), or refine selector
-        // The first 'Delete' is likely the title or original button if still visible.
-        // Let's rely on the button inside the modal structure or class.
-        // The output showed bg-red-500 for the delete button.
-
-        const deleteConfirmBtn = screen.getAllByText('Delete').find(el => el.tagName === 'BUTTON' && el.className.includes('bg-red-500'));
-        if (deleteConfirmBtn) {
-            fireEvent.click(deleteConfirmBtn);
-        } else {
-            throw new Error('Delete confirmation button not found');
-        }
+        // Find the destructive button in the modal dialog (variant="danger")
+        const modalDialog = screen.getByRole('dialog');
+        const deleteConfirmBtn = modalDialog.querySelector('button.btn-danger') as HTMLButtonElement;
+        fireEvent.click(deleteConfirmBtn);
 
         expect(mockHandleDeleteNode).toHaveBeenCalledWith('root1');
     });

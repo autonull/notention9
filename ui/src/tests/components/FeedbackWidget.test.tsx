@@ -33,6 +33,6 @@ describe('FeedbackWidget', () => {
     it('opens comment modal', () => {
         render(<FeedbackWidget entityId="test-1" />);
         fireEvent.click(screen.getByTitle('Provide details'));
-        expect(screen.getByText('Provide Feedback', { selector: 'h3' })).toBeTruthy();
+        expect(screen.getByText('Provide Feedback')).toBeTruthy();
     });
 });

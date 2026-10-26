@@ -7,22 +7,14 @@ import {useNotes} from '../../hooks/useNotes';
 import {useEditorActions} from '../../hooks/useEditorActions';
 import {useEditorShortcuts} from '../../hooks/useEditorShortcuts';
 import type {Note, OntologyNode} from '@notention/core';
-import {metaphorMapper} from '@notention/core';
 import {propertyToHtml} from '@notention/core';
 import {EditorHeader} from './EditorHeader';
 import {TiptapEditorRef} from './TiptapEditor';
-import {HybridEditor} from './HybridEditor';
-import {TemplateSelector} from './TemplateSelector';
-import {SaveTemplateModal} from './SaveTemplateModal';
-import {MapPickerModal} from '../map/MapPickerModal';
-import {TimePickerModal} from '../common/TimePickerModal';
-import {ContextPanel} from './ContextPanel';
-import {SmartNoteAssistant} from '../SmartNoteAssistant';
-import {MetaphorRenderer} from '../metaphor/MetaphorRenderer';
-import {PrivacyConfirmModal} from '../modals/PrivacyConfirmModal';
-import {MatchReplies} from '../match/MatchReplies';
-import {useMatches} from '../../hooks/useMatches';
-import {Button} from '../common/Button';
+import {EditorContent} from './EditorContent';
+import {EditorSidebar} from './EditorSidebar';
+import {EditorModals} from './EditorModals';
+import {PublishErrorBanner} from './PublishErrorBanner';
+import {MobileBackdrop} from './MobileBackdrop';
 
 interface EditorManagerProps {
     note: Note;
@@ -129,12 +121,7 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
         editorRef.current?.openPropertyModal(key);
     };
 
-    const activeMetaphor = metaphorMapper.mapToMetaphor(dirtyNote);
-    const matches = useMatches(dirtyNote);
-
     const handleMatchClick = useCallback((match: any) => {
-        // Navigate or preview match
-        // For now, let's just toast
         addToast(`Selected match: ${match.note.title || 'Untitled'}`, 'info');
     }, [addToast]);
 
@@ -173,123 +160,64 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                 onAddProperty={handleAddPropertyHint}
             />
             {publishError && (
-                <div
-                    data-testid="publish-error"
-                    className="flex flex-wrap items-center gap-3 border-b border-red-500/20 bg-red-500/10 px-4 py-2 text-xs text-red-200"
-                >
-                    <span>Publish failed: {publishError}</span>
-                    <Button size="xs" variant="secondary" onClick={handlePublish}>
-                        Retry
-                    </Button>
-                </div>
+                <PublishErrorBanner error={publishError} onRetry={handlePublish} />
             )}
             <div className="flex flex-1 overflow-hidden relative">
-                <div className="flex-1 flex flex-col relative transition-all duration-300">
-                    <HybridEditor
-                        ref={editorRef}
-                        key={note.id}
-                        note={dirtyNote}
-                        onSave={handleContentSave}
-                        onNoteUpdate={handleNoteUpdate}
-                        ontology={settings.ontology ?? []}
-                        templates={settings.customTemplates}
-                        showToolbar={isToolbarVisible}
-                        onMagic={() => {
-                            if (settings.aiProvider === 'webllm' && settings.aiEnabled) {
-                                addToast('Loading local model... this may take a while.', 'info');
-                            }
-                            handleMagic();
-                        }}
-                        onTemplates={() => setIsTemplateSelectorOpen(!isTemplateSelectorOpen)}
-                        notes={notes}
-                        onPickLocation={handleRequestLocationPick}
-                        saveStatus={saveStatus}
-                        topContent={
-                            <>
-                                {activeMetaphor && (
-                                    <MetaphorRenderer note={dirtyNote} metaphor={activeMetaphor}/>
-                                )}
-                                <ContextPanel
-                                    note={dirtyNote}
-                                    onPickLocation={() => setIsMapPickerOpen(true)}
-                                    onPickTime={handlePickTime}
-                                />
-                            </>
+                <EditorContent
+                    editorRef={editorRef}
+                    dirtyNote={dirtyNote}
+                    onSave={handleContentSave}
+                    onNoteUpdate={handleNoteUpdate}
+                    ontology={settings.ontology ?? []}
+                    templates={settings.customTemplates}
+                    showToolbar={isToolbarVisible}
+                    onMagic={() => {
+                        if (settings.aiProvider === 'webllm' && settings.aiEnabled) {
+                            addToast('Loading local model... this may take a while.', 'info');
                         }
-                    />
-
-                    {isTemplateSelectorOpen && (
-                        <TemplateSelector
-                            ontology={settings.ontology ?? []}
-                            onSelect={handleInsertTemplate}
-                            onClose={() => setIsTemplateSelectorOpen(false)}
-                        />
-                    )}
-
-                    {/* Match Replies - Simulated Thread */}
-                    <div className="px-8 pb-8 max-w-4xl mx-auto w-full">
-                        <MatchReplies matches={matches} onMatchClick={handleMatchClick} />
-                    </div>
-                </div>
-
-                {/* Mobile Backdrop */}
-                {isInspectorOpen && (
-                    <div
-                        className="fixed inset-0 bg-black/50 z-20 lg:hidden transition-opacity duration-300"
-                        onClick={() => setIsInspectorOpen(false)}
-                    />
-                )}
-
-                {/* Assistant Sidebar */}
-                <div
-                    className={`
-                        flex flex-col h-full bg-gray-900 border-l border-gray-700/50
-                        transition-all duration-300 ease-in-out transform
-                        fixed inset-y-0 right-0 z-30 shadow-2xl lg:shadow-none lg:z-0 lg:relative
-                        w-80 max-w-[85vw]
-                        ${isInspectorOpen
-                            ? 'translate-x-0'
-                            : 'translate-x-full lg:w-0 lg:translate-x-0 lg:border-l-0 lg:overflow-hidden'}
-                    `.replace(/\s+/g, ' ').trim()}
-                >
-                    <SmartNoteAssistant
-                        note={dirtyNote}
-                        onNoteUpdate={handleContentSave}
-                        className="h-full border-none rounded-none bg-transparent"
-                        properties={dirtyNote.properties}
-                        onUpdateProperty={handleUpdateTextFromInspector}
-                        onPickLocation={() => setIsMapPickerOpen(true)}
-                        onPickTime={handlePickTime}
-                        ontology={settings.ontology}
-                    />
-                </div>
-            </div>
-            <SaveTemplateModal
-                isOpen={isSaveTemplateModalOpen}
-                onClose={() => setIsSaveTemplateModalOpen(false)}
-                onSave={handleSaveTemplate}
-            />
-            <MapPickerModal
-                isOpen={isMapPickerOpen}
-                onClose={() => setIsMapPickerOpen(false)}
-                onLocationSelect={handleLocationSelect}
-            />
-            <TimePickerModal
-                isOpen={isTimePickerOpen}
-                onClose={() => setIsTimePickerOpen(false)}
-                onTimeSelect={handleTimeSelected}
-                title={`Pick Time for ${pickingTimeKey}`}
-            />
-            {privacyConfirmation && (
-                <PrivacyConfirmModal
-                    isOpen={privacyConfirmation.isOpen}
-                    onClose={handlePrivacyCancel}
-                    onConfirm={handlePrivacyConfirm}
-                    noteTitle={dirtyNote.title}
-                    destination="Nostr network"
-                    note={dirtyNote}
+                        handleMagic();
+                    }}
+                    onTemplates={() => setIsTemplateSelectorOpen(!isTemplateSelectorOpen)}
+                    notes={notes}
+                    onPickLocation={handleRequestLocationPick}
+                    onPickTime={handlePickTime}
+                    saveStatus={saveStatus}
+                    isTemplateSelectorOpen={isTemplateSelectorOpen}
+                    onCloseTemplateSelector={() => setIsTemplateSelectorOpen(false)}
+                    onInsertTemplate={handleInsertTemplate}
                 />
-            )}
+                <MobileBackdrop
+                    isVisible={isInspectorOpen}
+                    onClick={() => setIsInspectorOpen(false)}
+                />
+                <EditorSidebar
+                    isOpen={isInspectorOpen}
+                    onClose={() => setIsInspectorOpen(false)}
+                    note={dirtyNote}
+                    onNoteUpdate={handleContentSave}
+                    properties={dirtyNote.properties}
+                    onUpdateProperty={handleUpdateTextFromInspector}
+                    onPickLocation={handleRequestLocationPick}
+                    onPickTime={handlePickTime}
+                    ontology={settings.ontology}
+                />
+            </div>
+            <EditorModals
+                isSaveTemplateModalOpen={isSaveTemplateModalOpen}
+                onSaveTemplateModalClose={() => setIsSaveTemplateModalOpen(false)}
+                onSaveTemplate={handleSaveTemplate}
+                isMapPickerOpen={isMapPickerOpen}
+                onMapPickerClose={() => setIsMapPickerOpen(false)}
+                onLocationSelect={handleLocationSelect}
+                isTimePickerOpen={isTimePickerOpen}
+                onTimePickerClose={() => setIsTimePickerOpen(false)}
+                onTimeSelect={handleTimeSelected}
+                pickingTimeKey={pickingTimeKey}
+                privacyConfirmation={privacyConfirmation}
+                onPrivacyConfirm={handlePrivacyConfirm}
+                onPrivacyCancel={handlePrivacyCancel}
+                dirtyNote={dirtyNote}
+            />
         </div>
     );
 }
