@@ -7,6 +7,7 @@ import { PersistenceService } from '../../persistence.js';
 import { Capabilities } from '../../core/Capabilities.js';
 import { tryCatch, tryCatchSync, createSuccessResponse } from '../../utils/errorHandling.js';
 import { log } from '../../core/utils.js';
+import { SideEffect } from '@notention/optimize/policy';
 
 export class CorePlugin implements AgentPlugin {
     name = 'core';
@@ -37,6 +38,7 @@ export class CorePlugin implements AgentPlugin {
                     values: z.array(z.string())
                 })).optional()
             }),
+            sideEffect: 'write' as SideEffect,
             handler: async (args) => {
                 const { title, content, tags, properties } = args;
 
@@ -73,6 +75,7 @@ export class CorePlugin implements AgentPlugin {
                     values: z.array(z.string())
                 })).optional()
             }),
+            sideEffect: 'write' as SideEffect,
             handler: async ({ id, title, content, tags, properties }) => {
                 return tryCatch(async () => {
                     const notes = await PersistenceService.getNotesSafe();
@@ -99,6 +102,7 @@ export class CorePlugin implements AgentPlugin {
         registry.register('delete_note', {
             description: 'Delete a note by ID',
             schema: z.object({ id: z.string() }),
+            sideEffect: 'consequential' as SideEffect,
             handler: async ({ id }) => {
                 return tryCatch(async () => {
                     await PersistenceService.deleteNoteSafe(id);
@@ -114,6 +118,7 @@ export class CorePlugin implements AgentPlugin {
                 query: z.string().optional(),
                 tags: z.array(z.string()).optional()
             }),
+            sideEffect: 'read' as SideEffect,
             handler: async ({ query, tags }) => {
                 return tryCatch(
                     () => PersistenceService.searchNotesSafe(query || '', tags),
@@ -130,6 +135,7 @@ export class CorePlugin implements AgentPlugin {
                 limit: z.number().optional().default(50),
                 offset: z.number().optional().default(0)
             }),
+            sideEffect: 'read' as SideEffect,
             handler: async ({ limit, offset }) => {
                 return tryCatch(async () => {
                     const notes = await PersistenceService.getNotesSafe();
@@ -144,6 +150,7 @@ export class CorePlugin implements AgentPlugin {
         registry.register('get_capabilities', {
             description: 'Get system capabilities',
             schema: z.object({}),
+            sideEffect: 'read' as SideEffect,
             handler: async () => {
                 return tryCatchSync(() => {
                     const caps = Capabilities.getInstance();

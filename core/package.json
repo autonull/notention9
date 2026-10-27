@@ -5,6 +5,13 @@
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./constants/storageKeys": "./dist/constants/storageKeys.js",
+    "./constants/paths": "./dist/constants/paths.js",
+    "./extraction": "./dist/extraction/index.js",
+    "./extraction/deterministic": "./dist/extraction/deterministic.js"
+  },
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",

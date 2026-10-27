@@ -27,6 +27,7 @@
     "@modelcontextprotocol/sdk": "^1.0.1",
     "@notention/core": "workspace:*",
     "@notention/ui": "workspace:*",
+    "@notention/optimize": "workspace:*",
     "express": "^4.21.2",
     "playwright": "^1.58.0",
     "ws": "^8.18.0",

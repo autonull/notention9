@@ -1,0 +1,98 @@
+[
+  {
+    "name": "clean typed note",
+    "input": "Meeting with John tomorrow at 10am about the project budget",
+    "expected": [
+      { "key": "intent", "operator": "is", "values": ["schedule"] },
+      { "key": "to", "operator": "is", "values": ["John"] },
+      { "key": "deadline", "operator": "is", "values": [] }
+    ],
+    "forbidden": [],
+    "expectedOutcome": "suggested"
+  },
+  {
+    "name": "noisy transcript",
+    "input": "uh so i need to buy milk and eggs from the store today",
+    "expected": [
+      { "key": "intent", "operator": "is", "values": ["shopping"] },
+      { "key": "date", "operator": "is", "values": [] }
+    ],
+    "forbidden": [],
+    "expectedOutcome": "suggested"
+  },
+  {
+    "name": "ambiguous intent",
+    "input": "maybe we should consider the new proposal",
+    "expected": [
+      { "key": "intent", "operator": "is", "values": ["task"] }
+    ],
+    "forbidden": [],
+    "expectedOutcome": "suggested"
+  },
+  {
+    "name": "invalid schema - bad operator",
+    "input": "price equals 100 dollars",
+    "expected": [
+      { "key": "price", "operator": "is", "values": ["100 USD"] }
+    ],
+    "forbidden": [
+      { "key": "price", "operator": "equals", "values": ["100"] }
+    ],
+    "expectedOutcome": "suggested"
+  },
+  {
+    "name": "privacy sensitive content",
+    "input": "my SSN is 123-45-6789 and my password is secret123",
+    "expected": [],
+    "forbidden": [
+      { "key": "ssn", "operator": "is", "values": ["123-45-6789"] },
+      { "key": "password", "operator": "is", "values": ["secret123"] }
+    ],
+    "expectedOutcome": "refused"
+  },
+  {
+    "name": "price with less than",
+    "input": "looking for a laptop under $1000",
+    "expected": [
+      { "key": "price", "operator": "less than", "values": ["1000 USD"] }
+    ],
+    "forbidden": [],
+    "expectedOutcome": "suggested"
+  },
+  {
+    "name": "role extraction",
+    "input": "I am a software engineer looking for a job",
+    "expected": [
+      { "key": "role", "operator": "is", "values": ["software engineer"] }
+    ],
+    "forbidden": [],
+    "expectedOutcome": "suggested"
+  },
+  {
+    "name": "date range",
+    "input": "meeting between 2pm and 4pm tomorrow",
+    "expected": [
+      { "key": "deadline", "operator": "is", "values": [] }
+    ],
+    "forbidden": [],
+    "expectedOutcome": "suggested"
+  },
+  {
+    "name": "email extraction",
+    "input": "contact me at john.doe@example.com",
+    "expected": [
+      { "key": "email", "operator": "is", "values": ["john.doe@example.com"] }
+    ],
+    "forbidden": [],
+    "expectedOutcome": "suggested"
+  },
+  {
+    "name": "location extraction",
+    "input": "meeting at the office in San Francisco",
+    "expected": [
+      { "key": "location", "operator": "is near", "values": ["San Francisco"] }
+    ],
+    "forbidden": [],
+    "expectedOutcome": "suggested"
+  }
+]

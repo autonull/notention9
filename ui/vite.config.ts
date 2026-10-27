@@ -15,6 +15,10 @@ export default defineConfig(({mode}) => {
             alias: {
                 '@': path.resolve(__dirname, './src'),
                 '@notention/core': path.resolve(__dirname, '../core/src/index.ts'),
+                '@notention/core/constants/storageKeys': path.resolve(__dirname, '../core/src/constants/storageKeys.ts'),
+                '@notention/core/constants/paths': path.resolve(__dirname, '../core/src/constants/paths.ts'),
+                '@notention/core/extraction': path.resolve(__dirname, '../core/src/extraction/index.ts'),
+                '@notention/core/extraction/deterministic': path.resolve(__dirname, '../core/src/extraction/deterministic.ts'),
                 '@notention/core/src/matching': path.resolve(__dirname, '../core/src/matching'),
                 'path': 'path-browserify',
                 'os': 'os-browserify/browser',

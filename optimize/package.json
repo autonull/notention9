@@ -1,0 +1,30 @@
+{
+  "name": "@notention/optimize",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./journey": "./src/journey.ts",
+    "./evidence": "./src/evidence.ts",
+    "./policy": "./src/policy.ts",
+    "./prompts": "./src/prompts/index.ts"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "test": "vitest run",
+    "lint": "eslint src --ext .ts"
+  },
+  "dependencies": {
+    "@notention/core": "workspace:*",
+    "playwright": "^1.60.0",
+    "zod": "^3.23.8",
+    "tsx": "^4.19.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.5.0",
+    "vitest": "^4.1.6"
+  }
+}

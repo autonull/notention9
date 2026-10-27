@@ -1,12 +1,13 @@
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import type {OntologyNode, Property} from '@notention/core';
-import {getCanonicalKey, collectOntologyKeys} from '@notention/core';
+import {getCanonicalKey, collectOntologyKeys, resolvePresentation, isHighRiskProperty} from '@notention/core';
 import {useGardener} from './useGardener';
 import {getTextFromHtml} from '../utils/html';
 
 export interface PropertyReviewItem {
     property: Property;
     confidence: number;
+    presentation: 'silent' | 'suggest' | 'clarify' | 'block';
 }
 
 const propertyId = (property: Property): string =>
@@ -40,10 +41,12 @@ export function usePropertyReview(content: string, existing: Property[], ontolog
                     seen.add(id);
                     return true;
                 })
-                .map(property => ({
-                    property,
-                    confidence: ontologyKeys.has(property.key) ? 0.85 : 0.6,
-                }));
+                .map(property => {
+                    const confidence = ontologyKeys.has(property.key) ? 0.85 : 0.6;
+                    const risk = isHighRiskProperty(property.key) ? 'high' : 'low';
+                    const presentation = resolvePresentation({ confidence, risk });
+                    return { property, confidence, presentation };
+                });
 
             setItems(next);
         }, 500);

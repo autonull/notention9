@@ -2,6 +2,7 @@ import {useCallback, useState} from 'react';
 import type {Note} from '@notention/core';
 import {usePublish} from './usePublish';
 import {useToast} from './useToast';
+import {emitActionTrace} from '@notention/core';
 
 interface UseEditorPublishingProps {
     dirtyNote: Note;
@@ -12,12 +13,12 @@ interface UseEditorPublishingProps {
 }
 
 export function useEditorPublishing({
-                                        dirtyNote,
-                                        setDirtyNote,
-                                        onSave,
-                                        validationErrors,
-                                        actionLabel,
-                                    }: UseEditorPublishingProps) {
+                                         dirtyNote,
+                                         setDirtyNote,
+                                         onSave,
+                                         validationErrors,
+                                         actionLabel,
+                                     }: UseEditorPublishingProps) {
     const {publishNote, isPublishing} = usePublish();
     const {addToast} = useToast();
     const [publishError, setPublishError] = useState<string | null>(null);
@@ -61,7 +62,22 @@ export function useEditorPublishing({
         }
 
         const confirmed = await promptUser();
-        if (!confirmed) return;
+        if (!confirmed) {
+            emitActionTrace({
+                source: 'ui',
+                intent: 'note.publish',
+                confirmations: [{ action: 'publish', outcome: 'cancelled' }],
+                outcome: 'requires_confirmation',
+            });
+            return;
+        }
+
+        emitActionTrace({
+            source: 'ui',
+            intent: 'note.publish',
+            confirmations: [{ action: 'publish', outcome: 'requested' }],
+            outcome: 'requires_confirmation',
+        });
 
         // The disclosure preview is the consent step: publishing transmits the note,
         // so a private note becomes public before it leaves the device.
@@ -80,12 +96,25 @@ export function useEditorPublishing({
             setDirtyNote(updatedNote);
             onSave(updatedNote);
             addToast(`${actionLabel} successful!`, 'success');
+
+            emitActionTrace({
+                source: 'ui',
+                intent: 'note.publish',
+                confirmations: [{ action: 'publish', outcome: 'granted' }],
+                stateChanges: [{ path: 'privacy', from: dirtyNote.privacy, to: 'public' }],
+                outcome: 'ok',
+            });
         } catch (e) {
             // If user cancelled privacy modal, it throws 'Publishing cancelled' or similar.
             // We might want to swallow that error or show it as info.
             const msg = e instanceof Error ? e.message : String(e);
             if (msg.includes('cancelled')) {
-                // User cancelled, do nothing
+                emitActionTrace({
+                    source: 'ui',
+                    intent: 'note.publish',
+                    confirmations: [{ action: 'publish', outcome: 'cancelled' }],
+                    outcome: 'requires_confirmation',
+                });
                 return;
             }
             setPublishError(msg);
@@ -93,6 +122,12 @@ export function useEditorPublishing({
                 'Failed to publish: ' + msg,
                 'error'
             );
+
+            emitActionTrace({
+                source: 'ui',
+                intent: 'note.publish',
+                outcome: 'failed',
+            });
         }
     }, [
         dirtyNote,

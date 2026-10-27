@@ -5,6 +5,10 @@ export const settle = async (page: Page) => {
     await page.evaluate(() => document.fonts.ready);
     await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
     await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 150)));
+
+    if (import.meta.env.VITE_DEV_HOOKS === 'true') {
+        await page.waitForFunction(() => window.__NOTENTION_READY__ === true, { timeout: 5000 });
+    }
 };
 
 export const disableMotion = async (page: Page) => {

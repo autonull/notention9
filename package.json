@@ -6,7 +6,8 @@
     "agent",
     "core",
     "cli",
-    "simulator"
+    "simulator",
+    "optimize"
   ],
   "scripts": {
     "build": "npm run build --workspaces",
@@ -20,7 +21,9 @@
     "agent": "npm start -w @notention/agent",
     "dev:local": "VITE_ENABLE_AGENT=false VITE_LLM_SOURCE=none npm run dev -w @notention/ui",
     "dev:server": "node scripts/dev-runner.js",
-    "cli": "npm start -w @notention/cli --"
+    "cli": "npm start -w @notention/cli --",
+    "optimize": "tsx optimize/src/cli.ts",
+    "optimize:check": "node scripts/check-optimize-locators.mjs"
   },
   "dependencies": {
     "@meshtastic/core": "^2.6.7",

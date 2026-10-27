@@ -3,17 +3,11 @@ import { OntologyService } from '../../ontology/ontologyService.js';
 import { DEFAULT_ONTOLOGY } from '../../ontology/ontology.default.js';
 import { PropertyValidationError } from '../../utils/errors/index.js';
 import { parseQuantity } from '../quantities/index.js';
-import { Logger } from '../../utils/logging.js';
 import { normalizeNoteProperties } from '../properties.js';
 import { validateProperty } from '../../utils/validation.js';
-import {
-  extractIntents,
-  extractRegexProps,
-  extractLocation,
-  extractDate,
-  extractFuzzy
-} from './extractors.js';
+import { alignToOntology } from '../../extraction/index.js';
 import { TYPE_CHECKERS } from './patterns.js';
+import { Logger } from '../../utils/logging.js';
 
 export class PropertyExtractor {
   private readonly ontologyService: OntologyService;
@@ -24,13 +18,9 @@ export class PropertyExtractor {
   }
 
   extractFromText(text: string): Property[] {
-    const properties: Property[] = [
-      ...extractIntents(text),
-      ...extractRegexProps(text, this.ontologyService),
-      ...extractLocation(text),
-      ...extractDate(text),
-      ...extractFuzzy(text, this.ontologyService)
-    ];
+    const properties = alignToOntology(text, this.ontologyService.getAllNodes(), {
+      ontologyService: this.ontologyService
+    });
 
     return this.normalizeProperties(properties);
   }

@@ -10,6 +10,9 @@ import { ToolsCommand, ExtractCommand } from './ToolsCommand.js';
 import { OpenCommand, CloseCommand } from './ContextCommand.js';
 import { SecurityCommand } from './SecurityCommand.js';
 import { SetupCommand } from './SetupCommand.js';
+import { OptimizeCommand } from './OptimizeCommand.js';
+import { ReproduceCommand } from './ReproduceCommand.js';
+import { FindingsCommand } from './FindingsCommand.js';
 
 // Register all commands
 function registerCommands(): void {
@@ -28,6 +31,9 @@ function registerCommands(): void {
     commandRegistry.register(CloseCommand);
     commandRegistry.register(SecurityCommand);
     commandRegistry.register(SetupCommand);
+    commandRegistry.register(OptimizeCommand);
+    commandRegistry.register(ReproduceCommand);
+    commandRegistry.register(FindingsCommand);
 }
 
 registerCommands();

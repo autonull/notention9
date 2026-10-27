@@ -20,6 +20,7 @@ import {useToast} from '../hooks/useToast';
 import {useIsMobile} from '../hooks/useMediaQuery';
 import {useSidebarState} from '../hooks/useSidebarState';
 import {cn} from '../utils/ui';
+import {DevBridge} from '../dev/DevBridge';
 
 export function AppShell() {
     const {getSortedFilteredNotes, loading: notesLoading} = useNotes();
@@ -238,6 +239,7 @@ export function AppShell() {
                     isOpen={isShortcutsHelpOpen}
                     onClose={() => setIsShortcutsHelpOpen(false)}
                 />
+                {import.meta.env.VITE_DEV_HOOKS && <DevBridge/>}
             </div>
         </SelectorRegistryProvider>
     );

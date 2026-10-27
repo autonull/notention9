@@ -7,6 +7,7 @@ import { getTextFromHtml } from '../utils/html.js';
 import { inferNoteIntent, type NoteIntent } from './NoteIntentInferencer.js';
 import { memoize1, memoize2 } from '../utils/cache.js';
 import { areStringArraysEqual } from '../utils/common.js';
+import { emitActionTrace } from '../tracing/index.js';
 
 export const createNote = (overrides?: Partial<Note>): Note => {
   const now = new Date().toISOString();
@@ -62,12 +63,26 @@ export const NotePipeline = {
         ...implicitProperties.filter(p => !explicitKeys.has(p.key))
     ];
 
-    return {
+    const newNote = {
       ...note,
       content,
       properties,
       updatedAt: new Date().toISOString()
     };
+
+    const stateChanges: Array<{ path: string; from?: unknown; to?: unknown }> = [
+      { path: 'content', from: note.content, to: content },
+      { path: 'properties', from: note.properties, to: properties },
+    ];
+
+    emitActionTrace({
+      source: 'ui',
+      intent: 'note.updateContent',
+      stateChanges,
+      outcome: 'ok',
+    });
+
+    return newNote;
   },
 
   upsertProperty: (note: Note, key: string, value: string, ontology?: OntologyNode[]): Note => {
@@ -79,7 +94,16 @@ export const NotePipeline = {
     };
 
     const newContent = replacePropertyInString(note.content, existingProp || null, newProp);
-    return NotePipeline.updateContent(note, newContent, ontology);
+    const result = NotePipeline.updateContent(note, newContent, ontology);
+
+    emitActionTrace({
+      source: 'ui',
+      intent: 'note.upsertProperty',
+      stateChanges: [{ path: `properties.${key}`, from: existingProp?.values, to: [value] }],
+      outcome: 'ok',
+    });
+
+    return result;
   },
 
   removeProperty: (note: Note, key: string, ontology?: OntologyNode[]): Note => {
@@ -87,7 +111,16 @@ export const NotePipeline = {
     if (!existingProp) return note;
 
     const newContent = replacePropertyInString(note.content, existingProp, null);
-    return NotePipeline.updateContent(note, newContent, ontology);
+    const result = NotePipeline.updateContent(note, newContent, ontology);
+
+    emitActionTrace({
+      source: 'ui',
+      intent: 'note.removeProperty',
+      stateChanges: [{ path: `properties.${key}`, from: existingProp.values, to: undefined }],
+      outcome: 'ok',
+    });
+
+    return result;
   },
 
   toggleStatus: (note: Note, status: string, ontology?: OntologyNode[]): Note => {
@@ -103,7 +136,16 @@ export const NotePipeline = {
       } else {
         const newProp = { ...existingProp, values: newValues };
         const newContent = replacePropertyInString(note.content, existingProp, newProp);
-        return NotePipeline.updateContent(note, newContent, ontology);
+        const result = NotePipeline.updateContent(note, newContent, ontology);
+
+        emitActionTrace({
+          source: 'ui',
+          intent: 'note.toggleStatus',
+          stateChanges: [{ path: `properties.${NOTE_STATUS.KEY}`, from: existingProp.values, to: newValues }],
+          outcome: 'ok',
+        });
+
+        return result;
       }
     } else {
       return NotePipeline.upsertProperty(note, NOTE_STATUS.KEY, status, ontology);
@@ -112,21 +154,39 @@ export const NotePipeline = {
 
   setPriority: (note: Note, priority: number): Note => {
     if (note.priority === priority) return note;
-    return {
+    const result = {
       ...note,
       priority,
       updatedAt: new Date().toISOString()
     };
+
+    emitActionTrace({
+      source: 'ui',
+      intent: 'note.setPriority',
+      stateChanges: [{ path: 'priority', from: note.priority, to: priority }],
+      outcome: 'ok',
+    });
+
+    return result;
   },
 
   addTags: (note: Note, tags: string[]): Note => {
     const newTags = [...new Set([...note.tags, ...tags])];
     if (areStringArraysEqual(note.tags, newTags)) return note;
-    return {
+    const result = {
       ...note,
       tags: newTags,
       updatedAt: new Date().toISOString()
     };
+
+    emitActionTrace({
+      source: 'ui',
+      intent: 'note.addTags',
+      stateChanges: [{ path: 'tags', from: note.tags, to: newTags }],
+      outcome: 'ok',
+    });
+
+    return result;
   },
 
   addProperty: (note: Note, propertyTag: string, ontology?: OntologyNode[]): Note => {

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { Logger } from '@notention/core';
+import { guardrail, type SideEffect } from '@notention/optimize/policy';
 
 export interface ToolDefinition {
     name: string;
@@ -8,6 +9,7 @@ export interface ToolDefinition {
     schema: z.ZodType<any>;
     handler: (args: any) => Promise<any>;
     category?: string;
+    sideEffect?: SideEffect;
 }
 
 export class McpToolRegistry {
@@ -17,14 +19,16 @@ export class McpToolRegistry {
     /**
      * Register a new tool.
      */
-    register(name: string, def: Omit<ToolDefinition, 'name'>) {
-        this.tools.set(name, { ...def, name });
-        this.logger.debug(`Registered tool: ${name}`);
+    register(name: string, def: Omit<ToolDefinition, 'name'>): void {
+        const sideEffect = def.sideEffect ?? 'write';
+        this.tools.set(name, { ...def, name, sideEffect });
+        this.logger.debug(`Registered tool: ${name} (sideEffect: ${sideEffect})`);
     }
 
     /**
      * Execute a tool by name with arguments.
      * Validates arguments against the schema before execution.
+     * Checks guardrail policy before execution.
      */
     async execute(name: string, args: any): Promise<CallToolResult> {
         const tool = this.tools.get(name);
@@ -33,6 +37,15 @@ export class McpToolRegistry {
             return {
                 isError: true,
                 content: [{ type: 'text', text: `Tool not found: ${name}` }]
+            };
+        }
+
+        // Check guardrail
+        if (!guardrail.isAllowed(name, tool.sideEffect)) {
+            this.logger.warn(`Tool ${name} blocked by guardrail (sideEffect: ${tool.sideEffect})`);
+            return {
+                isError: true,
+                content: [{ type: 'text', text: `Tool ${name} blocked in report-only mode` }]
             };
         }
 

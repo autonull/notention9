@@ -9,9 +9,10 @@ const IS_CI = !!process.env.CI;
 
 // In CI, use pre-built artifacts to avoid 240s build on every run.
 // The build artifact should be prepared in a prior CI step.
+// For optimize runs, we need VITE_DEV_HOOKS=true to enable the debug bridge.
 const uiCommand = IS_CI
     ? `pnpm --filter @notention/ui preview --port ${UI_PORT} --strictPort`
-    : `VITE_ENABLE_AGENT=false VITE_LLM_SOURCE=none pnpm --filter @notention/ui build && pnpm --filter @notention/ui preview --port ${UI_PORT} --strictPort`;
+    : `VITE_ENABLE_AGENT=false VITE_LLM_SOURCE=none VITE_DEV_HOOKS=true pnpm --filter @notention/ui build && pnpm --filter @notention/ui preview --port ${UI_PORT} --strictPort`;
 
 export default defineConfig({
     testDir: ROOT,
@@ -58,6 +59,13 @@ export default defineConfig({
         {
             name: 'showcase',
             testMatch: 'showcase/**/*.scene.ts',
+            use: {
+                viewport: {width: 1440, height: 900},
+            },
+        },
+        {
+            name: 'optimize',
+            testMatch: 'optimize/**/*.journey.ts',
             use: {
                 viewport: {width: 1440, height: 900},
             },

@@ -1,0 +1,1 @@
+export { alignToOntology, explainAlignment, type AlignmentExplanation } from './deterministic.js';

@@ -2,6 +2,7 @@ import { generateObject } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import { z } from 'zod';
 import { Property } from '@notention/core';
+import { getPrompt } from '@notention/core/prompts';
 
 // Define the schema for the output
 const extractionSchema = z.object({
@@ -16,29 +17,17 @@ export class LlmPropertyExtractor {
     private model = openai('gpt-4o') as any;
 
     async extract(text: string): Promise<Property[]> {
+        const promptDef = getPrompt('property-extraction', '1');
+        const prompt = promptDef?.template
+            ? promptDef.template.replace('{{text}}', text)
+            : `Extract properties from: "${text}"`;
+
         try {
             // @ts-ignore
             const { object } = await generateObject({
                 model: this.model,
                 schema: extractionSchema,
-                prompt: `
-                You are a 'Gardener' AI for a semantic note-taking app. 
-                Your goal is to extract structured properties from the user's raw text note.
-                
-                The ontology keys usually include:
-                - intent (task, reminder, purchase, etc.)
-                - status (pending, done)
-                - priority (high, medium, low)
-                - topic (tech, philosophy, etc.)
-                - people (mentions of names)
-                - location
-                - date/time
-                
-                Extract semantic properties from the following text:
-                "${text}"
-                
-                Return the result as a list of properties.
-                `
+                prompt,
             });
 
             // Map to core Property type

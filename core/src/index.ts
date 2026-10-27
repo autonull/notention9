@@ -6,6 +6,11 @@ export * from './matching/index.js';
 export * from './ontology/index.js';
 export * from './network/index.js';
 export * from './skills/index.js';
+export * from './extraction/index.js';
+export * from './constants/index.js';
+export * from './tracing/index.js';
+export * from './prompts/index.js';
+export * from './policy/index.js';
 
 // Utils
 export * from './utils/errors/index.js';
