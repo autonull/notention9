@@ -1,53 +1,40 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, forwardRef, useImperativeHandle} from 'react';
 import type {Note} from '@notention/core';
 import {VirtualizedList, VirtualizedListRef} from '../ui/VirtualizedList';
 import {NoteListItem} from './NoteListItem';
 import {NoteGridItem} from './NoteGridItem';
 import {EmptyStatePreset, EmptyState, NotesEmptyIllustration} from '../ui/Primitives';
 import {cn} from '../../utils/ui';
-import {ITEM_HEIGHT, SIDEBAR_COLLAPSED_WIDTH} from '../../constants/ui';
+import {ITEM_HEIGHT} from '../../constants/ui';
+import {useSidebar} from './SidebarContext';
 
 interface SidebarListProps {
-    filteredNotes: Note[];
-    sortedNotes: Note[];
-    isLoading: boolean;
-    isMobile: boolean;
-    containerHeight: number;
     virtualListRef: React.RefObject<VirtualizedListRef>;
-    sidebarViewMode: string;
-    selectedNoteId: string | null;
-    setSelectedNoteId: (id: string | null) => void;
-    isTrashView: boolean;
-    showFullContent: boolean;
-    renderItem: (note: Note, index: number, isSelected: boolean) => React.ReactNode;
-    getItemKey: (note: Note, index: number) => string;
-    renderCollapsedTooltip: (note: Note) => React.ReactNode;
-    loadSampleWorkspace: () => void;
-    handleCreateNote: () => void;
-    searchTerm: string;
-    setSearchTerm: (term: string) => void;
 }
 
-export function SidebarList({
-    filteredNotes,
-    sortedNotes,
-    isLoading,
-    isMobile,
-    containerHeight,
-    virtualListRef,
-    sidebarViewMode,
-    selectedNoteId,
-    setSelectedNoteId,
-    isTrashView,
-    showFullContent,
-    renderItem,
-    getItemKey,
-    renderCollapsedTooltip,
-    loadSampleWorkspace,
-    handleCreateNote,
-    searchTerm,
-    setSearchTerm
-}: SidebarListProps) {
+const SidebarListInner = forwardRef<VirtualizedListRef, SidebarListProps>(({ virtualListRef }, ref) => {
+    const {
+        filteredNotes,
+        sortedNotes,
+        isLoading,
+        isMobile,
+        containerHeight,
+        sidebarViewMode,
+        selectedNoteId,
+        setSelectedNoteId,
+        isTrashView,
+        showFullContent,
+        renderItem,
+        getItemKey,
+        renderCollapsedTooltip,
+        loadSampleWorkspace,
+        handleCreateNote,
+        searchTerm,
+        setSearchTerm
+    } = useSidebar();
+
+    useImperativeHandle(ref, () => virtualListRef.current, [virtualListRef]);
+
     if (isLoading) return null;
 
     const EmptyStateFallback = useCallback(() => {
@@ -124,4 +111,8 @@ export function SidebarList({
             )}
         </div>
     );
-}
+});
+
+SidebarListInner.displayName = 'SidebarList';
+
+export const SidebarList = SidebarListInner;

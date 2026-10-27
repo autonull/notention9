@@ -1,11 +1,10 @@
 import React, {useRef, useMemo, useState, useEffect, useCallback} from 'react';
 import type {Note} from '@notention/core';
 import {DocumentDuplicateIcon, PinIcon, TrashIcon} from '../ui/icons';
-import {getTextFromHtml} from '../../utils/html';
 import {IconButton} from '../ui/Button';
-import {formatDistanceToNow} from 'date-fns';
 import {cn} from '../../utils/ui';
 import {useSwipeActions, SwipeActionItem} from '../../hooks/useTouchGestures';
+import {useNoteDisplay, useHighlightedText, useHighlightedPreview, getNoteItemClasses, getPropertyBadgeClasses, getRelativeTimeClasses} from './useNoteDisplay';
 
 interface NoteListItemProps {
     note: Note;
@@ -38,64 +37,27 @@ export const NoteListItem = React.memo(({
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
-    const contentPreview = useMemo(() => {
-        return getTextFromHtml(note.content) || 'No content';
-    }, [note.content]);
+    const {
+        contentPreview,
+        relativeTime,
+        displayProperties,
+        isPinned,
+        isLowPriority,
+        isVeryLowPriority
+    } = useNoteDisplay(note);
 
-    const relativeTime = useMemo(() => {
-        try {
-            return formatDistanceToNow(new Date(note.updatedAt), {addSuffix: true});
-        } catch {
-            return '';
-        }
-    }, [note.updatedAt]);
-
-    const displayProperties = useMemo(() => {
-        return note.properties.slice(0, 2);
-    }, [note.properties]);
-
-    const highlightedTitle = useMemo(() => {
-        if (!searchTerm) return note.title || 'Untitled Note';
-        const term = searchTerm.toLowerCase();
-        const title = note.title || 'Untitled Note';
-        const idx = title.toLowerCase().indexOf(term);
-        if (idx === -1) return title;
-        return (
-            <span>
-                {title.slice(0, idx)}
-                <mark className="bg-yellow-500/30 text-yellow-100 px-0.5 rounded">{title.slice(idx, idx + term.length)}</mark>
-                {title.slice(idx + term.length)}
-            </span>
-        );
-    }, [note.title, searchTerm]);
-
-    const highlightedPreview = useMemo(() => {
-        if (!searchTerm) return contentPreview;
-        const term = searchTerm.toLowerCase();
-        const idx = contentPreview.toLowerCase().indexOf(term);
-        if (idx === -1) return contentPreview;
-        const start = Math.max(0, idx - 20);
-        const end = Math.min(contentPreview.length, idx + term.length + 20);
-        return (
-            <span>
-                {start > 0 && '...'}
-                {contentPreview.slice(start, idx)}
-                <mark className="bg-yellow-500/30 text-yellow-100 px-0.5 rounded">{contentPreview.slice(idx, idx + term.length)}</mark>
-                {contentPreview.slice(idx + term.length, end)}
-                {end < contentPreview.length && '...'}
-            </span>
-        );
-    }, [contentPreview, searchTerm]);
+    const highlightedTitle = useHighlightedText(note.title || 'Untitled Note', searchTerm);
+    const highlightedPreview = useHighlightedPreview(contentPreview, searchTerm);
 
     // Swipe actions for mobile
     const swipeActions: SwipeActionItem[] = isMobile ? [
         ...(!isTrash && onPin ? [{
             id: 'pin',
-            label: note.pinned ? 'Unpin' : 'Pin',
+            label: isPinned ? 'Unpin' : 'Pin',
             icon: <PinIcon className="w-5 h-5"/>,
             onClick: () => onPin!(),
-            variant: note.pinned ? 'default' : 'primary',
-            backgroundColor: note.pinned ? '#3b82f6' : '#22c55e',
+            variant: isPinned ? 'default' : 'primary',
+            backgroundColor: isPinned ? '#3b82f6' : '#22c55e',
         }] : []),
         ...(isTrash && onRestore ? [{
             id: 'restore',
@@ -138,6 +100,19 @@ export const NoteListItem = React.memo(({
         swipeRef.current = el;
     }, [swipeRef]);
 
+    const itemClasses = getNoteItemClasses(isSelected, {
+        contentPreview: '',
+        relativeTime: '',
+        displayProperties: [],
+        isPublic: false,
+        isImported: false,
+        isPinned,
+        isTrash,
+        priority: 1,
+        isLowPriority,
+        isVeryLowPriority
+    }, isMobile, 'list');
+
     return (
         <div
             ref={combinedRef}
@@ -149,13 +124,7 @@ export const NoteListItem = React.memo(({
             tabIndex={0}
             onClick={onSelect}
             onKeyDown={handleKeyDown}
-            className={cn(
-                'note-list-item group relative flex flex-col p-3 rounded-lg cursor-pointer transition-all duration-200 overflow-hidden pressable',
-                isSelected
-                    ? 'bg-blue-900/20 shadow-sm ring-1 ring-blue-500/30'
-                    : 'bg-transparent hover:bg-gray-800/60 active:bg-gray-700/50',
-                'focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900'
-            )}
+            className={itemClasses}
         >
             {/* Selected Indicator */}
             {isSelected && (
@@ -167,7 +136,7 @@ export const NoteListItem = React.memo(({
                 <h3 className={cn('font-semibold text-sm leading-tight truncate flex-1 transition-colors', isSelected ? 'text-blue-50' : 'text-gray-300 group-hover:text-white')}>
                     {highlightedTitle}
                 </h3>
-                {note.pinned && (
+                {isPinned && (
                     <PinIcon className="h-2.5 w-2.5 text-blue-400 flex-shrink-0 animate-pulse-subtle"/>
                 )}
             </div>
@@ -180,7 +149,7 @@ export const NoteListItem = React.memo(({
             {/* Properties & Meta */}
             <div className="flex items-center justify-between pl-1 relative z-10">
                 <div className="flex items-center gap-1.5 overflow-hidden">
-                    <span className={cn('text-[10px] whitespace-nowrap transition-colors', isSelected ? 'text-blue-300/40' : 'text-gray-600 group-hover:text-gray-500')}>
+                    <span className={getRelativeTimeClasses(isSelected)}>
                         {relativeTime}
                     </span>
                     {displayProperties.length > 0 && (
@@ -188,12 +157,7 @@ export const NoteListItem = React.memo(({
                             {displayProperties.map((p, i) => (
                                 <span
                                     key={i}
-                                    className={cn(
-                                        'text-[9px] uppercase tracking-wider font-bold transition-colors px-1.5 py-0.5 rounded border',
-                                        isSelected
-                                            ? 'text-blue-400/60 border-blue-800/50 bg-blue-900/20'
-                                            : 'text-gray-700 group-hover:text-gray-600 border-gray-700 bg-gray-800/50'
-                                    )}
+                                    className={getPropertyBadgeClasses(isSelected)}
                                 >
                                     #{p.key}
                                 </span>
@@ -223,11 +187,11 @@ export const NoteListItem = React.memo(({
                             <IconButton
                                 onClick={(e) => { e.stopPropagation(); onPin(); }}
                                 tabIndex={-1}
-                                className={cn(note.pinned ? 'text-blue-400' : 'text-gray-500 hover:text-white p-0.5', note.pinned && 'animate-pulse-subtle')}
+                                className={cn(isPinned ? 'text-blue-400' : 'text-gray-500 hover:text-white p-0.5', isPinned && 'animate-pulse-subtle')}
                                 icon={PinIcon}
                                 size="sm"
                                 variant="ghost"
-                                aria-label={note.pinned ? 'Unpin note' : 'Pin note'}
+                                aria-label={isPinned ? 'Unpin note' : 'Pin note'}
                             />
                         )}
                         <IconButton

@@ -1,21 +1,17 @@
 import {useCallback, useEffect, useMemo, useRef} from 'react';
 import {useLocalForage} from '../useLocalForage';
-import type {GeoCoords, Note, SortOrder} from '@notention/core';
+import type {GeoCoords, Note, SortOrder, OntologyNode} from '@notention/core';
 import {
     createNote,
     normalizeNoteProperties,
-    networkRegistry,
     NoteFilter,
     NoteMetadata,
     NotePipeline
 } from '@notention/core';
-import {agentService} from '../../services/AgentService';
 import {useSettings} from '../useSettingsContext';
 import {useAgentSync} from './useAgentSync';
 import {STORAGE_KEYS} from '../../config/storageKeys';
-import {createScopedLogger} from '../logging.js';
-
-const log = createScopedLogger('useNotesData');
+import {createNotePersistence} from './notePersistence';
 
 export interface UseNotesDataResult {
     notes: Note[];
@@ -45,6 +41,12 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
 
     const noteFilter = useMemo(() => new NoteFilter(settings.ontology || []), [settings.ontology]);
 
+    // Consolidated persistence logic
+    const persistence = useMemo(
+        () => createNotePersistence({ settingsOntology: settings.ontology || [] }),
+        [settings.ontology]
+    );
+
     // --- Sync Logic ---
     useAgentSync(setNotes);
 
@@ -67,9 +69,9 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
         });
 
         if (!skipAgent) {
-            agentService.saveNote(normalizedNote);
+            persistence.persistUpdate(normalizedNote);
         }
-    }, [setNotes, settings.ontology]);
+    }, [setNotes, settings.ontology, persistence]);
 
 
     // --- CRUD Operations ---
@@ -79,17 +81,10 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
         newNote = normalizeNoteProperties(newNote, settings.ontology);
 
         setNotes((prev) => [newNote, ...prev]);
-        agentService.saveNote(newNote);
-
-        // Use abstraction for all active network providers
-        networkRegistry.getActiveProviders().forEach(p => {
-            p.sendNote(newNote, settings.ontology).catch(error => {
-                log.warn('Background publish failed', error as Error);
-            });
-        });
+        persistence.persistAdd(newNote);
 
         return newNote;
-    }, [setNotes, settings.ontology]);
+    }, [setNotes, settings.ontology, persistence]);
 
 
     const updateNote = useCallback((updatedNote: Note) => {
@@ -100,15 +95,8 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
         setNotes((prev) =>
             prev.map((n) => (n.id === noteWithTimestamp.id ? noteWithTimestamp : n))
         );
-        agentService.saveNote(noteWithTimestamp);
-
-        // Use abstraction for all active network providers
-        networkRegistry.getActiveProviders().forEach(p => {
-            p.sendNote(noteWithTimestamp, settings.ontology).catch(error => {
-                log.warn('Background publish failed', error as Error);
-            });
-        });
-    }, [setNotes, settings.ontology]);
+        persistence.persistUpdate(noteWithTimestamp);
+    }, [setNotes, settings.ontology, persistence]);
 
     const deleteNote = useCallback((id: string) => {
         setNotes((prev) => {
@@ -116,10 +104,10 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
                 n.id === id ? NotePipeline.delete(n) : n
             );
             const deleted = newNotes.find((n) => n.id === id);
-            if (deleted) agentService.saveNote(deleted);
+            if (deleted) persistence.persistDelete(deleted);
             return newNotes;
         });
-    }, [setNotes]);
+    }, [setNotes, persistence]);
 
     const restoreNote = useCallback((id: string) => {
         setNotes((prev) => {
@@ -127,15 +115,15 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
                 n.id === id ? NotePipeline.restore(n) : n
             );
             const restored = newNotes.find((n) => n.id === id);
-            if (restored) agentService.saveNote(restored);
+            if (restored) persistence.persistRestore(restored);
             return newNotes;
         });
-    }, [setNotes]);
+    }, [setNotes, persistence]);
 
     const permanentlyDeleteNote = useCallback((id: string) => {
         setNotes((prev) => prev.filter((note) => note.id !== id));
-        agentService.deleteNote(id);
-    }, [setNotes]);
+        persistence.persistHardDelete(id);
+    }, [setNotes, persistence]);
 
     // --- Optimized Filtering & Sorting ---
     const getSortedFilteredNotes = useCallback((

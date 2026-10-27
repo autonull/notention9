@@ -2,8 +2,8 @@ import React from 'react';
 import {act, fireEvent, render, screen} from '@testing-library/react';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {EditorManager} from '../../components/editor/EditorManager';
-import {ViewContext} from '../../components/contexts/ViewContext';
 import {SettingsContext} from '../../components/contexts/SettingsContext';
+import { renderWithProviders } from '../utils/testProviders';
 import type {Note} from '@notention/core';
 
 // Mock @notention/core metaphorMapper
@@ -258,40 +258,7 @@ describe('EditorManager', () => {
     });
 
     const renderWithContext = (ui: React.ReactElement) => {
-        const mockSettingsContext = {
-            settings: {
-                aiEnabled: false,
-                developerMode: true,
-                theme: 'dark' as const,
-                nostr: {privkey: null},
-                ontology: [],
-                customTemplates: []
-            },
-            setSettings: vi.fn(),
-            settingsLoading: false
-        };
-
-        return render(
-            <SettingsContext.Provider value={mockSettingsContext}>
-                <ViewContext.Provider value={{
-                    activeView: 'notes',
-                    setActiveView: vi.fn(),
-                    selectedNoteId: null,
-                    setSelectedNoteId: vi.fn(),
-                    matchingNoteId: null,
-                    setMatchingNoteId: vi.fn(),
-                    showToast: vi.fn(),
-                    notificationCount: 0,
-                    matches: [],
-                    addMatch: vi.fn(),
-                    clearNotifications: vi.fn(),
-                    selectedChatPubkey: null,
-                    setSelectedChatPubkey: vi.fn()
-                }}>
-                    {ui}
-                </ViewContext.Provider>
-            </SettingsContext.Provider>
-        );
+        return renderWithProviders(ui);
     };
 
     it('updates title and saves after debounce when user types', () => {

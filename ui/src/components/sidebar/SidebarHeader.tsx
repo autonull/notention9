@@ -9,43 +9,34 @@ import {Button} from '../ui/Button';
 import {PlusIcon, ChevronLeftIcon, ChevronRightIcon} from '../ui/icons';
 import {cn} from '../../utils/ui';
 import {modShortcut} from '../../utils/platform';
-import {SIDEBAR_COLLAPSED_WIDTH} from '../../constants/ui';
-
-interface SidebarHeaderProps {
-    searchInputRef: React.RefObject<HTMLInputElement>;
-    searchTerm: string;
-    setSearchTerm: (term: string) => void;
-    focusSearch: () => void;
-    onToggleSidebar: (() => void) | undefined;
-    handleCreateNote: () => void;
-    isCollapsed: boolean;
-    showFullContent: boolean;
-    sidebarViewMode: string;
-    setSidebarViewMode: (mode: string) => void;
-    sortOrder: string;
-    setSortOrder: (order: string) => void;
-    sortedNotes: Note[];
-    showPinnedOnly: boolean;
-    setShowPinnedOnly: (show: boolean) => void;
-}
+import {useSidebar} from './SidebarContext';
 
 export function SidebarHeader({
     searchInputRef,
-    searchTerm,
-    setSearchTerm,
     focusSearch,
     onToggleSidebar,
-    handleCreateNote,
     isCollapsed,
-    showFullContent,
-    sidebarViewMode,
-    setSidebarViewMode,
-    sortOrder,
-    setSortOrder,
-    sortedNotes,
-    showPinnedOnly,
-    setShowPinnedOnly
-}: SidebarHeaderProps) {
+    showFullContent
+}: {
+    searchInputRef: React.RefObject<HTMLInputElement>;
+    focusSearch: () => void;
+    onToggleSidebar: (() => void) | undefined;
+    isCollapsed: boolean;
+    showFullContent: boolean;
+}) {
+    const {
+        searchTerm,
+        setSearchTerm,
+        sidebarViewMode,
+        setSidebarViewMode,
+        sortOrder,
+        setSortOrder,
+        sortedNotes,
+        showPinnedOnly,
+        setShowPinnedOnly,
+        handleCreateNote
+    } = useSidebar();
+
     const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
         if (e.key === 'Escape') {
             searchInputRef.current?.blur();
