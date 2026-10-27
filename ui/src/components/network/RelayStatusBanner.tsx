@@ -1,6 +1,6 @@
 import React from 'react';
 import {useRelayStatus, type RelayStatus} from '../../hooks/useRelayStatus';
-import {Button} from '../common/Button';
+import {Button} from '../ui/Button';
 
 interface RelayStatusBannerProps {
     relays?: string[];

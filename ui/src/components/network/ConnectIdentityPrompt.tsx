@@ -1,6 +1,6 @@
 import React from 'react';
-import {KeyIcon, SettingsIcon} from '../common/icons';
-import {Button} from '../common/Button';
+import {KeyIcon, SettingsIcon} from '../ui/icons';
+import {Button} from '../ui/Button';
 
 interface ConnectIdentityPromptProps {
     onNavigateToSettings: () => void;

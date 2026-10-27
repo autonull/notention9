@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNetworkManagement } from '../../hooks/useNetworkManagement';
-import { Button } from '../common/Button';
-import { Input } from '../common/Input';
-import { GlobeIcon, SignalIcon, ShieldIcon, LoadingSpinner } from '../common/icons';
+import {Button} from '../ui/Button';
+import {Input} from '../ui/Input';
+import { GlobeIcon, SignalIcon, ShieldIcon, LoadingSpinner } from '../ui/icons';
 import { agentService } from '../../services/AgentService';
 import { useToast } from '../../hooks/useToast';
 import { MeshDevice } from "@meshtastic/core";

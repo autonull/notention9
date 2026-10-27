@@ -3,11 +3,11 @@ import {nip19} from 'nostr-tools';
 import {useNostrProfile} from '../../hooks/useNostrProfile';
 import type {Contact} from '@notention/core';
 import {formatNpub, Logger} from '@notention/core';
-import {SearchIcon, UserPlusIcon} from '../common/icons';
-import {Avatar} from '../common/Avatar';
-import {IconButton} from '../ui/Primitives';
-import {Button} from '../common/Button';
-import {Input} from '../common/Input';
+import {SearchIcon, UserPlusIcon} from '../ui/icons';
+import {Avatar} from '../ui/Avatar';
+import {IconButton} from '../ui/Button';
+import {Button} from '../ui/Button';
+import {Input} from '../ui/Input';
 import {Skeleton} from '../ui/Skeleton';
 
 interface ContactListProps {

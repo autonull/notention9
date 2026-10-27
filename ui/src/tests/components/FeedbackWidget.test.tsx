@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { FeedbackWidget } from '../../components/common/FeedbackWidget';
+import { FeedbackWidget } from '@notention/ui';
 
 describe('FeedbackWidget', () => {
     it('renders feedback buttons', () => {

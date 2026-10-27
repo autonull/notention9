@@ -136,7 +136,7 @@ export interface RenderPropertyOptionProps {
  * Render a single property option button.
  * Shared between PropertyPalette and UnifiedSelector.
  */
-import {SparklesIcon, TagIcon, ChevronRightIcon, ChevronDownIcon} from '../common/icons';
+import {SparklesIcon, TagIcon, ChevronRightIcon, ChevronDownIcon} from '../ui/icons';
 
 export function renderPropertyOption({
     option,

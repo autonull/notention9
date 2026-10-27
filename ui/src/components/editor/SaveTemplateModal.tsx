@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
-import {Modal} from '../common/Modal';
-import {Input} from '../common/Input';
-import {Button} from '../common/Button';
+import {Modal} from '../ui/Modal';
+import {Input} from '../ui/Input';
+import {Button} from '../ui/Button';
 
 interface SaveTemplateModalProps {
     isOpen: boolean;

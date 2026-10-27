@@ -1,6 +1,6 @@
 import React, {useEffect, useRef} from 'react';
 import {cn} from '../../utils/ui';
-import {Modal} from './Modal';
+import {Modal} from '../ui/Primitives';
 
 export {Modal};
 

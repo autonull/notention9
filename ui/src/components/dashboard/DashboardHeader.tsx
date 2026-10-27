@@ -1,6 +1,6 @@
 import React from 'react';
-import {Button} from '../ui/Primitives';
-import {PlusIcon, BoltIcon} from '../common/icons';
+import {Button} from '../ui/Button';
+import {PlusIcon, BoltIcon} from '../ui/icons';
 import {modShortcut} from '../../utils/platform';
 
 interface DashboardHeaderProps {

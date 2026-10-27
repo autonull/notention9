@@ -13,7 +13,7 @@ import {
     ChartBarIcon,
     HomeIcon,
     XMarkIcon
-} from '../common/icons';
+} from '../ui/icons';
 
 interface PropertyBlockProps {
     property: Property;

@@ -1,8 +1,8 @@
 import React from 'react';
 import type {OntologyAttribute} from '@notention/core';
-import {Input} from '../common/Input';
-import {Button} from '../common/Button';
-import {MapIcon} from '../common/icons';
+import {Input} from '../ui/Input';
+import {Button} from '../ui/Button';
+import {MapIcon} from '../ui/icons';
 
 interface PropertyValueInputProps {
     value: string;

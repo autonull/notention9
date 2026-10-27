@@ -1,8 +1,8 @@
 import React, {useRef, useMemo, useState, useEffect, useCallback} from 'react';
 import type {Note} from '@notention/core';
-import {DocumentDuplicateIcon, PinIcon, TrashIcon} from '../common/icons';
+import {DocumentDuplicateIcon, PinIcon, TrashIcon} from '../ui/icons';
 import {getTextFromHtml} from '../../utils/html';
-import {IconButton} from '../ui/Primitives';
+import {IconButton} from '../ui/Button';
 import {formatDistanceToNow} from 'date-fns';
 import {cn} from '../../utils/ui';
 import {useSwipeActions, SwipeActionItem} from '../../hooks/useTouchGestures';

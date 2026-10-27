@@ -1,6 +1,6 @@
 import React, {useMemo} from 'react';
 import type {OntologyNode} from '@notention/core';
-import {CubeIcon} from '../common/icons';
+import {CubeIcon} from '../ui/icons';
 
 interface TemplateSelectorProps {
     ontology: OntologyNode[];

@@ -10,7 +10,7 @@ import {
     HelpIcon,
     PlusIcon,
     SidebarIcon,
-} from '../components/common/icons';
+} from '../components/ui/icons';
 import {NAV_ITEMS, SETTINGS_VIEW} from '../utils/navigation';
 import {modShortcut} from '../utils/platform';
 

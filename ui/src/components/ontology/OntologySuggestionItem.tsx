@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { SuggestedAttribute } from '@notention/core';
-import { Button } from '../common/Button';
-import { PlusIcon } from '../common/icons';
+import {Button} from '../ui/Button';
+import { PlusIcon } from '../ui/icons';
 
 interface OntologySuggestionItemProps {
     suggestion: SuggestedAttribute;

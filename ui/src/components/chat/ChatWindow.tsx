@@ -7,9 +7,9 @@ import {useToast} from '../../hooks/useToast';
 import {useSettings} from '../../hooks/useSettingsContext';
 import type {Contact, NostrEvent} from '@notention/core';
 import {formatNpub, hexToBytes, Logger, parseProperties, pool, resolveRelays} from '@notention/core';
-import {ArrowLeftIcon, DocumentDuplicateIcon, SendIcon, SettingsIcon, TrashIcon} from '../common/icons';
-import {Avatar} from '../common/Avatar';
-import {IconButton} from '../ui/Primitives';
+import {ArrowLeftIcon, DocumentDuplicateIcon, SendIcon, SettingsIcon, TrashIcon} from '../ui/icons';
+import {Avatar} from '../ui/Avatar';
+import {IconButton} from '../ui/Button';
 import {Skeleton} from '../ui/Skeleton';
 
 interface ChatWindowProps {

@@ -1,6 +1,6 @@
 import React from 'react';
-import {Button} from '../ui/Primitives';
-import {PencilIcon, MapIcon, ChatIcon, NetworkIcon, ClockIcon, SettingsIcon} from '../common/icons';
+import {Button} from '../ui/Button';
+import {PencilIcon, MapIcon, ChatIcon, NetworkIcon, ClockIcon, SettingsIcon} from '../ui/icons';
 import {cn} from '../../utils/ui';
 import {modShortcut} from '../../utils/platform';
 

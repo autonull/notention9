@@ -1,9 +1,9 @@
 import React, {useState, useEffect} from 'react';
 import {MessageIcon, ThumbsDownIcon, ThumbsUpIcon} from './icons';
-import {IconButton} from '../ui/Primitives';
+import {IconButton} from './Button';
 import {InputModal} from './InputModal';
 
-interface FeedbackWidgetProps {
+export interface FeedbackWidgetProps {
     entityId: string;
     entityType?: string;
     onFeedback?: (type: 'positive' | 'negative' | 'comment', value: string) => void;

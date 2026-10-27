@@ -2,8 +2,8 @@ import React, {useCallback} from 'react';
 import {useView} from '../../hooks/useViewContext';
 import {useNotes} from '../../hooks/useNotes';
 import type {View} from '@notention/core';
-import {HelpIcon, PlusIcon, SearchIcon} from '../common/icons';
-import {IconButton} from '../ui/Primitives';
+import {HelpIcon, PlusIcon, SearchIcon} from '../ui/icons';
+import {IconButton} from '../ui/Button';
 import {cn} from '../../utils/ui';
 import {NAV_ITEMS, SETTINGS_VIEW} from '../../utils/navigation';
 

@@ -1,6 +1,6 @@
 import React from 'react';
-import {Button} from '../ui/Primitives';
-import {CheckCircleIcon} from '../common/icons';
+import {Button} from '../ui/Button';
+import {CheckCircleIcon} from '../ui/icons';
 import type {MatchResult, PropertyMatch} from '@notention/core';
 
 interface LocalMatchPreviewProps {

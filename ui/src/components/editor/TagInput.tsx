@@ -1,5 +1,5 @@
 import React, {KeyboardEvent, useState} from 'react';
-import {LoadingSpinner, SparklesIcon, TagIcon, XCircleIcon} from '../common/icons';
+import {LoadingSpinner, SparklesIcon, TagIcon, XCircleIcon} from '../ui/icons';
 
 interface TagInputProps {
     tags: string[];

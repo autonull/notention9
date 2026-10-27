@@ -15,14 +15,14 @@ export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElemen
 }
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(({
-                                                                      label,
-                                                                      error,
-                                                                      options,
-                                                                      children,
-                                                                      className = '',
-                                                                      leftIcon,
-                                                                      ...props
-                                                                  }, ref) => {
+    label,
+    error,
+    options,
+    children,
+    className = '',
+    leftIcon,
+    ...props
+}, ref) => {
     return (
         <div className={className}>
             {label && (

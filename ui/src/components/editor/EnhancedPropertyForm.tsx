@@ -1,14 +1,14 @@
 import React, {useEffect, useState} from 'react';
-import {CheckIcon, ClockIcon, InformationCircleIcon, MapPinIcon, SearchSparkleIcon, XIcon, SparklesIcon} from '../common/icons';
+import {CheckIcon, ClockIcon, InformationCircleIcon, MapPinIcon, SearchSparkleIcon, XIcon, SparklesIcon} from '../ui/icons';
 import type {OntologyNode} from '@notention/core';
 import {Logger} from '@notention/core';
 import {getCurrentPosition} from '../../utils/geolocation';
 import {useToast} from '../../hooks/useToast';
-import {Input} from '../common/Input';
-import {Button} from '../common/Button';
-import {IconButton} from '../ui/Primitives';
-import {Select} from '../common/Select';
-import {Textarea} from '../common/Textarea';
+import {Input} from '../ui/Input';
+import {Button} from '../ui/Button';
+import {IconButton} from '../ui/Button';
+import {Select} from '../ui/Select';
+import {Textarea} from '../ui/Textarea';
 import {useGardener} from '../../hooks/useGardener';
 import {EnhancedPropertyValueInput} from '../properties/EnhancedPropertyValueInput';
 

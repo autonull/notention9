@@ -1,7 +1,7 @@
 import React, {useEffect, useMemo, useRef, useState} from 'react';
 import type {OntologyNode, OntologyAttribute, Note} from '@notention/core';
-import {SearchIcon, SparklesIcon, PlusIcon, TagIcon, ChevronRightIcon, ChevronDownIcon} from '../common/icons';
-import {Input} from '../common/Input';
+import {SearchIcon, SparklesIcon, PlusIcon, TagIcon, ChevronRightIcon, ChevronDownIcon} from '../ui/icons';
+import {Input} from '../ui/Input';
 import {useListNavigation} from '../../hooks/useListNavigation';
 import {useSelectorRegistry, PropertySelector} from './SelectorRegistry';
 import {buildWidgetMetadata} from '@notention/core';

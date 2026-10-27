@@ -3,13 +3,13 @@ import {finalizeEvent, nip19} from 'nostr-tools';
 
 import type {AppSettings, NostrProfile} from '@notention/core';
 import {formatNpub, hexToBytes, Logger, pool, resolveRelays} from '@notention/core';
-import {EditIcon} from '../common/icons';
-import {Avatar} from '../common/Avatar';
-import {IconButton} from '../ui/Primitives';
-import {Button} from '../common/Button';
-import {Input} from '../common/Input';
-import {Textarea} from '../common/Textarea';
-import {Modal} from '../common/Modal';
+import {EditIcon} from '../ui/icons';
+import {Avatar} from '../ui/Avatar';
+import {IconButton} from '../ui/Button';
+import {Button} from '../ui/Button';
+import {Input} from '../ui/Input';
+import {Textarea} from '../ui/Textarea';
+import {Modal} from '../ui/Modal';
 
 interface ProfileEditorModalProps {
     isOpen: boolean;

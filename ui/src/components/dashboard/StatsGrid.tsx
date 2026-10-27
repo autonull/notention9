@@ -1,6 +1,6 @@
 import React from 'react';
 import {StatItem} from '../ui';
-import {CpuChipIcon, NetworkIcon, NoteIcon, CheckCircleIcon} from '../common/icons';
+import {CpuChipIcon, NetworkIcon, NoteIcon, CheckCircleIcon} from '../ui/icons';
 import {cn} from '../../utils/ui';
 
 interface StatsGridProps {

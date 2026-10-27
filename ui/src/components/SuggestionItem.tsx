@@ -1,7 +1,7 @@
 import React from 'react';
-import { CheckCircleIcon, InformationCircleIcon, LinkIcon, PlusIcon } from './common/icons';
+import { CheckCircleIcon, InformationCircleIcon, LinkIcon, PlusIcon } from './ui/icons';
 import { Suggestion } from '@notention/core';
-import { FeedbackWidget } from './common/FeedbackWidget';
+import { FeedbackWidget } from './ui/Primitives';
 import { agentService } from '../services/AgentService';
 
 interface SuggestionItemProps {

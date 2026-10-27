@@ -1,7 +1,7 @@
 import React from 'react';
-import {Button} from '../ui/Primitives';
-import {NoteIcon, PlusIcon} from '../common/icons';
-import {EmptyState} from '../common/EmptyState';
+import {Button} from '../ui/Button';
+import {NoteIcon, PlusIcon} from '../ui/icons';
+import {EmptyState} from '../ui/Primitives';
 
 interface EmptyStateForNotesProps {
     onCreateNote: () => void;

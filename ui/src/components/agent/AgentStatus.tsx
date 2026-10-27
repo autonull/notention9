@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {agentService} from '../../services/AgentService';
 import {AgentStatus as AgentStatusType} from '@notention/core';
-import {Badge} from '../common/Badge';
+import {Badge} from '../ui/Badge';
 
 interface AgentMessage {
     type: string;

@@ -1,6 +1,6 @@
-import { SparklesIcon } from '../common/icons';
-import { Badge } from '../common/Badge';
-import { Tabs } from '../common/Tabs';
+import { SparklesIcon } from '../ui/icons';
+import {Badge} from '../ui/Badge';
+import { Tabs } from '../ui/Primitives';
 import { ScoredMatch } from '@notention/core';
 import { Suggestion } from '@notention/core';
 

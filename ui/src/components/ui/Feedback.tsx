@@ -1,6 +1,6 @@
 import React from 'react';
 import {cn} from '../../utils/ui';
-import {LoadingSpinner} from '../common/icons';
+import {LoadingSpinner} from './icons';
 
 export interface LoadingStateProps {
     size?: 'sm' | 'md' | 'lg' | 'xl';
@@ -141,54 +141,6 @@ export function Skeleton({
     ));
 
     return count > 1 ? <div className="space-y-3">{items}</div> : items[0];
-}
-
-export interface EmptyStateProps {
-    icon?: React.ReactNode;
-    title: string;
-    description?: string;
-    action?: React.ReactNode;
-    secondaryAction?: React.ReactNode;
-    className?: string;
-    illustration?: React.ReactNode;
-}
-
-export function EmptyState({
-    icon,
-    title,
-    description,
-    action,
-    secondaryAction,
-    className = '',
-    illustration,
-}: EmptyStateProps) {
-    return (
-        <div
-            className={cn(
-                'flex flex-col items-center justify-center text-center py-12 md:py-16 px-4',
-                'bg-gray-900/50 rounded-2xl border border-gray-700/30',
-                className
-            )}
-        >
-            {illustration ? (
-                <div className="mb-6 text-gray-500">{illustration}</div>
-            ) : icon ? (
-                <div className="mb-6 text-gray-500 flex-shrink-0">
-                    {typeof icon === 'object' && 'type' in icon
-                        ? React.cloneElement(icon as React.ReactElement<React.SVGProps<SVGSVGElement>>, {className: 'w-16 h-16'})
-                        : icon}
-                </div>
-            ) : null}
-            <h3 className="text-lg font-semibold text-white mb-2">{title}</h3>
-            {description && <p className="text-sm text-gray-400 max-w-sm mx-auto mb-6">{description}</p>}
-            {(action || secondaryAction) && (
-                <div className="flex flex-col sm:flex-row items-center gap-3 w-full max-w-xs">
-                    {action && <div className="w-full sm:w-auto">{action}</div>}
-                    {secondaryAction && <div className="w-full sm:w-auto">{secondaryAction}</div>}
-                </div>
-            )}
-        </div>
-    );
 }
 
 export interface ErrorStateProps {

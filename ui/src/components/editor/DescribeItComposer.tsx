@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
 import type {OntologyNode, Property} from '@notention/core';
-import {Modal} from '../common/Modal';
-import {Button} from '../common/Button';
-import {CheckIcon, SparklesIcon, XMarkIcon} from '../common/icons';
+import {Modal} from '../ui/Modal';
+import {Button} from '../ui/Button';
+import {CheckIcon, SparklesIcon, XMarkIcon} from '../ui/icons';
 import {useDescribeIt} from '../../hooks/useDescribeIt';
 import {LmConsentModal} from '../modals/LmConsentModal';
 

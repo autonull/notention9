@@ -1,7 +1,7 @@
 import React from 'react';
 import type {SidebarViewMode} from '@notention/core';
-import {GridIcon, ListIcon} from '../common/icons';
-import {IconButton} from '../ui/Primitives';
+import {GridIcon, ListIcon} from '../ui/icons';
+import {IconButton} from '../ui/Button';
 
 interface ViewSelectorProps {
     viewMode: SidebarViewMode;

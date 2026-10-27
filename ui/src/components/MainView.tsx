@@ -7,7 +7,7 @@ import {useView} from '../hooks/useViewContext';
 import {useBackgroundMatcher} from '../hooks/useBackgroundMatcher';
 import {useChatNotifications} from '../hooks/useChatNotifications';
 import {useMetaprogramming} from '../hooks/useMetaprogramming';
-import {LoadingSpinner} from './common/icons';
+import {LoadingSpinner} from './ui/icons';
 import {ChatView} from './views/ChatView';
 import {MapView} from './views/MapView';
 import {TimelineView} from './views/TimelineView';

@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
 import type {OntologyNode} from '@notention/core';
-import {ChevronDownIcon, PlusIcon, TrashIcon} from '../common/icons';
+import {ChevronDownIcon, PlusIcon, TrashIcon} from '../ui/icons';
 import {AttributeList} from './AttributeList';
-import {IconButton} from '../ui/Primitives';
+import {IconButton} from '../ui/Button';
 
 interface OntologyNodeProps {
     node: OntologyNode;

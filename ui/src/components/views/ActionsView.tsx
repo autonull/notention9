@@ -1,8 +1,8 @@
 import React from 'react';
 import {useNotes} from '../../hooks/useNotes';
 import {useView} from '../../hooks/useViewContext';
-import {Button} from '../common/Button';
-import {Card} from '../common/Card';
+import {Button} from '../ui/Button';
+import {Card} from '../ui/Card';
 import {Note} from '@notention/core';
 import {Skeleton} from '../ui/Skeleton';
 

@@ -1,11 +1,11 @@
 import React, {useEffect, useMemo} from 'react';
-import {IconButton} from '../ui/Primitives';
-import {useFocusTrap} from '../ui/Overlay';
-import {XIcon, HelpIcon} from '../common/icons';
+import {IconButton} from './Button';
+import {useFocusTrap} from './Overlay';
+import {XIcon, HelpIcon} from './icons';
 import {cn} from '../../utils/ui';
 import {SHORTCUT_GROUPS, type ShortcutGroup} from '../../config/shortcuts';
 
-interface KeyboardShortcutsHelpProps {
+export interface KeyboardShortcutsHelpProps {
     isOpen: boolean;
     onClose: () => void;
     groups?: ShortcutGroup[];

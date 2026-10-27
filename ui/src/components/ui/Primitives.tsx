@@ -1,3 +1,4 @@
+// Base components
 export * from './Button';
 export * from './Card';
 export * from './Input';
@@ -17,6 +18,22 @@ export * from './Navigation';
 export * from './DataDisplay';
 export * from './Forms';
 
+// Composite components (built on top of base components)
+export * from './ConfirmationModal';
+export * from './CopyableField';
+export * from './DropdownMenu';
+export * from './InputModal';
+export * from './Select';
+export * from './Textarea';
+export * from './TimePickerModal';
+export * from './Toggle';
+export * from './KeyboardShortcutsHelp';
+export * from './ErrorBoundary';
+export * from './ErrorHandler';
+export * from './SkipLink';
+export * from './FeedbackWidget';
+export * from './EmptyState';
+
 // Re-export commonly used types
 export type {ButtonProps, IconButtonProps} from './Button';
 export type {CardProps} from './Card';
@@ -30,7 +47,21 @@ export type {VirtualizedListProps, VirtualizedListRef} from './VirtualizedList';
 export type {EnhancedCommandPaletteProps} from './EnhancedCommandPalette';
 export type {SmartSearchProps, SearchFilter, SearchResult, UseSmartSearchOptions} from './SmartSearch';
 export type {PageLayoutProps, ViewContainerProps, SectionProps, GridProps, StackProps, DividerProps, SpacerProps, ContainerProps} from './Layout';
-export type {LoadingStateProps, SkeletonProps, EmptyStateProps, ErrorStateProps, InlineAlertProps, ProgressProps, SpinnerProps} from './Feedback';
+export type {LoadingStateProps, SkeletonProps, ErrorStateProps, InlineAlertProps, ProgressProps, SpinnerProps} from './Feedback';
 export type {TabProps, TabsProps, TabPanelProps, BreadcrumbProps, PaginationProps, StepperProps, NavItem, NavProps} from './Navigation';
 export type {TableProps, ListProps, CardGridProps, StatItemProps, DataTableProps} from './DataDisplay';
 export type {FormFieldProps, TextareaProps, SelectProps, CheckboxProps, RadioGroupProps, SwitchProps, SliderProps, FormProps, FormActionsProps} from './Forms';
+export type {ConfirmationModalProps} from './ConfirmationModal';
+export type {CopyableFieldProps} from './CopyableField';
+export type {DropdownMenuProps, DropdownMenuItem} from './DropdownMenu';
+export type {InputModalProps} from './InputModal';
+export type {SelectProps, SelectOption} from './Select';
+export type {TextareaProps} from './Textarea';
+export type {TimePickerModalProps} from './TimePickerModal';
+export type {ToggleProps} from './Toggle';
+export type {KeyboardShortcutsHelpProps} from './KeyboardShortcutsHelp';
+export type {ErrorBoundaryProps} from './ErrorBoundary';
+export type {ErrorMessage, ErrorHandlerContextType} from './ErrorHandler';
+export type {SkipLinkProps, SkipLinkItem} from './SkipLink';
+export type {FeedbackWidgetProps} from './FeedbackWidget';
+export type {EmptyStateProps, EmptyStatePresetProps} from './EmptyState';

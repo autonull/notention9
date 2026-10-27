@@ -12,7 +12,7 @@ import {
     NetworkIcon,
     ClockIcon,
     SettingsIcon,
-} from '../common/icons';
+} from '../ui/icons';
 
 const QUICK_ACTIONS = [
     {id: 'new-note', label: 'New Note', description: 'Start writing', icon: PencilIcon, gradient: 'gradient-primary', action: 'new-note', shortcut: modShortcut('N')},

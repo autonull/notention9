@@ -3,8 +3,8 @@ import type {OntologyNode, OntologyAttribute} from '@notention/core';
 import {SelectorProps, PropertySelector} from './SelectorRegistry';
 import {buildWidgetMetadata} from '@notention/core';
 import {EnhancedPropertyValueInput} from './EnhancedPropertyValueInput';
-import {Button} from '../common/Button';
-import {TagIcon, UsersIcon, HeartIcon, MapPinIcon, CalendarIcon, FileTextIcon} from '../common/icons';
+import {Button} from '../ui/Button';
+import {TagIcon, UsersIcon, HeartIcon, MapPinIcon, CalendarIcon, FileTextIcon} from '../ui/icons';
 
 export const NeedSelector: PropertySelector = {
     id: 'need-selector',

@@ -2,7 +2,7 @@ import React from 'react';
 import {Modal} from './Modal';
 import {Button} from './Button';
 
-interface ConfirmationModalProps {
+export interface ConfirmationModalProps {
     isOpen: boolean;
     onClose: () => void;
     onConfirm: () => void;
@@ -14,15 +14,15 @@ interface ConfirmationModalProps {
 }
 
 export function ConfirmationModal({
-                                      isOpen,
-                                      onClose,
-                                      onConfirm,
-                                      title,
-                                      message,
-                                      confirmLabel = 'Confirm',
-                                      cancelLabel = 'Cancel',
-                                      isDestructive = false,
-                                  }: ConfirmationModalProps) {
+    isOpen,
+    onClose,
+    onConfirm,
+    title,
+    message,
+    confirmLabel = 'Confirm',
+    cancelLabel = 'Cancel',
+    isDestructive = false,
+}: ConfirmationModalProps) {
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={title}>
             <div className="space-y-6">
@@ -47,4 +47,4 @@ export function ConfirmationModal({
             </div>
         </Modal>
     );
-};
+}

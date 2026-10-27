@@ -11,7 +11,7 @@ import {
     CpuChipIcon,
     NetworkIcon,
     NoteIcon,
-} from '../common/icons';
+} from '../ui/icons';
 import {cn} from '../../utils/ui';
 
 interface DashboardStatsProps {

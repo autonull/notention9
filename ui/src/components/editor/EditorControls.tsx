@@ -9,10 +9,10 @@ import {
     SparklesIcon,
     EllipsisVerticalIcon,
     ArrowUpTrayIcon
-} from '../common/icons';
-import {IconButton} from '../ui/Primitives';
-import {Button} from '../ui/Primitives';
-import {DropdownMenu, DropdownMenuItem} from '../common/DropdownMenu';
+} from '../ui/icons';
+import {IconButton} from '../ui/Button';
+import {Button} from '../ui/Button';
+import {DropdownMenu, DropdownMenuItem} from '../ui/Primitives';
 
 export interface EditorControlsProps {
     onNext?: () => void;

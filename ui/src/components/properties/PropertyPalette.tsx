@@ -1,7 +1,7 @@
 import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {OntologyNode, SuggestedAttribute} from '@notention/core';
-import {SearchIcon, SparklesIcon, PlusIcon, TagIcon} from '../common/icons';
-import {Input} from '../common/Input';
+import {SearchIcon, SparklesIcon, PlusIcon, TagIcon} from '../ui/icons';
+import {Input} from '../ui/Input';
 import {useListNavigation} from '../../hooks/useListNavigation';
 import {buildPropertyOptions, filterPropertyOptions, renderPropertyOption} from './propertyUtils';
 

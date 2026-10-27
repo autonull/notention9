@@ -1,6 +1,6 @@
 import React from 'react';
-import {Modal} from '../common/Modal';
-import {Button} from '../common/Button';
+import {Modal} from '../ui/Modal';
+import {Button} from '../ui/Button';
 
 interface LmConsentModalProps {
     isOpen: boolean;

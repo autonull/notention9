@@ -1,6 +1,6 @@
 import React from 'react';
 import {Tooltip} from '../ui/Overlay';
-import {Badge} from '../common/Badge';
+import {Badge} from '../ui/Badge';
 
 export interface NavButtonProps {
     icon: React.ReactElement<{ className?: string }>;

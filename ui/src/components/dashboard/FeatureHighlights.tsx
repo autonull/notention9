@@ -1,5 +1,5 @@
 import React from 'react';
-import {BoltIcon, MagicWandIcon, ShieldIcon} from '../common/icons';
+import {BoltIcon, MagicWandIcon, ShieldIcon} from '../ui/icons';
 
 const FEATURE_HIGHLIGHTS = [
     {icon: BoltIcon, title: 'Semantic Extraction', desc: 'Auto-detect properties from natural language'},

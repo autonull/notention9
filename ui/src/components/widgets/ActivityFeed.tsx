@@ -1,6 +1,6 @@
 import React from 'react';
 import type {Note} from '@notention/core';
-import {ClockIcon, NoteIcon} from '../common/icons';
+import {ClockIcon, NoteIcon} from '../ui/icons';
 
 interface ActivityFeedProps {
     recentNotes: Note[];

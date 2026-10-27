@@ -1,6 +1,6 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {useView} from '../../hooks/useViewContext';
-import {HelpIcon} from '../common/icons';
+import {HelpIcon} from '../ui/icons';
 import {cn} from '../../utils/ui';
 
 interface ContextualShortcut {

@@ -1,7 +1,7 @@
 import React from 'react';
-import {CheckIcon, SparklesIcon, XMarkIcon} from '../common/icons';
+import {CheckIcon, SparklesIcon, XMarkIcon} from '../ui/icons';
 import type {PropertyReviewItem} from '../../hooks/usePropertyReview';
-import {Button} from '../common/Button';
+import {Button} from '../ui/Button';
 
 interface ExtractionReviewProps {
     items: PropertyReviewItem[];

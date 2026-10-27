@@ -2,8 +2,8 @@ import React, {useEffect, useMemo, useRef, useState, useCallback} from 'react';
 import {cn} from '../../utils/ui';
 import {CommandPaletteItem} from './Overlay';
 import {useFocusTrap} from './Overlay';
-import {SearchSparkleIcon, XIcon, SearchIcon, SettingsIcon} from '../common/icons';
-import {Button} from './Primitives';
+import {SearchSparkleIcon, XIcon, SearchIcon, SettingsIcon} from '../ui/icons';
+import {Button} from './Button';
 import {COMMAND_PALETTE_SHORTCUTS} from '../../config/shortcuts';
 import {useIsMobile} from '../../hooks/useMediaQuery';
 

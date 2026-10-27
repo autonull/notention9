@@ -2,8 +2,8 @@ import React from 'react';
 import 'leaflet/dist/leaflet.css';
 
 import {useMapView} from '../../hooks/useMapView';
-import {MapPinIcon} from '../common/icons';
-import {EmptyState} from '../common/EmptyState';
+import {MapPinIcon} from '../ui/icons';
+import {EmptyState} from '../ui/Primitives';
 
 export function MapView() {
     const {mapContainerRef, hasPoints} = useMapView();

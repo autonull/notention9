@@ -2,10 +2,10 @@ import React, {useMemo, useState} from 'react';
 import {getTextFromHtml, type Note} from '@notention/core';
 import {useNotes} from '../../hooks/useNotes';
 import {useToast} from '../../hooks/useToast';
-import {Button} from '../common/Button';
-import {ConfirmationModal} from '../common/ConfirmationModal';
-import {EmptyState} from '../common/EmptyState';
-import {TrashIcon, DocumentDuplicateIcon} from '../common/icons';
+import {Button} from '../ui/Button';
+import {ConfirmationModal} from '../ui/Primitives';
+import {EmptyState} from '../ui/Primitives';
+import {TrashIcon, DocumentDuplicateIcon} from '../ui/icons';
 import {Skeleton} from '../ui/Skeleton';
 
 export function TrashView() {

@@ -1,6 +1,6 @@
 import React, {Component, ErrorInfo, ReactNode} from 'react';
 
-interface ErrorBoundaryProps {
+export interface ErrorBoundaryProps {
     children: ReactNode;
     fallback?: ReactNode;
 }

@@ -1,6 +1,6 @@
 import { AttributeEditorModal } from '../ontology/AttributeEditorModal';
 import { OntologyAliasLinkModal } from '../ontology/OntologyAliasLinkModal';
-import { ConfirmationModal } from '../common/ConfirmationModal';
+import { ConfirmationModal } from '../ui/Primitives';
 import { OntologyAttribute, OntologyNode, Property } from '@notention/core';
 
 interface AssistantModalsProps {

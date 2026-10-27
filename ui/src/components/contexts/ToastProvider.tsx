@@ -1,5 +1,5 @@
 import React, {ReactNode, useCallback, useState} from 'react';
-import {Toast} from '../common/Toast';
+import {Toast} from '../ui/Toast';
 import {ToastContext, ToastMessage, ToastType} from './ToastContext';
 
 interface ToastProviderProps {

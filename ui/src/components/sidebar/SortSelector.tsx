@@ -1,7 +1,7 @@
 import React from 'react';
 import type {SortOrder} from '@notention/core';
-import {IconButton} from '../ui/Primitives';
-import {ArrowUpDownIcon, ArrowUpIcon, ArrowDownIcon, CalendarIcon, MapPinIcon, TagIcon, ClockIcon} from '../common/icons';
+import {IconButton} from '../ui/Button';
+import {ArrowUpDownIcon, ArrowUpIcon, ArrowDownIcon, CalendarIcon, MapPinIcon, TagIcon, ClockIcon} from '../ui/icons';
 
 const SORT_OPTIONS: {value: SortOrder; label: string; icon: React.ComponentType<React.SVGProps<SVGSVGElement>>; description: string}[] = [
     {value: "updatedAt_desc", label: "Modified (Newest)", icon: ArrowDownIcon, description: "Recently updated first"},
@@ -15,7 +15,7 @@ const SORT_OPTIONS: {value: SortOrder; label: string; icon: React.ComponentType<
     {value: "tags", label: "Tags (Count)", icon: TagIcon, description: "Most tags first"},
 ];
 
-import {ClockIcon} from '../common/icons';
+import {ClockIcon} from '../ui/icons';
 
 interface SortSelectorProps {
     sortOrder: SortOrder;

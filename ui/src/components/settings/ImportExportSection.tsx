@@ -1,7 +1,7 @@
 import React, {useRef, useState} from 'react';
-import {ArrowDownIcon, ArrowUpIcon, DocumentDuplicateIcon} from '../common/icons';
-import {Button} from '../common/Button';
-import {ConfirmationModal} from '../common/ConfirmationModal';
+import {ArrowDownIcon, ArrowUpIcon, DocumentDuplicateIcon} from '../ui/icons';
+import {Button} from '../ui/Button';
+import {ConfirmationModal} from '../ui/Primitives';
 import {useToast} from '../../hooks/useToast';
 import localforage from 'localforage';
 import type {AppSettings, ExportNote, Note} from '@notention/core';

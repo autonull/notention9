@@ -1,7 +1,7 @@
 import React, {forwardRef} from 'react';
-import {SearchIcon, XCircleIcon} from '../common/icons';
-import {IconButton} from '../ui/Primitives';
-import {Input} from '../common/Input';
+import {SearchIcon, XCircleIcon} from '../ui/icons';
+import {IconButton} from '../ui/Button';
+import {Input} from '../ui/Input';
 
 interface SearchProps {
     searchTerm: string;

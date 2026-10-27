@@ -4,9 +4,9 @@ import {nip19} from 'nostr-tools';
 import {useView} from '../../hooks/useViewContext';
 import type {NostrEvent, NostrProfile} from '@notention/core';
 import {extractPropertiesFromTags, formatNpub} from '@notention/core';
-import {ChatIcon, DocumentDuplicateIcon, MergeIcon} from '../common/icons';
-import {Avatar} from '../common/Avatar';
-import {Button} from '../common/Button';
+import {ChatIcon, DocumentDuplicateIcon, MergeIcon} from '../ui/icons';
+import {Avatar} from '../ui/Avatar';
+import {Button} from '../ui/Button';
 
 // Extend NostrEvent to include score if available
 export type ScoredNostrEvent = NostrEvent & { score?: number };

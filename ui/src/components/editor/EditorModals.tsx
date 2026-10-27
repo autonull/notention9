@@ -5,7 +5,7 @@
 import React from 'react';
 import {SaveTemplateModal} from './SaveTemplateModal';
 import {MapPickerModal} from '../map/MapPickerModal';
-import {TimePickerModal} from '../common/TimePickerModal';
+import {TimePickerModal} from '../ui/Primitives';
 import {PrivacyConfirmModal} from '../modals/PrivacyConfirmModal';
 import type {Note} from '@notention/core';
 

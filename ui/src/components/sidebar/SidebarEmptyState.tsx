@@ -1,7 +1,7 @@
 import React from 'react';
-import {PlusIcon, SparklesIcon, SearchIcon} from '../common/icons';
-import {Button} from '../ui/Primitives';
-import {EmptyState, NotesEmptyIllustration, SearchEmptyIllustration, TrashEmptyIllustration} from '../common/EmptyState';
+import {PlusIcon, SparklesIcon, SearchIcon} from '../ui/icons';
+import {Button} from '../ui/Button';
+import {EmptyState, NotesEmptyIllustration, SearchEmptyIllustration, TrashEmptyIllustration} from '../ui/Primitives';
 import {useDemoWorkspace} from '../../hooks/useDemoWorkspace';
 
 interface SidebarEmptyStateProps {

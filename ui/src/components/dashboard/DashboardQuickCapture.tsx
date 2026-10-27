@@ -20,7 +20,7 @@ import {
     LightBulbIcon,
     CheckCircleIcon,
     NoteIcon,
-} from '../common/icons';
+} from '../ui/icons';
 import {modShortcut} from '../../utils/platform';
 import {getTextFromHtml} from '@notention/core';
 

@@ -1,19 +1,19 @@
 import React, {useState} from 'react';
-import {ClipboardIcon} from '../common/icons';
+import {ClipboardIcon} from './icons';
 import {useToast} from '../../hooks/useToast';
 import {Input} from './Input';
 
-interface CopyableFieldProps {
+export interface CopyableFieldProps {
     label: string;
     value: string;
     isSecret?: boolean;
 }
 
 export function CopyableField({
-                                  label,
-                                  value,
-                                  isSecret = false,
-                              }: CopyableFieldProps) {
+    label,
+    value,
+    isSecret = false,
+}: CopyableFieldProps) {
     const {addToast} = useToast();
     const [visible, setVisible] = useState(!isSecret);
 
@@ -53,4 +53,4 @@ export function CopyableField({
             </div>
         </div>
     );
-};
+}

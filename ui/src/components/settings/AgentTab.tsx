@@ -1,9 +1,9 @@
 import React, {useState} from 'react';
 import {AgentStatus} from '../agent/AgentStatus';
 import {agentService} from '../../services/AgentService';
-import {Toggle} from '../common/Toggle';
-import {Input} from '../common/Input';
-import {Button} from '../common/Button';
+import {Toggle} from '../ui/Primitives';
+import {Input} from '../ui/Input';
+import {Button} from '../ui/Button';
 
 export function AgentTab() {
     const [enabled, setEnabled] = useState(agentService.isEnabled());

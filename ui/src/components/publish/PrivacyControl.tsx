@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
 import {Note, PrivacyLevel, publishNoteToNostr} from '@notention/core';
 import {useSettings} from '../../hooks/useSettingsContext';
-import {LockIcon, UserGroupIcon, WorldIcon} from '../common/icons';
-import {Button} from '../common/Button';
+import {LockIcon, UserGroupIcon, WorldIcon} from '../ui/icons';
+import {Button} from '../ui/Button';
 
 interface PrivacyControlProps {
     note: Note;

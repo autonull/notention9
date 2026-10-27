@@ -1,6 +1,6 @@
 import React from 'react';
-import {Button} from '../ui/Primitives';
-import {SparklesIcon} from '../common/icons';
+import {Button} from '../ui/Button';
+import {SparklesIcon} from '../ui/icons';
 
 interface SampleWorkspacePromptProps {
     onLoad: () => void;

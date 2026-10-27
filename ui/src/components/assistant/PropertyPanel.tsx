@@ -1,5 +1,5 @@
-import { Button } from '../common/Button';
-import { PlusIcon } from '../common/icons';
+import {Button} from '../ui/Button';
+import { PlusIcon } from '../ui/icons';
 import { PropertyForm } from '../editor/PropertyForm';
 import { PropertyBlock } from '../properties/PropertyBlock';
 import { ExtractionReview } from '../editor/ExtractionReview';

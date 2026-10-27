@@ -1,6 +1,6 @@
 import React from 'react';
-import {Modal} from '../common/Modal';
-import {KeyIcon, MapPinIcon, PlusCircleIcon, SearchIcon, SparklesIcon, TagIcon} from '../common/icons';
+import {Modal} from '../ui/Modal';
+import {KeyIcon, MapPinIcon, PlusCircleIcon, SearchIcon, SparklesIcon, TagIcon} from '../ui/icons';
 
 const SHORTCUTS = [
     ['New note', 'Ctrl N'],

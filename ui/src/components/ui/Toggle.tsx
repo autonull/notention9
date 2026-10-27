@@ -1,6 +1,6 @@
 import React from 'react';
 
-interface ToggleProps {
+export interface ToggleProps {
     checked: boolean;
     onChange: () => void;
     disabled?: boolean;
@@ -10,13 +10,13 @@ interface ToggleProps {
 }
 
 export function Toggle({
-                           checked,
-                           onChange,
-                           disabled = false,
-                           id,
-                           ariaLabel,
-                           label
-                       }: ToggleProps) {
+    checked,
+    onChange,
+    disabled = false,
+    id,
+    ariaLabel,
+    label
+}: ToggleProps) {
     return (
         <div className="flex items-center gap-3">
             <button

@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import type {Template} from '@notention/core';
-import {ChevronDownIcon, CubeTransparentIcon, PlusIcon, SparklesIcon} from '../common/icons';
+import {ChevronDownIcon, CubeTransparentIcon, PlusIcon, SparklesIcon} from '../ui/icons';
 import {modShortcut} from '../../utils/platform';
 
 interface NewNoteButtonProps {

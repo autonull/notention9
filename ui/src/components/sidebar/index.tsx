@@ -1,24 +1,24 @@
 import React, {useRef, useEffect, useCallback, useMemo, useState} from 'react';
 import type {Note} from '@notention/core';
-import {ConfirmationModal} from '../common/ConfirmationModal';
+import {ConfirmationModal} from '../ui/Primitives';
 import {SidebarHeader} from './SidebarHeader';
 import {SidebarList} from './SidebarList';
 import {SidebarPullToRefresh} from './SidebarPullToRefresh';
 import {useSidebarLogic} from './useSidebarLogic';
 import {NoteListItem} from './NoteListItem';
 import {NoteGridItem} from './NoteGridItem';
-import {IconButton} from '../ui/Primitives';
+import {IconButton} from '../ui/Button';
 import {cn} from '../../utils/ui';
 import {VirtualizedList} from '../ui/VirtualizedList';
 import {useTouchGestures} from '../../hooks/useTouchGestures';
 import {useIsMobile} from '../../hooks/useMediaQuery';
 import {SidebarSkeleton} from '../ui/Skeleton';
-import {EmptyStatePreset} from '../common/EmptyState';
+import {EmptyStatePreset} from '../ui/Primitives';
 import {useDemoWorkspace} from '../../hooks/useDemoWorkspace';
 import {modShortcut} from '../../utils/platform';
 import {ITEM_HEIGHT, SIDEBAR_COLLAPSED_WIDTH} from '../../constants/ui';
-import {NotesEmptyIllustration, EmptyState} from '../common/EmptyState';
-import {PlusIcon, ChevronLeftIcon, ChevronRightIcon} from '../common/icons';
+import {NotesEmptyIllustration, EmptyState} from '../ui/Primitives';
+import {PlusIcon, ChevronLeftIcon, ChevronRightIcon} from '../ui/icons';
 
 interface SidebarProps {
     sortedNotes?: Note[];

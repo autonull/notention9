@@ -1,10 +1,10 @@
 import React, {useEffect, useMemo, useRef, useState} from 'react';
 import L from 'leaflet';
 import {Logger} from '@notention/core';
-import {Modal} from '../common/Modal';
-import {Button} from '../common/Button';
-import {Input} from '../common/Input';
-import {LoadingSpinner, SearchIcon} from '../common/icons';
+import {Modal} from '../ui/Modal';
+import {Button} from '../ui/Button';
+import {Input} from '../ui/Input';
+import {LoadingSpinner, SearchIcon} from '../ui/icons';
 
 interface MapPickerModalProps {
     isOpen: boolean;

@@ -1,13 +1,13 @@
 import React, {useState} from 'react';
-import {DocumentDuplicateIcon, TrashIcon} from '../common/icons';
+import {DocumentDuplicateIcon, TrashIcon} from '../ui/icons';
 import {useNotes} from '../../hooks/useNotes';
 import {useSettings} from '../../hooks/useSettingsContext';
 import {useView} from '../../hooks/useViewContext';
-import {Button} from '../common/Button';
-import {ConfirmationModal} from '../common/ConfirmationModal';
+import {Button} from '../ui/Button';
+import {ConfirmationModal} from '../ui/Primitives';
 import {ImportExportSection} from './ImportExportSection';
 import {useDemoWorkspace} from '../../hooks/useDemoWorkspace';
-import {SparklesIcon} from '../common/icons';
+import {SparklesIcon} from '../ui/icons';
 
 export function DataTab() {
     const {notes} = useNotes();

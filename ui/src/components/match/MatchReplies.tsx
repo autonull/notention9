@@ -1,7 +1,7 @@
 import React from 'react';
 import {ScoredMatch} from '@notention/core';
 import {MatchItem} from './MatchItem';
-import {SparklesIcon} from '../common/icons';
+import {SparklesIcon} from '../ui/icons';
 
 interface MatchRepliesProps {
     matches: ScoredMatch[];

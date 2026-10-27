@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react';
-import {CheckCircleIcon, ClockIcon, LightBulbIcon, NoteIcon, UserGroupIcon, PlusIcon, TagIcon, DownloadIcon} from '../common/icons';
+import {CheckCircleIcon, ClockIcon, LightBulbIcon, NoteIcon, UserGroupIcon, PlusIcon, TagIcon, DownloadIcon} from '../ui/icons';
 import type {Note} from '@notention/core';
 import type {ComponentType} from 'react';
 import {cn} from '../../utils/ui';

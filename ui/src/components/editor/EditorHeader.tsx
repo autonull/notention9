@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
-import {ArrowLeftIcon, LockIcon} from '../common/icons';
+import {ArrowLeftIcon, LockIcon} from '../ui/icons';
 import {TagInput} from './TagInput';
-import {IconButton} from '../ui/Primitives';
+import {IconButton} from '../ui/Button';
 import {EditorControls} from './EditorControls';
 import {SkillExecutionIndicator} from '../notes/SkillExecutionIndicator';
 import {PrivacyControl} from '../publish/PrivacyControl';

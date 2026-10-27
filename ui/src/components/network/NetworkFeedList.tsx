@@ -1,9 +1,9 @@
 import React from 'react';
 import type {NostrEvent, NostrProfile} from '@notention/core';
 import {NostrEventCard} from './NostrEventCard';
-import {LoadingSpinner, SettingsIcon} from '../common/icons';
-import {Button} from '../ui/Primitives';
-import {EmptyState, NetworkEmptyIllustration} from '../common/EmptyState';
+import {LoadingSpinner, SettingsIcon} from '../ui/icons';
+import {Button} from '../ui/Button';
+import {EmptyState, NetworkEmptyIllustration} from '../ui/Primitives';
 import {useView} from '../../hooks/useViewContext';
 
 interface NetworkFeedListProps {

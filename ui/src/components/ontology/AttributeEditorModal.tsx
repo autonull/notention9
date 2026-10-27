@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Modal } from '../common/Modal';
-import { Button } from '../common/Button';
-import { Input } from '../common/Input';
+import {Modal} from '../ui/Modal';
+import {Button} from '../ui/Button';
+import {Input} from '../ui/Input';
 import { OntologyAttribute } from '@notention/core';
-import { CodeBlockIcon } from '../common/icons';
+import { CodeBlockIcon } from '../ui/icons';
 
 interface AttributeEditorModalProps {
     isOpen: boolean;

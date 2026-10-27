@@ -4,7 +4,7 @@ import {useView} from '../../hooks/useViewContext';
 import {useSettings} from '../../hooks/useSettingsContext';
 import {MatchEngine} from '@notention/core';
 import {Button} from '../ui';
-import {CheckCircleIcon} from '../common/icons';
+import {CheckCircleIcon} from '../ui/icons';
 import {cn} from '../../utils/ui';
 
 interface DashboardLocalMatchProps {

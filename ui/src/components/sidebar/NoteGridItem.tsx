@@ -1,7 +1,7 @@
 import React from 'react';
 import type {Note} from '@notention/core';
-import {DownloadIcon, LockIcon, NoteIcon, WorldIcon} from '../common/icons';
-import {Badge} from '../common/Badge';
+import {DownloadIcon, LockIcon, NoteIcon, WorldIcon} from '../ui/icons';
+import {Badge} from '../ui/Badge';
 import {SkillExecutionIndicator} from '../notes/SkillExecutionIndicator';
 
 interface NoteGridItemProps {

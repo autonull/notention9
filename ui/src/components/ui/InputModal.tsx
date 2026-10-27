@@ -3,7 +3,7 @@ import {Modal} from './Modal';
 import {Button} from './Button';
 import {Input} from './Input';
 
-interface InputModalProps {
+export interface InputModalProps {
     isOpen: boolean;
     onClose: () => void;
     onConfirm: (value: string) => void;
@@ -16,16 +16,16 @@ interface InputModalProps {
 }
 
 export function InputModal({
-                               isOpen,
-                               onClose,
-                               onConfirm,
-                               title,
-                               label,
-                               defaultValue = '',
-                               placeholder = '',
-                               confirmLabel = 'Confirm',
-                               cancelLabel = 'Cancel',
-                           }: InputModalProps) {
+    isOpen,
+    onClose,
+    onConfirm,
+    title,
+    label,
+    defaultValue = '',
+    placeholder = '',
+    confirmLabel = 'Confirm',
+    cancelLabel = 'Cancel',
+}: InputModalProps) {
     const [value, setValue] = useState(defaultValue);
 
     useEffect(() => {
@@ -72,4 +72,4 @@ export function InputModal({
             </form>
         </Modal>
     );
-};
+}

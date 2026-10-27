@@ -1,7 +1,7 @@
 import React from 'react';
 import {ActivityFeed} from '../widgets/ActivityFeed';
-import {EmptyState} from '../common/EmptyState';
-import {ClockIcon} from '../common/icons';
+import {EmptyState} from '../ui/Primitives';
+import {ClockIcon} from '../ui/icons';
 import type {Note} from '@notention/core';
 
 interface RecentActivityProps {

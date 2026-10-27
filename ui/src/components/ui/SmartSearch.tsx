@@ -1,7 +1,7 @@
 import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {cn} from '../../utils/ui';
-import {SearchIcon, XCircleIcon, ChevronDownIcon, SettingsIcon} from '../common/icons';
-import {Button} from './Primitives';
+import {SearchIcon, XCircleIcon, ChevronDownIcon, SettingsIcon} from '../ui/icons';
+import {Button} from './Button';
 
 export interface SearchFilter {
     key: string;

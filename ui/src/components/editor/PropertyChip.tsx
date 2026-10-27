@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import {NodeViewProps, NodeViewWrapper} from '@tiptap/react';
-import {ExclamationTriangleIcon, TagIcon} from '../common/icons';
+import {ExclamationTriangleIcon, TagIcon} from '../ui/icons';
 import {ICON_MAP} from '../layout/iconMap';
 import {useSettings} from '../../hooks/useSettingsContext';
 import {useOntologyIndex} from '../../hooks/useOntologyIndex';

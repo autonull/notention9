@@ -3,7 +3,7 @@
  * Extracted from EditorManager for separation of concerns
  */
 import React from 'react';
-import {Button} from '../common/Button';
+import {Button} from '../ui/Button';
 
 interface PublishErrorBannerProps {
     error: string;

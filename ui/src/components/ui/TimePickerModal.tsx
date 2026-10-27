@@ -5,7 +5,7 @@ import {Input} from './Input';
 import {format, isValid, parseISO} from 'date-fns';
 import {useToast} from '../../hooks/useToast';
 
-interface TimePickerModalProps {
+export interface TimePickerModalProps {
     isOpen: boolean;
     onClose: () => void;
     onTimeSelect: (isoString: string) => void;
@@ -14,12 +14,12 @@ interface TimePickerModalProps {
 }
 
 export function TimePickerModal({
-                                    isOpen,
-                                    onClose,
-                                    onTimeSelect,
-                                    initialValue,
-                                    title = "Pick Date & Time"
-                                }: TimePickerModalProps) {
+    isOpen,
+    onClose,
+    onTimeSelect,
+    initialValue,
+    title = "Pick Date & Time"
+}: TimePickerModalProps) {
     const [date, setDate] = useState('');
     const [time, setTime] = useState('');
     const {addToast} = useToast();
@@ -44,9 +44,6 @@ export function TimePickerModal({
             const dt = new Date(dateTimeString);
 
             if (isValid(dt)) {
-                // Return ISO string without milliseconds for cleaner display
-                // Or just the string the user built if we want to be loose
-                // Let's use standard ISO format
                 onTimeSelect(`${date}T${time}:00`);
                 onClose();
             } else {

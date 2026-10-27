@@ -1,5 +1,5 @@
-import { Button } from '../common/Button';
-import { SearchSparkleIcon } from '../common/icons';
+import {Button} from '../ui/Button';
+import { SearchSparkleIcon } from '../ui/icons';
 import { DiscoveredProperties } from '../network/DiscoveredProperties';
 import { MatchList } from '../match/MatchList';
 import { OntologyNode, ScoredMatch, Contact, Note } from '@notention/core';

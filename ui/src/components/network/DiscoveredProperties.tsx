@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { ScoredMatch, OntologyNode, getCanonicalKey, findAttributeDef } from '@notention/core';
-import { LightBulbIcon, PlusIcon, LinkIcon } from '../common/icons';
+import { LightBulbIcon, PlusIcon, LinkIcon } from '../ui/icons';
 
 interface DiscoveredPropertiesProps {
     networkMatches: ScoredMatch[];

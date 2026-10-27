@@ -1,9 +1,9 @@
 import React, {useState} from 'react';
-import {NetworkIcon, PlusIcon, TrashIcon} from '../common/icons';
-import {Button} from '../common/Button';
-import {IconButton} from '../ui/Primitives';
-import {Input} from '../common/Input';
-import {ConfirmationModal} from '../common/ConfirmationModal';
+import {NetworkIcon, PlusIcon, TrashIcon} from '../ui/icons';
+import {Button} from '../ui/Button';
+import {IconButton} from '../ui/Button';
+import {Input} from '../ui/Input';
+import {ConfirmationModal} from '../ui/Primitives';
 import {useToast} from '../../hooks/useToast';
 import type {AppSettings} from '@notention/core';
 import {DEFAULT_RELAYS} from '@notention/core';

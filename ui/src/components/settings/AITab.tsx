@@ -1,13 +1,13 @@
 import React, {useState} from 'react';
-import {CheckIcon, CpuChipIcon, SparklesIcon} from '../common/icons';
+import {CheckIcon, CpuChipIcon, SparklesIcon} from '../ui/icons';
 import {isGeminiApiKeyAvailable} from '@/services/ai/RemoteProvider';
 import {AVAILABLE_MODELS} from '@/services/ai/WebLLMProvider';
 import type {AppSettings} from '@notention/core';
 import {useToast} from '../../hooks/useToast';
-import {Toggle} from '../common/Toggle';
-import {Input} from '../common/Input';
-import {Button} from '../common/Button';
-import {Select} from '../common/Select';
+import {Toggle} from '../ui/Primitives';
+import {Input} from '../ui/Input';
+import {Button} from '../ui/Button';
+import {Select} from '../ui/Select';
 
 interface AITabProps {
     settings: AppSettings;

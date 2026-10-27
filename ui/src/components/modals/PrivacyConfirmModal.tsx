@@ -1,6 +1,6 @@
 import React, {useMemo} from 'react';
-import {Modal} from '../common/Modal';
-import {Button} from '../common/Button';
+import {Modal} from '../ui/Modal';
+import {Button} from '../ui/Button';
 import type {Note} from '@notention/core';
 import {getTextFromHtml} from '../../utils/html';
 

@@ -17,7 +17,7 @@ import {RecentActivity} from './RecentActivity';
 import {QuickActions} from './QuickActions';
 import {EmptyStateForNotes} from './EmptyStateForNotes';
 import {StatItem} from '../ui';
-import {LoadingSpinner} from '../common/icons';
+import {LoadingSpinner} from '../ui/icons';
 import {cn} from '../../utils/ui';
 import {modShortcut} from '../../utils/platform';
 import {DashboardStatSkeleton, ActivityFeedSkeleton, QuickActionsSkeleton} from '../ui/Skeleton';

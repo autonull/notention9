@@ -3,7 +3,7 @@ import type {Note} from '@notention/core';
 import {VirtualizedList, VirtualizedListRef} from '../ui/VirtualizedList';
 import {NoteListItem} from './NoteListItem';
 import {NoteGridItem} from './NoteGridItem';
-import {EmptyStatePreset, EmptyState, NotesEmptyIllustration} from '../common/EmptyState';
+import {EmptyStatePreset, EmptyState, NotesEmptyIllustration} from '../ui/Primitives';
 import {cn} from '../../utils/ui';
 import {ITEM_HEIGHT, SIDEBAR_COLLAPSED_WIDTH} from '../../constants/ui';
 

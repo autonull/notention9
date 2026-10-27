@@ -1,7 +1,7 @@
 import React from 'react';
 import {Editor} from '@tiptap/react';
 import {BubbleMenu} from '@tiptap/react/menus';
-import {BoldIcon, CodeBracketsIcon, ItalicIcon, LinkIcon, QuoteIcon, StrikethroughIcon} from '../common/icons';
+import {BoldIcon, CodeBracketsIcon, ItalicIcon, LinkIcon, QuoteIcon, StrikethroughIcon} from '../ui/icons';
 
 interface EditorBubbleMenuProps {
     editor: Editor | null;

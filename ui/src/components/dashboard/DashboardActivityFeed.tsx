@@ -3,8 +3,8 @@ import type {Note} from '@notention/core';
 import {useView} from '../../hooks/useViewContext';
 import {useNotes} from '../../hooks/useNotes';
 import {ActivityFeed} from '../widgets/ActivityFeed';
-import {EmptyState} from '../common/EmptyState';
-import {ClockIcon} from '../common/icons';
+import {EmptyState} from '../ui/Primitives';
+import {ClockIcon} from '../ui/icons';
 import {cn} from '../../utils/ui';
 
 interface DashboardActivityFeedProps {

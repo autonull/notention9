@@ -5,9 +5,9 @@ import {EnhancedCommandPalette} from './ui/EnhancedCommandPalette';
 import {Sidebar} from './sidebar';
 import {MainView} from './MainView';
 import {SelectorRegistryProvider} from './properties/SelectorRegistry';
-import {KeyboardShortcutsHelp} from './common/KeyboardShortcutsHelp';
+import {KeyboardShortcutsHelp} from './ui/Primitives';
 import {ContextualHint} from './ui/ContextualHint';
-import {NoteIcon} from './common/icons';
+import {NoteIcon} from './ui/icons';
 
 import {useNotes} from '../hooks/useNotes';
 import {useView} from '../hooks/useViewContext';

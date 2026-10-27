@@ -1,11 +1,11 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import {Modal} from '../common/Modal';
-import {InformationCircleIcon, TagIcon, ExclamationTriangleIcon, SparklesIcon, SparklesIcon as MagicIcon} from '../common/icons';
+import {Modal} from '../ui/Modal';
+import {InformationCircleIcon, TagIcon, ExclamationTriangleIcon, SparklesIcon, SparklesIcon as MagicIcon} from '../ui/icons';
 import {ICON_MAP} from '../layout/iconMap';
 import type {OntologyAttribute, OntologyNode, SuggestedAttribute} from '@notention/core';
 import {findAttributeDef, validateAttributeValue} from '@notention/core';
-import {Input} from '../common/Input';
-import {Button} from '../common/Button';
+import {Input} from '../ui/Input';
+import {Button} from '../ui/Button';
 import {EnhancedPropertyValueInput} from '../properties/EnhancedPropertyValueInput';
 
 interface InsertPropertyModalProps {

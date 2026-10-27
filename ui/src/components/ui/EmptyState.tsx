@@ -1,8 +1,8 @@
 import React from 'react';
 import {cn} from '../../utils/ui';
-import {SearchIcon, SparklesIcon, ArrowRightIcon, HelpIcon} from '../common/icons';
+import {SearchIcon, SparklesIcon, ArrowRightIcon, HelpIcon} from './icons';
 import {modShortcut} from '../../utils/platform';
-import {Button} from '../ui/Primitives';
+import {Button} from './Button';
 
 interface EmptyStateProps {
     icon?: React.ComponentType<{ className?: string }>;

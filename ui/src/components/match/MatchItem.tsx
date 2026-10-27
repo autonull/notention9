@@ -11,8 +11,8 @@ import {
     ExclamationTriangleIcon,
     XMarkIcon,
     QuestionMarkCircleIcon
-} from '../common/icons';
-import { Button } from '../common/Button';
+} from '../ui/icons';
+import {Button} from '../ui/Button';
 
 interface MatchItemProps {
     match: ScoredMatch;

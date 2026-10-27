@@ -1,16 +1,16 @@
 import React, {useMemo, useState} from 'react';
 import {generateSecretKey, getPublicKey, nip19} from 'nostr-tools';
 import {bytesToHex, hexToBytes} from '@noble/hashes/utils.js';
-import {KeyIcon, UserPlusIcon} from '../common/icons';
+import {KeyIcon, UserPlusIcon} from '../ui/icons';
 import type {AppSettings} from '@notention/core';
 import {Logger} from '@notention/core';
-import {CopyableField} from '../common/CopyableField';
+import {CopyableField} from '../ui/Primitives';
 import {usePublish} from '@/hooks/usePublish';
 import {useToast} from '../../hooks/useToast';
-import {Input} from '../common/Input';
-import {Button} from '../common/Button';
-import {Textarea} from '../common/Textarea';
-import {ConfirmationModal} from '../common/ConfirmationModal';
+import {Input} from '../ui/Input';
+import {Button} from '../ui/Button';
+import {Textarea} from '../ui/Textarea';
+import {ConfirmationModal} from '../ui/Primitives';
 import {RelayManagementSection} from './RelayManagementSection';
 
 interface NostrTabProps {

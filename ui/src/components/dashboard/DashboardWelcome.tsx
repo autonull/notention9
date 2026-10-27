@@ -1,6 +1,6 @@
 import React from 'react';
 import {Button} from '../ui';
-import {PlusIcon, BoltIcon, SparklesIcon, MagicWandIcon, ShieldIcon} from '../common/icons';
+import {PlusIcon, BoltIcon, SparklesIcon, MagicWandIcon, ShieldIcon} from '../ui/icons';
 import {cn} from '../../utils/ui';
 import {modShortcut} from '../../utils/platform';
 

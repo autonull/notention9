@@ -1,9 +1,9 @@
 import React, { useState, useMemo } from 'react';
-import { Modal } from '../common/Modal';
-import { Button } from '../common/Button';
+import {Modal} from '../ui/Modal';
+import {Button} from '../ui/Button';
 import { OntologyNode } from '@notention/core';
 import { levenshteinDistance } from '@notention/core';
-import { SparklesIcon } from '../common/icons';
+import { SparklesIcon } from '../ui/icons';
 
 interface OntologyAliasLinkModalProps {
     isOpen: boolean;

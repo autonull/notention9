@@ -1,7 +1,7 @@
 import React, {useMemo} from 'react';
 import type {Editor} from '@tiptap/react';
-import {IconButton} from '../ui/Primitives';
-import {DropdownMenu, DropdownMenuItem} from '../common/DropdownMenu';
+import {IconButton} from '../ui/Button';
+import {DropdownMenu, DropdownMenuItem} from '../ui/Primitives';
 import {
     BoldIcon,
     CodeBlockIcon,
@@ -20,7 +20,7 @@ import {
     SparklesIcon,
     StrikethroughIcon,
     ChevronDownIcon
-} from '../common/icons';
+} from '../ui/icons';
 
 interface TiptapToolbarProps {
     editor: Editor | null;

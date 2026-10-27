@@ -47,7 +47,7 @@ import {
     XCircleIcon,
     XIcon,
     XMarkIcon,
-} from '../common/icons';
+} from '../ui/icons';
 
 type IconProps = React.SVGProps<SVGSVGElement>;
 

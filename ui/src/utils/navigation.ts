@@ -11,7 +11,7 @@ import {
     SettingsIcon,
     TrashIcon,
     HomeIcon,
-} from '../components/common/icons';
+} from '../components/ui/icons';
 
 export const NAV_ITEMS: ViewConfig[] = [
     {id: 'dashboard', label: 'Dashboard', icon: HomeIcon, shortcut: '1', showInMobile: true},

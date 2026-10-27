@@ -1,6 +1,6 @@
 import { Suggestion } from '@notention/core';
 import { SuggestionItem } from '../SuggestionItem';
-import { FeedbackWidget } from '../common/FeedbackWidget';
+import { FeedbackWidget } from '../ui/Primitives';
 import { agentService } from '../../services/AgentService';
 import { useToast } from '../../hooks/useToast';
 

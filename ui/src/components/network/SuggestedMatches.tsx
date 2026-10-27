@@ -1,5 +1,5 @@
 import React from 'react';
-import {SparklesIcon} from '../common/icons';
+import {SparklesIcon} from '../ui/icons';
 import {useView} from '../../hooks/useViewContext';
 import {SuggestedMatchItem} from './SuggestedMatchItem';
 

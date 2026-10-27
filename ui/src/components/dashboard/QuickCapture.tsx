@@ -1,6 +1,8 @@
 import React from 'react';
-import {Button, Input, Badge} from '../ui/Primitives';
-import {SearchIcon, TagIcon, SparklesIcon, ArrowRightIcon} from '../common/icons';
+import {Badge} from '../ui/Badge';
+import {Input} from '../ui/Input';
+import {Button} from '../ui/Button';
+import {SearchIcon, TagIcon, SparklesIcon, ArrowRightIcon} from '../ui/icons';
 import {cn} from '../../utils/ui';
 
 interface QuickCaptureProps {

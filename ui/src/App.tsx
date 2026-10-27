@@ -1,12 +1,10 @@
 import React from 'react';
 import {AppShell} from './components/AppShell';
-import {ErrorBoundary} from './components/common/ErrorBoundary';
-import {ErrorDisplay, ErrorHandlingProvider} from './components/common/ErrorHandler';
+import {ErrorBoundary, ErrorDisplay, ErrorHandlingProvider, SkipLink} from './components/ui/Primitives';
 import {ConfigSync} from './components/config/ConfigSync';
 import {AgentCursor} from './components/AgentCursor';
 import {AgentStatusIndicator} from './components/agent/AgentStatusIndicator';
 import {useNetworkManagement} from './hooks/useNetworkManagement';
-import {SkipLink} from './components/common/SkipLink';
 
 function App() {
     return (
