@@ -1,6 +1,6 @@
 import { DiscoveryResult, DiscoveredAction } from './componentScanner.js';
 
-interface InferredSelector {
+export interface InferredSelector {
     target: {
         role?: string;
         name?: string;

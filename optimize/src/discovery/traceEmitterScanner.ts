@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { globSync } from 'glob';
 
-interface TraceEmitter {
+export interface TraceEmitter {
     file: string;
     function: string;
     traceType: 'prompt' | 'action';

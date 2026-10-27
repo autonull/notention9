@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { globSync } from 'glob';
 
-interface StatePath {
+export interface StatePath {
     path: string;
     type: string;
     description: string;
@@ -10,7 +10,7 @@ interface StatePath {
     elementType?: string;
 }
 
-interface HookState {
+export interface HookState {
     name: string;
     file: string;
     returns: StatePath[];

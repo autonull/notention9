@@ -3,6 +3,15 @@ export { StateSchemaInferencer, stateSchemaInferencer, type InferredStateSchema,
 export { TraceEmitterScanner, traceEmitterScanner, type TraceEmitter } from './traceEmitterScanner.js';
 export { JourneyGenerator, journeyGenerator, type GenerationOptions } from './journeyGenerator.js';
 export { SelectorInference, selectorInference, type InferredSelector } from './selectorInference.js';
+export { TsAstScanner, tsAstScanner, type ScannedType, type HookReturnType, type TypeSchemaData } from './tsAstScanner.js';
+export { TypeSchemaBuilder, TypeSchema, type ResolvedType, type ResolvedProperty } from './typeSchema.js';
+export { StatePathRegistry, getStatePathRegistry, setStatePathRegistry, type StatePathEntry, type StatePathInfo } from './statePathRegistry.js';
+export { GoalParser, goalParser, type ParsedGoal, type TargetStatePredicate, type GoalConstraints, type InferredAction } from './goalParser.js';
+export { JourneySynthesizer, journeySynthesizer, type SynthesisOptions } from './journeySynthesizer.js';
+export { EventFlowScanner, eventFlowScanner, type EventHandler, type ActionFlow, type ActionCall } from './eventFlowScanner.js';
+export { AccessibilitySelectorDeriver, deriveSelectorsFromPage, type AriaSnapshotOptions, type AccessibilitySelector, type LiveSelectorResult } from './accessibilitySelector.js';
+export { McpContractScanner, mcpContractScanner, type McpToolContract, type McpPluginInfo } from './mcpContractScanner.js';
+export { GoldenCaseMiner, goldenCaseMiner, type GoldenCase, type MiningOptions } from './goldenCaseMiner.js';
 
 // Unified discovery facade
 import { ComponentScanner } from './componentScanner.js';
@@ -10,6 +19,9 @@ import { StateSchemaInferencer } from './stateSchema.js';
 import { TraceEmitterScanner } from './traceEmitterScanner.js';
 import { JourneyGenerator } from './journeyGenerator.js';
 import { SelectorInference } from './selectorInference.js';
+import { TsAstScanner } from './tsAstScanner.js';
+import { TypeSchemaBuilder } from './typeSchema.js';
+import { StatePathRegistry } from './statePathRegistry.js';
 import type { JourneySpec } from '../journey.js';
 
 export class DiscoveryEngine {
@@ -18,6 +30,9 @@ export class DiscoveryEngine {
     private traces = new TraceEmitterScanner();
     private journeys = new JourneyGenerator();
     private selectors = new SelectorInference();
+    private tsScanner = new TsAstScanner();
+    private typeSchema: ReturnType<TypeSchemaBuilder['build']> | null = null;
+    private statePathRegistry = new StatePathRegistry();
 
     discoverAll(projectRoot: string = '/home/me/notention9') {
         const discovery = this.components.scan(projectRoot);
@@ -26,6 +41,14 @@ export class DiscoveryEngine {
         const selectors = this.selectors.infer(discovery);
 
         return { discovery, stateSchema, traceEmitters, selectors };
+    }
+
+    discoverWithTypes(projectRoot: string = '/home/me/notention9') {
+        const base = this.discoverAll(projectRoot);
+        const typeSchema = TypeSchemaBuilder.fromProject(projectRoot);
+        this.typeSchema = typeSchema;
+        this.statePathRegistry.merge(typeSchema.statePathRegistry);
+        return { ...base, typeSchema, statePathRegistry: this.statePathRegistry };
     }
 
     generateJourney(name: string, projectRoot: string = '/home/me/notention9'): JourneySpec {
@@ -39,6 +62,14 @@ export class DiscoveryEngine {
     getSelectors(projectRoot: string = '/home/me/notention9') {
         const discovery = this.components.scan(projectRoot);
         return this.selectors.infer(discovery);
+    }
+
+    getStatePathRegistry(): StatePathRegistry {
+        return this.statePathRegistry;
+    }
+
+    getTypeSchema() {
+        return this.typeSchema;
     }
 }
 

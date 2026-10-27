@@ -360,7 +360,7 @@ Each is a *shallow* cut: one seam, one test, no speculative generality.
 
 **Done when:** `discoveryEngine.generateJourney('capture-and-edit')` produces a valid `JourneySpec`; selectors inferred for all dialog fields and toolbar actions; trace emitters match AD-8 table; NL intent "capture and edit" resolves to the journey.
 
-### WS-2.6 · Advanced State Schema Inference — *eliminates `StatePath` string drift* (Day 5)
+### WS-2.6 · Advanced State Schema Inference — *eliminates `StatePath` string drift* (Day 5) ✅ **COMPLETE**
 - `optimize/src/discovery/tsAstScanner.ts` — TypeScript Compiler API / ts-morph scanner for `ui/src/hooks/**/*.ts`, `core/src/**/*.ts`.
 - `optimize/src/discovery/typeSchema.ts` — `TypeSchema.fromProject()` extracts return types of `useNotes`, `useView`, `useEditorLogic`, `useEditorPublishing`, resolves generics, flattens nested objects.
 - `optimize/src/discovery/statePathRegistry.ts` — canonical `StatePath` registry with dotted notation, array awareness (`note.propertyIndex.*`), validation that paths exist at runtime.
@@ -368,7 +368,7 @@ Each is a *shallow* cut: one seam, one test, no speculative generality.
 
 **Done when:** `statePathRegistry.get('note.propertyIndex.skill')` returns typed path; journey `assertState` uses registry; adding a new property to `Note` type automatically appears in registry.
 
-### WS-2.7 · Journey Synthesis from Goals — *eliminates manual journey files* (Day 6)
+### WS-2.7 · Journey Synthesis from Goals — *eliminates manual journey files* (Day 6) ✅ **COMPLETE**
 - `optimize/src/discovery/journeySynthesizer.ts` — `JourneySynthesizer.fromGoal(goal, options)` builds journey via:
   1. Component graph from `ComponentScanner` (nodes=components, edges=props/context/hooks)
   2. State transition graph from `TypeSchema` (pre/post conditions per action)
@@ -379,7 +379,7 @@ Each is a *shallow* cut: one seam, one test, no speculative generality.
 
 **Done when:** `journeySynthesizer.fromGoal('add a deadline property to a note')` produces valid `JourneySpec`; all existing journeys regeneratable; new features auto-discoverable.
 
-### WS-2.8 · Event Flow & Selector Derivation — *eliminates manual selector/action specs* (Day 6, parallel)
+### WS-2.8 · Event Flow & Selector Derivation — *eliminates manual selector/action specs* (Day 6, parallel) ✅ **COMPLETE**
 - `optimize/src/discovery/eventFlowScanner.ts` — scans JSX for `onClick`, `onSubmit`, `onChange` → traces to handler functions → builds action graph.
 - `optimize/src/discovery/accessibilitySelector.ts` — uses Playwright `ariaSnapshot()` on live app to derive canonical selectors for discovered actions/dialogs.
 - `optimize/src/discovery/mcpContractScanner.ts` — parses `agent/src/server/plugins/*.ts` for `McpToolRegistry.register()` calls → generates contract test specs.
@@ -559,9 +559,9 @@ pnpm-workspace.yaml, package.json   add `optimize`
 
 - [x] WS-0, WS-0.5…WS-5 complete; WS-6 merged behind an env gate (or explicitly deferred with a tracking note)
 - [x] WS-2.5 Discovery & Metaprogramming Layer complete (`optimize/src/discovery/`); journeys generated, not hand-written
-- [ ] WS-2.6 Advanced State Schema Inference complete (`tsAstScanner`, `typeSchema`, `statePathRegistry`); `StatePath` strings eliminated
-- [ ] WS-2.7 Journey Synthesis from Goals complete (`journeySynthesizer`, `goalParser`); manual journey files deprecated
-- [ ] WS-2.8 Event Flow & Selector Derivation complete (`eventFlowScanner`, `accessibilitySelector`, `mcpContractScanner`, `goldenCaseMiner`); selectors/contracts/goldens auto-derived
+- [x] WS-2.6 Advanced State Schema Inference complete (`tsAstScanner`, `typeSchema`, `statePathRegistry`); `StatePath` strings eliminated
+- [x] WS-2.7 Journey Synthesis from Goals complete (`journeySynthesizer`, `goalParser`); manual journey files deprecated
+- [x] WS-2.8 Event Flow & Selector Derivation complete (`eventFlowScanner`, `accessibilitySelector`, `mcpContractScanner`, `goldenCaseMiner`); selectors/contracts/goldens auto-derived
 - [ ] `pnpm optimize --journey capture-and-edit` green in CI and locally; bundle committed as a **baseline fixture** in `doc/evidence/baselines/capture-and-edit/`
 - [ ] `pnpm test`, `pnpm --filter @notention/ui test:e2e`, `pnpm optimize:check`, `pnpm run build` all green
 - [x] `optimize/README.md` documents: journey authoring, step kinds, replay, report-only semantics, and the "no class selectors" rule

@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { globSync } from 'glob';
 
-interface ComponentInfo {
+export interface ComponentInfo {
     name: string;
     file: string;
     props: PropInfo[];
@@ -10,33 +10,33 @@ interface ComponentInfo {
     exports: string[];
 }
 
-interface PropInfo {
+export interface PropInfo {
     name: string;
     type: string;
     optional: boolean;
 }
 
-interface JSXElement {
+export interface JSXElement {
     tag: string;
     props: Record<string, string>;
     children: JSXElement[];
     location: { line: number; column: number };
 }
 
-interface DiscoveredRoute {
+export interface DiscoveredRoute {
     path: string;
     component: string;
     guards: string[];
 }
 
-interface DiscoveredDialog {
+export interface DiscoveredDialog {
     name: string;
     trigger: string;
     component: string;
     fields: FieldInfo[];
 }
 
-interface FieldInfo {
+export interface FieldInfo {
     name: string;
     type: 'text' | 'select' | 'custom';
     label: string;
@@ -44,14 +44,14 @@ interface FieldInfo {
     options?: string[];
 }
 
-interface DiscoveredAction {
+export interface DiscoveredAction {
     component: string;
     action: string;
     selector: SelectorInfo;
     intent: string;
 }
 
-interface SelectorInfo {
+export interface SelectorInfo {
     role?: string;
     name?: string;
     testId?: string;

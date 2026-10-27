@@ -32,29 +32,47 @@ function parseOptimizeIntent(args: string[]): OptimizeIntent {
         case 'findings': {
             return { action: 'findings', constraints: { privacy: 'private' }, mode: 'report-only' };
         }
+        case 'help':
+        case '--help':
+        case '-h': {
+            printHelp();
+            process.exit(0);
+        }
         default:
-            throw new Error(`Unknown subcommand: ${subcommand}. Use: optimize, reproduce, findings`);
+            throw new Error(`Unknown subcommand: ${subcommand}. Use: optimize, reproduce, findings, help`);
     }
 }
 
-async function main() {
-    const args = process.argv.slice(2);
-    const { values, positionals } = parseArgs({ args, allowPositionals: true });
-
-    if (positionals.length === 0) {
-        console.log(`
+function printHelp(): void {
+    console.log(`
 Usage: pnpm optimize <command> [args]
 
 Commands:
   optimize <journeyId>     Run optimization journey
   reproduce <findingId>    Reproduce a finding
   findings                 List findings
+  help                     Show this help
 
 Options:
   --json                   Output as JSON
   --allow-draft            Allow draft journeys
   --replay <runId>         Replay a run
 `);
+}
+
+async function main() {
+    const rawArgs = process.argv.slice(2);
+
+    // Handle --help before parseArgs
+    if (rawArgs.includes('--help') || rawArgs.includes('-h')) {
+        printHelp();
+        process.exit(0);
+    }
+
+    const { values, positionals } = parseArgs({ args: rawArgs, allowPositionals: true });
+
+    if (positionals.length === 0) {
+        printHelp();
         process.exit(0);
     }
 

@@ -20,6 +20,7 @@
     "@notention/core": "workspace:*",
     "glob": "^13.0.6",
     "playwright": "^1.60.0",
+    "ts-morph": "^27.0.2",
     "tsx": "^4.19.0",
     "zod": "^3.23.8"
   },
