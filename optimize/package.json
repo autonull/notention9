@@ -4,15 +4,22 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts",
-    "./journey": "./src/journey.ts",
-    "./evidence": "./src/evidence.ts",
-    "./policy": "./src/policy.ts",
-    "./prompts": "./src/prompts/index.ts",
-    "./discovery": "./src/discovery/index.ts"
+    ".": "./dist/index.js",
+    "./journey": "./dist/journey.js",
+    "./evidence": "./dist/evidence.js",
+    "./policy": "./dist/policy.js",
+    "./prompts": "./dist/prompts/index.js",
+    "./discovery": "./dist/discovery/index.js",
+    "./replay": "./dist/replay.js",
+    "./intent": "./dist/intent.js",
+    "./state": "./dist/state.js",
+    "./finding": "./dist/finding.js",
+    "./steps": "./dist/steps.js",
+    "./execute": "./dist/execute.js",
+    "./registry": "./dist/registry.js"
   },
   "scripts": {
-    "build": "tsc --noEmit",
+    "build": "tsc",
     "test": "vitest run",
     "lint": "eslint src --ext .ts"
   },

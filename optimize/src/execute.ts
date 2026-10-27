@@ -94,7 +94,7 @@ export async function executeJourney(context: ExecutionContext): Promise<void> {
                 case 'assertState': {
                     stateSnapshot = await page.evaluate(() => (globalThis as any).__NOTENTION__?.state?.());
                     const value = resolvePath(stateSnapshot, step.path);
-                    if (value !== step.equals) {
+                    if (!deepEqual(value, step.equals)) {
                         throw new Error(`assertState failed: path="${step.path}", expected=${JSON.stringify(step.equals)}, actual=${JSON.stringify(value)}`);
                     }
                     break;
@@ -113,9 +113,32 @@ export async function executeJourney(context: ExecutionContext): Promise<void> {
                     stateSnapshot = await page.evaluate(() => (globalThis as any).__NOTENTION__?.state?.());
                     break;
                 }
+                case 'script': {
+                    await page.evaluate(step.code);
+                    break;
+                }
                 case 'seed':
                     // Handled before journey execution
                     break;
+                case 'waitForState': {
+                    const timeout = step.timeoutMs ?? 5000;
+                    const startTime = Date.now();
+                    while (Date.now() - startTime < timeout) {
+                        stateSnapshot = await page.evaluate(() => (globalThis as any).__NOTENTION__?.state?.());
+                        const value = resolvePath(stateSnapshot, step.path);
+                        if (deepEqual(value, step.equals)) {
+                            break;
+                        }
+                        await new Promise(r => setTimeout(r, 100));
+                    }
+                    // Final check
+                    stateSnapshot = await page.evaluate(() => (globalThis as any).__NOTENTION__?.state?.());
+                    const value = resolvePath(stateSnapshot, step.path);
+                    if (!deepEqual(value, step.equals)) {
+                        throw new Error(`waitForState timeout: path="${step.path}", expected=${JSON.stringify(step.equals)}, actual=${JSON.stringify(value)}`);
+                    }
+                    break;
+                }
             }
         } catch (e) {
             ok = false;
@@ -153,6 +176,20 @@ function resolvePath(obj: unknown, path: string): unknown {
         }
         return acc[part];
     }, obj);
+}
+
+function deepEqual(a: unknown, b: unknown): boolean {
+    if (a === b) return true;
+    if (a === null || b === null) return false;
+    if (typeof a !== 'object' || typeof b !== 'object') return false;
+    if (Array.isArray(a) && Array.isArray(b)) {
+        if (a.length !== b.length) return false;
+        return a.every((val, i) => deepEqual(val, b[i]));
+    }
+    const keysA = Object.keys(a as object);
+    const keysB = Object.keys(b as object);
+    if (keysA.length !== keysB.length) return false;
+    return keysA.every(key => deepEqual((a as any)[key], (b as any)[key]));
 }
 
 async function waitForReady(locator: any): Promise<void> {

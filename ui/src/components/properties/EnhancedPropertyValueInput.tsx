@@ -16,6 +16,7 @@ interface EnhancedPropertyValueInputProps {
     selectOptions?: string[];
     affinityOptions?: OntologyAttribute['affinityOptions'];
     arity?: OntologyAttribute['arity'];
+    testId?: string;
 }
 
 export function EnhancedPropertyValueInput({
@@ -29,7 +30,8 @@ export function EnhancedPropertyValueInput({
     numericOptions,
     selectOptions,
     affinityOptions,
-    arity
+    arity,
+    testId
 }: EnhancedPropertyValueInputProps) {
     const type = attributeDef?.type ?? 'string';
 
@@ -42,6 +44,7 @@ export function EnhancedPropertyValueInput({
                 onChange={(e) => onChange(e.target.value)}
                 autoFocus={!!attributeDef}
                 disabled={readonly}
+                data-testid={testId}
             >
                 <option value="">Select an option...</option>
                 {options.map((opt) => (
@@ -61,6 +64,7 @@ export function EnhancedPropertyValueInput({
                 onChange={(e) => onChange(e.target.value)}
                 autoFocus={!!attributeDef}
                 disabled={readonly}
+                data-testid={testId}
             />
         );
     }
@@ -80,6 +84,7 @@ export function EnhancedPropertyValueInput({
                 min={min?.toString()}
                 max={max?.toString()}
                 step={step?.toString()}
+                data-testid={testId}
             />
         );
     }
@@ -92,6 +97,7 @@ export function EnhancedPropertyValueInput({
                 onChange={(e) => onChange(e.target.value)}
                 autoFocus={!!attributeDef}
                 disabled={readonly}
+                data-testid={testId}
             />
         );
     }
@@ -104,6 +110,7 @@ export function EnhancedPropertyValueInput({
                 onChange={(e) => onChange(e.target.value)}
                 autoFocus={!!attributeDef}
                 disabled={readonly}
+                data-testid={testId}
             >
                 <option value="">Select...</option>
                 <option value="true">True</option>
@@ -123,6 +130,7 @@ export function EnhancedPropertyValueInput({
                     onChange={(e) => onChange(e.target.value)}
                     autoFocus={!!attributeDef}
                     disabled={readonly}
+                    data-testid={testId}
                 />
                 {onPickLocation && !readonly && (
                     <Button
@@ -168,6 +176,7 @@ export function EnhancedPropertyValueInput({
                     value={value}
                     onChange={(e) => onChange(e.target.value)}
                     disabled={readonly}
+                    data-testid={testId}
                 />
             </div>
         );
@@ -185,6 +194,7 @@ export function EnhancedPropertyValueInput({
             onChange={(e) => onChange(e.target.value)}
             autoFocus={!!attributeDef}
             disabled={readonly}
+            data-testid={testId}
         />
     );
 };

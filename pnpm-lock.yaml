@@ -148,6 +148,9 @@ importers:
       '@notention/core':
         specifier: workspace:*
         version: link:../core
+      '@notention/optimize':
+        specifier: workspace:*
+        version: link:../optimize
       '@types/conf':
         specifier: ^2.1.0
         version: 2.1.0

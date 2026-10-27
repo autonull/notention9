@@ -10,7 +10,10 @@
     "./constants/storageKeys": "./dist/constants/storageKeys.js",
     "./constants/paths": "./dist/constants/paths.js",
     "./extraction": "./dist/extraction/index.js",
-    "./extraction/deterministic": "./dist/extraction/deterministic.js"
+    "./extraction/deterministic": "./dist/extraction/deterministic.js",
+    "./prompts": "./dist/prompts/index.js",
+    "./prompts/registry": "./dist/prompts/registry.js",
+    "./prompts/propertyExtraction": "./dist/prompts/propertyExtraction.js"
   },
   "scripts": {
     "build": "tsc",

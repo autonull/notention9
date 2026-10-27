@@ -8,10 +8,6 @@
     "outDir": "./dist",
     "resolveJsonModule": true,
     "baseUrl": ".",
-    "paths": {
-      "@notention/core": ["../core/src/index.ts"],
-      "@notention/agent": ["../agent/src/index.ts"]
-    },
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true
   },

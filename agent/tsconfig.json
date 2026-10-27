@@ -29,6 +29,18 @@
     "paths": {
       "@notention/core": [
         "../core/src/index.ts"
+      ],
+      "@notention/optimize": [
+        "../optimize/src/index.ts"
+      ],
+      "@notention/core/constants/paths": [
+        "../core/src/constants/paths.ts"
+      ],
+      "@notention/core/prompts": [
+        "../core/src/prompts/index.ts"
+      ],
+      "@notention/optimize/policy": [
+        "../optimize/src/policy.ts"
       ]
     }
   },

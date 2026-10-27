@@ -1,6 +1,6 @@
 import { createCommand } from './command.js';
-import { parseOptimizeIntent } from '@notention/optimize/intent.js';
-import { loadBundle, planReplay } from '@notention/optimize/replay.js';
+import { parseOptimizeIntent } from '@notention/optimize/intent';
+import { loadBundle, planReplay } from '@notention/optimize/replay';
 
 export const ReproduceCommand = createCommand({
     name: 'reproduce',

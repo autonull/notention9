@@ -105,6 +105,7 @@ export function InsertPropertyModal({
                         autoFocus={!activeDef}
                         className={`w-full ${activeDef ? "border-blue-500/50 ring-1 ring-blue-500/20" : ""}`}
                         list="learned-keys"
+                        data-testid="property-key-input"
                     />
                     <datalist id="learned-keys">
                          {suggestions.map(s => (
@@ -156,6 +157,7 @@ export function InsertPropertyModal({
                             className="w-full bg-gray-900/50 border border-gray-700/50 rounded-lg px-3 py-2.5 text-gray-300 text-sm focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all cursor-pointer hover:bg-gray-800/50"
                             value={operator}
                             onChange={(e) => setOperator(e.target.value)}
+                            data-testid="property-operator-select"
                         >
                             {availableOperators.map(op => (
                                 <option key={op} value={op}>{op}</option>
@@ -177,6 +179,7 @@ export function InsertPropertyModal({
                             attributeDef={activeDef}
                             operator={operator}
                             onPickLocation={onPickLocation}
+                            testId="property-value-input"
                         />
                     </div>
                 </div>

@@ -1,5 +1,5 @@
 import { createCommand } from './command.js';
-import { parseOptimizeIntent } from '@notention/optimize/intent.js';
+import { parseOptimizeIntent } from '@notention/optimize/intent';
 import { spawnSync } from 'node:child_process';
 import { join } from 'path';
 

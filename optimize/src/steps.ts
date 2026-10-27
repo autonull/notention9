@@ -71,5 +71,9 @@ export async function executeAct(page: Page, step: Step): Promise<void> {
             if (step.value === undefined) throw new Error('press requires value');
             await locator.press(step.value);
             break;
+        case 'select':
+            if (step.value === undefined) throw new Error('select requires value');
+            await locator.selectOption(step.value);
+            break;
     }
 }

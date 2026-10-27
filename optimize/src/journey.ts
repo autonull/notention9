@@ -6,11 +6,13 @@ export type AriaRole = 'button' | 'link' | 'textbox' | 'combobox' | 'dialog' | '
 export type Step =
     | { kind: 'seed'; notes: Note[]; settings?: Partial<AppSettings> }
     | { kind: 'navigate'; hash: string }
-    | { kind: 'act'; target: Target; action: 'click' | 'fill' | 'press'; value?: string }
+    | { kind: 'act'; target: Target; action: 'click' | 'fill' | 'press' | 'select'; value?: string }
     | { kind: 'assertAria'; target: Target; snapshot: string }
     | { kind: 'assertState'; path: string; equals: unknown }
     | { kind: 'assertNoConsoleErrors' }
-    | { kind: 'capture'; label: string };
+    | { kind: 'capture'; label: string }
+    | { kind: 'script'; code: string }
+    | { kind: 'waitForState'; path: string; equals: unknown; timeoutMs?: number };
 
 export type Target =
     | { role: AriaRole; name: string | RegExp; modal?: string }
@@ -37,7 +39,9 @@ const TargetSchema = z.union([
 
 const SeedStepSchema = z.object({ kind: z.literal('seed'), notes: z.array(z.any()), settings: z.record(z.any()).optional() });
 const NavigateStepSchema = z.object({ kind: z.literal('navigate'), hash: z.string() });
-const ActStepSchema = z.object({ kind: z.literal('act'), target: TargetSchema, action: z.enum(['click', 'fill', 'press']), value: z.string().optional() });
+const ActStepSchema = z.object({ kind: z.literal('act'), target: TargetSchema, action: z.enum(['click', 'fill', 'press', 'select']), value: z.string().optional() });
+const ScriptStepSchema = z.object({ kind: z.literal('script'), code: z.string() });
+const WaitForStateStepSchema = z.object({ kind: z.literal('waitForState'), path: z.string(), equals: z.any(), timeoutMs: z.number().optional() });
 const AssertAriaStepSchema = z.object({ kind: z.literal('assertAria'), target: TargetSchema, snapshot: z.string() });
 const AssertStateStepSchema = z.object({ kind: z.literal('assertState'), path: z.string(), equals: z.any() });
 const AssertNoConsoleErrorsStepSchema = z.object({ kind: z.literal('assertNoConsoleErrors') });
@@ -51,6 +55,8 @@ export const StepSchema = z.discriminatedUnion('kind', [
     AssertStateStepSchema,
     AssertNoConsoleErrorsStepSchema,
     CaptureStepSchema,
+    ScriptStepSchema,
+    WaitForStateStepSchema,
 ]) as z.ZodType<Step>;
 
 export const JourneySpecSchema = z.object({

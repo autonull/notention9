@@ -16,7 +16,7 @@ const baseSettings: AppSettings = {
 const testNote: Note = {
     id: 'scene-editor-note',
     title: 'Scene Editor Note',
-    content: 'Working on the scene editor with React and TypeScript',
+    content: 'Working on the scene editor with <span data-type="property" data-name="skill" data-operator="contains" data-value="React, TypeScript"></span>',
     tags: ['development'],
     properties: [
         { key: 'skill', operator: 'contains', values: ['React', 'TypeScript'] },
@@ -37,10 +37,12 @@ const captureAndEdit: JourneySpec = {
     steps: [
         { kind: 'seed', notes: [testNote], settings: baseSettings },
         { kind: 'act', target: { testId: 'add-detail' }, action: 'click' },
-        { kind: 'act', target: { label: 'Detail', modal: 'Add detail' }, action: 'fill', value: 'framework' },
-        { kind: 'act', target: { label: 'Comparison', modal: 'Add detail' }, action: 'fill', value: 'contains' },
-        { kind: 'act', target: { label: 'Value', modal: 'Add detail' }, action: 'fill', value: 'Next.js' },
+        { kind: 'act', target: { testId: 'property-key-input', modal: 'Add detail' }, action: 'fill', value: 'framework' },
+        { kind: 'act', target: { testId: 'property-operator-select', modal: 'Add detail' }, action: 'select', value: 'contains' },
+        { kind: 'act', target: { testId: 'property-value-input', modal: 'Add detail' }, action: 'fill', value: 'Next.js' },
         { kind: 'act', target: { role: 'button', name: /^add detail$/i, modal: 'Add detail' }, action: 'click' },
+        { kind: 'script', code: 'window.dispatchEvent(new CustomEvent("save-note"))' },
+        { kind: 'waitForState', path: 'note.propertyIndex.framework', equals: ['Next.js'], timeoutMs: 3000 },
         { kind: 'assertState', path: 'note.propertyIndex.framework', equals: ['Next.js'] },
         { kind: 'assertState', path: 'note.propertyIndex.skill', equals: ['React', 'TypeScript'] },
         { kind: 'capture', label: 'after-edit' },

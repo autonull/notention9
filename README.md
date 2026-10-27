@@ -183,6 +183,7 @@ Node.js 20 or newer and pnpm are expected. Install dependencies once, then choos
 | UI plus agent | `pnpm run dev:server` |
 | Agent only | `pnpm run agent` |
 | Terminal session | `pnpm run cli` |
+| Run optimization journey | `pnpm optimize optimize <journeyId>` |
 | Build everything | `pnpm run build` |
 | Run tests | `pnpm test` |
 | Journey E2E | `pnpm run test:e2e` |

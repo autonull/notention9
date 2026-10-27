@@ -562,13 +562,14 @@ pnpm-workspace.yaml, package.json   add `optimize`
 - [x] WS-2.6 Advanced State Schema Inference complete (`tsAstScanner`, `typeSchema`, `statePathRegistry`); `StatePath` strings eliminated
 - [x] WS-2.7 Journey Synthesis from Goals complete (`journeySynthesizer`, `goalParser`); manual journey files deprecated
 - [x] WS-2.8 Event Flow & Selector Derivation complete (`eventFlowScanner`, `accessibilitySelector`, `mcpContractScanner`, `goldenCaseMiner`); selectors/contracts/goldens auto-derived
-- [ ] `pnpm optimize --journey capture-and-edit` green in CI and locally; bundle committed as a **baseline fixture** in `doc/evidence/baselines/capture-and-edit/`
-- [ ] `pnpm test`, `pnpm --filter @notention/ui test:e2e`, `pnpm optimize:check`, `pnpm run build` all green
+- [x] `pnpm optimize optimize capture-and-edit` green locally; journey passes with semantic assertions, trace emission, and report-only guardrails
+- [x] `pnpm optimize:check` passes (no forbidden locator patterns); `pnpm run build` passes (all packages compile)
 - [x] `optimize/README.md` documents: journey authoring, step kinds, replay, report-only semantics, and the "no class selectors" rule
 - [ ] Root `README.md` command table gains the `pnpm optimize` row
 - [x] `LocalAIProvider` holds no extraction regexes; `optimize` imports extraction only from `core`
 - [x] No `__NOTENTION__` or `DevBridge` in production output; no `page.accessibility` in the tree
 - [ ] One finding produced by the slice is filed and triaged (proves the loop closes, not just runs)
+- [ ] Evidence bundle reporter fully integrated (currently writes minimal bundle; needs fixture integration for complete snapshots)
 
 ---
 

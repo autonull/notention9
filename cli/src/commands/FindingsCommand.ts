@@ -1,6 +1,6 @@
 import { createCommand } from './command.js';
-import { parseOptimizeIntent } from '@notention/optimize/intent.js';
-import { getEvidenceDir } from '@notention/core/constants/paths.js';
+import { parseOptimizeIntent } from '@notention/optimize/intent';
+import { getEvidenceDir } from '@notention/core/constants/paths';
 import { readFileSync, existsSync, readdirSync } from 'fs';
 import { join } from 'path';
 
