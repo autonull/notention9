@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { seed, settle } from '../support/seed';
+import { seed } from '../support/seed';
+import { settle } from '../support/settle';
 import type { Note, AppSettings } from '@notention/core';
 
 const testNote: Note = {
@@ -32,6 +33,20 @@ test('optimize: capture-and-edit', async ({ page }) => {
     // Seed
     await seed(page, { notes: [testNote], settings, hash: 'notes/scene-editor-note' });
     await settle(page);
+
+    // Debug: check what the state actually contains
+    const debugState = await page.evaluate(() => {
+        const bridge = (window as any).__NOTENTION__;
+        const state = bridge?.state?.();
+        return {
+            hasBridge: !!bridge,
+            stateKeys: state ? Object.keys(state) : null,
+            note: state?.note,
+            route: state?.route,
+            loading: (window as any).__NOTENTION__?.loading,
+        };
+    });
+    console.log('Debug state:', JSON.stringify(debugState, null, 2));
 
     // Assert initial state
     const state = await page.evaluate(() => (window as any).__NOTENTION__?.state?.());

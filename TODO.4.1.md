@@ -349,6 +349,17 @@ Each is a *shallow* cut: one seam, one test, no speculative generality.
 
 **Done when:** `capture-and-edit` passes with zero CSS-class locators; deleting `data-testid="extraction-review"` breaks `assertAria` (proves contract), not the state assertion; `publish-gate` fails if the publish gate is removed (mutation check, run manually once).
 
+### WS-2.5 · Discovery & Metaprogramming Layer — *eliminates brittle manual journeys* (Day 4, parallel with WS-2 tail) ✅ **COMPLETE**
+- `optimize/src/discovery/componentScanner.ts` — static analysis of `ui/src/components/**/*.tsx` to discover routes, dialogs, forms, actions.
+- `optimize/src/discovery/stateSchema.ts` — infers `SemanticState` shape from hooks, bridge, and core types.
+- `optimize/src/discovery/traceEmitterScanner.ts` — finds all `addPromptTrace`/`addActionTrace` emission sites across packages.
+- `optimize/src/discovery/journeyGenerator.ts` — generates `JourneySpec` from discovered patterns (replaces manual journey files).
+- `optimize/src/discovery/selectorInference.ts` — derives stable Playwright selectors from component tree (role, label, testId).
+- `optimize/src/discovery/index.ts` — unified `DiscoveryEngine` facade; `discoverAll()`, `generateJourney(name)`, `generateFromIntent(nl)`.
+- Exports: `optimize/src/discovery` added to `optimize/package.json#exports`.
+
+**Done when:** `discoveryEngine.generateJourney('capture-and-edit')` produces a valid `JourneySpec`; selectors inferred for all dialog fields and toolbar actions; trace emitters match AD-8 table; NL intent "capture and edit" resolves to the journey.
+
 ### WS-3 · Prompt Lab Seed (Day 4, parallel with WS-2 tail) ✅ **COMPLETE**
 - `optimize/src/prompts/` golden-case files: `property-extraction.golden.json` (10 cases: clean typed, noisy transcript, ambiguity, invalid schema, privacy-sensitive) with `input / expected / forbidden / expectedOutcome`.
 - `optimize/src/prompts/evaluate.ts`: runs the **core** `alignToOntology` against the golden set (no network, no UI import); emits pass/fail per case into the bundle.
@@ -413,6 +424,7 @@ Each is a *shallow* cut: one seam, one test, no speculative generality.
 | Hidden mutation | "Optimize" quietly changes disk/relay | AD-6 precise definition + `publish-gate` negative journey + blocked-origin routes + `getNotentionDir()` confinement |
 | Network-only safety proof | Relay runs on localhost, so `isolateNetwork` cannot prove "no transmit" | Assert the `ActionTrace` outcome, not the socket |
 | Production leakage | An unconditional `<DevBridge/>` import survives tree-shaking | Guard at the usage site (`import.meta.env.VITE_DEV_HOOKS && <DevBridge/>`) + `grep` gate |
+| Vite env replace fails | `import.meta.env.VITE_DEV_HOOKS` not substituted in conditional JSX | `define` in `vite.config.ts` + explicit `.env.optimize`; verify with `grep` in CI |
 | Bundle bloat | Evidence becomes unreadable/unusable | Fixed capture budget: ≤1 shot + 1 aria + 1 state per `capture` step (≤4 per journey); console captured as JSONL, truncated to 200 entries |
 | Seeding drift | Fixtures silently diverge from app storage | `STORAGE_KEYS` moved to `core`; `seed()` asserts the written keys are read back after reload |
 | Journey/vs/refactor churn | Semantic assertions become a second brittle layer | Assertion targets are typed (`StatePath`); unknown path = fixture error, not skip |
@@ -427,7 +439,7 @@ Each is a *shallow* cut: one seam, one test, no speculative generality.
 ```
 optimize/                              NEW workspace
 ├── package.json  tsconfig.json  README.md
-│   └── exports: ".", "./journey", "./evidence", "./policy"
+│   └── exports: ".", "./journey", "./evidence", "./policy", "./prompts", "./discovery"
 └── src/
     ├── index.ts
     ├── journey.ts        types + zod
@@ -443,7 +455,14 @@ optimize/                              NEW workspace
     ├── prompts/
     │   ├── evaluate.ts            provider-injectable (deterministic | canned)
     │   └── property-extraction.golden.json
-    └── mcp/client.ts     (WS-6)
+    ├── mcp/client.ts     (WS-6)
+    └── discovery/        NEW (WS-2.5)
+        ├── componentScanner.ts    routes, dialogs, actions from JSX
+        ├── stateSchema.ts         SemanticState from hooks/bridge/core
+        ├── traceEmitterScanner.ts all trace emission points
+        ├── journeyGenerator.ts    JourneySpec from discoveries
+        ├── selectorInference.ts   stable selectors from component tree
+        └── index.ts               DiscoveryEngine facade
 
 core/src/
 ├── constants/{storageKeys,paths}.ts              MOVED + NEW (`getNotentionDir`)
@@ -503,6 +522,7 @@ pnpm-workspace.yaml, package.json   add `optimize`
 ## 11. Definition of Done
 
 - [x] WS-0, WS-0.5…WS-5 complete; WS-6 merged behind an env gate (or explicitly deferred with a tracking note)
+- [x] WS-2.5 Discovery & Metaprogramming Layer complete (`optimize/src/discovery/`); journeys generated, not hand-written
 - [ ] `pnpm optimize --journey capture-and-edit` green in CI and locally; bundle committed as a **baseline fixture** in `doc/evidence/baselines/capture-and-edit/`
 - [ ] `pnpm test`, `pnpm --filter @notention/ui test:e2e`, `pnpm optimize:check`, `pnpm run build` all green
 - [x] `optimize/README.md` documents: journey authoring, step kinds, replay, report-only semantics, and the "no class selectors" rule
@@ -550,6 +570,8 @@ Findings from mentally walking the implementation, and where each landed:
 | 13 | NL alias table would duplicate journey names | Aliases derived from the registry (WS-5) |
 | 14 | First CI run will flake | Day 6 buffer; no `waitForTimeout` allowed (§8) |
 | 15 | Deriving `Finding.id` from `runId` contradicted "byte-identical on replay" | Id derives from `journeyId+version+assertionId` (§4.5, AC-6) |
+| 16 | Manual journeys brittle, duplicate component knowledge | Discovery layer (WS-2.5) infers routes, dialogs, actions, selectors from source |
+| 17 | Vite `import.meta.env` not replaced in conditional JSX | `define` in `vite.config.ts` + explicit env file; DevBridge now loads in optimize builds |
 
 ---
 

@@ -6,6 +6,7 @@ import { useNotes } from '../../hooks/useNotes';
 import { useToast } from '../../hooks/useToast';
 import { useDemoWorkspace } from '../../hooks/useDemoWorkspace';
 import { STORAGE_KEYS } from '../../config/storageKeys';
+import { NoteListItem } from './NoteListItem';
 
 interface SidebarContextType {
     filteredNotes: Note[];

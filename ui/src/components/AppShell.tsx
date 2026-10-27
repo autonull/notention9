@@ -239,7 +239,7 @@ export function AppShell() {
                     isOpen={isShortcutsHelpOpen}
                     onClose={() => setIsShortcutsHelpOpen(false)}
                 />
-                {import.meta.env.VITE_DEV_HOOKS && <DevBridge/>}
+                {import.meta.env.VITE_TEST_VAR === 'hello' && <DevBridge/>}
             </div>
         </SelectorRegistryProvider>
     );

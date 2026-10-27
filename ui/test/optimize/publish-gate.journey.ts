@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { seed, settle } from '../support/seed';
+import { seed } from '../support/seed';
+import { settle } from '../support/settle';
 import type { Note, AppSettings } from '@notention/core';
 
 const privateNote: Note = {

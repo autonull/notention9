@@ -8,7 +8,8 @@
     "./journey": "./src/journey.ts",
     "./evidence": "./src/evidence.ts",
     "./policy": "./src/policy.ts",
-    "./prompts": "./src/prompts/index.ts"
+    "./prompts": "./src/prompts/index.ts",
+    "./discovery": "./src/discovery/index.ts"
   },
   "scripts": {
     "build": "tsc --noEmit",
@@ -17,9 +18,10 @@
   },
   "dependencies": {
     "@notention/core": "workspace:*",
+    "glob": "^13.0.6",
     "playwright": "^1.60.0",
-    "zod": "^3.23.8",
-    "tsx": "^4.19.0"
+    "tsx": "^4.19.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@playwright/test": "^1.60.0",

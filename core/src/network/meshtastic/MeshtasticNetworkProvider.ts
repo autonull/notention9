@@ -17,7 +17,7 @@ export class MeshtasticNetworkProvider extends BaseNetworkProvider implements Ne
     readonly id = 'meshtastic';
     readonly name = 'Meshtastic';
     private _transport: NetworkTransport | null = null;
-    declare config: MeshtasticConfig;
+    config: MeshtasticConfig = {};
     private seenNotes = new Map<string, Note>();
 
     constructor(config: MeshtasticConfig = {}) {

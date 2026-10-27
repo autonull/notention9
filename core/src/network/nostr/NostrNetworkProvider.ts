@@ -27,7 +27,7 @@ export class NostrNetworkProvider extends BaseNetworkProvider implements Network
     private _sub: { close: () => void } | null = null;
     private _pubkey: string | null = null;
 
-    declare config: NostrConfig;
+    config: NostrConfig = {};
 
     constructor(config: NostrConfig = {}) {
         super();

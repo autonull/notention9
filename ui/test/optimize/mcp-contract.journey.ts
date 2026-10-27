@@ -1,4 +1,4 @@
-import { test, expect, skip } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 
 test.describe('MCP Contract', () => {
     test.skip(!process.env.NOTENTION_MCP_URL, 'NOTENTION_MCP_URL not set');
@@ -15,11 +15,11 @@ test.describe('MCP Contract', () => {
 
     test('zod schema round-trip for all tools', async ({ request }) => {
         // TODO: Test each tool's schema validation
-        skip();
+        test.skip();
     });
 
     test('consequential tools are policy-gated', async ({ request }) => {
         // TODO: Attempt to call consequential tool in report-only mode
-        skip();
+        test.skip();
     });
 });

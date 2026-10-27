@@ -1,3 +1,5 @@
+import { useContext } from 'react';
+
 export const getLogStyle = (type: string) => {
     switch (type) {
         case 'match':

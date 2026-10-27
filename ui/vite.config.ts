@@ -6,6 +6,7 @@ import {VitePWA} from 'vite-plugin-pwa';
 
 export default defineConfig(({mode}) => {
     const env = loadEnv(mode, '.', '');
+    console.log('Vite config - mode:', mode, 'VITE_DEV_HOOKS:', env.VITE_DEV_HOOKS);
     return {
         define: {
             'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
