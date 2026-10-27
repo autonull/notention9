@@ -16,7 +16,7 @@ import {NotesView} from './views/NotesView';
 import {TrashView} from './views/TrashView';
 import {OntologyView} from './views/OntologyView';
 import {SettingsView} from './views/SettingsView';
-import {DashboardView} from './views/DashboardView';
+import {DashboardView} from './dashboard/DashboardView';
 import {ActionsView} from './views/ActionsView';
 
 interface MainViewProps {

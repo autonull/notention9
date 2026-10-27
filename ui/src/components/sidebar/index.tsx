@@ -15,10 +15,11 @@ import {VirtualizedList} from '../ui/VirtualizedList';
 import {useTouchGestures} from '../../hooks/useTouchGestures';
 import {useIsMobile} from '../../hooks/useMediaQuery';
 import {SidebarSkeleton} from '../ui/Skeleton';
-import {EmptyState, NotesEmptyIllustration, EmptyStatePreset} from '../common/EmptyState';
+import {EmptyStatePreset} from '../common/EmptyState';
 import {useDemoWorkspace} from '../../hooks/useDemoWorkspace';
 import {modShortcut} from '../../utils/platform';
 import {ITEM_HEIGHT, SIDEBAR_COLLAPSED_WIDTH} from '../../constants/ui';
+import {NotesEmptyIllustration, EmptyState} from '../common/EmptyState';
 
 interface SidebarProps {
     sortedNotes?: Note[];
@@ -122,7 +123,7 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
         },
         disabled: !isMobile,
     });
-    
+
     const touchRef = useCallback((el: HTMLDivElement | null) => {
         touchElementRef.current = el;
     }, []);
@@ -145,176 +146,49 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
 
     return (
         <div className={cn('bg-gray-900 flex flex-col h-full transition-all duration-300 ease-in-out')}>
-            <div className={cn(
-                'flex-shrink-0 border-b border-gray-700/50 bg-gray-900/95 backdrop-blur-sm sticky top-0 z-10 transition-all duration-200',
-                showFullContent ? 'p-3 space-y-3' : 'p-2 space-y-2 items-center'
-            )}>
-                <div className={cn('flex items-center gap-2 w-full', showFullContent ? '' : 'justify-center')}>
-                    <div className={cn('flex-grow relative group transition-all duration-200', !showFullContent && 'w-10')}>
-                        <Search
-                            ref={searchInputRef}
-                            searchTerm={searchTerm}
-                            setSearchTerm={setSearchTerm}
-                            onFocus={focusSearch}
-                            placeholder={showFullContent ? 'Search notes...' : ''}
-                            aria-label="Search notes"
-                        />
-                    </div>
-                    {!showFullContent && onToggleSidebar && (
-                        <IconButton
-                            onClick={onToggleSidebar}
-                            tooltip={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
-                            tooltipPosition="right"
-                            icon={isCollapsed ? ChevronRightIcon : ChevronLeftIcon}
-                            variant="ghost"
-                            size="md"
-                            className="flex-shrink-0 touch-target-48"
-                            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-                        />
-                    )}
-                    {showFullContent && (
-                        <IconButton
-                            onClick={() => handleCreateNote()}
-                            tooltip={`New Note (${modShortcut('N')})`}
-                            tooltipPosition="bottom"
-                            icon={PlusIcon}
-                            variant="primary"
-                            size="md"
-                            containerClassName="flex-shrink-0 shadow-lg shadow-blue-500/20"
-                            aria-label="Create new note"
-                        />
-                    )}
-                </div>
-
-                {showFullContent && (
-                    <>
-                        <div className="flex items-center gap-2 overflow-hidden" role="group" aria-label="View and filter options">
-                            <div className="flex-grow min-w-0">
-                                <FilterBar searchTerm={searchTerm} onSetSearch={setSearchTerm} notes={sortedNotes}/>
-                            </div>
-                            <div className="flex items-center gap-1 border-l border-gray-700/50 pl-2">
-                                <ViewSelector viewMode={sidebarViewMode} onViewChange={setSidebarViewMode}/>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center gap-2 px-1" role="group" aria-label="Sort and filter options">
-                            <SortSelector sortOrder={sortOrder} onSortChange={setSortOrder}/>
-                            {sortedNotes.some(n => n.pinned) && (
-                                <label className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-200 cursor-pointer touch-target-48">
-                                    <input
-                                        type="checkbox"
-                                        checked={showPinnedOnly}
-                                        onChange={(e) => setShowPinnedOnly(e.target.checked)}
-                                        className="w-4 h-4 accent-blue-500 rounded border-gray-700 bg-gray-800 focus:ring-2 focus:ring-blue-500"
-                                        aria-label="Show pinned only"
-                                    />
-                                    <span className="hidden sm:inline">Pinned only</span>
-                                    <span className="sm:hidden" aria-hidden="true">📌</span>
-                                </label>
-                            )}
-                        </div>
-                    </>
-                )}
-            </div>
-
-            <div
+            <SidebarHeader
+                searchInputRef={searchInputRef}
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                focusSearch={focusSearch}
+                onToggleSidebar={onToggleSidebar}
+                handleCreateNote={handleCreateNote}
+                isCollapsed={isCollapsed}
+                showFullContent={showFullContent}
+                sidebarViewMode={sidebarViewMode}
+                setSidebarViewMode={setSidebarViewMode}
+                sortOrder={sortOrder}
+                setSortOrder={setSortOrder}
+                sortedNotes={sortedNotes}
+                showPinnedOnly={showPinnedOnly}
+                setShowPinnedOnly={setShowPinnedOnly}
+            />
+            <SidebarList
                 ref={touchRef}
-                className="flex-grow px-2 py-3 overflow-hidden custom-scrollbar"
-                role="list"
-                aria-label={isTrashView ? 'Trash notes' : 'Notes'}
-                onKeyDown={handleKeyDown}
-            >
-                {filteredNotes.length > 0 ? (
-                    sidebarViewMode === 'grid' ? (
-                        <div className="grid grid-cols-2 gap-2 h-full overflow-y-auto custom-scrollbar" role="list">
-                            {filteredNotes.map((note) => (
-                                <NoteGridItem
-                                    key={note.id}
-                                    note={note}
-                                    isSelected={selectedNoteId === note.id}
-                                    onSelect={() => setSelectedNoteId(note.id)}
-                                />
-                            ))}
-                        </div>
-                    ) : (
-                        <VirtualizedList
-                            ref={virtualListRef}
-                            items={filteredNotes}
-                            itemHeight={ITEM_HEIGHT}
-                            containerHeight={containerHeight}
-                            getItemKey={getItemKey}
-                            selectedKey={selectedNoteId}
-                            overscan={8}
-                            className="h-full"
-                            keyboardNavigation
-                            role="listbox"
-                            aria-label={isTrashView ? 'Trash notes' : 'Notes'}
-                            onItemClick={(note) => setSelectedNoteId(note.id)}
-                            collapsedTooltip={!showFullContent ? renderCollapsedTooltip : undefined}
-                        >
-                            {renderItem}
-                        </VirtualizedList>
-                    )
-                ) : (
-                    <>
-                        {isTrashView ? (
-                            <EmptyStatePreset type="emptyTrash" />
-                        ) : searchTerm ? (
-                            <EmptyStatePreset
-                                type="noMatches"
-                                searchTerm={searchTerm}
-                                onClearSearch={() => setSearchTerm('')}
-                            />
-                        ) : sortedNotes.length === 0 ? (
-                            <EmptyStatePreset
-                                type="firstNote"
-                                onCreateNote={() => handleCreateNote()}
-                                onLoadSample={loadSampleWorkspace}
-                            />
-                        ) : (
-                            <EmptyState
-                                variant="illustrated"
-                                illustration={<NotesEmptyIllustration/>}
-                                title="No notes match your filters"
-                                description="Try adjusting your filters or sort order."
-                                hint="Press ⌘/ to search, or use filters to narrow results"
-                                showShortcuts
-                                shortcutContext="notes"
-                            />
-                        )}
-                    </>
-                )}
-            </div>
-
-            {isMobile && isPulling && (
-                <div className="pull-to-refresh flex items-center justify-center px-4 py-3 text-sm" style={{height: Math.max(60, pullDistance)}}>
-                    <div className="flex flex-col items-center gap-2 transition-all duration-200">
-                        <div className={cn(
-                            'w-8 h-8 border-2 rounded-full transition-all duration-200 flex items-center justify-center',
-                            pullProgress >= 1
-                                ? 'border-blue-500 animate-spin'
-                                : 'border-gray-600'
-                        )} style={{transform: `rotate(${pullProgress * 360}deg)`}}>
-                            {pullProgress >= 1 ? (
-                                <svg className="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                                </svg>
-                            ) : (
-                                <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{transform: `rotate(${-90 + pullProgress * 90}deg)`}}>
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                                </svg>
-                            )}
-                        </div>
-                        <span className={cn('transition-colors duration-200', pullProgress >= 1 ? 'text-blue-400 font-medium' : 'text-gray-500')}>
-                            {pullProgress >= 1 ? 'Refreshing...' : pullProgress > 0.5 ? 'Release to refresh' : 'Pull to refresh'}
-                        </span>
-                        <div className="w-32 h-0.5 bg-gray-700 rounded-full overflow-hidden">
-                            <div className="h-full bg-blue-500 rounded-full transition-all duration-100 ease-out" style={{width: `${pullProgress * 100}%`}}/>
-                        </div>
-                    </div>
-                </div>
-            )}
-
+                filteredNotes={filteredNotes}
+                sortedNotes={sortedNotes}
+                isLoading={isLoading}
+                isMobile={isMobile}
+                containerHeight={containerHeight}
+                virtualListRef={virtualListRef}
+                sidebarViewMode={sidebarViewMode}
+                selectedNoteId={selectedNoteId}
+                setSelectedNoteId={setSelectedNoteId}
+                isTrashView={isTrashView}
+                showFullContent={showFullContent}
+                renderItem={renderItem}
+                getItemKey={getItemKey}
+                renderCollapsedTooltip={renderCollapsedTooltip}
+                loadSampleWorkspace={loadSampleWorkspace}
+                handleCreateNote={handleCreateNote}
+            />
+            <SidebarPullToRefresh
+                isMobile={isMobile}
+                isPulling={isPulling}
+                pullDistance={pullDistance}
+                pullProgress={pullProgress}
+                refreshUserLocation={refreshUserLocation}
+            />
             <ConfirmationModal
                 isOpen={isDeleteModalOpen}
                 onClose={() => setIsDeleteModalOpen(false)}
@@ -324,6 +198,299 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
                 confirmLabel="Delete Forever"
                 isDestructive
             />
+        </div>
+    );
+}
+
+interface SidebarHeaderProps {
+    searchInputRef: React.RefObject<HTMLInputElement>;
+    searchTerm: string;
+    setSearchTerm: (term: string) => void;
+    focusSearch: () => void;
+    onToggleSidebar: (() => void) | undefined;
+    handleCreateNote: () => void;
+    isCollapsed: boolean;
+    showFullContent: boolean;
+    sidebarViewMode: string;
+    setSidebarViewMode: (mode: string) => void;
+    sortOrder: string;
+    setSortOrder: (order: string) => void;
+    sortedNotes: Note[];
+    showPinnedOnly: boolean;
+    setShowPinnedOnly: (show: boolean) => void;
+}
+
+function SidebarHeader({
+    searchInputRef,
+    searchTerm,
+    setSearchTerm,
+    focusSearch,
+    onToggleSidebar,
+    handleCreateNote,
+    isCollapsed,
+    showFullContent,
+    sidebarViewMode,
+    setSidebarViewMode,
+    sortOrder,
+    setSortOrder,
+    sortedNotes,
+    showPinnedOnly,
+    setShowPinnedOnly
+}: SidebarHeaderProps) {
+    const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+        if (e.key === 'Escape') {
+            searchInputRef.current?.blur();
+            setSearchTerm('');
+        }
+    }, [searchInputRef, setSearchTerm]);
+
+    return (
+        <div className={cn(
+            'flex-shrink-0 border-b border-gray-700/50 bg-gray-900/95 backdrop-blur-sm sticky top-0 z-10 transition-all duration-200',
+            showFullContent ? 'p-3 space-y-3' : 'p-2 space-y-2 items-center'
+        )}>
+            <div className={cn('flex items-center gap-2 w-full', showFullContent ? '' : 'justify-center')}>
+                <div className={cn('flex-grow relative group transition-all duration-200', !showFullContent && 'w-10')}>
+                    <Search
+                        ref={searchInputRef}
+                        searchTerm={searchTerm}
+                        setSearchTerm={setSearchTerm}
+                        onFocus={focusSearch}
+                        placeholder={showFullContent ? 'Search notes...' : ''}
+                        aria-label="Search notes"
+                    />
+                </div>
+                {!showFullContent && onToggleSidebar && (
+                    <IconButton
+                        onClick={onToggleSidebar}
+                        tooltip={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+                        tooltipPosition="right"
+                        icon={isCollapsed ? ChevronRightIcon : ChevronLeftIcon}
+                        variant="ghost"
+                        size="md"
+                        className="flex-shrink-0 touch-target-48"
+                        aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+                    />
+                )}
+                {showFullContent && (
+                    <IconButton
+                        onClick={() => handleCreateNote()}
+                        tooltip={`New Note (${modShortcut('N')})`}
+                        tooltipPosition="bottom"
+                        icon={PlusIcon}
+                        variant="primary"
+                        size="md"
+                        containerClassName="flex-shrink-0 shadow-lg shadow-blue-500/20"
+                        aria-label="Create new note"
+                    />
+                )}
+            </div>
+
+            {showFullContent && (
+                <>
+                    <div className="flex items-center gap-2 overflow-hidden" role="group" aria-label="View and filter options">
+                        <div className="flex-grow min-w-0">
+                            <FilterBar searchTerm={searchTerm} onSetSearch={setSearchTerm} notes={sortedNotes}/>
+                        </div>
+                        <div className="flex items-center gap-1 border-l border-gray-700/50 pl-2">
+                            <ViewSelector viewMode={sidebarViewMode} onViewChange={setSidebarViewMode}/>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 px-1" role="group" aria-label="Sort and filter options">
+                        <SortSelector sortOrder={sortOrder} onSortChange={setSortOrder}/>
+                        {sortedNotes.some(n => n.pinned) && (
+                            <label className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-200 cursor-pointer touch-target-48">
+                                <input
+                                    type="checkbox"
+                                    checked={showPinnedOnly}
+                                    onChange={(e) => setShowPinnedOnly(e.target.checked)}
+                                    className="w-4 h-4 accent-blue-500 rounded border-gray-700 bg-gray-800 focus:ring-2 focus:ring-blue-500"
+                                    aria-label="Show pinned only"
+                                />
+                                <span className="hidden sm:inline">Pinned only</span>
+                                <span className="sm:hidden" aria-hidden="true">📌</span>
+                            </label>
+                        )}
+                    </div>
+                </>
+            )}
+        </div>
+    );
+}
+
+interface SidebarListProps {
+    filteredNotes: Note[];
+    sortedNotes: Note[];
+    isLoading: boolean;
+    isMobile: boolean;
+    containerHeight: number;
+    virtualListRef: React.RefObject<any>;
+    sidebarViewMode: string;
+    selectedNoteId: string | null;
+    setSelectedNoteId: (id: string | null) => void;
+    isTrashView: boolean;
+    showFullContent: boolean;
+    renderItem: (note: Note, index: number, isSelected: boolean) => React.ReactNode;
+    getItemKey: (note: Note, index: number) => string;
+    renderCollapsedTooltip: (note: Note) => React.ReactNode;
+    loadSampleWorkspace: () => void;
+    handleCreateNote: () => void;
+}
+
+function SidebarList({
+    filteredNotes,
+    sortedNotes,
+    isLoading,
+    isMobile,
+    containerHeight,
+    virtualListRef,
+    sidebarViewMode,
+    selectedNoteId,
+    setSelectedNoteId,
+    isTrashView,
+    showFullContent,
+    renderItem,
+    getItemKey,
+    renderCollapsedTooltip,
+    loadSampleWorkspace,
+    handleCreateNote
+}: SidebarListProps) {
+    if (isLoading) return null;
+
+    return (
+        <div
+            className="flex-grow px-2 py-3 overflow-hidden custom-scrollbar"
+            role="list"
+            aria-label={isTrashView ? 'Trash notes' : 'Notes'}
+        >
+            {filteredNotes.length > 0 ? (
+                sidebarViewMode === 'grid' ? (
+                    <div className="grid grid-cols-2 gap-2 h-full overflow-y-auto custom-scrollbar" role="list">
+                        {filteredNotes.map((note) => (
+                            <NoteGridItem
+                                key={note.id}
+                                note={note}
+                                isSelected={selectedNoteId === note.id}
+                                onSelect={() => setSelectedNoteId(note.id)}
+                            />
+                        ))}
+                    </div>
+                ) : (
+                    <VirtualizedList
+                        ref={virtualListRef}
+                        items={filteredNotes}
+                        itemHeight={ITEM_HEIGHT}
+                        containerHeight={containerHeight}
+                        getItemKey={getItemKey}
+                        selectedKey={selectedNoteId}
+                        overscan={8}
+                        className="h-full"
+                        keyboardNavigation
+                        role="listbox"
+                        aria-label={isTrashView ? 'Trash notes' : 'Notes'}
+                        onItemClick={(note) => setSelectedNoteId(note.id)}
+                        collapsedTooltip={!showFullContent ? renderCollapsedTooltip : undefined}
+                    >
+                        {renderItem}
+                    </VirtualizedList>
+                )
+            ) : (
+                <>
+                    {isTrashView ? (
+                        <EmptyStatePreset type="emptyTrash" />
+                    ) : (
+                        <EmptyStateFallback
+                            searchTerm={searchTerm}
+                            setSearchTerm={setSearchTerm}
+                            sortedNotes={sortedNotes}
+                            loadSampleWorkspace={loadSampleWorkspace}
+                            handleCreateNote={handleCreateNote}
+                        />
+                    )}
+                </>
+            )}
+        </div>
+    );
+}
+
+interface EmptyStateFallbackProps {
+    searchTerm: string;
+    setSearchTerm: (term: string) => void;
+    sortedNotes: Note[];
+    loadSampleWorkspace: () => void;
+    handleCreateNote: () => void;
+}
+
+function EmptyStateFallback({searchTerm, setSearchTerm, sortedNotes, loadSampleWorkspace, handleCreateNote}: EmptyStateFallbackProps) {
+    if (searchTerm) {
+        return (
+            <EmptyStatePreset
+                type="noMatches"
+                searchTerm={searchTerm}
+                onClearSearch={() => setSearchTerm('')}
+            />
+        );
+    }
+    if (sortedNotes.length === 0) {
+        return (
+            <EmptyStatePreset
+                type="firstNote"
+                onCreateNote={() => handleCreateNote()}
+                onLoadSample={loadSampleWorkspace}
+            />
+        );
+    }
+    return (
+        <EmptyState
+            variant="illustrated"
+            illustration={<NotesEmptyIllustration/>}
+            title="No notes match your filters"
+            description="Try adjusting your filters or sort order."
+            hint="Press ⌘/ to search, or use filters to narrow results"
+            showShortcuts
+            shortcutContext="notes"
+        />
+    );
+}
+
+interface SidebarPullToRefreshProps {
+    isMobile: boolean;
+    isPulling: boolean;
+    pullDistance: number;
+    pullProgress: number;
+    refreshUserLocation: () => Promise<void>;
+}
+
+function SidebarPullToRefresh({isMobile, isPulling, pullDistance, pullProgress, refreshUserLocation}: SidebarPullToRefreshProps) {
+    if (!isMobile || !isPulling) return null;
+
+    return (
+        <div className="pull-to-refresh flex items-center justify-center px-4 py-3 text-sm" style={{height: Math.max(60, pullDistance)}}>
+            <div className="flex flex-col items-center gap-2 transition-all duration-200">
+                <div className={cn(
+                    'w-8 h-8 border-2 rounded-full transition-all duration-200 flex items-center justify-center',
+                    pullProgress >= 1
+                        ? 'border-blue-500 animate-spin'
+                        : 'border-gray-600'
+                )} style={{transform: `rotate(${pullProgress * 360}deg)`}}>
+                    {pullProgress >= 1 ? (
+                        <svg className="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                    ) : (
+                        <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{transform: `rotate(${-90 + pullProgress * 90}deg)`}}>
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                    )}
+                </div>
+                <span className={cn('transition-colors duration-200', pullProgress >= 1 ? 'text-blue-400 font-medium' : 'text-gray-500')}>
+                    {pullProgress >= 1 ? 'Refreshing...' : pullProgress > 0.5 ? 'Release to refresh' : 'Pull to refresh'}
+                </span>
+                <div className="w-32 h-0.5 bg-gray-700 rounded-full overflow-hidden">
+                    <div className="h-full bg-blue-500 rounded-full transition-all duration-100 ease-out" style={{width: `${pullProgress * 100}%`}}/>
+                </div>
+            </div>
         </div>
     );
 }

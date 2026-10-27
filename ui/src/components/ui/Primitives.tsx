@@ -2,10 +2,18 @@ import React from 'react';
 import {cn} from '../../utils/ui';
 import {Tooltip} from './Overlay';
 import {useFocusTrap} from './Overlay';
+import {
+    getButtonClasses,
+    getIconButtonClasses,
+    getIconSizeClass,
+    ButtonVariant,
+    ButtonSize,
+    IconButtonVariant,
+} from './buttonVariants';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-    variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'success' | 'outline';
-    size?: 'xs' | 'sm' | 'md' | 'lg';
+    variant?: ButtonVariant;
+    size?: ButtonSize;
     loading?: boolean;
     leftIcon?: React.ReactNode;
     rightIcon?: React.ReactNode;
@@ -29,15 +37,9 @@ export function Button({
     focusRing = true,
     ...props
 }: ButtonProps) {
-    const baseStyles = 'btn';
-    const variantClass = `btn-${variant}`;
-    const sizeClass = `btn-${size}`;
-    const touchClass = touchTarget ? 'touch-target-48' : '';
-    const focusClass = focusRing ? 'focus-ring-high-contrast' : '';
-
     return (
         <button
-            className={cn(baseStyles, variantClass, sizeClass, fullWidth && 'w-full', touchClass, focusClass, className)}
+            className={getButtonClasses({variant, size, fullWidth, touchTarget, focusRing, className, disabled, loading})}
             disabled={disabled || loading}
             {...props}
         >
@@ -58,8 +60,8 @@ export function Button({
 export interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     icon: React.ComponentType<{className?: string}>;
     isActive?: boolean;
-    variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'success';
-    size?: 'xs' | 'sm' | 'md' | 'lg';
+    variant?: IconButtonVariant;
+    size?: ButtonSize;
     tooltip?: string;
     tooltipPosition?: 'top' | 'bottom' | 'left' | 'right';
     containerClassName?: string;
@@ -82,44 +84,9 @@ export function IconButton({
     touchTarget = true,
     ...props
 }: IconButtonProps) {
-    const baseClasses = 'btn';
-    const variantMap: Record<string, string> = {
-        primary: 'btn-primary',
-        secondary: 'btn-secondary',
-        success: 'btn-success',
-        danger: 'btn-danger',
-        ghost: isActive ? 'btn-primary' : 'btn-ghost',
-    };
-    const variantClass = variantMap[variant];
-    const sizeMap: Record<string, string> = {
-        xs: 'btn-xs',
-        sm: 'btn-sm',
-        md: 'btn-md',
-        lg: 'btn-lg',
-    };
-    const sizeClass = sizeMap[size];
-    const touchClass = touchTarget ? 'touch-target-48' : '';
-    const focusClass = 'focus-ring-high-contrast';
-
-    const iconSizes = {
-        xs: 'h-3 w-3',
-        sm: 'h-4 w-4',
-        md: 'h-5 w-5',
-        lg: 'h-6 w-6',
-    };
-
     const button = (
         <button
-            className={cn(
-                baseClasses,
-                variantClass,
-                sizeClass,
-                touchClass,
-                focusClass,
-                disabled && 'opacity-40 cursor-not-allowed',
-                className,
-                'active:scale-[0.95] transition-transform duration-50'
-            )}
+            className={getIconButtonClasses({variant, size, touchTarget, className, disabled, isActive})}
             disabled={disabled}
             title={tooltip ? undefined : title}
             aria-label={props['aria-label'] || title || tooltip}
@@ -127,7 +94,7 @@ export function IconButton({
             aria-pressed={isActive}
             {...props}
         >
-            <Icon className={iconSizes[size]}/>
+            <Icon className={getIconSizeClass(size)}/>
             {label && (
                 <span className="ml-2 text-[10px] font-bold text-gray-500 uppercase tracking-wider">
                     {label}

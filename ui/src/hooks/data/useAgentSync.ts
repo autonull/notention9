@@ -38,7 +38,7 @@ export function useAgentSync(
     });
 
     useEffect(() => {
-        if (agentService.isEnabled() && agentService.isConnected()) {
+        if (agentService.isEnabled() && agentService.isConnected) {
             handleConnected();
         }
     }, [handleConnected]);

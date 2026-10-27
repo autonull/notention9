@@ -3,7 +3,7 @@ import type {Note} from '@notention/core';
 
 import {useNotesView} from '../../hooks/useNotesView';
 import {EditorManager} from '../editor/EditorManager';
-import {DashboardView} from './DashboardView';
+import {DashboardView} from '../dashboard/DashboardView';
 
 interface NotesViewProps {
     sortedNotes?: Note[];
