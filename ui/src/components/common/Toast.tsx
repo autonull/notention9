@@ -5,7 +5,6 @@
 export {
   Toast,
   ToastContainer,
-  toastTemplates,
   type ToastProps,
   type ToastContainerProps,
 } from '../ui/Primitives';

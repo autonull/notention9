@@ -5,6 +5,8 @@ import {SidebarHeader} from './SidebarHeader';
 import {SidebarList} from './SidebarList';
 import {SidebarPullToRefresh} from './SidebarPullToRefresh';
 import {useSidebarLogic} from './useSidebarLogic';
+import {NoteListItem} from './NoteListItem';
+import {NoteGridItem} from './NoteGridItem';
 import {IconButton} from '../ui/Primitives';
 import {cn} from '../../utils/ui';
 import {VirtualizedList} from '../ui/VirtualizedList';

@@ -1,0 +1,7 @@
+{
+  "area": "actions",
+  "state": "board",
+  "file": "actions/board.png",
+  "viewport": "desktop",
+  "description": "Task board grouped by status, with a new-task action."
+}

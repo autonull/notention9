@@ -1,0 +1,7 @@
+{
+  "area": "network",
+  "state": "feed",
+  "file": "network/feed.png",
+  "viewport": "desktop",
+  "description": "Public feed with signed notes from a local relay, including structured details."
+}

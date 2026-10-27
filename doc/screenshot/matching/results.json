@@ -1,0 +1,7 @@
+{
+  "area": "matching",
+  "state": "results",
+  "file": "matching/results.png",
+  "viewport": "desktop",
+  "description": "A request matched against a local offer with scores, computed offline."
+}

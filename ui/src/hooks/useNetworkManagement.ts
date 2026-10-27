@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
     networkRegistry,
     NostrNetworkProvider,
@@ -15,7 +15,7 @@ interface ProviderConfig {
     id: string;
     create: (settings: any) => NetworkProvider;
     update: (provider: NetworkProvider, settings: any) => void;
-    subscribe: (provider: NetworkProvider, handlers: any) => void;
+    subscribe: (provider: NetworkProvider, getUpsertNote: () => ((note: Note, skipAgent?: boolean) => void) | undefined, settings: any) => void;
 }
 
 const PROVIDER_CONFIGS: Record<string, ProviderConfig> = {
@@ -33,8 +33,11 @@ const PROVIDER_CONFIGS: Record<string, ProviderConfig> = {
                 enabled: settings.privacyMode !== 'local-only'
             });
         },
-        subscribe: (provider, { upsertNote }) => {
-            provider.on('note', (note: Note) => upsertNote(note, true));
+        subscribe: (provider, getUpsertNote) => {
+            provider.on('note', (note: Note) => {
+                const upsertNote = getUpsertNote();
+                upsertNote?.(note, true);
+            });
         }
     },
     meshtastic: {
@@ -52,10 +55,11 @@ const PROVIDER_CONFIGS: Record<string, ProviderConfig> = {
                 saveReceivedNotes: settings.meshtastic?.saveReceivedNotes
             });
         },
-        subscribe: (provider, { upsertNote }, settings) => {
+        subscribe: (provider, getUpsertNote, settings) => {
             provider.on('note', (note: Note) => {
                 if (settings.meshtastic?.saveReceivedNotes) {
-                    upsertNote(note, true);
+                    const upsertNote = getUpsertNote();
+                    upsertNote?.(note, true);
                 }
             });
             provider.on('error', (err: any) => console.error('Mesh error:', err));
@@ -65,15 +69,31 @@ const PROVIDER_CONFIGS: Record<string, ProviderConfig> = {
 
 export function useNetworkManagement() {
     const { settings, setSettings } = useSettings();
+    const upsertNoteRef = useRef<((note: Note, skipAgent?: boolean) => void) | null>(null);
+    
+    // Update ref when notes context is available
     const { upsertNote } = useNotes();
+    upsertNoteRef.current = upsertNote;
+    
     const [providers, setProviders] = useState(() => networkRegistry.getAllProviders());
 
     const nostr = useMemo(() => networkRegistry.getProvider('nostr') as NostrNetworkProvider | null, [providers]);
     const mesh = useMemo(() => networkRegistry.getProvider('meshtastic') as MeshtasticNetworkProvider | null, [providers]);
 
-    // Subscribe to events
-    useEventSubscription(nostr, PROVIDER_CONFIGS.nostr.subscribe({ upsertNote }));
-    useEventSubscription(mesh, PROVIDER_CONFIGS.meshtastic.subscribe({ upsertNote }, settings));
+    // Subscribe to events - use ref to get latest upsertNote
+    useEventSubscription(nostr, {
+        note: (note: Note) => {
+            upsertNoteRef.current?.(note, true);
+        }
+    });
+    useEventSubscription(mesh, {
+        note: (note: Note) => {
+            if (settings.meshtastic?.saveReceivedNotes) {
+                upsertNoteRef.current?.(note, true);
+            }
+        },
+        error: (err: any) => console.error('Mesh error:', err)
+    });
 
     // Initialize/update providers
     useEffect(() => {

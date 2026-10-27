@@ -1,0 +1,7 @@
+{
+  "area": "ontology",
+  "state": "graph",
+  "file": "ontology/graph.png",
+  "viewport": "desktop",
+  "description": "Ontology tree with domains, attributes, and usage counts."
+}
