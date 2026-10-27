@@ -360,6 +360,33 @@ Each is a *shallow* cut: one seam, one test, no speculative generality.
 
 **Done when:** `discoveryEngine.generateJourney('capture-and-edit')` produces a valid `JourneySpec`; selectors inferred for all dialog fields and toolbar actions; trace emitters match AD-8 table; NL intent "capture and edit" resolves to the journey.
 
+### WS-2.6 · Advanced State Schema Inference — *eliminates `StatePath` string drift* (Day 5)
+- `optimize/src/discovery/tsAstScanner.ts` — TypeScript Compiler API / ts-morph scanner for `ui/src/hooks/**/*.ts`, `core/src/**/*.ts`.
+- `optimize/src/discovery/typeSchema.ts` — `TypeSchema.fromProject()` extracts return types of `useNotes`, `useView`, `useEditorLogic`, `useEditorPublishing`, resolves generics, flattens nested objects.
+- `optimize/src/discovery/statePathRegistry.ts` — canonical `StatePath` registry with dotted notation, array awareness (`note.propertyIndex.*`), validation that paths exist at runtime.
+- Replace all hardcoded `StatePath` strings in journeys with registry lookups.
+
+**Done when:** `statePathRegistry.get('note.propertyIndex.skill')` returns typed path; journey `assertState` uses registry; adding a new property to `Note` type automatically appears in registry.
+
+### WS-2.7 · Journey Synthesis from Goals — *eliminates manual journey files* (Day 6)
+- `optimize/src/discovery/journeySynthesizer.ts` — `JourneySynthesizer.fromGoal(goal, options)` builds journey via:
+  1. Component graph from `ComponentScanner` (nodes=components, edges=props/context/hooks)
+  2. State transition graph from `TypeSchema` (pre/post conditions per action)
+  3. BFS/Dijkstra from entry component to target state predicate
+  4. Emits `JourneySpec` with `seed`, `steps`, `assertions`
+- `optimize/src/discovery/goalParser.ts` — parses NL goal ("capture note and add framework property") into `{ entryComponent, targetState, constraints }`.
+- Deprecate `journeyGenerator.ts` switch cases; registry stores only `JourneySpec` (generated or manual).
+
+**Done when:** `journeySynthesizer.fromGoal('add a deadline property to a note')` produces valid `JourneySpec`; all existing journeys regeneratable; new features auto-discoverable.
+
+### WS-2.8 · Event Flow & Selector Derivation — *eliminates manual selector/action specs* (Day 6, parallel)
+- `optimize/src/discovery/eventFlowScanner.ts` — scans JSX for `onClick`, `onSubmit`, `onChange` → traces to handler functions → builds action graph.
+- `optimize/src/discovery/accessibilitySelector.ts` — uses Playwright `ariaSnapshot()` on live app to derive canonical selectors for discovered actions/dialogs.
+- `optimize/src/discovery/mcpContractScanner.ts` — parses `agent/src/server/plugins/*.ts` for `McpToolRegistry.register()` calls → generates contract test specs.
+- `optimize/src/discovery/goldenCaseMiner.ts` — mines `doc/evidence/**/bundle.json` for high-confidence extraction examples → regenerates `property-extraction.golden.json`.
+
+**Done when:** Selectors for all actions derived from live ARIA; MCP contract tests auto-generated; golden cases refresh from production traces.
+
 ### WS-3 · Prompt Lab Seed (Day 4, parallel with WS-2 tail) ✅ **COMPLETE**
 - `optimize/src/prompts/` golden-case files: `property-extraction.golden.json` (10 cases: clean typed, noisy transcript, ambiguity, invalid schema, privacy-sensitive) with `input / expected / forbidden / expectedOutcome`.
 - `optimize/src/prompts/evaluate.ts`: runs the **core** `alignToOntology` against the golden set (no network, no UI import); emits pass/fail per case into the bundle.
@@ -456,13 +483,22 @@ optimize/                              NEW workspace
     │   ├── evaluate.ts            provider-injectable (deterministic | canned)
     │   └── property-extraction.golden.json
     ├── mcp/client.ts     (WS-6)
-    └── discovery/        NEW (WS-2.5)
-        ├── componentScanner.ts    routes, dialogs, actions from JSX
-        ├── stateSchema.ts         SemanticState from hooks/bridge/core
-        ├── traceEmitterScanner.ts all trace emission points
-        ├── journeyGenerator.ts    JourneySpec from discoveries
-        ├── selectorInference.ts   stable selectors from component tree
-        └── index.ts               DiscoveryEngine facade
+    └── discovery/        NEW (WS-2.5, WS-2.6, WS-2.7, WS-2.8)
+        ├── componentScanner.ts       routes, dialogs, actions from JSX
+        ├── stateSchema.ts            SemanticState from hooks/bridge/core
+        ├── traceEmitterScanner.ts    all trace emission points
+        ├── journeyGenerator.ts       JourneySpec from discoveries (deprecated by WS-2.7)
+        ├── selectorInference.ts      stable selectors from component tree
+        ├── index.ts                  DiscoveryEngine facade
+        ├── tsAstScanner.ts           TS Compiler API scanner for types (WS-2.6)
+        ├── typeSchema.ts             TypeSchema.fromProject() (WS-2.6)
+        ├── statePathRegistry.ts      canonical StatePath registry (WS-2.6)
+        ├── journeySynthesizer.ts     JourneySynthesizer.fromGoal() (WS-2.7)
+        ├── goalParser.ts             NL goal → structured intent (WS-2.7)
+        ├── eventFlowScanner.ts       onClick/onSubmit → action graph (WS-2.8)
+        ├── accessibilitySelector.ts  live ARIA → canonical selectors (WS-2.8)
+        ├── mcpContractScanner.ts     agent plugin → contract tests (WS-2.8)
+        └── goldenCaseMiner.ts        evidence bundles → golden cases (WS-2.8)
 
 core/src/
 ├── constants/{storageKeys,paths}.ts              MOVED + NEW (`getNotentionDir`)
@@ -523,6 +559,9 @@ pnpm-workspace.yaml, package.json   add `optimize`
 
 - [x] WS-0, WS-0.5…WS-5 complete; WS-6 merged behind an env gate (or explicitly deferred with a tracking note)
 - [x] WS-2.5 Discovery & Metaprogramming Layer complete (`optimize/src/discovery/`); journeys generated, not hand-written
+- [ ] WS-2.6 Advanced State Schema Inference complete (`tsAstScanner`, `typeSchema`, `statePathRegistry`); `StatePath` strings eliminated
+- [ ] WS-2.7 Journey Synthesis from Goals complete (`journeySynthesizer`, `goalParser`); manual journey files deprecated
+- [ ] WS-2.8 Event Flow & Selector Derivation complete (`eventFlowScanner`, `accessibilitySelector`, `mcpContractScanner`, `goldenCaseMiner`); selectors/contracts/goldens auto-derived
 - [ ] `pnpm optimize --journey capture-and-edit` green in CI and locally; bundle committed as a **baseline fixture** in `doc/evidence/baselines/capture-and-edit/`
 - [ ] `pnpm test`, `pnpm --filter @notention/ui test:e2e`, `pnpm optimize:check`, `pnpm run build` all green
 - [x] `optimize/README.md` documents: journey authoring, step kinds, replay, report-only semantics, and the "no class selectors" rule
@@ -541,9 +580,10 @@ pnpm-workspace.yaml, package.json   add `optimize`
 | Day 1 (pm) | WS-0.5 extraction unification | Gate: existing tests pass **unchanged** |
 | Days 2–3 | WS-1 bundle, reporter, bridge, traces | Longest block; do not start WS-2 early |
 | Days 3–4 | WS-2 journeys | `capture-and-edit` first, then `publish-gate` |
-| Day 4 | WS-3 golden set (parallel) | Provider injection is the only new idea |
-| Day 5 | WS-4 guardrails ∥ WS-5 control | Independent files |
-| **Day 6** | **CI stabilization buffer** | Reserved, not optional |
+| Day 4 | WS-3 golden set ∥ WS-2.5 discovery layer | Provider injection + static analysis |
+| Day 5 | WS-4 guardrails ∥ WS-5 control ∥ WS-2.6 state schema | Independent files |
+| Day 6 | WS-2.7 journey synthesis ∥ WS-2.8 event flow/selectors | Core metaprogramming |
+| **Day 7** | **CI stabilization buffer** | Reserved, not optional |
 
 The buffer is part of the plan because it is the one cost that is certain and unschedulable: the first headless run in CI will surface at least one timing assumption (worker start order, font load, dialog mount, PWA/SW interference). The rule during that day: replace the wait, never lengthen it.
 
