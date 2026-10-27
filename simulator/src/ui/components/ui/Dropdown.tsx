@@ -137,13 +137,4 @@ export const Dropdown = ({ trigger, items, align = 'right', closeOnSelect = true
   );
 };
 
-export interface DropdownTriggerProps {
-  children: ReactNode;
-  'aria-label'?: string;
-}
-
-export const DropdownTrigger = ({ children, 'aria-label': ariaLabel, ...props }: DropdownTriggerProps & React.ButtonHTMLAttributes<HTMLButtonElement>) => (
-  <Button variant="ghost" size="sm" {...props} aria-label={ariaLabel}>
-    {children}
-  </Button>
-);
+Dropdown.displayName = 'Dropdown';

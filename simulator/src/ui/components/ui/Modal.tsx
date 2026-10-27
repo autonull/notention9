@@ -1,9 +1,10 @@
 import React, { Fragment, ReactNode, useEffect, useRef, useCallback } from 'react';
 import { X } from 'lucide-react';
-import { Button, IconButton } from './Button';
+import { IconButton } from './IconButton';
 import { Card } from './Card';
 import { DesignTokens } from './DesignTokens';
 import { cn } from '../../utils';
+import { trapFocus } from '../../utils';
 
 export interface ModalProps {
   isOpen: boolean;
@@ -126,85 +127,4 @@ export const Modal = ({
   );
 };
 
-const trapFocus = (container: HTMLElement, event: KeyboardEvent): void => {
-  if (event.key !== 'Tab') return;
-  const focusable = container.querySelectorAll<HTMLElement>(
-    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-  );
-  if (!focusable.length) return;
-  const first = focusable[0];
-  const last = focusable[focusable.length - 1];
-  if (event.shiftKey && document.activeElement === first) {
-    event.preventDefault();
-    last.focus();
-  } else if (!event.shiftKey && document.activeElement === last) {
-    event.preventDefault();
-    first.focus();
-  }
-};
-
-export interface ConfirmModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: () => void;
-  title: string;
-  message: string;
-  confirmLabel?: string;
-  cancelLabel?: string;
-  variant?: 'danger' | 'primary';
-  loading?: boolean;
-}
-
-export const ConfirmModal = ({
-  isOpen,
-  onClose,
-  onConfirm,
-  title,
-  message,
-  confirmLabel = 'Confirm',
-  cancelLabel = 'Cancel',
-  variant = 'primary',
-  loading = false,
-}: ConfirmModalProps) => (
-  <Modal isOpen={isOpen} onClose={onClose} title={title} size="sm">
-    <p className={cn(DesignTokens.typography.body, DesignTokens.colors.text.secondary)}>{message}</p>
-    <div className="flex justify-end gap-3 mt-6" slot="footer">
-      <Button variant="ghost" onClick={onClose} disabled={loading}>
-        {cancelLabel}
-      </Button>
-      <Button variant={variant} onClick={onConfirm} loading={loading}>
-        {confirmLabel}
-      </Button>
-    </div>
-  </Modal>
-);
-
-export interface AlertModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  title: string;
-  message: string;
-  confirmLabel?: string;
-  icon?: ReactNode;
-}
-
-export const AlertModal = ({
-  isOpen,
-  onClose,
-  title,
-  message,
-  confirmLabel = 'OK',
-  icon,
-}: AlertModalProps) => (
-  <Modal isOpen={isOpen} onClose={onClose} title={title} size="sm">
-    <div className="flex items-start gap-4">
-      {icon && <div className="flex-shrink-0 mt-1">{icon}</div>}
-      <p className={cn(DesignTokens.typography.body, DesignTokens.colors.text.secondary, 'flex-1')}>{message}</p>
-    </div>
-    <div className="flex justify-end mt-6" slot="footer">
-      <Button variant="primary" onClick={onClose} autoFocus>
-        {confirmLabel}
-      </Button>
-    </div>
-  </Modal>
-);
+Modal.displayName = 'Modal';
