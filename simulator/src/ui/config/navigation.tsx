@@ -1,11 +1,10 @@
 import { Clapperboard, Film, MonitorPlay, HelpCircle, Keyboard, Command, Menu, X, Search, Settings } from 'lucide-react';
-import { formatShortcut, isMac } from '../utils';
+import { formatShortcut, isMac, GLOBAL_SHORTCUTS, COMMAND_PALETTE_SHORTCUTS, getNavShortcut } from '../utils/shortcuts';
 
 export interface NavItem {
   path: string;
   label: string;
   icon: React.ComponentType<{ size?: number }>;
-  shortcut: string;
   description: string;
   keywords: string[];
 }
@@ -15,7 +14,6 @@ export const NAV_ITEMS: NavItem[] = [
     path: '/',
     label: 'Studio',
     icon: Clapperboard,
-    shortcut: '1',
     description: 'Create new simulation movies',
     keywords: ['studio', 'create', 'new', 'simulation'],
   },
@@ -23,7 +21,6 @@ export const NAV_ITEMS: NavItem[] = [
     path: '/movies',
     label: 'Library',
     icon: Film,
-    shortcut: '2',
     description: 'Manage recorded movies',
     keywords: ['library', 'movies', 'manage', 'videos'],
   },
@@ -31,39 +28,12 @@ export const NAV_ITEMS: NavItem[] = [
     path: '/live',
     label: 'Live Preview',
     icon: MonitorPlay,
-    shortcut: '3',
     description: 'Watch running simulations',
     keywords: ['live', 'preview', 'watch', 'running'],
   },
 ];
 
-export interface Shortcut {
-  key: string;
-  ctrl?: boolean;
-  shift?: boolean;
-  alt?: boolean;
-  meta?: boolean;
-  handler: (event: KeyboardEvent) => void;
-  description: string;
-  category: 'navigation' | 'actions' | 'view';
-}
-
-export const SHORTCUT_CATEGORIES = {
-  navigation: 'Navigation',
-  actions: 'Actions',
-  view: 'View',
-} as const;
-
-export type ShortcutCategory = keyof typeof SHORTCUT_CATEGORIES;
-
-export const GLOBAL_SHORTCUTS = {
-  commandPalette: { key: 'k', meta: true, description: 'Open Command Palette', category: 'actions' as const },
-  help: { key: '?', shift: true, description: 'Show Help', category: 'actions' as const },
-  closeModals: { key: 'Escape', description: 'Close Modals / Sidebar', category: 'actions' as const },
-  navStudio: { key: '1', description: 'Go to Studio', category: 'navigation' as const },
-  navLibrary: { key: '2', description: 'Go to Library', category: 'navigation' as const },
-  navLive: { key: '3', description: 'Go to Live Preview', category: 'navigation' as const },
-} as const;
+export { SHORTCUT_CATEGORIES, type ShortcutCategory } from '../utils/shortcuts';
 
 export interface CommandItem {
   id: string;
@@ -144,32 +114,10 @@ export const createCommandItems = (
   },
 ];
 
-export const COMMAND_PALETTE_SHORTCUTS = [
-  {
-    category: 'Navigation',
-    shortcuts: [
-      { label: 'Studio', keys: ['1'] },
-      { label: 'Library', keys: ['2'] },
-      { label: 'Live Preview', keys: ['3'] },
-    ],
-  },
-  {
-    category: 'Actions',
-    shortcuts: [
-      { label: 'Command Palette', keys: isMac() ? ['⌘', 'K'] : ['Ctrl', 'K'] },
-      { label: 'Show Help', keys: ['?'] },
-      { label: 'Close Modals', keys: ['Esc'] },
-    ],
-  },
-];
+export { COMMAND_PALETTE_SHORTCUTS };
 
-export const formatNavShortcut = (shortcut: { key: string; ctrl?: boolean; shift?: boolean; alt?: boolean; meta?: boolean }): string => {
-  return formatShortcut([
-    ...(shortcut.meta || shortcut.ctrl ? [isMac() ? '⌘' : 'Ctrl'] : []),
-    ...(shortcut.shift ? ['Shift'] : []),
-    ...(shortcut.alt ? [isMac() ? '⌥' : 'Alt'] : []),
-    shortcut.key.toUpperCase(),
-  ]);
+export const formatNavShortcut = (index: number): string => {
+  return formatShortcut(getNavShortcut(index));
 };
 
 export const MOBILE_MENU_BUTTON = {

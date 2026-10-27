@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { Button } from './Button';
 import { CheckCircle, AlertTriangle, Info } from 'lucide-react';
 import { DesignTokens } from './DesignTokens';
@@ -38,39 +38,24 @@ const typeStyles = {
 };
 
 const ToastItem: React.FC<{ toast: Toast; onRemove: (id: number) => void }> = ({ toast, onRemove }) => {
-  const [progress, setProgress] = useState(100);
+  const [visible, setVisible] = useState(true);
   const [hovered, setHovered] = useState(false);
-  const progressRef = useRef(100);
-  const animationFrameRef = useRef<number>();
-  const startTimeRef = useRef(Date.now());
 
   useEffect(() => {
-    if (toast.persistent) {
-      setProgress(100);
-      return;
-    }
+    if (toast.persistent) return;
 
     const duration = toast.duration ?? DEFAULT_DURATION;
-    startTimeRef.current = Date.now();
-    progressRef.current = 100;
-    setProgress(100);
-
-    const animate = () => {
-      const elapsed = Date.now() - startTimeRef.current;
-      const newProgress = Math.max(0, 100 - (elapsed / duration) * 100);
-      progressRef.current = newProgress;
-      setProgress(newProgress);
-
-      if (newProgress > 0 && !hovered) {
-        animationFrameRef.current = requestAnimationFrame(animate);
-      } else if (newProgress <= 0) {
-        onRemove(toast.id);
+    const timer = setTimeout(() => {
+      if (!hovered) {
+        setVisible(false);
+        setTimeout(() => onRemove(toast.id), 300);
       }
-    };
+    }, duration);
 
-    animationFrameRef.current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(animationFrameRef.current!);
+    return () => clearTimeout(timer);
   }, [toast.id, onRemove, toast.persistent, toast.duration, hovered]);
+
+  if (!visible) return null;
 
   const { bg, icon } = typeStyles[toast.type];
 
@@ -82,9 +67,10 @@ const ToastItem: React.FC<{ toast: Toast; onRemove: (id: number) => void }> = ({
         'relative px-4 py-3 rounded-xl text-white text-sm font-medium animate-slide-in-right flex items-start gap-3 overflow-hidden',
         DesignTokens.shadows.card,
         bg,
-        'border border-white/10'
+        'border border-white/10',
+        'animate-fade-out'
       )}
-      style={{ minWidth: '320px', maxWidth: '480px' }}
+      style={{ minWidth: '320px', maxWidth: '480px', animationDuration: `${(toast.duration ?? DEFAULT_DURATION) / 1000}s` }}
       role="alert"
       aria-live={toast.type === 'error' ? 'assertive' : 'polite'}
     >
@@ -126,11 +112,7 @@ const ToastItem: React.FC<{ toast: Toast; onRemove: (id: number) => void }> = ({
         </svg>
       </Button>
       {!toast.persistent && (
-        <div
-          className="absolute bottom-0 left-0 h-1 bg-white/30 transition-all duration-100 ease-linear"
-          style={{ width: `${progress}%` }}
-          aria-hidden="true"
-        />
+        <div className="absolute bottom-0 left-0 h-1 bg-white/30 animate-progress" aria-hidden="true" />
       )}
       {toast.persistent && (
         <div className="absolute bottom-0 left-0 h-1 bg-white/30 animate-pulse-subtle" aria-hidden="true" />

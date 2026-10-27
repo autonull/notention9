@@ -39,6 +39,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       lg: DesignTokens.sizing.iconLg,
     };
 
+    const showIcon = icon && !error;
+
     return (
       <div className={cn(fullWidth && 'w-full')}>
         {label && (
@@ -47,7 +49,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           </label>
         )}
         <div className="relative">
-          {icon && iconPosition === 'left' && (
+          {showIcon && iconPosition === 'left' && (
             <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">
               <span className={iconSizeStyles[size]}>{icon}</span>
             </div>
@@ -61,14 +63,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               'w-full rounded-lg text-white outline-none',
               DesignTokens.colors.input.base,
               DesignTokens.sizing.input[size],
-              iconPosition === 'left' && 'pl-10',
-              iconPosition === 'right' && 'pr-10',
+              showIcon && iconPosition === 'left' && 'pl-10',
+              showIcon && iconPosition === 'right' && 'pr-10',
               error ? DesignTokens.colors.input.error : DesignTokens.colors.input.default,
               className
             )}
             {...props}
           />
-          {icon && iconPosition === 'right' && (
+          {showIcon && iconPosition === 'right' && (
             <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">
               <span className={iconSizeStyles[size]}>{icon}</span>
             </div>
@@ -206,31 +208,43 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             {label}
           </label>
         )}
-        <select
-          ref={ref}
-          id={selectId}
-          aria-invalid={error ? 'true' : 'false'}
-          aria-describedby={describedBy}
-          className={cn(
-            'w-full rounded-lg text-white appearance-none outline-none',
-            DesignTokens.colors.input.base,
-            DesignTokens.sizing.input[size],
-            error ? DesignTokens.colors.input.error : DesignTokens.colors.input.default,
-            className
+        <div className="relative">
+          <select
+            ref={ref}
+            id={selectId}
+            aria-invalid={error ? 'true' : 'false'}
+            aria-describedby={describedBy}
+            className={cn(
+              'w-full rounded-lg text-white appearance-none outline-none',
+              DesignTokens.colors.input.base,
+              DesignTokens.sizing.input[size],
+              'pr-10',
+              error ? DesignTokens.colors.input.error : DesignTokens.colors.input.default,
+              className
+            )}
+            {...props}
+          >
+            {placeholder && (
+              <option value="" disabled>
+                {placeholder}
+              </option>
+            )}
+            {options.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+          {error && (
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-red-400" aria-hidden="true">
+              <svg size={size === 'sm' ? 14 : size === 'md' ? 18 : 22} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+            </div>
           )}
-          {...props}
-        >
-          {placeholder && (
-            <option value="" disabled>
-              {placeholder}
-            </option>
-          )}
-          {options.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
+        </div>
         {error && (
           <p id={errorId} className={cn(DesignTokens.typography.error, 'mt-1.5')} role="alert">
             {error}

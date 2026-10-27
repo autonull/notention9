@@ -37,38 +37,6 @@ export const generateId = (): string =>
 export const isMac = (): boolean =>
   typeof navigator !== 'undefined' && navigator.platform.includes('Mac');
 
-export const formatShortcut = (keys: string[]): string => {
-  const isMacPlatform = isMac();
-  return keys.map(k => {
-    if (k === 'meta' || k === 'ctrl') return isMacPlatform ? '⌘' : 'Ctrl';
-    if (k === 'shift') return 'Shift';
-    if (k === 'alt') return isMacPlatform ? '⌥' : 'Alt';
-    return k.toUpperCase();
-  }).join(' + ');
-};
-
-export const parseShortcut = (shortcut: string): { key: string; ctrl?: boolean; shift?: boolean; alt?: boolean; meta?: boolean } => {
-  const parts = shortcut.toLowerCase().split('+').map(p => p.trim());
-  return {
-    key: parts[parts.length - 1],
-    ctrl: parts.includes('ctrl'),
-    shift: parts.includes('shift'),
-    alt: parts.includes('alt') || parts.includes('option') || parts.includes('⌥'),
-    meta: parts.includes('meta') || parts.includes('cmd') || parts.includes('⌘'),
-  };
-};
-
-export const matchesShortcut = (
-  event: KeyboardEvent,
-  shortcut: { key: string; ctrl?: boolean; shift?: boolean; alt?: boolean; meta?: boolean }
-): boolean => {
-  const keyMatch = event.key.toLowerCase() === shortcut.key.toLowerCase();
-  const ctrlMatch = (shortcut.ctrl ?? false) === (event.ctrlKey || event.metaKey);
-  const shiftMatch = (shortcut.shift ?? false) === event.shiftKey;
-  const altMatch = (shortcut.alt ?? false) === event.altKey;
-  return keyMatch && ctrlMatch && shiftMatch && altMatch;
-};
-
 export const isInputFocused = (target: HTMLElement | null): boolean => {
   if (!target) return false;
   return (
@@ -106,3 +74,17 @@ export const trapFocus = (container: HTMLElement, event: KeyboardEvent): void =>
 
 export const cn = (...classes: (string | undefined | null | false)[]): string =>
   classes.filter(Boolean).join(' ');
+
+export {
+  parseShortcut,
+  matchesShortcut,
+  formatShortcut,
+  formatShortcutKeys,
+  GLOBAL_SHORTCUTS,
+  COMMAND_PALETTE_SHORTCUTS,
+  getNavShortcut,
+  SHORTCUT_CATEGORIES,
+  type ShortcutCategory,
+  type ShortcutDef,
+  type ShortcutHandler,
+} from './shortcuts';

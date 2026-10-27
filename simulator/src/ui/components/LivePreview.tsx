@@ -1,13 +1,14 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { Loader2, AlertTriangle, CheckCircle, StopCircle, RefreshCw, Search, X, Copy, Trash2, Filter, PauseCircle, PlayCircle, Wifi, WifiOff, Activity, Terminal, Download, Maximize2, Minimize2, MonitorPlay, Film, Play } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Loader2, AlertTriangle, CheckCircle, StopCircle, RefreshCw, Wifi, WifiOff, Film, Play, PauseCircle, Maximize2, Copy } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useJobStatus, useDashboardConnection, useLogs, type JobStatus, type ConnectionState, STATUS_CONFIG } from '../hooks/useLivePreview';
+import { useJobStatus, useDashboardConnection, type JobStatus, type ConnectionState, STATUS_CONFIG } from '../hooks/useLivePreview';
 import { useToast } from '../components/ui';
-import { Button, IconButton, Kbd, Skeleton, Select } from '../components/ui';
-import { Card, CardHeader, CardTitle, CardContent } from '../components/ui';
+import { Button, IconButton, Kbd, Skeleton } from '../components/ui';
+import { Card, CardHeader, CardContent } from '../components/ui';
 import { Badge } from '../components/ui';
 import { DesignTokens } from '../components/ui';
 import { cn } from '../utils';
+import { LogsPanel, LogsPanelProvider } from './LogsPanel';
 
 const DashboardSkeleton = () => (
   <div className="w-full h-full flex flex-col">
@@ -47,70 +48,6 @@ const ConnectionIndicator = ({ state }: { state: ConnectionState }) => {
       {state === 'disconnected' && 'Disconnected'}
       {state === 'error' && 'Connection Error'}
     </span>
-  );
-};
-
-const LogEntry = ({ log, index, searchQuery, onClick, level }: {
-  log: string;
-  index: number;
-  searchQuery: string;
-  onClick: () => void;
-  level: 'all' | 'info' | 'warn' | 'error' | 'debug';
-}) => {
-  const lowerLog = log.toLowerCase();
-  const detectedLevel =
-    lowerLog.includes('error') || lowerLog.includes('fail') ? 'error' :
-    lowerLog.includes('warn') ? 'warn' :
-    lowerLog.includes('debug') ? 'debug' : 'info';
-
-  const levelBadgeStyles = {
-    error: cn(DesignTokens.colors.status.error.bg, DesignTokens.colors.status.error.border),
-    warn: cn(DesignTokens.colors.status.warning.bg, DesignTokens.colors.status.warning.border),
-    debug: cn(DesignTokens.colors.status.connecting.bg, DesignTokens.colors.status.connecting.border),
-    info: 'bg-gray-800 text-gray-300',
-  };
-
-  const levelTextColors = {
-    error: DesignTokens.colors.status.error.text,
-    warn: DesignTokens.colors.status.warning.text,
-    debug: DesignTokens.colors.status.connecting.text,
-    info: DesignTokens.colors.text.secondary,
-  };
-
-  const matchesSearch = !searchQuery || lowerLog.includes(searchQuery.toLowerCase());
-  const matchesFilter = level === 'all' || detectedLevel === level;
-
-  if (!matchesSearch || !matchesFilter) return null;
-
-  const highlight = (text: string) => {
-    if (!searchQuery) return <span>{text}</span>;
-    const parts = text.split(new RegExp(`(${searchQuery})`, 'gi'));
-    return parts.map((part, i) =>
-      part.toLowerCase() === searchQuery.toLowerCase()
-        ? <mark key={i} className="bg-yellow-500/30 text-yellow-100 px-0.5 rounded">{part}</mark>
-        : <span key={i}>{part}</span>
-    );
-  };
-
-  return (
-    <div
-      key={index}
-      onClick={onClick}
-      className={cn(
-        'break-words group hover:bg-gray-800/50 rounded px-1 py-0.5 transition-colors cursor-pointer',
-        DesignTokens.colors.text.secondary,
-        levelTextColors[detectedLevel]
-      )}
-      title="Click to copy"
-    >
-      <span className="text-gray-600 mr-2 select-none">[{index}]</span>
-      <span className="flex items-center gap-1">
-        <span className={cn('text-[10px] px-1.5 py-0.5 rounded uppercase font-medium', levelBadgeStyles[detectedLevel])}>
-          {detectedLevel.toUpperCase()}
-        </span>
-        {highlight(log)}
-      </span>
-    </div>
   );
 };
 
@@ -249,186 +186,9 @@ const JobStatusView = ({ job, connectionState, onCancel, onRetry, iframeRef, han
   );
 };
 
-const LogsPanel = ({
-  filteredLogs,
-  job,
-  logFilter,
-  setLogFilter,
-  logSearch,
-  setLogSearch,
-  paused,
-  setPaused,
-  showLogPanel,
-  setShowLogPanel,
-  logPanelWidth,
-  setLogPanelWidth,
-  isResizingLogs,
-  handleResizeStart,
-  handleResizeMove,
-  handleResizeEnd,
-  handleKeyDown,
-  copyLogs,
-  downloadLogs,
-  clearLogs,
-  logsEndRef,
-}: {
-  filteredLogs: string[];
-  job: JobStatus | null;
-  logFilter: 'all' | 'info' | 'warn' | 'error' | 'debug';
-  setLogFilter: React.Dispatch<React.SetStateAction<'all' | 'info' | 'warn' | 'error' | 'debug'>>;
-  logSearch: string;
-  setLogSearch: React.Dispatch<React.SetStateAction<string>>;
-  paused: boolean;
-  setPaused: React.Dispatch<React.SetStateAction<boolean>>;
-  showLogPanel: boolean;
-  setShowLogPanel: React.Dispatch<React.SetStateAction<boolean>>;
-  logPanelWidth: number;
-  setLogPanelWidth: React.Dispatch<React.SetStateAction<number>>;
-  isResizingLogs: boolean;
-  handleResizeStart: (e: React.MouseEvent) => void;
-  handleResizeMove: (e: MouseEvent) => void;
-  handleResizeEnd: () => void;
-  handleKeyDown: (e: KeyboardEvent) => void;
-  copyLogs: () => void;
-  downloadLogs: () => void;
-  clearLogs: () => void;
-  logsEndRef: React.RefObject<HTMLDivElement>;
-}) => (
-  <div className="relative" onKeyDown={handleKeyDown}>
-    <div
-      className="absolute left-0 top-0 bottom-0 w-1 cursor-col-resize z-10 hover:bg-indigo-500/30 transition-colors -ml-0.5"
-      onMouseDown={handleResizeStart}
-      aria-label="Resize logs panel"
-      role="separator"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-          e.preventDefault();
-          const newWidth = Math.min(Math.max(logPanelWidth + (e.key === 'ArrowLeft' ? -20 : 20), 200), 600);
-          setLogPanelWidth(newWidth);
-        }
-      }}
-    />
-
-    <Card
-      variant="elevated"
-      className={cn('min-w-[200px] max-w-[600px] flex flex-col', DesignTokens.breakpoints.logPanelMin, DesignTokens.breakpoints.logPanelMax)}
-      style={{ width: `${logPanelWidth}px`, flexShrink: 0 }}
-    >
-      <CardHeader className={cn('p-3 border-b flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3', DesignTokens.colors.background.panel, DesignTokens.colors.border.muted)}>
-        <div className="flex items-center gap-3 flex-wrap">
-          <span className={cn('text-xs font-mono font-bold text-gray-400 flex items-center gap-1.5')}>
-            <Terminal size={14} />
-            SYSTEM LOGS
-          </span>
-          <Badge variant="default" size="sm">{filteredLogs.length} / {job?.logs.length ?? 0}</Badge>
-        </div>
-
-        <div className="flex items-center gap-2 flex-wrap">
-          <div className="relative">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-500" size={14} />
-            <Input
-              id="log-search"
-              type="text"
-              value={logSearch}
-              onChange={(e) => setLogSearch(e.target.value)}
-              placeholder="Filter logs..."
-              className="w-48 sm:w-64"
-              size="sm"
-              aria-label="Filter logs"
-              icon={logSearch && <X size={12} />}
-              iconPosition="right"
-            />
-          </div>
-
-          <Select
-            value={logFilter}
-            onChange={(e) => setLogFilter(e.target.value as 'all' | 'info' | 'warn' | 'error' | 'debug')}
-            options={[
-              { value: 'all', label: 'All' },
-              { value: 'error', label: 'Errors' },
-              { value: 'warn', label: 'Warnings' },
-              { value: 'info', label: 'Info' },
-              { value: 'debug', label: 'Debug' },
-            ]}
-            className="text-xs"
-            size="sm"
-            aria-label="Filter by log level"
-          />
-
-          <div className="flex items-center gap-1">
-            <IconButton size="sm" onClick={copyLogs} aria-label="Copy filtered logs">
-              <Copy size={14} />
-            </IconButton>
-            <IconButton size="sm" onClick={downloadLogs} aria-label="Download all logs">
-              <Download size={14} />
-            </IconButton>
-            <IconButton size="sm" onClick={clearLogs} aria-label="Clear logs">
-              <Trash2 size={14} />
-            </IconButton>
-            <Button
-              variant={paused ? 'secondary' : 'ghost'}
-              size="sm"
-              onClick={() => setPaused(!paused)}
-              aria-label={paused ? 'Resume auto-scroll' : 'Pause auto-scroll'}
-              aria-pressed={paused}
-              icon={paused ? <PlayCircle size={14} /> : <PauseCircle size={14} />}
-            />
-          </div>
-        </div>
-      </CardHeader>
-
-      <CardContent className="flex-1 overflow-auto p-2 font-mono text-xs space-y-0.5 custom-scrollbar">
-        {filteredLogs.length === 0 ? (
-          <div className="text-gray-500 text-center py-8 flex flex-col items-center gap-2">
-            <Filter size={32} className="opacity-50" />
-            <span>{logSearch || logFilter !== 'all' ? 'No matching logs' : 'No logs yet'}</span>
-            {logSearch && <button onClick={() => setLogSearch('')} className="text-xs text-indigo-400 hover:underline">Clear search</button>}
-            {logFilter !== 'all' && <button onClick={() => setLogFilter('all')} className="text-xs text-indigo-400 hover:underline">Show all levels</button>}
-          </div>
-        ) : (
-          filteredLogs.map((log, originalIndex) => (
-            <LogEntry
-              key={originalIndex}
-              log={log}
-              index={originalIndex}
-              searchQuery={logSearch}
-              level={logFilter}
-              onClick={() => navigator.clipboard.writeText(`[${originalIndex}] ${log}`).then(() => {})}
-            />
-          ))
-        )}
-        <div ref={logsEndRef} />
-      </CardContent>
-    </Card>
-  </div>
-);
-
-export const LivePreview = () => {
+const LivePreviewContent = () => {
   const { job, loading, connectionState, setConnectionState, cancelJob, checkStatus } = useJobStatus();
   const { iframeRef, retryConnection, handleIframeLoad, handleIframeError } = useDashboardConnection(job, connectionState, setConnectionState);
-  const {
-    logFilter,
-    setLogFilter,
-    logSearch,
-    setLogSearch,
-    paused,
-    setPaused,
-    showLogPanel,
-    setShowLogPanel,
-    logPanelWidth,
-    setLogPanelWidth,
-    isResizingLogs,
-    filteredLogs,
-    logsEndRef,
-    copyLogs,
-    downloadLogs,
-    clearLogs,
-    handleResizeStart,
-    handleResizeMove,
-    handleResizeEnd,
-    handleKeyDown,
-  } = useLogs(job);
   const [cancelling, setCancelling] = useState(false);
   const [iframeError, setIframeError] = useState(false);
   const { addToast } = useToast();
@@ -539,31 +299,9 @@ export const LivePreview = () => {
           iframeError={iframeError}
         />
 
-        {showLogPanel && (
-          <LogsPanel
-            filteredLogs={filteredLogs}
-            job={job}
-            logFilter={logFilter}
-            setLogFilter={setLogFilter}
-            logSearch={logSearch}
-            setLogSearch={setLogSearch}
-            paused={paused}
-            setPaused={setPaused}
-            showLogPanel={showLogPanel}
-            setShowLogPanel={setShowLogPanel}
-            logPanelWidth={logPanelWidth}
-            setLogPanelWidth={setLogPanelWidth}
-            isResizingLogs={isResizingLogs}
-            handleResizeStart={handleResizeStart}
-            handleResizeMove={handleResizeMove}
-            handleResizeEnd={handleResizeEnd}
-            handleKeyDown={handleKeyDown}
-            copyLogs={copyLogs}
-            downloadLogs={downloadLogs}
-            clearLogs={clearLogs}
-            logsEndRef={logsEndRef}
-          />
-        )}
+        <LogsPanelProvider job={job}>
+          <LogsPanel />
+        </LogsPanelProvider>
       </div>
 
       {/* Keyboard Shortcuts Hint */}
@@ -575,5 +313,11 @@ export const LivePreview = () => {
     </div>
   );
 };
+
+export const LivePreview = () => (
+  <LogsPanelProvider job={null}>
+    <LivePreviewContent />
+  </LogsPanelProvider>
+);
 
 export default LivePreview;

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Routes, Route, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Clapperboard, Film, MonitorPlay, HelpCircle, Keyboard, Command, Menu, X, Play, Film as FilmIcon, MonitorPlay as MonitorPlayIcon, Settings, Trash2, Download, RefreshCw, HelpCircle as HelpCircleIcon, ChevronDown, ChevronUp } from 'lucide-react';
 import Studio from './components/Studio';
@@ -9,8 +9,8 @@ import CommandPalette from './components/CommandPalette';
 import { ToastProvider } from './components/ui';
 import ErrorBoundary from './components/ErrorBoundary';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
-import { formatShortcut } from './utils';
-import { SHORTCUT_CATEGORIES, NAV_ITEMS, createCommandItems, COMMAND_PALETTE_SHORTCUTS, formatNavShortcut, MOBILE_MENU_BUTTON, SIDEBAR_CLOSE_BUTTON } from './config/navigation';
+import { formatShortcut, GLOBAL_SHORTCUTS } from './utils/shortcuts';
+import { NAV_ITEMS, createCommandItems, COMMAND_PALETTE_SHORTCUTS, formatNavShortcut, MOBILE_MENU_BUTTON, SIDEBAR_CLOSE_BUTTON } from './config/navigation';
 import { Button, IconButton, Kbd } from './components/ui';
 import { Card } from './components/ui';
 
@@ -24,22 +24,15 @@ const AppContent = () => {
   const commandItems = useMemo(() => createCommandItems(navigate, setShowHelp, setShowCommandPalette), [navigate]);
 
   const shortcuts = useMemo(() => [
-    { key: '1', handler: () => navigate('/'), description: 'Go to Studio', category: SHORTCUT_CATEGORIES.navigation },
-    { key: '2', handler: () => navigate('/movies'), description: 'Go to Library', category: SHORTCUT_CATEGORIES.navigation },
-    { key: '3', handler: () => navigate('/live'), description: 'Go to Live Preview', category: SHORTCUT_CATEGORIES.navigation },
-    { key: 'k', meta: true, handler: () => setShowCommandPalette(true), description: 'Open Command Palette', category: SHORTCUT_CATEGORIES.actions },
-    { key: '?', shift: true, handler: () => setShowHelp(true), description: 'Show Help', category: SHORTCUT_CATEGORIES.actions },
-    { key: 'Escape', handler: () => { setShowHelp(false); setShowCommandPalette(false); setSidebarOpen(false); }, description: 'Close Modals / Sidebar', category: SHORTCUT_CATEGORIES.actions },
+    { ...GLOBAL_SHORTCUTS.navStudio, handler: () => navigate('/') },
+    { ...GLOBAL_SHORTCUTS.navLibrary, handler: () => navigate('/movies') },
+    { ...GLOBAL_SHORTCUTS.navLive, handler: () => navigate('/live') },
+    { ...GLOBAL_SHORTCUTS.commandPalette, handler: () => setShowCommandPalette(true) },
+    { ...GLOBAL_SHORTCUTS.help, handler: () => setShowHelp(true) },
+    { ...GLOBAL_SHORTCUTS.closeModals, handler: () => { setShowHelp(false); setShowCommandPalette(false); setSidebarOpen(false); } },
   ], [navigate]);
 
   useKeyboardShortcuts(shortcuts);
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-      e.preventDefault();
-      setShowCommandPalette(true);
-    }
-  };
 
   return (
     <>
@@ -51,7 +44,7 @@ const AppContent = () => {
         items={commandItems}
       />
 
-      <div className="flex h-screen bg-gray-900 text-white font-sans" onKeyDown={handleKeyDown}>
+      <div className="flex h-screen bg-gray-900 text-white font-sans">
         {/* Mobile sidebar backdrop */}
         {sidebarOpen && (
           <div
@@ -95,11 +88,11 @@ const AppContent = () => {
                     flex items-center gap-3 p-3 rounded-lg transition-colors
                     ${isActive ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white'}
                   `}
-                  title={`${item.label} ${formatNavShortcut(shortcut)}`}
+                  title={`${item.label} ${formatNavShortcut(index)}`}
                 >
                   <item.icon size={20} />
                   <span>{item.label}</span>
-                  <Kbd className="ml-auto text-xs text-gray-500 bg-gray-700 px-1.5 py-0.5 rounded">{item.shortcut}</Kbd>
+                  <Kbd className="ml-auto text-xs text-gray-500 bg-gray-700 px-1.5 py-0.5 rounded">{shortcut.key}</Kbd>
                 </NavLink>
               );
             })}

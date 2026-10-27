@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { X, Search, Command as CommandIcon, Loader2, Zap, History, Clock, HelpCircle } from 'lucide-react';
 import { Button, IconButton, Kbd } from './ui';
 import { Card } from './ui';
-import { COMMAND_PALETTE_SHORTCUTS } from '../config/navigation';
+import { COMMAND_PALETTE_SHORTCUTS } from '../utils/shortcuts';
 import type { CommandItem } from '../config/navigation';
 
 const RECENT_STORAGE_KEY = 'simulator-command-palette-recent';
