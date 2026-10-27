@@ -13,9 +13,9 @@ export type Step =
     | { kind: 'capture'; label: string };
 
 export type Target =
-    | { role: AriaRole; name: string }
-    | { testId: string }
-    | { label: string };
+    | { role: AriaRole; name: string | RegExp; modal?: string }
+    | { testId: string; modal?: string }
+    | { label: string; modal?: string };
 
 export interface JourneySpec {
     id: string;
@@ -30,7 +30,7 @@ export interface JourneySpec {
 
 // Use loose schema for Target to avoid AriaRole constraint issues
 const TargetSchema = z.union([
-    z.object({ role: z.string(), name: z.string() }),
+    z.object({ role: z.string(), name: z.union([z.string(), z.any()]) }),
     z.object({ testId: z.string() }),
     z.object({ label: z.string() }),
 ]);

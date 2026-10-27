@@ -18,8 +18,11 @@ export function DevBridge() {
 
     useEffect(() => {
         if (loading || !window.__NOTENTION__) return;
+        if (!selectedNoteId) return;
 
         const selectedNote = notes.find(n => n.id === selectedNoteId);
+        if (!selectedNote) return;
+
         const ontologyKeys = collectOntologyKeys([]);
 
         const state: SemanticState = {
@@ -28,7 +31,7 @@ export function DevBridge() {
                 hash: window.location.hash.slice(1),
                 noteId: selectedNoteId,
             },
-            note: selectedNote ? {
+            note: {
                 id: selectedNote.id,
                 title: selectedNote.title,
                 properties: selectedNote.properties,
@@ -37,7 +40,7 @@ export function DevBridge() {
                 privacy: selectedNote.privacy,
                 saveStatus: 'idle',
                 publishReadiness: { ready: selectedNote.privacy === 'public', blocking: [] },
-            } : null,
+            },
             editor: { dirty: false, propertyDraft: null },
             review: [],
             validation: { errors: [], missing: [] },

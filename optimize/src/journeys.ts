@@ -13,19 +13,34 @@ const baseSettings: AppSettings = {
     ontology: [],
 };
 
+const testNote: Note = {
+    id: 'scene-editor-note',
+    title: 'Scene Editor Note',
+    content: 'Working on the scene editor with React and TypeScript',
+    tags: ['development'],
+    properties: [
+        { key: 'skill', operator: 'contains', values: ['React', 'TypeScript'] },
+    ],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    source: { type: 'user', identifier: 'user-default', timestamp: Date.now() },
+    privacy: 'private',
+    priority: 1,
+};
+
 const captureAndEdit: JourneySpec = {
     id: 'capture-and-edit',
     version: 1,
     intent: 'capture a note and edit its properties',
     journeysTouched: ['capture', 'edit', 'property-extraction'],
-    seed: { notes: [], settings: baseSettings },
+    seed: { notes: [testNote], settings: baseSettings },
     steps: [
-        { kind: 'seed', notes: [], settings: baseSettings },
-        { kind: 'navigate', hash: 'notes/scene-editor-note' },
-        { kind: 'act', target: { testId: 'add-property' }, action: 'click' },
-        { kind: 'act', target: { role: 'textbox', name: 'property key' }, action: 'fill', value: 'framework' },
-        { kind: 'act', target: { role: 'textbox', name: 'property value' }, action: 'fill', value: 'Next.js' },
-        { kind: 'act', target: { role: 'button', name: 'add' }, action: 'click' },
+        { kind: 'seed', notes: [testNote], settings: baseSettings },
+        { kind: 'act', target: { testId: 'add-detail' }, action: 'click' },
+        { kind: 'act', target: { label: 'Detail', modal: 'Add detail' }, action: 'fill', value: 'framework' },
+        { kind: 'act', target: { label: 'Comparison', modal: 'Add detail' }, action: 'fill', value: 'contains' },
+        { kind: 'act', target: { label: 'Value', modal: 'Add detail' }, action: 'fill', value: 'Next.js' },
+        { kind: 'act', target: { role: 'button', name: /^add detail$/i, modal: 'Add detail' }, action: 'click' },
         { kind: 'assertState', path: 'note.propertyIndex.framework', equals: ['Next.js'] },
         { kind: 'assertState', path: 'note.propertyIndex.skill', equals: ['React', 'TypeScript'] },
         { kind: 'capture', label: 'after-edit' },

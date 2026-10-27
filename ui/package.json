@@ -12,7 +12,7 @@
     "test": "vitest",
     "typecheck:test": "tsc -p test/tsconfig.json --noEmit",
     "screenshots": "node test/scripts/reset-screenshot.mjs && playwright test --config test/playwright.config.ts --project=showcase && node test/scripts/build-index.mjs",
-    "test:e2e": "playwright test --config test/playwright.config.ts --project=journeys"
+    "test:e2e": "playwright test --config test/playwright.config.ts"
   },
   "dependencies": {
     "@google/genai": "^1.12.0",
@@ -44,6 +44,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
+    "@notention/optimize": "workspace:*",
     "@playwright/test": "^1.60.0",
     "@tailwindcss/postcss": "^4.1.18",
     "@testing-library/jest-dom": "^6.6.4",
