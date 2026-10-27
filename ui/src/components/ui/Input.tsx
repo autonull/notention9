@@ -1,5 +1,6 @@
 import React from 'react';
-import {cn} from '../../utils/ui';
+import { cn } from '../../utils/ui';
+import { componentTokens } from '../../styles/tokens';
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
     label?: string;
@@ -27,30 +28,32 @@ export function Input({
     const inputId = id || `input-${generatedId}`;
     const errorId = error ? `${inputId}-error` : undefined;
     const hintId = hint ? `${inputId}-hint` : undefined;
+    const tokens = componentTokens.input;
 
     return (
         <div className={cn('w-full', fullWidth && 'w-full')}>
             {label && (
                 <label
                     htmlFor={inputId}
-                    className="block text-sm font-medium text-gray-300 mb-1.5"
+                    className={tokens.label}
                 >
                     {label}
                 </label>
             )}
             <div className="relative">
                 {leftIcon && (
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500">
+                    <div className={cn(tokens.iconWrapper, 'left-0 pl-3')}>
                         {leftIcon}
                     </div>
                 )}
                 <input
                     id={inputId}
                     className={cn(
-                        'input',
-                        leftIcon ? 'pl-10' : '',
-                        rightIcon ? 'pr-10' : '',
-                        error && 'field-error',
+                        tokens.base,
+                        tokens.padding,
+                        leftIcon && 'pl-10',
+                        rightIcon && 'pr-10',
+                        error && tokens.error,
                         touchTarget && 'py-3 text-base',
                         className
                     )}
@@ -59,18 +62,18 @@ export function Input({
                     {...props}
                 />
                 {rightIcon && (
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-500">
+                    <div className={cn(tokens.iconWrapper, 'right-0 pr-3')}>
                         {rightIcon}
                     </div>
                 )}
             </div>
             {error && (
-                <p id={errorId} className="mt-1.5 text-sm text-red-400" role="alert">
+                <p id={errorId} className={tokens.errorText} role="alert">
                     {error}
                 </p>
             )}
             {hint && !error && (
-                <p id={hintId} className="mt-1.5 text-sm text-gray-500">
+                <p id={hintId} className={tokens.hintText}>
                     {hint}
                 </p>
             )}

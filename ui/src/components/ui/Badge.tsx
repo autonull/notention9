@@ -1,8 +1,9 @@
 import React from 'react';
-import {cn} from '../../utils/ui';
+import { cn } from '../../utils/ui';
+import { componentTokens } from '../../styles/tokens';
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-    variant?: 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'purple' | 'gray';
+    variant?: 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'purple' | 'default';
     size?: 'sm' | 'md';
     pill?: boolean;
     icon?: React.ReactNode;
@@ -11,7 +12,7 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 }
 
 export function Badge({
-    variant = 'gray',
+    variant = 'default',
     size = 'md',
     pill = false,
     icon,
@@ -21,25 +22,15 @@ export function Badge({
     children,
     ...props
 }: BadgeProps) {
-    const variantClassMap: Record<string, string> = {
-        primary: 'badge-primary',
-        success: 'badge-success',
-        warning: 'badge-warning',
-        danger: 'badge-danger',
-        info: 'badge-info',
-        purple: 'badge-purple',
-        gray: 'badge-gray',
-    };
-    const variantClass = variantClassMap[variant];
-    const sizeClass = size === 'sm' ? 'badge-sm' : '';
+    const tokens = componentTokens.badge;
 
     return (
         <span
             className={cn(
-                'badge',
-                variantClass,
-                sizeClass,
-                pill && 'px-3',
+                tokens.base,
+                tokens.sizes[size],
+                tokens.variants[variant],
+                pill && tokens.pill,
                 className
             )}
             {...props}
@@ -47,7 +38,7 @@ export function Badge({
             {dot && (
                 <span
                     className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                    style={{backgroundColor: dotColor || 'currentColor'}}
+                    style={{ backgroundColor: dotColor || 'currentColor' }}
                 />
             )}
             {icon && <span className="flex-shrink-0" aria-hidden="true">{icon}</span>}

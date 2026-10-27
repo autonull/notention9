@@ -1,11 +1,12 @@
 import React from 'react';
-import {cn} from '../../utils/ui';
+import { cn } from '../../utils/ui';
+import { componentTokens, colors } from '../../styles/tokens';
 
 export interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
     src?: string;
     alt?: string;
     name?: string;
-    size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+    size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
     shape?: 'circle' | 'square';
     status?: 'online' | 'offline' | 'busy' | 'away';
     statusPosition?: 'bottom-right' | 'top-right' | 'bottom-left' | 'top-left';
@@ -22,27 +23,13 @@ export function Avatar({
     className = '',
     ...props
 }: AvatarProps) {
-    const sizeStyles = {
-        xs: 'w-6 h-6 text-[10px]',
-        sm: 'w-8 h-8 text-xs',
-        md: 'w-10 h-10 text-sm',
-        lg: 'w-12 h-12 text-base',
-        xl: 'w-16 h-16 text-lg',
-    };
-
-    const statusSizes = {
-        xs: 'w-1.5 h-1.5',
-        sm: 'w-2 h-2',
-        md: 'w-2.5 h-2.5',
-        lg: 'w-3 h-3',
-        xl: 'w-4 h-4',
-    };
+    const tokens = componentTokens.avatar;
 
     const statusColors = {
-        online: 'bg-green-500',
-        offline: 'bg-gray-500',
-        busy: 'bg-red-500',
-        away: 'bg-yellow-500',
+        online: colors.status.online,
+        offline: colors.status.offline,
+        busy: colors.status.busy,
+        away: colors.status.away,
     };
 
     const positionStyles = {
@@ -65,7 +52,7 @@ export function Avatar({
                 className={cn(
                     'overflow-hidden bg-gray-800 flex items-center justify-center text-white font-medium',
                     'border-2 border-gray-700',
-                    sizeStyles[size],
+                    tokens.sizes[size],
                     shape === 'circle' ? 'rounded-full' : 'rounded-xl'
                 )}
                 aria-label={name || alt}
@@ -80,7 +67,7 @@ export function Avatar({
                     <span>{initials}</span>
                 ) : (
                     <svg className="w-1/2 h-1/2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                 )}
             </div>
@@ -88,7 +75,7 @@ export function Avatar({
                 <span
                     className={cn(
                         'absolute rounded-full border-2 border-gray-950',
-                        statusSizes[size],
+                        tokens.statusSizes[size],
                         statusColors[status],
                         positionStyles[statusPosition]
                     )}

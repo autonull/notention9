@@ -1,8 +1,9 @@
 import React from 'react';
-import {cn} from '../../utils/ui';
+import { cn } from '../../utils/ui';
+import { componentTokens } from '../../styles/tokens';
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-    variant?: 'default' | 'elevated' | 'outlined' | 'glass';
+    variant?: 'default' | 'elevated' | 'outlined' | 'glass' | 'gradient';
     hover?: boolean;
     padding?: 'none' | 'sm' | 'md' | 'lg';
 }
@@ -15,28 +16,15 @@ export function Card({
     children,
     ...props
 }: CardProps) {
-    const variantStyles: Record<string, string> = {
-        default: 'card',
-        elevated: 'card card-elevated',
-        outlined: 'card',
-        glass: 'card glass',
-    };
-
-    const paddingStyles = {
-        none: '',
-        sm: 'p-3',
-        md: 'p-4 md:p-6',
-        lg: 'p-6 md:p-8',
-    };
-
-    const hoverClass = hover ? 'card-hover' : '';
+    const tokens = componentTokens.card;
 
     return (
         <div
             className={cn(
-                variantStyles[variant],
-                paddingStyles[padding],
-                hoverClass,
+                tokens.base,
+                tokens.variants[variant],
+                tokens.padding[padding],
+                hover && tokens.hover,
                 className
             )}
             {...props}

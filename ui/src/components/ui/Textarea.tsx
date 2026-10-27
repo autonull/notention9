@@ -1,5 +1,6 @@
-import React, {forwardRef} from 'react';
-import {UI_STYLES} from '../../utils/ui';
+import React, { forwardRef } from 'react';
+import { cn } from '../../utils/ui';
+import { componentTokens } from '../../styles/tokens';
 
 export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
     label?: string;
@@ -14,28 +15,29 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({
     id,
     ...props
 }, ref) => {
+    const tokens = componentTokens.input;
     const inputId = id || (label ? `textarea-${label.replace(/\s+/g, '-').toLowerCase()}` : undefined);
 
     return (
         <div className={className}>
             {label && (
-                <label htmlFor={inputId} className={UI_STYLES.input.label}>
+                <label htmlFor={inputId} className={tokens.label}>
                     {label}
                 </label>
             )}
             <textarea
                 ref={ref}
                 id={inputId}
-                className={`
-            ${UI_STYLES.input.base}
-            ${UI_STYLES.input.padding}
-            custom-scrollbar
-            ${error ? UI_STYLES.input.error : ''}
-        `}
+                className={cn(
+                    tokens.base,
+                    tokens.padding,
+                    'custom-scrollbar',
+                    error && tokens.error
+                )}
                 {...props}
             />
             {error && (
-                <p className={UI_STYLES.input.errorText}>{error}</p>
+                <p className={tokens.errorText}>{error}</p>
             )}
         </div>
     );

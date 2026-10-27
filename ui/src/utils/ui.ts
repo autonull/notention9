@@ -25,21 +25,6 @@ export function cn(...classes: (string | undefined | null | false | Record<strin
 }
 
 /**
- * Shared UI styles and classes
- */
-import { useContext } from 'react';
-
-export const UI_STYLES = {
-    input: {
-        base: "w-full bg-gray-900/50 border border-gray-700/50 rounded-lg text-white focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all placeholder-gray-500 disabled:opacity-50 disabled:cursor-not-allowed",
-        padding: "px-3 py-2.5",
-        error: "border-red-500/50 focus:border-red-500 focus:ring-red-500/50",
-        label: "block text-xs uppercase font-bold text-gray-500 mb-2 tracking-wider",
-        errorText: "mt-1 text-xs text-red-500"
-    }
-};
-
-/**
  * Higher-order function (macro) to create a hook for consuming a React context.
  * Reduces boilerplate and ensures consistent error handling.
  */
