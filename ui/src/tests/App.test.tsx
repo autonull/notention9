@@ -12,6 +12,10 @@ vi.mock('../hooks/useNotes', () => ({
         notes: [],
         addNote: vi.fn(),
         deleteNote: vi.fn(),
+        upsertNote: vi.fn(),
+        updateNote: vi.fn(),
+        restoreNote: vi.fn(),
+        permanentlyDeleteNote: vi.fn(),
         notesLoading: false,
         getSortedFilteredNotes: vi.fn(() => []),
     }),
@@ -32,7 +36,25 @@ vi.mock('../hooks/useViewContext', () => ({
         setIsPaletteOpen: vi.fn(),
         isHelpOpen: false,
         setIsHelpOpen: vi.fn(),
+        sidebarViewMode: 'list',
+        setSidebarViewMode: vi.fn(),
+        refreshUserLocation: vi.fn(),
+        matchingNoteId: null,
+        setMatchingNoteId: vi.fn(),
+        selectedChatPubkey: null,
+        setSelectedChatPubkey: vi.fn(),
+        notificationCount: 0,
+        matches: [],
+        addMatch: vi.fn(),
+        clearNotifications: vi.fn(),
+        chatNotificationCount: 0,
+        incrementChatNotification: vi.fn(),
+        resetChatNotification: vi.fn(),
     }),
+}));
+
+vi.mock('../hooks/useNetworkManagement', () => ({
+    useNetworkManagement: vi.fn(),
 }));
 
 // Mock the onboarding service to prevent issues with constructor
