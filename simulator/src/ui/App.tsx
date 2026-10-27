@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { Routes, Route, NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { Clapperboard, Film, MonitorPlay, HelpCircle, Keyboard, Command, Menu, X, Play, Film as FilmIcon, MonitorPlay as MonitorPlayIcon, Settings, Trash2, Download, RefreshCw, HelpCircle as HelpCircleIcon, ChevronDown, ChevronUp } from 'lucide-react';
+import { Clapperboard, Film, MonitorPlay, HelpCircle, Keyboard, Command, Menu, X } from 'lucide-react';
 import Studio from './components/Studio';
 import MovieLibrary from './components/MovieLibrary';
 import LivePreview from './components/LivePreview';
@@ -9,10 +9,10 @@ import CommandPalette from './components/CommandPalette';
 import { ToastProvider } from './components/ui';
 import ErrorBoundary from './components/ErrorBoundary';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
-import { formatShortcut, GLOBAL_SHORTCUTS } from './utils/shortcuts';
-import { NAV_ITEMS, createCommandItems, COMMAND_PALETTE_SHORTCUTS, formatNavShortcut, MOBILE_MENU_BUTTON, SIDEBAR_CLOSE_BUTTON } from './config/navigation';
+import { GLOBAL_SHORTCUTS } from './utils/shortcuts';
+import { NAV_ITEMS, createCommandItems, formatNavShortcut } from './config/navigation';
 import { Button, IconButton, Kbd } from './components/ui';
-import { Card } from './components/ui';
+import { Sidebar } from './components/Layout';
 
 const AppContent = () => {
   const [showHelp, setShowHelp] = useState(false);
@@ -34,6 +34,16 @@ const AppContent = () => {
 
   useKeyboardShortcuts(shortcuts);
 
+  const handleCommandPalette = useCallback(() => {
+    setShowCommandPalette(true);
+    setSidebarOpen(false);
+  }, []);
+
+  const handleHelp = useCallback(() => {
+    setShowHelp(true);
+    setSidebarOpen(false);
+  }, []);
+
   return (
     <>
       <a href="#main-content" className="skip-link">Skip to main content</a>
@@ -45,95 +55,16 @@ const AppContent = () => {
       />
 
       <div className="flex h-screen bg-gray-900 text-white font-sans">
-        {/* Mobile sidebar backdrop */}
-        {sidebarOpen && (
-          <div
-            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-            onClick={() => setSidebarOpen(false)}
-            aria-hidden="true"
-          />
-        )}
-
-        <nav
-          className={`
-            fixed lg:static inset-y-0 left-0 z-50 w-64 bg-gray-800 border-r border-gray-700 flex flex-col p-4
-            transform transition-transform duration-300 ease-in-out lg:transform-none
-            ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-          `}
-        >
-          <div className="flex items-center justify-between mb-8">
-            <h1 className="text-xl font-bold flex items-center gap-2">
-              <Clapperboard className="text-indigo-500" />
-              Movie Studio
-            </h1>
-            <IconButton
-              onClick={() => setSidebarOpen(false)}
-              aria-label="Close sidebar"
-              size="sm"
-              className="lg:hidden"
-            >
-              <X size={24} />
-            </IconButton>
-          </div>
-
-          <div className="space-y-1 flex-1">
-            {NAV_ITEMS.map((item, index) => {
-              const shortcut = shortcuts[index];
-              return (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  onClick={() => setSidebarOpen(false)}
-                  className={({ isActive }) => `
-                    flex items-center gap-3 p-3 rounded-lg transition-colors
-                    ${isActive ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white'}
-                  `}
-                  title={`${item.label} ${formatNavShortcut(index)}`}
-                >
-                  <item.icon size={20} />
-                  <span>{item.label}</span>
-                  <Kbd className="ml-auto text-xs text-gray-500 bg-gray-700 px-1.5 py-0.5 rounded">{shortcut.key}</Kbd>
-                </NavLink>
-              );
-            })}
-          </div>
-
-          <div className="border-t border-gray-700 pt-4 space-y-2">
-            <Button
-              variant="ghost"
-              className="w-full justify-start"
-              onClick={() => { setShowCommandPalette(true); setSidebarOpen(false); }}
-              icon={<Command size={20} />}
-              iconPosition="left"
-            >
-              Command Palette
-              <Kbd className="ml-auto text-xs text-gray-500 bg-gray-700 px-1.5 py-0.5 rounded hidden sm:inline-flex">
-                {navigator.platform.includes('Mac') ? '⌘K' : 'Ctrl+K'}
-              </Kbd>
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start"
-              onClick={() => { setShowHelp(true); setSidebarOpen(false); }}
-              icon={<HelpCircle size={20} />}
-              iconPosition="left"
-            >
-              Documentation
-              <Kbd className="ml-auto text-xs text-gray-500 bg-gray-700 px-1.5 py-0.5 rounded hidden sm:inline-flex">?</Kbd>
-            </Button>
-          </div>
-        </nav>
+        <Sidebar
+          isOpen={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+          shortcuts={shortcuts}
+          onCommandPalette={handleCommandPalette}
+          onHelp={handleHelp}
+        />
 
         <main id="main-content" className="flex-1 overflow-hidden bg-gray-950 p-4 lg:p-8 lg:ml-0">
-          {/* Mobile menu button */}
-          <IconButton
-            onClick={() => setSidebarOpen(true)}
-            className="lg:hidden fixed bottom-4 right-4 z-50 bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg"
-            aria-label="Open menu"
-            size="md"
-          >
-            <Menu size={24} />
-          </IconButton>
+          <MobileMenuButton onClick={() => setSidebarOpen(true)} />
 
           <Routes>
             <Route path="/" element={<ErrorBoundary><Studio /></ErrorBoundary>} />
@@ -145,6 +76,17 @@ const AppContent = () => {
     </>
   );
 };
+
+const MobileMenuButton = ({ onClick }: { onClick: () => void }) => (
+  <IconButton
+    onClick={onClick}
+    className="lg:hidden fixed bottom-4 right-4 z-50 bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg"
+    aria-label="Open menu"
+    size="md"
+  >
+    <Menu size={24} />
+  </IconButton>
+);
 
 const App = () => (
   <ToastProvider>
