@@ -18,6 +18,7 @@ import {SidebarSkeleton} from '../ui/Skeleton';
 import {EmptyState, NotesEmptyIllustration, EmptyStatePreset} from '../common/EmptyState';
 import {useDemoWorkspace} from '../../hooks/useDemoWorkspace';
 import {modShortcut} from '../../utils/platform';
+import {ITEM_HEIGHT, SIDEBAR_COLLAPSED_WIDTH} from '../../constants/ui';
 
 interface SidebarProps {
     sortedNotes?: Note[];
@@ -27,9 +28,6 @@ interface SidebarProps {
     sidebarWidth?: number;
     isCollapsed?: boolean;
 }
-
-const ITEM_HEIGHT = 84;
-const SIDEBAR_COLLAPSED_WIDTH = 48;
 
 export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true, isLoading = false, sidebarWidth = 320, isCollapsed = false}: SidebarProps) {
     const {
@@ -70,7 +68,6 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
             searchInputRef.current?.blur();
             setSearchTerm('');
         }
-        // Let VirtualizedList handle arrow keys when focused
     }, [setSearchTerm]);
 
     const focusSearch = useCallback(() => {
@@ -92,7 +89,6 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
         />
     ), [setSelectedNoteId, handleDeleteRequest, handleTogglePin, isTrashView, handleRestore, searchTerm]);
 
-    // Collapsed sidebar tooltip render function
     const renderCollapsedTooltip = useCallback((note: Note) => {
         const preview = note.content ? note.content.replace(/<[^>]*>/g, '').slice(0, 120) : 'No content';
         return (
@@ -127,7 +123,6 @@ export function Sidebar({sortedNotes = [], onToggleSidebar, isSidebarOpen = true
         disabled: !isMobile,
     });
     
-    // Bridge the touch gesture ref to our div ref
     const touchRef = useCallback((el: HTMLDivElement | null) => {
         touchElementRef.current = el;
     }, []);

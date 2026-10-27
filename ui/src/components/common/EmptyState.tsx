@@ -17,11 +17,65 @@ interface EmptyStateProps {
     showSearchSuggestion?: boolean;
     searchTerm?: string;
     hint?: string;
-    /** Show contextual keyboard shortcuts */
     showShortcuts?: boolean;
-    /** Context for shortcuts (view name) */
     shortcutContext?: string;
 }
+
+const variantStyles = {
+    default: 'flex flex-col items-center justify-center py-12 px-4 text-center',
+    card: 'empty-state p-8',
+    minimal: 'flex flex-col items-center justify-center py-6 px-4 text-center',
+    illustrated: 'flex flex-col items-center justify-center py-16 px-6 text-center max-w-md mx-auto',
+    onboarding: 'flex flex-col items-center justify-center py-20 px-6 text-center max-w-lg mx-auto',
+    actionable: 'empty-state-actionable',
+};
+
+const iconContainerStyles = {
+    default: 'flex items-center justify-center rounded-full mb-4 bg-gray-800 p-4',
+    card: 'empty-state-icon',
+    minimal: 'flex items-center justify-center rounded-full mb-3 bg-gray-800 p-3',
+    illustrated: 'flex items-center justify-center rounded-full mb-6 w-20 h-20 bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30',
+    onboarding: 'flex items-center justify-center rounded-full mb-8 w-24 h-24 bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30 animate-pulse-subtle',
+    actionable: 'empty-state-icon',
+};
+
+const titleStyles = {
+    default: 'font-medium text-gray-300 text-lg mb-2',
+    card: 'empty-state-title text-lg',
+    minimal: 'font-medium text-gray-300 text-base mb-1',
+    illustrated: 'font-semibold text-white text-xl mb-3',
+    onboarding: 'font-bold text-white text-2xl mb-4',
+    actionable: 'empty-state-title',
+};
+
+const descriptionStyles = {
+    default: 'text-sm max-w-xs text-gray-500 mb-6',
+    card: 'empty-state-description text-gray-500',
+    minimal: 'text-sm max-w-xs text-gray-500 mb-4',
+    illustrated: 'text-base max-w-md text-gray-400 mb-8 leading-relaxed',
+    onboarding: 'text-lg max-w-lg text-gray-300 mb-10 leading-relaxed',
+    actionable: 'empty-state-description',
+};
+
+const shortcutContexts: Record<string, {keys: string; label: string}[]> = {
+    notes: [
+        {keys: modShortcut('N'), label: 'New note'},
+        {keys: modShortcut('K'), label: 'Command palette'},
+        {keys: modShortcut('/'), label: 'Search notes'},
+    ],
+    dashboard: [
+        {keys: modShortcut('N'), label: 'New note'},
+        {keys: modShortcut('K'), label: 'Command palette'},
+    ],
+    map: [
+        {keys: modShortcut('N'), label: 'New note'},
+        {keys: modShortcut('K'), label: 'Command palette'},
+    ],
+    network: [
+        {keys: modShortcut('N'), label: 'New note'},
+        {keys: modShortcut('K'), label: 'Command palette'},
+    ],
+};
 
 export function EmptyState({
     icon: Icon,
@@ -39,62 +93,6 @@ export function EmptyState({
     showShortcuts = false,
     shortcutContext
 }: EmptyStateProps) {
-    const variantStyles = {
-        default: 'flex flex-col items-center justify-center py-12 px-4 text-center',
-        card: 'empty-state p-8',
-        minimal: 'flex flex-col items-center justify-center py-6 px-4 text-center',
-        illustrated: 'flex flex-col items-center justify-center py-16 px-6 text-center max-w-md mx-auto',
-        onboarding: 'flex flex-col items-center justify-center py-20 px-6 text-center max-w-lg mx-auto',
-        actionable: 'empty-state-actionable',
-    };
-
-    const iconContainerStyles = {
-        default: 'flex items-center justify-center rounded-full mb-4 bg-gray-800 p-4',
-        card: 'empty-state-icon',
-        minimal: 'flex items-center justify-center rounded-full mb-3 bg-gray-800 p-3',
-        illustrated: 'flex items-center justify-center rounded-full mb-6 w-20 h-20 bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30',
-        onboarding: 'flex items-center justify-center rounded-full mb-8 w-24 h-24 bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30 animate-pulse-subtle',
-        actionable: 'empty-state-icon',
-    };
-
-    const titleStyles = {
-        default: 'font-medium text-gray-300 text-lg mb-2',
-        card: 'empty-state-title text-lg',
-        minimal: 'font-medium text-gray-300 text-base mb-1',
-        illustrated: 'font-semibold text-white text-xl mb-3',
-        onboarding: 'font-bold text-white text-2xl mb-4',
-        actionable: 'empty-state-title',
-    };
-
-    const descriptionStyles = {
-        default: 'text-sm max-w-xs text-gray-500 mb-6',
-        card: 'empty-state-description text-gray-500',
-        minimal: 'text-sm max-w-xs text-gray-500 mb-4',
-        illustrated: 'text-base max-w-md text-gray-400 mb-8 leading-relaxed',
-        onboarding: 'text-lg max-w-lg text-gray-300 mb-10 leading-relaxed',
-        actionable: 'empty-state-description',
-    };
-
-    const shortcutContexts: Record<string, {keys: string; label: string}[]> = {
-        notes: [
-            {keys: modShortcut('N'), label: 'New note'},
-            {keys: modShortcut('K'), label: 'Command palette'},
-            {keys: modShortcut('/'), label: 'Search notes'},
-        ],
-        dashboard: [
-            {keys: modShortcut('N'), label: 'New note'},
-            {keys: modShortcut('K'), label: 'Command palette'},
-        ],
-        map: [
-            {keys: modShortcut('N'), label: 'New note'},
-            {keys: modShortcut('K'), label: 'Command palette'},
-        ],
-        network: [
-            {keys: modShortcut('N'), label: 'New note'},
-            {keys: modShortcut('K'), label: 'Command palette'},
-        ],
-    };
-
     const contextShortcuts = shortcutContexts[shortcutContext || ''] || [];
 
     return (
@@ -127,12 +125,8 @@ export function EmptyState({
                     <code className="text-sm text-blue-400 font-mono">{searchTerm}</code>
                 </div>
             )}
-            {action && (
-                <div className="empty-state-actions">{action}</div>
-            )}
-            {secondaryAction && (
-                <div className="empty-state-actions">{secondaryAction}</div>
-            )}
+            {action && <div className="empty-state-actions">{action}</div>}
+            {secondaryAction && <div className="empty-state-actions">{secondaryAction}</div>}
             {showShortcuts && contextShortcuts.length > 0 && (
                 <div className="mt-6 pt-6 border-t border-gray-700/50 w-full max-w-xs animate-fade-in-up">
                     <p className="text-xs text-gray-500 mb-2 flex items-center gap-1">
@@ -227,7 +221,6 @@ export function TrashEmptyIllustration() {
     );
 }
 
-/* Actionable empty state presets */
 interface EmptyStatePresetProps {
     type: 'firstNote' | 'noMatches' | 'emptyTrash' | 'noNetwork' | 'noResults';
     searchTerm?: string;
@@ -238,118 +231,127 @@ interface EmptyStatePresetProps {
     onConfigureRelays?: () => void;
 }
 
-export function EmptyStatePreset({
-    type,
-    searchTerm,
-    query,
-    onCreateNote,
-    onLoadSample,
-    onClearSearch,
-    onConfigureRelays
-}: EmptyStatePresetProps) {
-    switch (type) {
-        case 'firstNote':
-            return (
-                <EmptyState
-                    variant="actionable"
-                    illustration={<NotesEmptyIllustration/>}
-                    title="Start your knowledge graph"
-                    description="Create your first note to begin building connections. Notes can be tasks, ideas, journal entries, or anything you want to remember."
-                    action={onCreateNote && (
-                        <Button
-                            variant="primary"
-                            size="lg"
-                            leftIcon={<SparklesIcon className="w-4 h-4"/>}
-                            className="touch-target-48"
-                            onClick={onCreateNote}
-                        >
-                            Create your first note
-                        </Button>
-                    )}
-                    secondaryAction={onLoadSample && (
-                        <Button
-                            variant="ghost"
-                            size="md"
-                            leftIcon={<ArrowRightIcon className="w-4 h-4"/>}
-                            className="touch-target-48"
-                            onClick={onLoadSample}
-                        >
-                            Load sample workspace
-                        </Button>
-                    )}
-                />
-            );
-        case 'noMatches':
-            return (
-                <EmptyState
-                    variant="illustrated"
-                    illustration={<SearchEmptyIllustration/>}
-                    title="No matching notes"
-                    description={`Your search for "${searchTerm}" didn't match any notes.`}
-                    hint="Try: #tag for tags, key:value for properties, or broader terms"
-                    action={onClearSearch && (
-                        <Button
-                            variant="secondary"
-                            size="md"
-                            leftIcon={<SearchIcon className="w-4 h-4"/>}
-                            className="touch-target-48"
-                            onClick={onClearSearch}
-                        >
-                            Clear search
-                        </Button>
-                    )}
-                />
-            );
-        case 'emptyTrash':
-            return (
-                <EmptyState
-                    variant="actionable"
-                    illustration={<TrashEmptyIllustration/>}
-                    title="Trash is empty"
-                    description="Deleted notes would appear here. Notes stay in trash for 30 days before permanent deletion."
-                />
-            );
-        case 'noNetwork':
-            return (
-                <EmptyState
-                    variant="illustrated"
-                    illustration={<NetworkEmptyIllustration/>}
-                    title="No network connections"
-                    description="Connect to Nostr relays to discover and share notes with others. Your data stays local until you choose to share."
-                    action={onConfigureRelays && (
-                        <Button
-                            variant="primary"
-                            size="md"
-                            leftIcon={<SparklesIcon className="w-4 h-4"/>}
-                            className="touch-target-48"
-                            onClick={onConfigureRelays}
-                        >
-                            Configure relays
-                        </Button>
-                    )}
-                />
-            );
-        case 'noResults':
-            return (
-                <EmptyState
-                    variant="illustrated"
-                    illustration={<SearchEmptyIllustration/>}
-                    title={`No results for "${query}"`}
-                    description="Try a different search term or check your spelling."
-                    action={onClearSearch && (
-                        <Button
-                            variant="secondary"
-                            size="md"
-                            leftIcon={<SearchIcon className="w-4 h-4"/>}
-                            className="touch-target-48"
-                            onClick={onClearSearch}
-                        >
-                            Clear search
-                        </Button>
-                    )}
-                />
-            );
-        default:
-            return null;
-    }
+function createFirstNotePreset({onCreateNote, onLoadSample}: EmptyStatePresetProps) {
+    return (
+        <EmptyState
+            variant="actionable"
+            illustration={<NotesEmptyIllustration/>}
+            title="Start your knowledge graph"
+            description="Create your first note to begin building connections. Notes can be tasks, ideas, journal entries, or anything you want to remember."
+            action={onCreateNote && (
+                <Button
+                    variant="primary"
+                    size="lg"
+                    leftIcon={<SparklesIcon className="w-4 h-4"/>}
+                    className="touch-target-48"
+                    onClick={onCreateNote}
+                >
+                    Create your first note
+                </Button>
+            )}
+            secondaryAction={onLoadSample && (
+                <Button
+                    variant="ghost"
+                    size="md"
+                    leftIcon={<ArrowRightIcon className="w-4 h-4"/>}
+                    className="touch-target-48"
+                    onClick={onLoadSample}
+                >
+                    Load sample workspace
+                </Button>
+            )}
+        />
+    );
+}
+
+function createNoMatchesPreset({searchTerm, onClearSearch}: EmptyStatePresetProps) {
+    return (
+        <EmptyState
+            variant="illustrated"
+            illustration={<SearchEmptyIllustration/>}
+            title="No matching notes"
+            description={`Your search for "${searchTerm}" didn't match any notes.`}
+            hint="Try: #tag for tags, key:value for properties, or broader terms"
+            action={onClearSearch && (
+                <Button
+                    variant="secondary"
+                    size="md"
+                    leftIcon={<SearchIcon className="w-4 h-4"/>}
+                    className="touch-target-48"
+                    onClick={onClearSearch}
+                >
+                    Clear search
+                </Button>
+            )}
+        />
+    );
+}
+
+function createEmptyTrashPreset(_props: EmptyStatePresetProps) {
+    return (
+        <EmptyState
+            variant="actionable"
+            illustration={<TrashEmptyIllustration/>}
+            title="Trash is empty"
+            description="Deleted notes would appear here. Notes stay in trash for 30 days before permanent deletion."
+        />
+    );
+}
+
+function createNoNetworkPreset({onConfigureRelays}: EmptyStatePresetProps) {
+    return (
+        <EmptyState
+            variant="illustrated"
+            illustration={<NetworkEmptyIllustration/>}
+            title="No network connections"
+            description="Connect to Nostr relays to discover and share notes with others. Your data stays local until you choose to share."
+            action={onConfigureRelays && (
+                <Button
+                    variant="primary"
+                    size="md"
+                    leftIcon={<SparklesIcon className="w-4 h-4"/>}
+                    className="touch-target-48"
+                    onClick={onConfigureRelays}
+                >
+                    Configure relays
+                </Button>
+            )}
+        />
+    );
+}
+
+function createNoResultsPreset({query, onClearSearch}: EmptyStatePresetProps) {
+    return (
+        <EmptyState
+            variant="illustrated"
+            illustration={<SearchEmptyIllustration/>}
+            title={`No results for "${query}"`}
+            description="Try a different search term or check your spelling."
+            action={onClearSearch && (
+                <Button
+                    variant="secondary"
+                    size="md"
+                    leftIcon={<SearchIcon className="w-4 h-4"/>}
+                    className="touch-target-48"
+                    onClick={onClearSearch}
+                >
+                    Clear search
+                </Button>
+            )}
+        />
+    );
+}
+
+const presets = {
+    firstNote: createFirstNotePreset,
+    noMatches: createNoMatchesPreset,
+    emptyTrash: createEmptyTrashPreset,
+    noNetwork: createNoNetworkPreset,
+    noResults: createNoResultsPreset,
+};
+
+export function EmptyStatePreset(props: EmptyStatePresetProps) {
+    const {type, ...rest} = props;
+    const preset = presets[type as keyof typeof presets];
+    return preset ? preset(rest) : null;
 }

@@ -18,10 +18,8 @@ import {HelpDialog} from './modals/HelpDialog';
 import {ConnectivityBanner} from './layout/ConnectivityBanner';
 import {useToast} from '../hooks/useToast';
 import {useIsMobile} from '../hooks/useMediaQuery';
+import {useSidebarState} from '../hooks/useSidebarState';
 import {cn} from '../utils/ui';
-
-const SIDEBAR_WIDTH = 320;
-const SIDEBAR_COLLAPSED_WIDTH = 48;
 
 export function AppShell() {
     const {getSortedFilteredNotes, loading: notesLoading} = useNotes();
@@ -32,8 +30,6 @@ export function AppShell() {
         setSelectedNoteId,
         searchTerm,
         sortOrder,
-        isSidebarOpen,
-        setIsSidebarOpen,
         userLocation,
         isPaletteOpen,
         setIsPaletteOpen,
@@ -52,12 +48,28 @@ export function AppShell() {
 
     const {commands, handleNewNote} = useCommands({setIsHelpOpen});
     const {addToast} = useToast();
+    const isMobile = useIsMobile();
+
+    const {
+        isOpen: isSidebarOpen,
+        isCollapsed,
+        effectiveWidth,
+        sidebarClasses,
+        style,
+        handleResizeStart,
+        handleResizeKeyDown,
+        toggleSidebar,
+    } = useSidebarState({
+        isMobile,
+        onToggle: () => {
+            if (isMobile) {
+                setSelectedNoteId(null);
+                setActiveView('notes');
+            }
+        }
+    });
 
     const [isShortcutsHelpOpen, setIsShortcutsHelpOpen] = useState(false);
-    const [sidebarWidth, setSidebarWidth] = useState(SIDEBAR_WIDTH);
-    const [isResizing, setIsResizing] = useState(false);
-    const resizeStartRef = useRef({x: 0, width: SIDEBAR_WIDTH});
-    const isMobile = useIsMobile();
 
     useEffect(() => {
         const handleStorageError = (event: Event) => {
@@ -72,40 +84,6 @@ export function AppShell() {
             window.removeEventListener('open-shortcuts-help', handleOpenShortcutsHelp);
         };
     }, [addToast, setIsShortcutsHelpOpen]);
-
-    const handleResizeMove = useCallback((e: MouseEvent) => {
-        const newWidth = Math.min(Math.max(resizeStartRef.current.width - (e.clientX - resizeStartRef.current.x), SIDEBAR_COLLAPSED_WIDTH), 600);
-        setSidebarWidth(newWidth);
-    }, []);
-
-    const handleResizeEnd = useCallback(() => {
-        setIsResizing(false);
-        document.removeEventListener('mousemove', handleResizeMove);
-        document.removeEventListener('mouseup', handleResizeEnd);
-    }, [handleResizeMove]);
-
-    const handleResizeStart = useCallback((e: React.MouseEvent) => {
-        e.preventDefault();
-        setIsResizing(true);
-        resizeStartRef.current = {x: e.clientX, width: sidebarWidth};
-        document.addEventListener('mousemove', handleResizeMove);
-        document.addEventListener('mouseup', handleResizeEnd);
-    }, [sidebarWidth, handleResizeMove, handleResizeEnd]);
-
-    const toggleSidebar = useCallback(() => {
-        if (isMobile) {
-            setSelectedNoteId(null);
-            setActiveView('notes');
-            return;
-        }
-        if (isSidebarOpen && sidebarWidth > SIDEBAR_COLLAPSED_WIDTH) {
-            setSidebarWidth(SIDEBAR_COLLAPSED_WIDTH);
-            setIsSidebarOpen(false);
-        } else {
-            setSidebarWidth(SIDEBAR_WIDTH);
-            setIsSidebarOpen(true);
-        }
-    }, [isMobile, isSidebarOpen, sidebarWidth, setIsSidebarOpen, setSelectedNoteId, setActiveView]);
 
     useKeyboardShortcuts({
         onNewNote: handleNewNote,
@@ -166,14 +144,6 @@ export function AppShell() {
 
     const isMobileNoteList = isMobile && activeView === 'notes' && !selectedNoteId;
     const effectiveSidebarOpen = isMobile ? isMobileNoteList : isSidebarOpen;
-    const effectiveSidebarWidth = isSidebarOpen ? sidebarWidth : 0;
-
-    const sidebarClasses = cn(
-        'flex-shrink-0 bg-gray-900 border-r border-gray-700/50 transition-all duration-300 ease-in-out',
-        isMobile ? (isMobileNoteList ? 'w-full block' : 'hidden') : 'block',
-        !isMobile && effectiveSidebarWidth === 0 && 'border-r-0 overflow-hidden',
-        isResizing && 'select-none'
-    );
 
     const mainClasses = cn(
         'flex-1 overflow-hidden pb-20 md:pb-0',
@@ -217,32 +187,26 @@ export function AppShell() {
                 <Header onNewNote={handleNewNote} onToggleSidebar={toggleSidebar}/>
                 <ConnectivityBanner/>
                 <div className="flex flex-1 overflow-hidden relative">
-                    <div className={sidebarClasses} style={isMobile ? undefined : {width: `${effectiveSidebarWidth}px`}}>
+                    <div className={sidebarClasses} style={style}>
                         <Sidebar
                             sortedNotes={sortedNotes}
                             onToggleSidebar={toggleSidebar}
                             isSidebarOpen={effectiveSidebarOpen}
                             isLoading={notesLoading}
-                            sidebarWidth={isMobile ? SIDEBAR_WIDTH : sidebarWidth}
-                            isCollapsed={!isMobile && !isSidebarOpen}
+                            sidebarWidth={isMobile ? 320 : effectiveWidth}
+                            isCollapsed={!isMobile && isCollapsed}
                         />
                     </div>
 
-                    {!isMobile && isSidebarOpen && sidebarWidth > SIDEBAR_COLLAPSED_WIDTH && (
+                    {!isMobile && isSidebarOpen && effectiveWidth > 48 && (
                         <div
                             className="absolute top-16 bottom-0 w-1 cursor-col-resize z-10 hover:bg-blue-500/30 transition-colors"
-                            style={{left: `${sidebarWidth}px`}}
+                            style={{left: `${effectiveWidth}px`}}
                             onMouseDown={handleResizeStart}
                             aria-label="Resize sidebar"
                             role="separator"
                             tabIndex={0}
-                            onKeyDown={(e) => {
-                                if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-                                    e.preventDefault();
-                                    const newWidth = Math.min(Math.max(sidebarWidth + (e.key === 'ArrowRight' ? 20 : -20), SIDEBAR_COLLAPSED_WIDTH), 600);
-                                    setSidebarWidth(newWidth);
-                                }
-                            }}
+                            onKeyDown={(e) => handleResizeKeyDown(e, effectiveWidth)}
                         />
                     )}
 
