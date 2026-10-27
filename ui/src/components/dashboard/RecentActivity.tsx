@@ -2,9 +2,10 @@ import React from 'react';
 import {ActivityFeed} from '../widgets/ActivityFeed';
 import {EmptyState} from '../common/EmptyState';
 import {ClockIcon} from '../common/icons';
+import type {Note} from '@notention/core';
 
 interface RecentActivityProps {
-    recentNotes: any[];
+    recentNotes: Note[];
     onSelectNote: (id: string) => void;
 }
 

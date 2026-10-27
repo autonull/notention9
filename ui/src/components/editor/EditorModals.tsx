@@ -12,10 +12,10 @@ import type {Note} from '@notention/core';
 interface EditorModalsProps {
     isSaveTemplateModalOpen: boolean;
     onSaveTemplateModalClose: () => void;
-    onSaveTemplate: (template: any) => void;
+    onSaveTemplate: (name: string) => void;
     isMapPickerOpen: boolean;
     onMapPickerClose: () => void;
-    onLocationSelect: (location: any) => void;
+    onLocationSelect: (location: string) => void;
     isTimePickerOpen: boolean;
     onTimePickerClose: () => void;
     onTimeSelect: (time: string) => void;

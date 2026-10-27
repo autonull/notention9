@@ -75,7 +75,13 @@ export function DashboardView() {
     }, [quickCaptureInput, extractedProps, addNote, setSelectedNoteId, setActiveView]);
 
     const handleQuickTemplate = useCallback((type: 'task' | 'journal' | 'idea') => {
-        const templates: Record<string, {title: string; content: string; tags: string[]; properties: any[]}> = {
+        interface Template {
+            title: string | (() => string);
+            content: string;
+            tags: string[];
+            properties: Array<{key: string; operator: string; values: string[]}>;
+        }
+        const templates: Record<string, Template> = {
             task: {
                 title: 'New Task',
                 content: '<p>Describe task...</p>',

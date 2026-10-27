@@ -1,5 +1,5 @@
 import React, {createContext, useContext, useMemo, useState, useCallback, useEffect} from 'react';
-import type {OntologyNode, OntologyAttribute} from '@notention/core';
+import type {OntologyNode, OntologyAttribute, Note} from '@notention/core';
 
 export interface SelectorProps {
     propertyKey: string;
@@ -7,7 +7,7 @@ export interface SelectorProps {
     currentValue: string;
     onChange: (value: string) => void;
     ontology: OntologyNode[];
-    note: any;
+    note: Note;
     onPickLocation?: () => Promise<string> | void;
     onPickTime?: (key: string) => void;
 }

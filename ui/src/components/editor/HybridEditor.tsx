@@ -7,7 +7,7 @@ import {SelectorRegistryProvider} from '../properties/SelectorRegistry';
 import {builtInSelectors} from '../properties/NicheSelectors';
 
 interface HybridEditorProps extends React.ComponentProps<typeof TiptapEditor> {
-    onNoteUpdate?: (note: any) => void;
+    onNoteUpdate?: (note: Partial<Note>) => void;
 }
 
 export const HybridEditor = forwardRef<TiptapEditorRef, HybridEditorProps>((props, ref) => {
@@ -19,7 +19,7 @@ export const HybridEditor = forwardRef<TiptapEditorRef, HybridEditorProps>((prop
         props.onSave(content);
     }, [props.onSave]);
 
-    const handleNoteUpdate = useCallback((updatedNote: any) => {
+    const handleNoteUpdate = useCallback((updatedNote: Partial<Note>) => {
         if (props.onNoteUpdate) {
             props.onNoteUpdate(updatedNote);
         }

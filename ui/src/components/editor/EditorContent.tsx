@@ -18,8 +18,8 @@ interface EditorContentProps {
     dirtyNote: Note;
     onSave: (content: string) => void;
     onNoteUpdate: (note: Partial<Note>) => void;
-    ontology: any[];
-    templates: any[];
+    ontology: OntologyNode[];
+    templates: Template[];
     showToolbar: boolean;
     onMagic: () => void;
     onTemplates: () => void;

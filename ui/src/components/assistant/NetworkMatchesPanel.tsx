@@ -2,14 +2,14 @@ import { Button } from '../common/Button';
 import { SearchSparkleIcon } from '../common/icons';
 import { DiscoveredProperties } from '../network/DiscoveredProperties';
 import { MatchList } from '../match/MatchList';
-import { OntologyNode, ScoredMatch } from '@notention/core';
+import { OntologyNode, ScoredMatch, Contact, Note } from '@notention/core';
 
 interface NetworkMatchesPanelProps {
     networkMatches: ScoredMatch[];
     isSearching: boolean;
-    note: any;
+    note: Note;
     settingsOntology: OntologyNode[];
-    contacts: any[];
+    contacts: Contact[];
     onFindMatches: (e?: React.MouseEvent) => Promise<void>;
     onConnect: (match: ScoredMatch) => Promise<void>;
     onChat: (author: string) => void;

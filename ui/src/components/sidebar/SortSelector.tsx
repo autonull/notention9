@@ -1,9 +1,9 @@
 import React from 'react';
 import type {SortOrder} from '@notention/core';
 import {IconButton} from '../ui/Primitives';
-import {ArrowUpDownIcon, ArrowUpIcon, ArrowDownIcon, CalendarIcon, MapPinIcon, TagIcon} from '../common/icons';
+import {ArrowUpDownIcon, ArrowUpIcon, ArrowDownIcon, CalendarIcon, MapPinIcon, TagIcon, ClockIcon} from '../common/icons';
 
-const SORT_OPTIONS: {value: SortOrder; label: string; icon: React.FC<any>; description: string}[] = [
+const SORT_OPTIONS: {value: SortOrder; label: string; icon: React.ComponentType<React.SVGProps<SVGSVGElement>>; description: string}[] = [
     {value: "updatedAt_desc", label: "Modified (Newest)", icon: ArrowDownIcon, description: "Recently updated first"},
     {value: "updatedAt_asc", label: "Modified (Oldest)", icon: ArrowUpIcon, description: "Least recently updated first"},
     {value: "createdAt_desc", label: "Created (Newest)", icon: CalendarIcon, description: "Recently created first"},

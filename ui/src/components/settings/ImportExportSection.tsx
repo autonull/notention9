@@ -21,7 +21,7 @@ interface ImportExportSectionProps {
 
 interface PendingImport {
     type: 'full' | 'note';
-    data: any;
+    data: {notes: ExportNote[]; settings: AppSettings} | ExportNote;
     message: string;
 }
 

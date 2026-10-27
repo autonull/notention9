@@ -1,6 +1,6 @@
 import React, {useCallback} from 'react';
 import type {Note} from '@notention/core';
-import {VirtualizedList} from '../ui/VirtualizedList';
+import {VirtualizedList, VirtualizedListRef} from '../ui/VirtualizedList';
 import {NoteListItem} from './NoteListItem';
 import {NoteGridItem} from './NoteGridItem';
 import {EmptyStatePreset, EmptyState, NotesEmptyIllustration} from '../common/EmptyState';
@@ -13,7 +13,7 @@ interface SidebarListProps {
     isLoading: boolean;
     isMobile: boolean;
     containerHeight: number;
-    virtualListRef: React.RefObject<any>;
+    virtualListRef: React.RefObject<VirtualizedListRef>;
     sidebarViewMode: string;
     selectedNoteId: string | null;
     setSelectedNoteId: (id: string | null) => void;

@@ -6,7 +6,7 @@ import {useToast} from '../../hooks/useToast';
 import {useNotes} from '../../hooks/useNotes';
 import {useEditorActions} from '../../hooks/useEditorActions';
 import {useEditorShortcuts} from '../../hooks/useEditorShortcuts';
-import type {Note, OntologyNode} from '@notention/core';
+import type {Note, OntologyNode, ScoredMatch} from '@notention/core';
 import {propertyToHtml} from '@notention/core';
 import {EditorHeader} from './EditorHeader';
 import {TiptapEditorRef} from './TiptapEditor';
@@ -121,7 +121,7 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
         editorRef.current?.openPropertyModal(key);
     };
 
-    const handleMatchClick = useCallback((match: any) => {
+    const handleMatchClick = useCallback((match: ScoredMatch) => {
         addToast(`Selected match: ${match.note.title || 'Untitled'}`, 'info');
     }, [addToast]);
 

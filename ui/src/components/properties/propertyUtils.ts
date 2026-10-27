@@ -136,6 +136,8 @@ export interface RenderPropertyOptionProps {
  * Render a single property option button.
  * Shared between PropertyPalette and UnifiedSelector.
  */
+import {SparklesIcon, TagIcon, ChevronRightIcon, ChevronDownIcon} from '../common/icons';
+
 export function renderPropertyOption({
     option,
     isSelected,
@@ -147,7 +149,6 @@ export function renderPropertyOption({
     showTypeBadge = false,
     renderTypeBadge
 }: RenderPropertyOptionProps): React.ReactNode {
-    const {SparklesIcon, TagIcon, ChevronRightIcon, ChevronDownIcon} = await import('../common/icons.js');
 
     // If this is a parent node with children, render expandable header
     if (hasChildren && onToggleExpand) {

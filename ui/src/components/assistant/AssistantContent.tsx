@@ -2,7 +2,8 @@ import { PropertyPanel } from './PropertyPanel';
 import { SuggestionsPanel } from './SuggestionsPanel';
 import { LocalMatchesPanel } from './LocalMatchesPanel';
 import { NetworkMatchesPanel } from './NetworkMatchesPanel';
-import { Property, ScoredMatch, OntologyNode, Suggestion } from '@notention/core';
+import { Property, ScoredMatch, OntologyNode, Suggestion, Contact, Note } from '@notention/core';
+import type {PropertyReviewItem} from '../../hooks/usePropertyReview';
 
 interface AssistantContentProps {
     activeTab: string;
@@ -11,9 +12,9 @@ interface AssistantContentProps {
     localMatches: ScoredMatch[];
     networkMatches: ScoredMatch[];
     isSearching: boolean;
-    note: any;
+    note: Note;
     settingsOntology: OntologyNode[];
-    contacts: any[];
+    contacts: Contact[];
     ontology: OntologyNode[];
     isAddingProperty: boolean;
     setIsAddingProperty: (adding: boolean) => void;
@@ -23,8 +24,8 @@ interface AssistantContentProps {
     setPropertyToDelete: (prop: Property | null) => void;
     onSaveProperty: (key: string, op: string, value: string) => void;
     onCancelEdit: () => void;
-    onAcceptReview: (item: any) => void;
-    propertyReview: any;
+    onAcceptReview: (item: PropertyReviewItem) => void;
+    propertyReview: PropertyReviewItem | null;
     onDeleteProperty: () => void;
     onPickLocation?: () => void;
     onPickTime?: (key: string) => void;

@@ -4,6 +4,7 @@ import { PropertyForm } from '../editor/PropertyForm';
 import { PropertyBlock } from '../properties/PropertyBlock';
 import { ExtractionReview } from '../editor/ExtractionReview';
 import { Property, OntologyNode } from '@notention/core';
+import type {PropertyReviewItem} from '../../hooks/usePropertyReview';
 
 interface PropertyPanelProps {
     properties: Property[];
@@ -15,8 +16,8 @@ interface PropertyPanelProps {
     setPropertyToDelete: (prop: Property | null) => void;
     onSaveProperty: (key: string, op: string, value: string) => void;
     onCancelEdit: () => void;
-    onAcceptReview: (item: any) => void;
-    propertyReview: any;
+    onAcceptReview: (item: PropertyReviewItem) => void;
+    propertyReview: PropertyReviewItem | null;
     onDeleteProperty: () => void;
     onPickLocation?: () => void;
     onPickTime?: (key: string) => void;

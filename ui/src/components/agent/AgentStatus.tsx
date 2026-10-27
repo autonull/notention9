@@ -3,6 +3,12 @@ import {agentService} from '../../services/AgentService';
 import {AgentStatus as AgentStatusType} from '@notention/core';
 import {Badge} from '../common/Badge';
 
+interface AgentMessage {
+    type: string;
+    payload?: AgentStatusType;
+    [key: string]: unknown;
+}
+
 export function AgentStatus() {
     const [status, setStatus] = useState<AgentStatusType | null>(null);
 
@@ -10,9 +16,9 @@ export function AgentStatus() {
     useEffect(() => {
         if (!agentService.isEnabled()) return;
 
-        const handler = (message: any) => {
+        const handler = (message: AgentMessage) => {
             if (message.type === 'agent_status') {
-                setStatus(message.payload);
+                setStatus(message.payload ?? null);
             }
         };
 

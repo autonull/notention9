@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useRef, useState} from 'react';
-import type {OntologyNode, OntologyAttribute} from '@notention/core';
+import type {OntologyNode, OntologyAttribute, Note} from '@notention/core';
 import {SearchIcon, SparklesIcon, PlusIcon, TagIcon, ChevronRightIcon, ChevronDownIcon} from '../common/icons';
 import {Input} from '../common/Input';
 import {useListNavigation} from '../../hooks/useListNavigation';
@@ -25,7 +25,7 @@ interface UnifiedSelectorProps {
     ontology: OntologyNode[];
     suggestions?: Array<{key: string; frequency: number}>;
     recentKeys?: string[];
-    note?: any;
+    note?: Note;
 }
 
 function flattenOntology(

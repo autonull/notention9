@@ -50,30 +50,11 @@ export function PropertyForm({
         setValue(initialValue);
     }, [initialKey, initialOp, initialValue]);
 
-    const getAttributeDetails = (k: string, nodes: OntologyNode[]): {
-        type: string;
-        description?: string;
-        options?: string[];
-        operators?: {real: string[]; imaginary: string[]};
-        numericOptions?: {unit?: string; precision?: number; min?: number; max?: number};
-        affinityOptions?: {bipolar?: boolean; targetType?: 'tag' | 'ontology_class' | 'peer'};
-        readonly?: boolean;
-        arity?: {min: number; max: number};
-    } | undefined => {
+    const getAttributeDetails = (k: string, nodes: OntologyNode[]): OntologyAttribute | undefined => {
         if (!nodes) return undefined;
         for (const node of nodes) {
             if (node.attributes && node.attributes[k]) {
-                const attr = node.attributes[k];
-                return {
-                    type: attr.type,
-                    description: attr.description,
-                    options: attr.options,
-                    operators: attr.operators,
-                    numericOptions: (attr as any).numericOptions,
-                    affinityOptions: (attr as any).affinityOptions,
-                    readonly: (attr as any).readonly,
-                    arity: (attr as any).arity,
-                };
+                return node.attributes[k];
             }
             if (node.children) {
                 const found = getAttributeDetails(k, node.children);
@@ -285,7 +266,7 @@ export function PropertyForm({
             <EnhancedPropertyValueInput
                 value={value}
                 onChange={setValue}
-                attributeDef={currentAttr as any}
+                attributeDef={currentAttr}
                 operator={op}
                 onPickLocation={onPickLocation ? async (): Promise<string> => {
                     if (isAdding && !key) setKey('location');

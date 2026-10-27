@@ -28,7 +28,7 @@ export function NetworkManagementSection() {
     useEffect(() => {
         const provider = networkRegistry.getProvider('meshtastic');
         if (provider) {
-            const errorHandler = (err: any) => {
+            const errorHandler = (err: Error) => {
                 addToast(`Mesh Error: ${err.message}`, 'error');
             };
             provider.on('error', errorHandler);
@@ -100,8 +100,9 @@ export function NetworkManagementSection() {
                 addToast('WebSerial mesh device connected', 'success');
                 setMeshStatus({ connected: true });
             }
-        } catch (e: any) {
-            addToast(`Connection failed: ${e.message}`, 'error');
+        } catch (e) {
+            const message = e instanceof Error ? e.message : String(e);
+            addToast(`Connection failed: ${message}`, 'error');
         } finally {
             setIsConnecting(false);
         }
@@ -183,7 +184,7 @@ export function NetworkManagementSection() {
                                         <select
                                             className="w-full bg-gray-900 border border-gray-700 rounded p-2 text-sm text-gray-200"
                                             value={connectionType}
-                                            onChange={(e) => setConnectionType(e.target.value as any)}
+                                            onChange={(e) => setConnectionType(e.target.value as 'webserial' | 'server-proxy')}
                                         >
                                             <option value="webserial">WebSerial (Browser Direct)</option>
                                             <option value="server-proxy">Agent Proxy (USB/Serial)</option>

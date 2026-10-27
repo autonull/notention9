@@ -2,7 +2,7 @@ import React, {useState, useRef, useEffect} from 'react';
 
 export interface DropdownMenuItem {
     label: string;
-    icon?: React.FC<any>;
+    icon?: React.ComponentType<React.SVGProps<SVGSVGElement>>;
     onClick: () => void;
     disabled?: boolean;
     variant?: 'default' | 'danger';

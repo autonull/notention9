@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import type {TabProps} from '../ui/Navigation';
 
 import {useOntologyView} from '../../hooks/useOntologyView';
 import {OntologyNodeItem} from '../ontology/OntologyNodeItem';
@@ -90,7 +91,7 @@ export function OntologyView() {
         }
     };
 
-    const tabs: any[] = [
+    const tabs: TabProps[] = [
         {id: 'graph', label: 'Graph'},
         {id: 'suggestions', label: 'Learning', count: suggestions.length > 0 ? suggestions.length : undefined},
         {id: 'conflicts', label: 'Conflicts', count: conflicts.length}
@@ -118,7 +119,7 @@ export function OntologyView() {
                             <Tabs
                                 tabs={tabs}
                                 activeTab={safeActiveTab}
-                                onChange={(id) => setActiveTab(id as any)}
+                                onChange={setActiveTab}
                                 className="bg-gray-800 p-1 rounded-lg"
                             />
                         </div>

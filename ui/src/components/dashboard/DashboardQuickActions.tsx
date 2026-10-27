@@ -4,6 +4,7 @@ import {useNotes} from '../../hooks/useNotes';
 import {Button} from '../ui';
 import {cn} from '../../utils/ui';
 import {modShortcut} from '../../utils/platform';
+import type {View} from '@notention/core';
 import {
     PencilIcon,
     MapIcon,
@@ -34,7 +35,7 @@ export function DashboardQuickActions({onCreateNote}: DashboardQuickActionsProps
             onCreateNote();
             return;
         }
-        setActiveView(action as any);
+        setActiveView(action as View);
     }, [onCreateNote, setActiveView]);
 
     return (

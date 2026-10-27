@@ -16,7 +16,7 @@ interface EditorSidebarProps {
     onUpdateProperty: (key: string, value: string) => void;
     onPickLocation: () => void;
     onPickTime: (key: string) => void;
-    ontology: any;
+    ontology: OntologyNode[];
 }
 
 export function EditorSidebar({

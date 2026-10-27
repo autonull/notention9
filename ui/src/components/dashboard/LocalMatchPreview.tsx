@@ -1,12 +1,13 @@
 import React from 'react';
 import {Button} from '../ui/Primitives';
 import {CheckCircleIcon} from '../common/icons';
+import type {MatchResult, PropertyMatch} from '@notention/core';
 
 interface LocalMatchPreviewProps {
     match: {
         request: {id: string; title: string};
         note: {id: string; title: string};
-        result: {score: number; matches: any[]; conflicts: any[]};
+        result: MatchResult;
     };
     onSelectNote: (id: string) => void;
 }

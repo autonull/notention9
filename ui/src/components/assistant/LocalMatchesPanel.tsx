@@ -1,9 +1,9 @@
 import { MatchList } from '../match/MatchList';
-import { ScoredMatch } from '@notention/core';
+import { ScoredMatch, Contact } from '@notention/core';
 
 interface LocalMatchesPanelProps {
     localMatches: ScoredMatch[];
-    contacts: any[];
+    contacts: Contact[];
     onSelect: (match: ScoredMatch) => void;
 }
 
