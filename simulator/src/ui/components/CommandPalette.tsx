@@ -27,7 +27,7 @@ function saveRecentItems(items: CommandItem[]) {
   }
 }
 
-const renderShortcuts = () => (
+const ShortcutsReference = () => (
   <div className="space-y-3 animate-fade-in">
     {COMMAND_PALETTE_SHORTCUTS.map((group) => (
       <div key={group.category} className="space-y-2">
@@ -47,6 +47,129 @@ const renderShortcuts = () => (
       </div>
     ))}
   </div>
+);
+
+const EmptyState = ({ onShowShortcuts }: { onShowShortcuts: () => void }) => (
+  <div className="p-8 text-center animate-fade-in">
+    <div className="p-3 bg-gray-700/50 rounded-xl w-fit mx-auto mb-4 text-gray-400">
+      <Zap size={32} />
+    </div>
+    <h3 className="text-lg font-semibold text-white mb-2">Welcome to Command Palette</h3>
+    <p className="text-gray-400 mb-6 max-w-xs mx-auto">
+      Press <Kbd className="inline-flex">⌘K</Kbd> to open, type to search commands.
+    </p>
+    <div className="flex flex-wrap justify-center gap-2 mx-auto max-w-xs">
+      <Button variant="secondary" onClick={onShowShortcuts}>View Shortcuts</Button>
+    </div>
+  </div>
+);
+
+const NoResultsState = ({ query, onClear }: { query: string; onClear: () => void }) => (
+  <div className="p-8 text-center animate-fade-in">
+    <div className="p-3 bg-gray-700/50 rounded-xl w-fit mx-auto mb-4 text-gray-400">
+      <Search size={32} />
+    </div>
+    <h3 className="text-lg font-semibold text-white mb-2">No results for &ldquo;{query}&rdquo;</h3>
+    <p className="text-gray-400 mb-4">Try a different search term.</p>
+    <Button variant="secondary" onClick={onClear}>Clear Search</Button>
+  </div>
+);
+
+interface RecentItemsProps {
+  items: CommandItem[];
+  selectedIndex: number;
+  onSelect: (item: CommandItem) => void;
+  onClear: () => void;
+  maxRecent: number;
+}
+
+const RecentItems = ({ items, selectedIndex, onSelect, onClear, maxRecent }: RecentItemsProps) => (
+  <div className="space-y-2 animate-fade-in p-2">
+    <div className="px-3 pt-2 pb-1 text-[10px] font-bold text-gray-500 uppercase tracking-widest flex items-center justify-between">
+      <span>Recent ({items.length})</span>
+      <Button variant="ghost" size="sm" onClick={onClear} className="text-xs">
+        Clear
+      </Button>
+    </div>
+    {items.slice(0, maxRecent).map((item, index) => (
+      <CommandPaletteItem
+        key={`recent-${item.id}`}
+        item={item}
+        isSelected={index === selectedIndex}
+        onSelect={onSelect}
+      />
+    ))}
+  </div>
+);
+
+interface AllCommandsProps {
+  items: CommandItem[];
+  selectedIndex: number;
+  recentCount: number;
+  onSelect: (item: CommandItem) => void;
+}
+
+const AllCommands = ({ items, selectedIndex, recentCount, onSelect }: AllCommandsProps) => (
+  <div className="p-2 space-y-1 animate-fade-in">
+    {items
+      .filter((item) => !item.hidden)
+      .map((item, index) => {
+        const displayIndex = index + recentCount;
+        const showCategory = item.category && (index === 0 || items[index - 1]?.category !== item.category);
+
+        return (
+          <React.Fragment key={item.id}>
+            {showCategory && (
+              <div className="px-3 pt-3 pb-1 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                {item.category}
+              </div>
+            )}
+            <CommandPaletteItem
+              item={item}
+              isSelected={displayIndex === selectedIndex}
+              onSelect={onSelect}
+              itemId={item.id}
+            />
+          </React.Fragment>
+        );
+      })}
+  </div>
+);
+
+interface CommandPaletteItemProps {
+  item: CommandItem;
+  isSelected: boolean;
+  onSelect: (item: CommandItem) => void;
+  itemId?: string;
+}
+
+const CommandPaletteItem = ({ item, isSelected, onSelect, itemId }: CommandPaletteItemProps) => (
+  <Button
+    variant={isSelected ? 'primary' : 'ghost'}
+    className="w-full justify-start gap-3 px-3 py-2.5 rounded-lg text-left transition-colors"
+    onClick={() => onSelect(item)}
+    onMouseEnter={() => onSelect(item)}
+    role="option"
+    aria-selected={isSelected}
+    id={itemId}
+  >
+    <div className={`flex-shrink-0 w-5 h-5 ${isSelected ? 'text-indigo-400' : 'text-gray-400'}`}>
+      {item.icon}
+    </div>
+    <div className="flex-1 min-w-0 text-left">
+      <div className={`font-medium truncate ${isSelected ? 'text-white' : 'text-gray-200'}`}>
+        {item.label}
+      </div>
+      <div className={`text-sm truncate ${isSelected ? 'text-indigo-200' : 'text-gray-500'}`}>
+        {item.description}
+      </div>
+    </div>
+    {item.shortcut && (
+      <Kbd className={`ml-2 text-[10px] font-mono px-1.5 py-0.5 rounded uppercase tracking-wider ${isSelected ? 'bg-indigo-500/30 text-indigo-200' : 'bg-gray-700 text-gray-500'}`}>
+        {item.shortcut}
+      </Kbd>
+    )}
+  </Button>
 );
 
 interface CommandPaletteProps {
@@ -179,6 +302,7 @@ export const CommandPalette = ({
 
   const isEmptyQuery = !query.trim();
   const showEmptyState = isEmptyQuery && !showHelp && (!showRecent || recentItems.length === 0);
+  const recentCount = showRecent && recentItems.length > 0 ? recentItems.slice(0, maxRecent).length : 0;
 
   return (
     <div
@@ -190,7 +314,7 @@ export const CommandPalette = ({
     >
       <Card variant="elevated" className="w-full max-w-2xl border border-gray-700 animate-slide-in-up" onClick={(e) => e.stopPropagation()}>
         <div className="p-4 border-b border-gray-700 relative">
-          {title && <CardTitle className="mb-3">{title}</CardTitle>}
+          {title && <h3 className="mb-3 text-lg font-semibold text-white">{title}</h3>}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
             <input
@@ -222,144 +346,34 @@ export const CommandPalette = ({
           role="listbox"
           aria-label="Commands"
         >
-          {showEmptyState && (
-            <div className="p-8 text-center animate-fade-in">
-              <div className="p-3 bg-gray-700/50 rounded-xl w-fit mx-auto mb-4 text-gray-400">
-                <Zap size={32} />
-              </div>
-              <CardTitle className="text-lg">Welcome to Command Palette</CardTitle>
-              <p className="text-gray-400 mb-6 max-w-xs mx-auto">
-                Press <Kbd className="inline-flex">⌘K</Kbd> to open, type to search commands.
-              </p>
-              <div className="flex flex-wrap justify-center gap-2 mx-auto max-w-xs">
-                <Button variant="secondary" onClick={() => setShowHelp(true)}>View Shortcuts</Button>
-              </div>
-            </div>
-          )}
+          {showEmptyState && <EmptyState onShowShortcuts={() => setShowHelp(true)} />}
 
           {!showEmptyState && filteredItems.length === 0 && query && (
-            <div className="p-8 text-center animate-fade-in">
-              <div className="p-3 bg-gray-700/50 rounded-xl w-fit mx-auto mb-4 text-gray-400">
-                <Search size={32} />
-              </div>
-              <CardTitle className="text-lg">No results for "{query}"</CardTitle>
-              <p className="text-gray-400 mb-4">Try a different search term.</p>
-              <Button variant="secondary" onClick={() => setQuery('')}>Clear Search</Button>
-            </div>
+            <NoResultsState query={query} onClear={() => setQuery('')} />
           )}
 
           {!showEmptyState && filteredItems.length === 0 && !query && !showHelp && (
             <>
-              {/* Recent Items */}
               {showRecent && recentItems.length > 0 && (
-                <div className="space-y-2 animate-fade-in p-2">
-                  <div className="px-3 pt-2 pb-1 text-[10px] font-bold text-gray-500 uppercase tracking-widest flex items-center justify-between">
-                    <span>Recent ({recentItems.length})</span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => { setRecentItems([]); saveRecentItems([]); }}
-                      className="text-xs"
-                    >
-                      Clear
-                    </Button>
-                  </div>
-                  {recentItems.slice(0, maxRecent).map((item, index) => (
-                    <Button
-                      key={`recent-${item.id}`}
-                      variant={index === selectedIndex ? 'primary' : 'ghost'}
-                      className="w-full justify-start gap-3 px-3 py-2.5 rounded-lg text-left transition-colors"
-                      onClick={() => handleItemClick(item)}
-                      onMouseEnter={() => setSelectedIndex(index)}
-                      role="option"
-                      aria-selected={index === selectedIndex}
-                    >
-                      <div className={`flex-shrink-0 w-5 h-5 ${index === selectedIndex ? 'text-indigo-400' : 'text-gray-400'}`}>
-                        {item.icon}
-                      </div>
-                      <div className="flex-1 min-w-0 text-left">
-                        <div className={`font-medium truncate ${index === selectedIndex ? 'text-white' : 'text-gray-200'}`}>
-                          {item.label}
-                        </div>
-                        {item.description && (
-                          <div className={`text-sm truncate ${index === selectedIndex ? 'text-indigo-200' : 'text-gray-500'}`}>
-                            {item.description}
-                          </div>
-                        )}
-                      </div>
-                      {item.shortcut && (
-                        <Kbd className={`ml-2 text-[10px] font-mono px-1.5 py-0.5 rounded uppercase tracking-wider ${index === selectedIndex ? 'bg-indigo-500/30 text-indigo-200' : 'bg-gray-700 text-gray-500'}`}>
-                          {item.shortcut}
-                        </Kbd>
-                      )}
-                    </Button>
-                  ))}
-                </div>
+                <RecentItems
+                  items={recentItems}
+                  selectedIndex={selectedIndex}
+                  onSelect={handleItemClick}
+                  onClear={() => { setRecentItems([]); saveRecentItems([]); }}
+                  maxRecent={maxRecent}
+                />
               )}
-
-              {/* All Commands */}
-              <div className="p-2 space-y-1 animate-fade-in">
-                {items
-                  .filter((item) => !item.hidden)
-                  .map((item, index) => {
-                    const displayIndex = (showRecent && recentItems.length > 0) ? index + recentItems.length : index;
-                    const showCategory = item.category && (index === 0 || items[index - 1]?.category !== item.category);
-
-                    return (
-                      <React.Fragment key={item.id}>
-                        {showCategory && (
-                          <div className="px-3 pt-3 pb-1 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-                            {item.category}
-                          </div>
-                        )}
-                        <Button
-                          variant={displayIndex === selectedIndex ? 'primary' : 'ghost'}
-                          className="w-full justify-start gap-3 px-3 py-2.5 rounded-lg text-left transition-colors"
-                          onClick={() => handleItemClick(item)}
-                          onMouseEnter={() => setSelectedIndex(displayIndex)}
-                          role="option"
-                          aria-selected={displayIndex === selectedIndex}
-                          id={item.id}
-                        >
-                          <div className={`flex-shrink-0 w-5 h-5 ${displayIndex === selectedIndex ? 'text-indigo-400' : 'text-gray-400'}`}>
-                            {item.icon}
-                          </div>
-                          <div className="flex-1 min-w-0 text-left">
-                            <div className={`font-medium truncate ${displayIndex === selectedIndex ? 'text-white' : 'text-gray-200'}`}>
-                              {item.label}
-                            </div>
-                            <div className={`text-sm truncate ${displayIndex === selectedIndex ? 'text-indigo-200' : 'text-gray-500'}`}>
-                              {item.description}
-                            </div>
-                          </div>
-                          {item.shortcut && (
-                            <Kbd className={`ml-2 text-[10px] font-mono px-1.5 py-0.5 rounded uppercase tracking-wider ${displayIndex === selectedIndex ? 'bg-indigo-500/30 text-indigo-200' : 'bg-gray-700 text-gray-500'}`}>
-                              {item.shortcut}
-                            </Kbd>
-                          )}
-                        </Button>
-                      </React.Fragment>
-                    );
-                  })}
-              </div>
-
-              {/* Shortcuts Help */}
-              {showShortcuts && (
-                <div className="p-2 pt-4 animate-fade-in">
-                  {renderShortcuts()}
-                </div>
-              )}
+              <AllCommands
+                items={items}
+                selectedIndex={selectedIndex}
+                recentCount={recentCount}
+                onSelect={handleItemClick}
+              />
+              {showShortcuts && <ShortcutsReference />}
             </>
           )}
 
-          {showHelp && !query && (
-            <div className="p-4 space-y-4 animate-fade-in">
-              <div className="px-3 pt-2 pb-1 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-                Keyboard Shortcuts
-              </div>
-              {renderShortcuts()}
-            </div>
-          )}
+          {showHelp && !query && <ShortcutsReference />}
         </div>
 
         <div className="p-2 border-t border-gray-700/50 text-xs text-gray-500 flex flex-wrap gap-4 justify-between">
