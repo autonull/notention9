@@ -6,6 +6,9 @@ import { dirname, join } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+// Import to register journeys
+import './journeys.js';
+
 import { handleOptimize, handleReplay, handleGenerateTest, handleReproduce, handleMarkFixed, handleFindings } from './cliHandlers.js';
 
 interface ParsedFlags {
