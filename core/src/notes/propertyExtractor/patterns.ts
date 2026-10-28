@@ -21,7 +21,7 @@ export const INTENTS = [
 
 export const LOCATION_KEYWORDS = ['near', 'in', 'at'];
 export const LOCATION_PATTERNS = LOCATION_KEYWORDS.map(k => ({
-  regex: new RegExp(`${k}\\s+([A-Z][a-z]+(?:\\s+[A-Z][a-z]+)*)`, 'gi'),
+  regex: new RegExp(`${k}\\s+([A-Z][a-z]+(?:\\s+[A-Z][a-z]+)*)`),
   prefix: new RegExp(`^${k}\\s+`, 'i'),
 }));
 

@@ -12,11 +12,11 @@ export const settle = async (page: Page) => {
         return bridge && typeof bridge.state === 'function';
     }, { timeout: 10000 });
 
-    // Wait for state to be populated with note data
+    // Wait for state to be populated (note may be null on dashboard)
     await page.waitForFunction(() => {
         const bridge = (window as any).__NOTENTION__;
         const state = bridge?.state?.();
-        return state?.note !== null;
+        return state !== undefined && state !== null;
     }, { timeout: 5000 });
 };
 

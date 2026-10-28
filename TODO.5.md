@@ -400,7 +400,12 @@ Local-only, opt-in, aggregated in-app:
    - Created batched UI test runner (`scripts/test-ui-batched.ts`) to avoid main process OOM
    - All core/agent/cli tests pass; UI tests pass in batches (2 pre-existing test failures unrelated)
 
-2. Write the Golden Path journey from empty state; record it in the Simulator Movie Studio.
+2. ✅ **Write the Golden Path journey from empty state; record it in the Simulator Movie Studio.**
+   - Created journey `golden-path` in `optimize/src/journeys.ts`
+   - Journey: empty state → create request note via quick capture → create offer note via quick capture → navigate to dashboard → verify local match preview appears
+   - Fixed extraction bugs: location pattern (removed 'gi' flag), role offer pattern (added 'in' to lookahead)
+   - Journey passes in optimize test suite
+
 3. Add storage schema versioning + export/import round-trip test.
 4. Collapse the UI barrel-export ambiguity and add the lint check.
 5. Wire `optimize` into CI with a findings-reproduction gate.

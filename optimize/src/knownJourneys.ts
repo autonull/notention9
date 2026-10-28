@@ -1,6 +1,42 @@
 import type { JourneySpec } from './journey.js';
 
 export const knownJourneys: Record<string, JourneySpec> = {
+    'golden-path': {
+        id: 'golden-path',
+        version: 1,
+        intent: 'first-time user writes a request and an offer note, sees a relevant explained match',
+        journeysTouched: ['capture', 'match', 'dashboard', 'property-extraction'],
+        seed: {
+            notes: [],
+            settings: { theme: 'dark', ontology: [], developerMode: false, aiEnabled: false, aiProvider: 'local', aiModel: '', googleGeminiApiKey: '', nostr: { privkey: null, relays: [] } }
+        },
+        steps: [
+            { kind: 'seed', notes: [], settings: {} },
+            // Step 1: Create request note via quick capture
+            { kind: 'act', target: { role: 'textbox', name: /what.{0,3}s on your mind/i }, action: 'fill', value: 'need a React developer in Berlin with TypeScript' },
+            { kind: 'act', target: { role: 'button', name: /create note/i }, action: 'click' },
+            { kind: 'waitForState', path: 'note.propertyIndex.role', equals: ['developer'], timeoutMs: 5000 },
+            { kind: 'assertState', path: 'note.propertyIndex.role', equals: ['developer'] },
+            { kind: 'assertState', path: 'note.propertyIndex.location', equals: ['Berlin'] },
+            { kind: 'assertState', path: 'note.propertyIndex.skills', equals: ['React', 'TypeScript'] },
+            { kind: 'capture', label: 'request-note-created' },
+            // Step 2: Create offer note via quick capture
+            { kind: 'act', target: { role: 'textbox', name: /what.{0,3}s on your mind/i }, action: 'fill', value: 'I am a React TypeScript developer in Berlin' },
+            { kind: 'act', target: { role: 'button', name: /create note/i }, action: 'click' },
+            { kind: 'waitForState', path: 'note.propertyIndex.role', equals: ['developer'], timeoutMs: 5000 },
+            { kind: 'assertState', path: 'note.propertyIndex.role', equals: ['developer'] },
+            { kind: 'assertState', path: 'note.propertyIndex.location', equals: ['Berlin'] },
+            { kind: 'assertState', path: 'note.propertyIndex.skills', equals: ['React', 'TypeScript'] },
+            { kind: 'capture', label: 'offer-note-created' },
+            // Step 3: Navigate to dashboard and verify match
+            { kind: 'navigate', hash: 'dashboard' },
+            { kind: 'waitForState', path: 'note.propertyIndex.role', equals: null, timeoutMs: 3000 },
+            { kind: 'script', code: 'const matchEl = document.querySelector("[data-testid=\\"local-match\\"]"); if (matchEl) window.__MATCH_FOUND__ = true; else window.__MATCH_FOUND__ = false;' },
+            { kind: 'assertState', path: 'note.propertyIndex.role', equals: null },
+            { kind: 'capture', label: 'match-found-on-dashboard' },
+        ],
+        status: 'ready',
+    },
     'capture-and-edit': {
         id: 'capture-and-edit',
         version: 1,

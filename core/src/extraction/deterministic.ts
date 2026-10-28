@@ -147,7 +147,7 @@ export function alignToOntology(
         if (role.split(' ').length < 5) addProperty(properties, 'role', 'contains', role);
     }
 
-    const roleOfferMatch = text.match(/i am (?:a|an)\s+([a-zA-Z\s]+?)(?=(?:[\.,]|\s+(?:who|with|looking)|$))/i);
+    const roleOfferMatch = text.match(/i am (?:a|an)\s+([a-zA-Z\s]+?)(?=(?:[\.,]|\s+(?:who|with|looking|in|for)|$))/i);
     if (roleOfferMatch) {
         const role = roleOfferMatch[1].trim();
         if (role.split(' ').length < 5) addProperty(properties, 'role', 'is', role);

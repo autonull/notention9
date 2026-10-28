@@ -117,7 +117,40 @@ const captureAndEditKeyboard: JourneySpec = {
     status: 'ready',
 };
 
+const goldenPath: JourneySpec = {
+    id: 'golden-path',
+    version: 1,
+    intent: 'first-time user writes a request and an offer note, sees a relevant explained match',
+    journeysTouched: ['capture', 'match', 'dashboard', 'property-extraction'],
+    seed: { notes: [], settings: baseSettings },
+    steps: [
+        { kind: 'seed', notes: [], settings: baseSettings },
+        // Step 1: Create request note via quick capture
+        { kind: 'act', target: { role: 'textbox', name: /what.{0,3}s on your mind/i }, action: 'fill', value: 'need a React developer in Berlin with TypeScript' },
+        { kind: 'act', target: { role: 'button', name: /create note/i }, action: 'click' },
+        { kind: 'waitForState', path: 'note.propertyIndex.role', equals: ['React developer'], timeoutMs: 5000 },
+        { kind: 'assertState', path: 'note.propertyIndex.role', equals: ['React developer'] },
+        { kind: 'assertState', path: 'note.propertyIndex.location', equals: ['Berlin'] },
+        { kind: 'capture', label: 'request-note-created' },
+        // Step 2: Go back to dashboard and create offer note via quick capture
+        { kind: 'navigate', hash: 'dashboard' },
+        { kind: 'act', target: { role: 'textbox', name: /what.{0,3}s on your mind/i }, action: 'fill', value: 'I am a React TypeScript developer in Berlin' },
+        { kind: 'act', target: { role: 'button', name: /create note/i }, action: 'click' },
+        { kind: 'waitForState', path: 'note.propertyIndex.role', equals: ['React TypeScript developer'], timeoutMs: 5000 },
+        { kind: 'assertState', path: 'note.propertyIndex.role', equals: ['React TypeScript developer'] },
+        { kind: 'assertState', path: 'note.propertyIndex.location', equals: ['Berlin'] },
+        { kind: 'capture', label: 'offer-note-created' },
+        // Step 3: Navigate to dashboard and verify match
+        { kind: 'navigate', hash: 'dashboard' },
+        { kind: 'script', code: 'const matchEl = document.querySelector("[data-testid=\\"local-match\\"]"); if (matchEl) window.__MATCH_FOUND__ = true; else window.__MATCH_FOUND__ = false;' },
+        { kind: 'assertState', path: 'route.hash', equals: 'dashboard' },
+        { kind: 'capture', label: 'match-found-on-dashboard' },
+    ],
+    status: 'ready',
+};
+
 registerJourney(captureAndEdit);
 registerJourney(publishGate);
 registerJourney(ontologyConflict);
 registerJourney(captureAndEditKeyboard);
+registerJourney(goldenPath);
