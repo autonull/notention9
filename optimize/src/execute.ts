@@ -1,7 +1,6 @@
 import type { Page } from '@playwright/test';
 import type { JourneySpec, Step } from './journey.js';
-import { executeAct, resolveTarget, waitForReady } from './steps.js';
-import { resolvePath, deepEqual } from './pathUtils.js';
+import { getExecutor, StepExecutionResult } from './stepExecutors.js';
 
 export interface StepResult {
     index: number;
@@ -28,10 +27,9 @@ export interface ExecutionContext {
     assertions: Array<{ id: string; ok: boolean; expected?: unknown; actual?: unknown; message?: string }>;
 }
 
-export async function executeJourney(context: ExecutionContext): Promise<void> {
-    const { page, journey, results, consoleEntries, networkEntries, promptTraces, actionTraces, assertions } = context;
+function setupListeners(context: ExecutionContext): void {
+    const { page, consoleEntries, networkEntries } = context;
 
-    // Collect console entries
     page.on('console', msg => {
         consoleEntries.push({
             type: msg.type(),
@@ -40,7 +38,6 @@ export async function executeJourney(context: ExecutionContext): Promise<void> {
         });
     });
 
-    // Collect network entries
     page.on('request', req => {
         networkEntries.push({
             method: req.method(),
@@ -51,156 +48,39 @@ export async function executeJourney(context: ExecutionContext): Promise<void> {
 
     page.on('requestfailed', req => {
         const entry = networkEntries.find(e => e.url === req.url() && e.method === req.method());
-        if (entry) {
-            entry.blocked = true;
-        }
+        if (entry) entry.blocked = true;
     });
 
     page.on('response', res => {
         const entry = networkEntries.find(e => e.url === res.url() && e.method === res.request().method());
-        if (entry) {
-            entry.status = res.status();
-        }
+        if (entry) entry.status = res.status();
     });
+}
+
+async function executeStep(
+    page: Page,
+    step: Step,
+    consoleEntries: ExecutionContext['consoleEntries']
+): Promise<StepExecutionResult> {
+    const executor = getExecutor(step.kind);
+    return executor.execute(page, step, consoleEntries);
+}
+
+export async function executeJourney(context: ExecutionContext): Promise<void> {
+    const { page, journey, results, consoleEntries, assertions } = context;
+
+    setupListeners(context);
 
     for (let i = 0; i < journey.steps.length; i++) {
         const step = journey.steps[i];
         const startedAt = new Date().toISOString();
         const stepStart = Date.now();
 
-        let ok = true;
-        let error: string | undefined;
-        let ariaSnapshot: string | undefined;
-        let screenshot: string | undefined;
-        let stateSnapshot: unknown;
-
+        let result: StepExecutionResult;
         try {
-            switch (step.kind) {
-                case 'navigate': {
-                    await page.goto(`#${step.hash}`);
-                    await page.waitForLoadState('domcontentloaded');
-                    break;
-                }
-                case 'act': {
-                    await executeAct(page, step);
-                    break;
-                }
-                case 'assertAria': {
-                    const locator = resolveTarget(page, step.target);
-                    await waitForReady(locator);
-                    ariaSnapshot = await locator.ariaSnapshot();
-                    // Note: actual assertion happens in test via expect().toMatchAriaSnapshot()
-                    break;
-                }
-                case 'assertState': {
-                    stateSnapshot = await page.evaluate(() => (globalThis as any).__NOTENTION__?.state?.());
-                    const value = resolvePath(stateSnapshot, step.path);
-                    if (!deepEqual(value, step.equals)) {
-                        throw new Error(`assertState failed: path="${step.path}", expected=${JSON.stringify(step.equals)}, actual=${JSON.stringify(value)}`);
-                    }
-                    break;
-                }
-                case 'assertNoConsoleErrors': {
-                    const errors = consoleEntries.filter(e => e.type === 'error');
-                    if (errors.length > 0) {
-                        throw new Error(`Console errors found: ${errors.map(e => e.text).join('; ')}`);
-                    }
-                    break;
-                }
-                case 'capture': {
-                    ariaSnapshot = await page.evaluate(() => (globalThis as any).__NOTENTION__?.ariaSnapshot?.(step.label));
-                    const screenshotBuffer = await page.screenshot({ fullPage: false });
-                    screenshot = screenshotBuffer.toString('base64');
-                    stateSnapshot = await page.evaluate(() => (globalThis as any).__NOTENTION__?.state?.());
-                    break;
-                }
-                case 'script': {
-                    await page.evaluate(step.code);
-                    break;
-                }
-                case 'seed':
-                    // Handled before journey execution
-                    break;
-                case 'waitForState': {
-                    const timeout = step.timeoutMs ?? 5000;
-                    const startTime = Date.now();
-                    while (Date.now() - startTime < timeout) {
-                        stateSnapshot = await page.evaluate(() => (globalThis as any).__NOTENTION__?.state?.());
-                        const value = resolvePath(stateSnapshot, step.path);
-                        if (deepEqual(value, step.equals)) {
-                            break;
-                        }
-                        await new Promise(r => setTimeout(r, 100));
-                    }
-                    // Final check
-                    stateSnapshot = await page.evaluate(() => (globalThis as any).__NOTENTION__?.state?.());
-                    const value = resolvePath(stateSnapshot, step.path);
-                    if (!deepEqual(value, step.equals)) {
-                        throw new Error(`waitForState timeout: path="${step.path}", expected=${JSON.stringify(step.equals)}, actual=${JSON.stringify(value)}`);
-                    }
-                    break;
-                }
-                case 'captureAria': {
-                    // Capture full accessibility tree snapshot
-                    const snapshot = await (page as any).accessibility.snapshot({ root: page.mainFrame() });
-                    ariaSnapshot = JSON.stringify(snapshot, null, 2);
-                    // Also capture via DevBridge if available for richer data
-                    const devBridgeSnapshot = await page.evaluate(() => (globalThis as any).__NOTENTION__?.ariaSnapshot?.(step.label));
-                    if (devBridgeSnapshot) {
-                        ariaSnapshot = devBridgeSnapshot;
-                    }
-                    stateSnapshot = await page.evaluate(() => (globalThis as any).__NOTENTION__?.state?.());
-                    break;
-                }
-                case 'assertAriaSnapshot': {
-                    const locator = resolveTarget(page, step.target);
-                    await waitForReady(locator);
-                    const actualSnapshot = await locator.ariaSnapshot();
-                    const actualStr = JSON.stringify(actualSnapshot, null, 2);
-                    // Store for comparison in test
-                    ariaSnapshot = actualStr;
-                    // Simple string comparison - in practice would use Playwright's expect().toMatchAriaSnapshot()
-                    if (!actualStr.includes(step.snapshot)) {
-                        throw new Error(`assertAriaSnapshot failed: expected snapshot to contain "${step.snapshot}", got: ${actualStr}`);
-                    }
-                    break;
-                }
-                case 'assertFocus': {
-                    const locator = resolveTarget(page, step.target);
-                    await waitForReady(locator);
-                    const isFocused = await locator.evaluate((el: HTMLElement) => el === el.ownerDocument.activeElement);
-                    if (!isFocused) {
-                        throw new Error(`assertFocus failed: element is not focused`);
-                    }
-                    break;
-                }
-                case 'assertAccessibleName': {
-                    const locator = resolveTarget(page, step.target);
-                    await waitForReady(locator);
-                    const accessibleName = await locator.getAttribute('aria-label') ||
-                                         await locator.getAttribute('aria-labelledby')?.then(id => page.locator(`#${id}`).textContent()) ||
-                                         await locator.textContent() ||
-                                         '';
-                    const normalizedName = accessibleName.trim().toLowerCase();
-                    const expectedNormalized = step.expected.trim().toLowerCase();
-                    if (!normalizedName.includes(expectedNormalized)) {
-                        throw new Error(`assertAccessibleName failed: expected name to contain "${step.expected}", got: "${accessibleName}"`);
-                    }
-                    break;
-                }
-                case 'assertRole': {
-                    const locator = resolveTarget(page, step.target);
-                    await waitForReady(locator);
-                    const actualRole = await locator.getAttribute('role') || 'unknown';
-                    if (actualRole !== step.expectedRole) {
-                        throw new Error(`assertRole failed: expected role "${step.expectedRole}", got: "${actualRole}"`);
-                    }
-                    break;
-                }
-            }
+            result = await executeStep(page, step, consoleEntries);
         } catch (e) {
-            ok = false;
-            error = e instanceof Error ? e.message : String(e);
+            result = { ok: false, error: e instanceof Error ? e.message : String(e) };
         }
 
         const durationMs = Date.now() - stepStart;
@@ -210,17 +90,17 @@ export async function executeJourney(context: ExecutionContext): Promise<void> {
             label: 'label' in step ? step.label : undefined,
             startedAt,
             durationMs,
-            ok,
-            error,
-            ariaSnapshot,
-            screenshot,
-            stateSnapshot,
+            ok: result.ok,
+            error: result.error,
+            ariaSnapshot: result.ariaSnapshot,
+            screenshot: result.screenshot,
+            stateSnapshot: result.stateSnapshot,
         });
 
-        if (!ok) {
-            assertions.push({ id: `${journey.id}:${i}`, ok: false, message: error });
-        } else {
-            assertions.push({ id: `${journey.id}:${i}`, ok: true });
-        }
+        assertions.push({
+            id: `${journey.id}:${i}`,
+            ok: result.ok,
+            message: result.error,
+        });
     }
 }
