@@ -565,11 +565,11 @@ pnpm-workspace.yaml, package.json   add `optimize`
 - [x] `pnpm optimize optimize capture-and-edit` green locally; journey passes with semantic assertions, trace emission, and report-only guardrails
 - [x] `pnpm optimize:check` passes (no forbidden locator patterns); `pnpm run build` passes (all packages compile)
 - [x] `optimize/README.md` documents: journey authoring, step kinds, replay, report-only semantics, and the "no class selectors" rule
-- [ ] Root `README.md` command table gains the `pnpm optimize` row
+- [x] Root `README.md` command table gains the `pnpm optimize` row
 - [x] `LocalAIProvider` holds no extraction regexes; `optimize` imports extraction only from `core`
 - [x] No `__NOTENTION__` or `DevBridge` in production output; no `page.accessibility` in the tree
-- [ ] One finding produced by the slice is filed and triaged (proves the loop closes, not just runs)
-- [ ] Evidence bundle reporter fully integrated (currently writes minimal bundle; needs fixture integration for complete snapshots)
+- [ ] One finding produced by the slice is filed and triaged (proves the loop closes, not just runs) - evidence infrastructure ready; finding generation deferred to next slice
+- [x] Evidence bundle reporter fully integrated (writes complete bundles: state, aria, console, network, screenshots)
 
 ---
 

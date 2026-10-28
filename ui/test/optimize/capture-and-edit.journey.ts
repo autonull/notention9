@@ -3,6 +3,8 @@ import { executeJourney, type ExecutionContext } from '@notention/optimize';
 import { getJourney } from '@notention/optimize';
 import { seed } from '../support/seed';
 import { settle } from '../support/settle';
+import { writeBundle, type EvidenceBundle } from '@notention/optimize/evidence';
+import { getEvidenceDir } from '@notention/core';
 
 test('optimize: capture-and-edit', async ({ page }) => {
     const journey = getJourney('capture-and-edit');
@@ -37,6 +39,33 @@ test('optimize: capture-and-edit', async ({ page }) => {
     };
 
     await executeJourney(context);
+
+    // Build evidence bundle
+    const bundle: EvidenceBundle = {
+        runId,
+        journeyId: journey.id,
+        startedAt: new Date().toISOString(),
+        completedAt: new Date().toISOString(),
+        status: context.assertions.every(a => a.ok) ? 'passed' : 'failed',
+        steps: context.results,
+        console: context.consoleEntries,
+        network: context.networkEntries,
+        promptTraces: context.promptTraces,
+        actionTraces: context.actionTraces,
+        assertions: context.assertions,
+        snapshots: context.results
+            .filter(r => r.kind === 'capture')
+            .map(r => ({
+                label: r.label || `step-${r.index}`,
+                state: r.stateSnapshot ?? {},
+                aria: r.ariaSnapshot || '',
+                screenshot: r.screenshot ? Buffer.from(r.screenshot, 'base64') : undefined,
+            })),
+    };
+
+    // Write evidence bundle
+    await writeBundle(runId, bundle);
+    console.log(`[Optimize] Evidence bundle written for run: ${runId}`);
 
     // Verify all assertions passed
     const failedAssertions = context.assertions.filter(a => !a.ok);

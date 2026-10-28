@@ -1,44 +1,10 @@
-import { FullConfig, FullResult, TestCase, TestResult } from '@playwright/test/reporter';
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { join } from 'path';
 import type { EvidenceBundle } from './evidence.js';
 import { getEvidenceDir } from '@notention/core';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-export class OptimizeReporter {
-    private bundles: Map<string, EvidenceBundle> = new Map();
-    private outputDir: string;
-
-    constructor() {
-        this.outputDir = getEvidenceDir();
-    }
-
-    onTestEnd(test: TestCase, result: TestResult): void {
-        if (!test.title.includes('optimize:')) return;
-
-        // Extract runId from test annotations or use a default
-        const runId = (test as any).runId || `run_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
-
-        // Build bundle from test fixtures (attached via testInfo)
-        const testInfo = (test as any)._testInfo;
-        if (!testInfo) return;
-
-        // This is a simplified version - real implementation would pull from fixtures
-        console.log(`[OptimizeReporter] Test ended: ${test.title}, runId: ${runId}`);
-    }
-
-    onEnd(result: FullResult): void {
-        // Write index.jsonl
-        const indexPath = join(this.outputDir, 'index.jsonl');
-        // In a real implementation, we'd write each bundle's summary here
-    }
-}
-
-export function writeBundle(runId: string, bundle: EvidenceBundle): void {
-    const outputDir = getEvidenceDir();
+export async function writeBundle(runId: string, bundle: EvidenceBundle): Promise<void> {
+    const outputDir = await getEvidenceDir();
     const runDir = join(outputDir, runId);
 
     if (!existsSync(runDir)) {
@@ -66,6 +32,10 @@ export function writeBundle(runId: string, bundle: EvidenceBundle): void {
 
         writeFileSync(join(stateDir, `${snapshot.label}.json`), JSON.stringify(snapshot.state, null, 2));
         writeFileSync(join(ariaDir, `${snapshot.label}.yml`), snapshot.aria);
-        // screenshot would be written as binary
+        if (snapshot.screenshot) {
+            writeFileSync(join(shotsDir, `${snapshot.label}.png`), snapshot.screenshot);
+        }
     }
+
+    console.log(`[Optimize] Evidence bundle written to: ${runDir}`);
 }

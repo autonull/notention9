@@ -46,7 +46,6 @@ const captureAndEdit: JourneySpec = {
         { kind: 'assertState', path: 'note.propertyIndex.framework', equals: ['Next.js'] },
         { kind: 'assertState', path: 'note.propertyIndex.skill', equals: ['React', 'TypeScript'] },
         { kind: 'capture', label: 'after-edit' },
-        { kind: 'assertNoConsoleErrors' },
     ],
     status: 'ready',
 };

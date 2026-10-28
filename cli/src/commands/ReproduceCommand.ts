@@ -17,7 +17,7 @@ export const ReproduceCommand = createCommand({
         }
 
         // Try to load as runId first
-        const bundle = loadBundle(intent.target);
+        const bundle = await loadBundle(intent.target);
         if (bundle) {
             console.log(`🔁 Replaying run: ${intent.target}`);
             const { command, env } = planReplay(bundle);

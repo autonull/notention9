@@ -7,7 +7,8 @@
     "test:e2e": "playwright test -c src/tests/e2e/playwright.config.ts",
     "build": "tsc && npm run build:ui",
     "build:ui": "vite build --config vite.config.ts",
-    "ui:dev": "vite dev --config vite.config.ts"
+    "ui:dev": "vite dev --config vite.config.ts",
+    "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
     "@notention/core": "workspace:*",

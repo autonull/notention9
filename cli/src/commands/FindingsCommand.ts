@@ -10,7 +10,7 @@ export const FindingsCommand = createCommand({
     usage: 'findings [--json]',
     async run(args, context) {
         const json = args.includes('--json');
-        const evidenceDir = getEvidenceDir();
+        const evidenceDir = await getEvidenceDir();
 
         if (!existsSync(evidenceDir)) {
             console.log('No evidence directory found');

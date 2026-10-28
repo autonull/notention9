@@ -3,8 +3,8 @@ import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 import { getEvidenceDir } from '@notention/core';
 
-export function loadBundle(runId: string): EvidenceBundle | null {
-    const bundlePath = join(getEvidenceDir(), runId, 'bundle.json');
+export async function loadBundle(runId: string): Promise<EvidenceBundle | null> {
+    const bundlePath = join(await getEvidenceDir(), runId, 'bundle.json');
     if (!existsSync(bundlePath)) return null;
     return JSON.parse(readFileSync(bundlePath, 'utf-8'));
 }

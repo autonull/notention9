@@ -106,7 +106,36 @@ async function main() {
             // TODO: implement replay
             process.exit(1);
         } else if (intent.action === 'findings') {
-            console.log('📋 Findings listing not yet implemented');
+            const { getEvidenceDir } = await import('@notention/core');
+            const { readFileSync, existsSync, readdirSync } = await import('fs');
+            const { join } = await import('path');
+
+            const evidenceDir = await getEvidenceDir();
+
+            if (!existsSync(evidenceDir)) {
+                console.log('No evidence directory found');
+                process.exit(0);
+            }
+
+            const runDirs = readdirSync(evidenceDir, { withFileTypes: true })
+                .filter(d => d.isDirectory() && d.name.startsWith('run_'))
+                .map(d => d.name);
+
+            if (runDirs.length === 0) {
+                console.log('No optimization runs found');
+                process.exit(0);
+            }
+
+            console.log('Optimization runs:');
+            for (const runId of runDirs) {
+                const findingsPath = join(evidenceDir, runId, 'findings.json');
+                let count = 0;
+                if (existsSync(findingsPath)) {
+                    const findings = JSON.parse(readFileSync(findingsPath, 'utf-8'));
+                    count = findings.length;
+                }
+                console.log(`  ${runId}: ${count} finding(s)`);
+            }
             process.exit(0);
         }
     } catch (e) {

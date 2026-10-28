@@ -3,17 +3,17 @@ import type { SemanticState } from './state.js';
 
 export interface EvidenceBundle {
     runId: string;
-    journey: { id: string; version: number; intent: string };
-    repo: { gitRev: string; dirty: boolean };
-    env: { uiUrl: string; reportOnly: true };
-    prompts: Record<string, string>;
-    steps: Array<{ index: number; kind: string; label?: string; startedAt: string; durationMs: number }>;
-    snapshots: Array<{ label: string; aria: string; shot: string; state: SemanticState }>;
-    traces: { prompt: PromptTrace[]; action: ActionTrace[] };
+    journeyId: string;
+    startedAt: string;
+    completedAt: string;
+    status: 'passed' | 'failed';
+    steps: Array<{ index: number; kind: string; label?: string; startedAt: string; durationMs: number; ok: boolean; error?: string; ariaSnapshot?: string; screenshot?: string; stateSnapshot?: unknown }>;
+    snapshots: Array<{ label: string; state: SemanticState; aria: string; screenshot?: Buffer }>;
     console: Array<{ type: string; text: string; location?: string }>;
     network: Array<{ method: string; url: string; status?: number; blocked: boolean }>;
+    promptTraces: Array<any>;
+    actionTraces: Array<any>;
     assertions: Array<{ id: string; ok: boolean; expected?: unknown; actual?: unknown; message?: string }>;
-    metrics: { stepCount: number; durationMs: number; consoleErrors: number; failedAssertions: number };
 }
 
 export interface PromptTrace {
@@ -53,3 +53,6 @@ export const EvidenceBundleSchema = z.custom<EvidenceBundle>();
 export function validateEvidenceBundle(bundle: unknown): EvidenceBundle {
     return EvidenceBundleSchema.parse(bundle);
 }
+
+// Re-export writeBundle from reporter
+export { writeBundle } from './reporter.js';
