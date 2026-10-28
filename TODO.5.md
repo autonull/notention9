@@ -38,7 +38,7 @@ Secondary North Star (durability): **no user loses a note.** Ever.
 | UI (views, editor, maps, timeline, chat) | ✅ Working, 100+ tests | Breadth > depth |
 | Nostr publish/discovery | 🟡 Works, protocol-nonconformant | Kind 35000, no CBOR, no NoteID |
 | Agent (MCP, tools, skills) | 🟡 Works headless; UI loop partial | Tool calling + confirmations incomplete |
-| Persistence | 🟡 `localforage` only | Single device; no backup/export UX; no migrations |
+| Persistence | 🟡 `localforage` only | Single device; backup/export UX done; schema validation only (no migrations) |
 | Protocol conformance | 🔴 Tier 0 blockers (CBOR, NoteID, signing) | 21-item gap list in `README2.md` |
 | Engineering confidence | 🔴 UI test suite OOMs at ~4GB | Blocks CI; hides regressions |
 | Optimize harness | ✅ Replay/reproduce/generate-test | Underused; no CI gate |
@@ -48,7 +48,7 @@ Secondary North Star (durability): **no user loses a note.** Ever.
 | **Pattern recognition** | ✅ Working | Co-occurrence + sequential patterns, prediction API |
 | **Metaphor system** | ✅ Working | 15 default metaphors, registry, mapper |
 | **Skill system** | 🟡 Emerging | Note-defined, dynamic, plugin-loaded; approval manager exists |
-| **Export/Import** | ✅ Schema + validation | Zod envelope v1, single-note export, private key scrubbing |
+| **Export/Import** | ✅ Schema + validation + round-trip tests | Zod envelope v1, single-note export, private key scrubbing, 19 storage tests |
 | **Templates / Gardener** | ✅ Working | Ontology-driven templates, conflict detection, learning |
 | **Ontology** | ✅ 5 domains built-in | Identity, communication, scheduling, work, commerce |
 
@@ -113,9 +113,9 @@ Score = **Impact** (does it move the North Star?) × **Confidence** (do we know 
 **Why now:** Silent data loss destroys trust faster than any missing feature. `localforage` alone is a single point of failure.
 
 **Work:**
-- ✅ Schema versioning for stored notes/settings/ontology with forward migrations and a tested downgrade path.
+- ✅ Schema versioning for stored notes/settings/ontology — validation-only approach (no backwards compat needed). `STORAGE_SCHEMA_VERSION = 1` stored with data; invalid versions rejected on read.
 - ⏳ Corruption recovery: detect unreadable store, offer export of raw salvage, never silently discard.
-- ✅ Export/import round-trip using `core/src/export` — full workspace, human-readable JSON, plus single-note export.
+- ✅ Export/import round-trip using `core/src/export` — full workspace, human-readable JSON, plus single-note export. 19 tests in `core/src/storage/storage.test.ts`.
 - ⏳ Automatic local snapshot rotation (N generations) with a "restore" UI.
 - ⏳ Quota handling: detect storage pressure, warn before failure.
 - ⏳ Journey: "create 100 notes → reload → all present and byte-identical."
@@ -284,8 +284,8 @@ These came from auditing the codebase, not from the feature wishlist.
 
 ### 6.1 Module boundary hygiene
 Already found: `Overlay.tsx` re-exported `Modal` through `Primitives`, causing an *ambiguous import* that broke Vite dependency scanning. Barrel files are masking duplicate exports.
-- ✅ Add a lint rule / CI check for ambiguous re-exports in `ui/src/components/ui`.
-- ✅ Collapse `Primitives.tsx` + `index.ts` + `Overlay.tsx` into one clear public surface.
+- ✅ Add a lint rule / CI check for ambiguous re-exports in `ui/src/components/ui` (`scripts/check-ambiguous-reexports.mjs`).
+- ✅ Collapse `Primitives.tsx` + `index.ts` into one clear public surface — `Primitives` re-exports only base/composite components; `index.ts` re-exports everything.
 - Effort is small; it currently breaks `pnpm dev`.
 
 ### 6.2 First-run and demo mode
@@ -407,17 +407,18 @@ Local-only, opt-in, aggregated in-app:
    - Journey passes in optimize test suite
 
 3. ✅ **Add storage schema versioning + export/import round-trip test.**
-   - Added `STORAGE_SCHEMA_VERSION` and migration system in `core/src/storage/migrations.ts`
-   - Created `MigratedStorage` class with automatic migration on read
+   - Added `STORAGE_SCHEMA_VERSION = 1` and validation-only system in `core/src/storage/migrations.ts`
+   - Created `ValidatedStorage` class in `core/src/storage/migratedStorage.ts` — stores data with version wrapper, validates on read, rejects invalid versions
    - Added schema version key to `STORAGE_KEYS`
-   - Created comprehensive test suite in `core/src/storage/storage.test.ts` (15 tests)
-   - All tests pass, migration from version 0 (legacy) to version 1 works
+   - Created comprehensive test suite in `core/src/storage/storage.test.ts` (19 tests)
+   - All tests pass: validates v1, rejects v0/missing/future versions
+   - **No migration logic** — no backwards compatibility needed
 
 4. ✅ **Collapse the UI barrel-export ambiguity and add the lint check.**
-   - Removed duplicate `export * from './Overlay'` and other ambiguous re-exports from `Primitives.tsx`
-   - Restructured exports: `Primitives.tsx` now only exports base/composite components; `index.ts` is the single source for all UI modules
-   - Added `check-ambiguous-reexports.mjs` script to detect cross-file duplicate re-exports
-   - Integrated into `pnpm lint` command
+   - Removed 12 duplicate re-exports from `Primitives.tsx` (Overlay, VirtualizedList, EnhancedCommandPalette, SmartSearch, ContextualHint, Skeleton, Layout, Feedback, Navigation, DataDisplay, Forms)
+   - Restructured exports: `Primitives.tsx` = base/composite components only; `index.ts` = single public surface
+   - Added `scripts/check-ambiguous-reexports.mjs` to detect cross-file duplicate re-exports
+   - Integrated into `pnpm lint` (via `lint:exports` script)
    - Fixed affected imports in `AssistantHeader.tsx`, `OntologyView.tsx`, `SettingsView.tsx`
 
 5. ⏳ **Wire `optimize` into CI with a findings-reproduction gate.**
@@ -723,7 +724,7 @@ START
 |------------|------------------------|
 | W0 | `ui/vite.config.ts`, `ui/vitest.config.ts`, `scripts/verify.ts` (new), `.github/workflows/` |
 | W1 | `optimize/src/knownJourneys.ts`, `optimize/src/discovery/stepBuilder.ts`, `simulator/src/scenarios/` |
-| W2 | `core/src/export/`, `ui/src/hooks/useLocalForage.ts`, `ui/src/components/settings/DataTab.tsx` |
+| W2 | `core/src/storage/`, `core/src/export/`, `ui/src/components/settings/DataTab.tsx` |
 | W3 | `core/src/prompts/`, `core/src/notes/propertyExtractor/`, `optimize/src/discovery/` |
 | W3b.1 | `cli/src/commands/`, `cli/src/tools/ingest.ts`, `README.md` |
 | W3b.2 | `simulator/src/scenarios/`, `simulator/src/movie_maker.ts`, `optimize/src/cliHandlers/reproduce.ts` |
@@ -737,7 +738,7 @@ START
 | W5 | `core/src/utils/canonicalization.ts` (new), `core/src/types/index.ts` (NoteID) |
 | W5b | `simulator/src/scenarios/protocol-conformance.ts` (new) |
 | W6 | `core/src/sync/` (new), `core/src/network/registry.ts` |
-| 6.1 | `ui/src/components/ui/Primitives.tsx`, `ui/src/components/ui/Overlay.tsx`, `eslint.config.js` |
+| 6.1 | `ui/src/components/ui/Primitives.tsx`, `ui/src/components/ui/index.ts`, `ui/scripts/check-ambiguous-reexports.mjs` |
 | 6.2 | `ui/src/components/dashboard/EmptyStateForNotes.tsx`, `SampleWorkspacePrompt.tsx` |
 | 6.3 | `ui/src/components/ui/`, `agent/src/server/`, `core/src/network/` |
 | 6.6 | `optimize/src/a11y.ts`, `optimize/src/discovery/accessibilitySelector.ts` |
@@ -750,7 +751,7 @@ START
 |----------|------------|---------|----------|
 | P0 | **W0** Engineering Confidence ✅ | Everything | CI green 2× under cap; `pnpm verify` passes |
 | P0 | **W1** Golden Path Proof | Product direction | Journey green + video + human test |
-| P0 | **W2** Data Durability | Trust foundation | Export→wipe→import = identical |
+| P0 | **W2** Data Durability | Trust foundation | Export→wipe→import = identical (schema validation done) |
 | P1 | **W3** Extraction Quality | Matching relevance | Calibrated prompts + regression tests |
 | P1 | **W3b** Power Tools Activation | Immediate value | 7 levers with "Done when" criteria |
 | P1 | **W4** Agent Loop Closure | Usable automation | Confirmations + traces + undo |
