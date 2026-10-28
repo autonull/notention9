@@ -1,6 +1,6 @@
 import { DiscoveryEngine } from './index.js';
-import { GoalParser, ParsedGoal, InferredAction } from './goalParser.js';
-import { SelectorInference } from './selectorInference.js';
+import { GoalParser, type ParsedGoal, type InferredAction } from './goalParser.js';
+import { SelectorInference, type InferredSelector } from './selectorInference.js';
 import type { JourneySpec, Step, Target } from '../journey.js';
 import type { Note, AppSettings } from '@notention/core';
 import type { Finding } from '../finding.js';
@@ -10,6 +10,9 @@ import { expect } from '../expectPolyfill.js';
 import { resolvePath } from '../pathUtils.js';
 import { getProjectRoot } from '../config.js';
 import { generateRegressionTest } from './regressionGenerator.js';
+import { buildSeed } from './seedBuilder.js';
+import { buildSteps, resolveSelector } from './stepBuilder.js';
+import { generateJourneyId, generateIntent, inferJourneysTouched } from './intentBuilder.js';
 
 export interface SynthesisOptions {
     projectRoot?: string;
@@ -47,357 +50,32 @@ export class JourneySynthesizer {
         const parsedGoal = this.goalParser.parse(goal, projectRoot);
 
         // Generate journey ID from goal
-        const journeyId = this.generateJourneyId(goal);
-
-        // Build steps
-        const steps = this.buildSteps(parsedGoal, selectors, discovery.statePathRegistry, options);
+        const journeyId = generateJourneyId(goal);
 
         // Build seed
-        const seed = this.buildSeed(parsedGoal, options);
+        const seed = buildSeed(parsedGoal, {
+            seedNotes: options.seedNotes,
+            seedSettings: options.seedSettings,
+        });
+
+        // Build steps
+        const steps = buildSteps(parsedGoal, selectors, discovery.statePathRegistry, options);
 
         // Determine status
         const status = steps.length > 0 && parsedGoal.targetState.path ? 'ready' : 'draft';
 
         // Generate intent description
-        const intent = this.generateIntent(goal, parsedGoal);
+        const intent = generateIntent(goal, parsedGoal);
 
         return {
             id: journeyId,
             version: 1,
             intent,
-            journeysTouched: this.inferJourneysTouched(parsedGoal),
+            journeysTouched: inferJourneysTouched(parsedGoal),
             seed,
             steps,
             status,
         };
-    }
-
-    private generateJourneyId(goal: string): string {
-        // Create a slug from the goal
-        return goal
-            .toLowerCase()
-            .replace(/[^a-z0-9\s-]/g, '')
-            .replace(/\s+/g, '-')
-            .substring(0, 50);
-    }
-
-    private generateIntent(goal: string, parsedGoal: ParsedGoal): string {
-        // Use the original goal as intent, or generate a descriptive one
-        if (goal.length > 10 && goal.length < 100) {
-            return goal;
-        }
-
-        const action = parsedGoal.actions[0]?.intent || 'perform action';
-        const target = parsedGoal.targetState.path;
-        return `${action.replace('note.', '')} ${target}`;
-    }
-
-    private inferJourneysTouched(parsedGoal: ParsedGoal): string[] {
-        const journeys: string[] = [];
-
-        for (const action of parsedGoal.actions) {
-            if (action.intent.includes('capture') || action.intent.includes('create')) {
-                journeys.push('note-capture');
-            }
-            if (action.intent.includes('property') || action.intent.includes('edit')) {
-                journeys.push('property-editing');
-            }
-            if (action.intent.includes('publish')) {
-                journeys.push('publishing');
-            }
-            if (action.intent.includes('persistence') || action.intent.includes('reload')) {
-                journeys.push('persistence');
-            }
-            if (action.intent.includes('select')) {
-                journeys.push('note-navigation');
-            }
-        }
-
-        return [...new Set(journeys)];
-    }
-
-    private buildSeed(parsedGoal: ParsedGoal, options: SynthesisOptions): { notes: Note[]; settings: Partial<AppSettings> } {
-        const notes = options.seedNotes || this.generateDefaultNotes(parsedGoal);
-        const settings = options.seedSettings || {
-            ontology: [],
-            aiEnabled: false,
-            aiProvider: 'local',
-            aiModel: '',
-            googleGeminiApiKey: '',
-            theme: 'dark',
-        };
-
-        // Adjust privacy based on constraints
-        if (parsedGoal.constraints.privacy === 'public') {
-            for (const note of notes) {
-                note.privacy = 'public';
-            }
-        } else if (parsedGoal.constraints.privacy === 'private') {
-            for (const note of notes) {
-                note.privacy = 'private';
-            }
-        }
-
-        return { notes, settings };
-    }
-
-    private generateDefaultNotes(parsedGoal: ParsedGoal): Note[] {
-        const now = new Date().toISOString();
-        const noteId = `synthesized-${Date.now()}`;
-
-        return [{
-            id: noteId,
-            title: parsedGoal.targetState.path.includes('property')
-                ? 'Note for property test'
-                : 'Synthesized Note',
-            content: 'Test content for synthesized journey',
-            tags: ['test', 'synthesized'],
-            properties: parsedGoal.targetState.type === 'property'
-                ? [{ key: parsedGoal.targetState.path.split('.').pop() || 'test', operator: 'is', values: ['test-value'] }]
-                : [],
-            createdAt: now,
-            updatedAt: now,
-            source: { type: 'user', identifier: 'user-default', timestamp: Date.now() },
-            privacy: 'private',
-            priority: 1,
-        }];
-    }
-
-    private buildSteps(
-        parsedGoal: ParsedGoal,
-        selectors: Map<string, import('./selectorInference').InferredSelector>,
-        statePathRegistry: import('./statePathRegistry').StatePathRegistry,
-        options: SynthesisOptions
-    ): Step[] {
-        const steps: Step[] = [];
-        let stepIndex = 0;
-
-        // 1. Navigation step (if needed)
-        if (parsedGoal.targetState.type === 'note' || parsedGoal.targetState.type === 'property') {
-            const navAction = parsedGoal.actions.find(a => a.intent === 'note.select');
-            if (navAction) {
-                steps.push(this.createNavigateStep(navAction, parsedGoal));
-                stepIndex++;
-            }
-        }
-
-        // 2. Initial state assertion
-        steps.push(this.createInitialAssertion(parsedGoal, statePathRegistry));
-        stepIndex++;
-
-        // 3. Action steps
-        for (const action of parsedGoal.actions) {
-            if (action.intent === 'note.select') continue; // Already handled
-
-            const actionSteps = this.createActionSteps(action, selectors, parsedGoal, stepIndex);
-            steps.push(...actionSteps);
-            stepIndex += actionSteps.length;
-        }
-
-        // 4. Final state assertion
-        steps.push(this.createFinalAssertion(parsedGoal, statePathRegistry));
-        stepIndex++;
-
-        // 5. Optional: reload and persistence check
-        if (parsedGoal.targetState.type === 'property' || parsedGoal.targetState.type === 'note') {
-            steps.push(this.createReloadStep(parsedGoal));
-            stepIndex++;
-            steps.push(this.createPersistenceAssertion(parsedGoal, statePathRegistry));
-            stepIndex++;
-        }
-
-        // 6. Console errors check
-        steps.push({ kind: 'assertNoConsoleErrors' });
-
-        return steps;
-    }
-
-    private createNavigateStep(action: InferredAction, parsedGoal: ParsedGoal): Step {
-        // Determine hash from note ID in seed
-        const noteId = parsedGoal.constraints.privacy === 'public' ? 'public-note' : 'synthesized-note';
-        return {
-            kind: 'navigate',
-            hash: `notes/${noteId}`,
-        };
-    }
-
-    private createInitialAssertion(parsedGoal: ParsedGoal, statePathRegistry: import('./statePathRegistry').StatePathRegistry): Step {
-        // Assert initial state exists
-        if (parsedGoal.targetState.type === 'property') {
-            const propKey = parsedGoal.targetState.path.split('.').pop();
-            return {
-                kind: 'assertState',
-                path: `note.propertyIndex.${propKey}`,
-                equals: [], // Should be empty initially
-            };
-        }
-
-        return {
-            kind: 'assertState',
-            path: 'note.id',
-            equals: expect.any(String), // Note exists
-        };
-    }
-
-    private createActionSteps(
-        action: InferredAction,
-        selectors: Map<string, import('./selectorInference').InferredSelector>,
-        parsedGoal: ParsedGoal,
-        stepIndex: number
-    ): Step[] {
-        const steps: Step[] = [];
-
-        switch (action.intent) {
-            case 'note.addProperty':
-            case 'note.insertProperty':
-                // Open property modal
-                steps.push({
-                    kind: 'act',
-                    target: this.resolveSelector(action.selector, selectors) || { role: 'button', name: 'Add detail' },
-                    action: 'click',
-                });
-
-                // Fill property form
-                const propKey = parsedGoal.targetState.path.split('.').pop() || 'property';
-                steps.push({
-                    kind: 'act',
-                    target: { label: 'Detail' },
-                    action: 'fill',
-                    value: propKey,
-                });
-
-                steps.push({
-                    kind: 'act',
-                    target: { label: 'Comparison' },
-                    action: 'fill',
-                    value: 'contains',
-                });
-
-                steps.push({
-                    kind: 'act',
-                    target: { label: 'Value' },
-                    action: 'fill',
-                    value: 'test-value',
-                });
-
-                // Submit
-                steps.push({
-                    kind: 'act',
-                    target: { role: 'button', name: 'Add detail' },
-                    action: 'click',
-                });
-                break;
-
-            case 'note.publish':
-                steps.push({
-                    kind: 'act',
-                    target: this.resolveSelector(action.selector, selectors) || { role: 'button', name: 'Publish' },
-                    action: 'click',
-                });
-                break;
-
-            case 'note.acceptExtraction':
-                steps.push({
-                    kind: 'act',
-                    target: this.resolveSelector(action.selector, selectors) || { role: 'button', name: 'Accept' },
-                    action: 'click',
-                });
-                break;
-
-            case 'note.rejectExtraction':
-                steps.push({
-                    kind: 'act',
-                    target: this.resolveSelector(action.selector, selectors) || { role: 'button', name: 'Reject' },
-                    action: 'click',
-                });
-                break;
-        }
-
-        return steps;
-    }
-
-    private createFinalAssertion(parsedGoal: ParsedGoal, statePathRegistry: import('./statePathRegistry').StatePathRegistry): Step {
-        if (parsedGoal.targetState.type === 'property') {
-            const propKey = parsedGoal.targetState.path.split('.').pop();
-            return {
-                kind: 'assertState',
-                path: `note.propertyIndex.${propKey}`,
-                equals: ['test-value'],
-            };
-        }
-
-        if (parsedGoal.targetState.type === 'confirmation') {
-            return {
-                kind: 'assertState',
-                path: 'pendingConfirmations',
-                equals: expect.arrayContaining([expect.objectContaining({ action: 'publish' })]),
-            };
-        }
-
-        if (parsedGoal.targetState.type === 'review') {
-            return {
-                kind: 'assertState',
-                path: 'review',
-                equals: expect.arrayContaining([expect.any(Object)]),
-            };
-        }
-
-        return {
-            kind: 'assertState',
-            path: 'note.id',
-            equals: expect.any(String),
-        };
-    }
-
-    private createReloadStep(parsedGoal: ParsedGoal): Step {
-        return {
-            kind: 'navigate',
-            hash: 'notes/synthesized-note',
-        };
-    }
-
-    private createPersistenceAssertion(parsedGoal: ParsedGoal, statePathRegistry: import('./statePathRegistry').StatePathRegistry): Step {
-        if (parsedGoal.targetState.type === 'property') {
-            const propKey = parsedGoal.targetState.path.split('.').pop();
-            return {
-                kind: 'assertState',
-                path: `note.propertyIndex.${propKey}`,
-                equals: ['test-value'],
-            };
-        }
-
-        return {
-            kind: 'assertState',
-            path: 'note.id',
-            equals: expect.any(String),
-        };
-    }
-
-    private resolveSelector(
-        selector: { role?: string; name?: string; testId?: string; label?: string },
-        selectors: Map<string, import('./selectorInference').InferredSelector>
-    ): Target | null {
-        // Try exact match on testId
-        if (selector.testId) {
-            const found = Array.from(selectors.values()).find(s => s.target.testId === selector.testId);
-            if (found) return found.target as Target;
-        }
-
-        // Match on role + name
-        if (selector.role && selector.name) {
-            const found = Array.from(selectors.values()).find(s =>
-                s.target.role === selector.role && s.target.name === selector.name
-            );
-            if (found) return found.target as Target;
-        }
-
-        // Match on label
-        if (selector.label) {
-            const found = Array.from(selectors.values()).find(s => s.target.label === selector.label);
-            if (found) return found.target as Target;
-        }
-
-        return null;
     }
 
     async generateRegressionTest(finding: Finding): Promise<JourneySpec> {

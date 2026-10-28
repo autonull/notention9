@@ -9,6 +9,9 @@ export { StatePathRegistry, getStatePathRegistry, setStatePathRegistry, type Sta
 export { GoalParser, goalParser, type ParsedGoal, type TargetStatePredicate, type GoalConstraints, type InferredAction } from './goalParser.js';
 export { JourneySynthesizer, journeySynthesizer, type SynthesisOptions } from './journeySynthesizer.js';
 export { generateRegressionTest } from './regressionGenerator.js';
+export { buildSeed } from './seedBuilder.js';
+export { buildSteps, resolveSelector } from './stepBuilder.js';
+export { generateJourneyId, generateIntent, inferJourneysTouched } from './intentBuilder.js';
 export { EventFlowScanner, eventFlowScanner, type EventHandler, type ActionFlow, type ActionCall } from './eventFlowScanner.js';
 export { AccessibilitySelectorDeriver, deriveSelectorsFromPage, type AriaSnapshotOptions, type AccessibilitySelector, type LiveSelectorResult } from './accessibilitySelector.js';
 export { McpContractScanner, mcpContractScanner, type McpToolContract, type McpPluginInfo } from './mcpContractScanner.js';
