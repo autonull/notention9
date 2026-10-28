@@ -1,8 +1,5 @@
 import React, {useEffect, useRef} from 'react';
 import {cn} from '../../utils/ui';
-import {Modal} from '../ui/Primitives';
-
-export {Modal};
 
 /**
  * Reusable focus trap hook for modals, drawers, and other overlay components.

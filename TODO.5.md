@@ -424,3 +424,315 @@ Local-only, opt-in, aggregated in-app:
 ---
 
 *Living document. Revise when a gate fails or evidence contradicts a priority.*
+
+---
+
+## 11. Visual Dependency Graph
+
+```mermaid
+graph TD
+    W0[W0: Engineering Confidence<br/>Fix vitest OOM + pnpm verify] --> W1
+    W0 --> W2
+    W1[W1: Golden Path Proof<br/>Journey + Simulator recording] --> W3[W3: Extraction Quality]
+    W1 --> W3b[W3b: Power Tools Activation]
+    W1 --> W4[W4: Agent Loop Closure]
+    W2[W2: Data Durability<br/>Export/import round-trip] --> W3b
+    W2 --> W6[W6: Multi-Device Sync]
+    W3b[W3b: Power Tools Activation<br/>7 existing levers] --> W4
+    W3b --> W3b1[CLI as daily driver]
+    W3b --> W3b2[Simulator as demo/regression]
+    W3b --> W3b3[Capabilities in UI]
+    W3b --> W3b4[Pattern suggestions]
+    W3b --> W3b5[Metaphor views]
+    W3b --> W3b6[Template gallery]
+    W3b --> W3b7[Export as trust]
+    W3b2 --> W5b[W5b: Simulator Protocol Testbed]
+    W3b3 --> W4b[W4b: Capability Security UI]
+    W4[W4: Agent Loop Closure] --> W4b
+    W4 --> W6
+    W5[W5: Protocol Foundation<br/>CBOR + NoteID + Signing] -.->|G4: interop-first| W0
+    W5 --> W6
+    W5b[W5b: Simulator Protocol Testbed] -.-> W5
+    W4b[W4b: Capability Security UI] --> W4
+
+    style W0 fill:#ffcccc
+    style W1 fill:#ffcccc
+    style W2 fill:#ffcccc
+    style W3b fill:#ccffcc
+    style G4 fill:#ffffcc
+```
+
+**Key**: Red = P0 (start now), Green = P1 (parallelizable activation), Yellow = Decision gate, Dashed = conditional
+
+---
+
+## 12. Risk Register
+
+| ID | Risk | Likelihood | Impact | Detection | Mitigation | Owner |
+|----|------|------------|--------|-----------|------------|-------|
+| R1 | Golden Path fails relevance test (G2) | Medium | Fatal | Human testing in W1 | Kill criteria in W1; pivot to matching/ontology quality | Product |
+| R2 | Vitest OOM fix doesn't hold under load | High | Blocks CI | Memory guard test + heap snapshot in CI | `pool: forks` + per-file isolation + 4GB cap + alerting | Eng |
+| R3 | Protocol direction flip (G4) | Medium | Reorders P0/P1 | Explicit decision gate G4 | W5 gated; W5b provides simulator validation path | Architecture |
+| R4 | Silent data loss / corruption | Medium | Trust erosion | Corruption injection test in W2 | Schema versioning + snapshots + export round-trip + quota warnings | Eng |
+| R5 | Power tools remain invisible | High | Wasted assets | Adoption metrics in §8 | W3b has concrete "Done when" per lever; tracked in metrics | Product |
+| R6 | Matching quality insufficient for real use | Medium | Product fails | G2 relevance rating | Kill criteria in W1; prompt evaluation (W3) feeds matching | ML/Eng |
+| R7 | Agent loop closure exposes unsafe actions | Low | Safety | W4 confirmation gates + capability scoping | Capability declarations + per-session grants + revoke | Security |
+| R8 | Single-device trust erodes before sync | High | User churn | W2 durability metrics | W2 is P0; export is trust signal; W6 deferred to G5 | Product |
+| R9 | Simulator regression engine not adopted | Medium | Missed leverage | Scenario run metrics | W3b.2 concrete deliverable; W5b validates protocol | Eng |
+| R10 | Scope creep into P3 items | Medium | Delays P0/P1 | Decision gates G0-G5 | Explicit P3 list; gates block spending | PM |
+
+**Risk appetite**: P0 risks (R2, R4, R8) are mitigated by design. P1 risks (R1, R3, R5, R9) have explicit gates and kill criteria. R6 is the product risk — if matching isn't relevant, no feature fixes it.
+
+---
+
+## 13. Anti-Goals (Vanity Metrics to Avoid)
+
+| Vanity Metric | Why It's Dangerous | Replacement |
+|---------------|-------------------|-------------|
+| "Features shipped" | Incentivizes breadth over depth; hides unfinished work | **Outcomes proven**: journeys green, findings fixed, relevance rated |
+| "Lines of code written" | Penalizes deletion/refactoring; rewards bloat | **Net reduction**: modules extracted, dead code removed |
+| "Test count" (without memory guard) | Hides OOM; green CI ≠ confidence | **CI stability**: deterministic runs under cap, regression caught |
+| "Protocol conformance %" (pre-G4) | Builds unused plumbing; delays product proof | **Interop decision first** (G4); then Tier 0 only |
+| "Journey count" (without relevance) | Brittle DOM tests that break on UI changes | **Semantic assertions**: `assertState` on match results, not selectors |
+| "Component count" | Fragmentation over composition | **Seams over special cases**: power tools use existing seams |
+| "Feature flags / config options" | Combinatorial complexity; untested permutations | **Constraints as defaults**: private-by-default, capability-gated |
+| "Demo features" (not tested) | Theater; breaks on first real use | **Demo is a test**: recorded in Simulator, replayable as journey |
+| "Contributor count" (without onboarding) | Burnout; knowledge silos | **Documentation truth**: one honest page (README2.md) |
+
+**Rule**: If a metric doesn't appear in §8 (Metrics to Instrument) or a gate in §7, it doesn't drive decisions.
+
+---
+
+## 14. Simulator as Regression Engine (Connecting W1, W3b.2, W5b, P2)
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    SIMULATOR REGRESSION LOOP                    │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  pnpm optimize reproduce <findingId> --simulator               │
+│           │                                                     │
+│           ▼                                                     │
+│  ┌─────────────────────────────────────────────┐               │
+│  │ 1. Load finding + evidence bundle           │               │
+│  │ 2. Generate simulator scenario from journey │               │
+│  │ 3. Spawn agents with finding's notes        │               │
+│  │ 4. Run headless (no browser flakiness)      │               │
+│  │ 5. Record MP4 + capture final state         │               │
+│  │ 6. Compare state assertions to original     │               │
+│  │ 7. Output: REPRODUCED / VERIFIED / PASSED   │               │
+│  └─────────────────────────────────────────────┘               │
+│           │                                                     │
+│           ▼                                                     │
+│  ┌─────────────────────────────────────────────┐               │
+│  │ Evidence bundle: video + state + traces     │               │
+│  │ Stored in finding.verifiedRunId             │               │
+│  │ CI gate: must pass for PR merge             │               │
+│  └─────────────────────────────────────────────┘               │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Implementation**:
+- Extend `optimize reproduce` with `--simulator` flag
+- `simulator/src/scenarios/` gets a `regression` scenario type
+- Reuses `journeySynthesizer.generateRegressionTest()` → converts to simulator agents
+- Movie Studio records automatically (`--movie` flag exists)
+- **Unlocks**: headless multi-agent validation, visual evidence for every finding, protocol conformance demos (W5b)
+
+**Effort**: Medium (reuses existing simulator + optimize + journey synthesis)
+
+---
+
+## 15. Capability Declaration Format (for W3b.3 / W4b)
+
+**Note property format** (already parsed by `CapabilityManager`):
+```
+[@allow:browser:navigate:example.com]
+[@allow:browser:interact:*]
+[@allow:network:fetch:api.github.com]
+[@allow:filesystem:read:~/projects]
+[@allow:system:exec:deno]
+```
+
+**Property equivalent** (for structured editing):
+- Key: `permission` (or `allow`)
+- Operator: `grant`
+- Values: `["browser:navigate", "example.com"]`
+
+**UI surface**:
+- Settings → Capabilities panel: list of active grants per note
+- Each grant: capability badge + scope + source note + **Revoke** button
+- Agent tool execution: shows required capabilities → user confirms → grant added
+- Revoke: immediate; running actions check capabilities at each step
+
+**Security invariant**: No capability grant persists across sessions without explicit "remember" action.
+
+---
+
+## 16. Extraction Confidence → UI Contract (W3 Detail)
+
+| Confidence | UI Behavior | Rationale |
+|------------|-------------|-----------|
+| `≥ 0.9` | Auto-apply property chip; subtle "added by AI" badge | High trust; reduce friction |
+| `0.7 – 0.89` | Show in property modal as "Suggested: framework=React (confidence 82%)" | Visible; user can accept/reject |
+| `0.5 – 0.69` | Show in suggestions panel; not in editor | Low trust; opt-in only |
+| `< 0.5` | Log only; never surface | Noise reduction |
+
+**Calibration target**: Brier score < 0.15 on golden corpus.
+
+**Operator fit metric**: % of extracted properties where user changes operator (contains → equals). Target: < 10%.
+
+**Noisy input corpus**: 200 samples (speech transcripts, typos, mixed lang, partial sentences) — maintained as test fixture.
+
+---
+
+## 17. Template Gallery Content (W3b.6)
+
+| Template | Ontology Domain | Key Properties | Match Triggers |
+|----------|----------------|----------------|----------------|
+| Job Application | Work | role, skills[], location, salary-range, employment-type | Offer notes with matching skills/location |
+| Project Spec | Work | type, stack[], timeline, team-size, budget | Offer notes with matching stack/availability |
+| Meeting Notes | Communication | attendees[], date, location, action-items[] | Follow-up notes, task extraction |
+| Travel Plan | Scheduling | destination, dates, budget, companions, preferences | Local guides, meetup offers |
+| Invoice | Commerce | amount, currency, due-date, payer, payee, line-items[] | Payment requests, accounting |
+| Event RSVP | Scheduling | event-id, status, guests, dietary[] | Event organizer notes |
+| Code Review | Work | repo, pr-number, status, blockers[] | Related PR notes, CI results |
+| Research Brief | Communication | topic, sources[], findings[], confidence | Related research, citations |
+
+**Generation**: `TemplateGenerator.createFromOntology(domain)` → structured note with property chips pre-filled.
+
+**Done when**: Each template produces a match in the simulator within 30 seconds of creation.
+
+---
+
+## 18. Gardener / Ontology Evolution UX (W6.13)
+
+**Current**: `useGardener` hook, `ontologyService.learnFromUsage()`, conflict detection, usage stats — all headless.
+
+**Proposed visible surface**:
+- Settings → Ontology → "Learned" tab
+- Each suggestion: property key + operator + values + frequency + confidence
+- Actions: **Adopt** (add to ontology), **Dismiss**, **Edit**
+- Conflict badge: "You use `skill` with both `contains` and `equals` — standardize?"
+
+**Trigger**: After N notes (configurable, default 10) with a property not in ontology.
+
+**Done when**: User adopts ≥ 50% of Gardener suggestions; ontology grows without manual editing.
+
+---
+
+## 19. Complete Decision Gate Flow
+
+```
+START
+  │
+  ▼
+┌─────────────────────────────────────┐
+│ G0: pnpm verify passes 2× in CI?    │
+│  (memory cap, deterministic, green) │
+└─────────────┬───────────────────────┘
+              │ No
+              ▼
+         FIX W0
+              │
+              ▼
+┌─────────────────────────────────────┐
+│ G1: Stranger completes Golden Path  │
+│  unaided in <2 min?                 │
+└─────────────┬───────────────────────┘
+              │ No
+              ▼
+         FIX W1
+              │
+              ▼
+┌─────────────────────────────────────┐
+│ G2: Humans rate ≥70% matches        │
+│  relevant?                          │
+└─────────────┬───────────────────────┘
+              │ No
+              ▼
+         FIX MATCHING/ONTOLOGY
+              │
+              ▼
+┌─────────────────────────────────────┐
+│ G3: Data loss provably impossible?  │
+│  (export→wipe→import = identical)   │
+└─────────────┬───────────────────────┘
+              │ No
+              ▼
+         FIX W2
+              │
+              ▼
+┌─────────────────────────────────────┐
+│ G4: Product direction interop-first?│
+└─────────────┬───────────────────────┘
+         ┌────┴────┐
+        Yes       No
+         │         │
+         ▼         ▼
+    W5 → P0    W5 stays P1
+    (Tier 0)   (deferred)
+         │         │
+         └────┬────┘
+              ▼
+┌─────────────────────────────────────┐
+│ G5: Users hit single-device limit?  │
+└─────────────┬───────────────────────┘
+         ┌────┴────┐
+        Yes       No
+         │         │
+         ▼         ▼
+    W6 → P1    W6 stays P2
+    (Sync)     (deferred)
+```
+
+**No gate bypassing**. Each gate is a hard stop.
+
+---
+
+## 20. File / Module Index for Workstreams
+
+| Workstream | Primary Files to Touch |
+|------------|------------------------|
+| W0 | `ui/vite.config.ts`, `ui/vitest.config.ts`, `scripts/verify.ts` (new), `.github/workflows/` |
+| W1 | `optimize/src/knownJourneys.ts`, `optimize/src/discovery/stepBuilder.ts`, `simulator/src/scenarios/` |
+| W2 | `core/src/export/`, `ui/src/hooks/useLocalForage.ts`, `ui/src/components/settings/DataTab.tsx` |
+| W3 | `core/src/prompts/`, `core/src/notes/propertyExtractor/`, `optimize/src/discovery/` |
+| W3b.1 | `cli/src/commands/`, `cli/src/tools/ingest.ts`, `README.md` |
+| W3b.2 | `simulator/src/scenarios/`, `simulator/src/movie_maker.ts`, `optimize/src/cliHandlers/reproduce.ts` |
+| W3b.3 | `ui/src/components/settings/`, `core/src/security/CapabilityManager.ts`, `core/src/network/networkGate.ts` |
+| W3b.4 | `ui/src/components/editor/`, `core/src/patternRecognition/`, `useEditorModals.tsx` |
+| W3b.5 | `ui/src/plugins/metaphor/`, `core/src/skills/metaphor/MetaphorMapper.ts` |
+| W3b.6 | `ui/src/components/editor/`, `core/src/templates/TemplateGenerator.ts` |
+| W3b.7 | `ui/src/components/settings/DataTab.tsx`, `core/src/export/`, `docs/export-format.md` (new) |
+| W4 | `ui/src/components/assistant/`, `agent/src/skills/`, `ui/src/hooks/useSmartNoteAssistant.tsx` |
+| W4b | `ui/src/components/AppShell.tsx`, `ui/src/components/ui/ConfirmationModal.tsx` |
+| W5 | `core/src/utils/canonicalization.ts` (new), `core/src/types/index.ts` (NoteID) |
+| W5b | `simulator/src/scenarios/protocol-conformance.ts` (new) |
+| W6 | `core/src/sync/` (new), `core/src/network/registry.ts` |
+| 6.1 | `ui/src/components/ui/Primitives.tsx`, `ui/src/components/ui/Overlay.tsx`, `eslint.config.js` |
+| 6.2 | `ui/src/components/dashboard/EmptyStateForNotes.tsx`, `SampleWorkspacePrompt.tsx` |
+| 6.3 | `ui/src/components/ui/`, `agent/src/server/`, `core/src/network/` |
+| 6.6 | `optimize/src/a11y.ts`, `optimize/src/discovery/accessibilitySelector.ts` |
+
+---
+
+## 21. Quick Reference: All Workstreams by Priority
+
+| Priority | Workstream | Unlocks | Evidence |
+|----------|------------|---------|----------|
+| P0 | **W0** Engineering Confidence | Everything | CI green 2× under cap |
+| P0 | **W1** Golden Path Proof | Product direction | Journey green + video + human test |
+| P0 | **W2** Data Durability | Trust foundation | Export→wipe→import = identical |
+| P1 | **W3** Extraction Quality | Matching relevance | Calibrated prompts + regression tests |
+| P1 | **W3b** Power Tools Activation | Immediate value | 7 levers with "Done when" criteria |
+| P1 | **W4** Agent Loop Closure | Usable automation | Confirmations + traces + undo |
+| P1 | **W4b** Capability Security UI | Trust boundary visible | Grants/revoke in Settings |
+| P1/G4 | **W5** Protocol Foundation | Decentralization | CBOR + NoteID + Signing |
+| P1 | **W5b** Simulator Protocol Testbed | Protocol validation | Conformance scenario |
+| P2/G5 | **W6** Multi-Device Sync | Scale | CRDT convergence |
+
+---
+
+*End of TODO.5.md — living document. Revise when a gate fails or evidence contradicts a priority.*
