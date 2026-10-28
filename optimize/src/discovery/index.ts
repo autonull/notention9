@@ -23,6 +23,7 @@ import { TsAstScanner } from './tsAstScanner.js';
 import { TypeSchemaBuilder } from './typeSchema.js';
 import { StatePathRegistry } from './statePathRegistry.js';
 import type { JourneySpec } from '../journey.js';
+import { getProjectRoot } from '../config.js';
 
 export class DiscoveryEngine {
     private components = new ComponentScanner();
@@ -34,7 +35,11 @@ export class DiscoveryEngine {
     private typeSchema: ReturnType<TypeSchemaBuilder['build']> | null = null;
     private statePathRegistry = new StatePathRegistry();
 
-    discoverAll(projectRoot: string = '/home/me/notention9') {
+    private defaultRoot(): string {
+        return getProjectRoot();
+    }
+
+    discoverAll(projectRoot: string = this.defaultRoot()) {
         const discovery = this.components.scan(projectRoot);
         const stateSchema = this.stateSchema.infer(projectRoot);
         const traceEmitters = this.traces.scan(projectRoot);
@@ -43,7 +48,7 @@ export class DiscoveryEngine {
         return { discovery, stateSchema, traceEmitters, selectors };
     }
 
-    discoverWithTypes(projectRoot: string = '/home/me/notention9') {
+    discoverWithTypes(projectRoot: string = this.defaultRoot()) {
         const base = this.discoverAll(projectRoot);
         const typeSchema = TypeSchemaBuilder.fromProject(projectRoot);
         this.typeSchema = typeSchema;
@@ -51,15 +56,15 @@ export class DiscoveryEngine {
         return { ...base, typeSchema, statePathRegistry: this.statePathRegistry };
     }
 
-    generateJourney(name: string, projectRoot: string = '/home/me/notention9'): JourneySpec {
+    generateJourney(name: string, projectRoot: string = this.defaultRoot()): JourneySpec {
         return this.journeys.generate(name, { projectRoot });
     }
 
-    generateFromIntent(intent: string, projectRoot: string = '/home/me/notention9'): JourneySpec | null {
+    generateFromIntent(intent: string, projectRoot: string = this.defaultRoot()): JourneySpec | null {
         return this.journeys.generateFromIntent(intent, { projectRoot });
     }
 
-    getSelectors(projectRoot: string = '/home/me/notention9') {
+    getSelectors(projectRoot: string = this.defaultRoot()) {
         const discovery = this.components.scan(projectRoot);
         return this.selectors.infer(discovery);
     }
