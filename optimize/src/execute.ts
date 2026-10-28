@@ -139,6 +139,63 @@ export async function executeJourney(context: ExecutionContext): Promise<void> {
                     }
                     break;
                 }
+                case 'captureAria': {
+                    // Capture full accessibility tree snapshot
+                    const snapshot = await (page as any).accessibility.snapshot({ root: page.mainFrame() });
+                    ariaSnapshot = JSON.stringify(snapshot, null, 2);
+                    // Also capture via DevBridge if available for richer data
+                    const devBridgeSnapshot = await page.evaluate(() => (globalThis as any).__NOTENTION__?.ariaSnapshot?.(step.label));
+                    if (devBridgeSnapshot) {
+                        ariaSnapshot = devBridgeSnapshot;
+                    }
+                    stateSnapshot = await page.evaluate(() => (globalThis as any).__NOTENTION__?.state?.());
+                    break;
+                }
+                case 'assertAriaSnapshot': {
+                    const locator = resolveTarget(page, step.target);
+                    await waitForReady(locator);
+                    const actualSnapshot = await locator.ariaSnapshot();
+                    const actualStr = JSON.stringify(actualSnapshot, null, 2);
+                    // Store for comparison in test
+                    ariaSnapshot = actualStr;
+                    // Simple string comparison - in practice would use Playwright's expect().toMatchAriaSnapshot()
+                    if (!actualStr.includes(step.snapshot)) {
+                        throw new Error(`assertAriaSnapshot failed: expected snapshot to contain "${step.snapshot}", got: ${actualStr}`);
+                    }
+                    break;
+                }
+                case 'assertFocus': {
+                    const locator = resolveTarget(page, step.target);
+                    await waitForReady(locator);
+                    const isFocused = await locator.evaluate((el: HTMLElement) => el === el.ownerDocument.activeElement);
+                    if (!isFocused) {
+                        throw new Error(`assertFocus failed: element is not focused`);
+                    }
+                    break;
+                }
+                case 'assertAccessibleName': {
+                    const locator = resolveTarget(page, step.target);
+                    await waitForReady(locator);
+                    const accessibleName = await locator.getAttribute('aria-label') ||
+                                         await locator.getAttribute('aria-labelledby')?.then(id => page.locator(`#${id}`).textContent()) ||
+                                         await locator.textContent() ||
+                                         '';
+                    const normalizedName = accessibleName.trim().toLowerCase();
+                    const expectedNormalized = step.expected.trim().toLowerCase();
+                    if (!normalizedName.includes(expectedNormalized)) {
+                        throw new Error(`assertAccessibleName failed: expected name to contain "${step.expected}", got: "${accessibleName}"`);
+                    }
+                    break;
+                }
+                case 'assertRole': {
+                    const locator = resolveTarget(page, step.target);
+                    await waitForReady(locator);
+                    const actualRole = await locator.getAttribute('role') || 'unknown';
+                    if (actualRole !== step.expectedRole) {
+                        throw new Error(`assertRole failed: expected role "${step.expectedRole}", got: "${actualRole}"`);
+                    }
+                    break;
+                }
             }
         } catch (e) {
             ok = false;

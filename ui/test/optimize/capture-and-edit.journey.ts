@@ -6,10 +6,10 @@ import { settle } from '../support/settle';
 import { writeBundle, type EvidenceBundle } from '@notention/optimize/evidence';
 import { getEvidenceDir } from '@notention/core';
 
-test('optimize: capture-and-edit', async ({ page }) => {
-    const journey = getJourney('capture-and-edit');
+async function runJourneyTest(journeyId: string, page: any) {
+    const journey = getJourney(journeyId);
     if (!journey) {
-        throw new Error('Journey capture-and-edit not found in registry');
+        throw new Error(`Journey ${journeyId} not found in registry`);
     }
 
     // Inject the runId before the app loads so DevBridge can find it
@@ -54,7 +54,7 @@ test('optimize: capture-and-edit', async ({ page }) => {
         actionTraces: context.actionTraces,
         assertions: context.assertions,
         snapshots: context.results
-            .filter(r => r.kind === 'capture')
+            .filter(r => r.kind === 'capture' || r.kind === 'captureAria')
             .map(r => ({
                 label: r.label || `step-${r.index}`,
                 state: r.stateSnapshot ?? {},
@@ -79,4 +79,12 @@ test('optimize: capture-and-edit', async ({ page }) => {
 
     // Verify we have results for all steps
     expect(context.results.length).toBeGreaterThan(0);
+}
+
+test('optimize: capture-and-edit', async ({ page }) => {
+    await runJourneyTest('capture-and-edit', page);
+});
+
+test('optimize: capture-and-edit-keyboard', async ({ page }) => {
+    await runJourneyTest('capture-and-edit-keyboard', page);
 });

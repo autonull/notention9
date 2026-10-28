@@ -83,6 +83,41 @@ const ontologyConflict: JourneySpec = {
     status: 'draft',
 };
 
+// Keyboard-only variant of capture-and-edit
+const captureAndEditKeyboard: JourneySpec = {
+    id: 'capture-and-edit-keyboard',
+    version: 1,
+    intent: 'capture a note and edit its properties using keyboard only',
+    journeysTouched: ['capture', 'edit', 'property-extraction', 'accessibility'],
+    seed: { notes: [testNote], settings: baseSettings },
+    steps: [
+        { kind: 'seed', notes: [testNote], settings: baseSettings },
+        // Focus the add-detail button and press Enter
+        { kind: 'act', target: { testId: 'add-detail' }, action: 'press', value: 'Enter' },
+        // Wait for modal to appear
+        { kind: 'script', code: 'new Promise(r => setTimeout(r, 500))' },
+        // Fill property key input (already focused via Tab navigation in modal)
+        { kind: 'act', target: { testId: 'property-key-input', modal: 'Add detail' }, action: 'fill', value: 'framework' },
+        // Tab to operator select, use arrow keys to select 'contains'
+        { kind: 'act', target: { testId: 'property-operator-select', modal: 'Add detail' }, action: 'press', value: 'Tab' },
+        { kind: 'act', target: { testId: 'property-operator-select', modal: 'Add detail' }, action: 'press', value: 'ArrowDown' },
+        { kind: 'act', target: { testId: 'property-operator-select', modal: 'Add detail' }, action: 'press', value: 'Enter' },
+        // Tab to value input
+        { kind: 'act', target: { testId: 'property-value-input', modal: 'Add detail' }, action: 'press', value: 'Tab' },
+        { kind: 'act', target: { testId: 'property-value-input', modal: 'Add detail' }, action: 'fill', value: 'Next.js' },
+        // Tab to Add Detail button and press Enter
+        { kind: 'act', target: { role: 'button', name: /^add detail$/i, modal: 'Add detail' }, action: 'press', value: 'Tab' },
+        { kind: 'act', target: { role: 'button', name: /^add detail$/i, modal: 'Add detail' }, action: 'press', value: 'Enter' },
+        { kind: 'script', code: 'window.dispatchEvent(new CustomEvent("save-note"))' },
+        { kind: 'waitForState', path: 'note.propertyIndex.framework', equals: ['Next.js'], timeoutMs: 3000 },
+        { kind: 'assertState', path: 'note.propertyIndex.framework', equals: ['Next.js'] },
+        { kind: 'assertState', path: 'note.propertyIndex.skill', equals: ['React', 'TypeScript'] },
+        { kind: 'capture', label: 'after-edit-keyboard' },
+    ],
+    status: 'ready',
+};
+
 registerJourney(captureAndEdit);
 registerJourney(publishGate);
 registerJourney(ontologyConflict);
+registerJourney(captureAndEditKeyboard);

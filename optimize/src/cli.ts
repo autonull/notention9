@@ -11,26 +11,28 @@ interface OptimizeIntent {
     action: 'optimize' | 'reproduce' | 'findings';
     journey?: string;
     target?: string;
+    json?: boolean;
+    a11y?: boolean;
     constraints: { privacy?: 'private' | 'public'; noisySpeech?: boolean };
     mode: 'report-only';
 }
 
-function parseOptimizeIntent(args: string[]): OptimizeIntent {
+function parseOptimizeIntent(args: string[], json: boolean, a11y: boolean): OptimizeIntent {
     const [subcommand, ...rest] = args;
 
     switch (subcommand) {
         case 'optimize': {
             const journey = rest[0];
             if (!journey) throw new Error('Journey ID required for optimize');
-            return { action: 'optimize', journey, constraints: { privacy: 'private' }, mode: 'report-only' };
+            return { action: 'optimize', journey, constraints: { privacy: 'private' }, mode: 'report-only', json, a11y };
         }
         case 'reproduce': {
             const target = rest[0];
             if (!target) throw new Error('Finding ID or runId required for reproduce');
-            return { action: 'reproduce', target, constraints: { privacy: 'private' }, mode: 'report-only' };
+            return { action: 'reproduce', target, constraints: { privacy: 'private' }, mode: 'report-only', json, a11y };
         }
         case 'findings': {
-            return { action: 'findings', constraints: { privacy: 'private' }, mode: 'report-only' };
+            return { action: 'findings', constraints: { privacy: 'private' }, mode: 'report-only', json, a11y };
         }
         case 'help':
         case '--help':
@@ -69,7 +71,12 @@ async function main() {
         process.exit(0);
     }
 
-    const { values, positionals } = parseArgs({ args: rawArgs, allowPositionals: true });
+    // Extract flags before parseArgs
+    const json = rawArgs.includes('--json');
+    const a11y = rawArgs.includes('--a11y');
+    const filteredArgs = rawArgs.filter(r => r !== '--json' && r !== '--a11y');
+
+    const { positionals } = parseArgs({ args: filteredArgs, allowPositionals: true });
 
     if (positionals.length === 0) {
         printHelp();
@@ -77,7 +84,7 @@ async function main() {
     }
 
     try {
-        const intent = parseOptimizeIntent(positionals);
+        const intent = parseOptimizeIntent(positionals, json, a11y);
 
         if (intent.action === 'optimize' && intent.journey) {
             console.log(`🔍 Running optimization journey: ${intent.journey}`);
@@ -126,15 +133,45 @@ async function main() {
                 process.exit(0);
             }
 
-            console.log('Optimization runs:');
-            for (const runId of runDirs) {
-                const findingsPath = join(evidenceDir, runId, 'findings.json');
-                let count = 0;
-                if (existsSync(findingsPath)) {
-                    const findings = JSON.parse(readFileSync(findingsPath, 'utf-8'));
-                    count = findings.length;
+            if (intent.json) {
+                const findings = runDirs.map(runId => {
+                    const findingsPath = join(evidenceDir, runId, 'findings.json');
+                    if (existsSync(findingsPath)) {
+                        return JSON.parse(readFileSync(findingsPath, 'utf-8'));
+                    }
+                    return [];
+                }).flat();
+                console.log(JSON.stringify(findings, null, 2));
+            } else if (intent.a11y) {
+                console.log('Accessibility findings:');
+                for (const runId of runDirs) {
+                    const findingsPath = join(evidenceDir, runId, 'findings.json');
+                    if (existsSync(findingsPath)) {
+                        const findings = JSON.parse(readFileSync(findingsPath, 'utf-8'));
+                        for (const finding of findings) {
+                            if (finding.id?.startsWith('a11y-')) {
+                                console.log(`  [${finding.severity.toUpperCase()}] ${finding.title}`);
+                                console.log(`    Run: ${runId}`);
+                                console.log(`    Location: ${finding.location}`);
+                                console.log(`    WCAG: ${finding.wcagCriteria?.join(', ') || 'N/A'}`);
+                                console.log(`    Impact: ${finding.userImpact}`);
+                                console.log(`    Fix: ${finding.proposedFix}`);
+                                console.log();
+                            }
+                        }
+                    }
                 }
-                console.log(`  ${runId}: ${count} finding(s)`);
+            } else {
+                console.log('Optimization runs:');
+                for (const runId of runDirs) {
+                    const findingsPath = join(evidenceDir, runId, 'findings.json');
+                    let count = 0;
+                    if (existsSync(findingsPath)) {
+                        const findings = JSON.parse(readFileSync(findingsPath, 'utf-8'));
+                        count = findings.length;
+                    }
+                    console.log(`  ${runId}: ${count} finding(s)`);
+                }
             }
             process.exit(0);
         }

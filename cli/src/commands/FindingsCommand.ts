@@ -7,9 +7,10 @@ import { join } from 'path';
 export const FindingsCommand = createCommand({
     name: 'findings',
     description: 'List findings from optimization runs',
-    usage: 'findings [--json]',
+    usage: 'findings [--json] [--a11y]',
     async run(args, context) {
         const json = args.includes('--json');
+        const a11y = args.includes('--a11y');
         const evidenceDir = await getEvidenceDir();
 
         if (!existsSync(evidenceDir)) {
@@ -35,6 +36,25 @@ export const FindingsCommand = createCommand({
                 return [];
             }).flat();
             console.log(JSON.stringify(findings, null, 2));
+        } else if (a11y) {
+            console.log('Accessibility findings:');
+            for (const runId of runDirs) {
+                const findingsPath = join(evidenceDir, runId, 'findings.json');
+                if (existsSync(findingsPath)) {
+                    const findings = JSON.parse(readFileSync(findingsPath, 'utf-8'));
+                    for (const finding of findings) {
+                        if (finding.id?.startsWith('a11y-')) {
+                            console.log(`  [${finding.severity.toUpperCase()}] ${finding.title}`);
+                            console.log(`    Run: ${runId}`);
+                            console.log(`    Location: ${finding.location}`);
+                            console.log(`    WCAG: ${finding.wcagCriteria?.join(', ') || 'N/A'}`);
+                            console.log(`    Impact: ${finding.userImpact}`);
+                            console.log(`    Fix: ${finding.proposedFix}`);
+                            console.log();
+                        }
+                    }
+                }
+            }
         } else {
             console.log('Optimization runs:');
             for (const runId of runDirs) {
