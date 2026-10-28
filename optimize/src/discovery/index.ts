@@ -8,6 +8,7 @@ export { TypeSchemaBuilder, TypeSchema, type ResolvedType, type ResolvedProperty
 export { StatePathRegistry, getStatePathRegistry, setStatePathRegistry, type StatePathEntry, type StatePathInfo } from './statePathRegistry.js';
 export { GoalParser, goalParser, type ParsedGoal, type TargetStatePredicate, type GoalConstraints, type InferredAction } from './goalParser.js';
 export { JourneySynthesizer, journeySynthesizer, type SynthesisOptions } from './journeySynthesizer.js';
+export { generateRegressionTest } from './regressionGenerator.js';
 export { EventFlowScanner, eventFlowScanner, type EventHandler, type ActionFlow, type ActionCall } from './eventFlowScanner.js';
 export { AccessibilitySelectorDeriver, deriveSelectorsFromPage, type AriaSnapshotOptions, type AccessibilitySelector, type LiveSelectorResult } from './accessibilitySelector.js';
 export { McpContractScanner, mcpContractScanner, type McpToolContract, type McpPluginInfo } from './mcpContractScanner.js';
