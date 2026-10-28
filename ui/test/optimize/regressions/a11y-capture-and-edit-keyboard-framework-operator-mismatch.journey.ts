@@ -26,12 +26,12 @@ const journey: JourneySpec = {
                     ]
                 }
             ],
-            "createdAt": "2026-10-28T18:12:00.843Z",
-            "updatedAt": "2026-10-28T18:12:00.843Z",
+            "createdAt": "2026-10-28T18:38:42.833Z",
+            "updatedAt": "2026-10-28T18:38:42.833Z",
             "source": {
                 "type": "user",
                 "identifier": "user-default",
-                "timestamp": 1793211120843
+                "timestamp": 1793212722833
             },
             "privacy": "private",
             "priority": 1
@@ -53,7 +53,7 @@ const journey: JourneySpec = {
 },
     steps: [
     { kind: 'seed',
-        notes: [{"id":"scene-editor-note","title":"Scene Editor Note","content":"Working on the scene editor with <span data-type=\"property\" data-name=\"skill\" data-operator=\"contains\" data-value=\"React, TypeScript\"></span>","tags":["development"],"properties":[{"key":"skill","operator":"contains","values":["React","TypeScript"]}],"createdAt":"2026-10-28T18:12:00.843Z","updatedAt":"2026-10-28T18:12:00.843Z","source":{"type":"user","identifier":"user-default","timestamp":1793211120843},"privacy":"private","priority":1}],
+        notes: [{"id":"scene-editor-note","title":"Scene Editor Note","content":"Working on the scene editor with <span data-type=\"property\" data-name=\"skill\" data-operator=\"contains\" data-value=\"React, TypeScript\"></span>","tags":["development"],"properties":[{"key":"skill","operator":"contains","values":["React","TypeScript"]}],"createdAt":"2026-10-28T18:38:42.833Z","updatedAt":"2026-10-28T18:38:42.833Z","source":{"type":"user","identifier":"user-default","timestamp":1793212722833},"privacy":"private","priority":1}],
         settings: {"theme":"dark","ontology":[],"developerMode":false,"aiEnabled":false,"aiProvider":"local","aiModel":"","googleGeminiApiKey":"","nostr":{"privkey":null,"relays":[]}}
     },
     { kind: 'navigate',

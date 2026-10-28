@@ -1,6 +1,7 @@
 import type { Page } from '@playwright/test';
 import type { JourneySpec, Step } from './journey.js';
-import { executeAct, resolveTarget } from './steps.js';
+import { executeAct, resolveTarget, waitForReady } from './steps.js';
+import { resolvePath, deepEqual } from './pathUtils.js';
 
 export interface StepResult {
     index: number;
@@ -222,34 +223,4 @@ export async function executeJourney(context: ExecutionContext): Promise<void> {
             assertions.push({ id: `${journey.id}:${i}`, ok: true });
         }
     }
-}
-
-function resolvePath(obj: unknown, path: string): unknown {
-    return path.split('.').reduce((acc: any, part) => {
-        if (acc === null || acc === undefined) return undefined;
-        const match = part.match(/^(.+)\[(\d+)\]$/);
-        if (match) {
-            return acc[match[1]]?.[parseInt(match[2], 10)];
-        }
-        return acc[part];
-    }, obj);
-}
-
-function deepEqual(a: unknown, b: unknown): boolean {
-    if (a === b) return true;
-    if (a === null || b === null) return false;
-    if (typeof a !== 'object' || typeof b !== 'object') return false;
-    if (Array.isArray(a) && Array.isArray(b)) {
-        if (a.length !== b.length) return false;
-        return a.every((val, i) => deepEqual(val, b[i]));
-    }
-    const keysA = Object.keys(a as object);
-    const keysB = Object.keys(b as object);
-    if (keysA.length !== keysB.length) return false;
-    return keysA.every(key => deepEqual((a as any)[key], (b as any)[key]));
-}
-
-async function waitForReady(locator: any): Promise<void> {
-    await locator.waitFor({ state: 'visible', timeout: 10000 });
-    await locator.waitFor({ state: 'enabled', timeout: 5000 });
 }

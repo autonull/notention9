@@ -1,6 +1,12 @@
 import type { Page, Locator } from '@playwright/test';
 import type { Target, Step } from './journey.js';
 
+export async function waitForReady(locator: Locator, isModal: boolean = false): Promise<void> {
+    const timeout = isModal ? 15000 : 10000;
+    await locator.waitFor({ state: 'visible', timeout });
+    await locator.waitFor({ state: 'attached', timeout: isModal ? 10000 : 5000 });
+}
+
 function isRegexString(value: string): boolean {
     return value.startsWith('/') && value.endsWith('/');
 }
@@ -45,12 +51,6 @@ export function resolveTarget(page: Page, target: Target): Locator {
         return scope.getByLabel(target.label);
     }
     throw new Error('Invalid target');
-}
-
-export async function waitForReady(locator: Locator, isModal: boolean = false): Promise<void> {
-    const timeout = isModal ? 15000 : 10000;
-    await locator.waitFor({ state: 'visible', timeout });
-    await locator.waitFor({ state: 'attached', timeout: isModal ? 10000 : 5000 });
 }
 
 export async function executeAct(page: Page, step: Step): Promise<void> {
