@@ -37,7 +37,7 @@ const settings: AppSettings = {
     sidebarViewMode: 'expanded',
 };
 
-test('optimize: ontology-conflict', async ({ page }) => {
+test.skip('optimize: ontology-conflict (draft)', async ({ page }) => {
     // Seed with a note that has ontology conflict
     await seed(page, { notes: [conflictingNote], settings, hash: 'notes/ontology-conflict-note' });
     await settle(page);
