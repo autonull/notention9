@@ -3,6 +3,8 @@ import { GoalParser, ParsedGoal, InferredAction } from './goalParser.js';
 import { SelectorInference } from './selectorInference.js';
 import type { JourneySpec, Step, Target } from '../journey.js';
 import type { Note, AppSettings } from '@notention/core';
+import type { Finding } from '../finding.js';
+import { loadBundle } from '../replay.js';
 
 export interface SynthesisOptions {
     projectRoot?: string;
@@ -391,6 +393,215 @@ export class JourneySynthesizer {
         }
 
         return null;
+    }
+
+    /**
+     * Generate a regression test journey from a finding.
+     * The journey will target the exact state path that failed and assert the expected value.
+     */
+    async generateRegressionTest(finding: Finding): Promise<JourneySpec> {
+        // Extract bundle runId from reproduction (handle both old string format and new object format)
+        const reproductionBundle = typeof finding.reproduction === 'object' 
+            ? finding.reproduction.bundle 
+            : '';
+        const reproductionJourneyId = typeof finding.reproduction === 'object'
+            ? finding.reproduction.journeyId
+            : 'unknown';
+
+        if (!reproductionBundle) {
+            throw new Error(`Finding has no reproduction bundle`);
+        }
+
+        // Load the original bundle to get the expected state
+        const bundle = await loadBundle(reproductionBundle);
+        if (!bundle) {
+            throw new Error(`Bundle not found for run: ${reproductionBundle}`);
+        }
+
+        // Extract the state path from the finding location
+        const statePath = finding.location; // e.g., "note.propertyIndex.framework"
+        
+        // Find the expected value from the original bundle's snapshots
+        let expectedValue: unknown = null;
+        for (const snapshot of bundle.snapshots) {
+            const value = this.resolvePath(snapshot.state, statePath);
+            if (value !== undefined) {
+                expectedValue = value;
+                break;
+            }
+        }
+
+        // Generate journey ID
+        const journeyId = `regression-${finding.id}`;
+
+        // Build steps for the regression test
+        const steps: Step[] = [];
+
+        // 1. Seed from the original journey's seed
+        const journey = this.getJourneySync(reproductionJourneyId);
+        if (journey) {
+            steps.push({ kind: 'seed', notes: journey.seed.notes, settings: journey.seed.settings as any });
+        } else {
+            // Fallback to minimal seed
+            steps.push({ 
+                kind: 'seed', 
+                notes: [], 
+                settings: { theme: 'dark', ontology: [] } 
+            });
+        }
+
+        // 2. Navigate to the note (use the original journey's navigation if available)
+        if (journey) {
+            for (const step of journey.steps) {
+                if (step.kind === 'navigate') {
+                    steps.push(step);
+                    break;
+                }
+            }
+        } else {
+            steps.push({ kind: 'navigate', hash: 'notes/scene-editor-note' });
+        }
+
+        // 3. Add initial assertion - state should exist
+        steps.push({ kind: 'assertState', path: 'note.id', equals: expect.any(String) });
+
+        // 4. Add the specific regression assertion - this is the key part
+        // The finding's location tells us what state path to check
+        steps.push({ 
+            kind: 'assertState', 
+            path: statePath, 
+            equals: expectedValue ?? [] // Expected value from bundle
+        });
+
+        // 5. Console errors check
+        steps.push({ kind: 'assertNoConsoleErrors' });
+
+        return {
+            id: journeyId,
+            version: 1,
+            intent: `Regression test for finding: ${finding.title}`,
+            journeysTouched: ['regression', finding.journey],
+            seed: journey?.seed ?? { notes: [], settings: { theme: 'dark', ontology: [] } },
+            steps,
+            status: 'ready',
+        };
+    }
+
+    private getJourneySync(journeyId: string): JourneySpec | undefined {
+        // Known journeys - return minimal data without triggering full module load
+        const knownJourneys: Record<string, JourneySpec> = {
+            'capture-and-edit': {
+                id: 'capture-and-edit',
+                version: 1,
+                intent: 'capture a note and edit its properties',
+                journeysTouched: ['capture', 'edit', 'property-extraction'],
+                seed: { 
+                    notes: [{
+                        id: 'scene-editor-note',
+                        title: 'Scene Editor Note',
+                        content: 'Working on the scene editor with <span data-type="property" data-name="skill" data-operator="contains" data-value="React, TypeScript"></span>',
+                        tags: ['development'],
+                        properties: [{ key: 'skill', operator: 'contains', values: ['React', 'TypeScript'] }],
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                        source: { type: 'user', identifier: 'user-default', timestamp: Date.now() },
+                        privacy: 'private',
+                        priority: 1,
+                    }], 
+                    settings: { theme: 'dark', ontology: [], developerMode: false, aiEnabled: false, aiProvider: 'local', aiModel: '', googleGeminiApiKey: '', nostr: { privkey: null, relays: [] } }
+                },
+                steps: [
+                    { kind: 'seed', notes: [], settings: {} },
+                    { kind: 'navigate', hash: 'notes/scene-editor-note' },
+                    { kind: 'act', target: { testId: 'add-detail' }, action: 'click' },
+                    { kind: 'act', target: { testId: 'property-key-input', modal: 'Add detail' }, action: 'fill', value: 'framework' },
+                    { kind: 'act', target: { testId: 'property-operator-select', modal: 'Add detail' }, action: 'select', value: 'contains' },
+                    { kind: 'act', target: { testId: 'property-value-input', modal: 'Add detail' }, action: 'fill', value: 'Next.js' },
+                    { kind: 'act', target: { role: 'button', name: /^add detail$/i, modal: 'Add detail' }, action: 'click' },
+                    { kind: 'script', code: 'window.dispatchEvent(new CustomEvent("save-note"))' },
+                    { kind: 'waitForState', path: 'note.propertyIndex.framework', equals: ['Next.js'], timeoutMs: 3000 },
+                    { kind: 'assertState', path: 'note.propertyIndex.framework', equals: ['Next.js'] },
+                    { kind: 'assertState', path: 'note.propertyIndex.skill', equals: ['React', 'TypeScript'] },
+                    { kind: 'capture', label: 'after-edit' },
+                ],
+                status: 'ready',
+            },
+            'capture-and-edit-keyboard': {
+                id: 'capture-and-edit-keyboard',
+                version: 1,
+                intent: 'capture a note and edit its properties using keyboard only',
+                journeysTouched: ['capture', 'edit', 'property-extraction', 'accessibility'],
+                seed: { 
+                    notes: [{
+                        id: 'scene-editor-note',
+                        title: 'Scene Editor Note',
+                        content: 'Working on the scene editor with <span data-type="property" data-name="skill" data-operator="contains" data-value="React, TypeScript"></span>',
+                        tags: ['development'],
+                        properties: [{ key: 'skill', operator: 'contains', values: ['React', 'TypeScript'] }],
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                        source: { type: 'user', identifier: 'user-default', timestamp: Date.now() },
+                        privacy: 'private',
+                        priority: 1,
+                    }], 
+                    settings: { theme: 'dark', ontology: [], developerMode: false, aiEnabled: false, aiProvider: 'local', aiModel: '', googleGeminiApiKey: '', nostr: { privkey: null, relays: [] } }
+                },
+                steps: [
+                    { kind: 'seed', notes: [], settings: {} },
+                    { kind: 'navigate', hash: 'notes/scene-editor-note' },
+                    { kind: 'act', target: { testId: 'add-detail' }, action: 'press', value: 'Enter' },
+                    { kind: 'script', code: 'new Promise(r => setTimeout(r, 500))' },
+                    { kind: 'act', target: { testId: 'property-key-input', modal: 'Add detail' }, action: 'fill', value: 'framework' },
+                    { kind: 'act', target: { testId: 'property-operator-select', modal: 'Add detail' }, action: 'press', value: 'Tab' },
+                    { kind: 'act', target: { testId: 'property-operator-select', modal: 'Add detail' }, action: 'press', value: 'ArrowDown' },
+                    { kind: 'act', target: { testId: 'property-operator-select', modal: 'Add detail' }, action: 'press', value: 'Enter' },
+                    { kind: 'act', target: { testId: 'property-value-input', modal: 'Add detail' }, action: 'press', value: 'Tab' },
+                    { kind: 'act', target: { testId: 'property-value-input', modal: 'Add detail' }, action: 'fill', value: 'Next.js' },
+                    { kind: 'act', target: { role: 'button', name: /^add detail$/i, modal: 'Add detail' }, action: 'press', value: 'Tab' },
+                    { kind: 'act', target: { role: 'button', name: /^add detail$/i, modal: 'Add detail' }, action: 'press', value: 'Enter' },
+                    { kind: 'script', code: 'window.dispatchEvent(new CustomEvent("save-note"))' },
+                    { kind: 'waitForState', path: 'note.propertyIndex.framework', equals: ['Next.js'], timeoutMs: 3000 },
+                    { kind: 'assertState', path: 'note.propertyIndex.framework', equals: ['Next.js'] },
+                    { kind: 'assertState', path: 'note.propertyIndex.skill', equals: ['React', 'TypeScript'] },
+                    { kind: 'capture', label: 'after-edit-keyboard' },
+                ],
+                status: 'ready',
+            },
+            'publish-gate': {
+                id: 'publish-gate',
+                version: 1,
+                intent: 'verify publish gate requires confirmation for private notes',
+                journeysTouched: ['publish', 'privacy-gate'],
+                seed: { notes: [], settings: { theme: 'dark', ontology: [], developerMode: false, aiEnabled: false, aiProvider: 'local', aiModel: '', googleGeminiApiKey: '', nostr: { privkey: null, relays: [] } } },
+                steps: [
+                    { kind: 'seed', notes: [], settings: {} },
+                    { kind: 'navigate', hash: 'notes/private-note-for-publish' },
+                    { kind: 'act', target: { role: 'button', name: 'publish' }, action: 'click' },
+                    { kind: 'assertState', path: 'pendingConfirmations.0.action', equals: 'publish' },
+                    { kind: 'act', target: { role: 'button', name: 'cancel' }, action: 'click' },
+                    { kind: 'assertState', path: 'note.privacy', equals: 'private' },
+                    { kind: 'capture', label: 'after-cancel' },
+                    { kind: 'assertNoConsoleErrors' },
+                ],
+                status: 'ready',
+            },
+        };
+        return knownJourneys[journeyId];
+    }
+
+    private resolvePath(obj: unknown, path: string): unknown {
+        if (obj === null || obj === undefined) return undefined;
+        const parts = path.split('.');
+        let current: unknown = obj;
+        for (const part of parts) {
+            if (current === null || current === undefined) return undefined;
+            if (typeof current === 'object' && current !== null) {
+                current = (current as Record<string, unknown>)[part];
+            } else {
+                return undefined;
+            }
+        }
+        return current;
     }
 }
 

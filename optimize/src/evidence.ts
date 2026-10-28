@@ -57,5 +57,8 @@ export function validateEvidenceBundle(bundle: unknown): EvidenceBundle {
 // Re-export writeBundle from reporter
 export { writeBundle } from './reporter.js';
 
+// Re-export replay functions
+export { loadBundle, verifyReplay, updateFindingStatus } from './replay.js';
+
 // Re-export a11y
 export * from './a11y.js';
