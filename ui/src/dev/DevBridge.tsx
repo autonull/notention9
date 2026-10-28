@@ -1,19 +1,41 @@
 import { useEffect } from 'react';
 import { useNotes } from '../hooks/useNotes';
 import { useView } from '../hooks/useViewContext';
-import { installBridge, updateState } from './bridge';
-import type { SemanticState, Property } from '@notention/optimize';
+import { usePendingConfirmations } from '../hooks/usePendingConfirmations';
+import { installBridge, updateState, addActionTrace, addPromptTrace } from './bridge';
+import { setTraceSink } from '@notention/core';
+import type { SemanticState, Property, ActionTrace, PromptTrace } from '@notention/optimize';
 import { collectOntologyKeys } from '@notention/core';
 
 export function DevBridge() {
+    console.log('[DevBridge] Component mounted');
     const { notes, loading } = useNotes();
     const { activeView, selectedNoteId, searchTerm, sortOrder } = useView();
+    const { pendingConfirmations } = usePendingConfirmations();
 
     useEffect(() => {
+        console.log('[DevBridge] useEffect 1 - installing bridge');
         const runId = window.__OPTIMIZE_RUN_ID__;
-        if (!runId) return;
+        if (!runId) {
+            console.log('[DevBridge] No runId found');
+            return;
+        }
 
+        console.log('[DevBridge] Installing bridge with runId:', runId);
         installBridge(runId);
+
+        // Install trace sink to capture traces from core
+        setTraceSink({
+            prompt: (entry: PromptTrace) => {
+                console.log('[DevBridge] Prompt trace:', entry);
+                addPromptTrace({ ...entry, runId });
+            },
+            action: (entry: ActionTrace) => {
+                console.log('[DevBridge] Action trace:', entry);
+                addActionTrace({ ...entry, runId });
+            },
+        });
+        console.log('[DevBridge] Trace sink installed');
     }, []);
 
     useEffect(() => {
@@ -45,11 +67,14 @@ export function DevBridge() {
             review: [],
             validation: { errors: [], missing: [] },
             dialogs: [],
-            pendingConfirmations: [],
+            pendingConfirmations: pendingConfirmations.map(c => ({
+                action: c.action,
+                consequence: c.consequence,
+            })),
         };
 
         updateState(state);
-    }, [notes, activeView, selectedNoteId, loading]);
+    }, [notes, activeView, selectedNoteId, loading, pendingConfirmations]);
 
     return null;
 }

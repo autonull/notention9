@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useMemo, useCallback, useRef} from 'react';
+import React, {useEffect, useState, useMemo, useCallback, useRef, Suspense} from 'react';
 import {Header} from './layout/Header';
 import {MobileNavigation} from './layout/MobileNavigation';
 import {EnhancedCommandPalette} from './ui/EnhancedCommandPalette';
@@ -20,7 +20,12 @@ import {useToast} from '../hooks/useToast';
 import {useIsMobile} from '../hooks/useMediaQuery';
 import {useSidebarState} from '../hooks/useSidebarState';
 import {cn} from '../utils/ui';
-import {DevBridge} from '../dev/DevBridge';
+import {PendingConfirmationsProvider} from '../hooks/usePendingConfirmations';
+
+// Dynamic import for DevBridge - only loaded when VITE_DEV_HOOKS=true
+const DevBridge = import.meta.env.VITE_DEV_HOOKS
+    ? React.lazy(() => import('../dev/DevBridge').then(m => ({ default: m.DevBridge })))
+    : () => null;
 
 export function AppShell() {
     const {getSortedFilteredNotes, loading: notesLoading} = useNotes();
@@ -183,64 +188,70 @@ export function AppShell() {
     ], [commands, sortedNotes, setActiveView, setSelectedNoteId]);
 
     return (
-        <SelectorRegistryProvider>
-            <div className="flex flex-col h-screen bg-gray-950 text-gray-200" data-ready>
-                <Header onNewNote={handleNewNote} onToggleSidebar={toggleSidebar}/>
-                <ConnectivityBanner/>
-                <div className="flex flex-1 overflow-hidden relative">
-                    <div className={sidebarClasses} style={style}>
-                        <Sidebar
-                            sortedNotes={sortedNotes}
-                            onToggleSidebar={toggleSidebar}
-                            isSidebarOpen={effectiveSidebarOpen}
-                            isLoading={notesLoading}
-                            sidebarWidth={isMobile ? 320 : effectiveWidth}
-                            isCollapsed={!isMobile && isCollapsed}
-                        />
+        <PendingConfirmationsProvider>
+            <SelectorRegistryProvider>
+                <div className="flex flex-col h-screen bg-gray-950 text-gray-200" data-ready>
+                    <Header onNewNote={handleNewNote} onToggleSidebar={toggleSidebar}/>
+                    <ConnectivityBanner/>
+                    <div className="flex flex-1 overflow-hidden relative">
+                        <div className={sidebarClasses} style={style}>
+                            <Sidebar
+                                sortedNotes={sortedNotes}
+                                onToggleSidebar={toggleSidebar}
+                                isSidebarOpen={effectiveSidebarOpen}
+                                isLoading={notesLoading}
+                                sidebarWidth={isMobile ? 320 : effectiveWidth}
+                                isCollapsed={!isMobile && isCollapsed}
+                            />
+                        </div>
+
+                        {!isMobile && isSidebarOpen && effectiveWidth > 48 && (
+                            <div
+                                className="absolute top-16 bottom-0 w-1 cursor-col-resize z-10 hover:bg-blue-500/30 transition-colors"
+                                style={{left: `${effectiveWidth}px`}}
+                                onMouseDown={handleResizeStart}
+                                aria-label="Resize sidebar"
+                                role="separator"
+                                tabIndex={0}
+                                onKeyDown={(e) => handleResizeKeyDown(e, effectiveWidth)}
+                            />
+                        )}
+
+                        <main id="main-content" className={mainClasses} tabIndex={-1}>
+                            <MainView sortedNotes={sortedNotes}/>
+                        </main>
                     </div>
-
-                    {!isMobile && isSidebarOpen && effectiveWidth > 48 && (
-                        <div
-                            className="absolute top-16 bottom-0 w-1 cursor-col-resize z-10 hover:bg-blue-500/30 transition-colors"
-                            style={{left: `${effectiveWidth}px`}}
-                            onMouseDown={handleResizeStart}
-                            aria-label="Resize sidebar"
-                            role="separator"
-                            tabIndex={0}
-                            onKeyDown={(e) => handleResizeKeyDown(e, effectiveWidth)}
-                        />
+                    <MobileNavigation/>
+                    <EnhancedCommandPalette
+                        isOpen={isPaletteOpen}
+                        onClose={() => setIsPaletteOpen(false)}
+                        items={paletteItems}
+                        placeholder="Type a command or search notes... (#tag, key:value)"
+                        title="Command Palette"
+                        showShortcuts={true}
+                        showRecent={true}
+                        fuzzySearch={true}
+                    />
+                    <ContextualHint compact persistent position="bottom-left"/>
+                    <HelpDialog
+                        isOpen={isHelpOpen}
+                        onClose={() => setIsHelpOpen(false)}
+                        onAddDetail={() => {
+                            setIsHelpOpen(false);
+                            window.dispatchEvent(new CustomEvent('open-property-palette'));
+                        }}
+                    />
+                    <KeyboardShortcutsHelp
+                        isOpen={isShortcutsHelpOpen}
+                        onClose={() => setIsShortcutsHelpOpen(false)}
+                    />
+                    {import.meta.env.VITE_DEV_HOOKS && (
+                        <Suspense fallback={null}>
+                            <DevBridge/>
+                        </Suspense>
                     )}
-
-                    <main id="main-content" className={mainClasses} tabIndex={-1}>
-                        <MainView sortedNotes={sortedNotes}/>
-                    </main>
                 </div>
-                <MobileNavigation/>
-                <EnhancedCommandPalette
-                    isOpen={isPaletteOpen}
-                    onClose={() => setIsPaletteOpen(false)}
-                    items={paletteItems}
-                    placeholder="Type a command or search notes... (#tag, key:value)"
-                    title="Command Palette"
-                    showShortcuts={true}
-                    showRecent={true}
-                    fuzzySearch={true}
-                />
-                <ContextualHint compact persistent position="bottom-left"/>
-                <HelpDialog
-                    isOpen={isHelpOpen}
-                    onClose={() => setIsHelpOpen(false)}
-                    onAddDetail={() => {
-                        setIsHelpOpen(false);
-                        window.dispatchEvent(new CustomEvent('open-property-palette'));
-                    }}
-                />
-                <KeyboardShortcutsHelp
-                    isOpen={isShortcutsHelpOpen}
-                    onClose={() => setIsShortcutsHelpOpen(false)}
-                />
-                {import.meta.env.VITE_DEV_HOOKS && <DevBridge/>}
-            </div>
-        </SelectorRegistryProvider>
+            </SelectorRegistryProvider>
+        </PendingConfirmationsProvider>
     );
 }

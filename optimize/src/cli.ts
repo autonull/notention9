@@ -74,7 +74,8 @@ async function main() {
     // Extract flags before parseArgs
     const json = rawArgs.includes('--json');
     const a11y = rawArgs.includes('--a11y');
-    const filteredArgs = rawArgs.filter(r => r !== '--json' && r !== '--a11y');
+    const allowDraft = rawArgs.includes('--allow-draft');
+    const filteredArgs = rawArgs.filter(r => r !== '--json' && r !== '--a11y' && r !== '--allow-draft');
 
     const { positionals } = parseArgs({ args: filteredArgs, allowPositionals: true });
 
@@ -87,6 +88,20 @@ async function main() {
         const intent = parseOptimizeIntent(positionals, json, a11y);
 
         if (intent.action === 'optimize' && intent.journey) {
+            // Check if journey exists and is ready (unless --allow-draft)
+            const { getJourney } = await import('@notention/optimize');
+            const journey = getJourney(intent.journey);
+            if (!journey) {
+                console.error(`Journey "${intent.journey}" not found`);
+                const readyJourneys = (await import('@notention/optimize')).getReadyJourneys().map(j => j.id);
+                console.error('Available ready journeys:', readyJourneys.join(', '));
+                process.exit(1);
+            }
+            if (journey.status === 'draft' && !allowDraft) {
+                console.error(`Journey "${intent.journey}" is a draft. Use --allow-draft to run it.`);
+                process.exit(1);
+            }
+
             console.log(`🔍 Running optimization journey: ${intent.journey}`);
             const runId = `run_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
             process.env.NOTENTION_OPTIMIZE_RUN_ID = runId;

@@ -6,16 +6,18 @@ export const settle = async (page: Page) => {
     await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
     await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 150)));
 
-    const hasDevHooks = await page.evaluate(() => typeof window.__NOTENTION_READY__ !== 'undefined');
-    if (hasDevHooks) {
-        await page.waitForFunction(() => window.__NOTENTION_READY__ === true, { timeout: 5000 });
-        // Wait for state to be populated with note data
-        await page.waitForFunction(() => {
-            const bridge = (window as any).__NOTENTION__;
-            const state = bridge?.state?.();
-            return state?.note !== null;
-        }, { timeout: 5000 });
-    }
+    // Wait for DevBridge to install the bridge (requires __OPTIMIZE_RUN_ID__ to be set)
+    await page.waitForFunction(() => {
+        const bridge = (window as any).__NOTENTION__;
+        return bridge && typeof bridge.state === 'function';
+    }, { timeout: 10000 });
+
+    // Wait for state to be populated with note data
+    await page.waitForFunction(() => {
+        const bridge = (window as any).__NOTENTION__;
+        const state = bridge?.state?.();
+        return state?.note !== null;
+    }, { timeout: 5000 });
 };
 
 export const disableMotion = async (page: Page) => {

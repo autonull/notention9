@@ -1,5 +1,5 @@
 import { guardrail as optimizeGuardrail } from '@notention/optimize/policy';
-import { getOptimizeLogPath } from '@notention/core/constants/paths';
+import { getOptimizeLogPathSync } from '@notention/core/constants/paths';
 import { appendFileSync, existsSync, mkdirSync } from 'fs';
 import { dirname } from 'path';
 
@@ -17,7 +17,7 @@ export class OptimizeLog {
     private logPath: string;
 
     constructor(logPath?: string) {
-        this.logPath = logPath ?? getOptimizeLogPath();
+        this.logPath = logPath ?? getOptimizeLogPathSync();
         this.ensureLogDir();
     }
 

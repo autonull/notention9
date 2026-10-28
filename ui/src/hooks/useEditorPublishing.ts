@@ -3,6 +3,7 @@ import type {Note} from '@notention/core';
 import {usePublish} from './usePublish';
 import {useToast} from './useToast';
 import {emitActionTrace} from '@notention/core';
+import {usePendingConfirmations} from './usePendingConfirmations';
 
 interface UseEditorPublishingProps {
     dirtyNote: Note;
@@ -21,6 +22,7 @@ export function useEditorPublishing({
                                      }: UseEditorPublishingProps) {
     const {publishNote, isPublishing} = usePublish();
     const {addToast} = useToast();
+    const {addPendingConfirmation, removePendingConfirmation} = usePendingConfirmations();
     const [publishError, setPublishError] = useState<string | null>(null);
 
     const [privacyConfirmation, setPrivacyConfirmation] = useState<{
@@ -61,8 +63,28 @@ export function useEditorPublishing({
             return;
         }
 
+        // Emit action trace immediately when publish is attempted (gate triggered)
+        console.log('[useEditorPublishing] Emitting action trace: requires_confirmation (gate triggered)');
+        emitActionTrace({
+            source: 'ui',
+            intent: 'note.publish',
+            confirmations: [{ action: 'publish', outcome: 'requested' }],
+            outcome: 'requires_confirmation',
+        });
+
+        // Add pending confirmation for the publish action
+        addPendingConfirmation({
+            action: 'publish',
+            consequence: `Note will become ${dirtyNote.privacy === 'public' ? 'public' : 'public (was private)'}`,
+        });
+
         const confirmed = await promptUser();
+        
+        // Remove pending confirmation after user responds
+        removePendingConfirmation('publish');
+
         if (!confirmed) {
+            console.log('[useEditorPublishing] Emitting action trace: cancelled');
             emitActionTrace({
                 source: 'ui',
                 intent: 'note.publish',
@@ -72,10 +94,11 @@ export function useEditorPublishing({
             return;
         }
 
+        console.log('[useEditorPublishing] Emitting action trace: granted');
         emitActionTrace({
             source: 'ui',
             intent: 'note.publish',
-            confirmations: [{ action: 'publish', outcome: 'requested' }],
+            confirmations: [{ action: 'publish', outcome: 'granted' }],
             outcome: 'requires_confirmation',
         });
 
@@ -138,6 +161,8 @@ export function useEditorPublishing({
         setDirtyNote,
         onSave,
         addToast,
+        addPendingConfirmation,
+        removePendingConfirmation,
     ]);
 
     return {

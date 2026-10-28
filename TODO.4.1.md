@@ -570,6 +570,11 @@ pnpm-workspace.yaml, package.json   add `optimize`
 - [x] No `__NOTENTION__` or `DevBridge` in production output; no `page.accessibility` in the tree
 - [ ] One finding produced by the slice is filed and triaged (proves the loop closes, not just runs) - evidence infrastructure ready; finding generation deferred to next slice
 - [x] Evidence bundle reporter fully integrated (writes complete bundles: state, aria, console, network, screenshots)
+- [x] Dynamic import for DevBridge ensures zero production leakage; `React.lazy` + `Suspense` pattern verified
+- [x] Pending confirmations state exposed via `usePendingConfirmations` context; `publish-gate` journey validates action traces
+- [x] Trace sink installed by DevBridge; `emitActionTrace` from core captured in evidence bundles
+- [x] CLI validates journey status (draft vs ready); `--allow-draft` flag works
+- [x] Findings CLI (`findings`, `--json`, `--a11y`) operational with evidence directory scanning
 
 ---
 
