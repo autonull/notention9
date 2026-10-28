@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
 import type { JourneySpec, Step } from './journey.js';
-import { getExecutor, StepExecutionResult } from './stepExecutors.js';
+import { getExecutor, StepExecutionResult } from './stepExecutors/index.js';
 
 export interface StepResult {
     index: number;
