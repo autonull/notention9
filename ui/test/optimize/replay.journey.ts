@@ -3,7 +3,7 @@ import { executeJourney, type ExecutionContext } from '@notention/optimize';
 import { getJourney } from '@notention/optimize';
 import { seed } from '../support/seed';
 import { settle } from '../support/settle';
-import { writeBundle, type EvidenceBundle, loadBundle, updateFindingStatus } from '@notention/optimize/evidence';
+import { writeReplayBundle, type EvidenceBundle, loadBundle, updateFindingStatus } from '@notention/optimize/evidence';
 import { getEvidenceDir } from '@notention/core';
 
 async function runReplayTest(runId: string, page: any) {
@@ -67,7 +67,7 @@ async function runReplayTest(runId: string, page: any) {
             })),
     };
 
-    await writeBundle(replayBundle.runId, replayBundle);
+    await writeReplayBundle(replayBundle.runId, replayBundle);
     console.log(`[Replay] Evidence bundle written for replay: ${replayBundle.runId}`);
 
     const failedAssertions = context.assertions.filter(a => !a.ok);
@@ -96,9 +96,14 @@ async function runReplayTest(runId: string, page: any) {
         if (existsSync(findingsPath)) {
             const findings = JSON.parse(readFileSync(findingsPath, 'utf-8'));
             for (const finding of findings) {
-                // Match finding by journey and assertion
+                // Match finding by journey and assertion (for assertion-based findings)
                 const origAssertionIds = originalFailed.map(a => a.id);
-                if (finding.evidence?.assertions?.some((id: string) => origAssertionIds.includes(id))) {
+                const matchesAssertion = finding.evidence?.assertions?.some((id: string) => origAssertionIds.includes(id));
+                // Match finding by journey and location (for a11y findings)
+                const matchesA11y = finding.journey === bundle.journeyId && 
+                    finding.location && 
+                    finding.status === 'fixed';
+                if (matchesAssertion || matchesA11y) {
                     const updated = await updateFindingStatus(runId, finding.id, 'verified', replayBundle.runId);
                     if (updated) {
                         console.log(`✅ Finding ${finding.id} marked as verified`);
@@ -111,6 +116,23 @@ async function runReplayTest(runId: string, page: any) {
 
     if (originalFailed.length === 0 && failedAssertions.length === 0) {
         console.log(`✅ REPLAY PASSED: Journey passes as expected`);
+        // Check for fixed a11y findings that should be marked as verified
+        const evidenceDir = await getEvidenceDir();
+        const { readFileSync, existsSync } = await import('fs');
+        const { join } = await import('path');
+        const findingsPath = join(evidenceDir, runId, 'findings.json');
+        if (existsSync(findingsPath)) {
+            const findings = JSON.parse(readFileSync(findingsPath, 'utf-8'));
+            for (const finding of findings) {
+                // Mark fixed a11y findings as verified when replay passes
+                if (finding.status === 'fixed' && finding.journey === bundle.journeyId) {
+                    const updated = await updateFindingStatus(runId, finding.id, 'verified', replayBundle.runId);
+                    if (updated) {
+                        console.log(`✅ Finding ${finding.id} marked as verified`);
+                    }
+                }
+            }
+        }
         return { reproduced: false, verifiedFix: false, passed: true };
     }
 

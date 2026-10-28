@@ -99,8 +99,9 @@ export function deriveFindingId(journeyId: string, version: number, assertionId:
 }
 
 export function markFixed(finding: Finding, commitSha: string): Finding {
+    const { verifiedAt, verifiedRunId, ...rest } = finding;
     return {
-        ...finding,
+        ...rest,
         status: 'fixed',
         fixedAt: new Date().toISOString(),
         fixedBy: commitSha,

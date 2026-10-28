@@ -35,8 +35,45 @@ registerJourney(journey);
 `;
 }
 
+function generateTestFile(journey: any): string {
+    // Build the test file with imports at the top
+    const stepsCode = journey.steps.map((step: any, i: number) => {
+        const props = Object.entries(step)
+            .filter(([k]) => k !== 'kind')
+            .map(([k, v]) => `        ${k}: ${JSON.stringify(v)}`)
+            .join(',\n');
+        return `    { kind: '${step.kind}',\n${props}\n    }`;
+    }).join(',\n');
+
+    return `import { registerJourney } from '@notention/optimize/registry';
+import type { JourneySpec } from '@notention/optimize/journey';
+import { test } from '@playwright/test';
+
+const journey: JourneySpec = {
+    id: '${journey.id}',
+    version: ${journey.version},
+    intent: '${journey.intent}',
+    journeysTouched: ${JSON.stringify(journey.journeysTouched)},
+    seed: ${JSON.stringify(journey.seed, null, 4)},
+    steps: [
+${stepsCode}
+    ],
+    status: '${journey.status}',
+};
+
+registerJourney(journey);
+
+test('optimize: ${journey.id}', async ({ page }) => {
+    page.on('console', msg => console.log('[BROWSER]', msg.type(), msg.text()));
+    page.on('pageerror', err => console.log('[BROWSER ERROR]', err.message));
+    const { runJourneyTest } = await import('../support/journeyTest');
+    await runJourneyTest('${journey.id}', page);
+});
+`;
+}
+
 interface OptimizeIntent {
-    action: 'optimize' | 'reproduce' | 'findings' | 'replay' | 'generate-test';
+    action: 'optimize' | 'reproduce' | 'findings' | 'replay' | 'generate-test' | 'mark-fixed';
     journey?: string;
     target?: string;
     runId?: string;
@@ -44,11 +81,12 @@ interface OptimizeIntent {
     json?: boolean;
     a11y?: boolean;
     status?: string;
+    commitSha?: string;
     constraints: { privacy?: 'private' | 'public'; noisySpeech?: boolean };
     mode: 'report-only';
 }
 
-function parseOptimizeIntent(args: string[], json: boolean, a11y: boolean, status?: string): OptimizeIntent {
+function parseOptimizeIntent(args: string[], json: boolean, a11y: boolean, status?: string, commitSha?: string): OptimizeIntent {
     const [subcommand, ...rest] = args;
 
     switch (subcommand) {
@@ -75,6 +113,12 @@ function parseOptimizeIntent(args: string[], json: boolean, a11y: boolean, statu
             if (!findingId) throw new Error('Finding ID required for generate-test');
             return { action: 'generate-test', findingId, constraints: { privacy: 'private' }, mode: 'report-only', json, a11y };
         }
+        case 'mark-fixed': {
+            const findingId = rest[0];
+            if (!findingId) throw new Error('Finding ID required for mark-fixed');
+            const sha = rest[1] || commitSha || 'manual';
+            return { action: 'mark-fixed', findingId, commitSha: sha, constraints: { privacy: 'private' }, mode: 'report-only', json, a11y };
+        }
         case 'help':
         case '--help':
         case '-h': {
@@ -82,7 +126,7 @@ function parseOptimizeIntent(args: string[], json: boolean, a11y: boolean, statu
             process.exit(0);
         }
         default:
-            throw new Error(`Unknown subcommand: ${subcommand}. Use: optimize, reproduce, findings, replay, generate-test, help`);
+            throw new Error(`Unknown subcommand: ${subcommand}. Use: optimize, reproduce, findings, replay, generate-test, mark-fixed, help`);
     }
 }
 
@@ -96,6 +140,7 @@ Commands:
   findings [--status <status>] List findings (filter by status: open, fixed, verified)
   replay <runId>               Replay a run from evidence bundle
   generate-test <findingId>    Generate regression test from finding
+  mark-fixed <findingId> [sha] Mark a finding as fixed (optional commit SHA)
   help                         Show this help
 
 Options:
@@ -132,13 +177,28 @@ async function main() {
         }
     }
     
+    // Handle --commit flag for mark-fixed
+    let commitSha: string | undefined;
+    const commitIndex = rawArgs.findIndex(r => r === '--commit');
+    if (commitIndex !== -1 && commitIndex + 1 < rawArgs.length) {
+        commitSha = rawArgs[commitIndex + 1];
+    } else {
+        const commitFlag = rawArgs.find(r => r.startsWith('--commit='));
+        if (commitFlag) {
+            commitSha = commitFlag.split('=')[1];
+        }
+    }
+    
     const filteredArgs = rawArgs.filter((r, i) => 
         r !== '--json' && 
         r !== '--a11y' && 
         r !== '--allow-draft' && 
         r !== '--status' && 
+        r !== '--commit' &&
         !r.startsWith('--status=') &&
-        !(i === statusIndex + 1 && rawArgs[statusIndex] === '--status')
+        !r.startsWith('--commit=') &&
+        !(i === statusIndex + 1 && rawArgs[statusIndex] === '--status') &&
+        !(i === commitIndex + 1 && rawArgs[commitIndex] === '--commit')
     );
 
     const { positionals } = parseArgs({ args: filteredArgs, allowPositionals: true });
@@ -149,7 +209,7 @@ async function main() {
     }
 
     try {
-        const intent = parseOptimizeIntent(positionals, json, a11y, status);
+        const intent = parseOptimizeIntent(positionals, json, a11y, status, commitSha);
 
         if (intent.action === 'optimize' && intent.journey) {
             // Check if journey exists and is ready (unless --allow-draft)
@@ -448,9 +508,9 @@ async function main() {
                 mkdirSync(regressionsDir, { recursive: true });
             }
 
-            const journeyCode = generateJourneyFile(regressionJourney);
+            const testCode = generateTestFile(regressionJourney);
             const outputPath = join(regressionsDir, `${finding.id}.journey.ts`);
-            writeFileSync(outputPath, journeyCode);
+            writeFileSync(outputPath, testCode);
 
             console.log(`✅ Generated regression test: ${outputPath}`);
             console.log(`Journey ID: ${regressionJourney.id}`);
@@ -511,8 +571,9 @@ async function main() {
 
             if (existsSync(indexPath)) {
                 const lines = readFileSync(indexPath, 'utf-8').trim().split('\n').filter(Boolean);
-                for (const line of lines) {
-                    const entry = JSON.parse(line);
+                // Search from most recent to oldest
+                for (let i = lines.length - 1; i >= 0; i--) {
+                    const entry = JSON.parse(lines[i]);
                     if (entry.type === 'finding' && entry.finding.id === intent.target) {
                         foundRunId = entry.runId;
                         foundFinding = entry.finding;
@@ -522,10 +583,12 @@ async function main() {
             }
 
             if (!foundRunId) {
-                // Fallback: scan all findings.json files
+                // Fallback: scan all findings.json files (most recent first)
                 const runDirs = readdirSync(evidenceDir, { withFileTypes: true })
                     .filter(d => d.isDirectory() && d.name.startsWith('run_'))
-                    .map(d => d.name);
+                    .map(d => d.name)
+                    .sort()
+                    .reverse();
 
                 for (const runId of runDirs) {
                     const findingsPath = pathJoin(evidenceDir, runId, 'findings.json');
@@ -589,6 +652,75 @@ async function main() {
                 console.log(`❌ Reproduction failed. Replay Run ID: ${runId}`);
             }
             process.exit(result.status ?? 1);
+        } else if (intent.action === 'mark-fixed' && intent.findingId) {
+            console.log(`🔧 Marking finding as fixed: ${intent.findingId}`);
+            const { getEvidenceDir } = await import('@notention/core');
+            const { readFileSync, existsSync, readdirSync } = await import('fs');
+            const { join } = await import('path');
+            const { updateFindingStatus } = await import('@notention/optimize/replay');
+
+            const evidenceDir = await getEvidenceDir();
+
+            if (!existsSync(evidenceDir)) {
+                console.error('No evidence directory found');
+                process.exit(1);
+            }
+
+            // Try index.jsonl first for fast lookup
+            const indexPath = join(evidenceDir, 'index.jsonl');
+            let foundRunId: string | null = null;
+            let foundFinding: any = null;
+
+            if (existsSync(indexPath)) {
+                const lines = readFileSync(indexPath, 'utf-8').trim().split('\n').filter(Boolean);
+                // Search from most recent to oldest
+                for (let i = lines.length - 1; i >= 0; i--) {
+                    const entry = JSON.parse(lines[i]);
+                    if (entry.type === 'finding' && entry.finding.id === intent.findingId) {
+                        foundRunId = entry.runId;
+                        foundFinding = entry.finding;
+                        break;
+                    }
+                }
+            }
+
+            // Fallback: scan all findings.json files (most recent first)
+            if (!foundRunId) {
+                const runDirs = readdirSync(evidenceDir, { withFileTypes: true })
+                    .filter(d => d.isDirectory() && d.name.startsWith('run_'))
+                    .map(d => d.name)
+                    .sort()
+                    .reverse();
+
+                for (const runId of runDirs) {
+                    const findingsPath = join(evidenceDir, runId, 'findings.json');
+                    if (existsSync(findingsPath)) {
+                        const findings = JSON.parse(readFileSync(findingsPath, 'utf-8'));
+                        const finding = findings.find((f: any) => f.id === intent.findingId);
+                        if (finding) {
+                            foundRunId = runId;
+                            foundFinding = finding;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (!foundRunId || !foundFinding) {
+                console.error(`Finding not found: ${intent.findingId}`);
+                process.exit(1);
+            }
+
+            console.log(`Found finding in run: ${foundRunId}`);
+            const commitSha = intent.commitSha || 'manual';
+            const updated = await updateFindingStatus(foundRunId, intent.findingId, 'fixed', commitSha);
+            if (updated) {
+                console.log(`✅ Finding ${intent.findingId} marked as fixed (commit: ${commitSha})`);
+            } else {
+                console.error(`Failed to mark finding as fixed`);
+                process.exit(1);
+            }
+            process.exit(0);
         } else if (intent.action === 'findings') {
             const { getEvidenceDir } = await import('@notention/core');
             const { readFileSync, existsSync, readdirSync } = await import('fs');

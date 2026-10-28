@@ -65,7 +65,8 @@ export default defineConfig({
         },
         {
             name: 'optimize',
-            testMatch: ['optimize/**/*.journey.ts', '!optimize/regressions/**'],
+            testMatch: 'optimize/**/*.journey.ts',
+            testIgnore: ['**/regressions/**', '**/replay.journey.ts'],
             use: {
                 viewport: {width: 1440, height: 900},
             },
