@@ -1,8 +1,8 @@
 import {describe, it, expect, vi, beforeEach} from 'vitest';
 import {buildExportEnvelope, readExportEnvelope, readSingleNote, EXPORT_VERSION} from '../export/index.js';
 import type {Note, AppSettings} from '../types/index.js';
-import {migrateStorage, getStorageVersion, STORAGE_SCHEMA_VERSION} from './migrations.js';
-import {MigratedStorage} from './migratedStorage.js';
+import {getStorageVersion, STORAGE_SCHEMA_VERSION, validateStorageSchema} from './migrations.js';
+import {ValidatedStorage} from './migratedStorage.js';
 
 const createTestNote = (overrides: Partial<Note> = {}): Note => ({
     id: 'test-note-1',
@@ -83,7 +83,7 @@ describe('Export/Import Round-trip', () => {
     });
 });
 
-describe('Storage Schema Versioning', () => {
+describe('Storage Schema Validation', () => {
     it('should detect version 0 (legacy) data', () => {
         const legacyData = {
             notes: [{id: '1', content: 'test', createdAt: '', updatedAt: '', properties: []}],
@@ -97,53 +97,41 @@ describe('Storage Schema Versioning', () => {
         expect(getStorageVersion(versionedData)).toBe(2);
     });
 
-    it('should migrate legacy data to current schema version', () => {
-        const legacyData = {
-            notes: [{
-                id: 'legacy-1',
-                content: 'Legacy note',
-                title: 'Legacy',
-                tags: ['legacy'],
-                properties: [{key: 'status', operator: 'equals', values: ['done']}],
-                createdAt: '2024-01-01T00:00:00.000Z',
-                updatedAt: '2024-01-01T00:00:00.000Z',
-            }],
-            settings: {theme: 'light', developerMode: true},
-        };
-
-        const migrated = migrateStorage(legacyData, 0) as {notes: Note[]; settings: AppSettings; version: number};
-        expect(migrated.version).toBe(STORAGE_SCHEMA_VERSION);
-        expect(migrated.notes).toHaveLength(1);
-        expect(migrated.notes[0].id).toBe('legacy-1');
-        expect(migrated.notes[0].properties[0].operator).toBe('equals');
-        expect(migrated.settings.theme).toBe('light');
-        expect(migrated.settings.developerMode).toBe(true);
-    });
-
-    it('should handle empty properties array in legacy data', () => {
-        const legacyData = {
-            notes: [{
-                id: 'legacy-empty-props',
-                content: 'No properties',
-                createdAt: '2024-01-01T00:00:00.000Z',
-                updatedAt: '2024-01-01T00:00:00.000Z',
-            }],
-            settings: {},
-        };
-
-        const migrated = migrateStorage(legacyData, 0) as {notes: Note[]};
-        expect(migrated.notes[0].properties).toEqual([]);
-    });
-
-    it('should handle current version data without migration', () => {
+    it('should validate current version data', () => {
         const currentData = {version: STORAGE_SCHEMA_VERSION, notes: [], settings: {}};
-        const result = migrateStorage(currentData, STORAGE_SCHEMA_VERSION);
-        expect(result).toEqual(currentData);
+        const validated = validateStorageSchema(currentData);
+        expect(validated.version).toBe(STORAGE_SCHEMA_VERSION);
+        expect(validated.notes).toEqual([]);
+        expect(validated.settings).toEqual({});
+    });
+
+    it('should reject data without version', () => {
+        const legacyData = {notes: [], settings: {}};
+        expect(() => validateStorageSchema(legacyData))
+            .toThrow(`expected ${STORAGE_SCHEMA_VERSION}, got none`);
+    });
+
+    it('should reject data with wrong version', () => {
+        const futureData = {version: 999, notes: [], settings: {}};
+        expect(() => validateStorageSchema(futureData))
+            .toThrow(`expected ${STORAGE_SCHEMA_VERSION}, got 999`);
+    });
+
+    it('should reject data with non-array notes', () => {
+        const invalidData = {version: STORAGE_SCHEMA_VERSION, notes: 'not-an-array', settings: {}};
+        expect(() => validateStorageSchema(invalidData))
+            .toThrow('notes must be an array');
+    });
+
+    it('should reject data with non-object settings', () => {
+        const invalidData = {version: STORAGE_SCHEMA_VERSION, notes: [], settings: 'not-an-object'};
+        expect(() => validateStorageSchema(invalidData))
+            .toThrow('settings must be an object');
     });
 });
 
-describe('MigratedStorage', () => {
-    let storage: MigratedStorage;
+describe('ValidatedStorage', () => {
+    let storage: ValidatedStorage;
     const mockStorage = new Map<string, unknown>();
 
     const createMockDriver = () => ({
@@ -158,7 +146,7 @@ describe('MigratedStorage', () => {
 
     beforeEach(() => {
         mockStorage.clear();
-        storage = new MigratedStorage({driver: createMockDriver() as any});
+        storage = new ValidatedStorage({driver: createMockDriver() as any});
     });
 
     it('should return empty notes when storage is empty', async () => {
@@ -166,18 +154,30 @@ describe('MigratedStorage', () => {
         expect(notes).toEqual([]);
     });
 
-    it('should store and retrieve notes', async () => {
+    it('should store and retrieve notes with correct version', async () => {
         const notes = [createTestNote(), createTestNote({id: 'note-2'})];
         await storage.setNotes(notes);
         const retrieved = await storage.getNotes();
         expect(retrieved).toHaveLength(2);
     });
 
-    it('should store and retrieve settings', async () => {
+    it('should reject notes with wrong version', async () => {
+        await storage['storage'].setItem('notention-notes', {version: 0, notes: [createTestNote()]});
+        const retrieved = await storage.getNotes();
+        expect(retrieved).toEqual([]);
+    });
+
+    it('should store and retrieve settings with correct version', async () => {
         const settings = createTestSettings({theme: 'light'});
         await storage.setSettings(settings);
         const retrieved = await storage.getSettings();
         expect(retrieved.theme).toBe('light');
+    });
+
+    it('should reject settings with wrong version', async () => {
+        await storage['storage'].setItem('notention-settings', {version: 0, theme: 'light'});
+        const retrieved = await storage.getSettings();
+        expect(retrieved.theme).toBe('dark'); // default
     });
 
     it('should store and retrieve full schema with version', async () => {
@@ -192,7 +192,7 @@ describe('MigratedStorage', () => {
         expect(retrieved?.notes).toHaveLength(1);
     });
 
-    it('should migrate legacy schema on full schema retrieval', async () => {
+    it('should return null for legacy schema on full schema retrieval', async () => {
         const legacySchema = {
             notes: [{
                 id: 'legacy-1',
@@ -207,7 +207,6 @@ describe('MigratedStorage', () => {
         await storage['storage'].setItem('notention-settings', legacySchema.settings);
 
         const retrieved = await storage.getFullSchema();
-        expect(retrieved?.version).toBe(STORAGE_SCHEMA_VERSION);
-        expect(retrieved?.notes[0].properties[0].operator).toBe('contains');
+        expect(retrieved).toBeNull();
     });
 });
