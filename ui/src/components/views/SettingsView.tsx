@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 
 import {useSettingsView} from '../../hooks/useSettingsView';
-import {Tabs} from '../ui/Primitives';
+import {Tabs} from '../ui/Navigation';
 import {AITab} from '../settings/AITab';
 import {DataTab} from '../settings/DataTab';
 import {NostrTab} from '../settings/NostrTab';

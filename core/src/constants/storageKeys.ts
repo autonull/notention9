@@ -4,6 +4,7 @@ export const STORAGE_KEYS = {
     sortOrder: 'notention-sort-order',
     sidebarViewMode: 'notention-sidebar-view-mode',
     suggestions: 'notention-suggestions',
+    schemaVersion: 'notention-schema-version',
 } as const;
 
 export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];

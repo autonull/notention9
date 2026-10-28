@@ -35,6 +35,7 @@ export * from './security/index.js';
 export * from './config/index.js';
 export * from './templates/index.js';
 export * from './export/index.js';
+export * from './storage/index.js';
 export * from './fixtures/index.js';
 export * from './feedback/index.js';
 

@@ -7,7 +7,7 @@ import eslintConfigPrettier from 'eslint-config-prettier';
 
 export default tseslint.config(
     {
-        ignores: ['dist', 'node_modules', 'eslint.config.js', 'check_nip04.cjs', 'postcss.config.js', 'run-tests.mjs'],
+        ignores: ['dist', 'node_modules', 'eslint.config.js', 'check_nip04.cjs', 'postcss.config.js', 'run-tests.mjs', 'dev-dist', 'eslint-rules', 'test/**', 'vite.config.ts', 'verify_build.ts'],
     },
     {
         files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'],

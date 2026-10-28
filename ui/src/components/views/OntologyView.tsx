@@ -5,7 +5,7 @@ import {useOntologyView} from '../../hooks/useOntologyView';
 import {OntologyNodeItem} from '../ontology/OntologyNodeItem';
 import {OntologyConflicts} from '../ontology/OntologyConflicts';
 import {useView} from '../../hooks/useViewContext';
-import {Tabs} from '../ui/Primitives';
+import {Tabs} from '../ui/Navigation';
 import {Button} from '../ui/Button';
 import {Toggle} from '../ui/Primitives';
 import {EditIcon, SparklesIcon, PlusIcon} from '../ui/icons';
@@ -15,7 +15,7 @@ import {OntologySuggestionItem} from '../ontology/OntologySuggestionItem';
 import {ConfirmationModal} from '../ui/Primitives';
 import {useToast} from '../../hooks/useToast';
 import {OntologyAttribute} from '@notention/core';
-import {Skeleton} from '../ui/Skeleton';
+import {Skeleton} from '../ui';
 
 export function OntologyView() {
     const {addToast} = useToast();

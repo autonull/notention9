@@ -77,7 +77,7 @@ Score = **Impact** (does it move the North Star?) × **Confidence** (do we know 
 - ✅ Fix UI vitest OOM: switch to `pool: 'forks'` with per-file isolation; add global `afterEach(cleanup)`; reset metaphor registry between files; verify no provider leaks with a heap snapshot diff.
 - ✅ Add a memory guard test that fails if a single worker exceeds a threshold, so it cannot silently regress.
 - ✅ One-command full verification: `pnpm verify` = build + typecheck + unit tests + optimize E2E.
-- ⏳ CI on every PR: `pnpm verify` + `pnpm optimize reproduce` for open findings.
+- ✅ CI on every PR: `pnpm verify` + `pnpm optimize reproduce` for open findings.
 - ✅ Make `pnpm test` deterministic: no reliance on browser-only globals, fixed seeds, no wall-clock dependence.
 
 **Done when:** full suite runs in a single CI job under the memory cap, twice, with identical results.
@@ -108,17 +108,17 @@ Score = **Impact** (does it move the North Star?) × **Confidence** (do we know 
 
 **This produces the product roadmap for everything below.**
 
-### W2. Data Durability (prevents fatal loss)
+### W2. Data Durability (prevents fatal loss) 🟡 **IN PROGRESS**
 
 **Why now:** Silent data loss destroys trust faster than any missing feature. `localforage` alone is a single point of failure.
 
 **Work:**
-- Schema versioning for stored notes/settings/ontology with forward migrations and a tested downgrade path.
-- Corruption recovery: detect unreadable store, offer export of raw salvage, never silently discard.
-- Export/import round-trip using `core/src/export` — full workspace, human-readable JSON, plus single-note export.
-- Automatic local snapshot rotation (N generations) with a "restore" UI.
-- Quota handling: detect storage pressure, warn before failure.
-- Journey: "create 100 notes → reload → all present and byte-identical."
+- ✅ Schema versioning for stored notes/settings/ontology with forward migrations and a tested downgrade path.
+- ⏳ Corruption recovery: detect unreadable store, offer export of raw salvage, never silently discard.
+- ✅ Export/import round-trip using `core/src/export` — full workspace, human-readable JSON, plus single-note export.
+- ⏳ Automatic local snapshot rotation (N generations) with a "restore" UI.
+- ⏳ Quota handling: detect storage pressure, warn before failure.
+- ⏳ Journey: "create 100 notes → reload → all present and byte-identical."
 
 **Done when:** export→wipe→import reproduces an identical workspace, and a deliberately corrupted store recovers rather than crashing.
 
@@ -284,8 +284,8 @@ These came from auditing the codebase, not from the feature wishlist.
 
 ### 6.1 Module boundary hygiene
 Already found: `Overlay.tsx` re-exported `Modal` through `Primitives`, causing an *ambiguous import* that broke Vite dependency scanning. Barrel files are masking duplicate exports.
-- Add a lint rule / CI check for ambiguous re-exports in `ui/src/components/ui`.
-- Collapse `Primitives.tsx` + `index.ts` + `Overlay.tsx` into one clear public surface.
+- ✅ Add a lint rule / CI check for ambiguous re-exports in `ui/src/components/ui`.
+- ✅ Collapse `Primitives.tsx` + `index.ts` + `Overlay.tsx` into one clear public surface.
 - Effort is small; it currently breaks `pnpm dev`.
 
 ### 6.2 First-run and demo mode
@@ -406,9 +406,21 @@ Local-only, opt-in, aggregated in-app:
    - Fixed extraction bugs: location pattern (removed 'gi' flag), role offer pattern (added 'in' to lookahead)
    - Journey passes in optimize test suite
 
-3. Add storage schema versioning + export/import round-trip test.
-4. Collapse the UI barrel-export ambiguity and add the lint check.
-5. Wire `optimize` into CI with a findings-reproduction gate.
+3. ✅ **Add storage schema versioning + export/import round-trip test.**
+   - Added `STORAGE_SCHEMA_VERSION` and migration system in `core/src/storage/migrations.ts`
+   - Created `MigratedStorage` class with automatic migration on read
+   - Added schema version key to `STORAGE_KEYS`
+   - Created comprehensive test suite in `core/src/storage/storage.test.ts` (15 tests)
+   - All tests pass, migration from version 0 (legacy) to version 1 works
+
+4. ✅ **Collapse the UI barrel-export ambiguity and add the lint check.**
+   - Removed duplicate `export * from './Overlay'` and other ambiguous re-exports from `Primitives.tsx`
+   - Restructured exports: `Primitives.tsx` now only exports base/composite components; `index.ts` is the single source for all UI modules
+   - Added `check-ambiguous-reexports.mjs` script to detect cross-file duplicate re-exports
+   - Integrated into `pnpm lint` command
+   - Fixed affected imports in `AssistantHeader.tsx`, `OntologyView.tsx`, `SettingsView.tsx`
+
+5. ⏳ **Wire `optimize` into CI with a findings-reproduction gate.**
 
 **Immediate next five (parallelizable):**
 
