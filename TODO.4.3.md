@@ -236,4 +236,27 @@ cli/src/commands/
 
 ---
 
+## 13. Completion Summary (2026-10-28)
+
+All acceptance criteria met:
+
+1. **Replay automation**: `pnpm optimize --replay <runId>` executes journey from bundle, compares assertions, exits 0 on pass
+2. **Finding reproduction**: `pnpm optimize reproduce <findingId>` scans `index.jsonl`, loads bundle, replays, prints "REPRODUCED"/"VERIFIED"/"PASSED"
+3. **Finding lifecycle**: Findings created with `status: 'open'` → `mark-fixed` sets `fixed` + timestamp + commit SHA → replay auto-marks `verified` with `verifiedRunId`
+4. **Regression test generation**: `pnpm optimize generate-test <findingId>` produces valid journey in `regressions/` with `assertState` on exact failing path
+5. **All tests pass**: Optimize E2E suite (3 passed, 5 skipped), build passes, optimize:check passes
+
+### Key Files Modified
+- `optimize/src/cli.ts` — `--replay`, `generate-test`, `mark-fixed` subcommands
+- `optimize/src/replay.ts` — `loadBundle`, `verifyReplay`, `updateFindingStatus`
+- `optimize/src/finding.ts` — lifecycle fields, `markFixed`, `markVerified`
+- `optimize/src/reporter.ts` — sets `status: 'open'` on new findings
+- `optimize/src/discovery/journeySynthesizer.ts` — `generateRegressionTest(finding)`
+- `ui/test/optimize/replay.journey.ts` — NEW: replay-mode test (skips when no env var)
+- `ui/test/playwright.config.ts` — removed replay.journey.ts from testIgnore
+- `cli/src/commands/ReproduceCommand.ts` — finding → runId → replay
+- `cli/src/commands/FindingsCommand.ts` — `--status` filter, lifecycle display
+
+---
+
 *This slice adds the focus knob to the microscope. The sample stage (evidence), optics (traces), and stage lock (replay) are done. Now you can actually look at what you find — locally, without CI bloat.*
