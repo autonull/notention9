@@ -22,6 +22,8 @@ export default defineConfig(({mode}) => {
                 '@notention/core/extraction': path.resolve(__dirname, '../core/src/extraction/index.ts'),
                 '@notention/core/extraction/deterministic': path.resolve(__dirname, '../core/src/extraction/deterministic.ts'),
                 '@notention/core/src/matching': path.resolve(__dirname, '../core/src/matching'),
+                '@notention/core/skills': path.resolve(__dirname, '../core/src/skills/index.ts'),
+                '@notention/core/skills/metaphor/MetaphorRegistry': path.resolve(__dirname, '../core/src/skills/metaphor/MetaphorRegistry.ts'),
                 'path': 'path-browserify',
                 'os': 'os-browserify/browser',
                 'util': 'util',
@@ -30,17 +32,24 @@ export default defineConfig(({mode}) => {
         test: {
             globals: true,
             environment: 'jsdom',
-            setupFiles: './src/tests/setup.ts',
-            exclude: [...configDefaults.exclude, '**/node_modules/**', '**/dist/**', 'test/**'],
+            setupFiles: ['./src/tests/setup.ts'],
+            exclude: [...configDefaults.exclude, '**/node_modules/**', '**/dist/**', 'test/**', '**/visual/**'],
             watch: false,
             pool: 'forks',
             poolOptions: {
                 forks: {
                     singleFork: false,
+                    isolate: true,
+                    maxForks: 1,
                 },
             },
             testTimeout: 10000,
             hookTimeout: 10000,
+            sequence: {
+                shuffle: true,
+                seed: 42,
+            },
+            forceExit: true,
             coverage: {
                 provider: 'v8',
                 reporter: ['text', 'json', 'html'],

@@ -1,6 +1,6 @@
 import {describe, expect, it, vi} from 'vitest';
 import {fireEvent, render, screen} from '@testing-library/react';
-import {EmptyState, EmptyStatePreset} from '@notention/ui';
+import {EmptyState, EmptyStatePreset} from '../../components/ui/EmptyState';
 
 describe('EmptyState', () => {
     it('renders contextual shortcuts when enabled', () => {

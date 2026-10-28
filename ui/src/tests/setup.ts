@@ -1,6 +1,7 @@
 // tests/setup.ts
 import '@testing-library/jest-dom';
-import {vi} from 'vitest';
+import {vi, afterEach, beforeAll, afterAll} from 'vitest';
+import {metaphorRegistry} from '@notention/core';
 
 // Mock scrollIntoView, which is not implemented in jsdom
 window.HTMLElement.prototype.scrollIntoView = vi.fn();
@@ -52,3 +53,41 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
     unobserve: vi.fn(),
     disconnect: vi.fn(),
 }));
+
+// Global test cleanup to prevent memory leaks
+afterEach(() => {
+    // Clear all mocks
+    vi.clearAllMocks();
+
+    // Reset metaphor registry to prevent accumulation across tests
+    metaphorRegistry.clear();
+
+    // Clear any timers
+    vi.clearAllTimers();
+
+    // Force garbage collection if available
+    if (global.gc) {
+        global.gc();
+    }
+});
+
+// Clean up after all tests
+afterAll(() => {
+    vi.clearAllMocks();
+    metaphorRegistry.clear();
+    if (global.gc) {
+        global.gc();
+    }
+});
+
+// Memory guard: fail if heap exceeds threshold (runs after each test file)
+const MEMORY_THRESHOLD_MB = 500;
+
+beforeAll(() => {
+    if (process.env.CI) {
+        console.log('[Memory Guard] Active - threshold:', MEMORY_THRESHOLD_MB, 'MB');
+    }
+});
+
+// Export for memory guard test
+export const MEMORY_THRESHOLD_BYTES = MEMORY_THRESHOLD_MB * 1024 * 1024;

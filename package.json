@@ -12,6 +12,7 @@
   "scripts": {
     "build": "npm run build --workspaces",
     "test": "npm run test --workspaces",
+    "verify": "tsx scripts/verify.ts",
     "screenshots": "pnpm --filter @notention/ui screenshots",
     "test:e2e": "pnpm --filter @notention/ui test:e2e",
     "relay": "pnpm --filter @notention/agent relay --",

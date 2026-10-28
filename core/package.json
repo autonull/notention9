@@ -13,7 +13,9 @@
     "./extraction/deterministic": "./dist/extraction/deterministic.js",
     "./prompts": "./dist/prompts/index.js",
     "./prompts/registry": "./dist/prompts/registry.js",
-    "./prompts/propertyExtraction": "./dist/prompts/propertyExtraction.js"
+    "./prompts/propertyExtraction": "./dist/prompts/propertyExtraction.js",
+    "./skills": "./dist/skills/index.js",
+    "./skills/metaphor": "./dist/skills/metaphor/MetaphorRegistry.js"
   },
   "scripts": {
     "build": "tsc",
