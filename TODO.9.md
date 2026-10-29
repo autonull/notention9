@@ -517,7 +517,7 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | L13 | Adopt winner behind flag; provenance; rollback | `ui/`, ledger | reversible adoption | L12 | ✅ |
 | L14 | T4 request emission | `optimize/src/synthesis/requests.ts` | request from real evidence | L12 | ✅ |
 | L15 | Prompt JSON schema derived from ontology; repair loop | `optimize/src/services/ai/extractionSchema.ts` | extraction validated | L2 | ✅ |
-| L16 | Clarification questions ranked by information gain | `ui/src/services/ai/` | "changed outcome" rate measured | L15 |
+| L16 | Clarification questions ranked by information gain | `ui/src/services/ai/` | "changed outcome" rate measured | L15 | 🟨 |
 | L17a | Lifecycle/status facet (`open→matched→committed→done→lapsed`) | `core/src/ontology/` | note carries status; task 4 passes | — | ✅ |
 | L17 | Ontology experiment: flat vs facets+status | `core/src/ontology/`, harness | recorded decision | L9, L17a |
 | L18 | Real-corpus ingestion → vocabulary + tasks | `optimize/src/corpus/` | ≥1 class beyond taxonomy | L5 |
@@ -544,7 +544,7 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 
 | ID | Item | Files | Acceptance | Depends |
 |----|------|-------|-----------|---------|
-| I1 | Explainable match results (why it fits, how it differs, what is missing) | `LocalMatchPreview`, match UI | explanation shown for every match | P4 |
+| I1 | Explainable match results (why it fits, how it differs, what is missing) | `LocalMatchPreview`, match UI | explanation shown for every match | P4 | ✅ |
 | I2 | Correction and recovery flows (reject, revise, continue without restart) | editor + match UI | recovery measurable; no forced restart | P3, P4 |
 
 ### S — Capability showcases · supporting
