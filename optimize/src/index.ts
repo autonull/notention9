@@ -19,3 +19,4 @@ export * from './config.js';
 export * from './pathUtils.js';
 export * from './stepExecutors/index.js';
 export * from './uiuxEvaluator.js';
+export * from './services/ai/extractionSchema.js';

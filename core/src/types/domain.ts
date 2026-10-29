@@ -2,6 +2,12 @@ import type { Event as NostrToolsEvent } from 'nostr-tools';
 
 export type NostrEvent = NostrToolsEvent;
 
+/**
+ * Note lifecycle status - tracks the progression from creation to completion
+ * open → matched → committed → done → lapsed
+ */
+export type NoteStatus = 'open' | 'matched' | 'committed' | 'done' | 'lapsed';
+
 export interface Note {
   id: string;
   title: string;
@@ -21,6 +27,19 @@ export interface Note {
   privacy: PrivacyLevel;
   priority: number;
   author?: string;
+
+  /** Lifecycle status for intent tracking and commitments */
+  status?: NoteStatus;
+  
+  /** Deadline for committed items */
+  deadline?: string;
+  
+  /** Commitment metadata */
+  commitment?: {
+    committedAt: string;
+    expectedCompletion?: string;
+    relatedNoteIds?: string[];
+  };
 }
 
 export type NoteSource = {

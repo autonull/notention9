@@ -503,9 +503,9 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | L12 | Sandbox build + harness run | `optimize/src/synthesis/` | candidate measured vs baseline | L11 | ✅ |
 | L13 | Adopt winner behind flag; provenance; rollback | `ui/`, ledger | reversible adoption | L12 | ✅ |
 | L14 | T4 request emission | `optimize/src/synthesis/requests.ts` | request from real evidence | L12 | ✅ |
-| L15 | Prompt JSON schema derived from ontology; repair loop | `ui/src/services/ai/`, `optimize/` | extraction validated | L2 |
+| L15 | Prompt JSON schema derived from ontology; repair loop | `ui/src/services/ai/`, `optimize/` | extraction validated | L2 | ✅ |
 | L16 | Clarification questions ranked by information gain | `ui/src/services/ai/` | "changed outcome" rate measured | L15 |
-| L17a | Lifecycle/status facet (`open→matched→committed→done→lapsed`) | `core/src/ontology/` | note carries status; task 4 passes | — |
+| L17a | Lifecycle/status facet (`open→matched→committed→done→lapsed`) | `core/src/ontology/` | note carries status; task 4 passes | — | ✅ |
 | L17 | Ontology experiment: flat vs facets+status | `core/src/ontology/`, harness | recorded decision | L9, L17a |
 | L18 | Real-corpus ingestion → vocabulary + tasks | `optimize/src/corpus/` | ≥1 class beyond taxonomy | L5 |
 | L19 | Ledger-lite (append-only decisions/deltas/provenance) | `core/src/suggestions/SuggestionStore.ts` | survives restart; dedupes | L5 |
