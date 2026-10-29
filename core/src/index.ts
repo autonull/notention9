@@ -44,3 +44,18 @@ export * from './network/nostr/nostr.js';
 export * from './network/nostr/privacy.js';
 export * from './network/nostr/discovery.js';
 export * from './network/nostr/relay.js';
+export {
+    PROTOCOL_VERSION,
+    EventCBOR,
+    encodeEventToCBOR,
+    decodeEventFromCBOR,
+    computeNoteID,
+    computeNoteIDFromSerialized,
+    signEvent,
+    verifyEventSignature,
+    getPublicKeyFromSecret,
+    generatePrivateKey,
+    serializeEventForSigning,
+    isValidEvent,
+    verifiedSymbol,
+} from './network/nostr/protocol.js';

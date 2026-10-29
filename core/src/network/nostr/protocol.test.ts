@@ -8,11 +8,10 @@ import {
     getPublicKeyFromSecret,
     generatePrivateKey,
     serializeEventForSigning,
-    hexToBytes,
-    bytesToHex,
     isValidEvent,
     verifiedSymbol,
 } from './protocol.js';
+import { hexToBytes, bytesToHex } from '../../utils/encoding.js';
 
 describe('Nostr Protocol (CBOR, NoteID, Signing)', () => {
     describe('hex/bytes conversion', () => {

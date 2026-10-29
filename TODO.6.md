@@ -100,8 +100,8 @@ Consolidated from TODO.5.md. Batches remaining work into 3 focused PRs. Supersed
 |------------|---------|------|
 | W3 Extraction Quality + Prompt Eval | Human relevance ratings (G2) | G2 |
 | W4 Agent Loop Closure | Confidence from G1/G2 | G1, G2 |
-| **W5 Protocol Foundation (CBOR, NoteID, Signing)** | G4 decision: interop-first? | ✅ **G4=YES → IN PROGRESS** |
-| W5b Simulator Protocol Testbed | W5 promoted | ✅ **G4 → W5 (Active)** |
+| **W5 Protocol Foundation (CBOR, NoteID, Signing)** | G4 decision: interop-first? | ✅ **G4=YES → COMPLETE** |
+| W5b Simulator Protocol Testbed | W5 promoted | ✅ **COMPLETE** |
 | W6 Multi-Device Sync | Users hit single-device limit (G5) | G3, G5 |
 | **G6 Fix** MP4 Recording Infrastructure | Demos, teaching, CI evidence | ✅ **DONE** (localhost:ports) |
 
@@ -166,8 +166,8 @@ Consolidated from TODO.5.md. Batches remaining work into 3 focused PRs. Supersed
 4. Batch C (Metaphor View) — ✅ DONE (1 PR)
    → Extensibility proven
 5. Fix G6 (MP4 recordings) — ✅ DONE (localhost:ports in MovieMaker)
-6. **W5 Protocol Foundation** — ✅ Core module complete (CBOR, NoteID, Signing)
-7. W5b Simulator Protocol Testbed — validate W5 in simulator
+6. **W5 Protocol Foundation** — ✅ COMPLETE (CBOR, NoteID, Signing)
+7. **W5b Simulator Protocol Testbed** — ✅ COMPLETE (13 tests passing)
 8. Human testing (G1, G2) — 5 users (G4+G6 ready)
 9. If G2 passes → W3/W4; W6 after G5
 ```
