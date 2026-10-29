@@ -1,0 +1,97 @@
+{
+  "strategyId": "capture-20-candidate-1793305217362",
+  "artifact": {
+    "id": "capture-20-candidate-1793305217362",
+    "kind": "ui",
+    "version": "2.10.29-5566",
+    "interface": "capture-20",
+    "config": {},
+    "requires": [],
+    "provenance": {
+      "generatorModel": "template-generator-v1",
+      "generatorVersion": "1.0.0",
+      "promptHash": "6a80cbfe",
+      "seed": 0,
+      "parentCommit": "unknown",
+      "author": "human",
+      "date": "2026-10-29T20:26:06.706Z",
+      "evidenceBundle": "evaluation-report.json"
+    }
+  },
+  "evaluation": {
+    "candidateId": "capture-20-candidate-1793305217362",
+    "taskResults": {
+      "task-1-capture": {
+        "taskId": "task-1-capture",
+        "successRate": 0.9719847720504652,
+        "medianDuration": 4397,
+        "p90Duration": 6811,
+        "medianSteps": 3,
+        "p90Steps": 6,
+        "errors": []
+      },
+      "task-2-match": {
+        "taskId": "task-2-match",
+        "successRate": 0.9189304620640617,
+        "medianDuration": 5057,
+        "p90Duration": 10153,
+        "medianSteps": 3,
+        "p90Steps": 6,
+        "errors": []
+      },
+      "task-3-extraction": {
+        "taskId": "task-3-extraction",
+        "successRate": 0.8385022191560064,
+        "medianDuration": 3890,
+        "p90Duration": 6570,
+        "medianSteps": 5,
+        "p90Steps": 6,
+        "errors": []
+      },
+      "task-4-commitment": {
+        "taskId": "task-4-commitment",
+        "successRate": 0.9091653932602752,
+        "medianDuration": 3540,
+        "p90Duration": 5767,
+        "medianSteps": 4,
+        "p90Steps": 5,
+        "errors": []
+      },
+      "task-5-search": {
+        "taskId": "task-5-search",
+        "successRate": 0.8214057915425844,
+        "medianDuration": 3279,
+        "p90Duration": 9464,
+        "medianSteps": 4,
+        "p90Steps": 5,
+        "errors": []
+      },
+      "task-6-recovery": {
+        "taskId": "task-6-recovery",
+        "successRate": 0.8201926236820671,
+        "medianDuration": 3492,
+        "p90Duration": 5105,
+        "medianSteps": 3,
+        "p90Steps": 6,
+        "errors": []
+      }
+    },
+    "overallSuccessRate": 0.8800302102925768,
+    "overallMedianDuration": 3942.5,
+    "passed": true
+  },
+  "adoptedAt": "2026-10-29T20:26:06.706Z",
+  "adoptedBy": "cli-user",
+  "flagKey": "strategy-capture-20-candidate-1793305217362",
+  "enabled": false,
+  "provenance": {
+    "generatorModel": "template-generator-v1",
+    "generatorVersion": "1.0.0",
+    "promptHash": "6a80cbfe",
+    "seed": 0,
+    "parentCommit": "unknown",
+    "author": "human",
+    "date": "2026-10-29T20:26:06.706Z",
+    "evidenceBundle": "evaluation-report.json"
+  }
+}

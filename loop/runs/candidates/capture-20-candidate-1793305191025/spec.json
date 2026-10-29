@@ -1,0 +1,39 @@
+{
+  "seam": "capture-20",
+  "intent": "Implement capture seam: capture (merged 21 clusters)",
+  "must": [
+    "Keyboard navigable",
+    "ARIA labels on all inputs",
+    "Works offline"
+  ],
+  "may": [
+    "react",
+    "@notention/ui/*",
+    "@notention/core/*"
+  ],
+  "mustNot": [
+    "fs",
+    "fs/promises",
+    "node:*",
+    "eval",
+    "fetch",
+    "localStorage",
+    "sessionStorage",
+    "indexedDB"
+  ],
+  "accepts": {
+    "type": "object",
+    "properties": {
+      "input": "string",
+      "onInputChange": "(value: string) => void",
+      "onSubmit": "(e: React.FormEvent) => void",
+      "extractedProps": "Array<{key: string; values: string[]}>",
+      "onTemplateClick": "(type: string) => void"
+    }
+  },
+  "emits": {
+    "type": "object",
+    "properties": {}
+  },
+  "examples": []
+}

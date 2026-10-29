@@ -1,0 +1,45 @@
+{
+  "seam": "elicit-1",
+  "intent": "Implement elicit seam: elicit (merged 2 clusters)",
+  "must": [
+    "Keyboard navigable",
+    "ARIA labels on all inputs",
+    "Works offline"
+  ],
+  "may": [
+    "react",
+    "@notention/ui/*",
+    "@notention/core/*"
+  ],
+  "mustNot": [
+    "fs",
+    "fs/promises",
+    "node:*",
+    "eval",
+    "fetch",
+    "localStorage",
+    "sessionStorage",
+    "indexedDB"
+  ],
+  "accepts": {
+    "type": "object",
+    "properties": {
+      "isOpen": "boolean",
+      "onClose": "() => void",
+      "onInsert": "(key: string, operator: string, value: string, icon?: string) => void",
+      "initialKey": "string?",
+      "initialOperator": "string?",
+      "initialValue": "string?",
+      "attributeDef": "OntologyAttribute?",
+      "ontology": "OntologyNode[]?",
+      "isEditing": "boolean?",
+      "onPickLocation": "() => Promise<string>?",
+      "suggestions": "SuggestedAttribute[]?"
+    }
+  },
+  "emits": {
+    "type": "object",
+    "properties": {}
+  },
+  "examples": []
+}

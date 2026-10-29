@@ -1,0 +1,18 @@
+{
+  "id": "capture-20-candidate-1793305217362",
+  "kind": "ui",
+  "version": "2.10.29-5566",
+  "interface": "capture-20",
+  "config": {},
+  "requires": [],
+  "provenance": {
+    "generatorModel": "template-generator-v1",
+    "generatorVersion": "1.0.0",
+    "promptHash": "6a80cbfe",
+    "seed": 0,
+    "parentCommit": "unknown",
+    "author": "human",
+    "date": "2026-10-29T20:26:06.706Z",
+    "evidenceBundle": "evaluation-report.json"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "artifact": {
+    "id": "capture-20-candidate-1793305507400",
+    "kind": "ui",
+    "version": "2.10.29-5509",
+    "interface": "capture-20",
+    "config": {},
+    "requires": [],
+    "provenance": {
+      "generatorModel": "template-generator-v1",
+      "generatorVersion": "1.0.0",
+      "promptHash": "6a80cbfe",
+      "seed": 0,
+      "parentCommit": "unknown",
+      "author": "human",
+      "date": "2026-10-29T20:25:09.703Z",
+      "evidenceBundle": "evaluation-report.json"
+    }
+  },
+  "adoptedAt": "2026-10-29T20:25:09.703Z"
+}

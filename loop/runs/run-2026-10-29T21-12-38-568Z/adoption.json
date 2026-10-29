@@ -1,0 +1,21 @@
+{
+  "artifact": {
+    "id": "elicit-1-candidate-1793308367999",
+    "kind": "ui",
+    "version": "2.10.29-8370",
+    "interface": "elicit-1",
+    "config": {},
+    "requires": [],
+    "provenance": {
+      "generatorModel": "template-generator-v1",
+      "generatorVersion": "1.0.0",
+      "promptHash": "1add6598",
+      "seed": 0,
+      "parentCommit": "unknown",
+      "author": "human",
+      "date": "2026-10-29T21:12:50.169Z",
+      "evidenceBundle": "evaluation-report.json"
+    }
+  },
+  "adoptedAt": "2026-10-29T21:12:50.171Z"
+}

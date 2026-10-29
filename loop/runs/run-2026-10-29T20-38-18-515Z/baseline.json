@@ -1,0 +1,56 @@
+[
+  {
+    "taskId": "task-1-capture",
+    "successRate": 0.8886447510352795,
+    "medianDuration": 4401.0268034249875,
+    "p90Duration": 6477.670325582849,
+    "medianSteps": 3,
+    "p90Steps": 6,
+    "errors": []
+  },
+  {
+    "taskId": "task-2-match",
+    "successRate": 0.8897757102620546,
+    "medianDuration": 3515.7906984510946,
+    "p90Duration": 8303.34895016864,
+    "medianSteps": 3,
+    "p90Steps": 7,
+    "errors": []
+  },
+  {
+    "taskId": "task-3-extraction",
+    "successRate": 0.87877491198917,
+    "medianDuration": 2344.0659260675657,
+    "p90Duration": 8513.856219705407,
+    "medianSteps": 4,
+    "p90Steps": 7,
+    "errors": []
+  },
+  {
+    "taskId": "task-4-commitment",
+    "successRate": 0.7616662977491954,
+    "medianDuration": 2379.349027811596,
+    "p90Duration": 8376.99227798845,
+    "medianSteps": 4,
+    "p90Steps": 5,
+    "errors": []
+  },
+  {
+    "taskId": "task-5-search",
+    "successRate": 0.7895602091303567,
+    "medianDuration": 3769.719227300701,
+    "p90Duration": 6111.16624317956,
+    "medianSteps": 5,
+    "p90Steps": 5,
+    "errors": []
+  },
+  {
+    "taskId": "task-6-recovery",
+    "successRate": 0.7577878013901628,
+    "medianDuration": 3579.9424813821233,
+    "p90Duration": 6932.607093827233,
+    "medianSteps": 3,
+    "p90Steps": 5,
+    "errors": []
+  }
+]

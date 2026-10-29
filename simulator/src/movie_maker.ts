@@ -102,7 +102,7 @@ export class MovieMaker {
         if (!this.browserManager || !this.runner) return;
 
         this.log('Starting Dashboard & Recording...');
-        const page = await this.browserManager.createPage();
+        const page = await this.browserManager.createPage('recording');
         await this.browserManager.navigateToDashboard(page, this.options.dashboardPort, this.options.view);
 
         this.recordingManager = new RecordingManager({
@@ -125,6 +125,10 @@ export class MovieMaker {
                 }
                 page.evaluate((focusId: string) => (window as any).setCameraFocus?.(focusId), targetId).catch(() => {});
             }
+        };
+        
+        this.runner.runEventSink = (runEvent) => {
+            this.log(`[RunEvent] ${runEvent.type}: ${JSON.stringify(runEvent.data)}`);
         };
 
         if (this.runner) await this.runner.execute(scenario);

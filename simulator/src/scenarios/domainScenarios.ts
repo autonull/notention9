@@ -53,6 +53,9 @@ export const DOMAIN_SCENARIOS: Record<string, Scenario> = {
             { at: 13, action: 'camera', actorRole: 'system', cameraFocus: 'grid' },
         ],
         duration: 15,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'medium'
     },
 
     'hiring-pipeline': {
@@ -105,6 +108,9 @@ export const DOMAIN_SCENARIOS: Record<string, Scenario> = {
             { at: 12, action: 'camera', actorRole: 'system', cameraFocus: 'grid' },
         ],
         duration: 15,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'medium'
     },
 
     'project-collaboration': {
@@ -152,6 +158,9 @@ export const DOMAIN_SCENARIOS: Record<string, Scenario> = {
             { at: 11, action: 'camera', actorRole: 'system', cameraFocus: 'grid' },
         ],
         duration: 12,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'easy'
     },
 
     'mentorship-network': {
@@ -201,6 +210,9 @@ export const DOMAIN_SCENARIOS: Record<string, Scenario> = {
             { at: 10, action: 'camera', actorRole: 'system', cameraFocus: 'grid' },
         ],
         duration: 12,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'medium'
     },
 
     'learning-community': {
@@ -259,6 +271,9 @@ export const DOMAIN_SCENARIOS: Record<string, Scenario> = {
             { at: 11, action: 'camera', actorRole: 'system', cameraFocus: 'grid' },
         ],
         duration: 12,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'easy'
     },
 
     'cofounder-matching': {
@@ -310,6 +325,9 @@ export const DOMAIN_SCENARIOS: Record<string, Scenario> = {
             { at: 10, action: 'camera', actorRole: 'system', cameraFocus: 'grid' },
         ],
         duration: 12,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'hard'
     },
 
     'investor-startup': {
@@ -368,6 +386,9 @@ export const DOMAIN_SCENARIOS: Record<string, Scenario> = {
             { at: 9, action: 'camera', actorRole: 'system', cameraFocus: 'grid' },
         ],
         duration: 12,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'hard'
     },
 
     'events-networking': {
@@ -416,6 +437,9 @@ export const DOMAIN_SCENARIOS: Record<string, Scenario> = {
             { at: 10, action: 'camera', actorRole: 'system', cameraFocus: 'grid' },
         ],
         duration: 12,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'medium'
     },
 
     'open-source-contrib': {
@@ -464,6 +488,9 @@ export const DOMAIN_SCENARIOS: Record<string, Scenario> = {
             { at: 9, action: 'camera', actorRole: 'system', cameraFocus: 'grid' },
         ],
         duration: 12,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'easy'
     },
 
     'research-collaboration': {
@@ -512,6 +539,9 @@ export const DOMAIN_SCENARIOS: Record<string, Scenario> = {
             { at: 8, action: 'camera', actorRole: 'system', cameraFocus: 'grid' },
         ],
         duration: 10,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'hard'
     },
 };
 

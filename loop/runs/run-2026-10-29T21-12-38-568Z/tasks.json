@@ -1,0 +1,64 @@
+{
+  "timestamp": "2026-10-29T21:12:47.983Z",
+  "version": "1.0.0",
+  "tasks": [
+    {
+      "id": "task-1",
+      "name": "Capture need with ≥3 properties in <20s",
+      "type": "capture",
+      "seam": "capture",
+      "acceptance": {
+        "minProperties": 3,
+        "maxTimeSeconds": 20
+      }
+    },
+    {
+      "id": "task-2",
+      "name": "Capture offer → ≥1 match without re-edit",
+      "type": "match",
+      "seam": "match-display",
+      "acceptance": {
+        "minMatches": 1,
+        "maxReedits": 0
+      }
+    },
+    {
+      "id": "task-3",
+      "name": "Paragraph → valid structured note",
+      "type": "extraction",
+      "seam": "extraction",
+      "acceptance": {
+        "schemaValid": true,
+        "minFields": 3
+      }
+    },
+    {
+      "id": "task-4",
+      "name": "Open note → commitment with status+deadline",
+      "type": "commitment",
+      "seam": "intent-surface",
+      "acceptance": {
+        "hasStatus": true,
+        "hasDeadline": true
+      }
+    },
+    {
+      "id": "task-5",
+      "name": "Find note by intent",
+      "type": "search",
+      "seam": "intent-surface",
+      "acceptance": {
+        "findsTarget": true
+      }
+    },
+    {
+      "id": "task-6",
+      "name": "Add missing detail after failed match",
+      "type": "recovery",
+      "seam": "detail-elicitation",
+      "acceptance": {
+        "recoversFromFailure": true
+      }
+    }
+  ]
+}

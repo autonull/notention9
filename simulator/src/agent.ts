@@ -67,6 +67,9 @@ export class Agent {
         this.#engine = new MatchEngine(ontology);
 
         this.#relay = new WebSocket(relayUrl);
+        this.#relay.on('error', () => {
+            // Silently handle connection errors - relay may not be available in tests
+        });
         this.#setupNetwork();
     }
 

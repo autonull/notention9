@@ -1,0 +1,88 @@
+{
+  "seam": "capture-0",
+  "intent": "Capture structured properties from user input with real-time validation",
+  "must": [
+    "Keyboard navigable",
+    "ARIA labels on all inputs",
+    "Works offline",
+    "Validates against ontology schema",
+    "Shows validation errors inline"
+  ],
+  "may": [
+    "react",
+    "@notention/ui/*",
+    "@notention/core/*",
+    "zod",
+    "date-fns"
+  ],
+  "mustNot": [
+    "fs",
+    "fs/promises",
+    "node:*",
+    "eval",
+    "fetch",
+    "localStorage",
+    "sessionStorage",
+    "indexedDB",
+    "crypto.randomUUID"
+  ],
+  "accepts": {
+    "type": "object",
+    "properties": {
+      "initialKey": {
+        "type": "string"
+      },
+      "initialOp": {
+        "type": "string"
+      },
+      "initialValue": {
+        "type": "string"
+      },
+      "isAdding": {
+        "type": "boolean"
+      },
+      "onSave": {
+        "type": "function"
+      },
+      "onCancel": {
+        "type": "function"
+      },
+      "ontology": {
+        "type": "array"
+      }
+    },
+    "required": [
+      "onSave",
+      "onCancel",
+      "ontology"
+    ]
+  },
+  "emits": {
+    "type": "object",
+    "properties": {
+      "propertySaved": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "operator": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "operator",
+          "value"
+        ]
+      }
+    }
+  },
+  "examples": [
+    "User types \"send to john@example.com\" → extracts {key: \"to\", operator: \"send to\", value: \"john@example.com\"}",
+    "User selects \"client\" from dropdown, enters \"Acme Corp\" → saves property"
+  ]
+}

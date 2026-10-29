@@ -18,6 +18,7 @@ interface AgentContext {
 export class BrowserManager {
     private browser: Browser | null = null;
     private agentContexts: AgentContext[] = [];
+    private dedicatedPages: Map<string, Page> = new Map();
 
     constructor(private readonly options: BrowserManagerOptions) {}
 
@@ -76,12 +77,25 @@ export class BrowserManager {
         }
     }
 
-    async createPage(): Promise<Page> {
+    async createPage(owner?: string): Promise<Page> {
         if (!this.browser) throw new Error('Browser not started');
-        // Return page from first agent context, or create a new one
-        if (this.agentContexts.length > 0) {
-            return this.agentContexts[0].page;
+        
+        // If owner is specified, return or create a dedicated page for that owner
+        if (owner) {
+            const existing = this.dedicatedPages.get(owner);
+            if (existing) return existing;
+            
+            const context = await this.browser.newContext({
+                viewport: this.options.resolution,
+                bypassCSP: true,
+                ignoreHTTPSErrors: true
+            });
+            const page = await context.newPage();
+            this.dedicatedPages.set(owner, page);
+            return page;
         }
+        
+        // No owner specified - create a new independent page (not tied to any agent)
         const context = await this.browser.newContext({
             viewport: this.options.resolution,
             bypassCSP: true,
@@ -110,6 +124,11 @@ export class BrowserManager {
             await context.close();
         }
         this.agentContexts = [];
+        
+        for (const page of this.dedicatedPages.values()) {
+            await page.context().close();
+        }
+        this.dedicatedPages.clear();
         
         if (this.browser) {
             await this.browser.close();

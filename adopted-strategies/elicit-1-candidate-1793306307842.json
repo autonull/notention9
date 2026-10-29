@@ -1,0 +1,18 @@
+{
+  "id": "elicit-1-candidate-1793306307842",
+  "kind": "ui",
+  "version": "2.10.29-6310",
+  "interface": "elicit-1",
+  "config": {},
+  "requires": [],
+  "provenance": {
+    "generatorModel": "template-generator-v1",
+    "generatorVersion": "1.0.0",
+    "promptHash": "1add6598",
+    "seed": 0,
+    "parentCommit": "unknown",
+    "author": "human",
+    "date": "2026-10-29T20:38:30.001Z",
+    "evidenceBundle": "evaluation-report.json"
+  }
+}

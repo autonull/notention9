@@ -1,0 +1,122 @@
+[
+  {
+    "candidateId": "capture-20-candidate-1793308206014",
+    "gates": {
+      "typescript": {
+        "pass": true,
+        "errors": [],
+        "warnings": []
+      },
+      "eslint": {
+        "pass": true,
+        "errors": [],
+        "warnings": [
+          "ESLint check failed: This method cannot be used with flat config. Add your entries directly into the config array."
+        ]
+      },
+      "seamConformance": {
+        "pass": true,
+        "errors": [],
+        "warnings": [
+          "No events emitted - check if seam requires output events"
+        ]
+      },
+      "importAllowlist": {
+        "pass": true,
+        "errors": [],
+        "warnings": []
+      },
+      "noAmbientCaps": {
+        "pass": true,
+        "errors": [],
+        "warnings": []
+      },
+      "specValidation": {
+        "pass": true,
+        "errors": [],
+        "warnings": []
+      },
+      "a11y": {
+        "pass": true,
+        "errors": [],
+        "warnings": []
+      },
+      "keyboard": {
+        "pass": true,
+        "errors": [],
+        "warnings": [
+          "No keyboard event handlers found - ensure keyboard navigability",
+          "No explicit focus management found"
+        ]
+      },
+      "mustWin": {
+        "pass": true,
+        "errors": [],
+        "warnings": [
+          "Must-win requires baseline comparison"
+        ]
+      }
+    },
+    "overallPass": true
+  },
+  {
+    "candidateId": "elicit-1-candidate-1793308206015",
+    "gates": {
+      "typescript": {
+        "pass": true,
+        "errors": [],
+        "warnings": []
+      },
+      "eslint": {
+        "pass": true,
+        "errors": [],
+        "warnings": [
+          "ESLint check failed: This method cannot be used with flat config. Add your entries directly into the config array."
+        ]
+      },
+      "seamConformance": {
+        "pass": true,
+        "errors": [],
+        "warnings": [
+          "No events emitted - check if seam requires output events"
+        ]
+      },
+      "importAllowlist": {
+        "pass": true,
+        "errors": [],
+        "warnings": []
+      },
+      "noAmbientCaps": {
+        "pass": true,
+        "errors": [],
+        "warnings": []
+      },
+      "specValidation": {
+        "pass": true,
+        "errors": [],
+        "warnings": []
+      },
+      "a11y": {
+        "pass": true,
+        "errors": [],
+        "warnings": []
+      },
+      "keyboard": {
+        "pass": true,
+        "errors": [],
+        "warnings": [
+          "No keyboard event handlers found - ensure keyboard navigability",
+          "No explicit focus management found"
+        ]
+      },
+      "mustWin": {
+        "pass": true,
+        "errors": [],
+        "warnings": [
+          "Must-win requires baseline comparison"
+        ]
+      }
+    },
+    "overallPass": true
+  }
+]

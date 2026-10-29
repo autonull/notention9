@@ -45,4 +45,7 @@ export const GoldenPathScenario: Scenario = {
         { at: 8, action: 'camera', actorRole: 'system', cameraFocus: 'grid' },
     ],
     duration: 12,
+    tags: ['golden-path', 'smoke'],
+    requires: ['relay', 'ui'],
+    difficulty: 'easy'
 };

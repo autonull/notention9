@@ -1,10 +1,9 @@
 import { Agent, AgentProfile } from './agent.js';
-import type { Property, OntologyNode } from '@notention/core';
+import type { Property, OntologyNode, Scenario, AgentConfig, EventConfig, InputMethod, RunEvent, RunEventSink, RunEventType } from './types.js';
 import chalk from 'chalk';
 import { SIMULATION_CONFIG, AGENT_COLORS } from './constants.js';
-import type { Scenario, AgentConfig, EventConfig, InputMethod } from './types.js';
 
-export type { Property, Scenario, AgentConfig, EventConfig, InputMethod };
+export type { Property, Scenario, AgentConfig, EventConfig, InputMethod, RunEvent, RunEventSink, RunEventType };
 
 type ActionHandler = (agent: Agent, inputMethod: string, targetId?: string) => Promise<void>;
 
@@ -18,13 +17,33 @@ export class ScenarioRunner {
     public readonly agents: Agent[] = [];
     #colors = AGENT_COLORS.map(c => chalk[c] as chalk.Chalk);
     #onEvent?: (event: EventConfig) => void;
+    #runEventSink?: RunEventSink;
 
     constructor(
         readonly relayUrl: string,
         readonly ontology: OntologyNode[]
     ) {}
 
+    set runEventSink(sink: RunEventSink | undefined) {
+        this.#runEventSink = sink;
+    }
+
+    get runEventSink(): RunEventSink | undefined {
+        return this.#runEventSink;
+    }
+
+    #emitRunEvent(type: RunEventType, scenarioName: string, data: Record<string, unknown>): void {
+        const event: RunEvent = {
+            type,
+            timestamp: Date.now(),
+            scenarioName,
+            data,
+        };
+        this.#runEventSink?.(event);
+    }
+
     async prepare(scenario: Scenario) {
+        this.#emitRunEvent('scenario:start', scenario.name, { description: scenario.description, duration: scenario.duration });
         console.log(chalk.bold.cyan(`\nRunning Scenario: ${scenario.name}`));
         console.log(chalk.gray(scenario.description));
 
@@ -35,6 +54,7 @@ export class ScenarioRunner {
         this.#scheduleEvents(scenario.events);
         await new Promise(resolve => setTimeout(resolve, scenario.duration * 1000));
         console.log(chalk.bold.green(`\nScenario Completed.`));
+        this.#emitRunEvent('scenario:end', scenario.name, { duration: scenario.duration });
     }
 
     async run(scenario: Scenario) {
@@ -63,6 +83,7 @@ export class ScenarioRunner {
                 );
 
                 this.agents.push(agent);
+                this.#emitRunEvent('agent:spawn', '', { agentName: profile.name, role: config.role, id: agent.id });
                 await new Promise(resolve => setTimeout(resolve, SIMULATION_CONFIG.agentSpawnDelay));
             }
         }
@@ -82,6 +103,7 @@ export class ScenarioRunner {
             setTimeout(async () => {
                 console.log(chalk.bold(`\n[${event.at}s] Event: ${event.actorRole} -> ${event.action} (${event.inputMethod ?? 'raw'})`));
                 this.#onEvent?.(event);
+                this.#emitRunEvent('event:scheduled', '', { ...event });
 
                 if (event.action !== 'camera') {
                     await this.#executeAction(event.actorRole, event.action, event.inputMethod, event.targetAgentId);
@@ -96,7 +118,13 @@ export class ScenarioRunner {
 
         if (!handler) return;
 
+        for (const actor of actors) {
+            this.#emitRunEvent('agent:action', '', { agentName: actor.profile.name, action, inputMethod, targetId });
+        }
+
         const tasks = actors.map(actor => handler(actor, inputMethod, targetId));
         await Promise.all(tasks);
+        
+        this.#emitRunEvent('event:executed', '', { role, action, inputMethod, targetId });
     }
 }

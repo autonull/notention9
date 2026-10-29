@@ -44,4 +44,7 @@ export const RegressionScenario: Scenario = {
         { at: 3, action: 'publish_offer', actorRole: 'RegressOfferer' },
     ],
     duration: 8,
+    tags: ['regression', 'smoke'],
+    requires: ['relay'],
+    difficulty: 'easy'
 };

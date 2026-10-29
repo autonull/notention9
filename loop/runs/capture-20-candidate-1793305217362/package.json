@@ -1,0 +1,16 @@
+{
+  "name": "@notention/sandbox-capture-20-candidate-1793305217362",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "strategy.tsx",
+  "dependencies": {
+    "react": "^18.2.0",
+    "@notention/core": "workspace:*",
+    "@notention/ui": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "@types/react": "^18.2.0"
+  }
+}

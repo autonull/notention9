@@ -434,6 +434,19 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | D4 | UI batching is a hand-maintained list | `scripts/test-ui-batched.ts` | glob + chunk | D3 | ✅ |
 | D5 | Phase 1 infra has zero consumers (`uiRegistry`, `ontologyRegistry`, `suggestionStore`, adapters) | `core/src/ui/`, `core/src/ontology/`, `core/src/suggestions/` | wired (L7) or deleted | L2a | ✅ **decision: wire** |
 | D6 | `analyzeRoutes`/`analyzeDialogs`/`analyzeActions` hardcoded | `optimize/src/discovery/componentScanner.ts` | derived from JSX | L3 |
+| D7 | `BrowserManager.createPage()` returns the first agent's page | `simulator/src/browser_manager.ts` | explicit page/context per use | — | ✅ |
+| D8 | `Scenario` lacks tags/`requires`/`difficulty`; runner logs instead of emitting events | `simulator/src/types.ts`, `scenario.ts`, `agent.ts` | typed `RunEvent` sink | — | ✅ |
+| D9 | `MetricsTab` untested | `ui/src/components/settings/MetricsTab.tsx` | render + consent test | — | ✅ |
+| D10 | Metrics persistence broken: `track()` never persists; `flush()` clears then persists empty | `ui/src/hooks/useMetrics.ts` | survives flush + reload; test | — | ✅ |
+
+| ID | Item | Files | Acceptance | Depends |
+|----|------|-------|-----------|---------|
+| D1 | Uncapped normalized score (`1 - (v-max)/max` > 1) | `optimize/src/uiuxEvaluator.ts:426` | score ∈ [0,1] asserted | — | ✅ |
+| D2 | CLI builds config then calls the singleton; flags ignored | `optimize/src/cliHandlers/uxEvaluate.ts:37` | flags change output (test) | D1 | ✅ |
+| D3 | Plain `pnpm test` OOMs on `ui` | `ui/vitest.config.ts`, root scripts | `pnpm test` exits 0 | — | ✅ |
+| D4 | UI batching is a hand-maintained list | `scripts/test-ui-batched.ts` | glob + chunk | D3 | ✅ |
+| D5 | Phase 1 infra has zero consumers (`uiRegistry`, `ontologyRegistry`, `suggestionStore`, adapters) | `core/src/ui/`, `core/src/ontology/`, `core/src/suggestions/` | wired (L7) or deleted | L2a | ✅ **decision: wire** |
+| D6 | `analyzeRoutes`/`analyzeDialogs`/`analyzeActions` hardcoded | `optimize/src/discovery/componentScanner.ts` | derived from JSX | L3 |
 | D7 | `BrowserManager.createPage()` returns the first agent's page | `simulator/src/browser_manager.ts` | explicit page/context per use | — |
 | D8 | `Scenario` lacks tags/`requires`/`difficulty`; runner logs instead of emitting events | `simulator/src/types.ts`, `scenario.ts`, `agent.ts` | typed `RunEvent` sink | — |
 | D9 | `MetricsTab` untested | `ui/src/components/settings/MetricsTab.tsx` | render + consent test | — | ✅ |
@@ -702,7 +715,7 @@ And the architectural principle holds: **the system improved its own behaviour w
 8. ✅ **L7, L8, B1, B2** — `ComponentStrategy<P>` + auto-registration; wrap existing components; runtime independent of the loop, data separated from strategy.
 9. 🟨 **L9, O1–O3, E1, E2** — harness; journey model; outcome-primary scoring; workflow-level evaluation and deterministic checks. *(harness simulated, needs real Playwright integration)*
 10. ✅ **M1, M2, M3, M4** — inference interface, local model path, deterministic core, imperfect-inference handling.
-11. **D7, D8, Q2** — simulator telemetry sink and explicit page ownership; verify event stream.
+11. ✅ **D7, D8, Q2** — simulator telemetry sink and explicit page ownership; verify event stream.
 12. ✅ **L17a** — lifecycle/status facet.
 13. ✅ **L10–L14, E4, E5, X5** — synthesis with gates; evaluator independence; baseline retention; rollback demo.
 14. **L15, L16, I1, I2, P1, P2** — prompt schema, clarification value, explainability, recovery, NL capture, progressive elicitation.

@@ -1,0 +1,185 @@
+{
+  "baseline": [
+    {
+      "taskId": "task-1-capture",
+      "successRate": 0.7444936054564782,
+      "medianDuration": 4547.983882881244,
+      "p90Duration": 6614.873562094929,
+      "medianSteps": 4,
+      "p90Steps": 6,
+      "errors": []
+    },
+    {
+      "taskId": "task-2-match",
+      "successRate": 0.8129657110204465,
+      "medianDuration": 2228.5084358383388,
+      "p90Duration": 9025.585497263628,
+      "medianSteps": 4,
+      "p90Steps": 5,
+      "errors": []
+    },
+    {
+      "taskId": "task-3-extraction",
+      "successRate": 0.8895395685549846,
+      "medianDuration": 4915.908295312029,
+      "p90Duration": 9867.473791831395,
+      "medianSteps": 3,
+      "p90Steps": 6,
+      "errors": []
+    },
+    {
+      "taskId": "task-4-commitment",
+      "successRate": 0.7446544073097319,
+      "medianDuration": 2063.4412432343884,
+      "p90Duration": 6517.654900537949,
+      "medianSteps": 3,
+      "p90Steps": 7,
+      "errors": []
+    },
+    {
+      "taskId": "task-5-search",
+      "successRate": 0.7150074570826105,
+      "medianDuration": 4631.4071575740345,
+      "p90Duration": 7239.137800731052,
+      "medianSteps": 4,
+      "p90Steps": 5,
+      "errors": []
+    },
+    {
+      "taskId": "task-6-recovery",
+      "successRate": 0.7222472012892942,
+      "medianDuration": 4727.321925522374,
+      "p90Duration": 9141.574522426461,
+      "medianSteps": 3,
+      "p90Steps": 6,
+      "errors": []
+    }
+  ],
+  "candidates": [
+    {
+      "candidateId": "capture-20-candidate-1793308367998",
+      "taskResults": {
+        "task-1-capture": {
+          "taskId": "task-1-capture",
+          "successRate": 0.6701076136203034,
+          "medianDuration": 4210,
+          "p90Duration": 6123,
+          "medianSteps": 4,
+          "p90Steps": 6,
+          "errors": []
+        },
+        "task-2-match": {
+          "taskId": "task-2-match",
+          "successRate": 0.7655620677079016,
+          "medianDuration": 2123,
+          "p90Duration": 8598,
+          "medianSteps": 4,
+          "p90Steps": 5,
+          "errors": []
+        },
+        "task-3-extraction": {
+          "taskId": "task-3-extraction",
+          "successRate": 0.86698255437732,
+          "medianDuration": 4805,
+          "p90Duration": 9645,
+          "medianSteps": 3,
+          "p90Steps": 6,
+          "errors": []
+        },
+        "task-4-commitment": {
+          "taskId": "task-4-commitment",
+          "successRate": 0.6846312646219982,
+          "medianDuration": 1940,
+          "p90Duration": 6126,
+          "medianSteps": 3,
+          "p90Steps": 7,
+          "errors": []
+        },
+        "task-5-search": {
+          "taskId": "task-5-search",
+          "successRate": 0.6522540153907321,
+          "medianDuration": 4341,
+          "p90Duration": 6785,
+          "medianSteps": 4,
+          "p90Steps": 5,
+          "errors": []
+        },
+        "task-6-recovery": {
+          "taskId": "task-6-recovery",
+          "successRate": 0.7733498785260269,
+          "medianDuration": 4969,
+          "p90Duration": 9609,
+          "medianSteps": 3,
+          "p90Steps": 6,
+          "errors": []
+        }
+      },
+      "overallSuccessRate": 0.7354812323740468,
+      "overallMedianDuration": 3731.3333333333335,
+      "passed": false
+    },
+    {
+      "candidateId": "elicit-1-candidate-1793308367999",
+      "taskResults": {
+        "task-1-capture": {
+          "taskId": "task-1-capture",
+          "successRate": 0.8428788332693912,
+          "medianDuration": 4995,
+          "p90Duration": 7266,
+          "medianSteps": 4,
+          "p90Steps": 7,
+          "errors": []
+        },
+        "task-2-match": {
+          "taskId": "task-2-match",
+          "successRate": 0.8516409602966095,
+          "medianDuration": 2315,
+          "p90Duration": 9375,
+          "medianSteps": 4,
+          "p90Steps": 5,
+          "errors": []
+        },
+        "task-3-extraction": {
+          "taskId": "task-3-extraction",
+          "successRate": 0.9757962718376294,
+          "medianDuration": 5340,
+          "p90Duration": 10719,
+          "medianSteps": 3,
+          "p90Steps": 7,
+          "errors": []
+        },
+        "task-4-commitment": {
+          "taskId": "task-4-commitment",
+          "successRate": 0.7325448845638016,
+          "medianDuration": 2038,
+          "p90Duration": 6439,
+          "medianSteps": 3,
+          "p90Steps": 7,
+          "errors": []
+        },
+        "task-5-search": {
+          "taskId": "task-5-search",
+          "successRate": 0.7942498412982842,
+          "medianDuration": 4998,
+          "p90Duration": 7813,
+          "medianSteps": 4,
+          "p90Steps": 5,
+          "errors": []
+        },
+        "task-6-recovery": {
+          "taskId": "task-6-recovery",
+          "successRate": 0.7312191090981678,
+          "medianDuration": 4770,
+          "p90Duration": 9224,
+          "medianSteps": 3,
+          "p90Steps": 6,
+          "errors": []
+        }
+      },
+      "overallSuccessRate": 0.8213883167273139,
+      "overallMedianDuration": 4076,
+      "passed": true
+    }
+  ],
+  "timestamp": "2026-10-29T21:12:50.167Z"
+}

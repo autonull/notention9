@@ -1,0 +1,97 @@
+{
+  "strategyId": "elicit-1-candidate-1793306307842",
+  "artifact": {
+    "id": "elicit-1-candidate-1793306307842",
+    "kind": "ui",
+    "version": "2.10.29-6310",
+    "interface": "elicit-1",
+    "config": {},
+    "requires": [],
+    "provenance": {
+      "generatorModel": "template-generator-v1",
+      "generatorVersion": "1.0.0",
+      "promptHash": "1add6598",
+      "seed": 0,
+      "parentCommit": "unknown",
+      "author": "human",
+      "date": "2026-10-29T20:38:30.001Z",
+      "evidenceBundle": "evaluation-report.json"
+    }
+  },
+  "evaluation": {
+    "candidateId": "elicit-1-candidate-1793306307842",
+    "taskResults": {
+      "task-1-capture": {
+        "taskId": "task-1-capture",
+        "successRate": 0.9221995225659646,
+        "medianDuration": 4549,
+        "p90Duration": 6695,
+        "medianSteps": 3,
+        "p90Steps": 6,
+        "errors": []
+      },
+      "task-2-match": {
+        "taskId": "task-2-match",
+        "successRate": 0.936729081290797,
+        "medianDuration": 3681,
+        "p90Duration": 8693,
+        "medianSteps": 3,
+        "p90Steps": 7,
+        "errors": []
+      },
+      "task-3-extraction": {
+        "taskId": "task-3-extraction",
+        "successRate": 0.9549713611816399,
+        "medianDuration": 2523,
+        "p90Duration": 9163,
+        "medianSteps": 4,
+        "p90Steps": 8,
+        "errors": []
+      },
+      "task-4-commitment": {
+        "taskId": "task-4-commitment",
+        "successRate": 0.7252706075270453,
+        "medianDuration": 2293,
+        "p90Duration": 8072,
+        "medianSteps": 4,
+        "p90Steps": 5,
+        "errors": []
+      },
+      "task-5-search": {
+        "taskId": "task-5-search",
+        "successRate": 0.8066026364937475,
+        "medianDuration": 3834,
+        "p90Duration": 6215,
+        "medianSteps": 5,
+        "p90Steps": 5,
+        "errors": []
+      },
+      "task-6-recovery": {
+        "taskId": "task-6-recovery",
+        "successRate": 0.7458179046435082,
+        "medianDuration": 3537,
+        "p90Duration": 6850,
+        "medianSteps": 3,
+        "p90Steps": 5,
+        "errors": []
+      }
+    },
+    "overallSuccessRate": 0.8485985189504505,
+    "overallMedianDuration": 3402.8333333333335,
+    "passed": true
+  },
+  "adoptedAt": "2026-10-29T20:38:30.001Z",
+  "adoptedBy": "cli-user",
+  "flagKey": "strategy-elicit-1-candidate-1793306307842",
+  "enabled": false,
+  "provenance": {
+    "generatorModel": "template-generator-v1",
+    "generatorVersion": "1.0.0",
+    "promptHash": "1add6598",
+    "seed": 0,
+    "parentCommit": "unknown",
+    "author": "human",
+    "date": "2026-10-29T20:38:30.001Z",
+    "evidenceBundle": "evaluation-report.json"
+  }
+}

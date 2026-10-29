@@ -1,0 +1,150 @@
+[
+  {
+    "id": "missing-seam-explain",
+    "type": "failed-match",
+    "description": "Missing seam for role: explain",
+    "seamId": "explain",
+    "frequency": 5,
+    "severity": 4,
+    "recoverability": 2,
+    "reach": 5,
+    "evidence": [
+      "No components found for explain seam"
+    ],
+    "impactScore": 400,
+    "rank": 1
+  },
+  {
+    "id": "duplicate-setSettings-updater-settings-AppSettings",
+    "type": "duplicate-component",
+    "description": "Duplicate component group: RelayManagementSection and 2 duplicates (identical-props)",
+    "component": "RelayManagementSection",
+    "frequency": 3,
+    "severity": 3,
+    "recoverability": 4,
+    "reach": 2,
+    "evidence": [
+      "Primary: RelayManagementSection",
+      "Duplicates: NostrTab, AITab",
+      "Reason: identical-props"
+    ],
+    "impactScore": 36,
+    "rank": 2
+  },
+  {
+    "id": "duplicate-sortedNotes-Note-",
+    "type": "duplicate-component",
+    "description": "Duplicate component group: MainView and 1 duplicates (identical-props)",
+    "component": "MainView",
+    "frequency": 2,
+    "severity": 3,
+    "recoverability": 4,
+    "reach": 2,
+    "evidence": [
+      "Primary: MainView",
+      "Duplicates: NotesView",
+      "Reason: identical-props"
+    ],
+    "impactScore": 24,
+    "rank": 3
+  },
+  {
+    "id": "duplicate-onSelectNote-id-string-void-recentNotes-",
+    "type": "duplicate-component",
+    "description": "Duplicate component group: ActivityFeed and 1 duplicates (identical-props)",
+    "component": "ActivityFeed",
+    "frequency": 2,
+    "severity": 3,
+    "recoverability": 4,
+    "reach": 2,
+    "evidence": [
+      "Primary: ActivityFeed",
+      "Duplicates: RecentActivity",
+      "Reason: identical-props"
+    ],
+    "impactScore": 24,
+    "rank": 4
+  },
+  {
+    "id": "duplicate-children-React-ReactNode-className-strin",
+    "type": "duplicate-component",
+    "description": "Duplicate component group: Drawer and 1 duplicates (near-identical-props)",
+    "component": "Drawer",
+    "frequency": 2,
+    "severity": 3,
+    "recoverability": 4,
+    "reach": 2,
+    "evidence": [
+      "Primary: Drawer",
+      "Duplicates: Modal",
+      "Reason: near-identical-props"
+    ],
+    "impactScore": 24,
+    "rank": 5
+  },
+  {
+    "id": "duplicate-onCreateNote-void",
+    "type": "duplicate-component",
+    "description": "Duplicate component group: EmptyStateForNotes and 1 duplicates (identical-props)",
+    "component": "EmptyStateForNotes",
+    "frequency": 2,
+    "severity": 3,
+    "recoverability": 4,
+    "reach": 2,
+    "evidence": [
+      "Primary: EmptyStateForNotes",
+      "Duplicates: DashboardQuickActions",
+      "Reason: identical-props"
+    ],
+    "impactScore": 24,
+    "rank": 6
+  },
+  {
+    "id": "dead-TestProviders",
+    "type": "dead-component",
+    "description": "Dead component: TestProviders (no-jsx-usage)",
+    "component": "TestProviders",
+    "frequency": 1,
+    "severity": 2,
+    "recoverability": 5,
+    "reach": 1,
+    "evidence": [
+      "Reason: no-jsx-usage",
+      "Confidence: 0.7"
+    ],
+    "impactScore": 2,
+    "rank": 7
+  },
+  {
+    "id": "dead-TemplateSelectorStrategy",
+    "type": "dead-component",
+    "description": "Dead component: TemplateSelectorStrategy (no-jsx-usage)",
+    "component": "TemplateSelectorStrategy",
+    "frequency": 1,
+    "severity": 2,
+    "recoverability": 5,
+    "reach": 1,
+    "evidence": [
+      "Reason: no-jsx-usage",
+      "Confidence: 0.7"
+    ],
+    "impactScore": 2,
+    "rank": 8
+  },
+  {
+    "id": "dead-TemplateSelector",
+    "type": "dead-component",
+    "description": "Dead component: TemplateSelector (no-jsx-usage)",
+    "component": "TemplateSelector",
+    "frequency": 1,
+    "severity": 2,
+    "recoverability": 5,
+    "reach": 1,
+    "evidence": [
+      "Reason: no-jsx-usage",
+      "Confidence: 0.7"
+    ],
+    "impactScore": 2,
+    "rank": 9
+  }
+]

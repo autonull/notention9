@@ -41,5 +41,8 @@ export const GigEconomyScenario: Scenario = {
         { at: 5, action: 'publish_offer', actorRole: 'Freelancer' },
         { at: 8, action: 'publish_job', actorRole: 'Client' },
     ],
-    duration: 15
+    duration: 15,
+    tags: ['domain', 'smoke'],
+    requires: ['relay', 'ui'],
+    difficulty: 'easy'
 };
