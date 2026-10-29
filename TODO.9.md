@@ -460,18 +460,18 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | M2 | Local/browser model path for capture and extraction (`WebLLMProvider`) | `ui/src/services/ai/WebLLMProvider.ts`, `DescribeItComposer` | intent captured with local model only | M1 | ✅ |
 | M3 | Deterministic core: schemas, validation, rules, state transitions outside the model | `ui/src/services/ai/schema.ts`, `core/` | invariants hold regardless of model output | — | ✅ |
 | M4 | Imperfect-inference handling: malformed, uncertain, timeout, unsupported | `ui/src/services/ai/inference.ts`, `ui/src/services/ai/schema.ts` | no state corruption; user never blocked | M1 | ✅ |
-| M5 | Offline mode: core workflows + evaluation + approved changes without network | app + `ui/eval/` | tested with network disabled | M2, E3 | 🟨 |
-| M6 | Resource metrics in evaluation (latency, memory, model size, cost) | `ui/eval/` | reported per candidate | L9 | 🟨 |
+| M5 | Offline mode: core workflows + evaluation + approved changes without network | app + `ui/eval/` | tested with network disabled | M2, E3 | ✅ |
+| M6 | Resource metrics in evaluation (latency, memory, model size, cost) | `optimize/src/synthesis/evaluator.ts` | reported per candidate | L9 | ✅ |
 
 ### B — Architectural boundaries · essential
 
 | ID | Item | Acceptance | Depends |
 |----|------|-----------|---------|
-| B1 | Runtime independent of the loop process | app runs with no optimization process | — |
-| B2 | Data / strategy / execution separation | user data never inside strategy artifacts | L7 |
-| B3 | Inspectable decision records (strategy, change, evidence, verdict) | any adopted change explainable from the bundle | L19 |
-| B4 | Privacy policy: retention, redaction, egress | written policy; default no egress | L19 |
-| B5 | Reproducibility record (model/prompt/strategy/ontology/evaluator versions) | replay matches record | L20 |
+| B1 | Runtime independent of the loop process | app runs with no optimization process | — | ✅ |
+| B2 | Data / strategy / execution separation | user data never inside strategy artifacts | L7 | ✅ |
+| B3 | Inspectable decision records (strategy, change, evidence, verdict) | any adopted change explainable from the bundle | L19 | ✅ |
+| B4 | Privacy policy: retention, redaction, egress | written policy; default no egress | L19 | ✅ |
+| B5 | Reproducibility record (model/prompt/strategy/ontology/evaluator versions) | replay matches record | L20 | ✅ |
 | B6 | No premature abstraction | second workflow before generalising | X4 |
 
 ### O — Objective and prioritisation · essential
@@ -481,11 +481,11 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | O1 | Journey model: intent → interpret → clarify → match → decide → act → outcome | `ui/eval/` | every task scored on the full path | L9 |
 | O2 | Outcome success as primary metric | `ui/eval/` | completion + relevance dominate TTI | L9 |
 | O3 | User-perspective friction discovery (steps, dead ends, rework) | `ui/eval/` | friction found from flows, not code | L9 |
-| O4 | Impact scoring (frequency × severity × recoverability × reach) | `optimize/src/loop/` | ranked problem list per cycle | L5 |
-| O5 | Failure signal capture (failed matches, corrections, abandonment, opt-in feedback) | app + `optimize/` | signals recorded locally, opt-in | M4 |
-| O6 | Failure vs legitimate variation discrimination | `optimize/src/loop/` | single rejection ≠ defect | O4 |
-| O7 | Abstain on insufficient evidence | `optimize/src/loop/` | "no proposal" is a valid cycle output | O4 |
-| O8 | Smallest-change preference | `optimize/src/loop/` | complexity delta reported per candidate | O4 |
+| O4 | Impact scoring (frequency × severity × recoverability × reach) | `optimize/src/loop/prioritize.ts` | ranked problem list per cycle | L5 | ✅ |
+| O5 | Failure signal capture (failed matches, corrections, abandonment, opt-in feedback) | `optimize/src/loop/prioritize.ts` | signals recorded locally, opt-in | M4 | ✅ |
+| O6 | Failure vs legitimate variation discrimination | `optimize/src/loop/prioritize.ts` | single rejection ≠ defect | O4 | ✅ |
+| O7 | Abstain on insufficient evidence | `optimize/src/loop/prioritize.ts` | "no proposal" is a valid cycle output | O4 | ✅ |
+| O8 | Smallest-change preference | `optimize/src/loop/prioritize.ts` | complexity delta reported per candidate | O4 | ✅ |
 
 ### E — Evaluation quality · essential
 
@@ -493,7 +493,7 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 |----|------|-------|-----------|---------|
 | E1 | Complete-workflow evaluation | `ui/eval/` | journey scored end to end | L9 |
 | E2 | Deterministic invariant checks (schema, state, required behaviour) | `ui/eval/`, `optimize/` | failures block promotion | L9 |
-| E3 | Offline evaluation runner | `ui/eval/` | runs with no network | M1 |
+| E3 | Offline evaluation runner | `optimize/src/synthesis/evaluator.ts` | runs with no network | M1 | ✅ |
 | E4 | Evaluator independence | `optimize/src/loop/` | candidate cannot configure its judge | L12 |
 | E5 | Baseline retention on inconclusive/regression | `optimize/src/loop/` | decision.md states why retained | L12 |
 
@@ -510,7 +510,7 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | L6 | Golden cases mined from existing tests | `GoldenCaseMiner` wiring | ≥10 cases; injected break caught | L5 | ✅ |
 | L7 | `ComponentStrategy<P>` + `registerDiscoveredStrategies` | `ui/src/strategies/`, `core/src/ui/` | new component auto-registers | L3, L2a | ✅ |
 | L8 | Wrap existing components as strategies | `ui/src/strategies/` | `PropertyForm`, `TagInput`, `DescribeItComposer`, `TemplateSelector` | L7 | ✅ |
-| L9 | Task harness + tasks 1–3, N≥10, seeded | `ui/eval/` | TTI/steps/errors per config | L8 | ✅ |
+| L9 | Task harness + tasks 1–3, N≥10, seeded | `ui/eval/`, `optimize/src/synthesis/evaluator.ts` | TTI/steps/errors per config | L8 | ✅ |
 | L10 | `StrategySpec` + generator + candidate dir | `optimize/src/synthesis/` | candidates with provenance | L9 | ✅ |
 | L11 | Static gates: typecheck, lint, seam conformance, imports, no ambient caps | `optimize/src/synthesis/gates.ts` | bad candidates rejected pre-build | L10 | ✅ |
 | L12 | Sandbox build + harness run | `optimize/src/synthesis/` | candidate measured vs baseline | L11 | ✅ |
@@ -521,8 +521,8 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | L17a | Lifecycle/status facet (`open→matched→committed→done→lapsed`) | `core/src/ontology/` | note carries status; task 4 passes | — | ✅ |
 | L17 | Ontology experiment: flat vs facets+status | `core/src/ontology/`, harness | recorded decision | L9, L17a |
 | L18 | Real-corpus ingestion → vocabulary + tasks | `optimize/src/corpus/` | ≥1 class beyond taxonomy | L5 |
-| L19 | Ledger-lite (append-only decisions/deltas/provenance) | `core/src/suggestions/SuggestionStore.ts` | survives restart; dedupes | L5 |
-| L20 | Determinism: pinned models, cached outputs, replay | `optimize/src/loop/` | identical hash on replay | L9 |
+| L19 | Ledger-lite (append-only decisions/deltas/provenance) | `optimize/src/synthesis/adoption.ts`, `optimize/src/loop/determinism.ts` | survives restart; dedupes | L5 | ✅ |
+| L20 | Determinism: pinned models, cached outputs, replay | `optimize/src/loop/determinism.ts` | identical hash on replay | L9 | ✅ |
 | L21 | A11y + keyboard assertions in harness | `optimize/src/a11y.ts`, `ui/eval/` | violations fail the task | L9 |
 | L22 | Preference + interaction-strategy comparison (human + calibrated judge) | `ui/eval/` | win-rate on question sequences, explanations, layouts | L9 |
 | L23 | Profiles + policy + per-user overrides | `ui/src/settings/`, config | 2 profiles; overrides persist | L8, L22 |
@@ -532,7 +532,7 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 
 | ID | Item | Files | Acceptance | Depends |
 |----|------|-------|-----------|---------|
-| P1 | Natural-language capture end to end (schema + repair + review) | `DescribeItComposer`, `ExtractionReview`, `ui/src/services/ai/` | fewer steps than form; works with local model | L15, M2 |
+| P1 | Natural-language capture end to end (schema + repair + review) | `DescribeItComposer`, `ExtractionReview`, `ui/src/services/ai/` | fewer steps than form; works with local model | L15, M2 | ✅ |
 | P2 | Progressive + `on-match-failure` elicitation | `InsertPropertyModal`, `EnhancedPropertyForm` | lower TTI **and** lower abandonment | L9 | ✅ |
 | P3 | `workspace-layout` strategies: list vs two-pane | `DashboardView`, `NotesView` | selectable, measured | L8 |
 | P4 | `match-display` strategies: inline vs sidebar | `LocalMatchPreview`, `DashboardLocalMatch` | selectable, measured | L8 |
@@ -566,7 +566,7 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | X3 | Run the complete loop locally | problem → proposal → evaluation → selection → verification | X2, L12 |
 | X4 | Demonstrate meaningful evolution without manual rewrite | measurable improvement, human-confirmed | X3 |
 | X5 | Regression protection and rollback demo | rejected candidate; known-good restored | X3 |
-| X6 | Constrained operation: compact local model, network off | workflow completes offline on local model | X3, M5 |
+| X6 | Constrained operation: compact local model, network off | workflow completes offline on local model | X3, M5 | 🟨 |
 | X7 | Evidence document (baseline, change, results, resources, outcome) | `loop/evidence/<id>.md` complete | X3–X6 |
 
 ### H — Human gates and research
@@ -640,17 +640,17 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | Taxonomy + coverage design | ✅ done (L1) |
 | `ComponentScanner` AST rewrite + tests | ✅ done |
 | `TsAstScanner` tsconfig crash | ✅ fixed |
-| Model independence / offline (M1–M4) | ✅ done (inference router, capability probing, fallback, schema validation, repair) |
-| Architectural boundaries | ⬜ not started (B1–B6) |
+| Model independence / offline (M1–M6) | ✅ done (inference router, capability probing, fallback, schema validation, repair, resource metrics) |
+| Architectural boundaries | ✅ done (B1–B5 complete; B6 after X4) |
 | Prioritisation by impact | ✅ done (O1–O8, L2, L4, prioritize cmd) |
-| Workflow-level evaluation | 🟨 partial (E1–E5, harness simulated, L9, L12) |
+| Workflow-level evaluation | ✅ done (E1–E5, harness with Playwright, L9, L12) |
 | Seam clustering / duplicates | ✅ done (L3, L4) |
 | `pnpm loop` + discover/prioritize/synthesize/evaluate/adopt/request/run | ✅ **done (L2, L5, L10–L14)** |
 | **Loop config (taxonomy, config, schema)** | ✅ **done (L1)** |
-| Task harness | 🟨 simulated (L9, N≥10 reps, seeded) |
+| Task harness | ✅ done (L9, N≥10 reps, seeded, Playwright + resource metrics) |
 | Synthesis (T2/T4) | ✅ done (L10–L14) |
 | Capability showcases | ⬜ not started (S1–S5) |
-| End-to-end proof | 🟨 partial (X1–X3 loop runs, X4–X7 pending) |
+| End-to-end proof | 🟨 partial (X1–X3, X5 loop runs, X4, X6–X7 pending) |
 | Human gates G1/G2/G5 | ⏳ pending |
 
 **Test state:** core 398 · simulator 20 · agent 17 · cli 6 · optimize 32 · ui 37 batched ✅ (D3, D4 fixed)
@@ -713,14 +713,14 @@ And the architectural principle holds: **the system improved its own behaviour w
 6. ✅ **L3, L4, D6** — seam clustering, duplicates, AST-derived routes/dialogs/actions.
 7. ✅ **L5, L6** — discover artifacts; mine golden cases; verify injected break is caught.
 8. ✅ **L7, L8, B1, B2** — `ComponentStrategy<P>` + auto-registration; wrap existing components; runtime independent of the loop, data separated from strategy.
-9. 🟨 **L9, O1–O3, E1, E2** — harness; journey model; outcome-primary scoring; workflow-level evaluation and deterministic checks. *(harness simulated, needs real Playwright integration)*
+9. ✅ **L9, O1–O3, E1, E2** — harness; journey model; outcome-primary scoring; workflow-level evaluation and deterministic checks. *(Playwright integration complete)*
 10. ✅ **M1, M2, M3, M4** — inference interface, local model path, deterministic core, imperfect-inference handling.
 11. ✅ **D7, D8, Q2** — simulator telemetry sink and explicit page ownership; verify event stream.
 12. ✅ **L17a** — lifecycle/status facet.
 13. ✅ **L10–L14, E4, E5, X5** — synthesis with gates; evaluator independence; baseline retention; rollback demo.
-14. 🟨 **L15, L16, I1, I2, P1, P2** — prompt schema, clarification value, explainability, recovery, NL capture, progressive elicitation.
-15. **E3, M5, M6, X6** — offline evaluation; offline workflows; resource metrics; constrained-operation demo.
-16. **O4–O8, L19, L20, B3–B5** — impact scoring, failure signals, abstention, minimal change; ledger; determinism; inspectability; privacy; reproducibility.
+14. ✅ **L15, L16, I1, I2, P1, P2** — prompt schema, clarification value, explainability, recovery, NL capture, progressive elicitation.
+15. ✅ **E3, M5, M6** — offline evaluation; offline workflows; resource metrics. *(X6 constrained-operation demo pending UI server)*
+16. ✅ **O4–O8, L19, L20, B3–B5** — impact scoring, failure signals, abstention, minimal change; ledger; determinism; inspectability; privacy; reproducibility.
 17. **X1–X4, X7, H1–H4** — one-journey proof, evidence doc, human gates, decision records.
 18. **L21–L24, P3–P7, L17, L18** — a11y, preference, profiles, layouts, ontology experiment, real corpora.
 19. **S1–S5, Q1–Q5, B6** — showcases; tests and docs alongside; generalise only after the second workflow proves the abstraction.

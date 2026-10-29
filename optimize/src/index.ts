@@ -20,3 +20,6 @@ export * from './pathUtils.js';
 export * from './stepExecutors/index.js';
 export * from './uiuxEvaluator.js';
 export * from './services/ai/extractionSchema.js';
+export * from './synthesis/index.js';
+export * from './loop/index.js';
+export * from './discovery/index.js';

@@ -30,10 +30,153 @@ export function prioritizeProblems(problems: DiscoveredProblem[]): PrioritizedPr
         ...p,
         impactScore: calculateImpactScore(p),
     }));
-    
+
     scored.sort((a, b) => b.impactScore - a.impactScore);
-    
+
     return scored.map((p, i) => ({ ...p, rank: i + 1 }));
+}
+
+/**
+ * Failure signal capture (O5) - captures signals from app usage
+ */
+export interface FailureSignal {
+    type: 'failed-match' | 'repeated-correction' | 'abandoned-task' | 'opt-in-feedback';
+    timestamp: string;
+    context: Record<string, unknown>;
+    userId?: string;
+    sessionId?: string;
+}
+
+export interface FailureSignalStore {
+    signals: FailureSignal[];
+    record(signal: FailureSignal): void;
+    getSignals(filter?: { type?: FailureSignal['type']; since?: string }): FailureSignal[];
+    clear(): void;
+}
+
+export function createFailureSignalStore(): FailureSignalStore {
+    const signals: FailureSignal[] = [];
+    return {
+        signals,
+        record(signal: FailureSignal) {
+            signals.push(signal);
+        },
+        getSignals(filter) {
+            return signals.filter(s => {
+                if (filter?.type && s.type !== filter.type) return false;
+                if (filter?.since && s.timestamp < filter.since) return false;
+                return true;
+            });
+        },
+        clear() {
+            signals.length = 0;
+        },
+    };
+}
+
+/**
+ * Failure vs legitimate variation discrimination (O6)
+ * Requires repeated patterns (threshold) before treating variation as failure
+ */
+export interface VariationThresholds {
+    failedMatch: number;      // Minimum failed matches before flagging
+    repeatedCorrection: number; // Minimum corrections before flagging
+    abandonedTask: number;    // Minimum abandoned tasks before flagging
+}
+
+export const DEFAULT_VARIATION_THRESHOLDS: VariationThresholds = {
+    failedMatch: 3,
+    repeatedCorrection: 3,
+    abandonedTask: 2,
+};
+
+export function isFailureNotVariation(
+    signalCount: number,
+    signalType: FailureSignal['type'],
+    thresholds: VariationThresholds = DEFAULT_VARIATION_THRESHOLDS
+): boolean {
+    switch (signalType) {
+        case 'failed-match':
+            return signalCount >= thresholds.failedMatch;
+        case 'repeated-correction':
+            return signalCount >= thresholds.repeatedCorrection;
+        case 'abandoned-task':
+            return signalCount >= thresholds.abandonedTask;
+        case 'opt-in-feedback':
+            return true; // Explicit feedback is always a signal
+        default:
+            return false;
+    }
+}
+
+/**
+ * Abstention on insufficient evidence (O7)
+ */
+export interface AbstentionDecision {
+    shouldAbstain: boolean;
+    reason: string;
+    evidenceCount: number;
+    minimumRequired: number;
+}
+
+export function checkAbstention(
+    evidenceCount: number,
+    minimumRequired: number = 3
+): AbstentionDecision {
+    if (evidenceCount < minimumRequired) {
+        return {
+            shouldAbstain: true,
+            reason: `Insufficient evidence: ${evidenceCount} signals, minimum ${minimumRequired} required`,
+            evidenceCount,
+            minimumRequired,
+        };
+    }
+    return {
+        shouldAbstain: false,
+        reason: 'Sufficient evidence for decision',
+        evidenceCount,
+        minimumRequired,
+    };
+}
+
+/**
+ * Smallest-change preference (O8) - tracks complexity delta
+ */
+export interface ComplexityDelta {
+    linesAdded: number;
+    linesRemoved: number;
+    newDependencies: string[];
+    newFiles: number;
+    modifiedFiles: number;
+    complexityScore: number; // Weighted score
+}
+
+export function calculateComplexityDelta(
+    baseline: { files: number; lines: number; deps: string[] },
+    candidate: { files: number; lines: number; deps: string[] }
+): ComplexityDelta {
+    const linesAdded = Math.max(0, candidate.lines - baseline.lines);
+    const linesRemoved = Math.max(0, baseline.lines - candidate.lines);
+    const newDeps = candidate.deps.filter(d => !baseline.deps.includes(d));
+    const newFiles = Math.max(0, candidate.files - baseline.files);
+    const modifiedFiles = Math.min(baseline.files, candidate.files);
+
+    // Weighted complexity score
+    const complexityScore =
+        linesAdded * 0.1 +
+        linesRemoved * 0.05 +
+        newDeps.length * 5 +
+        newFiles * 10 +
+        modifiedFiles * 1;
+
+    return {
+        linesAdded,
+        linesRemoved,
+        newDependencies: newDeps,
+        newFiles,
+        modifiedFiles,
+        complexityScore,
+    };
 }
 
 export function deriveProblemsFromDiscovery(
@@ -48,7 +191,7 @@ export function deriveProblemsFromDiscovery(
     }
 ): DiscoveredProblem[] {
     const problems: DiscoveredProblem[] = [];
-    
+
     // Duplicate components
     for (const group of discovered.duplicateAnalysis.duplicateGroups) {
         problems.push({
@@ -63,7 +206,7 @@ export function deriveProblemsFromDiscovery(
             evidence: [`Primary: ${group.primary}`, `Duplicates: ${group.duplicates.join(', ')}`, `Reason: ${group.reason}`],
         });
     }
-    
+
     // Dead components
     for (const dead of discovered.duplicateAnalysis.deadComponents) {
         problems.push({
@@ -78,7 +221,7 @@ export function deriveProblemsFromDiscovery(
             evidence: [`Reason: ${dead.reason}`, `Confidence: ${dead.confidence}`],
         });
     }
-    
+
     // Inlined candidates
     for (const inline of discovered.duplicateAnalysis.inlinedCandidates) {
         problems.push({
@@ -93,11 +236,11 @@ export function deriveProblemsFromDiscovery(
             evidence: [`Reason: ${inline.reason}`, `Suggested: ${inline.suggestedAction}`],
         });
     }
-    
+
     // Missing seams for key roles
     const expectedRoles: Array<Seam['role']> = ['capture', 'elicit', 'match', 'display', 'layout', 'explain', 'ontology', 'intent'];
     const foundRoles = new Set(discovered.seams.map(s => s.role));
-    
+
     for (const role of expectedRoles) {
         if (!foundRoles.has(role)) {
             problems.push({
@@ -113,6 +256,6 @@ export function deriveProblemsFromDiscovery(
             });
         }
     }
-    
+
     return problems;
 }

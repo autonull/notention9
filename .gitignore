@@ -48,6 +48,15 @@ optimize/src/**/*.d.ts
 !optimize/src/**/*.test.ts
 !optimize/src/**/*.test.tsx
 
+# Loop artifacts
+loop/runs/
+adopted-strategies/
+feature-flags/
+adoption-ledger.jsonl
+loop/model-pins.json
+loop/output-cache.json
+loop/replay-records.jsonl
+
 # Simulator
 simulator/src/**/*.js
 simulator/src/**/*.d.ts
