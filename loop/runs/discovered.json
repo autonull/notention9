@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-10-29T17:57:31.110Z",
+  "timestamp": "2026-10-29T18:13:30.005Z",
   "version": "1.0.0",
   "components": [
     {
@@ -17241,48 +17241,1483 @@
   "ontology": {
     "properties": [
       {
+        "key": "name",
+        "type": "string",
         "operators": [
-          "equals"
+          "is"
         ],
-        "defaultOperator": "equals",
-        "description": "The base for all things that can be identified."
+        "defaultOperator": "is",
+        "description": "Full name.",
+        "category": "Person"
       },
       {
+        "key": "firstName",
+        "type": "string",
         "operators": [
-          "equals"
+          "is"
         ],
-        "defaultOperator": "equals",
-        "description": "Messages and conversations across channels."
+        "defaultOperator": "is",
+        "description": "First/given name.",
+        "category": "Person"
       },
       {
+        "key": "lastName",
+        "type": "string",
         "operators": [
-          "equals"
+          "is"
         ],
-        "defaultOperator": "equals",
-        "description": "Something that happens, especially something of importance."
+        "defaultOperator": "is",
+        "description": "Last/family name.",
+        "category": "Person"
       },
       {
+        "key": "email",
+        "type": "string",
         "operators": [
-          "equals"
+          "is"
         ],
-        "defaultOperator": "equals",
-        "description": "Activity involving mental or physical effort."
+        "defaultOperator": "is",
+        "description": "Email address",
+        "category": "Person"
       },
       {
+        "key": "phone",
+        "type": "string",
         "operators": [
-          "equals"
+          "is"
         ],
-        "defaultOperator": "equals",
-        "description": "Buying and selling of goods and services."
+        "defaultOperator": "is",
+        "description": "Phone number",
+        "category": "Person"
+      },
+      {
+        "key": "role",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Professional role or position",
+        "category": "Person"
+      },
+      {
+        "key": "organization",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Associated organization",
+        "category": "Person"
+      },
+      {
+        "key": "relationships",
+        "type": "string",
+        "operators": [
+          "has"
+        ],
+        "defaultOperator": "has",
+        "description": "Relationships to other entities",
+        "category": "Person"
+      },
+      {
+        "key": "intent",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "allowedValues": [
+          "request",
+          "offer",
+          "reminder",
+          "schedule",
+          "task",
+          "shopping",
+          "health",
+          "communication",
+          "monitor",
+          "automation"
+        ],
+        "description": "The inferred intent of the note",
+        "category": "Person"
+      },
+      {
+        "key": "name",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Organization name",
+        "category": "Organization"
+      },
+      {
+        "key": "website",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Official website URL",
+        "category": "Organization"
+      },
+      {
+        "key": "industry",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Industry or sector",
+        "category": "Organization"
+      },
+      {
+        "key": "employees",
+        "type": "number",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Number of employees",
+        "category": "Organization"
+      },
+      {
+        "key": "founded",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Founding date",
+        "category": "Organization"
+      },
+      {
+        "key": "location",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Headquarters location",
+        "category": "Organization"
+      },
+      {
+        "key": "name",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Place name",
+        "category": "Place"
+      },
+      {
+        "key": "address",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Street address",
+        "category": "Place"
+      },
+      {
+        "key": "city",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "City name",
+        "category": "Place"
+      },
+      {
+        "key": "country",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Country name",
+        "category": "Place"
+      },
+      {
+        "key": "coordinates",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "GPS coordinates",
+        "category": "Place"
+      },
+      {
+        "key": "capacity",
+        "type": "number",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Maximum capacity",
+        "category": "Place"
+      },
+      {
+        "key": "amenities",
+        "type": "string",
+        "operators": [
+          "has"
+        ],
+        "defaultOperator": "has",
+        "allowedValues": [
+          "wifi",
+          "parking",
+          "food",
+          "accessibility",
+          "av-equipment"
+        ],
+        "description": "Available amenities",
+        "category": "Place"
+      },
+      {
+        "key": "subject",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Subject or title of the message",
+        "category": "Message"
+      },
+      {
+        "key": "body",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Content of the message",
+        "category": "Message"
+      },
+      {
+        "key": "conversationId",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Thread or conversation identifier",
+        "category": "Message"
+      },
+      {
+        "key": "channel",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "allowedValues": [
+          "whatsapp",
+          "telegram",
+          "discord",
+          "sms",
+          "email",
+          "slack",
+          "teams",
+          "signal",
+          "call"
+        ],
+        "description": "Communication channel",
+        "category": "Message"
+      },
+      {
+        "key": "from",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Sender identifier (phone, email, username)",
+        "category": "Message"
+      },
+      {
+        "key": "to",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Recipient identifier",
+        "category": "Message"
+      },
+      {
+        "key": "cc",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Carbon copy recipients",
+        "category": "Message"
+      },
+      {
+        "key": "bcc",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Blind carbon copy recipients",
+        "category": "Message"
+      },
+      {
+        "key": "messageType",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "allowedValues": [
+          "text",
+          "image",
+          "voice",
+          "video",
+          "file",
+          "link",
+          "reaction",
+          "status"
+        ],
+        "description": "Type of message content",
+        "category": "Message"
+      },
+      {
+        "key": "priority",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "allowedValues": [
+          "low",
+          "normal",
+          "high",
+          "urgent"
+        ],
+        "description": "Priority level of the message",
+        "category": "Message"
+      },
+      {
+        "key": "status",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "allowedValues": [
+          "sent",
+          "delivered",
+          "read",
+          "failed"
+        ],
+        "description": "Delivery status of the message",
+        "category": "Message"
+      },
+      {
+        "key": "attachments",
+        "type": "number",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Number of attachments",
+        "category": "Message"
+      },
+      {
+        "key": "sentiment",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "allowedValues": [
+          "positive",
+          "neutral",
+          "negative",
+          "mixed"
+        ],
+        "description": "Sentiment of the message",
+        "category": "Message"
+      },
+      {
+        "key": "title",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Title or name of the event",
+        "category": "Event"
+      },
+      {
+        "key": "description",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Detailed description of the event",
+        "category": "Event"
+      },
+      {
+        "key": "startDateTime",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "The start date and time",
+        "category": "Event"
+      },
+      {
+        "key": "endDateTime",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "The end date and time",
+        "category": "Event"
+      },
+      {
+        "key": "duration",
+        "type": "number",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Duration in minutes",
+        "category": "Event"
+      },
+      {
+        "key": "venue",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "The name of the place where the event takes place",
+        "category": "Event"
+      },
+      {
+        "key": "location",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Geographic coordinates of the venue",
+        "category": "Event"
+      },
+      {
+        "key": "eventType",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "allowedValues": [
+          "meeting",
+          "conference",
+          "workshop",
+          "seminar",
+          "training",
+          "social",
+          "celebration",
+          "performance",
+          "sports",
+          "other"
+        ],
+        "description": "Type of event",
+        "category": "Event"
+      },
+      {
+        "key": "status",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "allowedValues": [
+          "planned",
+          "confirmed",
+          "in-progress",
+          "completed",
+          "cancelled",
+          "postponed"
+        ],
+        "description": "Current status of the event",
+        "category": "Event"
+      },
+      {
+        "key": "capacity",
+        "type": "number",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Maximum number of attendees",
+        "category": "Event"
+      },
+      {
+        "key": "attendees",
+        "type": "number",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Number of registered attendees",
+        "category": "Event"
+      },
+      {
+        "key": "organizer",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Organizer of the event",
+        "category": "Event"
+      },
+      {
+        "key": "cost",
+        "type": "number",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Cost of attending the event",
+        "category": "Event"
+      },
+      {
+        "key": "registrationUrl",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "URL for event registration",
+        "category": "Event"
+      },
+      {
+        "key": "meetingType",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "allowedValues": [
+          "standup",
+          "review",
+          "planning",
+          "retrospective",
+          "one-on-one",
+          "team",
+          "client"
+        ],
+        "description": "Type of meeting",
+        "category": "Meeting"
+      },
+      {
+        "key": "agenda",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Meeting agenda items",
+        "category": "Meeting"
+      },
+      {
+        "key": "decisions",
+        "type": "string",
+        "operators": [
+          "has"
+        ],
+        "defaultOperator": "has",
+        "description": "Decisions made during the meeting",
+        "category": "Meeting"
+      },
+      {
+        "key": "actionItems",
+        "type": "number",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Number of action items assigned",
+        "category": "Meeting"
+      },
+      {
+        "key": "recurring",
+        "type": "boolean",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Whether the meeting is recurring",
+        "category": "Meeting"
+      },
+      {
+        "key": "recurrencePattern",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "allowedValues": [
+          "daily",
+          "weekly",
+          "biweekly",
+          "monthly",
+          "quarterly"
+        ],
+        "description": "Recurrence pattern if recurring",
+        "category": "Meeting"
+      },
+      {
+        "key": "conferenceType",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "allowedValues": [
+          "academic",
+          "industry",
+          "trade",
+          "user-group",
+          "internal"
+        ],
+        "description": "Type of conference",
+        "category": "Conference"
+      },
+      {
+        "key": "tracks",
+        "type": "number",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Number of parallel tracks",
+        "category": "Conference"
+      },
+      {
+        "key": "keynoteSpeakers",
+        "type": "string",
+        "operators": [
+          "has"
+        ],
+        "defaultOperator": "has",
+        "description": "Keynote speakers",
+        "category": "Conference"
+      },
+      {
+        "key": "submissionDeadline",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Paper/submission deadline",
+        "category": "Conference"
+      },
+      {
+        "key": "title",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Job title",
+        "category": "Job Request"
+      },
+      {
+        "key": "role",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "The job title or role.",
+        "category": "Job Request"
+      },
+      {
+        "key": "description",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Detailed job description",
+        "category": "Job Request"
+      },
+      {
+        "key": "company",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Company offering the job",
+        "category": "Job Request"
+      },
+      {
+        "key": "location",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Job location",
+        "category": "Job Request"
+      },
+      {
+        "key": "employmentType",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "allowedValues": [
+          "full-time",
+          "part-time",
+          "contract",
+          "temporary",
+          "internship",
+          "volunteer"
+        ],
+        "description": "Type of employment",
+        "category": "Job Request"
+      },
+      {
+        "key": "experienceLevel",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "allowedValues": [
+          "entry",
+          "mid",
+          "senior",
+          "executive"
+        ],
+        "description": "Required experience level",
+        "category": "Job Request"
+      },
+      {
+        "key": "skills",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Required skills",
+        "category": "Job Request"
+      },
+      {
+        "key": "budget",
+        "type": "number",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Total budget amount.",
+        "category": "Job Request"
+      },
+      {
+        "key": "budgetRate",
+        "type": "number",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Budget rate (e.g., per hour, per day).",
+        "category": "Job Request"
+      },
+      {
+        "key": "remote",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "allowedValues": [
+          "true",
+          "false",
+          "hybrid"
+        ],
+        "description": "Whether the job is remote",
+        "category": "Job Request"
+      },
+      {
+        "key": "title",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Service title",
+        "category": "Freelance Offer"
+      },
+      {
+        "key": "role",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "The role offered.",
+        "category": "Freelance Offer"
+      },
+      {
+        "key": "description",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Detailed service description",
+        "category": "Freelance Offer"
+      },
+      {
+        "key": "skills",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Skills offered",
+        "category": "Freelance Offer"
+      },
+      {
+        "key": "rate",
+        "type": "number",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Service rate (e.g., per hour, per day, per project).",
+        "category": "Freelance Offer"
+      },
+      {
+        "key": "availability",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "When the service is available",
+        "category": "Freelance Offer"
+      },
+      {
+        "key": "deliveryTime",
+        "type": "number",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Expected delivery time in days",
+        "category": "Freelance Offer"
+      },
+      {
+        "key": "title",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Project title",
+        "category": "Project"
+      },
+      {
+        "key": "description",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Project description",
+        "category": "Project"
+      },
+      {
+        "key": "status",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "allowedValues": [
+          "planning",
+          "active",
+          "on-hold",
+          "completed",
+          "cancelled"
+        ],
+        "description": "Project status",
+        "category": "Project"
+      },
+      {
+        "key": "priority",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "allowedValues": [
+          "low",
+          "medium",
+          "high",
+          "critical"
+        ],
+        "description": "Project priority",
+        "category": "Project"
+      },
+      {
+        "key": "deadline",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Project deadline",
+        "category": "Project"
+      },
+      {
+        "key": "budget",
+        "type": "number",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Total project budget",
+        "category": "Project"
+      },
+      {
+        "key": "teamSize",
+        "type": "number",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Number of team members",
+        "category": "Project"
+      },
+      {
+        "key": "title",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Task title",
+        "category": "Task"
+      },
+      {
+        "key": "description",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Task description",
+        "category": "Task"
+      },
+      {
+        "key": "status",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "allowedValues": [
+          "todo",
+          "in-progress",
+          "review",
+          "done",
+          "blocked"
+        ],
+        "description": "Task status",
+        "category": "Task"
+      },
+      {
+        "key": "priority",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "allowedValues": [
+          "low",
+          "medium",
+          "high",
+          "urgent"
+        ],
+        "description": "Task priority",
+        "category": "Task"
+      },
+      {
+        "key": "dueDate",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Task due date",
+        "category": "Task"
+      },
+      {
+        "key": "estimatedHours",
+        "type": "number",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Estimated hours to complete",
+        "category": "Task"
+      },
+      {
+        "key": "actualHours",
+        "type": "number",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Actual hours spent",
+        "category": "Task"
+      },
+      {
+        "key": "assignee",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Person assigned to the task",
+        "category": "Task"
+      },
+      {
+        "key": "labels",
+        "type": "string",
+        "operators": [
+          "has"
+        ],
+        "defaultOperator": "has",
+        "description": "Task labels or tags",
+        "category": "Task"
+      },
+      {
+        "key": "name",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Product name",
+        "category": "Product"
+      },
+      {
+        "key": "price",
+        "type": "number",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Sale price",
+        "category": "Product"
+      },
+      {
+        "key": "condition",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "allowedValues": [
+          "new",
+          "like-new",
+          "used",
+          "refurbished"
+        ],
+        "description": "Product condition",
+        "category": "Product"
+      },
+      {
+        "key": "category",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Product category",
+        "category": "Product"
+      },
+      {
+        "key": "brand",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Product brand",
+        "category": "Product"
+      },
+      {
+        "key": "sku",
+        "type": "string",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Stock Keeping Unit",
+        "category": "Product"
+      },
+      {
+        "key": "stock",
+        "type": "number",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Items in stock",
+        "category": "Product"
+      },
+      {
+        "key": "purchasePrice",
+        "type": "number",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Purchase price",
+        "category": "Product"
+      },
+      {
+        "key": "priceRate",
+        "type": "number",
+        "operators": [
+          "is"
+        ],
+        "defaultOperator": "is",
+        "description": "Price rate",
+        "category": "Product"
       }
     ],
     "operators": {
-      "undefined": [
-        "equals"
+      "name": [
+        "is"
+      ],
+      "firstName": [
+        "is"
+      ],
+      "lastName": [
+        "is"
+      ],
+      "email": [
+        "is"
+      ],
+      "phone": [
+        "is"
+      ],
+      "role": [
+        "is"
+      ],
+      "organization": [
+        "is"
+      ],
+      "relationships": [
+        "has"
+      ],
+      "intent": [
+        "is"
+      ],
+      "website": [
+        "is"
+      ],
+      "industry": [
+        "is"
+      ],
+      "employees": [
+        "is"
+      ],
+      "founded": [
+        "is"
+      ],
+      "location": [
+        "is"
+      ],
+      "address": [
+        "is"
+      ],
+      "city": [
+        "is"
+      ],
+      "country": [
+        "is"
+      ],
+      "coordinates": [
+        "is"
+      ],
+      "capacity": [
+        "is"
+      ],
+      "amenities": [
+        "has"
+      ],
+      "subject": [
+        "is"
+      ],
+      "body": [
+        "is"
+      ],
+      "conversationId": [
+        "is"
+      ],
+      "channel": [
+        "is"
+      ],
+      "from": [
+        "is"
+      ],
+      "to": [
+        "is"
+      ],
+      "cc": [
+        "is"
+      ],
+      "bcc": [
+        "is"
+      ],
+      "messageType": [
+        "is"
+      ],
+      "priority": [
+        "is"
+      ],
+      "status": [
+        "is"
+      ],
+      "attachments": [
+        "is"
+      ],
+      "sentiment": [
+        "is"
+      ],
+      "title": [
+        "is"
+      ],
+      "description": [
+        "is"
+      ],
+      "startDateTime": [
+        "is"
+      ],
+      "endDateTime": [
+        "is"
+      ],
+      "duration": [
+        "is"
+      ],
+      "venue": [
+        "is"
+      ],
+      "eventType": [
+        "is"
+      ],
+      "attendees": [
+        "is"
+      ],
+      "organizer": [
+        "is"
+      ],
+      "cost": [
+        "is"
+      ],
+      "registrationUrl": [
+        "is"
+      ],
+      "meetingType": [
+        "is"
+      ],
+      "agenda": [
+        "is"
+      ],
+      "decisions": [
+        "has"
+      ],
+      "actionItems": [
+        "is"
+      ],
+      "recurring": [
+        "is"
+      ],
+      "recurrencePattern": [
+        "is"
+      ],
+      "conferenceType": [
+        "is"
+      ],
+      "tracks": [
+        "is"
+      ],
+      "keynoteSpeakers": [
+        "has"
+      ],
+      "submissionDeadline": [
+        "is"
+      ],
+      "company": [
+        "is"
+      ],
+      "employmentType": [
+        "is"
+      ],
+      "experienceLevel": [
+        "is"
+      ],
+      "skills": [
+        "is"
+      ],
+      "budget": [
+        "is"
+      ],
+      "budgetRate": [
+        "is"
+      ],
+      "remote": [
+        "is"
+      ],
+      "rate": [
+        "is"
+      ],
+      "availability": [
+        "is"
+      ],
+      "deliveryTime": [
+        "is"
+      ],
+      "deadline": [
+        "is"
+      ],
+      "teamSize": [
+        "is"
+      ],
+      "dueDate": [
+        "is"
+      ],
+      "estimatedHours": [
+        "is"
+      ],
+      "actualHours": [
+        "is"
+      ],
+      "assignee": [
+        "is"
+      ],
+      "labels": [
+        "has"
+      ],
+      "price": [
+        "is"
+      ],
+      "condition": [
+        "is"
+      ],
+      "category": [
+        "is"
+      ],
+      "brand": [
+        "is"
+      ],
+      "sku": [
+        "is"
+      ],
+      "stock": [
+        "is"
+      ],
+      "purchasePrice": [
+        "is"
+      ],
+      "priceRate": [
+        "is"
       ]
     }
   },
-  "goldenCases": [],
+  "duplicateAnalysis": {
+    "duplicateGroups": [
+      {
+        "signature": "sortedNotes:Note[]?",
+        "primary": "MainView",
+        "duplicates": [
+          "NotesView"
+        ],
+        "reason": "identical-props"
+      },
+      {
+        "signature": "onSelectNote:(id: string) => void|recentNotes:Note[]",
+        "primary": "ActivityFeed",
+        "duplicates": [
+          "RecentActivity"
+        ],
+        "reason": "identical-props"
+      },
+      {
+        "signature": "children:React.ReactNode|className:string?|closeOnOverlayClick:boolean?|description:string?|isOpen:boolean|onClose:() => void|position:'left' | 'right' | 'top' | 'bottom'?|showCloseButton:boolean?|size:'sm' | 'md' | 'lg' | 'xl' | 'full'?|title:string?",
+        "primary": "Drawer",
+        "duplicates": [
+          "Modal"
+        ],
+        "reason": "near-identical-props"
+      },
+      {
+        "signature": "setSettings:(updater: (settings: AppSettings) => AppSettings) => void|settings:AppSettings",
+        "primary": "RelayManagementSection",
+        "duplicates": [
+          "NostrTab",
+          "AITab"
+        ],
+        "reason": "identical-props"
+      },
+      {
+        "signature": "onCreateNote:() => void",
+        "primary": "EmptyStateForNotes",
+        "duplicates": [
+          "DashboardQuickActions"
+        ],
+        "reason": "identical-props"
+      }
+    ],
+    "deadComponents": [
+      {
+        "component": "TestProviders",
+        "reason": "no-jsx-usage",
+        "confidence": 0.7
+      },
+      {
+        "component": "TemplateSelector",
+        "reason": "no-jsx-usage",
+        "confidence": 0.7
+      }
+    ],
+    "inlinedCandidates": [],
+    "summary": {
+      "totalComponents": 194,
+      "duplicateCount": 6,
+      "deadCount": 2,
+      "inlinedCount": 0,
+      "actionableFindings": 7
+    }
+  },
   "tasks": [
     {
       "id": "task-1",

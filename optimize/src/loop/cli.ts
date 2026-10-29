@@ -13,6 +13,7 @@ import { TypeSchemaBuilder } from '../discovery/typeSchema.js';
 import { OntologyAdapter } from '../discovery/ontologyAdapter.js';
 import { GoldenCaseMiner } from '../discovery/goldenCaseMiner.js';
 import { discoverSeams } from '../discovery/seams.js';
+import { analyzeDuplicates } from '../discovery/duplicates.js';
 import { loadLoopConfig, validateLoopConfig } from '../utils/loopConfig.js';
 import { loadTaxonomy, validateTaxonomy } from '../utils/taxonomy.js';
 
@@ -89,25 +90,31 @@ async function runDiscover(config: any, outputDir: string, dry: boolean, json: b
     const seams = await discoverSeams(components);
     console.log(`     Found ${seams.length} seams`);
 
-    // 3. Build type schemas
+    // 3. Analyze duplicates
+    console.log('  🔍 Analyzing duplicates...');
+    const duplicateAnalysis = await analyzeDuplicates(components, seams);
+    console.log(`     Found ${duplicateAnalysis.duplicateGroups.length} duplicate groups, ${duplicateAnalysis.deadComponents.length} dead components, ${duplicateAnalysis.inlinedCandidates.length} inline candidates`);
+    console.log(`     Actionable findings: ${duplicateAnalysis.summary.actionableFindings}`);
+
+    // 4. Build type schemas
     console.log('  📐 Building type schemas...');
     const typeSchemaResult = TypeSchemaBuilder.fromProject();
     const typeSchemas = typeSchemaResult.types;
     console.log(`     Built ${typeSchemas.size} type schemas`);
 
-    // 4. Ontology adapter
+    // 5. Ontology adapter
     console.log('  📚 Loading ontology...');
     const ontologyAdapter = new OntologyAdapter();
     const ontology = await ontologyAdapter.load();
     console.log(`     Loaded ontology with ${ontology.properties.length} properties`);
 
-    // 5. Mine golden cases
+    // 6. Mine golden cases
     console.log('  🏆 Mining golden cases...');
     const goldenCaseMiner = new GoldenCaseMiner('doc/evidence');
     const goldenCases = await goldenCaseMiner.mine({ minConfidence: 0.5, maxCases: 20 });
     console.log(`     Mined ${goldenCases.length} golden cases`);
 
-    // 6. Derive tasks from taxonomy × ontology × friction
+    // 7. Derive tasks from taxonomy × ontology × friction
     console.log('  📋 Deriving tasks...');
     const taxonomy = await loadTaxonomy('loop/taxonomy.json');
     const tasks = deriveTasks(taxonomy, ontology, seams);
@@ -121,14 +128,54 @@ async function runDiscover(config: any, outputDir: string, dry: boolean, json: b
         seams: seams.map(s => ({ id: s.id, name: s.name, components: s.components, propsShape: s.propsShape })),
         typeSchemas: Array.from(typeSchemas.entries()).map(([k, v]) => ({ key: k, schema: v })),
         ontology: { properties: ontology.properties, operators: ontology.operators },
-        goldenCases: goldenCases.map(g => ({ name: g.name, input: g.input, expected: g.expected })),
+        duplicateAnalysis: {
+            duplicateGroups: duplicateAnalysis.duplicateGroups.map(g => ({
+                signature: g.signature,
+                primary: g.primary,
+                duplicates: g.duplicates,
+                reason: g.reason,
+            })),
+            deadComponents: duplicateAnalysis.deadComponents.map(d => ({
+                component: d.component.name,
+                reason: d.reason,
+                confidence: d.confidence,
+            })),
+            inlinedCandidates: duplicateAnalysis.inlinedCandidates.map(i => ({
+                component: i.component.name,
+                reason: i.reason,
+                suggestedAction: i.suggestedAction,
+            })),
+            summary: duplicateAnalysis.summary,
+        },
         tasks: tasks.map(t => ({ id: t.id, name: t.name, type: t.type, seam: t.seam, acceptance: t.acceptance })),
     };
 
+    // Write separate artifact files
     if (!dry) {
         await ensureDir(outputDir);
         await writeFile(join(outputDir, 'discovered.json'), JSON.stringify(discovered, null, 2));
-        console.log(`\n✅ Discovered artifacts written to ${outputDir}/discovered.json`);
+        
+        const tasksJson = {
+            timestamp: discovered.timestamp,
+            version: config.version,
+            tasks: discovered.tasks,
+        };
+        await writeFile(join(outputDir, 'tasks.json'), JSON.stringify(tasksJson, null, 2));
+        
+        const goldenJsonl = goldenCases.map(g => JSON.stringify({
+            name: g.name,
+            input: g.input,
+            expected: g.expected,
+            forbidden: g.forbidden,
+            expectedOutcome: g.expectedOutcome,
+            metadata: g.metadata,
+        })).join('\n');
+        await writeFile(join(outputDir, 'golden.jsonl'), goldenJsonl + '\n');
+        
+        console.log(`\n✅ Discovered artifacts written to ${outputDir}/`);
+        console.log(`   - discovered.json (full artifact)`);
+        console.log(`   - tasks.json (task definitions)`);
+        console.log(`   - golden.jsonl (golden cases)`);
     } else {
         console.log('\n🔍 Dry run - no files written');
         if (json) console.log(JSON.stringify(discovered, null, 2));
