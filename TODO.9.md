@@ -545,7 +545,7 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | ID | Item | Files | Acceptance | Depends |
 |----|------|-------|-----------|---------|
 | I1 | Explainable match results (why it fits, how it differs, what is missing) | `LocalMatchPreview`, match UI | explanation shown for every match | P4 | ✅ |
-| I2 | Correction and recovery flows (reject, revise, continue without restart) | editor + match UI | recovery measurable; no forced restart | P3, P4 |
+| I2 | Correction and recovery flows (reject, revise, continue without restart) | editor + match UI | recovery measurable; no forced restart | P3, P4 | ✅ |
 
 ### S — Capability showcases · supporting
 
