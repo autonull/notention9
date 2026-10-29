@@ -16,7 +16,7 @@ import { discoverSeams } from '../discovery/seams.js';
 import { analyzeDuplicates } from '../discovery/duplicates.js';
 import { loadLoopConfig, validateLoopConfig } from '../utils/loopConfig.js';
 import { loadTaxonomy, validateTaxonomy } from '../utils/taxonomy.js';
-import { StrategySpecGenerator, generateAllCandidates, runStaticGates, runGatesOnCandidateDir } from '../synthesis/index.js';
+import { StrategySpecGenerator, generateAllCandidates, runStaticGates, runGatesOnCandidateDir, runFullEvaluation, runBaselineEvaluation } from '../synthesis/index.js';
 import type { Seam } from '../discovery/seams.js';
 
 interface LoopParsedFlags {
@@ -323,6 +323,90 @@ async function runSynthesize(config: any, outputDir: string, dry: boolean, json:
     return failed > 0 ? 1 : 0;
 }
 
+async function runEvaluate(config: any, outputDir: string, dry: boolean, _json: boolean): Promise<number> {
+    console.log('📊 Evaluating candidates against baseline...\n');
+
+    const fs = await import('fs/promises');
+    const path = await import('path');
+    
+    // Load gate reports to get passed candidates
+    const gateReportsPath = path.join(outputDir, 'gate-reports.json');
+    let candidatesDir;
+    
+    try {
+        const gateContent = await fs.readFile(gateReportsPath, 'utf-8');
+        const gateReports = JSON.parse(gateContent);
+        
+        // Load candidates from candidates directory
+        const candidatesPath = path.join(outputDir, 'candidates');
+        const { loadCandidates } = await import('../synthesis/StrategySpec.js');
+        candidatesDir = await loadCandidates(candidatesPath);
+        
+        // Filter to only candidates that passed gates
+        const passedCandidateIds = new Set(
+            gateReports
+                .filter((r: any) => r.overallPass)
+                .map((r: any) => r.candidateId)
+        );
+        
+        // Remove failed candidates
+        for (const id of candidatesDir.candidates.keys()) {
+            if (!passedCandidateIds.has(id)) {
+                candidatesDir.candidates.delete(id);
+            }
+        }
+        
+        console.log(`  📋 Loaded ${candidatesDir.candidates.size} gate-passed candidates`);
+    } catch {
+        console.log('  ⚠️  No gate reports or candidates found. Run synthesize first.');
+        return 1;
+    }
+
+    if (candidatesDir.candidates.size === 0) {
+        console.log('  ❌ No candidates passed static gates');
+        return 1;
+    }
+
+    // Run baseline evaluation
+    console.log('  📏 Running baseline evaluation...');
+    const baseline = await runBaselineEvaluation({
+        baseURL: config.evaluation.harness?.baseURL || 'http://localhost:5173',
+        headless: config.evaluation.harness?.headless !== false,
+        repetitions: config.evaluation.harness?.repetitions || 10,
+        seed: config.evaluation.harness?.seed || 42,
+    });
+    
+    if (!dry) {
+        await ensureDir(outputDir);
+        await fs.writeFile(path.join(outputDir, 'baseline.json'), JSON.stringify(baseline, null, 2));
+    }
+
+    // Run full evaluation on candidates
+    const evalConfig = {
+        baseURL: config.evaluation.harness?.baseURL || 'http://localhost:5173',
+        headless: config.evaluation.harness?.headless !== false,
+        repetitions: config.evaluation.harness?.repetitions || 10,
+        seed: config.evaluation.harness?.seed || 42,
+    };
+    
+    const report = await runFullEvaluation(candidatesDir, baseline, outputDir, evalConfig);
+    
+    // Summary
+    const passedCandidates = report.candidates.filter(c => c.passed).length;
+    console.log(`\n📊 Evaluation Summary:`);
+    console.log(`   Baseline overall success rate: ${(report.baseline.reduce((s, b) => s + b.successRate, 0) / report.baseline.length * 100).toFixed(1)}%`);
+    console.log(`   Candidates evaluated: ${report.candidates.length}`);
+    console.log(`   Candidates beating baseline: ${passedCandidates}`);
+    
+    if (dry) {
+        console.log('\n🔍 Dry run - no files written');
+    } else {
+        console.log(`\n✅ Evaluation report written to ${outputDir}/evaluation-report.json`);
+    }
+    
+    return passedCandidates > 0 ? 0 : 1;
+}
+
 async function main(): Promise<number> {
     const rawArgs = process.argv.slice(2);
 
@@ -357,8 +441,7 @@ async function main(): Promise<number> {
                 return runSynthesize(config, output, dry, json);
             }
             case 'evaluate': {
-                console.log('🔄 Evaluate command not yet implemented');
-                return 1;
+                return runEvaluate(config, output, dry, json);
             }
             case 'adopt': {
                 console.log('🔄 Adopt command not yet implemented');

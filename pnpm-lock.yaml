@@ -279,6 +279,9 @@ importers:
       '@notention/core':
         specifier: workspace:*
         version: link:../core
+      '@notention/eval':
+        specifier: workspace:*
+        version: link:../ui/eval
       '@notention/simulator':
         specifier: workspace:*
         version: link:../simulator
@@ -570,6 +573,31 @@ importers:
       vitest:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@24.12.3)(jiti@2.7.0)(jsdom@26.1.0)(lightningcss@1.32.0)(terser@5.47.1)(tsx@4.21.0)(yaml@2.8.4)
+
+  ui/eval:
+    dependencies:
+      '@notention/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@notention/optimize':
+        specifier: workspace:*
+        version: link:../../optimize
+      zod:
+        specifier: ^3.23.8
+        version: 3.25.76
+    devDependencies:
+      '@playwright/test':
+        specifier: ^1.60.0
+        version: 1.60.0
+      '@types/node':
+        specifier: ^22.0.0
+        version: 22.20.5
+      typescript:
+        specifier: ^5.5.0
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.6
+        version: 4.1.6(@opentelemetry/api@1.9.1)(@types/node@22.20.5)(jsdom@26.1.0)(vite@7.3.3(@types/node@22.20.5)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.47.1)(tsx@4.21.0)(yaml@2.8.4))
 
 packages:
 
