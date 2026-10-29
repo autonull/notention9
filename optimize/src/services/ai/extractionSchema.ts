@@ -309,7 +309,7 @@ RULES FOR FIXING:
 CORRECTED OUTPUT:`;
 }
 
-function validateAgainstSchema(obj: any, schema: ExtractionSchema): string[] {
+export function validateAgainstSchema(obj: any, schema: ExtractionSchema): string[] {
     const errors: string[] = [];
 
     if (typeof obj !== 'object' || obj === null) {

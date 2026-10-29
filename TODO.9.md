@@ -516,7 +516,7 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | L12 | Sandbox build + harness run | `optimize/src/synthesis/` | candidate measured vs baseline | L11 | ✅ |
 | L13 | Adopt winner behind flag; provenance; rollback | `ui/`, ledger | reversible adoption | L12 | ✅ |
 | L14 | T4 request emission | `optimize/src/synthesis/requests.ts` | request from real evidence | L12 | ✅ |
-| L15 | Prompt JSON schema derived from ontology; repair loop | `ui/src/services/ai/`, `optimize/` | extraction validated | L2 | ✅ |
+| L15 | Prompt JSON schema derived from ontology; repair loop | `optimize/src/services/ai/extractionSchema.ts` | extraction validated | L2 | ✅ |
 | L16 | Clarification questions ranked by information gain | `ui/src/services/ai/` | "changed outcome" rate measured | L15 |
 | L17a | Lifecycle/status facet (`open→matched→committed→done→lapsed`) | `core/src/ontology/` | note carries status; task 4 passes | — | ✅ |
 | L17 | Ontology experiment: flat vs facets+status | `core/src/ontology/`, harness | recorded decision | L9, L17a |
@@ -718,7 +718,7 @@ And the architectural principle holds: **the system improved its own behaviour w
 11. ✅ **D7, D8, Q2** — simulator telemetry sink and explicit page ownership; verify event stream.
 12. ✅ **L17a** — lifecycle/status facet.
 13. ✅ **L10–L14, E4, E5, X5** — synthesis with gates; evaluator independence; baseline retention; rollback demo.
-14. **L15, L16, I1, I2, P1, P2** — prompt schema, clarification value, explainability, recovery, NL capture, progressive elicitation.
+14. 🟨 **L15, L16, I1, I2, P1, P2** — prompt schema, clarification value, explainability, recovery, NL capture, progressive elicitation.
 15. **E3, M5, M6, X6** — offline evaluation; offline workflows; resource metrics; constrained-operation demo.
 16. **O4–O8, L19, L20, B3–B5** — impact scoring, failure signals, abstention, minimal change; ledger; determinism; inspectability; privacy; reproducibility.
 17. **X1–X4, X7, H1–H4** — one-journey proof, evidence doc, human gates, decision records.
