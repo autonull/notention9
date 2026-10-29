@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-10-29T18:26:51.355Z",
+  "timestamp": "2026-10-29T19:28:41.608Z",
   "version": "1.0.0",
   "components": [
     {
@@ -52,6 +52,26 @@
           "optional": true
         }
       ]
+    },
+    {
+      "name": "TemplateSelectorStrategy",
+      "file": "/home/me/notention9/ui/src/strategies/TemplateSelectorStrategy.tsx",
+      "props": []
+    },
+    {
+      "name": "TagInputStrategy",
+      "file": "/home/me/notention9/ui/src/strategies/TagInputStrategy.tsx",
+      "props": []
+    },
+    {
+      "name": "PropertyFormStrategy",
+      "file": "/home/me/notention9/ui/src/strategies/PropertyFormStrategy.tsx",
+      "props": []
+    },
+    {
+      "name": "DescribeItComposerStrategy",
+      "file": "/home/me/notention9/ui/src/strategies/DescribeItComposerStrategy.tsx",
+      "props": []
     },
     {
       "name": "MetaphorPlugin",
@@ -4966,6 +4986,7 @@
     {
       "id": "display-38",
       "name": "display (merged 86 clusters)",
+      "role": "display",
       "components": [
         "RelayManagementSection",
         "NostrTab",
@@ -4979,6 +5000,7 @@
     {
       "id": "layout-8",
       "name": "layout (merged 9 clusters)",
+      "role": "layout",
       "components": [
         "PropertyPanel"
       ],
@@ -5003,6 +5025,7 @@
     {
       "id": "capture-20",
       "name": "capture (merged 21 clusters)",
+      "role": "capture",
       "components": [
         "QuickCapture"
       ],
@@ -5017,6 +5040,7 @@
     {
       "id": "elicit-1",
       "name": "elicit (merged 2 clusters)",
+      "role": "elicit",
       "components": [
         "InsertPropertyModal"
       ],
@@ -5037,6 +5061,7 @@
     {
       "id": "ontology-5",
       "name": "ontology (merged 6 clusters)",
+      "role": "ontology",
       "components": [
         "OntologyAliasLinkModal"
       ],
@@ -5051,6 +5076,7 @@
     {
       "id": "match-7",
       "name": "match (merged 8 clusters)",
+      "role": "match",
       "components": [
         "LocalMatchesPanel"
       ],
@@ -5063,6 +5089,7 @@
     {
       "id": "intent-1",
       "name": "intent (merged 2 clusters)",
+      "role": "intent",
       "components": [
         "EditorStatusBar"
       ],
@@ -5262,6 +5289,363 @@
             "type": "(attempt: number, error: unknown) => void",
             "optional": true,
             "source": "core/src/utils/async.ts"
+          }
+        ],
+        "isArray": false
+      }
+    },
+    {
+      "key": "Strategy",
+      "schema": {
+        "name": "Strategy",
+        "properties": [
+          {
+            "name": "id",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/strategy.ts"
+          },
+          {
+            "name": "seam",
+            "type": {
+              "name": "Seam",
+              "properties": [
+                {
+                  "name": "id",
+                  "type": "string",
+                  "optional": false,
+                  "source": "core/src/ui/strategy.ts"
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "optional": false,
+                  "source": "core/src/ui/strategy.ts"
+                },
+                {
+                  "name": "description",
+                  "type": "string",
+                  "optional": false,
+                  "source": "core/src/ui/strategy.ts"
+                },
+                {
+                  "name": "propsShape",
+                  "type": "Record<string, string>",
+                  "optional": false,
+                  "source": "core/src/ui/strategy.ts"
+                },
+                {
+                  "name": "components",
+                  "type": "string",
+                  "optional": false,
+                  "source": "core/src/ui/strategy.ts"
+                },
+                {
+                  "name": "role",
+                  "type": "'capture' | 'elicit' | 'match' | 'display' | 'layout' | 'explain' | 'ontology' | 'intent'",
+                  "optional": false,
+                  "source": "core/src/ui/strategy.ts"
+                }
+              ],
+              "isArray": false
+            },
+            "optional": false,
+            "source": "core/src/ui/strategy.ts"
+          },
+          {
+            "name": "version",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/strategy.ts"
+          },
+          {
+            "name": "params",
+            "type": {
+              "name": "ParamSpec",
+              "properties": [],
+              "isArray": false
+            },
+            "optional": false,
+            "source": "core/src/ui/strategy.ts"
+          }
+        ],
+        "isArray": false
+      }
+    },
+    {
+      "key": "Seam",
+      "schema": {
+        "name": "Seam",
+        "properties": [
+          {
+            "name": "id",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/strategy.ts"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/strategy.ts"
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/strategy.ts"
+          },
+          {
+            "name": "propsShape",
+            "type": "Record<string, string>",
+            "optional": false,
+            "source": "core/src/ui/strategy.ts"
+          },
+          {
+            "name": "components",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/strategy.ts"
+          },
+          {
+            "name": "role",
+            "type": "'capture' | 'elicit' | 'match' | 'display' | 'layout' | 'explain' | 'ontology' | 'intent'",
+            "optional": false,
+            "source": "core/src/ui/strategy.ts"
+          }
+        ],
+        "isArray": false
+      }
+    },
+    {
+      "key": "ParamSpec",
+      "schema": {
+        "name": "ParamSpec",
+        "properties": [],
+        "isArray": false
+      }
+    },
+    {
+      "key": "ParamDef",
+      "schema": {
+        "name": "ParamDef",
+        "properties": [
+          {
+            "name": "type",
+            "type": "'string' | 'number' | 'boolean' | 'enum' | 'object' | 'array'",
+            "optional": false,
+            "source": "core/src/ui/strategy.ts"
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "optional": true,
+            "source": "core/src/ui/strategy.ts"
+          },
+          {
+            "name": "required",
+            "type": "boolean",
+            "optional": true,
+            "source": "core/src/ui/strategy.ts"
+          },
+          {
+            "name": "default",
+            "type": "unknown",
+            "optional": true,
+            "source": "core/src/ui/strategy.ts"
+          },
+          {
+            "name": "options",
+            "type": "string",
+            "optional": true,
+            "source": "core/src/ui/strategy.ts"
+          },
+          {
+            "name": "min",
+            "type": "number",
+            "optional": true,
+            "source": "core/src/ui/strategy.ts"
+          },
+          {
+            "name": "max",
+            "type": "number",
+            "optional": true,
+            "source": "core/src/ui/strategy.ts"
+          }
+        ],
+        "isArray": false
+      }
+    },
+    {
+      "key": "StrategyArtifact",
+      "schema": {
+        "name": "StrategyArtifact",
+        "properties": [
+          {
+            "name": "id",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/strategy.ts"
+          },
+          {
+            "name": "kind",
+            "type": "'prompt' | 'ui' | 'ontology-facet'",
+            "optional": false,
+            "source": "core/src/ui/strategy.ts"
+          },
+          {
+            "name": "version",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/strategy.ts"
+          },
+          {
+            "name": "interface",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/strategy.ts"
+          },
+          {
+            "name": "config",
+            "type": "Record<string, unknown>",
+            "optional": false,
+            "source": "core/src/ui/strategy.ts"
+          },
+          {
+            "name": "requires",
+            "type": {
+              "name": "Capability",
+              "properties": [
+                {
+                  "name": "name",
+                  "type": "string",
+                  "optional": false,
+                  "source": "core/src/ui/strategy.ts"
+                },
+                {
+                  "name": "minVersion",
+                  "type": "string",
+                  "optional": true,
+                  "source": "core/src/ui/strategy.ts"
+                }
+              ],
+              "isArray": false
+            },
+            "optional": false,
+            "source": "core/src/ui/strategy.ts"
+          },
+          {
+            "name": "provenance",
+            "type": {
+              "name": "Provenance",
+              "properties": [
+                {
+                  "name": "author",
+                  "type": "'human' | 'model'",
+                  "optional": false,
+                  "source": "core/src/ui/strategy.ts"
+                },
+                {
+                  "name": "model",
+                  "type": "string",
+                  "optional": true,
+                  "source": "core/src/ui/strategy.ts"
+                },
+                {
+                  "name": "promptHash",
+                  "type": "string",
+                  "optional": true,
+                  "source": "core/src/ui/strategy.ts"
+                },
+                {
+                  "name": "diff",
+                  "type": "string",
+                  "optional": true,
+                  "source": "core/src/ui/strategy.ts"
+                },
+                {
+                  "name": "date",
+                  "type": "string",
+                  "optional": false,
+                  "source": "core/src/ui/strategy.ts"
+                },
+                {
+                  "name": "evidenceBundle",
+                  "type": "string",
+                  "optional": true,
+                  "source": "core/src/ui/strategy.ts"
+                }
+              ],
+              "isArray": false
+            },
+            "optional": false,
+            "source": "core/src/ui/strategy.ts"
+          }
+        ],
+        "isArray": false
+      }
+    },
+    {
+      "key": "Capability",
+      "schema": {
+        "name": "Capability",
+        "properties": [
+          {
+            "name": "name",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/strategy.ts"
+          },
+          {
+            "name": "minVersion",
+            "type": "string",
+            "optional": true,
+            "source": "core/src/ui/strategy.ts"
+          }
+        ],
+        "isArray": false
+      }
+    },
+    {
+      "key": "Provenance",
+      "schema": {
+        "name": "Provenance",
+        "properties": [
+          {
+            "name": "author",
+            "type": "'human' | 'model'",
+            "optional": false,
+            "source": "core/src/ui/strategy.ts"
+          },
+          {
+            "name": "model",
+            "type": "string",
+            "optional": true,
+            "source": "core/src/ui/strategy.ts"
+          },
+          {
+            "name": "promptHash",
+            "type": "string",
+            "optional": true,
+            "source": "core/src/ui/strategy.ts"
+          },
+          {
+            "name": "diff",
+            "type": "string",
+            "optional": true,
+            "source": "core/src/ui/strategy.ts"
+          },
+          {
+            "name": "date",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/strategy.ts"
+          },
+          {
+            "name": "evidenceBundle",
+            "type": "string",
+            "optional": true,
+            "source": "core/src/ui/strategy.ts"
           }
         ],
         "isArray": false
@@ -18704,6 +19088,11 @@
         "confidence": 0.7
       },
       {
+        "component": "TemplateSelectorStrategy",
+        "reason": "no-jsx-usage",
+        "confidence": 0.7
+      },
+      {
         "component": "TemplateSelector",
         "reason": "no-jsx-usage",
         "confidence": 0.7
@@ -18711,11 +19100,11 @@
     ],
     "inlinedCandidates": [],
     "summary": {
-      "totalComponents": 194,
+      "totalComponents": 198,
       "duplicateCount": 6,
-      "deadCount": 2,
+      "deadCount": 3,
       "inlinedCount": 0,
-      "actionableFindings": 7
+      "actionableFindings": 8
     }
   },
   "tasks": [

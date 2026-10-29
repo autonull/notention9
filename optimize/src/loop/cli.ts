@@ -16,6 +16,8 @@ import { discoverSeams } from '../discovery/seams.js';
 import { analyzeDuplicates } from '../discovery/duplicates.js';
 import { loadLoopConfig, validateLoopConfig } from '../utils/loopConfig.js';
 import { loadTaxonomy, validateTaxonomy } from '../utils/taxonomy.js';
+import { StrategySpecGenerator, generateAllCandidates, runStaticGates, runGatesOnCandidateDir } from '../synthesis/index.js';
+import type { Seam } from '../discovery/seams.js';
 
 interface LoopParsedFlags {
     json: boolean;
@@ -134,7 +136,7 @@ async function runDiscover(config: any, outputDir: string, dry: boolean, json: b
         timestamp: new Date().toISOString(),
         version: config.version,
         components: components.map(c => ({ name: c.name, file: c.file, props: c.props })),
-        seams: seams.map(s => ({ id: s.id, name: s.name, components: s.components, propsShape: s.propsShape })),
+        seams: seams.map(s => ({ id: s.id, name: s.name, role: s.role, components: s.components, propsShape: s.propsShape })),
         typeSchemas: Array.from(typeSchemas.entries()).map(([k, v]) => ({ key: k, schema: v })),
         ontology: { properties: ontology.properties, operators: ontology.operators },
         duplicateAnalysis: {
@@ -254,6 +256,73 @@ function deriveTasks(taxonomy: any, ontology: any, seams: any[]): any[] {
     return tasks;
 }
 
+async function runSynthesize(config: any, outputDir: string, dry: boolean, json: boolean): Promise<number> {
+    console.log('🔧 Synthesizing candidate strategies...\n');
+
+    // Load discovered artifacts
+    const fs = await import('fs/promises');
+    const path = await import('path');
+    
+    const discoveredPath = path.join(outputDir, 'discovered.json');
+    let discovered: any;
+    
+    try {
+        const content = await fs.readFile(discoveredPath, 'utf-8');
+        discovered = JSON.parse(content);
+        console.log(`  📄 Loaded discovered artifacts from ${discoveredPath}`);
+    } catch {
+        console.log('  ⚠️  No discovered.json found, running discovery first...');
+        // Run discovery inline
+        const componentScanner = new ComponentScanner();
+        const discovery = componentScanner.scan();
+        const components = discovery.components;
+        const seams = await discoverSeams(components);
+        discovered = { components, seams };
+    }
+
+    const seams = discovered.seams as any[];
+    console.log(`  🔗 Found ${seams.length} seams`);
+
+    // Generate candidates for all seams with built-in specs
+    console.log('  🤖 Generating candidate strategies...');
+    const candidatesDir = await generateAllCandidates(seams, path.join(outputDir, 'candidates'));
+    console.log(`     Generated ${candidatesDir.candidates.size} candidates`);
+
+    // Run static gates on all candidates
+    console.log('  🛡️  Running static gates...');
+    const gateReports = await runGatesOnCandidateDir(candidatesDir, seams);
+    
+    let passed = 0;
+    let failed = 0;
+    for (const report of gateReports) {
+        if (report.overallPass) {
+            passed++;
+            console.log(`     ✅ ${report.candidateId}: ALL GATES PASSED`);
+        } else {
+            failed++;
+            console.log(`     ❌ ${report.candidateId}: FAILED`);
+            for (const [gateName, result] of Object.entries(report.gates)) {
+                if (!result.pass) {
+                    console.log(`        - ${gateName}: ${result.errors.join(', ')}`);
+                }
+            }
+        }
+    }
+
+    // Save gate reports
+    if (!dry) {
+        await ensureDir(outputDir);
+        const reportsPath = path.join(outputDir, 'gate-reports.json');
+        await fs.writeFile(reportsPath, JSON.stringify(gateReports, null, 2));
+        console.log(`\n✅ Gate reports written to ${reportsPath}`);
+    } else {
+        console.log('\n🔍 Dry run - no files written');
+    }
+
+    console.log(`\n📊 Summary: ${passed} passed, ${failed} failed`);
+    return failed > 0 ? 1 : 0;
+}
+
 async function main(): Promise<number> {
     const rawArgs = process.argv.slice(2);
 
@@ -285,8 +354,7 @@ async function main(): Promise<number> {
                 return 1;
             }
             case 'synthesize': {
-                console.log('🔄 Synthesize command not yet implemented');
-                return 1;
+                return runSynthesize(config, output, dry, json);
             }
             case 'evaluate': {
                 console.log('🔄 Evaluate command not yet implemented');
