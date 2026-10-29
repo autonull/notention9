@@ -194,6 +194,47 @@ Node.js 20 or newer and pnpm are expected. Install dependencies once, then choos
 
 The UI is a PWA and can be installed; the terminal prints the addresses it binds. The CLI can start an embedded agent automatically when it cannot find one.
 
+### CLI Usage
+
+The CLI (`pnpm run cli`) provides an interactive terminal session with an embedded agent server.
+
+```bash
+# Start interactive session (auto-starts embedded agent if needed)
+pnpm run cli
+
+# Start with options
+pnpm run cli run --provider openai --model gpt-4o
+
+# Run with custom provider via env
+LLM_PROVIDER=openai LLM_API_KEY=xxx LLM_MODEL=gpt-4o pnpm run cli
+```
+
+Inside the interactive session, type `/help` for available slash commands:
+
+| Command | Description |
+| :--- | :--- |
+| `/help` | Show available commands |
+| `/status` | View system status (provider, model, server) |
+| `/open <id>` | Open a note as active context |
+| `/close` | Clear active context |
+| `/extract <text>` | Extract semantic properties from text |
+| `/run <scenario>` | Run a simulation scenario |
+| `/security scan` | Scan notes for secrets |
+| `/provider <name>` | Switch LLM provider (ollama, openai, etc.) |
+| `/clear` | Clear the screen |
+| `/config` | Manage configuration (get/set/list/reset) |
+| `/setup` | Run interactive setup wizard |
+
+The CLI also supports subcommands directly:
+
+```bash
+pnpm run cli run          # Start interactive session
+pnpm run cli run -- --provider openai  # With options
+pnpm run cli config       # Manage config (--get, --set, --list, --reset)
+pnpm run cli provider     # Manage providers (--list, --current, --switch)
+pnpm run cli setup        # Run setup wizard
+```
+
 Environment switches:
 
 | Variable | Effect |
@@ -232,6 +273,51 @@ A typical integration follows the same shape as the application: parse or constr
 | Add a CLI capability | Slash command module and tool adapter | `cli/src/commands`, `cli/src/tools` |
 
 The seams are intentional. A new domain should not require a new matching engine; a new transport should not require changes to note semantics; a new skill should not require changes to the ontology core.
+
+### Simulator
+
+The Simulator runs multi-agent scenarios to observe matching, publishing, and emergent coordination.
+
+```bash
+# Build the simulator
+pnpm run build -w simulator
+
+# Start the Movie Studio UI (web interface at localhost:3000)
+pnpm start -w simulator -- --ui-server
+
+# Run a scenario headless
+pnpm start -w simulator -- --scenario=gig-economy
+
+# Record a scenario as MP4 (Movie Maker mode)
+pnpm start -w simulator -- --movie --scenario=gig-economy --fps=2 --width=1920 --height=1080
+
+# Generate a random scenario
+pnpm start -w simulator -- --generate=10 --duration=60
+
+# List available scenarios
+pnpm start -w simulator -- --list-scenarios
+```
+
+The Movie Studio UI provides a Studio for configuring scenarios, Live Preview for real-time viewing, and a Movie Library for managing recordings.
+
+### Optimization (Journey Testing)
+
+```bash
+# Run the Golden Path journey
+pnpm optimize optimize golden-path
+
+# List findings
+pnpm optimize findings
+
+# Reproduce a finding
+pnpm optimize reproduce <findingId>
+
+# Generate regression test from finding
+pnpm optimize generate-test <findingId>
+
+# Mark finding as fixed
+pnpm optimize mark-fixed <findingId> [commitSha]
+```
 
 ## 🧭 Possibilities
 

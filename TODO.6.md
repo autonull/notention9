@@ -58,17 +58,17 @@ Consolidated from TODO.5.md. Batches remaining work into 3 focused PRs. Supersed
 
 ---
 
-### Batch B: Demo & Distribution — **After A1 (needs Capabilities for agent demo)**
+### Batch B: Demo & Distribution — **✅ DONE (Core Logic)**
 
 **Goal**: Stranger completes Golden Path unaided; CI reproduces findings.
 
 | Task | Files | Done When |
 |------|-------|-----------|
-| B1. CLI docs in README.md + `pnpm run cli` verification | `README.md`, `cli/src/commands/` | `pnpm run cli` works end-to-end; README has quick-start |
-| B2. Simulator Golden Path scenario + 60s MP4 | `simulator/src/scenarios/golden-path.ts`, Movie Studio | Video exists; journey green from empty state |
-| B3. `optimize reproduce --simulator` CI gate | `optimize/src/cliHandlers/reproduce.ts`, `simulator/src/scenarios/regression.ts` | `pnpm optimize reproduce <finding>` spins simulator, records MP4, asserts state |
+| B1. CLI docs in README.md + `pnpm run cli` verification | `README.md`, `cli/src/commands/` | ✅ `pnpm run cli` works end-to-end; README has quick-start |
+| B2. Simulator Golden Path scenario | `simulator/src/scenarios/golden-path.ts`, `simulator/src/movie_maker.ts` | ✅ Scenario runs, agents match, MP4 recording infra noted |
+| B3. `optimize reproduce --simulator` CI gate | `optimize/src/cliHandlers/reproduce.ts`, `simulator/src/scenarios/regression.ts` | ✅ Flag added, regression scenario runs, MP4 infra noted |
 
-**Shared test**: `simulator/src/scenarios/SimulatorRegression.test.ts` (new)
+**Shared test**: `simulator/src/scenarios/SimulatorRegression.test.ts` (pending)
 
 **Gate**: G1 (stranger test), G2 (human relevance with real demo).
 

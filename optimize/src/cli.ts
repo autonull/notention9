@@ -15,6 +15,7 @@ interface ParsedFlags {
     json: boolean;
     a11y: boolean;
     allowDraft: boolean;
+    simulator: boolean;
     status?: string;
     commitSha?: string;
     positionals: string[];
@@ -24,6 +25,7 @@ function parseFlags(args: string[]): ParsedFlags {
     const json = args.includes('--json');
     const a11y = args.includes('--a11y');
     const allowDraft = args.includes('--allow-draft');
+    const simulator = args.includes('--simulator');
 
     let status: string | undefined;
     const statusIndex = args.findIndex(r => r === '--status');
@@ -43,7 +45,7 @@ function parseFlags(args: string[]): ParsedFlags {
         if (commitFlag) commitSha = commitFlag.split('=')[1];
     }
 
-    const flagSet = new Set(['--json', '--a11y', '--allow-draft', '--status', '--commit']);
+    const flagSet = new Set(['--json', '--a11y', '--allow-draft', '--simulator', '--status', '--commit']);
     const positionals = args.filter((r, i) => {
         if (flagSet.has(r)) return false;
         if (r.startsWith('--status=') || r.startsWith('--commit=')) return false;
@@ -52,7 +54,7 @@ function parseFlags(args: string[]): ParsedFlags {
         return true;
     });
 
-    return { json, a11y, allowDraft, status, commitSha, positionals };
+    return { json, a11y, allowDraft, simulator, status, commitSha, positionals };
 }
 
 function printHelp(): void {
@@ -72,6 +74,7 @@ Options:
   --json                   Output as JSON
   --allow-draft            Allow draft journeys
   --a11y                   Show accessibility findings
+  --simulator              Run simulator regression scenario and record MP4
   --status <status>        Filter findings by status (open|fixed|verified)
   --commit <sha>           Commit SHA for mark-fixed
 `);
@@ -85,7 +88,7 @@ async function main(): Promise<number> {
         return 0;
     }
 
-    const { json, a11y, allowDraft, status, commitSha, positionals } = parseFlags(rawArgs);
+    const { json, a11y, allowDraft, simulator, status, commitSha, positionals } = parseFlags(rawArgs);
 
     if (positionals.length === 0) {
         printHelp();
@@ -114,7 +117,7 @@ async function main(): Promise<number> {
             case 'reproduce': {
                 const target = rest[0];
                 if (!target) throw new Error('Finding ID or runId required for reproduce');
-                return handleReproduce(target, json, a11y);
+                return handleReproduce(target, json, a11y, simulator);
             }
             case 'mark-fixed': {
                 const findingId = rest[0];

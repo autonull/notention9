@@ -3,9 +3,15 @@ import { findFindingById } from '../findingRepository.js';
 import { runOptimizeTest, createRunId } from '../runner.js';
 import { verifyReplay } from '../replay.js';
 import { getReproductionJourneyId } from './utils.js';
+import { runSimulatorRegression } from './simulator-regression.js';
 
-export async function handleReproduce(target: string, json: boolean, a11y: boolean): Promise<number> {
+export async function handleReproduce(target: string, json: boolean, a11y: boolean, simulator: boolean): Promise<number> {
     console.log(`🔁 Reproducing: ${target}`);
+
+    if (simulator) {
+        console.log('🎬 Running simulator regression...');
+        return runSimulatorRegression(target, json);
+    }
 
     const bundle = await loadBundle(target);
     if (bundle) {
