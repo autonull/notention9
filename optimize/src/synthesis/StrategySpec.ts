@@ -40,6 +40,30 @@ export interface CandidateStrategy {
     createdAt: string;
 }
 
+export interface StrategyArtifact {
+    id: string;
+    kind: 'prompt' | 'ui' | 'ontology-facet';
+    version: string;
+    interface: string;
+    config: Record<string, unknown>;
+    requires: Capability[];
+    provenance: Provenance;
+}
+
+export interface Capability {
+    name: string;
+    minVersion?: string;
+}
+
+export interface Provenance {
+    author: 'human' | 'model';
+    model?: string;
+    promptHash?: string;
+    diff?: string;
+    date: string;
+    evidenceBundle?: string;
+}
+
 export interface CandidateProvenance {
     generatorModel: string;
     generatorVersion: string;

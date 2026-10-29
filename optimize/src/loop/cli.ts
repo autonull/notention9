@@ -16,7 +16,7 @@ import { discoverSeams } from '../discovery/seams.js';
 import { analyzeDuplicates } from '../discovery/duplicates.js';
 import { loadLoopConfig, validateLoopConfig } from '../utils/loopConfig.js';
 import { loadTaxonomy, validateTaxonomy } from '../utils/taxonomy.js';
-import { StrategySpecGenerator, generateAllCandidates, runStaticGates, runGatesOnCandidateDir, runFullEvaluation, runBaselineEvaluation } from '../synthesis/index.js';
+import { StrategySpecGenerator, generateAllCandidates, runStaticGates, runGatesOnCandidateDir, runFullEvaluation, runBaselineEvaluation, createAdoptionSystem, adoptWinner, emitT4RequestFromEvidence, generateT4FromFailedCandidates } from '../synthesis/index.js';
 import type { Seam } from '../discovery/seams.js';
 
 interface LoopParsedFlags {
@@ -60,6 +60,7 @@ Commands:
   synthesize [--dry] [--output <dir>]   Synthesize candidate strategies (T1-T2)
   evaluate [--dry] [--output <dir>]     Evaluate candidates against baseline
   adopt [--dry] [--output <dir>]        Adopt winning candidate with evidence gate
+  request [--dry] [--output <dir>]      Emit T4 request for human implementation
   run [--dry] [--output <dir>]          Run full discover→prioritize→synthesize→evaluate→adopt cycle
   help                                  Show this help
 
@@ -407,6 +408,102 @@ async function runEvaluate(config: any, outputDir: string, dry: boolean, _json: 
     return passedCandidates > 0 ? 0 : 1;
 }
 
+async function runAdopt(config: any, outputDir: string, dry: boolean, _json: boolean): Promise<number> {
+    console.log('✅ Adopting winning candidate...\n');
+
+    const fs = await import('fs/promises');
+    const path = await import('path');
+    
+    // Load evaluation report
+    const evalPath = path.join(outputDir, 'evaluation-report.json');
+    let evaluationReport: any;
+    
+    try {
+        const content = await fs.readFile(evalPath, 'utf-8');
+        evaluationReport = JSON.parse(content);
+        console.log(`  📄 Loaded evaluation report from ${evalPath}`);
+    } catch {
+        console.log('  ❌ No evaluation-report.json found. Run evaluate first.');
+        return 1;
+    }
+
+    // Load candidates
+    const candidatesPath = path.join(outputDir, 'candidates');
+    const { loadCandidates } = await import('../synthesis/StrategySpec.js');
+    const candidatesDir = await loadCandidates(candidatesPath);
+    
+    if (candidatesDir.candidates.size === 0) {
+        console.log('  ❌ No candidates found. Run synthesize first.');
+        return 1;
+    }
+
+    // Adopt winner
+    const artifact = await adoptWinner(evaluationReport, candidatesDir, {
+        actor: 'cli-user',
+        reason: 'Evaluation winner adopted via pnpm loop adopt',
+        enabled: false, // Behind feature flag by default
+    });
+
+    if (!artifact) {
+        console.log('  ❌ No winning candidate to adopt');
+        return 1;
+    }
+
+    // Save adopted artifact info
+    if (!dry) {
+        await ensureDir(outputDir);
+        const adoptionPath = path.join(outputDir, 'adoption.json');
+        await fs.writeFile(adoptionPath, JSON.stringify({ artifact, adoptedAt: new Date().toISOString() }, null, 2));
+        console.log(`\n✅ Adoption complete. Artifact saved to ${adoptionPath}`);
+    } else {
+        console.log('\n🔍 Dry run - no files written');
+    }
+
+    return 0;
+}
+
+async function runRequest(config: any, outputDir: string, dry: boolean, _json: boolean): Promise<number> {
+    console.log('📝 Emitting T4 request from evaluation evidence...\n');
+
+    const fs = await import('fs/promises');
+    const path = await import('path');
+    
+    // Load evaluation report
+    const evalPath = path.join(outputDir, 'evaluation-report.json');
+    let evaluationReport: any;
+    
+    try {
+        const content = await fs.readFile(evalPath, 'utf-8');
+        evaluationReport = JSON.parse(content);
+        console.log(`  📄 Loaded evaluation report from ${evalPath}`);
+    } catch {
+        console.log('  ❌ No evaluation-report.json found. Run evaluate first.');
+        return 1;
+    }
+
+    // Generate T4 requests from failed candidates
+    const requests = generateT4FromFailedCandidates(evaluationReport, path.join(outputDir, 'requests'));
+    
+    if (requests.length === 0) {
+        console.log('  ✅ No T4 requests needed - all candidates passed or no failures');
+        return 0;
+    }
+
+    console.log(`\n📋 Generated ${requests.length} T4 request(s):`);
+    for (const req of requests) {
+        console.log(`   - ${req.id}: ${req.title}`);
+        console.log(`     Priority: ${req.priority}, Status: ${req.status}`);
+    }
+
+    if (dry) {
+        console.log('\n🔍 Dry run - no files written');
+    } else {
+        console.log(`\n✅ T4 requests written to ${outputDir}/requests/`);
+    }
+
+    return 0;
+}
+
 async function main(): Promise<number> {
     const rawArgs = process.argv.slice(2);
 
@@ -444,8 +541,10 @@ async function main(): Promise<number> {
                 return runEvaluate(config, output, dry, json);
             }
             case 'adopt': {
-                console.log('🔄 Adopt command not yet implemented');
-                return 1;
+                return runAdopt(config, output, dry, json);
+            }
+            case 'request': {
+                return runRequest(config, output, dry, json);
             }
             case 'run': {
                 console.log('🔄 Full loop run not yet implemented');

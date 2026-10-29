@@ -501,8 +501,8 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | L10 | `StrategySpec` + generator + candidate dir | `optimize/src/synthesis/` | candidates with provenance | L9 | ✅ |
 | L11 | Static gates: typecheck, lint, seam conformance, imports, no ambient caps | `optimize/src/synthesis/gates.ts` | bad candidates rejected pre-build | L10 | ✅ |
 | L12 | Sandbox build + harness run | `optimize/src/synthesis/` | candidate measured vs baseline | L11 | ✅ |
-| L13 | Adopt winner behind flag; provenance; rollback | `ui/`, ledger | reversible adoption | L12 |
-| L14 | T4 request emission | `optimize/src/synthesis/requests.ts` | request from real evidence | L12 |
+| L13 | Adopt winner behind flag; provenance; rollback | `ui/`, ledger | reversible adoption | L12 | ✅ |
+| L14 | T4 request emission | `optimize/src/synthesis/requests.ts` | request from real evidence | L12 | ✅ |
 | L15 | Prompt JSON schema derived from ontology; repair loop | `ui/src/services/ai/`, `optimize/` | extraction validated | L2 |
 | L16 | Clarification questions ranked by information gain | `ui/src/services/ai/` | "changed outcome" rate measured | L15 |
 | L17a | Lifecycle/status facet (`open→matched→committed→done→lapsed`) | `core/src/ontology/` | note carries status; task 4 passes | — |
