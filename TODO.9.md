@@ -497,7 +497,7 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | L6 | Golden cases mined from existing tests | `GoldenCaseMiner` wiring | ≥10 cases; injected break caught | L5 | ✅ |
 | L7 | `ComponentStrategy<P>` + `registerDiscoveredStrategies` | `ui/src/strategies/`, `core/src/ui/` | new component auto-registers | L3, L2a | ✅ |
 | L8 | Wrap existing components as strategies | `ui/src/strategies/` | `PropertyForm`, `TagInput`, `DescribeItComposer`, `TemplateSelector` | L7 | ✅ |
-| L9 | Task harness + tasks 1–3, N≥10, seeded | `ui/eval/` | TTI/steps/errors per config | L8 |
+| L9 | Task harness + tasks 1–3, N≥10, seeded | `ui/eval/` | TTI/steps/errors per config | L8 | ✅ |
 | L10 | `StrategySpec` + generator + candidate dir | `optimize/src/synthesis/` | candidates with provenance | L9 |
 | L11 | Static gates: typecheck, lint, seam conformance, imports, no ambient caps | `optimize/src/synthesis/gates.ts` | bad candidates rejected pre-build | L10 |
 | L12 | Sandbox build + harness run | `optimize/src/synthesis/` | candidate measured vs baseline | L11 |
