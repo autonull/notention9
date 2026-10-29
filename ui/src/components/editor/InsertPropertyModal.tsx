@@ -1,6 +1,6 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {Modal} from '../ui/Modal';
-import {InformationCircleIcon, TagIcon, ExclamationTriangleIcon, SparklesIcon, SparklesIcon as MagicIcon} from '../ui/icons';
+import {InformationCircleIcon, TagIcon, ExclamationTriangleIcon, SparklesIcon, BoltIcon} from '../ui/icons';
 import {ICON_MAP} from '../layout/iconMap';
 import type {OntologyAttribute, OntologyNode, SuggestedAttribute} from '@notention/core';
 import {findAttributeDef, validateAttributeValue} from '@notention/core';
@@ -76,6 +76,14 @@ export function InsertPropertyModal({
             .slice(0, 5);
     }, [key, suggestions, activeDef]);
 
+    const patternSuggestions = useMemo(() => {
+        return filteredSuggestions.filter(s => s.parentContext);
+    }, [filteredSuggestions]);
+
+    const learnedSuggestions = useMemo(() => {
+        return filteredSuggestions.filter(s => !s.parentContext);
+    }, [filteredSuggestions]);
+
     const handleSubmit = (e?: React.FormEvent) => {
         e?.preventDefault();
         setTouched(true);
@@ -109,13 +117,15 @@ export function InsertPropertyModal({
                     />
                     <datalist id="learned-keys">
                          {suggestions.map(s => (
-                             <option key={s.key} value={s.key}>{s.key} (Learned)</option>
+                             <option key={`${s.key}-${s.type}`} value={s.key}>
+                                 {s.key} {s.parentContext ? `(Pattern: ${s.parentContext})` : '(Learned)'}
+                             </option>
                          ))}
                     </datalist>
 
-                    {filteredSuggestions.length > 0 && (
+                    {learnedSuggestions.length > 0 && (
                          <div className="flex flex-wrap gap-2 mt-2">
-                             {filteredSuggestions.map(s => (
+                             {learnedSuggestions.map(s => (
                                  <button
                                      key={s.key}
                                      type="button"
@@ -123,6 +133,23 @@ export function InsertPropertyModal({
                                      className="flex items-center gap-1 text-[10px] px-2 py-1 rounded-full bg-purple-900/30 text-purple-300 border border-purple-800/50 hover:bg-purple-900/50 transition-colors"
                                  >
                                      <SparklesIcon className="w-3 h-3" />
+                                     {s.key}
+                                 </button>
+                             ))}
+                         </div>
+                    )}
+
+                    {patternSuggestions.length > 0 && (
+                         <div className="flex flex-wrap gap-2 mt-2">
+                             {patternSuggestions.map(s => (
+                                 <button
+                                     key={`${s.key}-${s.parentContext}`}
+                                     type="button"
+                                     onClick={() => setKey(s.key)}
+                                     className="flex items-center gap-1 text-[10px] px-2 py-1 rounded-full bg-green-900/30 text-green-300 border border-green-800/50 hover:bg-green-900/50 transition-colors"
+                                     title={`Suggested by pattern: ${s.parentContext}`}
+                                 >
+                                     <BoltIcon className="w-3 h-3" />
                                      {s.key}
                                  </button>
                              ))}

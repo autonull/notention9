@@ -6,6 +6,7 @@ import {useView} from '../../hooks/useViewContext';
 import {Button} from '../ui/Button';
 import {ConfirmationModal} from '../ui/Primitives';
 import {ImportExportSection} from './ImportExportSection';
+import {CapabilitiesPanel} from './CapabilitiesPanel';
 import {useDemoWorkspace} from '../../hooks/useDemoWorkspace';
 import {SparklesIcon} from '../ui/icons';
 
@@ -59,6 +60,8 @@ export function DataTab() {
                         Recently deleted
                     </Button>
                 </div>
+
+                <CapabilitiesPanel/>
 
                 <div className="border-t border-gray-700 pt-6">
                 <p className="text-sm text-gray-400 mb-4">

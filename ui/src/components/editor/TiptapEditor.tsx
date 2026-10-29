@@ -1,4 +1,4 @@
-import React, {forwardRef, useEffect, useImperativeHandle, useState} from 'react';
+import React, {forwardRef, useEffect, useImperativeHandle, useMemo, useState} from 'react';
 import {Editor, EditorContent} from '@tiptap/react';
 import type {Note, OntologyNode, Template} from '@notention/core';
 import {TiptapToolbar} from './TiptapToolbar';
@@ -14,6 +14,7 @@ import {InsertPropertyModal} from './InsertPropertyModal';
 import {DescribeItComposer} from './DescribeItComposer';
 import {usePropertyInsertion} from '../../hooks/usePropertyInsertion';
 import {useOntologySuggestions} from '../../hooks/useOntologySuggestions';
+import {usePatternSuggestions} from '../../hooks/usePatternSuggestions';
 
 interface TiptapEditorProps {
     note: Note;
@@ -71,7 +72,21 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
         handlePrepareNewProperty
     } = usePropertyInsertion();
 
-    const {suggestions} = useOntologySuggestions();
+    const {suggestions: ontologySuggestions} = useOntologySuggestions();
+    const {suggestions: patternSuggestions} = usePatternSuggestions(note);
+
+    const allSuggestions = useMemo(() => {
+        const seen = new Set<string>();
+        const merged: typeof ontologySuggestions = [];
+        for (const s of [...patternSuggestions, ...ontologySuggestions]) {
+            const key = `${s.key}:${s.type}`;
+            if (!seen.has(key)) {
+                seen.add(key);
+                merged.push(s);
+            }
+        }
+        return merged;
+    }, [ontologySuggestions, patternSuggestions]);
 
     useImperativeHandle(ref, () => ({
         openPropertyModal: handleOpenPropertyModal,
@@ -158,9 +173,9 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
                 initialValue={initialModalData?.value}
                 attributeDef={initialModalData?.key ? findAttributeDef(initialModalData.key, ontology) : undefined}
                 ontology={ontology}
-                isEditing={!!initialModalData} // Check if we have initial data (editing) - or track pos
+                isEditing={!!initialModalData}
                 onPickLocation={onPickLocation}
-                suggestions={suggestions}
+                suggestions={allSuggestions}
             />
             <div className="flex-grow overflow-y-auto" onClick={handleEditorClick}>
                 {topContent}

@@ -21,6 +21,7 @@ import {useIsMobile} from '../hooks/useMediaQuery';
 import {useSidebarState} from '../hooks/useSidebarState';
 import {cn} from '../utils/ui';
 import {PendingConfirmationsProvider} from '../hooks/usePendingConfirmations';
+import {PendingConfirmationsModal} from './ui/PendingConfirmationsModal';
 
 // Dynamic import for DevBridge - only loaded when VITE_DEV_HOOKS=true
 const DevBridge = import.meta.env.VITE_DEV_HOOKS
@@ -250,6 +251,7 @@ export function AppShell() {
                             <DevBridge/>
                         </Suspense>
                     )}
+                    <PendingConfirmationsModal/>
                 </div>
             </SelectorRegistryProvider>
         </PendingConfirmationsProvider>

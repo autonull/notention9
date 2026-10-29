@@ -9,6 +9,7 @@ export * from './Toast';
 
 // Composite components (built on top of base components)
 export * from './ConfirmationModal';
+export * from './PendingConfirmationsModal';
 export * from './CopyableField';
 export * from './DropdownMenu';
 export * from './InputModal';

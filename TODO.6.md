@@ -14,8 +14,8 @@ Consolidated from TODO.5.md. Batches remaining work into 3 focused PRs. Supersed
 | Storage | ✅ Schema v1 validation + export/import | Corruption recovery, snapshots, quota |
 | Nostr | 🟡 Works, nonconformant | CBOR, NoteID, signing (Tier 0) |
 | Agent | 🟡 Headless OK; UI loop partial | Confirmations, traces, undo |
-| Capability security | ✅ Core; UI missing | Grants/revoke panel |
-| Pattern recognition | ✅ Engine; UI missing | Suggestions in property modal |
+| Capability security | ✅ Core; UI ✅ | — |
+| Pattern recognition | ✅ Engine; UI ✅ | — |
 | Metaphor system | ✅ 15 defaults, registry, mapper | Zero visual consumers |
 | Templates | ✅ Generator + ontology | Create-note flow wiring |
 | CLI | ✅ Full cockpit | Docs only |
@@ -31,7 +31,7 @@ Consolidated from TODO.5.md. Batches remaining work into 3 focused PRs. Supersed
 | **G0** | `pnpm verify` 2× in CI under cap? | ✅ **DONE** | — |
 | **G1** | Stranger completes Golden Path <2 min unaided? | ⏳ Batch B | Fix W1; no features |
 | **G2** | Humans rate ≥70% matches relevant? | ⏳ After G1 | Fix matching/ontology |
-| **G3** | Data loss provably impossible? | 🟡 Partial (export/import ✅) | Fix W2 remaining |
+| **G3** | Data loss provably impossible? | 🟡 Partial (export/import ✅, Batch A ✅) | Fix W2 remaining |
 | **G4** | Product direction interop-first? | ⏳ Decide now | W5 stays P1 or → P0 |
 | **G5** | Users hit single-device limit? | ⏳ After G3 | Defer W6 |
 
@@ -41,18 +41,18 @@ Consolidated from TODO.5.md. Batches remaining work into 3 focused PRs. Supersed
 
 ## 2. Three Batches (Sequential PRs)
 
-### Batch A: Trust & Visibility (Settings Panel) — **Start Now**
+### Batch A: Trust & Visibility (Settings Panel) — **✅ DONE**
 
 **Goal**: Make trust boundary visible; prove export is a trust signal.
 
 | Task | Files | Done When |
 |------|-------|-----------|
-| A1. Capabilities panel: list grants per note, revoke button | `ui/src/components/settings/CapabilitiesPanel.tsx` (new), `DataTab.tsx` | Note with `[@allow:browser:navigate:example.com]` shows live indicator + revoke |
-| A2. Pattern recognition suggestions in property modal | `ui/src/components/editor/PropertyModal.tsx`, `core/src/patternRecognition/` | "Suggested: framework=React (based on history)" appears, accept reduces entry |
-| A3. Export workspace/note buttons in Data tab | `ui/src/components/settings/DataTab.tsx`, `core/src/export/` | Export → wipe → import = identical workspace |
-| A4. Wire `pendingConfirmations` to publish-gate modal | `ui/src/components/ui/ConfirmationModal.tsx`, `core/src/security/` | Consequential tools (publish, delete, network, file) show confirmation |
+| A1. Capabilities panel: list grants per note, revoke button | `ui/src/components/settings/CapabilitiesPanel.tsx` (new), `DataTab.tsx` | ✅ Note with `[@allow:browser:navigate:example.com]` shows live indicator + revoke |
+| A2. Pattern recognition suggestions in property modal | `ui/src/components/editor/InsertPropertyModal.tsx`, `ui/src/hooks/usePatternSuggestions.ts`, `core/src/patternRecognition/` | ✅ "Suggested: framework=React (based on history)" appears, accept reduces entry |
+| A3. Export workspace/note buttons in Data tab | `ui/src/components/settings/DataTab.tsx`, `core/src/export/` | ✅ Export → wipe → import = identical workspace |
+| A4. Wire `pendingConfirmations` to publish-gate modal | `ui/src/components/ui/PendingConfirmationsModal.tsx`, `AppShell.tsx`, `core/src/security/` | ✅ Consequential tools (publish, delete, network, file) show confirmation |
 
-**Shared test**: `ui/src/components/settings/SettingsPanel.test.tsx` (add to existing)
+**Shared test**: `ui/src/components/settings/SettingsPanel.test.tsx` (add to existing) — *pending*
 
 **Gate**: Enables G3 (data durability visible), unblocks W4/W4b.
 
@@ -119,9 +119,9 @@ Consolidated from TODO.5.md. Batches remaining work into 3 focused PRs. Supersed
 
 | Batch | Primary Files |
 |-------|---------------|
-| **A** | `ui/src/components/settings/CapabilitiesPanel.tsx`, `DataTab.tsx`, `ui/src/components/editor/PropertyModal.tsx`, `ui/src/components/ui/ConfirmationModal.tsx`, `core/src/security/CapabilityManager.ts`, `core/src/patternRecognition/`, `core/src/export/` |
+| **A** | `ui/src/components/settings/CapabilitiesPanel.tsx` (new), `ui/src/components/settings/DataTab.tsx`, `ui/src/components/editor/InsertPropertyModal.tsx`, `ui/src/hooks/usePatternSuggestions.ts` (new), `ui/src/components/ui/PendingConfirmationsModal.tsx` (new), `ui/src/components/AppShell.tsx`, `core/src/security/CapabilityManager.ts`, `core/src/patternRecognition/`, `core/src/export/` |
 | **B** | `README.md`, `cli/src/commands/`, `simulator/src/scenarios/golden-path.ts`, `simulator/src/movie_maker.ts`, `optimize/src/cliHandlers/reproduce.ts`, `simulator/src/scenarios/regression.ts` |
-| **C** | `ui/src/plugins/metaphor/MetaphorViewPlugin.ts`, `ui/src/plugins/metaphor/ConditionalAutomationView.tsx`, `core/src/skills/metaphor/MetaphorMapper.ts`, `ui/src/components/editor/CreateNoteModal.tsx`, `core/src/templates/TemplateGenerator.ts` |
+| **C** | `ui/src/plugins/metaphor/MetaphorViewPlugin.ts` (new), `ui/src/plugins/metaphor/ConditionalAutomationView.tsx` (new), `core/src/skills/metaphor/MetaphorMapper.ts`, `ui/src/components/editor/CreateNoteModal.tsx`, `core/src/templates/TemplateGenerator.ts` |
 
 ---
 
@@ -129,9 +129,9 @@ Consolidated from TODO.5.md. Batches remaining work into 3 focused PRs. Supersed
 
 | Batch | Test File | Scope |
 |-------|-----------|-------|
-| A | `ui/src/components/settings/SettingsPanel.test.tsx` | CapabilitiesPanel, Export buttons, Pattern suggestions, Confirmation wiring |
-| B | `simulator/src/scenarios/SimulatorRegression.test.ts` | Golden Path scenario, `reproduce --simulator` gate |
-| C | `ui/src/plugins/metaphor/MetaphorViewPlugin.test.tsx` | Plugin interface, ConditionalAutomationView, Template wiring |
+| A | `ui/src/components/settings/SettingsPanel.test.tsx` (new) | CapabilitiesPanel, Export buttons, Pattern suggestions, Confirmation wiring |
+| B | `simulator/src/scenarios/SimulatorRegression.test.ts` (new) | Golden Path scenario, `reproduce --simulator` gate |
+| C | `ui/src/plugins/metaphor/MetaphorViewPlugin.test.tsx` (new) | Plugin interface, ConditionalAutomationView, Template wiring |
 
 **No new test infrastructure** — uses existing vitest + optimize + Simulator.
 
@@ -153,9 +153,9 @@ Consolidated from TODO.5.md. Batches remaining work into 3 focused PRs. Supersed
 
 ```
 1. Decide G4 (interop-first?) — 1 hour
-2. Batch A (Trust & Visibility) — 1 PR
+2. Batch A (Trust & Visibility) — ✅ DONE (1 PR)
    → G3 closer, unblocks W4/W4b
-3. Batch B (Demo & Distribution) — 1 PR
+3. Batch B (Demo & Distribution) — 1 PR (READY TO START)
    → G1, G2 achievable
 4. Batch C (Metaphor View) — 1 PR
    → Extensibility proven
