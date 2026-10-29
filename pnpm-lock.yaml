@@ -282,6 +282,9 @@ importers:
       '@notention/simulator':
         specifier: workspace:*
         version: link:../simulator
+      ajv:
+        specifier: ^8.17.1
+        version: 8.20.0
       glob:
         specifier: ^13.0.6
         version: 13.0.6

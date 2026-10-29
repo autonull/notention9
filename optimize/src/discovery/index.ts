@@ -85,3 +85,5 @@ export class DiscoveryEngine {
 }
 
 export const discoveryEngine = new DiscoveryEngine();
+export { discoverSeams, type Seam } from './seams.js';
+export { OntologyAdapter, type OntologyData, type OntologyProperty } from './ontologyAdapter.js';

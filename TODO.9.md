@@ -432,7 +432,7 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | D2 | CLI builds config then calls the singleton; flags ignored | `optimize/src/cliHandlers/uxEvaluate.ts:37` | flags change output (test) | D1 | ✅ |
 | D3 | Plain `pnpm test` OOMs on `ui` | `ui/vitest.config.ts`, root scripts | `pnpm test` exits 0 | — | ✅ |
 | D4 | UI batching is a hand-maintained list | `scripts/test-ui-batched.ts` | glob + chunk | D3 | ✅ |
-| D5 | Phase 1 infra has zero consumers (`uiRegistry`, `ontologyRegistry`, `suggestionStore`, adapters) | `core/src/ui/`, `core/src/ontology/`, `core/src/suggestions/` | wired (L7) or deleted | L2a |
+| D5 | Phase 1 infra has zero consumers (`uiRegistry`, `ontologyRegistry`, `suggestionStore`, adapters) | `core/src/ui/`, `core/src/ontology/`, `core/src/suggestions/` | wired (L7) or deleted | L2a | ✅ **decision: wire** |
 | D6 | `analyzeRoutes`/`analyzeDialogs`/`analyzeActions` hardcoded | `optimize/src/discovery/componentScanner.ts` | derived from JSX | L3 |
 | D7 | `BrowserManager.createPage()` returns the first agent's page | `simulator/src/browser_manager.ts` | explicit page/context per use | — |
 | D8 | `Scenario` lacks tags/`requires`/`difficulty`; runner logs instead of emitting events | `simulator/src/types.ts`, `scenario.ts`, `agent.ts` | typed `RunEvent` sink | — |
@@ -489,8 +489,8 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | ID | Item | Files | Acceptance | Depends |
 |----|------|-------|-----------|---------|
 | L1 | `loop/taxonomy.json` + `loop.config.json` + schema | `loop/` | loads; universals audit complete | — | ✅ |
-| L2 | `pnpm loop` + root script; `discover` subcommand | `optimize/src/cli.ts`, `package.json` | `pnpm loop --dry` runs | L1 |
-| L2a | D5 decision: wire Phase 1 registries or delete | `core/src/ui/`, `core/src/ontology/`, `core/src/suggestions/` | decision recorded | — |
+| L2 | `pnpm loop` + root script; `discover` subcommand | `optimize/src/cli.ts`, `package.json` | `pnpm loop --dry` runs | L1 | ✅ |
+| L2a | D5 decision: wire Phase 1 registries or delete | `core/src/ui/`, `core/src/ontology/`, `core/src/suggestions/` | decision recorded | — | ✅ **wire** |
 | L3 | Cluster prop-bearing components into seams | `optimize/src/discovery/seams.ts` | ≥3 seams with members | L2 |
 | L4 | Detect duplicate/dead/inlined candidates | `optimize/src/discovery/duplicates.ts` | ≥1 actionable finding | L3 |
 | L5 | Emit `discovered.json`, `tasks.json`, `golden.jsonl` | `optimize/src/loop/` | reproducible artifacts | L2, L3 |

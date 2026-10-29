@@ -24,7 +24,8 @@
     "dev:server": "node scripts/dev-runner.js",
     "cli": "npm start -w @notention/cli --",
     "optimize": "tsx optimize/src/cli.ts",
-    "optimize:check": "node scripts/check-optimize-locators.mjs"
+    "optimize:check": "node scripts/check-optimize-locators.mjs",
+    "loop": "tsx optimize/src/loop/cli.ts"
   },
   "dependencies": {
     "@meshtastic/core": "^2.6.7",

@@ -4,6 +4,7 @@ import { join, dirname } from 'node:path';
 
 export interface GoldenCase {
     id: string;
+    name: string;
     input: string;
     ontology: any[];
     expected: any[];
@@ -99,6 +100,7 @@ export class GoldenCaseMiner {
 
                     cases.push({
                         id: `gc_${bundle.runId}_${promptTrace.promptId}_${Date.now()}`,
+                        name: `extraction-${promptTrace.promptId}-${bundle.runId}`,
                         input,
                         ontology: bundle.journey?.seed?.settings?.ontology || [],
                         expected,
