@@ -1,5 +1,10 @@
 # Notention Development Plan (TODO.8.md)
 
+> ⚠️ **Superseded by [TODO.9.md](./TODO.9.md).** TODO.9 keeps this relaxed goal and adds a
+> metaprogramming layer (derive seams/tasks/schemas/golden cases from source and ontology)
+> plus synthesis (LLM-written strategies, or evidence-backed developer requests).
+> Kept for reference.
+
 Supersedes TODO.7.md. TODO.7's rigor (maximin coverage, L2 autonomy, t-wise arrays, ratchets) is **relaxed**: the goal is narrower and the timeline shorter.
 
 > **Goal:** optimize Notention's UI/UX so users more ergonomically achieve **reality management** and **intent satisfaction** — and start improving the real system now.
