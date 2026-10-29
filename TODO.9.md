@@ -364,7 +364,7 @@ Nothing is tracked outside this document. TODO.6/7/8 are superseded; anything st
 | D2 | CLI builds config then calls the singleton; `--scenarios`/`--threshold-*` ignored | `optimize/src/cliHandlers/uxEvaluate.ts:37` | flags change output (test) | D1 |
 | D3 | Plain `pnpm test` OOMs on `ui` | `ui/vitest.config.ts`, root scripts | `pnpm test` exits 0 | — |
 | D4 | UI batching is a hand-maintained list; new tests silently excluded | `scripts/test-ui-batched.ts` | glob + chunk, no manual list | D3 |
-| D5 | Phase 1 infra has zero consumers: `uiRegistry`, `ontologyRegistry`, `suggestionStore`, `OntologyAdapter`, `UIAdapter` | `core/src/ui/`, `core/src/ontology/OntologyAdapter.ts`, `core/src/suggestions/` | wired in L2/L7 **or deleted** | L2 |
+| D5 | Phase 1 infra has zero consumers: `uiRegistry`, `ontologyRegistry`, `suggestionStore`, `OntologyAdapter`, `UIAdapter` | `core/src/ui/`, `core/src/ontology/OntologyAdapter.ts`, `core/src/suggestions/` | wired in L7 **or deleted** | L2a |
 | D6 | `analyzeRoutes`/`analyzeDialogs`/`analyzeActions` are hardcoded component lists | `optimize/src/discovery/componentScanner.ts` | derived from JSX (buttons, labels, triggers) | L3 |
 | D7 | `BrowserManager.createPage()` returns the first agent's page (surprising ownership) | `simulator/src/browser_manager.ts` | explicit page/context per use | — |
 | D8 | `Scenario` has no tags/`requires`/`difficulty`; `ScenarioRunner` logs instead of emitting events | `simulator/src/types.ts`, `scenario.ts`, `agent.ts` | typed `RunEvent` sink | — |
@@ -376,12 +376,13 @@ Nothing is tracked outside this document. TODO.6/7/8 are superseded; anything st
 | ID | Item | Files | Acceptance | Depends |
 |----|------|-------|-----------|---------|
 | L1 | `loop/taxonomy.json` + `loop.config.json` + schema | `loop/` | loads; universals audit complete | — |
-| L2 | `pnpm loop` command + root script; `discover` subcommand | `optimize/src/cli.ts`, `package.json` | `pnpm loop --dry` runs | L1, D5 |
+| L2 | `pnpm loop` command + root script; `discover` subcommand | `optimize/src/cli.ts`, `package.json` | `pnpm loop --dry` runs | L1 |
+| L2a | D5 decision: wire Phase 1 registries (uiRegistry, ontologyRegistry, suggestionStore, adapters) or delete them | `core/src/ui/`, `core/src/ontology/`, `core/src/suggestions/` | decision recorded; if wired, L7 unblocked | — |
 | L3 | Cluster prop-bearing components into seams | `optimize/src/discovery/seams.ts` | ≥3 seams with members | L2 |
 | L4 | Detect duplicate/dead/inlined strategy candidates | `optimize/src/discovery/duplicates.ts` | ≥1 actionable finding | L3 |
 | L5 | Emit `loop/discovered.json`, `loop/tasks.json`, `loop/golden.jsonl` | `optimize/src/loop/` | artifacts reproducible | L2, L3 |
 | L6 | Golden cases mined from existing test assertions | `GoldenCaseMiner` wiring | ≥10 cases; injected break detected | L5 |
-| L7 | `ComponentStrategy<P>` + `registerDiscoveredStrategies` | `ui/src/strategies/`, `core/src/ui/` | new component auto-registers | L3, D5 |
+| L7 | `ComponentStrategy<P>` + `registerDiscoveredStrategies` | `ui/src/strategies/`, `core/src/ui/` | new component auto-registers | L3, L2a |
 | L8 | Wrap existing components as strategies (zero per-component glue) | `ui/src/strategies/` | `PropertyForm`, `TagInput`, `DescribeItComposer`, `TemplateSelector` registered | L7 |
 | L9 | Task harness + tasks 1–3, N≥10, seeded | `ui/eval/` | TTI/steps/errors per config | L8 |
 | L10 | `StrategySpec` + generator prompt + candidate dir | `optimize/src/synthesis/` | candidates emitted with provenance | L9 |
@@ -391,8 +392,8 @@ Nothing is tracked outside this document. TODO.6/7/8 are superseded; anything st
 | L14 | S4 request emission (`loop/requests/<id>.md`) | `optimize/src/synthesis/requests.ts` | request from real evidence | L12 |
 | L15 | Derive prompt JSON schema from ontology; repair loop | `ui/src/services/ai/`, `optimize/` | extraction validated against schema | L2 |
 | L16 | LLM probe questions ranked by information gain | `ui/src/services/ai/` | properties gained per question measured | L15 |
-| L17 | Ontology experiment: S1 flat vs S2 facets+status | `core/src/ontology/`, harness | recorded decision with evidence | L9, L17a |
 | L17a | Lifecycle/status facet (`open→matched→committed→done→lapsed`) | `core/src/ontology/` | note can carry status; task 4 passes | — |
+| L17 | Ontology experiment: S1 flat vs S2 facets+status | `core/src/ontology/`, harness | recorded decision with evidence | L9, L17a |
 | L18 | Real-corpus ingestion → vocabulary + narrative tasks | `optimize/src/corpus/` | ≥1 narrative class beyond taxonomy | L5 |
 | L19 | Ledger-lite (append-only decisions/deltas/provenance) | `core/src/suggestions/SuggestionStore.ts` | survives restart; dedupes | L5 |
 | L20 | Determinism: pinned models, cached outputs, replay | `optimize/src/loop/` | identical hash on replay | L9 |
@@ -456,17 +457,23 @@ Nothing here is forgotten; each has a reopen condition.
 ## 18. Sequenced next actions
 
 1. **D1, D2** — make the evaluator honest (cheap, removes a trap).
-2. **D10, D3, D4** — fix metrics persistence, then make `pnpm test` reliable, before any harness work.
-3. **L1, L2** — taxonomy/config files and the `pnpm loop` entry point.
-4. **L3, L4, D6** — seam clustering, duplicate detection, AST-derived actions. (Closes Cycle 0.)
-5. **L7, L8, L9** — auto-registered strategies + baseline harness. (Closes Cycle 1.)
-6. **D5** — decide: wire the registries (L2/L7) or delete them.
-7. **L10–L14** — synthesis with gates, then the request path. (Cycles 2–3.)
-8. **L15–L17a** — prompt schema, probing, ontology experiment. (Cycle 4.)
-9. **L18** — real corpora. (Cycle 5.)
-10. **H1 → H2 → H3** — human testing, in parallel from step 5.
-11. **L19–L24, P1–P7** — ledger, determinism, profiles, product surfaces.
-12. **Q1–Q4** — tests and docs alongside each step, not after.
+2. **D10, D3, D4** — fix metrics persistence, then make `pnpm test` reliable (glob+batch, no manual list), before any harness work.
+3. **L1** — `loop/taxonomy.json` + `loop.config.json` + schema.
+4. **L2a** — D5 decision: wire Phase 1 registries or delete them. **Blocker for L7.** Record decision.
+5. **L2** — `pnpm loop` entry point + `discover` subcommand.
+6. **L3, L4, D6** — seam clustering, duplicate detection, AST-derived routes/dialogs/actions. (Closes Cycle 0.)
+7. **L5** — emit `loop/discovered.json`, `loop/tasks.json`, `loop/golden.jsonl`.
+8. **L6** — wire `GoldenCaseMiner` to mine ≥10 cases from existing tests; verify injected break is caught.
+9. **L7, L8** — `ComponentStrategy<P>` + auto-registration; wrap existing components as strategies.
+10. **L9** — task harness (`ui/eval/`) + tasks 1–3, N≥10 seeded. Baseline TTI/steps/errors.
+11. **L10–L14** — synthesis: `StrategySpec` + generator → static gates (typecheck, lint, seam conformance, import allowlist, no ambient caps) → sandbox build → harness → adopt winner behind flag + provenance. S4 request path for gate failures.
+12. **L17a** — lifecycle/status facet in ontology (`open→matched→committed→done→lapsed`).
+13. **L15, L16** — derive prompt JSON schema from ontology (repair loop); LLM probe questions ranked by information gain.
+14. **L17** — ontology experiment: S1 flat vs S2 facets+status on tasks 1–4. Record decision.
+15. **L18** — ingest one real corpus → vocabulary + narrative tasks; find ≥1 class beyond taxonomy.
+16. **H1 → H2 → H3** — human testing (G1, G2, G5) in parallel from step 10.
+17. **L19–L24, P1–P7** — ledger, determinism (pinned models, cached outputs, replay), a11y/keyboard in harness, pairwise preference (human + calibrated judge), profiles + policy + overrides, product surfaces.
+18. **Q1–Q5** — tests and docs alongside each step; reconcile or retire `DESIGN_UI_UX_ONTOLOGY_SUGGESTIONS.md`.
 
 **Definition of done (draft):** the loop discovers its own seams, derives its own tasks, generates at least one shipped strategy, emits at least one developer request from evidence, and produces recorded decisions on the ontology and prompt questions — with every adopted change reversible and every number traceable to a run.
 
