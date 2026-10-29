@@ -1,13 +1,13 @@
-import {useCallback, useMemo} from 'react';
+import {useCallback, useMemo, useEffect, useState} from 'react';
 import {capabilities} from '../config/Capabilities';
 import {useSettings} from './useSettingsContext';
 import {useToast} from './useToast';
 import {Gardener} from '../services/gardener';
-import {LocalAIProvider} from '../services/ai/LocalProvider';
-import {RemoteAIProvider} from '../services/ai/RemoteProvider';
-import {WebLLMProvider} from '../services/ai/WebLLMProvider';
+import {routerAdapter, RouterAdapter} from '../services/ai/RouterAdapter';
+import {initializeAI, getInferenceRouter} from '../services/ai/init';
 import {EMERGENT_NODE_ID, EMERGENT_NODE_LABEL} from '@notention/core';
 import type {Note, OntologyAttribute, OntologyNode, Property} from '@notention/core';
+import type {InferenceOptions} from '../services/ai/inference';
 
 // Helper to merge attributes into a target node (or "Emergent" if not found/specified)
 const mergeAttributesToNode = (ontology: OntologyNode[], newAttributes: Record<string, OntologyAttribute>, targetNodeId?: string): OntologyNode[] => {
@@ -49,25 +49,25 @@ const mergeAttributesToNode = (ontology: OntologyNode[], newAttributes: Record<s
 export function useGardener() {
     const {settings, setSettings} = useSettings();
     const {addToast} = useToast();
+    const [initialized, setInitialized] = useState(false);
 
     const provider = useMemo(() => {
-        // Instantiate provider based on capabilities and settings
-        if (capabilities.llm === 'none') {
-            return new LocalAIProvider();
-        }
+        return routerAdapter;
+    }, []);
 
-        if (capabilities.llm === 'browser') {
-            // Browser environment forces WebLLM if enabled, or Local if not
-            return settings.aiEnabled
-                ? new WebLLMProvider(settings.aiModel)
-                : new LocalAIProvider();
-        }
-
-        // Server capability allows full flexibility
-        if (!settings.aiEnabled) return new LocalAIProvider();
-        return settings.aiProvider === 'webllm'
-            ? new WebLLMProvider(settings.aiModel)
-            : new RemoteAIProvider(settings.googleGeminiApiKey);
+    // Initialize AI providers when settings change
+    useEffect(() => {
+        const init = async () => {
+            await initializeAI({
+                remoteApiKey: settings.googleGeminiApiKey,
+                webllmModelId: settings.aiModel,
+                enableRemote: settings.aiEnabled && settings.aiProvider !== 'webllm' && capabilities.llm !== 'none',
+                enableWebLLM: settings.aiEnabled && settings.aiProvider === 'webllm' && capabilities.llm === 'browser',
+                enableHeuristic: true,
+            });
+            setInitialized(true);
+        };
+        init();
     }, [settings.aiEnabled, settings.aiProvider, settings.aiModel, settings.googleGeminiApiKey]);
 
     const gardener = useMemo(() => new Gardener(provider), [provider]);
@@ -165,5 +165,5 @@ export function useGardener() {
         return result;
     }, [gardener, settings.ontology, addToast]);
 
-    return {evolveOntology, learnFromProperties, alignToOntology, optimizeOntology, provider, providerKind: provider.kind};
+    return {evolveOntology, learnFromProperties, alignToOntology, optimizeOntology, provider, providerKind: provider.kind, initialized, router: getInferenceRouter()};
 };

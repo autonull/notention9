@@ -443,12 +443,12 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 
 | ID | Item | Files | Acceptance | Depends |
 |----|------|-------|-----------|---------|
-| M1 | One inference interface + capability probing + fallback chain (`local → remote → rules`) | `ui/src/services/ai/` | app usable with any link missing | — |
-| M2 | Local/browser model path for capture and extraction (`WebLLMProvider`) | `ui/src/services/ai/`, `DescribeItComposer` | intent captured with local model only | M1 |
-| M3 | Deterministic core: schemas, validation, rules, state transitions outside the model | `core/`, `ui/` | invariants hold regardless of model output | — |
-| M4 | Imperfect-inference handling: malformed, uncertain, timeout, unsupported | `ui/src/services/ai/` | no state corruption; user never blocked | M1 |
-| M5 | Offline mode: core workflows + evaluation + approved changes without network | app + `ui/eval/` | tested with network disabled | M2, E3 |
-| M6 | Resource metrics in evaluation (latency, memory, model size, cost) | `ui/eval/` | reported per candidate | L9 |
+| M1 | One inference interface + capability probing + fallback chain (`local → remote → rules`) | `ui/src/services/ai/inference.ts`, `ui/src/services/ai/init.ts` | app usable with any link missing | — | ✅ |
+| M2 | Local/browser model path for capture and extraction (`WebLLMProvider`) | `ui/src/services/ai/WebLLMProvider.ts`, `DescribeItComposer` | intent captured with local model only | M1 | ✅ |
+| M3 | Deterministic core: schemas, validation, rules, state transitions outside the model | `ui/src/services/ai/schema.ts`, `core/` | invariants hold regardless of model output | — | ✅ |
+| M4 | Imperfect-inference handling: malformed, uncertain, timeout, unsupported | `ui/src/services/ai/inference.ts`, `ui/src/services/ai/schema.ts` | no state corruption; user never blocked | M1 | ✅ |
+| M5 | Offline mode: core workflows + evaluation + approved changes without network | app + `ui/eval/` | tested with network disabled | M2, E3 | 🟨 |
+| M6 | Resource metrics in evaluation (latency, memory, model size, cost) | `ui/eval/` | reported per candidate | L9 | 🟨 |
 
 ### B — Architectural boundaries · essential
 
@@ -627,7 +627,7 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | Taxonomy + coverage design | ✅ done (L1) |
 | `ComponentScanner` AST rewrite + tests | ✅ done |
 | `TsAstScanner` tsconfig crash | ✅ fixed |
-| Model independence / offline | ⬜ not started (M1–M6) |
+| Model independence / offline (M1–M4) | ✅ done (inference router, capability probing, fallback, schema validation, repair) |
 | Architectural boundaries | ⬜ not started (B1–B6) |
 | Prioritisation by impact | ✅ done (O1–O8, L2, L4, prioritize cmd) |
 | Workflow-level evaluation | 🟨 partial (E1–E5, harness simulated, L9, L12) |
@@ -701,7 +701,7 @@ And the architectural principle holds: **the system improved its own behaviour w
 7. ✅ **L5, L6** — discover artifacts; mine golden cases; verify injected break is caught.
 8. ✅ **L7, L8, B1, B2** — `ComponentStrategy<P>` + auto-registration; wrap existing components; runtime independent of the loop, data separated from strategy.
 9. 🟨 **L9, O1–O3, E1, E2** — harness; journey model; outcome-primary scoring; workflow-level evaluation and deterministic checks. *(harness simulated, needs real Playwright integration)*
-10. **M1, M2, M3, M4** — inference interface, local model path, deterministic core, imperfect-inference handling.
+10. ✅ **M1, M2, M3, M4** — inference interface, local model path, deterministic core, imperfect-inference handling.
 11. **D7, D8, Q2** — simulator telemetry sink and explicit page ownership; verify event stream.
 12. ✅ **L17a** — lifecycle/status facet.
 13. ✅ **L10–L14, E4, E5, X5** — synthesis with gates; evaluator independence; baseline retention; rollback demo.
