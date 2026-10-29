@@ -1,7 +1,7 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Button} from '../ui/Button';
-import {CheckCircleIcon, XCircleIcon, MinusIcon, InformationCircleIcon} from '../ui/icons';
-import type {MatchResult, PropertyMatch, Property} from '@notention/core';
+import {CheckCircleIcon, XCircleIcon, MinusIcon, InformationCircleIcon, ArrowPathIcon, PencilIcon, XMarkIcon} from '../ui/icons';
+import type {MatchResult, PropertyMatch, Property, Note} from '@notention/core';
 
 interface LocalMatchPreviewProps {
     match: {
@@ -10,6 +10,8 @@ interface LocalMatchPreviewProps {
         result: MatchResult;
     };
     onSelectNote: (id: string) => void;
+    onRejectMatch?: (requestId: string, noteId: string) => void;
+    onReviseRequest?: (requestId: string) => void;
 }
 
 function getMatchTypeColor(type: PropertyMatch['details']['type']) {
@@ -38,7 +40,7 @@ function getMatchTypeLabel(type: PropertyMatch['details']['type']) {
     }
 }
 
-export function LocalMatchPreview({match, onSelectNote}: LocalMatchPreviewProps) {
+export function LocalMatchPreview({match, onSelectNote, onRejectMatch, onReviseRequest}: LocalMatchPreviewProps) {
     const {result} = match;
     const totalMatches = result.matches.length;
     const totalConflicts = result.conflicts.length;
@@ -47,6 +49,8 @@ export function LocalMatchPreview({match, onSelectNote}: LocalMatchPreviewProps)
     const hasExplanations = result.matches.some(m => m.details) || 
                            result.conflicts.some(c => c.details) ||
                            totalMissing > 0;
+    
+    const [showRecovery, setShowRecovery] = useState(false);
 
     return (
         <section className="rounded-3xl border border-green-500/20 bg-green-500/5 p-6 animate-slide-in-up stagger-2" data-testid="local-match">
@@ -163,7 +167,51 @@ export function LocalMatchPreview({match, onSelectNote}: LocalMatchPreviewProps)
                         >
                             Open match
                         </Button>
+                        <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => setShowRecovery(true)}
+                            className="text-yellow-400 hover:text-yellow-300"
+                            title="This match isn't right - help me correct it"
+                        >
+                            <XMarkIcon className="w-4 h-4 mr-1"/> Not a match
+                        </Button>
                     </div>
+                    
+                    {showRecovery && onRejectMatch && onReviseRequest && (
+                        <div className="mt-3 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl animate-slide-in-down">
+                            <div className="text-xs text-yellow-300 mb-2">This match isn't right. What would you like to do?</div>
+                            <div className="flex flex-wrap gap-2">
+                                <Button
+                                    size="sm"
+                                    variant="secondary"
+                                    onClick={() => {
+                                        onRejectMatch(match.request.id, match.note.id);
+                                        setShowRecovery(false);
+                                    }}
+                                >
+                                    <XMarkIcon className="w-3 h-3 mr-1"/> Reject this match
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    variant="primary"
+                                    onClick={() => {
+                                        onReviseRequest(match.request.id);
+                                        setShowRecovery(false);
+                                    }}
+                                >
+                                    <PencilIcon className="w-3 h-3 mr-1"/> Revise request
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => setShowRecovery(false)}
+                                >
+                                    <ArrowPathIcon className="w-3 h-3 mr-1"/> Try different match
+                                </Button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </section>

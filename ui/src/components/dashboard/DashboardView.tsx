@@ -154,6 +154,17 @@ export function DashboardView() {
         setActiveView('notes');
     }, [setSelectedNoteId, setActiveView]);
 
+    const handleRejectMatch = useCallback((requestId: string, noteId: string) => {
+        // TODO: Record rejection for learning (L16)
+        console.log('Match rejected:', {requestId, noteId});
+        // Could update the request note to mark this note as rejected
+    }, []);
+
+    const handleReviseRequest = useCallback((requestId: string) => {
+        setSelectedNoteId(requestId);
+        setActiveView('notes');
+    }, [setSelectedNoteId, setActiveView]);
+
     const isConnected = agentStatus.status === 'connected';
 
     if (notesLoading) {
@@ -226,7 +237,14 @@ export function DashboardView() {
 
                 {notes.length > 0 && recentNotes.length === 0 && <EmptyStateForNotes onCreateNote={handleCreateNote}/>}
 
-                {localMatch && <LocalMatchPreview match={localMatch} onSelectNote={handleSelectNote}/>}
+                {localMatch && (
+                    <LocalMatchPreview
+                        match={localMatch}
+                        onSelectNote={handleSelectNote}
+                        onRejectMatch={handleRejectMatch}
+                        onReviseRequest={handleReviseRequest}
+                    />
+                )}
 
                 <AutomationsView/>
 
