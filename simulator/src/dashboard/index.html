@@ -342,8 +342,8 @@
             container.className = 'agent-frame-container';
             container.id = `agent-${agent.id}`;
 
-            // Generate subdomain URL
-            const url = `http://${agent.id}.lvh.me:${uiPort}/`;
+            // Use localhost for all agents (browser contexts provide isolation)
+            const url = `http://localhost:${uiPort}/`;
 
             container.innerHTML = `
                 <div class="agent-header">

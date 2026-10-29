@@ -35,7 +35,7 @@ Consolidated from TODO.5.md. Batches remaining work into 3 focused PRs. Supersed
 | **G3** | Data loss provably impossible? | 🟡 Partial (export/import ✅, Batch A ✅) | Fix W2 remaining |
 | **G4** | Product direction interop-first? | ⏳ Decide now | W5 stays P1 or → P0 |
 | **G5** | Users hit single-device limit? | ⏳ After G3 | Defer W6 |
-| **G6** | MP4 recordings work reliably for demos/teaching? | ⏳ Infrastructure | Fix lvh.me DNS / use localhost:ports |
+| **G6** | MP4 recordings work reliably for demos/teaching? | ✅ **DONE** | Use localhost:ports instead of lvh.me DNS |
 
 **G4 must be decided before Batch A completes** (affects W5 priority).
 
@@ -103,7 +103,7 @@ Consolidated from TODO.5.md. Batches remaining work into 3 focused PRs. Supersed
 | W5 Protocol Foundation (CBOR, NoteID, Signing) | G4 decision: interop-first? | G4 |
 | W5b Simulator Protocol Testbed | W5 promoted | G4 → W5 |
 | W6 Multi-Device Sync | Users hit single-device limit (G5) | G3, G5 |
-| **G6 Fix** MP4 Recording Infrastructure | Demos, teaching, CI evidence | G4 (decide scope) |
+| **G6 Fix** MP4 Recording Infrastructure | Demos, teaching, CI evidence | ✅ **DONE** (localhost:ports) |
 
 ---
 
@@ -165,8 +165,8 @@ Consolidated from TODO.5.md. Batches remaining work into 3 focused PRs. Supersed
    → G1, G2 achievable
 4. Batch C (Metaphor View) — ✅ DONE (1 PR)
    → Extensibility proven
-5. **NEXT: Fix G6 (MP4 recordings)** — lvh.me DNS or localhost:ports in MovieMaker
-6. Human testing (G1, G2) — 5 users (deferred until G4+G6)
+5. Fix G6 (MP4 recordings) — ✅ DONE (localhost:ports in MovieMaker)
+6. Human testing (G1, G2) — 5 users (deferred until G4)
 7. If G2 passes → W3/W4; if G4=yes → W5
 ```
 
