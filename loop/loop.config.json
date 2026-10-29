@@ -1,0 +1,253 @@
+{
+  "$schema": "./schema.json#/definitions/loopConfig",
+  "version": "1.0.0",
+  "description": "Notention improvement loop configuration",
+  "discovery": {
+    "enabled": true,
+    "sourceDirs": [
+      "ui/src",
+      "core/src",
+      "simulator/src"
+    ],
+    "excludePatterns": [
+      "**/*.test.*",
+      "**/*.spec.*",
+      "**/tests/**",
+      "**/fixtures/**",
+      "**/dist/**",
+      "**/node_modules/**"
+    ],
+    "scanners": {
+      "componentScanner": {
+        "enabled": true,
+        "minProps": 1
+      },
+      "tsAstScanner": {
+        "enabled": true,
+        "tsconfigPath": "tsconfig.json"
+      },
+      "typeSchemaBuilder": {
+        "enabled": true
+      },
+      "ontologyAdapter": {
+        "enabled": true
+      },
+      "goldenCaseMiner": {
+        "enabled": true
+      }
+    }
+  },
+  "prioritization": {
+    "enabled": true,
+    "impactWeights": {
+      "frequency": 0.3,
+      "severity": 0.3,
+      "recoverability": 0.2,
+      "reach": 0.2
+    },
+    "failureSignals": {
+      "failedMatches": true,
+      "repeatedCorrections": true,
+      "abandonedTasks": true,
+      "optInFeedback": true
+    },
+    "variationThreshold": 3,
+    "abstentionEnabled": true
+  },
+  "synthesis": {
+    "enabled": true,
+    "tiers": {
+      "T1": {
+        "enabled": true,
+        "description": "Compose/parametrise existing strategies",
+        "autoAdopt": true
+      },
+      "T2": {
+        "enabled": true,
+        "description": "LLM writes strategy behind existing seam",
+        "autoAdopt": true,
+        "guards": [
+          "compile",
+          "lint",
+          "typecheck",
+          "a11y",
+          "importAllowlist",
+          "seamConformance",
+          "mustWin"
+        ]
+      },
+      "T3": {
+        "enabled": true,
+        "description": "New seam + strategy",
+        "autoAdopt": false,
+        "requiresHumanReview": true
+      },
+      "T4": {
+        "enabled": true,
+        "description": "Spec/request for developer or delegated agent",
+        "autoAdopt": false,
+        "requiresHumanReview": true
+      }
+    },
+    "importAllowlist": [
+      "react",
+      "react-dom",
+      "@notention/ui/*",
+      "@notention/core/*",
+      "zod",
+      "date-fns"
+    ],
+    "forbiddenImports": [
+      "fs",
+      "fs/promises",
+      "node:*",
+      "eval",
+      "fetch",
+      "localStorage",
+      "sessionStorage",
+      "indexedDB"
+    ],
+    "determinism": {
+      "pinnedModel": true,
+      "temperature": 0,
+      "cacheKey": "(prompt,spec,model,version)"
+    }
+  },
+  "evaluation": {
+    "enabled": true,
+    "harness": {
+      "runner": "playwright",
+      "browserContext": "per-config",
+      "seededData": true,
+      "repetitions": 10,
+      "aggregation": "median+spread"
+    },
+    "tasks": [
+      {
+        "id": "task-1",
+        "name": "Capture need with ≥3 properties in <20s",
+        "type": "capture",
+        "enabled": true
+      },
+      {
+        "id": "task-2",
+        "name": "Capture offer → ≥1 match without re-edit",
+        "type": "match",
+        "enabled": true
+      },
+      {
+        "id": "task-3",
+        "name": "Paragraph → valid structured note",
+        "type": "extraction",
+        "enabled": true
+      },
+      {
+        "id": "task-4",
+        "name": "Open note → commitment with status+deadline",
+        "type": "commitment",
+        "enabled": false,
+        "dependsOn": ["L17a"]
+      },
+      {
+        "id": "task-5",
+        "name": "Find note by intent",
+        "type": "search",
+        "enabled": false
+      },
+      {
+        "id": "task-6",
+        "name": "Add missing detail after failed match",
+        "type": "recovery",
+        "enabled": false
+      }
+    ],
+    "deterministicChecks": {
+      "schemaValidation": true,
+      "invariants": true,
+      "stateTransitions": true,
+      "requiredBehaviours": true,
+      "offlineBehaviour": true
+    },
+    "outcomeMeasures": {
+      "completion": true,
+      "relevance": true,
+      "correctionFrequency": true,
+      "unnecessaryClarification": true,
+      "abandonment": true,
+      "latency": true,
+      "resourceConsumption": true
+    },
+    "evidenceGate": {
+      "deterministicChecksPass": true,
+      "outcomeImprovesBeyondNoise": true,
+      "noGoldenCaseRegression": true,
+      "resourceCostAcceptable": true,
+      "humanConfirmsUsability": true
+    },
+    "offline": {
+      "enabled": true,
+      "localModelOnly": true
+    }
+  },
+  "adoption": {
+    "enabled": true,
+    "versioning": {
+      "strategy": "semver",
+      "retention": "all"
+    },
+    "featureFlags": {
+      "enabled": true,
+      "defaultOff": true
+    },
+    "rollback": {
+      "enabled": true,
+      "oneCommand": true
+    },
+    "provenance": {
+      "required": true,
+      "fields": [
+        "author",
+        "model",
+        "promptHash",
+        "diff",
+        "date",
+        "evidenceBundle"
+      ]
+    }
+  },
+  "reproducibility": {
+    "recordVersions": [
+      "model",
+      "prompt",
+      "strategy",
+      "ontology",
+      "evaluator"
+    ],
+    "deterministicReplay": true
+  },
+  "privacy": {
+    "defaultNoEgress": true,
+    "retentionPolicy": "local-only",
+    "redaction": {
+      "enabled": true,
+      "fields": [
+        "userId",
+        "sessionId",
+        "ip",
+        "userAgent",
+        "rawInput"
+      ]
+    },
+    "optInMetrics": true
+  },
+  "artifacts": {
+    "outputDir": "loop/runs",
+    "discoveredFile": "discovered.json",
+    "candidatesDir": "loop/candidates",
+    "resultsFile": "results.json",
+    "decisionFile": "decision.md",
+    "evidenceDir": "loop/evidence",
+    "showcasesDir": "loop/showcases",
+    "ledgerFile": "core/src/suggestions/SuggestionStore.ts"
+  }
+}

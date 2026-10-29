@@ -1,0 +1,168 @@
+{
+  "$schema": "./schema.json#/definitions/taxonomy",
+  "version": "1.0.0",
+  "description": "Notention interaction taxonomy — structure vs skin axes for scenario classification and coverage sampling",
+  "axes": {
+    "socialForm": {
+      "name": "Social Form",
+      "description": "Fiske's relational models",
+      "values": [
+        "communal",
+        "authority",
+        "equality",
+        "market"
+      ],
+      "source": "Fiske (1991) Relational Models Theory"
+    },
+    "topology": {
+      "name": "Topology",
+      "description": "Interaction topology / participant structure",
+      "values": [
+        "1:1",
+        "1:N",
+        "N:M",
+        "chain",
+        "coalition",
+        "hierarchy",
+        "mesh"
+      ]
+    },
+    "exchange": {
+      "name": "Exchange Type",
+      "description": "What is being exchanged",
+      "values": [
+        "goods",
+        "labour",
+        "knowledge",
+        "capital",
+        "care",
+        "space",
+        "access",
+        "commitment",
+        "status",
+        "identity"
+      ]
+    },
+    "stakes": {
+      "name": "Stakes",
+      "description": "What is at risk in the interaction",
+      "values": [
+        "info",
+        "social",
+        "economic",
+        "legal",
+        "safety",
+        "existential"
+      ]
+    },
+    "temporality": {
+      "name": "Temporality",
+      "description": "Time structure of the interaction",
+      "values": [
+        "one-shot",
+        "recurring",
+        "open-ended",
+        "deadline",
+        "ephemeral",
+        "generational"
+      ]
+    },
+    "heterogeneity": {
+      "name": "Heterogeneity",
+      "description": "Diversity of participants/context",
+      "values": [
+        "shared",
+        "cross-domain",
+        "multilingual",
+        "tacit",
+        "contested"
+      ]
+    }
+  },
+  "modifiers": {
+    "scale": {
+      "description": "Number of participants or scope",
+      "type": "ordinal",
+      "values": ["personal", "small-group", "organization", "community", "societal", "global"]
+    },
+    "trust": {
+      "description": "Baseline trust level between parties",
+      "type": "ordinal",
+      "values": ["none", "low", "medium", "high", "implicit"]
+    },
+    "ostromGovernance": {
+      "description": "Ostrom design principles for commons governance",
+      "type": "set",
+      "values": [
+        "boundaries",
+        "congruence",
+        "collective-choice",
+        "monitoring",
+        "graduated-sanctions",
+        "conflict-resolution",
+        "recognition",
+        "nested-enterprises"
+      ]
+    },
+    "powerAsymmetry": {
+      "description": "Degree of power imbalance",
+      "type": "ordinal",
+      "values": ["none", "low", "medium", "high", "extreme"]
+    },
+    "formality": {
+      "description": "Degree of formal structure/contracts",
+      "type": "ordinal",
+      "values": ["informal", "semi-formal", "formal", "codified", "legalistic"]
+    },
+    "dignityFaceHonour": {
+      "description": "Cultural significance of dignity/face/honour",
+      "type": "ordinal",
+      "values": ["irrelevant", "present", "significant", "central"]
+    }
+  },
+  "universals": [
+    "kinship",
+    "gift",
+    "redistribution",
+    "market",
+    "divisionOfLabour",
+    "property",
+    "contract",
+    "conflictResolution",
+    "law",
+    "ritual",
+    "status",
+    "alliance",
+    "familyFormation",
+    "apprenticeship",
+    "caregiving",
+    "inheritance",
+    "hospitality",
+    "taboo",
+    "commons",
+    "debt",
+    "reputation",
+    "oath",
+    "sanctuary",
+    "tribute"
+  ],
+  "coverage": {
+    "cellsCovered": 1,
+    "totalPossibleCells": 120960,
+    "note": "All current scenarios occupy one cell: N:M topology · market exchange · economic stakes · one-shot temporality · shared heterogeneity"
+  },
+  "audit": {
+    "date": "2026-10-29",
+    "currentCell": {
+      "socialForm": "market",
+      "topology": "N:M",
+      "exchange": "goods",
+      "stakes": "economic",
+      "temporality": "one-shot",
+      "heterogeneity": "shared"
+    },
+    "expectedGaps": [
+      "care/kinship/obligation tasks will expose priced-dyadic-exchange assumptions"
+    ]
+  }
+}

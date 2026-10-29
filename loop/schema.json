@@ -1,0 +1,440 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://notention.dev/loop/schema.json",
+  "title": "Notention Loop Configuration Schema",
+  "description": "JSON Schema for loop/taxonomy.json and loop/loop.config.json",
+  "definitions": {
+    "taxonomy": {
+      "type": "object",
+      "required": ["version", "axes", "modifiers", "universals", "coverage", "audit"],
+      "properties": {
+        "$schema": { "type": "string" },
+        "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+        "description": { "type": "string" },
+        "axes": {
+          "type": "object",
+          "required": ["socialForm", "topology", "exchange", "stakes", "temporality", "heterogeneity"],
+          "properties": {
+            "socialForm": { "$ref": "#/definitions/axis" },
+            "topology": { "$ref": "#/definitions/axis" },
+            "exchange": { "$ref": "#/definitions/axis" },
+            "stakes": { "$ref": "#/definitions/axis" },
+            "temporality": { "$ref": "#/definitions/axis" },
+            "heterogeneity": { "$ref": "#/definitions/axis" }
+          },
+          "additionalProperties": false
+        },
+        "modifiers": {
+          "type": "object",
+          "required": ["scale", "trust", "ostromGovernance", "powerAsymmetry", "formality", "dignityFaceHonour"],
+          "properties": {
+            "scale": { "$ref": "#/definitions/modifier" },
+            "trust": { "$ref": "#/definitions/modifier" },
+            "ostrumGovernance": { "$ref": "#/definitions/modifier" },
+            "powerAsymmetry": { "$ref": "#/definitions/modifier" },
+            "formality": { "$ref": "#/definitions/modifier" },
+            "dignityFaceHonour": { "$ref": "#/definitions/modifier" }
+          },
+          "additionalProperties": true
+        },
+        "universals": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "coverage": {
+          "type": "object",
+          "required": ["cellsCovered", "totalPossibleCells", "note"],
+          "properties": {
+            "cellsCovered": { "type": "integer", "minimum": 0 },
+            "totalPossibleCells": { "type": "integer", "minimum": 1 },
+            "note": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "audit": {
+          "type": "object",
+          "required": ["date", "currentCell", "expectedGaps"],
+          "properties": {
+            "date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+            "currentCell": {
+              "type": "object",
+              "required": ["socialForm", "topology", "exchange", "stakes", "temporality", "heterogeneity"],
+              "properties": {
+                "socialForm": { "type": "string", "enum": ["communal", "authority", "equality", "market"] },
+                "topology": { "type": "string", "enum": ["1:1", "1:N", "N:M", "chain", "coalition", "hierarchy", "mesh"] },
+                "exchange": { "type": "string", "enum": ["goods", "labour", "knowledge", "capital", "care", "space", "access", "commitment", "status", "identity"] },
+                "stakes": { "type": "string", "enum": ["info", "social", "economic", "legal", "safety", "existential"] },
+                "temporality": { "type": "string", "enum": ["one-shot", "recurring", "open-ended", "deadline", "ephemeral", "generational"] },
+                "heterogeneity": { "type": "string", "enum": ["shared", "cross-domain", "multilingual", "tacit", "contested"] }
+              },
+              "additionalProperties": false
+            },
+            "expectedGaps": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": true
+    },
+    "axis": {
+      "type": "object",
+      "required": ["name", "description", "values"],
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "values": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "source": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "modifier": {
+      "type": "object",
+      "required": ["description", "type", "values"],
+      "properties": {
+        "description": { "type": "string" },
+        "type": { "type": "string", "enum": ["ordinal", "set"] },
+        "values": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "loopConfig": {
+      "type": "object",
+      "required": ["version", "discovery", "prioritization", "synthesis", "evaluation", "adoption", "reproducibility", "privacy", "artifacts"],
+      "properties": {
+        "$schema": { "type": "string" },
+        "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+        "description": { "type": "string" },
+        "discovery": { "$ref": "#/definitions/discoveryConfig" },
+        "prioritization": { "$ref": "#/definitions/prioritizationConfig" },
+        "synthesis": { "$ref": "#/definitions/synthesisConfig" },
+        "evaluation": { "$ref": "#/definitions/evaluationConfig" },
+        "adoption": { "$ref": "#/definitions/adoptionConfig" },
+        "reproducibility": { "$ref": "#/definitions/reproducibilityConfig" },
+        "privacy": { "$ref": "#/definitions/privacyConfig" },
+        "artifacts": { "$ref": "#/definitions/artifactsConfig" }
+      },
+      "additionalProperties": false
+    },
+    "discoveryConfig": {
+      "type": "object",
+      "required": ["enabled", "sourceDirs", "excludePatterns", "scanners"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "sourceDirs": { "type": "array", "items": { "type": "string" } },
+        "excludePatterns": { "type": "array", "items": { "type": "string" } },
+        "scanners": {
+          "type": "object",
+          "required": ["componentScanner", "tsAstScanner", "typeSchemaBuilder", "ontologyAdapter", "goldenCaseMiner"],
+          "properties": {
+            "componentScanner": { "$ref": "#/definitions/scannerConfig" },
+            "tsAstScanner": { "$ref": "#/definitions/tsAstScannerConfig" },
+            "typeSchemaBuilder": { "$ref": "#/definitions/scannerConfig" },
+            "ontologyAdapter": { "$ref": "#/definitions/scannerConfig" },
+            "goldenCaseMiner": { "$ref": "#/definitions/scannerConfig" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "scannerConfig": {
+      "type": "object",
+      "required": ["enabled"],
+      "properties": {
+        "enabled": { "type": "boolean" }
+      },
+      "additionalProperties": true
+    },
+    "tsAstScannerConfig": {
+      "type": "object",
+      "required": ["enabled", "tsconfigPath"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "tsconfigPath": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "prioritizationConfig": {
+      "type": "object",
+      "required": ["enabled", "impactWeights", "failureSignals", "variationThreshold", "abstentionEnabled"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "impactWeights": {
+          "type": "object",
+          "required": ["frequency", "severity", "recoverability", "reach"],
+          "properties": {
+            "frequency": { "type": "number", "minimum": 0, "maximum": 1 },
+            "severity": { "type": "number", "minimum": 0, "maximum": 1 },
+            "recoverability": { "type": "number", "minimum": 0, "maximum": 1 },
+            "reach": { "type": "number", "minimum": 0, "maximum": 1 }
+          },
+          "additionalProperties": false
+        },
+        "failureSignals": {
+          "type": "object",
+          "required": ["failedMatches", "repeatedCorrections", "abandonedTasks", "optInFeedback"],
+          "properties": {
+            "failedMatches": { "type": "boolean" },
+            "repeatedCorrections": { "type": "boolean" },
+            "abandonedTasks": { "type": "boolean" },
+            "optInFeedback": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        },
+        "variationThreshold": { "type": "integer", "minimum": 1 },
+        "abstentionEnabled": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "synthesisConfig": {
+      "type": "object",
+      "required": ["enabled", "tiers", "importAllowlist", "forbiddenImports", "determinism"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "tiers": {
+          "type": "object",
+          "required": ["T1", "T2", "T3", "T4"],
+          "properties": {
+            "T1": { "$ref": "#/definitions/tierConfig" },
+            "T2": { "$ref": "#/definitions/t2TierConfig" },
+            "T3": { "$ref": "#/definitions/t3TierConfig" },
+            "T4": { "$ref": "#/definitions/t3TierConfig" }
+          },
+          "additionalProperties": false
+        },
+        "importAllowlist": { "type": "array", "items": { "type": "string" } },
+        "forbiddenImports": { "type": "array", "items": { "type": "string" } },
+        "determinism": {
+          "type": "object",
+          "required": ["pinnedModel", "temperature", "cacheKey"],
+          "properties": {
+            "pinnedModel": { "type": "boolean" },
+            "temperature": { "type": "number", "minimum": 0, "maximum": 2 },
+            "cacheKey": { "type": "string" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "tierConfig": {
+      "type": "object",
+      "required": ["enabled", "description", "autoAdopt"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "description": { "type": "string" },
+        "autoAdopt": { "type": "boolean" }
+      },
+      "additionalProperties": true
+    },
+    "t2TierConfig": {
+      "allOf": [
+        { "$ref": "#/definitions/tierConfig" },
+        {
+          "type": "object",
+          "required": ["guards"],
+          "properties": {
+            "guards": { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      ]
+    },
+    "t3TierConfig": {
+      "allOf": [
+        { "$ref": "#/definitions/tierConfig" },
+        {
+          "type": "object",
+          "required": ["requiresHumanReview"],
+          "properties": {
+            "requiresHumanReview": { "type": "boolean" }
+          }
+        }
+      ]
+    },
+    "evaluationConfig": {
+      "type": "object",
+      "required": ["enabled", "harness", "tasks", "deterministicChecks", "outcomeMeasures", "evidenceGate", "offline"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "harness": {
+          "type": "object",
+          "required": ["runner", "browserContext", "seededData", "repetitions", "aggregation"],
+          "properties": {
+            "runner": { "type": "string", "enum": ["playwright", "vitest"] },
+            "browserContext": { "type": "string", "enum": ["per-config", "shared"] },
+            "seededData": { "type": "boolean" },
+            "repetitions": { "type": "integer", "minimum": 1 },
+            "aggregation": { "type": "string", "enum": ["median+spread", "mean+std", "min", "max"] }
+          },
+          "additionalProperties": false
+        },
+        "tasks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "name", "type", "enabled"],
+            "properties": {
+              "id": { "type": "string" },
+              "name": { "type": "string" },
+              "type": { "type": "string", "enum": ["capture", "match", "extraction", "commitment", "search", "recovery"] },
+              "enabled": { "type": "boolean" },
+              "dependsOn": { "type": "array", "items": { "type": "string" } }
+            },
+            "additionalProperties": false
+          }
+        },
+        "deterministicChecks": {
+          "type": "object",
+          "required": ["schemaValidation", "invariants", "stateTransitions", "requiredBehaviours", "offlineBehaviour"],
+          "properties": {
+            "schemaValidation": { "type": "boolean" },
+            "invariants": { "type": "boolean" },
+            "stateTransitions": { "type": "boolean" },
+            "requiredBehaviours": { "type": "boolean" },
+            "offlineBehaviour": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        },
+        "outcomeMeasures": {
+          "type": "object",
+          "required": ["completion", "relevance", "correctionFrequency", "unnecessaryClarification", "abandonment", "latency", "resourceConsumption"],
+          "properties": {
+            "completion": { "type": "boolean" },
+            "relevance": { "type": "boolean" },
+            "correctionFrequency": { "type": "boolean" },
+            "unnecessaryClarification": { "type": "boolean" },
+            "abandonment": { "type": "boolean" },
+            "latency": { "type": "boolean" },
+            "resourceConsumption": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        },
+        "evidenceGate": {
+          "type": "object",
+          "required": ["deterministicChecksPass", "outcomeImprovesBeyondNoise", "noGoldenCaseRegression", "resourceCostAcceptable", "humanConfirmsUsability"],
+          "properties": {
+            "deterministicChecksPass": { "type": "boolean" },
+            "outcomeImprovesBeyondNoise": { "type": "boolean" },
+            "noGoldenCaseRegression": { "type": "boolean" },
+            "resourceCostAcceptable": { "type": "boolean" },
+            "humanConfirmsUsability": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        },
+        "offline": {
+          "type": "object",
+          "required": ["enabled", "localModelOnly"],
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "localModelOnly": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "adoptionConfig": {
+      "type": "object",
+      "required": ["enabled", "versioning", "featureFlags", "rollback", "provenance"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "versioning": {
+          "type": "object",
+          "required": ["strategy", "retention"],
+          "properties": {
+            "strategy": { "type": "string", "enum": ["semver", "timestamp", "hash"] },
+            "retention": { "type": "string", "enum": ["all", "latest-only", "last-n"] }
+          },
+          "additionalProperties": false
+        },
+        "featureFlags": {
+          "type": "object",
+          "required": ["enabled", "defaultOff"],
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "defaultOff": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        },
+        "rollback": {
+          "type": "object",
+          "required": ["enabled", "oneCommand"],
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "oneCommand": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        },
+        "provenance": {
+          "type": "object",
+          "required": ["required", "fields"],
+          "properties": {
+            "required": { "type": "boolean" },
+            "fields": { "type": "array", "items": { "type": "string" } }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "reproducibilityConfig": {
+      "type": "object",
+      "required": ["recordVersions", "deterministicReplay"],
+      "properties": {
+        "recordVersions": { "type": "array", "items": { "type": "string" } },
+        "deterministicReplay": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "privacyConfig": {
+      "type": "object",
+      "required": ["defaultNoEgress", "retentionPolicy", "redaction", "optInMetrics"],
+      "properties": {
+        "defaultNoEgress": { "type": "boolean" },
+        "retentionPolicy": { "type": "string", "enum": ["local-only", "opt-in-remote", "anonymous-aggregated"] },
+        "redaction": {
+          "type": "object",
+          "required": ["enabled", "fields"],
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "fields": { "type": "array", "items": { "type": "string" } }
+          },
+          "additionalProperties": false
+        },
+        "optInMetrics": { "type": "boolean" }
+      },
+      "additionalProperties": true
+    },
+    "artifactsConfig": {
+      "type": "object",
+      "required": ["outputDir", "discoveredFile", "candidatesDir", "resultsFile", "decisionFile", "evidenceDir", "showcasesDir", "ledgerFile"],
+      "properties": {
+        "outputDir": { "type": "string" },
+        "discoveredFile": { "type": "string" },
+        "candidatesDir": { "type": "string" },
+        "resultsFile": { "type": "string" },
+        "decisionFile": { "type": "string" },
+        "evidenceDir": { "type": "string" },
+        "showcasesDir": { "type": "string" },
+        "ledgerFile": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "anyOf": [
+    { "$ref": "#/definitions/taxonomy" },
+    { "$ref": "#/definitions/loopConfig" }
+  ]
+}

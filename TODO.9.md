@@ -488,7 +488,7 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 
 | ID | Item | Files | Acceptance | Depends |
 |----|------|-------|-----------|---------|
-| L1 | `loop/taxonomy.json` + `loop.config.json` + schema | `loop/` | loads; universals audit complete | — |
+| L1 | `loop/taxonomy.json` + `loop.config.json` + schema | `loop/` | loads; universals audit complete | — | ✅ |
 | L2 | `pnpm loop` + root script; `discover` subcommand | `optimize/src/cli.ts`, `package.json` | `pnpm loop --dry` runs | L1 |
 | L2a | D5 decision: wire Phase 1 registries or delete | `core/src/ui/`, `core/src/ontology/`, `core/src/suggestions/` | decision recorded | — |
 | L3 | Cluster prop-bearing components into seams | `optimize/src/discovery/seams.ts` | ≥3 seams with members | L2 |
@@ -633,13 +633,14 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | Workflow-level evaluation | ⬜ not started (E1–E5) |
 | Seam clustering / duplicates | ⬜ next (L3, L4) |
 | `pnpm loop` | ⬜ does not exist (L2) |
+| **Loop config (taxonomy, config, schema)** | ✅ **done (L1)** |
 | Task harness | ⬜ does not exist (L9) |
 | Synthesis (T2/T4) | ⬜ not started (L10–L14) |
 | Capability showcases | ⬜ not started (S1–S5) |
 | End-to-end proof | ⬜ not started (X1–X7) |
 | Human gates G1/G2/G5 | ⏳ pending |
 
-**Test state:** core 398 · simulator 20 · agent 17 · cli 6 · optimize 12 · ui 37 batched ✅ (D3, D4 fixed)
+**Test state:** core 398 · simulator 20 · agent 17 · cli 6 · optimize 20 · ui 37 batched ✅ (D3, D4 fixed)
 
 ---
 
