@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { ComponentScanner } from './componentScanner.js';
@@ -161,6 +161,6 @@ export interface Note {
 
 describe('DEFAULT_PROJECT_ROOT', () => {
     it('resolves a directory containing the pnpm workspace file', () => {
-        expect(DEFAULT_PROJECT_ROOT).toBe('/home/me/notention9');
+        expect(existsSync(join(DEFAULT_PROJECT_ROOT, 'pnpm-workspace.yaml'))).toBe(true);
     });
 });
