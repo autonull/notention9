@@ -20,6 +20,11 @@ import {
     LightBulbIcon,
     CheckCircleIcon,
     NoteIcon,
+    ClockIcon,
+    EyeIcon,
+    MessageSquareIcon,
+    HomeIcon,
+    ZapIcon,
 } from '../ui/icons';
 import {modShortcut} from '../../utils/platform';
 import {getTextFromHtml} from '@notention/core';
@@ -69,6 +74,87 @@ const TEMPLATES: Record<string, QuickCaptureTemplate> = {
         bgColor: 'bg-yellow-900/20',
         borderColor: 'border-yellow-500/30',
         gradient: 'gradient-warning'
+    },
+    // Metaphor-based templates
+    'conditional-automation': {
+        title: 'Automation Rule',
+        content: '<p>When a condition is met, perform an action automatically.</p>',
+        properties: [
+            {key: 'metaphor', operator: 'is', values: ['conditional-automation']},
+            {key: 'if', operator: 'is', values: ['condition']},
+            {key: 'then', operator: 'is', values: ['action']},
+            {key: 'frequency', operator: 'is', values: ['continuous']},
+        ],
+        tags: ['automation', 'rule'],
+        icon: ZapIcon,
+        color: 'text-blue-400',
+        bgColor: 'bg-blue-900/20',
+        borderColor: 'border-blue-500/30',
+        gradient: 'gradient-primary'
+    },
+    'scheduled-task': {
+        title: 'Scheduled Task',
+        content: '<p>Run an action at a specific time or on a schedule.</p>',
+        properties: [
+            {key: 'metaphor', operator: 'is', values: ['scheduled-task']},
+            {key: 'when', operator: 'is', values: ['time']},
+            {key: 'do', operator: 'is', values: ['action']},
+            {key: 'repeat', operator: 'is', values: ['true']},
+        ],
+        tags: ['automation', 'schedule'],
+        icon: ClockIcon,
+        color: 'text-green-400',
+        bgColor: 'bg-green-900/20',
+        borderColor: 'border-green-500/30',
+        gradient: 'gradient-success'
+    },
+    'monitoring-agent': {
+        title: 'Monitoring Agent',
+        content: '<p>Watch for changes and respond automatically.</p>',
+        properties: [
+            {key: 'metaphor', operator: 'is', values: ['monitoring-agent']},
+            {key: 'monitor', operator: 'is', values: ['what']},
+            {key: 'when', operator: 'is', values: ['changes']},
+            {key: 'do', operator: 'is', values: ['response']},
+        ],
+        tags: ['automation', 'monitoring'],
+        icon: EyeIcon,
+        color: 'text-purple-400',
+        bgColor: 'bg-purple-900/20',
+        borderColor: 'border-purple-500/30',
+        gradient: 'from-purple-900/20 to-pink-900/20'
+    },
+    'communication-flow': {
+        title: 'Communication Flow',
+        content: '<p>Send a message when an event occurs.</p>',
+        properties: [
+            {key: 'metaphor', operator: 'is', values: ['communication-flow']},
+            {key: 'when', operator: 'is', values: ['event']},
+            {key: 'contact', operator: 'is', values: ['who']},
+            {key: 'message', operator: 'is', values: ['what']},
+        ],
+        tags: ['automation', 'communication'],
+        icon: MessageSquareIcon,
+        color: 'text-pink-400',
+        bgColor: 'bg-pink-900/20',
+        borderColor: 'border-pink-500/30',
+        gradient: 'from-pink-900/20 to-red-900/20'
+    },
+    'context-aware': {
+        title: 'Context-Aware Automation',
+        content: '<p>Adjust environment based on context and conditions.</p>',
+        properties: [
+            {key: 'metaphor', operator: 'is', values: ['context-aware']},
+            {key: 'when', operator: 'is', values: ['context']},
+            {key: 'if', operator: 'is', values: ['conditions']},
+            {key: 'adjust', operator: 'is', values: ['environment']},
+        ],
+        tags: ['automation', 'context'],
+        icon: HomeIcon,
+        color: 'text-amber-400',
+        bgColor: 'bg-amber-900/20',
+        borderColor: 'border-amber-500/30',
+        gradient: 'from-amber-900/20 to-orange-900/20'
     }
 };
 

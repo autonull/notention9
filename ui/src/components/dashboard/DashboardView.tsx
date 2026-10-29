@@ -15,6 +15,7 @@ import {LocalMatchPreview} from './LocalMatchPreview';
 import {StatsGrid} from './StatsGrid';
 import {RecentActivity} from './RecentActivity';
 import {QuickActions} from './QuickActions';
+import {AutomationsView} from './AutomationsView';
 import {EmptyStateForNotes} from './EmptyStateForNotes';
 import {StatItem} from '../ui';
 import {LoadingSpinner} from '../ui/icons';
@@ -226,6 +227,8 @@ export function DashboardView() {
                 {notes.length > 0 && recentNotes.length === 0 && <EmptyStateForNotes onCreateNote={handleCreateNote}/>}
 
                 {localMatch && <LocalMatchPreview match={localMatch} onSelectNote={handleSelectNote}/>}
+
+                <AutomationsView/>
 
                 <StatsGrid stats={stats} isConnected={isConnected}/>
 

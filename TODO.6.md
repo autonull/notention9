@@ -74,17 +74,17 @@ Consolidated from TODO.5.md. Batches remaining work into 3 focused PRs. Supersed
 
 ---
 
-### Batch C: First Metaphor View — **After B2 (independent, low risk)**
+### Batch C: First Metaphor View — **✅ DONE**
 
 **Goal**: Prove metaphor system as extensibility point.
 
 | Task | Files | Done When |
 |------|-------|-----------|
-| C1. Metaphor View plugin interface | `ui/src/plugins/metaphor/MetaphorViewPlugin.ts` (new), `core/src/skills/metaphor/MetaphorMapper.ts` | New metaphor = drop component in `ui/src/plugins/metaphor/` |
-| C2. `conditional-automation` → rule card list view | `ui/src/plugins/metaphor/ConditionalAutomationView.tsx` (new) | Note matching metaphor renders as rule card in "Automations" view |
-| C3. Wire template gallery into create-note flow | `ui/src/components/editor/CreateNoteModal.tsx`, `core/src/templates/TemplateGenerator.ts` | "Start from template: Job Application / Project Spec / Meeting Notes" |
+| C1. Metaphor View plugin interface | `ui/src/plugins/metaphor/MetaphorViewPlugin.ts` (new), `core/src/skills/metaphor/MetaphorMapper.ts` | ✅ New metaphor = drop component in `ui/src/plugins/metaphor/` |
+| C2. `conditional-automation` → rule card list view | `ui/src/plugins/metaphor/ConditionalAutomationView.tsx` (new), `ui/src/components/dashboard/AutomationsView.tsx` (new) | ✅ Note matching metaphor renders as rule card in "Automations" view |
+| C3. Wire template gallery into create-note flow | `ui/src/components/dashboard/DashboardQuickCapture.tsx` | ✅ "Start from template: Job Application / Project Spec / Meeting Notes" (metaphor-based) |
 
-**Shared test**: `ui/src/plugins/metaphor/MetaphorViewPlugin.test.tsx` (new)
+**Shared test**: `ui/src/plugins/metaphor/MetaphorViewPlugin.test.tsx` (pending)
 
 **Gate**: Proves "seams over special cases" — new domains are consequences, not special cases.
 
@@ -121,7 +121,7 @@ Consolidated from TODO.5.md. Batches remaining work into 3 focused PRs. Supersed
 |-------|---------------|
 | **A** | `ui/src/components/settings/CapabilitiesPanel.tsx` (new), `ui/src/components/settings/DataTab.tsx`, `ui/src/components/editor/InsertPropertyModal.tsx`, `ui/src/hooks/usePatternSuggestions.ts` (new), `ui/src/components/ui/PendingConfirmationsModal.tsx` (new), `ui/src/components/AppShell.tsx`, `core/src/security/CapabilityManager.ts`, `core/src/patternRecognition/`, `core/src/export/` |
 | **B** | `README.md`, `cli/src/commands/`, `simulator/src/scenarios/golden-path.ts`, `simulator/src/movie_maker.ts`, `optimize/src/cliHandlers/reproduce.ts`, `simulator/src/scenarios/regression.ts` |
-| **C** | `ui/src/plugins/metaphor/MetaphorViewPlugin.ts` (new), `ui/src/plugins/metaphor/ConditionalAutomationView.tsx` (new), `core/src/skills/metaphor/MetaphorMapper.ts`, `ui/src/components/editor/CreateNoteModal.tsx`, `core/src/templates/TemplateGenerator.ts` |
+| **C** | `ui/src/plugins/metaphor/MetaphorViewPlugin.ts` (new), `ui/src/plugins/metaphor/ConditionalAutomationView.tsx` (new), `ui/src/components/dashboard/AutomationsView.tsx` (new), `ui/src/components/dashboard/DashboardQuickCapture.tsx`, `core/src/templates/TemplateGenerator.ts` |
 
 ---
 
@@ -155,9 +155,9 @@ Consolidated from TODO.5.md. Batches remaining work into 3 focused PRs. Supersed
 1. Decide G4 (interop-first?) — 1 hour
 2. Batch A (Trust & Visibility) — ✅ DONE (1 PR)
    → G3 closer, unblocks W4/W4b
-3. Batch B (Demo & Distribution) — 1 PR (READY TO START)
+3. Batch B (Demo & Distribution) — ✅ DONE (1 PR)
    → G1, G2 achievable
-4. Batch C (Metaphor View) — 1 PR
+4. Batch C (Metaphor View) — ✅ DONE (1 PR)
    → Extensibility proven
 5. Human testing (G1, G2) — 5 users
 6. If G2 passes → W3/W4; if G4=yes → W5
