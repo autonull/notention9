@@ -111,8 +111,17 @@ async function runDiscover(config: any, outputDir: string, dry: boolean, json: b
     // 6. Mine golden cases
     console.log('  🏆 Mining golden cases...');
     const goldenCaseMiner = new GoldenCaseMiner('doc/evidence');
-    const goldenCases = await goldenCaseMiner.mine({ minConfidence: 0.5, maxCases: 20 });
-    console.log(`     Mined ${goldenCases.length} golden cases`);
+    // Mine from evidence bundles
+    const evidenceCases = await goldenCaseMiner.mine({ minConfidence: 0.5, maxCases: 20 });
+    // Mine from test files
+    const testCases = goldenCaseMiner.mineFromTests(['core/src/tests', 'ui/src/tests', 'optimize/src/tests']);
+    // Load curated cases from static file
+    const curatedCases = goldenCaseMiner.loadCuratedCases('loop/golden-cases.json');
+    // Combine and deduplicate
+    const goldenCases = [...evidenceCases, ...testCases, ...curatedCases].filter((c, i, arr) => 
+        arr.findIndex(x => x.input === c.input) === i
+    ).slice(0, 50);
+    console.log(`     Mined ${goldenCases.length} golden cases (${evidenceCases.length} from evidence, ${testCases.length} from tests, ${curatedCases.length} curated)`);
 
     // 7. Derive tasks from taxonomy × ontology × friction
     console.log('  📋 Deriving tasks...');
