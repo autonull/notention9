@@ -430,14 +430,14 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 |----|------|-------|-----------|---------|
 | D1 | Uncapped normalized score (`1 - (v-max)/max` > 1) | `optimize/src/uiuxEvaluator.ts:426` | score ∈ [0,1] asserted | — | ✅ |
 | D2 | CLI builds config then calls the singleton; flags ignored | `optimize/src/cliHandlers/uxEvaluate.ts:37` | flags change output (test) | D1 | ✅ |
-| D3 | Plain `pnpm test` OOMs on `ui` | `ui/vitest.config.ts`, root scripts | `pnpm test` exits 0 | — |
-| D4 | UI batching is a hand-maintained list | `scripts/test-ui-batched.ts` | glob + chunk | D3 |
+| D3 | Plain `pnpm test` OOMs on `ui` | `ui/vitest.config.ts`, root scripts | `pnpm test` exits 0 | — | ✅ |
+| D4 | UI batching is a hand-maintained list | `scripts/test-ui-batched.ts` | glob + chunk | D3 | ✅ |
 | D5 | Phase 1 infra has zero consumers (`uiRegistry`, `ontologyRegistry`, `suggestionStore`, adapters) | `core/src/ui/`, `core/src/ontology/`, `core/src/suggestions/` | wired (L7) or deleted | L2a |
 | D6 | `analyzeRoutes`/`analyzeDialogs`/`analyzeActions` hardcoded | `optimize/src/discovery/componentScanner.ts` | derived from JSX | L3 |
 | D7 | `BrowserManager.createPage()` returns the first agent's page | `simulator/src/browser_manager.ts` | explicit page/context per use | — |
 | D8 | `Scenario` lacks tags/`requires`/`difficulty`; runner logs instead of emitting events | `simulator/src/types.ts`, `scenario.ts`, `agent.ts` | typed `RunEvent` sink | — |
-| D9 | `MetricsTab` untested | `ui/src/components/settings/MetricsTab.tsx` | render + consent test | — |
-| D10 | Metrics persistence broken: `track()` never persists; `flush()` clears then persists empty | `ui/src/hooks/useMetrics.ts` | survives flush + reload; test | — |
+| D9 | `MetricsTab` untested | `ui/src/components/settings/MetricsTab.tsx` | render + consent test | — | ✅ |
+| D10 | Metrics persistence broken: `track()` never persists; `flush()` clears then persists empty | `ui/src/hooks/useMetrics.ts` | survives flush + reload; test | — | ✅ |
 
 ### M — Model independence and offline operation · essential
 
@@ -639,7 +639,7 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | End-to-end proof | ⬜ not started (X1–X7) |
 | Human gates G1/G2/G5 | ⏳ pending |
 
-**Test state:** core 398 · simulator 20 · agent 17 · cli 6 · optimize 12 · ui per-file OK, plain `pnpm test` OOMs (D3).
+**Test state:** core 398 · simulator 20 · agent 17 · cli 6 · optimize 12 · ui 37 batched ✅ (D3, D4 fixed)
 
 ---
 

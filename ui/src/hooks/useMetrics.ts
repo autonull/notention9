@@ -49,6 +49,14 @@ function flush(): void {
     }
 }
 
+function persistQueueImmediate(): void {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(eventQueue.slice(-MAX_QUEUE_SIZE)));
+    } catch {
+        // Ignore quota exceeded
+    }
+}
+
 function scheduleFlush(): void {
     if (flushTimer) return;
     flushTimer = setTimeout(() => {
@@ -72,7 +80,7 @@ function setConsent(value: boolean): void {
         localStorage.setItem(CONSENT_KEY, value ? 'true' : 'false');
         if (!value) {
             eventQueue.length = 0;
-            persistQueue();
+            persistQueueImmediate();
         }
     } catch {
         // Ignore
@@ -112,6 +120,7 @@ export function useMetrics() {
         };
 
         eventQueue.push(event);
+        persistQueueImmediate();
         if (eventQueue.length >= MAX_QUEUE_SIZE) {
             flush();
         } else {
@@ -128,7 +137,7 @@ export function useMetrics() {
 
     const clearQueue = useCallback(() => {
         eventQueue.length = 0;
-        persistQueue();
+        persistQueueImmediate();
     }, []);
 
     return {track, consent, toggleConsent, getQueue, clearQueue};
@@ -143,12 +152,12 @@ export function getMetricsQueue(): MetricEvent[] {
     return [...eventQueue];
 }
 
-export function clearMetricsQueue(): void {
+function clearMetricsQueue(): void {
     eventQueue.length = 0;
-    persistQueue();
+    persistQueueImmediate();
 }
 
-export {hasConsent, setConsent};
+export {hasConsent, setConsent, clearMetricsQueue};
 
 // Convenience metric names
 export const Metrics = {
