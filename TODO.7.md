@@ -1,5 +1,10 @@
 # Notention Development Plan (TODO.7.md)
 
+> ⚠️ **Superseded by [TODO.8.md](./TODO.8.md).** Requirements relaxed: the goal is
+> UI/UX ergonomics for reality management and intent satisfaction, improving the live
+> system immediately. Taxonomy and loop notes are retained there. Kept for reference:
+> this document holds the stricter measurement/acceptance architecture.
+
 Supersedes TODO.6.md. Gates, completed batches, and shipped infrastructure carry forward. The improvement loop is rearchitected so that "self-improvement" means **measured, bounded, reversible, holdout-validated change** over a **measurable use-case space** — not a queue of suggestions judged by a static estimator.
 
 ---
