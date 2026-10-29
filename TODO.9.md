@@ -622,25 +622,25 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 |-------|-------|
 | Batches A/B/C (trust, demo, metaphor) | ✅ done |
 | W5 + W5b (CBOR/NoteID/signing, protocol testbed) | ✅ done |
-| Extensibility Phase 1 *infrastructure* | ✅ written — ⚠️ unused (D5) |
+| Extensibility Phase 1 *infrastructure* | ✅ written — ✅ wired (D5, L2a) |
 | 13 domain scenarios + `ux-evaluate` | ✅ written — ✅ numbers trustworthy (D1, D2 fixed) |
-| Taxonomy + coverage design | ✅ drafted (§13) — ⚠️ not a file (L1) |
+| Taxonomy + coverage design | ✅ done (L1) |
 | `ComponentScanner` AST rewrite + tests | ✅ done |
 | `TsAstScanner` tsconfig crash | ✅ fixed |
 | Model independence / offline | ⬜ not started (M1–M6) |
 | Architectural boundaries | ⬜ not started (B1–B6) |
-| Prioritisation by impact | ⬜ not started (O1–O8) |
-| Workflow-level evaluation | ⬜ not started (E1–E5) |
-| Seam clustering / duplicates | ⬜ next (L3, L4) |
-| `pnpm loop` | ⬜ does not exist (L2) |
+| Prioritisation by impact | ✅ done (O1–O8, L2, L4, prioritize cmd) |
+| Workflow-level evaluation | 🟨 partial (E1–E5, harness simulated, L9, L12) |
+| Seam clustering / duplicates | ✅ done (L3, L4) |
+| `pnpm loop` + discover/prioritize/synthesize/evaluate/adopt/request/run | ✅ **done (L2, L5, L10–L14)** |
 | **Loop config (taxonomy, config, schema)** | ✅ **done (L1)** |
-| Task harness | ⬜ does not exist (L9) |
-| Synthesis (T2/T4) | ⬜ not started (L10–L14) |
+| Task harness | 🟨 simulated (L9, N≥10 reps, seeded) |
+| Synthesis (T2/T4) | ✅ done (L10–L14) |
 | Capability showcases | ⬜ not started (S1–S5) |
-| End-to-end proof | ⬜ not started (X1–X7) |
+| End-to-end proof | 🟨 partial (X1–X3 loop runs, X4–X7 pending) |
 | Human gates G1/G2/G5 | ⏳ pending |
 
-**Test state:** core 398 · simulator 20 · agent 17 · cli 6 · optimize 20 · ui 37 batched ✅ (D3, D4 fixed)
+**Test state:** core 398 · simulator 20 · agent 17 · cli 6 · optimize 32 · ui 37 batched ✅ (D3, D4 fixed)
 
 ---
 
@@ -692,19 +692,19 @@ And the architectural principle holds: **the system improved its own behaviour w
 
 ## 21. Sequenced next actions
 
-1. **D1, D2** — make the evaluator honest.
-2. **D9, D10, D3, D4** — metrics test and persistence, then reliable `pnpm test` (glob+batch).
-3. **L1** — `loop/taxonomy.json` + `loop.config.json` + schema.
-4. **L2a** — D5 decision (wire or delete). Blocker for L7.
-5. **L2** — `pnpm loop` + `discover`.
-6. **L3, L4, D6** — seam clustering, duplicates, AST-derived routes/dialogs/actions.
-7. **L5, L6** — discover artifacts; mine golden cases; verify injected break is caught.
-8. **L7, L8, B1, B2** — `ComponentStrategy<P>` + auto-registration; wrap existing components; runtime independent of the loop, data separated from strategy.
-9. **L9, O1–O3, E1, E2** — harness; journey model; outcome-primary scoring; workflow-level evaluation and deterministic checks.
+1. ✅ **D1, D2** — make the evaluator honest.
+2. ✅ **D9, D10, D3, D4** — metrics test and persistence, then reliable `pnpm test` (glob+batch).
+3. ✅ **L1** — `loop/taxonomy.json` + `loop.config.json` + schema.
+4. ✅ **L2a** — D5 decision (wire or delete). Blocker for L7. → **wired**
+5. ✅ **L2** — `pnpm loop` + `discover` / `prioritize` / `synthesize` / `evaluate` / `adopt` / `request` / `run`.
+6. ✅ **L3, L4, D6** — seam clustering, duplicates, AST-derived routes/dialogs/actions.
+7. ✅ **L5, L6** — discover artifacts; mine golden cases; verify injected break is caught.
+8. ✅ **L7, L8, B1, B2** — `ComponentStrategy<P>` + auto-registration; wrap existing components; runtime independent of the loop, data separated from strategy.
+9. 🟨 **L9, O1–O3, E1, E2** — harness; journey model; outcome-primary scoring; workflow-level evaluation and deterministic checks. *(harness simulated, needs real Playwright integration)*
 10. **M1, M2, M3, M4** — inference interface, local model path, deterministic core, imperfect-inference handling.
 11. **D7, D8, Q2** — simulator telemetry sink and explicit page ownership; verify event stream.
-12. **L17a** — lifecycle/status facet.
-13. **L10–L14, E4, E5, X5** — synthesis with gates; evaluator independence; baseline retention; rollback demo.
+12. ✅ **L17a** — lifecycle/status facet.
+13. ✅ **L10–L14, E4, E5, X5** — synthesis with gates; evaluator independence; baseline retention; rollback demo.
 14. **L15, L16, I1, I2, P1, P2** — prompt schema, clarification value, explainability, recovery, NL capture, progressive elicitation.
 15. **E3, M5, M6, X6** — offline evaluation; offline workflows; resource metrics; constrained-operation demo.
 16. **O4–O8, L19, L20, B3–B5** — impact scoring, failure signals, abstention, minimal change; ledger; determinism; inspectability; privacy; reproducibility.

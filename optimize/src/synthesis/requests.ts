@@ -295,7 +295,7 @@ export function emitT4RequestFromEvidence(
  * Auto-generate T4 requests from failed evaluation candidates
  */
 export function generateT4FromFailedCandidates(
-    evaluationReport: { candidates: Array<{ candidateId: string; passed: boolean; taskResults: Map<string, any>; overallSuccessRate?: number }> },
+    evaluationReport: { candidates: Array<{ candidateId: string; passed: boolean; taskResults: Map<string, any> | Record<string, any>; overallSuccessRate?: number }> },
     outputDir: string = 'loop/requests'
 ): T4Request[] {
     const requests: T4Request[] = [];
@@ -307,7 +307,12 @@ export function generateT4FromFailedCandidates(
         const failedTasks: string[] = [];
         const failureReasons: string[] = [];
         
-        for (const [taskId, result] of candidate.taskResults) {
+        // Handle both Map and plain object
+        const taskResults = candidate.taskResults instanceof Map 
+            ? candidate.taskResults 
+            : new Map(Object.entries(candidate.taskResults));
+        
+        for (const [taskId, result] of taskResults) {
             if (result.successRate < 0.5) {
                 failedTasks.push(taskId);
                 failureReasons.push(`${taskId}: ${(result.successRate * 100).toFixed(0)}% success`);

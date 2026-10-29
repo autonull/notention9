@@ -25,9 +25,25 @@ export interface CandidateEvaluation {
     passed: boolean;  // must-win vs baseline
 }
 
+// Serializable version of CandidateEvaluation for JSON output
+export interface SerializableCandidateEvaluation {
+    candidateId: string;
+    taskResults: Record<string, BaselineResult>;
+    overallSuccessRate: number;
+    overallMedianDuration: number;
+    passed: boolean;
+}
+
 export interface EvaluationReport {
     baseline: BaselineResult[];
     candidates: CandidateEvaluation[];
+    timestamp: string;
+}
+
+// Serializable version of EvaluationReport for JSON output
+export interface SerializableEvaluationReport {
+    baseline: BaselineResult[];
+    candidates: SerializableCandidateEvaluation[];
     timestamp: string;
 }
 
@@ -224,17 +240,24 @@ export async function runFullEvaluation(
         console.log(`     ${evaluation.passed ? '✅' : '❌'} Success rate: ${(evaluation.overallSuccessRate * 100).toFixed(1)}% (baseline: ${(baseline.reduce((s, b) => s + b.successRate, 0) / baseline.length * 100).toFixed(1)}%)`);
     }
     
-    // Save report
-    const report: EvaluationReport = {
+    // Save report - convert Maps to objects for JSON serialization
+    const serializableReport: SerializableEvaluationReport = {
         baseline,
-        candidates: results,
+        candidates: results.map(c => ({
+            ...c,
+            taskResults: Object.fromEntries(c.taskResults),
+        })),
         timestamp: new Date().toISOString(),
     };
     
     mkdirSync(outputDir, { recursive: true });
-    writeFileSync(join(outputDir, 'evaluation-report.json'), JSON.stringify(report, null, 2));
+    writeFileSync(join(outputDir, 'evaluation-report.json'), JSON.stringify(serializableReport, null, 2));
     
-    return report;
+    return {
+        baseline,
+        candidates: results,
+        timestamp: new Date().toISOString(),
+    };
 }
 
 /**

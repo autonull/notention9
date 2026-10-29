@@ -12,9 +12,9 @@ export class StrategyGenerator {
     async generateForSeam(
         seamId: string,
         requirements: string[],
-        options: GenerateOptions = {}
+        options: GenerateOptions & { spec?: StrategySpec } = {}
     ): Promise<CandidateStrategy> {
-        const spec = this.specGenerator.getSpec(seamId) 
+        const spec = options.spec ?? this.specGenerator.getSpec(seamId) 
             ?? this.specGenerator.generateSpec(
                 { id: seamId, name: seamId, role: 'capture', propsShape: {} },
                 requirements
@@ -79,16 +79,16 @@ Return ONLY the TypeScript/TSX code, no markdown formatting.
         // Generate event handlers from emits schema
         const events = this.generateEventHandlers(spec.emits);
 
+        // Generate JSX for the component based on accepts schema
+        const jsxContent = this.generateJSXFromAccepts(spec);
+
         return `import React, { useState, useCallback, useEffect } from 'react';
-import type { OntologyNode } from '@notention/core';
-import { useOntology } from '@notention/ui/hooks';
 
 ${props}
 
 ${events}
 
 export default function ${componentName}(props: Props): React.ReactElement {
-    const { ontology } = useOntology();
     const [localProps, setLocalProps] = useState<Props>(props);
     
     // TODO: Implement strategy logic based on seam: ${spec.seam}
@@ -99,13 +99,142 @@ export default function ${componentName}(props: Props): React.ReactElement {
             role="region" 
             aria-label="${spec.intent}"
             className="strategy-component"
+            data-seam="${spec.seam}"
         >
-            <p>Generated strategy for ${spec.seam}</p>
-            <p>Intent: ${spec.intent}</p>
+            ${jsxContent}
         </div>
     );
 }
 `;
+    }
+
+    private generateJSXFromAccepts(spec: StrategySpec): string {
+        const acceptsProps = spec.accepts.properties as Record<string, { type: string; required?: boolean }> || {};
+        const requiredProps = spec.accepts.required as string[] || [];
+        const seamRole = spec.seam.split('-')[0]; // e.g., "capture", "elicit", "extraction", "template"
+        
+        // Identify function props (callbacks) and data props
+        const functionProps: string[] = [];
+        const dataProps: string[] = [];
+        
+        for (const [key, def] of Object.entries(acceptsProps)) {
+            if (def.type === 'function') {
+                functionProps.push(key);
+            } else {
+                dataProps.push(key);
+            }
+        }
+        
+        // Find common callback patterns
+        const onSave = functionProps.find(p => p.startsWith('onSave') || p.startsWith('onApply') || p.startsWith('onSelect') || p.startsWith('onInsert'));
+        const onCancel = functionProps.find(p => p.startsWith('onCancel') || p.startsWith('onClose'));
+        const onChange = functionProps.find(p => p.startsWith('onChange') || p.startsWith('onInputChange'));
+        
+        // Generate inputs for data props (excluding ontology which is typically an array)
+        const dataInputs = dataProps
+            .filter(key => key !== 'ontology')
+            .map(key => {
+                const def = acceptsProps[key];
+                const required = requiredProps.includes(key) ? ' required' : '';
+                const isBoolean = def.type === 'boolean';
+                const isArray = def.type === 'array';
+                
+                if (isBoolean) {
+                    return `<label>
+    <input 
+        type="checkbox" 
+        checked={localProps.${key} || false}
+        onChange={(e) => setLocalProps(prev => ({ ...prev, ${key}: e.target.checked }))}
+        aria-label="${key}"
+    />
+    ${key}
+</label>`;
+                }
+                
+                if (isArray && key === 'tags') {
+                    return `<label htmlFor="${key}" className="sr-only">${key}</label>
+<input 
+    id="${key}"
+    type="text" 
+    value={(localProps.${key} || []).join(', ')}
+    onChange={(e) => setLocalProps(prev => ({ ...prev, ${key}: e.target.value.split(',').map(s => s.trim()) }))}
+    placeholder="${key} (comma-separated)"${required}
+    aria-label="${key}"
+/>`;
+                }
+                
+                // For select-like props (initialKey, templateId), try to use a select if ontology is available
+                if ((key === 'initialKey' || key === 'templateId') && acceptsProps.ontology) {
+                    return `<label htmlFor="${key}" className="sr-only">${key}</label>
+<select 
+    id="${key}"
+    value={localProps.${key} || ''}
+    onChange={(e) => setLocalProps(prev => ({ ...prev, ${key}: e.target.value }))}
+    aria-label="${key}"${required}
+>
+    <option value="">Select ${key}...</option>
+    {props.ontology?.map((node: any) => (
+        <option key={node.id} value={node.key || node.id}>{node.label || node.key || node.id}</option>
+    ))}
+</select>`;
+                }
+                
+                // For textarea-like props
+                if (key === 'text' || key === 'content' || key === 'description') {
+                    return `<label htmlFor="${key}" className="sr-only">${key}</label>
+<textarea 
+    id="${key}"
+    value={localProps.${key} || ''}
+    onChange={(e) => setLocalProps(prev => ({ ...prev, ${key}: e.target.value }))}
+    placeholder="${key}"${required}
+    aria-label="${key}"
+    rows={4}
+/>`;
+                }
+                
+                return `<label htmlFor="${key}" className="sr-only">${key}</label>
+<input 
+    id="${key}"
+    type="text" 
+    value={localProps.${key} || ''}
+    onChange={(e) => setLocalProps(prev => ({ ...prev, ${key}: e.target.value }))}
+    placeholder="${key}"${required}
+    aria-label="${key}"
+/>`;
+            })
+            .join('\n            ');
+        
+        // Generate action buttons based on available callbacks
+        const actionButtons: string[] = [];
+        if (onSave) {
+            actionButtons.push(`<button 
+    type="button"
+    onClick={() => props.${onSave}(localProps)}
+    disabled={${dataProps.map(p => `!localProps.${p}`).join(' && ')}}
+>
+    ${onSave === 'onSave' ? 'Save' : onSave === 'onApply' ? 'Apply' : onSave === 'onSelect' ? 'Select' : 'Insert'}
+</button>`);
+        }
+        if (onCancel) {
+            actionButtons.push(`<button 
+    type="button"
+    onClick={() => props.${onCancel}()}
+>
+    ${onCancel === 'onCancel' ? 'Cancel' : 'Close'}
+</button>`);
+        }
+        
+        if (actionButtons.length === 0) {
+            // Default buttons if no recognized callbacks
+            actionButtons.push(`<button type="button" disabled>No action</button>`);
+        }
+        
+        const buttonsJsx = actionButtons.join('\n            ');
+        
+        return `<div className="${seamRole}-strategy">
+            ${dataInputs}
+            ${buttonsJsx}
+        </div>`;
     }
 
     private generatePropsInterface(accepts: Record<string, unknown>): string {
@@ -184,25 +313,20 @@ export async function generateAllCandidates(
     const generator = new StrategyGenerator();
     const dir = createCandidateDir(outputDir);
     
-    // Map discovered seam roles to built-in spec IDs
-    const roleToSpecId: Record<string, string> = {
-        'capture': 'capture-0',
-        'elicit': 'elicit-0',
-        'extraction': 'extraction-0',
-        'template': 'template-0',
-    };
+    // Generate one candidate per discovered seam that has a built-in spec for its role
+    const rolesWithBuiltinSpecs = new Set(['capture', 'elicit', 'extraction', 'template']);
     
-    // Generate one candidate per built-in spec that has a matching seam role
     for (const seam of seams) {
-        const specId = roleToSpecId[seam.role];
-        if (specId) {
-            const spec = generator.specGenerator.getSpec(specId);
-            if (spec) {
-                // Use the built-in spec ID for generation but include discovered seam info
-                const candidate = await generator.generateForSeam(specId, [], options);
-                await saveCandidate(dir, candidate);
-            }
-        }
+        if (!rolesWithBuiltinSpecs.has(seam.role)) continue;
+        
+        // Generate a spec from the discovered seam (uses built-in as base if available)
+        const spec = generator.specGenerator.generateSpec(seam, []);
+        
+        // Generate candidate using the discovered seam's ID
+        const candidate = await generator.generateForSeam(seam.id, [], options);
+        // Override the spec with the discovered seam's spec
+        candidate.spec = spec;
+        await saveCandidate(dir, candidate);
     }
     
     return dir;

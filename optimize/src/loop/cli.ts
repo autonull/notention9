@@ -3,6 +3,7 @@ import { parseArgs } from 'node:util';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { mkdir, writeFile, readFile, readdir } from 'fs/promises';
+import * as path from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -17,6 +18,7 @@ import { analyzeDuplicates } from '../discovery/duplicates.js';
 import { loadLoopConfig, validateLoopConfig } from '../utils/loopConfig.js';
 import { loadTaxonomy, validateTaxonomy } from '../utils/taxonomy.js';
 import { StrategySpecGenerator, generateAllCandidates, runStaticGates, runGatesOnCandidateDir, runFullEvaluation, runBaselineEvaluation, createAdoptionSystem, adoptWinner, emitT4RequestFromEvidence, generateT4FromFailedCandidates } from '../synthesis/index.js';
+import { deriveProblemsFromDiscovery, prioritizeProblems, type DiscoveredProblem, type PrioritizedProblem } from './prioritize.js';
 import type { Seam } from '../discovery/seams.js';
 
 interface LoopParsedFlags {
@@ -462,6 +464,52 @@ async function runAdopt(config: any, outputDir: string, dry: boolean, _json: boo
     return 0;
 }
 
+async function runPrioritize(config: any, outputDir: string, dry: boolean, json: boolean): Promise<number> {
+    console.log('📊 Prioritizing discovered problems by impact...\n');
+
+    const fs = await import('fs/promises');
+    const path = await import('path');
+    
+    // Load discovered artifacts
+    const discoveredPath = path.join(outputDir, 'discovered.json');
+    let discovered: any;
+    
+    try {
+        const content = await fs.readFile(discoveredPath, 'utf-8');
+        discovered = JSON.parse(content);
+        console.log(`  📄 Loaded discovered artifacts from ${discoveredPath}`);
+    } catch {
+        console.log('  ❌ No discovered.json found. Run discover first.');
+        return 1;
+    }
+
+    // Derive problems from discovery
+    const problems = deriveProblemsFromDiscovery(discovered);
+    console.log(`  🔍 Derived ${problems.length} problems from discovery`);
+
+    // Prioritize
+    const prioritized = prioritizeProblems(problems);
+    
+    console.log('\n📋 Prioritized Problems:');
+    for (const p of prioritized) {
+        console.log(`   ${p.rank}. [${p.impactScore}] ${p.type}: ${p.description}`);
+        if (!dry) console.log(`      Evidence: ${p.evidence.join('; ')}`);
+    }
+
+    // Save prioritized problems
+    if (!dry) {
+        await ensureDir(outputDir);
+        const prioritizedPath = path.join(outputDir, 'prioritized.json');
+        await fs.writeFile(prioritizedPath, JSON.stringify(prioritized, null, 2));
+        console.log(`\n✅ Prioritized problems written to ${prioritizedPath}`);
+    } else {
+        console.log('\n🔍 Dry run - no files written');
+        if (json) console.log(JSON.stringify(prioritized, null, 2));
+    }
+
+    return 0;
+}
+
 async function runRequest(config: any, outputDir: string, dry: boolean, _json: boolean): Promise<number> {
     console.log('📝 Emitting T4 request from evaluation evidence...\n');
 
@@ -504,6 +552,82 @@ async function runRequest(config: any, outputDir: string, dry: boolean, _json: b
     return 0;
 }
 
+async function runFullLoop(config: any, outputDir: string, dry: boolean, json: boolean): Promise<number> {
+    console.log('🔄 Running full discover→prioritize→synthesize→evaluate→adopt cycle...\n');
+    
+    // Create a timestamped run directory
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const runDir = dry ? outputDir : path.join(outputDir, `run-${timestamp}`);
+    
+    if (!dry) {
+        await ensureDir(runDir);
+    }
+    
+    console.log(`📁 Output directory: ${runDir}\n`);
+    
+    // Step 1: Discover
+    console.log('━'.repeat(60));
+    console.log('STEP 1: DISCOVER');
+    console.log('━'.repeat(60));
+    const discoverResult = await runDiscover(config, runDir, dry, false);
+    if (discoverResult !== 0) {
+        console.log('❌ Discover failed, stopping loop');
+        return discoverResult;
+    }
+    
+    // Step 2: Prioritize
+    console.log('\n━'.repeat(60));
+    console.log('STEP 2: PRIORITIZE');
+    console.log('━'.repeat(60));
+    const prioritizeResult = await runPrioritize(config, runDir, dry, false);
+    if (prioritizeResult !== 0) {
+        console.log('❌ Prioritize failed, stopping loop');
+        return prioritizeResult;
+    }
+    
+    // Step 3: Synthesize
+    console.log('\n━'.repeat(60));
+    console.log('STEP 3: SYNTHESIZE');
+    console.log('━'.repeat(60));
+    const synthesizeResult = await runSynthesize(config, runDir, dry, false);
+    if (synthesizeResult !== 0) {
+        console.log('❌ Synthesize failed (no candidates passed gates), stopping loop');
+        return synthesizeResult;
+    }
+    
+    // Step 4: Evaluate
+    console.log('\n━'.repeat(60));
+    console.log('STEP 4: EVALUATE');
+    console.log('━'.repeat(60));
+    const evaluateResult = await runEvaluate(config, runDir, dry, false);
+    if (evaluateResult !== 0) {
+        console.log('❌ Evaluate failed (no candidates beat baseline), stopping loop');
+        return evaluateResult;
+    }
+    
+    // Step 5: Adopt
+    console.log('\n━'.repeat(60));
+    console.log('STEP 5: ADOPT');
+    console.log('━'.repeat(60));
+    const adoptResult = await runAdopt(config, runDir, dry, false);
+    if (adoptResult !== 0) {
+        console.log('⚠️  Adopt failed (no winning candidate), but continuing');
+    }
+    
+    // Step 6: Request (T4 for failed candidates)
+    console.log('\n━'.repeat(60));
+    console.log('STEP 6: REQUEST (T4)');
+    console.log('━'.repeat(60));
+    await runRequest(config, runDir, dry, false);
+    
+    console.log('\n━'.repeat(60));
+    console.log('✅ FULL LOOP COMPLETE');
+    console.log('━'.repeat(60));
+    console.log(`Artifacts written to: ${runDir}`);
+    
+    return 0;
+}
+
 async function main(): Promise<number> {
     const rawArgs = process.argv.slice(2);
 
@@ -531,8 +655,7 @@ async function main(): Promise<number> {
                 return runDiscover(config, output, dry, json);
             }
             case 'prioritize': {
-                console.log('🔄 Prioritize command not yet implemented');
-                return 1;
+                return runPrioritize(config, output, dry, json);
             }
             case 'synthesize': {
                 return runSynthesize(config, output, dry, json);
@@ -547,15 +670,14 @@ async function main(): Promise<number> {
                 return runRequest(config, output, dry, json);
             }
             case 'run': {
-                console.log('🔄 Full loop run not yet implemented');
-                return 1;
+                return runFullLoop(config, output, dry, json);
             }
             case 'help': {
                 printLoopHelp();
                 return 0;
             }
             default:
-                throw new Error(`Unknown subcommand: ${subcommand}. Use: discover, prioritize, synthesize, evaluate, adopt, run, help`);
+                throw new Error(`Unknown subcommand: ${subcommand}. Use: discover, prioritize, synthesize, evaluate, adopt, request, run, help`);
         }
     } catch (e) {
         console.error(`Error: ${e instanceof Error ? e.message : String(e)}`);
