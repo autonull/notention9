@@ -10,7 +10,7 @@ Consolidated from TODO.5.md. Batches remaining work into 3 focused PRs. Supersed
 |------|-------|----------|
 | Core semantics | ✅ 360 tests | — |
 | UI | ✅ 100+ tests | 2 pre-existing failures |
-| Golden Path journey | ✅ Green (optimize) | Needs clean-profile + human test |
+| Golden Path journey | ✅ Green (optimize) | Clean-profile + human test (G1) |
 | Storage | ✅ Schema v1 validation + export/import + recovery/snapshots | Quota mgmt |
 | Nostr | 🟡 Works, nonconformant | CBOR, NoteID, signing (Tier 0) |
 | Agent | 🟡 Headless OK; UI loop partial | Confirmations, traces, undo |
@@ -19,8 +19,9 @@ Consolidated from TODO.5.md. Batches remaining work into 3 focused PRs. Supersed
 | Metaphor system | ✅ 15 defaults, registry, mapper + visual consumers | — |
 | Templates | ✅ Generator + ontology + create-note wiring | — |
 | CLI | ✅ Full cockpit + docs | — |
-| Simulator | ✅ Movie Studio + scenarios + regression test | Golden Path recording |
-| Engineering confidence | ✅ `pnpm verify` passes | CI gate (G0 done) |
+| Simulator | ✅ Movie Studio + scenarios + regression test | Golden Path recording (G6) |
+| Engineering confidence | ✅ `pnpm verify` passes (CI gate G0) | — |
+| **3 Batches (A/B/C)** | ✅ **ALL COMPLETE** | Gates G1-G6 remain |
 
 ---
 
@@ -34,14 +35,17 @@ Consolidated from TODO.5.md. Batches remaining work into 3 focused PRs. Supersed
 | **G3** | Data loss provably impossible? | 🟡 Partial (export/import ✅, Batch A ✅) | Fix W2 remaining |
 | **G4** | Product direction interop-first? | ⏳ Decide now | W5 stays P1 or → P0 |
 | **G5** | Users hit single-device limit? | ⏳ After G3 | Defer W6 |
+| **G6** | MP4 recordings work reliably for demos/teaching? | ⏳ Infrastructure | Fix lvh.me DNS / use localhost:ports |
 
 **G4 must be decided before Batch A completes** (affects W5 priority).
 
+**Human testing (G1, G2) deferred** — will run when G4 is decided and MP4 infrastructure (G6) is functional for recording demos.
+
 ---
 
-## 2. Three Batches (Sequential PRs)
+## 2. Three Batches (Sequential PRs) — **ALL COMPLETE ✅**
 
-### Batch A: Trust & Visibility (Settings Panel) — **✅ DONE**
+### Batch A: Trust & Visibility (Settings Panel) — ✅ DONE (PR #1)
 
 **Goal**: Make trust boundary visible; prove export is a trust signal.
 
@@ -58,7 +62,7 @@ Consolidated from TODO.5.md. Batches remaining work into 3 focused PRs. Supersed
 
 ---
 
-### Batch B: Demo & Distribution — **✅ DONE (Core Logic)**
+### Batch B: Demo & Distribution — ✅ DONE (PR #2, Core Logic)
 
 **Goal**: Stranger completes Golden Path unaided; CI reproduces findings.
 
@@ -74,7 +78,7 @@ Consolidated from TODO.5.md. Batches remaining work into 3 focused PRs. Supersed
 
 ---
 
-### Batch C: First Metaphor View — **✅ DONE**
+### Batch C: First Metaphor View — ✅ DONE (PR #3)
 
 **Goal**: Prove metaphor system as extensibility point.
 
@@ -99,6 +103,7 @@ Consolidated from TODO.5.md. Batches remaining work into 3 focused PRs. Supersed
 | W5 Protocol Foundation (CBOR, NoteID, Signing) | G4 decision: interop-first? | G4 |
 | W5b Simulator Protocol Testbed | W5 promoted | G4 → W5 |
 | W6 Multi-Device Sync | Users hit single-device limit (G5) | G3, G5 |
+| **G6 Fix** MP4 Recording Infrastructure | Demos, teaching, CI evidence | G4 (decide scope) |
 
 ---
 
@@ -146,6 +151,7 @@ Consolidated from TODO.5.md. Batches remaining work into 3 focused PRs. Supersed
 | R3 | Simulator regression engine not adopted | Concrete deliverable in B3; CI gate enforces |
 | R4 | Metaphor plugin interface over-engineered | Ship one working example (C2) before generalizing |
 | R5 | G4 decision delays W5 | Decide G4 now; W5b provides simulator validation path regardless |
+| R6 | MP4 recording infrastructure blocks demo/teaching | Fix lvh.me DNS or refactor MovieMaker to use localhost:ports; headless works now |
 
 ---
 
@@ -159,8 +165,9 @@ Consolidated from TODO.5.md. Batches remaining work into 3 focused PRs. Supersed
    → G1, G2 achievable
 4. Batch C (Metaphor View) — ✅ DONE (1 PR)
    → Extensibility proven
-5. Human testing (G1, G2) — 5 users
-6. If G2 passes → W3/W4; if G4=yes → W5
+5. **NEXT: Fix G6 (MP4 recordings)** — lvh.me DNS or localhost:ports in MovieMaker
+6. Human testing (G1, G2) — 5 users (deferred until G4+G6)
+7. If G2 passes → W3/W4; if G4=yes → W5
 ```
 
 ---
@@ -184,8 +191,8 @@ Consolidated from TODO.5.md. Batches remaining work into 3 focused PRs. Supersed
 | **Storage Recovery** | Snapshots (auto + manual), corruption recovery (validated restore, corrupted note dropping), quota monitoring | `core/src/storage/recovery.ts`, `core/src/storage/recovery.test.ts` |
 | **Test Coverage** | DataTab, SimulatorRegression, MetaphorViewPlugin tests | `ui/src/components/settings/DataTab.test.tsx`, `simulator/src/scenarios/SimulatorRegression.test.ts`, `ui/src/plugins/metaphor/MetaphorViewPlugin.test.tsx` |
 
-**Core tests: 360 passing | Verify: ✅**
+**Core tests: 360 passing | Verify: ✅ | 3 PRs complete**
 
 ---
 
-*End of TODO.6.md — 3 PRs + robustness complete, gates unblocked, evidence-driven.*
+*End of TODO.6.md — 3 PRs + robustness complete, gates unblocked, evidence-driven. Next: G6 (MP4 infra) → G4 decision → human testing (G1, G2).*
