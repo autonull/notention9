@@ -33,11 +33,11 @@ Consolidated from TODO.5.md. Batches remaining work into 3 focused PRs. Supersed
 | **G1** | Stranger completes Golden Path <2 min unaided? | ⏳ Batch B | Fix W1; no features |
 | **G2** | Humans rate ≥70% matches relevant? | ⏳ After G1 | Fix matching/ontology |
 | **G3** | Data loss provably impossible? | 🟡 Partial (export/import ✅, Batch A ✅) | Fix W2 remaining |
-| **G4** | Product direction interop-first? | ⏳ Decide now | W5 stays P1 or → P0 |
+| **G4** | Product direction interop-first? | ✅ **YES** — Interop-first | W5 stays P1 or → P0 |
 | **G5** | Users hit single-device limit? | ⏳ After G3 | Defer W6 |
 | **G6** | MP4 recordings work reliably for demos/teaching? | ✅ **DONE** | Use localhost:ports instead of lvh.me DNS |
 
-**G4 must be decided before Batch A completes** (affects W5 priority).
+**G4 must be decided before Batch A completes** (affects W5 priority). → **DECIDED: YES (interop-first)**
 
 **Human testing (G1, G2) deferred** — will run when G4 is decided and MP4 infrastructure (G6) is functional for recording demos.
 
@@ -100,8 +100,8 @@ Consolidated from TODO.5.md. Batches remaining work into 3 focused PRs. Supersed
 |------------|---------|------|
 | W3 Extraction Quality + Prompt Eval | Human relevance ratings (G2) | G2 |
 | W4 Agent Loop Closure | Confidence from G1/G2 | G1, G2 |
-| W5 Protocol Foundation (CBOR, NoteID, Signing) | G4 decision: interop-first? | G4 |
-| W5b Simulator Protocol Testbed | W5 promoted | G4 → W5 |
+| **W5 Protocol Foundation (CBOR, NoteID, Signing)** | G4 decision: interop-first? | ✅ **G4=YES → ACTIVE** |
+| W5b Simulator Protocol Testbed | W5 promoted | ✅ **G4 → W5 (Active)** |
 | W6 Multi-Device Sync | Users hit single-device limit (G5) | G3, G5 |
 | **G6 Fix** MP4 Recording Infrastructure | Demos, teaching, CI evidence | ✅ **DONE** (localhost:ports) |
 
@@ -158,7 +158,7 @@ Consolidated from TODO.5.md. Batches remaining work into 3 focused PRs. Supersed
 ## 8. Execution Order
 
 ```
-1. Decide G4 (interop-first?) — 1 hour
+1. Decide G4 (interop-first?) — ✅ DONE (YES)
 2. Batch A (Trust & Visibility) — ✅ DONE (1 PR)
    → G3 closer, unblocks W4/W4b
 3. Batch B (Demo & Distribution) — ✅ DONE (1 PR)
@@ -166,8 +166,10 @@ Consolidated from TODO.5.md. Batches remaining work into 3 focused PRs. Supersed
 4. Batch C (Metaphor View) — ✅ DONE (1 PR)
    → Extensibility proven
 5. Fix G6 (MP4 recordings) — ✅ DONE (localhost:ports in MovieMaker)
-6. Human testing (G1, G2) — 5 users (deferred until G4)
-7. If G2 passes → W3/W4; if G4=yes → W5
+6. **NEXT: W5 Protocol Foundation** — CBOR, NoteID, Signing (interop-first)
+7. W5b Simulator Protocol Testbed — validate W5 in simulator
+8. Human testing (G1, G2) — 5 users (G4+G6 ready)
+9. If G2 passes → W3/W4; W6 after G5
 ```
 
 ---
