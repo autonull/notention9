@@ -14,7 +14,12 @@ interface CapabilityGrant {
     permission: Permission;
 }
 
-export function CapabilitiesPanel() {
+interface CapabilitiesPanelProps {
+    onGrantViewed?: (noteId: string, capability: string) => void;
+    onRevoked?: (noteId: string, capability: string) => void;
+}
+
+export function CapabilitiesPanel({onGrantViewed, onRevoked}: CapabilitiesPanelProps) {
     const {notes, updateNote} = useNotes();
     const [revokeConfirm, setRevokeConfirm] = useState<CapabilityGrant | null>(null);
     const [expandedNoteId, setExpandedNoteId] = useState<string | null>(null);
@@ -89,7 +94,15 @@ export function CapabilitiesPanel() {
                     <div key={noteId} className="border border-gray-700/50 rounded-lg overflow-hidden">
                         <button
                             type="button"
-                            onClick={() => setExpandedNoteId(expandedNoteId === noteId ? null : noteId)}
+                            onClick={() => {
+                                const isExpanding = expandedNoteId !== noteId;
+                                setExpandedNoteId(isExpanding ? noteId : null);
+                                if (isExpanding) {
+                                    noteGrants.forEach(grant => {
+                                        onGrantViewed?.(noteId, `${grant.permission.type}:${grant.permission.scope}`);
+                                    });
+                                }
+                            }}
                             className="w-full p-4 flex items-center justify-between hover:bg-gray-800/50 transition-colors text-left"
                         >
                             <div className="flex items-center gap-3">
@@ -140,7 +153,10 @@ export function CapabilitiesPanel() {
                 isOpen={!!revokeConfirm}
                 onClose={() => setRevokeConfirm(null)}
                 onConfirm={() => {
-                    if (revokeConfirm) handleRevoke(revokeConfirm);
+                    if (revokeConfirm) {
+                        handleRevoke(revokeConfirm);
+                        onRevoked?.(revokeConfirm.noteId, `${revokeConfirm.permission.type}:${revokeConfirm.permission.scope}`);
+                    }
                     setRevokeConfirm(null);
                 }}
                 title="Revoke Capability Grant?"

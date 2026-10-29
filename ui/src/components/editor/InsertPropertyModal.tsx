@@ -7,6 +7,7 @@ import {findAttributeDef, validateAttributeValue} from '@notention/core';
 import {Input} from '../ui/Input';
 import {Button} from '../ui/Button';
 import {EnhancedPropertyValueInput} from '../properties/EnhancedPropertyValueInput';
+import {useMetrics, Metrics} from '../../hooks/useMetrics';
 
 interface InsertPropertyModalProps {
     isOpen: boolean;
@@ -39,6 +40,7 @@ export function InsertPropertyModal({
     const [operator, setOperator] = useState(initialOperator);
     const [value, setValue] = useState(initialValue);
     const [touched, setTouched] = useState(false);
+    const {track} = useMetrics();
 
     const activeDef = useMemo(() => {
         if (ontology && key) {
@@ -83,6 +85,16 @@ export function InsertPropertyModal({
     const learnedSuggestions = useMemo(() => {
         return filteredSuggestions.filter(s => !s.parentContext);
     }, [filteredSuggestions]);
+
+    // Track when pattern suggestions are shown
+    React.useEffect(() => {
+        if (patternSuggestions.length > 0) {
+            track(Metrics.PATTERN_SUGGESTION_SHOWN, {
+                count: patternSuggestions.length,
+                suggestions: patternSuggestions.map(s => `${s.key} (${s.parentContext})`).join(', ')
+            });
+        }
+    }, [patternSuggestions, track]);
 
     const handleSubmit = (e?: React.FormEvent) => {
         e?.preventDefault();
@@ -145,7 +157,14 @@ export function InsertPropertyModal({
                                  <button
                                      key={`${s.key}-${s.parentContext}`}
                                      type="button"
-                                     onClick={() => setKey(s.key)}
+                                     onClick={() => {
+                                         track(Metrics.PATTERN_SUGGESTION_ACCEPTED, {
+                                             suggestionKey: s.key,
+                                             parentContext: s.parentContext,
+                                             confidence: s.confidence
+                                         });
+                                         setKey(s.key);
+                                     }}
                                      className="flex items-center gap-1 text-[10px] px-2 py-1 rounded-full bg-green-900/30 text-green-300 border border-green-800/50 hover:bg-green-900/50 transition-colors"
                                      title={`Suggested by pattern: ${s.parentContext}`}
                                  >

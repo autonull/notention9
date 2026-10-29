@@ -17,6 +17,11 @@ import {STORAGE_KEYS} from '../../config/storageKeys';
 interface ImportExportSectionProps {
     notes: Note[];
     settings: AppSettings;
+    onExportWorkspace?: () => void;
+    onExportNote?: (noteId: string) => void;
+    onImportSuccess?: (noteCount: number) => void;
+    onImportFailed?: (error: string) => void;
+    onImportNote?: (noteId: string) => void;
 }
 
 interface PendingImport {
@@ -25,7 +30,7 @@ interface PendingImport {
     message: string;
 }
 
-export function ImportExportSection({notes, settings}: ImportExportSectionProps) {
+export function ImportExportSection({notes, settings, onExportWorkspace, onExportNote, onImportSuccess, onImportFailed}: ImportExportSectionProps) {
     const {addToast} = useToast();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [pendingImport, setPendingImport] = useState<PendingImport | null>(null);
@@ -40,6 +45,7 @@ export function ImportExportSection({notes, settings}: ImportExportSectionProps)
         a.click();
         URL.revokeObjectURL(url);
         addToast('Data exported successfully', 'success');
+        onExportWorkspace?.();
     };
 
     const handleExportCSV = () => {
@@ -52,6 +58,7 @@ export function ImportExportSection({notes, settings}: ImportExportSectionProps)
         a.click();
         URL.revokeObjectURL(url);
         addToast('CSV exported successfully', 'success');
+        onExportWorkspace?.();
     };
 
     const handleImportFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,6 +95,7 @@ export function ImportExportSection({notes, settings}: ImportExportSectionProps)
                         currentNotes.push(note as Note);
                         await localforage.setItem(STORAGE_KEYS.notes, currentNotes);
                         addToast(`Imported note: ${note.title ?? 'Untitled'}`, 'success');
+                        onImportNote?.(note.id);
                         setTimeout(() => window.location.reload(), 1000);
                     }
                     return;
@@ -97,6 +105,7 @@ export function ImportExportSection({notes, settings}: ImportExportSectionProps)
             } catch (err: unknown) {
                 const message = err instanceof Error ? err.message : String(err);
                 addToast('Import failed: ' + message, 'error', 5000);
+                onImportFailed?.(message);
             } finally {
                 if (fileInputRef.current) fileInputRef.current.value = '';
             }
@@ -113,6 +122,7 @@ export function ImportExportSection({notes, settings}: ImportExportSectionProps)
                 await localforage.setItem(STORAGE_KEYS.notes, envelope.notes);
                 await localforage.setItem(STORAGE_KEYS.settings, envelope.settings);
                 addToast('Import successful. Reloading...', 'success');
+                onImportSuccess?.(envelope.notes.length);
                 setTimeout(() => window.location.reload(), 1500);
             } else {
                 const note = readSingleNote(pendingImport.data) as Note;
@@ -127,11 +137,13 @@ export function ImportExportSection({notes, settings}: ImportExportSectionProps)
 
                 await localforage.setItem(STORAGE_KEYS.notes, currentNotes);
                 addToast(`Imported note: ${note.title ?? 'Untitled'}`, 'success');
+                onImportSuccess?.(1);
                 setTimeout(() => window.location.reload(), 1000);
             }
         } catch (err) {
             Logger.getInstance().error('Import execution failed', err instanceof Error ? err : new Error(String(err)));
             addToast('Import execution failed. Your existing data was not changed.', 'error');
+            onImportFailed?.(err instanceof Error ? err.message : String(err));
         } finally {
             setPendingImport(null);
         }

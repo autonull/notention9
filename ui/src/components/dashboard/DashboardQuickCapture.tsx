@@ -28,6 +28,7 @@ import {
 } from '../ui/icons';
 import {modShortcut} from '../../utils/platform';
 import {getTextFromHtml} from '@notention/core';
+import {useMetrics, Metrics} from '../../hooks/useMetrics';
 
 interface QuickCaptureTemplate {
     title: string | (() => string);
@@ -183,6 +184,7 @@ export function DashboardQuickCapture({onCreateNote, loadSampleWorkspace, showSa
     const {settings} = useSettings();
     const [quickCaptureInput, setQuickCaptureInput] = useState('');
     const [showFeatures, setShowFeatures] = useState(false);
+    const {track} = useMetrics();
 
     const extractor = useMemo(() => new PropertyExtractor(settings.ontology), [settings.ontology]);
     const extractedProps = useMemo(() => {
@@ -204,11 +206,18 @@ export function DashboardQuickCapture({onCreateNote, loadSampleWorkspace, showSa
         setSelectedNoteId(note.id);
         setActiveView('notes');
         setQuickCaptureInput('');
-    }, [quickCaptureInput, extractedProps, addNote, setSelectedNoteId, setActiveView]);
+        onCreateNote?.();
+    }, [quickCaptureInput, extractedProps, addNote, setSelectedNoteId, setActiveView, onCreateNote]);
 
     const handleQuickTemplate = useCallback((type: keyof typeof TEMPLATES) => {
         const template = TEMPLATES[type];
         const title = typeof template.title === 'function' ? template.title() : template.title;
+
+        // Track template selection
+        track(Metrics.TEMPLATE_SELECTED, {
+            templateType: type,
+            hasMetaphor: template.properties.some(p => p.key === 'metaphor')
+        });
 
         const note = addNote({
             title,
@@ -216,9 +225,16 @@ export function DashboardQuickCapture({onCreateNote, loadSampleWorkspace, showSa
             tags: template.tags,
             properties: template.properties
         });
+
+        // Track template note creation
+        track(Metrics.TEMPLATE_NOTE_CREATED, {
+            templateType: type,
+            noteId: note.id
+        });
+
         setSelectedNoteId(note.id);
         setActiveView('notes');
-    }, [addNote, setSelectedNoteId, setActiveView]);
+    }, [addNote, setSelectedNoteId, setActiveView, track]);
 
     const hasNotes = false; // This will be passed from parent or derived from notes
 

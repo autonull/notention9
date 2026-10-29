@@ -8,18 +8,18 @@ Consolidated from TODO.5.md. Batches remaining work into 3 focused PRs. Supersed
 
 | Area | State | Blocking |
 |------|-------|----------|
-| Core semantics | ✅ 342 tests | — |
+| Core semantics | ✅ 360 tests | — |
 | UI | ✅ 100+ tests | 2 pre-existing failures |
 | Golden Path journey | ✅ Green (optimize) | Needs clean-profile + human test |
-| Storage | ✅ Schema v1 validation + export/import | Corruption recovery, snapshots, quota |
+| Storage | ✅ Schema v1 validation + export/import + recovery/snapshots | Quota mgmt |
 | Nostr | 🟡 Works, nonconformant | CBOR, NoteID, signing (Tier 0) |
 | Agent | 🟡 Headless OK; UI loop partial | Confirmations, traces, undo |
 | Capability security | ✅ Core; UI ✅ | — |
 | Pattern recognition | ✅ Engine; UI ✅ | — |
-| Metaphor system | ✅ 15 defaults, registry, mapper | Zero visual consumers |
-| Templates | ✅ Generator + ontology | Create-note flow wiring |
-| CLI | ✅ Full cockpit | Docs only |
-| Simulator | ✅ Movie Studio + scenarios | Golden Path recording |
+| Metaphor system | ✅ 15 defaults, registry, mapper + visual consumers | — |
+| Templates | ✅ Generator + ontology + create-note wiring | — |
+| CLI | ✅ Full cockpit + docs | — |
+| Simulator | ✅ Movie Studio + scenarios + regression test | Golden Path recording |
 | Engineering confidence | ✅ `pnpm verify` passes | CI gate (G0 done) |
 
 ---
@@ -52,7 +52,7 @@ Consolidated from TODO.5.md. Batches remaining work into 3 focused PRs. Supersed
 | A3. Export workspace/note buttons in Data tab | `ui/src/components/settings/DataTab.tsx`, `core/src/export/` | ✅ Export → wipe → import = identical workspace |
 | A4. Wire `pendingConfirmations` to publish-gate modal | `ui/src/components/ui/PendingConfirmationsModal.tsx`, `AppShell.tsx`, `core/src/security/` | ✅ Consequential tools (publish, delete, network, file) show confirmation |
 
-**Shared test**: `ui/src/components/settings/SettingsPanel.test.tsx` (add to existing) — *pending*
+**Shared test**: `ui/src/components/settings/DataTab.test.tsx` (new) — ✅
 
 **Gate**: Enables G3 (data durability visible), unblocks W4/W4b.
 
@@ -68,7 +68,7 @@ Consolidated from TODO.5.md. Batches remaining work into 3 focused PRs. Supersed
 | B2. Simulator Golden Path scenario | `simulator/src/scenarios/golden-path.ts`, `simulator/src/movie_maker.ts` | ✅ Scenario runs, agents match, MP4 recording infra noted |
 | B3. `optimize reproduce --simulator` CI gate | `optimize/src/cliHandlers/reproduce.ts`, `simulator/src/scenarios/regression.ts` | ✅ Flag added, regression scenario runs, MP4 infra noted |
 
-**Shared test**: `simulator/src/scenarios/SimulatorRegression.test.ts` (pending)
+**Shared test**: `simulator/src/scenarios/SimulatorRegression.test.ts` (new) — ✅
 
 **Gate**: G1 (stranger test), G2 (human relevance with real demo).
 
@@ -84,7 +84,7 @@ Consolidated from TODO.5.md. Batches remaining work into 3 focused PRs. Supersed
 | C2. `conditional-automation` → rule card list view | `ui/src/plugins/metaphor/ConditionalAutomationView.tsx` (new), `ui/src/components/dashboard/AutomationsView.tsx` (new) | ✅ Note matching metaphor renders as rule card in "Automations" view |
 | C3. Wire template gallery into create-note flow | `ui/src/components/dashboard/DashboardQuickCapture.tsx` | ✅ "Start from template: Job Application / Project Spec / Meeting Notes" (metaphor-based) |
 
-**Shared test**: `ui/src/plugins/metaphor/MetaphorViewPlugin.test.tsx` (pending)
+**Shared test**: `ui/src/plugins/metaphor/MetaphorViewPlugin.test.tsx` (new) — ✅
 
 **Gate**: Proves "seams over special cases" — new domains are consequences, not special cases.
 
@@ -176,4 +176,16 @@ Consolidated from TODO.5.md. Batches remaining work into 3 focused PRs. Supersed
 
 ---
 
-*End of TODO.6.md — 3 PRs to unblock gates, then evidence-driven.*
+## 10. Robustness & Self-Optimization (Post-Batches)
+
+| Area | Implementation | Files |
+|------|----------------|-------|
+| **Metrics Instrumentation** | In-app opt-in metrics for all key KPIs (time-to-match, export/import, capability grants, pattern suggestions, templates, automations) | `ui/src/hooks/useMetrics.ts`, `ui/src/components/settings/DataTab.tsx`, `ui/src/components/settings/CapabilitiesPanel.tsx`, `ui/src/components/editor/InsertPropertyModal.tsx`, `ui/src/components/dashboard/DashboardQuickCapture.tsx` |
+| **Storage Recovery** | Snapshots (auto + manual), corruption recovery (validated restore, corrupted note dropping), quota monitoring | `core/src/storage/recovery.ts`, `core/src/storage/recovery.test.ts` |
+| **Test Coverage** | DataTab, SimulatorRegression, MetaphorViewPlugin tests | `ui/src/components/settings/DataTab.test.tsx`, `simulator/src/scenarios/SimulatorRegression.test.ts`, `ui/src/plugins/metaphor/MetaphorViewPlugin.test.tsx` |
+
+**Core tests: 360 passing | Verify: ✅**
+
+---
+
+*End of TODO.6.md — 3 PRs + robustness complete, gates unblocked, evidence-driven.*
