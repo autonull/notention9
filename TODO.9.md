@@ -533,7 +533,7 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | ID | Item | Files | Acceptance | Depends |
 |----|------|-------|-----------|---------|
 | P1 | Natural-language capture end to end (schema + repair + review) | `DescribeItComposer`, `ExtractionReview`, `ui/src/services/ai/` | fewer steps than form; works with local model | L15, M2 |
-| P2 | Progressive + `on-match-failure` elicitation | `InsertPropertyModal`, `EnhancedPropertyForm` | lower TTI **and** lower abandonment | L9 |
+| P2 | Progressive + `on-match-failure` elicitation | `InsertPropertyModal`, `EnhancedPropertyForm` | lower TTI **and** lower abandonment | L9 | ✅ |
 | P3 | `workspace-layout` strategies: list vs two-pane | `DashboardView`, `NotesView` | selectable, measured | L8 |
 | P4 | `match-display` strategies: inline vs sidebar | `LocalMatchPreview`, `DashboardLocalMatch` | selectable, measured | L8 |
 | P5 | `intent-surface`: commitments/deadlines/status | new view + L17a | a commitment can be completed | L17a, P3 |
