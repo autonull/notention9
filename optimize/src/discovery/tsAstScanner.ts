@@ -1,7 +1,7 @@
-import { Project, SourceFile, Type, Symbol, SyntaxKind, Node, InterfaceDeclaration, TypeAliasDeclaration, PropertySignature, TypeReferenceNode, ArrayTypeNode, UnionTypeNode, IntersectionTypeNode, TypeLiteralNode, Identifier } from 'ts-morph';
+import { Project, Type, Symbol, Node, InterfaceDeclaration, TypeAliasDeclaration, PropertySignature } from 'ts-morph';
 import { globSync } from 'glob';
-import { readFileSync } from 'node:fs';
-import { resolve, relative } from 'node:path';
+import { relative } from 'node:path';
+import { createAstProject, DEFAULT_PROJECT_ROOT } from './astProject.js';
 
 export interface ScannedType {
     name: string;
@@ -44,37 +44,17 @@ export interface StatePathInfo {
 
 export class TsAstScanner {
     private project: Project;
+    private readonly projectRoot: string;
     private scannedTypes: Map<string, ScannedType> = new Map();
     private hookReturns: HookReturnType[] = [];
     private statePaths: StatePathInfo[] = [];
 
-    constructor(projectRoot: string = '/home/me/notention9') {
-        this.project = new Project({
-            tsConfigFilePath: `${projectRoot}/tsconfig.json`,
-            skipAddingFilesFromTsConfig: true,
-            compilerOptions: {
-                target: 99,
-                module: 99,
-                moduleResolution: 2,
-                jsx: 4,
-                allowJs: true,
-                skipLibCheck: true,
-                strict: false,
-                esModuleInterop: true,
-                allowSyntheticDefaultImports: true,
-                forceConsistentCasingInFileNames: true,
-                resolveJsonModule: true,
-                isolatedModules: true,
-                noEmit: true,
-                baseUrl: projectRoot,
-                paths: {
-                    '@notention/*': ['packages/*/src'],
-                },
-            },
-        });
+    constructor(projectRoot: string = DEFAULT_PROJECT_ROOT) {
+        this.projectRoot = projectRoot;
+        this.project = createAstProject(projectRoot);
     }
 
-    scanProject(projectRoot: string = '/home/me/notention9'): TypeSchemaData {
+    scanProject(projectRoot: string = this.projectRoot): TypeSchemaData {
         this.scannedTypes.clear();
         this.hookReturns = [];
         this.statePaths = [];
@@ -432,7 +412,7 @@ export class TsAstScanner {
     }
 
     private relativePath(file: string): string {
-        return relative('/home/me/notention9', file);
+        return relative(this.projectRoot, file);
     }
 
     // Get all state paths for registry

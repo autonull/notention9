@@ -94,6 +94,26 @@ registerDiscoveredStrategies(seam, dir);   // glob → inspect → wrap → regi
 
 **Guarantees this buys:** adding a component to the repo can automatically make it a testable strategy; adding an ontology property can automatically create capture/repair tasks and a prompt schema. The search space grows with the codebase, not with our to-do list.
 
+### 3.1 Decision applied: AST only, no regex
+
+`ComponentScanner` was regex-based (its own comment said "TypeScript AST is heavy"). Regex is unsafe here: it misses multi-line destructured props, inherited interfaces, `React.FC<Props>` type arguments, and it counts `useFake` inside strings, comments, and imports as hooks. It also cannot report real source locations.
+
+Rewritten against `ts-morph`, sharing one project factory with `TsAstScanner`:
+
+| Now derived | Previously |
+|-------------|------------|
+| props via referenced type, `extends` chain, type-literal aliases, `React.FC<T>` | one `interface *Props` regex, single-line only |
+| hooks via `CallExpression` matching `use[A-Z]` | substring match over the whole file (strings/comments/imports included) |
+| JSX as a real tree with attribute values and line/column | flat `matchAll` over `<Tag ...>`, line 0 |
+| exports via declaration nodes + export declarations + default | first `export (function\|const\|class)` occurrence |
+| project root found by walking up to `pnpm-workspace.yaml` | hardcoded `/home/me/notention9` |
+
+**Bug found while doing this:** `TsAstScanner` constructed `new Project({ tsConfigFilePath: '<root>/tsconfig.json' })`, but the repo has **no root tsconfig** — construction threw `File not found`, so the entire type-schema discovery pipeline was inert. Fixed by the shared `createAstProject` factory, which uses explicit compiler options and only loads a tsconfig when one exists.
+
+**Verified:** 6 tests (real fixtures on disk, no mocks); live scan of `ui/src` finds 194 components (139 with props), accurate multi-line prop types, zero hook false-positives, ~4s.
+
+**Remaining hardcoding in the scanner (deliberate, next cycle):** `analyzeRoutes`, `analyzeDialogs`, and `analyzeActions` are still seeded from named components and hand-written action lists. They are heuristics, not regex, and will be derived from JSX (buttons, labels, triggers) in Cycle 0 follow-up.
+
 ---
 
 ## 4. Synthesis: inventing UI
@@ -239,6 +259,7 @@ Task harness: Playwright, per-config browser context, seeded data, N≥10 reps, 
 - Derive tasks from ontology + `TypeSchemaBuilder`; mine golden cases via `GoldenCaseMiner`.
 - Output `loop/discovered.json`, `loop/tasks.json`, `loop/golden.jsonl`.
 - **Acceptance:** ≥3 real seams discovered; ≥1 duplicate-component finding; tasks generated for every required ontology property.
+- **Done so far:** ✅ scanner is AST-based and the type-schema pipeline no longer throws (§3.1). Next: seam clustering, duplicate detection, `pnpm loop discover` emission.
 
 **Cycle 1 — Auto-register + baseline**
 - `ComponentStrategy<P>` + `registerDiscoveredStrategies`.

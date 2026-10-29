@@ -1,5 +1,8 @@
-import { readFileSync } from 'node:fs';
 import { globSync } from 'glob';
+import { join } from 'node:path';
+import type { Node, PropertySignature, SourceFile } from 'ts-morph';
+import { Node as N, SyntaxKind } from 'ts-morph';
+import { createAstProject, DEFAULT_PROJECT_ROOT } from './astProject.js';
 
 export interface ComponentInfo {
     name: string;
@@ -59,27 +62,51 @@ export interface SelectorInfo {
     css?: string;
 }
 
+export interface DiscoveryResult {
+    routes: DiscoveredRoute[];
+    dialogs: DiscoveredDialog[];
+    actions: DiscoveredAction[];
+    components: ComponentInfo[];
+}
+
+interface ComponentDeclaration {
+    name: string;
+    node: Node;
+}
+
 export class ComponentScanner {
     private components: Map<string, ComponentInfo> = new Map();
     private routes: DiscoveredRoute[] = [];
     private dialogs: DiscoveredDialog[] = [];
     private actions: DiscoveredAction[] = [];
 
-    scan(projectRoot: string = '/home/me/notention9'): DiscoveryResult {
+    scan(projectRoot: string = DEFAULT_PROJECT_ROOT): DiscoveryResult {
         this.components.clear();
         this.routes = [];
         this.dialogs = [];
         this.actions = [];
 
-        const uiRoot = `${projectRoot}/ui/src`;
-        const files = globSync('**/*.tsx', { cwd: uiRoot, absolute: true });
+        const project = createAstProject(projectRoot);
+        const uiRoot = join(projectRoot, 'ui', 'src');
+        const files = globSync('**/*.tsx', {
+            cwd: uiRoot,
+            absolute: true,
+            ignore: ['**/*.test.tsx', '**/*.spec.tsx'],
+        });
 
         for (const file of files) {
-            const content = readFileSync(file, 'utf-8');
-            const info = this.parseComponent(file, content);
-            if (info) {
-                this.components.set(info.name, info);
+            try {
+                project.addSourceFileAtPath(file);
+            } catch {
+                // Unparseable or missing file: skip rather than fail the whole scan
             }
+        }
+
+        for (const file of files) {
+            const sourceFile = project.getSourceFile(file);
+            if (!sourceFile) continue;
+            const info = this.parseComponent(sourceFile);
+            if (info) this.components.set(info.name, info);
         }
 
         this.analyzeRoutes();
@@ -94,102 +121,268 @@ export class ComponentScanner {
         };
     }
 
-    private parseComponent(file: string, content: string): ComponentInfo | null {
-        let name = '';
-        const props: PropInfo[] = [];
-        const jsx: JSXElement[] = [];
-        const hooks: string[] = [];
-        const exports: string[] = [];
+    private parseComponent(sourceFile: SourceFile): ComponentInfo | null {
+        const declarations = this.componentDeclarations(sourceFile);
+        if (declarations.length === 0) return null;
 
-        // Simple regex-based extraction (TypeScript AST is heavy)
-        const exportMatch = content.match(/export\s+(?:function|const|class)\s+(\w+)/);
-        if (exportMatch) name = exportMatch[1];
+        return {
+            name: declarations[0].name,
+            file: sourceFile.getFilePath(),
+            props: this.extractProps(sourceFile, declarations),
+            jsx: this.extractJsx(sourceFile),
+            hooks: this.extractHooks(sourceFile),
+            exports: this.extractExports(sourceFile),
+        };
+    }
 
-        // Props interface
-        const propsMatch = content.match(/interface\s+\w+Props\s*\{([^}]+)\}/);
-        if (propsMatch) {
-            const propLines = propsMatch[1].split('\n');
-            for (const line of propLines) {
-                const m = line.trim().match(/^(\??\w+)\s*:\s*([^;]+);?$/);
-                if (m) {
-                    props.push({ name: m[1].replace('?', ''), type: m[2].trim(), optional: m[1].startsWith('?') });
-                }
+    private componentDeclarations(sourceFile: SourceFile): ComponentDeclaration[] {
+        const found: ComponentDeclaration[] = [];
+
+        for (const fn of sourceFile.getFunctions()) {
+            if (!fn.isExported() && !fn.isDefaultExport()) continue;
+            const name = fn.getName() ?? this.basename(sourceFile);
+            found.push({ name, node: fn });
+        }
+
+        for (const cls of sourceFile.getClasses()) {
+            if (!cls.isExported() && !cls.isDefaultExport()) continue;
+            const name = cls.getName() ?? this.basename(sourceFile);
+            found.push({ name, node: cls });
+        }
+
+        for (const statement of sourceFile.getVariableStatements()) {
+            if (!statement.isExported()) continue;
+            for (const declaration of statement.getDeclarations()) {
+                const name = declaration.getName();
+                if (!/^[A-Z]/.test(name)) continue;
+                found.push({ name, node: declaration });
             }
         }
 
-        // Hooks used
-        const hookMatches = content.matchAll(/use[A-Z]\w+/g);
-        for (const m of hookMatches) hooks.push(m[0]);
+        const capitalised = found.filter(declaration => /^[A-Z]/.test(declaration.name));
+        return capitalised.length > 0 ? capitalised : found;
+    }
 
-        // JSX elements with semantic meaning
-        const jsxMatches = content.matchAll(/<(\w+)(?:\s+[^>]*)?>/g);
-        for (const m of jsxMatches) {
-            const tag = m[1];
-            if (this.isSemanticElement(tag)) {
-                jsx.push({ tag, props: this.extractProps(m[0]), children: [], location: { line: 0, column: 0 } });
-            }
+    private basename(sourceFile: SourceFile): string {
+        return sourceFile.getBaseNameWithoutExtension();
+    }
+
+    private extractProps(sourceFile: SourceFile, declarations: ComponentDeclaration[]): PropInfo[] {
+        const referenced = this.referencedPropsTypeName(declarations);
+        if (referenced) {
+            const props = this.propsFromNamedType(sourceFile, referenced, new Set());
+            if (props.length > 0) return props;
         }
 
-        return name ? { name, file, props, jsx, hooks, exports } : null;
+        for (const candidate of this.propsCandidateNames(sourceFile)) {
+            const props = this.propsFromNamedType(sourceFile, candidate, new Set());
+            if (props.length > 0) return props;
+        }
+
+        return [];
     }
 
-    private isSemanticElement(tag: string): boolean {
-        const semantic = [
-            'Modal', 'Dialog', 'Button', 'Input', 'Select', 'Form',
-            'TiptapEditor', 'InsertPropertyModal', 'ExtractionReview',
-            'NotesView', 'EditorManager', 'DashboardView', 'SettingsView',
-            'Sidebar', 'Header', 'CommandPalette', 'PropertyForm'
-        ];
-        return semantic.some(s => tag.includes(s)) || tag[0] === tag[0].toUpperCase();
+    private referencedPropsTypeName(declarations: ComponentDeclaration[]): string | null {
+        for (const declaration of declarations) {
+            const parameter = this.firstParameter(declaration.node);
+            const typeNode = parameter?.getTypeNode();
+            if (!typeNode) continue;
+            const name = this.typeReferenceName(typeNode);
+            if (name) return name;
+        }
+        return null;
     }
 
-    private extractProps(jsxString: string): Record<string, string> {
+    private firstParameter(node: Node) {
+        if (N.isFunctionDeclaration(node) || N.isArrowFunction(node) || N.isFunctionExpression(node) || N.isMethodDeclaration(node)) {
+            return node.getParameters()[0];
+        }
+        if (N.isVariableDeclaration(node)) {
+            const initializer = node.getInitializer();
+            if (initializer && (N.isArrowFunction(initializer) || N.isFunctionExpression(initializer))) {
+                return initializer.getParameters()[0];
+            }
+        }
+        return undefined;
+    }
+
+    private typeReferenceName(typeNode: Node): string | null {
+        if (N.isTypeReference(typeNode)) {
+            const typeArguments = typeNode.getTypeArguments();
+            if (typeArguments.length > 0) return this.typeReferenceName(typeArguments[0]);
+            const name = typeNode.getTypeName().getText();
+            return name.includes('.') ? name.split('.').pop() ?? null : name;
+        }
+        if (N.isParenthesizedTypeNode(typeNode)) {
+            return this.typeReferenceName(typeNode.getTypeNode());
+        }
+        return null;
+    }
+
+    private propsCandidateNames(sourceFile: SourceFile): string[] {
+        return [
+            ...sourceFile.getInterfaces().map(declaration => declaration.getName()),
+            ...sourceFile.getTypeAliases().map(declaration => declaration.getName()),
+        ].filter(name => name === 'Props' || name.endsWith('Props'));
+    }
+
+    private propsFromNamedType(sourceFile: SourceFile, name: string, seen: Set<string>): PropInfo[] {
+        if (seen.has(name)) return [];
+        seen.add(name);
+
+        const iface = sourceFile.getInterface(name);
+        if (iface) {
+            const props = iface.getProperties().map(property => this.toPropInfo(property));
+            for (const extension of iface.getExtends()) {
+                const base = this.typeReferenceName(extension) ?? extension.getText();
+                props.push(...this.propsFromNamedType(sourceFile, base, seen));
+            }
+            return props;
+        }
+
+        const alias = sourceFile.getTypeAlias(name);
+        const typeNode = alias?.getTypeNode();
+        if (!typeNode) return [];
+
+        if (N.isTypeLiteral(typeNode)) {
+            return this.typeLiteralProps(typeNode);
+        }
+        if (N.isIntersectionTypeNode(typeNode)) {
+            return typeNode.getTypeNodes().flatMap(member => (N.isTypeLiteral(member) ? this.typeLiteralProps(member) : []));
+        }
+        return [];
+    }
+
+    private typeLiteralProps(typeNode: Node): PropInfo[] {
+        if (!N.isTypeLiteral(typeNode)) return [];
+        return typeNode
+            .getMembers()
+            .filter(N.isPropertySignature)
+            .map(member => this.toPropInfo(member));
+    }
+
+    private toPropInfo(property: PropertySignature): PropInfo {
+        return {
+            name: property.getName(),
+            type: property.getTypeNode()?.getText() ?? 'unknown',
+            optional: property.hasQuestionToken(),
+        };
+    }
+
+    private extractHooks(sourceFile: SourceFile): string[] {
+        const hooks = new Set<string>();
+        for (const call of sourceFile.getDescendantsOfKind(SyntaxKind.CallExpression)) {
+            const match = call.getExpression().getText().match(/(?:^|\.)(use[A-Z]\w*)$/);
+            if (match) hooks.add(match[1]);
+        }
+        return [...hooks];
+    }
+
+    private extractExports(sourceFile: SourceFile): string[] {
+        const names = new Set<string>();
+
+        for (const fn of sourceFile.getFunctions()) {
+            if (fn.isExported()) names.add(fn.getName() ?? 'default');
+        }
+        for (const cls of sourceFile.getClasses()) {
+            if (cls.isExported()) names.add(cls.getName() ?? 'default');
+        }
+        for (const statement of sourceFile.getVariableStatements()) {
+            if (!statement.isExported()) continue;
+            for (const declaration of statement.getDeclarations()) names.add(declaration.getName());
+        }
+        for (const declaration of sourceFile.getExportDeclarations()) {
+            for (const named of declaration.getNamedExports()) names.add(named.getName());
+            if (!declaration.getModuleSpecifierValue()) names.add('*');
+        }
+        if (sourceFile.getDefaultExportSymbol()) names.add('default');
+
+        return [...names];
+    }
+
+    private extractJsx(sourceFile: SourceFile): JSXElement[] {
+        return this.jsxInNode(sourceFile);
+    }
+
+    private jsxInNode(node: Node): JSXElement[] {
+        const elements: JSXElement[] = [];
+        for (const child of node.getChildren()) {
+            if (N.isJsxElement(child)) {
+                elements.push(this.fromJsxElement(child));
+            } else if (N.isJsxSelfClosingElement(child)) {
+                elements.push(this.fromSelfClosing(child));
+            } else {
+                elements.push(...this.jsxInNode(child));
+            }
+        }
+        return elements;
+    }
+
+    private fromJsxElement(element: import('ts-morph').JsxElement): JSXElement {
+        const opening = element.getOpeningElement();
+        return {
+            tag: opening.getTagNameNode().getText(),
+            props: this.jsxAttributes(opening.getAttributes()),
+            children: this.jsxInNode(element),
+            location: this.location(element),
+        };
+    }
+
+    private fromSelfClosing(element: import('ts-morph').JsxSelfClosingElement): JSXElement {
+        return {
+            tag: element.getTagNameNode().getText(),
+            props: this.jsxAttributes(element.getAttributes()),
+            children: [],
+            location: this.location(element),
+        };
+    }
+
+    private jsxAttributes(attributes: Node[]): Record<string, string> {
         const props: Record<string, string> = {};
-        const propRegex = /(\w+)\s*=\s*(?:"([^"]*)"|\{([^}]*)\})/g;
-        let match;
-        while ((match = propRegex.exec(jsxString)) !== null) {
-            props[match[1]] = match[2] ?? match[3] ?? '';
+        for (const attribute of attributes) {
+            if (!N.isJsxAttribute(attribute)) continue;
+            props[attribute.getNameNode().getText()] = this.attributeValue(attribute.getInitializer());
         }
         return props;
     }
 
+    private attributeValue(initializer: Node | undefined): string {
+        if (!initializer) return 'true';
+        if (N.isStringLiteral(initializer)) return initializer.getLiteralText();
+        if (N.isJsxExpression(initializer)) return initializer.getExpression()?.getText() ?? '';
+        return initializer.getText();
+    }
+
+    private location(node: Node): { line: number; column: number } {
+        const sourceFile = node.getSourceFile();
+        const position = node.getStart();
+        const { line, column } = sourceFile.getLineAndColumnAtPos(position);
+        return { line, column };
+    }
+
     private analyzeRoutes(): void {
-        // AppShell -> NotesView (when selectedNote) -> EditorManager -> TiptapEditor
-        // DashboardView (when no selectedNote)
-        const notesView = this.components.get('NotesView');
-        const editorManager = this.components.get('EditorManager');
-        const tiptapEditor = this.components.get('TiptapEditor');
-        const dashboardView = this.components.get('DashboardView');
+        const { notesView, editorManager, tiptapEditor, dashboardView } = {
+            notesView: this.components.get('NotesView'),
+            editorManager: this.components.get('EditorManager'),
+            tiptapEditor: this.components.get('TiptapEditor'),
+            dashboardView: this.components.get('DashboardView'),
+        };
 
         if (notesView && editorManager && tiptapEditor) {
-            this.routes.push({
-                path: '#notes/:noteId',
-                component: 'NotesView',
-                guards: ['selectedNoteId'],
-            });
+            this.routes.push({ path: '#notes/:noteId', component: 'NotesView', guards: ['selectedNoteId'] });
         }
         if (dashboardView) {
-            this.routes.push({
-                path: '#dashboard',
-                component: 'DashboardView',
-                guards: ['!selectedNoteId'],
-            });
+            this.routes.push({ path: '#dashboard', component: 'DashboardView', guards: ['!selectedNoteId'] });
         }
-        // Settings, Ontology, Network, Map, Chat, Trash, Timeline, Actions
-        for (const [name, comp] of this.components) {
+        for (const name of this.components.keys()) {
             if (name.endsWith('View') && !['NotesView', 'DashboardView'].includes(name)) {
-                this.routes.push({
-                    path: `#${name.replace('View', '').toLowerCase()}`,
-                    component: name,
-                    guards: [],
-                });
+                this.routes.push({ path: `#${name.replace('View', '').toLowerCase()}`, component: name, guards: [] });
             }
         }
     }
 
     private analyzeDialogs(): void {
-        const insertModal = this.components.get('InsertPropertyModal');
-        if (insertModal) {
+        if (this.components.has('InsertPropertyModal')) {
             this.dialogs.push({
                 name: 'InsertPropertyModal',
                 trigger: 'handlePrepareNewProperty / toolbar "Add detail" button',
@@ -201,83 +394,27 @@ export class ComponentScanner {
                 ],
             });
         }
-
-        // Other modals
-        for (const [name, comp] of this.components) {
+        for (const name of this.components.keys()) {
             if ((name.includes('Modal') || name.includes('Dialog')) && name !== 'InsertPropertyModal') {
-                this.dialogs.push({
-                    name,
-                    trigger: 'unknown',
-                    component: name,
-                    fields: [],
-                });
+                this.dialogs.push({ name, trigger: 'unknown', component: name, fields: [] });
             }
         }
     }
 
     private analyzeActions(): void {
-        // Toolbar "Add detail" button
-        this.actions.push({
-            component: 'TiptapToolbar',
-            action: 'openPropertyModal',
-            selector: { role: 'button', name: 'Add detail' },
-            intent: 'note.addProperty',
-        });
-
-        // Modal submit
-        this.actions.push({
-            component: 'InsertPropertyModal',
-            action: 'submit',
-            selector: { role: 'button', name: 'Add detail' },
-            intent: 'note.insertProperty',
-        });
-
-        // Modal cancel
-        this.actions.push({
-            component: 'InsertPropertyModal',
-            action: 'cancel',
-            selector: { role: 'button', name: 'Cancel' },
-            intent: 'note.cancelProperty',
-        });
-
-        // Extraction review accept/reject
-        this.actions.push({
-            component: 'ExtractionReview',
-            action: 'accept',
-            selector: { role: 'button', name: 'Accept' },
-            intent: 'note.acceptExtraction',
-        });
-
-        this.actions.push({
-            component: 'ExtractionReview',
-            action: 'reject',
-            selector: { role: 'button', name: 'Reject' },
-            intent: 'note.rejectExtraction',
-        });
-
-        // Publish button
-        this.actions.push({
-            component: 'EditorHeader',
-            action: 'publish',
-            selector: { role: 'button', name: 'Publish' },
-            intent: 'note.publish',
-        });
-
-        // Sidebar note selection
-        this.actions.push({
-            component: 'Sidebar',
-            action: 'selectNote',
-            selector: { role: 'button', name: 'note' },
-            intent: 'note.select',
-        });
+        const actions: DiscoveredAction[] = [
+            { component: 'TiptapToolbar', action: 'openPropertyModal', selector: { role: 'button', name: 'Add detail' }, intent: 'note.addProperty' },
+            { component: 'InsertPropertyModal', action: 'submit', selector: { role: 'button', name: 'Add detail' }, intent: 'note.insertProperty' },
+            { component: 'InsertPropertyModal', action: 'cancel', selector: { role: 'button', name: 'Cancel' }, intent: 'note.cancelProperty' },
+            { component: 'ExtractionReview', action: 'accept', selector: { role: 'button', name: 'Accept' }, intent: 'note.acceptExtraction' },
+            { component: 'ExtractionReview', action: 'reject', selector: { role: 'button', name: 'Reject' }, intent: 'note.rejectExtraction' },
+            { component: 'EditorHeader', action: 'publish', selector: { role: 'button', name: 'Publish' }, intent: 'note.publish' },
+            { component: 'Sidebar', action: 'selectNote', selector: { role: 'button', name: 'note' }, intent: 'note.select' },
+        ];
+        for (const action of actions) {
+            if (this.components.has(action.component)) this.actions.push(action);
+        }
     }
-}
-
-export interface DiscoveryResult {
-    routes: DiscoveredRoute[];
-    dialogs: DiscoveredDialog[];
-    actions: DiscoveredAction[];
-    components: ComponentInfo[];
 }
 
 export const scanner = new ComponentScanner();

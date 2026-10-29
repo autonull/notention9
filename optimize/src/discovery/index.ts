@@ -1,4 +1,5 @@
 export { ComponentScanner, scanner, type DiscoveryResult, type DiscoveredRoute, type DiscoveredDialog, type DiscoveredAction } from './componentScanner.js';
+export { createAstProject, findProjectRoot, DEFAULT_PROJECT_ROOT } from './astProject.js';
 export { StateSchemaInferencer, stateSchemaInferencer, type InferredStateSchema, type StatePath } from './stateSchema.js';
 export { TraceEmitterScanner, traceEmitterScanner, type TraceEmitter } from './traceEmitterScanner.js';
 export { JourneyGenerator, journeyGenerator, type GenerationOptions } from './journeyGenerator.js';
