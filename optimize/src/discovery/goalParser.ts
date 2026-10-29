@@ -1,5 +1,6 @@
 import { DiscoveryEngine } from './index.js';
 import type { JourneySpec } from '../journey.js';
+import type { StatePathRegistry } from './statePathRegistry.js';
 
 export interface ParsedGoal {
     entryComponent: string;
@@ -87,7 +88,7 @@ export class GoalParser {
         return 'DashboardView';
     }
 
-    private inferTargetState(goal: string, selectors: import('./statePathRegistry').StatePathRegistry): TargetStatePredicate {
+    private inferTargetState(goal: string, selectors: StatePathRegistry): TargetStatePredicate {
         // Property-related goals
         if (goal.includes('property') || goal.includes('detail') || goal.includes('attribute')) {
             // Extract property key from goal

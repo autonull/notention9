@@ -3,17 +3,29 @@ node_modules/
 dist/
 build/
 .env
+core/src/**/*.js
+core/src/**/*.d.ts
+!core/src/**/*.test.ts
+!core/src/**/*.test.tsx
 
 # Agent
 agent/data/
 agent/node_modules/
 agent/dist/
+agent/src/**/*.js
+agent/src/**/*.d.ts
+!agent/src/**/*.test.ts
+!agent/src/**/*.test.tsx
 
 # UI
 ui/node_modules/
 ui/dist/
 ui/dev-dist/
 ui/.vite/
+ui/src/**/*.js
+ui/src/**/*.d.ts
+!ui/src/**/*.test.ts
+!ui/src/**/*.test.tsx
 
 # Misc
 .DS_Store
@@ -26,3 +38,18 @@ test-results/
 simulator/src/tests/e2e/test-results/
 playwright-report/
 blob-report/
+simulator/tmp-*.js
+simulator/tmp-*.ts
+ux-evaluation-report.json
+
+# Optimizer
+optimize/src/**/*.js
+optimize/src/**/*.d.ts
+!optimize/src/**/*.test.ts
+!optimize/src/**/*.test.tsx
+
+# Simulator
+simulator/src/**/*.js
+simulator/src/**/*.d.ts
+!simulator/src/**/*.test.ts
+!simulator/src/**/*.test.tsx

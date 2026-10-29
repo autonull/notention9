@@ -107,6 +107,32 @@ export interface Suggestion {
   data?: any;
 }
 
+export interface OntologyMatchResult {
+  noteId: string;
+  score: number;
+  matchedProperties: Property[];
+  matchedInterests: Property[];
+  explanation: string;
+}
+
+export interface OntologyValidationResult {
+  valid: boolean;
+  errors: OntologyValidationError[];
+  warnings: OntologyValidationWarning[];
+}
+
+export interface OntologyValidationError {
+  path: string;
+  message: string;
+  code: string;
+}
+
+export interface OntologyValidationWarning {
+  path: string;
+  message: string;
+  code: string;
+}
+
 export interface Quantity {
   value: number;
   unit: string;

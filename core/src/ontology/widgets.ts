@@ -3,29 +3,36 @@ import type { OntologyNode, OntologyAttribute, PropertyType } from '../types/ind
 /**
  * Widget type mapping for UI generation
  */
-export type WidgetType =
-    | 'text-input'
-    | 'number-input'
-    | 'datetime-picker'
-    | 'date-picker'
-    | 'map-picker'
-    | 'dropdown'
-    | 'contact-selector';
+export const WidgetType = {
+    textInput: 'text-input',
+    numberInput: 'number-input',
+    datetimePicker: 'datetime-picker',
+    datePicker: 'date-picker',
+    mapPicker: 'map-picker',
+    dropdown: 'dropdown',
+    contactSelector: 'contact-selector',
+} as const;
 
-export interface WidgetMetadata {
+export type WidgetType = typeof WidgetType[keyof typeof WidgetType];
+
+/**
+ * Widget metadata structure - used as return type for buildWidgetMetadata
+ * Not exported at runtime - only used as TypeScript type annotation
+ */
+type WidgetMetadata = {
     type: WidgetType;
     icon?: string;
     options?: string[];  // For dropdowns
     operators: string[];
-}
+};
 
 const WIDGET_MAPPING: Record<string, WidgetType> = {
-    'string': 'text-input',
-    'number': 'number-input',
-    'datetime': 'datetime-picker',
-    'date': 'date-picker',
-    'geo': 'map-picker',
-    'enum': 'dropdown'
+    'string': WidgetType.textInput,
+    'number': WidgetType.numberInput,
+    'datetime': WidgetType.datetimePicker,
+    'date': WidgetType.datePicker,
+    'geo': WidgetType.mapPicker,
+    'enum': WidgetType.dropdown
 };
 
 /**

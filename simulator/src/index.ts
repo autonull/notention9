@@ -4,6 +4,15 @@ import { SCENARIOS, generateScenario } from './scenarios/index.js';
 import { MovieMaker, type MovieOptions } from './movie_maker.js';
 import { MovieServer } from './movie_server.js';
 import { DEFAULT_ONTOLOGY } from '@notention/core';
+
+export { type Scenario, type AgentConfig, type Property, type EventConfig, type InputMethod } from './types.js';
+export { ScenarioRunner } from './scenario.js';
+export { Agent } from './agent.js';
+export { MovieMaker, type MovieOptions } from './movie_maker.js';
+export { MovieServer } from './movie_server.js';
+export { SCENARIOS, generateScenario, getScenarioNames, getScenario, getAllScenarios } from './scenarios/index.js';
+export { DEFAULT_ONTOLOGY } from '@notention/core';
+export { SIMULATION_CONFIG, AGENT_COLORS, DEFAULT_PORTS, DEFAULT_MOVIE_OPTIONS, SCENARIO_DEFAULTS } from './constants.js';
 import type { Scenario } from './types.js';
 import chalk from 'chalk';
 import ora from 'ora';
@@ -148,4 +157,6 @@ Options:
     }
 }
 
-main().catch(console.error);
+if (import.meta.url === `file://${process.argv[1]}`) {
+    main().catch(console.error);
+}

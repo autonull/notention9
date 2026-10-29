@@ -6,14 +6,24 @@ import {
     getEnumOptions,
     getAttributesByType,
     getValidOperators,
-    type WidgetMetadata,
     type WidgetType
 } from './widgets.js';
 import { UsageTracker, type SuggestedAttribute } from './statistics.js';
 import { FuzzyMatcher } from '../utils/matching.js';
 import { DEFAULT_ONTOLOGY } from './ontology.default.js';
 
-export type { SuggestedAttribute, WidgetMetadata, WidgetType };
+/**
+ * Widget metadata structure - used as return type for buildWidgetMetadata
+ */
+type WidgetMetadata = {
+    type: WidgetType;
+    icon?: string;
+    options?: string[];
+    operators: string[];
+};
+
+export type { SuggestedAttribute, WidgetType };
+export type { WidgetMetadata };
 
 /**
  * OntologyService - Programmatic access to ontology metadata

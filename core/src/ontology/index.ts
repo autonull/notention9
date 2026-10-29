@@ -1,6 +1,3 @@
-export * from './ontology.default.js';
-export * from './ontologyCore.js';
-export * from './ontologyService.js';
-export * from './domains.js';
-export * from './widgets.js';
-export * from './statistics.js';
+export * from './OntologyAdapter.js';
+export { collectOntologyKeys, getCanonicalKey, getAliases, buildAttributeIndex, findNode, findNodeWithAttribute, findNodeIdForAttribute, getSubtreeKeys, findAttributeDef, addAttribute, addAliasToAttribute, addNode, deleteNode } from './ontologyCore.js';
+export { buildWidgetMetadata, WidgetType } from './widgets.js';

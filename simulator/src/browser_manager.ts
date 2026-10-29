@@ -9,30 +9,39 @@ export interface BrowserManagerOptions {
     relayUrl: string;
 }
 
+interface AgentContext {
+    agent: Agent;
+    context: BrowserContext;
+    page: Page;
+}
+
 export class BrowserManager {
     private browser: Browser | null = null;
-    private context: BrowserContext | null = null;
+    private agentContexts: AgentContext[] = [];
 
     constructor(private readonly options: BrowserManagerOptions) {}
 
-    async start(): Promise<BrowserContext> {
+    async start(): Promise<Browser> {
         this.browser = await chromium.launch({ headless: true });
-        this.context = await this.browser.newContext({
-            viewport: this.options.resolution,
-            bypassCSP: true,
-            ignoreHTTPSErrors: true
-        });
-        return this.context;
+        return this.browser;
     }
 
     async configureAgents(agents: Agent[]): Promise<void> {
-        if (!this.context) throw new Error('Browser not started');
+        if (!this.browser) throw new Error('Browser not started');
         
-        const page = await this.context.newPage();
         this.log(`Configuring ${agents.length} agent sessions...`);
 
         for (const agent of agents) {
-            const url = `http://${agent.id}.lvh.me:${this.options.uiPort}`;
+            // Create isolated context for each agent (separate localStorage/cookies)
+            const context = await this.browser.newContext({
+                viewport: this.options.resolution,
+                bypassCSP: true,
+                ignoreHTTPSErrors: true
+            });
+            
+            const page = await context.newPage();
+            const url = `http://localhost:${this.options.uiPort}`;
+            
             try {
                 await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
                 await page.evaluate(async (data: { key: string; relayUrl: string }) => {
@@ -57,17 +66,38 @@ export class BrowserManager {
                         };
                     });
                 }, { key: agent.secretKey, relayUrl: this.options.relayUrl });
+                
+                this.agentContexts.push({ agent, context, page });
             } catch (e) {
                 const message = e instanceof Error ? e.message : String(e);
                 this.error(new Error(`Failed to configure agent ${agent.profile.name}: ${message}`));
+                await context.close();
             }
         }
-        await page.close();
     }
 
     async createPage(): Promise<Page> {
-        if (!this.context) throw new Error('Browser not started');
-        return this.context.newPage();
+        if (!this.browser) throw new Error('Browser not started');
+        // Return page from first agent context, or create a new one
+        if (this.agentContexts.length > 0) {
+            return this.agentContexts[0].page;
+        }
+        const context = await this.browser.newContext({
+            viewport: this.options.resolution,
+            bypassCSP: true,
+            ignoreHTTPSErrors: true
+        });
+        return context.newPage();
+    }
+
+    getAgentPage(agentName: string): Page | undefined {
+        const ctx = this.agentContexts.find(c => c.agent.profile.name === agentName);
+        return ctx?.page;
+    }
+
+    getAgentContext(agentName: string): BrowserContext | undefined {
+        const ctx = this.agentContexts.find(c => c.agent.profile.name === agentName);
+        return ctx?.context;
     }
 
     async navigateToDashboard(page: Page, dashboardPort: number, view: 'dashboard' | 'ontology' = 'dashboard'): Promise<void> {
@@ -76,10 +106,14 @@ export class BrowserManager {
     }
 
     async cleanup(): Promise<void> {
+        for (const { context } of this.agentContexts) {
+            await context.close();
+        }
+        this.agentContexts = [];
+        
         if (this.browser) {
             await this.browser.close();
             this.browser = null;
-            this.context = null;
         }
     }
 

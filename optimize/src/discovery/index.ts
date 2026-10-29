@@ -16,6 +16,7 @@ export { EventFlowScanner, eventFlowScanner, type EventHandler, type ActionFlow,
 export { AccessibilitySelectorDeriver, deriveSelectorsFromPage, type AriaSnapshotOptions, type AccessibilitySelector, type LiveSelectorResult } from './accessibilitySelector.js';
 export { McpContractScanner, mcpContractScanner, type McpToolContract, type McpPluginInfo } from './mcpContractScanner.js';
 export { GoldenCaseMiner, goldenCaseMiner, type GoldenCase, type MiningOptions } from './goldenCaseMiner.js';
+export { journeyToSimulatorScenario, findingToSimulatorScenario } from './simulatorScenarioGenerator.js';
 
 // Unified discovery facade
 import { ComponentScanner } from './componentScanner.js';

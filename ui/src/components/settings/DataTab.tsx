@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {DocumentDuplicateIcon, TrashIcon} from '../ui/icons';
+import React, {useState, useEffect} from 'react';
+import {DocumentDuplicateIcon, TrashIcon, ExclamationTriangleIcon} from '../ui/icons';
 import {useNotes} from '../../hooks/useNotes';
 import {useSettings} from '../../hooks/useSettingsContext';
 import {useView} from '../../hooks/useViewContext';
@@ -10,6 +10,7 @@ import {CapabilitiesPanel} from './CapabilitiesPanel';
 import {useDemoWorkspace} from '../../hooks/useDemoWorkspace';
 import {SparklesIcon} from '../ui/icons';
 import {useMetrics, Metrics} from '../../hooks/useMetrics';
+import {storageRecovery} from '@notention/core';
 
 export function DataTab() {
     const {notes} = useNotes();
@@ -17,7 +18,18 @@ export function DataTab() {
     const {setActiveView} = useView();
     const demo = useDemoWorkspace();
     const [showClearConfirm, setShowClearConfirm] = useState(false);
+    const [quotaInfo, setQuotaInfo] = useState<{used: number; available: number; percentUsed: number} | null>(null);
     const {track} = useMetrics();
+
+    useEffect(() => {
+        const checkQuota = async () => {
+            const info = await storageRecovery.getQuotaInfo();
+            setQuotaInfo(info);
+        };
+        checkQuota();
+        const interval = setInterval(checkQuota, 60000);
+        return () => clearInterval(interval);
+    }, []);
 
     const handleExportWorkspace = () => {
         track(Metrics.EXPORT_WORKSPACE, {noteCount: notes.length});
@@ -96,6 +108,22 @@ export function DataTab() {
                 onGrantViewed={(noteId, capability) => track(Metrics.CAPABILITY_GRANT_VIEWED, {noteId, capability})}
                 onRevoked={(noteId, capability) => track(Metrics.CAPABILITY_REVOKED, {noteId, capability})}
             />
+
+            {quotaInfo && quotaInfo.percentUsed >= 80 && (
+                <div className="border-t border-gray-700 pt-6">
+                    <div className="flex items-center gap-3 p-4 bg-amber-900/30 border border-amber-700 rounded-lg">
+                        <ExclamationTriangleIcon className="h-6 w-6 text-amber-400 flex-shrink-0"/>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-amber-300">Storage quota warning</p>
+                            <p className="text-xs text-amber-500 mt-1">
+                                Using {quotaInfo.percentUsed.toFixed(1)}% of available storage
+                                ({(quotaInfo.used / 1024 / 1024).toFixed(2)} MB / {(quotaInfo.available / 1024 / 1024).toFixed(2)} MB).
+                                Consider exporting and clearing old data.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <div className="border-t border-gray-700 pt-6">
                 <p className="text-sm text-gray-400 mb-4">

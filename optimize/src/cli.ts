@@ -9,13 +9,14 @@ const __dirname = dirname(__filename);
 // Import to register journeys
 import './journeys.js';
 
-import { handleOptimize, handleReplay, handleGenerateTest, handleReproduce, handleMarkFixed, handleFindings } from './cliHandlers.js';
+import { handleOptimize, handleReplay, handleGenerateTest, handleReproduce, handleMarkFixed, handleFindings, handleUXEvaluate } from './cliHandlers.js';
 
 interface ParsedFlags {
     json: boolean;
     a11y: boolean;
     allowDraft: boolean;
     simulator: boolean;
+    headless: boolean;
     status?: string;
     commitSha?: string;
     positionals: string[];
@@ -26,6 +27,7 @@ function parseFlags(args: string[]): ParsedFlags {
     const a11y = args.includes('--a11y');
     const allowDraft = args.includes('--allow-draft');
     const simulator = args.includes('--simulator');
+    const headless = args.includes('--headless');
 
     let status: string | undefined;
     const statusIndex = args.findIndex(r => r === '--status');
@@ -45,7 +47,7 @@ function parseFlags(args: string[]): ParsedFlags {
         if (commitFlag) commitSha = commitFlag.split('=')[1];
     }
 
-    const flagSet = new Set(['--json', '--a11y', '--allow-draft', '--simulator', '--status', '--commit']);
+    const flagSet = new Set(['--json', '--a11y', '--allow-draft', '--simulator', '--headless', '--status', '--commit']);
     const positionals = args.filter((r, i) => {
         if (flagSet.has(r)) return false;
         if (r.startsWith('--status=') || r.startsWith('--commit=')) return false;
@@ -54,7 +56,7 @@ function parseFlags(args: string[]): ParsedFlags {
         return true;
     });
 
-    return { json, a11y, allowDraft, simulator, status, commitSha, positionals };
+    return { json, a11y, allowDraft, simulator, headless, status, commitSha, positionals };
 }
 
 function printHelp(): void {
@@ -68,6 +70,7 @@ Commands:
   replay <runId>               Replay a run from evidence bundle
   generate-test <findingId>    Generate regression test from finding
   mark-fixed <findingId> [sha] Mark a finding as fixed (optional commit SHA)
+  ux-evaluate                  Evaluate UX metrics across simulator scenarios
   help                         Show this help
 
 Options:
@@ -75,8 +78,12 @@ Options:
   --allow-draft            Allow draft journeys
   --a11y                   Show accessibility findings
   --simulator              Run simulator regression scenario and record MP4
+  --headless               Run simulator regression headless (no browser/MP4)
   --status <status>        Filter findings by status (open|fixed|verified)
   --commit <sha>           Commit SHA for mark-fixed
+  --scenarios <names>      Comma-separated scenario names (ux-evaluate)
+  --output <path>          Output path for JSON report (ux-evaluate)
+  --threshold-<metric> <value>  Threshold overrides (ux-evaluate)
 `);
 }
 
@@ -88,7 +95,7 @@ async function main(): Promise<number> {
         return 0;
     }
 
-    const { json, a11y, allowDraft, simulator, status, commitSha, positionals } = parseFlags(rawArgs);
+    const { json, a11y, allowDraft, simulator, headless, status, commitSha, positionals } = parseFlags(rawArgs);
 
     if (positionals.length === 0) {
         printHelp();
@@ -117,7 +124,7 @@ async function main(): Promise<number> {
             case 'reproduce': {
                 const target = rest[0];
                 if (!target) throw new Error('Finding ID or runId required for reproduce');
-                return handleReproduce(target, json, a11y, simulator);
+                return handleReproduce(target, json, a11y, simulator, headless);
             }
             case 'mark-fixed': {
                 const findingId = rest[0];
@@ -126,6 +133,9 @@ async function main(): Promise<number> {
             }
             case 'findings': {
                 return handleFindings(json, a11y, status);
+            }
+            case 'ux-evaluate': {
+                return handleUXEvaluate(rest);
             }
             case 'help': {
                 printHelp();

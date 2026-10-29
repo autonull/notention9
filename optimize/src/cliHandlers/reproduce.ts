@@ -5,12 +5,12 @@ import { verifyReplay } from '../replay.js';
 import { getReproductionJourneyId } from './utils.js';
 import { runSimulatorRegression } from './simulator-regression.js';
 
-export async function handleReproduce(target: string, json: boolean, a11y: boolean, simulator: boolean): Promise<number> {
+export async function handleReproduce(target: string, json: boolean, a11y: boolean, simulator: boolean, headless: boolean): Promise<number> {
     console.log(`🔁 Reproducing: ${target}`);
 
     if (simulator) {
-        console.log('🎬 Running simulator regression...');
-        return runSimulatorRegression(target, json);
+        console.log(`🎬 Running simulator regression${headless ? ' (headless)' : ''}...`);
+        return runSimulatorRegression(target, json, headless);
     }
 
     const bundle = await loadBundle(target);

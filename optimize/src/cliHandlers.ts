@@ -4,4 +4,5 @@ export { handleGenerateTest } from './cliHandlers/generateTest.js';
 export { handleReproduce } from './cliHandlers/reproduce.js';
 export { handleMarkFixed } from './cliHandlers/markFixed.js';
 export { handleFindings } from './cliHandlers/findings.js';
+export { handleUXEvaluate } from './cliHandlers/uxEvaluate.js';
 export { isA11yFinding, getReproductionJourneyId } from './cliHandlers/utils.js';

@@ -11,6 +11,8 @@ export * from './constants/index.js';
 export * from './tracing/index.js';
 export * from './prompts/index.js';
 export * from './policy/index.js';
+export { DEFAULT_ONTOLOGY } from './ontology/ontology.default.js';
+export { OntologyService } from './ontology/ontologyService.js';
 
 // Utils
 export * from './utils/errors/index.js';
@@ -39,6 +41,11 @@ export * from './storage/index.js';
 export * from './fixtures/index.js';
 export * from './feedback/index.js';
 
+// New extensibility modules
+export * from './ui/index.js';
+export * from './ontology/index.js';
+export * from './suggestions/index.js';
+
 // Nostr-specific (keep separate for optional dependency)
 export * from './network/nostr/nostr.js';
 export * from './network/nostr/privacy.js';
@@ -46,7 +53,6 @@ export * from './network/nostr/discovery.js';
 export * from './network/nostr/relay.js';
 export {
     PROTOCOL_VERSION,
-    EventCBOR,
     encodeEventToCBOR,
     decodeEventFromCBOR,
     computeNoteID,

@@ -16,14 +16,18 @@ import type { NostrEvent } from '../../types/index.js';
 
 export const PROTOCOL_VERSION = 1;
 
-export interface EventCBOR {
+/**
+ * Event CBOR structure - used for encoding/decoding Nostr events to CBOR
+ * Not exported at runtime - only used as TypeScript type annotation
+ */
+type EventCBOR = {
     pubkey: Uint8Array;
     created_at: number;
     kind: number;
     tags: string[][];
     content: string;
     sig: Uint8Array;
-}
+};
 
 export function encodeEventToCBOR(event: NostrEvent): Uint8Array {
     if (!validateEvent(event)) {

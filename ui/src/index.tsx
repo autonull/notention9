@@ -1,14 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import 'tippy.js/dist/tippy.css'; // Import tippy styles for suggestions
+import 'tippy.js/dist/tippy.css';
 import 'leaflet/dist/leaflet.css';
 import './index.css';
 import App from './App';
 import {UIProvider} from './components/UIProvider';
 import {pluginManager} from './plugins';
+import {storageRecovery} from '@notention/core';
 
 // Initialize plugins
 pluginManager.loadPlugins();
+
+// Start storage recovery auto-snapshots (24h interval)
+storageRecovery.startAutoSnapshot();
 
 // Service worker is registered via vite-plugin-pwa injection
 

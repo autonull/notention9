@@ -4,6 +4,7 @@ import {useSettingsView} from '../../hooks/useSettingsView';
 import {Tabs} from '../ui/Navigation';
 import {AITab} from '../settings/AITab';
 import {DataTab} from '../settings/DataTab';
+import {MetricsTab} from '../settings/MetricsTab';
 import {NostrTab} from '../settings/NostrTab';
 import {OntologyTab} from '../settings/OntologyTab';
 import {AgentTab} from '../settings/AgentTab';
@@ -23,6 +24,7 @@ export function SettingsView() {
         {id: 'network', label: '🌐 Networks'},
         {id: 'nostr', label: '🔑 Nostr Keys'},
         {id: 'data', label: '📦 Data Management'},
+        {id: 'metrics', label: '📊 Metrics'},
         {id: 'ontology', label: '🧬 Ontology Graph'},
     ];
 
@@ -55,6 +57,7 @@ export function SettingsView() {
                     <NostrTab settings={settings} setSettings={setSettings}/>
                 )}
                 {activeTab === 'data' && <DataTab/>}
+                {activeTab === 'metrics' && <MetricsTab/>}
                 {activeTab === 'ontology' && <OntologyTab/>}
             </div>
         </div>

@@ -1,4 +1,4 @@
-import {useCallback, useRef} from 'react';
+import {useCallback, useRef, useEffect, useState} from 'react';
 
 interface MetricEvent {
     name: string;
@@ -12,12 +12,33 @@ const listeners = new Set<MetricCallback>();
 const eventQueue: MetricEvent[] = [];
 const MAX_QUEUE_SIZE = 100;
 let flushTimer: ReturnType<typeof setTimeout> | null = null;
+const STORAGE_KEY = 'notention_metrics';
+const CONSENT_KEY = 'notention_metrics_consent';
+
+function persistQueue(): void {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(eventQueue.slice(-MAX_QUEUE_SIZE)));
+    } catch {
+        // Ignore quota exceeded
+    }
+}
+
+function loadQueue(): MetricEvent[] {
+    try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) return JSON.parse(stored);
+    } catch {
+        // Ignore parse errors
+    }
+    return [];
+}
 
 function flush(): void {
     if (eventQueue.length === 0) return;
 
     const events = [...eventQueue];
     eventQueue.length = 0;
+    persistQueue();
 
     for (const listener of listeners) {
         try {
@@ -36,7 +57,30 @@ function scheduleFlush(): void {
     }, 5000);
 }
 
+function hasConsent(): boolean {
+    if (typeof window === 'undefined') return false;
+    try {
+        return localStorage.getItem(CONSENT_KEY) === 'true';
+    } catch {
+        return false;
+    }
+}
+
+function setConsent(value: boolean): void {
+    if (typeof window === 'undefined') return;
+    try {
+        localStorage.setItem(CONSENT_KEY, value ? 'true' : 'false');
+        if (!value) {
+            eventQueue.length = 0;
+            persistQueue();
+        }
+    } catch {
+        // Ignore
+    }
+}
+
 export function useMetrics() {
+    const [consent, setConsentState] = useState(false);
     const sessionIdRef = useRef(() => {
         try {
             return window.crypto?.randomUUID?.() || Math.random().toString(36).slice(2);
@@ -45,7 +89,18 @@ export function useMetrics() {
         }
     })();
 
+    useEffect(() => {
+        const initialConsent = hasConsent();
+        setConsentState(initialConsent);
+        if (initialConsent) {
+            const loaded = loadQueue();
+            eventQueue.push(...loaded);
+        }
+    }, []);
+
     const track = useCallback((name: string, properties: Record<string, string | number | boolean> = {}) => {
+        if (!consent) return;
+
         const event: MetricEvent = {
             name,
             properties: {
@@ -62,9 +117,21 @@ export function useMetrics() {
         } else {
             scheduleFlush();
         }
+    }, [consent]);
+
+    const toggleConsent = useCallback((value: boolean) => {
+        setConsent(value);
+        setConsentState(value);
     }, []);
 
-    return {track};
+    const getQueue = useCallback(() => [...eventQueue], []);
+
+    const clearQueue = useCallback(() => {
+        eventQueue.length = 0;
+        persistQueue();
+    }, []);
+
+    return {track, consent, toggleConsent, getQueue, clearQueue};
 }
 
 export function subscribeMetrics(callback: MetricCallback): () => void {
@@ -78,7 +145,10 @@ export function getMetricsQueue(): MetricEvent[] {
 
 export function clearMetricsQueue(): void {
     eventQueue.length = 0;
+    persistQueue();
 }
+
+export {hasConsent, setConsent};
 
 // Convenience metric names
 export const Metrics = {

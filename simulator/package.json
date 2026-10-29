@@ -1,7 +1,14 @@
 {
-  "name": "simulator",
+  "name": "@notention/simulator",
   "version": "1.0.0",
   "type": "module",
+  "exports": {
+    ".": "./dist/index.js",
+    "./types": "./dist/types.js",
+    "./scenario": "./dist/scenario.js",
+    "./agent": "./dist/agent.js",
+    "./constants": "./dist/constants.js"
+  },
   "scripts": {
     "start": "tsx src/index.ts",
     "test:e2e": "playwright test -c src/tests/e2e/playwright.config.ts",
