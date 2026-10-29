@@ -1,5 +1,10 @@
 # Notention Development Plan (TODO.6.md)
 
+> ⚠️ **Superseded by [TODO.7.md](./TODO.7.md).** The improvement loop here relies on a
+> static estimator (`uxEvaluator`), an uncapped score (`uiuxEvaluator.ts:426`), and a CLI
+> that ignores its own config. TODO.7 rearchitects it around observed measurement,
+> a bounded mutation grammar, holdout validation, and a ledger. Kept for history only.
+
 Consolidated from TODO.5.md. Supersedes prior plan. Tracks the original 3 batches (complete), the extensibility foundation (complete), and the self-improving development loop (next).
 
 ---
