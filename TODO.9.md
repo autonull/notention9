@@ -428,8 +428,8 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 
 | ID | Item | Files | Acceptance | Depends |
 |----|------|-------|-----------|---------|
-| D1 | Uncapped normalized score (`1 - (v-max)/max` > 1) | `optimize/src/uiuxEvaluator.ts:426` | score ∈ [0,1] asserted | — |
-| D2 | CLI builds config then calls the singleton; flags ignored | `optimize/src/cliHandlers/uxEvaluate.ts:37` | flags change output (test) | D1 |
+| D1 | Uncapped normalized score (`1 - (v-max)/max` > 1) | `optimize/src/uiuxEvaluator.ts:426` | score ∈ [0,1] asserted | — | ✅ |
+| D2 | CLI builds config then calls the singleton; flags ignored | `optimize/src/cliHandlers/uxEvaluate.ts:37` | flags change output (test) | D1 | ✅ |
 | D3 | Plain `pnpm test` OOMs on `ui` | `ui/vitest.config.ts`, root scripts | `pnpm test` exits 0 | — |
 | D4 | UI batching is a hand-maintained list | `scripts/test-ui-batched.ts` | glob + chunk | D3 |
 | D5 | Phase 1 infra has zero consumers (`uiRegistry`, `ontologyRegistry`, `suggestionStore`, adapters) | `core/src/ui/`, `core/src/ontology/`, `core/src/suggestions/` | wired (L7) or deleted | L2a |
@@ -623,7 +623,7 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | Batches A/B/C (trust, demo, metaphor) | ✅ done |
 | W5 + W5b (CBOR/NoteID/signing, protocol testbed) | ✅ done |
 | Extensibility Phase 1 *infrastructure* | ✅ written — ⚠️ unused (D5) |
-| 13 domain scenarios + `ux-evaluate` | ✅ written — ⚠️ numbers untrustworthy (D1, D2) |
+| 13 domain scenarios + `ux-evaluate` | ✅ written — ✅ numbers trustworthy (D1, D2 fixed) |
 | Taxonomy + coverage design | ✅ drafted (§13) — ⚠️ not a file (L1) |
 | `ComponentScanner` AST rewrite + tests | ✅ done |
 | `TsAstScanner` tsconfig crash | ✅ fixed |

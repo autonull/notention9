@@ -1,6 +1,22 @@
 import { UXEvaluationConfig } from '../uiuxEvaluator.js';
 import { uxEvaluator } from '../uiuxEvaluator.js';
 
+function getThresholdArg(args: string[], flag: string): { min?: number; max?: number; target?: number } | undefined {
+    const idx = args.indexOf(flag);
+    if (idx === -1) return undefined;
+    const val = args[idx + 1];
+    if (!val) return undefined;
+    const num = parseFloat(val);
+    if (isNaN(num)) return undefined;
+    if (flag.includes('min') || flag.includes('match-relevance') || flag.includes('acceptance') || flag.includes('engagement') || flag.includes('dashboard')) {
+        return { min: num };
+    }
+    if (flag.includes('max') || flag.includes('time-to-match')) {
+        return { max: num };
+    }
+    return { target: num };
+}
+
 export async function handleUXEvaluate(args: string[]): Promise<number> {
     const scenarios = args.includes('--scenarios')
         ? args[args.indexOf('--scenarios') + 1]?.split(',').map((s: string) => s.trim())
@@ -12,13 +28,17 @@ export async function handleUXEvaluate(args: string[]): Promise<number> {
 
     const noReport = args.includes('--no-report');
 
-    const thresholds: UXEvaluationConfig['thresholds'] = {
-        'match-relevance': { min: parseFloat(args[args.indexOf('--threshold-match-relevance') + 1] ?? '0.7') },
-        'time-to-first-match': { max: parseFloat(args[args.indexOf('--threshold-time-to-match') + 1] ?? '30') },
-        'match-acceptance-rate': { min: parseFloat(args[args.indexOf('--threshold-acceptance-rate') + 1] ?? '0.6') },
-        'agent-engagement': { min: parseFloat(args[args.indexOf('--threshold-engagement') + 1] ?? '0.5') },
-        'dashboard-clarity': { min: parseFloat(args[args.indexOf('--threshold-dashboard-clarity') + 1] ?? '0.7') },
-    };
+    const thresholds: UXEvaluationConfig['thresholds'] = {};
+    const matchRel = getThresholdArg(args, '--threshold-match-relevance');
+    if (matchRel) thresholds['match-relevance'] = matchRel;
+    const timeToMatch = getThresholdArg(args, '--threshold-time-to-match');
+    if (timeToMatch) thresholds['time-to-first-match'] = timeToMatch;
+    const acceptance = getThresholdArg(args, '--threshold-acceptance-rate');
+    if (acceptance) thresholds['match-acceptance-rate'] = acceptance;
+    const engagement = getThresholdArg(args, '--threshold-engagement');
+    if (engagement) thresholds['agent-engagement'] = engagement;
+    const dashboard = getThresholdArg(args, '--threshold-dashboard-clarity');
+    if (dashboard) thresholds['dashboard-clarity'] = dashboard;
 
     const config: UXEvaluationConfig = {
         scenarios,
@@ -34,7 +54,7 @@ export async function handleUXEvaluate(args: string[]): Promise<number> {
         console.log('   Scenarios: all available');
     }
 
-    const reports = await uxEvaluator.evaluateAll();
+    const reports = await uxEvaluator.evaluateAll(config);
 
     console.log('\n📊 UX Evaluation Results:\n');
     for (const report of reports) {

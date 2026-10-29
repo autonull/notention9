@@ -62,14 +62,21 @@ export class UXEvaluator {
         };
     }
 
-    async evaluateAll(): Promise<ScenarioUXReport[]> {
-        const scenarioNames = this.config.scenarios ?? Object.keys(SCENARIOS);
+    async evaluateAll(config?: UXEvaluationConfig): Promise<ScenarioUXReport[]> {
+        const effectiveConfig = config
+            ? {
+                ...this.config,
+                ...config,
+                thresholds: { ...this.config.thresholds, ...config.thresholds },
+            }
+            : this.config;
+        const scenarioNames = effectiveConfig.scenarios ?? Object.keys(SCENARIOS);
         const reports: ScenarioUXReport[] = [];
 
         for (const name of scenarioNames) {
             const scenario = SCENARIOS[name];
             if (scenario) {
-                const report = await this.evaluateScenario(scenario);
+                const report = await this.evaluateScenario(scenario, effectiveConfig);
                 reports.push(report);
             }
         }
@@ -77,8 +84,9 @@ export class UXEvaluator {
         return reports;
     }
 
-    async evaluateScenario(scenario: Scenario): Promise<ScenarioUXReport> {
-        const metrics = await this.computeMetrics(scenario);
+    async evaluateScenario(scenario: Scenario, config?: UXEvaluationConfig): Promise<ScenarioUXReport> {
+        const effectiveConfig = config ?? this.config;
+        const metrics = await this.computeMetrics(scenario, effectiveConfig);
         const issues = this.identifyIssues(scenario, metrics);
         const recommendations = this.generateRecommendations(issues, metrics);
         const overallScore = this.computeOverallScore(metrics);
@@ -96,8 +104,8 @@ export class UXEvaluator {
         };
     }
 
-    private async computeMetrics(scenario: Scenario): Promise<UXMetric[]> {
-        const thresholds = this.config.thresholds ?? DEFAULT_THRESHOLDS;
+    private async computeMetrics(scenario: Scenario, config: UXEvaluationConfig): Promise<UXMetric[]> {
+        const thresholds = config.thresholds ?? DEFAULT_THRESHOLDS;
 
         return [
             {
@@ -423,7 +431,7 @@ export class UXEvaluator {
                 } else if (threshold.min !== undefined) {
                     normalizedScore = Math.min(1, metric.value / threshold.min);
                 } else if (threshold.max !== undefined) {
-                    normalizedScore = Math.max(0, 1 - (metric.value - threshold.max) / threshold.max);
+                    normalizedScore = Math.min(1, Math.max(0, 1 - (metric.value - threshold.max) / threshold.max));
                 } else if (threshold.target !== undefined) {
                     normalizedScore = Math.max(0, 1 - Math.abs(metric.value - threshold.target) / threshold.target);
                 }
