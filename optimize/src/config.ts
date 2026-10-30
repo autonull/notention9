@@ -1,17 +1,3 @@
-import { resolve } from 'path';
+import { getProjectRoot, getOptimizeDir, validateLoopConfig, loadLoopConfigSchema } from '@notention/core';
 
-let projectRoot: string | null = null;
-
-export function setProjectRoot(root: string): void {
-    projectRoot = root;
-}
-
-export function getProjectRoot(): string {
-    if (projectRoot) return projectRoot;
-    // Default to workspace root
-    return resolve(__dirname, '../../..');
-}
-
-export function getOptimizeConfigDir(): string {
-    return resolve(getProjectRoot(), 'optimize');
-}
+export { getProjectRoot, getOptimizeDir, validateLoopConfig, loadLoopConfigSchema };

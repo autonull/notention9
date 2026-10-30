@@ -228,14 +228,28 @@ discovery/
 
 ## 🟡 Medium Value (Lower Impact, Lower Complexity)
 
-### 8. Constants/Configuration Centralization
-**Files:** Scattered constants in `core/src/constants/`, `ui/src/constants/`, `optimize/src/utils/loopConfig.ts`, `optimize/src/config.ts`
+### 8. Constants/Configuration Centralization ✅ **COMPLETED**
+**Files:** Multiple constants files across packages
 
-**Opportunity:** Single `config.ts` at workspace root or in core:
-- Environment-specific config (dev/prod/test)
-- Feature flags
-- Default timeouts, retries, limits
-- Ontology version pinning
+**Problem:** 
+- `core/src/utils/constants.ts` - daily prompts, note status, ontology, regex
+- `core/src/matching/constants.ts` - matching operators, canonical terms
+- `core/src/notes/parsing/constants.ts` - parsing regexes, symbol mappings
+- `core/src/constants/seams.ts` - seam roles
+- `optimize/src/config.ts` - project root, loop config
+- `optimize/src/utils/loopConfig.ts` - loop config schema
+- `ui/src/constants/*.ts` - UI constants, profiles, seams
+
+**Solution:** Created `core/src/config.ts` as single source of truth:
+- All core constants moved to config.ts and re-exported from original locations
+- `optimize/src/config.ts` now imports from `@notention/core`
+- `optimize/src/utils/loopConfig.ts` uses core validation
+- UI constants import seam roles from core (already working)
+- All 568 tests pass
+
+**Impact:** Single config source, easier maintenance, consistent values across packages.
+
+---
 
 ### 9. Error Type Hierarchy
 **Files:** Error handling scattered, inconsistent error types
@@ -274,8 +288,8 @@ class ProviderError extends NotentionError { }
 | 5 | CLI Command Framework | 1 day | None | ✅ Done |
 | 6 | **Discovery Module Consolidation** | 2-3 days | None | ✅ Done |
 | 7 | **Test Infrastructure Unification** | 1-2 days | None | ✅ Done |
-| 8 | Constants Centralization | 0.5 day | None | ⏳ Next |
-| 9 | Error Type Hierarchy | 1 day | None | ⏳ |
+| 8 | **Constants Centralization** | 0.5 day | None | ✅ Done |
+| 9 | Error Type Hierarchy | 1 day | None | ⏳ Next |
 | 10 | Event/Telemetry System | 2 days | Task 9 | ⏳ |
 
 ---
@@ -446,13 +460,16 @@ class ProviderError extends NotentionError { }
 2. Replace `throw new Error()` in core packages
 3. Add error codes for monitoring
 
-#### S3: Constants Centralization (0.5 day)
+#### S3: Constants Centralization (0.5 day) ✅ **COMPLETED**
 **Goal:** Single config source
 
 **Steps:**
-1. Create `core/src/config.ts` with env-aware config
-2. Migrate constants from `core/src/constants/`, `ui/src/constants/`, `optimize/src/utils/loopConfig.ts`, `optimize/src/config.ts`
-3. Update imports
+1. ✅ Create `core/src/config.ts` with env-aware config
+2. ✅ Migrate constants from `core/src/utils/constants.ts`, `core/src/matching/constants.ts`, `core/src/notes/parsing/constants.ts`, `core/src/constants/seams.ts`
+3. ✅ Update `optimize/src/config.ts` to import from `@notention/core`
+4. ✅ Update `optimize/src/utils/loopConfig.ts` to use core validation
+5. ✅ UI constants import seam roles from core (already working)
+6. ✅ Run tests - all 568 pass
 
 ---
 
@@ -519,12 +536,12 @@ Week 2:  C1 ✅ (Days 1-4) + C3 ✅ (Days 1-2, parallel)
          
 Week 3:  C2 ✅ (Days 1-5) 
          
-Week 4:  Priority 6 ✅, 7 ✅, 8 ⏳, 9 ⏳  (sequential, 3.5 days)
+Week 4:  Priority 6 ✅, 7 ✅, 8 ✅, 9 ⏳  (sequential, 2.5 days)
 Week 5:  Priority 10 ⏳ (2 days)
 ```
 
 **Total: ~4 weeks for 1 person, ~2 weeks with 2-3 people**
-**Completed: Priorities 1-7 (7/10 tasks)**
+**Completed: Priorities 1-8 (8/10 tasks)**
 
 ---
 
