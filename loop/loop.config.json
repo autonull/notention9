@@ -121,7 +121,7 @@
       "seededData": true,
       "repetitions": 3,
       "aggregation": "median+spread",
-      "baseURL": "http://localhost:5175"
+      "baseURL": "http://localhost:5173"
     },
     "tasks": [
       {

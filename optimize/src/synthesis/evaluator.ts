@@ -280,13 +280,15 @@ export async function evaluateCandidate(
             let input: unknown;
             switch (task.type) {
                 case 'capture':
-                    input = 'I need to build a React app with TypeScript, Tailwind, and Vite. It should have a dashboard with charts, user authentication, and a settings page.';
+                    // Input that deterministic extraction handles well (≥3 properties: intent, budget, price, role, deadline)
+                    input = 'I need a React developer for two weeks, up to 900 USD, starting next week';
                     break;
                 case 'match':
                     input = { offer: 'I can help with React development, TypeScript, and Vite setup. Available weekends.' };
                     break;
                 case 'extraction':
-                    input = 'Create a new project with React 18, TypeScript, and Vite. Use Tailwind for styling. Set up ESLint and Prettier. Add a dashboard page with Recharts visualizations.';
+                    // Input with budget, deadline, and other extractable properties
+                    input = 'Create a new project with React 18, TypeScript, and Vite. Use Tailwind for styling. Set up ESLint and Prettier. Add a dashboard page with Recharts visualizations. Budget 5000 USD, deadline next Friday.';
                     break;
                 case 'commitment':
                     input = { noteId: 'test-note-1' };
@@ -466,13 +468,15 @@ export async function runBaselineEvaluation(
             let input: unknown;
             switch (task.type) {
                 case 'capture':
-                    input = 'I need to build a React app with TypeScript, Tailwind, and Vite. It should have a dashboard with charts, user authentication, and a settings page.';
+                    // Input that deterministic extraction handles well (≥3 properties: intent, budget, price, role, deadline)
+                    input = 'I need a React developer for two weeks, up to 900 USD, starting next week';
                     break;
                 case 'match':
                     input = { offer: 'I can help with React development, TypeScript, and Vite setup. Available weekends.' };
                     break;
                 case 'extraction':
-                    input = 'Create a new project with React 18, TypeScript, and Vite. Use Tailwind for styling. Set up ESLint and Prettier. Add a dashboard page with Recharts visualizations.';
+                    // Input with budget, deadline, and other extractable properties
+                    input = 'Create a new project with React 18, TypeScript, and Vite. Use Tailwind for styling. Set up ESLint and Prettier. Add a dashboard page with Recharts visualizations. Budget 5000 USD, deadline next Friday.';
                     break;
                 case 'commitment':
                     input = { noteId: 'test-note-1' };

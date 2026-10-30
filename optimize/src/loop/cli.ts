@@ -17,7 +17,7 @@ import { discoverSeams } from '../discovery/seams.js';
 import { analyzeDuplicates } from '../discovery/duplicates.js';
 import { loadLoopConfig, validateLoopConfig } from '../utils/loopConfig.js';
 import { loadTaxonomy, validateTaxonomy } from '../utils/taxonomy.js';
-import { StrategySpecGenerator, generateAllCandidates, runStaticGates, runGatesOnCandidateDir, runFullEvaluation, runBaselineEvaluation, createAdoptionSystem, adoptWinner, emitT4RequestFromEvidence, generateT4FromFailedCandidates } from '../synthesis/index.js';
+import { StrategySpecGenerator, generateAllCandidates, runStaticGates, runGatesOnCandidateDir, runFastEvaluation, runFastBaselineEvaluation, loadOrRunFastBaseline, adoptWinner, generateT4FromFailedCandidates } from '../synthesis/index.js';
 import { deriveProblemsFromDiscovery, prioritizeProblems, type DiscoveredProblem, type PrioritizedProblem } from './prioritize.js';
 import type { Seam } from '../discovery/seams.js';
 
@@ -327,7 +327,7 @@ async function runSynthesize(config: any, outputDir: string, dry: boolean, json:
 }
 
 async function runEvaluate(config: any, outputDir: string, dry: boolean, _json: boolean): Promise<number> {
-    console.log('📊 Evaluating candidates against baseline...\n');
+    console.log('📊 Evaluating candidates against baseline (fast mode)...\n');
 
     const fs = await import('fs/promises');
     const path = await import('path');
@@ -370,44 +370,50 @@ async function runEvaluate(config: any, outputDir: string, dry: boolean, _json: 
         return 1;
     }
 
-    // Run baseline evaluation
-    console.log('  📏 Running baseline evaluation...');
-    const baseline = await runBaselineEvaluation({
-        baseURL: config.evaluation.harness?.baseURL || 'http://localhost:5173',
-        headless: config.evaluation.harness?.headless !== false,
-        repetitions: config.evaluation.harness?.repetitions || 10,
-        seed: config.evaluation.harness?.seed || 42,
-    });
+    // Run fast baseline evaluation (no browser)
+    console.log('  📏 Running fast baseline evaluation...');
+    const baselinePath = path.join(outputDir, 'baseline.json');
+    const baseline = await loadOrRunFastBaseline(baselinePath);
     
     if (!dry) {
         await ensureDir(outputDir);
-        await fs.writeFile(path.join(outputDir, 'baseline.json'), JSON.stringify(baseline, null, 2));
+        await fs.writeFile(baselinePath, JSON.stringify(baseline, null, 2));
     }
 
-    // Wait for browser processes to fully terminate
-    console.log('  ⏳ Waiting for baseline browser to fully close...');
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    // Run full evaluation on candidates
-    const evalConfig = {
-        baseURL: config.evaluation.harness?.baseURL || 'http://localhost:5173',
-        headless: config.evaluation.harness?.headless !== false,
-        repetitions: config.evaluation.harness?.repetitions || 10,
-        seed: config.evaluation.harness?.seed || 42,
-    };
-    
-    const report = await runFullEvaluation(candidatesDir, baseline, outputDir, evalConfig);
+    // Run fast evaluation on candidates
+    console.log('  🚀 Running fast candidate evaluation...');
+    const report = await runFastEvaluation(candidatesDir, baseline);
     
     // Summary
     const passedCandidates = report.candidates.filter(c => c.passed).length;
+    const baselineOverall = (report.baseline.reduce((s, b) => s + b.successRate, 0) / report.baseline.length * 100).toFixed(1);
     console.log(`\n📊 Evaluation Summary:`);
-    console.log(`   Baseline overall success rate: ${(report.baseline.reduce((s, b) => s + b.successRate, 0) / report.baseline.length * 100).toFixed(1)}%`);
+    console.log(`   Baseline overall success rate: ${baselineOverall}%`);
     console.log(`   Candidates evaluated: ${report.candidates.length}`);
     console.log(`   Candidates beating baseline: ${passedCandidates}`);
     
+    // Print task details
+    for (const task of report.baseline) {
+        const status = task.successRate === 1 ? '✅' : '❌';
+        console.log(`   ${status} ${task.taskId}: ${(task.successRate * 100).toFixed(0)}% (${task.medianDuration}ms)`);
+        if (task.errors.length > 0) {
+            console.log(`      Errors: ${task.errors.join('; ')}`);
+        }
+    }
+
     if (dry) {
         console.log('\n🔍 Dry run - no files written');
     } else {
+        // Convert Maps to objects for JSON serialization
+        const serializableReport = {
+            baseline: report.baseline,
+            candidates: report.candidates.map(c => ({
+                ...c,
+                taskResults: Object.fromEntries(c.taskResults),
+            })),
+            timestamp: report.timestamp,
+        };
+        await fs.writeFile(path.join(outputDir, 'evaluation-report.json'), JSON.stringify(serializableReport, null, 2));
         console.log(`\n✅ Evaluation report written to ${outputDir}/evaluation-report.json`);
     }
     
