@@ -1,4 +1,5 @@
 import type { Seam, Strategy } from './strategy.js';
+import { SEAM_IDS } from '../constants/seams.js';
 
 /**
  * Strategy profile - a named collection of strategy selections per seam
@@ -160,10 +161,10 @@ export const DEFAULT_PROFILES: StrategyProfile[] = [
         name: 'Default',
         description: 'Balanced experience for all users',
         strategySelections: {
-            'capture-20': 'describe-it-composer',
-            'elicit-1': 'tag-input',
-            'match-7': 'local-match-preview',
-            'layout-8': 'property-panel',
+            [SEAM_IDS.CAPTURE]: 'describe-it-composer',
+            [SEAM_IDS.ELICIT]: 'tag-input',
+            [SEAM_IDS.MATCH]: 'local-match-preview',
+            [SEAM_IDS.LAYOUT]: 'property-panel',
         },
         isDefault: true,
         createdAt: new Date().toISOString(),
@@ -174,10 +175,10 @@ export const DEFAULT_PROFILES: StrategyProfile[] = [
         name: 'Compact',
         description: 'Dense information, minimal UI',
         strategySelections: {
-            'capture-20': 'quick-capture',
-            'elicit-1': 'tag-input',
-            'match-7': 'dashboard-local-match',
-            'layout-8': 'property-panel',
+            [SEAM_IDS.CAPTURE]: 'quick-capture',
+            [SEAM_IDS.ELICIT]: 'tag-input',
+            [SEAM_IDS.MATCH]: 'dashboard-local-match',
+            [SEAM_IDS.LAYOUT]: 'property-panel',
         },
         context: { persona: 'power-user' },
         createdAt: new Date().toISOString(),
@@ -188,10 +189,10 @@ export const DEFAULT_PROFILES: StrategyProfile[] = [
         name: 'Guided',
         description: 'More explanations, progressive disclosure',
         strategySelections: {
-            'capture-20': 'describe-it-composer',
-            'elicit-1': 'insert-property-modal',
-            'match-7': 'local-match-preview',
-            'layout-8': 'property-panel',
+            [SEAM_IDS.CAPTURE]: 'describe-it-composer',
+            [SEAM_IDS.ELICIT]: 'insert-property-modal',
+            [SEAM_IDS.MATCH]: 'local-match-preview',
+            [SEAM_IDS.LAYOUT]: 'property-panel',
         },
         context: { persona: 'new-user' },
         createdAt: new Date().toISOString(),
@@ -202,10 +203,10 @@ export const DEFAULT_PROFILES: StrategyProfile[] = [
         name: 'Accessible',
         description: 'High contrast, full keyboard support, screen reader optimized',
         strategySelections: {
-            'capture-20': 'describe-it-composer',
-            'elicit-1': 'tag-input',
-            'match-7': 'local-match-preview',
-            'layout-8': 'property-panel',
+            [SEAM_IDS.CAPTURE]: 'describe-it-composer',
+            [SEAM_IDS.ELICIT]: 'tag-input',
+            [SEAM_IDS.MATCH]: 'local-match-preview',
+            [SEAM_IDS.LAYOUT]: 'property-panel',
         },
         context: { persona: 'accessibility' },
         createdAt: new Date().toISOString(),
@@ -255,11 +256,11 @@ export const DEFAULT_MATCH_DISPLAY_EXPERIMENT: StrategyExperiment = {
     id: 'match-display-v1',
     name: 'Match Display: Detailed vs Compact',
     description: 'Compare detailed explanations (local-match-preview) vs compact (dashboard-local-match)',
-    seamId: 'match-7',
+    seamId: SEAM_IDS.MATCH,
     variants: [
         {
             id: 'variant-detailed',
-            seamId: 'match-7',
+            seamId: SEAM_IDS.MATCH,
             strategyId: 'local-match-preview',
             label: 'Detailed with Explanations',
             description: 'Shows why it fits, conflicts, missing details, and recovery options',
@@ -268,7 +269,7 @@ export const DEFAULT_MATCH_DISPLAY_EXPERIMENT: StrategyExperiment = {
         },
         {
             id: 'variant-compact',
-            seamId: 'match-7',
+            seamId: SEAM_IDS.MATCH,
             strategyId: 'dashboard-local-match',
             label: 'Compact Summary',
             description: 'Shows match score and basic actions only',
