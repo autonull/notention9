@@ -5,22 +5,28 @@ import { PropertyValidationError } from '../../utils/errors/index.js';
 import { parseQuantity } from '../quantities/index.js';
 import { normalizeNoteProperties } from '../properties.js';
 import { validateProperty } from '../../utils/validation.js';
-import { alignToOntology } from '../../extraction/index.js';
+import { ExtractionPipeline, defaultStages, ExtractionOptions } from '../../extraction/index.js';
 import { TYPE_CHECKERS } from './patterns.js';
 import { Logger } from '../../utils/logging.js';
 
 export class PropertyExtractor {
   private readonly ontologyService: OntologyService;
   private readonly logger = Logger.getInstance();
+  private readonly pipeline: ExtractionPipeline;
 
-  constructor(ontology = DEFAULT_ONTOLOGY) {
+  constructor(ontology = DEFAULT_ONTOLOGY, defaultOptions?: ExtractionOptions) {
     this.ontologyService = new OntologyService(ontology);
+    this.pipeline = new ExtractionPipeline(defaultStages);
+    if (defaultOptions) {
+      // Store default options for use in extractFromText
+      (this.pipeline as any).defaultOptions = defaultOptions;
+    }
   }
 
-  extractFromText(text: string): Property[] {
-    const properties = alignToOntology(text, this.ontologyService.getAllNodes(), {
-      ontologyService: this.ontologyService
-    });
+  async extractFromText(text: string, options?: ExtractionOptions): Promise<Property[]> {
+    const pipeline = options ? new ExtractionPipeline(defaultStages) : this.pipeline;
+    const result = await pipeline.extract(text, this.ontologyService.getAllNodes(), options ?? (this.pipeline as any).defaultOptions);
+    const properties = result.properties;
 
     return this.normalizeProperties(properties);
   }

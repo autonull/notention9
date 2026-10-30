@@ -7,9 +7,9 @@ describe('Enhanced Semantic Capabilities (Phase 7)', () => {
   const extractor = new PropertyExtractor();
   const userId = 'test-user';
 
-  it('should extract intents from natural language', () => {
+  it('should extract intents from natural language', async () => {
     const text = 'Remind me to call Mom';
-    const properties = extractor.extractFromText(text);
+    const properties = await extractor.extractFromText(text);
 
     const intentProp = properties.find(p => p.key === 'intent');
     expect(intentProp).toBeDefined();
@@ -38,11 +38,11 @@ describe('Enhanced Semantic Capabilities (Phase 7)', () => {
     expect(reminderPrediction?.confidence).toBeGreaterThan(0.8);
   });
 
-  it('should handle multiple intents correctly', () => {
+  it('should handle multiple intents correctly', async () => {
     const text = 'Remind me to buy milk';
     // "Remind me" -> reminder
     // "buy" -> shopping
-    const properties = extractor.extractFromText(text);
+    const properties = await extractor.extractFromText(text);
 
     const intentProp = properties.find(p => p.key === 'intent');
     expect(intentProp).toBeDefined();

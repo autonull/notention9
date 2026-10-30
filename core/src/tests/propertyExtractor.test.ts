@@ -50,8 +50,8 @@ describe('PropertyExtractor Tests', () => {
   });
 
   describe('extractFromText', () => {
-    test('should extract send to property', () => {
-      const result = extractor.extractFromText('send to john@example.com');
+    test('should extract send to property', async () => {
+      const result = await extractor.extractFromText('send to john@example.com');
       // The actual result might contain multiple properties due to email detection
       // Look for the 'to' property with 'send to' operator
       const toProperty = result.find(p => p.key === 'to' && p.operator === 'send to');
@@ -62,8 +62,8 @@ describe('PropertyExtractor Tests', () => {
       expect(toProperty?.values).toContainEqual(expect.stringContaining('john'));
     });
 
-    test('should extract channel property', () => {
-      const result = extractor.extractFromText('via whatsapp');
+    test('should extract channel property', async () => {
+      const result = await extractor.extractFromText('via whatsapp');
       expect(result).toContainEqual({
         key: 'channel',
         operator: 'is',
@@ -71,8 +71,8 @@ describe('PropertyExtractor Tests', () => {
       });
     });
 
-    test('should extract email property', () => {
-      const result = extractor.extractFromText('Contact: john@example.com');
+    test('should extract email property', async () => {
+      const result = await extractor.extractFromText('Contact: john@example.com');
       expect(result).toContainEqual({
         key: 'email',
         operator: 'is',
@@ -80,8 +80,8 @@ describe('PropertyExtractor Tests', () => {
       });
     });
 
-    test('should extract location property', () => {
-      const result = extractor.extractFromText('Meeting at New York');
+    test('should extract location property', async () => {
+      const result = await extractor.extractFromText('Meeting at New York');
       expect(result).toContainEqual({
         key: 'location',
         operator: 'is near',
@@ -89,8 +89,8 @@ describe('PropertyExtractor Tests', () => {
       });
     });
 
-    test('should extract date property', () => {
-      const result = extractor.extractFromText('Tomorrow meeting');
+    test('should extract date property', async () => {
+      const result = await extractor.extractFromText('Tomorrow meeting');
       expect(result).toContainEqual({
         key: 'date',
         operator: 'is',
@@ -98,8 +98,8 @@ describe('PropertyExtractor Tests', () => {
       });
     });
 
-    test('should extract multiple properties', () => {
-      const result = extractor.extractFromText('Send email to john via whatsapp tomorrow');
+    test('should extract multiple properties', async () => {
+      const result = await extractor.extractFromText('Send email to john via whatsapp tomorrow');
       expect(result.length).toBeGreaterThan(1);
       // Check if any of the expected properties are present
       const hasTo = result.some(p => p.key === 'to');
