@@ -16,7 +16,9 @@
     "./finding": "./dist/finding.js",
     "./steps": "./dist/steps.js",
     "./execute": "./dist/execute.js",
-    "./registry": "./dist/registry.js"
+    "./registry": "./dist/registry.js",
+    "./synthesis": "./dist/synthesis/index.js",
+    "./synthesis/strategyComparison": "./dist/synthesis/strategyComparison.js"
   },
   "scripts": {
     "build": "tsc",

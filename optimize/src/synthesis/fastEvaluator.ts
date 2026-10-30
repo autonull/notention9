@@ -6,45 +6,22 @@ import { DEFAULT_ONTOLOGY } from '@notention/core';
 import { OntologyService } from '@notention/core';
 import { Note, Property } from '@notention/core';
 import type { CandidateStrategy, CandidateDir } from './StrategySpec.js';
-import type { BaselineResult, ResourceMetrics, CandidateEvaluation, EvaluationReport } from './evaluator.js';
+import type { BaselineResult as BaseBaselineResult, ResourceMetrics, CandidateEvaluation as BaseCandidateEvaluation, EvaluationReport as BaseEvaluationReport } from './evaluator.js';
 import { loadCorpusTestCases } from '../corpus/index.js';
 
-export interface BaselineResult {
-    taskId: string;
-    successRate: number;
-    medianDuration: number;
-    p90Duration: number;
-    medianSteps: number;
-    p90Steps: number;
-    errors: string[];
+export interface BaselineResult extends BaseBaselineResult {
     isCorpusTest?: boolean;  // Flag for corpus-generated gap detection tests
 }
 
-export interface ResourceMetrics {
-    totalLatencyMs: number;
-    avgInferenceLatencyMs: number;
-    peakMemoryMB: number;
-    modelSizeMB: number;
-    inferenceCount: number;
-    tokensUsed: number;
+export interface CandidateEvaluation extends BaseCandidateEvaluation {
+    // Extends base with any fast-eval specific fields if needed
 }
 
-export interface CandidateEvaluation {
-    candidateId: string;
-    taskResults: Map<string, BaselineResult>;
-    overallSuccessRate: number;
-    overallMedianDuration: number;
-    passed: boolean;
-    resourceMetrics: ResourceMetrics;
+export interface EvaluationReport extends BaseEvaluationReport {
+    // Extends base
 }
 
-export interface EvaluationReport {
-    baseline: BaselineResult[];
-    candidates: CandidateEvaluation[];
-    timestamp: string;
-}
-
-interface TestCase {
+export interface TestCase {
     id: string;
     name: string;
     input: string;
@@ -52,7 +29,7 @@ interface TestCase {
     expectedProperties?: Partial<Property>[];
 }
 
-interface MatchTestCase {
+export interface MatchTestCase {
     id: string;
     name: string;
     requestText: string;

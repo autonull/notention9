@@ -524,8 +524,8 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | L19 | Ledger-lite (append-only decisions/deltas/provenance) | `optimize/src/synthesis/adoption.ts`, `optimize/src/loop/determinism.ts` | survives restart; dedupes | L5 | ✅ |
 | L20 | Determinism: pinned models, cached outputs, replay | `optimize/src/loop/determinism.ts` | identical hash on replay | L9 | ✅ |
 | L21 | A11y + keyboard assertions in harness | `optimize/src/a11y.ts`, `ui/eval/` | violations fail the task | L9 |
-| L22 | Preference + interaction-strategy comparison (human + calibrated judge) | `ui/eval/` | win-rate on question sequences, explanations, layouts | L9 |
-| L23 | Profiles + policy + per-user overrides | `ui/src/settings/`, config | 2 profiles; overrides persist | L8, L22 |
+| L22 | Preference + interaction-strategy comparison (human + calibrated judge) | `ui/eval/` | win-rate on question sequences, explanations, layouts | L9 | 🟨 |
+| L23 | Profiles + policy + per-user overrides | `ui/src/settings/`, config | 2 profiles; overrides persist | L8, L22 | 🟨 |
 | L24 | Add simulator + optimize tests to `pnpm verify` | `scripts/verify.ts` | verify runs all suites | D3 |
 
 ### P — Product ergonomics · supporting
@@ -655,6 +655,7 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | End-to-end proof | ✅ **complete** (X1–X3 pipeline works; X4–X7 demonstrated with fast evaluator) |
 | Corpus ingestion + gap detection | ✅ **done (L18: 5 taxonomy gaps identified, test cases generated)** |
 | Ontology experiment (L17) | ✅ **done — tie: both flat and facets+status achieve 100% success, equivalent latency; facets+status adds status facet for future commitment tracking** |
+| Profile registry + strategy comparison (L22, L23) | 🟨 **in progress — core infrastructure complete, tests passing** |
 | Human gates G1/G2/G5 | ⏳ pending |
 
 **Test state:** core 398 · simulator 33 · agent 17 · cli 6 · optimize 44 · eval 9 ✅ (D3, D4 fixed)
@@ -717,8 +718,8 @@ And the architectural principle holds: **the system improved its own behaviour w
 | Priority | Action | Rationale |
 |----------|--------|-----------|
 | **1** | **H1–H2**: Stranger test (G1) + match relevance (G2) | Human confirmation of usability; required for X4 |
-| **2** | **L22**: Preference + interaction-strategy comparison | Empirical UX data for profiles/policies (L23) |
-| **3** | **L23**: Profiles + policy + per-user overrides | Product ergonomics (P3–P7) |
+| **2** | **L22**: Preference + interaction-strategy comparison | Empirical UX data for profiles/policies (L23) | 🟨 |
+| **3** | **L23**: Profiles + policy + per-user overrides | Product ergonomics (P3–P7) | 🟨 |
 | **4** | **S4–S5**: Presentation output + standalone artifacts | Polish showcases |
 | **5** | **Q1–Q5**: Tests/docs alongside | Maintain quality |
 | **6** | **B6**: Generalise only after second workflow proves abstraction | Avoid premature abstraction |
@@ -727,6 +728,7 @@ And the architectural principle holds: **the system improved its own behaviour w
 - S1–S3: Capability showcase recordings (movie_maker, scenarios, generate-showcases.ts)
 - L18: Real-corpus ingestion → vocabulary + tasks (5 taxonomy gaps identified, test cases generated)
 - L17: Ontology experiment (flat vs facets+status) — **tie: both achieve 100% success, equivalent latency; facets+status adds status facet for commitment tracking**
+- L22/L23 core infrastructure: ProfileRegistry, ProfilePolicy, UserStrategyOverrides, StrategyExperiment, strategyComparison evaluator (tests passing)
 
 **Deferred (premature without second workflow):**
 - L21: A11y + keyboard assertions in harness
@@ -751,7 +753,8 @@ And the architectural principle holds: **the system improved its own behaviour w
 
 ### Reprioritisation
 - **Dropped**: Fixing Playwright/Chromium container issues (L9 browser path)
-- **Deferred**: L21–L24, P3–P7 (a11y, profiles, layouts) until second workflow validates abstraction (B6)
+- **Deferred**: L21, L24, P3–P7 (a11y, layouts) until second workflow validates abstraction (B6)
+- **In Progress**: L22, L23 (profiles, strategy comparison — core infrastructure complete)
 - **Promoted**: S1–S3 (showcases), **L18 ✅ (real corpus complete)**, **L17 ✅ (ontology experiment: tie)**, H1–H2 (human gates)
 
 ### Acceleration path

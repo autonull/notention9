@@ -4,6 +4,6 @@ export {
     type CorpusConfig,
     type CorpusAnalysis,
     type ExtractedTerm,
-    type TestCase,
-    type MatchTestCase,
 } from './ingest.js';
+
+export type { TestCase, MatchTestCase } from '../synthesis/fastEvaluator.js';

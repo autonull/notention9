@@ -16,7 +16,9 @@
     "./prompts/propertyExtraction": "./dist/prompts/propertyExtraction.js",
     "./skills": "./dist/skills/index.js",
     "./skills/metaphor": "./dist/skills/metaphor/MetaphorRegistry.js",
-    "./ontology/domains.facets": "./dist/ontology/domains.facets.js"
+    "./ontology/domains.facets": "./dist/ontology/domains.facets.js",
+    "./ui/profile": "./dist/ui/profile.js",
+    "./ui/strategy": "./dist/ui/strategy.js"
   },
   "scripts": {
     "build": "tsc",

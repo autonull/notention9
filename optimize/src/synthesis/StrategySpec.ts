@@ -1,16 +1,11 @@
 import { z } from 'zod';
+import type { Seam } from '../discovery/seams.js';
 
 /**
  * Seam definition - shared between discovery and synthesis
+ * Re-exported from discovery for consistency
  */
-export interface Seam {
-    id: string;
-    name: string;
-    description: string;
-    propsShape: Record<string, string>;
-    components: string[];
-    role: 'capture' | 'elicit' | 'match' | 'display' | 'layout' | 'explain' | 'ontology' | 'intent';
-}
+export type { Seam };
 
 /**
  * StrategySpec - defines what a synthesized strategy must implement

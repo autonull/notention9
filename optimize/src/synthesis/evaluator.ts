@@ -16,6 +16,7 @@ export interface BaselineResult {
     medianSteps: number;
     p90Steps: number;
     errors: string[];
+    isCorpusTest?: boolean;  // Flag for corpus-generated gap detection tests
 }
 
 export interface ResourceMetrics {
