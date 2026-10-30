@@ -1,6 +1,6 @@
 import React from 'react';
 import { TagInput } from '../components/editor/TagInput';
-import { createComponentStrategy } from '@notention/core/ui';
+import { createBaseStrategy } from '@notention/core/ui';
 import type { Seam } from '@notention/optimize/discovery';
 
 const elicitSeam: Seam = {
@@ -19,7 +19,7 @@ const elicitSeam: Seam = {
     role: 'elicit',
 };
 
-export const TagInputStrategy = createComponentStrategy<
+export const TagInputStrategy = createBaseStrategy<
     React.ComponentProps<typeof TagInput>
 >(
     'tag-input',

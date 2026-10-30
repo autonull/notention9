@@ -1,6 +1,6 @@
 import React from 'react';
 import { TemplateSelector } from '../components/editor/TemplateSelector';
-import { createComponentStrategy } from '@notention/core/ui';
+import { createBaseStrategy } from '@notention/core/ui';
 import type { Seam } from '@notention/optimize/discovery';
 
 const templateSeam: Seam = {
@@ -16,7 +16,7 @@ const templateSeam: Seam = {
     role: 'capture',
 };
 
-export const TemplateSelectorStrategy = createComponentStrategy<
+export const TemplateSelectorStrategy = createBaseStrategy<
     React.ComponentProps<typeof TemplateSelector>
 >(
     'template-selector',

@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropertyForm } from '../components/editor/PropertyForm';
-import { createComponentStrategy } from '@notention/core/ui';
+import { createBaseStrategy } from '@notention/core/ui';
 import type { Seam } from '@notention/optimize/discovery';
 
 const captureSeam: Seam = {
@@ -22,7 +22,7 @@ const captureSeam: Seam = {
     role: 'capture',
 };
 
-export const PropertyFormStrategy = createComponentStrategy<
+export const PropertyFormStrategy = createBaseStrategy<
     React.ComponentProps<typeof PropertyForm>
 >(
     'property-form',

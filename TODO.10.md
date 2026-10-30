@@ -249,18 +249,18 @@ class ProviderError extends NotentionError { }
 
 ## 📋 Suggested Execution Order
 
-| Priority | Task | Est. Effort | Dependencies |
-|----------|------|-------------|--------------|
-| 1 | Consolidate AI Validation/Repair | 2-3 days | None |
-| 2 | Unify Property Extraction Pipeline | 3-4 days | Task 1 |
-| 3 | Consolidate Ontology Types | 1-2 days | None |
-| 4 | **Strategy Component Base Class** | 1-2 days | None |
-| 5 | CLI Command Framework | 1 day | None |
-| 6 | Discovery Module Consolidation | 2-3 days | None |
-| 7 | Test Infrastructure Unification | 1-2 days | None |
-| 8 | Constants Centralization | 0.5 day | None |
-| 9 | Error Type Hierarchy | 1 day | None |
-| 10 | Event/Telemetry System | 2 days | Task 9 |
+| Priority | Task | Est. Effort | Dependencies | Status |
+|----------|------|-------------|--------------|--------|
+| 1 | Consolidate AI Validation/Repair | 2-3 days | None | ✅ Done |
+| 2 | Unify Property Extraction Pipeline | 3-4 days | Task 1 | ✅ Done |
+| 3 | Consolidate Ontology Types | 1-2 days | None | ✅ Done |
+| 4 | **Strategy Component Base Class** | 1-2 days | None | ✅ Done |
+| 5 | CLI Command Framework | 1 day | None | ✅ Done |
+| 6 | Discovery Module Consolidation | 2-3 days | None | ⏳ Next |
+| 7 | Test Infrastructure Unification | 1-2 days | None | ⏳ |
+| 8 | Constants Centralization | 0.5 day | None | ⏳ |
+| 9 | Error Type Hierarchy | 1 day | None | ⏳ |
+| 10 | Event/Telemetry System | 2 days | Task 9 | ⏳ |
 
 ---
 
@@ -489,7 +489,7 @@ class ProviderError extends NotentionError { }
 - QW1, QW2, QW3, QW4: ✅ **COMPLETED**
 - C1 and C3: **Independent** - different code areas
 - C1, C2, C3: ✅ **COMPLETED**
-- S1, S2, S3: **Independent** - can parallelize
+- Priority 6, 7, 8: **Independent** - can parallelize
 
 ---
 
@@ -501,13 +501,14 @@ Week 1:  QW1 ✅ → QW2 ✅ → QW3 ✅ → QW4 ✅  (sequential, 1 person, 4 h
 
 Week 2:  C1 ✅ (Days 1-4) + C3 ✅ (Days 1-2, parallel)
          
-Week 3:  C2 ✅ (Days 1-5) + S1 ⏳ (Days 1-3, parallel)
+Week 3:  C2 ✅ (Days 1-5) 
          
-Week 4:  S1 ⏳, S2 ⏳, S3 ⏳, O1 ⏳  (sequential, 3.5 days)
+Week 4:  Priority 6 ✅, 7 ⏳, 8 ⏳, 9 ⏳  (sequential, 4.5 days)
+Week 5:  Priority 10 ⏳ (2 days)
 ```
 
 **Total: ~4 weeks for 1 person, ~2 weeks with 2-3 people**
-**Completed: QW1, QW2, QW3, QW4, C1, C2, C3 (7/10 tasks)**
+**Completed: Priorities 1-5 (5/10 tasks)**
 
 ---
 

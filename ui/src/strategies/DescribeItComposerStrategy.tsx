@@ -1,6 +1,6 @@
 import React from 'react';
 import { DescribeItComposer } from '../components/editor/DescribeItComposer';
-import { createComponentStrategy } from '@notention/core/ui';
+import { createBaseStrategy } from '@notention/core/ui';
 import type { Seam } from '@notention/optimize/discovery';
 
 const extractionSeam: Seam = {
@@ -17,7 +17,7 @@ const extractionSeam: Seam = {
     role: 'capture',
 };
 
-export const DescribeItComposerStrategy = createComponentStrategy<
+export const DescribeItComposerStrategy = createBaseStrategy<
     React.ComponentProps<typeof DescribeItComposer>
 >(
     'describe-it-composer',
