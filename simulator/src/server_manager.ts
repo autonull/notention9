@@ -19,6 +19,10 @@ export interface ServerPorts {
     ui: number;
 }
 
+export interface ServerManagerOptions {
+    startUiServer?: boolean;
+}
+
 export class ServerManager {
     private relayServer: NostrRelay | null = null;
     private dashboardServer: http.Server | null = null;
@@ -26,7 +30,7 @@ export class ServerManager {
     private ports: ServerPorts = { relay: 0, dashboard: 0, ui: 0 };
     private isShuttingDown = false;
 
-    constructor() {}
+    constructor(private readonly options: ServerManagerOptions = {}) {}
 
     async start(agents: DashboardAgent[], requestedUiPort: number = DEFAULT_PORTS.ui): Promise<ServerPorts> {
         // 1. Find Ports
@@ -42,9 +46,11 @@ export class ServerManager {
         // 3. Start Dashboard
         this.dashboardServer = startDashboard(this.ports.dashboard, this.ports.ui, agents, this.relayUrl);
 
-        // 4. Start UI Server
-        this.uiServer = new UIServer({ port: this.ports.ui });
-        await this.uiServer.start();
+        // 4. Start UI Server (optional)
+        if (this.options.startUiServer !== false) {
+            this.uiServer = new UIServer({ port: this.ports.ui });
+            await this.uiServer.start();
+        }
 
         // Handle Shutdown
         process.on('SIGINT', () => this.shutdown());

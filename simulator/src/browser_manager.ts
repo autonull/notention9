@@ -2,11 +2,13 @@ import { chromium, Browser, BrowserContext, Page } from 'playwright';
 import chalk from 'chalk';
 import type { Agent } from './agent.js';
 import { DEFAULT_ONTOLOGY } from '@notention/core';
+import type { OntologyNode } from '@notention/core';
 
 export interface BrowserManagerOptions {
     resolution: { width: number; height: number };
     uiPort: number;
     relayUrl: string;
+    ontology?: OntologyNode[];
 }
 
 interface AgentContext {
@@ -19,8 +21,11 @@ export class BrowserManager {
     private browser: Browser | null = null;
     private agentContexts: AgentContext[] = [];
     private dedicatedPages: Map<string, Page> = new Map();
+    private readonly ontology: OntologyNode[];
 
-    constructor(private readonly options: BrowserManagerOptions) {}
+    constructor(private readonly options: BrowserManagerOptions) {
+        this.ontology = options.ontology ?? DEFAULT_ONTOLOGY;
+    }
 
     async start(): Promise<Browser> {
         this.browser = await chromium.launch({ headless: true });
@@ -45,13 +50,13 @@ export class BrowserManager {
             
             try {
                 await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
-                await page.evaluate(async (data: { key: string; relayUrl: string }) => {
+                await page.evaluate(async (data: { key: string; relayUrl: string; ontology: OntologyNode[] }) => {
                     const settings = {
                         aiEnabled: false,
                         developerMode: false,
                         theme: 'dark',
                         nostr: { privkey: data.key, relays: [data.relayUrl] },
-                        ontology: DEFAULT_ONTOLOGY
+                        ontology: data.ontology
                     };
                     return new Promise<void>((resolve, reject) => {
                         const request = indexedDB.open('localforage');
@@ -66,7 +71,7 @@ export class BrowserManager {
                             putReq.onerror = () => reject(putReq.error);
                         };
                     });
-                }, { key: agent.secretKey, relayUrl: this.options.relayUrl });
+                }, { key: agent.secretKey, relayUrl: this.options.relayUrl, ontology: this.ontology });
                 
                 this.agentContexts.push({ agent, context, page });
             } catch (e) {

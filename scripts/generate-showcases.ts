@@ -96,6 +96,7 @@ async function generateShowcase(scenarioName: string, options: ShowcaseOptions):
     const { SCENARIOS } = await import('../simulator/src/scenarios/index.js');
     const { ServerManager } = await import('../simulator/src/server_manager.js');
     const { DEFAULT_PORTS, DEFAULT_MOVIE_OPTIONS } = await import('../simulator/src/constants.js');
+    const { startStaticUIServer } = await import('../simulator/src/ui_server.js');
 
     const scenario = SCENARIOS[scenarioName];
     if (!scenario) {
@@ -106,8 +107,12 @@ async function generateShowcase(scenarioName: string, options: ShowcaseOptions):
     const outputDir = options.outputDir || join(rootDir, 'movies', `${scenario.name}-${new Date().toISOString().replace(/[:.]/g, '-')}`);
     mkdirSync(outputDir, { recursive: true });
 
-    const serverManager = new ServerManager();
+    const serverManager = new ServerManager({ startUiServer: false });
     const ports = await serverManager.start([], DEFAULT_PORTS.ui);
+
+    // Start fast static UI server (built dist) instead of Vite dev
+    const uiServer = await startStaticUIServer(ports.ui);
+    console.log(`  UI Server (static) running at http://localhost:${ports.ui}`);
 
     const movieOptions: MovieOptions = {
         framerate: options.fps ?? DEFAULT_MOVIE_OPTIONS.framerate,
@@ -135,9 +140,13 @@ async function generateShowcase(scenarioName: string, options: ShowcaseOptions):
         await movieMaker.start(scenario);
         console.log(`✅ Showcase generated: ${outputDir}/simulation.mp4`);
     } catch (err) {
-        console.error(`❌ Failed to generate showcase: ${err}`);
+        const msg = err instanceof Error ? err.message : String(err);
+        const stack = err instanceof Error ? err.stack : '';
+        console.error(`❌ Failed to generate showcase: ${msg}`);
+        if (stack) console.error(stack);
         throw err;
     } finally {
+        uiServer.stop();
         await serverManager.shutdown();
     }
 }

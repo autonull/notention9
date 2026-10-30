@@ -74,7 +74,8 @@ export class MovieMaker {
             this.browserManager = new BrowserManager({
                 resolution: this.options.resolution,
                 uiPort: this.options.uiPort,
-                relayUrl: this.relayUrl
+                relayUrl: this.relayUrl,
+                ontology: DEFAULT_ONTOLOGY
             });
             await this.browserManager.start();
             await this.browserManager.configureAgents(this.runner.agents);
@@ -135,6 +136,7 @@ export class MovieMaker {
         await new Promise(r => setTimeout(r, SIMULATION_CONFIG.postSimulationDelay));
 
         this.recordingManager.stopRecording();
+        await this.recordingManager.waitForRecording();
         this.log(`🎥 Recording finished. captured ${this.recordingManager.getFrameCount()} frames.`);
 
         if (!this.cancelled) await this.recordingManager.encodeVideo();

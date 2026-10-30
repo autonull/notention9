@@ -1,4 +1,5 @@
 import { spawn, ChildProcess } from 'child_process';
+import express from 'express';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -79,4 +80,31 @@ export async function startUIServer(port: number, uiPath?: string): Promise<UISe
     const server = new UIServer({ port, uiPath });
     await server.start();
     return server;
+}
+
+export async function startStaticUIServer(port: number): Promise<UIServer> {
+    const uiBuildDir = path.resolve(__dirname, '../dist/ui');
+    if (!fs.existsSync(uiBuildDir)) {
+        throw new Error(`UI build not found at ${uiBuildDir}. Run 'pnpm build' first.`);
+    }
+
+    const app = express();
+    
+    app.use(express.static(uiBuildDir));
+    app.get('*', (req, res) => {
+        if (req.path.startsWith('/api')) return res.status(404).send('Not found');
+        res.sendFile(path.join(uiBuildDir, 'index.html'));
+    });
+
+    return new Promise<UIServer>((resolve, reject) => {
+        const server = app.listen(port, () => {
+            console.log(chalk.green(`UI Server (static) Ready at http://localhost:${port}`));
+            resolve({
+                stop: () => server.close(),
+                isRunning: true
+            });
+        });
+
+        server.on('error', (err) => reject(err));
+    });
 }
