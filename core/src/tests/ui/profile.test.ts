@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { profileRegistry, DEFAULT_PROFILES, DEFAULT_POLICY, DEFAULT_MATCH_DISPLAY_EXPERIMENT } from '@notention/core/ui/profile';
 import { strategyRegistry } from '@notention/core/ui/strategy';
-import { SEAM_IDS } from '@notention/core/constants/seams';
+import { SEAM_ROLES } from '@notention/core/constants/seams';
 
 describe('ProfileRegistry', () => {
     beforeEach(() => {
@@ -61,22 +61,22 @@ describe('ProfileRegistry', () => {
     });
 
     it('should set and remove overrides', () => {
-        profileRegistry.setOverride('test-user-4', SEAM_IDS.MATCH, 'dashboard-local-match');
+        profileRegistry.setOverride('test-user-4', SEAM_ROLES.MATCH, 'dashboard-local-match');
         
         let config = profileRegistry.getUserConfig('test-user-4');
-        expect(config.overrides.overrides[SEAM_IDS.MATCH]).toBe('dashboard-local-match');
+        expect(config.overrides.overrides[SEAM_ROLES.MATCH]).toBe('dashboard-local-match');
         
-        profileRegistry.removeOverride('test-user-4', SEAM_IDS.MATCH);
+        profileRegistry.removeOverride('test-user-4', SEAM_ROLES.MATCH);
         
         config = profileRegistry.getUserConfig('test-user-4');
-        expect(config.overrides.overrides[SEAM_IDS.MATCH]).toBeUndefined();
+        expect(config.overrides.overrides[SEAM_ROLES.MATCH]).toBeUndefined();
     });
 
     it('should resolve strategy from user override', () => {
-        // Register a mock strategy
+        // Register a mock strategy with a proper seam ID that matches the role pattern
         const mockStrategy = {
             id: 'test-strategy',
-            seam: { id: 'test-seam', name: 'test', description: '', components: [], propsShape: {}, role: 'capture' as const },
+            seam: { id: 'capture-0', name: 'test', description: '', components: [], propsShape: {}, role: 'capture' as const },
             version: '1.0.0',
             params: {},
             render: () => null,
@@ -84,13 +84,13 @@ describe('ProfileRegistry', () => {
         };
         
         // Register directly in strategy registry
-        const testSeam = { id: 'test-seam', name: 'test', description: '', components: [], propsShape: {}, role: 'capture' as const };
+        const testSeam = { id: 'capture-0', name: 'test', description: '', components: [], propsShape: {}, role: 'capture' as const };
         strategyRegistry.register(testSeam, mockStrategy);
         
-        // Set override
-        profileRegistry.setOverride('test-user-5', 'test-seam', 'test-strategy');
+        // Set override using role
+        profileRegistry.setOverride('test-user-5', 'capture', 'test-strategy');
         
-        const resolved = profileRegistry.resolveStrategy('test-user-5', 'test-seam', strategyRegistry.strategies);
+        const resolved = profileRegistry.resolveStrategy('test-user-5', 'capture', strategyRegistry);
         expect(resolved).toBeDefined();
         expect(resolved?.id).toBe('test-strategy');
     });
@@ -133,7 +133,7 @@ describe('ProfileRegistry', () => {
             strategyRegistry.register(mockStrategy.seam, mockStrategy);
         }
         
-        const resolved = profileRegistry.resolveStrategy('test-user-6', SEAM_IDS.MATCH, strategyRegistry.strategies);
+        const resolved = profileRegistry.resolveStrategy('test-user-6', SEAM_ROLES.MATCH, strategyRegistry);
         expect(resolved).toBeDefined();
         expect(['local-match-preview', 'dashboard-local-match']).toContain(resolved?.id);
     });

@@ -1,4 +1,4 @@
-import { SEAM_IDS, type SeamId } from './seams';
+import { SEAM_ROLES, type SeamRole } from './seams';
 import type { StrategyProfile } from '@notention/core/ui/profile';
 
 export const DEFAULT_PROFILES: Omit<StrategyProfile, 'createdAt' | 'updatedAt'>[] = [
@@ -7,10 +7,10 @@ export const DEFAULT_PROFILES: Omit<StrategyProfile, 'createdAt' | 'updatedAt'>[
         name: 'Default',
         description: 'Balanced experience for all users',
         strategySelections: {
-            [SEAM_IDS.CAPTURE]: 'describe-it-composer',
-            [SEAM_IDS.ELICIT]: 'tag-input',
-            [SEAM_IDS.MATCH]: 'local-match-preview',
-            [SEAM_IDS.LAYOUT]: 'property-panel',
+            [SEAM_ROLES.CAPTURE]: 'describe-it-composer',
+            [SEAM_ROLES.ELICIT]: 'tag-input',
+            [SEAM_ROLES.MATCH]: 'local-match-preview',
+            [SEAM_ROLES.LAYOUT]: 'property-panel',
         },
         isDefault: true,
     },
@@ -19,10 +19,10 @@ export const DEFAULT_PROFILES: Omit<StrategyProfile, 'createdAt' | 'updatedAt'>[
         name: 'Compact',
         description: 'Dense information, minimal UI',
         strategySelections: {
-            [SEAM_IDS.CAPTURE]: 'quick-capture',
-            [SEAM_IDS.ELICIT]: 'tag-input',
-            [SEAM_IDS.MATCH]: 'dashboard-local-match',
-            [SEAM_IDS.LAYOUT]: 'property-panel',
+            [SEAM_ROLES.CAPTURE]: 'quick-capture',
+            [SEAM_ROLES.ELICIT]: 'tag-input',
+            [SEAM_ROLES.MATCH]: 'dashboard-local-match',
+            [SEAM_ROLES.LAYOUT]: 'property-panel',
         },
         context: { persona: 'power-user' },
     },
@@ -31,10 +31,10 @@ export const DEFAULT_PROFILES: Omit<StrategyProfile, 'createdAt' | 'updatedAt'>[
         name: 'Guided',
         description: 'More explanations, progressive disclosure',
         strategySelections: {
-            [SEAM_IDS.CAPTURE]: 'describe-it-composer',
-            [SEAM_IDS.ELICIT]: 'insert-property-modal',
-            [SEAM_IDS.MATCH]: 'local-match-preview',
-            [SEAM_IDS.LAYOUT]: 'property-panel',
+            [SEAM_ROLES.CAPTURE]: 'describe-it-composer',
+            [SEAM_ROLES.ELICIT]: 'insert-property-modal',
+            [SEAM_ROLES.MATCH]: 'local-match-preview',
+            [SEAM_ROLES.LAYOUT]: 'property-panel',
         },
         context: { persona: 'new-user' },
     },
@@ -43,10 +43,10 @@ export const DEFAULT_PROFILES: Omit<StrategyProfile, 'createdAt' | 'updatedAt'>[
         name: 'Accessible',
         description: 'High contrast, full keyboard support, screen reader optimized',
         strategySelections: {
-            [SEAM_IDS.CAPTURE]: 'describe-it-composer',
-            [SEAM_IDS.ELICIT]: 'tag-input',
-            [SEAM_IDS.MATCH]: 'local-match-preview',
-            [SEAM_IDS.LAYOUT]: 'property-panel',
+            [SEAM_ROLES.CAPTURE]: 'describe-it-composer',
+            [SEAM_ROLES.ELICIT]: 'tag-input',
+            [SEAM_ROLES.MATCH]: 'local-match-preview',
+            [SEAM_ROLES.LAYOUT]: 'property-panel',
         },
         context: { persona: 'accessibility' },
     },

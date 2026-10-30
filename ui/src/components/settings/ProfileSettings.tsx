@@ -1,12 +1,12 @@
 import { useStrategy } from '../../hooks/useStrategyResolver';
-import { SEAM_IDS } from '../../constants/seams';
+import { SEAM_ROLES, type SeamRole, resolveSeamId } from '../../constants/seams';
 import { profileRegistry, type StrategyProfile } from '@notention/core/ui/profile';
 import { strategyRegistry } from '@notention/core/ui/strategy';
 import { Button } from '../ui/Button';
 import { Select } from '../ui/Select';
 import { Toggle } from '../ui/Toggle';
 import { useState, useMemo } from 'react';
-import { UserGroupIcon, SettingsIcon, ChevronDownIcon, ChevronUpIcon, PlusIcon } from '../ui/icons';
+import { UserGroupIcon, SettingsIcon, ChevronDownIcon, ChevronUpIcon } from '../ui/icons';
 
 export function ProfileSettings() {
     const {
@@ -23,32 +23,32 @@ export function ProfileSettings() {
     const profiles = profileRegistry.getAllProfiles();
     const activeProfile = getActiveProfile();
     const [showOverrides, setShowOverrides] = useState(false);
-    const [addingOverrideSeam, setAddingOverrideSeam] = useState<string | null>(null);
+    const [addingOverrideSeam, setAddingOverrideSeam] = useState<SeamRole | null>(null);
 
     const getAvailableStrategies = useMemo(
-        () => (seamId: string) => strategyRegistry.getAllForSeam(seamId).map(s => ({ id: s.id, name: s.id })),
+        () => (seamRole: SeamRole) => strategyRegistry.getAllForSeam(resolveSeamId(seamRole, strategyRegistry)).map(s => ({ id: s.id, name: s.id })),
         []
     );
 
     const seamOptions = useMemo(
         () => [
-            { value: SEAM_IDS.CAPTURE, label: 'Capture' },
-            { value: SEAM_IDS.ELICIT, label: 'Elicit' },
-            { value: SEAM_IDS.MATCH, label: 'Match Display' },
-            { value: SEAM_IDS.LAYOUT, label: 'Layout' },
+            { value: SEAM_ROLES.CAPTURE, label: 'Capture' },
+            { value: SEAM_ROLES.ELICIT, label: 'Elicit' },
+            { value: SEAM_ROLES.MATCH, label: 'Match Display' },
+            { value: SEAM_ROLES.LAYOUT, label: 'Layout' },
         ],
         []
     );
 
-    const handleOverrideChange = (seamId: string, strategyId: string) => {
-        strategyId ? setOverride(seamId as any, strategyId) : removeOverride(seamId as any);
+    const handleOverrideChange = (seamRole: SeamRole, strategyId: string) => {
+        strategyId ? setOverride(seamRole, strategyId) : removeOverride(seamRole);
     };
 
-    const handleAddOverrideSeamChange = (seamId: string) => setAddingOverrideSeam(seamId);
+    const handleAddOverrideSeamChange = (seamRole: SeamRole) => setAddingOverrideSeam(seamRole);
 
-    const handleAddOverrideStrategyChange = (seamId: string, strategyId: string) => {
+    const handleAddOverrideStrategyChange = (seamRole: SeamRole, strategyId: string) => {
         if (strategyId) {
-            setOverride(seamId as any, strategyId);
+            setOverride(seamRole, strategyId);
             setAddingOverrideSeam(null);
         }
     };
@@ -97,20 +97,24 @@ export function ProfileSettings() {
                         {Object.entries(overrides).length === 0 ? (
                             <p className="text-sm text-gray-500">No overrides set. Using profile defaults.</p>
                         ) : (
-                            Object.entries(overrides).map(([seamId, strategyId]) => (
-                                <div key={seamId} className="flex items-center gap-3">
-                                    <span className="text-sm font-mono text-gray-400 min-w-[150px]">{seamId}</span>
-                                    <Select
-                                        value={strategyId}
-                                        onChange={v => handleOverrideChange(seamId, v)}
-                                        options={getAvailableStrategies(seamId).map(s => ({ value: s.id, label: s.name }))}
-                                        placeholder="Select strategy"
-                                    />
-                                    <Button variant="ghost" size="sm" onClick={() => handleOverrideChange(seamId, '')}>
-                                        Clear
-                                    </Button>
-                                </div>
-                            ))
+                            Object.entries(overrides).map(([seamId, strategyId]) => {
+                                // Find the role for this seam ID
+                                const seamRole = Object.entries(SEAM_ROLES).find(([, id]) => seamId.startsWith(id))?.[0] as SeamRole | undefined;
+                                return (
+                                    <div key={seamId} className="flex items-center gap-3">
+                                        <span className="text-sm font-mono text-gray-400 min-w-[150px]">{seamRole ?? seamId}</span>
+                                        <Select
+                                            value={strategyId}
+                                            onChange={v => handleOverrideChange(seamRole!, v)}
+                                            options={getAvailableStrategies(seamRole!).map(s => ({ value: s.id, label: s.name }))}
+                                            placeholder="Select strategy"
+                                        />
+                                        <Button variant="ghost" size="sm" onClick={() => handleOverrideChange(seamRole!, '')}>
+                                            Clear
+                                        </Button>
+                                    </div>
+                                );
+                            })
                         )}
 
                         {/* Add new override */}
@@ -174,12 +178,15 @@ export function ProfileSettings() {
                                 )}
                             </div>
                             <div className="mt-2 text-xs text-gray-500 space-y-1">
-                                {Object.entries(profile.strategySelections).map(([seam, strategy]) => (
-                                    <div key={seam} className="flex justify-between">
-                                        <span className="font-mono">{seam}</span>
-                                        <span>{strategy}</span>
-                                    </div>
-                                ))}
+                                {Object.entries(profile.strategySelections).map(([seam, strategy]) => {
+                                    const seamRole = Object.entries(SEAM_ROLES).find(([, id]) => seam.startsWith(id))?.[0] as SeamRole | undefined;
+                                    return (
+                                        <div key={seam} className="flex justify-between">
+                                            <span className="font-mono">{seamRole ?? seam}</span>
+                                            <span>{strategy}</span>
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </div>
                     ))}

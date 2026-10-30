@@ -1,6 +1,18 @@
 import React from 'react';
 
 /**
+ * Seam definition - shared between discovery, synthesis, and runtime
+ */
+export interface Seam {
+    id: string;
+    name: string;
+    description: string;
+    propsShape: Record<string, string>;
+    components: string[];
+    role: 'capture' | 'elicit' | 'match' | 'display' | 'layout' | 'explain' | 'ontology' | 'intent';
+}
+
+/**
  * Strategy interface - all strategies must implement this
  */
 export interface Strategy<P = Record<string, unknown>> {
@@ -10,18 +22,6 @@ export interface Strategy<P = Record<string, unknown>> {
     readonly params: ParamSpec;
     render(props: P): React.ReactElement;
     getDefaultProps(): Partial<P>;
-}
-
-/**
- * Seam definition - shared between discovery and runtime
- */
-export interface Seam {
-    id: string;
-    name: string;
-    description: string;
-    propsShape: Record<string, string>;
-    components: string[];
-    role: 'capture' | 'elicit' | 'match' | 'display' | 'layout' | 'explain' | 'ontology' | 'intent';
 }
 
 /**

@@ -14,15 +14,15 @@ import { DescribeItComposerStrategy } from '../strategies/DescribeItComposerStra
 import { TagInputStrategy } from '../strategies/TagInputStrategy';
 import { PropertyFormStrategy } from '../strategies/PropertyFormStrategy';
 import { TemplateSelectorStrategy } from '../strategies/TemplateSelectorStrategy';
-import { SEAM_IDS, type SeamId } from '../constants/seams';
+import { SEAM_ROLES, type SeamRole, resolveSeamId } from '../constants/seams';
 
 // Strategy context for React components
 interface StrategyContextValue {
-    resolveStrategy: (seamId: SeamId) => Strategy | undefined;
+    resolveStrategy: (seamRole: SeamRole) => Strategy | undefined;
     getActiveProfile: () => StrategyProfile | undefined;
     setActiveProfile: (profileId: string) => boolean;
-    setOverride: (seamId: SeamId, strategyId: string) => void;
-    removeOverride: (seamId: SeamId) => void;
+    setOverride: (seamRole: SeamRole, strategyId: string) => void;
+    removeOverride: (seamRole: SeamRole) => void;
     setManualMode: (manual: boolean) => void;
     userId: string;
     isManualMode: boolean;
@@ -56,7 +56,10 @@ export function StrategyProvider({ children, userId = 'default-user' }: Strategy
     const persistConfig = useCallback(() => { persistUserConfig(userId); }, [userId]);
 
     const resolveStrategy = useMemo(
-        () => (seamId: SeamId) => profileRegistry.resolveStrategy(userId, seamId, strategyRegistry.strategies),
+        () => (seamRole: SeamRole) => {
+            const seamId = resolveSeamId(seamRole, strategyRegistry);
+            return profileRegistry.resolveStrategy(userId, seamId, strategyRegistry.strategies);
+        },
         [userId]
     );
 
@@ -77,13 +80,15 @@ export function StrategyProvider({ children, userId = 'default-user' }: Strategy
         return result;
     }, [userId, persistConfig]);
 
-    const setOverride = useMemo(() => (seamId: SeamId, strategyId: string) => {
+    const setOverride = useMemo(() => (seamRole: SeamRole, strategyId: string) => {
+        const seamId = resolveSeamId(seamRole, strategyRegistry);
         profileRegistry.setOverride(userId, seamId, strategyId);
         setUserConfigState(profileRegistry.getUserConfig(userId));
         persistConfig();
     }, [userId, persistConfig]);
 
-    const removeOverride = useMemo(() => (seamId: SeamId) => {
+    const removeOverride = useMemo(() => (seamRole: SeamRole) => {
+        const seamId = resolveSeamId(seamRole, strategyRegistry);
         profileRegistry.removeOverride(userId, seamId);
         setUserConfigState(profileRegistry.getUserConfig(userId));
         persistConfig();
@@ -126,9 +131,9 @@ export function StrategyProvider({ children, userId = 'default-user' }: Strategy
 }
 
 // Hook for components to use a specific seam's strategy
-export function useSeamStrategy<P = Record<string, unknown>>(seamId: SeamId): Strategy<P> | undefined {
+export function useSeamStrategy<P = Record<string, unknown>>(seamRole: SeamRole): Strategy<P> | undefined {
     const { resolveStrategy } = useStrategy();
-    return resolveStrategy(seamId) as Strategy<P> | undefined;
+    return resolveStrategy(seamRole) as Strategy<P> | undefined;
 }
 
 // Forward declarations for component types
@@ -246,11 +251,12 @@ export async function initializeProfiles(): Promise<void> {
     // Load persisted user configs from storage
     await loadPersistedConfigs();
 
-    // Register experiment for match-display comparison
+    // Register experiment for match-display comparison (uses dynamic seam ID resolution)
+    const matchSeamId = resolveSeamId(SEAM_ROLES.MATCH, strategyRegistry);
     profileRegistry.registerExperiment({
         ...DEFAULT_MATCH_DISPLAY_EXPERIMENT,
-        seamId: SEAM_IDS.MATCH,
-        variants: DEFAULT_MATCH_DISPLAY_EXPERIMENT.variants.map(v => ({ ...v, seamId: SEAM_IDS.MATCH })),
+        seamId: matchSeamId,
+        variants: DEFAULT_MATCH_DISPLAY_EXPERIMENT.variants.map(v => ({ ...v, seamId: matchSeamId })),
     });
 }
 
@@ -301,9 +307,15 @@ export async function persistUserConfig(userId: string): Promise<void> {
 export async function registerUIStrategies(): Promise<void> {
     await loadComponents();
 
+    // Resolve seam IDs dynamically from the strategy registry (populated by discovery)
+    const captureSeamId = resolveSeamId(SEAM_ROLES.CAPTURE, strategyRegistry);
+    const elicitSeamId = resolveSeamId(SEAM_ROLES.ELICIT, strategyRegistry);
+    const matchSeamId = resolveSeamId(SEAM_ROLES.MATCH, strategyRegistry);
+    const layoutSeamId = resolveSeamId(SEAM_ROLES.LAYOUT, strategyRegistry);
+
     const seams: Seam[] = [
         {
-            id: SEAM_IDS.CAPTURE,
+            id: captureSeamId,
             name: 'Capture',
             description: 'Natural language capture interface',
             role: 'capture',
@@ -317,7 +329,7 @@ export async function registerUIStrategies(): Promise<void> {
             },
         },
         {
-            id: SEAM_IDS.ELICIT,
+            id: elicitSeamId,
             name: 'Elicit',
             description: 'Property elicitation interface',
             role: 'elicit',
@@ -335,7 +347,7 @@ export async function registerUIStrategies(): Promise<void> {
             },
         },
         {
-            id: SEAM_IDS.MATCH,
+            id: matchSeamId,
             name: 'Match Display',
             description: 'Match explanation and selection interface',
             role: 'display',
@@ -349,7 +361,7 @@ export async function registerUIStrategies(): Promise<void> {
             },
         },
         {
-            id: SEAM_IDS.LAYOUT,
+            id: layoutSeamId,
             name: 'Layout',
             description: 'Workspace layout and panel arrangement',
             role: 'layout',
@@ -382,20 +394,20 @@ export async function registerUIStrategies(): Promise<void> {
     }
 
     // Register capture strategies
-    strategyRegistry.register(createComponentStrategy(SEAM_IDS.CAPTURE, 'describe-it-composer', DescribeItComposerStrategy, components.quickCapture!));
-    strategyRegistry.register(createComponentStrategy(SEAM_IDS.CAPTURE, 'quick-capture', () => components.quickCapture!, components.quickCapture!));
+    strategyRegistry.register(createComponentStrategy(captureSeamId, 'describe-it-composer', DescribeItComposerStrategy, components.quickCapture!));
+    strategyRegistry.register(createComponentStrategy(captureSeamId, 'quick-capture', () => components.quickCapture!, components.quickCapture!));
 
     // Register elicit strategies
-    strategyRegistry.register(createComponentStrategy(SEAM_IDS.ELICIT, 'tag-input', TagInputStrategy, components.insertPropertyModal!));
-    strategyRegistry.register(createComponentStrategy(SEAM_IDS.ELICIT, 'insert-property-modal', () => components.insertPropertyModal!, components.insertPropertyModal!));
+    strategyRegistry.register(createComponentStrategy(elicitSeamId, 'tag-input', TagInputStrategy, components.insertPropertyModal!));
+    strategyRegistry.register(createComponentStrategy(elicitSeamId, 'insert-property-modal', () => components.insertPropertyModal!, components.insertPropertyModal!));
 
     // Register match strategies
-    strategyRegistry.register(createComponentStrategy(SEAM_IDS.MATCH, 'local-match-preview', () => components.localMatchPreview!, components.localMatchPreview!));
-    strategyRegistry.register(createComponentStrategy(SEAM_IDS.MATCH, 'dashboard-local-match', () => components.dashboardLocalMatch!, components.dashboardLocalMatch!));
+    strategyRegistry.register(createComponentStrategy(matchSeamId, 'local-match-preview', () => components.localMatchPreview!, components.localMatchPreview!));
+    strategyRegistry.register(createComponentStrategy(matchSeamId, 'dashboard-local-match', () => components.dashboardLocalMatch!, components.dashboardLocalMatch!));
 
     // Register layout strategies
-    strategyRegistry.register(createComponentStrategy(SEAM_IDS.LAYOUT, 'property-panel', PropertyFormStrategy, components.propertyPanel!));
-    strategyRegistry.register(createComponentStrategy(SEAM_IDS.LAYOUT, 'local-matches-panel', () => components.localMatchesPanel!, components.localMatchesPanel!));
+    strategyRegistry.register(createComponentStrategy(layoutSeamId, 'property-panel', PropertyFormStrategy, components.propertyPanel!));
+    strategyRegistry.register(createComponentStrategy(layoutSeamId, 'local-matches-panel', () => components.localMatchesPanel!, components.localMatchesPanel!));
 }
 
 export async function initializeStrategySystem(): Promise<void> {

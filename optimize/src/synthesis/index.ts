@@ -5,6 +5,7 @@ export * from './evaluator.js';
 export * from './adoption.js';
 export * from './requests.js';
 export * from './strategyComparison.js';
+export * from './testCases.js';
 export * from '../corpus/index.js';
 // Re-export fastEvaluator functions but not types (to avoid duplicates)
 export {

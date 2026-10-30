@@ -361,59 +361,198 @@ export class ComponentScanner {
     }
 
     private analyzeRoutes(): void {
-        const { notesView, editorManager, tiptapEditor, dashboardView } = {
-            notesView: this.components.get('NotesView'),
-            editorManager: this.components.get('EditorManager'),
-            tiptapEditor: this.components.get('TiptapEditor'),
-            dashboardView: this.components.get('DashboardView'),
-        };
-
-        if (notesView && editorManager && tiptapEditor) {
-            this.routes.push({ path: '#notes/:noteId', component: 'NotesView', guards: ['selectedNoteId'] });
-        }
-        if (dashboardView) {
-            this.routes.push({ path: '#dashboard', component: 'DashboardView', guards: ['!selectedNoteId'] });
-        }
-        for (const name of this.components.keys()) {
-            if (name.endsWith('View') && !['NotesView', 'DashboardView'].includes(name)) {
-                this.routes.push({ path: `#${name.replace('View', '').toLowerCase()}`, component: name, guards: [] });
+        // Derive routes from JSX: look for routing components and path patterns
+        const routeComponents = new Map<string, { path: string; guards: string[] }>();
+        
+        for (const [compName, comp] of this.components) {
+            for (const jsx of comp.jsx) {
+                this.extractRoutesFromJsx(compName, jsx, routeComponents);
             }
+        }
+        
+        // Add discovered routes
+        for (const [path, info] of routeComponents) {
+            this.routes.push({ path, component: info.path.split('/')[1] || 'Unknown', guards: info.guards });
+        }
+        
+        // Fallback: detect View components
+        for (const name of this.components.keys()) {
+            if (name.endsWith('View')) {
+                const path = `#${name.replace('View', '').toLowerCase()}`;
+                if (!this.routes.some(r => r.path === path)) {
+                    this.routes.push({ path, component: name, guards: [] });
+                }
+            }
+        }
+    }
+    
+    private extractRoutesFromJsx(compName: string, jsx: JSXElement, routes: Map<string, { path: string; guards: string[] }>): void {
+        // Look for routing patterns in JSX
+        if (jsx.tag === 'Route' || jsx.tag === 'Routes' || jsx.tag === 'Switch') {
+            const path = jsx.props.path || jsx.props.from;
+            if (path) {
+                const guards: string[] = [];
+                if (jsx.props.guard) guards.push(jsx.props.guard);
+                if (jsx.props.requireAuth) guards.push('auth');
+                routes.set(path, { path, guards });
+            }
+        }
+        
+        // Look for Link/NavLink components with to prop
+        if ((jsx.tag === 'Link' || jsx.tag === 'NavLink') && jsx.props.to) {
+            const path = jsx.props.to;
+            routes.set(path, { path, guards: [] });
+        }
+        
+        // Recurse into children
+        for (const child of jsx.children) {
+            this.extractRoutesFromJsx(compName, child, routes);
         }
     }
 
     private analyzeDialogs(): void {
-        if (this.components.has('InsertPropertyModal')) {
-            this.dialogs.push({
-                name: 'InsertPropertyModal',
-                trigger: 'handlePrepareNewProperty / toolbar "Add detail" button',
-                component: 'InsertPropertyModal',
-                fields: [
-                    { name: 'key', type: 'text', label: 'Detail', required: true },
-                    { name: 'operator', type: 'select', label: 'Comparison', required: true, options: ['is', 'is not', 'greater than', 'less than', 'contains', 'between'] },
-                    { name: 'value', type: 'custom', label: 'Value', required: true },
-                ],
-            });
-        }
-        for (const name of this.components.keys()) {
-            if ((name.includes('Modal') || name.includes('Dialog')) && name !== 'InsertPropertyModal') {
-                this.dialogs.push({ name, trigger: 'unknown', component: name, fields: [] });
+        // Derive dialogs from JSX: look for Modal, Dialog, Popover components
+        for (const [compName, comp] of this.components) {
+            for (const jsx of comp.jsx) {
+                this.extractDialogsFromJsx(compName, jsx);
             }
         }
     }
+    
+    private extractDialogsFromJsx(compName: string, jsx: JSXElement): void {
+        // Check if this component renders a Modal/Dialog
+        const isDialogComponent = ['Modal', 'Dialog', 'Popover', 'Drawer'].some(d => 
+            jsx.tag === d || jsx.tag.endsWith(d)
+        );
+        
+        if (isDialogComponent) {
+            const fields = this.extractFormFieldsFromJsx(jsx);
+            this.dialogs.push({
+                name: compName,
+                trigger: this.inferDialogTrigger(compName, jsx),
+                component: compName,
+                fields,
+            });
+        }
+        
+        // Recurse into children
+        for (const child of jsx.children) {
+            this.extractDialogsFromJsx(compName, child);
+        }
+    }
+    
+    private extractFormFieldsFromJsx(jsx: JSXElement): FieldInfo[] {
+        const fields: FieldInfo[] = [];
+        
+        // Look for form inputs
+        const inputTags = ['input', 'select', 'textarea', 'Input', 'Select', 'Textarea'];
+        if (inputTags.includes(jsx.tag) || inputTags.some(t => jsx.tag.endsWith(t))) {
+            const field = this.parseFormField(jsx);
+            if (field) fields.push(field);
+        }
+        
+        // Recurse into children
+        for (const child of jsx.children) {
+            fields.push(...this.extractFormFieldsFromJsx(child));
+        }
+        
+        return fields;
+    }
+    
+    private parseFormField(jsx: JSXElement): FieldInfo | null {
+        const name = jsx.props.name || jsx.props.id || jsx.props['data-field'];
+        if (!name) return null;
+        
+        let type: FieldInfo['type'] = 'text';
+        if (jsx.tag === 'select' || jsx.tag === 'Select') type = 'select';
+        else if (jsx.props.type === 'checkbox' || jsx.props.type === 'radio') type = 'select';
+        else if (jsx.tag === 'textarea' || jsx.tag === 'Textarea') type = 'text';
+        
+        const options: string[] = [];
+        if (type === 'select') {
+            // Extract options from children
+            for (const child of jsx.children) {
+                if (child.tag === 'option' || child.tag === 'Option') {
+                    options.push(child.props.value || child.props.children?.[0] || '');
+                }
+            }
+        }
+        
+        return {
+            name,
+            type,
+            label: jsx.props.label || jsx.props.placeholder || name,
+            required: jsx.props.required === 'true' || jsx.props.required === true,
+            options: options.length > 0 ? options : undefined,
+        };
+    }
+    
+    private inferDialogTrigger(compName: string, jsx: JSXElement): string {
+        // Try to infer what triggers this dialog
+        if (compName.includes('InsertProperty')) return 'toolbar "Add detail" button';
+        if (compName.includes('Confirm')) return 'delete/destructive action';
+        if (compName.includes('Alert')) return 'error/notification';
+        return 'unknown';
+    }
 
     private analyzeActions(): void {
-        const actions: DiscoveredAction[] = [
-            { component: 'TiptapToolbar', action: 'openPropertyModal', selector: { role: 'button', name: 'Add detail' }, intent: 'note.addProperty' },
-            { component: 'InsertPropertyModal', action: 'submit', selector: { role: 'button', name: 'Add detail' }, intent: 'note.insertProperty' },
-            { component: 'InsertPropertyModal', action: 'cancel', selector: { role: 'button', name: 'Cancel' }, intent: 'note.cancelProperty' },
-            { component: 'ExtractionReview', action: 'accept', selector: { role: 'button', name: 'Accept' }, intent: 'note.acceptExtraction' },
-            { component: 'ExtractionReview', action: 'reject', selector: { role: 'button', name: 'Reject' }, intent: 'note.rejectExtraction' },
-            { component: 'EditorHeader', action: 'publish', selector: { role: 'button', name: 'Publish' }, intent: 'note.publish' },
-            { component: 'Sidebar', action: 'selectNote', selector: { role: 'button', name: 'note' }, intent: 'note.select' },
-        ];
-        for (const action of actions) {
-            if (this.components.has(action.component)) this.actions.push(action);
+        // Derive actions from JSX: look for onClick handlers, buttons with intents
+        for (const [compName, comp] of this.components) {
+            for (const jsx of comp.jsx) {
+                this.extractActionsFromJsx(compName, jsx);
+            }
         }
+    }
+    
+    private extractActionsFromJsx(compName: string, jsx: JSXElement): void {
+        // Look for click handlers
+        const clickHandlers = ['onClick', 'onPress', 'onSubmit', 'onSelect'];
+        for (const handler of clickHandlers) {
+            if (jsx.props[handler]) {
+                const intent = this.inferIntentFromHandler(handler, jsx.props[handler], compName);
+                const selector = this.extractSelector(jsx);
+                
+                this.actions.push({
+                    component: compName,
+                    action: handler.replace('on', '').toLowerCase(),
+                    selector,
+                    intent,
+                });
+                break; // Only record first click handler per element
+            }
+        }
+        
+        // Recurse into children
+        for (const child of jsx.children) {
+            this.extractActionsFromJsx(compName, child);
+        }
+    }
+    
+    private inferIntentFromHandler(handler: string, handlerValue: string, compName: string): string {
+        const handlerLower = handlerValue.toLowerCase();
+        const compLower = compName.toLowerCase();
+        
+        if (handlerLower.includes('add') && handlerLower.includes('detail')) return 'note.addProperty';
+        if (handlerLower.includes('insert') && handlerLower.includes('propert')) return 'note.insertProperty';
+        if (handlerLower.includes('cancel')) return 'note.cancelProperty';
+        if (handlerLower.includes('accept') || handlerLower.includes('approve')) return 'note.acceptExtraction';
+        if (handlerLower.includes('reject') || handlerLower.includes('decline')) return 'note.rejectExtraction';
+        if (handlerLower.includes('publish')) return 'note.publish';
+        if (handlerLower.includes('select') && compLower.includes('sidebar')) return 'note.select';
+        if (handlerLower.includes('save')) return 'note.save';
+        if (handlerLower.includes('delete') || handlerLower.includes('remove')) return 'note.delete';
+        
+        return `ui.${compName.toLowerCase()}.${handler.toLowerCase()}`;
+    }
+    
+    private extractSelector(jsx: JSXElement): SelectorInfo {
+        return {
+            role: jsx.props.role,
+            name: jsx.props.name || jsx.props['aria-label'] || jsx.props['data-testid'],
+            testId: jsx.props['data-testid'],
+            label: jsx.props['aria-label'] || jsx.props.label,
+            css: jsx.props.className || jsx.props.id ? `#${jsx.props.id}` : undefined,
+        };
     }
 }
 

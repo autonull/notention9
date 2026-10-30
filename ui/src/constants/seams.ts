@@ -1,10 +1,10 @@
-import { SEAM_IDS, type SeamId } from '@notention/core/constants/seams';
+import { SEAM_ROLES, type SeamRole } from '@notention/core/constants/seams';
 
-export { SEAM_IDS, type SeamId };
+export { SEAM_ROLES, type SeamRole };
 
 export const SEAM_OPTIONS = [
-    { value: SEAM_IDS.CAPTURE, label: 'Capture' },
-    { value: SEAM_IDS.ELICIT, label: 'Elicit' },
-    { value: SEAM_IDS.MATCH, label: 'Match Display' },
-    { value: SEAM_IDS.LAYOUT, label: 'Layout' },
+    { value: SEAM_ROLES.CAPTURE, label: 'Capture' },
+    { value: SEAM_ROLES.ELICIT, label: 'Elicit' },
+    { value: SEAM_ROLES.MATCH, label: 'Match Display' },
+    { value: SEAM_ROLES.LAYOUT, label: 'Layout' },
 ] as const;

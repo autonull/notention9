@@ -1,9 +1,8 @@
 import { z } from 'zod';
-import type { Seam } from '../discovery/seams.js';
+import type { Seam, StrategyArtifact, Capability, Provenance } from '@notention/core/ui';
 
 /**
- * Seam definition - shared between discovery and synthesis
- * Re-exported from discovery for consistency
+ * Seam definition - re-exported from core for consistency
  */
 export type { Seam };
 
@@ -35,29 +34,8 @@ export interface CandidateStrategy {
     createdAt: string;
 }
 
-export interface StrategyArtifact {
-    id: string;
-    kind: 'prompt' | 'ui' | 'ontology-facet';
-    version: string;
-    interface: string;
-    config: Record<string, unknown>;
-    requires: Capability[];
-    provenance: Provenance;
-}
-
-export interface Capability {
-    name: string;
-    minVersion?: string;
-}
-
-export interface Provenance {
-    author: 'human' | 'model';
-    model?: string;
-    promptHash?: string;
-    diff?: string;
-    date: string;
-    evidenceBundle?: string;
-}
+// Re-export core types
+export type { StrategyArtifact, Capability, Provenance };
 
 export interface CandidateProvenance {
     generatorModel: string;

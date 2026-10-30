@@ -85,6 +85,7 @@ export class DiscoveryEngine {
 }
 
 export const discoveryEngine = new DiscoveryEngine();
-export { discoverSeams, type Seam } from './seams.js';
+export { discoverSeams } from './seams.js';
+export type { Seam } from '@notention/core/ui';
 export { OntologyAdapter, type OntologyData, type OntologyProperty } from './ontologyAdapter.js';
 export { analyzeDuplicates, type DiscoveryAnalysis, type DuplicateGroup, type DeadComponent, type InlinedCandidate } from './duplicates.js';

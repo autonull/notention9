@@ -8,6 +8,7 @@ import { Note, Property } from '@notention/core';
 import type { CandidateStrategy, CandidateDir } from './StrategySpec.js';
 import type { BaselineResult as BaseBaselineResult, ResourceMetrics, CandidateEvaluation as BaseCandidateEvaluation, EvaluationReport as BaseEvaluationReport } from './evaluator.js';
 import { loadCorpusTestCases } from '../corpus/index.js';
+import { testCaseRegistry, CORE_CAPTURE_TEST_CASE } from './testCases.js';
 
 export interface BaselineResult extends BaseBaselineResult {
     isCorpusTest?: boolean;  // Flag for corpus-generated gap detection tests
@@ -20,110 +21,6 @@ export interface CandidateEvaluation extends BaseCandidateEvaluation {
 export interface EvaluationReport extends BaseEvaluationReport {
     // Extends base
 }
-
-export interface TestCase {
-    id: string;
-    name: string;
-    input: string;
-    expectedMinProperties: number;
-    expectedProperties?: Partial<Property>[];
-}
-
-export interface MatchTestCase {
-    id: string;
-    name: string;
-    requestText: string;
-    offerText: string;
-    expectedMinScore: number;
-    expectedMaxScore?: number;
-}
-
-const EXTRACTION_TEST_CASES: TestCase[] = [
-    {
-        id: 'extraction-1',
-        name: 'Job request with budget, role, deadline',
-        input: 'I need a React developer for two weeks, up to 900 USD, starting next week',
-        expectedMinProperties: 3,
-        expectedProperties: [
-            { key: 'intent', operator: 'is', values: ['task'] },
-            { key: 'role', operator: 'contains', values: ['React developer'] },
-            { key: 'budget', operator: 'is', values: ['900'] },
-        ],
-    },
-    {
-        id: 'extraction-2',
-        name: 'Project with budget and deadline',
-        input: 'Create a new project with React 18, TypeScript, and Vite. Use Tailwind for styling. Budget 5000 USD, deadline next Friday.',
-        expectedMinProperties: 3,
-        expectedProperties: [
-            { key: 'budget', operator: 'is', values: ['5000'] },
-            { key: 'price', operator: 'is', values: ['5000 USD'] },
-        ],
-    },
-    {
-        id: 'extraction-3',
-        name: 'Shopping intent',
-        input: 'Buy milk #shopping',
-        expectedMinProperties: 1,
-        expectedProperties: [
-            { key: 'intent', operator: 'is', values: ['shopping'] },
-        ],
-    },
-    {
-        id: 'extraction-4',
-        name: 'Meeting with budget',
-        input: 'Meeting at 3pm with John about the project budget of 5000 USD',
-        expectedMinProperties: 2,
-        expectedProperties: [
-            { key: 'budget', operator: 'is', values: ['5000'] },
-            { key: 'price', operator: 'is', values: ['5000 USD'] },
-        ],
-    },
-    {
-        id: 'extraction-5',
-        name: 'Freelance offer with rate',
-        input: 'I offer React development services at 100 USD per hour',
-        expectedMinProperties: 2,
-        expectedProperties: [
-            { key: 'price', operator: 'is', values: ['100 USD'] },
-        ],
-    },
-];
-
-const MATCH_TEST_CASES: MatchTestCase[] = [
-    {
-        id: 'match-1',
-        name: 'React developer request matches React offer (price compatible)',
-        requestText: 'I need a React developer for 100 USD per hour',
-        offerText: 'I offer React development services at 100 USD per hour',
-        expectedMinScore: 0.3,
-        expectedMaxScore: 1.0,
-    },
-    {
-        id: 'match-2',
-        name: 'Budget request matches priced offer',
-        requestText: 'Need a designer for 5000 USD',
-        offerText: 'Designer offering services at 5000 USD',
-        expectedMinScore: 0.3,
-        expectedMaxScore: 1.0,
-    },
-    {
-        id: 'match-3',
-        name: 'No match for unrelated skills',
-        requestText: 'I need a React developer',
-        offerText: 'I offer Python development services',
-        expectedMinScore: 0,
-        expectedMaxScore: 0.2,
-    },
-    {
-        id: 'match-4',
-        name: 'Price conflict - different budgets',
-        requestText: 'Need a developer for 2000 USD',
-        offerText: 'Developer offering services at 100 USD per hour',
-        expectedMinScore: 0,
-        expectedMaxScore: 0.1,
-    },
-];
 
 const ontologyService = new OntologyService(DEFAULT_ONTOLOGY);
 const extractor = new PropertyExtractor(DEFAULT_ONTOLOGY);
@@ -188,8 +85,17 @@ export async function runFastBaselineEvaluation(): Promise<BaselineResult[]> {
     // Load corpus-generated test cases
     const corpusCases = await loadCorpusTestCasesForEvaluation();
     
+    // Register corpus cases with the registry
+    testCaseRegistry.registerExtractionCases(corpusCases.extraction);
+    testCaseRegistry.registerMatchCases(corpusCases.match);
+    
+    // Get all test cases from registry
+    const { extraction: allExtractionCases, match: allMatchCases } = testCaseRegistry.getAllCases();
+    const coreExtractionCases = testCaseRegistry.getCoreExtractionCases();
+    const coreMatchCases = testCaseRegistry.getCoreMatchCases();
+    
     // Test core extraction tasks (regression tests)
-    for (const testCase of EXTRACTION_TEST_CASES) {
+    for (const testCase of coreExtractionCases) {
         const startTime = Date.now();
         const properties = extractor.extractFromText(testCase.input);
         const duration = Date.now() - startTime;
@@ -231,7 +137,7 @@ export async function runFastBaselineEvaluation(): Promise<BaselineResult[]> {
     }
     
     // Test core match tasks (regression tests)
-    for (const testCase of MATCH_TEST_CASES) {
+    for (const testCase of coreMatchCases) {
         const startTime = Date.now();
         const request = createNoteFromText(testCase.requestText, 'request');
         const offer = createNoteFromText(testCase.offerText, 'offer');
@@ -277,11 +183,11 @@ export async function runFastBaselineEvaluation(): Promise<BaselineResult[]> {
     }
     
     // Test capture task (uses extraction)
-    const captureInput = 'I need a React developer for two weeks, up to 900 USD, starting next week';
+    const captureInput = CORE_CAPTURE_TEST_CASE.input;
     const captureStart = Date.now();
     const captureProps = extractor.extractFromText(captureInput);
     const captureDuration = Date.now() - captureStart;
-    const captureSuccess = captureProps.length >= 3 && captureDuration < 20000;
+    const captureSuccess = captureProps.length >= CORE_CAPTURE_TEST_CASE.expectedMinProperties && captureDuration < CORE_CAPTURE_TEST_CASE.maxDurationMs;
     
     results.unshift({
         taskId: 'task-1-capture',

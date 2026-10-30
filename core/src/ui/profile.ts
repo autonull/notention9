@@ -1,15 +1,15 @@
-import type { Seam, Strategy } from './strategy.js';
-import { SEAM_IDS } from '../constants/seams.js';
+import type { Seam, Strategy, StrategyRegistry } from './strategy.js';
+import { SEAM_ROLES, type SeamRole } from '../constants/seams.js';
 
 /**
- * Strategy profile - a named collection of strategy selections per seam
+ * Strategy profile - a named collection of strategy selections per seam role
  */
 export interface StrategyProfile {
     id: string;
     name: string;
     description: string;
-    // seamId -> strategyId mapping
-    strategySelections: Record<string, string>;
+    // seamRole -> strategyId mapping (uses stable roles, not dynamic seam IDs)
+    strategySelections: Partial<Record<SeamRole, string>>;
     // When this profile is active (optional context)
     context?: ProfileContext;
     isDefault?: boolean;
@@ -64,8 +64,8 @@ export interface ProfileRule {
  */
 export interface UserStrategyOverrides {
     userId: string;
-    // seamId -> strategyId (overrides profile selection)
-    overrides: Record<string, string>;
+    // seamRole -> strategyId (overrides profile selection)
+    overrides: Partial<Record<SeamRole, string>>;
     updatedAt: string;
 }
 
@@ -86,7 +86,7 @@ export interface UserProfileConfig {
  */
 export interface StrategyVariant {
     id: string;
-    seamId: string;
+    seamId: SeamRole;
     strategyId: string;
     // Human-readable label for the variant
     label: string;
@@ -104,7 +104,7 @@ export interface StrategyExperiment {
     id: string;
     name: string;
     description: string;
-    seamId: string;
+    seamId: SeamRole;
     variants: StrategyVariant[];
     // Metrics to track
     metrics: ExperimentMetric[];
@@ -154,17 +154,17 @@ export interface ExperimentResult {
 }
 
 // Default profiles
-// Seam IDs match the discovered seams from loop/runs/discovered.json
+// Seam roles map to discovered seam IDs at runtime
 export const DEFAULT_PROFILES: StrategyProfile[] = [
     {
         id: 'default',
         name: 'Default',
         description: 'Balanced experience for all users',
         strategySelections: {
-            [SEAM_IDS.CAPTURE]: 'describe-it-composer',
-            [SEAM_IDS.ELICIT]: 'tag-input',
-            [SEAM_IDS.MATCH]: 'local-match-preview',
-            [SEAM_IDS.LAYOUT]: 'property-panel',
+            [SEAM_ROLES.CAPTURE]: 'describe-it-composer',
+            [SEAM_ROLES.ELICIT]: 'tag-input',
+            [SEAM_ROLES.MATCH]: 'local-match-preview',
+            [SEAM_ROLES.LAYOUT]: 'property-panel',
         },
         isDefault: true,
         createdAt: new Date().toISOString(),
@@ -175,10 +175,10 @@ export const DEFAULT_PROFILES: StrategyProfile[] = [
         name: 'Compact',
         description: 'Dense information, minimal UI',
         strategySelections: {
-            [SEAM_IDS.CAPTURE]: 'quick-capture',
-            [SEAM_IDS.ELICIT]: 'tag-input',
-            [SEAM_IDS.MATCH]: 'dashboard-local-match',
-            [SEAM_IDS.LAYOUT]: 'property-panel',
+            [SEAM_ROLES.CAPTURE]: 'quick-capture',
+            [SEAM_ROLES.ELICIT]: 'tag-input',
+            [SEAM_ROLES.MATCH]: 'dashboard-local-match',
+            [SEAM_ROLES.LAYOUT]: 'property-panel',
         },
         context: { persona: 'power-user' },
         createdAt: new Date().toISOString(),
@@ -189,10 +189,10 @@ export const DEFAULT_PROFILES: StrategyProfile[] = [
         name: 'Guided',
         description: 'More explanations, progressive disclosure',
         strategySelections: {
-            [SEAM_IDS.CAPTURE]: 'describe-it-composer',
-            [SEAM_IDS.ELICIT]: 'insert-property-modal',
-            [SEAM_IDS.MATCH]: 'local-match-preview',
-            [SEAM_IDS.LAYOUT]: 'property-panel',
+            [SEAM_ROLES.CAPTURE]: 'describe-it-composer',
+            [SEAM_ROLES.ELICIT]: 'insert-property-modal',
+            [SEAM_ROLES.MATCH]: 'local-match-preview',
+            [SEAM_ROLES.LAYOUT]: 'property-panel',
         },
         context: { persona: 'new-user' },
         createdAt: new Date().toISOString(),
@@ -203,10 +203,10 @@ export const DEFAULT_PROFILES: StrategyProfile[] = [
         name: 'Accessible',
         description: 'High contrast, full keyboard support, screen reader optimized',
         strategySelections: {
-            [SEAM_IDS.CAPTURE]: 'describe-it-composer',
-            [SEAM_IDS.ELICIT]: 'tag-input',
-            [SEAM_IDS.MATCH]: 'local-match-preview',
-            [SEAM_IDS.LAYOUT]: 'property-panel',
+            [SEAM_ROLES.CAPTURE]: 'describe-it-composer',
+            [SEAM_ROLES.ELICIT]: 'tag-input',
+            [SEAM_ROLES.MATCH]: 'local-match-preview',
+            [SEAM_ROLES.LAYOUT]: 'property-panel',
         },
         context: { persona: 'accessibility' },
         createdAt: new Date().toISOString(),
@@ -256,11 +256,11 @@ export const DEFAULT_MATCH_DISPLAY_EXPERIMENT: StrategyExperiment = {
     id: 'match-display-v1',
     name: 'Match Display: Detailed vs Compact',
     description: 'Compare detailed explanations (local-match-preview) vs compact (dashboard-local-match)',
-    seamId: SEAM_IDS.MATCH,
+    seamId: SEAM_ROLES.MATCH,
     variants: [
         {
             id: 'variant-detailed',
-            seamId: SEAM_IDS.MATCH,
+            seamId: SEAM_ROLES.MATCH,
             strategyId: 'local-match-preview',
             label: 'Detailed with Explanations',
             description: 'Shows why it fits, conflicts, missing details, and recovery options',
@@ -269,7 +269,7 @@ export const DEFAULT_MATCH_DISPLAY_EXPERIMENT: StrategyExperiment = {
         },
         {
             id: 'variant-compact',
-            seamId: SEAM_IDS.MATCH,
+            seamId: SEAM_ROLES.MATCH,
             strategyId: 'dashboard-local-match',
             label: 'Compact Summary',
             description: 'Shows match score and basic actions only',
@@ -383,35 +383,36 @@ export class ProfileRegistry {
         this.userConfigs.set(userId, config);
     }
 
-    setOverride(userId: string, seamId: string, strategyId: string): void {
+    setOverride(userId: string, seamRole: SeamRole, strategyId: string): void {
         const config = this.getUserConfig(userId);
-        config.overrides.overrides[seamId] = strategyId;
+        config.overrides.overrides[seamRole] = strategyId;
         config.overrides.updatedAt = new Date().toISOString();
         config.updatedAt = new Date().toISOString();
         this.userConfigs.set(userId, config);
     }
 
-    removeOverride(userId: string, seamId: string): void {
+    removeOverride(userId: string, seamRole: SeamRole): void {
         const config = this.getUserConfig(userId);
-        delete config.overrides.overrides[seamId];
+        delete config.overrides.overrides[seamRole];
         config.overrides.updatedAt = new Date().toISOString();
         config.updatedAt = new Date().toISOString();
         this.userConfigs.set(userId, config);
     }
 
-    // Resolve strategy for a user and seam
-    resolveStrategy(userId: string, seamId: string, strategyRegistry: Map<string, Map<string, Strategy>>): Strategy | undefined {
+    // Resolve strategy for a user and seam role
+    resolveStrategy(userId: string, seamRole: SeamRole, strategyRegistry: StrategyRegistry): Strategy | undefined {
         const config = this.getUserConfig(userId);
+        const seamId = this.resolveSeamId(seamRole, strategyRegistry);
         
-        // 1. Check user overrides first
-        if (config.overrides.overrides[seamId]) {
-            const strategyId = config.overrides.overrides[seamId];
-            return strategyRegistry.get(seamId)?.get(strategyId);
+        // 1. Check user overrides first (stored by role)
+        if (config.overrides.overrides[seamRole]) {
+            const strategyId = config.overrides.overrides[seamRole];
+            return strategyRegistry.get(seamId, strategyId);
         }
 
-        // 2. Check active experiment assignment
+        // 2. Check active experiment assignment (experiments use roles)
         for (const experiment of this.experiments.values()) {
-            if (!experiment.isActive || experiment.seamId !== seamId) continue;
+            if (!experiment.isActive || experiment.seamId !== seamRole) continue;
             
             const assignmentKey = `${experiment.id}:${userId}`;
             let assignment = this.assignments.get(assignmentKey);
@@ -424,15 +425,15 @@ export class ProfileRegistry {
             
             const variant = experiment.variants.find(v => v.id === assignment.variantId);
             if (variant) {
-                return strategyRegistry.get(seamId)?.get(variant.strategyId);
+                return strategyRegistry.get(seamId, variant.strategyId);
             }
         }
 
         // 3. Check manual mode
         if (config.manualMode) {
             const profile = this.profiles.get(config.activeProfileId);
-            if (profile?.strategySelections[seamId]) {
-                return strategyRegistry.get(seamId)?.get(profile.strategySelections[seamId]);
+            if (profile?.strategySelections[seamRole]) {
+                return strategyRegistry.get(seamId, profile.strategySelections[seamRole]);
             }
         }
 
@@ -440,20 +441,29 @@ export class ProfileRegistry {
         const policy = this.getActivePolicy();
         if (policy) {
             const profile = this.selectProfileByPolicy(policy, config);
-            if (profile?.strategySelections[seamId]) {
-                return strategyRegistry.get(seamId)?.get(profile.strategySelections[seamId]);
+            if (profile?.strategySelections[seamRole]) {
+                return strategyRegistry.get(seamId, profile.strategySelections[seamRole]);
             }
         }
 
         // 5. Fallback to default profile
         const defaultProfile = this.getDefaultProfile();
-        if (defaultProfile?.strategySelections[seamId]) {
-            return strategyRegistry.get(seamId)?.get(defaultProfile.strategySelections[seamId]);
+        if (defaultProfile?.strategySelections[seamRole]) {
+            return strategyRegistry.get(seamId, defaultProfile.strategySelections[seamRole]);
         }
 
         // 6. Last resort: first available strategy for seam
-        const seamStrategies = strategyRegistry.get(seamId);
-        return seamStrategies?.values().next().value;
+        const seamStrategies = strategyRegistry.getAllForSeam(seamId);
+        return seamStrategies[0];
+    }
+
+    /**
+     * Resolve a seam role to the actual discovered seam ID
+     */
+    private resolveSeamId(seamRole: SeamRole, strategyRegistry: StrategyRegistry): string {
+        const seams = strategyRegistry.listSeams();
+        const discovered = seams.find(s => s.id.startsWith(`${seamRole}-`));
+        return discovered?.id ?? seamRole;
     }
 
     private selectProfileByPolicy(policy: ProfilePolicy, config: UserProfileConfig): StrategyProfile | undefined {
