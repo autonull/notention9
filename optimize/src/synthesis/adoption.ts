@@ -91,7 +91,7 @@ export class StrategyAdoption {
                 evidenceBundle: evaluation ? 'evaluation-report.json' : undefined,
             },
         };
-
+        
         // Save artifact
         const artifactPath = join(this.config.strategiesDir, `${candidate.id}.json`);
         mkdirSync(dirname(artifactPath), { recursive: true });
@@ -105,7 +105,12 @@ export class StrategyAdoption {
         const record: AdoptionRecord = {
             strategyId: candidate.id,
             artifact,
-            evaluation,
+            evaluation: {
+                candidateId: evaluation.candidateId,
+                overallSuccessRate: evaluation.overallSuccessRate,
+                passed: evaluation.passed,
+                resourceMetrics: evaluation.resourceMetrics,
+            },
             adoptedAt: new Date().toISOString(),
             adoptedBy: options.actor,
             flagKey,
@@ -125,7 +130,7 @@ export class StrategyAdoption {
             timestamp: new Date().toISOString(),
             actor: options.actor,
             reason: options.reason,
-            newState: JSON.stringify(record),
+            newState: JSON.stringify({ strategyId: candidate.id, version: artifact.version, flagKey, enabled: record.enabled }),
         });
 
         console.log(`✅ Adopted ${candidate.id} v${artifact.version} (flag: ${flagKey}, enabled: ${options.enabled ?? this.config.defaultEnabled})`);
@@ -165,7 +170,7 @@ export class StrategyAdoption {
             timestamp: new Date().toISOString(),
             actor: options.actor,
             reason: options.reason,
-            previousState: JSON.stringify(previousRecord),
+            previousState: JSON.stringify({ strategyId, version: previousRecord.artifact.version, flagKey: previousRecord.flagKey }),
         });
 
         console.log(`🔄 Rolled back ${strategyId} (disabled flag: ${previousRecord.flagKey})`);

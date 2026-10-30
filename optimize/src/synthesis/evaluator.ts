@@ -179,23 +179,26 @@ export async function buildCandidateInSandbox(
 }
 
 /**
- * Run a single task against a live page using the TaskHarness
+ * Run a single task against a live page using the TaskHarness's pre-warmed contexts
  */
 async function runTaskOnPage(
     harness: TaskHarness,
     task: TaskConfig,
     input: unknown,
-    seed: number
+    seed: number,
+    baseURL: string,
+    viewport: { width: number; height: number }
 ): Promise<{ success: boolean; output: unknown; steps: number; errors: string[]; metrics: Record<string, number>; duration: number }> {
-    // The harness runs tasks across multiple contexts; for single-page evaluation we create a one-off run
+    // Use the harness's pre-warmed context (first one available)
     const context = await harness['browser'].newContext({
-        viewport: harness['config'].viewport,
+        viewport,
+        baseURL,
     });
 
     try {
         const page = await context.newPage();
         const startTime = Date.now();
-        const result = await task.execute(page, input, seed);
+        const result = await task.execute(page, input, seed, baseURL);
         const duration = Date.now() - startTime;
         return { ...result, duration };
     } finally {
@@ -222,7 +225,23 @@ export async function evaluateCandidate(
 
     try {
         // Launch browser
+        console.log(`  🌐 Launching browser (headless: ${config.headless})...`);
         browser = await chromium.launch({ headless: config.headless });
+        
+        // Verify browser is connected
+        if (!browser.isConnected()) {
+            throw new Error('Browser failed to connect after launch');
+        }
+        console.log(`  🌐 Browser launched and connected`);
+        
+        // Small delay to ensure browser is fully initialized
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Verify still connected
+        if (!browser.isConnected()) {
+            throw new Error('Browser disconnected after initialization delay');
+        }
+        console.log(`  🌐 Browser still connected after delay`);
 
         // Create a temporary TaskHarness with a mocked browser for the actual test
         // We'll use the actual TaskHarness but with our browser instance
@@ -238,14 +257,18 @@ export async function evaluateCandidate(
 
         // Create a mock browser object that uses our actual browser
         const mockBrowser = {
-            newContext: async (options?: { viewport?: { width: number; height: number }; recordVideo?: { dir: string } }) => {
-                const context = await browser!.newContext(options);
+            newContext: async (options?: { viewport?: { width: number; height: number }; recordVideo?: { dir: string }; baseURL?: string }) => {
+                if (!browser || !browser.isConnected()) {
+                    throw new Error('Browser is not connected');
+                }
+                const context = await browser!.newContext({ ...options, baseURL: config.baseURL });
                 return context;
             },
         };
 
         const harness = new TaskHarness(mockBrowser as any, harnessConfig);
         await harness.setup();
+        console.log(`  ✅ Harness setup complete`);
 
         const taskResults = new Map<string, BaselineResult>();
 
@@ -283,7 +306,7 @@ export async function evaluateCandidate(
 
             for (let rep = 0; rep < config.repetitions; rep++) {
                 try {
-                    const result = await runTaskOnPage(harness, task, input, config.seed + rep);
+                    const result = await runTaskOnPage(harness, task, input, config.seed + rep, config.baseURL, harness['config'].viewport);
                     runResults.push(result);
                 } catch (error) {
                     runResults.push({
@@ -402,8 +425,21 @@ export async function runBaselineEvaluation(
     resourceMonitor.start();
 
     try {
+        console.log(`  🌐 Launching browser for baseline (headless: ${config.headless})...`);
         browser = await chromium.launch({ headless: config.headless });
-
+        
+        if (!browser.isConnected()) {
+            throw new Error('Browser failed to connect after launch');
+        }
+        console.log(`  🌐 Baseline browser launched and connected`);
+        
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        if (!browser.isConnected()) {
+            throw new Error('Baseline browser disconnected after initialization delay');
+        }
+        console.log(`  🌐 Baseline browser still connected after delay`);
+        
         const harnessConfig = {
             baseURL: config.baseURL,
             headless: config.headless,
@@ -415,8 +451,8 @@ export async function runBaselineEvaluation(
         };
 
         const mockBrowser = {
-            newContext: async (options?: { viewport?: { width: number; height: number }; recordVideo?: { dir: string } }) => {
-                const context = await browser!.newContext(options);
+            newContext: async (options?: { viewport?: { width: number; height: number }; recordVideo?: { dir: string }; baseURL?: string }) => {
+                const context = await browser!.newContext({ ...options, baseURL: config.baseURL });
                 return context;
             },
         };
@@ -455,7 +491,7 @@ export async function runBaselineEvaluation(
 
             for (let rep = 0; rep < config.repetitions; rep++) {
                 try {
-                    const result = await runTaskOnPage(harness, task, input, config.seed + rep);
+                    const result = await runTaskOnPage(harness, task, input, config.seed + rep, config.baseURL, harness['config'].viewport);
                     runResults.push(result);
                 } catch (error) {
                     runResults.push({

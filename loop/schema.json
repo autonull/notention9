@@ -276,7 +276,8 @@
             "browserContext": { "type": "string", "enum": ["per-config", "shared"] },
             "seededData": { "type": "boolean" },
             "repetitions": { "type": "integer", "minimum": 1 },
-            "aggregation": { "type": "string", "enum": ["median+spread", "mean+std", "min", "max"] }
+            "aggregation": { "type": "string", "enum": ["median+spread", "mean+std", "min", "max"] },
+            "baseURL": { "type": "string", "format": "uri" }
           },
           "additionalProperties": false
         },

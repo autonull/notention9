@@ -384,6 +384,10 @@ async function runEvaluate(config: any, outputDir: string, dry: boolean, _json: 
         await fs.writeFile(path.join(outputDir, 'baseline.json'), JSON.stringify(baseline, null, 2));
     }
 
+    // Wait for browser processes to fully terminate
+    console.log('  ⏳ Waiting for baseline browser to fully close...');
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
     // Run full evaluation on candidates
     const evalConfig = {
         baseURL: config.evaluation.harness?.baseURL || 'http://localhost:5173',
@@ -455,7 +459,12 @@ async function runAdopt(config: any, outputDir: string, dry: boolean, _json: boo
     if (!dry) {
         await ensureDir(outputDir);
         const adoptionPath = path.join(outputDir, 'adoption.json');
-        await fs.writeFile(adoptionPath, JSON.stringify({ artifact, adoptedAt: new Date().toISOString() }, null, 2));
+        const adoptionInfo = { 
+            artifact: { id: artifact.id, kind: artifact.kind, version: artifact.version, interface: artifact.interface },
+            adoptedAt: new Date().toISOString() 
+        };
+        console.log('DEBUG: Writing adoption info...');
+        await fs.writeFile(adoptionPath, JSON.stringify(adoptionInfo, null, 2));
         console.log(`\n✅ Adoption complete. Artifact saved to ${adoptionPath}`);
     } else {
         console.log('\n🔍 Dry run - no files written');

@@ -119,8 +119,9 @@
       "runner": "playwright",
       "browserContext": "per-config",
       "seededData": true,
-      "repetitions": 10,
-      "aggregation": "median+spread"
+      "repetitions": 3,
+      "aggregation": "median+spread",
+      "baseURL": "http://localhost:5175"
     },
     "tasks": [
       {

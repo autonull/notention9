@@ -20,7 +20,7 @@ export interface TaskConfig<Input = unknown, Output = unknown> {
     id: string;
     name: string;
     type: 'capture' | 'match' | 'extraction' | 'commitment' | 'search' | 'recovery';
-    execute(page: Page, input: Input, seed: number): Promise<TaskExecutionResult<Output>>;
+    execute(page: Page, input: Input, seed: number, baseURL: string): Promise<TaskExecutionResult<Output>>;
 }
 
 /**
