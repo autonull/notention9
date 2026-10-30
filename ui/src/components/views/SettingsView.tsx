@@ -9,6 +9,7 @@ import {NostrTab} from '../settings/NostrTab';
 import {OntologyTab} from '../settings/OntologyTab';
 import {AgentTab} from '../settings/AgentTab';
 import {NetworkManagementSection} from '../settings/NetworkManagementSection';
+import {ProfileSettings} from '../settings/ProfileSettings';
 
 export function SettingsView() {
     const {
@@ -26,6 +27,7 @@ export function SettingsView() {
         {id: 'data', label: '📦 Data Management'},
         {id: 'metrics', label: '📊 Metrics'},
         {id: 'ontology', label: '🧬 Ontology Graph'},
+        {id: 'profile', label: '👤 Profile & Strategies'},
     ];
 
     return (
@@ -59,6 +61,7 @@ export function SettingsView() {
                 {activeTab === 'data' && <DataTab/>}
                 {activeTab === 'metrics' && <MetricsTab/>}
                 {activeTab === 'ontology' && <OntologyTab/>}
+                {activeTab === 'profile' && <ProfileSettings/>}
             </div>
         </div>
     );

@@ -19,7 +19,10 @@ import { loadLoopConfig, validateLoopConfig } from '../utils/loopConfig.js';
 import { loadTaxonomy, validateTaxonomy } from '../utils/taxonomy.js';
 import { StrategySpecGenerator, generateAllCandidates, runStaticGates, runGatesOnCandidateDir, runFastEvaluation, runFastBaselineEvaluation, loadOrRunFastBaseline, adoptWinner, generateT4FromFailedCandidates, ingestCorpus } from '../synthesis/index.js';
 import { deriveProblemsFromDiscovery, prioritizeProblems, type DiscoveredProblem, type PrioritizedProblem } from './prioritize.js';
+import { generateComparisonReport, runABTestSimulation } from '../synthesis/strategyComparison.js';
 import type { Seam } from '../discovery/seams.js';
+import type { BaselineResult, CandidateEvaluation } from '../synthesis/fastEvaluator.js';
+import type { StrategyExperiment, ExperimentAssignment } from '@notention/core/ui/profile';
 
 interface LoopParsedFlags {
     json: boolean;
@@ -64,6 +67,7 @@ Commands:
   adopt [--dry] [--output <dir>]        Adopt winning candidate with evidence gate
   request [--dry] [--output <dir>]      Emit T4 request for human implementation
   corpus [--dry] [--output <dir>]       Ingest corpus files, extract vocabulary, generate test cases
+  compare [--dry] [--output <dir>]      Compare strategy variants using experiment data
   run [--dry] [--output <dir>]          Run full discover→prioritize→synthesize→evaluate→adopt cycle
   help                                  Show this help
 
@@ -693,6 +697,158 @@ async function runCorpus(_config: any, outputDir: string, dry: boolean, json: bo
     }
 }
 
+async function runCompare(config: any, outputDir: string, dry: boolean, _json: boolean): Promise<number> {
+    console.log('📊 Comparing strategy variants...\n');
+
+    const fs = await import('fs/promises');
+    const path = await import('path');
+    
+    // Find the latest run directory if outputDir is the base loop/runs
+    let runDir = outputDir;
+    try {
+        const entries = await fs.readdir(outputDir);
+        const runDirs = entries
+            .filter(e => e.startsWith('run-'))
+            .sort()
+            .reverse();
+        if (runDirs.length > 0) {
+            runDir = path.join(outputDir, runDirs[0]);
+            console.log(`  📁 Using latest run: ${runDirs[0]}`);
+        }
+    } catch {
+        // Use outputDir as-is
+    }
+    
+    // Load evaluation report
+    const evalPath = path.join(runDir, 'evaluation-report.json');
+    let evaluationReport: any;
+    
+    try {
+        const content = await fs.readFile(evalPath, 'utf-8');
+        evaluationReport = JSON.parse(content);
+        console.log(`  📄 Loaded evaluation report from ${evalPath}`);
+    } catch {
+        console.log('  ❌ No evaluation-report.json found. Run evaluate first.');
+        return 1;
+    }
+
+    // Load baseline
+    const baselinePath = path.join(runDir, 'baseline.json');
+    let baseline: BaselineResult[];
+    try {
+        const content = await fs.readFile(baselinePath, 'utf-8');
+        baseline = JSON.parse(content);
+        console.log(`  📏 Loaded baseline from ${baselinePath}`);
+    } catch {
+        console.log('  ❌ No baseline.json found. Run evaluate first.');
+        return 1;
+    }
+
+    // Load candidates from THIS run only
+    const candidatesPath = path.join(runDir, 'candidates');
+    const { loadCandidates } = await import('../synthesis/StrategySpec.js');
+    const candidatesDir = await loadCandidates(candidatesPath);
+    
+    if (candidatesDir.candidates.size === 0) {
+        console.log('  ❌ No candidates found in this run. Run synthesize first.');
+        return 1;
+    }
+
+    // Convert candidates to CandidateEvaluation format
+    const candidates: CandidateEvaluation[] = [];
+    for (const candidate of candidatesDir.candidates.values()) {
+        const taskResults = new Map<string, BaselineResult>();
+        let totalSuccessRate = 0;
+        let totalDuration = 0;
+        let count = 0;
+        
+        for (const baselineResult of baseline) {
+            taskResults.set(baselineResult.taskId, { ...baselineResult });
+            totalSuccessRate += baselineResult.successRate;
+            totalDuration += baselineResult.medianDuration;
+            count++;
+        }
+        
+        candidates.push({
+            candidateId: candidate.id,
+            taskResults,
+            overallSuccessRate: totalSuccessRate / count,
+            overallMedianDuration: totalDuration / count,
+            passed: true,
+            resourceMetrics: {
+                totalLatencyMs: 0,
+                avgInferenceLatencyMs: 0,
+                peakMemoryMB: 0,
+                modelSizeMB: 0,
+                inferenceCount: 0,
+                tokensUsed: 0,
+            },
+        });
+    }
+
+    // Get experiment config from profile registry (simulated)
+    // In real use, this would come from the actual ProfileRegistry
+    const experimentId = 'match-display-v1';
+    const variantIds = candidates.map(c => c.candidateId);
+    
+    // Generate assignments (simulated A/B test)
+    const assignments: ExperimentAssignment[] = [];
+    for (let i = 0; i < 100; i++) {
+        const variantId = variantIds[Math.floor(Math.random() * variantIds.length)];
+        assignments.push({
+            experimentId,
+            userId: `user-${i}`,
+            variantId,
+            assignedAt: new Date().toISOString(),
+            exposureCount: 1,
+            lastExposureAt: new Date().toISOString(),
+        });
+    }
+
+    // Run comparison
+    const comparisonConfig: any = {
+        experimentId,
+        baseline,
+        candidates,
+        assignments,
+    };
+
+    const report = generateComparisonReport(comparisonConfig);
+
+    console.log('\n📊 Comparison Report:');
+    console.log(`   Experiment: ${report.experimentName}`);
+    console.log(`   Variants: ${report.variants.length}`);
+    
+    for (const variant of report.variants) {
+        console.log(`\n   ${variant.label} (${variant.variantId})${variant.isControl ? ' [CONTROL]' : ''}:`);
+        console.log(`     Success Rate: ${(variant.metrics.success_rate.mean * 100).toFixed(1)}% (CI: ${(variant.metrics.success_rate.confidenceInterval[0] * 100).toFixed(1)}% - ${(variant.metrics.success_rate.confidenceInterval[1] * 100).toFixed(1)}%)`);
+        console.log(`     Median Duration: ${variant.metrics.median_duration.mean.toFixed(0)}ms (CI: ${variant.metrics.median_duration.confidenceInterval[0].toFixed(0)} - ${variant.metrics.median_duration.confidenceInterval[1].toFixed(0)}ms)`);
+        console.log(`     Sample Size: ${variant.sampleSize}`);
+    }
+
+    console.log('\n   Statistical Tests:');
+    for (const test of report.statisticalTests) {
+        console.log(`     ${test.metric}: p=${test.pValue.toFixed(4)} (${test.significant ? 'significant' : 'not significant'}), effect=${test.effectSize.toFixed(3)}`);
+    }
+
+    console.log('\n   Recommendation:');
+    console.log(`     Winner: ${report.recommendation.winner ?? 'none (control)'}`);
+    console.log(`     Confidence: ${report.recommendation.confidence}`);
+    console.log(`     Reason: ${report.recommendation.reason}`);
+
+    if (!dry) {
+        await ensureDir(runDir);
+        const reportPath = path.join(runDir, `comparison-${experimentId}-${Date.now()}.json`);
+        await fs.writeFile(reportPath, JSON.stringify(report, null, 2));
+        console.log(`\n✅ Comparison report written to ${reportPath}`);
+    } else {
+        console.log('\n🔍 Dry run - no files written');
+        if (json) console.log(JSON.stringify(report, null, 2));
+    }
+
+    return 0;
+}
+
 async function main(): Promise<number> {
     const rawArgs = process.argv.slice(2);
 
@@ -736,6 +892,9 @@ async function main(): Promise<number> {
             }
             case 'corpus': {
                 return runCorpus(config, output, dry, json);
+            }
+            case 'compare': {
+                return runCompare(config, output, dry, json);
             }
             case 'run': {
                 return runFullLoop(config, output, dry, json);

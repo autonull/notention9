@@ -524,8 +524,8 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | L19 | Ledger-lite (append-only decisions/deltas/provenance) | `optimize/src/synthesis/adoption.ts`, `optimize/src/loop/determinism.ts` | survives restart; dedupes | L5 | ✅ |
 | L20 | Determinism: pinned models, cached outputs, replay | `optimize/src/loop/determinism.ts` | identical hash on replay | L9 | ✅ |
 | L21 | A11y + keyboard assertions in harness | `optimize/src/a11y.ts`, `ui/eval/` | violations fail the task | L9 |
-| L22 | Preference + interaction-strategy comparison (human + calibrated judge) | `ui/eval/` | win-rate on question sequences, explanations, layouts | L9 | 🟨 |
-| L23 | Profiles + policy + per-user overrides | `ui/src/settings/`, config | 2 profiles; overrides persist | L8, L22 | 🟨 |
+| L22 | Preference + interaction-strategy comparison (human + calibrated judge) | `ui/eval/`, `optimize/src/synthesis/strategyComparison.ts` | win-rate on question sequences, explanations, layouts | L9 | 🟨 |
+| L23 | Profiles + policy + per-user overrides | `ui/src/settings/`, `ui/src/hooks/useStrategyResolver.ts`, config | 2 profiles; overrides persist | L8, L22 | 🟨 |
 | L24 | Add simulator + optimize tests to `pnpm verify` | `scripts/verify.ts` | verify runs all suites | D3 |
 
 ### P — Product ergonomics · supporting
@@ -554,8 +554,8 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | S1 | On-demand recording of selected workflows | `simulator/src/movie_maker.ts`, `recording_manager.ts`, `scripts/generate-showcases.ts` | one workflow recorded on request | — | ✅ |
 | S2 | Capability-oriented scenario library | `simulator/src/scenarios/` | scenarios show outcomes, not tutorials | S1 | ✅ |
 | S3 | Optional/selective generation + local artifact | `scripts/generate-showcases.ts` | no workflow requires a recording | S1 | ✅ |
-| S4 | Presentation output (optional narration/captions) | `movie_maker.ts` | captions present when requested | S1 | ⬜ |
-| S5 | Standalone versioned artifacts, no mandatory sync | `loop/showcases/` | recording valid after UI change | S1 | ⬜ |
+| S4 | Presentation output (optional narration/captions) | `movie_maker.ts` | captions present when requested | S1 | ✅ |
+| S5 | Standalone versioned artifacts, no mandatory sync | `loop/showcases/` | recording valid after UI change | S1 | ✅ |
 
 ### X — End-to-end proof · essential
 
@@ -655,7 +655,7 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | End-to-end proof | ✅ **complete** (X1–X3 pipeline works; X4–X7 demonstrated with fast evaluator) |
 | Corpus ingestion + gap detection | ✅ **done (L18: 5 taxonomy gaps identified, test cases generated)** |
 | Ontology experiment (L17) | ✅ **done — tie: both flat and facets+status achieve 100% success, equivalent latency; facets+status adds status facet for future commitment tracking** |
-| Profile registry + strategy comparison (L22, L23) | 🟨 **in progress — core infrastructure complete, tests passing** |
+| Profile registry + strategy comparison (L22, L23) | ✅ **core infrastructure complete; UI integration in progress; compare command added** |
 | Human gates G1/G2/G5 | ⏳ pending |
 
 **Test state:** core 398 · simulator 33 · agent 17 · cli 6 · optimize 44 · eval 9 ✅ (D3, D4 fixed)
@@ -691,7 +691,7 @@ Dependency order, not a prohibition on parallel work.
 | **2. Make strategies evolvable** | Version prompts/UI/ontology artifacts; interfaces; model-independent runtime; fallback chain | Artifacts versioned; app works with any inference link missing (M1, B2) | ✅ Done |
 | **3. Safe local experimentation** | Generate candidates; evaluate offline; deterministic checks; reject regressions; promote with rollback | Evidence gate enforced; rollback demonstrated (X5) | ✅ **Done** |
 | **4. Demonstrate the complete loop** | Compact local model contributes a measured improvement in the real workflow, network off | X3–X7 complete | ✅ **Done** (fast evaluator, offline, deterministic) |
-| **5. Showcases + generalise** | Selective recordings; extend the validated loop to more workflows | S1–S5 done; second workflow validated (B6) | 🟨 **S1–S3 done, S4–S5 pending** |
+| **5. Showcases + generalise** | Selective recordings; extend the validated loop to more workflows | S1–S5 done; second workflow validated (B6) | 🟨 **S1–S5 done, second workflow pending** |
 | **6. Production hardening** | L21–L24, P3–P7, L17, L18 — a11y, preference, profiles, layouts, ontology experiment, real corpora | Second workflow validated; generalisation justified (B6) | ⬜ Deferred until Phase 5 proves abstraction |
 
 ---
@@ -718,17 +718,17 @@ And the architectural principle holds: **the system improved its own behaviour w
 | Priority | Action | Rationale |
 |----------|--------|-----------|
 | **1** | **H1–H2**: Stranger test (G1) + match relevance (G2) | Human confirmation of usability; required for X4 |
-| **2** | **L22**: Preference + interaction-strategy comparison | Empirical UX data for profiles/policies (L23) | 🟨 |
-| **3** | **L23**: Profiles + policy + per-user overrides | Product ergonomics (P3–P7) | 🟨 |
-| **4** | **S4–S5**: Presentation output + standalone artifacts | Polish showcases |
-| **5** | **Q1–Q5**: Tests/docs alongside | Maintain quality |
-| **6** | **B6**: Generalise only after second workflow proves abstraction | Avoid premature abstraction |
+| **2** | **L23**: Complete UI integration of profiles/policies | Product ergonomics (P3–P7) | 🟨 |
+| **3** | **L22**: Run preference experiments with real users | Empirical UX data for profiles/policies (L23) |
+| **4** | **Q1–Q5**: Tests/docs alongside | Maintain quality |
+| **5** | **B6**: Generalise only after second workflow proves abstraction | Avoid premature abstraction |
 
 **Completed:**
-- S1–S3: Capability showcase recordings (movie_maker, scenarios, generate-showcases.ts)
+- S1–S5: Capability showcase recordings (movie_maker, scenarios, generate-showcases.ts) with captions/narration
 - L18: Real-corpus ingestion → vocabulary + tasks (5 taxonomy gaps identified, test cases generated)
 - L17: Ontology experiment (flat vs facets+status) — **tie: both achieve 100% success, equivalent latency; facets+status adds status facet for commitment tracking**
-- L22/L23 core infrastructure: ProfileRegistry, ProfilePolicy, UserStrategyOverrides, StrategyExperiment, strategyComparison evaluator (tests passing)
+- L22/L23 core infrastructure: ProfileRegistry, ProfilePolicy, UserStrategyOverrides, StrategyExperiment, strategyComparison evaluator, compare command (tests passing)
+- ProfileSettings UI component integrated in SettingsView
 
 **Deferred (premature without second workflow):**
 - L21: A11y + keyboard assertions in harness

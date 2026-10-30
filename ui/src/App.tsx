@@ -5,8 +5,12 @@ import {ConfigSync} from './components/config/ConfigSync';
 import {AgentCursor} from './components/AgentCursor';
 import {AgentStatusIndicator} from './components/agent/AgentStatusIndicator';
 import {useNetworkManagement} from './hooks/useNetworkManagement';
+import {useStrategyInit} from './hooks/useStrategyInit';
+import {StrategyProvider} from './hooks/useStrategyResolver';
 
 function App() {
+    useStrategyInit();
+    
     return (
         <ErrorHandlingProvider>
             <ErrorBoundary>
@@ -22,13 +26,15 @@ function AppContent() {
     useNetworkManagement();
 
     return (
-        <>
-            <SkipLink targetId="main-content" />
-            <AgentStatusIndicator/>
-            <AgentCursor/>
-            <AppShell/>
-            <ConfigSync/>
-        </>
+        <StrategyProvider>
+            <>
+                <SkipLink targetId="main-content" />
+                <AgentStatusIndicator/>
+                <AgentCursor/>
+                <AppShell/>
+                <ConfigSync/>
+            </>
+        </StrategyProvider>
     );
 }
 

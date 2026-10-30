@@ -17,6 +17,10 @@ interface ShowcaseOptions {
     width?: number;
     height?: number;
     outputDir?: string;
+    captions?: boolean;
+    narration?: boolean;
+    captionFontSize?: number;
+    captionColor?: string;
 }
 
 function parseArgs(): ShowcaseOptions {
@@ -45,6 +49,16 @@ function parseArgs(): ShowcaseOptions {
             options.height = parseInt(args[++i], 10);
         } else if (arg === '--output' || arg === '-o') {
             options.outputDir = args[++i];
+        } else if (arg === '--captions') {
+            options.captions = true;
+        } else if (arg === '--no-captions') {
+            options.captions = false;
+        } else if (arg === '--narration') {
+            options.narration = true;
+        } else if (arg === '--caption-font-size') {
+            options.captionFontSize = parseInt(args[++i], 10);
+        } else if (arg === '--caption-color') {
+            options.captionColor = args[++i];
         } else if (arg === '--help' || arg === '-h') {
             printHelp();
             process.exit(0);
@@ -68,6 +82,11 @@ Options:
   --width <number>         Video width (default: 1920)
   --height <number>        Video height (default: 1080)
   --output <dir>, -o       Output directory (default: ./movies)
+  --captions               Enable captions (default: true)
+  --no-captions            Disable captions
+  --narration              Enable narration script generation
+  --caption-font-size <n>  Caption font size (default: 24)
+  --caption-color <color>  Caption color (default: white)
   --help, -h               Show this help
 
 Examples:
@@ -75,6 +94,8 @@ Examples:
   pnpm showcase --all
   pnpm showcase -s golden-path -s freelance-marketplace
   pnpm showcase --all --fps 12 --width 1280 --height 720
+  pnpm showcase -s golden-path --captions --narration
+  pnpm showcase -s golden-path --no-captions
 `);
 }
 
@@ -127,6 +148,10 @@ async function generateShowcase(scenarioName: string, options: ShowcaseOptions):
         skipUiServer: true,
         onProgress: (msg) => console.log(`  ${msg}`),
         onError: (err) => console.error(`  Error: ${err.message}`),
+        enableCaptions: options.captions ?? true,
+        enableNarration: options.narration ?? false,
+        captionFontSize: options.captionFontSize,
+        captionColor: options.captionColor,
     };
 
     console.log(`\n🎬 Generating showcase: ${scenario.name}`);
