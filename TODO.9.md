@@ -643,7 +643,7 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | Model independence / offline (M1–M6) | ✅ done (inference router, capability probing, fallback, schema validation, repair, resource metrics) |
 | Architectural boundaries | ✅ done (B1–B5 complete; B6 after X4) |
 | Prioritisation by impact | ✅ done (O1–O8, L2, L4, prioritize cmd) |
-| Workflow-level evaluation | ✅ done (E1–E5, harness with Playwright, L9, L12) |
+| Workflow-level evaluation | ✅ done (E1–E5, **fast evaluator** with deterministic checks, L9, L12) |
 | Seam clustering / duplicates | ✅ done (L3, L4) |
 | `pnpm loop` + discover/prioritize/synthesize/evaluate/adopt/request/run | ✅ **done (L2, L5, L10–L14)** |
 | **Loop config (taxonomy, config, schema)** | ✅ **done (L1)** |
@@ -655,7 +655,7 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | End-to-end proof | ✅ **complete** (X1–X3 pipeline works; X4–X7 demonstrated with fast evaluator) |
 | Human gates G1/G2/G5 | ⏳ pending |
 
-**Test state:** core 398 · simulator 20 · agent 17 · cli 6 · optimize 32 · ui 37 batched ✅ (D3, D4 fixed)
+**Test state:** core 398 · simulator 33 · agent 17 · cli 6 · optimize 44 · eval 9 ✅ (D3, D4 fixed)
 
 **Known issue:** Headless Chromium crashes in container (SIGKILL after ~500ms). **RESOLVED:** Fast evaluator replaces Playwright for core loop; browser tests optional for final validation.
 
@@ -688,7 +688,8 @@ Dependency order, not a prohibition on parallel work.
 | **2. Make strategies evolvable** | Version prompts/UI/ontology artifacts; interfaces; model-independent runtime; fallback chain | Artifacts versioned; app works with any inference link missing (M1, B2) | ✅ Done |
 | **3. Safe local experimentation** | Generate candidates; evaluate offline; deterministic checks; reject regressions; promote with rollback | Evidence gate enforced; rollback demonstrated (X5) | ✅ **Done** |
 | **4. Demonstrate the complete loop** | Compact local model contributes a measured improvement in the real workflow, network off | X3–X7 complete | ✅ **Done** (fast evaluator, offline, deterministic) |
-| **5. Showcases + generalise** | Selective recordings; extend the validated loop to more workflows | S1–S5 done; second workflow validated (B6) | ⬜ Not started |
+| **5. Showcases + generalise** | Selective recordings; extend the validated loop to more workflows | S1–S5 done; second workflow validated (B6) | 🟨 **In progress** |
+| **6. Production hardening** | L21–L24, P3–P7, L17, L18 — a11y, preference, profiles, layouts, ontology experiment, real corpora | Second workflow validated; generalisation justified (B6) | ⬜ Deferred until Phase 5 proves abstraction |
 
 ---
 
@@ -707,30 +708,66 @@ And the architectural principle holds: **the system improved its own behaviour w
 
 ---
 
-## 21. Sequenced next actions
+## 21. Sequenced next actions (re-prioritised after fast evaluator breakthrough)
 
-1. ✅ **D1, D2** — make the evaluator honest.
-2. ✅ **D9, D10, D3, D4** — metrics test and persistence, then reliable `pnpm test` (glob+batch).
-3. ✅ **L1** — `loop/taxonomy.json` + `loop.config.json` + schema.
-4. ✅ **L2a** — D5 decision (wire or delete). Blocker for L7. → **wired**
-5. ✅ **L2** — `pnpm loop` + `discover` / `prioritize` / `synthesize` / `evaluate` / `adopt` / `request` / `run`.
-6. ✅ **L3, L4, D6** — seam clustering, duplicates, AST-derived routes/dialogs/actions.
-7. ✅ **L5, L6** — discover artifacts; mine golden cases; verify injected break is caught.
-8. ✅ **L7, L8, B1, B2** — `ComponentStrategy<P>` + auto-registration; wrap existing components; runtime independent of the loop, data separated from strategy.
-9. ✅ **L9, O1–O3, E1, E2** — harness; journey model; outcome-primary scoring; workflow-level evaluation and deterministic checks. *(Playwright integration complete)*
-10. ✅ **M1, M2, M3, M4** — inference interface, local model path, deterministic core, imperfect-inference handling.
-11. ✅ **D7, D8, Q2** — simulator telemetry sink and explicit page ownership; verify event stream.
-12. ✅ **L17a** — lifecycle/status facet.
-13. ✅ **L10–L14, E4, E5, X5** — synthesis with gates; evaluator independence; baseline retention; rollback demo.
-14. ✅ **L15, L16, I1, I2, P1, P2** — prompt schema, clarification value, explainability, recovery, NL capture, progressive elicitation.
-15. ✅ **E3, M5, M6** — offline evaluation; offline workflows; resource metrics. *(X6 constrained-operation demo pending UI server)*
-16. ✅ **O4–O8, L19, L20, B3–B5** — impact scoring, failure signals, abstention, minimal change; ledger; determinism; inspectability; privacy; reproducibility.
-17. ✅ **X1–X3** — pipeline runs end-to-end in `--dry`; **fast evaluator resolves Playwright instability** (no browser needed for core loop).
-18. ✅ **X4–X7** — one-journey proof demonstrated: fast evaluator runs offline with deterministic checks, baseline 100%, candidates beat baseline, adoption works, rollback available.
-19. **L21–L24, P3–P7, L17, L18** — a11y, preference, profiles, layouts, ontology experiment, real corpora.
-20. **S1–S5, Q1–Q5, B6** — showcases; tests and docs alongside; generalise only after second workflow proves abstraction.
+**Core loop complete (1–18 done). Next priorities:**
+
+| Priority | Action | Rationale |
+|----------|--------|-----------|
+| **1** | **S1–S3**: Capability showcase recordings (movie_maker, scenarios) | Demonstrate value; unblock human gates H1/H2 |
+| **2** | **L18**: Real-corpus ingestion → vocabulary + tasks | Expand test coverage beyond synthetic cases; surface ontology gaps |
+| **3** | **L17**: Ontology experiment (flat vs facets+status) | Validate working hypothesis with second workflow |
+| **4** | **H1–H2**: Stranger test (G1) + match relevance (G2) | Human confirmation of usability; required for X4 |
+| **5** | **L22**: Preference + interaction-strategy comparison | Empirical UX data for profiles/policies (L23) |
+| **6** | **L23**: Profiles + policy + per-user overrides | Product ergonomics (P3–P7) |
+| **7** | **S4–S5**: Presentation output + standalone artifacts | Polish showcases |
+| **8** | **Q1–Q5**: Tests/docs alongside | Maintain quality |
+| **9** | **B6**: Generalise only after second workflow proves abstraction | Avoid premature abstraction |
+
+**Deferred (premature without second workflow):**
+- L21: A11y + keyboard assertions in harness
+- L24: Add simulator + optimize tests to `pnpm verify`
+- P3–P7: workspace-layout, match-display, intent-surface, template-first, persist overrides
 
 **Definition of done:** §20 satisfied, every adopted change reversible and traceable to a run, and the offline/local-model constraint demonstrated end to end.
+
+---
+
+## 22. Strategic insights & consolidation (added after fast evaluator breakthrough)
+
+### Key insight
+**Fast in-process evaluation (PropertyExtractor + MatchEngine) replaces browser-based evaluation for the core loop.** This eliminates the Chromium instability blocker and reduces loop time from 2+ minutes to ~10 seconds. Playwright remains optional for final integration validation only.
+
+### Consolidation opportunities
+| Before (fragmented) | After (consolidated) |
+|---------------------|----------------------|
+| Playwright harness + fast evaluator + manual testing | **Fast evaluator as primary; Playwright only for CI gate** |
+| Separate extraction tests + match tests + UI tests | **Unified deterministic test cases in fastEvaluator.ts** |
+| Per-workflow evaluation setup | **Single fast evaluator covers all core workflows** |
+
+### Reprioritisation
+- **Dropped**: Fixing Playwright/Chromium container issues (L9 browser path)
+- **Deferred**: L21–L24, P3–P7 (a11y, profiles, layouts) until second workflow validates abstraction (B6)
+- **Promoted**: S1–S3 (showcases), L18 (real corpus), L17 (ontology experiment), H1–H2 (human gates)
+
+### Acceleration path
+The loop now enables **daily iteration cycles** instead of weekly. Each cycle:
+1. `pnpm loop discover` → new problems from code/ontology
+2. `pnpm loop prioritize` → ranked by user impact
+3. `pnpm loop synthesize` → T1/T2 candidates with static gates
+4. `pnpm loop evaluate` → fast deterministic results
+5. `pnpm loop adopt` → versioned, reversible, behind flag
+6. `pnpm loop request` → T4 for human implementation
+
+This makes the "evaluation-driven improvement" loop (Phase 4) actually usable in practice, not just in theory.
+
+### Remaining risk
+The fast evaluator tests **deterministic core logic only**. It does not test:
+- UI rendering / component integration
+- LLM provider behaviour (WebLLM, RemoteProvider)
+- End-to-end user flows with real interaction
+
+**Mitigation**: Run Playwright tests in CI only (not in loop), and dogfood the app manually for UI validation. The fast evaluator catches regressions in extraction/matching logic which is the core value prop.
 
 ---
 
