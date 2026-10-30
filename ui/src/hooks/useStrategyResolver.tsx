@@ -9,6 +9,7 @@ import {
     DEFAULT_MATCH_DISPLAY_EXPERIMENT,
 } from '@notention/core/ui/profile';
 import { strategyRegistry, type Seam, type Strategy, createComponentStrategy } from '@notention/core/ui/strategy';
+import { JsonStore } from '@notention/core/storage';
 import { DescribeItComposerStrategy } from '../strategies/DescribeItComposerStrategy';
 import { TagInputStrategy } from '../strategies/TagInputStrategy';
 import { PropertyFormStrategy } from '../strategies/PropertyFormStrategy';
@@ -52,7 +53,7 @@ export function StrategyProvider({ children, userId = 'default-user' }: Strategy
         setUserConfigState(profileRegistry.getUserConfig(userId));
     }, [userId]);
 
-    const persistConfig = useCallback(() => persistUserConfig(userId), [userId]);
+    const persistConfig = useCallback(() => { persistUserConfig(userId); }, [userId]);
 
     const resolveStrategy = useMemo(
         () => (seamId: SeamId) => profileRegistry.resolveStrategy(userId, seamId, strategyRegistry.strategies),
@@ -232,18 +233,18 @@ const isCleanProfile =
     (window.location.search.includes('clean=true') || localStorage.getItem('notention:clean-profile') === 'true');
 
 if (isCleanProfile) {
-    localStorage.removeItem('notention:profile-config');
     localStorage.removeItem('notention:clean-profile');
+    await profileConfigStore.clear();
 }
 
 // Initialize profiles from core defaults
-export function initializeProfiles(): void {
+export async function initializeProfiles(): Promise<void> {
     for (const profile of DEFAULT_PROFILES) {
         profileRegistry.registerProfile(profile);
     }
 
-    // Load persisted user configs from localStorage
-    loadPersistedConfigs();
+    // Load persisted user configs from storage
+    await loadPersistedConfigs();
 
     // Register experiment for match-display comparison
     profileRegistry.registerExperiment({
@@ -253,14 +254,17 @@ export function initializeProfiles(): void {
     });
 }
 
-// Persist user configs to localStorage
+// Persist user configs to storage
 const STORAGE_KEY = 'notention:profile-config';
+const profileConfigStore = new JsonStore<{
+    userConfigs: UserProfileConfig[];
+    assignments: ExperimentAssignment[];
+}>(STORAGE_KEY);
 
-function loadPersistedConfigs(): void {
+async function loadPersistedConfigs(): Promise<void> {
     try {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (!stored) return;
-        const data = JSON.parse(stored);
+        const data = await profileConfigStore.load();
+        if (!data) return;
         data.userConfigs?.forEach((config: UserProfileConfig) =>
             profileRegistry.userConfigs.set(config.userId, config)
         );
@@ -272,13 +276,13 @@ function loadPersistedConfigs(): void {
     }
 }
 
-export function persistUserConfig(userId: string): void {
+export async function persistUserConfig(userId: string): Promise<void> {
     try {
         const config = profileRegistry.getUserConfig(userId);
         const assignments = Array.from(profileRegistry.assignments.values()).filter(a => a.userId === userId);
 
-        const existing = localStorage.getItem(STORAGE_KEY);
-        const data = existing ? JSON.parse(existing) : { userConfigs: [], assignments: [] };
+        const existing = await profileConfigStore.load();
+        const data = existing ?? { userConfigs: [], assignments: [] };
 
         const configIndex = data.userConfigs.findIndex((c: any) => c.userId === userId);
         if (configIndex >= 0) data.userConfigs[configIndex] = config;
@@ -287,7 +291,7 @@ export function persistUserConfig(userId: string): void {
         data.assignments = data.assignments.filter((a: any) => a.userId !== userId);
         data.assignments.push(...assignments);
 
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        await profileConfigStore.save(data);
     } catch (e) {
         console.warn('Failed to persist profile config:', e);
     }

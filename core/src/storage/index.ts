@@ -1,3 +1,2 @@
-export * from './migrations.js';
-export * from './migratedStorage.js';
+export * from './Storage.js';
 export * from './recovery.js';
