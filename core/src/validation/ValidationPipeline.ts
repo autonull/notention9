@@ -59,7 +59,7 @@ export class ValidationPipeline<T> {
         }
 
         this.repairStrategy = strategies.length > 0 
-            ? new CompositeRepairStrategy(strategies)
+            ? new CompositeRepairStrategy(strategies, this.validator)
             : new NoOpRepairStrategy();
     }
 
@@ -84,7 +84,11 @@ export class ValidationPipeline<T> {
             const repaired = await this.repairStrategy.repair(this.buildContext(currentData, history));
             
             if (repaired === null || repaired === undefined) {
-                break;
+                // Repair failed - record failed attempt and continue to next iteration
+                const failedResult = this.validator.validate(currentData);
+                history.push({ ...failedResult, repaired: false, repairAttempts: attempt });
+                this.onRepairAttempt?.(attempt, failedResult);
+                continue;
             }
 
             currentData = repaired;

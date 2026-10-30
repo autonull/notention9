@@ -2,17 +2,13 @@ import type {Note, OntologyNode, Property} from '@notention/core';
 import type {AIProvider, ProviderKind, InferredAttribute, PropertyProposal} from './types';
 import {z} from 'zod';
 import {
-    validateAndRepair,
-    repairPropertyArray,
-    repairTagArray,
-    repairInferredAttributes,
-    repairOntologyOptimization,
-    type ValidationResult,
-    PropertySchema,
-    TagSchema,
-    InferredAttributeSchema,
-    OntologyOptimizationSchema,
-} from './schema';
+    ValidationPipeline,
+    createPropertyPipeline,
+    createTagPipeline,
+    createInferredAttributesPipeline,
+    createOntologyOptimizationPipeline,
+    type PipelineResult,
+} from '@notention/core/validation';
 
 export interface ModelCapabilities {
     structuredOutput: boolean;
@@ -45,7 +41,7 @@ export interface InferenceResult<T> {
     latencyMs: number;
     retries: number;
     fallbackUsed: boolean;
-    validation?: ValidationResult<T>;
+    validation?: PipelineResult<T>;
 }
 
 /**
@@ -116,33 +112,58 @@ export class InferenceRouter {
         ]);
     }
 
-    private getRepairFn(method: keyof AIProvider): ((raw: unknown) => unknown) | undefined {
+    private getPipeline(method: keyof AIProvider): ValidationPipeline<unknown> {
         switch (method) {
             case 'alignToOntology':
-                return repairPropertyArray;
+                return createPropertyPipeline({ 
+                    schema: { 
+                        kind: 'zod', 
+                        schema: z.array(z.object({
+                            key: z.string().min(1),
+                            operator: z.enum(['is', 'is not', 'contains', 'greater than', 'less than']),
+                            values: z.array(z.string().min(1)).min(1),
+                        }))
+                    },
+                    maxRepairAttempts: 3,
+                });
             case 'suggestTags':
-                return repairTagArray;
+                return createTagPipeline({ 
+                    schema: { 
+                        kind: 'zod', 
+                        schema: z.array(z.string().min(1)).max(20)
+                    },
+                    maxRepairAttempts: 3,
+                });
             case 'analyzeOntology':
-                return repairInferredAttributes;
+                return createInferredAttributesPipeline({ 
+                    schema: { 
+                        kind: 'zod', 
+                        schema: z.array(z.object({
+                            key: z.string().min(1),
+                            type: z.enum(['string', 'number', 'date', 'enum', 'geo']),
+                            description: z.string().optional(),
+                            usageCount: z.number().int().min(0).default(0),
+                            sampleValues: z.array(z.string()).default([]),
+                        }))
+                    },
+                    maxRepairAttempts: 3,
+                });
             case 'optimizeOntology':
-                return repairOntologyOptimization;
+                return createOntologyOptimizationPipeline({ 
+                    schema: { 
+                        kind: 'zod', 
+                        schema: z.object({
+                            merged: z.array(z.object({
+                                source: z.string().min(1),
+                                target: z.string().min(1),
+                            })),
+                            pruned: z.array(z.string().min(1)),
+                        })
+                    },
+                    maxRepairAttempts: 3,
+                });
             default:
-                return undefined;
-        }
-    }
-
-    private getSchema(method: keyof AIProvider): z.ZodSchema<unknown> | undefined {
-        switch (method) {
-            case 'alignToOntology':
-                return PropertySchema;
-            case 'suggestTags':
-                return TagSchema;
-            case 'analyzeOntology':
-                return InferredAttributeSchema;
-            case 'optimizeOntology':
-                return OntologyOptimizationSchema;
-            default:
-                return undefined;
+                throw new Error(`Unknown method: ${method}`);
         }
     }
 
@@ -155,8 +176,7 @@ export class InferenceRouter {
         const startTime = Date.now();
         let lastError: Error | null = null;
         const autoRepair = options.autoRepair ?? true;
-        const repairFn = autoRepair ? this.getRepairFn(method) : undefined;
-        const schema = this.getSchema(method);
+        const pipeline = autoRepair ? this.getPipeline(method) : null;
 
         for (let attempt = 0; attempt <= (options.maxRetries ?? 2); attempt++) {
             try {
@@ -164,15 +184,15 @@ export class InferenceRouter {
                 const rawData = await this.withTimeout(methodFn.apply(provider, args), options.timeout);
 
                 let data: T = rawData;
-                let validation: ValidationResult<T> | undefined;
+                let validation: PipelineResult<T> | undefined;
 
-                if (schema && rawData !== null) {
-                    const validated = validateAndRepair(rawData, schema, repairFn);
+                if (pipeline && rawData !== null) {
+                    const validated = await pipeline.validate(rawData);
                     if (validated.success) {
                         data = validated.data as T;
-                        validation = validated as ValidationResult<T>;
+                        validation = validated;
                     } else {
-                        throw new Error(`Validation failed: ${validated.errors.join(', ')}`);
+                        throw new Error(`Validation failed: ${validated.issues.map(i => i.message).join(', ')}`);
                     }
                 }
 

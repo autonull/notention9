@@ -241,9 +241,18 @@ export class LLMBasedRepairStrategy<T> implements RepairStrategy<T> {
         const repairPrompt = this.buildRepairPrompt(invalidOutput, context.schema, lastAttempt.issues);
         const repairedOutput = await this.llmGenerate(repairPrompt);
 
+        // Try to parse the repaired output
+        let parsed: unknown;
+        try {
+            parsed = JSON.parse(repairedOutput);
+        } catch {
+            // LLM returned invalid JSON - cannot repair
+            return null;
+        }
+
         // Validate the repaired output
         const validator = createValidator(context.schema);
-        const result = validator.validate(JSON.parse(repairedOutput));
+        const result = validator.validate(parsed);
         
         if (result.success) {
             return result.data;
@@ -254,11 +263,15 @@ export class LLMBasedRepairStrategy<T> implements RepairStrategy<T> {
 
 /**
  * Composite repair strategy that tries multiple strategies in order
+ * and validates each result before returning
  */
 export class CompositeRepairStrategy<T> implements RepairStrategy<T> {
     readonly name = 'composite-repair';
 
-    constructor(private readonly strategies: RepairStrategy<T>[]) {}
+    constructor(
+        private readonly strategies: RepairStrategy<T>[],
+        private readonly validator?: { validate: (data: unknown) => { success: boolean; issues: readonly { message: string }[] } }
+    ) {}
 
     canRepair(context: RepairContext<T>): boolean {
         return this.strategies.some(s => s.canRepair(context));
@@ -268,13 +281,20 @@ export class CompositeRepairStrategy<T> implements RepairStrategy<T> {
         for (const strategy of this.strategies) {
             if (strategy.canRepair(context)) {
                 const result = strategy.repair(context);
-                if (result instanceof Promise) {
-                    const resolved = await result;
-                    if (resolved !== null && resolved !== undefined) {
-                        return resolved;
+                const resolved = result instanceof Promise ? await result : result;
+                
+                if (resolved !== null && resolved !== undefined) {
+                    // If we have a validator, check if the result passes validation
+                    if (this.validator) {
+                        const validation = this.validator.validate(resolved);
+                        if (validation.success) {
+                            return resolved;
+                        }
+                        // Validation failed - continue to next strategy
+                        continue;
                     }
-                } else if (result !== null && result !== undefined) {
-                    return result;
+                    // No validator - return first non-null result (legacy behavior)
+                    return resolved;
                 }
             }
         }

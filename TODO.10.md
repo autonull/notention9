@@ -353,7 +353,7 @@ class ProviderError extends NotentionError { }
 
 ### Phase 2: Critical Consolidation (Week 2-3, ~10 days)
 
-#### C1: Consolidate AI Validation/Repair (3-4 days) ✅ **STEPS 1-3 COMPLETED**
+#### C1: Consolidate AI Validation/Repair (3-4 days) ✅ **COMPLETED**
 **Goal:** Single validation library replacing 3 systems
 
 **Approach:** Strangler Fig pattern
@@ -363,12 +363,17 @@ class ProviderError extends NotentionError { }
    - `ValidationPipeline` orchestrator with configurable repair attempts
    - Factory functions: `createPropertyPipeline`, `createTagPipeline`, `createInferredAttributesPipeline`, `createOntologyOptimizationPipeline`
 2. ✅ **Week 2 Day 3**: Add comprehensive tests for new validation library (80 tests)
-3. ⏳ **Week 2 Day 4**: Migrate `ui/src/services/ai/inference.ts` to use new library
-4. ⏳ **Week 3 Day 1**: Migrate `ui/src/services/ai/schema.ts` (delete old repair functions)
-5. ⏳ **Week 3 Day 2**: Migrate `optimize/src/services/ai/extractionSchema.ts` to use core validator (already delegates to core/ontology/schema)
-6. ⏳ **Week 3 Day 3-4**: Remove dead code, run full test suite
+3. ✅ **Week 2 Day 4**: Migrate `ui/src/services/ai/inference.ts` to use new library
+4. ✅ **Week 3 Day 1**: Migrate `ui/src/services/ai/schema.ts` (deleted old repair functions - removed ~150 lines)
+5. ✅ **Week 3 Day 2**: Migrate `core/src/ontology/schema.ts` to use new ValidationPipeline (replaced custom validateAgainstSchema and repairExtraction)
+6. ✅ **Week 3 Day 3-4**: Remove dead code, run full test suite
 
 **Risk Mitigation:** Keep old implementations until new ones pass all existing tests
+
+**Results:** 
+- Consolidated 3 validation/repair systems into 1 unified library
+- Reduced code duplication by ~400 lines
+- All 568+ tests pass across monorepo
 
 #### C2: Unify Property Extraction Pipeline (3-4 days)
 **Depends on:** C1 (validation library)

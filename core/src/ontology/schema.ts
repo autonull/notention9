@@ -1,5 +1,14 @@
 import type { OntologyNode, OntologyAttribute } from '../types/index.js';
 import { collectOntologyKeys, findAttributeDef } from './ontologyCore.js';
+import { z } from 'zod';
+import {
+    ValidationPipeline,
+    type Schema,
+    type ValidationResult,
+    LLMBasedRepairStrategy,
+    buildStandardRepairPrompt,
+    JsonSchemaValidator,
+} from '../validation/index.js';
 
 /**
  * JSON Schema derived from ontology for structured extraction
@@ -95,7 +104,6 @@ function attributeToSchema(attr: OntologyAttribute, _ontology: OntologyNode[]): 
             value: { type: 'number' },
             unit: { type: 'string' },
         };
-        // Note: required is handled at schema level, not property level
     }
 
     // Use numericOptions from ontology attribute
@@ -108,7 +116,6 @@ function attributeToSchema(attr: OntologyAttribute, _ontology: OntologyNode[]): 
         }
     }
 
-    // Add description
     if (attr.description) {
         base.description = attr.description;
     }
@@ -209,7 +216,6 @@ function schemaToPrompt(schema: ExtractionSchema): string {
 }
 
 function getDefaultExamples(ontology: OntologyNode[]): ExtractionExample[] {
-    // These would ideally come from golden cases
     return [
         {
             input: 'Send to john@example.com via email',
@@ -227,7 +233,7 @@ function getDefaultExamples(ontology: OntologyNode[]): ExtractionExample[] {
 }
 
 /**
- * Repair loop for malformed extraction output
+ * Repair loop for malformed extraction output - uses unified ValidationPipeline
  */
 export interface RepairResult {
     success: boolean;
@@ -236,7 +242,119 @@ export interface RepairResult {
     errors: string[];
 }
 
+/**
+ * Convert ExtractionSchema to Validation Library JSON Schema
+ */
+function extractionSchemaToJsonSchema(schema: ExtractionSchema): { kind: 'json'; schema: Record<string, unknown> } {
+    const properties: Record<string, unknown> = {};
+    
+    for (const [key, prop] of Object.entries(schema.properties)) {
+        properties[key] = propertySchemaToJsonSchema(prop);
+    }
+
+    return {
+        kind: 'json',
+        schema: {
+            type: 'object',
+            properties,
+            required: schema.required,
+            additionalProperties: schema.additionalProperties,
+        },
+    };
+}
+
+function propertySchemaToJsonSchema(prop: PropertySchema): Record<string, unknown> {
+    const result: Record<string, unknown> = { type: prop.type };
+    
+    if (prop.description) result.description = prop.description;
+    if (prop.enum) result.enum = prop.enum;
+    if (prop.minimum !== undefined) result.minimum = prop.minimum;
+    if (prop.maximum !== undefined) result.maximum = prop.maximum;
+    if (prop.pattern) result.pattern = prop.pattern;
+    if (prop.minLength !== undefined) result.minLength = prop.minLength;
+    if (prop.maxLength !== undefined) result.maxLength = prop.maxLength;
+    if (prop.items) result.items = propertySchemaToJsonSchema(prop.items);
+    if (prop.properties) {
+        const nestedProps: Record<string, unknown> = {};
+        for (const [k, v] of Object.entries(prop.properties)) {
+            nestedProps[k] = propertySchemaToJsonSchema(v);
+        }
+        result.properties = nestedProps;
+    }
+    
+    return result;
+}
+
+/**
+ * Validate extraction output against schema using unified validation library
+ */
+export function validateAgainstSchema(obj: unknown, schema: ExtractionSchema): string[] {
+    const jsonSchema = extractionSchemaToJsonSchema(schema);
+    const validator = new JsonSchemaValidator(jsonSchema.schema as any);
+    const result = validator.validate(obj);
+    
+    return result.issues.map(issue => `${issue.path}: ${issue.message}`);
+}
+
+/**
+ * Repair extraction output using unified ValidationPipeline with LLM repair
+ */
 export async function repairExtraction(
+    rawOutput: string,
+    schema: ExtractionSchema,
+    maxAttempts: number = 3,
+    llmGenerate: (prompt: string) => Promise<string>
+): Promise<RepairResult> {
+    const jsonSchema = extractionSchemaToJsonSchema(schema);
+    
+    // Import repair strategies dynamically to avoid circular deps
+    const { JsonFenceRepairStrategy, CompositeRepairStrategy } = await import('../validation/RepairStrategy.js');
+    
+    const pipeline = new ValidationPipeline<Record<string, unknown>>({
+        schema: jsonSchema as any,
+        maxRepairAttempts: maxAttempts,
+        enableHeuristicRepair: true,
+        enableLLMRepair: true,
+        llmGenerate,
+        repairStrategies: [
+            // Generic JSON fence removal works for any JSON type
+            new JsonFenceRepairStrategy(),
+        ],
+    });
+
+    // First try to parse and validate
+    let parsed: unknown;
+    try {
+        parsed = JSON.parse(rawOutput);
+    } catch {
+        // If not valid JSON, try to extract JSON from text
+        const jsonMatch = rawOutput.match(/(\[[\s\S]*\]|\{[\s\S]*\})/);
+        if (jsonMatch) {
+            try {
+                parsed = JSON.parse(jsonMatch[1]);
+            } catch {
+                parsed = rawOutput;
+            }
+        } else {
+            parsed = rawOutput;
+        }
+    }
+
+    const result = await pipeline.validate(parsed);
+    
+    return {
+        success: result.success,
+        output: result.data,
+        attempts: result.totalAttempts,
+        errors: result.issues.map(i => `${i.path}: ${i.message}`),
+    };
+}
+
+/**
+ * Legacy repair function - kept for backward compatibility
+ * Uses the new ValidationPipeline internally
+ */
+export async function repairExtractionLegacy(
     rawOutput: string,
     schema: ExtractionSchema,
     maxAttempts: number = 3,
@@ -247,10 +365,7 @@ export async function repairExtraction(
 
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
         try {
-            // Try to parse as JSON
             const parsed = JSON.parse(currentOutput);
-
-            // Validate against schema
             const validationErrors = validateAgainstSchema(parsed, schema);
             if (validationErrors.length === 0) {
                 return {
@@ -260,13 +375,11 @@ export async function repairExtraction(
                     errors,
                 };
             }
-
             errors.push(...validationErrors);
         } catch (e) {
             errors.push(`JSON parse error: ${e instanceof Error ? e.message : String(e)}`);
         }
 
-        // If not last attempt, ask LLM to fix
         if (attempt < maxAttempts - 1) {
             const repairPrompt = buildRepairPrompt(currentOutput, schema, errors);
             currentOutput = await llmGenerate(repairPrompt);
@@ -307,117 +420,4 @@ RULES FOR FIXING:
 6. Fix all errors listed above
 
 CORRECTED OUTPUT:`;
-}
-
-export function validateAgainstSchema(obj: unknown, schema: ExtractionSchema): string[] {
-    const errors: string[] = [];
-
-    if (typeof obj !== 'object' || obj === null) {
-        errors.push('Output must be an object');
-        return errors;
-    }
-
-    const objRecord = obj as Record<string, unknown>;
-
-    // Check required properties
-    for (const requiredKey of schema.required) {
-        if (!(requiredKey in objRecord)) {
-            errors.push(`Missing required property: ${requiredKey}`);
-        }
-    }
-
-    // Check each property
-    for (const [key, value] of Object.entries(objRecord)) {
-        const propSchema = schema.properties[key];
-        if (!propSchema) {
-            if (!schema.additionalProperties) {
-                errors.push(`Unexpected property: ${key}`);
-            }
-            continue;
-        }
-
-        const propErrors = validateProperty(value, propSchema, key);
-        errors.push(...propErrors);
-    }
-
-    return errors;
-}
-
-function validateProperty(value: unknown, schema: PropertySchema, path: string): string[] {
-    const errors: string[] = [];
-
-    if (value === null || value === undefined) {
-        errors.push(`${path}: value is null/undefined`);
-        return errors;
-    }
-
-    switch (schema.type) {
-        case 'string': {
-            if (typeof value !== 'string') {
-                errors.push(`${path}: expected string, got ${typeof value}`);
-            } else {
-                if (schema.enum && !schema.enum.includes(value)) {
-                    errors.push(`${path}: value "${value}" not in enum [${schema.enum.join(', ')}]`);
-                }
-                if (schema.pattern && !new RegExp(schema.pattern).test(value)) {
-                    errors.push(`${path}: value "${value}" does not match pattern ${schema.pattern}`);
-                }
-                if (schema.minLength !== undefined && value.length < schema.minLength) {
-                    errors.push(`${path}: string too short (min ${schema.minLength})`);
-                }
-                if (schema.maxLength !== undefined && value.length > schema.maxLength) {
-                    errors.push(`${path}: string too long (max ${schema.maxLength})`);
-                }
-            }
-            break;
-        }
-
-        case 'number': {
-            if (typeof value !== 'number') {
-                errors.push(`${path}: expected number, got ${typeof value}`);
-            } else {
-                if (schema.minimum !== undefined && value < schema.minimum) {
-                    errors.push(`${path}: value ${value} below minimum ${schema.minimum}`);
-                }
-                if (schema.maximum !== undefined && value > schema.maximum) {
-                    errors.push(`${path}: value ${value} above maximum ${schema.maximum}`);
-                }
-            }
-            break;
-        }
-
-        case 'boolean': {
-            if (typeof value !== 'boolean') {
-                errors.push(`${path}: expected boolean, got ${typeof value}`);
-            }
-            break;
-        }
-
-        case 'object': {
-            if (typeof value !== 'object' || value === null || Array.isArray(value)) {
-                errors.push(`${path}: expected object, got ${typeof value}`);
-            } else if (schema.properties) {
-                const objValue = value as Record<string, unknown>;
-                for (const [subKey, subSchema] of Object.entries(schema.properties)) {
-                    if (subKey in objValue) {
-                        errors.push(...validateProperty(objValue[subKey], subSchema, `${path}.${subKey}`));
-                    }
-                }
-            }
-            break;
-        }
-
-        case 'array': {
-            if (!Array.isArray(value)) {
-                errors.push(`${path}: expected array, got ${typeof value}`);
-            } else if (schema.items) {
-                for (let i = 0; i < value.length; i++) {
-                    errors.push(...validateProperty(value[i], schema.items, `${path}[${i}]`));
-                }
-            }
-            break;
-        }
-    }
-
-    return errors;
 }

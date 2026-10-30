@@ -125,7 +125,8 @@ describe('Repair Loop (L15)', () => {
         
         expect(result.success).toBe(false);
         expect(result.output).toBeNull();
-        expect(result.attempts).toBe(2);
+        // New pipeline: 1 initial validation + 2 repair attempts = 3 total
+        expect(result.attempts).toBe(3);
         expect(result.errors.length).toBeGreaterThan(0);
     });
 });
