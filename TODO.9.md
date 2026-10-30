@@ -551,11 +551,11 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 
 | ID | Item | Files | Acceptance | Depends |
 |----|------|-------|-----------|---------|
-| S1 | On-demand recording of selected workflows | `simulator/src/movie_maker.ts`, `recording_manager.ts` | one workflow recorded on request | — |
-| S2 | Capability-oriented scenario library | `simulator/src/scenarios/` | scenarios show outcomes, not tutorials | S1 |
-| S3 | Optional/selective generation + local artifact | scripts | no workflow requires a recording | S1 |
-| S4 | Presentation output (optional narration/captions) | `movie_maker.ts` | captions present when requested | S1 |
-| S5 | Standalone versioned artifacts, no mandatory sync | `loop/showcases/` | recording valid after UI change | S1 |
+| S1 | On-demand recording of selected workflows | `simulator/src/movie_maker.ts`, `recording_manager.ts`, `scripts/generate-showcases.ts` | one workflow recorded on request | — | ✅ |
+| S2 | Capability-oriented scenario library | `simulator/src/scenarios/` | scenarios show outcomes, not tutorials | S1 | ✅ |
+| S3 | Optional/selective generation + local artifact | `scripts/generate-showcases.ts` | no workflow requires a recording | S1 | ✅ |
+| S4 | Presentation output (optional narration/captions) | `movie_maker.ts` | captions present when requested | S1 | ⬜ |
+| S5 | Standalone versioned artifacts, no mandatory sync | `loop/showcases/` | recording valid after UI change | S1 | ⬜ |
 
 ### X — End-to-end proof · essential
 
@@ -651,7 +651,7 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | Synthesis (T2/T4) | ✅ done (L10–L14) |
 | `pnpm loop run --dry` | ✅ full pipeline executes (discover→prioritize→synthesize→gates) |
 | Playwright evaluation | ✅ infrastructure complete; **fast evaluator replaces for core loop** (no browser needed) |
-| Capability showcases | ⬜ not started (S1–S5) |
+| Capability showcases | ✅ **done** (S1–S3: on-demand recordings, scenario library, selective generation) |
 | End-to-end proof | ✅ **complete** (X1–X3 pipeline works; X4–X7 demonstrated with fast evaluator) |
 | Human gates G1/G2/G5 | ⏳ pending |
 
@@ -688,7 +688,7 @@ Dependency order, not a prohibition on parallel work.
 | **2. Make strategies evolvable** | Version prompts/UI/ontology artifacts; interfaces; model-independent runtime; fallback chain | Artifacts versioned; app works with any inference link missing (M1, B2) | ✅ Done |
 | **3. Safe local experimentation** | Generate candidates; evaluate offline; deterministic checks; reject regressions; promote with rollback | Evidence gate enforced; rollback demonstrated (X5) | ✅ **Done** |
 | **4. Demonstrate the complete loop** | Compact local model contributes a measured improvement in the real workflow, network off | X3–X7 complete | ✅ **Done** (fast evaluator, offline, deterministic) |
-| **5. Showcases + generalise** | Selective recordings; extend the validated loop to more workflows | S1–S5 done; second workflow validated (B6) | 🟨 **In progress** |
+| **5. Showcases + generalise** | Selective recordings; extend the validated loop to more workflows | S1–S5 done; second workflow validated (B6) | 🟨 **S1–S3 done, S4–S5 pending** |
 | **6. Production hardening** | L21–L24, P3–P7, L17, L18 — a11y, preference, profiles, layouts, ontology experiment, real corpora | Second workflow validated; generalisation justified (B6) | ⬜ Deferred until Phase 5 proves abstraction |
 
 ---
@@ -714,15 +714,17 @@ And the architectural principle holds: **the system improved its own behaviour w
 
 | Priority | Action | Rationale |
 |----------|--------|-----------|
-| **1** | **S1–S3**: Capability showcase recordings (movie_maker, scenarios) | Demonstrate value; unblock human gates H1/H2 |
-| **2** | **L18**: Real-corpus ingestion → vocabulary + tasks | Expand test coverage beyond synthetic cases; surface ontology gaps |
-| **3** | **L17**: Ontology experiment (flat vs facets+status) | Validate working hypothesis with second workflow |
-| **4** | **H1–H2**: Stranger test (G1) + match relevance (G2) | Human confirmation of usability; required for X4 |
-| **5** | **L22**: Preference + interaction-strategy comparison | Empirical UX data for profiles/policies (L23) |
-| **6** | **L23**: Profiles + policy + per-user overrides | Product ergonomics (P3–P7) |
-| **7** | **S4–S5**: Presentation output + standalone artifacts | Polish showcases |
-| **8** | **Q1–Q5**: Tests/docs alongside | Maintain quality |
-| **9** | **B6**: Generalise only after second workflow proves abstraction | Avoid premature abstraction |
+| **1** | **L18**: Real-corpus ingestion → vocabulary + tasks | Expand test coverage beyond synthetic cases; surface ontology gaps |
+| **2** | **L17**: Ontology experiment (flat vs facets+status) | Validate working hypothesis with second workflow |
+| **3** | **H1–H2**: Stranger test (G1) + match relevance (G2) | Human confirmation of usability; required for X4 |
+| **4** | **L22**: Preference + interaction-strategy comparison | Empirical UX data for profiles/policies (L23) |
+| **5** | **L23**: Profiles + policy + per-user overrides | Product ergonomics (P3–P7) |
+| **6** | **S4–S5**: Presentation output + standalone artifacts | Polish showcases |
+| **7** | **Q1–Q5**: Tests/docs alongside | Maintain quality |
+| **8** | **B6**: Generalise only after second workflow proves abstraction | Avoid premature abstraction |
+
+**Completed:**
+- S1–S3: Capability showcase recordings (movie_maker, scenarios, generate-showcases.ts)
 
 **Deferred (premature without second workflow):**
 - L21: A11y + keyboard assertions in harness
@@ -760,6 +762,13 @@ The loop now enables **daily iteration cycles** instead of weekly. Each cycle:
 6. `pnpm loop request` → T4 for human implementation
 
 This makes the "evaluation-driven improvement" loop (Phase 4) actually usable in practice, not just in theory.
+
+### Showcase capability (S1–S3 complete)
+`pnpm showcase` provides on-demand recording of capability demonstrations:
+- `pnpm showcase --list` — list 10 domain scenarios (freelance, hiring, collaboration, mentorship, learning, cofounder, investor, events, open-source, research)
+- `pnpm showcase -s <name>` — record specific scenario
+- `pnpm showcase --all` — record all scenarios
+- Output: versioned local artifacts in `movies/<scenario>-<timestamp>/simulation.mp4`
 
 ### Remaining risk
 The fast evaluator tests **deterministic core logic only**. It does not test:
