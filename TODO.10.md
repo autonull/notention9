@@ -375,15 +375,21 @@ class ProviderError extends NotentionError { }
 - Reduced code duplication by ~400 lines
 - All 568+ tests pass across monorepo
 
-#### C2: Unify Property Extraction Pipeline (3-4 days)
+#### C2: Unify Property Extraction Pipeline (3-4 days) ✅ **STEPS 1-2 COMPLETED**
 **Depends on:** C1 (validation library)
 
 **Approach:** Pipeline composition
-1. **Day 1**: Create `core/src/extraction/ExtractionPipeline.ts` with stage interface
-2. **Day 2**: Implement stages: `DeterministicStage`, `PatternStage`, `AIStage`, `FuzzyStage`
-3. **Day 3**: Wire into `PropertyExtractor` (replace current monolithic extract)
-4. **Day 4**: Update `InferenceRouter.alignToOntology` to use pipeline
-5. **Day 5**: Tests + benchmark accuracy
+1. ✅ **Day 1**: Create `core/src/extraction/ExtractionPipeline.ts` with stage interface
+2. ✅ **Day 2**: Implement stages: `DeterministicStage`, `PatternStage`, `OntologyKeyStage`, `FuzzyStage`, `AIStage`
+3. ⏳ **Day 3**: Wire into `PropertyExtractor` (replace current monolithic extract)
+4. ⏳ **Day 4**: Update `InferenceRouter.alignToOntology` to use pipeline
+5. ⏳ **Day 5**: Tests + benchmark accuracy
+
+**Results:**
+- Created unified pipeline with 5 composable stages in `core/src/extraction/ExtractionPipeline.ts`
+- `LocalProvider` migrated to use new pipeline
+- Backward compatibility maintained via `alignToOntology` function
+- All 568+ tests pass
 
 #### C3: Consolidate Ontology Types (1-2 days)
 **Can parallelize with C1**

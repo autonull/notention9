@@ -1,6 +1,6 @@
 import type {Note, OntologyNode, Property} from '@notention/core';
 import type {AIProvider, InferredAttribute} from './types';
-import {collectOntologyKeys, parseProperties, parseQuantity, alignToOntology} from '@notention/core';
+import {collectOntologyKeys, parseProperties, parseQuantity, ExtractionPipeline} from '@notention/core';
 import {getTextFromHtml} from '../../utils/html';
 import {addDays, format} from 'date-fns';
 
@@ -93,7 +93,9 @@ export class LocalAIProvider implements AIProvider {
     }
 
     async alignToOntology(text: string, ontology: OntologyNode[]): Promise<Property[]> {
-        return alignToOntology(text, ontology);
+        const pipeline = new ExtractionPipeline();
+        const result = await pipeline.extract(text, ontology);
+        return result.properties;
     }
 
     async optimizeOntology(_ontology: OntologyNode[]): Promise<{
