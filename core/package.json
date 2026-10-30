@@ -19,6 +19,8 @@
     "./skills": "./dist/skills/index.js",
     "./skills/metaphor": "./dist/skills/metaphor/MetaphorRegistry.js",
     "./ontology/domains.facets": "./dist/ontology/domains.facets.js",
+    "./ontology/schema": "./dist/ontology/schema.js",
+    "./test-utils": "./dist/test-utils/index.js",
     "./ui": "./dist/ui/index.js",
     "./ui/profile": "./dist/ui/profile.js",
     "./ui/strategy": "./dist/ui/strategy.js"

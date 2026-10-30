@@ -45,6 +45,7 @@ export * from './feedback/index.js';
 export * from './ui/index.js';
 export * from './ontology/index.js';
 export * from './suggestions/index.js';
+export * from './test-utils/index.js';
 
 // Nostr-specific (keep separate for optional dependency)
 export * from './network/nostr/nostr.js';

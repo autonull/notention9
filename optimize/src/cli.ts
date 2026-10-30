@@ -3,13 +3,31 @@ import { parseArgs } from 'node:util';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import { commandRegistry } from './cli/Command.js';
+import {
+    OptimizeCommand,
+    ReplayCommand,
+    GenerateTestCommand,
+    ReproduceCommand,
+    MarkFixedCommand,
+    FindingsCommand,
+    UXEvaluateCommand,
+} from './cli/commands/index.js';
 
 // Import to register journeys
 import './journeys.js';
 
-import { handleOptimize, handleReplay, handleGenerateTest, handleReproduce, handleMarkFixed, handleFindings, handleUXEvaluate } from './cliHandlers.js';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Register all commands
+commandRegistry.register(new OptimizeCommand());
+commandRegistry.register(new ReplayCommand());
+commandRegistry.register(new GenerateTestCommand());
+commandRegistry.register(new ReproduceCommand());
+commandRegistry.register(new MarkFixedCommand());
+commandRegistry.register(new FindingsCommand());
+commandRegistry.register(new UXEvaluateCommand());
 
 interface ParsedFlags {
     json: boolean;
@@ -19,7 +37,11 @@ interface ParsedFlags {
     headless: boolean;
     status?: string;
     commitSha?: string;
+    scenarios?: string;
+    output?: string;
+    noReport?: boolean;
     positionals: string[];
+    [key: string]: unknown;
 }
 
 function parseFlags(args: string[]): ParsedFlags {
@@ -30,33 +52,65 @@ function parseFlags(args: string[]): ParsedFlags {
     const headless = args.includes('--headless');
 
     let status: string | undefined;
-    const statusIndex = args.findIndex(r => r === '--status');
+    const statusIndex = args.findIndex((r) => r === '--status');
     if (statusIndex !== -1 && statusIndex + 1 < args.length) {
         status = args[statusIndex + 1];
     } else {
-        const statusFlag = args.find(r => r.startsWith('--status='));
+        const statusFlag = args.find((r) => r.startsWith('--status='));
         if (statusFlag) status = statusFlag.split('=')[1];
     }
 
     let commitSha: string | undefined;
-    const commitIndex = args.findIndex(r => r === '--commit');
+    const commitIndex = args.findIndex((r) => r === '--commit');
     if (commitIndex !== -1 && commitIndex + 1 < args.length) {
         commitSha = args[commitIndex + 1];
     } else {
-        const commitFlag = args.find(r => r.startsWith('--commit='));
+        const commitFlag = args.find((r) => r.startsWith('--commit='));
         if (commitFlag) commitSha = commitFlag.split('=')[1];
     }
 
-    const flagSet = new Set(['--json', '--a11y', '--allow-draft', '--simulator', '--headless', '--status', '--commit']);
+    const flagSet = new Set([
+        '--json',
+        '--a11y',
+        '--allow-draft',
+        '--simulator',
+        '--headless',
+        '--status',
+        '--commit',
+        '--scenarios',
+        '--output',
+        '--no-report',
+        '--threshold-match-relevance',
+        '--threshold-time-to-match',
+        '--threshold-acceptance-rate',
+        '--threshold-engagement',
+        '--threshold-dashboard-clarity',
+    ]);
     const positionals = args.filter((r, i) => {
         if (flagSet.has(r)) return false;
         if (r.startsWith('--status=') || r.startsWith('--commit=')) return false;
+        if (r.startsWith('--scenarios=') || r.startsWith('--output=')) return false;
+        if (r.startsWith('--threshold-')) return false;
         if (i === statusIndex + 1 && args[statusIndex] === '--status') return false;
         if (i === commitIndex + 1 && args[commitIndex] === '--commit') return false;
         return true;
     });
 
-    return { json, a11y, allowDraft, simulator, headless, status, commitSha, positionals };
+    // Parse flag values into an object for easy access
+    const flags: Record<string, unknown> = { json, a11y, allowDraft, simulator, headless, status, commitSha };
+    for (const arg of args) {
+        if (arg.startsWith('--')) {
+            const [key, value] = arg.split('=');
+            const flagName = key.slice(2).replace(/-/g, '');
+            if (value !== undefined) {
+                flags[flagName] = isNaN(Number(value)) ? value : Number(value);
+            } else if (!key.includes('=')) {
+                flags[flagName] = true;
+            }
+        }
+    }
+
+    return { json, a11y, allowDraft, simulator, headless, status, commitSha, positionals, ...flags };
 }
 
 function printHelp(): void {
@@ -64,16 +118,9 @@ function printHelp(): void {
 Usage: pnpm optimize <command> [args]
 
 Commands:
-  optimize <journeyId>         Run optimization journey
-  reproduce <findingId|runId>  Reproduce a finding or replay a run
-  findings [--status <status>] List findings (filter by status: open, fixed, verified)
-  replay <runId>               Replay a run from evidence bundle
-  generate-test <findingId>    Generate regression test from finding
-  mark-fixed <findingId> [sha] Mark a finding as fixed (optional commit SHA)
-  ux-evaluate                  Evaluate UX metrics across simulator scenarios
-  help                         Show this help
+${commandRegistry.getAll().map((cmd) => `  ${cmd.name.padEnd(15)} ${cmd.description}`).join('\n')}
 
-Options:
+Options (common):
   --json                   Output as JSON
   --allow-draft            Allow draft journeys
   --a11y                   Show accessibility findings
@@ -84,6 +131,8 @@ Options:
   --scenarios <names>      Comma-separated scenario names (ux-evaluate)
   --output <path>          Output path for JSON report (ux-evaluate)
   --threshold-<metric> <value>  Threshold overrides (ux-evaluate)
+
+Run 'pnpm optimize <command> --help' for command-specific options.
 `);
 }
 
@@ -95,62 +144,42 @@ async function main(): Promise<number> {
         return 0;
     }
 
-    const { json, a11y, allowDraft, simulator, headless, status, commitSha, positionals } = parseFlags(rawArgs);
+    const flags = parseFlags(rawArgs);
 
-    if (positionals.length === 0) {
+    if (flags.positionals.length === 0) {
         printHelp();
         return 0;
     }
 
-    const [subcommand, ...rest] = positionals;
+    const [subcommand, ...rest] = flags.positionals;
+
+    // Handle help for specific command
+    if (rest.includes('--help') || rest.includes('-h')) {
+        const cmd = commandRegistry.get(subcommand);
+        if (cmd) {
+            cmd.printHelp();
+            return 0;
+        }
+    }
+
+    const command = commandRegistry.get(subcommand);
+    if (!command) {
+        console.error(`Unknown subcommand: ${subcommand}. Use: ${commandRegistry.list().join(', ')}`);
+        return 1;
+    }
+
+    // Set positionals for the command
+    flags.positionals = rest;
 
     try {
-        switch (subcommand) {
-            case 'optimize': {
-                const journeyId = rest[0];
-                if (!journeyId) throw new Error('Journey ID required for optimize');
-                return handleOptimize(journeyId, allowDraft, json, a11y);
-            }
-            case 'replay': {
-                const runId = rest[0];
-                if (!runId) throw new Error('Run ID required for replay');
-                return handleReplay(runId, json, a11y);
-            }
-            case 'generate-test': {
-                const findingId = rest[0];
-                if (!findingId) throw new Error('Finding ID required for generate-test');
-                return handleGenerateTest(findingId, json, a11y);
-            }
-            case 'reproduce': {
-                const target = rest[0];
-                if (!target) throw new Error('Finding ID or runId required for reproduce');
-                return handleReproduce(target, json, a11y, simulator, headless);
-            }
-            case 'mark-fixed': {
-                const findingId = rest[0];
-                if (!findingId) throw new Error('Finding ID required for mark-fixed');
-                return handleMarkFixed(findingId, commitSha ?? '', json, a11y);
-            }
-            case 'findings': {
-                return handleFindings(json, a11y, status);
-            }
-            case 'ux-evaluate': {
-                return handleUXEvaluate(rest);
-            }
-            case 'help': {
-                printHelp();
-                return 0;
-            }
-            default:
-                throw new Error(`Unknown subcommand: ${subcommand}. Use: optimize, reproduce, findings, replay, generate-test, mark-fixed, help`);
-        }
+        return await command.execute(flags);
     } catch (e) {
         console.error(`Error: ${e instanceof Error ? e.message : String(e)}`);
         return 1;
     }
 }
 
-main().catch(e => {
+main().catch((e) => {
     console.error(`Fatal: ${e instanceof Error ? e.message : String(e)}`);
     process.exit(1);
 });
