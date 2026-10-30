@@ -23,7 +23,7 @@ async function runPreferenceExperiment(experimentId?: string) {
 
     // First, ensure we have evaluation data
     console.log('📊 Step 1: Running evaluation to generate baseline and candidates...');
-    const evalResult = spawnSync('pnpm', ['--filter', '@notention/optimize', 'loop', 'evaluate'], {
+    const evalResult = spawnSync('pnpm', ['loop', 'evaluate'], {
         cwd: ROOT,
         stdio: 'inherit',
     });
@@ -36,7 +36,7 @@ async function runPreferenceExperiment(experimentId?: string) {
     // Then run compare
     console.log('');
     console.log('📊 Step 2: Comparing strategy variants...');
-    const compareResult = spawnSync('pnpm', ['--filter', '@notention/optimize', 'loop', 'compare'], {
+    const compareResult = spawnSync('pnpm', ['loop', 'compare'], {
         cwd: ROOT,
         stdio: 'inherit',
     });

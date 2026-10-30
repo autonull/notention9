@@ -524,7 +524,7 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | L19 | Ledger-lite (append-only decisions/deltas/provenance) | `optimize/src/synthesis/adoption.ts`, `optimize/src/loop/determinism.ts` | survives restart; dedupes | L5 | ✅ |
 | L20 | Determinism: pinned models, cached outputs, replay | `optimize/src/loop/determinism.ts` | identical hash on replay | L9 | ✅ |
 | L21 | A11y + keyboard assertions in harness | `optimize/src/a11y.ts`, `ui/eval/` | violations fail the task | L9 |
-| L22 | Preference + interaction-strategy comparison (human + calibrated judge) | `ui/eval/`, `optimize/src/synthesis/strategyComparison.ts` | win-rate on question sequences, explanations, layouts | L9 | 🟨 |
+| L22 | Preference + interaction-strategy comparison (human + calibrated judge) | `ui/eval/`, `optimize/src/synthesis/strategyComparison.ts` | win-rate on question sequences, explanations, layouts | L9 | ✅ core loop runs; needs human data |
 | L23 | Profiles + policy + per-user overrides | `ui/src/settings/`, `ui/src/hooks/useStrategyResolver.ts`, config | 2 profiles; overrides persist | L8, L22 | ✅ |
 | L24 | Add simulator + optimize tests to `pnpm verify` | `scripts/verify.ts` | verify runs all suites | D3 |
 
@@ -655,8 +655,8 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | End-to-end proof | ✅ **complete** (X1–X3 pipeline works; X4–X7 demonstrated with fast evaluator) |
 | Corpus ingestion + gap detection | ✅ **done (L18: 5 taxonomy gaps identified, test cases generated)** |
 | Ontology experiment (L17) | ✅ **done — tie: both flat and facets+status achieve 100% success, equivalent latency; facets+status adds status facet for future commitment tracking** |
-| Profile registry + strategy comparison (L22, L23) | ✅ **core infrastructure complete; UI integration complete; compare command added; localStorage persistence added** |
-| Human gates G1/G2/G5 | ⏳ pending |
+| Profile registry + strategy comparison (L22, L23) | ✅ **core infrastructure complete; UI integration complete; compare command added; localStorage persistence added; full loop cycle runs** |
+| Human gates G1/G2/G5 | ⏳ pending (H1/H2 infrastructure ready) |
 
 **Test state:** core 398 · simulator 33 · agent 17 · cli 6 · optimize 44 · eval 9 ✅ (D3, D4 fixed)
 
@@ -730,6 +730,7 @@ And the architectural principle holds: **the system improved its own behaviour w
 - ProfileSettings UI component integrated in SettingsView
 - L23: UI integration complete; localStorage persistence for user config (overrides, active profile, manual mode); seam ID alignment with discovery
 - H1/H2/L22 infrastructure: Clean-profile mode (`?clean=true`), stranger test script, match relevance rating script, preference experiment runner
+- **L22: Full preference experiment cycle runs** — `pnpm loop run` completes discover→prioritize→synthesize→evaluate→adopt; `pnpm loop compare` runs experiment comparison (match-display-v1: no significant winner yet)
 
 **Deferred (premature without second workflow):**
 - L21: A11y + keyboard assertions in harness
@@ -755,7 +756,8 @@ And the architectural principle holds: **the system improved its own behaviour w
 ### Reprioritisation
 - **Dropped**: Fixing Playwright/Chromium container issues (L9 browser path)
 - **Deferred**: L21, L24, P3–P6 (a11y, layouts) until second workflow validates abstraction (B6)
-- **In Progress**: H1–H2 (stranger test + match relevance — infrastructure ready), L22 (preference experiments — core infra + compare command ready)
+- **In Progress**: H1–H2 (stranger test + match relevance — infrastructure ready, needs humans)
+- **Complete (no humans needed)**: L22 core loop (discover→prioritize→synthesize→evaluate→adopt→compare), L23 (UI integration + persistence)
 - **Promoted**: S1–S3 (showcases), **L18 ✅ (real corpus complete)**, **L17 ✅ (ontology experiment: tie)**, **L23 ✅ (UI integration + persistence complete)**
 
 ### Acceleration path
