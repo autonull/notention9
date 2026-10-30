@@ -353,20 +353,20 @@ class ProviderError extends NotentionError { }
 
 ### Phase 2: Critical Consolidation (Week 2-3, ~10 days)
 
-#### C1: Consolidate AI Validation/Repair (3-4 days)
+#### C1: Consolidate AI Validation/Repair (3-4 days) ✅ **STEPS 1-2 COMPLETED**
 **Goal:** Single validation library replacing 3 systems
 
 **Approach:** Strangler Fig pattern
-1. **Week 2 Day 1-2**: Create `core/src/validation/` with:
-   - `Validator<T>` interface
-   - `ZodValidator<T>` implementation (wraps schema.ts Zod schemas)
-   - `RepairStrategy` interface + `HeuristicRepair`, `LLMRepair` implementations
-   - `ValidationPipeline` orchestrator
-2. **Week 2 Day 3**: Add comprehensive tests for new validation library
-3. **Week 2 Day 4**: Migrate `ui/src/services/ai/inference.ts` to use new library
-4. **Week 3 Day 1**: Migrate `ui/src/services/ai/schema.ts` (delete old repair functions)
-5. **Week 3 Day 2**: Migrate `optimize/src/services/ai/extractionSchema.ts` to use core validator
-6. **Week 3 Day 3-4**: Remove dead code, run full test suite
+1. ✅ **Week 2 Day 1-2**: Create `core/src/validation/` with:
+   - `Validator<T>` interface + `ZodValidator`, `JsonSchemaValidator`, `CustomValidator`
+   - `RepairStrategy` interface + `HeuristicRepair` (JsonFence, PropertyArray, TagArray, InferredAttributes, OntologyOptimization), `LLMRepair` implementations
+   - `ValidationPipeline` orchestrator with configurable repair attempts
+   - Factory functions: `createPropertyPipeline`, `createTagPipeline`, `createInferredAttributesPipeline`, `createOntologyOptimizationPipeline`
+2. ⏳ **Week 2 Day 3**: Add comprehensive tests for new validation library
+3. ⏳ **Week 2 Day 4**: Migrate `ui/src/services/ai/inference.ts` to use new library
+4. ⏳ **Week 3 Day 1**: Migrate `ui/src/services/ai/schema.ts` (delete old repair functions)
+5. ⏳ **Week 3 Day 2**: Migrate `optimize/src/services/ai/extractionSchema.ts` to use core validator (already delegates to core/ontology/schema)
+6. ⏳ **Week 3 Day 3-4**: Remove dead code, run full test suite
 
 **Risk Mitigation:** Keep old implementations until new ones pass all existing tests
 

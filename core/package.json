@@ -21,6 +21,7 @@
     "./ontology/domains.facets": "./dist/ontology/domains.facets.js",
     "./ontology/schema": "./dist/ontology/schema.js",
     "./test-utils": "./dist/test-utils/index.js",
+    "./validation": "./dist/validation/index.js",
     "./ui": "./dist/ui/index.js",
     "./ui/profile": "./dist/ui/profile.js",
     "./ui/strategy": "./dist/ui/strategy.js"
