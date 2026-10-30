@@ -2,9 +2,9 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { ComponentScanner } from './componentScanner.js';
-import { TsAstScanner } from './tsAstScanner.js';
-import { DEFAULT_PROJECT_ROOT } from './astProject.js';
+import { ComponentScanner } from './scanner/componentScanner.js';
+import { TsAstScanner } from './scanner/tsAstScanner.js';
+import { DEFAULT_PROJECT_ROOT } from './scanner/astProject.js';
 
 let root: string;
 

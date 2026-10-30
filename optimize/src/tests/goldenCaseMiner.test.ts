@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from 'vitest';
-import { GoldenCaseMiner } from '../discovery/goldenCaseMiner.js';
+import { GoldenCaseMiner } from '../discovery/testgen/goldenCaseMiner.js';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import * as fs from 'fs';

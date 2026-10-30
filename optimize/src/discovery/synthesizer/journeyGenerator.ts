@@ -1,7 +1,7 @@
-import { ComponentScanner, DiscoveryResult, DiscoveredRoute, DiscoveredDialog, DiscoveredAction } from './componentScanner.js';
-import { StateSchemaInferencer, InferredStateSchema } from './stateSchema.js';
-import { TraceEmitterScanner, TraceEmitter } from './traceEmitterScanner.js';
-import type { JourneySpec, Step } from '../journey.js';
+import { ComponentScanner, DiscoveryResult, DiscoveredRoute, DiscoveredDialog, DiscoveredAction } from '../scanner/componentScanner.js';
+import { StateSchemaInferencer, InferredStateSchema } from '../scanner/stateSchema.js';
+import { TraceEmitterScanner, TraceEmitter } from '../scanner/traceEmitterScanner.js';
+import type { JourneySpec, Step } from '../../journey.js';
 
 export class JourneyGenerator {
     private components: ComponentScanner;

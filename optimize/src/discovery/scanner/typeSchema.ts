@@ -1,5 +1,5 @@
 import { TsAstScanner, ScannedType, HookReturnType, StatePathInfo, TypeSchemaData } from './tsAstScanner.js';
-import { StatePathRegistry } from './statePathRegistry.js';
+import { StatePathRegistry } from '../analyzer/statePathRegistry.js';
 
 export interface ResolvedType {
     name: string;

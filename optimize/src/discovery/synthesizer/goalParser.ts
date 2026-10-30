@@ -1,6 +1,6 @@
-import { DiscoveryEngine } from './index.js';
-import type { JourneySpec } from '../journey.js';
-import type { StatePathRegistry } from './statePathRegistry.js';
+import { DiscoveryEngine } from '../index.js';
+import type { JourneySpec } from '../../journey.js';
+import type { StatePathRegistry } from '../analyzer/statePathRegistry.js';
 
 export interface ParsedGoal {
     entryComponent: string;

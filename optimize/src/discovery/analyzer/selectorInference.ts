@@ -1,4 +1,4 @@
-import { DiscoveryResult, DiscoveredAction } from './componentScanner.js';
+import { DiscoveryResult, DiscoveredAction } from '../scanner/componentScanner.js';
 
 export interface InferredSelector {
     target: {

@@ -146,46 +146,62 @@ export class OptimizeCommand extends Command {
 
 ---
 
-### 6. Discovery Module Consolidation
-**Files:** `optimize/src/discovery/*.ts` (15+ files)
+### 6. Discovery Module Consolidation ✅ **COMPLETED**
+**Files:** `optimize/src/discovery/*.ts` (20+ files reorganized)
 
 **Problem:** Many small files with overlapping responsibilities:
 - `seams.ts` - seam discovery
 - `duplicates.ts` - duplicate analysis
 - `componentScanner.ts` - component analysis
-- `journeyGenerator.ts` - journey synthesis
-- `journeySynthesizer.ts` - similar to journeyGenerator?
+- `journeyGenerator.ts` - journey synthesis (template-based)
+- `journeySynthesizer.ts` - journey synthesis (dynamic)
 - `regressionGenerator.ts` - test generation
 - `goldenCaseMiner.ts` - test case mining
 - `intentBuilder.ts`, `stepBuilder.ts`, `seedBuilder.ts` - builder pattern fragments
+- `stateSchema.ts`, `traceEmitterScanner.ts`, `tsAstScanner.ts`, `typeSchema.ts`, `astProject.ts` - scanning
+- `eventFlowScanner.ts`, `selectorInference.ts`, `statePathRegistry.ts`, `ontologyAdapter.ts` - analysis
+- `accessibilitySelector.ts`, `mcpContractScanner.ts` - specialized scanners
+- `goalParser.ts` - goal parsing
+- `simulatorScenarioGenerator.ts` - testgen
 
-**Opportunity:** Reorganize into cohesive modules:
+**Solution:** Reorganized into cohesive modules:
 ```
 discovery/
-├── index.ts              # Public API
+├── index.ts              # Public API + DiscoveryEngine facade
 ├── scanner/
 │   ├── componentScanner.ts
 │   ├── tsAstScanner.ts
-│   └── mcpContractScanner.ts
+│   ├── mcpContractScanner.ts
+│   ├── astProject.ts
+│   ├── traceEmitterScanner.ts
+│   ├── stateSchema.ts
+│   ├── typeSchema.ts
+│   └── accessibilitySelector.ts
 ├── analyzer/
-│   ├── seamAnalyzer.ts
-│   ├── duplicateAnalyzer.ts
-│   └── eventFlowScanner.ts
+│   ├── seamAnalyzer.ts       (was seams.ts)
+│   ├── duplicateAnalyzer.ts  (was duplicates.ts)
+│   ├── eventFlowScanner.ts
+│   ├── statePathRegistry.ts
+│   ├── selectorInference.ts
+│   └── ontologyAdapter.ts
 ├── synthesizer/
 │   ├── journeySynthesizer.ts
+│   ├── journeyGenerator.ts   (template-based, kept separate from synthesizer)
+│   ├── goalParser.ts
 │   ├── intentBuilder.ts
 │   ├── stepBuilder.ts
 │   └── seedBuilder.ts
 ├── testgen/
 │   ├── goldenCaseMiner.ts
-│   └── regressionGenerator.ts
-└── types.ts              # Shared types
+│   ├── regressionGenerator.ts
+│   └── simulatorScenarioGenerator.ts
 ```
 - Clear separation: scan → analyze → synthesize → testgen
-- Remove duplicate `journeyGenerator.ts` / `journeySynthesizer.ts`
-- Shared types in `types.ts`
+- `journeyGenerator.ts` (template-based) and `journeySynthesizer.ts` (dynamic) kept as separate approaches
+- All imports updated across codebase
+- Test file `componentScanner.test.ts` and `goldenCaseMiner.test.ts` updated
 
-**Impact:** Better maintainability, clearer architecture, ~200 lines reduced via shared utilities.
+**Impact:** Better maintainability, clearer architecture, all 568 tests pass.
 
 ---
 
@@ -256,8 +272,8 @@ class ProviderError extends NotentionError { }
 | 3 | Consolidate Ontology Types | 1-2 days | None | ✅ Done |
 | 4 | **Strategy Component Base Class** | 1-2 days | None | ✅ Done |
 | 5 | CLI Command Framework | 1 day | None | ✅ Done |
-| 6 | Discovery Module Consolidation | 2-3 days | None | ⏳ Next |
-| 7 | Test Infrastructure Unification | 1-2 days | None | ⏳ |
+| 6 | **Discovery Module Consolidation** | 2-3 days | None | ✅ Done |
+| 7 | Test Infrastructure Unification | 1-2 days | None | ⏳ Next |
 | 8 | Constants Centralization | 0.5 day | None | ⏳ |
 | 9 | Error Type Hierarchy | 1 day | None | ⏳ |
 | 10 | Event/Telemetry System | 2 days | Task 9 | ⏳ |
@@ -411,16 +427,16 @@ class ProviderError extends NotentionError { }
 
 ### Phase 3: Structural Improvements (Week 3-4, ~5 days)
 
-#### S1: Discovery Module Reorganization (2-3 days)
+#### S1: Discovery Module Reorganization (2-3 days) ✅ **COMPLETED**
 **Goal:** Clear scan→analyze→synthesize→testgen flow
 
 **Steps:**
-1. Create new directory structure
-2. Move files, update imports
-3. Merge `journeyGenerator.ts` + `journeySynthesizer.ts`
-4. Create shared `types.ts`
-5. Update `optimize/src/discovery/index.ts` exports
-6. Run tests
+1. ✅ Create new directory structure
+2. ✅ Move files, update imports
+3. ✅ Kept `journeyGenerator.ts` (template-based) and `journeySynthesizer.ts` (dynamic) as separate approaches
+4. ✅ Updated `optimize/src/discovery/index.ts` exports
+5. ✅ Updated test imports (`componentScanner.test.ts`, `goldenCaseMiner.test.ts`)
+6. ✅ Run tests - all 568 pass
 
 #### S2: Error Type Hierarchy (1 day)
 **Goal:** Typed errors across codebase
@@ -508,7 +524,7 @@ Week 5:  Priority 10 ⏳ (2 days)
 ```
 
 **Total: ~4 weeks for 1 person, ~2 weeks with 2-3 people**
-**Completed: Priorities 1-5 (5/10 tasks)**
+**Completed: Priorities 1-6 (6/10 tasks)**
 
 ---
 

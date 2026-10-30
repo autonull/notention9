@@ -1,33 +1,170 @@
-export { ComponentScanner, scanner, type DiscoveryResult, type DiscoveredRoute, type DiscoveredDialog, type DiscoveredAction } from './componentScanner.js';
-export { createAstProject, findProjectRoot, DEFAULT_PROJECT_ROOT } from './astProject.js';
-export { StateSchemaInferencer, stateSchemaInferencer, type InferredStateSchema, type StatePath } from './stateSchema.js';
-export { TraceEmitterScanner, traceEmitterScanner, type TraceEmitter } from './traceEmitterScanner.js';
-export { JourneyGenerator, journeyGenerator, type GenerationOptions } from './journeyGenerator.js';
-export { SelectorInference, selectorInference, type InferredSelector } from './selectorInference.js';
-export { TsAstScanner, tsAstScanner, type ScannedType, type HookReturnType, type TypeSchemaData } from './tsAstScanner.js';
-export { TypeSchemaBuilder, TypeSchema, type ResolvedType, type ResolvedProperty } from './typeSchema.js';
-export { StatePathRegistry, getStatePathRegistry, setStatePathRegistry, type StatePathEntry, type StatePathInfo } from './statePathRegistry.js';
-export { GoalParser, goalParser, type ParsedGoal, type TargetStatePredicate, type GoalConstraints, type InferredAction } from './goalParser.js';
-export { JourneySynthesizer, journeySynthesizer, type SynthesisOptions } from './journeySynthesizer.js';
-export { generateRegressionTest } from './regressionGenerator.js';
-export { buildSeed } from './seedBuilder.js';
-export { buildSteps, resolveSelector } from './stepBuilder.js';
-export { generateJourneyId, generateIntent, inferJourneysTouched } from './intentBuilder.js';
-export { EventFlowScanner, eventFlowScanner, type EventHandler, type ActionFlow, type ActionCall } from './eventFlowScanner.js';
-export { AccessibilitySelectorDeriver, deriveSelectorsFromPage, type AriaSnapshotOptions, type AccessibilitySelector, type LiveSelectorResult } from './accessibilitySelector.js';
-export { McpContractScanner, mcpContractScanner, type McpToolContract, type McpPluginInfo } from './mcpContractScanner.js';
-export { GoldenCaseMiner, goldenCaseMiner, type GoldenCase, type MiningOptions } from './goldenCaseMiner.js';
-export { journeyToSimulatorScenario, findingToSimulatorScenario } from './simulatorScenarioGenerator.js';
+// Scanner exports
+export {
+    ComponentScanner,
+    scanner,
+    type DiscoveryResult,
+    type DiscoveredRoute,
+    type DiscoveredDialog,
+    type DiscoveredAction,
+    type ComponentInfo,
+    type PropInfo,
+    type JSXElement,
+    type FieldInfo,
+    type SelectorInfo,
+} from './scanner/componentScanner.js';
+
+export { createAstProject, findProjectRoot, DEFAULT_PROJECT_ROOT } from './scanner/astProject.js';
+export {
+    StateSchemaInferencer,
+    stateSchemaInferencer,
+    type InferredStateSchema,
+    type StatePath,
+    type HookState,
+} from './scanner/stateSchema.js';
+
+export {
+    TraceEmitterScanner,
+    traceEmitterScanner,
+    type TraceEmitter,
+} from './scanner/traceEmitterScanner.js';
+
+export {
+    TsAstScanner,
+    tsAstScanner,
+    type ScannedType,
+    type HookReturnType,
+    type TypeSchemaData,
+} from './scanner/tsAstScanner.js';
+
+export {
+    TypeSchemaBuilder,
+    TypeSchema,
+    type ResolvedType,
+    type ResolvedProperty,
+} from './scanner/typeSchema.js';
+
+export {
+    AccessibilitySelectorDeriver,
+    deriveSelectorsFromPage,
+    type AriaSnapshotOptions,
+    type AccessibilitySelector,
+    type LiveSelectorResult,
+} from './scanner/accessibilitySelector.js';
+
+export {
+    McpContractScanner,
+    mcpContractScanner,
+    type McpToolContract,
+    type McpPluginInfo,
+} from './scanner/mcpContractScanner.js';
+
+// Analyzer exports
+export {
+    discoverSeams,
+    type Seam,
+} from './analyzer/seamAnalyzer.js';
+
+export {
+    analyzeDuplicates,
+    type DiscoveryAnalysis,
+    type DuplicateGroup,
+    type DeadComponent,
+    type InlinedCandidate,
+} from './analyzer/duplicateAnalyzer.js';
+
+export {
+    EventFlowScanner,
+    eventFlowScanner,
+    type EventHandler,
+    type ActionFlow,
+    type ActionCall,
+} from './analyzer/eventFlowScanner.js';
+
+export {
+    StatePathRegistry,
+    getStatePathRegistry,
+    setStatePathRegistry,
+    type StatePathEntry,
+    type StatePathInfo,
+} from './analyzer/statePathRegistry.js';
+
+export {
+    SelectorInference,
+    selectorInference,
+    type InferredSelector,
+} from './analyzer/selectorInference.js';
+
+export {
+    OntologyAdapter,
+    type OntologyData,
+    type OntologyProperty,
+} from './analyzer/ontologyAdapter.js';
+
+// Synthesizer exports
+export {
+    JourneySynthesizer,
+    journeySynthesizer,
+    type SynthesisOptions,
+} from './synthesizer/journeySynthesizer.js';
+
+export {
+    GoalParser,
+    goalParser,
+    type ParsedGoal,
+    type TargetStatePredicate,
+    type GoalConstraints,
+    type InferredAction,
+} from './synthesizer/goalParser.js';
+
+export {
+    JourneyGenerator,
+    journeyGenerator,
+    type GenerationOptions,
+} from './synthesizer/journeyGenerator.js';
+
+export {
+    generateJourneyId,
+    generateIntent,
+    inferJourneysTouched,
+} from './synthesizer/intentBuilder.js';
+
+export {
+    buildSteps,
+    resolveSelector,
+    type StepBuilderOptions,
+} from './synthesizer/stepBuilder.js';
+
+export {
+    buildSeed,
+    type SeedBuilderOptions,
+} from './synthesizer/seedBuilder.js';
+
+// Testgen exports
+export {
+    GoldenCaseMiner,
+    goldenCaseMiner,
+    type GoldenCase,
+    type MiningOptions,
+} from './testgen/goldenCaseMiner.js';
+
+export {
+    generateRegressionTest,
+} from './testgen/regressionGenerator.js';
+
+export {
+    journeyToSimulatorScenario,
+    findingToSimulatorScenario,
+} from './testgen/simulatorScenarioGenerator.js';
 
 // Unified discovery facade
-import { ComponentScanner } from './componentScanner.js';
-import { StateSchemaInferencer } from './stateSchema.js';
-import { TraceEmitterScanner } from './traceEmitterScanner.js';
-import { JourneyGenerator } from './journeyGenerator.js';
-import { SelectorInference } from './selectorInference.js';
-import { TsAstScanner } from './tsAstScanner.js';
-import { TypeSchemaBuilder } from './typeSchema.js';
-import { StatePathRegistry } from './statePathRegistry.js';
+import { ComponentScanner } from './scanner/componentScanner.js';
+import { StateSchemaInferencer } from './scanner/stateSchema.js';
+import { TraceEmitterScanner } from './scanner/traceEmitterScanner.js';
+import { JourneyGenerator } from './synthesizer/journeyGenerator.js';
+import { SelectorInference } from './analyzer/selectorInference.js';
+import { TsAstScanner } from './scanner/tsAstScanner.js';
+import { TypeSchemaBuilder } from './scanner/typeSchema.js';
+import { StatePathRegistry } from './analyzer/statePathRegistry.js';
 import type { JourneySpec } from '../journey.js';
 import { getProjectRoot } from '../config.js';
 
@@ -85,7 +222,3 @@ export class DiscoveryEngine {
 }
 
 export const discoveryEngine = new DiscoveryEngine();
-export { discoverSeams } from './seams.js';
-export type { Seam } from '@notention/core/ui';
-export { OntologyAdapter, type OntologyData, type OntologyProperty } from './ontologyAdapter.js';
-export { analyzeDuplicates, type DiscoveryAnalysis, type DuplicateGroup, type DeadComponent, type InlinedCandidate } from './duplicates.js';

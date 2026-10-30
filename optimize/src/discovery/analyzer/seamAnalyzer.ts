@@ -1,4 +1,4 @@
-import type { ComponentInfo } from './componentScanner.js';
+import type { ComponentInfo } from '../scanner/componentScanner.js';
 import type { Seam } from '@notention/core/ui';
 
 export type { Seam };

@@ -1,8 +1,8 @@
-import type { Step, Target } from '../journey.js';
+import type { Step, Target } from '../../journey.js';
 import type { ParsedGoal, InferredAction } from './goalParser.js';
-import type { InferredSelector } from './selectorInference.js';
-import { StatePathRegistry } from './statePathRegistry.js';
-import { expect } from '../expectPolyfill.js';
+import type { InferredSelector } from '../analyzer/selectorInference.js';
+import { StatePathRegistry } from '../analyzer/statePathRegistry.js';
+import { expect } from '../../expectPolyfill.js';
 
 export interface StepBuilderOptions {
     includeTraceAssertions?: boolean;

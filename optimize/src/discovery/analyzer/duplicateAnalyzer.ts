@@ -1,5 +1,5 @@
-import type { ComponentInfo } from './componentScanner.js';
-import type { Seam } from './seams.js';
+import type { ComponentInfo } from '../scanner/componentScanner.js';
+import type { Seam } from './seamAnalyzer.js';
 
 export interface DuplicateGroup {
     signature: string;
