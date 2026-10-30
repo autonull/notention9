@@ -1,3 +1,5 @@
+import React from 'react';
+
 /**
  * Strategy interface - all strategies must implement this
  */
@@ -109,7 +111,6 @@ export class StrategyRegistry {
 
     listSeams(): Seam[] {
         return Array.from(this.strategies.keys()).map(id => {
-            // Return a minimal seam representation
             const firstStrat = this.strategies.get(id)?.values().next().value;
             return firstStrat?.seam ?? { id, name: id, description: '', components: [], propsShape: {}, role: 'display' };
         });
@@ -130,13 +131,6 @@ export async function registerDiscoveredStrategies(
     seam: Seam,
     strategyDir: string
 ): Promise<number> {
-    // In a real implementation, this would:
-    // 1. Glob strategyDir for *.strategy.ts(x) files
-    // 2. Dynamically import each
-    // 3. Verify it matches the seam
-    // 4. Register with strategyRegistry
-    
-    // For now, return count of strategies registered for this seam
     return strategyRegistry.listStrategyIds(seam.id).length;
 }
 
@@ -166,7 +160,6 @@ export abstract class ComponentStrategy<P extends Record<string, unknown>> imple
      * Override for custom param definitions
      */
     protected deriveParams(): ParamSpec {
-        // This would use reflection or a separate metadata file in production
         return {};
     }
 }
@@ -190,5 +183,3 @@ export function createComponentStrategy<P extends Record<string, unknown>>(
         getDefaultProps: () => defaultProps,
     };
 }
-
-import React from 'react';

@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { profileRegistry, DEFAULT_PROFILES, DEFAULT_POLICY, DEFAULT_MATCH_DISPLAY_EXPERIMENT } from '@notention/core/ui/profile';
 import { strategyRegistry } from '@notention/core/ui/strategy';
+import { SEAM_IDS } from '@notention/core/constants/seams';
 
 describe('ProfileRegistry', () => {
     beforeEach(() => {
@@ -60,15 +61,15 @@ describe('ProfileRegistry', () => {
     });
 
     it('should set and remove overrides', () => {
-        profileRegistry.setOverride('test-user-4', 'match-7', 'dashboard-local-match');
+        profileRegistry.setOverride('test-user-4', SEAM_IDS.MATCH, 'dashboard-local-match');
         
         let config = profileRegistry.getUserConfig('test-user-4');
-        expect(config.overrides.overrides['match-7']).toBe('dashboard-local-match');
+        expect(config.overrides.overrides[SEAM_IDS.MATCH]).toBe('dashboard-local-match');
         
-        profileRegistry.removeOverride('test-user-4', 'match-7');
+        profileRegistry.removeOverride('test-user-4', SEAM_IDS.MATCH);
         
         config = profileRegistry.getUserConfig('test-user-4');
-        expect(config.overrides.overrides['match-7']).toBeUndefined();
+        expect(config.overrides.overrides[SEAM_IDS.MATCH]).toBeUndefined();
     });
 
     it('should resolve strategy from user override', () => {
@@ -132,7 +133,7 @@ describe('ProfileRegistry', () => {
             strategyRegistry.register(mockStrategy.seam, mockStrategy);
         }
         
-        const resolved = profileRegistry.resolveStrategy('test-user-6', 'match-7', strategyRegistry.strategies);
+        const resolved = profileRegistry.resolveStrategy('test-user-6', SEAM_IDS.MATCH, strategyRegistry.strategies);
         expect(resolved).toBeDefined();
         expect(['local-match-preview', 'dashboard-local-match']).toContain(resolved?.id);
     });
