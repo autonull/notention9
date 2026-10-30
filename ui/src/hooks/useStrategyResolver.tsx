@@ -1,23 +1,19 @@
 import { useMemo, useContext, createContext, useState, useEffect, useCallback, ReactNode } from 'react';
-import { profileRegistry, type StrategyProfile, type UserProfileConfig, type StrategyExperiment, type ExperimentAssignment, DEFAULT_MATCH_DISPLAY_EXPERIMENT } from '@notention/core/ui/profile';
+import {
+    profileRegistry,
+    type StrategyProfile,
+    type UserProfileConfig,
+    type StrategyExperiment,
+    type ExperimentAssignment,
+    DEFAULT_PROFILES,
+    DEFAULT_MATCH_DISPLAY_EXPERIMENT,
+} from '@notention/core/ui/profile';
 import { strategyRegistry, type Seam, type Strategy, createComponentStrategy } from '@notention/core/ui/strategy';
 import { DescribeItComposerStrategy } from '../strategies/DescribeItComposerStrategy';
 import { TagInputStrategy } from '../strategies/TagInputStrategy';
 import { PropertyFormStrategy } from '../strategies/PropertyFormStrategy';
 import { TemplateSelectorStrategy } from '../strategies/TemplateSelectorStrategy';
-
-// Seam IDs from discovery (sync with loop/discovered.json)
-export const SEAM_IDS = {
-    CAPTURE: 'capture-20',
-    ELICIT: 'elicit-1',
-    MATCH: 'match-7',
-    DISPLAY: 'display-38',
-    LAYOUT: 'layout-8',
-    ONTOLOGY: 'ontology-5',
-    INTENT: 'intent-1',
-} as const;
-
-export type SeamId = typeof SEAM_IDS[keyof typeof SEAM_IDS];
+import { SEAM_IDS, type SeamId } from '../constants/seams';
 
 // Strategy context for React components
 interface StrategyContextValue {
@@ -50,25 +46,26 @@ interface StrategyProviderProps {
 
 export function StrategyProvider({ children, userId = 'default-user' }: StrategyProviderProps) {
     const [userConfig, setUserConfigState] = useState(() => profileRegistry.getUserConfig(userId));
-    
+
     // Sync with profileRegistry on mount
     useEffect(() => {
-        const config = profileRegistry.getUserConfig(userId);
-        setUserConfigState(config);
+        setUserConfigState(profileRegistry.getUserConfig(userId));
     }, [userId]);
 
-    const persistConfig = useCallback(() => {
-        persistUserConfig(userId);
-    }, [userId]);
+    const persistConfig = useCallback(() => persistUserConfig(userId), [userId]);
 
-    const resolveStrategy = useMemo(() => (seamId: SeamId) => {
-        return profileRegistry.resolveStrategy(userId, seamId, strategyRegistry.strategies);
-    }, [userId]);
+    const resolveStrategy = useMemo(
+        () => (seamId: SeamId) => profileRegistry.resolveStrategy(userId, seamId, strategyRegistry.strategies),
+        [userId]
+    );
 
-    const getActiveProfile = useMemo(() => () => {
-        const config = profileRegistry.getUserConfig(userId);
-        return profileRegistry.getProfile(config.activeProfileId);
-    }, [userId]);
+    const getActiveProfile = useMemo(
+        () => () => {
+            const config = profileRegistry.getUserConfig(userId);
+            return profileRegistry.getProfile(config.activeProfileId);
+        },
+        [userId]
+    );
 
     const setActiveProfile = useMemo(() => (profileId: string) => {
         const result = profileRegistry.setActiveProfile(userId, profileId);
@@ -97,29 +94,32 @@ export function StrategyProvider({ children, userId = 'default-user' }: Strategy
         persistConfig();
     }, [userId, persistConfig]);
 
-    const value = useMemo(() => ({
-        resolveStrategy,
-        getActiveProfile,
-        setActiveProfile,
-        setOverride,
-        removeOverride,
-        setManualMode,
-        userId,
-        isManualMode: userConfig.manualMode,
-        activeProfileId: userConfig.activeProfileId,
-        overrides: userConfig.overrides.overrides,
-    }), [
-        resolveStrategy,
-        getActiveProfile,
-        setActiveProfile,
-        setOverride,
-        removeOverride,
-        setManualMode,
-        userId,
-        userConfig.manualMode,
-        userConfig.activeProfileId,
-        userConfig.overrides.overrides,
-    ]);
+    const value = useMemo(
+        () => ({
+            resolveStrategy,
+            getActiveProfile,
+            setActiveProfile,
+            setOverride,
+            removeOverride,
+            setManualMode,
+            userId,
+            isManualMode: userConfig.manualMode,
+            activeProfileId: userConfig.activeProfileId,
+            overrides: userConfig.overrides.overrides,
+        }),
+        [
+            resolveStrategy,
+            getActiveProfile,
+            setActiveProfile,
+            setOverride,
+            removeOverride,
+            setManualMode,
+            userId,
+            userConfig.manualMode,
+            userConfig.activeProfileId,
+            userConfig.overrides.overrides,
+        ]
+    );
 
     return <StrategyContext.Provider value={value}>{children}</StrategyContext.Provider>;
 }
@@ -135,7 +135,7 @@ type QuickCaptureComponent = React.ComponentType<{
     input: string;
     onInputChange: (value: string) => void;
     onSubmit: (e: React.FormEvent) => void;
-    extractedProps: Array<{key: string; values: string[]}>;
+    extractedProps: Array<{ key: string; values: string[] }>;
     onTemplateClick: (type: string) => void;
 }>;
 
@@ -189,43 +189,46 @@ type PropertyPanelComponent = React.ComponentType<{
     ontology?: any[];
 }>;
 
-// Import components lazily to avoid circular deps
-let quickCaptureComponent: QuickCaptureComponent | null = null;
-let insertPropertyModalComponent: InsertPropertyModalComponent | null = null;
-let localMatchPreviewComponent: LocalMatchPreviewComponent | null = null;
-let dashboardLocalMatchComponent: DashboardLocalMatchComponent | null = null;
-let localMatchesPanelComponent: LocalMatchesPanelComponent | null = null;
-let propertyPanelComponent: PropertyPanelComponent | null = null;
+// Lazy-loaded components
+const components = {
+    quickCapture: null as QuickCaptureComponent | null,
+    insertPropertyModal: null as InsertPropertyModalComponent | null,
+    localMatchPreview: null as LocalMatchPreviewComponent | null,
+    dashboardLocalMatch: null as DashboardLocalMatchComponent | null,
+    localMatchesPanel: null as LocalMatchesPanelComponent | null,
+    propertyPanel: null as PropertyPanelComponent | null,
+};
 
-async function loadComponents() {
-    if (!quickCaptureComponent) {
+async function loadComponents(): Promise<void> {
+    if (!components.quickCapture) {
         const { QuickCapture } = await import('../components/dashboard/QuickCapture');
-        quickCaptureComponent = QuickCapture;
+        components.quickCapture = QuickCapture;
     }
-    if (!insertPropertyModalComponent) {
+    if (!components.insertPropertyModal) {
         const { InsertPropertyModal } = await import('../components/editor/InsertPropertyModal');
-        insertPropertyModalComponent = InsertPropertyModal;
+        components.insertPropertyModal = InsertPropertyModal;
     }
-    if (!localMatchPreviewComponent) {
+    if (!components.localMatchPreview) {
         const { LocalMatchPreview } = await import('../components/dashboard/LocalMatchPreview');
-        localMatchPreviewComponent = LocalMatchPreview;
+        components.localMatchPreview = LocalMatchPreview;
     }
-    if (!dashboardLocalMatchComponent) {
+    if (!components.dashboardLocalMatch) {
         const { DashboardLocalMatch } = await import('../components/dashboard/DashboardLocalMatch');
-        dashboardLocalMatchComponent = DashboardLocalMatch;
+        components.dashboardLocalMatch = DashboardLocalMatch;
     }
-    if (!localMatchesPanelComponent) {
+    if (!components.localMatchesPanel) {
         const { LocalMatchesPanel } = await import('../components/assistant/LocalMatchesPanel');
-        localMatchesPanelComponent = LocalMatchesPanel;
+        components.localMatchesPanel = LocalMatchesPanel;
     }
-    if (!propertyPanelComponent) {
+    if (!components.propertyPanel) {
         const { PropertyPanel } = await import('../components/assistant/PropertyPanel');
-        propertyPanelComponent = PropertyPanel;
+        components.propertyPanel = PropertyPanel;
     }
 }
 
 // Check if running in clean-profile mode (for stranger testing)
-const isCleanProfile = typeof window !== 'undefined' && 
+const isCleanProfile =
+    typeof window !== 'undefined' &&
     (window.location.search.includes('clean=true') || localStorage.getItem('notention:clean-profile') === 'true');
 
 if (isCleanProfile) {
@@ -233,68 +236,9 @@ if (isCleanProfile) {
     localStorage.removeItem('notention:clean-profile');
 }
 
-// Initialize profiles to match actual seam IDs
+// Initialize profiles from core defaults
 export function initializeProfiles(): void {
-    const profiles: StrategyProfile[] = [
-        {
-            id: 'default',
-            name: 'Default',
-            description: 'Balanced experience for all users',
-            strategySelections: {
-                [SEAM_IDS.CAPTURE]: 'describe-it-composer',
-                [SEAM_IDS.ELICIT]: 'tag-input',
-                [SEAM_IDS.MATCH]: 'local-match-preview',
-                [SEAM_IDS.LAYOUT]: 'property-panel',
-            },
-            isDefault: true,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-        },
-        {
-            id: 'compact',
-            name: 'Compact',
-            description: 'Dense information, minimal UI',
-            strategySelections: {
-                [SEAM_IDS.CAPTURE]: 'quick-capture',
-                [SEAM_IDS.ELICIT]: 'tag-input',
-                [SEAM_IDS.MATCH]: 'dashboard-local-match',
-                [SEAM_IDS.LAYOUT]: 'property-panel',
-            },
-            context: { persona: 'power-user' },
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-        },
-        {
-            id: 'guided',
-            name: 'Guided',
-            description: 'More explanations, progressive disclosure',
-            strategySelections: {
-                [SEAM_IDS.CAPTURE]: 'describe-it-composer',
-                [SEAM_IDS.ELICIT]: 'insert-property-modal',
-                [SEAM_IDS.MATCH]: 'local-match-preview',
-                [SEAM_IDS.LAYOUT]: 'property-panel',
-            },
-            context: { persona: 'new-user' },
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-        },
-        {
-            id: 'accessible',
-            name: 'Accessible',
-            description: 'High contrast, full keyboard support, screen reader optimized',
-            strategySelections: {
-                [SEAM_IDS.CAPTURE]: 'describe-it-composer',
-                [SEAM_IDS.ELICIT]: 'tag-input',
-                [SEAM_IDS.MATCH]: 'local-match-preview',
-                [SEAM_IDS.LAYOUT]: 'property-panel',
-            },
-            context: { persona: 'accessibility' },
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-        },
-    ];
-
-    for (const profile of profiles) {
+    for (const profile of DEFAULT_PROFILES) {
         profileRegistry.registerProfile(profile);
     }
 
@@ -305,10 +249,7 @@ export function initializeProfiles(): void {
     profileRegistry.registerExperiment({
         ...DEFAULT_MATCH_DISPLAY_EXPERIMENT,
         seamId: SEAM_IDS.MATCH,
-        variants: DEFAULT_MATCH_DISPLAY_EXPERIMENT.variants.map((v: any) => ({
-            ...v,
-            seamId: SEAM_IDS.MATCH,
-        })),
+        variants: DEFAULT_MATCH_DISPLAY_EXPERIMENT.variants.map(v => ({ ...v, seamId: SEAM_IDS.MATCH })),
     });
 }
 
@@ -318,19 +259,14 @@ const STORAGE_KEY = 'notention:profile-config';
 function loadPersistedConfigs(): void {
     try {
         const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) {
-            const data = JSON.parse(stored);
-            if (data.userConfigs) {
-                for (const config of data.userConfigs) {
-                    profileRegistry.userConfigs.set(config.userId, config);
-                }
-            }
-            if (data.assignments) {
-                for (const assignment of data.assignments) {
-                    profileRegistry.assignments.set(`${assignment.experimentId}:${assignment.userId}`, assignment);
-                }
-            }
-        }
+        if (!stored) return;
+        const data = JSON.parse(stored);
+        data.userConfigs?.forEach((config: UserProfileConfig) =>
+            profileRegistry.userConfigs.set(config.userId, config)
+        );
+        data.assignments?.forEach((assignment: ExperimentAssignment) =>
+            profileRegistry.assignments.set(`${assignment.experimentId}:${assignment.userId}`, assignment)
+        );
     } catch (e) {
         console.warn('Failed to load persisted profile configs:', e);
     }
@@ -339,24 +275,18 @@ function loadPersistedConfigs(): void {
 export function persistUserConfig(userId: string): void {
     try {
         const config = profileRegistry.getUserConfig(userId);
-        const assignments = Array.from(profileRegistry.assignments.values())
-            .filter(a => a.userId === userId);
-        
+        const assignments = Array.from(profileRegistry.assignments.values()).filter(a => a.userId === userId);
+
         const existing = localStorage.getItem(STORAGE_KEY);
         const data = existing ? JSON.parse(existing) : { userConfigs: [], assignments: [] };
-        
-        // Update or add user config
+
         const configIndex = data.userConfigs.findIndex((c: any) => c.userId === userId);
-        if (configIndex >= 0) {
-            data.userConfigs[configIndex] = config;
-        } else {
-            data.userConfigs.push(config);
-        }
-        
-        // Update assignments
+        if (configIndex >= 0) data.userConfigs[configIndex] = config;
+        else data.userConfigs.push(config);
+
         data.assignments = data.assignments.filter((a: any) => a.userId !== userId);
         data.assignments.push(...assignments);
-        
+
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     } catch (e) {
         console.warn('Failed to persist profile config:', e);
@@ -367,7 +297,6 @@ export function persistUserConfig(userId: string): void {
 export async function registerUIStrategies(): Promise<void> {
     await loadComponents();
 
-    // Define seams matching discovery
     const seams: Seam[] = [
         {
             id: SEAM_IDS.CAPTURE,
@@ -386,123 +315,86 @@ export async function registerUIStrategies(): Promise<void> {
         {
             id: SEAM_IDS.ELICIT,
             name: 'Elicit',
-            description: 'Progressive property elicitation',
+            description: 'Property elicitation interface',
             role: 'elicit',
-            components: ['InsertPropertyModal', 'TagInput'],
+            components: ['TagInput', 'InsertPropertyModal'],
             propsShape: {
-                isOpen: 'boolean',
-                onClose: '() => void',
                 onInsert: '(key: string, operator: string, value: string, icon?: string) => void',
-                initialKey: 'string?',
-                initialOperator: 'string?',
-                initialValue: 'string?',
-                attributeDef: 'OntologyAttribute?',
-                ontology: 'OntologyNode[]?',
-                isEditing: 'boolean?',
-                onPickLocation: '() => Promise<string>?',
-                suggestions: 'SuggestedAttribute[]?',
+                initialKey: 'string',
+                initialOperator: 'string',
+                initialValue: 'string',
+                attributeDef: 'any',
+                ontology: 'any[]',
+                isEditing: 'boolean',
+                onPickLocation: '() => Promise<string>',
+                suggestions: 'any[]',
             },
         },
         {
             id: SEAM_IDS.MATCH,
             name: 'Match Display',
-            description: 'Display and explain match results',
+            description: 'Match explanation and selection interface',
             role: 'display',
-            components: ['LocalMatchesPanel', 'LocalMatchPreview', 'DashboardLocalMatch'],
+            components: ['LocalMatchPreview', 'DashboardLocalMatch'],
             propsShape: {
-                localMatches: 'ScoredMatch[]',
-                contacts: 'Contact[]',
-                onSelect: '(match: ScoredMatch) => void',
+                match: 'any',
+                onSelectNote: '(noteId: string) => void',
+                onRejectMatch: '(matchId: string) => void',
+                onReviseRequest: '() => void',
+                notes: 'any[]',
             },
         },
         {
             id: SEAM_IDS.LAYOUT,
-            name: 'Workspace Layout',
-            description: 'Overall workspace arrangement',
+            name: 'Layout',
+            description: 'Workspace layout and panel arrangement',
             role: 'layout',
-            components: ['PropertyPanel', 'DashboardView', 'NotesView'],
+            components: ['PropertyPanel', 'LocalMatchesPanel'],
             propsShape: {
-                properties: 'Property[]',
+                properties: 'any[]',
                 isAddingProperty: 'boolean',
                 setIsAddingProperty: '(adding: boolean) => void',
                 editingPropertyIndex: 'number | null',
                 setEditingPropertyIndex: '(index: number | null) => void',
-                propertyToDelete: 'Property | null',
-                setPropertyToDelete: '(prop: Property | null) => void',
+                propertyToDelete: 'any | null',
+                setPropertyToDelete: '(prop: any | null) => void',
                 onSaveProperty: '(key: string, op: string, value: string) => void',
                 onCancelEdit: '() => void',
-                onAcceptReview: '(item: PropertyReviewItem) => void',
-                propertyReview: 'PropertyReviewItem | null',
+                onAcceptReview: '(item: any) => void',
+                propertyReview: 'any | null',
                 onDeleteProperty: '() => void',
-                onPickLocation: '() => void?',
-                onPickTime: '(key: string) => void?',
-                ontology: 'OntologyNode[]?',
+                onPickLocation: '() => void',
+                onPickTime: '(key: string) => void',
+                ontology: 'any[]',
+                localMatches: 'any[]',
+                contacts: 'any[]',
+                onSelect: '(match: any) => void',
             },
         },
     ];
 
-    // Register strategies for capture seam
-    strategyRegistry.register(seams[0], DescribeItComposerStrategy);
-    if (quickCaptureComponent) {
-        strategyRegistry.register(seams[0], createComponentStrategy(
-            'quick-capture',
-            seams[0],
-            quickCaptureComponent,
-            '1.0.0'
-        ));
+    for (const seam of seams) {
+        strategyRegistry.register(seam);
     }
 
-    // Register strategies for elicit seam
-    strategyRegistry.register(seams[1], TagInputStrategy);
-    strategyRegistry.register(seams[1], PropertyFormStrategy);
-    if (insertPropertyModalComponent) {
-        strategyRegistry.register(seams[1], createComponentStrategy(
-            'insert-property-modal',
-            seams[1],
-            insertPropertyModalComponent,
-            '1.0.0'
-        ));
-    }
+    // Register capture strategies
+    strategyRegistry.register(createComponentStrategy(SEAM_IDS.CAPTURE, 'describe-it-composer', DescribeItComposerStrategy, components.quickCapture!));
+    strategyRegistry.register(createComponentStrategy(SEAM_IDS.CAPTURE, 'quick-capture', () => components.quickCapture!, components.quickCapture!));
 
-    // Register strategies for match seam
-    if (localMatchPreviewComponent) {
-        strategyRegistry.register(seams[2], createComponentStrategy(
-            'local-match-preview',
-            seams[2],
-            localMatchPreviewComponent,
-            '1.0.0'
-        ));
-    }
-    if (dashboardLocalMatchComponent) {
-        strategyRegistry.register(seams[2], createComponentStrategy(
-            'dashboard-local-match',
-            seams[2],
-            dashboardLocalMatchComponent,
-            '1.0.0'
-        ));
-    }
-    if (localMatchesPanelComponent) {
-        strategyRegistry.register(seams[2], createComponentStrategy(
-            'local-matches-panel',
-            seams[2],
-            localMatchesPanelComponent,
-            '1.0.0'
-        ));
-    }
+    // Register elicit strategies
+    strategyRegistry.register(createComponentStrategy(SEAM_IDS.ELICIT, 'tag-input', TagInputStrategy, components.insertPropertyModal!));
+    strategyRegistry.register(createComponentStrategy(SEAM_IDS.ELICIT, 'insert-property-modal', () => components.insertPropertyModal!, components.insertPropertyModal!));
 
-    // Register strategies for layout seam
-    if (propertyPanelComponent) {
-        strategyRegistry.register(seams[3], createComponentStrategy(
-            'property-panel',
-            seams[3],
-            propertyPanelComponent,
-            '1.0.0'
-        ));
-    }
+    // Register match strategies
+    strategyRegistry.register(createComponentStrategy(SEAM_IDS.MATCH, 'local-match-preview', () => components.localMatchPreview!, components.localMatchPreview!));
+    strategyRegistry.register(createComponentStrategy(SEAM_IDS.MATCH, 'dashboard-local-match', () => components.dashboardLocalMatch!, components.dashboardLocalMatch!));
+
+    // Register layout strategies
+    strategyRegistry.register(createComponentStrategy(SEAM_IDS.LAYOUT, 'property-panel', PropertyFormStrategy, components.propertyPanel!));
+    strategyRegistry.register(createComponentStrategy(SEAM_IDS.LAYOUT, 'local-matches-panel', () => components.localMatchesPanel!, components.localMatchesPanel!));
 }
 
-// Initialize everything
 export async function initializeStrategySystem(): Promise<void> {
-    await registerUIStrategies();
     initializeProfiles();
+    await registerUIStrategies();
 }

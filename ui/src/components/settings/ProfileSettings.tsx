@@ -1,4 +1,5 @@
-import { useStrategy, SEAM_IDS } from '../../hooks/useStrategyResolver';
+import { useStrategy } from '../../hooks/useStrategyResolver';
+import { SEAM_IDS } from '../../constants/seams';
 import { profileRegistry, type StrategyProfile } from '@notention/core/ui/profile';
 import { strategyRegistry } from '@notention/core/ui/strategy';
 import { Button } from '../ui/Button';
@@ -14,7 +15,6 @@ export function ProfileSettings() {
         setOverride,
         removeOverride,
         setManualMode,
-        userId,
         isManualMode,
         activeProfileId,
         overrides,
@@ -25,36 +25,26 @@ export function ProfileSettings() {
     const [showOverrides, setShowOverrides] = useState(false);
     const [addingOverrideSeam, setAddingOverrideSeam] = useState<string | null>(null);
 
-    const handleProfileChange = (profileId: string) => {
-        setActiveProfile(profileId);
-    };
+    const getAvailableStrategies = useMemo(
+        () => (seamId: string) => strategyRegistry.getAllForSeam(seamId).map(s => ({ id: s.id, name: s.id })),
+        []
+    );
 
-    const handleToggleManual = () => {
-        setManualMode(!isManualMode);
-    };
+    const seamOptions = useMemo(
+        () => [
+            { value: SEAM_IDS.CAPTURE, label: 'Capture' },
+            { value: SEAM_IDS.ELICIT, label: 'Elicit' },
+            { value: SEAM_IDS.MATCH, label: 'Match Display' },
+            { value: SEAM_IDS.LAYOUT, label: 'Layout' },
+        ],
+        []
+    );
 
     const handleOverrideChange = (seamId: string, strategyId: string) => {
-        if (strategyId) {
-            setOverride(seamId as any, strategyId);
-        } else {
-            removeOverride(seamId as any);
-        }
+        strategyId ? setOverride(seamId as any, strategyId) : removeOverride(seamId as any);
     };
 
-    const getAvailableStrategies = useMemo(() => (seamId: string) => {
-        return strategyRegistry.getAllForSeam(seamId).map(s => ({ id: s.id, name: s.id }));
-    }, []);
-
-    const seamOptions = useMemo(() => [
-        { value: SEAM_IDS.CAPTURE, label: 'Capture' },
-        { value: SEAM_IDS.ELICIT, label: 'Elicit' },
-        { value: SEAM_IDS.MATCH, label: 'Match Display' },
-        { value: SEAM_IDS.LAYOUT, label: 'Layout' },
-    ], []);
-
-    const handleAddOverrideSeamChange = (seamId: string) => {
-        setAddingOverrideSeam(seamId);
-    };
+    const handleAddOverrideSeamChange = (seamId: string) => setAddingOverrideSeam(seamId);
 
     const handleAddOverrideStrategyChange = (seamId: string, strategyId: string) => {
         if (strategyId) {
@@ -76,11 +66,7 @@ export function ProfileSettings() {
                     <p className="font-medium">Manual Profile Selection</p>
                     <p className="text-sm text-gray-400">Disable automatic profile switching based on context</p>
                 </div>
-                <Toggle
-                    checked={isManualMode}
-                    onChange={handleToggleManual}
-                    aria-label="Manual profile selection"
-                />
+                <Toggle checked={isManualMode} onChange={() => setManualMode(!isManualMode)} aria-label="Manual profile selection" />
             </div>
 
             {/* Profile Selector */}
@@ -88,27 +74,19 @@ export function ProfileSettings() {
                 <label className="block text-sm font-medium">Active Profile</label>
                 <Select
                     value={activeProfileId}
-                    onChange={handleProfileChange}
+                    onChange={setActiveProfile}
                     disabled={!isManualMode}
                     options={profiles.map(p => ({ value: p.id, label: `${p.name} — ${p.description}` }))}
                     placeholder="Select profile"
                 />
-                {activeProfile && (
-                    <p className="text-sm text-gray-400 ml-2">
-                        {activeProfile.description}
-                    </p>
-                )}
+                {activeProfile && <p className="text-sm text-gray-400 ml-2">{activeProfile.description}</p>}
             </div>
 
             {/* Strategy Overrides */}
             <div className="space-y-2">
                 <div className="flex items-center justify-between">
                     <label className="block text-sm font-medium">Strategy Overrides</label>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setShowOverrides(!showOverrides)}
-                    >
+                    <Button variant="ghost" size="sm" onClick={() => setShowOverrides(!showOverrides)}>
                         {showOverrides ? <ChevronUpIcon className="w-4 h-4" /> : <ChevronDownIcon className="w-4 h-4" />}
                     </Button>
                 </div>
@@ -124,15 +102,11 @@ export function ProfileSettings() {
                                     <span className="text-sm font-mono text-gray-400 min-w-[150px]">{seamId}</span>
                                     <Select
                                         value={strategyId}
-                                        onChange={(v) => handleOverrideChange(seamId, v)}
+                                        onChange={v => handleOverrideChange(seamId, v)}
                                         options={getAvailableStrategies(seamId).map(s => ({ value: s.id, label: s.name }))}
                                         placeholder="Select strategy"
                                     />
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => handleOverrideChange(seamId, '')}
-                                    >
+                                    <Button variant="ghost" size="sm" onClick={() => handleOverrideChange(seamId, '')}>
                                         Clear
                                     </Button>
                                 </div>
@@ -149,13 +123,9 @@ export function ProfileSettings() {
                                     </Button>
                                 )}
                             </div>
-                            
+
                             {!addingOverrideSeam ? (
-                                <Select
-                                    placeholder="Select seam to override"
-                                    options={seamOptions}
-                                    onChange={handleAddOverrideSeamChange}
-                                />
+                                <Select placeholder="Select seam to override" options={seamOptions} onChange={handleAddOverrideSeamChange} />
                             ) : (
                                 <div className="flex gap-2">
                                     <span className="text-sm font-mono text-gray-400 min-w-[150px] flex items-center">
@@ -164,13 +134,9 @@ export function ProfileSettings() {
                                     <Select
                                         placeholder="Select strategy"
                                         options={getAvailableStrategies(addingOverrideSeam).map(s => ({ value: s.id, label: s.name }))}
-                                        onChange={(v) => handleAddOverrideStrategyChange(addingOverrideSeam, v)}
+                                        onChange={v => handleAddOverrideStrategyChange(addingOverrideSeam, v)}
                                     />
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => setAddingOverrideSeam(null)}
-                                    >
+                                    <Button variant="ghost" size="sm" onClick={() => setAddingOverrideSeam(null)}>
                                         Cancel
                                     </Button>
                                 </div>
