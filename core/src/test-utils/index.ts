@@ -216,3 +216,12 @@ export function createMockProperties(properties: Array<{ key: string; operator?:
         createMockProperty(p.key, p.operator, p.values)
     );
 }
+
+export {
+    setupTestEnvironment,
+    cleanupTestEnvironment,
+    initMemoryGuard,
+    withMemoryGuard,
+    MEMORY_THRESHOLD_MB,
+    MEMORY_THRESHOLD_BYTES,
+} from './testSetup.js';

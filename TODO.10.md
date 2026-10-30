@@ -205,7 +205,7 @@ discovery/
 
 ---
 
-### 7. Test Infrastructure Unification
+### 7. Test Infrastructure Unification ✅ **COMPLETED**
 **Files:** Multiple test utilities across packages
 
 **Problem:** 
@@ -214,15 +214,15 @@ discovery/
 - `core/src/tests/` - core tests
 - `ui/src/components/settings/DataTab.test.tsx` - component tests
 
-**Opportunity:** Create `@notention/test-utils` package (or `core/src/test-utils`):
-- `renderWithProviders()` - common React test wrapper
-- `createMockOntology()` - test ontology factory
-- `createMockNote()` - test note factory
-- `createMockStrategy()` - test strategy factory
-- `assertPropertyMatch()` - property assertion helpers
-- `withTimeout()` - async test helper
+**Solution:** Created shared test infrastructure in `core/src/test-utils/`:
+- `testSetup.ts` - shared environment setup (localStorage, matchMedia, ResizeObserver, memory guard)
+- `vitestSetup.ts` - ready-to-use vitest setup file with afterEach/afterAll cleanup
+- `index.ts` - re-exports all utilities including `setupTestEnvironment`, `cleanupTestEnvironment`, `initMemoryGuard`, `withMemoryGuard`, `MEMORY_THRESHOLD_MB/BYTES`
+- Updated `ui/src/tests/setup.ts` to use shared setup
+- Updated `optimize/vitest.config.ts` to use shared setup
+- UI-specific `renderWithProviders` kept in `ui/src/tests/utils/testProviders.tsx` (depends on UI contexts)
 
-**Impact:** Consistent test patterns, easier test writing, ~100 lines deduplicated per package.
+**Impact:** Consistent test patterns across packages, centralized environment setup, all 568 tests pass.
 
 ---
 
@@ -273,8 +273,8 @@ class ProviderError extends NotentionError { }
 | 4 | **Strategy Component Base Class** | 1-2 days | None | ✅ Done |
 | 5 | CLI Command Framework | 1 day | None | ✅ Done |
 | 6 | **Discovery Module Consolidation** | 2-3 days | None | ✅ Done |
-| 7 | Test Infrastructure Unification | 1-2 days | None | ⏳ Next |
-| 8 | Constants Centralization | 0.5 day | None | ⏳ |
+| 7 | **Test Infrastructure Unification** | 1-2 days | None | ✅ Done |
+| 8 | Constants Centralization | 0.5 day | None | ⏳ Next |
 | 9 | Error Type Hierarchy | 1 day | None | ⏳ |
 | 10 | Event/Telemetry System | 2 days | Task 9 | ⏳ |
 
@@ -519,12 +519,12 @@ Week 2:  C1 ✅ (Days 1-4) + C3 ✅ (Days 1-2, parallel)
          
 Week 3:  C2 ✅ (Days 1-5) 
          
-Week 4:  Priority 6 ✅, 7 ⏳, 8 ⏳, 9 ⏳  (sequential, 4.5 days)
+Week 4:  Priority 6 ✅, 7 ✅, 8 ⏳, 9 ⏳  (sequential, 3.5 days)
 Week 5:  Priority 10 ⏳ (2 days)
 ```
 
 **Total: ~4 weeks for 1 person, ~2 weeks with 2-3 people**
-**Completed: Priorities 1-6 (6/10 tasks)**
+**Completed: Priorities 1-7 (7/10 tasks)**
 
 ---
 
