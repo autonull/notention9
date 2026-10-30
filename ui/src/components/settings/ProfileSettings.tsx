@@ -1,10 +1,11 @@
-import { useStrategy } from './useStrategyResolver';
+import { useStrategy, SEAM_IDS } from '../../hooks/useStrategyResolver';
 import { profileRegistry, type StrategyProfile } from '@notention/core/ui/profile';
+import { strategyRegistry } from '@notention/core/ui/strategy';
 import { Button } from '../ui/Button';
 import { Select } from '../ui/Select';
 import { Toggle } from '../ui/Toggle';
-import { useState } from 'react';
-import { UserIcon, SettingsIcon, EyeIcon, EyeOffIcon } from '../ui/icons';
+import { useState, useMemo } from 'react';
+import { UserGroupIcon, SettingsIcon, ChevronDownIcon, ChevronUpIcon, PlusIcon } from '../ui/icons';
 
 export function ProfileSettings() {
     const {
@@ -22,6 +23,7 @@ export function ProfileSettings() {
     const profiles = profileRegistry.getAllProfiles();
     const activeProfile = getActiveProfile();
     const [showOverrides, setShowOverrides] = useState(false);
+    const [addingOverrideSeam, setAddingOverrideSeam] = useState<string | null>(null);
 
     const handleProfileChange = (profileId: string) => {
         setActiveProfile(profileId);
@@ -39,10 +41,26 @@ export function ProfileSettings() {
         }
     };
 
-    const getAvailableStrategies = (seamId: string) => {
-        // Get from strategy registry
-        const strategies = require('@notention/core/ui/strategy').strategyRegistry.getAllForSeam(seamId);
-        return strategies.map((s: any) => ({ id: s.id, name: s.id }));
+    const getAvailableStrategies = useMemo(() => (seamId: string) => {
+        return strategyRegistry.getAllForSeam(seamId).map(s => ({ id: s.id, name: s.id }));
+    }, []);
+
+    const seamOptions = useMemo(() => [
+        { value: SEAM_IDS.CAPTURE, label: 'Capture' },
+        { value: SEAM_IDS.ELICIT, label: 'Elicit' },
+        { value: SEAM_IDS.MATCH, label: 'Match Display' },
+        { value: SEAM_IDS.LAYOUT, label: 'Layout' },
+    ], []);
+
+    const handleAddOverrideSeamChange = (seamId: string) => {
+        setAddingOverrideSeam(seamId);
+    };
+
+    const handleAddOverrideStrategyChange = (seamId: string, strategyId: string) => {
+        if (strategyId) {
+            setOverride(seamId as any, strategyId);
+            setAddingOverrideSeam(null);
+        }
     };
 
     return (
@@ -91,19 +109,13 @@ export function ProfileSettings() {
                         size="sm"
                         onClick={() => setShowOverrides(!showOverrides)}
                     >
-                        {showOverrides ? <EyeOffIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
+                        {showOverrides ? <ChevronUpIcon className="w-4 h-4" /> : <ChevronDownIcon className="w-4 h-4" />}
                     </Button>
                 </div>
 
                 {showOverrides && (
                     <div className="space-y-3 pl-4 border-l-2 border-gray-700">
-                        {profiles.flatMap(p => Object.entries(p.strategySelections)).reduce((acc, [seamId, strategyId]) => {
-                            if (!acc[seamId]) acc[seamId] = [];
-                            acc[seamId].push({ profileId: p.id, strategyId });
-                            return acc;
-                        }, {} as Record<string, Array<{ profileId: string; strategyId: string }>>)}
-
-                        {/* Actually, let's show overrides per seam */}
+                        {/* Existing overrides */}
                         {Object.entries(overrides).length === 0 ? (
                             <p className="text-sm text-gray-500">No overrides set. Using profile defaults.</p>
                         ) : (
@@ -127,22 +139,42 @@ export function ProfileSettings() {
                             ))
                         )}
 
+                        {/* Add new override */}
                         <div className="pt-2 border-t border-gray-700">
-                            <p className="text-sm text-gray-500 mb-2">Add new override:</p>
-                            <div className="flex gap-2">
-                                <Select
-                                    placeholder="Select seam"
-                                    options={[
-                                        { value: 'capture-20', label: 'Capture' },
-                                        { value: 'elicit-1', label: 'Elicit' },
-                                        { value: 'match-7', label: 'Match Display' },
-                                        { value: 'layout-8', label: 'Layout' },
-                                    ]}
-                                    onChange={(seamId) => {
-                                        // Would need to show strategy selector for this seam
-                                    }}
-                                />
+                            <div className="flex items-center gap-2 mb-2">
+                                <p className="text-sm text-gray-500">Add new override:</p>
+                                {addingOverrideSeam && (
+                                    <Button variant="ghost" size="sm" onClick={() => setAddingOverrideSeam(null)}>
+                                        Cancel
+                                    </Button>
+                                )}
                             </div>
+                            
+                            {!addingOverrideSeam ? (
+                                <Select
+                                    placeholder="Select seam to override"
+                                    options={seamOptions}
+                                    onChange={handleAddOverrideSeamChange}
+                                />
+                            ) : (
+                                <div className="flex gap-2">
+                                    <span className="text-sm font-mono text-gray-400 min-w-[150px] flex items-center">
+                                        {seamOptions.find(o => o.value === addingOverrideSeam)?.label} ({addingOverrideSeam})
+                                    </span>
+                                    <Select
+                                        placeholder="Select strategy"
+                                        options={getAvailableStrategies(addingOverrideSeam).map(s => ({ value: s.id, label: s.name }))}
+                                        onChange={(v) => handleAddOverrideStrategyChange(addingOverrideSeam, v)}
+                                    />
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => setAddingOverrideSeam(null)}
+                                    >
+                                        Cancel
+                                    </Button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}
@@ -151,7 +183,7 @@ export function ProfileSettings() {
             {/* Profile Info */}
             <details className="group">
                 <summary className="cursor-pointer flex items-center gap-2 text-sm text-gray-400">
-                    <UserIcon className="w-4 h-4" />
+                    <UserGroupIcon className="w-4 h-4" />
                     Available Profiles
                 </summary>
                 <div className="mt-2 space-y-2">

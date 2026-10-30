@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-10-29T19:28:41.608Z",
+  "timestamp": "2026-10-30T16:55:12.917Z",
   "version": "1.0.0",
   "components": [
     {
@@ -4149,6 +4149,16 @@
           "name": "onSelectNote",
           "type": "(id: string) => void",
           "optional": false
+        },
+        {
+          "name": "onRejectMatch",
+          "type": "(requestId: string, noteId: string) => void",
+          "optional": true
+        },
+        {
+          "name": "onReviseRequest",
+          "type": "(requestId: string) => void",
+          "optional": true
         }
       ]
     },
@@ -5652,6 +5662,670 @@
       }
     },
     {
+      "key": "StrategyProfile",
+      "schema": {
+        "name": "StrategyProfile",
+        "properties": [
+          {
+            "name": "id",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "strategySelections",
+            "type": "Record<string, string>",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "context",
+            "type": {
+              "name": "ProfileContext",
+              "properties": [
+                {
+                  "name": "view",
+                  "type": "string",
+                  "optional": true,
+                  "source": "core/src/ui/profile.ts"
+                },
+                {
+                  "name": "persona",
+                  "type": "'power-user' | 'casual' | 'new-user' | 'accessibility'",
+                  "optional": true,
+                  "source": "core/src/ui/profile.ts"
+                },
+                {
+                  "name": "device",
+                  "type": "'desktop' | 'tablet' | 'mobile'",
+                  "optional": true,
+                  "source": "core/src/ui/profile.ts"
+                },
+                {
+                  "name": "timeContext",
+                  "type": "string",
+                  "optional": true,
+                  "source": "core/src/ui/profile.ts"
+                }
+              ],
+              "isArray": false
+            },
+            "optional": true,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "isDefault",
+            "type": "boolean",
+            "optional": true,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "createdAt",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "updatedAt",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          }
+        ],
+        "isArray": false
+      }
+    },
+    {
+      "key": "ProfileContext",
+      "schema": {
+        "name": "ProfileContext",
+        "properties": [
+          {
+            "name": "view",
+            "type": "string",
+            "optional": true,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "persona",
+            "type": "'power-user' | 'casual' | 'new-user' | 'accessibility'",
+            "optional": true,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "device",
+            "type": "'desktop' | 'tablet' | 'mobile'",
+            "optional": true,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "timeContext",
+            "type": "string",
+            "optional": true,
+            "source": "core/src/ui/profile.ts"
+          }
+        ],
+        "isArray": false
+      }
+    },
+    {
+      "key": "ProfilePolicy",
+      "schema": {
+        "name": "ProfilePolicy",
+        "properties": [
+          {
+            "name": "id",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "rules",
+            "type": {
+              "name": "ProfileRule",
+              "properties": [
+                {
+                  "name": "id",
+                  "type": "string",
+                  "optional": false,
+                  "source": "core/src/ui/profile.ts"
+                },
+                {
+                  "name": "conditions",
+                  "type": "Record<string, unknown>",
+                  "optional": false,
+                  "source": "core/src/ui/profile.ts"
+                },
+                {
+                  "name": "profileId",
+                  "type": "string",
+                  "optional": false,
+                  "source": "core/src/ui/profile.ts"
+                },
+                {
+                  "name": "priority",
+                  "type": "number",
+                  "optional": false,
+                  "source": "core/src/ui/profile.ts"
+                }
+              ],
+              "isArray": false
+            },
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "fallbackProfileId",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "isEnabled",
+            "type": "boolean",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "createdAt",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "updatedAt",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          }
+        ],
+        "isArray": false
+      }
+    },
+    {
+      "key": "ProfileRule",
+      "schema": {
+        "name": "ProfileRule",
+        "properties": [
+          {
+            "name": "id",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "conditions",
+            "type": "Record<string, unknown>",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "profileId",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "priority",
+            "type": "number",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          }
+        ],
+        "isArray": false
+      }
+    },
+    {
+      "key": "UserStrategyOverrides",
+      "schema": {
+        "name": "UserStrategyOverrides",
+        "properties": [
+          {
+            "name": "userId",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "overrides",
+            "type": "Record<string, string>",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "updatedAt",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          }
+        ],
+        "isArray": false
+      }
+    },
+    {
+      "key": "UserProfileConfig",
+      "schema": {
+        "name": "UserProfileConfig",
+        "properties": [
+          {
+            "name": "userId",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "activeProfileId",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "overrides",
+            "type": {
+              "name": "UserStrategyOverrides",
+              "properties": [
+                {
+                  "name": "userId",
+                  "type": "string",
+                  "optional": false,
+                  "source": "core/src/ui/profile.ts"
+                },
+                {
+                  "name": "overrides",
+                  "type": "Record<string, string>",
+                  "optional": false,
+                  "source": "core/src/ui/profile.ts"
+                },
+                {
+                  "name": "updatedAt",
+                  "type": "string",
+                  "optional": false,
+                  "source": "core/src/ui/profile.ts"
+                }
+              ],
+              "isArray": false
+            },
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "manualMode",
+            "type": "boolean",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "updatedAt",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          }
+        ],
+        "isArray": false
+      }
+    },
+    {
+      "key": "StrategyVariant",
+      "schema": {
+        "name": "StrategyVariant",
+        "properties": [
+          {
+            "name": "id",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "seamId",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "strategyId",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "label",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "isControl",
+            "type": "boolean",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "weight",
+            "type": "number",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          }
+        ],
+        "isArray": false
+      }
+    },
+    {
+      "key": "StrategyExperiment",
+      "schema": {
+        "name": "StrategyExperiment",
+        "properties": [
+          {
+            "name": "id",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "seamId",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "variants",
+            "type": {
+              "name": "StrategyVariant",
+              "properties": [
+                {
+                  "name": "id",
+                  "type": "string",
+                  "optional": false,
+                  "source": "core/src/ui/profile.ts"
+                },
+                {
+                  "name": "seamId",
+                  "type": "string",
+                  "optional": false,
+                  "source": "core/src/ui/profile.ts"
+                },
+                {
+                  "name": "strategyId",
+                  "type": "string",
+                  "optional": false,
+                  "source": "core/src/ui/profile.ts"
+                },
+                {
+                  "name": "label",
+                  "type": "string",
+                  "optional": false,
+                  "source": "core/src/ui/profile.ts"
+                },
+                {
+                  "name": "description",
+                  "type": "string",
+                  "optional": false,
+                  "source": "core/src/ui/profile.ts"
+                },
+                {
+                  "name": "isControl",
+                  "type": "boolean",
+                  "optional": false,
+                  "source": "core/src/ui/profile.ts"
+                },
+                {
+                  "name": "weight",
+                  "type": "number",
+                  "optional": false,
+                  "source": "core/src/ui/profile.ts"
+                }
+              ],
+              "isArray": false
+            },
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "metrics",
+            "type": {
+              "name": "ExperimentMetric",
+              "properties": [
+                {
+                  "name": "id",
+                  "type": "string",
+                  "optional": false,
+                  "source": "core/src/ui/profile.ts"
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "optional": false,
+                  "source": "core/src/ui/profile.ts"
+                },
+                {
+                  "name": "type",
+                  "type": "string",
+                  "optional": false,
+                  "source": "core/src/ui/profile.ts"
+                },
+                {
+                  "name": "direction",
+                  "type": "'higher' | 'lower'",
+                  "optional": false,
+                  "source": "core/src/ui/profile.ts"
+                }
+              ],
+              "isArray": false
+            },
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "minSampleSize",
+            "type": "number",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "maxDurationDays",
+            "type": "number",
+            "optional": true,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "isActive",
+            "type": "boolean",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "createdAt",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "updatedAt",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          }
+        ],
+        "isArray": false
+      }
+    },
+    {
+      "key": "ExperimentMetric",
+      "schema": {
+        "name": "ExperimentMetric",
+        "properties": [
+          {
+            "name": "id",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "type",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "direction",
+            "type": "'higher' | 'lower'",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          }
+        ],
+        "isArray": false
+      }
+    },
+    {
+      "key": "ExperimentAssignment",
+      "schema": {
+        "name": "ExperimentAssignment",
+        "properties": [
+          {
+            "name": "experimentId",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "userId",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "variantId",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "assignedAt",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "exposureCount",
+            "type": "number",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "lastExposureAt",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          }
+        ],
+        "isArray": false
+      }
+    },
+    {
+      "key": "ExperimentResult",
+      "schema": {
+        "name": "ExperimentResult",
+        "properties": [
+          {
+            "name": "experimentId",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "variantId",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "sampleSize",
+            "type": "number",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "metrics",
+            "type": "Record<string, number>",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "confidenceInterval",
+            "type": "Record<string, [number, number]>",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "isSignificant",
+            "type": "boolean",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "winner",
+            "type": "string",
+            "optional": true,
+            "source": "core/src/ui/profile.ts"
+          },
+          {
+            "name": "computedAt",
+            "type": "string",
+            "optional": false,
+            "source": "core/src/ui/profile.ts"
+          }
+        ],
+        "isArray": false
+      }
+    },
+    {
       "key": "UIAdapter",
       "schema": {
         "name": "UIAdapter",
@@ -6907,6 +7581,28 @@
             "type": "string",
             "optional": true,
             "source": "core/src/types/domain.ts"
+          },
+          {
+            "name": "status",
+            "type": {
+              "name": "NoteStatus",
+              "properties": [],
+              "isArray": false
+            },
+            "optional": true,
+            "source": "core/src/types/domain.ts"
+          },
+          {
+            "name": "deadline",
+            "type": "string",
+            "optional": true,
+            "source": "core/src/types/domain.ts"
+          },
+          {
+            "name": "commitment",
+            "type": "{\n    committedAt: string;\n    expectedCompletion?: string;\n    relatedNoteIds?: string[];\n  }",
+            "optional": true,
+            "source": "core/src/types/domain.ts"
           }
         ],
         "isArray": false
@@ -7840,6 +8536,14 @@
       "key": "NostrEvent",
       "schema": {
         "name": "NostrEvent",
+        "properties": [],
+        "isArray": false
+      }
+    },
+    {
+      "key": "NoteStatus",
+      "schema": {
+        "name": "NoteStatus",
         "properties": [],
         "isArray": false
       }
@@ -9610,6 +10314,28 @@
                         "type": "string",
                         "optional": true,
                         "source": "core/src/types/domain.ts"
+                      },
+                      {
+                        "name": "status",
+                        "type": {
+                          "name": "NoteStatus",
+                          "properties": [],
+                          "isArray": false
+                        },
+                        "optional": true,
+                        "source": "core/src/types/domain.ts"
+                      },
+                      {
+                        "name": "deadline",
+                        "type": "string",
+                        "optional": true,
+                        "source": "core/src/types/domain.ts"
+                      },
+                      {
+                        "name": "commitment",
+                        "type": "{\n    committedAt: string;\n    expectedCompletion?: string;\n    relatedNoteIds?: string[];\n  }",
+                        "optional": true,
+                        "source": "core/src/types/domain.ts"
                       }
                     ],
                     "isArray": false
@@ -10002,6 +10728,28 @@
                 {
                   "name": "author",
                   "type": "string",
+                  "optional": true,
+                  "source": "core/src/types/domain.ts"
+                },
+                {
+                  "name": "status",
+                  "type": {
+                    "name": "NoteStatus",
+                    "properties": [],
+                    "isArray": false
+                  },
+                  "optional": true,
+                  "source": "core/src/types/domain.ts"
+                },
+                {
+                  "name": "deadline",
+                  "type": "string",
+                  "optional": true,
+                  "source": "core/src/types/domain.ts"
+                },
+                {
+                  "name": "commitment",
+                  "type": "{\n    committedAt: string;\n    expectedCompletion?: string;\n    relatedNoteIds?: string[];\n  }",
                   "optional": true,
                   "source": "core/src/types/domain.ts"
                 }
@@ -10507,6 +11255,28 @@
                 {
                   "name": "author",
                   "type": "string",
+                  "optional": true,
+                  "source": "core/src/types/domain.ts"
+                },
+                {
+                  "name": "status",
+                  "type": {
+                    "name": "NoteStatus",
+                    "properties": [],
+                    "isArray": false
+                  },
+                  "optional": true,
+                  "source": "core/src/types/domain.ts"
+                },
+                {
+                  "name": "deadline",
+                  "type": "string",
+                  "optional": true,
+                  "source": "core/src/types/domain.ts"
+                },
+                {
+                  "name": "commitment",
+                  "type": "{\n    committedAt: string;\n    expectedCompletion?: string;\n    relatedNoteIds?: string[];\n  }",
                   "optional": true,
                   "source": "core/src/types/domain.ts"
                 }
@@ -11640,6 +12410,28 @@
                   "type": "string",
                   "optional": true,
                   "source": "core/src/types/domain.ts"
+                },
+                {
+                  "name": "status",
+                  "type": {
+                    "name": "NoteStatus",
+                    "properties": [],
+                    "isArray": false
+                  },
+                  "optional": true,
+                  "source": "core/src/types/domain.ts"
+                },
+                {
+                  "name": "deadline",
+                  "type": "string",
+                  "optional": true,
+                  "source": "core/src/types/domain.ts"
+                },
+                {
+                  "name": "commitment",
+                  "type": "{\n    committedAt: string;\n    expectedCompletion?: string;\n    relatedNoteIds?: string[];\n  }",
+                  "optional": true,
+                  "source": "core/src/types/domain.ts"
                 }
               ],
               "isArray": false
@@ -12021,6 +12813,28 @@
                       {
                         "name": "author",
                         "type": "string",
+                        "optional": true,
+                        "source": "core/src/types/domain.ts"
+                      },
+                      {
+                        "name": "status",
+                        "type": {
+                          "name": "NoteStatus",
+                          "properties": [],
+                          "isArray": false
+                        },
+                        "optional": true,
+                        "source": "core/src/types/domain.ts"
+                      },
+                      {
+                        "name": "deadline",
+                        "type": "string",
+                        "optional": true,
+                        "source": "core/src/types/domain.ts"
+                      },
+                      {
+                        "name": "commitment",
+                        "type": "{\n    committedAt: string;\n    expectedCompletion?: string;\n    relatedNoteIds?: string[];\n  }",
                         "optional": true,
                         "source": "core/src/types/domain.ts"
                       }
@@ -12485,6 +13299,28 @@
                       {
                         "name": "author",
                         "type": "string",
+                        "optional": true,
+                        "source": "core/src/types/domain.ts"
+                      },
+                      {
+                        "name": "status",
+                        "type": {
+                          "name": "NoteStatus",
+                          "properties": [],
+                          "isArray": false
+                        },
+                        "optional": true,
+                        "source": "core/src/types/domain.ts"
+                      },
+                      {
+                        "name": "deadline",
+                        "type": "string",
+                        "optional": true,
+                        "source": "core/src/types/domain.ts"
+                      },
+                      {
+                        "name": "commitment",
+                        "type": "{\n    committedAt: string;\n    expectedCompletion?: string;\n    relatedNoteIds?: string[];\n  }",
                         "optional": true,
                         "source": "core/src/types/domain.ts"
                       }
@@ -14061,6 +14897,28 @@
                   "type": "string",
                   "optional": true,
                   "source": "core/src/types/domain.ts"
+                },
+                {
+                  "name": "status",
+                  "type": {
+                    "name": "NoteStatus",
+                    "properties": [],
+                    "isArray": false
+                  },
+                  "optional": true,
+                  "source": "core/src/types/domain.ts"
+                },
+                {
+                  "name": "deadline",
+                  "type": "string",
+                  "optional": true,
+                  "source": "core/src/types/domain.ts"
+                },
+                {
+                  "name": "commitment",
+                  "type": "{\n    committedAt: string;\n    expectedCompletion?: string;\n    relatedNoteIds?: string[];\n  }",
+                  "optional": true,
+                  "source": "core/src/types/domain.ts"
                 }
               ],
               "isArray": false
@@ -15299,6 +16157,28 @@
                   "type": "string",
                   "optional": true,
                   "source": "core/src/types/domain.ts"
+                },
+                {
+                  "name": "status",
+                  "type": {
+                    "name": "NoteStatus",
+                    "properties": [],
+                    "isArray": false
+                  },
+                  "optional": true,
+                  "source": "core/src/types/domain.ts"
+                },
+                {
+                  "name": "deadline",
+                  "type": "string",
+                  "optional": true,
+                  "source": "core/src/types/domain.ts"
+                },
+                {
+                  "name": "commitment",
+                  "type": "{\n    committedAt: string;\n    expectedCompletion?: string;\n    relatedNoteIds?: string[];\n  }",
+                  "optional": true,
+                  "source": "core/src/types/domain.ts"
                 }
               ],
               "isArray": false
@@ -16459,6 +17339,28 @@
                   "type": "string",
                   "optional": true,
                   "source": "core/src/types/domain.ts"
+                },
+                {
+                  "name": "status",
+                  "type": {
+                    "name": "NoteStatus",
+                    "properties": [],
+                    "isArray": false
+                  },
+                  "optional": true,
+                  "source": "core/src/types/domain.ts"
+                },
+                {
+                  "name": "deadline",
+                  "type": "string",
+                  "optional": true,
+                  "source": "core/src/types/domain.ts"
+                },
+                {
+                  "name": "commitment",
+                  "type": "{\n    committedAt: string;\n    expectedCompletion?: string;\n    relatedNoteIds?: string[];\n  }",
+                  "optional": true,
+                  "source": "core/src/types/domain.ts"
                 }
               ],
               "isArray": false
@@ -16880,6 +17782,66 @@
       }
     },
     {
+      "key": "ElicitationState",
+      "schema": {
+        "name": "ElicitationState",
+        "properties": [
+          {
+            "name": "questions",
+            "type": "ClarificationQuestion",
+            "optional": false,
+            "source": "ui/src/hooks/useProgressiveElicitation.ts"
+          },
+          {
+            "name": "currentQuestionIndex",
+            "type": "number",
+            "optional": false,
+            "source": "ui/src/hooks/useProgressiveElicitation.ts"
+          },
+          {
+            "name": "answers",
+            "type": "Record<string, string>",
+            "optional": false,
+            "source": "ui/src/hooks/useProgressiveElicitation.ts"
+          },
+          {
+            "name": "isActive",
+            "type": "boolean",
+            "optional": false,
+            "source": "ui/src/hooks/useProgressiveElicitation.ts"
+          }
+        ],
+        "isArray": false
+      }
+    },
+    {
+      "key": "ProgressiveElicitationOptions",
+      "schema": {
+        "name": "ProgressiveElicitationOptions",
+        "properties": [
+          {
+            "name": "onAnswer",
+            "type": "(question: ClarificationQuestion, answer: string) => void",
+            "optional": true,
+            "source": "ui/src/hooks/useProgressiveElicitation.ts"
+          },
+          {
+            "name": "onComplete",
+            "type": "(answers: Record<string, string>) => void",
+            "optional": true,
+            "source": "ui/src/hooks/useProgressiveElicitation.ts"
+          },
+          {
+            "name": "onCancel",
+            "type": "() => void",
+            "optional": true,
+            "source": "ui/src/hooks/useProgressiveElicitation.ts"
+          }
+        ],
+        "isArray": false
+      }
+    },
+    {
       "key": "OntologyTab",
       "schema": {
         "name": "OntologyTab",
@@ -17285,6 +18247,28 @@
                 {
                   "name": "author",
                   "type": "string",
+                  "optional": true,
+                  "source": "core/src/types/domain.ts"
+                },
+                {
+                  "name": "status",
+                  "type": {
+                    "name": "NoteStatus",
+                    "properties": [],
+                    "isArray": false
+                  },
+                  "optional": true,
+                  "source": "core/src/types/domain.ts"
+                },
+                {
+                  "name": "deadline",
+                  "type": "string",
+                  "optional": true,
+                  "source": "core/src/types/domain.ts"
+                },
+                {
+                  "name": "commitment",
+                  "type": "{\n    committedAt: string;\n    expectedCompletion?: string;\n    relatedNoteIds?: string[];\n  }",
                   "optional": true,
                   "source": "core/src/types/domain.ts"
                 }

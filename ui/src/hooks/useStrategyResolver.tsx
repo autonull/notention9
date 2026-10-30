@@ -1,6 +1,10 @@
-import { useMemo, useContext, createContext, useState, useEffect, ReactNode } from 'react';
-import { profileRegistry, type StrategyProfile, type UserProfileConfig, type StrategyExperiment, type ExperimentAssignment } from '@notention/core/ui/profile';
+import { useMemo, useContext, createContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import { profileRegistry, type StrategyProfile, type UserProfileConfig, type StrategyExperiment, type ExperimentAssignment, DEFAULT_MATCH_DISPLAY_EXPERIMENT } from '@notention/core/ui/profile';
 import { strategyRegistry, type Seam, type Strategy, createComponentStrategy } from '@notention/core/ui/strategy';
+import { DescribeItComposerStrategy } from '../strategies/DescribeItComposerStrategy';
+import { TagInputStrategy } from '../strategies/TagInputStrategy';
+import { PropertyFormStrategy } from '../strategies/PropertyFormStrategy';
+import { TemplateSelectorStrategy } from '../strategies/TemplateSelectorStrategy';
 
 // Seam IDs from discovery (sync with loop/discovered.json)
 export const SEAM_IDS = {
@@ -53,6 +57,10 @@ export function StrategyProvider({ children, userId = 'default-user' }: Strategy
         setUserConfigState(config);
     }, [userId]);
 
+    const persistConfig = useCallback(() => {
+        persistUserConfig(userId);
+    }, [userId]);
+
     const resolveStrategy = useMemo(() => (seamId: SeamId) => {
         return profileRegistry.resolveStrategy(userId, seamId, strategyRegistry.strategies);
     }, [userId]);
@@ -66,24 +74,28 @@ export function StrategyProvider({ children, userId = 'default-user' }: Strategy
         const result = profileRegistry.setActiveProfile(userId, profileId);
         if (result) {
             setUserConfigState(profileRegistry.getUserConfig(userId));
+            persistConfig();
         }
         return result;
-    }, [userId]);
+    }, [userId, persistConfig]);
 
     const setOverride = useMemo(() => (seamId: SeamId, strategyId: string) => {
         profileRegistry.setOverride(userId, seamId, strategyId);
         setUserConfigState(profileRegistry.getUserConfig(userId));
-    }, [userId]);
+        persistConfig();
+    }, [userId, persistConfig]);
 
     const removeOverride = useMemo(() => (seamId: SeamId) => {
         profileRegistry.removeOverride(userId, seamId);
         setUserConfigState(profileRegistry.getUserConfig(userId));
-    }, [userId]);
+        persistConfig();
+    }, [userId, persistConfig]);
 
     const setManualMode = useMemo(() => (manual: boolean) => {
         profileRegistry.setManualMode(userId, manual);
         setUserConfigState(profileRegistry.getUserConfig(userId));
-    }, [userId]);
+        persistConfig();
+    }, [userId, persistConfig]);
 
     const value = useMemo(() => ({
         resolveStrategy,
@@ -277,8 +289,10 @@ export function initializeProfiles(): void {
         profileRegistry.registerProfile(profile);
     }
 
+    // Load persisted user configs from localStorage
+    loadPersistedConfigs();
+
     // Register experiment for match-display comparison
-    const { DEFAULT_MATCH_DISPLAY_EXPERIMENT } = require('@notention/core/ui/profile');
     profileRegistry.registerExperiment({
         ...DEFAULT_MATCH_DISPLAY_EXPERIMENT,
         seamId: SEAM_IDS.MATCH,
@@ -289,15 +303,60 @@ export function initializeProfiles(): void {
     });
 }
 
+// Persist user configs to localStorage
+const STORAGE_KEY = 'notention:profile-config';
+
+function loadPersistedConfigs(): void {
+    try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+            const data = JSON.parse(stored);
+            if (data.userConfigs) {
+                for (const config of data.userConfigs) {
+                    profileRegistry.userConfigs.set(config.userId, config);
+                }
+            }
+            if (data.assignments) {
+                for (const assignment of data.assignments) {
+                    profileRegistry.assignments.set(`${assignment.experimentId}:${assignment.userId}`, assignment);
+                }
+            }
+        }
+    } catch (e) {
+        console.warn('Failed to load persisted profile configs:', e);
+    }
+}
+
+export function persistUserConfig(userId: string): void {
+    try {
+        const config = profileRegistry.getUserConfig(userId);
+        const assignments = Array.from(profileRegistry.assignments.values())
+            .filter(a => a.userId === userId);
+        
+        const existing = localStorage.getItem(STORAGE_KEY);
+        const data = existing ? JSON.parse(existing) : { userConfigs: [], assignments: [] };
+        
+        // Update or add user config
+        const configIndex = data.userConfigs.findIndex((c: any) => c.userId === userId);
+        if (configIndex >= 0) {
+            data.userConfigs[configIndex] = config;
+        } else {
+            data.userConfigs.push(config);
+        }
+        
+        // Update assignments
+        data.assignments = data.assignments.filter((a: any) => a.userId !== userId);
+        data.assignments.push(...assignments);
+        
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch (e) {
+        console.warn('Failed to persist profile config:', e);
+    }
+}
+
 // Register UI strategies with the core registry
 export async function registerUIStrategies(): Promise<void> {
     await loadComponents();
-
-    // Import strategies
-    const { DescribeItComposerStrategy } = await import('./strategies/DescribeItComposerStrategy');
-    const { TagInputStrategy } = await import('./strategies/TagInputStrategy');
-    const { PropertyFormStrategy } = await import('./strategies/PropertyFormStrategy');
-    const { TemplateSelectorStrategy } = await import('./strategies/TemplateSelectorStrategy');
 
     // Define seams matching discovery
     const seams: Seam[] = [

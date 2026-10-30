@@ -525,7 +525,7 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | L20 | Determinism: pinned models, cached outputs, replay | `optimize/src/loop/determinism.ts` | identical hash on replay | L9 | ✅ |
 | L21 | A11y + keyboard assertions in harness | `optimize/src/a11y.ts`, `ui/eval/` | violations fail the task | L9 |
 | L22 | Preference + interaction-strategy comparison (human + calibrated judge) | `ui/eval/`, `optimize/src/synthesis/strategyComparison.ts` | win-rate on question sequences, explanations, layouts | L9 | 🟨 |
-| L23 | Profiles + policy + per-user overrides | `ui/src/settings/`, `ui/src/hooks/useStrategyResolver.ts`, config | 2 profiles; overrides persist | L8, L22 | 🟨 |
+| L23 | Profiles + policy + per-user overrides | `ui/src/settings/`, `ui/src/hooks/useStrategyResolver.ts`, config | 2 profiles; overrides persist | L8, L22 | ✅ |
 | L24 | Add simulator + optimize tests to `pnpm verify` | `scripts/verify.ts` | verify runs all suites | D3 |
 
 ### P — Product ergonomics · supporting
@@ -538,7 +538,7 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | P4 | `match-display` strategies: inline vs sidebar | `LocalMatchPreview`, `DashboardLocalMatch` | selectable, measured | L8 |
 | P5 | `intent-surface`: commitments/deadlines/status | new view + L17a | a commitment can be completed | L17a, P3 |
 | P6 | Template-first + conversational capture | `TemplateSelector`, new | selectable, measured | L8 |
-| P7 | Persist per-user overrides | settings | survives reload | L23 |
+| P7 | Persist per-user overrides | settings | survives reload | L23 | ✅ |
 
 ### I — Interaction model · supporting
 
@@ -655,7 +655,7 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | End-to-end proof | ✅ **complete** (X1–X3 pipeline works; X4–X7 demonstrated with fast evaluator) |
 | Corpus ingestion + gap detection | ✅ **done (L18: 5 taxonomy gaps identified, test cases generated)** |
 | Ontology experiment (L17) | ✅ **done — tie: both flat and facets+status achieve 100% success, equivalent latency; facets+status adds status facet for future commitment tracking** |
-| Profile registry + strategy comparison (L22, L23) | ✅ **core infrastructure complete; UI integration in progress; compare command added** |
+| Profile registry + strategy comparison (L22, L23) | ✅ **core infrastructure complete; UI integration complete; compare command added; localStorage persistence added** |
 | Human gates G1/G2/G5 | ⏳ pending |
 
 **Test state:** core 398 · simulator 33 · agent 17 · cli 6 · optimize 44 · eval 9 ✅ (D3, D4 fixed)
@@ -718,10 +718,9 @@ And the architectural principle holds: **the system improved its own behaviour w
 | Priority | Action | Rationale |
 |----------|--------|-----------|
 | **1** | **H1–H2**: Stranger test (G1) + match relevance (G2) | Human confirmation of usability; required for X4 |
-| **2** | **L23**: Complete UI integration of profiles/policies | Product ergonomics (P3–P7) | 🟨 |
-| **3** | **L22**: Run preference experiments with real users | Empirical UX data for profiles/policies (L23) |
-| **4** | **Q1–Q5**: Tests/docs alongside | Maintain quality |
-| **5** | **B6**: Generalise only after second workflow proves abstraction | Avoid premature abstraction |
+| **2** | **L22**: Run preference experiments with real users | Empirical UX data for profiles/policies |
+| **3** | **Q1–Q5**: Tests/docs alongside | Maintain quality |
+| **4** | **B6**: Generalise only after second workflow proves abstraction | Avoid premature abstraction |
 
 **Completed:**
 - S1–S5: Capability showcase recordings (movie_maker, scenarios, generate-showcases.ts) with captions/narration
@@ -729,11 +728,12 @@ And the architectural principle holds: **the system improved its own behaviour w
 - L17: Ontology experiment (flat vs facets+status) — **tie: both achieve 100% success, equivalent latency; facets+status adds status facet for commitment tracking**
 - L22/L23 core infrastructure: ProfileRegistry, ProfilePolicy, UserStrategyOverrides, StrategyExperiment, strategyComparison evaluator, compare command (tests passing)
 - ProfileSettings UI component integrated in SettingsView
+- L23: UI integration complete; localStorage persistence for user config (overrides, active profile, manual mode); seam ID alignment with discovery
 
 **Deferred (premature without second workflow):**
 - L21: A11y + keyboard assertions in harness
 - L24: Add simulator + optimize tests to `pnpm verify`
-- P3–P7: workspace-layout, match-display, intent-surface, template-first, persist overrides
+- P3–P6: workspace-layout, match-display, intent-surface, template-first
 
 **Definition of done:** §20 satisfied, every adopted change reversible and traceable to a run, and the offline/local-model constraint demonstrated end to end.
 
@@ -753,9 +753,9 @@ And the architectural principle holds: **the system improved its own behaviour w
 
 ### Reprioritisation
 - **Dropped**: Fixing Playwright/Chromium container issues (L9 browser path)
-- **Deferred**: L21, L24, P3–P7 (a11y, layouts) until second workflow validates abstraction (B6)
-- **In Progress**: L22, L23 (profiles, strategy comparison — core infrastructure complete)
-- **Promoted**: S1–S3 (showcases), **L18 ✅ (real corpus complete)**, **L17 ✅ (ontology experiment: tie)**, H1–H2 (human gates)
+- **Deferred**: L21, L24, P3–P6 (a11y, layouts) until second workflow validates abstraction (B6)
+- **In Progress**: L22 (profiles, strategy comparison — core infrastructure complete, UI integration done)
+- **Promoted**: S1–S3 (showcases), **L18 ✅ (real corpus complete)**, **L17 ✅ (ontology experiment: tie)**, **L23 ✅ (UI integration + persistence complete)**, H1–H2 (human gates)
 
 ### Acceleration path
 The loop now enables **daily iteration cycles** instead of weekly. Each cycle:

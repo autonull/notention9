@@ -153,18 +153,17 @@ export interface ExperimentResult {
 }
 
 // Default profiles
+// Seam IDs match the discovered seams from loop/runs/discovered.json
 export const DEFAULT_PROFILES: StrategyProfile[] = [
     {
         id: 'default',
         name: 'Default',
         description: 'Balanced experience for all users',
         strategySelections: {
-            'capture-0': 'describe-it-composer',
-            'elicit-0': 'tag-input',
-            'extraction-0': 'describe-it-composer',
-            'template-0': 'template-selector',
-            'match-display-0': 'local-match-preview',
-            'workspace-layout-0': 'list',
+            'capture-20': 'describe-it-composer',
+            'elicit-1': 'tag-input',
+            'match-7': 'local-match-preview',
+            'layout-8': 'property-panel',
         },
         isDefault: true,
         createdAt: new Date().toISOString(),
@@ -175,12 +174,10 @@ export const DEFAULT_PROFILES: StrategyProfile[] = [
         name: 'Compact',
         description: 'Dense information, minimal UI',
         strategySelections: {
-            'capture-0': 'describe-it-composer',
-            'elicit-0': 'tag-input',
-            'extraction-0': 'describe-it-composer',
-            'template-0': 'template-selector',
-            'match-display-0': 'dashboard-local-match',
-            'workspace-layout-0': 'list',
+            'capture-20': 'quick-capture',
+            'elicit-1': 'tag-input',
+            'match-7': 'dashboard-local-match',
+            'layout-8': 'property-panel',
         },
         context: { persona: 'power-user' },
         createdAt: new Date().toISOString(),
@@ -191,12 +188,10 @@ export const DEFAULT_PROFILES: StrategyProfile[] = [
         name: 'Guided',
         description: 'More explanations, progressive disclosure',
         strategySelections: {
-            'capture-0': 'describe-it-composer',
-            'elicit-0': 'tag-input',
-            'extraction-0': 'describe-it-composer',
-            'template-0': 'template-selector',
-            'match-display-0': 'local-match-preview',
-            'workspace-layout-0': 'two-pane',
+            'capture-20': 'describe-it-composer',
+            'elicit-1': 'insert-property-modal',
+            'match-7': 'local-match-preview',
+            'layout-8': 'property-panel',
         },
         context: { persona: 'new-user' },
         createdAt: new Date().toISOString(),
@@ -207,12 +202,10 @@ export const DEFAULT_PROFILES: StrategyProfile[] = [
         name: 'Accessible',
         description: 'High contrast, full keyboard support, screen reader optimized',
         strategySelections: {
-            'capture-0': 'describe-it-composer',
-            'elicit-0': 'tag-input',
-            'extraction-0': 'describe-it-composer',
-            'template-0': 'template-selector',
-            'match-display-0': 'local-match-preview',
-            'workspace-layout-0': 'list',
+            'capture-20': 'describe-it-composer',
+            'elicit-1': 'tag-input',
+            'match-7': 'local-match-preview',
+            'layout-8': 'property-panel',
         },
         context: { persona: 'accessibility' },
         createdAt: new Date().toISOString(),
@@ -262,11 +255,11 @@ export const DEFAULT_MATCH_DISPLAY_EXPERIMENT: StrategyExperiment = {
     id: 'match-display-v1',
     name: 'Match Display: Detailed vs Compact',
     description: 'Compare detailed explanations (local-match-preview) vs compact (dashboard-local-match)',
-    seamId: 'match-display-0',
+    seamId: 'match-7',
     variants: [
         {
             id: 'variant-detailed',
-            seamId: 'match-display-0',
+            seamId: 'match-7',
             strategyId: 'local-match-preview',
             label: 'Detailed with Explanations',
             description: 'Shows why it fits, conflicts, missing details, and recovery options',
@@ -275,7 +268,7 @@ export const DEFAULT_MATCH_DISPLAY_EXPERIMENT: StrategyExperiment = {
         },
         {
             id: 'variant-compact',
-            seamId: 'match-display-0',
+            seamId: 'match-7',
             strategyId: 'dashboard-local-match',
             label: 'Compact Summary',
             description: 'Shows match score and basic actions only',

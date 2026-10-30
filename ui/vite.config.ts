@@ -16,7 +16,7 @@ export default defineConfig(({mode}) => {
         resolve: {
             alias: {
                 '@': path.resolve(__dirname, './src'),
-                '@notention/core': path.resolve(__dirname, '../core/src/index.ts'),
+                '@notention/core': path.resolve(__dirname, '../core/src'),
                 '@notention/core/constants/storageKeys': path.resolve(__dirname, '../core/src/constants/storageKeys.ts'),
                 '@notention/core/constants/paths': path.resolve(__dirname, '../core/src/constants/paths.ts'),
                 '@notention/core/extraction': path.resolve(__dirname, '../core/src/extraction/index.ts'),

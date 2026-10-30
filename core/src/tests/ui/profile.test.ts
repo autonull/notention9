@@ -10,6 +10,7 @@ describe('ProfileRegistry', () => {
         profileRegistry.userConfigs.clear();
         profileRegistry.experiments.clear();
         profileRegistry.assignments.clear();
+        strategyRegistry.strategies.clear();
         
         // Re-register defaults
         for (const profile of DEFAULT_PROFILES) {
@@ -59,15 +60,15 @@ describe('ProfileRegistry', () => {
     });
 
     it('should set and remove overrides', () => {
-        profileRegistry.setOverride('test-user-4', 'match-display-0', 'dashboard-local-match');
+        profileRegistry.setOverride('test-user-4', 'match-7', 'dashboard-local-match');
         
         let config = profileRegistry.getUserConfig('test-user-4');
-        expect(config.overrides.overrides['match-display-0']).toBe('dashboard-local-match');
+        expect(config.overrides.overrides['match-7']).toBe('dashboard-local-match');
         
-        profileRegistry.removeOverride('test-user-4', 'match-display-0');
+        profileRegistry.removeOverride('test-user-4', 'match-7');
         
         config = profileRegistry.getUserConfig('test-user-4');
-        expect(config.overrides.overrides['match-display-0']).toBeUndefined();
+        expect(config.overrides.overrides['match-7']).toBeUndefined();
     });
 
     it('should resolve strategy from user override', () => {
@@ -131,7 +132,7 @@ describe('ProfileRegistry', () => {
             strategyRegistry.register(mockStrategy.seam, mockStrategy);
         }
         
-        const resolved = profileRegistry.resolveStrategy('test-user-6', 'match-display-0', strategyRegistry.strategies);
+        const resolved = profileRegistry.resolveStrategy('test-user-6', 'match-7', strategyRegistry.strategies);
         expect(resolved).toBeDefined();
         expect(['local-match-preview', 'dashboard-local-match']).toContain(resolved?.id);
     });
