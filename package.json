@@ -27,7 +27,10 @@
     "optimize": "tsx optimize/src/cli.ts",
     "optimize:check": "node scripts/check-optimize-locators.mjs",
     "loop": "tsx optimize/src/loop/cli.ts",
-    "showcase": "tsx scripts/generate-showcases.ts"
+    "showcase": "tsx scripts/generate-showcases.ts",
+    "stranger-test": "tsx scripts/stranger-test.ts",
+    "match-relevance": "tsx scripts/match-relevance-test.ts",
+    "preference-exp": "tsx scripts/run-preference-experiment.ts"
   },
   "dependencies": {
     "@meshtastic/core": "^2.6.7",

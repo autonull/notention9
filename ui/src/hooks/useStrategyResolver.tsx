@@ -224,6 +224,15 @@ async function loadComponents() {
     }
 }
 
+// Check if running in clean-profile mode (for stranger testing)
+const isCleanProfile = typeof window !== 'undefined' && 
+    (window.location.search.includes('clean=true') || localStorage.getItem('notention:clean-profile') === 'true');
+
+if (isCleanProfile) {
+    localStorage.removeItem('notention:profile-config');
+    localStorage.removeItem('notention:clean-profile');
+}
+
 // Initialize profiles to match actual seam IDs
 export function initializeProfiles(): void {
     const profiles: StrategyProfile[] = [

@@ -729,6 +729,7 @@ And the architectural principle holds: **the system improved its own behaviour w
 - L22/L23 core infrastructure: ProfileRegistry, ProfilePolicy, UserStrategyOverrides, StrategyExperiment, strategyComparison evaluator, compare command (tests passing)
 - ProfileSettings UI component integrated in SettingsView
 - L23: UI integration complete; localStorage persistence for user config (overrides, active profile, manual mode); seam ID alignment with discovery
+- H1/H2/L22 infrastructure: Clean-profile mode (`?clean=true`), stranger test script, match relevance rating script, preference experiment runner
 
 **Deferred (premature without second workflow):**
 - L21: A11y + keyboard assertions in harness
@@ -754,8 +755,8 @@ And the architectural principle holds: **the system improved its own behaviour w
 ### Reprioritisation
 - **Dropped**: Fixing Playwright/Chromium container issues (L9 browser path)
 - **Deferred**: L21, L24, P3–P6 (a11y, layouts) until second workflow validates abstraction (B6)
-- **In Progress**: L22 (profiles, strategy comparison — core infrastructure complete, UI integration done)
-- **Promoted**: S1–S3 (showcases), **L18 ✅ (real corpus complete)**, **L17 ✅ (ontology experiment: tie)**, **L23 ✅ (UI integration + persistence complete)**, H1–H2 (human gates)
+- **In Progress**: H1–H2 (stranger test + match relevance — infrastructure ready), L22 (preference experiments — core infra + compare command ready)
+- **Promoted**: S1–S3 (showcases), **L18 ✅ (real corpus complete)**, **L17 ✅ (ontology experiment: tie)**, **L23 ✅ (UI integration + persistence complete)**
 
 ### Acceleration path
 The loop now enables **daily iteration cycles** instead of weekly. Each cycle:
