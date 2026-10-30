@@ -17,7 +17,7 @@ import { discoverSeams } from '../discovery/seams.js';
 import { analyzeDuplicates } from '../discovery/duplicates.js';
 import { loadLoopConfig, validateLoopConfig } from '../utils/loopConfig.js';
 import { loadTaxonomy, validateTaxonomy } from '../utils/taxonomy.js';
-import { StrategySpecGenerator, generateAllCandidates, runStaticGates, runGatesOnCandidateDir, runFastEvaluation, runFastBaselineEvaluation, loadOrRunFastBaseline, adoptWinner, generateT4FromFailedCandidates } from '../synthesis/index.js';
+import { StrategySpecGenerator, generateAllCandidates, runStaticGates, runGatesOnCandidateDir, runFastEvaluation, runFastBaselineEvaluation, loadOrRunFastBaseline, adoptWinner, generateT4FromFailedCandidates, ingestCorpus } from '../synthesis/index.js';
 import { deriveProblemsFromDiscovery, prioritizeProblems, type DiscoveredProblem, type PrioritizedProblem } from './prioritize.js';
 import type { Seam } from '../discovery/seams.js';
 
@@ -63,6 +63,7 @@ Commands:
   evaluate [--dry] [--output <dir>]     Evaluate candidates against baseline
   adopt [--dry] [--output <dir>]        Adopt winning candidate with evidence gate
   request [--dry] [--output <dir>]      Emit T4 request for human implementation
+  corpus [--dry] [--output <dir>]       Ingest corpus files, extract vocabulary, generate test cases
   run [--dry] [--output <dir>]          Run full discover→prioritize→synthesize→evaluate→adopt cycle
   help                                  Show this help
 
@@ -384,20 +385,41 @@ async function runEvaluate(config: any, outputDir: string, dry: boolean, _json: 
     console.log('  🚀 Running fast candidate evaluation...');
     const report = await runFastEvaluation(candidatesDir, baseline);
     
-    // Summary
+    // Summary - separate core and corpus tests
     const passedCandidates = report.candidates.filter(c => c.passed).length;
-    const baselineOverall = (report.baseline.reduce((s, b) => s + b.successRate, 0) / report.baseline.length * 100).toFixed(1);
+    const coreBaseline = report.baseline.filter(b => !b.isCorpusTest);
+    const corpusBaseline = report.baseline.filter(b => b.isCorpusTest);
+    const coreSuccessRate = coreBaseline.length > 0 
+        ? (coreBaseline.reduce((s, b) => s + b.successRate, 0) / coreBaseline.length * 100).toFixed(1)
+        : '0.0';
+    const corpusSuccessRate = corpusBaseline.length > 0
+        ? (corpusBaseline.reduce((s, b) => s + b.successRate, 0) / corpusBaseline.length * 100).toFixed(1)
+        : 'N/A';
     console.log(`\n📊 Evaluation Summary:`);
-    console.log(`   Baseline overall success rate: ${baselineOverall}%`);
+    console.log(`   Core tests success rate: ${coreSuccessRate}% (${coreBaseline.length} tests)`);
+    console.log(`   Corpus gap-detection tests: ${corpusSuccessRate}% (${corpusBaseline.length} tests)`);
     console.log(`   Candidates evaluated: ${report.candidates.length}`);
     console.log(`   Candidates beating baseline: ${passedCandidates}`);
     
-    // Print task details
-    for (const task of report.baseline) {
+    // Print core task details
+    console.log(`\n   Core regression tests:`);
+    for (const task of coreBaseline) {
         const status = task.successRate === 1 ? '✅' : '❌';
         console.log(`   ${status} ${task.taskId}: ${(task.successRate * 100).toFixed(0)}% (${task.medianDuration}ms)`);
         if (task.errors.length > 0) {
             console.log(`      Errors: ${task.errors.join('; ')}`);
+        }
+    }
+    
+    // Print corpus task details
+    if (corpusBaseline.length > 0) {
+        console.log(`\n   Corpus gap-detection tests:`);
+        for (const task of corpusBaseline) {
+            const status = task.successRate === 1 ? '✅' : '❌';
+            console.log(`   ${status} ${task.taskId}: ${(task.successRate * 100).toFixed(0)}% (${task.medianDuration}ms)`);
+            if (task.errors.length > 0) {
+                console.log(`      Gap: ${task.errors.join('; ')}`);
+            }
         }
     }
 
@@ -629,6 +651,48 @@ async function runFullLoop(config: any, outputDir: string, dry: boolean, json: b
     return 0;
 }
 
+async function runCorpus(_config: any, outputDir: string, dry: boolean, json: boolean): Promise<number> {
+    console.log('📚 Ingesting corpus files...\n');
+    
+    if (dry) {
+        console.log('🔍 Dry run - would ingest corpus files');
+        return 0;
+    }
+    
+    try {
+        const analysis = await ingestCorpus({
+            inputDir: 'corpus',
+            outputDir: outputDir ? `${outputDir}/corpus-output` : 'loop/corpus-output',
+            generateTestCases: true,
+            generateMatchCases: true,
+        });
+        
+        console.log(`\n✅ Corpus ingestion complete`);
+        console.log(`   Files processed: ${analysis.totalFiles}`);
+        console.log(`   Unique terms: ${analysis.totalTerms}`);
+        console.log(`   Vocabulary size: ${analysis.vocabulary.length}`);
+        console.log(`   Extraction test cases: ${analysis.generatedTestCases.length}`);
+        console.log(`   Match test cases: ${analysis.generatedMatchCases.length}`);
+        console.log(`   Taxonomy gaps identified: ${analysis.taxonomyGaps.length}`);
+        
+        if (analysis.taxonomyGaps.length > 0) {
+            console.log('\n📋 Taxonomy Gaps:');
+            for (const gap of analysis.taxonomyGaps) {
+                console.log(`   - ${gap}`);
+            }
+        }
+        
+        if (json) {
+            console.log(JSON.stringify(analysis, null, 2));
+        }
+        
+        return 0;
+    } catch (error) {
+        console.error(`Corpus ingestion failed: ${error instanceof Error ? error.message : String(error)}`);
+        return 1;
+    }
+}
+
 async function main(): Promise<number> {
     const rawArgs = process.argv.slice(2);
 
@@ -670,6 +734,9 @@ async function main(): Promise<number> {
             case 'request': {
                 return runRequest(config, output, dry, json);
             }
+            case 'corpus': {
+                return runCorpus(config, output, dry, json);
+            }
             case 'run': {
                 return runFullLoop(config, output, dry, json);
             }
@@ -678,7 +745,7 @@ async function main(): Promise<number> {
                 return 0;
             }
             default:
-                throw new Error(`Unknown subcommand: ${subcommand}. Use: discover, prioritize, synthesize, evaluate, adopt, request, run, help`);
+                throw new Error(`Unknown subcommand: ${subcommand}. Use: discover, prioritize, synthesize, evaluate, adopt, request, corpus, run, help`);
         }
     } catch (e) {
         console.error(`Error: ${e instanceof Error ? e.message : String(e)}`);

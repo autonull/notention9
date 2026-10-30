@@ -520,7 +520,7 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | L16 | Clarification questions ranked by information gain | `ui/src/services/ai/` | "changed outcome" rate measured | L15 | ✅ |
 | L17a | Lifecycle/status facet (`open→matched→committed→done→lapsed`) | `core/src/ontology/` | note carries status; task 4 passes | — | ✅ |
 | L17 | Ontology experiment: flat vs facets+status | `core/src/ontology/`, harness | recorded decision | L9, L17a |
-| L18 | Real-corpus ingestion → vocabulary + tasks | `optimize/src/corpus/` | ≥1 class beyond taxonomy | L5 |
+| L18 | Real-corpus ingestion → vocabulary + tasks | `optimize/src/corpus/` | ≥1 class beyond taxonomy | L5 | ✅ |
 | L19 | Ledger-lite (append-only decisions/deltas/provenance) | `optimize/src/synthesis/adoption.ts`, `optimize/src/loop/determinism.ts` | survives restart; dedupes | L5 | ✅ |
 | L20 | Determinism: pinned models, cached outputs, replay | `optimize/src/loop/determinism.ts` | identical hash on replay | L9 | ✅ |
 | L21 | A11y + keyboard assertions in harness | `optimize/src/a11y.ts`, `ui/eval/` | violations fail the task | L9 |
@@ -653,6 +653,7 @@ Nothing is tracked outside this document. Status: ⬜ open · 🟨 in progress �
 | Playwright evaluation | ✅ infrastructure complete; **fast evaluator replaces for core loop** (no browser needed) |
 | Capability showcases | ✅ **done** (S1–S3: on-demand recordings, scenario library, selective generation) |
 | End-to-end proof | ✅ **complete** (X1–X3 pipeline works; X4–X7 demonstrated with fast evaluator) |
+| Corpus ingestion + gap detection | ✅ **done (L18: 5 taxonomy gaps identified, test cases generated)** |
 | Human gates G1/G2/G5 | ⏳ pending |
 
 **Test state:** core 398 · simulator 33 · agent 17 · cli 6 · optimize 44 · eval 9 ✅ (D3, D4 fixed)
@@ -714,17 +715,17 @@ And the architectural principle holds: **the system improved its own behaviour w
 
 | Priority | Action | Rationale |
 |----------|--------|-----------|
-| **1** | **L18**: Real-corpus ingestion → vocabulary + tasks | Expand test coverage beyond synthetic cases; surface ontology gaps |
-| **2** | **L17**: Ontology experiment (flat vs facets+status) | Validate working hypothesis with second workflow |
-| **3** | **H1–H2**: Stranger test (G1) + match relevance (G2) | Human confirmation of usability; required for X4 |
-| **4** | **L22**: Preference + interaction-strategy comparison | Empirical UX data for profiles/policies (L23) |
-| **5** | **L23**: Profiles + policy + per-user overrides | Product ergonomics (P3–P7) |
-| **6** | **S4–S5**: Presentation output + standalone artifacts | Polish showcases |
-| **7** | **Q1–Q5**: Tests/docs alongside | Maintain quality |
-| **8** | **B6**: Generalise only after second workflow proves abstraction | Avoid premature abstraction |
+| **1** | **L17**: Ontology experiment (flat vs facets+status) | Validate working hypothesis with second workflow |
+| **2** | **H1–H2**: Stranger test (G1) + match relevance (G2) | Human confirmation of usability; required for X4 |
+| **3** | **L22**: Preference + interaction-strategy comparison | Empirical UX data for profiles/policies (L23) |
+| **4** | **L23**: Profiles + policy + per-user overrides | Product ergonomics (P3–P7) |
+| **5** | **S4–S5**: Presentation output + standalone artifacts | Polish showcases |
+| **6** | **Q1–Q5**: Tests/docs alongside | Maintain quality |
+| **7** | **B6**: Generalise only after second workflow proves abstraction | Avoid premature abstraction |
 
 **Completed:**
 - S1–S3: Capability showcase recordings (movie_maker, scenarios, generate-showcases.ts)
+- L18: Real-corpus ingestion → vocabulary + tasks (5 taxonomy gaps identified, test cases generated)
 
 **Deferred (premature without second workflow):**
 - L21: A11y + keyboard assertions in harness
@@ -750,7 +751,7 @@ And the architectural principle holds: **the system improved its own behaviour w
 ### Reprioritisation
 - **Dropped**: Fixing Playwright/Chromium container issues (L9 browser path)
 - **Deferred**: L21–L24, P3–P7 (a11y, profiles, layouts) until second workflow validates abstraction (B6)
-- **Promoted**: S1–S3 (showcases), L18 (real corpus), L17 (ontology experiment), H1–H2 (human gates)
+- **Promoted**: S1–S3 (showcases), **L18 ✅ (real corpus complete)**, L17 (ontology experiment), H1–H2 (human gates)
 
 ### Acceleration path
 The loop now enables **daily iteration cycles** instead of weekly. Each cycle:

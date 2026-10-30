@@ -5,3 +5,4 @@ export * from './evaluator.js';
 export * from './fastEvaluator.js';
 export * from './adoption.js';
 export * from './requests.js';
+export * from '../corpus/index.js';

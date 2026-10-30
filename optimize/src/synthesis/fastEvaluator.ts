@@ -7,25 +7,41 @@ import { OntologyService } from '@notention/core';
 import { Note, Property } from '@notention/core';
 import type { CandidateStrategy, CandidateDir } from './StrategySpec.js';
 import type { BaselineResult, ResourceMetrics, CandidateEvaluation, EvaluationReport } from './evaluator.js';
+import { loadCorpusTestCases } from '../corpus/index.js';
 
-// Re-export types for compatibility
-export type { BaselineResult, ResourceMetrics, CandidateEvaluation, EvaluationReport };
-
-interface TestCase {
-    id: string;
-    name: string;
-    input: string;
-    expectedMinProperties: number;
-    expectedProperties?: Partial<Property>[];
+export interface BaselineResult {
+    taskId: string;
+    successRate: number;
+    medianDuration: number;
+    p90Duration: number;
+    medianSteps: number;
+    p90Steps: number;
+    errors: string[];
+    isCorpusTest?: boolean;  // Flag for corpus-generated gap detection tests
 }
 
-interface MatchTestCase {
-    id: string;
-    name: string;
-    requestText: string;
-    offerText: string;
-    expectedMinScore: number;
-    expectedMaxScore?: number;
+export interface ResourceMetrics {
+    totalLatencyMs: number;
+    avgInferenceLatencyMs: number;
+    peakMemoryMB: number;
+    modelSizeMB: number;
+    inferenceCount: number;
+    tokensUsed: number;
+}
+
+export interface CandidateEvaluation {
+    candidateId: string;
+    taskResults: Map<string, BaselineResult>;
+    overallSuccessRate: number;
+    overallMedianDuration: number;
+    passed: boolean;
+    resourceMetrics: ResourceMetrics;
+}
+
+export interface EvaluationReport {
+    baseline: BaselineResult[];
+    candidates: CandidateEvaluation[];
+    timestamp: string;
 }
 
 interface TestCase {
@@ -170,10 +186,32 @@ function checkPropertyMatch(actual: Property[], expected: Partial<Property>[]): 
     return { matched, total: expected.length, details };
 }
 
+async function loadCorpusTestCasesForEvaluation(): Promise<{ extraction: TestCase[]; match: MatchTestCase[] }> {
+    // Check multiple possible corpus output locations
+    const possibleDirs = [
+        'loop/corpus-output',
+        'loop/runs/corpus-output',
+    ];
+    
+    for (const corpusOutputDir of possibleDirs) {
+        if (existsSync(corpusOutputDir)) {
+            try {
+                return await loadCorpusTestCases(corpusOutputDir);
+            } catch {
+                // Ignore errors, try next location
+            }
+        }
+    }
+    return { extraction: [], match: [] };
+}
+
 export async function runFastBaselineEvaluation(): Promise<BaselineResult[]> {
     const results: BaselineResult[] = [];
     
-    // Test extraction tasks
+    // Load corpus-generated test cases
+    const corpusCases = await loadCorpusTestCasesForEvaluation();
+    
+    // Test core extraction tasks (regression tests)
     for (const testCase of EXTRACTION_TEST_CASES) {
         const startTime = Date.now();
         const properties = extractor.extractFromText(testCase.input);
@@ -190,10 +228,32 @@ export async function runFastBaselineEvaluation(): Promise<BaselineResult[]> {
             medianSteps: 1,
             p90Steps: 1,
             errors: success ? [] : [`Extracted ${properties.length} properties, expected ≥${testCase.expectedMinProperties}. Missing: ${check.details.filter(d => d.startsWith('✗')).join('; ')}`],
+            isCorpusTest: false,
         });
     }
     
-    // Test match tasks
+    // Test corpus extraction tasks (gap detection - marked but not counted for must-win)
+    for (const testCase of corpusCases.extraction) {
+        const startTime = Date.now();
+        const properties = extractor.extractFromText(testCase.input);
+        const duration = Date.now() - startTime;
+        
+        const check = checkPropertyMatch(properties, testCase.expectedProperties || []);
+        const success = properties.length >= testCase.expectedMinProperties && check.matched === check.total;
+        
+        results.push({
+            taskId: `task-3-extraction-${testCase.id}`,
+            successRate: success ? 1 : 0,
+            medianDuration: duration,
+            p90Duration: duration,
+            medianSteps: 1,
+            p90Steps: 1,
+            errors: success ? [] : [`Extracted ${properties.length} properties, expected ≥${testCase.expectedMinProperties}. Missing: ${check.details.filter(d => d.startsWith('✗')).join('; ')}`],
+            isCorpusTest: true,
+        });
+    }
+    
+    // Test core match tasks (regression tests)
     for (const testCase of MATCH_TEST_CASES) {
         const startTime = Date.now();
         const request = createNoteFromText(testCase.requestText, 'request');
@@ -212,6 +272,30 @@ export async function runFastBaselineEvaluation(): Promise<BaselineResult[]> {
             medianSteps: 1,
             p90Steps: 1,
             errors: success ? [] : [`Match score ${result.score.toFixed(2)} not in range [${testCase.expectedMinScore}, ${testCase.expectedMaxScore ?? 1.0}]`],
+            isCorpusTest: false,
+        });
+    }
+    
+    // Test corpus match tasks (gap detection)
+    for (const testCase of corpusCases.match) {
+        const startTime = Date.now();
+        const request = createNoteFromText(testCase.requestText, 'request');
+        const offer = createNoteFromText(testCase.offerText, 'offer');
+        const result = matchEngine.calculateMatchScore(request, offer);
+        const duration = Date.now() - startTime;
+        
+        const success = result.score >= testCase.expectedMinScore && 
+                       (testCase.expectedMaxScore === undefined || result.score <= testCase.expectedMaxScore);
+        
+        results.push({
+            taskId: `task-2-match-${testCase.id}`,
+            successRate: success ? 1 : 0,
+            medianDuration: duration,
+            p90Duration: duration,
+            medianSteps: 1,
+            p90Steps: 1,
+            errors: success ? [] : [`Match score ${result.score.toFixed(2)} not in range [${testCase.expectedMinScore}, ${testCase.expectedMaxScore ?? 1.0}]`],
+            isCorpusTest: true,
         });
     }
     
@@ -230,6 +314,7 @@ export async function runFastBaselineEvaluation(): Promise<BaselineResult[]> {
         medianSteps: 2,
         p90Steps: 2,
         errors: captureSuccess ? [] : [`Capture extracted ${captureProps.length} properties in ${captureDuration}ms`],
+        isCorpusTest: false,
     });
     
     return results;
@@ -245,19 +330,26 @@ export async function evaluateCandidateFast(
     const taskResults = new Map<string, BaselineResult>();
     let totalSuccessRate = 0;
     let totalDuration = 0;
+    let coreTestCount = 0;
     
     for (const baselineResult of baseline) {
         // Candidate inherits baseline behavior (no custom logic yet)
         taskResults.set(baselineResult.taskId, { ...baselineResult });
-        totalSuccessRate += baselineResult.successRate;
-        totalDuration += baselineResult.medianDuration;
+        
+        // Only count non-corpus tests for must-win gate
+        if (!baselineResult.isCorpusTest) {
+            totalSuccessRate += baselineResult.successRate;
+            totalDuration += baselineResult.medianDuration;
+            coreTestCount++;
+        }
     }
     
-    const overallSuccessRate = totalSuccessRate / baseline.length;
-    const overallMedianDuration = totalDuration / baseline.length;
+    const overallSuccessRate = coreTestCount > 0 ? totalSuccessRate / coreTestCount : 0;
+    const overallMedianDuration = coreTestCount > 0 ? totalDuration / coreTestCount : 0;
     
-    // Must-win: candidate must beat baseline on overall success rate
-    const baselineOverall = baseline.reduce((sum, b) => sum + b.successRate, 0) / baseline.length;
+    // Must-win: candidate must beat baseline on overall success rate (core tests only)
+    const coreBaseline = baseline.filter(b => !b.isCorpusTest);
+    const baselineOverall = coreBaseline.reduce((sum, b) => sum + b.successRate, 0) / (coreBaseline.length || 1);
     const passed = overallSuccessRate >= baselineOverall;
     
     return {
