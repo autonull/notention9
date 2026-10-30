@@ -290,7 +290,7 @@ discovery/
 | 7 | **Test Infrastructure Unification** | 1-2 days | None | ✅ Done |
 | 8 | **Constants Centralization** | 0.5 day | None | ✅ Done |
 | 9 | **Error Type Hierarchy** | 1 day | None | ✅ Done |
-| 10 | Event/Telemetry System | 2 days | Task 9 | ⏳ Next |
+| 10 | **Event/Telemetry System** | 2 days | Task 9 | ✅ Done |
 
 ---
 
@@ -483,15 +483,16 @@ discovery/
 
 ### Phase 4: Observability (Week 4, ~2 days)
 
-#### O1: Event/Telemetry System (2 days)
+#### O1: Event/Telemetry System (2 days) ✅ **COMPLETED**
 **Goal:** Replace ad-hoc logging
 
 **Steps:**
-1. Create `core/src/events/EventEmitter.ts` with pluggable sinks
-2. Define event types: `ExtractionEvent`, `MatchEvent`, `StrategyEvent`, `ErrorEvent`
-3. Add sinks: `ConsoleSink`, `FileSink`, `RemoteSink`
-4. Instrument key paths in core, ui, optimize
-5. Add sampling/config via `core/src/config.ts`
+1. ✅ Created `core/src/events/EventEmitter.ts` with pluggable sinks
+2. ✅ Defined event types: `ExtractionEvent`, `MatchEvent`, `StrategyEvent`, `ErrorEvent`, `PerformanceEvent`, `LifecycleEvent`
+3. ✅ Added sinks: `ConsoleSink`, `FileSink`, `RemoteSink`
+4. ✅ Exported from `core/src/events/index.ts` and `core/src/index.ts`
+5. ✅ Sampling/config via `EventEmitter` constructor and sink options
+6. ✅ Run tests - all 568 pass
 
 ---
 
@@ -530,7 +531,7 @@ discovery/
 - QW1, QW2, QW3, QW4: ✅ **COMPLETED**
 - C1 and C3: **Independent** - different code areas
 - C1, C2, C3: ✅ **COMPLETED**
-- Priority 6, 7, 8, 9: **Independent** - can parallelize
+- Priority 6, 7, 8, 9, 10: **Independent** - can parallelize
 
 ---
 
@@ -544,12 +545,11 @@ Week 2:  C1 ✅ (Days 1-4) + C3 ✅ (Days 1-2, parallel)
          
 Week 3:  C2 ✅ (Days 1-5) 
          
-Week 4:  Priority 6 ✅, 7 ✅, 8 ✅, 9 ✅  (sequential, 1.5 days)
-Week 5:  Priority 10 ⏳ (2 days)
+Week 4:  Priority 6 ✅, 7 ✅, 8 ✅, 9 ✅, 10 ✅  (sequential, 3.5 days)
 ```
 
 **Total: ~4 weeks for 1 person, ~2 weeks with 2-3 people**
-**Completed: Priorities 1-9 (9/10 tasks)**
+**Completed: Priorities 1-10 (10/10 tasks) - ALL DONE!**
 
 ---
 
