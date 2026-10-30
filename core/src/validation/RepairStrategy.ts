@@ -284,24 +284,17 @@ export class CompositeRepairStrategy<T> implements RepairStrategy<T> {
 
 /**
  * Default repair strategies for common types
+ * Each strategy handles JSON fence removal internally
  */
-export const defaultRepairStrategies = {
-    properties: new CompositeRepairStrategy<PropertyItem[]>([
-        new JsonFenceRepairStrategy(),
-        new PropertyArrayRepairStrategy(),
-    ]),
-    tags: new CompositeRepairStrategy<string[]>([
-        new JsonFenceRepairStrategy(),
-        new TagArrayRepairStrategy(),
-    ]),
-    inferredAttributes: new CompositeRepairStrategy<InferredAttribute[]>([
-        new JsonFenceRepairStrategy(),
-        new InferredAttributesRepairStrategy(),
-    ]),
-    ontologyOptimization: new CompositeRepairStrategy<OntologyOptimization>([
-        new JsonFenceRepairStrategy(),
-        new OntologyOptimizationRepairStrategy(),
-    ]),
+/**
+ * Default repair strategies for common types
+ * Each strategy handles JSON fence removal internally
+ */
+export const defaultRepairStrategies: Record<string, RepairStrategy<any>> = {
+    properties: new PropertyArrayRepairStrategy(),
+    tags: new TagArrayRepairStrategy(),
+    inferredAttributes: new InferredAttributesRepairStrategy(),
+    ontologyOptimization: new OntologyOptimizationRepairStrategy(),
 };
 
 /**

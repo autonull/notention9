@@ -353,7 +353,7 @@ class ProviderError extends NotentionError { }
 
 ### Phase 2: Critical Consolidation (Week 2-3, ~10 days)
 
-#### C1: Consolidate AI Validation/Repair (3-4 days) ✅ **STEPS 1-2 COMPLETED**
+#### C1: Consolidate AI Validation/Repair (3-4 days) ✅ **STEPS 1-3 COMPLETED**
 **Goal:** Single validation library replacing 3 systems
 
 **Approach:** Strangler Fig pattern
@@ -362,7 +362,7 @@ class ProviderError extends NotentionError { }
    - `RepairStrategy` interface + `HeuristicRepair` (JsonFence, PropertyArray, TagArray, InferredAttributes, OntologyOptimization), `LLMRepair` implementations
    - `ValidationPipeline` orchestrator with configurable repair attempts
    - Factory functions: `createPropertyPipeline`, `createTagPipeline`, `createInferredAttributesPipeline`, `createOntologyOptimizationPipeline`
-2. ⏳ **Week 2 Day 3**: Add comprehensive tests for new validation library
+2. ✅ **Week 2 Day 3**: Add comprehensive tests for new validation library (80 tests)
 3. ⏳ **Week 2 Day 4**: Migrate `ui/src/services/ai/inference.ts` to use new library
 4. ⏳ **Week 3 Day 1**: Migrate `ui/src/services/ai/schema.ts` (delete old repair functions)
 5. ⏳ **Week 3 Day 2**: Migrate `optimize/src/services/ai/extractionSchema.ts` to use core validator (already delegates to core/ontology/schema)

@@ -163,13 +163,25 @@ export class JsonSchemaValidator<T> implements Validator<T> {
                     expected: 'array',
                     received: typeof value,
                 });
-            } else if (schema.items) {
-                for (let i = 0; i < value.length; i++) {
-                    issues.push(...this.validateJsonSchema(
-                        value[i], 
-                        schema.items, 
-                        `${currentPath}[${i}]`
-                    ));
+            } else {
+                if (schema.maxLength !== undefined && value.length > schema.maxLength) {
+                    issues.push({
+                        path: currentPath,
+                        message: `Array too long (max ${schema.maxLength})`,
+                        severity: 'error',
+                        code: 'MAX_LENGTH',
+                        expected: schema.maxLength,
+                        received: value.length,
+                    });
+                }
+                if (schema.items) {
+                    for (let i = 0; i < value.length; i++) {
+                        issues.push(...this.validateJsonSchema(
+                            value[i], 
+                            schema.items, 
+                            `${currentPath}[${i}]`
+                        ));
+                    }
                 }
             }
 

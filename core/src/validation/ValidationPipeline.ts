@@ -72,7 +72,7 @@ export class ValidationPipeline<T> {
         history.push(result);
 
         if (result.success) {
-            return this.buildResult(result, history, 1);
+            return this.buildResult({ ...result, repaired: false, repairAttempts: 0 }, history, 1);
         }
 
         // Repair attempts
@@ -89,13 +89,15 @@ export class ValidationPipeline<T> {
 
             currentData = repaired;
             result = this.validator.validate(currentData);
-            history.push({ ...result, repaired: true, repairAttempts: attempt });
+            const historyEntry = { ...result, repaired: true, repairAttempts: attempt };
+            history.push(historyEntry);
 
-            this.onRepairAttempt?.(attempt, result);
+            this.onRepairAttempt?.(attempt, historyEntry);
 
             if (result.success) {
-                return this.buildResult(result, history, attempt + 1);
+                return this.buildResult(historyEntry, history, attempt + 1);
             }
+            // Validation still failed - continue to next repair attempt
         }
 
         // All attempts failed
