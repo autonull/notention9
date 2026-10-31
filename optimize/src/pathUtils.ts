@@ -1,11 +1,10 @@
 export function resolvePath(obj: unknown, path: string): unknown {
-    if (obj === null || obj === undefined) return undefined;
+    if (obj == null) return undefined;
     return path.split('.').reduce((acc: unknown, part) => {
-        if (acc === null || acc === undefined) return undefined;
+        if (acc == null) return undefined;
         const match = part.match(/^(.+)\[(\d+)\]$/);
         if (match) {
-            const objAcc = acc as Record<string, unknown>;
-            const arr = objAcc[match[1]] as unknown[] | undefined;
+            const arr = (acc as Record<string, unknown>)[match[1]] as unknown[] | undefined;
             return arr?.[parseInt(match[2], 10)];
         }
         return (acc as Record<string, unknown>)[part];
@@ -18,7 +17,7 @@ export function getNestedValue<T>(obj: unknown, path: string): T | undefined {
 
 export function deepEqual(a: unknown, b: unknown): boolean {
     if (a === b) return true;
-    if (a === null || b === null) return false;
+    if (a == null || b == null) return false;
     if (typeof a !== 'object' || typeof b !== 'object') return false;
     if (Array.isArray(a) && Array.isArray(b)) {
         if (a.length !== b.length) return false;

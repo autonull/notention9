@@ -64,8 +64,9 @@ export class ResourceMonitor {
     private peakMemory = 0;
 
     start(): void {
-        if (typeof process !== 'undefined' && process.memoryUsage) {
-            this.startMemory = process.memoryUsage().heapUsed;
+        const memoryUsage = process?.memoryUsage?.();
+        if (memoryUsage) {
+            this.startMemory = memoryUsage.heapUsed;
             this.peakMemory = this.startMemory;
         }
     }
@@ -78,8 +79,9 @@ export class ResourceMonitor {
     }
 
     private updatePeakMemory(): void {
-        if (typeof process !== 'undefined' && process.memoryUsage) {
-            const current = process.memoryUsage().heapUsed;
+        const memoryUsage = process?.memoryUsage?.();
+        if (memoryUsage) {
+            const current = memoryUsage.heapUsed;
             if (current > this.peakMemory) {
                 this.peakMemory = current;
             }

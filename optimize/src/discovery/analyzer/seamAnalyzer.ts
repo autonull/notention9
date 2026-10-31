@@ -1,7 +1,7 @@
 import type { ComponentInfo } from '../scanner/componentScanner.js';
 import type { Seam } from '@notention/core/ui';
 
-export type { Seam };
+export type { Seam } from '@notention/core/ui';
 
 export interface PropSignature {
     name: string;

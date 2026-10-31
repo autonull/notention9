@@ -136,7 +136,7 @@ export class StatePathRegistry {
     }
 
     private resolvePath(obj: unknown, path: string): unknown {
-        if (obj === null || obj === undefined) {
+        if (obj == null) {
             throw new Error(`Cannot resolve path on null/undefined`);
         }
 
@@ -146,7 +146,7 @@ export class StatePathRegistry {
         for (let i = 0; i < parts.length; i++) {
             const part = parts[i];
 
-            if (current === null || current === undefined) {
+            if (current == null) {
                 throw new Error(`Path resolution failed at ${part} (null/undefined)`);
             }
 
@@ -214,7 +214,7 @@ export class StatePathRegistry {
 
     // Check if a path exists
     has(path: string): boolean {
-        return this.get(path) !== undefined;
+        return this.get(path) != null;
     }
 
     // Get all categories
