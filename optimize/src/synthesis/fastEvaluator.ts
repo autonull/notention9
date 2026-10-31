@@ -5,33 +5,20 @@
 
 import { readFile, writeFile, mkdir } from 'fs/promises';
 import { join, dirname } from 'path';
-import { PropertyExtractor } from '@notention/core';
-import { MatchEngine } from '@notention/core';
-import { DEFAULT_ONTOLOGY } from '@notention/core';
-import { OntologyService } from '@notention/core';
-import { Note, Property } from '@notention/core';
 import type { CandidateStrategy, CandidateDir } from './StrategySpec.js';
 import type { BaselineResult, ResourceMetrics, CandidateEvaluation, EvaluationReport, ResourceMonitor } from './evaluationTypes.js';
 import { testCaseRegistry, CORE_CAPTURE_TEST_CASE } from './testCases.js';
 import {
     runTestCases,
-    buildTestCasesWithFlags,
     extractionEvaluator,
     matchEvaluator,
     captureEvaluator,
     createBaselineResultAsync,
-    checkPropertyMatch,
-    createNoteFromText,
-    loadCorpusTestCasesForEvaluation,
     prepareEvaluationTestCases,
 } from './evaluationUtils.js';
 
 // Re-export evaluation types for backward compatibility
 export type { BaselineResult, ResourceMetrics, CandidateEvaluation, EvaluationReport, ResourceMonitor } from './evaluationTypes.js';
-
-const ontologyService = new OntologyService(DEFAULT_ONTOLOGY);
-const extractor = new PropertyExtractor(DEFAULT_ONTOLOGY);
-const matchEngine = new MatchEngine(DEFAULT_ONTOLOGY);
 
 export async function runFastBaselineEvaluation(): Promise<BaselineResult[]> {
     const results: BaselineResult[] = [];

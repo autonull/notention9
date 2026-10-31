@@ -21,11 +21,6 @@ export {
 } from './ConsoleSink.js';
 
 export {
-    FileSink,
-    type FileSinkOptions,
-} from './FileSink.js';
-
-export {
     RemoteSink,
     type RemoteSinkOptions,
 } from './RemoteSink.js';

@@ -247,3 +247,28 @@ export async function initializeStrategySystem(): Promise<void> {
     await initializeProfiles();
     await registerUIStrategies();
 }
+
+const USER_CONFIG_KEY = 'notention:user-config';
+
+export function persistUserConfig(userId: string): void {
+    if (typeof window === 'undefined') return;
+    try {
+        const config = profileRegistry.getUserConfig(userId);
+        localStorage.setItem(USER_CONFIG_KEY, JSON.stringify(config));
+    } catch (err) {
+        console.warn('Failed to persist user config:', err);
+    }
+}
+
+export function loadUserConfig(userId: string): void {
+    if (typeof window === 'undefined') return;
+    try {
+        const stored = localStorage.getItem(USER_CONFIG_KEY);
+        if (stored) {
+            const config = JSON.parse(stored);
+            profileRegistry.setUserConfig(config);
+        }
+    } catch (err) {
+        console.warn('Failed to load user config:', err);
+    }
+}

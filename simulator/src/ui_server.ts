@@ -16,7 +16,7 @@ export interface UIServerOptions {
 }
 
 export class UIServer {
-    private process: ChildProcess | null = null;
+    protected process: ChildProcess | null = null;
     private readonly port: number;
     private readonly uiPath: string;
     private readonly onReady?: () => void;
@@ -96,15 +96,38 @@ export async function startStaticUIServer(port: number): Promise<UIServer> {
         res.sendFile(path.join(uiBuildDir, 'index.html'));
     });
 
-    return new Promise<UIServer>((resolve, reject) => {
-        const server = app.listen(port, () => {
-            console.log(chalk.green(`UI Server (static) Ready at http://localhost:${port}`));
-            resolve({
-                stop: () => server.close(),
-                isRunning: true
+    // Create a minimal UIServer subclass for static serving
+    class StaticUIServer extends UIServer {
+        private server: ReturnType<typeof app.listen> | null = null;
+        
+        constructor(port: number, uiPath: string) {
+            super({ port, uiPath });
+        }
+        
+        override start(): Promise<void> {
+            return new Promise<void>((resolve, reject) => {
+                this.server = app.listen(port, () => {
+                    console.log(chalk.green(`UI Server (static) Ready at http://localhost:${port}`));
+                    resolve();
+                });
+                this.server.on('error', reject);
             });
-        });
+        }
+        
+        override stop(): void {
+            if (this.server) {
+                this.server.close();
+                this.server = null;
+            }
+        }
+        
+        override get isRunning(): boolean {
+            return this.server !== null && this.server.listening;
+        }
+    }
 
-        server.on('error', (err) => reject(err));
-    });
+    const uiServer = new StaticUIServer(port, uiBuildDir);
+    await uiServer.start();
+    
+    return uiServer;
 }

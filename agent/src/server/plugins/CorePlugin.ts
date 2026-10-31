@@ -49,7 +49,7 @@ export class CorePlugin implements AgentPlugin {
                     if (this.ontology.length === 0) await this.loadOntology();
 
                     const extractor = new PropertyExtractor(this.ontology);
-                    const extracted = extractor.extractFromText(getTextFromHtml(content));
+                    const extracted = await extractor.extractFromText(getTextFromHtml(content));
                     if (extracted.length > 0) {
                         finalProperties = [...finalProperties, ...extracted];
                     }

@@ -19,8 +19,10 @@ interface ImportMetaEnv {
 function getImportMetaEnv(): ImportMetaEnv {
     // In browser/Vite: import.meta.env is available
     // In Node.js/Vitest: it may be undefined or we provide a fallback
-    const env = (typeof import.meta !== 'undefined' && import.meta.env) ? import.meta.env : {};
-    return env as ImportMetaEnv;
+    // Use type assertion to satisfy TypeScript in Node.js context
+    const meta = import.meta as unknown as { env?: ImportMetaEnv };
+    const env = meta.env ?? {};
+    return env;
 }
 
 const env = getImportMetaEnv();

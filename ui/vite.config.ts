@@ -16,14 +16,15 @@ export default defineConfig(({mode}) => {
         resolve: {
             alias: {
                 '@': path.resolve(__dirname, './src'),
-                '@notention/core': path.resolve(__dirname, '../core/src'),
-                '@notention/core/constants/storageKeys': path.resolve(__dirname, '../core/src/constants/storageKeys.ts'),
-                '@notention/core/constants/paths': path.resolve(__dirname, '../core/src/constants/paths.ts'),
-                '@notention/core/extraction': path.resolve(__dirname, '../core/src/extraction/index.ts'),
-                '@notention/core/extraction/deterministic': path.resolve(__dirname, '../core/src/extraction/deterministic.ts'),
-                '@notention/core/src/matching': path.resolve(__dirname, '../core/src/matching'),
-                '@notention/core/skills': path.resolve(__dirname, '../core/src/skills/index.ts'),
-                '@notention/core/skills/metaphor/MetaphorRegistry': path.resolve(__dirname, '../core/src/skills/metaphor/MetaphorRegistry.ts'),
+                '@notention/core': path.resolve(__dirname, '../core/dist'),
+                '@notention/core/constants/storageKeys': path.resolve(__dirname, '../core/dist/constants/storageKeys.js'),
+                '@notention/core/constants/paths': path.resolve(__dirname, '../core/dist/constants/paths.js'),
+                '@notention/core/constants/seams': path.resolve(__dirname, '../core/dist/constants/seams.js'),
+                '@notention/core/extraction': path.resolve(__dirname, '../core/dist/extraction/index.js'),
+                '@notention/core/extraction/deterministic': path.resolve(__dirname, '../core/dist/extraction/deterministic.js'),
+                '@notention/core/src/matching': path.resolve(__dirname, '../core/dist/matching'),
+                '@notention/core/skills': path.resolve(__dirname, '../core/dist/skills/index.js'),
+                '@notention/core/skills/metaphor/MetaphorRegistry': path.resolve(__dirname, '../core/dist/skills/metaphor/MetaphorRegistry.js'),
                 'path': 'path-browserify',
                 'os': 'os-browserify/browser',
                 'util': 'util',
@@ -108,7 +109,8 @@ export default defineConfig(({mode}) => {
             rollupOptions: {
                 input: {
                     main: path.resolve(__dirname, 'index.html'),
-                }
+                },
+                external: ['fs', 'fs/promises', 'path', 'os', 'url', 'node:os', 'node:module'],
             }
         }
     };

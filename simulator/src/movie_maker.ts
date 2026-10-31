@@ -352,13 +352,18 @@ export class MovieMaker {
         const assPath = join(this.options.outputDir, 'captions.ass');
         writeFileSync(assPath, assContent);
 
-        return new Promise<void>((resolve, reject) => {
-            const ffmpeg = await import('fluent-ffmpeg');
-            const ffmpegPath = await import('ffmpeg-static');
-            
-            ffmpeg.default.setFfmpegPath(ffmpegPath.default || '/usr/bin/ffmpeg');
-            
-            ffmpeg.default(inputPath)
+        // Import ffmpeg modules
+        const [ffmpegModule, ffmpegPathModule] = await Promise.all([
+            import('fluent-ffmpeg'),
+            import('ffmpeg-static'),
+        ]);
+        const ffmpeg = ffmpegModule.default;
+        const ffmpegPath = (ffmpegPathModule.default as unknown as string) || '/usr/bin/ffmpeg';
+        
+        ffmpeg.setFfmpegPath(ffmpegPath);
+        
+        await new Promise<void>((resolve, reject) => {
+            ffmpeg(inputPath)
                 .input(assPath)
                 .outputOptions([
                     '-vf', `ass=${assPath.replace(/\\/g, '\\\\')}`,
