@@ -180,35 +180,10 @@ export const DAILY_PROMPTS = [
 ] as const;
 
 // ============================================================================
-// Seam Roles
+// Seam Roles - re-exported from dedicated module
 // ============================================================================
 
-export const SEAM_ROLES = {
-    CAPTURE: 'capture',
-    ELICIT: 'elicit',
-    MATCH: 'match',
-    DISPLAY: 'display',
-    LAYOUT: 'layout',
-    ONTOLOGY: 'ontology',
-    INTENT: 'intent',
-} as const;
-
-export type SeamRole = typeof SEAM_ROLES[keyof typeof SEAM_ROLES];
-
-export function resolveSeamId(role: SeamRole, strategyRegistry?: { listSeams(): Array<{ id: string }> }): string {
-    if (!strategyRegistry) return role;
-
-    const seams = strategyRegistry.listSeams();
-    const discovered = seams.find(s => s.id.startsWith(`${role}-`));
-    return discovered?.id ?? role;
-}
-
-export function getSeamIdsForRole(role: SeamRole, strategyRegistry?: { listSeams(): Array<{ id: string }> }): string[] {
-    if (!strategyRegistry) return [role];
-
-    const seams = strategyRegistry.listSeams();
-    return seams.filter(s => s.id.startsWith(`${role}-`)).map(s => s.id);
-}
+export { SEAM_ROLES, type SeamRole, resolveSeamId, getSeamIdsForRole } from './constants/seams.js';
 
 // ============================================================================
 // UI Constants (shared)

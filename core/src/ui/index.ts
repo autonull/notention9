@@ -1,4 +1,4 @@
 export * from './UIAdapter.js';
 export * from './strategy.js';
-export * from './profile.js';
+export * from './ProfileRegistry.js';
 export * from './BaseStrategy.js';

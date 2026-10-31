@@ -1,20 +1,18 @@
+/**
+ * Strategy resolver hook - simplified version
+ * Uses centralized profile registry and strategy resolver
+ */
+
 import { useMemo, useContext, createContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import {
     profileRegistry,
     type StrategyProfile,
     type UserProfileConfig,
-    type StrategyExperiment,
-    type ExperimentAssignment,
-    DEFAULT_PROFILES,
-    DEFAULT_MATCH_DISPLAY_EXPERIMENT,
-} from '@notention/core/ui/profile';
-import { strategyRegistry, type Seam, type Strategy, createComponentStrategy } from '@notention/core/ui/strategy';
+} from '@notention/core/ui/ProfileRegistry';
+import { strategyRegistry, type Seam, type Strategy } from '@notention/core/ui/strategy';
 import { JsonStore } from '@notention/core/storage';
-import { DescribeItComposerStrategy } from '../strategies/DescribeItComposerStrategy';
-import { TagInputStrategy } from '../strategies/TagInputStrategy';
-import { PropertyFormStrategy } from '../strategies/PropertyFormStrategy';
-import { TemplateSelectorStrategy } from '../strategies/TemplateSelectorStrategy';
 import { SEAM_ROLES, type SeamRole, resolveSeamId } from '../constants/seams';
+import { initializeStrategySystem, persistUserConfig } from './strategyResolverInit';
 
 // Strategy context for React components
 interface StrategyContextValue {
@@ -58,7 +56,7 @@ export function StrategyProvider({ children, userId = 'default-user' }: Strategy
     const resolveStrategy = useMemo(
         () => (seamRole: SeamRole) => {
             const seamId = resolveSeamId(seamRole, strategyRegistry);
-            return profileRegistry.resolveStrategy(userId, seamId, strategyRegistry.strategies);
+            return profileRegistry.resolveStrategy(userId, seamId, strategyRegistry);
         },
         [userId]
     );
@@ -136,281 +134,5 @@ export function useSeamStrategy<P = Record<string, unknown>>(seamRole: SeamRole)
     return resolveStrategy(seamRole) as Strategy<P> | undefined;
 }
 
-// Forward declarations for component types
-type QuickCaptureComponent = React.ComponentType<{
-    input: string;
-    onInputChange: (value: string) => void;
-    onSubmit: (e: React.FormEvent) => void;
-    extractedProps: Array<{ key: string; values: string[] }>;
-    onTemplateClick: (type: string) => void;
-}>;
-
-type InsertPropertyModalComponent = React.ComponentType<{
-    isOpen: boolean;
-    onClose: () => void;
-    onInsert: (key: string, operator: string, value: string, icon?: string) => void;
-    initialKey?: string;
-    initialOperator?: string;
-    initialValue?: string;
-    attributeDef?: any;
-    ontology?: any[];
-    isEditing?: boolean;
-    onPickLocation?: () => Promise<string>;
-    suggestions?: any[];
-}>;
-
-type LocalMatchPreviewComponent = React.ComponentType<{
-    match: any;
-    onSelectNote: (noteId: string) => void;
-    onRejectMatch: (matchId: string) => void;
-    onReviseRequest: () => void;
-}>;
-
-type DashboardLocalMatchComponent = React.ComponentType<{
-    notes: any[];
-    onSelectNote: (noteId: string) => void;
-}>;
-
-type LocalMatchesPanelComponent = React.ComponentType<{
-    localMatches: any[];
-    contacts: any[];
-    onSelect: (match: any) => void;
-}>;
-
-type PropertyPanelComponent = React.ComponentType<{
-    properties: any[];
-    isAddingProperty: boolean;
-    setIsAddingProperty: (adding: boolean) => void;
-    editingPropertyIndex: number | null;
-    setEditingPropertyIndex: (index: number | null) => void;
-    propertyToDelete: any | null;
-    setPropertyToDelete: (prop: any | null) => void;
-    onSaveProperty: (key: string, op: string, value: string) => void;
-    onCancelEdit: () => void;
-    onAcceptReview: (item: any) => void;
-    propertyReview: any | null;
-    onDeleteProperty: () => void;
-    onPickLocation?: () => void;
-    onPickTime?: (key: string) => void;
-    ontology?: any[];
-}>;
-
-// Lazy-loaded components
-const components = {
-    quickCapture: null as QuickCaptureComponent | null,
-    insertPropertyModal: null as InsertPropertyModalComponent | null,
-    localMatchPreview: null as LocalMatchPreviewComponent | null,
-    dashboardLocalMatch: null as DashboardLocalMatchComponent | null,
-    localMatchesPanel: null as LocalMatchesPanelComponent | null,
-    propertyPanel: null as PropertyPanelComponent | null,
-};
-
-async function loadComponents(): Promise<void> {
-    if (!components.quickCapture) {
-        const { QuickCapture } = await import('../components/dashboard/QuickCapture');
-        components.quickCapture = QuickCapture;
-    }
-    if (!components.insertPropertyModal) {
-        const { InsertPropertyModal } = await import('../components/editor/InsertPropertyModal');
-        components.insertPropertyModal = InsertPropertyModal;
-    }
-    if (!components.localMatchPreview) {
-        const { LocalMatchPreview } = await import('../components/dashboard/LocalMatchPreview');
-        components.localMatchPreview = LocalMatchPreview;
-    }
-    if (!components.dashboardLocalMatch) {
-        const { DashboardLocalMatch } = await import('../components/dashboard/DashboardLocalMatch');
-        components.dashboardLocalMatch = DashboardLocalMatch;
-    }
-    if (!components.localMatchesPanel) {
-        const { LocalMatchesPanel } = await import('../components/assistant/LocalMatchesPanel');
-        components.localMatchesPanel = LocalMatchesPanel;
-    }
-    if (!components.propertyPanel) {
-        const { PropertyPanel } = await import('../components/assistant/PropertyPanel');
-        components.propertyPanel = PropertyPanel;
-    }
-}
-
-// Check if running in clean-profile mode (for stranger testing)
-const isCleanProfile =
-    typeof window !== 'undefined' &&
-    (window.location.search.includes('clean=true') || localStorage.getItem('notention:clean-profile') === 'true');
-
-if (isCleanProfile) {
-    localStorage.removeItem('notention:clean-profile');
-    await profileConfigStore.clear();
-}
-
-// Initialize profiles from core defaults
-export async function initializeProfiles(): Promise<void> {
-    for (const profile of DEFAULT_PROFILES) {
-        profileRegistry.registerProfile(profile);
-    }
-
-    // Load persisted user configs from storage
-    await loadPersistedConfigs();
-
-    // Register experiment for match-display comparison (uses dynamic seam ID resolution)
-    const matchSeamId = resolveSeamId(SEAM_ROLES.MATCH, strategyRegistry);
-    profileRegistry.registerExperiment({
-        ...DEFAULT_MATCH_DISPLAY_EXPERIMENT,
-        seamId: matchSeamId,
-        variants: DEFAULT_MATCH_DISPLAY_EXPERIMENT.variants.map(v => ({ ...v, seamId: matchSeamId })),
-    });
-}
-
-// Persist user configs to storage
-const STORAGE_KEY = 'notention:profile-config';
-const profileConfigStore = new JsonStore<{
-    userConfigs: UserProfileConfig[];
-    assignments: ExperimentAssignment[];
-}>(STORAGE_KEY);
-
-async function loadPersistedConfigs(): Promise<void> {
-    try {
-        const data = await profileConfigStore.load();
-        if (!data) return;
-        data.userConfigs?.forEach((config: UserProfileConfig) =>
-            profileRegistry.userConfigs.set(config.userId, config)
-        );
-        data.assignments?.forEach((assignment: ExperimentAssignment) =>
-            profileRegistry.assignments.set(`${assignment.experimentId}:${assignment.userId}`, assignment)
-        );
-    } catch (e) {
-        console.warn('Failed to load persisted profile configs:', e);
-    }
-}
-
-export async function persistUserConfig(userId: string): Promise<void> {
-    try {
-        const config = profileRegistry.getUserConfig(userId);
-        const assignments = Array.from(profileRegistry.assignments.values()).filter(a => a.userId === userId);
-
-        const existing = await profileConfigStore.load();
-        const data = existing ?? { userConfigs: [], assignments: [] };
-
-        const configIndex = data.userConfigs.findIndex((c: any) => c.userId === userId);
-        if (configIndex >= 0) data.userConfigs[configIndex] = config;
-        else data.userConfigs.push(config);
-
-        data.assignments = data.assignments.filter((a: any) => a.userId !== userId);
-        data.assignments.push(...assignments);
-
-        await profileConfigStore.save(data);
-    } catch (e) {
-        console.warn('Failed to persist profile config:', e);
-    }
-}
-
-// Register UI strategies with the core registry
-export async function registerUIStrategies(): Promise<void> {
-    await loadComponents();
-
-    // Resolve seam IDs dynamically from the strategy registry (populated by discovery)
-    const captureSeamId = resolveSeamId(SEAM_ROLES.CAPTURE, strategyRegistry);
-    const elicitSeamId = resolveSeamId(SEAM_ROLES.ELICIT, strategyRegistry);
-    const matchSeamId = resolveSeamId(SEAM_ROLES.MATCH, strategyRegistry);
-    const layoutSeamId = resolveSeamId(SEAM_ROLES.LAYOUT, strategyRegistry);
-
-    const seams: Seam[] = [
-        {
-            id: captureSeamId,
-            name: 'Capture',
-            description: 'Natural language capture interface',
-            role: 'capture',
-            components: ['QuickCapture', 'DescribeItComposer'],
-            propsShape: {
-                input: 'string',
-                onInputChange: '(value: string) => void',
-                onSubmit: '(e: React.FormEvent) => void',
-                extractedProps: 'Array<{key: string; values: string[]}>',
-                onTemplateClick: '(type: string) => void',
-            },
-        },
-        {
-            id: elicitSeamId,
-            name: 'Elicit',
-            description: 'Property elicitation interface',
-            role: 'elicit',
-            components: ['TagInput', 'InsertPropertyModal'],
-            propsShape: {
-                onInsert: '(key: string, operator: string, value: string, icon?: string) => void',
-                initialKey: 'string',
-                initialOperator: 'string',
-                initialValue: 'string',
-                attributeDef: 'any',
-                ontology: 'any[]',
-                isEditing: 'boolean',
-                onPickLocation: '() => Promise<string>',
-                suggestions: 'any[]',
-            },
-        },
-        {
-            id: matchSeamId,
-            name: 'Match Display',
-            description: 'Match explanation and selection interface',
-            role: 'display',
-            components: ['LocalMatchPreview', 'DashboardLocalMatch'],
-            propsShape: {
-                match: 'any',
-                onSelectNote: '(noteId: string) => void',
-                onRejectMatch: '(matchId: string) => void',
-                onReviseRequest: '() => void',
-                notes: 'any[]',
-            },
-        },
-        {
-            id: layoutSeamId,
-            name: 'Layout',
-            description: 'Workspace layout and panel arrangement',
-            role: 'layout',
-            components: ['PropertyPanel', 'LocalMatchesPanel'],
-            propsShape: {
-                properties: 'any[]',
-                isAddingProperty: 'boolean',
-                setIsAddingProperty: '(adding: boolean) => void',
-                editingPropertyIndex: 'number | null',
-                setEditingPropertyIndex: '(index: number | null) => void',
-                propertyToDelete: 'any | null',
-                setPropertyToDelete: '(prop: any | null) => void',
-                onSaveProperty: '(key: string, op: string, value: string) => void',
-                onCancelEdit: '() => void',
-                onAcceptReview: '(item: any) => void',
-                propertyReview: 'any | null',
-                onDeleteProperty: '() => void',
-                onPickLocation: '() => void',
-                onPickTime: '(key: string) => void',
-                ontology: 'any[]',
-                localMatches: 'any[]',
-                contacts: 'any[]',
-                onSelect: '(match: any) => void',
-            },
-        },
-    ];
-
-    for (const seam of seams) {
-        strategyRegistry.register(seam);
-    }
-
-    // Register capture strategies
-    strategyRegistry.register(createComponentStrategy(captureSeamId, 'describe-it-composer', DescribeItComposerStrategy, components.quickCapture!));
-    strategyRegistry.register(createComponentStrategy(captureSeamId, 'quick-capture', () => components.quickCapture!, components.quickCapture!));
-
-    // Register elicit strategies
-    strategyRegistry.register(createComponentStrategy(elicitSeamId, 'tag-input', TagInputStrategy, components.insertPropertyModal!));
-    strategyRegistry.register(createComponentStrategy(elicitSeamId, 'insert-property-modal', () => components.insertPropertyModal!, components.insertPropertyModal!));
-
-    // Register match strategies
-    strategyRegistry.register(createComponentStrategy(matchSeamId, 'local-match-preview', () => components.localMatchPreview!, components.localMatchPreview!));
-    strategyRegistry.register(createComponentStrategy(matchSeamId, 'dashboard-local-match', () => components.dashboardLocalMatch!, components.dashboardLocalMatch!));
-
-    // Register layout strategies
-    strategyRegistry.register(createComponentStrategy(layoutSeamId, 'property-panel', PropertyFormStrategy, components.propertyPanel!));
-    strategyRegistry.register(createComponentStrategy(layoutSeamId, 'local-matches-panel', () => components.localMatchesPanel!, components.localMatchesPanel!));
-}
-
-export async function initializeStrategySystem(): Promise<void> {
-    initializeProfiles();
-    await registerUIStrategies();
-}
+// Re-export for convenience
+export { initializeStrategySystem } from './strategyResolverInit';

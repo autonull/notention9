@@ -1,4 +1,5 @@
-import type { Seam } from '@notention/optimize/discovery';
+import type { Seam } from '@notention/core/ui/strategy';
+import { getBuiltinSeamSpec, toCoreSeam, type SeamSpec } from '@notention/core/constants/seams';
 
 /**
  * Centralized strategy configurations
@@ -13,98 +14,62 @@ export interface StrategyConfig {
     defaultProps: Record<string, unknown>;
 }
 
+function createStrategyConfig(
+    id: string,
+    seamSpec: SeamSpec,
+    componentPath: string,
+    componentName: string,
+    version: string,
+    defaultProps: Record<string, unknown>
+): StrategyConfig {
+    return {
+        id,
+        seam: toCoreSeam(seamSpec),
+        componentPath,
+        componentName,
+        version,
+        defaultProps,
+    };
+}
+
+const captureSpec = getBuiltinSeamSpec('capture-0')!;
+const elicitSpec = getBuiltinSeamSpec('elicit-0')!;
+const matchSpec = getBuiltinSeamSpec('match-0')!;
+const layoutSpec = getBuiltinSeamSpec('layout-0')!;
+
 export const STRATEGY_CONFIGS: StrategyConfig[] = [
-    {
-        id: 'property-form',
-        seam: {
-            id: 'capture-0',
-            name: 'capture',
-            description: 'Capture seam for property input',
-            propsShape: {
-                initialKey: 'string',
-                initialOp: 'string',
-                initialValue: 'string',
-                isAdding: 'boolean',
-                onSave: '(key: string, op: string, value: string) => void',
-                onCancel: '() => void',
-                onPickLocation: '() => Promise<string> | void',
-                onPickTime: '(key: string) => void',
-                ontology: 'OntologyNode[]',
-            },
-            components: ['PropertyForm'],
-            role: 'capture',
-        },
-        componentPath: '../components/editor/PropertyForm',
-        componentName: 'PropertyForm',
-        version: '1.0.0',
-        defaultProps: {
-            isAdding: true,
-            initialOp: 'is',
-        },
-    },
-    {
-        id: 'describe-it-composer',
-        seam: {
-            id: 'extraction-0',
-            name: 'extraction',
-            description: 'Extract structured properties from natural language',
-            propsShape: {
-                isOpen: 'boolean',
-                onClose: '() => void',
-                onApply: '(properties: Property[]) => void',
-                ontology: 'OntologyNode[]',
-            },
-            components: ['DescribeItComposer'],
-            role: 'capture',
-        },
-        componentPath: '../components/editor/DescribeItComposer',
-        componentName: 'DescribeItComposer',
-        version: '1.0.0',
-        defaultProps: {},
-    },
-    {
-        id: 'template-selector',
-        seam: {
-            id: 'template-0',
-            name: 'template-selection',
-            description: 'Select a template for note creation',
-            propsShape: {
-                ontology: 'OntologyNode[]',
-                onSelect: '(template: OntologyNode) => void',
-                onClose: '() => void',
-            },
-            components: ['TemplateSelector'],
-            role: 'capture',
-        },
-        componentPath: '../components/editor/TemplateSelector',
-        componentName: 'TemplateSelector',
-        version: '1.0.0',
-        defaultProps: {},
-    },
-    {
-        id: 'tag-input',
-        seam: {
-            id: 'elicit-0',
-            name: 'detail-elicitation',
-            description: 'Elicit additional details from user',
-            propsShape: {
-                tags: 'string[]',
-                onChange: '(tags: string[]) => void',
-                onAutoTag: '() => void',
-                isAutoTagging: 'boolean',
-                autoFocus: 'boolean',
-                className: 'string',
-            },
-            components: ['TagInput'],
-            role: 'elicit',
-        },
-        componentPath: '../components/editor/TagInput',
-        componentName: 'TagInput',
-        version: '1.0.0',
-        defaultProps: {
-            autoFocus: false,
-        },
-    },
+    createStrategyConfig(
+        'property-form',
+        captureSpec,
+        '../components/editor/PropertyForm',
+        'PropertyForm',
+        '1.0.0',
+        { isAdding: true, initialOp: 'is' }
+    ),
+    createStrategyConfig(
+        'describe-it-composer',
+        { ...captureSpec, id: 'extraction-0', name: 'extraction', description: 'Extract structured properties from natural language' },
+        '../components/editor/DescribeItComposer',
+        'DescribeItComposer',
+        '1.0.0',
+        {}
+    ),
+    createStrategyConfig(
+        'template-selector',
+        { ...captureSpec, id: 'template-0', name: 'template-selection', description: 'Select a template for note creation' },
+        '../components/editor/TemplateSelector',
+        'TemplateSelector',
+        '1.0.0',
+        {}
+    ),
+    createStrategyConfig(
+        'tag-input',
+        elicitSpec,
+        '../components/editor/TagInput',
+        'TagInput',
+        '1.0.0',
+        { autoFocus: false }
+    ),
 ];
 
 /**

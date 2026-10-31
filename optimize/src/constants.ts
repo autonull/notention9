@@ -106,17 +106,8 @@ export const RUN_DIR_PREFIX = 'run-';
 // Dry run output directory
 export const DEFAULT_OUTPUT_DIR = 'loop/runs';
 
-// Seam role constants
-export const SEAM_ROLES = {
-    CAPTURE: 'capture',
-    ELICIT: 'elicit',
-    MATCH: 'match',
-    DISPLAY: 'display',
-    LAYOUT: 'layout',
-    EXPLAIN: 'explain',
-    ONTOLOGY: 'ontology',
-    INTENT: 'intent',
-} as const;
+// Seam role constants - re-exported from core for consistency
+export { SEAM_ROLES } from '@notention/core/constants/seams';
 
 // Strategy kinds
 export const STRATEGY_KINDS = ['prompt', 'ui', 'ontology-facet'] as const;

@@ -1,6 +1,6 @@
 import { useStrategy } from '../../hooks/useStrategyResolver';
 import { SEAM_ROLES, type SeamRole, resolveSeamId } from '../../constants/seams';
-import { profileRegistry, type StrategyProfile } from '@notention/core/ui/profile';
+import { profileRegistry, type StrategyProfile } from '@notention/core/ui/ProfileRegistry';
 import { strategyRegistry } from '@notention/core/ui/strategy';
 import { Button } from '../ui/Button';
 import { Select } from '../ui/Select';
