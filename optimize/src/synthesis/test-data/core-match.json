@@ -1,0 +1,34 @@
+[
+  {
+    "id": "match-1",
+    "name": "React developer request matches React offer (price compatible)",
+    "requestText": "I need a React developer for 100 USD per hour",
+    "offerText": "I offer React development services at 100 USD per hour",
+    "expectedMinScore": 0.3,
+    "expectedMaxScore": 1.0
+  },
+  {
+    "id": "match-2",
+    "name": "Budget request matches priced offer",
+    "requestText": "Need a designer for 5000 USD",
+    "offerText": "Designer offering services at 5000 USD",
+    "expectedMinScore": 0.3,
+    "expectedMaxScore": 1.0
+  },
+  {
+    "id": "match-3",
+    "name": "No match for unrelated skills",
+    "requestText": "I need a React developer",
+    "offerText": "I offer Python development services",
+    "expectedMinScore": 0,
+    "expectedMaxScore": 0.2
+  },
+  {
+    "id": "match-4",
+    "name": "Price conflict - different budgets",
+    "requestText": "Need a developer for 2000 USD",
+    "offerText": "Developer offering services at 100 USD per hour",
+    "expectedMinScore": 0,
+    "expectedMaxScore": 0.1
+  }
+]

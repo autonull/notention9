@@ -95,7 +95,7 @@ export async function createBaselineResultAsync<TTestCase extends { id: string }
     taskPrefix?: string
 ): Promise<BaselineResult> {
     const { success, details, duration } = await evaluator.evaluate(testCase);
-    const prefix = taskPrefix ?? evaluator.type;
+    const prefix = taskPrefix ?? evaluator.getTaskPrefix();
 
     return {
         taskId: `${prefix}-${evaluator.getId(testCase)}`,

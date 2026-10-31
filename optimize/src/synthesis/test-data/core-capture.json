@@ -1,0 +1,9 @@
+[
+  {
+    "id": "capture-1",
+    "name": "Capture extracts key properties",
+    "input": "I need a React developer for two weeks, up to 900 USD, starting next week",
+    "expectedMinProperties": 3,
+    "maxDurationMs": 20000
+  }
+]

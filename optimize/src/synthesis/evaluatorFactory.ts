@@ -4,6 +4,7 @@
  */
 
 import type { Note, Property } from '@notention/core';
+import type { ExtractionTestCase, MatchTestCase, CaptureTestCase } from './testCases.js';
 
 /**
  * Common result format for all evaluators
@@ -145,34 +146,6 @@ export function createCaptureEvaluator(
 }
 
 /**
- * Type definitions - re-exported from testCases.ts for backward compatibility
- */
-export interface ExtractionTestCase {
-    id: string;
-    name: string;
-    input: string;
-    expectedMinProperties: number;
-    expectedProperties?: Partial<Property>[];
-}
-
-export interface MatchTestCase {
-    id: string;
-    name: string;
-    requestText: string;
-    offerText: string;
-    expectedMinScore: number;
-    expectedMaxScore?: number;
-}
-
-export interface CaptureTestCase {
-    id: string;
-    name: string;
-    input: string;
-    expectedMinProperties: number;
-    maxDurationMs: number;
-}
-
-/**
  * Helper function to check property match (shared)
  */
 export function checkPropertyMatch(actual: Property[], expected: Partial<Property>[]): { matched: number; total: number; details: string[] } {
@@ -219,5 +192,6 @@ export async function createNoteFromText(
     };
 }
 
-// Re-export from testCases for backward compatibility
+// Re-export test case types and constants from testCases
+export type { ExtractionTestCase, MatchTestCase, CaptureTestCase } from './testCases.js';
 export { CORE_EXTRACTION_TEST_CASES, CORE_MATCH_TEST_CASES, CORE_CAPTURE_TEST_CASE, testCaseRegistry } from './testCases.js';

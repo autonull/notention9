@@ -1,0 +1,51 @@
+[
+  {
+    "id": "extraction-1",
+    "name": "Job request with budget, role, deadline",
+    "input": "I need a React developer for two weeks, up to 900 USD, starting next week",
+    "expectedMinProperties": 3,
+    "expectedProperties": [
+      { "key": "intent", "operator": "is", "values": ["task"] },
+      { "key": "role", "operator": "contains", "values": ["React developer"] },
+      { "key": "budget", "operator": "is", "values": ["900"] }
+    ]
+  },
+  {
+    "id": "extraction-2",
+    "name": "Project with budget and deadline",
+    "input": "Create a new project with React 18, TypeScript, and Vite. Use Tailwind for styling. Budget 5000 USD, deadline next Friday.",
+    "expectedMinProperties": 3,
+    "expectedProperties": [
+      { "key": "budget", "operator": "is", "values": ["5000"] },
+      { "key": "price", "operator": "is", "values": ["5000 USD"] }
+    ]
+  },
+  {
+    "id": "extraction-3",
+    "name": "Shopping intent",
+    "input": "Buy milk #shopping",
+    "expectedMinProperties": 1,
+    "expectedProperties": [
+      { "key": "intent", "operator": "is", "values": ["shopping"] }
+    ]
+  },
+  {
+    "id": "extraction-4",
+    "name": "Meeting with budget",
+    "input": "Meeting at 3pm with John about the project budget of 5000 USD",
+    "expectedMinProperties": 2,
+    "expectedProperties": [
+      { "key": "budget", "operator": "is", "values": ["5000"] },
+      { "key": "price", "operator": "is", "values": ["5000 USD"] }
+    ]
+  },
+  {
+    "id": "extraction-5",
+    "name": "Freelance offer with rate",
+    "input": "I offer React development services at 100 USD per hour",
+    "expectedMinProperties": 2,
+    "expectedProperties": [
+      { "key": "price", "operator": "is", "values": ["100 USD"] }
+    ]
+  }
+]

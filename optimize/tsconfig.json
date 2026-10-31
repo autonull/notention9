@@ -24,6 +24,6 @@
   "references": [
     { "path": "../core" }
   ],
-  "include": ["src/**/*", "src/prompts/*.json"],
+  "include": ["src/**/*", "src/prompts/*.json", "src/synthesis/test-data/*.json"],
   "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx"]
 }
