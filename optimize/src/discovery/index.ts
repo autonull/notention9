@@ -15,6 +15,12 @@ export {
 
 export { createAstProject, findProjectRoot, DEFAULT_PROJECT_ROOT } from './scanner/astProject.js';
 export {
+    FileScanner,
+    fileScanner,
+    scanUIComponents,
+    scanTypeScriptSources,
+} from './scanner/fileScanner.js';
+export {
     StateSchemaInferencer,
     stateSchemaInferencer,
     type InferredStateSchema,

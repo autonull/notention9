@@ -399,63 +399,93 @@ export class ProfileRegistry {
         this.userConfigs.set(userId, config);
     }
 
-    // Resolve strategy for a user and seam role
+    // Strategy resolution step interface
+    private readonly resolutionSteps: Array<{
+        tryResolve(config: UserProfileConfig, seamRole: SeamRole, seamId: string): Strategy | undefined;
+    }> = [
+        // 1. User overrides (highest priority)
+        {
+            tryResolve: (config, seamRole, seamId) => {
+                const overrideId = config.overrides.overrides[seamRole];
+                return overrideId ? this.strategyRegistry?.get(seamId, overrideId) : undefined;
+            },
+        },
+        // 2. Active experiment assignment
+        {
+            tryResolve: (config, seamRole, seamId) => {
+                for (const experiment of this.experiments.values()) {
+                    if (!experiment.isActive || experiment.seamId !== seamRole) continue;
+                    
+                    const assignmentKey = `${experiment.id}:${config.userId}`;
+                    let assignment = this.assignments.get(assignmentKey);
+                    
+                    if (!assignment) {
+                        assignment = this.assignToVariant(experiment, config.userId);
+                        this.assignments.set(assignmentKey, assignment);
+                    }
+                    
+                    const variant = experiment.variants.find(v => v.id === assignment.variantId);
+                    if (variant) {
+                        return this.strategyRegistry?.get(seamId, variant.strategyId);
+                    }
+                }
+                return undefined;
+            },
+        },
+        // 3. Manual mode with active profile
+        {
+            tryResolve: (config, seamRole, seamId) => {
+                if (!config.manualMode) return undefined;
+                const profile = this.profiles.get(config.activeProfileId);
+                const strategyId = profile?.strategySelections[seamRole];
+                return strategyId ? this.strategyRegistry?.get(seamId, strategyId) : undefined;
+            },
+        },
+        // 4. Auto-select profile via policy
+        {
+            tryResolve: (config, seamRole, seamId) => {
+                const policy = this.getActivePolicy();
+                if (!policy) return undefined;
+                const profile = this.selectProfileByPolicy(policy, config);
+                const strategyId = profile?.strategySelections[seamRole];
+                return strategyId ? this.strategyRegistry?.get(seamId, strategyId) : undefined;
+            },
+        },
+        // 5. Default profile
+        {
+            tryResolve: (_, seamRole, seamId) => {
+                const defaultProfile = this.getDefaultProfile();
+                const strategyId = defaultProfile?.strategySelections[seamRole];
+                return strategyId ? this.strategyRegistry?.get(seamId, strategyId) : undefined;
+            },
+        },
+        // 6. Last resort: first available strategy for seam
+        {
+            tryResolve: (_, seamRole, seamId) => {
+                const seamStrategies = this.strategyRegistry?.getAllForSeam(seamId) ?? [];
+                return seamStrategies[0];
+            },
+        },
+    ];
+
+    // Resolve strategy for a user and seam role using pipeline
     resolveStrategy(userId: string, seamRole: SeamRole, strategyRegistry: StrategyRegistry): Strategy | undefined {
+        // Store registry reference for step functions
+        this.strategyRegistry = strategyRegistry;
+        
         const config = this.getUserConfig(userId);
         const seamId = this.resolveSeamId(seamRole, strategyRegistry);
         
-        // 1. Check user overrides first (stored by role)
-        if (config.overrides.overrides[seamRole]) {
-            const strategyId = config.overrides.overrides[seamRole];
-            return strategyRegistry.get(seamId, strategyId);
+        // Run pipeline
+        for (const step of this.resolutionSteps) {
+            const strategy = step.tryResolve(config, seamRole, seamId);
+            if (strategy) return strategy;
         }
-
-        // 2. Check active experiment assignment (experiments use roles)
-        for (const experiment of this.experiments.values()) {
-            if (!experiment.isActive || experiment.seamId !== seamRole) continue;
-            
-            const assignmentKey = `${experiment.id}:${userId}`;
-            let assignment = this.assignments.get(assignmentKey);
-            
-            if (!assignment) {
-                // Assign to variant based on weights
-                assignment = this.assignToVariant(experiment, userId);
-                this.assignments.set(assignmentKey, assignment);
-            }
-            
-            const variant = experiment.variants.find(v => v.id === assignment.variantId);
-            if (variant) {
-                return strategyRegistry.get(seamId, variant.strategyId);
-            }
-        }
-
-        // 3. Check manual mode
-        if (config.manualMode) {
-            const profile = this.profiles.get(config.activeProfileId);
-            if (profile?.strategySelections[seamRole]) {
-                return strategyRegistry.get(seamId, profile.strategySelections[seamRole]);
-            }
-        }
-
-        // 4. Auto-select profile via policy
-        const policy = this.getActivePolicy();
-        if (policy) {
-            const profile = this.selectProfileByPolicy(policy, config);
-            if (profile?.strategySelections[seamRole]) {
-                return strategyRegistry.get(seamId, profile.strategySelections[seamRole]);
-            }
-        }
-
-        // 5. Fallback to default profile
-        const defaultProfile = this.getDefaultProfile();
-        if (defaultProfile?.strategySelections[seamRole]) {
-            return strategyRegistry.get(seamId, defaultProfile.strategySelections[seamRole]);
-        }
-
-        // 6. Last resort: first available strategy for seam
-        const seamStrategies = strategyRegistry.getAllForSeam(seamId);
-        return seamStrategies[0];
+        
+        return undefined;
     }
+
+    private strategyRegistry: StrategyRegistry | null = null;
 
     /**
      * Resolve a seam role to the actual discovered seam ID

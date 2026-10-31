@@ -20,7 +20,18 @@ import {
     CORE_MATCH_TEST_CASES,
     type ExtractionTestCase,
     type MatchTestCase,
+    type CaptureTestCase,
 } from './testCases.js';
+import {
+    runTestCases,
+    buildTestCasesWithFlags,
+    extractionEvaluator,
+    matchEvaluator,
+    captureEvaluator,
+    createBaselineResultAsync,
+    checkPropertyMatch,
+    createNoteFromText,
+} from './evaluationUtils.js';
 
 // Re-export evaluation types for backward compatibility
 export type { BaselineResult, ResourceMetrics, CandidateEvaluation, EvaluationReport, ResourceMonitor } from './evaluationTypes.js';
@@ -28,43 +39,6 @@ export type { BaselineResult, ResourceMetrics, CandidateEvaluation, EvaluationRe
 const ontologyService = new OntologyService(DEFAULT_ONTOLOGY);
 const extractor = new PropertyExtractor(DEFAULT_ONTOLOGY);
 const matchEngine = new MatchEngine(DEFAULT_ONTOLOGY);
-
-async function createNoteFromText(text: string, id: string = 'test'): Promise<Note> {
-    const properties = await extractor.extractFromText(text);
-    return {
-        id,
-        title: text.slice(0, 50),
-        content: `<p>${text}</p>`,
-        properties,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        tags: [],
-        source: { type: 'user' as const, identifier: 'test', timestamp: Date.now() },
-        privacy: 'private' as const,
-        priority: 0,
-    };
-}
-
-function checkPropertyMatch(actual: Property[], expected: Partial<Property>[]): { matched: number; total: number; details: string[] } {
-    let matched = 0;
-    const details: string[] = [];
-    
-    for (const exp of expected) {
-        const found = actual.some(a => 
-            a.key === exp.key && 
-            a.operator === exp.operator &&
-            exp.values?.some(v => a.values.includes(v))
-        );
-        if (found) {
-            matched++;
-            details.push(`✓ ${exp.key} ${exp.operator} ${exp.values?.join(',')}`);
-        } else {
-            details.push(`✗ Missing: ${exp.key} ${exp.operator} ${exp.values?.join(',')}`);
-        }
-    }
-    
-    return { matched, total: expected.length, details };
-}
 
 async function loadCorpusTestCasesForEvaluation(): Promise<{ extraction: ExtractionTestCase[]; match: MatchTestCase[] }> {
     // Check multiple possible corpus output locations
@@ -82,72 +56,6 @@ async function loadCorpusTestCasesForEvaluation(): Promise<{ extraction: Extract
         }
     }
     return { extraction: [], match: [] };
-}
-
-async function evaluateExtractionTestCase(
-    testCase: ExtractionTestCase,
-    isCorpusTest: boolean,
-    taskPrefix: string
-): Promise<BaselineResult> {
-    const startTime = Date.now();
-    const properties = await extractor.extractFromText(testCase.input);
-    const duration = Date.now() - startTime;
-    
-    const check = checkPropertyMatch(properties, testCase.expectedProperties || []);
-    const success = properties.length >= testCase.expectedMinProperties && check.matched === check.total;
-    
-    return {
-        taskId: `${taskPrefix}${testCase.id}`,
-        successRate: success ? 1 : 0,
-        medianDuration: duration,
-        p90Duration: duration,
-        medianSteps: 1,
-        p90Steps: 1,
-        errors: success ? [] : [`Extracted ${properties.length} properties, expected ≥${testCase.expectedMinProperties}. Missing: ${check.details.filter(d => d.startsWith('✗')).join('; ')}`],
-        isCorpusTest,
-    };
-}
-
-async function evaluateMatchTestCase(
-    testCase: MatchTestCase,
-    isCorpusTest: boolean,
-    taskPrefix: string
-): Promise<BaselineResult> {
-    const startTime = Date.now();
-    const request = await createNoteFromText(testCase.requestText, 'request');
-    const offer = await createNoteFromText(testCase.offerText, 'offer');
-    const result = matchEngine.calculateMatchScore(request, offer);
-    const duration = Date.now() - startTime;
-    
-    const success = result.score >= testCase.expectedMinScore && 
-                   (testCase.expectedMaxScore === undefined || result.score <= testCase.expectedMaxScore);
-    
-    return {
-        taskId: `${taskPrefix}${testCase.id}`,
-        successRate: success ? 1 : 0,
-        medianDuration: duration,
-        p90Duration: duration,
-        medianSteps: 1,
-        p90Steps: 1,
-        errors: success ? [] : [`Match score ${result.score.toFixed(2)} not in range [${testCase.expectedMinScore}, ${testCase.expectedMaxScore ?? 1.0}]`],
-        isCorpusTest,
-    };
-}
-
-function buildTestCasesWithFlags<TCore, TCorpus>(
-    coreCases: TCore[],
-    corpusCases: TCorpus[]
-): Array<{ testCase: TCore | TCorpus; isCorpusTest: boolean; taskPrefix: string }> {
-    const withFlags: Array<{ testCase: TCore | TCorpus; isCorpusTest: boolean; taskPrefix: string }> = [];
-    
-    for (const testCase of coreCases) {
-        withFlags.push({ testCase, isCorpusTest: false, taskPrefix: '' });
-    }
-    for (const testCase of corpusCases) {
-        withFlags.push({ testCase, isCorpusTest: true, taskPrefix: '' });
-    }
-    
-    return withFlags;
 }
 
 export async function runFastBaselineEvaluation(): Promise<BaselineResult[]> {
@@ -169,36 +77,23 @@ export async function runFastBaselineEvaluation(): Promise<BaselineResult[]> {
         coreExtractionCases,
         corpusCases.extraction
     );
-    for (const { testCase, isCorpusTest } of extractionCases) {
-        results.push(await evaluateExtractionTestCase(testCase, isCorpusTest, 'task-3-extraction-'));
-    }
+    results.push(...await runTestCases(extractionCases, extractionEvaluator));
     
     // Evaluate match test cases (core + corpus)
     const matchCases = buildTestCasesWithFlags(
         coreMatchCases,
         corpusCases.match
     );
-    for (const { testCase, isCorpusTest } of matchCases) {
-        results.push(await evaluateMatchTestCase(testCase, isCorpusTest, 'task-2-match-'));
-    }
+    results.push(...await runTestCases(matchCases, matchEvaluator));
     
     // Test capture task (uses extraction)
-    const captureInput = CORE_CAPTURE_TEST_CASE.input;
-    const captureStart = Date.now();
-    const captureProps = await extractor.extractFromText(captureInput);
-    const captureDuration = Date.now() - captureStart;
-    const captureSuccess = captureProps.length >= CORE_CAPTURE_TEST_CASE.expectedMinProperties && captureDuration < CORE_CAPTURE_TEST_CASE.maxDurationMs;
-    
-    results.unshift({
-        taskId: 'task-1-capture',
-        successRate: captureSuccess ? 1 : 0,
-        medianDuration: captureDuration,
-        p90Duration: captureDuration,
-        medianSteps: 2,
-        p90Steps: 2,
-        errors: captureSuccess ? [] : [`Capture extracted ${captureProps.length} properties in ${captureDuration}ms`],
-        isCorpusTest: false,
-    });
+    const captureResult = await createBaselineResultAsync(
+        CORE_CAPTURE_TEST_CASE,
+        captureEvaluator,
+        false,
+        'task-1-capture'
+    );
+    results.unshift(captureResult);
     
     return results;
 }

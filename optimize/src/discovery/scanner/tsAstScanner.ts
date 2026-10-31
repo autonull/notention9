@@ -2,6 +2,7 @@ import { Project, Type, Symbol, Node, InterfaceDeclaration, TypeAliasDeclaration
 import { globSync } from 'glob';
 import { relative } from 'node:path';
 import { createAstProject, DEFAULT_PROJECT_ROOT } from './astProject.js';
+import { scanTypeScriptSources } from './fileScanner.js';
 
 export interface ScannedType {
     name: string;
@@ -60,11 +61,7 @@ export class TsAstScanner {
         this.statePaths = [];
 
         // Add source files
-        const uiFiles = globSync('**/*.ts', { cwd: `${projectRoot}/ui/src`, absolute: true });
-        const coreFiles = globSync('**/*.ts', { cwd: `${projectRoot}/core/src`, absolute: true });
-        const agentFiles = globSync('**/*.ts', { cwd: `${projectRoot}/agent/src`, absolute: true });
-
-        const allFiles = [...uiFiles, ...coreFiles, ...agentFiles];
+        const allFiles = scanTypeScriptSources(projectRoot);
         for (const file of allFiles) {
             try {
                 this.project.addSourceFileAtPath(file);

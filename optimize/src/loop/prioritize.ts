@@ -179,6 +179,28 @@ export function calculateComplexityDelta(
     };
 }
 
+/**
+ * Helper to create a discovered problem with common fields
+ */
+function createProblem(
+    id: string,
+    type: DiscoveredProblem['type'],
+    description: string,
+    options: Partial<DiscoveredProblem> = {}
+): DiscoveredProblem {
+    return {
+        id,
+        type,
+        description,
+        frequency: 1,
+        severity: 2,
+        recoverability: 3,
+        reach: 2,
+        evidence: [],
+        ...options,
+    };
+}
+
 export function deriveProblemsFromDiscovery(
     discovered: {
         duplicateAnalysis: {
@@ -194,47 +216,53 @@ export function deriveProblemsFromDiscovery(
 
     // Duplicate components
     for (const group of discovered.duplicateAnalysis.duplicateGroups) {
-        problems.push({
-            id: `duplicate-${group.signature.replace(/[^a-z0-9]+/gi, '-').slice(0, 40)}`,
-            type: 'duplicate-component',
-            description: `Duplicate component group: ${group.primary} and ${group.duplicates.length} duplicates (${group.reason})`,
-            component: group.primary,
-            frequency: group.duplicates.length + 1,
-            severity: 3,
-            recoverability: 4, // Easy to deduplicate
-            reach: 2,
-            evidence: [`Primary: ${group.primary}`, `Duplicates: ${group.duplicates.join(', ')}`, `Reason: ${group.reason}`],
-        });
+        problems.push(createProblem(
+            `duplicate-${group.signature.replace(/[^a-z0-9]+/gi, '-').slice(0, 40)}`,
+            'duplicate-component',
+            `Duplicate component group: ${group.primary} and ${group.duplicates.length} duplicates (${group.reason})`,
+            {
+                component: group.primary,
+                frequency: group.duplicates.length + 1,
+                severity: 3,
+                recoverability: 4, // Easy to deduplicate
+                reach: 2,
+                evidence: [`Primary: ${group.primary}`, `Duplicates: ${group.duplicates.join(', ')}`, `Reason: ${group.reason}`],
+            }
+        ));
     }
 
     // Dead components
     for (const dead of discovered.duplicateAnalysis.deadComponents) {
-        problems.push({
-            id: `dead-${dead.component.replace(/[^a-z0-9]+/gi, '-').slice(0, 40)}`,
-            type: 'dead-component',
-            description: `Dead component: ${dead.component} (${dead.reason})`,
-            component: dead.component,
-            frequency: 1,
-            severity: 2,
-            recoverability: 5, // Easy to remove
-            reach: 1,
-            evidence: [`Reason: ${dead.reason}`, `Confidence: ${dead.confidence}`],
-        });
+        problems.push(createProblem(
+            `dead-${dead.component.replace(/[^a-z0-9]+/gi, '-').slice(0, 40)}`,
+            'dead-component',
+            `Dead component: ${dead.component} (${dead.reason})`,
+            {
+                component: dead.component,
+                frequency: 1,
+                severity: 2,
+                recoverability: 5, // Easy to remove
+                reach: 1,
+                evidence: [`Reason: ${dead.reason}`, `Confidence: ${dead.confidence}`],
+            }
+        ));
     }
 
     // Inlined candidates
     for (const inline of discovered.duplicateAnalysis.inlinedCandidates) {
-        problems.push({
-            id: `inline-${inline.component.replace(/[^a-z0-9]+/gi, '-').slice(0, 40)}`,
-            type: 'inline-candidate',
-            description: `Inlined component: ${inline.component} (${inline.reason}) - ${inline.suggestedAction}`,
-            component: inline.component,
-            frequency: 1,
-            severity: 2,
-            recoverability: 3,
-            reach: 2,
-            evidence: [`Reason: ${inline.reason}`, `Suggested: ${inline.suggestedAction}`],
-        });
+        problems.push(createProblem(
+            `inline-${inline.component.replace(/[^a-z0-9]+/gi, '-').slice(0, 40)}`,
+            'inline-candidate',
+            `Inlined component: ${inline.component} (${inline.reason}) - ${inline.suggestedAction}`,
+            {
+                component: inline.component,
+                frequency: 1,
+                severity: 2,
+                recoverability: 3,
+                reach: 2,
+                evidence: [`Reason: ${inline.reason}`, `Suggested: ${inline.suggestedAction}`],
+            }
+        ));
     }
 
     // Missing seams for key roles
@@ -243,17 +271,19 @@ export function deriveProblemsFromDiscovery(
 
     for (const role of expectedRoles) {
         if (!foundRoles.has(role)) {
-            problems.push({
-                id: `missing-seam-${role}`,
-                type: 'failed-match',
-                description: `Missing seam for role: ${role}`,
-                seamId: role,
-                frequency: 5, // High frequency - affects all workflows using this role
-                severity: 4,
-                recoverability: 2, // Hard to recover without the seam
-                reach: 5, // Affects all users
-                evidence: [`No components found for ${role} seam`],
-            });
+            problems.push(createProblem(
+                `missing-seam-${role}`,
+                'failed-match',
+                `Missing seam for role: ${role}`,
+                {
+                    seamId: role,
+                    frequency: 5, // High frequency - affects all workflows using this role
+                    severity: 4,
+                    recoverability: 2, // Hard to recover without the seam
+                    reach: 5, // Affects all users
+                    evidence: [`No components found for ${role} seam`],
+                }
+            ));
         }
     }
 

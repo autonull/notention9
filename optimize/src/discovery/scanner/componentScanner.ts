@@ -1,8 +1,8 @@
-import { globSync } from 'glob';
 import { join } from 'node:path';
 import type { Node, PropertySignature, SourceFile } from 'ts-morph';
 import { Node as N, SyntaxKind } from 'ts-morph';
 import { createAstProject, DEFAULT_PROJECT_ROOT } from './astProject.js';
+import { FileScanner, scanUIComponents } from './fileScanner.js';
 
 export interface ComponentInfo {
     name: string;
@@ -87,12 +87,7 @@ export class ComponentScanner {
         this.actions = [];
 
         const project = createAstProject(projectRoot);
-        const uiRoot = join(projectRoot, 'ui', 'src');
-        const files = globSync('**/*.tsx', {
-            cwd: uiRoot,
-            absolute: true,
-            ignore: ['**/*.test.tsx', '**/*.spec.tsx'],
-        });
+        const files = scanUIComponents(projectRoot);
 
         for (const file of files) {
             try {
@@ -482,7 +477,7 @@ export class ComponentScanner {
             name,
             type,
             label: jsx.props.label || jsx.props.placeholder || name,
-            required: jsx.props.required === 'true' || jsx.props.required === true,
+            required: jsx.props.required === 'true' || jsx.props.required === true || jsx.props.required === '',
             options: options.length > 0 ? options : undefined,
         };
     }
