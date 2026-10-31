@@ -1,6 +1,6 @@
 import { readFile, writeFile, mkdir, access } from 'fs/promises';
 import { join, dirname } from 'path';
-import type { BaselineResult, CandidateEvaluation, EvaluationReport } from './fastEvaluator.js';
+import type { BaselineResult, CandidateEvaluation, EvaluationReport } from './evaluation.js';
 import type { StrategyExperiment, ExperimentResult, ExperimentAssignment } from '@notention/core/ui/profile';
 import { computeStats, normalCDF } from './stats.js';
 

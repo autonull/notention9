@@ -4,8 +4,8 @@
 
 import { mkdir, writeFile, readFile, readdir } from 'fs/promises';
 import { join } from 'path';
-import { loadOrRunFastBaseline, runFastEvaluation } from '../synthesis/fastEvaluator.js';
-import type { BaselineResult } from '../synthesis/fastEvaluator.js';
+import { loadOrRunFastBaseline, runFastEvaluation } from '../synthesis/evaluation.js';
+import type { BaselineResult } from '../synthesis/evaluation.js';
 
 export async function ensureDir(dir: string): Promise<void> {
     await mkdir(dir, { recursive: true });

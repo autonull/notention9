@@ -5,7 +5,7 @@
 import { BaseSubcommand, SubcommandConfig, SubcommandOptions } from './base.js';
 import { loadEvaluationReport, loadBaseline, loadCandidatesFromDir, findLatestRunDir, getArtifactPaths } from '../artifactIO.js';
 import { generateComparisonReport, type VariantComparison, type ComparisonReport } from '../../synthesis/strategyComparison.js';
-import type { BaselineResult, CandidateEvaluation } from '../../synthesis/fastEvaluator.js';
+import type { BaselineResult, CandidateEvaluation } from '../../synthesis/evaluation.js';
 import type { ExperimentAssignment } from '@notention/core/ui/profile';
 import { join } from 'path';
 

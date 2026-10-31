@@ -6,4 +6,4 @@ export {
     type ExtractedTerm,
 } from './ingest.js';
 
-export type { ExtractionTestCase as TestCase, MatchTestCase } from '../synthesis/testCases.js';
+export type { ExtractionTestCase, MatchTestCase } from '../synthesis/evaluation.js';

@@ -1,4 +1,16 @@
 import type { Seam } from '@notention/optimize/discovery';
+import {
+    RECOVERABILITY_WEIGHTS,
+    DEFAULT_VARIATION_THRESHOLDS,
+    DEFAULT_MIN_EVIDENCE_FOR_DECISION,
+    DEFAULT_PROBLEM_VALUES,
+    PROBLEM_SEVERITY_DEFAULTS,
+    PROBLEM_RECOVERABILITY_DEFAULTS,
+    PROBLEM_REACH_DEFAULTS,
+    EXPECTED_SEAM_ROLES,
+    COMPLEXITY_WEIGHTS,
+    MISSING_SEAM_FREQUENCY,
+} from './prioritizeConstants.js';
 
 export interface DiscoveredProblem {
     id: string;
@@ -18,10 +30,8 @@ export interface PrioritizedProblem extends DiscoveredProblem {
     rank: number;
 }
 
-const RECOVERABILITY_WEIGHTS = { 1: 5, 2: 4, 3: 3, 4: 2, 5: 1 }; // Lower recoverability = higher impact
-
 export function calculateImpactScore(problem: DiscoveredProblem): number {
-    const recoverabilityFactor = RECOVERABILITY_WEIGHTS[problem.recoverability as keyof typeof RECOVERABILITY_WEIGHTS] || 3;
+    const recoverabilityFactor = RECOVERABILITY_WEIGHTS[problem.recoverability as keyof typeof RECOVERABILITY_WEIGHTS] ?? 3;
     return problem.frequency * problem.severity * recoverabilityFactor * problem.reach;
 }
 
@@ -84,12 +94,6 @@ export interface VariationThresholds {
     abandonedTask: number;    // Minimum abandoned tasks before flagging
 }
 
-export const DEFAULT_VARIATION_THRESHOLDS: VariationThresholds = {
-    failedMatch: 3,
-    repeatedCorrection: 3,
-    abandonedTask: 2,
-};
-
 export function isFailureNotVariation(
     signalCount: number,
     signalType: FailureSignal['type'],
@@ -121,7 +125,7 @@ export interface AbstentionDecision {
 
 export function checkAbstention(
     evidenceCount: number,
-    minimumRequired: number = 3
+    minimumRequired: number = DEFAULT_MIN_EVIDENCE_FOR_DECISION
 ): AbstentionDecision {
     if (evidenceCount < minimumRequired) {
         return {
@@ -163,11 +167,11 @@ export function calculateComplexityDelta(
 
     // Weighted complexity score
     const complexityScore =
-        linesAdded * 0.1 +
-        linesRemoved * 0.05 +
-        newDeps.length * 5 +
-        newFiles * 10 +
-        modifiedFiles * 1;
+        linesAdded * COMPLEXITY_WEIGHTS.linesAdded +
+        linesRemoved * COMPLEXITY_WEIGHTS.linesRemoved +
+        newDeps.length * COMPLEXITY_WEIGHTS.newDependency +
+        newFiles * COMPLEXITY_WEIGHTS.newFile +
+        modifiedFiles * COMPLEXITY_WEIGHTS.modifiedFile;
 
     return {
         linesAdded,
@@ -192,11 +196,10 @@ function createProblem(
         id,
         type,
         description,
-        frequency: 1,
-        severity: 2,
-        recoverability: 3,
-        reach: 2,
-        evidence: [],
+        ...DEFAULT_PROBLEM_VALUES,
+        severity: PROBLEM_SEVERITY_DEFAULTS[type] ?? DEFAULT_PROBLEM_VALUES.severity,
+        recoverability: PROBLEM_RECOVERABILITY_DEFAULTS[type] ?? DEFAULT_PROBLEM_VALUES.recoverability,
+        reach: PROBLEM_REACH_DEFAULTS[type] ?? DEFAULT_PROBLEM_VALUES.reach,
         ...options,
     };
 }
@@ -223,9 +226,6 @@ export function deriveProblemsFromDiscovery(
             {
                 component: group.primary,
                 frequency: group.duplicates.length + 1,
-                severity: 3,
-                recoverability: 4, // Easy to deduplicate
-                reach: 2,
                 evidence: [`Primary: ${group.primary}`, `Duplicates: ${group.duplicates.join(', ')}`, `Reason: ${group.reason}`],
             }
         ));
@@ -239,10 +239,6 @@ export function deriveProblemsFromDiscovery(
             `Dead component: ${dead.component} (${dead.reason})`,
             {
                 component: dead.component,
-                frequency: 1,
-                severity: 2,
-                recoverability: 5, // Easy to remove
-                reach: 1,
                 evidence: [`Reason: ${dead.reason}`, `Confidence: ${dead.confidence}`],
             }
         ));
@@ -256,20 +252,15 @@ export function deriveProblemsFromDiscovery(
             `Inlined component: ${inline.component} (${inline.reason}) - ${inline.suggestedAction}`,
             {
                 component: inline.component,
-                frequency: 1,
-                severity: 2,
-                recoverability: 3,
-                reach: 2,
                 evidence: [`Reason: ${inline.reason}`, `Suggested: ${inline.suggestedAction}`],
             }
         ));
     }
 
     // Missing seams for key roles
-    const expectedRoles: Array<Seam['role']> = ['capture', 'elicit', 'match', 'display', 'layout', 'explain', 'ontology', 'intent'];
     const foundRoles = new Set(discovered.seams.map(s => s.role));
 
-    for (const role of expectedRoles) {
+    for (const role of EXPECTED_SEAM_ROLES) {
         if (!foundRoles.has(role)) {
             problems.push(createProblem(
                 `missing-seam-${role}`,
@@ -277,10 +268,7 @@ export function deriveProblemsFromDiscovery(
                 `Missing seam for role: ${role}`,
                 {
                     seamId: role,
-                    frequency: 5, // High frequency - affects all workflows using this role
-                    severity: 4,
-                    recoverability: 2, // Hard to recover without the seam
-                    reach: 5, // Affects all users
+                    frequency: MISSING_SEAM_FREQUENCY,
                     evidence: [`No components found for ${role} seam`],
                 }
             ));

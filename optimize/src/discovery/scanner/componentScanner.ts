@@ -5,9 +5,7 @@ import { extractProps } from './componentProps.js';
 import { extractHooks } from './componentHooks.js';
 import { extractExports } from './componentExports.js';
 import { extractJsx, traverseJsx, traverseJsxWithContext } from './componentJsx.js';
-import { analyzeRoutes } from './componentRoutes.js';
-import { analyzeDialogs } from './componentDialogs.js';
-import { analyzeActions } from './componentActions.js';
+import { analyzeComponents } from './componentAnalyzer.js';
 
 export interface ComponentInfo {
     name: string;
@@ -98,9 +96,7 @@ export class ComponentScanner {
             if (info) this.components.set(info.name, info);
         }
 
-        const routes = analyzeRoutes(this.components);
-        const dialogs = analyzeDialogs(this.components);
-        const actions = analyzeActions(this.components);
+        const { routes, dialogs, actions } = analyzeComponents(this.components);
 
         return {
             routes,

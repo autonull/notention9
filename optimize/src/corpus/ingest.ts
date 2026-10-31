@@ -1,6 +1,6 @@
 import { readFile, readdir, stat, writeFile, mkdir } from 'fs/promises';
 import { join, extname, basename, relative } from 'path';
-import type { ExtractionTestCase as TestCase, MatchTestCase } from '../synthesis/testCases.js';
+import type { ExtractionTestCase, MatchTestCase } from '../synthesis/evaluation.js';
 
 export interface CorpusConfig {
     inputDir: string;
@@ -25,7 +25,7 @@ export interface CorpusAnalysis {
     totalTerms: number;
     terms: ExtractedTerm[];
     vocabulary: string[];
-    generatedTestCases: TestCase[];
+    generatedTestCases: ExtractionTestCase[];
     generatedMatchCases: MatchTestCase[];
     taxonomyGaps: string[];
 }
@@ -195,7 +195,7 @@ export async function ingestCorpus(config: Partial<CorpusConfig> = {}): Promise<
     console.log(`  Vocabulary size: ${vocabulary.length}`);
     
     // Generate test cases
-    let generatedTestCases: TestCase[] = [];
+    let generatedTestCases: ExtractionTestCase[] = [];
     let generatedMatchCases: MatchTestCase[] = [];
     
     if (finalConfig.generateTestCases) {
@@ -252,8 +252,8 @@ async function getFiles(dir: string, extensions: string[]): Promise<string[]> {
     return files;
 }
 
-function generateTestCasesFromCorpus(terms: ExtractedTerm[], vocabulary: string[]): TestCase[] {
-    const testCases: TestCase[] = [];
+function generateTestCasesFromCorpus(terms: ExtractedTerm[], vocabulary: string[]): ExtractionTestCase[] {
+    const testCases: ExtractionTestCase[] = [];
     
     // Valid ontology property keys that the extractor can recognize
     const validPropertyKeys = new Set([
@@ -528,13 +528,13 @@ async function writeOutputFiles(outputDir: string, analysis: CorpusAnalysis): Pr
 }
 
 export async function loadCorpusTestCases(outputDir: string): Promise<{
-    extraction: TestCase[];
+    extraction: ExtractionTestCase[];
     match: MatchTestCase[];
 }> {
     const extractionPath = join(outputDir, 'extraction-test-cases.json');
     const matchPath = join(outputDir, 'match-test-cases.json');
     
-    let extraction: TestCase[] = [];
+    let extraction: ExtractionTestCase[] = [];
     let match: MatchTestCase[] = [];
     
     try {

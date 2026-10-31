@@ -1,7 +1,18 @@
 import { DEFAULT_ONTOLOGY, PropertyExtractor, MatchEngine } from '@notention/core';
 import { FACETS_STATUS_ONTOLOGY } from '@notention/core/ontology/domains.facets';
-import { runFastBaselineEvaluation, runFastEvaluation, loadOrRunFastBaseline } from '../synthesis/fastEvaluator.js';
-import type { BaselineResult, CandidateEvaluation, EvaluationReport } from '../synthesis/fastEvaluator.js';
+import { 
+    runFastBaselineEvaluation, 
+    loadOrRunFastBaseline,
+    type BaselineResult,
+    createExtractionEvaluator,
+    createMatchEvaluator,
+    createCaptureEvaluator,
+    checkPropertyMatch,
+    createNoteFromText,
+    CORE_EXTRACTION_TEST_CASES,
+    CORE_MATCH_TEST_CASES,
+    CORE_CAPTURE_TEST_CASE,
+} from '../synthesis/evaluation.js';
 
 interface OntologyExperimentResult {
     flat: {
@@ -29,7 +40,7 @@ const facetsExtractor = new PropertyExtractor(FACETS_STATUS_ONTOLOGY);
 const facetsMatchEngine = new MatchEngine(FACETS_STATUS_ONTOLOGY);
 
 /**
- * Run baseline evaluation with a specific ontology
+ * Run baseline evaluation with a specific ontology using shared evaluators
  */
 async function runBaselineWithOntology(
     extractor: PropertyExtractor,
@@ -37,140 +48,20 @@ async function runBaselineWithOntology(
 ): Promise<BaselineResult[]> {
     const results: BaselineResult[] = [];
 
-    // Test core extraction tasks (regression tests)
-    const EXTRACTION_TEST_CASES = [
-        {
-            id: 'extraction-1',
-            name: 'Job request with budget, role, deadline',
-            input: 'I need a React developer for two weeks, up to 900 USD, starting next week',
-            expectedMinProperties: 3,
-            expectedProperties: [
-                { key: 'intent', operator: 'is', values: ['task'] },
-                { key: 'role', operator: 'contains', values: ['React developer'] },
-                { key: 'budget', operator: 'is', values: ['900'] },
-            ],
-        },
-        {
-            id: 'extraction-2',
-            name: 'Project with budget and deadline',
-            input: 'Create a new project with React 18, TypeScript, and Vite. Use Tailwind for styling. Budget 5000 USD, deadline next Friday.',
-            expectedMinProperties: 3,
-            expectedProperties: [
-                { key: 'budget', operator: 'is', values: ['5000'] },
-                { key: 'price', operator: 'is', values: ['5000 USD'] },
-            ],
-        },
-        {
-            id: 'extraction-3',
-            name: 'Shopping intent',
-            input: 'Buy milk #shopping',
-            expectedMinProperties: 1,
-            expectedProperties: [
-                { key: 'intent', operator: 'is', values: ['shopping'] },
-            ],
-        },
-        {
-            id: 'extraction-4',
-            name: 'Meeting with budget',
-            input: 'Meeting at 3pm with John about the project budget of 5000 USD',
-            expectedMinProperties: 2,
-            expectedProperties: [
-                { key: 'budget', operator: 'is', values: ['5000'] },
-                { key: 'price', operator: 'is', values: ['5000 USD'] },
-            ],
-        },
-        {
-            id: 'extraction-5',
-            name: 'Freelance offer with rate',
-            input: 'I offer React development services at 100 USD per hour',
-            expectedMinProperties: 2,
-            expectedProperties: [
-                { key: 'price', operator: 'is', values: ['100 USD'] },
-            ],
-        },
-    ];
-
-    const MATCH_TEST_CASES = [
-        {
-            id: 'match-1',
-            name: 'React developer request matches React offer (price compatible)',
-            requestText: 'I need a React developer for 100 USD per hour',
-            offerText: 'I offer React development services at 100 USD per hour',
-            expectedMinScore: 0.3,
-            expectedMaxScore: 1.0,
-        },
-        {
-            id: 'match-2',
-            name: 'Budget request matches priced offer',
-            requestText: 'Need a designer for 5000 USD',
-            offerText: 'Designer offering services at 5000 USD',
-            expectedMinScore: 0.3,
-            expectedMaxScore: 1.0,
-        },
-        {
-            id: 'match-3',
-            name: 'No match for unrelated skills',
-            requestText: 'I need a React developer',
-            offerText: 'I offer Python development services',
-            expectedMinScore: 0,
-            expectedMaxScore: 0.2,
-        },
-        {
-            id: 'match-4',
-            name: 'Price conflict - different budgets',
-            requestText: 'Need a developer for 2000 USD',
-            offerText: 'Developer offering services at 100 USD per hour',
-            expectedMinScore: 0,
-            expectedMaxScore: 0.1,
-        },
-    ];
-
-    async function createNoteFromText(text: string, id: string = 'test') {
-        const properties = await extractor.extractFromText(text);
-        return {
-            id,
-            title: text.slice(0, 50),
-            content: `<p>${text}</p>`,
-            properties,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            tags: [],
-            source: { type: 'user' as const, identifier: 'test', timestamp: Date.now() },
-            privacy: 'private' as const,
-            priority: 0,
-        };
-    }
-
-    function checkPropertyMatch(actual: { key: string; operator: string; values: string[] }[], expected: { key: string; operator: string; values?: string[] }[]) {
-        let matched = 0;
-        const details: string[] = [];
-        
-        for (const exp of expected) {
-            const found = actual.some(a => 
-                a.key === exp.key && 
-                a.operator === exp.operator &&
-                exp.values?.some(v => a.values.includes(v))
-            );
-            if (found) {
-                matched++;
-                details.push(`✓ ${exp.key} ${exp.operator} ${exp.values?.join(',')}`);
-            } else {
-                details.push(`✗ Missing: ${exp.key} ${exp.operator} ${exp.values?.join(',')}`);
-            }
-        }
-        
-        return { matched, total: expected.length, details };
-    }
+    // Create evaluators for this ontology
+    const extractionEvaluator = createExtractionEvaluator(extractor);
+    const matchEvaluator = createMatchEvaluator(matchEngine, extractor);
+    const captureEvaluator = createCaptureEvaluator(extractor);
 
     // Test core extraction tasks
-    for (const testCase of EXTRACTION_TEST_CASES) {
+    for (const testCase of CORE_EXTRACTION_TEST_CASES) {
         const startTime = Date.now();
         const properties = await extractor.extractFromText(testCase.input);
         const duration = Date.now() - startTime;
-        
+
         const check = checkPropertyMatch(properties, testCase.expectedProperties || []);
         const success = properties.length >= testCase.expectedMinProperties && check.matched === check.total;
-        
+
         results.push({
             taskId: `task-3-extraction-${testCase.id}`,
             successRate: success ? 1 : 0,
@@ -184,16 +75,16 @@ async function runBaselineWithOntology(
     }
 
     // Test core match tasks
-    for (const testCase of MATCH_TEST_CASES) {
+    for (const testCase of CORE_MATCH_TEST_CASES) {
         const startTime = Date.now();
-        const request = await createNoteFromText(testCase.requestText, 'request');
-        const offer = await createNoteFromText(testCase.offerText, 'offer');
+        const request = await createNoteFromText(testCase.requestText, 'request', extractor);
+        const offer = await createNoteFromText(testCase.offerText, 'offer', extractor);
         const result = matchEngine.calculateMatchScore(request, offer);
         const duration = Date.now() - startTime;
-        
+
         const success = result.score >= testCase.expectedMinScore && 
                        (testCase.expectedMaxScore === undefined || result.score <= testCase.expectedMaxScore);
-        
+
         results.push({
             taskId: `task-2-match-${testCase.id}`,
             successRate: success ? 1 : 0,
@@ -207,11 +98,11 @@ async function runBaselineWithOntology(
     }
 
     // Test capture task
-    const captureInput = 'I need a React developer for two weeks, up to 900 USD, starting next week';
+    const captureInput = CORE_CAPTURE_TEST_CASE.input;
     const captureStart = Date.now();
     const captureProps = await extractor.extractFromText(captureInput);
     const captureDuration = Date.now() - captureStart;
-    const captureSuccess = captureProps.length >= 3 && captureDuration < 20000;
+    const captureSuccess = captureProps.length >= CORE_CAPTURE_TEST_CASE.expectedMinProperties && captureDuration < CORE_CAPTURE_TEST_CASE.maxDurationMs;
     
     results.unshift({
         taskId: 'task-1-capture',
