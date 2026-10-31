@@ -1,4 +1,3 @@
-import { readFileSync } from 'fs';
 import { globSync } from 'glob';
 import { join } from 'path';
 import * as ts from 'typescript';

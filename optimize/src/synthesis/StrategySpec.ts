@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import type { Seam, StrategyArtifact, Capability, Provenance } from '@notention/core/ui';
-import { BUILTIN_SPECS, ROLES_WITH_BUILTIN_SPECS, getBuiltinSpec, hasBuiltinSpec } from './builtinSpecs.js';
+import { BUILTIN_SPECS, ROLES_WITH_BUILTIN_SPECS, getBuiltinSpec, hasBuiltinSpec, getAllBuiltinSpecs } from './builtinSpecs.js';
 
 /**
  * Seam definition - re-exported from core for consistency

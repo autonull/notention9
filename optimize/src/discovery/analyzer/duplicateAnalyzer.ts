@@ -1,5 +1,6 @@
 import type { ComponentInfo } from '../scanner/componentScanner.js';
 import type { Seam } from './seamAnalyzer.js';
+import { getPropSignature, signatureKey } from './seamAnalyzer.js';
 
 export interface DuplicateGroup {
     signature: string;
@@ -32,13 +33,6 @@ export interface DiscoveryAnalysis {
         inlinedCount: number;
         actionableFindings: number;
     };
-}
-
-function getPropSignature(component: ComponentInfo): string {
-    return component.props
-        .map(p => `${p.name}:${p.type}${p.optional ? '?' : ''}`)
-        .sort()
-        .join('|');
 }
 
 function propsAreIdentical(a: ComponentInfo, b: ComponentInfo): boolean {
@@ -101,8 +95,9 @@ export async function analyzeDuplicates(
 
         if (group.length > 1) {
             const primary = group[0].name;
+            const sig = getPropSignature(group[0]);
             duplicateGroups.push({
-                signature: getPropSignature(group[0]),
+                signature: signatureKey(sig),
                 components: group,
                 reason: group.every(c => propsAreIdentical(group[0], c)) ? 'identical-props' : 'near-identical-props',
                 primary,

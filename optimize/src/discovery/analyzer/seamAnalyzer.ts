@@ -3,13 +3,13 @@ import type { Seam } from '@notention/core/ui';
 
 export type { Seam };
 
-interface PropSignature {
+export interface PropSignature {
     name: string;
     type: string;
     optional: boolean;
 }
 
-function getPropSignature(component: ComponentInfo): PropSignature[] {
+export function getPropSignature(component: ComponentInfo): PropSignature[] {
     return component.props.map(p => ({
         name: p.name,
         type: p.type,
@@ -17,7 +17,7 @@ function getPropSignature(component: ComponentInfo): PropSignature[] {
     }));
 }
 
-function signatureKey(sig: PropSignature[]): string {
+export function signatureKey(sig: PropSignature[]): string {
     return sig.map(p => `${p.name}:${p.type}${p.optional ? '?' : ''}`).sort().join('|');
 }
 

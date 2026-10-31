@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, mkdirSync, existsSync, rmSync, readdirSync } from 'fs';
+import { readFile, writeFile, mkdir, rm, readdir } from 'fs/promises';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import type { CandidateStrategy, CandidateDir, StrategyArtifact } from './StrategySpec.js';
@@ -55,17 +55,19 @@ export class StrategyAdoption {
         this.loadLedger();
     }
 
-    private loadLedger(): void {
-        if (existsSync(this.config.ledgerFile)) {
-            const content = readFileSync(this.config.ledgerFile, 'utf-8');
+    private async loadLedger(): Promise<void> {
+        try {
+            const content = await readFile(this.config.ledgerFile, 'utf-8');
             this.ledger = content.trim().split('\n').filter(Boolean).map(line => JSON.parse(line));
+        } catch {
+            // File doesn't exist yet
         }
     }
 
-    private appendLedger(entry: LedgerEntry): void {
+    private async appendLedger(entry: LedgerEntry): Promise<void> {
         this.ledger.push(entry);
-        mkdirSync(dirname(this.config.ledgerFile), { recursive: true });
-        writeFileSync(this.config.ledgerFile, this.ledger.map(e => JSON.stringify(e)).join('\n') + '\n', { flag: 'a' });
+        await mkdir(dirname(this.config.ledgerFile), { recursive: true });
+        await writeFile(this.config.ledgerFile, this.ledger.map(e => JSON.stringify(e)).join('\n') + '\n', { flag: 'a' });
     }
 
     /**
@@ -94,8 +96,8 @@ export class StrategyAdoption {
         
         // Save artifact
         const artifactPath = join(this.config.strategiesDir, `${candidate.id}.json`);
-        mkdirSync(dirname(artifactPath), { recursive: true });
-        writeFileSync(artifactPath, JSON.stringify(artifact, null, 2));
+        await mkdir(dirname(artifactPath), { recursive: true });
+        await writeFile(artifactPath, JSON.stringify(artifact, null, 2));
 
         // Create feature flag
         const flagKey = `strategy-${candidate.id}`;
@@ -114,10 +116,10 @@ export class StrategyAdoption {
         };
 
         const recordPath = join(this.config.strategiesDir, `${candidate.id}.adoption.json`);
-        writeFileSync(recordPath, JSON.stringify(record, null, 2));
+        await writeFile(recordPath, JSON.stringify(record, null, 2));
 
         // Append to ledger
-        this.appendLedger({
+        await this.appendLedger({
             id: `adopt-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
             type: 'adopt',
             strategyId: candidate.id,
@@ -140,24 +142,26 @@ export class StrategyAdoption {
         const artifactPath = join(this.config.strategiesDir, `${strategyId}.json`);
         const recordPath = join(this.config.strategiesDir, `${strategyId}.adoption.json`);
 
-        if (!existsSync(artifactPath) || !existsSync(recordPath)) {
+        try {
+            await readFile(recordPath, 'utf-8');
+        } catch {
             console.log(`❌ Strategy ${strategyId} not found for rollback`);
             return false;
         }
 
-        const previousRecord = JSON.parse(readFileSync(recordPath, 'utf-8'));
+        const previousRecord = JSON.parse(await readFile(recordPath, 'utf-8'));
 
         // Disable feature flag
         await this.setFlag(previousRecord.flagKey, false);
 
         // Move artifact to archive
         const archivePath = join(this.config.strategiesDir, 'archive', `${strategyId}-${Date.now()}.json`);
-        mkdirSync(dirname(archivePath), { recursive: true });
-        rmSync(artifactPath, { force: true });
-        rmSync(recordPath, { force: true });
+        await mkdir(dirname(archivePath), { recursive: true });
+        await rm(artifactPath, { force: true });
+        await rm(recordPath, { force: true });
 
         // Append to ledger
-        this.appendLedger({
+        await this.appendLedger({
             id: `rollback-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
             type: 'rollback',
             strategyId,
@@ -177,38 +181,46 @@ export class StrategyAdoption {
      */
     async setFlag(flagKey: string, enabled: boolean): Promise<void> {
         const flagPath = join(this.config.flagsDir, `${flagKey}.json`);
-        mkdirSync(dirname(flagPath), { recursive: true });
+        await mkdir(dirname(flagPath), { recursive: true });
         
         const flag = {
             key: flagKey,
             enabled,
             updatedAt: new Date().toISOString(),
         };
-        writeFileSync(flagPath, JSON.stringify(flag, null, 2));
+        await writeFile(flagPath, JSON.stringify(flag, null, 2));
     }
 
     /**
      * Get feature flag state
      */
-    getFlag(flagKey: string): { enabled: boolean; updatedAt: string } | null {
+    async getFlag(flagKey: string): Promise<{ enabled: boolean; updatedAt: string } | null> {
         const flagPath = join(this.config.flagsDir, `${flagKey}.json`);
-        if (!existsSync(flagPath)) return null;
-        
-        const content = readFileSync(flagPath, 'utf-8');
-        return JSON.parse(content);
+        try {
+            const content = await readFile(flagPath, 'utf-8');
+            return JSON.parse(content);
+        } catch {
+            return null;
+        }
     }
 
     /**
      * Get all adopted strategies
      */
-    getAdoptedStrategies(): AdoptionRecord[] {
-        if (!existsSync(this.config.strategiesDir)) return [];
-        
-        const files = readdirSync(this.config.strategiesDir).filter(f => f.endsWith('.adoption.json'));
-        return files.map(f => {
-            const content = readFileSync(join(this.config.strategiesDir, f), 'utf-8');
-            return JSON.parse(content);
-        });
+    async getAdoptedStrategies(): Promise<AdoptionRecord[]> {
+        try {
+            const files = await readdir(this.config.strategiesDir);
+            const adoptionFiles = files.filter(f => f.endsWith('.adoption.json'));
+            const records = await Promise.all(
+                adoptionFiles.map(async f => {
+                    const content = await readFile(join(this.config.strategiesDir, f), 'utf-8');
+                    return JSON.parse(content);
+                })
+            );
+            return records;
+        } catch {
+            return [];
+        }
     }
 
     /**
@@ -234,12 +246,15 @@ export class StrategyAdoption {
     /**
      * Check if a strategy is currently enabled
      */
-    isEnabled(strategyId: string): boolean {
+    async isEnabled(strategyId: string): Promise<boolean> {
         const recordPath = join(this.config.strategiesDir, `${strategyId}.adoption.json`);
-        if (!existsSync(recordPath)) return false;
-        
-        const record = JSON.parse(readFileSync(recordPath, 'utf-8'));
-        return this.getFlag(record.flagKey)?.enabled ?? false;
+        try {
+            const record = JSON.parse(await readFile(recordPath, 'utf-8'));
+            const flag = await this.getFlag(record.flagKey);
+            return flag?.enabled ?? false;
+        } catch {
+            return false;
+        }
     }
 }
 

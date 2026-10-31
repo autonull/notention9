@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
+import { readFile, writeFile, mkdir, access } from 'fs/promises';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { createHash } from 'crypto';
@@ -48,27 +48,26 @@ export class ModelPinner {
         this.load();
     }
 
-    private load(): void {
-        if (existsSync(this.pinsFile)) {
-            try {
-                const content = readFileSync(this.pinsFile, 'utf-8');
-                const pins = JSON.parse(content);
-                for (const [key, pin] of Object.entries(pins)) {
-                    this.pins.set(key, pin as ModelPin);
-                }
-            } catch {
-                // Ignore corrupt file
+    private async load(): Promise<void> {
+        try {
+            await access(this.pinsFile);
+            const content = await readFile(this.pinsFile, 'utf-8');
+            const pins = JSON.parse(content);
+            for (const [key, pin] of Object.entries(pins)) {
+                this.pins.set(key, pin as ModelPin);
             }
+        } catch {
+            // File doesn't exist or corrupt - ignore
         }
     }
 
-    private save(): void {
-        mkdirSync(dirname(this.pinsFile), { recursive: true });
+    private async save(): Promise<void> {
+        await mkdir(dirname(this.pinsFile), { recursive: true });
         const obj = Object.fromEntries(this.pins);
-        writeFileSync(this.pinsFile, JSON.stringify(obj, null, 2));
+        await writeFile(this.pinsFile, JSON.stringify(obj, null, 2));
     }
 
-    pinModel(modelId: string, version: string, provider: ModelPin['provider']): ModelPin {
+    async pinModel(modelId: string, version: string, provider: ModelPin['provider']): Promise<ModelPin> {
         const pin: ModelPin = {
             modelId,
             version,
@@ -77,7 +76,7 @@ export class ModelPinner {
             hash: createHash('sha256').update(`${modelId}@${version}`).digest('hex').slice(0, 16),
         };
         this.pins.set(`${provider}:${modelId}`, pin);
-        this.save();
+        await this.save();
         return pin;
     }
 
@@ -114,46 +113,45 @@ export class OutputCache<T = unknown> {
         this.load();
     }
 
-    private load(): void {
-        if (existsSync(this.cacheFile)) {
-            try {
-                const content = readFileSync(this.cacheFile, 'utf-8');
-                const entries = JSON.parse(content);
-                for (const [key, entry] of Object.entries(entries)) {
-                    this.cache.set(key, entry as CacheEntry<T>);
-                }
-            } catch {
-                // Ignore corrupt file
+    private async load(): Promise<void> {
+        try {
+            await access(this.cacheFile);
+            const content = await readFile(this.cacheFile, 'utf-8');
+            const entries = JSON.parse(content);
+            for (const [key, entry] of Object.entries(entries)) {
+                this.cache.set(key, entry as CacheEntry<T>);
             }
+        } catch {
+            // File doesn't exist or corrupt - ignore
         }
     }
 
-    private save(): void {
-        mkdirSync(dirname(this.cacheFile), { recursive: true });
+    private async save(): Promise<void> {
+        await mkdir(dirname(this.cacheFile), { recursive: true });
         const obj = Object.fromEntries(this.cache);
-        writeFileSync(this.cacheFile, JSON.stringify(obj, null, 2));
+        await writeFile(this.cacheFile, JSON.stringify(obj, null, 2));
     }
 
     private generateKey(prompt: string, spec: string, model: string, version: string): string {
         return createHash('sha256').update(`${prompt}|${spec}|${model}|${version}`).digest('hex');
     }
 
-    get(prompt: string, spec: string, model: string, version: string): T | null {
+    async get(prompt: string, spec: string, model: string, version: string): Promise<T | null> {
         const key = this.generateKey(prompt, spec, model, version);
         const entry = this.cache.get(key);
         if (entry) {
             entry.hits++;
-            this.save();
+            await this.save();
             return entry.value;
         }
         return null;
     }
 
-    set(prompt: string, spec: string, model: string, version: string, value: T): void {
+    async set(prompt: string, spec: string, model: string, version: string, value: T): Promise<void> {
         const key = this.generateKey(prompt, spec, model, version);
         const modelPin = this.modelPinner.getPin(model, 'local-model') ||
             this.modelPinner.getPin(model, 'remote') ||
-            this.modelPinner.pinModel(model, version, 'local-model');
+            await this.modelPinner.pinModel(model, version, 'local-model');
 
         const entry: CacheEntry<T> = {
             key,
@@ -163,7 +161,7 @@ export class OutputCache<T = unknown> {
             hits: 0,
         };
         this.cache.set(key, entry);
-        this.save();
+        await this.save();
     }
 
     has(prompt: string, spec: string, model: string, version: string): boolean {
@@ -193,23 +191,22 @@ export class ReplaySystem {
         this.load();
     }
 
-    private load(): void {
-        if (existsSync(this.recordsFile)) {
-            try {
-                const content = readFileSync(this.recordsFile, 'utf-8');
-                this.records = content.trim().split('\n').filter(Boolean).map(line => JSON.parse(line));
-            } catch {
-                // Ignore corrupt file
-            }
+    private async load(): Promise<void> {
+        try {
+            await access(this.recordsFile);
+            const content = await readFile(this.recordsFile, 'utf-8');
+            this.records = content.trim().split('\n').filter(Boolean).map(line => JSON.parse(line));
+        } catch {
+            // File doesn't exist or corrupt - ignore
         }
     }
 
-    private save(): void {
-        mkdirSync(dirname(this.recordsFile), { recursive: true });
-        writeFileSync(this.recordsFile, this.records.map(r => JSON.stringify(r)).join('\n') + '\n', { flag: 'a' });
+    private async save(): Promise<void> {
+        await mkdir(dirname(this.recordsFile), { recursive: true });
+        await writeFile(this.recordsFile, this.records.map(r => JSON.stringify(r)).join('\n') + '\n', { flag: 'a' });
     }
 
-    record(record: Omit<ReplayRecord, 'id' | 'timestamp' | 'resultHash'>): ReplayRecord {
+    async record(record: Omit<ReplayRecord, 'id' | 'timestamp' | 'resultHash'>): Promise<ReplayRecord> {
         const fullRecord: ReplayRecord = {
             ...record,
             id: `replay-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
@@ -217,7 +214,7 @@ export class ReplaySystem {
             resultHash: this.computeResultHash(record.outputs),
         };
         this.records.push(fullRecord);
-        this.save();
+        await this.save();
         return fullRecord;
     }
 
@@ -288,13 +285,13 @@ export function createRunContext(
         ontologyVersion,
         evaluatorVersion,
         loopConfigHash,
-        gitCommit: getGitCommit(),
+        gitCommit: getGitCommitSync(),
     };
 }
 
-function getGitCommit(): string | undefined {
+function getGitCommitSync(): string | undefined {
     try {
-        const { execSync } = await import('child_process');
+        const { execSync } = require('child_process');
         return execSync('git rev-parse HEAD', { encoding: 'utf-8', stdio: 'pipe' }).trim();
     } catch {
         return undefined;
@@ -320,9 +317,9 @@ export type RedactionField = typeof PRIVACY_REDACTION_FIELDS[number];
 
 export function redactSensitiveFields<T extends Record<string, unknown>>(
     obj: T,
-    fields: RedactionField[] = PRIVACY_REDACTION_FIELDS
+    fields: readonly RedactionField[] = PRIVACY_REDACTION_FIELDS
 ): T {
-    const result = { ...obj };
+    const result = { ...obj } as Record<string, unknown>;
     for (const field of fields) {
         if (field in result) {
             result[field] = '[REDACTED]';
@@ -334,7 +331,7 @@ export function redactSensitiveFields<T extends Record<string, unknown>>(
             result[key] = redactSensitiveFields(result[key] as Record<string, unknown>, fields);
         }
     }
-    return result;
+    return result as T;
 }
 
 /**

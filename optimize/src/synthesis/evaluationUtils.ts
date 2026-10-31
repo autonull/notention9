@@ -6,12 +6,6 @@
 import { readFile, access } from 'fs/promises';
 import { join } from 'path';
 import type { BaselineResult } from './evaluationTypes.js';
-import type { ExtractionTestCase, MatchTestCase, CaptureTestCase } from './testCases.js';
-import { PropertyExtractor } from '@notention/core';
-import { MatchEngine } from '@notention/core';
-import { DEFAULT_ONTOLOGY } from '@notention/core';
-import type { Note, Property } from '@notention/core';
-import { loadCorpusTestCases } from '../corpus/index.js';
 import {
     testCaseRegistry, 
     CORE_CAPTURE_TEST_CASE,
@@ -21,6 +15,11 @@ import {
     type MatchTestCase,
     type CaptureTestCase,
 } from './testCases.js';
+import { PropertyExtractor } from '@notention/core';
+import { MatchEngine } from '@notention/core';
+import { DEFAULT_ONTOLOGY } from '@notention/core';
+import type { Note, Property } from '@notention/core';
+import { loadCorpusTestCases } from '../corpus/index.js';
 import { CORPUS_OUTPUT_DIRS } from '../constants.js';
 
 const extractor = new PropertyExtractor(DEFAULT_ONTOLOGY);

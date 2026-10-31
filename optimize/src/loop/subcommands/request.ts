@@ -29,7 +29,7 @@ export class RequestSubcommand extends BaseSubcommand {
         this.logSuccess(`Loaded evaluation report`);
 
         // Generate T4 requests from failed candidates
-        const requests = generateT4FromFailedCandidates(evaluationReport, join(this.options.outputDir, 'requests'));
+        const requests = await generateT4FromFailedCandidates(evaluationReport, join(this.options.outputDir, 'requests'));
 
         if (requests.length === 0) {
             this.logSuccess('No T4 requests needed - all candidates passed or no failures');

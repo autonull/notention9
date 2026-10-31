@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from 'fs';
+import { readFile, writeFile, mkdir, readdir, access } from 'fs/promises';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import type { StrategySpec } from './StrategySpec.js';
@@ -144,8 +144,8 @@ function generateAcceptanceCriteria(evidence: T4Evidence): string[] {
 /**
  * Save T4 request to directory
  */
-export function saveT4Request(request: T4Request, dir: string = 'loop/requests'): void {
-    mkdirSync(dir, { recursive: true });
+export async function saveT4Request(request: T4Request, dir: string = 'loop/requests'): Promise<void> {
+    await mkdir(dir, { recursive: true });
     const filePath = join(dir, `${request.id}.md`);
     
     const markdown = `# ${request.title}
@@ -190,22 +190,26 @@ ${request.acceptance.map((a, i) => `${i + 1}. ${a}`).join('\n')}
 ${request.proposedSeam || 'Not specified'}
 `;
     
-    writeFileSync(filePath, markdown);
+    await writeFile(filePath, markdown);
 }
 
 /**
  * Load all T4 requests from directory
  */
-export function loadT4Requests(dir: string = 'loop/requests'): T4RequestDir {
+export async function loadT4Requests(dir: string = 'loop/requests'): Promise<T4RequestDir> {
     const result: T4RequestDir = { root: dir, requests: new Map() };
     
-    if (!existsSync(dir)) return result;
+    try {
+        await access(dir);
+    } catch {
+        return result;
+    }
     
-    const files = readdirSync(dir).filter(f => f.endsWith('.md') || f.endsWith('.json'));
+    const files = (await readdir(dir)).filter(f => f.endsWith('.md') || f.endsWith('.json'));
     
     for (const file of files) {
         try {
-            const content = readFileSync(join(dir, file), 'utf-8');
+            const content = await readFile(join(dir, file), 'utf-8');
             let request: T4Request;
             
             if (file.endsWith('.json')) {
@@ -281,12 +285,12 @@ function parseMarkdownRequest(content: string, filename: string): T4Request {
 /**
  * Emit T4 request from evaluation evidence (automatic)
  */
-export function emitT4RequestFromEvidence(
+export async function emitT4RequestFromEvidence(
     evidence: T4Evidence,
     outputDir: string = 'loop/requests'
-): T4Request {
+): Promise<T4Request> {
     const request = createT4Request(evidence);
-    saveT4Request(request, outputDir);
+    await saveT4Request(request, outputDir);
     console.log(`📝 Emitted T4 request: ${request.id}`);
     return request;
 }
@@ -294,10 +298,10 @@ export function emitT4RequestFromEvidence(
 /**
  * Auto-generate T4 requests from failed evaluation candidates
  */
-export function generateT4FromFailedCandidates(
+export async function generateT4FromFailedCandidates(
     evaluationReport: { candidates: Array<{ candidateId: string; passed: boolean; taskResults: Map<string, any> | Record<string, any>; overallSuccessRate?: number }> },
     outputDir: string = 'loop/requests'
-): T4Request[] {
+): Promise<T4Request[]> {
     const requests: T4Request[] = [];
     
     for (const candidate of evaluationReport.candidates) {
@@ -332,7 +336,7 @@ export function generateT4FromFailedCandidates(
                 suggestedSolution: `Improve strategy for ${failedTasks.join(', ')} or redesign seam interface`,
             };
             
-            const request = emitT4RequestFromEvidence(evidence, outputDir);
+            const request = await emitT4RequestFromEvidence(evidence, outputDir);
             requests.push(request);
         }
     }

@@ -3,7 +3,7 @@
  */
 
 import { BaseSubcommand, SubcommandConfig, SubcommandOptions } from './base.js';
-import { loadEvaluationReport, loadBaseline, loadCandidatesFromDir, findLatestRunDir } from '../artifactIO.js';
+import { loadEvaluationReport, loadBaseline, loadCandidatesFromDir, findLatestRunDir, getArtifactPaths } from '../artifactIO.js';
 import { generateComparisonReport, type VariantComparison, type ComparisonReport } from '../../synthesis/strategyComparison.js';
 import type { BaselineResult, CandidateEvaluation } from '../../synthesis/fastEvaluator.js';
 import type { ExperimentAssignment } from '@notention/core/ui/profile';
@@ -30,7 +30,7 @@ export class CompareSubcommand extends BaseSubcommand {
             this.logInfo(`Using latest run: ${runDir.split('/').pop()}`);
         }
 
-        const paths = this.getArtifactPaths(runDir);
+        const paths = getArtifactPaths(runDir);
 
         // Load evaluation report
         const evaluationReport = await loadEvaluationReport(runDir);
@@ -93,11 +93,6 @@ export class CompareSubcommand extends BaseSubcommand {
         }
 
         return 0;
-    }
-
-    private getArtifactPaths(runDir: string): ReturnType<typeof import('../artifactIO.js').getArtifactPaths> {
-        const { getArtifactPaths } = require('../artifactIO.js');
-        return getArtifactPaths(runDir);
     }
 
     private convertCandidates(candidatesDir: { candidates: Map<string, { id: string }> }, baseline: BaselineResult[]): CandidateEvaluation[] {

@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
+import { readFile, writeFile, mkdir, access } from 'fs/promises';
 import { join, dirname } from 'path';
 import type { BaselineResult, CandidateEvaluation, EvaluationReport } from './fastEvaluator.js';
 import type { StrategyExperiment, ExperimentResult, ExperimentAssignment } from '@notention/core/ui/profile';
@@ -205,19 +205,24 @@ function makeRecommendation(
 /**
  * Save comparison report
  */
-export function saveComparisonReport(report: ComparisonReport, outputDir: string): string {
-    mkdirSync(outputDir, { recursive: true });
+export async function saveComparisonReport(report: ComparisonReport, outputDir: string): Promise<string> {
+    await mkdir(outputDir, { recursive: true });
     const filePath = join(outputDir, `comparison-${report.experimentId}-${Date.now()}.json`);
-    writeFileSync(filePath, JSON.stringify(report, null, 2));
+    await writeFile(filePath, JSON.stringify(report, null, 2));
     return filePath;
 }
 
 /**
  * Load comparison report
  */
-export function loadComparisonReport(filePath: string): ComparisonReport {
-    const content = readFileSync(filePath, 'utf-8');
-    return JSON.parse(content);
+export async function loadComparisonReport(filePath: string): Promise<ComparisonReport> {
+    try {
+        await access(filePath);
+        const content = await readFile(filePath, 'utf-8');
+        return JSON.parse(content);
+    } catch {
+        throw new Error(`Comparison report not found: ${filePath}`);
+    }
 }
 
 /**
