@@ -22,12 +22,35 @@ export interface EvaluationReport extends BaseEvaluationReport {
     // Extends base
 }
 
+/**
+ * Test case for extraction evaluation
+ */
+export interface TestCase {
+    id: string;
+    name: string;
+    input: string;
+    expectedMinProperties: number;
+    expectedProperties?: Partial<Property>[];
+}
+
+/**
+ * Test case for match evaluation
+ */
+export interface MatchTestCase {
+    id: string;
+    name: string;
+    requestText: string;
+    offerText: string;
+    expectedMinScore: number;
+    expectedMaxScore?: number;
+}
+
 const ontologyService = new OntologyService(DEFAULT_ONTOLOGY);
 const extractor = new PropertyExtractor(DEFAULT_ONTOLOGY);
 const matchEngine = new MatchEngine(DEFAULT_ONTOLOGY);
 
-function createNoteFromText(text: string, id: string = 'test'): Note {
-    const properties = extractor.extractFromText(text);
+async function createNoteFromText(text: string, id: string = 'test'): Promise<Note> {
+    const properties = await extractor.extractFromText(text);
     return {
         id,
         title: text.slice(0, 50),
@@ -36,6 +59,9 @@ function createNoteFromText(text: string, id: string = 'test'): Note {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         tags: [],
+        source: { type: 'user' as const, identifier: 'test', timestamp: Date.now() },
+        privacy: 'private' as const,
+        priority: 0,
     };
 }
 
@@ -79,6 +105,72 @@ async function loadCorpusTestCasesForEvaluation(): Promise<{ extraction: TestCas
     return { extraction: [], match: [] };
 }
 
+async function evaluateExtractionTestCase(
+    testCase: TestCase,
+    isCorpusTest: boolean,
+    taskPrefix: string
+): Promise<BaselineResult> {
+    const startTime = Date.now();
+    const properties = await extractor.extractFromText(testCase.input);
+    const duration = Date.now() - startTime;
+    
+    const check = checkPropertyMatch(properties, testCase.expectedProperties || []);
+    const success = properties.length >= testCase.expectedMinProperties && check.matched === check.total;
+    
+    return {
+        taskId: `${taskPrefix}${testCase.id}`,
+        successRate: success ? 1 : 0,
+        medianDuration: duration,
+        p90Duration: duration,
+        medianSteps: 1,
+        p90Steps: 1,
+        errors: success ? [] : [`Extracted ${properties.length} properties, expected ≥${testCase.expectedMinProperties}. Missing: ${check.details.filter(d => d.startsWith('✗')).join('; ')}`],
+        isCorpusTest,
+    };
+}
+
+async function evaluateMatchTestCase(
+    testCase: MatchTestCase,
+    isCorpusTest: boolean,
+    taskPrefix: string
+): Promise<BaselineResult> {
+    const startTime = Date.now();
+    const request = await createNoteFromText(testCase.requestText, 'request');
+    const offer = await createNoteFromText(testCase.offerText, 'offer');
+    const result = matchEngine.calculateMatchScore(request, offer);
+    const duration = Date.now() - startTime;
+    
+    const success = result.score >= testCase.expectedMinScore && 
+                   (testCase.expectedMaxScore === undefined || result.score <= testCase.expectedMaxScore);
+    
+    return {
+        taskId: `${taskPrefix}${testCase.id}`,
+        successRate: success ? 1 : 0,
+        medianDuration: duration,
+        p90Duration: duration,
+        medianSteps: 1,
+        p90Steps: 1,
+        errors: success ? [] : [`Match score ${result.score.toFixed(2)} not in range [${testCase.expectedMinScore}, ${testCase.expectedMaxScore ?? 1.0}]`],
+        isCorpusTest,
+    };
+}
+
+function buildTestCasesWithFlags<TCore, TCorpus>(
+    coreCases: TCore[],
+    corpusCases: TCorpus[]
+): Array<{ testCase: TCore | TCorpus; isCorpusTest: boolean; taskPrefix: string }> {
+    const withFlags: Array<{ testCase: TCore | TCorpus; isCorpusTest: boolean; taskPrefix: string }> = [];
+    
+    for (const testCase of coreCases) {
+        withFlags.push({ testCase, isCorpusTest: false, taskPrefix: '' });
+    }
+    for (const testCase of corpusCases) {
+        withFlags.push({ testCase, isCorpusTest: true, taskPrefix: '' });
+    }
+    
+    return withFlags;
+}
+
 export async function runFastBaselineEvaluation(): Promise<BaselineResult[]> {
     const results: BaselineResult[] = [];
     
@@ -90,102 +182,31 @@ export async function runFastBaselineEvaluation(): Promise<BaselineResult[]> {
     testCaseRegistry.registerMatchCases(corpusCases.match);
     
     // Get all test cases from registry
-    const { extraction: allExtractionCases, match: allMatchCases } = testCaseRegistry.getAllCases();
     const coreExtractionCases = testCaseRegistry.getCoreExtractionCases();
     const coreMatchCases = testCaseRegistry.getCoreMatchCases();
     
-    // Test core extraction tasks (regression tests)
-    for (const testCase of coreExtractionCases) {
-        const startTime = Date.now();
-        const properties = extractor.extractFromText(testCase.input);
-        const duration = Date.now() - startTime;
-        
-        const check = checkPropertyMatch(properties, testCase.expectedProperties || []);
-        const success = properties.length >= testCase.expectedMinProperties && check.matched === check.total;
-        
-        results.push({
-            taskId: `task-3-extraction-${testCase.id}`,
-            successRate: success ? 1 : 0,
-            medianDuration: duration,
-            p90Duration: duration,
-            medianSteps: 1,
-            p90Steps: 1,
-            errors: success ? [] : [`Extracted ${properties.length} properties, expected ≥${testCase.expectedMinProperties}. Missing: ${check.details.filter(d => d.startsWith('✗')).join('; ')}`],
-            isCorpusTest: false,
-        });
+    // Evaluate extraction test cases (core + corpus)
+    const extractionCases = buildTestCasesWithFlags(
+        coreExtractionCases,
+        corpusCases.extraction
+    );
+    for (const { testCase, isCorpusTest } of extractionCases) {
+        results.push(await evaluateExtractionTestCase(testCase as TestCase, isCorpusTest, 'task-3-extraction-'));
     }
     
-    // Test corpus extraction tasks (gap detection - marked but not counted for must-win)
-    for (const testCase of corpusCases.extraction) {
-        const startTime = Date.now();
-        const properties = extractor.extractFromText(testCase.input);
-        const duration = Date.now() - startTime;
-        
-        const check = checkPropertyMatch(properties, testCase.expectedProperties || []);
-        const success = properties.length >= testCase.expectedMinProperties && check.matched === check.total;
-        
-        results.push({
-            taskId: `task-3-extraction-${testCase.id}`,
-            successRate: success ? 1 : 0,
-            medianDuration: duration,
-            p90Duration: duration,
-            medianSteps: 1,
-            p90Steps: 1,
-            errors: success ? [] : [`Extracted ${properties.length} properties, expected ≥${testCase.expectedMinProperties}. Missing: ${check.details.filter(d => d.startsWith('✗')).join('; ')}`],
-            isCorpusTest: true,
-        });
-    }
-    
-    // Test core match tasks (regression tests)
-    for (const testCase of coreMatchCases) {
-        const startTime = Date.now();
-        const request = createNoteFromText(testCase.requestText, 'request');
-        const offer = createNoteFromText(testCase.offerText, 'offer');
-        const result = matchEngine.calculateMatchScore(request, offer);
-        const duration = Date.now() - startTime;
-        
-        const success = result.score >= testCase.expectedMinScore && 
-                       (testCase.expectedMaxScore === undefined || result.score <= testCase.expectedMaxScore);
-        
-        results.push({
-            taskId: `task-2-match-${testCase.id}`,
-            successRate: success ? 1 : 0,
-            medianDuration: duration,
-            p90Duration: duration,
-            medianSteps: 1,
-            p90Steps: 1,
-            errors: success ? [] : [`Match score ${result.score.toFixed(2)} not in range [${testCase.expectedMinScore}, ${testCase.expectedMaxScore ?? 1.0}]`],
-            isCorpusTest: false,
-        });
-    }
-    
-    // Test corpus match tasks (gap detection)
-    for (const testCase of corpusCases.match) {
-        const startTime = Date.now();
-        const request = createNoteFromText(testCase.requestText, 'request');
-        const offer = createNoteFromText(testCase.offerText, 'offer');
-        const result = matchEngine.calculateMatchScore(request, offer);
-        const duration = Date.now() - startTime;
-        
-        const success = result.score >= testCase.expectedMinScore && 
-                       (testCase.expectedMaxScore === undefined || result.score <= testCase.expectedMaxScore);
-        
-        results.push({
-            taskId: `task-2-match-${testCase.id}`,
-            successRate: success ? 1 : 0,
-            medianDuration: duration,
-            p90Duration: duration,
-            medianSteps: 1,
-            p90Steps: 1,
-            errors: success ? [] : [`Match score ${result.score.toFixed(2)} not in range [${testCase.expectedMinScore}, ${testCase.expectedMaxScore ?? 1.0}]`],
-            isCorpusTest: true,
-        });
+    // Evaluate match test cases (core + corpus)
+    const matchCases = buildTestCasesWithFlags(
+        coreMatchCases,
+        corpusCases.match
+    );
+    for (const { testCase, isCorpusTest } of matchCases) {
+        results.push(await evaluateMatchTestCase(testCase as MatchTestCase, isCorpusTest, 'task-2-match-'));
     }
     
     // Test capture task (uses extraction)
     const captureInput = CORE_CAPTURE_TEST_CASE.input;
     const captureStart = Date.now();
-    const captureProps = extractor.extractFromText(captureInput);
+    const captureProps = await extractor.extractFromText(captureInput);
     const captureDuration = Date.now() - captureStart;
     const captureSuccess = captureProps.length >= CORE_CAPTURE_TEST_CASE.expectedMinProperties && captureDuration < CORE_CAPTURE_TEST_CASE.maxDurationMs;
     

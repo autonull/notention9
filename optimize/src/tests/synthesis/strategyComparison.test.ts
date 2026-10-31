@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { generateComparisonReport, runABTestSimulation } from '@notention/optimize/synthesis/strategyComparison';
-import type { BaselineResult, CandidateEvaluation } from '@notention/optimize/synthesis/fastEvaluator';
+import { generateComparisonReport, runABTestSimulation } from '../../synthesis/strategyComparison.js';
+import { computeStats } from '../../synthesis/stats.js';
+import type { BaselineResult, CandidateEvaluation } from '../../synthesis/fastEvaluator.js';
 
 describe('Strategy Comparison', () => {
     let baseline: BaselineResult[];
@@ -134,28 +135,3 @@ describe('Strategy Comparison', () => {
         expect(stats.stdDev).toBe(0);
     });
 });
-
-// Need to export computeStats for testing
-function computeStats(values: number[]): { mean: number; median: number; stdDev: number; confidenceInterval: [number, number] } {
-    if (values.length === 0) {
-        return { mean: 0, median: 0, stdDev: 0, confidenceInterval: [0, 0] };
-    }
-
-    const sorted = [...values].sort((a, b) => a - b);
-    const mean = values.reduce((a, b) => a + b, 0) / values.length;
-    const median = sorted[Math.floor(sorted.length / 2)];
-    
-    const variance = values.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / (values.length - 1 || 1);
-    const stdDev = Math.sqrt(variance);
-    
-    const se = stdDev / Math.sqrt(values.length);
-    const t = values.length > 30 ? 1.96 : 2.0;
-    const margin = t * se;
-
-    return {
-        mean,
-        median,
-        stdDev,
-        confidenceInterval: [mean - margin, mean + margin],
-    };
-}

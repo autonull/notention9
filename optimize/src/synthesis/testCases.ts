@@ -106,17 +106,8 @@ export const CORE_CAPTURE_TEST_CASE = {
  * Test case registry for managing all test cases
  */
 export class TestCaseRegistry {
-    private extractionCases: TestCase[] = [];
-    private matchCases: MatchTestCase[] = [];
-    
-    constructor() {
-        this.registerCoreCases();
-    }
-    
-    private registerCoreCases(): void {
-        this.extractionCases.push(...CORE_EXTRACTION_TEST_CASES);
-        this.matchCases.push(...CORE_MATCH_TEST_CASES);
-    }
+    private extractionCases: TestCase[] = [...CORE_EXTRACTION_TEST_CASES];
+    private matchCases: MatchTestCase[] = [...CORE_MATCH_TEST_CASES];
     
     registerExtractionCases(cases: TestCase[]): void {
         this.extractionCases.push(...cases);
@@ -126,19 +117,12 @@ export class TestCaseRegistry {
         this.matchCases.push(...cases);
     }
     
-    getExtractionCases(): TestCase[] {
+    getAllExtractionCases(): TestCase[] {
         return [...this.extractionCases];
     }
     
-    getMatchCases(): MatchTestCase[] {
+    getAllMatchCases(): MatchTestCase[] {
         return [...this.matchCases];
-    }
-    
-    getAllCases(): { extraction: TestCase[]; match: MatchTestCase[] } {
-        return {
-            extraction: this.getExtractionCases(),
-            match: this.getMatchCases(),
-        };
     }
     
     getCoreExtractionCases(): TestCase[] {
@@ -150,11 +134,11 @@ export class TestCaseRegistry {
     }
     
     getCorpusExtractionCases(): TestCase[] {
-        return this.extractionCases.filter(c => c.id.startsWith('corpus-'));
+        return this.extractionCases.filter((c): c is TestCase => c.id.startsWith('corpus-'));
     }
     
     getCorpusMatchCases(): MatchTestCase[] {
-        return this.matchCases.filter(c => c.id.startsWith('corpus-'));
+        return this.matchCases.filter((c): c is MatchTestCase => c.id.startsWith('corpus-'));
     }
 }
 
