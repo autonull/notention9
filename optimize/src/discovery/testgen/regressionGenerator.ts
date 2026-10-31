@@ -1,9 +1,9 @@
-import type { JourneySpec, Step } from '../journey.js';
-import type { Finding } from '../finding.js';
-import { loadBundle } from '../replay.js';
-import { getKnownJourney } from '../knownJourneys.js';
-import { expect } from '../expectPolyfill.js';
-import { resolvePath } from '../pathUtils.js';
+import type { JourneySpec, Step } from '../../journey.js';
+import type { Finding } from '../../finding.js';
+import { loadBundle } from '../../replay.js';
+import { getKnownJourney } from '../../knownJourneys.js';
+import { expect } from '../../expectPolyfill.js';
+import { resolvePath } from '../../pathUtils.js';
 
 export async function generateRegressionTest(finding: Finding): Promise<JourneySpec> {
     // Extract bundle runId from reproduction (handle both old string format and new object format)

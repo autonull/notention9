@@ -1,4 +1,4 @@
-import type { JourneySpec, Step } from '../journey.js';
+import type { JourneySpec, Step } from '../../journey.js';
 import type { Scenario, AgentConfig, Property, EventConfig } from '@notention/simulator';
 
 function prop(key: string, operator: string, ...values: string[]): Property {
@@ -42,11 +42,11 @@ function inferRoleFromContent(content: string): 'Requester' | 'Offerer' {
     return 'Offerer';
 }
 
-function inferPropertiesFromNote(note: JourneySpec['seed']['notes'][0]): Property[] {
+function inferPropertiesFromNote(note: { properties: { key: string; operator: string; values: string[] }[] }): Property[] {
     return note.properties.map(p => prop(p.key, p.operator, ...p.values));
 }
 
-function inferInterestsFromNote(note: JourneySpec['seed']['notes'][0]): Property[] {
+function inferInterestsFromNote(note: { properties: { key: string; operator: string; values: string[] }[] }): Property[] {
     return note.properties.map(p => prop(p.key, p.operator, ...p.values));
 }
 

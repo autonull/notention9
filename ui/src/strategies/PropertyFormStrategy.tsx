@@ -1,36 +1,17 @@
 import React from 'react';
 import { PropertyForm } from '../components/editor/PropertyForm';
 import { createBaseStrategy } from '@notention/core/ui';
-import type { Seam } from '@notention/optimize/discovery';
+import { getStrategyConfig } from './strategyConfigs.js';
 
-const captureSeam: Seam = {
-    id: 'capture-0',
-    name: 'capture',
-    description: 'Capture seam for property input',
-    propsShape: {
-        initialKey: 'string',
-        initialOp: 'string',
-        initialValue: 'string',
-        isAdding: 'boolean',
-        onSave: '(key: string, op: string, value: string) => void',
-        onCancel: '() => void',
-        onPickLocation: '() => Promise<string> | void',
-        onPickTime: '(key: string) => void',
-        ontology: 'OntologyNode[]',
-    },
-    components: ['PropertyForm'],
-    role: 'capture',
-};
+const config = getStrategyConfig('property-form');
+if (!config) throw new Error('Strategy config not found: property-form');
 
 export const PropertyFormStrategy = createBaseStrategy<
     React.ComponentProps<typeof PropertyForm>
 >(
-    'property-form',
-    captureSeam,
+    config.id,
+    config.seam,
     PropertyForm,
-    '1.0.0',
-    {
-        isAdding: true,
-        initialOp: 'is',
-    }
+    config.version,
+    config.defaultProps
 );

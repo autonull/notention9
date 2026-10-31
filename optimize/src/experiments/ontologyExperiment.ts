@@ -6,13 +6,13 @@ import type { BaselineResult, CandidateEvaluation, EvaluationReport } from '../s
 interface OntologyExperimentResult {
     flat: {
         baseline: BaselineResult[];
-        coreSuccessRate: number;
-        coreMedianDuration: number;
+        successRate: number;
+        medianDuration: number;
     };
     facetsStatus: {
         baseline: BaselineResult[];
-        coreSuccessRate: number;
-        coreMedianDuration: number;
+        successRate: number;
+        medianDuration: number;
     };
     comparison: {
         successRateDiff: number;  // facets - flat (positive = facets better)
@@ -125,8 +125,8 @@ async function runBaselineWithOntology(
         },
     ];
 
-    function createNoteFromText(text: string, id: string = 'test') {
-        const properties = extractor.extractFromText(text);
+    async function createNoteFromText(text: string, id: string = 'test') {
+        const properties = await extractor.extractFromText(text);
         return {
             id,
             title: text.slice(0, 50),
@@ -135,10 +135,13 @@ async function runBaselineWithOntology(
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             tags: [],
+            source: { type: 'user' as const, identifier: 'test', timestamp: Date.now() },
+            privacy: 'private' as const,
+            priority: 0,
         };
     }
 
-    function checkPropertyMatch(actual: any[], expected: any[]) {
+    function checkPropertyMatch(actual: { key: string; operator: string; values: string[] }[], expected: { key: string; operator: string; values?: string[] }[]) {
         let matched = 0;
         const details: string[] = [];
         
@@ -162,7 +165,7 @@ async function runBaselineWithOntology(
     // Test core extraction tasks
     for (const testCase of EXTRACTION_TEST_CASES) {
         const startTime = Date.now();
-        const properties = extractor.extractFromText(testCase.input);
+        const properties = await extractor.extractFromText(testCase.input);
         const duration = Date.now() - startTime;
         
         const check = checkPropertyMatch(properties, testCase.expectedProperties || []);
@@ -183,8 +186,8 @@ async function runBaselineWithOntology(
     // Test core match tasks
     for (const testCase of MATCH_TEST_CASES) {
         const startTime = Date.now();
-        const request = createNoteFromText(testCase.requestText, 'request');
-        const offer = createNoteFromText(testCase.offerText, 'offer');
+        const request = await createNoteFromText(testCase.requestText, 'request');
+        const offer = await createNoteFromText(testCase.offerText, 'offer');
         const result = matchEngine.calculateMatchScore(request, offer);
         const duration = Date.now() - startTime;
         
@@ -206,7 +209,7 @@ async function runBaselineWithOntology(
     // Test capture task
     const captureInput = 'I need a React developer for two weeks, up to 900 USD, starting next week';
     const captureStart = Date.now();
-    const captureProps = extractor.extractFromText(captureInput);
+    const captureProps = await extractor.extractFromText(captureInput);
     const captureDuration = Date.now() - captureStart;
     const captureSuccess = captureProps.length >= 3 && captureDuration < 20000;
     

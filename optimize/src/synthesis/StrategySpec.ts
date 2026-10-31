@@ -134,24 +134,24 @@ export function createCandidateDir(root: string): CandidateDir {
  * Save a candidate to the candidate directory
  */
 export async function saveCandidate(dir: CandidateDir, candidate: CandidateStrategy): Promise<void> {
-    const fs = await import('fs/promises');
-    const path = await import('path');
+    const { writeFile, mkdir } = await import('fs/promises');
+    const { join } = await import('path');
     
-    const candidateDir = path.join(dir.root, candidate.id);
-    await fs.mkdir(candidateDir, { recursive: true });
+    const candidateDir = join(dir.root, candidate.id);
+    await mkdir(candidateDir, { recursive: true });
     
-    await fs.writeFile(
-        path.join(candidateDir, 'spec.json'),
+    await writeFile(
+        join(candidateDir, 'spec.json'),
         JSON.stringify(candidate.spec, null, 2)
     );
     
-    await fs.writeFile(
-        path.join(candidateDir, 'strategy.tsx'),
+    await writeFile(
+        join(candidateDir, 'strategy.tsx'),
         candidate.code
     );
     
-    await fs.writeFile(
-        path.join(candidateDir, 'provenance.json'),
+    await writeFile(
+        join(candidateDir, 'provenance.json'),
         JSON.stringify(candidate.provenance, null, 2)
     );
     
@@ -162,27 +162,27 @@ export async function saveCandidate(dir: CandidateDir, candidate: CandidateStrat
  * Load all candidates from a directory
  */
 export async function loadCandidates(root: string): Promise<CandidateDir> {
-    const fs = await import('fs/promises');
-    const path = await import('path');
+    const { readdir, readFile } = await import('fs/promises');
+    const { join } = await import('path');
     
     const dir = createCandidateDir(root);
     
     try {
-        const entries = await fs.readdir(root, { withFileTypes: true });
+        const entries = await readdir(root, { withFileTypes: true });
         
         for (const entry of entries) {
             if (!entry.isDirectory()) continue;
             
-            const candidateDir = path.join(root, entry.name);
-            const specFile = path.join(candidateDir, 'spec.json');
-            const codeFile = path.join(candidateDir, 'strategy.tsx');
-            const provFile = path.join(candidateDir, 'provenance.json');
+            const candidateDir = join(root, entry.name);
+            const specFile = join(candidateDir, 'spec.json');
+            const codeFile = join(candidateDir, 'strategy.tsx');
+            const provFile = join(candidateDir, 'provenance.json');
             
             try {
                 const [specContent, codeContent, provContent] = await Promise.all([
-                    fs.readFile(specFile, 'utf-8'),
-                    fs.readFile(codeFile, 'utf-8'),
-                    fs.readFile(provFile, 'utf-8'),
+                    readFile(specFile, 'utf-8'),
+                    readFile(codeFile, 'utf-8'),
+                    readFile(provFile, 'utf-8'),
                 ]);
                 
                 const candidate: CandidateStrategy = {
@@ -204,3 +204,6 @@ export async function loadCandidates(root: string): Promise<CandidateDir> {
     
     return dir;
 }
+
+// Re-export builtin spec utilities for convenience
+export { BUILTIN_SPECS, ROLES_WITH_BUILTIN_SPECS, getBuiltinSpec, hasBuiltinSpec, getAllBuiltinSpecs };

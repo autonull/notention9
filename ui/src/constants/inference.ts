@@ -1,6 +1,5 @@
 /**
- * Shared constants for the UI package
- * Centralizes magic strings and numbers for maintainability
+ * Inference-related constants for the UI package
  */
 
 // Default inference options

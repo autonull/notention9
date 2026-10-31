@@ -1,21 +1,10 @@
+import type { StrategySpec } from './StrategySpec.js';
+
 /**
  * Built-in strategy specifications
- * Extracted from StrategySpecGenerator for maintainability and configurability
- * Uses a local type definition to avoid circular dependency with StrategySpec.ts
+ * Single source of truth for strategy specs used by synthesis and gates
  */
-
-interface StrategySpecLocal {
-    seam: string;
-    intent: string;
-    must: string[];
-    may: string[];
-    mustNot: string[];
-    accepts: Record<string, unknown>;
-    emits: Record<string, unknown>;
-    examples: string[];
-}
-
-export const BUILTIN_SPECS: Record<string, StrategySpecLocal> = {
+export const BUILTIN_SPECS: Record<string, StrategySpec> = {
     'capture-0': {
         seam: 'capture-0',
         intent: 'Capture structured properties from user input with real-time validation',
@@ -53,6 +42,8 @@ export const BUILTIN_SPECS: Record<string, StrategySpecLocal> = {
                 isAdding: { type: 'boolean' },
                 onSave: { type: 'function' },
                 onCancel: { type: 'function' },
+                onPickLocation: { type: 'function' },
+                onPickTime: { type: 'function' },
                 ontology: { type: 'array' },
             },
             required: ['onSave', 'onCancel', 'ontology'],
@@ -248,7 +239,7 @@ export const ROLES_WITH_BUILTIN_SPECS = new Set([
 /**
  * Get a built-in spec by seam ID
  */
-export function getBuiltinSpec(seamId: string): StrategySpecLocal | undefined {
+export function getBuiltinSpec(seamId: string): StrategySpec | undefined {
     return BUILTIN_SPECS[seamId];
 }
 
@@ -262,6 +253,6 @@ export function hasBuiltinSpec(role: string): boolean {
 /**
  * Get all built-in specs
  */
-export function getAllBuiltinSpecs(): StrategySpecLocal[] {
+export function getAllBuiltinSpecs(): StrategySpec[] {
     return Object.values(BUILTIN_SPECS);
 }

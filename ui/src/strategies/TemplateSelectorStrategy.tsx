@@ -1,27 +1,17 @@
 import React from 'react';
 import { TemplateSelector } from '../components/editor/TemplateSelector';
 import { createBaseStrategy } from '@notention/core/ui';
-import type { Seam } from '@notention/optimize/discovery';
+import { getStrategyConfig } from './strategyConfigs.js';
 
-const templateSeam: Seam = {
-    id: 'template-0',
-    name: 'template-selection',
-    description: 'Select a template for note creation',
-    propsShape: {
-        ontology: 'OntologyNode[]',
-        onSelect: '(template: OntologyNode) => void',
-        onClose: '() => void',
-    },
-    components: ['TemplateSelector'],
-    role: 'capture',
-};
+const config = getStrategyConfig('template-selector');
+if (!config) throw new Error('Strategy config not found: template-selector');
 
 export const TemplateSelectorStrategy = createBaseStrategy<
     React.ComponentProps<typeof TemplateSelector>
 >(
-    'template-selector',
-    templateSeam,
+    config.id,
+    config.seam,
     TemplateSelector,
-    '1.0.0',
-    {}
+    config.version,
+    config.defaultProps
 );

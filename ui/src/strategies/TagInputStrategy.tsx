@@ -1,32 +1,17 @@
 import React from 'react';
 import { TagInput } from '../components/editor/TagInput';
 import { createBaseStrategy } from '@notention/core/ui';
-import type { Seam } from '@notention/optimize/discovery';
+import { getStrategyConfig } from './strategyConfigs.js';
 
-const elicitSeam: Seam = {
-    id: 'elicit-0',
-    name: 'detail-elicitation',
-    description: 'Elicit additional details from user',
-    propsShape: {
-        tags: 'string[]',
-        onChange: '(tags: string[]) => void',
-        onAutoTag: '() => void',
-        isAutoTagging: 'boolean',
-        autoFocus: 'boolean',
-        className: 'string',
-    },
-    components: ['TagInput'],
-    role: 'elicit',
-};
+const config = getStrategyConfig('tag-input');
+if (!config) throw new Error('Strategy config not found: tag-input');
 
 export const TagInputStrategy = createBaseStrategy<
     React.ComponentProps<typeof TagInput>
 >(
-    'tag-input',
-    elicitSeam,
+    config.id,
+    config.seam,
     TagInput,
-    '1.0.0',
-    {
-        autoFocus: false,
-    }
+    config.version,
+    config.defaultProps
 );

@@ -13,7 +13,7 @@ import {
     DEFAULT_INFERENCE_OPTIONS,
     CAPABILITY_PROBE_TIMEOUT,
     CAPABILITY_PROBE_PROMPT,
-} from '../constants.js';
+} from '../../constants';
 
 export interface ModelCapabilities {
     structuredOutput: boolean;

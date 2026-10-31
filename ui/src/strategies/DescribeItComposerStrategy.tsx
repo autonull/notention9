@@ -1,28 +1,17 @@
 import React from 'react';
 import { DescribeItComposer } from '../components/editor/DescribeItComposer';
 import { createBaseStrategy } from '@notention/core/ui';
-import type { Seam } from '@notention/optimize/discovery';
+import { getStrategyConfig } from './strategyConfigs.js';
 
-const extractionSeam: Seam = {
-    id: 'extraction-0',
-    name: 'extraction',
-    description: 'Extract structured properties from natural language',
-    propsShape: {
-        isOpen: 'boolean',
-        onClose: '() => void',
-        onApply: '(properties: Property[]) => void',
-        ontology: 'OntologyNode[]',
-    },
-    components: ['DescribeItComposer'],
-    role: 'capture',
-};
+const config = getStrategyConfig('describe-it-composer');
+if (!config) throw new Error('Strategy config not found: describe-it-composer');
 
 export const DescribeItComposerStrategy = createBaseStrategy<
     React.ComponentProps<typeof DescribeItComposer>
 >(
-    'describe-it-composer',
-    extractionSeam,
+    config.id,
+    config.seam,
     DescribeItComposer,
-    '1.0.0',
-    {}
+    config.version,
+    config.defaultProps
 );

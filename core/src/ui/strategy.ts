@@ -15,7 +15,7 @@ export interface Seam {
 /**
  * Strategy interface - all strategies must implement this
  */
-export interface Strategy<P = Record<string, unknown>> {
+export interface Strategy<P extends object = Record<string, unknown>> {
     readonly id: string;
     readonly seam: Seam;
     readonly version: string;
@@ -138,7 +138,7 @@ export async function registerDiscoveredStrategies(
  * Base class for component-based strategies
  * Derives params from the component's prop types
  */
-export abstract class ComponentStrategy<P extends Record<string, unknown>> implements Strategy<P> {
+export abstract class ComponentStrategy<P extends object> implements Strategy<P> {
     abstract readonly id: string;
     abstract readonly seam: Seam;
     readonly version: string = '1.0.0';
@@ -167,7 +167,7 @@ export abstract class ComponentStrategy<P extends Record<string, unknown>> imple
 /**
  * Helper to create a strategy from a React component
  */
-export function createComponentStrategy<P extends Record<string, unknown>>(
+export function createComponentStrategy<P extends object>(
     id: string,
     seam: Seam,
     component: React.ComponentType<P>,

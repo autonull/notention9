@@ -474,7 +474,7 @@ export class ComponentScanner {
             name,
             type,
             label: jsx.props.label || jsx.props.placeholder || name,
-            required: jsx.props.required === 'true' || jsx.props.required === true || jsx.props.required === '',
+            required: jsx.props.required === 'true' || jsx.props.required === '' || jsx.props.required === 'required',
             options: options.length > 0 ? options : undefined,
         };
     }

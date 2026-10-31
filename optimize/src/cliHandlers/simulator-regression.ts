@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 import fs from 'fs';
 import { findFindingById } from '../findingRepository.js';
 import { getKnownJourney } from '../knownJourneys.js';
-import { journeyToSimulatorScenario, findingToSimulatorScenario } from '../discovery/simulatorScenarioGenerator.js';
+import { journeyToSimulatorScenario, findingToSimulatorScenario } from '../discovery/testgen/simulatorScenarioGenerator.js';
 import { SCENARIOS } from '@notention/simulator';
 
 const __filename = fileURLToPath(import.meta.url);
