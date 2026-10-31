@@ -16,6 +16,7 @@
     "test": "pnpm --filter @notention/core test && pnpm --filter @notention/agent test && pnpm --filter @notention/cli test && pnpm --filter @notention/optimize test",
     "test:ui": "tsx scripts/test-ui-batched.ts",
     "verify": "tsx scripts/verify.ts",
+    "lint:fabricated": "tsx scripts/grep-fabricated-paths.ts",
     "screenshots": "pnpm --filter @notention/ui screenshots",
     "test:e2e": "pnpm --filter @notention/ui test:e2e",
     "relay": "pnpm --filter @notention/agent relay --",

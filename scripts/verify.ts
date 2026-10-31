@@ -37,11 +37,17 @@ async function main(): Promise<void> {
     console.log('==========================================');
     console.log('Lanes: L0 (pure) + L1 (fast quality) + L2 (browser smoke)');
 
+    // L0: Fabricated path guard (must pass)
+    run('pnpm lint:fabricated', 'L0: Fabricated path grep guard');
+
     // L0 + L1: Unit tests (pure + fast quality)
     run('pnpm test', 'L0+L1: Unit tests (core, agent, cli, optimize)');
 
     // L1 continued: UI unit tests (batched)
     run('pnpm test:ui', 'L1: UI unit tests (batched)');
+
+    // L1: Param visibility check
+    run('pnpm exec tsx scripts/verify-param-visibility.ts', 'L1: Strategy param visibility check');
 
     // L2: Browser smoke test (pre-existing issue in optimize journey; will be fixed in Phase 1.3)
     runOptional('pnpm optimize optimize capture-and-edit', 'L2: Optimize E2E smoke test (capture-and-edit)');

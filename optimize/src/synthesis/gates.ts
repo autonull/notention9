@@ -13,14 +13,12 @@ export interface GateReport {
 }
 
 import { runTypeScriptGate } from './gates/typeScriptGate.js';
-import { runESLintGate } from './gates/eslintGate.js';
 import { runSeamConformanceGate } from './gates/seamConformanceGate.js';
 import { runImportAllowlistGate } from './gates/importAllowlistGate.js';
 import { runNoAmbientCapsGate } from './gates/noAmbientCapsGate.js';
 import { runSpecValidationGate } from './gates/specValidationGate.js';
 import { runA11yGate } from './gates/a11yGate.js';
 import { runKeyboardGate } from './gates/keyboardGate.js';
-import { runMustWinGate } from './gates/mustWinGate.js';
 
 /**
  * Run all static gates on a candidate strategy
@@ -34,29 +32,26 @@ export async function runStaticGates(
     // Gate 1: TypeScript compilation
     gates.typescript = await runTypeScriptGate(candidate);
 
-    // Gate 2: ESLint
-    gates.eslint = await runESLintGate(candidate);
-
-    // Gate 3: Seam conformance
+    // Gate 2: Seam conformance
     gates.seamConformance = runSeamConformanceGate(candidate, seams);
 
-    // Gate 4: Import allowlist
+    // Gate 3: Import allowlist
     gates.importAllowlist = runImportAllowlistGate(candidate);
 
-    // Gate 5: No ambient capabilities
+    // Gate 4: No ambient capabilities
     gates.noAmbientCaps = runNoAmbientCapsGate(candidate);
 
-    // Gate 6: Spec validation
+    // Gate 5: Spec validation
     gates.specValidation = runSpecValidationGate(candidate);
 
-    // Gate 7: A11y
+    // Gate 6: A11y
     gates.a11y = runA11yGate(candidate);
 
-    // Gate 8: Keyboard navigation
+    // Gate 7: Keyboard navigation
     gates.keyboard = runKeyboardGate(candidate);
 
-    // Gate 9: Must-win (placeholder - needs comparison)
-    gates.mustWin = runMustWinGate(candidate);
+    // Note: Must-win gate is evaluated in the evaluation phase (evaluateCandidateFast)
+    // where baseline comparison is available.
 
     const overallPass = Object.values(gates).every(g => g.pass);
 

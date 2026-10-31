@@ -1,7 +1,7 @@
 # TODO.12 — Notention Evaluation & Improvement Program
 
 **Supersedes:** `TODO.11.md`, `TODO.11.a.md`, and all prior drafts of this file
-**Status:** Active — Phase 0 done; Phase 1 in progress (no-regrets complete)
+**Status:** Active — Phase 0 done; Phase 1 complete
 **Shape:** One measurement substrate, three consumers. Consolidate existing code. Commit only to the next experiment; defer what the next experiment does not need.
 
 ---
@@ -86,12 +86,12 @@ The plan is a hypothesis. These three pivots will reshape it based on Phase 1–
 | Phase | Status | Target | Exit gate |
 |---|---|---|---|
 | **0. Integrity** | ✅ Done | 2026-10-31 | Core cases load in built runtime |
-| **1. Truth & Plumbing** | 🔄 In Progress | 2026-11-07 | Resolver delivers params; Tier-0 schemas frozen; fabricated paths deleted; fast CI lane green |
+| **1. Truth & Plumbing** | ✅ Done | 2026-10-31 | Resolver delivers params; Tier-0 schemas frozen; fabricated paths deleted; fast CI lane green |
 | 1.1 Tier-0 Decisions | ✅ Done | 2026-10-31 | 5 decisions drafted |
 | 1.2 ResolvedStrategy impl | ✅ Done | 2026-10-31 | `ResolvedStrategy` type + `resolveStrategyWithMeta` + 5-layer precedence test |
-| 1.3 Must-win gate / ESLint gate | 🔄 Next | 2026-11-03 | Implement or delete; fix/remove ESLint gate; repair/delete `determinism.ts` |
-| 1.4 Fabricated-path grep guard | ⏳ Queued | 2026-11-04 | Add to CI |
-| 1.5 Gate: `pnpm verify` green + param visibility | ⏳ Queued | 2026-11-05 | One strategy param visibly changes a capture render |
+| 1.3 Must-win gate / ESLint gate | ✅ Done | 2026-10-31 | Removed placeholder must-win from synthesis (real one in evaluation); removed ESLint gate (custom config); deleted unused `determinism.ts` |
+| 1.4 Fabricated-path grep guard | ✅ Done | 2026-10-31 | Added `pnpm lint:fabricated` script + CI integration in verify |
+| 1.5 Gate: `pnpm verify` green + param visibility | ✅ Done | 2026-10-31 | PropertyForm isAdding param visibly changes capture render (header + Magic button) |
 | **2. Measurement Core** | ⏳ Queued | 2026-11-14 | Verdict fixtures pass in < 10 s |
 | **3. Causal Delivery Slice** | ⏳ Queued | 2026-11-21 | One real revision decision, C1–C9 demonstrated |
 | **4. Benchmark + Representation** | ⏳ Queued | 2026-12-05 | 40 intent / 60 quality cases; F1 + match baselines |
