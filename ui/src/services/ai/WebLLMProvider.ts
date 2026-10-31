@@ -1,7 +1,8 @@
 import {CreateMLCEngine, MLCEngine} from "@mlc-ai/web-llm";
 import type {Note, OntologyAttribute, OntologyNode, Property} from '@notention/core';
-import type {AIProvider, InferredAttribute} from './types';
-import {Logger, collectOntologyKeys, parsePropertiesJson, stripJsonFence} from '@notention/core';
+import type {InferredAttribute} from './types';
+import {BaseAIProvider} from './BaseProvider.js';
+import {Logger, collectOntologyKeys, parsePropertiesJson} from '@notention/core';
 
 export const AVAILABLE_MODELS = [
     {id: "Llama-3.2-3B-Instruct-q4f16_1-MLC", label: "Llama 3.2 3B (Balanced)"},
@@ -9,16 +10,16 @@ export const AVAILABLE_MODELS = [
     {id: "RedPajama-INCITE-Chat-3B-v1-q4f16_1-MLC", label: "RedPajama 3B"}
 ];
 
-export class WebLLMProvider implements AIProvider {
-    name = 'WebLLM (In-Browser)';
-    kind = 'local-model' as const;
-    isAvailable = true;
+export class WebLLMProvider extends BaseAIProvider {
+    readonly name = 'WebLLM (In-Browser)';
+    readonly kind = 'local-model' as const;
+    readonly isAvailable = true;
     private engine: MLCEngine | null = null;
-    private modelId: string;
+    private readonly modelId: string;
     private initPromise: Promise<void> | null = null;
-    private logger = Logger.getInstance();
 
     constructor(modelId: string = "Llama-3.2-3B-Instruct-q4f16_1-MLC") {
+        super();
         this.modelId = modelId;
     }
 
@@ -35,7 +36,7 @@ export class WebLLMProvider implements AIProvider {
         return response.choices[0]?.message?.content || "";
     }
 
-    async suggestTags(text: string, ontology?: OntologyNode[]): Promise<string[]> {
+    protected async doSuggestTags(text: string, ontology?: OntologyNode[]): Promise<string[]> {
         const engine = await this.getEngine();
         if (!engine) {
             throw new Error("WebLLM engine not available");
@@ -64,14 +65,14 @@ export class WebLLMProvider implements AIProvider {
 
         const content = response.choices[0]?.message?.content || "[]";
         try {
-            return JSON.parse(stripJsonFence(content));
+            return this.parseJsonArray(content);
         } catch {
             this.logger.warn("Failed to parse AI tags:", new Error(content));
             return [];
         }
     }
 
-    async analyzeOntology(notes: Note[]): Promise<InferredAttribute[]> {
+    protected async doAnalyzeOntology(notes: Note[]): Promise<InferredAttribute[]> {
         const engine = await this.getEngine();
         if (!engine) {
             throw new Error("WebLLM engine not available");
@@ -95,17 +96,8 @@ export class WebLLMProvider implements AIProvider {
 
         const content = response.choices[0]?.message?.content || "[]";
         try {
-            const jsonStr = stripJsonFence(content);
-
-            interface RawAttribute {
-                key: string;
-                type: string;
-                description?: string;
-                sampleValues?: string[];
-            }
-
-            const raw: RawAttribute[] = JSON.parse(jsonStr);
-            return raw.map((r) => ({
+            const jsonStr = this.parseJsonArray<{key: string, type: string, description?: string, sampleValues?: string[]}>(content);
+            return jsonStr.map((r) => ({
                 key: r.key,
                 type: r.type as OntologyAttribute['type'],
                 description: r.description,
@@ -118,7 +110,7 @@ export class WebLLMProvider implements AIProvider {
         }
     }
 
-    async alignToOntology(text: string, ontology: OntologyNode[]): Promise<Property[]> {
+    protected async doAlignToOntology(text: string, ontology: OntologyNode[]): Promise<Property[]> {
         const engine = await this.getEngine();
         if (!engine) throw new Error("WebLLM engine not available");
 
@@ -141,14 +133,14 @@ export class WebLLMProvider implements AIProvider {
 
         const content = response.choices[0]?.message?.content || "[]";
         try {
-            return parsePropertiesJson(JSON.parse(stripJsonFence(content)));
+            return parsePropertiesJson(this.parseJsonObject(content, []));
         } catch {
             this.logger.warn("Failed to parse AI properties:", new Error(content));
             return [];
         }
     }
 
-    async optimizeOntology(_ontology: OntologyNode[]): Promise<{
+    protected async doOptimizeOntology(_ontology: OntologyNode[]): Promise<{
         merged: { source: string, target: string }[],
         pruned: string[]
     }> {

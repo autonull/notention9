@@ -37,6 +37,12 @@ import {
     extractRoles,
     runDeterministicExtraction,
 } from './extractionPatterns.js';
+import {
+    EXTRACTION_STAGE_PRIORITIES,
+    EXTRACTION_STAGE_CONFIDENCE,
+    getStagePriority,
+    getStageConfidence,
+} from './extractionConstants.js';
 
 export type ExtractionStageName = 'deterministic' | 'pattern' | 'ai' | 'fuzzy';
 
@@ -98,7 +104,7 @@ export interface AlignmentExplanation {
  */
 export class DeterministicStage implements ExtractionStage {
     readonly name = 'deterministic' as const;
-    readonly priority = 10;
+    readonly priority = getStagePriority('deterministic');
 
     extract(text: string, ontology: OntologyNode[], context?: ExtractionContext): Property[] {
         const options = context?.options ?? {};
@@ -119,7 +125,7 @@ export class DeterministicStage implements ExtractionStage {
  */
 export class PatternStage implements ExtractionStage {
     readonly name = 'pattern' as const;
-    readonly priority = 20;
+    readonly priority = getStagePriority('pattern');
 
     extract(text: string, ontology: OntologyNode[], context?: ExtractionContext): Property[] {
         const options = context?.options ?? {};
@@ -140,7 +146,7 @@ export class PatternStage implements ExtractionStage {
  */
 export class OntologyKeyStage implements ExtractionStage {
     readonly name = 'pattern' as const; // Same priority as PatternStage
-    readonly priority = 20;
+    readonly priority = getStagePriority('pattern');
 
     extract(text: string, ontology: OntologyNode[], context?: ExtractionContext): Property[] {
         const options = context?.options ?? {};
@@ -182,7 +188,7 @@ export interface AIExtractionProvider {
 
 export class AIStage implements ExtractionStage {
     readonly name = 'ai' as const;
-    readonly priority = 30;
+    readonly priority = getStagePriority('ai');
 
     constructor(private readonly provider: AIExtractionProvider) {}
 
@@ -200,7 +206,7 @@ export class AIStage implements ExtractionStage {
  */
 export class FuzzyStage implements ExtractionStage {
     readonly name = 'fuzzy' as const;
-    readonly priority = 40;
+    readonly priority = getStagePriority('fuzzy');
 
     extract(text: string, ontology: OntologyNode[], context?: ExtractionContext): Property[] {
         const options = context?.options ?? {};
@@ -329,13 +335,7 @@ export class ExtractionPipeline {
     }
 
     private getStageConfidence(stageName: ExtractionStageName, _property: Property): number {
-        switch (stageName) {
-            case 'deterministic': return 0.95;
-            case 'pattern': return 0.85;
-            case 'ai': return 0.8;
-            case 'fuzzy': return 0.6;
-            default: return 0.5;
-        }
+        return getStageConfidence(stageName);
     }
 }
 

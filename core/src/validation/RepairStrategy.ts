@@ -48,6 +48,12 @@ export class JsonFenceRepairStrategy<T> implements RepairStrategy<T> {
 }
 
 /**
+ * Shared singleton instance for JSON fence removal
+ * Avoids creating multiple instances across repair strategies
+ */
+export const sharedJsonFenceRepair = new JsonFenceRepairStrategy<unknown>();
+
+/**
  * Heuristic repair for property arrays (from ui/services/ai/schema.ts)
  */
 export interface PropertyItem {
@@ -67,7 +73,7 @@ export class PropertyArrayRepairStrategy implements RepairStrategy<PropertyItem[
         const text = typeof context.rawInput === 'string' 
             ? context.rawInput 
             : JSON.stringify(context.rawInput);
-        const cleaned = new JsonFenceRepairStrategy().repair({ ...context, rawInput: text });
+        const cleaned = sharedJsonFenceRepair.repair({ ...context, rawInput: text });
 
         try {
             const parsed = JSON.parse(cleaned as string);
@@ -105,7 +111,7 @@ export class TagArrayRepairStrategy implements RepairStrategy<string[]> {
         const text = typeof context.rawInput === 'string' 
             ? context.rawInput 
             : JSON.stringify(context.rawInput);
-        const cleaned = new JsonFenceRepairStrategy().repair({ ...context, rawInput: text });
+        const cleaned = sharedJsonFenceRepair.repair({ ...context, rawInput: text });
 
         try {
             const parsed = JSON.parse(cleaned as string);
@@ -142,7 +148,7 @@ export class InferredAttributesRepairStrategy implements RepairStrategy<Inferred
         const text = typeof context.rawInput === 'string' 
             ? context.rawInput 
             : JSON.stringify(context.rawInput);
-        const cleaned = new JsonFenceRepairStrategy().repair({ ...context, rawInput: text });
+        const cleaned = sharedJsonFenceRepair.repair({ ...context, rawInput: text });
 
         try {
             const parsed = JSON.parse(cleaned as string);
@@ -189,7 +195,7 @@ export class OntologyOptimizationRepairStrategy implements RepairStrategy<Ontolo
         const text = typeof context.rawInput === 'string' 
             ? context.rawInput 
             : JSON.stringify(context.rawInput);
-        const cleaned = new JsonFenceRepairStrategy().repair({ ...context, rawInput: text });
+        const cleaned = sharedJsonFenceRepair.repair({ ...context, rawInput: text });
 
         try {
             const parsed = JSON.parse(cleaned as string);
@@ -304,11 +310,7 @@ export class CompositeRepairStrategy<T> implements RepairStrategy<T> {
 
 /**
  * Default repair strategies for common types
- * Each strategy handles JSON fence removal internally
- */
-/**
- * Default repair strategies for common types
- * Each strategy handles JSON fence removal internally
+ * Each strategy uses sharedJsonFenceRepair for JSON fence removal
  */
 export const defaultRepairStrategies: Record<string, RepairStrategy<any>> = {
     properties: new PropertyArrayRepairStrategy(),

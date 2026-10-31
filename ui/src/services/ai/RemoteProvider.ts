@@ -1,6 +1,7 @@
 import type {Note, OntologyNode, Property} from '@notention/core';
-import type {AIProvider, InferredAttribute} from './types';
-import {buildAttributeIndex, collectOntologyKeys, Logger, parsePropertiesJson, stripJsonFence} from '@notention/core';
+import type {InferredAttribute} from './types';
+import {BaseAIProvider} from './BaseProvider.js';
+import {buildAttributeIndex, collectOntologyKeys, Logger, parsePropertiesJson} from '@notention/core';
 import {GoogleGenAI} from '@google/genai';
 
 export const isGeminiApiKeyAvailable = (userKey?: string): boolean => {
@@ -8,15 +9,15 @@ export const isGeminiApiKeyAvailable = (userKey?: string): boolean => {
     return !!(key && key !== 'YOUR_GEMINI_API_KEY');
 };
 
-export class RemoteAIProvider implements AIProvider {
-    name = 'Google Gemini';
-    kind = 'remote' as const;
-    isAvailable: boolean;
+export class RemoteAIProvider extends BaseAIProvider {
+    readonly name = 'Google Gemini';
+    readonly kind = 'remote' as const;
+    readonly isAvailable: boolean;
     private client: GoogleGenAI | null = null;
-    private modelName = 'gemini-1.5-flash';
-    private logger = Logger.getInstance();
+    private readonly modelName = 'gemini-1.5-flash';
 
     constructor(apiKey?: string) {
+        super();
         const key = apiKey || process.env.API_KEY;
         this.isAvailable = !!(key && key !== 'YOUR_GEMINI_API_KEY');
         if (this.isAvailable) {
@@ -39,7 +40,7 @@ export class RemoteAIProvider implements AIProvider {
         }
     }
 
-    async suggestTags(text: string): Promise<string[]> {
+    protected async doSuggestTags(text: string): Promise<string[]> {
         if (!this.client) throw new Error('AI Provider not configured');
 
         const prompt = `Analyze the following note content and suggest up to 5 relevant tags.
@@ -51,14 +52,14 @@ ${text}`;
 
         try {
             const result = await this.generateCompletion(prompt);
-            return JSON.parse(stripJsonFence(result));
+            return this.parseJsonArray(result);
         } catch (e) {
             this.logger.error('Tag Suggestion Error:', e as Error);
             return [];
         }
     }
 
-    async analyzeOntology(notes: Note[]): Promise<InferredAttribute[]> {
+    protected async doAnalyzeOntology(notes: Note[]): Promise<InferredAttribute[]> {
         if (!this.client) throw new Error('AI Provider not configured');
 
         // To avoid hitting context limits, we might only send a sample of notes or just their properties.
@@ -85,14 +86,14 @@ ${propertySummary}`;
 
         try {
             const result = await this.generateCompletion(prompt);
-            return JSON.parse(stripJsonFence(result));
+            return this.parseJsonArray(result);
         } catch (e) {
             this.logger.error('Ontology Analysis Error:', e as Error);
             return [];
         }
     }
 
-    async alignToOntology(text: string, ontology: OntologyNode[]): Promise<Property[]> {
+    protected async doAlignToOntology(text: string, ontology: OntologyNode[]): Promise<Property[]> {
         if (!this.client) throw new Error('AI Provider not configured');
 
         // Build definitions list with types
@@ -123,14 +124,14 @@ ${text}`;
 
         try {
             const result = await this.generateCompletion(prompt);
-            return parsePropertiesJson(JSON.parse(stripJsonFence(result)));
+            return parsePropertiesJson(this.parseJsonObject(result, []));
         } catch (e) {
             this.logger.error('Alignment Error:', e as Error);
             return [];
         }
     }
 
-    async optimizeOntology(ontology: OntologyNode[]): Promise<{
+    protected async doOptimizeOntology(ontology: OntologyNode[]): Promise<{
         merged: { source: string, target: string }[],
         pruned: string[]
     }> {
@@ -155,7 +156,7 @@ ${keys.join(', ')}`;
 
         try {
             const result = await this.generateCompletion(prompt);
-            return JSON.parse(stripJsonFence(result));
+            return this.parseJsonObject(result, {merged: [], pruned: []});
         } catch (e) {
             this.logger.error('Optimization Error:', e as Error);
             return {merged: [], pruned: []};

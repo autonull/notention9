@@ -3,6 +3,13 @@ import type { Node, PropertySignature, SourceFile } from 'ts-morph';
 import { Node as N, SyntaxKind } from 'ts-morph';
 import { createAstProject, DEFAULT_PROJECT_ROOT } from './astProject.js';
 import { FileScanner, scanUIComponents } from './fileScanner.js';
+import { 
+    DIALOG_COMPONENT_TAGS, 
+    ROUTING_COMPONENT_TAGS, 
+    LINK_COMPONENT_TAGS, 
+    FORM_INPUT_TAGS, 
+    CLICK_HANDLERS 
+} from '../../constants.js';
 
 export interface ComponentInfo {
     name: string;
@@ -384,7 +391,7 @@ export class ComponentScanner {
     private extractRoutesFromJsx(compName: string, jsx: JSXElement, routes: Map<string, { path: string; guards: string[] }>): void {
         this.traverseJsx(jsx, (node) => {
             // Look for routing patterns in JSX
-            if (node.tag === 'Route' || node.tag === 'Routes' || node.tag === 'Switch') {
+            if (ROUTING_COMPONENT_TAGS.some(tag => node.tag === tag)) {
                 const path = node.props.path || node.props.from;
                 if (path) {
                     const guards: string[] = [];
@@ -395,7 +402,7 @@ export class ComponentScanner {
             }
             
             // Look for Link/NavLink components with to prop
-            if ((node.tag === 'Link' || node.tag === 'NavLink') && node.props.to) {
+            if (LINK_COMPONENT_TAGS.some(tag => node.tag === tag) && node.props.to) {
                 const path = node.props.to;
                 routes.set(path, { path, guards: [] });
             }
@@ -414,7 +421,7 @@ export class ComponentScanner {
     private extractDialogsFromJsx(compName: string, jsx: JSXElement): void {
         this.traverseJsx(jsx, (node) => {
             // Check if this component renders a Modal/Dialog
-            const isDialogComponent = ['Modal', 'Dialog', 'Popover', 'Drawer'].some(d => 
+            const isDialogComponent = DIALOG_COMPONENT_TAGS.some(d => 
                 node.tag === d || node.tag.endsWith(d)
             );
             
@@ -435,8 +442,7 @@ export class ComponentScanner {
         
         this.traverseJsx(jsx, (node) => {
             // Look for form inputs
-            const inputTags = ['input', 'select', 'textarea', 'Input', 'Select', 'Textarea'];
-            if (inputTags.includes(node.tag) || inputTags.some(t => node.tag.endsWith(t))) {
+            if (FORM_INPUT_TAGS.some(tag => node.tag === tag || node.tag.endsWith(tag))) {
                 const field = this.parseFormField(node);
                 if (field) fields.push(field);
             }
@@ -493,8 +499,7 @@ export class ComponentScanner {
     private extractActionsFromJsx(compName: string, jsx: JSXElement): void {
         this.traverseJsx(jsx, (node) => {
             // Look for click handlers
-            const clickHandlers = ['onClick', 'onPress', 'onSubmit', 'onSelect'];
-            for (const handler of clickHandlers) {
+            for (const handler of CLICK_HANDLERS) {
                 if (node.props[handler]) {
                     const intent = this.inferIntentFromHandler(handler, node.props[handler], compName);
                     const selector = this.extractSelector(node);

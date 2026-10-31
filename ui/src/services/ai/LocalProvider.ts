@@ -1,13 +1,14 @@
 import type {Note, OntologyNode, Property} from '@notention/core';
-import type {AIProvider, InferredAttribute} from './types';
+import type {InferredAttribute} from './types';
+import {BaseAIProvider} from './BaseProvider.js';
 import {collectOntologyKeys, parseProperties, parseQuantity, ExtractionPipeline} from '@notention/core';
 import {getTextFromHtml} from '../../utils/html';
 import {addDays, format} from 'date-fns';
 
-export class LocalAIProvider implements AIProvider {
-    name = 'Local (Heuristic)';
-    kind = 'heuristic' as const;
-    isAvailable = true;
+export class LocalAIProvider extends BaseAIProvider {
+    readonly name = 'Local (Heuristic)';
+    readonly kind = 'heuristic' as const;
+    readonly isAvailable = true;
 
     async generateCompletion(prompt: string): Promise<string> {
         if (prompt.includes("Suggest 5 semantic tags")) {
@@ -16,7 +17,7 @@ export class LocalAIProvider implements AIProvider {
         return 'Local AI provider does not support generic text generation yet.';
     }
 
-    async suggestTags(text: string): Promise<string[]> {
+    protected async doSuggestTags(text: string): Promise<string[]> {
         const tags = new Set<string>();
 
         const matches = text.match(/#[\w-]+/g);
@@ -49,7 +50,7 @@ export class LocalAIProvider implements AIProvider {
         return Array.from(tags);
     }
 
-    async analyzeOntology(notes: Note[], context?: string): Promise<InferredAttribute[]> {
+    protected async doAnalyzeOntology(notes: Note[]): Promise<InferredAttribute[]> {
         const propertyMap = new Map<string, { count: number; values: Set<string> }>();
 
         for (const note of notes) {
@@ -65,11 +66,6 @@ export class LocalAIProvider implements AIProvider {
                 entry.count++;
                 prop.values.forEach(v => entry.values.add(v));
             }
-        }
-
-        if (context === 'Project') {
-            if (!propertyMap.has('budget')) propertyMap.set('budget', {count: 1, values: new Set(['1000'])});
-            if (!propertyMap.has('deadline')) propertyMap.set('deadline', {count: 1, values: new Set(['2024-01-01'])});
         }
 
         const attributes: InferredAttribute[] = [];
@@ -92,17 +88,17 @@ export class LocalAIProvider implements AIProvider {
         return attributes;
     }
 
-    async alignToOntology(text: string, ontology: OntologyNode[]): Promise<Property[]> {
-        const pipeline = new ExtractionPipeline();
-        const result = await pipeline.extract(text, ontology);
-        return result.properties;
-    }
-
-    async optimizeOntology(_ontology: OntologyNode[]): Promise<{
+    protected async doOptimizeOntology(_ontology: OntologyNode[]): Promise<{
         merged: { source: string, target: string }[],
         pruned: string[]
     }> {
         return {merged: [], pruned: []};
+    }
+
+    protected async doAlignToOntology(text: string, ontology: OntologyNode[]): Promise<Property[]> {
+        const pipeline = new ExtractionPipeline();
+        const result = await pipeline.extract(text, ontology);
+        return result.properties;
     }
 
     private inferType(values: string[]): InferredAttribute['type'] {

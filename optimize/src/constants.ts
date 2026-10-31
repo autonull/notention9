@@ -31,35 +31,8 @@ export const CAPABILITY_PROBE_TIMEOUT = 5000;
 // Provider capability probe test prompt
 export const CAPABILITY_PROBE_PROMPT = `Return a JSON object: {"test": "ok"}`;
 
-// Default extraction options
-export const DEFAULT_EXTRACTION_OPTIONS = {
-    intents: true,
-    patterns: true,
-    ontologyKeys: true,
-    fuzzy: true,
-    price: true,
-    dates: true,
-    roles: true,
-    ranges: true,
-    maxProperties: 50,
-    fuzzyThreshold: 0.8,
-} as const;
-
-// Extraction stage priorities (lower = runs first)
-export const EXTRACTION_STAGE_PRIORITIES = {
-    deterministic: 10,
-    pattern: 20,
-    ai: 30,
-    fuzzy: 40,
-} as const;
-
-// Extraction stage confidence scores
-export const EXTRACTION_STAGE_CONFIDENCE = {
-    deterministic: 0.95,
-    pattern: 0.85,
-    ai: 0.8,
-    fuzzy: 0.6,
-} as const;
+// Extraction stage priorities (lower = runs first) - re-exported from core
+export { EXTRACTION_STAGE_PRIORITIES, EXTRACTION_STAGE_CONFIDENCE, DEFAULT_EXTRACTION_OPTIONS } from '@notention/core/extraction';
 
 // Default loop configuration
 export const DEFAULT_LOOP_CONFIG = {
