@@ -8,6 +8,8 @@ import {
     profileRegistry,
     type StrategyProfile,
     type UserProfileConfig,
+    type ResolvedStrategy,
+    type ResolutionReason,
 } from '@notention/core/ui/ProfileRegistry';
 import { strategyRegistry, type Seam, type Strategy } from '@notention/core/ui/strategy';
 import { JsonStore } from '@notention/core/storage';
@@ -16,7 +18,8 @@ import { initializeStrategySystem, persistUserConfig } from './strategyResolverI
 
 // Strategy context for React components
 interface StrategyContextValue {
-    resolveStrategy: (seamRole: SeamRole) => Strategy | undefined;
+    resolveStrategy: (seamRole: SeamRole) => ResolvedStrategy | undefined;
+    resolveStrategyOnly: (seamRole: SeamRole) => Strategy | undefined;
     getActiveProfile: () => StrategyProfile | undefined;
     setActiveProfile: (profileId: string) => boolean;
     setOverride: (seamRole: SeamRole, strategyId: string) => void;
@@ -53,7 +56,14 @@ export function StrategyProvider({ children, userId = 'default-user' }: Strategy
 
     const persistConfig = useCallback(() => { persistUserConfig(userId); }, [userId]);
 
-    const resolveStrategy = useMemo(
+    const resolveStrategyWithMeta = useMemo(
+        () => (seamRole: SeamRole) => {
+            return profileRegistry.resolveStrategyWithMeta(userId, seamRole, strategyRegistry);
+        },
+        [userId]
+    );
+
+    const resolveStrategyOnly = useMemo(
         () => (seamRole: SeamRole) => {
             return profileRegistry.resolveStrategy(userId, seamRole, strategyRegistry);
         },
@@ -99,7 +109,8 @@ export function StrategyProvider({ children, userId = 'default-user' }: Strategy
 
     const value = useMemo(
         () => ({
-            resolveStrategy,
+            resolveStrategy: resolveStrategyWithMeta,
+            resolveStrategyOnly,
             getActiveProfile,
             setActiveProfile,
             setOverride,
@@ -111,7 +122,8 @@ export function StrategyProvider({ children, userId = 'default-user' }: Strategy
             overrides: userConfig.overrides.overrides,
         }),
         [
-            resolveStrategy,
+            resolveStrategyWithMeta,
+            resolveStrategyOnly,
             getActiveProfile,
             setActiveProfile,
             setOverride,
@@ -127,10 +139,16 @@ export function StrategyProvider({ children, userId = 'default-user' }: Strategy
     return <StrategyContext.Provider value={value}>{children}</StrategyContext.Provider>;
 }
 
-// Hook for components to use a specific seam's strategy
+// Hook for components to use a specific seam's strategy (backward compatible)
 export function useSeamStrategy<P = Record<string, unknown>>(seamRole: SeamRole): Strategy<P> | undefined {
+    const { resolveStrategyOnly } = useStrategy();
+    return resolveStrategyOnly(seamRole) as Strategy<P> | undefined;
+}
+
+// Hook for components that need full provenance metadata
+export function useResolvedStrategy<P = Record<string, unknown>>(seamRole: SeamRole): ResolvedStrategy<P> | undefined {
     const { resolveStrategy } = useStrategy();
-    return resolveStrategy(seamRole) as Strategy<P> | undefined;
+    return resolveStrategy(seamRole) as ResolvedStrategy<P> | undefined;
 }
 
 // Re-export for convenience

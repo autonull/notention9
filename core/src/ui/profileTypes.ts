@@ -4,6 +4,7 @@
  */
 
 import type { SeamRole } from '../constants/seams.js';
+import type { Strategy } from './strategy.js';
 
 /**
  * Strategy profile - a named collection of strategy selections per seam role
@@ -155,4 +156,29 @@ export interface ExperimentResult {
     isSignificant: boolean;
     winner?: string;
     computedAt: string;
+}
+
+/**
+ * Reason why a strategy was resolved
+ * Provides full traceability for evaluation and audit
+ */
+export type ResolutionReason =
+    | { kind: 'override'; strategyId: string }
+    | { kind: 'experiment'; experimentId: string; variantId: string }
+    | { kind: 'manual-profile'; profileId: string }
+    | { kind: 'policy'; policyId: string; ruleId: string }
+    | { kind: 'default-profile'; profileId: string }
+    | { kind: 'fallback'; seamId: string };
+
+/**
+ * Resolved strategy with full provenance metadata
+ * Returned by ProfileRegistry.resolveStrategyWithMeta()
+ */
+export interface ResolvedStrategy<P extends object = Record<string, unknown>> {
+    strategy: Strategy<P>;
+    reason: ResolutionReason;
+    resolvedParams: P;
+    resolvedAt: string;
+    userId: string;
+    seamRole: SeamRole;
 }
