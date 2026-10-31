@@ -1,4 +1,9 @@
-import { readFileSync, writeFileSync, mkdirSync, existsSync, rmSync } from 'fs';
+/**
+ * Fast evaluator - runs deterministic evaluation without browser
+ * Uses async filesystem operations consistently
+ */
+
+import { readFile, writeFile, mkdir, access } from 'fs/promises';
 import { join, dirname } from 'path';
 import { PropertyExtractor } from '@notention/core';
 import { MatchEngine } from '@notention/core';
@@ -8,33 +13,17 @@ import { Note, Property } from '@notention/core';
 import type { CandidateStrategy, CandidateDir } from './StrategySpec.js';
 import type { BaselineResult, ResourceMetrics, CandidateEvaluation, EvaluationReport, ResourceMonitor } from './evaluationTypes.js';
 import { loadCorpusTestCases } from '../corpus/index.js';
-import { testCaseRegistry, CORE_CAPTURE_TEST_CASE } from './testCases.js';
+import { 
+    testCaseRegistry, 
+    CORE_CAPTURE_TEST_CASE,
+    CORE_EXTRACTION_TEST_CASES,
+    CORE_MATCH_TEST_CASES,
+    type ExtractionTestCase,
+    type MatchTestCase,
+} from './testCases.js';
 
 // Re-export evaluation types for backward compatibility
 export type { BaselineResult, ResourceMetrics, CandidateEvaluation, EvaluationReport, ResourceMonitor } from './evaluationTypes.js';
-
-/**
- * Test case for extraction evaluation
- */
-export interface TestCase {
-    id: string;
-    name: string;
-    input: string;
-    expectedMinProperties: number;
-    expectedProperties?: Partial<Property>[];
-}
-
-/**
- * Test case for match evaluation
- */
-export interface MatchTestCase {
-    id: string;
-    name: string;
-    requestText: string;
-    offerText: string;
-    expectedMinScore: number;
-    expectedMaxScore?: number;
-}
 
 const ontologyService = new OntologyService(DEFAULT_ONTOLOGY);
 const extractor = new PropertyExtractor(DEFAULT_ONTOLOGY);
@@ -77,7 +66,7 @@ function checkPropertyMatch(actual: Property[], expected: Partial<Property>[]): 
     return { matched, total: expected.length, details };
 }
 
-async function loadCorpusTestCasesForEvaluation(): Promise<{ extraction: TestCase[]; match: MatchTestCase[] }> {
+async function loadCorpusTestCasesForEvaluation(): Promise<{ extraction: ExtractionTestCase[]; match: MatchTestCase[] }> {
     // Check multiple possible corpus output locations
     const possibleDirs = [
         'loop/corpus-output',
@@ -85,19 +74,18 @@ async function loadCorpusTestCasesForEvaluation(): Promise<{ extraction: TestCas
     ];
     
     for (const corpusOutputDir of possibleDirs) {
-        if (existsSync(corpusOutputDir)) {
-            try {
-                return await loadCorpusTestCases(corpusOutputDir);
-            } catch {
-                // Ignore errors, try next location
-            }
+        try {
+            await access(corpusOutputDir);
+            return await loadCorpusTestCases(corpusOutputDir);
+        } catch {
+            // Ignore errors, try next location
         }
     }
     return { extraction: [], match: [] };
 }
 
 async function evaluateExtractionTestCase(
-    testCase: TestCase,
+    testCase: ExtractionTestCase,
     isCorpusTest: boolean,
     taskPrefix: string
 ): Promise<BaselineResult> {
@@ -182,7 +170,7 @@ export async function runFastBaselineEvaluation(): Promise<BaselineResult[]> {
         corpusCases.extraction
     );
     for (const { testCase, isCorpusTest } of extractionCases) {
-        results.push(await evaluateExtractionTestCase(testCase as TestCase, isCorpusTest, 'task-3-extraction-'));
+        results.push(await evaluateExtractionTestCase(testCase, isCorpusTest, 'task-3-extraction-'));
     }
     
     // Evaluate match test cases (core + corpus)
@@ -191,7 +179,7 @@ export async function runFastBaselineEvaluation(): Promise<BaselineResult[]> {
         corpusCases.match
     );
     for (const { testCase, isCorpusTest } of matchCases) {
-        results.push(await evaluateMatchTestCase(testCase as MatchTestCase, isCorpusTest, 'task-2-match-'));
+        results.push(await evaluateMatchTestCase(testCase, isCorpusTest, 'task-2-match-'));
     }
     
     // Test capture task (uses extraction)
@@ -285,14 +273,16 @@ export async function runFastEvaluation(
 export async function loadOrRunFastBaseline(
     baselinePath: string
 ): Promise<BaselineResult[]> {
-    if (existsSync(baselinePath)) {
-        const content = readFileSync(baselinePath, 'utf-8');
+    try {
+        const content = await readFile(baselinePath, 'utf-8');
         return JSON.parse(content);
+    } catch {
+        // File doesn't exist or can't be read
     }
     
     const baseline = await runFastBaselineEvaluation();
-    mkdirSync(dirname(baselinePath), { recursive: true });
-    writeFileSync(baselinePath, JSON.stringify(baseline, null, 2));
+    await mkdir(dirname(baselinePath), { recursive: true });
+    await writeFile(baselinePath, JSON.stringify(baseline, null, 2));
     
     return baseline;
 }

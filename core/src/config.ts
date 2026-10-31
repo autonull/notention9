@@ -246,10 +246,18 @@ let cachedLoopSchema: LoopConfigSchema | null = null;
 
 export async function loadLoopConfigSchema(): Promise<LoopConfigSchema> {
     if (cachedLoopSchema) return cachedLoopSchema;
-    const response = await fetch(`${getProjectRoot()}/optimize/loop/schema.json`);
-    const schema = await response.json() as LoopConfigSchema;
-    cachedLoopSchema = schema;
-    return schema;
+    // In Node.js (CLI), use fs/promises; in browser, use fetch
+    if (typeof process !== 'undefined' && process.versions?.node) {
+        const { readFile } = await import('fs/promises');
+        const { join } = await import('path');
+        // Schema is at loop/schema.json relative to monorepo root
+        const schemaText = await readFile(join(getProjectRoot(), 'loop/schema.json'), 'utf-8');
+        cachedLoopSchema = JSON.parse(schemaText);
+    } else {
+        const response = await fetch(`${getProjectRoot()}/loop/schema.json`);
+        cachedLoopSchema = await response.json() as LoopConfigSchema;
+    }
+    return cachedLoopSchema!;
 }
 
 export async function validateLoopConfig(config: unknown): Promise<void> {

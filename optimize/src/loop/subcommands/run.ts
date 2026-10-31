@@ -19,69 +19,75 @@ interface LoopConfig {
     version: string;
 }
 
+interface StepResult {
+    name: string;
+    success: boolean;
+    message?: string;
+}
+
+const STEPS: Array<{
+    name: string;
+    run: (config: LoopConfig, runDir: string, dry: boolean, json: boolean) => Promise<number>;
+    stopOnFailure: boolean;
+}> = [
+    { name: 'DISCOVER', run: runDiscover, stopOnFailure: true },
+    { name: 'PRIORITIZE', run: runPrioritize, stopOnFailure: true },
+    { name: 'SYNTHESIZE', run: runSynthesize, stopOnFailure: true },
+    { name: 'EVALUATE', run: runEvaluate, stopOnFailure: true },
+    { name: 'ADOPT', run: runAdopt, stopOnFailure: false },
+    { name: 'REQUEST (T4)', run: runRequest, stopOnFailure: false },
+];
+
 export async function runFullLoop(
     config: LoopConfig,
     outputDir: string,
     dry: boolean,
-    json: boolean
+    _json: boolean
 ): Promise<number> {
     console.log('🔄 Running full discover→prioritize→synthesize→evaluate→adopt cycle...\n');
-    
+
     // Create a timestamped run directory
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const runDir = dry ? outputDir : join(outputDir, `run-${timestamp}`);
-    
+
     if (!dry) {
         await ensureDir(runDir);
     }
-    
+
     console.log(`📁 Output directory: ${runDir}\n`);
-    
-    // Step 1: Discover
-    console.log('\n━━━ STEP 1: DISCOVER ━━━');
-    const discoverResult = await runDiscover(config, runDir, dry, false);
-    if (discoverResult !== 0) {
-        console.log('❌ Discover failed, stopping loop');
-        return discoverResult;
+
+    const results: StepResult[] = [];
+
+    for (const step of STEPS) {
+        console.log(`\n━━━ STEP: ${step.name} ━━━`);
+        const result = await step.run(config, runDir, dry, _json);
+        const success = result === 0;
+        results.push({ name: step.name, success });
+
+        if (!success) {
+            console.log(`❌ ${step.name} failed`);
+            if (step.stopOnFailure) {
+                console.log('Stopping loop due to failure');
+                printSummary(results);
+                return result;
+            } else {
+                console.log(`⚠️  ${step.name} failed, but continuing`);
+            }
+        } else {
+            console.log(`✅ ${step.name} completed`);
+        }
     }
-    
-    // Step 2: Prioritize
-    console.log('\n━━━ STEP 2: PRIORITIZE ━━━');
-    const prioritizeResult = await runPrioritize(config, runDir, dry, false);
-    if (prioritizeResult !== 0) {
-        console.log('❌ Prioritize failed, stopping loop');
-        return prioritizeResult;
-    }
-    
-    // Step 3: Synthesize
-    console.log('\n━━━ STEP 3: SYNTHESIZE ━━━');
-    const synthesizeResult = await runSynthesize(config, runDir, dry, false);
-    if (synthesizeResult !== 0) {
-        console.log('❌ Synthesize failed (no candidates passed gates), stopping loop');
-        return synthesizeResult;
-    }
-    
-    // Step 4: Evaluate
-    console.log('\n━━━ STEP 4: EVALUATE ━━━');
-    const evaluateResult = await runEvaluate(config, runDir, dry, false);
-    if (evaluateResult !== 0) {
-        console.log('❌ Evaluate failed (no candidates beat baseline), stopping loop');
-        return evaluateResult;
-    }
-    
-    // Step 5: Adopt
-    console.log('\n━━━ STEP 5: ADOPT ━━━');
-    const adoptResult = await runAdopt(config, runDir, dry, false);
-    if (adoptResult !== 0) {
-        console.log('⚠️  Adopt failed (no winning candidate), but continuing');
-    }
-    
-    // Step 6: Request (T4 for failed candidates)
-    console.log('\n━━━ STEP 6: REQUEST (T4) ━━━');
-    await runRequest(config, runDir, dry, false);
-    
+
     console.log('\n━━━ ✅ FULL LOOP COMPLETE ━━━');
     console.log(`Artifacts written to: ${runDir}`);
-    
+    printSummary(results);
+
     return 0;
+}
+
+function printSummary(results: StepResult[]): void {
+    console.log('\n📋 Summary:');
+    for (const r of results) {
+        console.log(`   ${r.success ? '✅' : '❌'} ${r.name}`);
+    }
 }

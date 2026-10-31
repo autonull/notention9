@@ -1,6 +1,6 @@
 import { readFile, readdir, stat, writeFile, mkdir } from 'fs/promises';
 import { join, extname, basename, relative } from 'path';
-import type { TestCase, MatchTestCase } from '../synthesis/fastEvaluator.js';
+import type { ExtractionTestCase as TestCase, MatchTestCase } from '../synthesis/testCases.js';
 
 export interface CorpusConfig {
     inputDir: string;

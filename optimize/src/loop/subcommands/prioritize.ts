@@ -2,52 +2,62 @@
  * Prioritize subcommand - prioritizes discovered problems by impact
  */
 
-import { deriveProblemsFromDiscovery, prioritizeProblems } from '@notention/optimize/loop/prioritize';
-import { loadDiscoveredArtifact, writeJsonArtifact, getArtifactPaths } from '../artifactIO.js';
+import { BaseSubcommand, SubcommandConfig, SubcommandOptions } from './base.js';
+import { loadDiscoveredArtifact } from '../artifactIO.js';
+import { deriveProblemsFromDiscovery, prioritizeProblems } from '../../loop/prioritize.js';
 
-interface LoopConfig {
-    version: string;
+export class PrioritizeSubcommand extends BaseSubcommand {
+    constructor(config: SubcommandConfig, options: SubcommandOptions) {
+        super(config, options);
+    }
+
+    protected getName(): string {
+        return 'Prioritize';
+    }
+
+    protected async execute(): Promise<number> {
+        this.logStep('PRIORITIZE');
+        this.logInfo('Prioritizing discovered problems by impact...\n');
+
+        // Load discovered artifacts
+        const discovered = await loadDiscoveredArtifact(this.options.outputDir);
+        if (!discovered) {
+            this.logError('No discovered.json found. Run discover first.');
+            return 1;
+        }
+        this.logSuccess(`Loaded discovered artifacts`);
+
+        // Derive problems from discovery
+        const problems = deriveProblemsFromDiscovery(discovered);
+        this.logInfo(`Derived ${problems.length} problems from discovery`);
+
+        // Prioritize
+        const prioritized = prioritizeProblems(problems);
+
+        this.logInfo('Prioritized Problems:');
+        for (const p of prioritized) {
+            console.log(`   ${p.rank}. [${p.impactScore}] ${p.type}: ${p.description}`);
+            if (!this.options.dry) console.log(`      Evidence: ${p.evidence.join('; ')}`);
+        }
+
+        // Save prioritized problems
+        if (!this.options.dry) {
+            await this.saveArtifact(this.paths.prioritized, prioritized);
+            this.logSuccess(`Prioritized problems written to ${this.paths.prioritized}`);
+        }
+
+        this.printDryRun(prioritized);
+
+        return 0;
+    }
 }
 
 export async function runPrioritize(
-    config: LoopConfig,
+    config: SubcommandConfig,
     outputDir: string,
     dry: boolean,
     json: boolean
 ): Promise<number> {
-    console.log('📊 Prioritizing discovered problems by impact...\n');
-
-    const paths = getArtifactPaths(outputDir);
-    
-    // Load discovered artifacts
-    const discovered = await loadDiscoveredArtifact(outputDir);
-    if (!discovered) {
-        console.log('  ❌ No discovered.json found. Run discover first.');
-        return 1;
-    }
-    console.log(`  📄 Loaded discovered artifacts from ${paths.discovered}`);
-
-    // Derive problems from discovery
-    const problems = deriveProblemsFromDiscovery(discovered);
-    console.log(`  🔍 Derived ${problems.length} problems from discovery`);
-
-    // Prioritize
-    const prioritized = prioritizeProblems(problems);
-    
-    console.log('\n📋 Prioritized Problems:');
-    for (const p of prioritized) {
-        console.log(`   ${p.rank}. [${p.impactScore}] ${p.type}: ${p.description}`);
-        if (!dry) console.log(`      Evidence: ${p.evidence.join('; ')}`);
-    }
-
-    // Save prioritized problems
-    if (!dry) {
-        await writeJsonArtifact(paths.prioritized, prioritized, dry);
-        console.log(`\n✅ Prioritized problems written to ${paths.prioritized}`);
-    } else {
-        console.log('\n🔍 Dry run - no files written');
-        if (json) console.log(JSON.stringify(prioritized, null, 2));
-    }
-
-    return 0;
+    const subcommand = new PrioritizeSubcommand(config, { outputDir, dry, json });
+    return subcommand.run();
 }

@@ -13,7 +13,14 @@
     "downlevelIteration": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "paths": {
+      "@notention/optimize": ["./src/index.ts"],
+      "@notention/optimize/*": ["./src/*"],
+      "@notention/core": ["../core/src/index.ts"],
+      "@notention/core/*": ["../core/src/*"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx"]

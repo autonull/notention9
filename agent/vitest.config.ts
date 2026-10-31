@@ -4,7 +4,8 @@ import path from 'path';
 export default defineConfig({
   resolve: {
     alias: {
-      '@notention/core': path.resolve(__dirname, '../core/src/index.ts')
+      '@notention/core': path.resolve(__dirname, '../core/src/index.ts'),
+      '@notention/optimize': path.resolve(__dirname, '../optimize/src'),
     }
   },
   test: {

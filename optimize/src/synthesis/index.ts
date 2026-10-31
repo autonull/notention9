@@ -8,7 +8,14 @@ export * from './strategyComparison.js';
 export * from './testCases.js';
 export * from './stats.js';
 export * from './templateGenerator.js';
-export * from '../corpus/index.js';
+// Re-export corpus functions (excluding types that conflict with testCases)
+export { 
+    ingestCorpus, 
+    loadCorpusTestCases,
+    type CorpusConfig,
+    type CorpusAnalysis,
+    type ExtractedTerm,
+} from '../corpus/index.js';
 // Re-export fastEvaluator functions
 export {
     runFastBaselineEvaluation,
@@ -16,3 +23,5 @@ export {
     loadOrRunFastBaseline,
     evaluateCandidateFast,
 } from './fastEvaluator.js';
+// Re-export evaluation types from fastEvaluator
+export type { BaselineResult, ResourceMetrics, CandidateEvaluation, EvaluationReport, ResourceMonitor } from './fastEvaluator.js';

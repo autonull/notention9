@@ -1,10 +1,52 @@
-import type { TestCase, MatchTestCase } from './fastEvaluator.js';
+/**
+ * Core test case definitions and registry
+ * Single source of truth for test case types and core test cases
+ */
+
+import type { Property } from '@notention/core';
+
+/**
+ * Test case for extraction evaluation
+ */
+export interface ExtractionTestCase {
+    id: string;
+    name: string;
+    input: string;
+    expectedMinProperties: number;
+    expectedProperties?: Partial<Property>[];
+}
+
+/**
+ * Test case for match evaluation
+ */
+export interface MatchTestCase {
+    id: string;
+    name: string;
+    requestText: string;
+    offerText: string;
+    expectedMinScore: number;
+    expectedMaxScore?: number;
+}
+
+/**
+ * Capture test case - tests the capture task (uses extraction)
+ */
+export interface CaptureTestCase {
+    id: string;
+    name: string;
+    input: string;
+    expectedMinProperties: number;
+    maxDurationMs: number;
+}
+
+// Type aliases for backward compatibility
+export type TestCase = ExtractionTestCase;
 
 /**
  * Core regression test cases - these must always pass
  * They represent the baseline behavior that should never regress
  */
-export const CORE_EXTRACTION_TEST_CASES: TestCase[] = [
+export const CORE_EXTRACTION_TEST_CASES: ExtractionTestCase[] = [
     {
         id: 'extraction-1',
         name: 'Job request with budget, role, deadline',
@@ -94,7 +136,7 @@ export const CORE_MATCH_TEST_CASES: MatchTestCase[] = [
 /**
  * Capture test case - tests the capture task (uses extraction)
  */
-export const CORE_CAPTURE_TEST_CASE = {
+export const CORE_CAPTURE_TEST_CASE: CaptureTestCase = {
     id: 'capture-1',
     name: 'Capture extracts key properties',
     input: 'I need a React developer for two weeks, up to 900 USD, starting next week',
@@ -106,10 +148,10 @@ export const CORE_CAPTURE_TEST_CASE = {
  * Test case registry for managing all test cases
  */
 export class TestCaseRegistry {
-    private extractionCases: TestCase[] = [...CORE_EXTRACTION_TEST_CASES];
+    private extractionCases: ExtractionTestCase[] = [...CORE_EXTRACTION_TEST_CASES];
     private matchCases: MatchTestCase[] = [...CORE_MATCH_TEST_CASES];
     
-    registerExtractionCases(cases: TestCase[]): void {
+    registerExtractionCases(cases: ExtractionTestCase[]): void {
         this.extractionCases.push(...cases);
     }
     
@@ -117,7 +159,7 @@ export class TestCaseRegistry {
         this.matchCases.push(...cases);
     }
     
-    getAllExtractionCases(): TestCase[] {
+    getAllExtractionCases(): ExtractionTestCase[] {
         return [...this.extractionCases];
     }
     
@@ -125,7 +167,7 @@ export class TestCaseRegistry {
         return [...this.matchCases];
     }
     
-    getCoreExtractionCases(): TestCase[] {
+    getCoreExtractionCases(): ExtractionTestCase[] {
         return [...CORE_EXTRACTION_TEST_CASES];
     }
     
@@ -133,8 +175,8 @@ export class TestCaseRegistry {
         return [...CORE_MATCH_TEST_CASES];
     }
     
-    getCorpusExtractionCases(): TestCase[] {
-        return this.extractionCases.filter((c): c is TestCase => c.id.startsWith('corpus-'));
+    getCorpusExtractionCases(): ExtractionTestCase[] {
+        return this.extractionCases.filter((c): c is ExtractionTestCase => c.id.startsWith('corpus-'));
     }
     
     getCorpusMatchCases(): MatchTestCase[] {
