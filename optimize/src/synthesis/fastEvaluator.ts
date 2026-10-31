@@ -6,21 +6,12 @@ import { DEFAULT_ONTOLOGY } from '@notention/core';
 import { OntologyService } from '@notention/core';
 import { Note, Property } from '@notention/core';
 import type { CandidateStrategy, CandidateDir } from './StrategySpec.js';
-import type { BaselineResult as BaseBaselineResult, ResourceMetrics, CandidateEvaluation as BaseCandidateEvaluation, EvaluationReport as BaseEvaluationReport } from './evaluator.js';
+import type { BaselineResult, ResourceMetrics, CandidateEvaluation, EvaluationReport, ResourceMonitor } from './evaluationTypes.js';
 import { loadCorpusTestCases } from '../corpus/index.js';
 import { testCaseRegistry, CORE_CAPTURE_TEST_CASE } from './testCases.js';
 
-export interface BaselineResult extends BaseBaselineResult {
-    isCorpusTest?: boolean;  // Flag for corpus-generated gap detection tests
-}
-
-export interface CandidateEvaluation extends BaseCandidateEvaluation {
-    // Extends base with any fast-eval specific fields if needed
-}
-
-export interface EvaluationReport extends BaseEvaluationReport {
-    // Extends base
-}
+// Re-export evaluation types for backward compatibility
+export type { BaselineResult, ResourceMetrics, CandidateEvaluation, EvaluationReport, ResourceMonitor } from './evaluationTypes.js';
 
 /**
  * Test case for extraction evaluation

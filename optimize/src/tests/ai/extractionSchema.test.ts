@@ -5,7 +5,7 @@ import {
     buildExtractionPrompt,
     repairExtraction,
     validateAgainstSchema,
-} from '../../services/ai/extractionSchema';
+} from '@notention/core/ontology/schema';
 
 describe('Extraction Schema (L15)', () => {
     const ontology = DEFAULT_ONTOLOGY;

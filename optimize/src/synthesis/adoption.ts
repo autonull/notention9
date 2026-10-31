@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync, rmSync, readdirSync
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import type { CandidateStrategy, CandidateDir, StrategyArtifact } from './StrategySpec.js';
-import type { EvaluationReport } from './evaluator.js';
+import type { EvaluationReport, CandidateEvaluation } from './evaluationTypes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -21,7 +21,7 @@ export interface AdoptionConfig {
 export interface AdoptionRecord {
     strategyId: string;
     artifact: StrategyArtifact;
-    evaluation: EvaluationReport['candidates'][0];
+    evaluation: CandidateEvaluation;
     adoptedAt: string;
     adoptedBy: string;
     flagKey: string;
@@ -73,7 +73,7 @@ export class StrategyAdoption {
      */
     async adopt(
         candidate: CandidateStrategy,
-        evaluation: EvaluationReport['candidates'][0],
+        evaluation: CandidateEvaluation,
         options: { actor: string; reason: string; enabled?: boolean } = { actor: 'system', reason: '', enabled: false }
     ): Promise<StrategyArtifact> {
         // Create artifact from candidate
@@ -88,7 +88,7 @@ export class StrategyAdoption {
                 ...candidate.provenance,
                 author: options.actor === 'system' ? 'model' : 'human',
                 date: new Date().toISOString(),
-                evidenceBundle: evaluation ? 'evaluation-report.json' : undefined,
+                evidenceBundle: 'evaluation-report.json',
             },
         };
         
@@ -105,12 +105,7 @@ export class StrategyAdoption {
         const record: AdoptionRecord = {
             strategyId: candidate.id,
             artifact,
-            evaluation: {
-                candidateId: evaluation.candidateId,
-                overallSuccessRate: evaluation.overallSuccessRate,
-                passed: evaluation.passed,
-                resourceMetrics: evaluation.resourceMetrics,
-            },
+            evaluation,
             adoptedAt: new Date().toISOString(),
             adoptedBy: options.actor,
             flagKey,

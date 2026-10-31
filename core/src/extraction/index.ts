@@ -2,7 +2,7 @@ export {
     alignToOntology, 
     explainAlignment, 
     type AlignmentExplanation 
-} from './deterministic.js';
+} from './ExtractionPipeline.js';
 
 export {
     ExtractionPipeline,

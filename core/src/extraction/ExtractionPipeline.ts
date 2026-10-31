@@ -79,6 +79,11 @@ export interface ExtractionExplanation {
     confidence: number;
 }
 
+export interface AlignmentExplanation {
+    property: Property;
+    matchedBy: 'regex' | 'ontology-key' | 'intent' | 'fuzzy' | 'price' | 'date' | 'role' | 'range';
+}
+
 /**
  * Deterministic extraction stage - regex/pattern based
  */
