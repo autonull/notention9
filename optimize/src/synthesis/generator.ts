@@ -2,6 +2,15 @@ import { StrategySpecGenerator, type StrategySpec, type CandidateStrategy, type 
 import { generateStrategyCode, hashPrompt } from './templateGenerator.js';
 
 /**
+ * Options for strategy generation
+ */
+export interface GenerateOptions {
+    model?: string;
+    seed?: number;
+    parentCommit?: string;
+}
+
+/**
  * LLM Strategy Generator - generates T2 strategies (LLM writes strategy behind existing seam)
  */
 export class StrategyGenerator {
@@ -67,11 +76,6 @@ CONSTRAINTS:
 Return ONLY the TypeScript/TSX code, no markdown formatting.
 `;
     }
-
-export interface GenerateOptions {
-    model?: string;
-    seed?: number;
-    parentCommit?: string;
 }
 
 /**

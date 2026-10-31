@@ -18,7 +18,11 @@
     "./execute": "./dist/execute.js",
     "./registry": "./dist/registry.js",
     "./synthesis": "./dist/synthesis/index.js",
-    "./synthesis/strategyComparison": "./dist/synthesis/strategyComparison.js"
+    "./synthesis/strategyComparison": "./dist/synthesis/strategyComparison.js",
+    "./synthesis/fastEvaluator": "./dist/synthesis/fastEvaluator.js",
+    "./loop/prioritize": "./dist/loop/prioritize.js",
+    "./utils/taxonomy": "./dist/utils/taxonomy.js",
+    "./discovery/seams": "./dist/discovery/index.js"
   },
   "scripts": {
     "build": "tsc",

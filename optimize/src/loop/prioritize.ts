@@ -1,4 +1,4 @@
-import type { Seam } from '../discovery/seams.js';
+import type { Seam } from '@notention/optimize/discovery';
 
 export interface DiscoveredProblem {
     id: string;
