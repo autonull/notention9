@@ -1,5 +1,6 @@
 import { StrategySpecGenerator, type StrategySpec, type CandidateStrategy, type CandidateDir, createCandidateDir, saveCandidate, loadCandidates } from './StrategySpec.js';
 import { generateStrategyCode, hashPrompt } from './templateGenerator.js';
+import { getBuiltinSpec } from './builtinSpecs.js';
 
 /**
  * Options for strategy generation
@@ -89,19 +90,18 @@ export async function generateAllCandidates(
     const generator = new StrategyGenerator();
     const dir = createCandidateDir(outputDir);
     
-    // Generate one candidate per discovered seam that has a built-in spec for its role
-    const rolesWithBuiltinSpecs = new Set(['capture', 'elicit', 'extraction', 'template']);
-    
+    // Generate one candidate per discovered seam that has a built-in spec for its exact ID
     for (const seam of seams) {
-        if (!rolesWithBuiltinSpecs.has(seam.role)) continue;
+        const spec = getBuiltinSpec(seam.id);
+        if (!spec) continue;
         
         // Generate a spec from the discovered seam (uses built-in as base if available)
-        const spec = generator.specGenerator.generateSpec(seam, []);
+        const generatedSpec = generator.specGenerator.generateSpec(seam, []);
         
         // Generate candidate using the discovered seam's ID
         const candidate = await generator.generateForSeam(seam.id, [], options);
         // Override the spec with the discovered seam's spec
-        candidate.spec = spec;
+        candidate.spec = generatedSpec;
         await saveCandidate(dir, candidate);
     }
     

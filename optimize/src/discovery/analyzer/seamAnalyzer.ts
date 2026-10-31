@@ -131,15 +131,20 @@ function mergeSimilarSeams(seams: Seam[]): Seam[] {
     const merged: Seam[] = [];
     for (const [role, roleSeams] of byRole) {
         if (roleSeams.length === 1) {
-            merged.push(roleSeams[0]);
+            // Normalize ID to use index 0
+            const seam = roleSeams[0];
+            merged.push({ ...seam, id: `${role}-0` });
             continue;
         }
 
-        // For now, just pick the largest cluster per role
+        // Pick the largest cluster per role
         const largest = roleSeams.reduce((a, b) => a.components.length > b.components.length ? a : b);
-        largest.name = `${role} (merged ${roleSeams.length} clusters)`;
-        largest.description = `Merged ${roleSeams.length} auto-discovered ${role} seams, ${largest.components.length} components`;
-        merged.push(largest);
+        merged.push({ 
+            ...largest, 
+            id: `${role}-0`,
+            name: `${role} (merged ${roleSeams.length} clusters)`,
+            description: `Merged ${roleSeams.length} auto-discovered ${role} seams, ${largest.components.length} components`,
+        });
     }
 
     return merged;

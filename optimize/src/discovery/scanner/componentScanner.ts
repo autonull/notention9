@@ -382,27 +382,24 @@ export class ComponentScanner {
     }
     
     private extractRoutesFromJsx(compName: string, jsx: JSXElement, routes: Map<string, { path: string; guards: string[] }>): void {
-        // Look for routing patterns in JSX
-        if (jsx.tag === 'Route' || jsx.tag === 'Routes' || jsx.tag === 'Switch') {
-            const path = jsx.props.path || jsx.props.from;
-            if (path) {
-                const guards: string[] = [];
-                if (jsx.props.guard) guards.push(jsx.props.guard);
-                if (jsx.props.requireAuth) guards.push('auth');
-                routes.set(path, { path, guards });
+        this.traverseJsx(jsx, (node) => {
+            // Look for routing patterns in JSX
+            if (node.tag === 'Route' || node.tag === 'Routes' || node.tag === 'Switch') {
+                const path = node.props.path || node.props.from;
+                if (path) {
+                    const guards: string[] = [];
+                    if (node.props.guard) guards.push(node.props.guard);
+                    if (node.props.requireAuth) guards.push('auth');
+                    routes.set(path, { path, guards });
+                }
             }
-        }
-        
-        // Look for Link/NavLink components with to prop
-        if ((jsx.tag === 'Link' || jsx.tag === 'NavLink') && jsx.props.to) {
-            const path = jsx.props.to;
-            routes.set(path, { path, guards: [] });
-        }
-        
-        // Recurse into children
-        for (const child of jsx.children) {
-            this.extractRoutesFromJsx(compName, child, routes);
-        }
+            
+            // Look for Link/NavLink components with to prop
+            if ((node.tag === 'Link' || node.tag === 'NavLink') && node.props.to) {
+                const path = node.props.to;
+                routes.set(path, { path, guards: [] });
+            }
+        });
     }
 
     private analyzeDialogs(): void {
@@ -415,41 +412,35 @@ export class ComponentScanner {
     }
     
     private extractDialogsFromJsx(compName: string, jsx: JSXElement): void {
-        // Check if this component renders a Modal/Dialog
-        const isDialogComponent = ['Modal', 'Dialog', 'Popover', 'Drawer'].some(d => 
-            jsx.tag === d || jsx.tag.endsWith(d)
-        );
-        
-        if (isDialogComponent) {
-            const fields = this.extractFormFieldsFromJsx(jsx);
-            this.dialogs.push({
-                name: compName,
-                trigger: this.inferDialogTrigger(compName, jsx),
-                component: compName,
-                fields,
-            });
-        }
-        
-        // Recurse into children
-        for (const child of jsx.children) {
-            this.extractDialogsFromJsx(compName, child);
-        }
+        this.traverseJsx(jsx, (node) => {
+            // Check if this component renders a Modal/Dialog
+            const isDialogComponent = ['Modal', 'Dialog', 'Popover', 'Drawer'].some(d => 
+                node.tag === d || node.tag.endsWith(d)
+            );
+            
+            if (isDialogComponent) {
+                const fields = this.extractFormFieldsFromJsx(node);
+                this.dialogs.push({
+                    name: compName,
+                    trigger: this.inferDialogTrigger(compName, node),
+                    component: compName,
+                    fields,
+                });
+            }
+        });
     }
     
     private extractFormFieldsFromJsx(jsx: JSXElement): FieldInfo[] {
         const fields: FieldInfo[] = [];
         
-        // Look for form inputs
-        const inputTags = ['input', 'select', 'textarea', 'Input', 'Select', 'Textarea'];
-        if (inputTags.includes(jsx.tag) || inputTags.some(t => jsx.tag.endsWith(t))) {
-            const field = this.parseFormField(jsx);
-            if (field) fields.push(field);
-        }
-        
-        // Recurse into children
-        for (const child of jsx.children) {
-            fields.push(...this.extractFormFieldsFromJsx(child));
-        }
+        this.traverseJsx(jsx, (node) => {
+            // Look for form inputs
+            const inputTags = ['input', 'select', 'textarea', 'Input', 'Select', 'Textarea'];
+            if (inputTags.includes(node.tag) || inputTags.some(t => node.tag.endsWith(t))) {
+                const field = this.parseFormField(node);
+                if (field) fields.push(field);
+            }
+        });
         
         return fields;
     }
@@ -500,27 +491,24 @@ export class ComponentScanner {
     }
     
     private extractActionsFromJsx(compName: string, jsx: JSXElement): void {
-        // Look for click handlers
-        const clickHandlers = ['onClick', 'onPress', 'onSubmit', 'onSelect'];
-        for (const handler of clickHandlers) {
-            if (jsx.props[handler]) {
-                const intent = this.inferIntentFromHandler(handler, jsx.props[handler], compName);
-                const selector = this.extractSelector(jsx);
-                
-                this.actions.push({
-                    component: compName,
-                    action: handler.replace('on', '').toLowerCase(),
-                    selector,
-                    intent,
-                });
-                break; // Only record first click handler per element
+        this.traverseJsx(jsx, (node) => {
+            // Look for click handlers
+            const clickHandlers = ['onClick', 'onPress', 'onSubmit', 'onSelect'];
+            for (const handler of clickHandlers) {
+                if (node.props[handler]) {
+                    const intent = this.inferIntentFromHandler(handler, node.props[handler], compName);
+                    const selector = this.extractSelector(node);
+                    
+                    this.actions.push({
+                        component: compName,
+                        action: handler.replace('on', '').toLowerCase(),
+                        selector,
+                        intent,
+                    });
+                    return; // Only record first click handler per element
+                }
             }
-        }
-        
-        // Recurse into children
-        for (const child of jsx.children) {
-            this.extractActionsFromJsx(compName, child);
-        }
+        });
     }
     
     private inferIntentFromHandler(handler: string, handlerValue: string, compName: string): string {
@@ -548,6 +536,26 @@ export class ComponentScanner {
             label: jsx.props['aria-label'] || jsx.props.label,
             css: jsx.props.className || jsx.props.id ? `#${jsx.props.id}` : undefined,
         };
+    }
+
+    /**
+     * Generic JSX tree traversal - applies visitor to each node
+     */
+    private traverseJsx(jsx: JSXElement, visitor: (node: JSXElement) => void): void {
+        visitor(jsx);
+        for (const child of jsx.children) {
+            this.traverseJsx(child, visitor);
+        }
+    }
+
+    /**
+     * Generic JSX tree traversal with context - applies visitor to each node with context
+     */
+    private traverseJsxWithContext<T>(jsx: JSXElement, context: T, visitor: (node: JSXElement, context: T) => void): void {
+        visitor(jsx, context);
+        for (const child of jsx.children) {
+            this.traverseJsxWithContext(child, context, visitor);
+        }
     }
 }
 

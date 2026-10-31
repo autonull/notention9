@@ -9,6 +9,11 @@ import {
     createOntologyOptimizationPipeline,
     type PipelineResult,
 } from '@notention/core/validation';
+import {
+    DEFAULT_INFERENCE_OPTIONS,
+    CAPABILITY_PROBE_TIMEOUT,
+    CAPABILITY_PROBE_PROMPT,
+} from '../constants.js';
 
 export interface ModelCapabilities {
     structuredOutput: boolean;
@@ -51,12 +56,7 @@ export interface InferenceResult<T> {
 export class InferenceRouter {
     private providers: Map<string, AIProvider> = new Map();
     private providerConfigs: Map<string, ProviderConfig> = new Map();
-    private defaultOptions: InferenceOptions = {
-        timeout: 30000,
-        maxRetries: 2,
-        temperature: 0.1,
-        autoRepair: true,
-    };
+    private defaultOptions: InferenceOptions = DEFAULT_INFERENCE_OPTIONS;
 
     registerProvider(provider: AIProvider, config: ProviderConfig): void {
         this.providers.set(config.name, provider);
@@ -80,9 +80,8 @@ export class InferenceRouter {
     }
 
     async probeCapabilities(provider: AIProvider): Promise<ModelCapabilities> {
-        const testPrompt = `Return a JSON object: {"test": "ok"}`;
         try {
-            const result = await this.withTimeout(provider.generateCompletion(testPrompt), 5000);
+            const result = await this.withTimeout(provider.generateCompletion(CAPABILITY_PROBE_PROMPT), CAPABILITY_PROBE_TIMEOUT);
             const parsed = JSON.parse(result);
             const hasStructuredOutput = parsed && typeof parsed === 'object' && 'test' in parsed;
             return {

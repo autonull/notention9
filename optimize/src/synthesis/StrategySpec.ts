@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type { Seam, StrategyArtifact, Capability, Provenance } from '@notention/core/ui';
+import { BUILTIN_SPECS, ROLES_WITH_BUILTIN_SPECS, getBuiltinSpec, hasBuiltinSpec } from './builtinSpecs.js';
 
 /**
  * Seam definition - re-exported from core for consistency
@@ -59,240 +60,19 @@ export interface CandidateDir {
 export class StrategySpecGenerator {
     private specs = new Map<string, StrategySpec>();
 
-    // Built-in specs for known seams
-    private builtinSpecs: Record<string, StrategySpec> = {
-        'capture-0': {
-            seam: 'capture-0',
-            intent: 'Capture structured properties from user input with real-time validation',
-            must: [
-                'Keyboard navigable',
-                'ARIA labels on all inputs',
-                'Works offline',
-                'Validates against ontology schema',
-                'Shows validation errors inline',
-            ],
-            may: [
-                'react',
-                '@notention/ui/*',
-                '@notention/core/*',
-                'zod',
-                'date-fns',
-            ],
-            mustNot: [
-                'fs',
-                'fs/promises',
-                'node:*',
-                'eval',
-                'fetch',
-                'localStorage',
-                'sessionStorage',
-                'indexedDB',
-                'crypto.randomUUID',
-            ],
-            accepts: {
-                type: 'object',
-                properties: {
-                    initialKey: { type: 'string' },
-                    initialOp: { type: 'string' },
-                    initialValue: { type: 'string' },
-                    isAdding: { type: 'boolean' },
-                    onSave: { type: 'function' },
-                    onCancel: { type: 'function' },
-                    ontology: { type: 'array' },
-                },
-                required: ['onSave', 'onCancel', 'ontology'],
-            },
-            emits: {
-                type: 'object',
-                properties: {
-                    propertySaved: {
-                        type: 'object',
-                        properties: {
-                            key: { type: 'string' },
-                            operator: { type: 'string' },
-                            value: { type: 'string' },
-                        },
-                        required: ['key', 'operator', 'value'],
-                    },
-                },
-            },
-            examples: [
-                'User types "send to john@example.com" → extracts {key: "to", operator: "send to", value: "john@example.com"}',
-                'User selects "client" from dropdown, enters "Acme Corp" → saves property',
-            ],
-        },
-        'elicit-0': {
-            seam: 'elicit-0',
-            intent: 'Elicit additional details from user with auto-complete and tag suggestions',
-            must: [
-                'Keyboard navigable',
-                'ARIA labels on all inputs',
-                'Works offline',
-                'Shows suggestions from ontology',
-            ],
-            may: [
-                'react',
-                '@notention/ui/*',
-                '@notention/core/*',
-                'zod',
-            ],
-            mustNot: [
-                'fs',
-                'fs/promises',
-                'node:*',
-                'eval',
-                'fetch',
-                'localStorage',
-                'sessionStorage',
-                'indexedDB',
-            ],
-            accepts: {
-                type: 'object',
-                properties: {
-                    tags: { type: 'array', items: { type: 'string' } },
-                    onChange: { type: 'function' },
-                    onAutoTag: { type: 'function' },
-                    isAutoTagging: { type: 'boolean' },
-                    autoFocus: { type: 'boolean' },
-                    className: { type: 'string' },
-                },
-            },
-            emits: {
-                type: 'object',
-                properties: {
-                    tagsChanged: {
-                        type: 'object',
-                        properties: {
-                            tags: { type: 'array', items: { type: 'string' } },
-                        },
-                        required: ['tags'],
-                    },
-                },
-            },
-            examples: [
-                'User adds "urgent" tag → emits tagsChanged with ["urgent"]',
-                'Auto-tag suggests "follow-up" based on content',
-            ],
-        },
-        'extraction-0': {
-            seam: 'extraction-0',
-            intent: 'Extract structured properties from natural language text using LLM with schema validation',
-            must: [
-                'Keyboard navigable',
-                'ARIA labels on all inputs',
-                'Shows extraction preview before applying',
-                'Allows user to edit extracted properties',
-                'Repairs malformed LLM output',
-            ],
-            may: [
-                'react',
-                '@notention/ui/*',
-                '@notention/core/*',
-                'zod',
-                '@notention/ai',
-            ],
-            mustNot: [
-                'fs',
-                'fs/promises',
-                'node:*',
-                'eval',
-                'fetch',
-                'localStorage',
-                'sessionStorage',
-                'indexedDB',
-            ],
-            accepts: {
-                type: 'object',
-                properties: {
-                    isOpen: { type: 'boolean' },
-                    onClose: { type: 'function' },
-                    onApply: { type: 'function' },
-                    ontology: { type: 'array' },
-                },
-                required: ['isOpen', 'onClose', 'onApply', 'ontology'],
-            },
-            emits: {
-                type: 'object',
-                properties: {
-                    extractionComplete: {
-                        type: 'object',
-                        properties: {
-                            properties: { type: 'array' },
-                        },
-                        required: ['properties'],
-                    },
-                },
-            },
-            examples: [
-                'Input: "Meeting with John tomorrow at 2pm" → extracts [{"key":"who","op":"is","value":"John"},{"key":"when","op":"is","value":"tomorrow 2pm"}]',
-                'Input: "Need to buy milk" → extracts [{"key":"task","op":"is","value":"buy milk"}]',
-            ],
-        },
-        'template-0': {
-            seam: 'template-0',
-            intent: 'Select a template for note creation with preview',
-            must: [
-                'Keyboard navigable',
-                'ARIA labels on all inputs',
-                'Works offline',
-                'Shows template preview',
-            ],
-            may: [
-                'react',
-                '@notention/ui/*',
-                '@notention/core/*',
-            ],
-            mustNot: [
-                'fs',
-                'fs/promises',
-                'node:*',
-                'eval',
-                'fetch',
-                'localStorage',
-                'sessionStorage',
-                'indexedDB',
-            ],
-            accepts: {
-                type: 'object',
-                properties: {
-                    ontology: { type: 'array' },
-                    onSelect: { type: 'function' },
-                    onClose: { type: 'function' },
-                },
-                required: ['ontology', 'onSelect', 'onClose'],
-            },
-            emits: {
-                type: 'object',
-                properties: {
-                    templateSelected: {
-                        type: 'object',
-                        properties: {
-                            templateId: { type: 'string' },
-                        },
-                        required: ['templateId'],
-                    },
-                },
-            },
-            examples: [
-                'User selects "Meeting" template → pre-fills who, when, where properties',
-                'User selects "Task" template → pre-fills task, deadline, priority',
-            ],
-        },
-    };
-
     getSpec(seamId: string): StrategySpec | undefined {
-        return this.builtinSpecs[seamId];
+        return getBuiltinSpec(seamId);
     }
 
     getAllSpecs(): StrategySpec[] {
-        return Object.values(this.builtinSpecs);
+        return getAllBuiltinSpecs();
     }
 
     /**
      * Generate a StrategySpec from a discovered seam and requirements
      */
     generateSpec(seam: { id: string; name: string; role: string; propsShape: Record<string, string> }, requirements: string[]): StrategySpec {
-        const baseSpec = this.builtinSpecs[seam.id];
+        const baseSpec = getBuiltinSpec(seam.id);
         if (baseSpec) return baseSpec;
 
         // Generate a basic spec from the seam
