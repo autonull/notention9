@@ -1,3 +1,3 @@
-export * from './cli.js';
+export { main } from './cli.js';
 export * from './prioritize.js';
 export * from './determinism.js';

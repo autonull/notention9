@@ -55,8 +55,7 @@ export function StrategyProvider({ children, userId = 'default-user' }: Strategy
 
     const resolveStrategy = useMemo(
         () => (seamRole: SeamRole) => {
-            const seamId = resolveSeamId(seamRole, strategyRegistry);
-            return profileRegistry.resolveStrategy(userId, seamId, strategyRegistry);
+            return profileRegistry.resolveStrategy(userId, seamRole, strategyRegistry);
         },
         [userId]
     );

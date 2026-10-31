@@ -210,21 +210,35 @@ export async function registerUIStrategies(): Promise<void> {
     const { TemplateSelectorStrategy } = await import('../strategies/TemplateSelectorStrategy');
     const { createComponentStrategy } = await import('@notention/core/ui/strategy');
 
+    // Get seam objects from registry (registered above)
+    const captureSeam = strategyRegistry.getAllForSeam(captureSeamId)[0]?.seam;
+    const elicitSeam = strategyRegistry.getAllForSeam(elicitSeamId)[0]?.seam;
+    const matchSeam = strategyRegistry.getAllForSeam(matchSeamId)[0]?.seam;
+    const layoutSeam = strategyRegistry.getAllForSeam(layoutSeamId)[0]?.seam;
+
     // Register capture strategies
-    strategyRegistry.register(createComponentStrategy(captureSeamId, 'describe-it-composer', DescribeItComposerStrategy, components.quickCapture!));
-    strategyRegistry.register(createComponentStrategy(captureSeamId, 'quick-capture', () => components.quickCapture!, components.quickCapture!));
+    if (captureSeam) {
+        strategyRegistry.register(createComponentStrategy('describe-it-composer', captureSeam, DescribeItComposerStrategy));
+        strategyRegistry.register(createComponentStrategy('quick-capture', captureSeam, () => components.quickCapture!));
+    }
 
     // Register elicit strategies
-    strategyRegistry.register(createComponentStrategy(elicitSeamId, 'tag-input', TagInputStrategy, components.insertPropertyModal!));
-    strategyRegistry.register(createComponentStrategy(elicitSeamId, 'insert-property-modal', () => components.insertPropertyModal!, components.insertPropertyModal!));
+    if (elicitSeam) {
+        strategyRegistry.register(createComponentStrategy('tag-input', elicitSeam, TagInputStrategy));
+        strategyRegistry.register(createComponentStrategy('insert-property-modal', elicitSeam, () => components.insertPropertyModal!));
+    }
 
     // Register match strategies
-    strategyRegistry.register(createComponentStrategy(matchSeamId, 'local-match-preview', () => components.localMatchPreview!, components.localMatchPreview!));
-    strategyRegistry.register(createComponentStrategy(matchSeamId, 'dashboard-local-match', () => components.dashboardLocalMatch!, components.dashboardLocalMatch!));
+    if (matchSeam) {
+        strategyRegistry.register(createComponentStrategy('local-match-preview', matchSeam, () => components.localMatchPreview!));
+        strategyRegistry.register(createComponentStrategy('dashboard-local-match', matchSeam, () => components.dashboardLocalMatch!));
+    }
 
     // Register layout strategies
-    strategyRegistry.register(createComponentStrategy(layoutSeamId, 'property-panel', PropertyFormStrategy, components.propertyPanel!));
-    strategyRegistry.register(createComponentStrategy(layoutSeamId, 'local-matches-panel', () => components.localMatchesPanel!, components.localMatchesPanel!));
+    if (layoutSeam) {
+        strategyRegistry.register(createComponentStrategy('property-panel', layoutSeam, PropertyFormStrategy));
+        strategyRegistry.register(createComponentStrategy('local-matches-panel', layoutSeam, () => components.localMatchesPanel!));
+    }
 }
 
 import { DEFAULT_PROFILES, DEFAULT_MATCH_DISPLAY_EXPERIMENT } from '@notention/core/ui/profileDefaults';

@@ -93,7 +93,7 @@ async function main(): Promise<void> {
         console.log(`\n📦 Batch ${i + 1}/${batches.length} (${batch.length} files)`);
         
         const files = batch.join(' ');
-        const result = run(`pnpm --filter @notention/ui test --run ${files}`);
+        const result = run(`pnpm --filter @notention/ui vitest run ${files}`);
         
         if (!result.passed) {
             if (hasOnlyKnownFailures(result.output)) {

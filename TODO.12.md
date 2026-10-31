@@ -1,7 +1,7 @@
 # TODO.12 — Notention Evaluation & Improvement Program
 
 **Supersedes:** `TODO.11.md`, `TODO.11.a.md`, and all prior drafts of this file
-**Status:** Active — Phase 0 done; Phase 1 next
+**Status:** Active — Phase 0 done; Phase 1 in progress (no-regrets complete)
 **Shape:** One measurement substrate, three consumers. Consolidate existing code. Commit only to the next experiment; defer what the next experiment does not need.
 
 ---
@@ -10,16 +10,16 @@
 
 These items are independent of any pivot and unblock everything else. They are safe to do now.
 
-| # | Item | Why it's no-regrets | Files |
-|---|---|---|---|
-| NR1 | Fix `createComponentStrategy` argument order bug | Params never reach the app today; nothing causal can work without this | `ui/src/hooks/strategyResolverInit.ts:214-227`, `core/src/ui/strategy.ts:170-185` |
-| NR2 | Fix resolver hook contract (`SeamRole` vs seam ID) | Broken contract between hook and registry | `ui/src/hooks/useStrategyResolver.tsx:56-93` |
-| NR3 | Delete `compare.ts` fabricated comparison | Actively misleading; no code depends on it | `optimize/src/loop/subcommands/compare.ts` |
-| NR4 | Remove `main()` import side effect in `loop/index.ts` | Breaks tooling, tests, and any programmatic use | `optimize/src/loop/index.ts:1`, `loop/cli.ts:145` |
-| NR5 | Fix `scripts/test-ui-batched.ts:96` recursion | `pnpm verify` and CI are unreliable | `scripts/test-ui-batched.ts` |
-| NR6 | Add `pnpm test` + `pnpm verify` lane definitions | Current test commands don't run what they should | `package.json`, `scripts/verify.ts` |
+| # | Item | Why it's no-regrets | Files | Status |
+|---|---|---|---|---|
+| NR1 | Fix `createComponentStrategy` argument order bug | Params never reach the app today; nothing causal can work without this | `ui/src/hooks/strategyResolverInit.ts:214-227`, `core/src/ui/strategy.ts:170-185` | ✅ Done |
+| NR2 | Fix resolver hook contract (`SeamRole` vs seam ID) | Broken contract between hook and registry | `ui/src/hooks/useStrategyResolver.tsx:56-93` | ✅ Done |
+| NR3 | Delete `compare.ts` fabricated comparison | Actively misleading; no code depends on it | `optimize/src/loop/subcommands/compare.ts` | ✅ Done |
+| NR4 | Remove `main()` import side effect in `loop/index.ts` | Breaks tooling, tests, and any programmatic use | `optimize/src/loop/index.ts:1`, `loop/cli.ts:145` | ✅ Done |
+| NR5 | Fix `scripts/test-ui-batched.ts:96` recursion | `pnpm verify` and CI are unreliable | `scripts/test-ui-batched.ts` | ✅ Done |
+| NR6 | Add `pnpm test` + `pnpm verify` lane definitions | Current test commands don't run what they should | `package.json`, `scripts/verify.ts` | ✅ Done |
 
-**Start here.** These 6 items take ~2 days and make the codebase honest.
+**Start here.** These 6 items take ~2 days and make the codebase honest. **All complete as of 2026-10-31.**
 
 ### Deferred to the vertical slice (not no-regrets)
 
@@ -86,7 +86,7 @@ The plan is a hypothesis. These three pivots will reshape it based on Phase 1–
 | Phase | Status | Target | Exit gate |
 |---|---|---|---|
 | **0. Integrity** | ✅ Done | 2026-10-31 | Core cases load in built runtime |
-| **1. Truth & Plumbing** | 🔄 Next | 2026-11-07 | Resolver delivers params; Tier-0 schemas frozen; fabricated paths deleted; fast CI lane green |
+| **1. Truth & Plumbing** | 🔄 In Progress | 2026-11-07 | Resolver delivers params; Tier-0 schemas frozen; fabricated paths deleted; fast CI lane green |
 | **2. Measurement Core** | ⏳ Queued | 2026-11-14 | Verdict fixtures pass in < 10 s |
 | **3. Causal Delivery Slice** | ⏳ Queued | 2026-11-21 | One real revision decision, C1–C9 demonstrated |
 | **4. Benchmark + Representation** | ⏳ Queued | 2026-12-05 | 40 intent / 60 quality cases; F1 + match baselines |
@@ -728,17 +728,17 @@ These are **known unknowns**, classified by the Decision Ladder. Do not assume a
 
 ## Appendix C — First Actions
 
-### Week 1: No-Regrets + Tier-0 schemas (survives any pivot)
+### Week 1: No-Regrets + Tier-0 schemas (survives any pivot) ✅ **CODE COMPLETE 2026-10-31**
 
 **Code (independent):**
-1. **NR1** Fix `strategyResolverInit.ts:214-227` argument order; unit test resolves `capture` role
-2. **NR2** Fix `useStrategyResolver.tsx:56-93` to pass `SeamRole`, not seam ID
-3. **NR3** Delete `optimize/src/loop/subcommands/compare.ts`
-4. **NR4** Remove `main()` import side effect (`loop/index.ts:1`, `loop/cli.ts:145`)
-5. **NR5** Fix `scripts/test-ui-batched.ts:96` recursion
-6. **NR6** Define `pnpm test` (L0+L1) and `pnpm verify` (build+typecheck+L0+L1+L2)
+1. **NR1** ✅ Fix `strategyResolverInit.ts:214-227` argument order; unit test resolves `capture` role
+2. **NR2** ✅ Fix `useStrategyResolver.tsx:56-93` to pass `SeamRole`, not seam ID
+3. **NR3** ✅ Delete `optimize/src/loop/subcommands/compare.ts`
+4. **NR4** ✅ Remove `main()` import side effect (`loop/index.ts:1`, `loop/cli.ts:145`)
+5. **NR5** ✅ Fix `scripts/test-ui-batched.ts:96` recursion
+6. **NR6** ✅ Define `pnpm test` (L0+L1) and `pnpm verify` (build+typecheck+L0+L1+L2)
 
-**Decisions (Tier 0, one page each):**
+**Decisions (Tier 0, one page each) — NEXT:**
 7. Resolution spine: extend `ProfileRegistry` or direct `RevisionStore → renderer`
 8. Revision schema
 9. Case manifest schema

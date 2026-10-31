@@ -22,7 +22,6 @@ import { runEvaluate } from './subcommands/evaluate.js';
 import { runAdopt } from './subcommands/adopt.js';
 import { runRequest } from './subcommands/request.js';
 import { runCorpus } from './subcommands/corpus.js';
-import { runCompare } from './subcommands/compare.js';
 import { runFullLoop } from './subcommands/run.js';
 
 interface LoopParsedFlags {
@@ -68,7 +67,6 @@ Commands:
   adopt [--dry] [--output <dir>]        Adopt winning candidate with evidence gate
   request [--dry] [--output <dir>]      Emit T4 request for human implementation
   corpus [--dry] [--output <dir>]       Ingest corpus files, extract vocabulary, generate test cases
-  compare [--dry] [--output <dir>]      Compare strategy variants using experiment data
   run [--dry] [--output <dir>]          Run full discover→prioritize→synthesize→evaluate→adopt cycle
   help                                  Show this help
 
@@ -79,7 +77,7 @@ Options:
 `);
 }
 
-async function main(): Promise<number> {
+export async function main(): Promise<number> {
     const rawArgs = process.argv.slice(2);
 
     if (rawArgs.includes('--help') || rawArgs.includes('-h')) {
@@ -123,9 +121,6 @@ async function main(): Promise<number> {
             case 'corpus': {
                 return runCorpus(config, output, dry, json);
             }
-            case 'compare': {
-                return runCompare(config, output, dry, json);
-            }
             case 'run': {
                 return runFullLoop(config, output, dry, json);
             }
@@ -142,7 +137,11 @@ async function main(): Promise<number> {
     }
 }
 
-main().catch(e => {
-    console.error(`Fatal: ${e instanceof Error ? e.message : String(e)}`);
-    process.exit(1);
-});
+const isMainModule = import.meta.url === `file://${process.argv[1]}`;
+
+if (isMainModule) {
+    main().catch(e => {
+        console.error(`Fatal: ${e instanceof Error ? e.message : String(e)}`);
+        process.exit(1);
+    });
+}
