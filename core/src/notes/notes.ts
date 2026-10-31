@@ -49,13 +49,13 @@ const getCachedProperties = memoize2((content: string, ontology: OntologyNode[] 
  * Ensures consistent data updates across the application.
  */
 export const NotePipeline = {
-  updateContent: (note: Note, content: string, ontology?: OntologyNode[]): Note => {
+  updateContent: async (note: Note, content: string, ontology?: OntologyNode[]): Promise<Note> => {
     if (note.content === content) return note;
 
     const explicitProperties = getCachedProperties(content, ontology);
     const plainText = getTextFromHtml(content);
     const extractor = getExtractor(ontology);
-    const implicitProperties = extractor.extractFromText(plainText);
+    const implicitProperties = await extractor.extractFromText(plainText);
 
     const explicitKeys = new Set(explicitProperties.map(p => p.key));
     const properties = [
@@ -85,7 +85,7 @@ export const NotePipeline = {
     return newNote;
   },
 
-  upsertProperty: (note: Note, key: string, value: string, ontology?: OntologyNode[]): Note => {
+  upsertProperty: async (note: Note, key: string, value: string, ontology?: OntologyNode[]): Promise<Note> => {
     const existingProp = note.properties.find(p => p.key === key);
     const newProp: Property = {
       key,
@@ -94,7 +94,7 @@ export const NotePipeline = {
     };
 
     const newContent = replacePropertyInString(note.content, existingProp || null, newProp);
-    const result = NotePipeline.updateContent(note, newContent, ontology);
+    const result = await NotePipeline.updateContent(note, newContent, ontology);
 
     emitActionTrace({
       source: 'ui',
@@ -106,12 +106,12 @@ export const NotePipeline = {
     return result;
   },
 
-  removeProperty: (note: Note, key: string, ontology?: OntologyNode[]): Note => {
+  removeProperty: async (note: Note, key: string, ontology?: OntologyNode[]): Promise<Note> => {
     const existingProp = note.properties.find(p => p.key === key);
     if (!existingProp) return note;
 
     const newContent = replacePropertyInString(note.content, existingProp, null);
-    const result = NotePipeline.updateContent(note, newContent, ontology);
+    const result = await NotePipeline.updateContent(note, newContent, ontology);
 
     emitActionTrace({
       source: 'ui',
@@ -123,7 +123,7 @@ export const NotePipeline = {
     return result;
   },
 
-  toggleStatus: (note: Note, status: string, ontology?: OntologyNode[]): Note => {
+  toggleStatus: async (note: Note, status: string, ontology?: OntologyNode[]): Promise<Note> => {
     const isCurrentlySet = note.properties.some(p => p.key === NOTE_STATUS.KEY && p.values.includes(status));
 
     if (isCurrentlySet) {
@@ -136,7 +136,7 @@ export const NotePipeline = {
       } else {
         const newProp = { ...existingProp, values: newValues };
         const newContent = replacePropertyInString(note.content, existingProp, newProp);
-        const result = NotePipeline.updateContent(note, newContent, ontology);
+        const result = await NotePipeline.updateContent(note, newContent, ontology);
 
         emitActionTrace({
           source: 'ui',
@@ -189,7 +189,7 @@ export const NotePipeline = {
     return result;
   },
 
-  addProperty: (note: Note, propertyTag: string, ontology?: OntologyNode[]): Note => {
+  addProperty: async (note: Note, propertyTag: string, ontology?: OntologyNode[]): Promise<Note> => {
     const newContent = appendPropertyToText(note.content, propertyTag);
     return NotePipeline.updateContent(note, newContent, ontology);
   }

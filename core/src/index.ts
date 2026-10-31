@@ -42,7 +42,6 @@ export * from './fixtures/index.js';
 export * from './feedback/index.js';
 
 // New extensibility modules
-export * from './ui/index.js';
 export * from './ontology/index.js';
 export * from './suggestions/index.js';
 export * from './test-utils/index.js';

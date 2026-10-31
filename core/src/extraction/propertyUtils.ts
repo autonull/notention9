@@ -95,3 +95,10 @@ export function removeProperty(properties: Map<string, Property>, key: string, o
 export function getProperty(properties: Map<string, Property>, key: string, operator: string): Property | undefined {
     return properties.get(makePropertyId(key, operator));
 }
+
+/**
+ * Check if a property with key+operator exists in an array
+ */
+export function hasPropertyArray(properties: Property[], key: string, operator: string): boolean {
+    return properties.some(p => p.key === key && p.operator === operator);
+}

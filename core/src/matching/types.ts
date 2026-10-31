@@ -1,6 +1,6 @@
 import type { Property } from '../types/index.js';
 
-export type MatchType = 'exact' | 'alias' | 'fuzzy' | 'range' | 'partial' | 'geo' | 'date' | 'unknown';
+export type MatchType = 'exact' | 'alias' | 'fuzzy' | 'range' | 'partial' | 'substring' | 'none' | 'geo' | 'date' | 'unknown';
 
 export interface MatchDetails {
     type: MatchType;

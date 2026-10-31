@@ -20,7 +20,7 @@ export interface BaseEvent<T extends EventCategory, P extends Record<string, unk
     correlationId?: string;
 }
 
-export interface ExtractionEventPayload {
+export interface ExtractionEventPayload extends Record<string, unknown> {
     stage: string;
     inputLength: number;
     propertiesFound: number;
@@ -29,14 +29,14 @@ export interface ExtractionEventPayload {
     error?: string;
 }
 
-export interface MatchEventPayload {
+export interface MatchEventPayload extends Record<string, unknown> {
     queryType: string;
     resultsCount: number;
     durationMs: number;
     threshold: number;
 }
 
-export interface StrategyEventPayload {
+export interface StrategyEventPayload extends Record<string, unknown> {
     strategyId: string;
     seamId: string;
     action: 'mount' | 'unmount' | 'save' | 'cancel' | 'error';
@@ -44,7 +44,7 @@ export interface StrategyEventPayload {
     error?: string;
 }
 
-export interface ErrorEventPayload {
+export interface ErrorEventPayload extends Record<string, unknown> {
     errorType: string;
     message: string;
     stack?: string;
@@ -52,13 +52,13 @@ export interface ErrorEventPayload {
     severity: 'warning' | 'error' | 'critical';
 }
 
-export interface PerformanceEventPayload {
+export interface PerformanceEventPayload extends Record<string, unknown> {
     operation: string;
     durationMs: number;
     metadata?: Record<string, unknown>;
 }
 
-export interface LifecycleEventPayload {
+export interface LifecycleEventPayload extends Record<string, unknown> {
     phase: 'init' | 'ready' | 'shutdown' | 'error';
     component: string;
     details?: Record<string, unknown>;

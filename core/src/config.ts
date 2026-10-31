@@ -7,13 +7,31 @@
 // Environment & Runtime
 // ============================================================================
 
-export const IS_DEV = import.meta.env.DEV;
-export const IS_PROD = import.meta.env.PROD;
-export const IS_TEST = import.meta.env.MODE === 'test';
+interface ImportMetaEnv {
+    DEV?: boolean;
+    PROD?: boolean;
+    MODE?: string;
+    PROJECT_ROOT?: string;
+    VITE_TELEMETRY?: string;
+    VITE_DEV_HOOKS?: string;
+}
+
+function getImportMetaEnv(): ImportMetaEnv {
+    // In browser/Vite: import.meta.env is available
+    // In Node.js/Vitest: it may be undefined or we provide a fallback
+    const env = (typeof import.meta !== 'undefined' && import.meta.env) ? import.meta.env : {};
+    return env as ImportMetaEnv;
+}
+
+const env = getImportMetaEnv();
+
+export const IS_DEV = env.DEV ?? true;
+export const IS_PROD = env.PROD ?? false;
+export const IS_TEST = env.MODE === 'test';
 
 export function getProjectRoot(): string {
     // Vite defines import.meta.env.PROJECT_ROOT at build time
-    return import.meta.env.PROJECT_ROOT ?? '/home/me/notention9';
+    return env.PROJECT_ROOT ?? '/home/me/notention9';
 }
 
 export function getOptimizeDir(): string {
@@ -229,14 +247,15 @@ let cachedLoopSchema: LoopConfigSchema | null = null;
 export async function loadLoopConfigSchema(): Promise<LoopConfigSchema> {
     if (cachedLoopSchema) return cachedLoopSchema;
     const response = await fetch(`${getProjectRoot()}/optimize/loop/schema.json`);
-    cachedLoopSchema = await response.json();
-    return cachedLoopSchema;
+    const schema = await response.json() as LoopConfigSchema;
+    cachedLoopSchema = schema;
+    return schema;
 }
 
 export async function validateLoopConfig(config: unknown): Promise<void> {
-    const { Ajv } = await import('ajv');
+    const { default: Ajv } = await import('ajv');
     const schema = await loadLoopConfigSchema();
-    const ajv = new (Ajv.default || Ajv)({ allErrors: true, strict: false });
+    const ajv = new Ajv({ allErrors: true, strict: false });
     const validate = ajv.compile({
         ...schema.definitions.loopConfig,
         definitions: schema.definitions,
@@ -254,8 +273,8 @@ export async function validateLoopConfig(config: unknown): Promise<void> {
 export const FEATURES = {
     AI_INFERENCE: true,
     ONTOLOGY_OPTIMIZATION: true,
-    TELEMETRY: import.meta.env.VITE_TELEMETRY === 'true',
-    DEV_HOOKS: import.meta.env.VITE_DEV_HOOKS === 'true',
+    TELEMETRY: env.VITE_TELEMETRY === 'true',
+    DEV_HOOKS: env.VITE_DEV_HOOKS === 'true',
 } as const;
 
 // ============================================================================

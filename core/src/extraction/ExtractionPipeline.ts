@@ -23,6 +23,7 @@ import {
 } from '../notes/propertyExtractor/patterns.js';
 import {
     addProperty,
+    hasProperty,
     makePropertyId,
     getProperties,
     PROP_ID_SEPARATOR

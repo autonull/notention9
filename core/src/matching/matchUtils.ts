@@ -6,6 +6,7 @@
  */
 
 import { levenshteinDistance } from '../utils/string.js';
+import type { Property } from '../types/domain.js';
 
 /**
  * Normalize a term for comparison (lowercase, trim, canonical mapping)
@@ -187,12 +188,12 @@ export function matchValues(
 /**
  * Filter note properties into facts (operator === 'is') and constraints (operator !== 'is')
  */
-export function partitionProperties(properties: { operator: string }[]): {
-    facts: typeof properties;
-    constraints: typeof properties;
+export function partitionProperties(properties: Property[]): {
+    facts: Property[];
+    constraints: Property[];
 } {
-    const facts: typeof properties = [];
-    const constraints: typeof properties = [];
+    const facts: Property[] = [];
+    const constraints: Property[] = [];
     
     for (const prop of properties) {
         if (prop.operator === 'is') {

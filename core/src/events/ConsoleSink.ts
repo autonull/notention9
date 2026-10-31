@@ -2,7 +2,7 @@
  * Console sink for event emission
  */
 
-import { EventSink, AnyEvent, ErrorEvent } from './EventEmitter.js';
+import { EventSink, AnyEvent, ErrorEventPayload } from './EventEmitter.js';
 
 export interface ConsoleSinkOptions {
     name?: string;
@@ -72,7 +72,7 @@ export class ConsoleSink implements EventSink {
 
     private getSeverity(event: AnyEvent): 'warning' | 'error' | 'critical' | 'info' {
         if (event.category === 'error') {
-            return (event.payload as ErrorEvent).severity;
+            return (event.payload as ErrorEventPayload).severity;
         }
         return 'info';
     }

@@ -47,56 +47,32 @@ describe('MatchingService', () => {
     });
 
     it('should calculate partial score for mixed satisfaction', () => {
+      // 'is' operator = fact, other operators = constraint
       const request = createNote([
-        prop('role', 'is', 'Designer'), // Constraint (Request -> Offer)
-        prop('skill', 'is', 'React')    // Fact (for Offer -> Request)
+        prop('role', 'is', 'Designer'),     // Fact (for Offer -> Request)
+        prop('skill', 'contains', 'React')  // Constraint (Request -> Offer)
       ]);
       const offer = createNote([
-        prop('role', 'is', 'Developer'), // Fact (for Request -> Offer)
-        prop('skill', 'contains', 'React') // Constraint (Offer -> Request)
+        prop('role', 'is', 'Developer'),    // Fact (for Request -> Offer)
+        prop('skill', 'is', 'React')        // Fact (for Offer -> Request)
       ]);
 
-      // Request constraints: role (is Designer)
-      // Offer constraints: skill (contains React)
-      // Total constraints: 2
-
-      // 1. Check Request -> Offer
-      // req constraint: role:is:Designer
-      // offer fact: role:is:Developer
-      // Match? "Designer" vs "Developer" -> No.
-      // Satisfied: 0
-
-      // 2. Check Offer -> Request
-      // offer constraint: skill:contains:React
-      // req fact: skill:is:React
-      // Match? "React" contains "React" -> Yes.
-      // Satisfied: 1
-
-      // Total satisfied: 1 / 2 = 0.5
+      // matchDirectional uses ALL request.properties as constraints:
+      // 1. reqToOffer: request has 2 properties (role:is:Designer, skill:contains:React)
+      //    offer has 2 facts (role:is:Developer, skill:is:React)
+      //    - role:is:Designer vs role:is:Developer -> no match
+      //    - skill:contains:React vs skill:is:React -> match!
+      //    score = 1/2 = 0.5, totalConstraints = 2
+      //
+      // 2. offerToRequest: offerConstraints from request = [skill:contains:React]
+      //    requestFacts from request = [role:is:Designer]
+      //    request has 1 constraint, offer has 1 fact
+      //    - skill:contains:React vs role:is:Designer -> missing (different keys)
+      //    score = 0/1 = 0, totalConstraints = 1
+      //
+      // Total: (0.5*2 + 0*1) / (2+1) = 1/3 = 0.333
 
       const result = matchingService.matchNotesWithRealVsImaginary(request, offer);
-
-      // If logic counts ALL request properties as constraints (even 'is'), then:
-      // Request properties: 2 (role, skill) -> both treated as constraints in requestConstraints list?
-      // Line 104: const requestConstraints = request.properties;
-      // So request has 2 constraints.
-
-      // Offer properties:
-      // Facts: role:is:Developer
-      // Constraints: skill:contains:React
-      // Offer constraints: 1
-
-      // Total constraints = 2 (req) + 1 (offer) = 3.
-
-      // 1. Req -> Offer
-      // Constraint 1: role:is:Designer vs Fact role:is:Developer -> Fail.
-      // Constraint 2: skill:is:React vs Fact? No fact for skill in offer. -> Fail.
-
-      // 2. Offer -> Request
-      // Constraint 1: skill:contains:React vs Fact skill:is:React -> Pass.
-
-      // Satisfied: 1. Total: 3. Score: 1/3 ~ 0.333
-
       expect(result.score).toBeCloseTo(0.333, 2);
     });
   });
