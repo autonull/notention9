@@ -2,32 +2,74 @@
 
 **Supersedes:** `TODO.11.md`, `TODO.11.a.md`, and all prior drafts of this file
 **Status:** Active — Phase 0 done; Phase 1 next
-**Shape:** One measurement substrate, three consumers. Consolidate the existing code; do not build a parallel system.
+**Shape:** One measurement substrate, three consumers. Consolidate existing code. Commit only to the next experiment; defer what the next experiment does not need.
 
 ---
 
-## ⚡ No-Regrets Work (start immediately, survives any plan change)
+## ⚡ No-Regrets Work (start immediately)
 
-These items are **structurally necessary** regardless of which architecture or pivot we end up with. They unblock all downstream work and have no downside.
+These items are independent of any pivot and unblock everything else. They are safe to do now.
 
 | # | Item | Why it's no-regrets | Files |
 |---|---|---|---|
 | NR1 | Fix `createComponentStrategy` argument order bug | Params never reach the app today; nothing causal can work without this | `ui/src/hooks/strategyResolverInit.ts:214-227`, `core/src/ui/strategy.ts:170-185` |
 | NR2 | Fix resolver hook contract (`SeamRole` vs seam ID) | Broken contract between hook and registry | `ui/src/hooks/useStrategyResolver.tsx:56-93` |
 | NR3 | Delete `compare.ts` fabricated comparison | Actively misleading; no code depends on it | `optimize/src/loop/subcommands/compare.ts` |
-| NR4 | Replace `evaluateCandidateFast` copy-baseline with real execution | Fabricated evaluation is worse than no evaluation | `optimize/src/synthesis/evaluation.ts:632-679` |
-| NR5 | Fix adoption ledger corruption (append-all bug) | Ledger is unusable; 2,047 lines / 11 unique IDs | `optimize/src/synthesis/adoption.ts:67-70` |
-| NR6 | Remove `main()` import side effect in `loop/index.ts` | Breaks tooling, tests, and any programmatic use | `optimize/src/loop/index.ts:1`, `loop/cli.ts:145` |
-| NR7 | Fix `scripts/test-ui-batched.ts:96` recursion | `pnpm verify` and CI are unreliable | `scripts/test-ui-batched.ts` |
-| NR8 | Add `pnpm test` + `pnpm verify` lane definitions | Current test commands don't run what they should | `package.json`, `scripts/verify.ts` |
+| NR4 | Remove `main()` import side effect in `loop/index.ts` | Breaks tooling, tests, and any programmatic use | `optimize/src/loop/index.ts:1`, `loop/cli.ts:145` |
+| NR5 | Fix `scripts/test-ui-batched.ts:96` recursion | `pnpm verify` and CI are unreliable | `scripts/test-ui-batched.ts` |
+| NR6 | Add `pnpm test` + `pnpm verify` lane definitions | Current test commands don't run what they should | `package.json`, `scripts/verify.ts` |
 
-**Start here.** These 8 items take ~2 days and make the codebase honest. Everything else depends on them.
+**Start here.** These 6 items take ~2 days and make the codebase honest.
+
+### Deferred to the vertical slice (not no-regrets)
+
+| # | Item | Why not now | Move to |
+|---|---|---|---|
+| DS1 | Replace `evaluateCandidateFast` copy-baseline | "Real execution" requires params to reach the extractor/matcher — the same plumbing as NR1/NR2. Not independent. | Phase 3 slice, minimal version: candidate declares one supported option; runner applies it |
+| DS2 | Fix adoption ledger | Revisions replace adoption; fixing the old ledger is wasted work. | Delete the corrupt ledger, mark `adoption.ts` deprecated, write the new ledger correctly in Phase 2 |
+
+---
+
+## 🪜 Decision Ladder
+
+"Cross that bridge when we get to it" is valid for **behavior and thresholds**. It is invalid for **persisted schemas and load-bearing contracts**. Deferring a schema is how you get a rewrite.
+
+| Test | If yes | If no |
+|---|---|---|
+| Does the next 2 weeks depend on it? | Decide now | Defer |
+| Is it cheap to reverse? | Defer | Decide now |
+| Does it constrain a stored format? | Decide now, version it | Defer |
+
+### Tier 0 — Decide now (load-bearing or persisted)
+
+| Decision | Why now | Artifact |
+|---|---|---|
+| Resolution spine | Everything downstream depends on it | One-page decision: `ProfileRegistry` extension vs direct `RevisionStore → renderer` |
+| Revision schema | Stored; hard to migrate | `core/src/ui/RevisionStore.ts` types |
+| Case manifest schema | Stored; all cases depend on it | `eval/cases/manifest.json` |
+| Ledger event schema | Append-only; hard to migrate | `optimize/src/eval/ledger.ts` |
+| Causality definition | Measurement is meaningless without it | One sentence + one test |
+
+### Tier 1 — Decide at a gate (cheap to change)
+
+| Decision | Gate |
+|---|---|
+| Statistical model (McNemar vs Bayesian vs other) | Phase 2.4 fixture suite |
+| Case counts and split | Phase 2.1 manifest |
+| Consent UX details | Phase 3.5 |
+| Friction taxonomy | Phase 4b after 4 digests |
+| Optimizer search space | Phase 5 |
+| Benchmark ownership | Phase 2.1 |
+
+### Tier 2 — Defer (out of scope v1)
+
+Multi-device revision sync, ontology migration mechanics, auto-tune policy, synthesis (S2+), remote telemetry, fleet experiments.
 
 ---
 
 ## 🔀 Pivot Points (where the plan will likely change)
 
-The plan is a hypothesis. These three pivots will reshape it based on Phase 1–2 reality checks.
+The plan is a hypothesis. These three pivots will reshape it based on Phase 1–3 reality checks.
 
 | Pivot | Trigger | What changes if triggered |
 |---|---|---|
@@ -44,7 +86,7 @@ The plan is a hypothesis. These three pivots will reshape it based on Phase 1–
 | Phase | Status | Target | Exit gate |
 |---|---|---|---|
 | **0. Integrity** | ✅ Done | 2026-10-31 | Core cases load in built runtime |
-| **1. Truth & Plumbing** | 🔄 Next | 2026-11-07 | Resolver delivers params; fabricated paths deleted; fast CI lane green |
+| **1. Truth & Plumbing** | 🔄 Next | 2026-11-07 | Resolver delivers params; Tier-0 schemas frozen; fabricated paths deleted; fast CI lane green |
 | **2. Measurement Core** | ⏳ Queued | 2026-11-14 | Verdict fixtures pass in < 10 s |
 | **3. Causal Delivery Slice** | ⏳ Queued | 2026-11-21 | One real revision decision, C1–C9 demonstrated |
 | **4. Benchmark + Representation** | ⏳ Queued | 2026-12-05 | 40 intent / 60 quality cases; F1 + match baselines |
@@ -384,18 +426,17 @@ interface FrictionEvent {
 |---|---|---|---|---|
 | 1.1 | Fix strategy registration argument order | `ui/src/hooks/strategyResolverInit.ts:214-227` | Registered strategy IDs match profile selections | ✅ NR1 |
 | 1.2 | Fix resolver hook to pass `SeamRole`, not seam ID | `ui/src/hooks/useStrategyResolver.tsx:56-93` | Unit test resolves `capture` role | ✅ NR2 |
-| 1.3 | Plumb `params` + `reason` through `ResolvedStrategy` | `core/src/ui/ProfileRegistry.ts:129-213` | 5-layer precedence test passes | |
+| 1.3 | Decide + implement resolution spine; plumb `params` + `reason` through `ResolvedStrategy` | `core/src/ui/ProfileRegistry.ts:129-213` | 5-layer precedence test (stub revision source) passes | Tier 0 |
 | 1.4 | Delete fabricated comparison | `optimize/src/loop/subcommands/compare.ts` | File gone; no references | ✅ NR3 |
-| 1.5 | Replace copy-baseline evaluation with real execution | `optimize/src/synthesis/evaluation.ts:632-679` | Distinct params → distinct results | ✅ NR4 |
-| 1.6 | Fix adoption ledger append + migrate old ledger | `optimize/src/synthesis/adoption.ts:67-70` | One line per event; chain valid | ✅ NR5 |
-| 1.7 | Remove `main()` import side effect | `optimize/src/loop/index.ts:1`, `loop/cli.ts:145` | Import does not run CLI | ✅ NR6 |
-| 1.8 | Implement or delete must-win gate | `synthesis/gates/mustWinGate.ts` | No placeholder `pass:true` | |
-| 1.9 | Fix or remove ESLint gate | `synthesis/gates/eslintGate.ts` | Gate actually lints | |
-| 1.10 | Repair or delete `determinism.ts` | `optimize/src/loop/determinism.ts` | No unused latent module | |
-| 1.11 | Fix UI test recursion + verify lanes | `scripts/test-ui-batched.ts`, `scripts/verify.ts` | `pnpm verify` runs L0+L1+L2 | ✅ NR7, NR8 |
-| 1.12 | Add fabricated-path grep guard | CI script | Reintroduction fails CI | |
+| 1.5 | Remove `main()` import side effect | `optimize/src/loop/index.ts:1`, `loop/cli.ts:145` | Import does not run CLI | ✅ NR4 |
+| 1.6 | Fix UI test recursion + define verify lanes | `scripts/test-ui-batched.ts`, `scripts/verify.ts` | `pnpm verify` runs L0+L1+L2 | ✅ NR5, NR6 |
+| 1.7 | Implement or delete must-win gate | `synthesis/gates/mustWinGate.ts` | No placeholder `pass:true` | |
+| 1.8 | Fix or remove ESLint gate | `synthesis/gates/eslintGate.ts` | Gate actually lints | |
+| 1.9 | Repair or delete `determinism.ts` | `optimize/src/loop/determinism.ts` | No unused latent module | |
+| 1.10 | Freeze Tier-0 schemas (revision, manifest, ledger, causality) | one-page decisions | Schemas reviewed and versioned | Tier 0 |
+| 1.11 | Add fabricated-path grep guard | CI script | Reintroduction fails CI | |
 
-**Gate:** `pnpm verify` green; one revision param visibly changes a capture render; no fabricated evaluation path remains.
+**Gate:** `pnpm verify` green; one strategy param visibly changes a capture render; Tier-0 schemas frozen; no fabricated evaluation path remains.
 
 **Resolver Pivot check:** If 1.3 + L2 smoke fail → abandon `ProfileRegistry` spine, build direct `RevisionStore → renderer` path.
 
@@ -414,7 +455,8 @@ interface FrictionEvent {
 | 2.5 | `optimize/src/eval/quality.ts` real runner + baseline cache | Cache hit < 1 ms |
 | 2.6 | `RunContext` + replay hash | Re-run hash matches |
 | 2.7 | `optimize/src/eval/ledger.ts` + audit | Tamper detected |
-| 2.8 | `pnpm eval` CLI (no side effects) | `eval run`, `eval audit`, `eval report` |
+| 2.8 | Delete corrupt `adoption-ledger.jsonl`; mark `adoption.ts` deprecated | No stale ledger; one writer |
+| 2.9 | `pnpm eval` CLI (no side effects) | `eval run`, `eval audit`, `eval report` |
 
 **Gate:** L0+L1 < 10 s; all four fixture classes yield the expected verdict; ledger audit passes.
 
@@ -431,11 +473,12 @@ interface FrictionEvent {
 | 3.1 | `RevisionStore` + schema + validation | Invalid patch rejected |
 | 3.2 | Revision layer in `ProfileRegistry` precedence | 5-layer test passes |
 | 3.3 | One capture revision (`autoFocus`, `placeholder`, `submitOnEnter`) | Render differs per params |
-| 3.4 | Consent UI: Settings → Revisions (accept/decline) | Decline sticky |
-| 3.5 | One intent case + `SeedSnapshot` + clock/RNG freeze | Replay DOM hash identical |
-| 3.6 | End-to-end: propose → evaluate → verdict → consent → active → rollback | C1–C9 demonstrated |
-| 3.7 | Ledger records every transition | Audit verifies |
-| 3.8 | Human gate reported as `unmet` when absent | Visible in report |
+| 3.4 | Replace copy-baseline evaluation with real execution (minimal) | Distinct params → distinct results |
+| 3.5 | Consent UI: Settings → Revisions (accept/decline) | Decline sticky |
+| 3.6 | One intent case + `SeedSnapshot` + clock/RNG freeze | Replay DOM hash identical |
+| 3.7 | End-to-end: propose → evaluate → verdict → consent → active → rollback | C1–C9 demonstrated |
+| 3.8 | Ledger records every transition | Audit verifies |
+| 3.9 | Human gate reported as `unmet` when absent | Visible in report |
 
 **Gate:** one real release decision made with the harness; rollback restores prior behavior; L2 < 60 s.
 
@@ -445,52 +488,36 @@ interface FrictionEvent {
 
 ### Phase 4 — Benchmark + Representation (parallel, ~2 weeks)
 
-#### 4a. Representation (O2)
+**Outcome:** a benchmark large enough to make O2/O3 claims, with baselines recorded.
 
-| # | Task | Exit |
-|---|---|---|
-| 4a.1 | 60 quality cases, ≥ 40% non-market, κ ≥ 0.6 | All run |
-| 4a.2 | Extraction F1 + schema-validity baseline | Reproducible |
-| 4a.3 | Match P@5 / R@5 / NDCG@10 baseline | Reproducible |
-| 4a.4 | Confidence + provenance on inferred values | `source: inferred|confirmed`, `confidence` |
-| 4a.5 | ECE calibration | ECE ≤ 0.1 on labeled subset |
-| 4a.6 | Correction flow feeds labels | Override recorded, never silently binding |
-| 4a.7 | Coverage matrix | Full/partial/gap per axis |
-| 4a.8 | Flat vs facet benchmark | Decision record |
-| 4a.9 | Commitment lifecycle states | Invalid transitions rejected |
-| 4a.10 | 40 intent cases authored | All run; incumbent band holds |
-
-#### 4b. Friction (O3)
-
-| # | Task | Exit |
-|---|---|---|
-| 4b.1 | Local journal, opt-in, aggregates | No raw text; retention enforced |
-| 4b.2 | 7 workflow capture points | Counts match manual session |
-| 4b.3 | Weekly digest with confidence | Generated from aggregates |
-| 4b.4 | Human triage queue | ≥ 5 triaged, reason recorded |
-| 4b.5 | Evidence classes + decay | Measured outranks hypothesized |
+- **4a Representation (O2):** 60 quality cases (≥ 40% non-market, κ ≥ 0.6); extraction F1 + match P@5/R@5/NDCG@10 baselines; confidence + provenance on inferred values; ECE calibration; correction flow; coverage matrix; flat-vs-facet decision; commitment lifecycle; 40 intent cases.
+- **4b Friction (O3):** local opt-in journal; 7 capture points; weekly digest; human triage queue; evidence classes + decay.
 
 **Gate to O2 claims:** baseline + one ontology change with no intent regression.
 **Gate to O3 claims:** ≥ 5 triaged, ≥ 1 shipped fix.
 
 **Friction Pivot check:** After 4 weekly digests, if output is noise/trivia → redesign event taxonomy/granularity or kill per kill criteria.
 
+*Task breakdown is intentionally deferred until Phase 3 passes. Writing it now would be speculation.*
+
 ---
 
 ### Phase 5 — Optimizer (serial, ~2 weeks)
 
-| # | Task | Exit |
-|---|---|---|
-| 5.1 | Second seam revision set (match) | Renders differently per params |
-| 5.2 | Candidate enumeration over `ParamSpec` | 8 candidates/seam |
-| 5.3 | Candidate cache `(target, patchHash)` | Re-evaluation skipped |
-| 5.4 | Successive halving + budget | Budget respected, early stop |
-| 5.5 | Full cycle: propose → evaluate → decide → propose-to-user | One opt-in adoption |
-| 5.6 | Negative-result recording + freeze | Frozen seam exits cleanly |
-| 5.7 | Cost accounting | Report includes runs/tokens/minutes |
+**Outcome:** a parameter search that can conclude "win" or "no win" with evidence.
+
+- Second seam revision set (match)
+- Candidate enumeration over declared `ParamSpec`
+- Candidate cache `(target, patchHash)`
+- Successive halving + budget
+- Full cycle: propose → evaluate → decide → propose-to-user
+- Negative-result recording + freeze
+- Cost accounting
 
 **Search space:** declared `ParamSpec` only. No free-form values. LLM may propose a patch; it is validated and never emits code.
 **Gate to synthesis:** two measured wins, or two credible negatives on a valid benchmark.
+
+*Task breakdown is intentionally deferred until Phase 4 baselines exist.*
 
 ---
 
@@ -654,17 +681,21 @@ A cycle over budget is `invalid`, not `improved`.
 
 ## 🏗️ Open Architectural Questions (explicitly undecided)
 
-These are not "decisions pending" — they are **known unknowns** that will be resolved by executing to the relevant gate. Do not assume answers.
+These are **known unknowns**, classified by the Decision Ladder. Do not assume answers; do not pre-solve.
 
-| Area | Question | Will be decided at |
-|---|---|---|
-| Resolution spine | Does `ProfileRegistry` + `ResolvedStrategy` work, or do we need direct `RevisionStore → renderer`? | Phase 1.3 + L2 smoke (Resolver Pivot) |
-| Statistical model | Is exact McNemar + bootstrap CI adequate for 40 intent cases, or do we need Bayesian / larger N / different primary? | Phase 2.4 fixture suite (Verdict Pivot) |
-| Benchmark scope | Are 40 intent / 60 quality cases the right split? Should recovery/elicitation be in v1? | Phase 2.1 manifest creation (D46, D7) |
-| Friction taxonomy | Do the 7 event kinds capture real struggle, or are they too coarse/fine? | Phase 4b after 4 weekly digests (Friction Pivot) |
-| Optimizer search | Is `ParamSpec`-only search sufficient, or do we need structural candidates? | Phase 5.2 candidate enumeration |
-| Consent model | Is binary `opt-in` vs `auto-tune` enough, or do we need per-revision consent? | Phase 3.4 consent UI |
-| Multi-device | Will revisions ever sync? | Deferred (D34) — out of scope v1 |
+| Area | Question | Tier | Decided at |
+|---|---|---|---|
+| Resolution spine | `ProfileRegistry` extension, or direct `RevisionStore → renderer`? | **0** | Phase 1 (Resolver Pivot) |
+| Revision schema | What fields are stored, and how are patches validated? | **0** | Phase 1 |
+| Manifest schema | How are cases enumerated, hashed, and split? | **0** | Phase 1 |
+| Ledger schema | Which events, and what hash chain? | **0** | Phase 1 |
+| Causality definition | What counts as "the change executed"? | **0** | Phase 1 |
+| Statistical model | Is McNemar + bootstrap adequate for the case count? | **1** | Phase 2.4 fixture suite (Verdict Pivot) |
+| Benchmark scope | 40 intent / 60 quality? Include recovery/elicitation? | **1** | Phase 2.1 manifest |
+| Consent model | Binary opt-in vs per-revision consent? | **1** | Phase 3.5 consent UI |
+| Friction taxonomy | Do the 7 event kinds capture real struggle? | **1** | Phase 4b after 4 digests |
+| Optimizer search | Is `ParamSpec`-only search sufficient? | **1** | Phase 5 |
+| Multi-device | Will revisions sync? | **2** | Deferred (D34) |
 
 ---
 
@@ -695,30 +726,44 @@ These are not "decisions pending" — they are **known unknowns** that will be r
 }
 ```
 
-## Appendix C — First Actions (No-Regrets First)
+## Appendix C — First Actions
 
-### Week 1: No-Regrets (survives any pivot)
+### Week 1: No-Regrets + Tier-0 schemas (survives any pivot)
+
+**Code (independent):**
 1. **NR1** Fix `strategyResolverInit.ts:214-227` argument order; unit test resolves `capture` role
 2. **NR2** Fix `useStrategyResolver.tsx:56-93` to pass `SeamRole`, not seam ID
 3. **NR3** Delete `optimize/src/loop/subcommands/compare.ts`
-4. **NR4** Replace `evaluateCandidateFast` copy-baseline with real execution (`evaluation.ts:632-679`)
-5. **NR5** Fix adoption ledger append bug + migrate old ledger (`adoption.ts:67-70`)
-6. **NR6** Remove `main()` import side effect (`loop/index.ts:1`, `loop/cli.ts:145`)
-7. **NR7** Fix `scripts/test-ui-batched.ts:96` recursion
-8. **NR8** Define `pnpm test` (L0+L1) and `pnpm verify` (build+typecheck+L0+L1+L2) lanes
+4. **NR4** Remove `main()` import side effect (`loop/index.ts:1`, `loop/cli.ts:145`)
+5. **NR5** Fix `scripts/test-ui-batched.ts:96` recursion
+6. **NR6** Define `pnpm test` (L0+L1) and `pnpm verify` (build+typecheck+L0+L1+L2)
+
+**Decisions (Tier 0, one page each):**
+7. Resolution spine: extend `ProfileRegistry` or direct `RevisionStore → renderer`
+8. Revision schema
+9. Case manifest schema
+10. Ledger event schema
+11. Causality definition (one sentence + one test)
 
 ### Week 2: Truth & Plumbing
-9. Add `ResolvedStrategy` + revision layer in `ProfileRegistry`; 5-layer precedence test
-10. Implement or delete must-win gate; fix or remove ESLint gate; repair/delete `determinism.ts`
-11. Add fabricated-path grep guard to CI
-12. **Gate:** `pnpm verify` green; one revision param visibly changes capture render
+12. Implement chosen resolution spine + `ResolvedStrategy`; 5-layer precedence test
+13. Implement or delete must-win gate; fix/remove ESLint gate; repair/delete `determinism.ts`
+14. Add fabricated-path grep guard to CI
+15. **Gate:** `pnpm verify` green; one strategy param visibly changes a capture render
 
-### Week 3+: Measurement Core → Causal Slice
-13. `eval/cases/manifest.json` + hash guard + readers
-14. `verdict.ts` pure engine + four fixtures (no-op, duplicate, known-bad, real-improvement)
-15. `quality.ts` real runner + baseline cache
-16. `RunContext` + replay hash + `ledger.ts` + `pnpm eval` CLI
-17. `RevisionStore` + schema + consent UI (Settings → Revisions)
-18. One capture revision + intent case + SeedSnapshot + clock/RNG freeze
-19. End-to-end: propose → evaluate → verdict → consent → active → rollback (C1–C9)
-20. **Gate:** one real release decision; rollback works; L2 < 60 s
+### Week 3: Thin Vertical Slice
+16. `eval/cases/manifest.json` + hash guard + readers
+17. `verdict.ts` pure engine + four fixtures (no-op, duplicate, known-bad, real-improvement)
+18. `quality.ts` real runner + baseline cache
+19. `RunContext` + replay hash + `ledger.ts` + `pnpm eval` CLI
+20. Delete corrupt `adoption-ledger.jsonl`; deprecate `adoption.ts`
+21. `RevisionStore` + consent UI (Settings → Revisions)
+22. One capture revision + one intent case + SeedSnapshot + clock/RNG freeze
+23. Replace copy-baseline evaluation with real execution (minimal)
+24. End-to-end: propose → evaluate → verdict → consent → active → rollback (C1–C9)
+25. **Gate:** one real release decision; rollback works; L2 < 60 s
+
+### After the slice: decide, then write Phase 4/5 detail
+- If the slice works: expand cases and write Phase 4.
+- If the slice fails: trigger the Resolver Pivot and redesign the spine.
+- Do not pre-write Phase 4/5 task tables.
