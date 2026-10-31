@@ -1,6 +1,7 @@
 import type { Note, Property, OntologyNode } from '../../types/index.js';
 import { MatchEngine } from '../../matching/MatchEngine.js';
 import { matchBidirectional } from '../../matching/bidirectional.js';
+import { matchValues, matchPropertySimple } from '../../matching/matchUtils.js';
 
 /**
  * Pattern Matching Utilities
@@ -72,31 +73,10 @@ function matchSimple(
         if (!matchingProp) return false;
 
         return condition.values.some(conditionValue =>
-            matchValues(conditionValue, matchingProp.values, caseSensitive)
+            matchingProp.values.some(propValue =>
+                matchValues(propValue, conditionValue, caseSensitive)
+            )
         );
-    });
-}
-
-/**
- * Match a condition value against property values
- */
-function matchValues(
-    conditionValue: string,
-    propValues: string[],
-    caseSensitive: boolean
-): boolean {
-    if (conditionValue === 'ANY') return true;
-
-    const normalize = caseSensitive
-        ? (s: string) => s
-        : (s: string) => s.toLowerCase();
-
-    const normalizedCondition = normalize(conditionValue);
-
-    return propValues.some(propValue => {
-        const normalizedProp = normalize(propValue);
-        return normalizedProp.includes(normalizedCondition) ||
-               normalizedCondition.includes(normalizedProp);
     });
 }
 
