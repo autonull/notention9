@@ -21,6 +21,12 @@ import {
     DATE_PATTERNS,
     STOP_WORDS
 } from '../notes/propertyExtractor/patterns.js';
+import {
+    addProperty,
+    makePropertyId,
+    getProperties,
+    PROP_ID_SEPARATOR
+} from './propertyUtils.js';
 
 export type ExtractionStageName = 'deterministic' | 'pattern' | 'ai' | 'fuzzy';
 
@@ -85,23 +91,11 @@ export class DeterministicStage implements ExtractionStage {
         const properties = new Map<string, Property>();
         const lowerText = text.toLowerCase();
 
-        const addProperty = (key: string, operator: string, value: string) => {
-            const values = value.split(',').map(part => part.trim()).filter(Boolean);
-            if (values.length === 0) return;
-            const id = `${key}\u0000${operator}`;
-            const existing = properties.get(id);
-            if (existing) {
-                values.forEach(v => { if (!existing.values.includes(v)) existing.values.push(v); });
-                return;
-            }
-            properties.set(id, { key, operator, values });
-        };
-
         // Intents
         if (options.intents !== false) {
             for (const intent of INTENTS) {
                 if (intent.regex.test(text)) {
-                    addProperty('intent', 'is', intent.key);
+                    addProperty(properties, 'intent', 'is', intent.key);
                 }
             }
         }
@@ -109,28 +103,28 @@ export class DeterministicStage implements ExtractionStage {
         // Regex-based properties
         if (options.patterns !== false) {
             const sendToMatch = text.match(CORE_PATTERNS.SEND_TO);
-            if (sendToMatch) addProperty('to', 'send to', sendToMatch[1]);
+            if (sendToMatch) addProperty(properties, 'to', 'send to', sendToMatch[1]);
 
             const channelMatch = text.match(CORE_PATTERNS.CHANNEL);
             if (channelMatch) {
                 const channel = channelMatch[1].toLowerCase();
                 if (ontologyService.getEnumOptions('channel')?.includes(channel)) {
-                    addProperty('channel', 'is', channel);
+                    addProperty(properties, 'channel', 'is', channel);
                 }
             }
 
             const phoneMatch = text.match(REGEX.PHONE);
-            if (phoneMatch && !properties.has('to\u0000send to') && !properties.has('from\u0000is')) {
-                addProperty('from', 'is', phoneMatch[1]);
+            if (phoneMatch && !hasProperty(properties, 'to', 'send to') && !hasProperty(properties, 'from', 'is')) {
+                addProperty(properties, 'from', 'is', phoneMatch[1]);
             }
 
             const emailMatch = text.match(REGEX.EMAIL);
-            if (emailMatch) addProperty('email', 'is', emailMatch[0]);
+            if (emailMatch) addProperty(properties, 'email', 'is', emailMatch[0]);
 
             const budgetMatch = text.match(REGEX.BUDGET);
             if (budgetMatch) {
                 const amount = (budgetMatch[1] || budgetMatch[2]).replace(/,/g, '');
-                addProperty('budget', 'is', amount);
+                addProperty(properties, 'budget', 'is', amount);
             }
         }
 
@@ -139,7 +133,7 @@ export class DeterministicStage implements ExtractionStage {
             const locationMatch = LOCATION_PATTERNS.find(p => p.regex.test(text));
             if (locationMatch) {
                 const location = text.match(locationMatch.regex)![0].replace(locationMatch.prefix, '').trim();
-                addProperty('location', 'is near', location);
+                addProperty(properties, 'location', 'is near', location);
             }
         }
 
@@ -149,11 +143,11 @@ export class DeterministicStage implements ExtractionStage {
             if (datePattern) {
                 const date = new Date();
                 date.setDate(date.getDate() + datePattern.offset);
-                addProperty('date', 'is', date.toISOString().split('T')[0]);
+                addProperty(properties, 'date', 'is', date.toISOString().split('T')[0]);
             }
         }
 
-        return Array.from(properties.values());
+        return getProperties(properties);
     }
 }
 
@@ -169,18 +163,6 @@ export class PatternStage implements ExtractionStage {
         const properties = new Map<string, Property>();
         const lowerText = text.toLowerCase();
 
-        const addProperty = (key: string, operator: string, value: string) => {
-            const values = value.split(',').map(part => part.trim()).filter(Boolean);
-            if (values.length === 0) return;
-            const id = `${key}\u0000${operator}`;
-            const existing = properties.get(id);
-            if (existing) {
-                values.forEach(v => { if (!existing.values.includes(v)) existing.values.push(v); });
-                return;
-            }
-            properties.set(id, { key, operator, values });
-        };
-
         // Price / Cost
         if (options.price !== false) {
             const lessThanMatch = text.match(/(?:under|below|less than)\s*([$€£])?\s*(\d+(?:,\d{3})*(?:\.\d{1,2})?)(?:\s*(usd|eur|gbp|sats))?/i);
@@ -188,7 +170,7 @@ export class PatternStage implements ExtractionStage {
                 const symbol = lessThanMatch[1] || '';
                 const suffix = lessThanMatch[3] || '';
                 const quantity = parseQuantity(`${symbol}${lessThanMatch[2]} ${suffix}`.trim());
-                addProperty('price', 'less than', quantity ? `${quantity.value} ${quantity.unit}` : lessThanMatch[2]);
+                addProperty(properties, 'price', 'less than', quantity ? `${quantity.value} ${quantity.unit}` : lessThanMatch[2]);
             }
 
             const greaterThanMatch = text.match(/(?:over|above|more than)\s*([$€£])?\s*(\d+(?:,\d{3})*(?:\.\d{1,2})?)(?:\s*(usd|eur|gbp|sats))?/i);
@@ -196,19 +178,19 @@ export class PatternStage implements ExtractionStage {
                 const symbol = greaterThanMatch[1] || '';
                 const suffix = greaterThanMatch[3] || '';
                 const quantity = parseQuantity(`${symbol}${greaterThanMatch[2]} ${suffix}`.trim());
-                addProperty('price', 'greater than', quantity ? `${quantity.value} ${quantity.unit}` : greaterThanMatch[2]);
+                addProperty(properties, 'price', 'greater than', quantity ? `${quantity.value} ${quantity.unit}` : greaterThanMatch[2]);
             }
 
             if (!lessThanMatch && !greaterThanMatch) {
                 const priceMatch = text.match(/([$€£])\s*(\d+(?:,\d{3})*(?:\.\d{1,2})?)/);
                 if (priceMatch) {
                     const quantity = parseQuantity(`${priceMatch[1]}${priceMatch[2]}`);
-                    addProperty('price', 'is', quantity ? `${quantity.value} ${quantity.unit}` : priceMatch[2]);
+                    addProperty(properties, 'price', 'is', quantity ? `${quantity.value} ${quantity.unit}` : priceMatch[2]);
                 } else {
                     const currencyMatch = text.match(/(\d+(?:,\d{3})*(?:\.\d{1,2})?)\s*(USD|EUR|GBP|sats)/i);
                     if (currencyMatch) {
                         const quantity = parseQuantity(`${currencyMatch[1]} ${currencyMatch[2]}`);
-                        addProperty('price', 'is', quantity ? `${quantity.value} ${quantity.unit}` : currencyMatch[1]);
+                        addProperty(properties, 'price', 'is', quantity ? `${quantity.value} ${quantity.unit}` : currencyMatch[1]);
                     }
                 }
             }
@@ -218,7 +200,7 @@ export class PatternStage implements ExtractionStage {
                 const rangeMatch = text.match(/(?:between|from)?\s*(\$|€|£)?\s*(\d+)\s*(?:and|to|-)\s*(\$|€|£)?\s*(\d+)\s*(?:usd|eur|gbp)?/i);
                 if (rangeMatch) {
                     const [, , min, , max] = rangeMatch;
-                    if (min && max && Number(max) > Number(min)) addProperty('price', 'between', `${min},${max}`);
+                    if (min && max && Number(max) > Number(min)) addProperty(properties, 'price', 'between', `${min},${max}`);
                 }
             }
         }
@@ -228,13 +210,13 @@ export class PatternStage implements ExtractionStage {
             const roleRequestMatch = text.match(/(?:looking for|hiring|need) (?:a|an)\s+([a-zA-Z\s]+?)(?=(?:[\.,]|\s+(?:for|in|to|with)|$))/i);
             if (roleRequestMatch) {
                 const role = roleRequestMatch[1].trim();
-                if (role.split(' ').length < 5) addProperty('role', 'contains', role);
+                if (role.split(' ').length < 5) addProperty(properties, 'role', 'contains', role);
             }
 
             const roleOfferMatch = text.match(/i am (?:a|an)\s+([a-zA-Z\s]+?)(?=(?:[\.,]|\s+(?:who|with|looking|in|for)|$))/i);
             if (roleOfferMatch) {
                 const role = roleOfferMatch[1].trim();
-                if (role.split(' ').length < 5) addProperty('role', 'is', role);
+                if (role.split(' ').length < 5) addProperty(properties, 'role', 'is', role);
             }
         }
 
@@ -244,25 +226,25 @@ export class PatternStage implements ExtractionStage {
             if (lowerText.includes('due tomorrow') || lowerText.includes('deadline tomorrow')) {
                 const tomorrow = new Date(today);
                 tomorrow.setDate(tomorrow.getDate() + 1);
-                addProperty('deadline', 'is', tomorrow.toISOString().split('T')[0]);
+                addProperty(properties, 'deadline', 'is', tomorrow.toISOString().split('T')[0]);
             }
             if (lowerText.includes('due today') || lowerText.includes('deadline today')) {
-                addProperty('deadline', 'is', today.toISOString().split('T')[0]);
+                addProperty(properties, 'deadline', 'is', today.toISOString().split('T')[0]);
             }
             if (lowerText.includes('next week')) {
                 const nextWeek = new Date(today);
                 nextWeek.setDate(nextWeek.getDate() + 7);
-                addProperty('deadline', 'is', nextWeek.toISOString().split('T')[0]);
+                addProperty(properties, 'deadline', 'is', nextWeek.toISOString().split('T')[0]);
             }
             const inDaysMatch = lowerText.match(/(?:in|within) (\d+) days/);
             if (inDaysMatch) {
                 const future = new Date(today);
                 future.setDate(future.getDate() + parseInt(inDaysMatch[1]));
-                addProperty('deadline', 'is', future.toISOString().split('T')[0]);
+                addProperty(properties, 'deadline', 'is', future.toISOString().split('T')[0]);
             }
         }
 
-        return Array.from(properties.values());
+        return getProperties(properties);
     }
 }
 
@@ -276,18 +258,6 @@ export class OntologyKeyStage implements ExtractionStage {
     extract(text: string, ontology: OntologyNode[], context?: ExtractionContext): Property[] {
         const options = context?.options ?? {};
         const properties = new Map<string, Property>();
-
-        const addProperty = (key: string, operator: string, value: string) => {
-            const values = value.split(',').map(part => part.trim()).filter(Boolean);
-            if (values.length === 0) return;
-            const id = `${key}\u0000${operator}`;
-            const existing = properties.get(id);
-            if (existing) {
-                values.forEach(v => { if (!existing.values.includes(v)) existing.values.push(v); });
-                return;
-            }
-            properties.set(id, { key, operator, values });
-        };
 
         if (options.ontologyKeys !== false) {
             const allKeys = collectOntologyKeys(ontology);
@@ -308,11 +278,11 @@ export class OntologyKeyStage implements ExtractionStage {
 
                 const quantity = parseQuantity(value);
                 const canonicalKey = getCanonicalKey(key, ontology);
-                addProperty(canonicalKey, operator, quantity?.unit ? `${quantity.value} ${quantity.unit}` : value);
+                addProperty(properties, canonicalKey, operator, quantity?.unit ? `${quantity.value} ${quantity.unit}` : value);
             });
         }
 
-        return Array.from(properties.values());
+        return getProperties(properties);
     }
 }
 
@@ -351,18 +321,6 @@ export class FuzzyStage implements ExtractionStage {
         const properties = new Map<string, Property>();
         const existingKeys = new Set(context?.existingProperties?.map(p => p.key) ?? []);
 
-        const addProperty = (key: string, operator: string, value: string) => {
-            const values = value.split(',').map(part => part.trim()).filter(Boolean);
-            if (values.length === 0) return;
-            const id = `${key}\u0000${operator}`;
-            const existing = properties.get(id);
-            if (existing) {
-                values.forEach(v => { if (!existing.values.includes(v)) existing.values.push(v); });
-                return;
-            }
-            properties.set(id, { key, operator, values });
-        };
-
         if (options.fuzzy !== false) {
             const words = text.split(/\s+/);
             const threshold = options.fuzzyThreshold ?? 0.8;
@@ -376,12 +334,12 @@ export class FuzzyStage implements ExtractionStage {
                 const nextWord = words[i + 1];
                 if (nextWord.length > 2 && !STOP_WORDS.has(nextWord.toLowerCase())) {
                     existingKeys.add(match);
-                    addProperty(match, 'contains', nextWord);
+                    addProperty(properties, match, 'contains', nextWord);
                 }
             }
         }
 
-        return Array.from(properties.values());
+        return getProperties(properties);
     }
 }
 

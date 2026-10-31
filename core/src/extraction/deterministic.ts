@@ -10,27 +10,7 @@ import {
     DATE_PATTERNS,
     STOP_WORDS
 } from '../notes/propertyExtractor/patterns.js';
-
-function addProperty(
-    properties: Map<string, Property>,
-    key: string,
-    operator: string,
-    value: string
-) {
-    const values = value.split(',').map(part => part.trim()).filter(Boolean);
-    if (values.length === 0) return;
-    const id = `${key}\u0000${operator}`;
-    const existing = properties.get(id);
-    if (existing) {
-        values.forEach(v => { if (!existing.values.includes(v)) existing.values.push(v); });
-        return;
-    }
-    properties.set(id, { key, operator, values });
-}
-
-function normalizeKey(key: string, ontology: OntologyNode[]): string {
-    return getCanonicalKey(key, ontology);
-}
+import { addProperty, hasProperty, getProperties, makePropertyId } from './propertyUtils.js';
 
 export function alignToOntology(
     text: string,
@@ -63,7 +43,7 @@ export function alignToOntology(
     }
 
     const phoneMatch = text.match(REGEX.PHONE);
-    if (phoneMatch && !properties.has('to\u0000send to') && !properties.has('from\u0000is')) {
+    if (phoneMatch && !hasProperty(properties, 'to', 'send to') && !hasProperty(properties, 'from', 'is')) {
         addProperty(properties, 'from', 'is', phoneMatch[1]);
     }
 
@@ -205,11 +185,11 @@ export function alignToOntology(
         else if (['over', 'above', 'more than', 'greater than'].some(part => operatorStr.includes(part))) operator = 'greater than';
 
         const quantity = parseQuantity(value);
-        const canonicalKey = normalizeKey(key, ontology);
+        const canonicalKey = getCanonicalKey(key, ontology);
         addProperty(properties, canonicalKey, operator, quantity?.unit ? `${quantity.value} ${quantity.unit}` : value);
     });
 
-    return Array.from(properties.values());
+    return getProperties(properties);
 }
 
 export interface AlignmentExplanation {
