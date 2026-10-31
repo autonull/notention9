@@ -21,6 +21,11 @@ import type { Note, Property } from '@notention/core';
 import { loadCorpusTestCases } from '../corpus/index.js';
 import { CORPUS_OUTPUT_DIRS } from '../constants.js';
 
+// Static imports for core test data — fail loud if missing
+import coreExtractionCases from './test-data/core-extraction.json' with { type: 'json' };
+import coreMatchCases from './test-data/core-match.json' with { type: 'json' };
+import coreCaptureCases from './test-data/core-capture.json' with { type: 'json' };
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = join(__filename, '..');
 
@@ -65,6 +70,33 @@ export interface CaptureTestCase {
 export type TestCase = ExtractionTestCase;
 
 /**
+ * Core extraction test cases (loaded from JSON via static import)
+ * Fails loud at build time if file is missing or invalid.
+ */
+export const CORE_EXTRACTION_TEST_CASES: ExtractionTestCase[] = coreExtractionCases as ExtractionTestCase[];
+if (CORE_EXTRACTION_TEST_CASES.length === 0) {
+    throw new Error('CORE_EXTRACTION_TEST_CASES is empty — test data failed to load');
+}
+
+/**
+ * Core match test cases (loaded from JSON via static import)
+ * Fails loud at build time if file is missing or invalid.
+ */
+export const CORE_MATCH_TEST_CASES: MatchTestCase[] = coreMatchCases as MatchTestCase[];
+if (CORE_MATCH_TEST_CASES.length === 0) {
+    throw new Error('CORE_MATCH_TEST_CASES is empty — test data failed to load');
+}
+
+/**
+ * Core capture test case (loaded from JSON via static import)
+ * Fails loud at build time if file is missing or invalid.
+ */
+export const CORE_CAPTURE_TEST_CASE: CaptureTestCase = coreCaptureCases[0] as CaptureTestCase;
+if (!CORE_CAPTURE_TEST_CASE) {
+    throw new Error('CORE_CAPTURE_TEST_CASE is undefined — test data failed to load');
+}
+
+/**
  * Test case registry for managing all test cases
  */
 export class TestCaseRegistry {
@@ -76,19 +108,8 @@ export class TestCaseRegistry {
     }
 
     private loadCoreCases(): void {
-        this.extractionCases = this.loadCoreTestCasesSync<ExtractionTestCase>('core-extraction.json');
-        this.matchCases = this.loadCoreTestCasesSync<MatchTestCase>('core-match.json');
-    }
-
-    private loadCoreTestCasesSync<T>(filename: string): T[] {
-        try {
-            const { readFileSync } = require('fs');
-            const { join } = require('path');
-            const content = readFileSync(join(__dirname, 'test-data', filename), 'utf-8');
-            return JSON.parse(content) as T[];
-        } catch {
-            return [];
-        }
+        this.extractionCases = CORE_EXTRACTION_TEST_CASES;
+        this.matchCases = CORE_MATCH_TEST_CASES;
     }
 
     registerExtractionCases(cases: ExtractionTestCase[]): void {
@@ -125,55 +146,6 @@ export class TestCaseRegistry {
 }
 
 export const testCaseRegistry = new TestCaseRegistry();
-
-/**
- * Core extraction test cases (loaded from JSON)
- */
-export const CORE_EXTRACTION_TEST_CASES: ExtractionTestCase[] = (() => {
-    try {
-        const { readFileSync } = require('fs');
-        const { join } = require('path');
-        const content = readFileSync(join(__dirname, 'test-data', 'core-extraction.json'), 'utf-8');
-        return JSON.parse(content) as ExtractionTestCase[];
-    } catch {
-        return [];
-    }
-})();
-
-/**
- * Core match test cases (loaded from JSON)
- */
-export const CORE_MATCH_TEST_CASES: MatchTestCase[] = (() => {
-    try {
-        const { readFileSync } = require('fs');
-        const { join } = require('path');
-        const content = readFileSync(join(__dirname, 'test-data', 'core-match.json'), 'utf-8');
-        return JSON.parse(content) as MatchTestCase[];
-    } catch {
-        return [];
-    }
-})();
-
-/**
- * Core capture test case
- */
-export const CORE_CAPTURE_TEST_CASE: CaptureTestCase = (() => {
-    try {
-        const { readFileSync } = require('fs');
-        const { join } = require('path');
-        const content = readFileSync(join(__dirname, 'test-data', 'core-capture.json'), 'utf-8');
-        const cases = JSON.parse(content) as CaptureTestCase[];
-        return cases[0];
-    } catch {
-        return {
-            id: 'capture-1',
-            name: 'Capture extracts key properties',
-            input: 'I need a React developer for two weeks, up to 900 USD, starting next week',
-            expectedMinProperties: 3,
-            maxDurationMs: 20000,
-        };
-    }
-})();
 
 /* ============================================================================
  * Evaluation Types

@@ -6,6 +6,26 @@
 
 ---
 
+## Progress Tracking
+
+| Phase | Status | Completed | Notes |
+|---|---|---|---|
+| Phase 0: Integrity | ✅ **Done** | 2026-10-31 | ESM test-data loading fixed with static imports + fail-loud assertions |
+| Phase 1: P1 Harness | ⏳ Not started | — | Depends on Phase 0 |
+| Phase 2: P2 Representation | ⏳ Not started | — | Parallel with Phase 3 |
+| Phase 3: P3 Friction | ⏳ Not started | — | Parallel with Phase 2 |
+| Phase 4: Revision delivery + consent | ⏳ Not started | — | |
+| Phase 5: P4 Optimizer | ⏳ Not started | — | |
+| Phase 6: Synthesis | 🔒 Deferred | — | |
+
+### Phase 0 — Integrity (Completed 2026-10-31)
+- [x] Fix ESM test-data loading; fail loud — static imports for `core-extraction.json`, `core-match.json`, `core-capture.json` with runtime assertions
+- [x] Verify: `CORE_EXTRACTION_TEST_CASES.length > 0` and `CORE_MATCH_TEST_CASES.length > 0` in built runtime
+- [x] All existing tests pass (34/34)
+- [x] Ontology experiment runs successfully with loaded test data
+
+---
+
 ## 0. Purpose
 
 Build the measurement and delivery foundation Notention needs, then use it for four distinct objectives. Each objective has its own success criteria and its own kill switch.
