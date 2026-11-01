@@ -31,9 +31,10 @@ export function useNoteProperties(
     const handleUpdateTextFromInspector = useCallback((oldProp: Property | null, newProp: Property | null) => {
         const newContent = replacePropertyInString(dirtyNote.content, oldProp, newProp);
         if (newContent !== dirtyNote.content) {
+            recordCorrection();
             handleContentSave(newContent);
         }
-    }, [dirtyNote.content, handleContentSave]);
+    }, [dirtyNote.content, handleContentSave, recordCorrection]);
 
     const handleUpdateProperty = useCallback((key: string, value: string) => {
         recordCorrection();

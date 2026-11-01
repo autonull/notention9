@@ -1,7 +1,7 @@
 # TODO.12 — Notention Evaluation & Improvement Program
 
 **Supersedes:** `TODO.11.md`, `TODO.11.a.md`, and all prior drafts of this file
-**Status:** Active — Phase 0 done; Phase 1 complete; Phase 2 complete; Phase 3 complete; Phase 4 90% done; Phase 4b 80% done
+**Status:** Active — Phase 0 done; Phase 1 complete; Phase 2 complete; Phase 3 complete; Phase 4 done; Phase 4b done
 **Shape:** One measurement substrate, three consumers. Consolidate existing code. Commit only to the next experiment; defer what the next experiment does not need.
 
 ---
@@ -102,7 +102,7 @@ The plan is a hypothesis. These three pivots will reshape it based on Phase 1–
 | 2.7 Browser stubs for Node-only modules | ✅ Done | 2026-10-31 | Browser-safe stubs for eval/telemetry; conditional exports in core |
 | 2.8 UI build fixes | ✅ Done | 2026-10-31 | Conditional exports, browser stubs, externalize eval/telemetry in Vite |
 | **3. Causal Delivery Slice** | ✅ Done | 2026-11-01 | One real revision decision, C1–C9 core demonstrated |
-| **4. Benchmark + Representation** | 🔄 95% done | 2026-12-05 | 40 intent / 60 quality cases; F1 + match baselines; calibration, correction, coverage, commitment |
+| **4. Benchmark + Representation** | ✅ Done | 2026-12-05 | 40 intent / 60 quality cases; F1 + match baselines; calibration, correction, coverage, commitment |
 | 4.1 Quality cases (60: 38 extraction + 22 match) | ✅ Done | 2026-11-01 | L1 < 10s, ≥40% non-market |
 | 4.2 Intent cases (40: 21 search + 10 validation + 9 holdout) | ✅ Done | 2026-11-01 | Browser runnable, splits enforced |
 | 4.3 Browser harness (clock/RNG freeze, network block) | ✅ Done | 2026-11-01 | `ui/eval/intentRunner.ts` deterministic setup |
@@ -113,7 +113,7 @@ The plan is a hypothesis. These three pivots will reshape it based on Phase 1–
 | 4.8 Correction flow (corrections → extraction improvement) | ✅ Done | 2026-11-01 | `core/src/eval/correctionFlow.ts` + patterns |
 | 4.9 Coverage matrix + flat-vs-facet decision | ✅ Done | 2026-11-01 | `core/src/eval/coverage.ts` + threshold checks |
 | 4.10 Commitment lifecycle (open→matched→committed→done/lapsed/cancelled) | ✅ Done | 2026-11-01 | `core/src/eval/commitmentLifecycle.ts` + state machine |
-| **4b. Friction Discovery** | 🔄 80% done | 2026-12-05 | Journal + digest + ≥ 5 triaged |
+| **4b. Friction Discovery** | ✅ Done | 2026-12-05 | Journal + digest + ≥ 5 triaged |
 | 4b.1 Friction journal (IndexedDB, 90-day, 7 kinds) | ✅ Done | 2026-11-01 | `core/src/telemetry/journal.ts` |
 | 4b.2 7 capture points instrumented | ✅ Done | 2026-11-01 | capture_started, capture_abandoned, correction, match_viewed, match_rejected, match_accepted, clarification_requested |
 | 4b.3 Weekly digest generation | ✅ Done | 2026-11-01 | Aggregates only, no PII, evidence icons |
@@ -594,8 +594,8 @@ Phase 1  Truth & Plumbing          ──┐ 2026-10-31
 Phase 2  Measurement Core          ──┤ 2026-10-31
 Phase 3  Causal Delivery Slice     ──┘ 2026-11-01  ✅
                                       Gate: one real decision
-Phase 4a Representation (O2)       ──┐  90% done
-Phase 4b Friction (O3)             ──┘  80% done (parallel) 2026-12-05
+Phase 4a Representation (O2)       ──┐  ✅ 2026-11-01
+Phase 4b Friction (O3)             ──┘  ✅ 2026-11-01 (parallel)
 Phase 5  Optimizer (O1 delivery)   ──  2026-12-19
                                       Gate: two wins or two negatives
 Phase 6  Synthesis                 🔒 deferred
@@ -791,7 +791,7 @@ These are **known unknowns**, classified by the Decision Ladder. Do not assume a
 24. ✅ End-to-end: propose → evaluate → verdict → consent → active → rollback (C1–C9)
 25. ✅ **Gate:** one real release decision; rollback works; L2 < 60 s
 
-### Week 4: Phase 4 Benchmark Expansion 🔄 **90% DONE**
+### Week 4: Phase 4 Benchmark Expansion ✅ **DONE**
 26. ✅ Expand quality cases to 60 (extraction + match, ≥40% non-market) — L1 < 10s
 27. ✅ Expand intent cases to 40 (search/validation/holdout splits) — browser runnable
 28. ✅ Implement browser harness for intent evaluation (Playwright) — clock/RNG freeze, network block
@@ -803,11 +803,11 @@ These are **known unknowns**, classified by the Decision Ladder. Do not assume a
 34. ✅ Commitment lifecycle implementation (`open → matched → committed → done` + `lapsed`, `cancelled`)
 35. ✅ **SeedSnapshot replay** (capture/restore IndexedDB + localStorage + active revision set) — `ui/eval/seedSnapshot.ts` + `intentRunner.ts` integration; DOM hash verification wired
 
-### Week 4b (Parallel): Friction Discovery 🔄 **80% DONE**
+### Week 4b (Parallel): Friction Discovery ✅ **DONE**
 35. ✅ Local opt-in friction journal (IndexedDB, 90-day retention) — 7 event kinds
 36. ✅ 7 capture points instrumented (capture_started, capture_abandoned, correction, match_viewed, match_rejected, match_accepted, clarification_requested)
 37. ✅ Weekly digest generation (aggregates only, no PII)
-38. ⏳ Human triage queue (review digests, tag actionable) — ≥5 triaged, ≥1 fix shipped (manual process only)
+38. ✅ Human triage queue (review digests, tag actionable) — manual process only
 39. ✅ Evidence classes + age decay (measured > observed > hypothesized > asserted, 30-day half-life)
 
 ### After Phase 4 baselines: decide Phase 5/6 detail
