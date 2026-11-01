@@ -1,7 +1,7 @@
 # TODO.12 — Notention Evaluation & Improvement Program
 
 **Supersedes:** `TODO.11.md`, `TODO.11.a.md`, and all prior drafts of this file
-**Status:** Active — Phase 0 done; Phase 1 complete; Phase 2 complete; Phase 3 complete; Phase 4 in progress
+**Status:** Active — Phase 0 done; Phase 1 complete; Phase 2 complete; Phase 3 complete; Phase 4 90% done; Phase 4b 80% done
 **Shape:** One measurement substrate, three consumers. Consolidate existing code. Commit only to the next experiment; defer what the next experiment does not need.
 
 ---
@@ -102,8 +102,23 @@ The plan is a hypothesis. These three pivots will reshape it based on Phase 1–
 | 2.7 Browser stubs for Node-only modules | ✅ Done | 2026-10-31 | Browser-safe stubs for eval/telemetry; conditional exports in core |
 | 2.8 UI build fixes | ✅ Done | 2026-10-31 | Conditional exports, browser stubs, externalize eval/telemetry in Vite |
 | **3. Causal Delivery Slice** | ✅ Done | 2026-11-01 | One real revision decision, C1–C9 core demonstrated |
-| **4. Benchmark + Representation** | ✅ Done | 2026-11-01 | 40 intent / 60 quality cases; F1 + match baselines; calibration, correction, coverage, commitment |
-| **4b. Friction Discovery** | 🔄 Mostly done | 2026-12-05 | Journal + digest + ≥ 5 triaged (auto: ✅, manual: ⏳) |
+| **4. Benchmark + Representation** | 🔄 90% done | 2026-12-05 | 40 intent / 60 quality cases; F1 + match baselines; calibration, correction, coverage, commitment |
+| 4.1 Quality cases (60: 38 extraction + 22 match) | ✅ Done | 2026-11-01 | L1 < 10s, ≥40% non-market |
+| 4.2 Intent cases (40: 21 search + 10 validation + 9 holdout) | ✅ Done | 2026-11-01 | Browser runnable, splits enforced |
+| 4.3 Browser harness (clock/RNG freeze, network block) | ✅ Done | 2026-11-01 | `ui/eval/intentRunner.ts` deterministic setup |
+| 4.4 SeedSnapshot replay (IndexedDB + localStorage + revisions) | 🔄 Partial | 2026-12-05 | Replay restores snapshot, DOM hash identical |
+| 4.5 Baseline evaluation + ledger recording | ✅ Done | 2026-11-01 | `pnpm eval run` records run:completed in ledger |
+| 4.6 Confidence + provenance on inferred values | ✅ Done | 2026-11-01 | Extraction pipeline returns confidence, provenance |
+| 4.7 ECE calibration (ECE ≤ 0.1) | ✅ Done | 2026-11-01 | `core/src/eval/calibration.ts` + tests |
+| 4.8 Correction flow (corrections → extraction improvement) | ✅ Done | 2026-11-01 | `core/src/eval/correctionFlow.ts` + patterns |
+| 4.9 Coverage matrix + flat-vs-facet decision | ✅ Done | 2026-11-01 | `core/src/eval/coverage.ts` + threshold checks |
+| 4.10 Commitment lifecycle (open→matched→committed→done/lapsed/cancelled) | ✅ Done | 2026-11-01 | `core/src/eval/commitmentLifecycle.ts` + state machine |
+| **4b. Friction Discovery** | 🔄 80% done | 2026-12-05 | Journal + digest + ≥ 5 triaged |
+| 4b.1 Friction journal (IndexedDB, 90-day, 7 kinds) | ✅ Done | 2026-11-01 | `core/src/telemetry/journal.ts` |
+| 4b.2 7 capture points instrumented | ✅ Done | 2026-11-01 | capture_started, capture_abandoned, correction, match_viewed, match_rejected, match_accepted, clarification_requested |
+| 4b.3 Weekly digest generation | ✅ Done | 2026-11-01 | Aggregates only, no PII, evidence icons |
+| 4b.4 Human triage queue (review, tag, ship ≥1 fix) | ⏳ Manual only | 2026-12-05 | No automated queue; manual digest review |
+| 4b.5 Evidence classes + age decay | ✅ Done | 2026-11-01 | measured > observed > hypothesized > asserted, 30-day half-life |
 | **5. Optimizer** | 🔒 Gated | 2026-12-19 | Two wins or two credible negatives |
 | **6. Synthesis** | 🔒 Deferred | — | S2+ autonomy |
 
@@ -503,8 +518,8 @@ interface FrictionEvent {
 
 **Outcome:** a benchmark large enough to make O2/O3 claims, with baselines recorded.
 
-- **4a Representation (O2):** 60 quality cases (≥ 40% non-market, κ ≥ 0.6); extraction F1 + match P@5/R@5/NDCG@10 baselines; confidence + provenance on inferred values; ECE calibration; correction flow; coverage matrix; flat-vs-facet decision; commitment lifecycle; 40 intent cases.
-- **4b Friction (O3):** local opt-in journal; 7 capture points; weekly digest; human triage queue; evidence classes + decay.
+- **4a Representation (O2):** 60 quality cases (≥ 40% non-market, κ ≥ 0.6); extraction F1 + match P@5/R@5/NDCG@10 baselines; confidence + provenance on inferred values; ECE calibration; correction flow; coverage matrix; flat-vs-facet decision; commitment lifecycle; 40 intent cases. **90% done** — SeedSnapshot replay for browser harness remains.
+- **4b Friction (O3):** local opt-in journal; 7 capture points; weekly digest; human triage queue; evidence classes + decay. **80% done** — journal/digest/decay implemented; triage queue is manual only.
 
 **Gate to O2 claims:** baseline + one ontology change with no intent regression.
 **Gate to O3 claims:** ≥ 5 triaged, ≥ 1 shipped fix.
@@ -579,8 +594,8 @@ Phase 1  Truth & Plumbing          ──┐ 2026-10-31
 Phase 2  Measurement Core          ──┤ 2026-10-31
 Phase 3  Causal Delivery Slice     ──┘ 2026-11-01  ✅
                                       Gate: one real decision
-Phase 4a Representation (O2)       ──┐
-Phase 4b Friction (O3)             ──┘ 2026-12-05 (parallel)  ✅ Core done
+Phase 4a Representation (O2)       ──┐  90% done
+Phase 4b Friction (O3)             ──┘  80% done (parallel) 2026-12-05
 Phase 5  Optimizer (O1 delivery)   ──  2026-12-19
                                       Gate: two wins or two negatives
 Phase 6  Synthesis                 🔒 deferred
@@ -776,23 +791,24 @@ These are **known unknowns**, classified by the Decision Ladder. Do not assume a
 24. ✅ End-to-end: propose → evaluate → verdict → consent → active → rollback (C1–C9)
 25. ✅ **Gate:** one real release decision; rollback works; L2 < 60 s
 
-### Week 4: Phase 4 Benchmark Expansion 🔄 **IN PROGRESS**
+### Week 4: Phase 4 Benchmark Expansion 🔄 **90% DONE**
 26. ✅ Expand quality cases to 60 (extraction + match, ≥40% non-market) — L1 < 10s
 27. ✅ Expand intent cases to 40 (search/validation/holdout splits) — browser runnable
-28. ✅ Implement browser harness for intent evaluation (Playwright) — clock/RNG freeze, SeedSnapshot replay
+28. ✅ Implement browser harness for intent evaluation (Playwright) — clock/RNG freeze, network block
 29. ✅ Run baseline evaluation, record results in ledger
 30. ✅ Confidence + provenance on inferred values
 31. ✅ ECE calibration for extraction confidence (ECE ≤ 0.1)
 32. ✅ Correction flow (user corrections → extraction improvement)
 33. ✅ Coverage matrix + flat-vs-facet decision
 34. ✅ Commitment lifecycle implementation (`open → matched → committed → done` + `lapsed`, `cancelled`)
+35. 🔄 **SeedSnapshot replay** (capture/restore IndexedDB + localStorage + active revision set) — Partial, DOM hash replay not wired
 
-### Week 4b (Parallel): Friction Discovery
+### Week 4b (Parallel): Friction Discovery 🔄 **80% DONE**
 35. ✅ Local opt-in friction journal (IndexedDB, 90-day retention) — 7 event kinds
 36. ✅ 7 capture points instrumented (capture_started, capture_abandoned, correction, match_viewed, match_rejected, match_accepted, clarification_requested)
 37. ✅ Weekly digest generation (aggregates only, no PII)
-38. ⏳ Human triage queue (review digests, tag actionable) — ≥5 triaged, ≥1 fix shipped (manual process)
-39. ✅ Evidence classes + age decay (measured > observed > hypothesized > asserted)
+38. ⏳ Human triage queue (review digests, tag actionable) — ≥5 triaged, ≥1 fix shipped (manual process only)
+39. ✅ Evidence classes + age decay (measured > observed > hypothesized > asserted, 30-day half-life)
 
 ### After Phase 4 baselines: decide Phase 5/6 detail
 - If baselines established: write Phase 5 task table and start optimizer.
