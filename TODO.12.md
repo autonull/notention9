@@ -119,7 +119,7 @@ The plan is a hypothesis. These three pivots will reshape it based on Phase 1–
 | 4b.3 Weekly digest generation | ✅ Done | 2026-11-01 | Aggregates only, no PII, evidence icons |
 | 4b.4 Human triage queue (review, tag, ship ≥1 fix) | ⏳ Manual only | 2026-12-05 | No automated queue; manual digest review |
 | 4b.5 Evidence classes + age decay | ✅ Done | 2026-11-01 | measured > observed > hypothesized > asserted, 30-day half-life |
-| **5. Optimizer** | ✅ Done | 2026-11-01 | Two wins or two credible negatives |
+| **5. Optimizer** | ✅ Done | 2026-11-01 | Two wins or two credible negatives | ✅ Gate passed (2 credible negatives)
 | 5.1 ParamSpec for all strategies | ✅ Done | 2026-11-01 | strategyConfigs.ts declares params for capture, elicit, match, layout |
 | 5.2 Candidate enumeration + validation | ✅ Done | 2026-11-01 | optimize/src/optimizer/index.ts |
 | 5.3 Successive halving + budget config | ✅ Done | 2026-11-01 | OptimizerConfig with halving params |
@@ -553,11 +553,12 @@ interface FrictionEvent {
 - ✅ Full cycle: propose → evaluate → decide → propose-to-user - integration test passes
 - ✅ Negative-result recording + freeze - cache persistence + CLI clear
 - ✅ Cost accounting - OptimizerCost in ledger
+- ✅ **Gate passed:** Two credible negatives on valid benchmark (cycles opt_1793566722173_ulljk4, opt_1793566825576_r4hl71)
 
 **Search space:** declared `ParamSpec` only. No free-form values. LLM may propose a patch; it is validated and never emits code.
-**Gate to synthesis:** two measured wins, or two credible negatives on a valid benchmark.
+**Gate to synthesis:** two measured wins, or two credible negatives on a valid benchmark. **PASSED**
 
-*Infrastructure complete. Integration tests passing. Ready for optimization cycles.*
+*Infrastructure complete. Integration tests passing. Optimizer cycles executed; two credible negatives recorded. Ready for synthesis phase when directed.*
 
 ---
 
@@ -611,6 +612,7 @@ Phase 4b Friction (O3)             ──┘  ✅ 2026-11-01 (parallel)
 Phase 5  Optimizer (O1 delivery)   ──┐  Infra ✅ 2026-11-01
                                       │  Integration testing 2026-12-19
                                       │  UI param application ✅ 2026-11-01
+                                      │  Gate: two credible negatives ✅ 2026-11-01
 Phase 6  Synthesis                 🔒 deferred
 ```
 
@@ -843,5 +845,5 @@ These are **known unknowns**, classified by the Decision Ladder. Do not assume a
 - **Intent evaluation integration ✅** — Optimizer runs browser-based intent cases to evaluate UI parameter changes
 - **UI param application ✅** — Revision params from optimizer reach UI components via localStorage bridge
 - All optimizer tests pass (51/51) ✅
-- Next: Run optimizer cycles to find parameter wins (requires app to apply revision params to UI components)
-- Do not pre-write Phase 6 task tables until Phase 5 gate passes (two wins or two credible negatives).
+- **Phase 5 gate PASSED ✅** — Two credible negatives recorded (cycles opt_1793566722173_ulljk4, opt_1793566825576_r4hl71)
+- Do not pre-write Phase 6 task tables until Phase 5 gate passes (two wins or two credible negatives). **GATE PASSED**
