@@ -1,7 +1,7 @@
 # TODO.12 — Notention Evaluation & Improvement Program
 
 **Supersedes:** `TODO.11.md`, `TODO.11.a.md`, and all prior drafts of this file
-**Status:** Active — Phase 0 done; Phase 1 complete; Phase 2 complete
+**Status:** Active — Phase 0 done; Phase 1 complete; Phase 2 complete; Phase 3 complete; Phase 4 in progress
 **Shape:** One measurement substrate, three consumers. Consolidate existing code. Commit only to the next experiment; defer what the next experiment does not need.
 
 ---
@@ -575,12 +575,12 @@ Ontology and prompt revisions are **Structure-equivalent**: they change meaning,
 
 ```
 Phase 0  Integrity                ✅ 2026-10-31
-Phase 1  Truth & Plumbing          ──┐ 2026-11-07
-Phase 2  Measurement Core          ──┤ 2026-11-14
+Phase 1  Truth & Plumbing          ──┐ 2026-10-31
+Phase 2  Measurement Core          ──┤ 2026-10-31
 Phase 3  Causal Delivery Slice     ──┘ 2026-11-01  ✅
                                       Gate: one real decision
 Phase 4a Representation (O2)       ──┐
-Phase 4b Friction (O3)             ──┘ 2026-12-05 (parallel)
+Phase 4b Friction (O3)             ──┘ 2026-12-05 (parallel)  🔄 In Progress
 Phase 5  Optimizer (O1 delivery)   ──  2026-12-19
                                       Gate: two wins or two negatives
 Phase 6  Synthesis                 🔒 deferred
@@ -758,27 +758,43 @@ These are **known unknowns**, classified by the Decision Ladder. Do not assume a
 10. ✅ Ledger event schema → `docs/decisions/010-ledger-event-schema.md`
 11. ✅ Causality definition → `docs/decisions/011-causality-definition.md`
 
-**Next: Week 2 Implementation (items 12-15)**
+### Week 2: Truth & Plumbing ✅ **COMPLETE 2026-10-31**
+12. ✅ Implement chosen resolution spine + `ResolvedStrategy`; 5-layer precedence test
+13. ✅ Implement or delete must-win gate; fix/remove ESLint gate; repair/delete `determinism.ts`
+14. ✅ Add fabricated-path grep guard to CI
+15. ✅ **Gate:** `pnpm verify` green; one strategy param visibly changes a capture render
 
-### Week 2: Truth & Plumbing
-12. Implement chosen resolution spine + `ResolvedStrategy`; 5-layer precedence test
-13. Implement or delete must-win gate; fix/remove ESLint gate; repair/delete `determinism.ts`
-14. Add fabricated-path grep guard to CI
-15. **Gate:** `pnpm verify` green; one strategy param visibly changes a capture render
+### Week 3: Thin Vertical Slice ✅ **COMPLETE 2026-11-01**
+16. ✅ `eval/cases/manifest.json` + hash guard + readers
+17. ✅ `verdict.ts` pure engine + four fixtures (no-op, duplicate, known-bad, real-improvement)
+18. ✅ `quality.ts` real runner + baseline cache
+19. ✅ `RunContext` + replay hash + `ledger.ts` + `pnpm eval` CLI
+20. ✅ Delete corrupt `adoption-ledger.jsonl`; deprecate `adoption.ts`
+21. ✅ `RevisionStore` + consent UI (Settings → Revisions)
+22. ✅ One capture revision + one intent case + SeedSnapshot + clock/RNG freeze
+23. ✅ Replace copy-baseline evaluation with real execution (minimal)
+24. ✅ End-to-end: propose → evaluate → verdict → consent → active → rollback (C1–C9)
+25. ✅ **Gate:** one real release decision; rollback works; L2 < 60 s
 
-### Week 3: Thin Vertical Slice
-16. `eval/cases/manifest.json` + hash guard + readers
-17. `verdict.ts` pure engine + four fixtures (no-op, duplicate, known-bad, real-improvement)
-18. `quality.ts` real runner + baseline cache
-19. `RunContext` + replay hash + `ledger.ts` + `pnpm eval` CLI
-20. Delete corrupt `adoption-ledger.jsonl`; deprecate `adoption.ts`
-21. `RevisionStore` + consent UI (Settings → Revisions)
-22. One capture revision + one intent case + SeedSnapshot + clock/RNG freeze
-23. Replace copy-baseline evaluation with real execution (minimal)
-24. End-to-end: propose → evaluate → verdict → consent → active → rollback (C1–C9)
-25. **Gate:** one real release decision; rollback works; L2 < 60 s
+### Week 4: Phase 4 Benchmark Expansion 🔄 **IN PROGRESS**
+26. Expand quality cases to 60 (extraction + match, ≥40% non-market) — L1 < 10s
+27. Expand intent cases to 40 (search/validation/holdout splits) — browser runnable
+28. Implement browser harness for intent evaluation (Playwright) — clock/RNG freeze, SeedSnapshot replay
+29. Run baseline evaluation, record results in ledger
+30. Confidence + provenance on inferred values
+31. ECE calibration for extraction confidence (ECE ≤ 0.1)
+32. Correction flow (user corrections → extraction improvement)
+33. Coverage matrix + flat-vs-facet decision
+34. Commitment lifecycle implementation (`open → matched → committed → done` + `lapsed`, `cancelled`)
 
-### After the slice: decide, then write Phase 4/5 detail
-- If the slice works: expand cases and write Phase 4.
-- If the slice fails: trigger the Resolver Pivot and redesign the spine.
-- Do not pre-write Phase 4/5 task tables.
+### Week 4b (Parallel): Friction Discovery
+35. Local opt-in friction journal (IndexedDB, 90-day retention) — 7 event kinds
+36. 7 capture points instrumented (capture_started, capture_abandoned, correction, match_viewed, match_rejected, match_accepted, clarification_requested)
+37. Weekly digest generation (aggregates only, no PII)
+38. Human triage queue (review digests, tag actionable) — ≥5 triaged, ≥1 fix shipped
+39. Evidence classes + age decay (measured > observed > hypothesized > asserted)
+
+### After Phase 4 baselines: decide Phase 5/6 detail
+- If baselines established: write Phase 5 task table and start optimizer.
+- If baselines fail: recalibrate or pivot.
+- Do not pre-write Phase 5/6 task tables until Phase 4 gates pass.

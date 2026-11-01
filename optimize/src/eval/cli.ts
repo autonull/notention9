@@ -6,7 +6,7 @@
 import { Command } from 'commander';
 import { readManifest, readIntentCases, readQualityCases, verifyManifest, generateManifest, writeManifest } from '@notention/core/eval/caseManifest';
 import { runAllQuality, type QualityRunConfig } from '@notention/core/eval/quality';
-import { computeRunVerdict, type RunVerdict, type VerdictConfig } from '@notention/core/eval/verdict';
+import { computeRunVerdict, computeCaseVerdict, type RunVerdict, type VerdictConfig } from '@notention/core/eval/verdict';
 import { getRevisionStore } from '@notention/core/telemetry/revisionStore';
 import { logEvent, getRunEvents, exportRun } from '@notention/core/telemetry/ledger';
 import { ExtractionPipeline, createExtractionPipeline } from '@notention/core/extraction';
@@ -15,6 +15,7 @@ import { OntologyService } from '@notention/core/ontology/ontologyService';
 import { type OntologyNode, type Note, type Property } from '@notention/core/types';
 import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { DEFAULT_ONTOLOGY } from '@notention/core/ontology';
 
 const program = new Command();
 
@@ -152,25 +153,25 @@ program
             console.log(`\n📦 Candidate: ${candidateRev.id} (${candidateRev.seamRole})`);
             console.log(`📦 Baseline: ${baselineRev.id} (${baselineRev.seamRole})`);
             
-            // Run quality evaluation
-            console.log('\n🔬 Running quality suite...');
+            // Run quality evaluation for both revisions
+            console.log('\n🔬 Running quality suite (baseline)...');
             const qualityConfig: QualityRunConfig = {
                 repetitions,
             };
             
-            const qualityResults = await runQualityEvaluation(qualityConfig);
+            const baselineQualityResults = await runQualityEvaluationForRevision(baselineRevisionId, qualityConfig);
+            
+            console.log('\n🔬 Running quality suite (candidate)...');
+            const candidateQualityResults = await runQualityEvaluationForRevision(revisionId, qualityConfig);
             
             // Run intent evaluation (placeholder)
             console.log('\n🌐 Running intent suite (browser)...');
             const intentResults = await runSimulatedIntent(repetitions);
             
-            // Combine all results
-            const allCaseResults = [...qualityResults, ...intentResults];
-            
             // Compute verdicts
             console.log('\n⚖️  Computing verdicts...');
             const verdictConfig: VerdictConfig = {
-                primaryMetric: 'completion',
+                primaryMetric: 'f1',
                 mde: {
                     completion: 0.10,
                     steps: -0.5,
@@ -185,7 +186,11 @@ program
                 minSampleSize: 30,
             };
             
-            const caseVerdicts = computeCaseVerdictsFromResults(allCaseResults, verdictConfig);
+            const caseVerdicts = computeCaseVerdictsFromResults(baselineQualityResults, candidateQualityResults, verdictConfig);
+            
+            // Combine all results for saving
+            const allCaseResults = [...baselineQualityResults, ...candidateQualityResults, ...intentResults];
+            
             const runVerdict = computeRunVerdict(
                 runId,
                 manifest.hash,
@@ -375,8 +380,7 @@ program
 
 // --- Helper functions ---
 
-// Default ontology for evaluation
-const DEFAULT_ONTOLOGY: OntologyNode[] = [];
+import { DEFAULT_ONTOLOGY } from '@notention/core/ontology';
 
 // Create extraction engine adapter
 function createExtractionEngine() {
@@ -435,7 +439,7 @@ function createMatchEngine() {
     };
 }
 
-// Sample notes for match evaluation
+// Sample notes for match evaluation - aligned with quality-match-001 case
 function createSampleNotes(): Note[] {
     const now = new Date().toISOString();
     const dayAgo = new Date(Date.now() - 86400000).toISOString();
@@ -443,15 +447,15 @@ function createSampleNotes(): Note[] {
     
     return [
         {
-            id: 'note-1',
-            title: 'React Developer',
-            content: 'Senior React developer available for 2 weeks, rate 900 USD',
+            id: 'note-ramp-001',
+            title: 'Wheelchair Ramp Installation Service',
+            content: 'Professional wheelchair ramp installation before Friday, budget 850 USD',
             properties: [
-                { key: 'role', operator: 'is', values: ['react developer'] },
-                { key: 'duration', operator: 'less than', values: ['2 weeks'] },
-                { key: 'budget', operator: 'less than', values: ['900 USD'] },
+                { key: 'role', operator: 'is', values: ['wheelchair ramp installer'] },
+                { key: 'deadline', operator: 'less than', values: ['Friday'] },
+                { key: 'budget', operator: 'less than', values: ['850 USD'] },
             ],
-            tags: ['dev', 'react'],
+            tags: ['care', 'accessibility', 'service'],
             createdAt: dayAgo,
             updatedAt: dayAgo,
             status: 'open',
@@ -460,19 +464,35 @@ function createSampleNotes(): Note[] {
             priority: 0,
         },
         {
-            id: 'note-2',
-            title: 'Wheelchair Ramp Installation',
-            content: 'Can install wheelchair ramp before Friday, budget 900 USD',
+            id: 'note-ramp-002',
+            title: 'Accessibility Ramp Build',
+            content: 'Building an accessibility ramp for home entry, can complete by Thursday, 900 USD',
             properties: [
-                { key: 'task', operator: 'is', values: ['wheelchair ramp'] },
-                { key: 'deadline', operator: 'is', values: ['friday'] },
+                { key: 'role', operator: 'is', values: ['wheelchair ramp builder'] },
+                { key: 'deadline', operator: 'less than', values: ['Thursday'] },
                 { key: 'budget', operator: 'less than', values: ['900 USD'] },
             ],
-            tags: ['care', 'accessibility'],
+            tags: ['care', 'accessibility', 'construction'],
             createdAt: twoDaysAgo,
             updatedAt: twoDaysAgo,
             status: 'open',
             source: { type: 'user', identifier: 'test', timestamp: Date.now() - 172800000 },
+            privacy: 'private',
+            priority: 0,
+        },
+        {
+            id: 'note-other-001',
+            title: 'Garden Maintenance',
+            content: 'Weekly garden maintenance service, 50 USD per visit',
+            properties: [
+                { key: 'role', operator: 'is', values: ['gardener'] },
+                { key: 'budget', operator: 'equals', values: ['50 USD'] },
+            ],
+            tags: ['home', 'maintenance'],
+            createdAt: now,
+            updatedAt: now,
+            status: 'open',
+            source: { type: 'user', identifier: 'test', timestamp: Date.now() },
             privacy: 'private',
             priority: 0,
         },
@@ -502,9 +522,127 @@ async function runSimulatedIntent(repetitions: number) {
     return [];
 }
 
-function computeCaseVerdictsFromResults(results: any[], config: VerdictConfig) {
-    // Placeholder - in real implementation, pair baseline/candidate results
-    return [];
+async function runQualityEvaluationForRevision(revisionId: string, config: QualityRunConfig) {
+    console.log(`  Running quality evaluation for revision ${revisionId}...`);
+    
+    const extractionEngine = createExtractionEngine();
+    const matchEngine = createMatchEngine();
+    const notes = createSampleNotes();
+    
+    const qualityConfig: QualityRunConfig = {
+        ...config,
+        extractionEngine,
+        matchEngine,
+        notes,
+    };
+    
+    const results = await runAllQuality(qualityConfig);
+    return results.map(r => ({ ...r, revisionId }));
+}
+
+function computeCaseVerdictsFromResults(
+    baselineResults: any[],
+    candidateResults: any[],
+    config: VerdictConfig
+) {
+    // Group results by caseId and repetition
+    const baselineByCase = new Map<string, Map<number, any>>();
+    const candidateByCase = new Map<string, Map<number, any>>();
+    
+    for (const r of baselineResults) {
+        const caseMap = baselineByCase.get(r.caseId) || new Map();
+        caseMap.set(r.repetition, r);
+        baselineByCase.set(r.caseId, caseMap);
+    }
+    
+    for (const r of candidateResults) {
+        const caseMap = candidateByCase.get(r.caseId) || new Map();
+        caseMap.set(r.repetition, r);
+        candidateByCase.set(r.caseId, caseMap);
+    }
+    
+    // Get all case IDs
+    const allCaseIds = new Set([...baselineByCase.keys(), ...candidateByCase.keys()]);
+    const pairedResults: any[] = [];
+    
+    for (const caseId of allCaseIds) {
+        const baselineCase = baselineByCase.get(caseId);
+        const candidateCase = candidateByCase.get(caseId);
+        
+        if (!baselineCase || !candidateCase) {
+            // Missing data for one revision
+            pairedResults.push({
+                caseId,
+                verdict: 'invalid',
+                primaryMetric: {
+                    metric: config.primaryMetric,
+                    baselineMean: 0,
+                    candidateMean: 0,
+                    delta: 0,
+                    deltaPercent: 0,
+                    pValue: 1,
+                    ci: [0, 0],
+                    mde: config.mde[config.primaryMetric] ?? 0,
+                    passes: false,
+                    direction: 'no-change',
+                },
+                otherMetrics: [],
+                floors: [],
+                excluded: true,
+                excludeReason: 'Missing baseline or candidate results',
+            });
+            continue;
+        }
+        
+        // Get all repetition IDs
+        const allReps = new Set([...baselineCase.keys(), ...candidateCase.keys()]);
+        
+        for (const rep of allReps) {
+            const baseline = baselineCase.get(rep);
+            const candidate = candidateCase.get(rep);
+            
+            if (!baseline || !candidate) {
+                continue; // Skip incomplete pairs
+            }
+            
+            // Convert to RunResult format expected by verdict engine
+            const paired: any = {
+                caseId: `${caseId}-rep-${rep}`,
+                baseline: {
+                    caseId,
+                    revisionId: baseline.revisionId,
+                    repetition: rep,
+                    metrics: baseline.metrics,
+                    output: baseline,
+                    durationMs: 0,
+                    success: baseline.success,
+                    error: baseline.error,
+                },
+                candidate: {
+                    caseId,
+                    revisionId: candidate.revisionId,
+                    repetition: rep,
+                    metrics: candidate.metrics,
+                    output: candidate,
+                    durationMs: 0,
+                    success: candidate.success,
+                    error: candidate.error,
+                },
+            };
+            
+            pairedResults.push(paired);
+        }
+    }
+    
+    // Compute verdicts using the verdict engine
+    const verdicts = [];
+    
+    for (const paired of pairedResults) {
+        const verdict = computeCaseVerdict(paired.caseId, paired, config);
+        verdicts.push(verdict);
+    }
+    
+    return verdicts;
 }
 
 program.parse();

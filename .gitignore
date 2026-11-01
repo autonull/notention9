@@ -62,3 +62,6 @@ simulator/src/**/*.js
 simulator/src/**/*.d.ts
 !simulator/src/**/*.test.ts
 !simulator/src/**/*.test.tsx
+.notention/
+eval/runs/
+test-*.ts

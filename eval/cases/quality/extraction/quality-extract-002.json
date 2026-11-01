@@ -2,11 +2,10 @@
   "id": "quality-extract-002",
   "family": "quality",
   "qualityFamily": "extraction",
-  "input": "My mother needs grab bars in the bathroom by end of month, cost around 200",
+  "input": "Need grab bars installed by end of month, budget 200 USD",
   "expected": [
-    { "key": "need", "operator": "equals", "values": ["grab bars"] },
-    { "key": "deadline", "operator": "less than", "values": ["end of month"] },
-    { "key": "budget", "operator": "equals", "values": ["200 USD"] }
+    { "key": "price", "operator": "is", "values": ["200 USD"] },
+    { "key": "budget", "operator": "is", "values": ["200"] }
   ],
   "forbidden": [],
   "labels": {

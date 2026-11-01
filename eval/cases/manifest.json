@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-31T23:57:05.103Z",
+  "generatedAt": "2026-11-01T12:54:30.608Z",
   "counts": {
     "intent": {
       "search": 4,
@@ -92,7 +92,7 @@
       "family": "quality",
       "qualityFamily": "extraction",
       "path": "quality/extraction/quality-extract-001.json",
-      "hash": "05dc0eab6560b79f",
+      "hash": "89dd220d2b086693",
       "tags": [
         "care",
         "non-market",
@@ -105,7 +105,7 @@
       "family": "quality",
       "qualityFamily": "extraction",
       "path": "quality/extraction/quality-extract-002.json",
-      "hash": "8152e12b58983f8d",
+      "hash": "c057205416fa1690",
       "tags": [
         "care",
         "non-market",
@@ -118,7 +118,7 @@
       "family": "quality",
       "qualityFamily": "match",
       "path": "quality/match/quality-match-001.json",
-      "hash": "a77536535d50a043",
+      "hash": "5bc45f2f57524be3",
       "tags": [
         "care",
         "non-market",
@@ -126,5 +126,5 @@
       ]
     }
   ],
-  "hash": "6ab968bcfeb75686"
+  "hash": "87e70e1a66fb40b0"
 }

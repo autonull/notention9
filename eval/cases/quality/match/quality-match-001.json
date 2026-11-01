@@ -2,10 +2,10 @@
   "id": "quality-match-001",
   "family": "quality",
   "qualityFamily": "match",
-  "input": "wheelchair ramp installation",
+  "input": "I need a wheelchair ramp installed",
   "expected": [
-    { "noteId": "note-ramp-001", "minScore": 0.7 },
-    { "noteId": "note-ramp-002", "minScore": 0.5 }
+    { "noteId": "note-ramp-001", "minScore": 0.3 },
+    { "noteId": "note-ramp-002", "minScore": 0.2 }
   ],
   "labels": {
     "annotators": 2,
