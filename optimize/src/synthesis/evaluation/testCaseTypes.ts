@@ -1,30 +1,14 @@
 import type { Property, Note } from '@notention/core';
+import type { ExtractionTestCase, MatchTestCase } from '../../shared/types/testCaseTypes.js';
 
 /**
- * Test case for extraction evaluation
+ * Re-export shared test case types
  */
-export interface ExtractionTestCase {
-    id: string;
-    name: string;
-    input: string;
-    expectedMinProperties: number;
-    expectedProperties?: Partial<Property>[];
-}
-
-/**
- * Test case for match evaluation
- */
-export interface MatchTestCase {
-    id: string;
-    name: string;
-    requestText: string;
-    offerText: string;
-    expectedMinScore: number;
-    expectedMaxScore?: number;
-}
+export type { ExtractionTestCase, MatchTestCase };
 
 /**
  * Capture test case - tests the capture task (uses extraction)
+ * Specific to synthesis/evaluation module
  */
 export interface CaptureTestCase {
     id: string;
