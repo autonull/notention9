@@ -1,0 +1,82 @@
+#!/usr/bin/env node
+/**
+ * Optimizer CLI — Run parameter search cycles
+ */
+
+import { Command } from 'commander';
+import { runOptimizerCycle, defaultOptimizerConfig, type OptimizerConfig } from './index.js';
+
+const program = new Command();
+
+program
+    .name('pnpm optimizer')
+    .description('Notention Optimizer — Evidence-based parameter search')
+    .version('1.0.0');
+
+program
+    .command('run')
+    .description('Run a single optimizer cycle')
+    .option('-s, --seams <seams>', 'Comma-separated seam roles to optimize', 'capture,match')
+    .option('-c, --candidates <n>', 'Max candidates per seam', '8')
+    .option('--max-runs <n>', 'Max browser runs', '160')
+    .option('--max-minutes <n>', 'Max time budget in minutes', '30')
+    .option('--no-halving', 'Disable successive halving')
+    .option('-o, --output <dir>', 'Output directory', 'optimize/runs')
+    .action(async (options) => {
+        const config: OptimizerConfig = {
+            ...defaultOptimizerConfig(),
+            targetSeams: options.seams.split(',').map((s: string) => s.trim()),
+            maxCandidatesPerSeam: parseInt(options.candidates, 10),
+            maxBrowserRuns: parseInt(options.maxRuns, 10),
+            maxTimeMinutes: parseInt(options.maxMinutes, 10),
+            useSuccessiveHalving: options.halving !== false,
+        };
+
+        console.log('🔧 Notention Optimizer');
+        console.log('=====================');
+        console.log(`Target seams: ${config.targetSeams.join(', ')}`);
+        console.log(`Max candidates/seam: ${config.maxCandidatesPerSeam}`);
+        console.log(`Max browser runs: ${config.maxBrowserRuns}`);
+        console.log(`Max time: ${config.maxTimeMinutes} min`);
+        console.log(`Successive halving: ${config.useSuccessiveHalving ? 'enabled' : 'disabled'}`);
+        console.log('');
+
+        try {
+            const result = await runOptimizerCycle(config);
+
+            console.log('\n✅ Optimizer cycle complete');
+            console.log(`   Cycle ID: ${result.cycleId}`);
+            console.log(`   Candidates evaluated: ${result.candidatesEvaluated}`);
+            console.log(`   Winners: ${result.winners.length}`);
+            console.log(`   Losers: ${result.losers.length}`);
+            console.log(`   Total time: ${(result.totalCost.durationMs / 1000).toFixed(1)}s`);
+            console.log(`   Results: ${join('optimize/runs', result.cycleId, 'results.json')}`);
+
+            if (result.winners.length > 0) {
+                console.log('\n🏆 Winners:');
+                for (const winner of result.winners) {
+                    console.log(`   ${winner.id}: Δ${winner.evaluation?.primaryDelta.toFixed(4)}`);
+                    console.log(`     Patch: ${JSON.stringify(winner.patch)}`);
+                }
+            }
+
+            process.exit(result.winners.length > 0 ? 0 : 1);
+        } catch (e) {
+            console.error(`\n❌ Optimizer failed: ${e instanceof Error ? e.message : String(e)}`);
+            process.exit(1);
+        }
+    });
+
+program
+    .command('config')
+    .description('Show default optimizer configuration')
+    .action(() => {
+        const config = defaultOptimizerConfig();
+        console.log(JSON.stringify(config, null, 2));
+    });
+
+function join(...args: string[]): string {
+    return args.join('/');
+}
+
+program.parse();

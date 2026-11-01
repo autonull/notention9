@@ -22,12 +22,14 @@
     "./synthesis/fastEvaluator": "./dist/synthesis/fastEvaluator.js",
     "./loop/prioritize": "./dist/loop/prioritize.js",
     "./utils/taxonomy": "./dist/utils/taxonomy.js",
-    "./discovery/seams": "./dist/discovery/index.js"
+    "./discovery/seams": "./dist/discovery/index.js",
+    "./optimizer": "./dist/optimizer/index.js"
   },
   "scripts": {
     "build": "tsc",
     "test": "vitest run",
-    "lint": "eslint src --ext .ts"
+    "lint": "eslint src --ext .ts",
+    "optimizer": "tsx src/optimizer/cli.ts"
   },
   "dependencies": {
     "@notention/core": "workspace:*",

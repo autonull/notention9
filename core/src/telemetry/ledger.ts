@@ -57,7 +57,10 @@ export type LedgerEventType =
     | 'revision:rejected'
     | 'consent:requested'
     | 'consent:granted'
-    | 'consent:denied';
+    | 'consent:denied'
+    | 'optimizer:cycle:started'
+    | 'optimizer:cycle:completed'
+    | 'optimizer:candidate:evaluated';
 
 export type LedgerPayload =
     | { type: 'run:started'; config: RunConfig; caseIds: string[] }
@@ -80,7 +83,10 @@ export type LedgerPayload =
     | { type: 'revision:rejected'; revisionId: string; reason: string }
     | { type: 'consent:requested'; revisionId: string; userId: string }
     | { type: 'consent:granted'; revisionId: string; userId: string }
-    | { type: 'consent:denied'; revisionId: string; userId: string; reason: string };
+    | { type: 'consent:denied'; revisionId: string; userId: string; reason: string }
+    | { type: 'optimizer:cycle:started'; config: OptimizerConfig; manifestHash: string }
+    | { type: 'optimizer:cycle:completed'; candidatesEvaluated: number; winners: number; losers: number; inconclusive: number; totalCost: OptimizerCost }
+    | { type: 'optimizer:candidate:evaluated'; candidateId: string; seamRole: string; strategyId: string; verdict: string; primaryDelta: number };
 
 export interface RunConfig {
     manifestHash: string;
@@ -136,6 +142,23 @@ export interface Revision {
     createdAt: string;
     updatedAt: string;
     tags?: string[];
+}
+
+export interface OptimizerConfig {
+    targetSeams: string[];
+    maxCandidatesPerSeam: number;
+    maxBrowserRuns: number;
+    maxTimeMinutes: number;
+    maxTokens: number;
+    useSuccessiveHalving: boolean;
+    initialSliceFraction: number;
+    minPromote: number;
+}
+
+export interface OptimizerCost {
+    browserRuns: number;
+    tokensUsed: number;
+    durationMs: number;
 }
 
 // --- ULID generation (simple timestamp + random) ---

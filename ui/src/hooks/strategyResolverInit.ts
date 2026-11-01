@@ -209,6 +209,7 @@ export async function registerUIStrategies(): Promise<void> {
     const { PropertyFormStrategy } = await import('../strategies/PropertyFormStrategy');
     const { TemplateSelectorStrategy } = await import('../strategies/TemplateSelectorStrategy');
     const { createComponentStrategy } = await import('@notention/core/ui/strategy');
+    const { STRATEGY_CONFIGS, getStrategyConfig } = await import('../strategies/strategyConfigs');
 
     // Get seam objects from registry (registered above)
     const captureSeam = strategyRegistry.getAllForSeam(captureSeamId)[0]?.seam;
@@ -218,26 +219,69 @@ export async function registerUIStrategies(): Promise<void> {
 
     // Register capture strategies
     if (captureSeam) {
-        strategyRegistry.register(createComponentStrategy('describe-it-composer', captureSeam, DescribeItComposerStrategy));
+        const describeItConfig = getStrategyConfig('describe-it-composer');
+        if (describeItConfig) {
+            strategyRegistry.register(createComponentStrategy(
+                describeItConfig.id, captureSeam, DescribeItComposerStrategy,
+                describeItConfig.version, describeItConfig.defaultProps, describeItConfig.paramSpec
+            ));
+        }
         strategyRegistry.register(createComponentStrategy('quick-capture', captureSeam, () => components.quickCapture!));
     }
 
     // Register elicit strategies
     if (elicitSeam) {
-        strategyRegistry.register(createComponentStrategy('tag-input', elicitSeam, TagInputStrategy));
+        const tagInputConfig = getStrategyConfig('tag-input');
+        if (tagInputConfig) {
+            strategyRegistry.register(createComponentStrategy(
+                tagInputConfig.id, elicitSeam, TagInputStrategy,
+                tagInputConfig.version, tagInputConfig.defaultProps, tagInputConfig.paramSpec
+            ));
+        }
         strategyRegistry.register(createComponentStrategy('insert-property-modal', elicitSeam, () => components.insertPropertyModal!));
     }
 
     // Register match strategies
     if (matchSeam) {
-        strategyRegistry.register(createComponentStrategy('local-match-preview', matchSeam, () => components.localMatchPreview!));
-        strategyRegistry.register(createComponentStrategy('dashboard-local-match', matchSeam, () => components.dashboardLocalMatch!));
+        const localMatchPreviewConfig = getStrategyConfig('local-match-preview');
+        if (localMatchPreviewConfig) {
+            strategyRegistry.register(createComponentStrategy(
+                localMatchPreviewConfig.id, matchSeam, () => components.localMatchPreview!,
+                localMatchPreviewConfig.version, localMatchPreviewConfig.defaultProps, localMatchPreviewConfig.paramSpec
+            ));
+        }
+        const dashboardLocalMatchConfig = getStrategyConfig('dashboard-local-match');
+        if (dashboardLocalMatchConfig) {
+            strategyRegistry.register(createComponentStrategy(
+                dashboardLocalMatchConfig.id, matchSeam, () => components.dashboardLocalMatch!,
+                dashboardLocalMatchConfig.version, dashboardLocalMatchConfig.defaultProps, dashboardLocalMatchConfig.paramSpec
+            ));
+        }
     }
 
     // Register layout strategies
     if (layoutSeam) {
-        strategyRegistry.register(createComponentStrategy('property-panel', layoutSeam, PropertyFormStrategy));
-        strategyRegistry.register(createComponentStrategy('local-matches-panel', layoutSeam, () => components.localMatchesPanel!));
+        const propertyFormConfig = getStrategyConfig('property-form');
+        if (propertyFormConfig) {
+            strategyRegistry.register(createComponentStrategy(
+                propertyFormConfig.id, layoutSeam, PropertyFormStrategy,
+                propertyFormConfig.version, propertyFormConfig.defaultProps, propertyFormConfig.paramSpec
+            ));
+        }
+        const templateSelectorConfig = getStrategyConfig('template-selector');
+        if (templateSelectorConfig) {
+            strategyRegistry.register(createComponentStrategy(
+                templateSelectorConfig.id, layoutSeam, TemplateSelectorStrategy,
+                templateSelectorConfig.version, templateSelectorConfig.defaultProps, templateSelectorConfig.paramSpec
+            ));
+        }
+        const localMatchesPanelConfig = getStrategyConfig('local-matches-panel');
+        if (localMatchesPanelConfig) {
+            strategyRegistry.register(createComponentStrategy(
+                localMatchesPanelConfig.id, layoutSeam, () => components.localMatchesPanel!,
+                localMatchesPanelConfig.version, localMatchesPanelConfig.defaultProps, localMatchesPanelConfig.paramSpec
+            ));
+        }
     }
 }
 

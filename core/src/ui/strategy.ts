@@ -172,13 +172,14 @@ export function createComponentStrategy<P extends object>(
     seam: Seam,
     component: React.ComponentType<P>,
     version: string = '1.0.0',
-    defaultProps: Partial<P> = {}
+    defaultProps: Partial<P> = {},
+    paramSpec: ParamSpec = {}
 ): Strategy<P> {
     return {
         id,
         seam,
         version,
-        params: {},
+        params: paramSpec,
         render: (props: P) => React.createElement(component, props),
         getDefaultProps: () => defaultProps,
     };
