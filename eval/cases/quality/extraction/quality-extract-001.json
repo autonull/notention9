@@ -1,0 +1,19 @@
+{
+  "id": "quality-extract-001",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Need a wheelchair ramp installed before Friday, budget 900",
+  "expected": [
+    { "key": "need", "operator": "equals", "values": ["wheelchair ramp"] },
+    { "key": "deadline", "operator": "less than", "values": ["Friday"] },
+    { "key": "budget", "operator": "less than", "values": ["900 USD"] }
+  ],
+  "forbidden": [
+    { "key": "budget", "operator": "greater than", "values": ["1000 USD"] }
+  ],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.92
+  },
+  "tags": ["care", "non-market", "deadline", "budget"]
+}

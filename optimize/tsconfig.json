@@ -14,16 +14,13 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
-    "composite": true,
     "baseUrl": ".",
     "paths": {
       "@notention/optimize": ["./src/index.ts"],
-      "@notention/optimize/*": ["./src/*"]
+      "@notention/optimize/*": ["./src/*"],
+      "@notention/core/*": ["../core/dist/*"]
     }
   },
-  "references": [
-    { "path": "../core" }
-  ],
   "include": ["src/**/*", "src/prompts/*.json", "src/synthesis/test-data/*.json"],
   "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx"]
 }

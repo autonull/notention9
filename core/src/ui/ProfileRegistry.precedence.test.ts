@@ -1,8 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { ProfileRegistry } from '../core/src/ui/ProfileRegistry.js';
-import { StrategyRegistry } from '../core/src/ui/strategy.js';
-import { type Seam, type Strategy } from '../core/src/ui/strategy.js';
-import { SEAM_ROLES, type SeamRole } from '../core/src/constants/seams.js';
+import { describe, it, expect } from 'vitest';
+import { ProfileRegistry, StrategyRegistry, type Seam, type Strategy, SEAM_ROLES, type SeamRole } from '@notention/core';
 
 // Mock strategy factory
 function createMockStrategy(id: string, seamRole: SeamRole): Strategy {
@@ -119,7 +116,9 @@ describe('ProfileRegistry: 5-layer precedence', () => {
         expect(resolved).toBeDefined();
         expect(resolved!.strategy.id).toBe('override-strategy');
         expect(resolved!.reason.kind).toBe('override');
-        expect(resolved!.reason.strategyId).toBe('override-strategy');
+        if (resolved!.reason.kind === 'override') {
+            expect(resolved!.reason.strategyId).toBe('override-strategy');
+        }
     });
 
     it('Layer 2: Experiment assignment wins over profiles', () => {
@@ -148,7 +147,9 @@ describe('ProfileRegistry: 5-layer precedence', () => {
         expect(resolved).toBeDefined();
         expect(resolved!.strategy.id).toBe('manual-profile-strategy');
         expect(resolved!.reason.kind).toBe('manual-profile');
-        expect(resolved!.reason.profileId).toBe('manual-profile');
+        if (resolved!.reason.kind === 'manual-profile') {
+            expect(resolved!.reason.profileId).toBe('manual-profile');
+        }
     });
 
     it('Layer 4: Policy-based auto-selection wins', () => {
@@ -177,8 +178,10 @@ describe('ProfileRegistry: 5-layer precedence', () => {
         expect(resolved).toBeDefined();
         expect(resolved!.strategy.id).toBe('policy-strategy');
         expect(resolved!.reason.kind).toBe('policy');
-        expect(resolved!.reason.policyId).toBe('test-policy');
-        expect(resolved!.reason.ruleId).toBe('rule-1');
+        if (resolved!.reason.kind === 'policy') {
+            expect(resolved!.reason.policyId).toBe('test-policy');
+            expect(resolved!.reason.ruleId).toBe('rule-1');
+        }
     });
 
     it('Layer 5: Policy fallback returns default profile strategy with policy reason', () => {
@@ -207,8 +210,10 @@ describe('ProfileRegistry: 5-layer precedence', () => {
         expect(resolved!.strategy.id).toBe('default-profile-strategy');
         // Policy step runs before default profile step, so fallback goes through policy
         expect(resolved!.reason.kind).toBe('policy');
-        expect(resolved!.reason.policyId).toBe('test-policy');
-        expect(resolved!.reason.ruleId).toBe('fallback');
+        if (resolved!.reason.kind === 'policy') {
+            expect(resolved!.reason.policyId).toBe('test-policy');
+            expect(resolved!.reason.ruleId).toBe('fallback');
+        }
     });
 
     it('Layer 6: Fallback to first available strategy', () => {
@@ -241,7 +246,9 @@ describe('ProfileRegistry: 5-layer precedence', () => {
         expect(resolved).toBeDefined();
         expect(resolved!.strategy.id).toBe('fallback-strategy');
         expect(resolved!.reason.kind).toBe('fallback');
-        expect(resolved!.reason.seamId).toBe('capture-0');
+        if (resolved!.reason.kind === 'fallback') {
+            expect(resolved!.reason.seamId).toBe('capture-0');
+        }
     });
 
     it('ResolvedStrategy includes resolvedParams from getDefaultProps', () => {

@@ -1,0 +1,130 @@
+{
+  "version": 1,
+  "generatedAt": "2026-10-31T23:57:05.103Z",
+  "counts": {
+    "intent": {
+      "search": 4,
+      "validation": 2,
+      "holdout": 0
+    },
+    "quality": {
+      "extraction": 2,
+      "match": 1
+    }
+  },
+  "cases": [
+    {
+      "id": "intent-capture-001",
+      "family": "intent",
+      "split": "search",
+      "path": "intent/search/intent-capture-001.json",
+      "hash": "fa5ac127f4909e49",
+      "tags": [
+        "care",
+        "non-market",
+        "deadline"
+      ]
+    },
+    {
+      "id": "intent-capture-002",
+      "family": "intent",
+      "split": "search",
+      "path": "intent/search/intent-capture-002.json",
+      "hash": "87c8c27f91fccf74",
+      "tags": [
+        "health",
+        "non-market",
+        "scheduling"
+      ]
+    },
+    {
+      "id": "intent-capture-003",
+      "family": "intent",
+      "split": "search",
+      "path": "intent/search/intent-capture-003.json",
+      "hash": "eb442810210021d0",
+      "tags": [
+        "community",
+        "non-market",
+        "volunteering"
+      ]
+    },
+    {
+      "id": "intent-capture-010",
+      "family": "intent",
+      "split": "validation",
+      "path": "intent/validation/intent-capture-010.json",
+      "hash": "af1b87b93141d3bd",
+      "tags": [
+        "care",
+        "non-market",
+        "deadline",
+        "accessibility"
+      ]
+    },
+    {
+      "id": "intent-capture-011",
+      "family": "intent",
+      "split": "validation",
+      "path": "intent/validation/intent-capture-011.json",
+      "hash": "7db2d6aa5a51e340",
+      "tags": [
+        "community",
+        "non-market",
+        "care",
+        "food"
+      ]
+    },
+    {
+      "id": "intent-elicit-001",
+      "family": "intent",
+      "split": "search",
+      "path": "intent/search/intent-elicit-001.json",
+      "hash": "89739e5ccf6fd7f3",
+      "tags": [
+        "care",
+        "non-market",
+        "property"
+      ]
+    },
+    {
+      "id": "quality-extract-001",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-001.json",
+      "hash": "05dc0eab6560b79f",
+      "tags": [
+        "care",
+        "non-market",
+        "deadline",
+        "budget"
+      ]
+    },
+    {
+      "id": "quality-extract-002",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-002.json",
+      "hash": "8152e12b58983f8d",
+      "tags": [
+        "care",
+        "non-market",
+        "accessibility",
+        "budget"
+      ]
+    },
+    {
+      "id": "quality-match-001",
+      "family": "quality",
+      "qualityFamily": "match",
+      "path": "quality/match/quality-match-001.json",
+      "hash": "a77536535d50a043",
+      "tags": [
+        "care",
+        "non-market",
+        "accessibility"
+      ]
+    }
+  ],
+  "hash": "6ab968bcfeb75686"
+}

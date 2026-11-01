@@ -1,0 +1,15 @@
+{
+  "id": "quality-match-001",
+  "family": "quality",
+  "qualityFamily": "match",
+  "input": "wheelchair ramp installation",
+  "expected": [
+    { "noteId": "note-ramp-001", "minScore": 0.7 },
+    { "noteId": "note-ramp-002", "minScore": 0.5 }
+  ],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.85
+  },
+  "tags": ["care", "non-market", "accessibility"]
+}

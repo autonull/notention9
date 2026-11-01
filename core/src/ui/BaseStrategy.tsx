@@ -48,7 +48,7 @@ export abstract class BaseStrategy<P extends BaseStrategyProps> extends Componen
         return { hasError: true, error };
     }
 
-    componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
+    override componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
         console.error(`[BaseStrategy] Error in ${this.constructor.name}:`, error, errorInfo);
     }
 
@@ -116,7 +116,7 @@ export abstract class BaseStrategy<P extends BaseStrategyProps> extends Componen
         };
     }
 
-    render(): ReactElement {
+    override render(): ReactElement {
         const { hasError, error } = this.state;
         const { isLoading, children, className, onCancel } = this.props;
 

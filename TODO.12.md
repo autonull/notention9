@@ -1,7 +1,7 @@
 # TODO.12 — Notention Evaluation & Improvement Program
 
 **Supersedes:** `TODO.11.md`, `TODO.11.a.md`, and all prior drafts of this file
-**Status:** Active — Phase 0 done; Phase 1 complete
+**Status:** Active — Phase 0 done; Phase 1 complete; Phase 2 complete
 **Shape:** One measurement substrate, three consumers. Consolidate existing code. Commit only to the next experiment; defer what the next experiment does not need.
 
 ---
@@ -92,8 +92,16 @@ The plan is a hypothesis. These three pivots will reshape it based on Phase 1–
 | 1.3 Must-win gate / ESLint gate | ✅ Done | 2026-10-31 | Removed placeholder must-win from synthesis (real one in evaluation); removed ESLint gate (custom config); deleted unused `determinism.ts` |
 | 1.4 Fabricated-path grep guard | ✅ Done | 2026-10-31 | Added `pnpm lint:fabricated` script + CI integration in verify |
 | 1.5 Gate: `pnpm verify` green + param visibility | ✅ Done | 2026-10-31 | PropertyForm isAdding param visibly changes capture render (header + Magic button) |
-| **2. Measurement Core** | ⏳ Queued | 2026-11-14 | Verdict fixtures pass in < 10 s |
-| **3. Causal Delivery Slice** | ⏳ Queued | 2026-11-21 | One real revision decision, C1–C9 demonstrated |
+| **2. Measurement Core** | ✅ Done | 2026-10-31 | Case manifest + verdict engine + quality runner + ledger + revision store + eval CLI |
+| 2.1 Case manifest + hash guard | ✅ Done | 2026-10-31 | `core/src/eval/caseManifest.ts` + `scripts/update-case-manifest.ts` + `pnpm eval:verify-manifest` |
+| 2.2 Verdict engine (pure) | ✅ Done | 2026-10-31 | `core/src/eval/verdict.ts` — paired t-test, MDE, floors, Fisher's method |
+| 2.3 Quality runner (in-process) | ✅ Done | 2026-10-31 | `core/src/eval/quality.ts` — extraction (P/R/F1) + match (P/R/F1) |
+| 2.4 Ledger (append-only JSONL + SQLite index) | ✅ Done | 2026-10-31 | `core/src/telemetry/ledger.ts` — tamper-evident, indexed, prunable |
+| 2.5 RevisionStore (JSONL + state machine) | ✅ Done | 2026-10-31 | `core/src/telemetry/revisionStore.ts` — draft→evaluated→consented→active→rolled-back |
+| 2.6 Eval CLI (`pnpm eval`) | ✅ Done | 2026-10-31 | `optimize/src/eval/cli.ts` — manifest, quality, intent, run, revision, ledger subcommands |
+| 2.7 Browser stubs for Node-only modules | ✅ Done | 2026-10-31 | Browser-safe stubs for eval/telemetry; conditional exports in core |
+| 2.8 UI build fixes | ✅ Done | 2026-10-31 | Conditional exports, browser stubs, externalize eval/telemetry in Vite |
+| **3. Causal Delivery Slice** | 🔄 In Progress | 2026-11-21 | One real revision decision, C1–C9 demonstrated |
 | **4. Benchmark + Representation** | ⏳ Queued | 2026-12-05 | 40 intent / 60 quality cases; F1 + match baselines |
 | **4b. Friction Discovery** | ⏳ Parallel | 2026-12-05 | Journal + digest + ≥ 5 triaged |
 | **5. Optimizer** | 🔒 Gated | 2026-12-19 | Two wins or two credible negatives |

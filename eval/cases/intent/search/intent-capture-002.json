@@ -1,0 +1,22 @@
+{
+  "id": "intent-capture-002",
+  "family": "intent",
+  "intent": "capture_need",
+  "prompt": "Need to schedule a dentist appointment for next week",
+  "seed": {
+    "notes": [],
+    "settings": {},
+    "revisions": ["incumbent"]
+  },
+  "expected": {
+    "minProperties": 2,
+    "requiredKeys": ["need", "deadline"],
+    "outcome": "captured"
+  },
+  "metrics": ["completion", "steps", "corrections"],
+  "tags": ["health", "non-market", "scheduling"],
+  "provenance": {
+    "author": "human",
+    "source": "interview-07"
+  }
+}

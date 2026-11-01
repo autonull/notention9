@@ -1,0 +1,22 @@
+{
+  "id": "intent-capture-011",
+  "family": "intent",
+  "intent": "capture_need",
+  "prompt": "Need to organize a meal train for the new parents on Maple Street",
+  "seed": {
+    "notes": [],
+    "settings": {},
+    "revisions": ["incumbent"]
+  },
+  "expected": {
+    "minProperties": 2,
+    "requiredKeys": ["need", "deadline"],
+    "outcome": "captured"
+  },
+  "metrics": ["completion", "steps", "corrections"],
+  "tags": ["community", "non-market", "care", "food"],
+  "provenance": {
+    "author": "human",
+    "source": "interview-22"
+  }
+}

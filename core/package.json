@@ -6,7 +6,11 @@
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
-    ".": "./dist/index.js",
+    ".": {
+      "import": "./dist/index.node.js",
+      "node": "./dist/index.node.js",
+      "browser": "./dist/index.browser.js"
+    },
     "./constants/storageKeys": "./dist/constants/storageKeys.js",
     "./constants/paths": "./dist/constants/paths.js",
     "./constants/seams": "./dist/constants/seams.js",
@@ -24,7 +28,34 @@
     "./validation": "./dist/validation/index.js",
     "./ui": "./dist/ui/index.js",
     "./ui/profile": "./dist/ui/profile.js",
-    "./ui/strategy": "./dist/ui/strategy.js"
+    "./ui/strategy": "./dist/ui/strategy.js",
+    "./ui/ProfileRegistry": "./dist/ui/ProfileRegistry.js",
+    "./ui/profileDefaults": "./dist/ui/profileDefaults.js",
+    "./eval/caseManifest": {
+      "import": "./dist/eval/caseManifest.js",
+      "node": "./dist/eval/caseManifest.js",
+      "browser": "./dist/eval/caseManifest.browser.js"
+    },
+    "./eval/verdict": {
+      "import": "./dist/eval/verdict.js",
+      "node": "./dist/eval/verdict.js",
+      "browser": "./dist/eval/verdict.browser.js"
+    },
+    "./eval/quality": {
+      "import": "./dist/eval/quality.js",
+      "node": "./dist/eval/quality.js",
+      "browser": "./dist/eval/quality.browser.js"
+    },
+    "./telemetry/ledger": {
+      "import": "./dist/telemetry/ledger.js",
+      "node": "./dist/telemetry/ledger.js",
+      "browser": "./dist/telemetry/ledger.browser.js"
+    },
+    "./telemetry/revisionStore": {
+      "import": "./dist/telemetry/revisionStore.js",
+      "node": "./dist/telemetry/revisionStore.js",
+      "browser": "./dist/telemetry/revisionStore.browser.js"
+    }
   },
   "scripts": {
     "build": "tsc",

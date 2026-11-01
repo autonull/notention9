@@ -1,0 +1,22 @@
+{
+  "id": "intent-capture-003",
+  "family": "intent",
+  "intent": "capture_need",
+  "prompt": "We need more volunteers for the community garden this Saturday",
+  "seed": {
+    "notes": [],
+    "settings": {},
+    "revisions": ["incumbent"]
+  },
+  "expected": {
+    "minProperties": 2,
+    "requiredKeys": ["need", "deadline"],
+    "outcome": "captured"
+  },
+  "metrics": ["completion", "steps", "corrections"],
+  "tags": ["community", "non-market", "volunteering"],
+  "provenance": {
+    "author": "human",
+    "source": "interview-12"
+  }
+}

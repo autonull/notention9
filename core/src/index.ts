@@ -49,6 +49,9 @@ export * from './validation/index.js';
 export * from './config.js';
 export * from './events/index.js';
 
+// UI exports
+export * from './ui/index.js';
+
 // Nostr-specific (keep separate for optional dependency)
 export * from './network/nostr/nostr.js';
 export * from './network/nostr/privacy.js';

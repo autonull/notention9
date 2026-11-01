@@ -17,6 +17,8 @@
     "test:ui": "tsx scripts/test-ui-batched.ts",
     "verify": "tsx scripts/verify.ts",
     "lint:fabricated": "tsx scripts/grep-fabricated-paths.ts",
+    "eval:update-manifest": "tsx scripts/update-case-manifest.ts",
+    "eval:verify-manifest": "tsx -e \"import {verifyManifest} from './core/src/eval/caseManifest.js'; const v=verifyManifest(); console.log(v.valid?'✅ OK':'❌ '+v.error); if(!v.valid)process.exit(1)\"",
     "screenshots": "pnpm --filter @notention/ui screenshots",
     "test:e2e": "pnpm --filter @notention/ui test:e2e",
     "relay": "pnpm --filter @notention/agent relay --",

@@ -26,6 +26,7 @@
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     "exactOptionalPropertyTypes": false,
+    "jsx": "react-jsx",
     "paths": {
       "@notention/core": [
         "../core/src/index.ts"
