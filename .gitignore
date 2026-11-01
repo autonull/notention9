@@ -65,3 +65,4 @@ simulator/src/**/*.d.ts
 .notention/
 eval/runs/
 test-*.ts
+optimize
