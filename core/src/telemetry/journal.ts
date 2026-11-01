@@ -15,6 +15,7 @@ import {
     EVIDENCE_CLASS_WEIGHTS,
     DIGEST_TOP_SIGNALS_PER_WORKFLOW,
     DIGEST_LOOKBACK_DAYS,
+    MS_PER_DAY,
 } from './constants.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -218,7 +219,7 @@ export class Journal {
         const now = Date.now();
 
         return aggregates.map(agg => {
-            const ageDays = Math.floor((now - new Date(agg.lastSeen).getTime()) / (24 * 60 * 60 * 1000));
+            const ageDays = this.msToDays(now - new Date(agg.lastSeen).getTime());
             const evidenceClass = this.inferEvidenceClass(agg.kind, agg.count, ageDays);
             const weight = this.computeWeight(agg.count, ageDays, evidenceClass);
 
@@ -251,11 +252,15 @@ export class Journal {
         return baseWeight * decay;
     }
 
+    private msToDays(ms: number): number {
+        return Math.floor(ms / MS_PER_DAY);
+    }
+
     /**
      * Generate weekly digest (aggregates only, no PII)
      */
     generateWeeklyDigest(): string {
-        const since = new Date(Date.now() - DIGEST_LOOKBACK_DAYS * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+        const since = new Date(Date.now() - DIGEST_LOOKBACK_DAYS * MS_PER_DAY).toISOString().split('T')[0];
         const signals = this.getSignals(since);
 
         if (signals.length === 0) {
@@ -307,7 +312,7 @@ export class Journal {
     async applyRetention(): Promise<number> {
         if (!existsSync(JOURNAL_FILE)) return 0;
 
-        const cutoff = Date.now() - this.config.retentionDays * 24 * 60 * 60 * 1000;
+        const cutoff = Date.now() - this.config.retentionDays * MS_PER_DAY;
         const content = readFileSync(JOURNAL_FILE, 'utf-8');
         const lines = content.trim().split('\n').filter(l => l.length > 0);
 

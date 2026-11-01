@@ -143,3 +143,43 @@ export const DEFAULT_REMOTE_SAMPLE_RATE = 0.1;
 
 /** Default priority for meshtastic messages */
 export const DEFAULT_MESHTASTIC_PRIORITY = 0.1;
+
+// --- Time Constants ---
+
+/** Milliseconds in one day */
+export const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+/** Milliseconds in one hour */
+export const MS_PER_HOUR = 60 * 60 * 1000;
+
+// --- Revision Store ---
+
+/** Default maximum revisions per seam */
+export const DEFAULT_MAX_REVISIONS_PER_SEAM = 1000;
+
+// --- Recovery / Snapshots ---
+
+/** Default snapshot interval (24 hours) */
+export const DEFAULT_SNAPSHOT_INTERVAL_MS = MS_PER_DAY;
+
+// --- Policy / Presentation ---
+
+/** High confidence threshold for presentation policy */
+export const POLICY_HIGH_CONFIDENCE_THRESHOLD = 0.85;
+
+/** Medium confidence threshold for presentation policy */
+export const POLICY_MEDIUM_CONFIDENCE_THRESHOLD = 0.6;
+
+// --- Extraction Confidence ---
+
+/** Default fuzzy match threshold */
+export const DEFAULT_FUZZY_THRESHOLD = 0.8;
+
+/** Default fuzzy extraction confidence */
+export const DEFAULT_FUZZY_CONFIDENCE = 0.6;
+
+/** Default pattern extraction confidence */
+export const DEFAULT_PATTERN_CONFIDENCE = 0.85;
+
+/** Default deterministic extraction confidence */
+export const DEFAULT_DETERMINISTIC_CONFIDENCE = 0.95;

@@ -19,7 +19,9 @@ export interface RecoveryResult {
 
 const SNAPSHOT_PREFIX = 'notention_snapshot_';
 const MAX_SNAPSHOTS = 10;
-const SNAPSHOT_INTERVAL_MS = 24 * 60 * 60 * 1000; // 24 hours
+import { DEFAULT_SNAPSHOT_INTERVAL_MS } from '../telemetry/constants.js';
+
+const SNAPSHOT_INTERVAL_MS = DEFAULT_SNAPSHOT_INTERVAL_MS; // 24 hours
 
 export class StorageRecovery {
     private storage: LocalForage;

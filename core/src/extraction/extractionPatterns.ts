@@ -15,6 +15,7 @@ import {
     DATE_PATTERNS,
     STOP_WORDS
 } from '../notes/propertyExtractor/patterns.js';
+import { DEFAULT_DETERMINISTIC_CONFIDENCE } from '../telemetry/constants.js';
 
 /**
  * Extract date-related properties from text
@@ -25,7 +26,7 @@ export function extractDates(
     lowerText: string,
     properties: Map<string, Property>,
     options: { dates?: boolean } = {},
-    confidence = 0.95,
+    confidence = DEFAULT_DETERMINISTIC_CONFIDENCE,
     provenance: Property['provenance'] = 'deterministic'
 ): void {
     if (options.dates === false) return;
@@ -70,7 +71,7 @@ export function extractPrices(
     text: string,
     properties: Map<string, Property>,
     options: { price?: boolean; ranges?: boolean } = {},
-    confidence = 0.95,
+    confidence = DEFAULT_DETERMINISTIC_CONFIDENCE,
     provenance: Property['provenance'] = 'deterministic'
 ): void {
     if (options.price === false) return;
@@ -133,7 +134,7 @@ export function extractRoles(
     text: string,
     properties: Map<string, Property>,
     options: { roles?: boolean } = {},
-    confidence = 0.95,
+    confidence = DEFAULT_DETERMINISTIC_CONFIDENCE,
     provenance: Property['provenance'] = 'deterministic'
 ): void {
     if (options.roles === false) return;
@@ -159,7 +160,7 @@ export function extractLocations(
     ontology: import('../types/index.js').OntologyNode[],
     properties: Map<string, Property>,
     options: { patterns?: boolean } = {},
-    confidence = 0.95,
+    confidence = DEFAULT_DETERMINISTIC_CONFIDENCE,
     provenance: Property['provenance'] = 'deterministic'
 ): void {
     if (options.patterns === false) return;
@@ -178,7 +179,7 @@ export function extractIntents(
     text: string,
     properties: Map<string, Property>,
     options: { intents?: boolean } = {},
-    confidence = 0.95,
+    confidence = DEFAULT_DETERMINISTIC_CONFIDENCE,
     provenance: Property['provenance'] = 'deterministic'
 ): void {
     if (options.intents === false) return;
@@ -198,7 +199,7 @@ export function extractCommunication(
     ontology: import('../types/index.js').OntologyNode[],
     properties: Map<string, Property>,
     options: { patterns?: boolean } = {},
-    confidence = 0.95,
+    confidence = DEFAULT_DETERMINISTIC_CONFIDENCE,
     provenance: Property['provenance'] = 'deterministic'
 ): void {
     if (options.patterns === false) return;

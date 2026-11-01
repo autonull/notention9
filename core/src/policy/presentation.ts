@@ -5,14 +5,19 @@ export interface PresentationOptions {
     risk: 'low' | 'high';
 }
 
+import {
+    POLICY_HIGH_CONFIDENCE_THRESHOLD,
+    POLICY_MEDIUM_CONFIDENCE_THRESHOLD,
+} from '../telemetry/constants.js';
+
 export function resolvePresentation(options: PresentationOptions): PresentationMode {
     const { confidence, risk } = options;
 
-    if (confidence >= 0.85) {
+    if (confidence >= POLICY_HIGH_CONFIDENCE_THRESHOLD) {
         return risk === 'high' ? 'clarify' : 'suggest';
     }
 
-    if (confidence >= 0.6) {
+    if (confidence >= POLICY_MEDIUM_CONFIDENCE_THRESHOLD) {
         return risk === 'high' ? 'block' : 'suggest';
     }
 

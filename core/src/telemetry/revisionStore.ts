@@ -8,6 +8,7 @@ import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } fr
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { logEvent, type LedgerEventType, type LedgerPayload } from './ledger.js';
+import { DEFAULT_MAX_REVISIONS_PER_SEAM } from './constants.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = join(__dirname, '..', '..', '..', '.notention', 'revisions');
@@ -87,7 +88,7 @@ export class RevisionStore {
 
     constructor(config: RevisionStoreConfig = {}) {
         this.config = {
-            maxRevisionsPerSeam: 1000,
+            maxRevisionsPerSeam: DEFAULT_MAX_REVISIONS_PER_SEAM,
             ...config,
         };
     }

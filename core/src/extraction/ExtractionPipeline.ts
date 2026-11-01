@@ -43,6 +43,11 @@ import {
     getStagePriority,
     getStageConfidence,
 } from './extractionConstants.js';
+import {
+    DEFAULT_PATTERN_CONFIDENCE,
+    DEFAULT_FUZZY_CONFIDENCE,
+    DEFAULT_FUZZY_THRESHOLD,
+} from '../telemetry/constants.js';
 
 export type ExtractionStageName = 'deterministic' | 'pattern' | 'ai' | 'fuzzy';
 
@@ -133,9 +138,9 @@ export class PatternStage implements ExtractionStage {
         const lowerText = text.toLowerCase();
 
         // Use shared extraction functions
-        extractPrices(text, properties, { price: options.price, ranges: options.ranges }, 0.85, 'pattern');
-        extractRoles(text, properties, { roles: options.roles }, 0.85, 'pattern');
-        extractDates(text, lowerText, properties, { dates: options.dates }, 0.85, 'pattern');
+        extractPrices(text, properties, { price: options.price, ranges: options.ranges }, DEFAULT_PATTERN_CONFIDENCE, 'pattern');
+        extractRoles(text, properties, { roles: options.roles }, DEFAULT_PATTERN_CONFIDENCE, 'pattern');
+        extractDates(text, lowerText, properties, { dates: options.dates }, DEFAULT_PATTERN_CONFIDENCE, 'pattern');
 
         return getProperties(properties);
     }
@@ -171,7 +176,7 @@ export class OntologyKeyStage implements ExtractionStage {
 
                 const quantity = parseQuantity(value);
                 const canonicalKey = getCanonicalKey(key, ontology);
-                addProperty(properties, canonicalKey, operator, quantity?.unit ? `${quantity.value} ${quantity.unit}` : value, 0.85, 'ontology-key');
+                addProperty(properties, canonicalKey, operator, quantity?.unit ? `${quantity.value} ${quantity.unit}` : value, DEFAULT_PATTERN_CONFIDENCE, 'ontology-key');
             });
         }
 
@@ -222,7 +227,7 @@ export class FuzzyStage implements ExtractionStage {
 
         if (options.fuzzy !== false) {
             const words = text.split(/\s+/);
-            const threshold = options.fuzzyThreshold ?? 0.8;
+            const threshold = options.fuzzyThreshold ?? DEFAULT_FUZZY_THRESHOLD;
 
             for (let i = 0; i < words.length - 1; i++) {
                 const word = words[i];
@@ -233,7 +238,7 @@ export class FuzzyStage implements ExtractionStage {
                 const nextWord = words[i + 1];
                 if (nextWord.length > 2 && !STOP_WORDS.has(nextWord.toLowerCase())) {
                     existingKeys.add(match);
-                    addProperty(properties, match, 'contains', nextWord, 0.6, 'fuzzy');
+                    addProperty(properties, match, 'contains', nextWord, DEFAULT_FUZZY_CONFIDENCE, 'fuzzy');
                 }
             }
         }

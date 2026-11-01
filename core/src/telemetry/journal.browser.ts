@@ -13,6 +13,7 @@ import {
     EVIDENCE_CLASS_WEIGHTS,
     DIGEST_TOP_SIGNALS_PER_WORKFLOW,
     DIGEST_LOOKBACK_DAYS,
+    MS_PER_DAY,
 } from './constants.js';
 
 const JOURNAL_KEY = 'friction-journal';
@@ -140,7 +141,7 @@ export class Journal {
         const now = Date.now();
 
         return aggregates.map(agg => {
-            const ageDays = Math.floor((now - new Date(agg.lastSeen).getTime()) / (24 * 60 * 60 * 1000));
+            const ageDays = Math.floor((now - new Date(agg.lastSeen).getTime()) / MS_PER_DAY);
             const evidenceClass = this.inferEvidenceClass(agg.kind, agg.count, ageDays);
             const weight = this.computeWeight(agg.count, ageDays, evidenceClass);
 
@@ -175,7 +176,7 @@ export class Journal {
      */
     async generateWeeklyDigest(): Promise<string> {
         await this.init();
-        const since = new Date(Date.now() - DIGEST_LOOKBACK_DAYS * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+        const since = new Date(Date.now() - DIGEST_LOOKBACK_DAYS * MS_PER_DAY).toISOString().split('T')[0];
         const signals = await this.getSignals(since);
 
         if (signals.length === 0) {
@@ -219,7 +220,7 @@ export class Journal {
      */
     async applyRetention(): Promise<number> {
         await this.init();
-        const cutoff = Date.now() - this.config.retentionDays * 24 * 60 * 60 * 1000;
+        const cutoff = Date.now() - this.config.retentionDays * MS_PER_DAY;
         const events = (await this.eventStore.load()) ?? [];
 
         const kept = events.filter(e => new Date(e.bucket).getTime() >= cutoff);
