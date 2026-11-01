@@ -35,7 +35,9 @@ export function addProperty(
     properties: Map<string, Property>,
     key: string,
     operator: string,
-    value: string
+    value: string,
+    confidence?: number,
+    provenance?: Property['provenance']
 ): void {
     const values = value.split(',').map(part => part.trim()).filter(Boolean);
     if (values.length === 0) return;
@@ -46,7 +48,7 @@ export function addProperty(
         values.forEach(v => { if (!existing.values.includes(v)) existing.values.push(v); });
         return;
     }
-    properties.set(id, { key, operator, values });
+    properties.set(id, { key, operator, values, confidence, provenance });
 }
 
 /**
@@ -56,7 +58,9 @@ export function addPropertyValues(
     properties: Map<string, Property>,
     key: string,
     operator: string,
-    values: string[]
+    values: string[],
+    confidence?: number,
+    provenance?: Property['provenance']
 ): void {
     if (values.length === 0) return;
     const id = makePropertyId(key, operator);
@@ -65,7 +69,7 @@ export function addPropertyValues(
         values.forEach(v => { if (!existing.values.includes(v)) existing.values.push(v); });
         return;
     }
-    properties.set(id, { key, operator, values: [...values] });
+    properties.set(id, { key, operator, values: [...values], confidence, provenance });
 }
 
 /**

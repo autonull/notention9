@@ -3,13 +3,15 @@ import type { Note, NoteStatus } from '../types/domain.js';
 /**
  * Valid status transitions for note lifecycle
  * open → matched → committed → done → lapsed
+ * cancelled is a terminal state
  */
 const STATUS_TRANSITIONS: Record<NoteStatus, NoteStatus[]> = {
-    open: ['matched', 'committed', 'lapsed'],
-    matched: ['committed', 'open', 'lapsed'],
-    committed: ['done', 'matched', 'open', 'lapsed'],
-    done: ['open', 'lapsed'],
-    lapsed: ['open'],
+    open: ['matched', 'committed', 'lapsed', 'cancelled'],
+    matched: ['committed', 'open', 'lapsed', 'cancelled'],
+    committed: ['done', 'matched', 'open', 'lapsed', 'cancelled'],
+    done: ['open', 'lapsed', 'cancelled'],
+    lapsed: ['open', 'cancelled'],
+    cancelled: [],
 };
 
 /**
@@ -123,6 +125,7 @@ export const STATUS_LABELS: Record<NoteStatus, string> = {
     committed: 'Committed',
     done: 'Done',
     lapsed: 'Lapsed',
+    cancelled: 'Cancelled',
 };
 
 /**
@@ -134,6 +137,7 @@ export const STATUS_COLORS: Record<NoteStatus, string> = {
     committed: 'orange',
     done: 'green',
     lapsed: 'gray',
+    cancelled: 'red',
 };
 
 /**
@@ -145,4 +149,5 @@ export const STATUS_DESCRIPTIONS: Record<NoteStatus, string> = {
     committed: 'Active commitment with deadline',
     done: 'Successfully completed',
     lapsed: 'Expired or abandoned',
+    cancelled: 'Cancelled by user',
 };

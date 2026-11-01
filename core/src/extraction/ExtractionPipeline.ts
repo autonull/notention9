@@ -133,9 +133,9 @@ export class PatternStage implements ExtractionStage {
         const lowerText = text.toLowerCase();
 
         // Use shared extraction functions
-        extractPrices(text, properties, { price: options.price, ranges: options.ranges });
-        extractRoles(text, properties, { roles: options.roles });
-        extractDates(text, lowerText, properties, { dates: options.dates });
+        extractPrices(text, properties, { price: options.price, ranges: options.ranges }, 0.85, 'pattern');
+        extractRoles(text, properties, { roles: options.roles }, 0.85, 'pattern');
+        extractDates(text, lowerText, properties, { dates: options.dates }, 0.85, 'pattern');
 
         return getProperties(properties);
     }
@@ -171,7 +171,7 @@ export class OntologyKeyStage implements ExtractionStage {
 
                 const quantity = parseQuantity(value);
                 const canonicalKey = getCanonicalKey(key, ontology);
-                addProperty(properties, canonicalKey, operator, quantity?.unit ? `${quantity.value} ${quantity.unit}` : value);
+                addProperty(properties, canonicalKey, operator, quantity?.unit ? `${quantity.value} ${quantity.unit}` : value, 0.85, 'ontology-key');
             });
         }
 
@@ -194,7 +194,13 @@ export class AIStage implements ExtractionStage {
 
     async extract(text: string, ontology: OntologyNode[], context?: ExtractionContext): Promise<Property[]> {
         try {
-            return await this.provider.extract(text, ontology);
+            const properties = await this.provider.extract(text, ontology);
+            // Ensure confidence and provenance are set
+            return properties.map(p => ({
+                ...p,
+                confidence: p.confidence ?? 0.8,
+                provenance: p.provenance ?? 'ai',
+            }));
         } catch {
             return [];
         }
@@ -227,7 +233,7 @@ export class FuzzyStage implements ExtractionStage {
                 const nextWord = words[i + 1];
                 if (nextWord.length > 2 && !STOP_WORDS.has(nextWord.toLowerCase())) {
                     existingKeys.add(match);
-                    addProperty(properties, match, 'contains', nextWord);
+                    addProperty(properties, match, 'contains', nextWord, 0.6, 'fuzzy');
                 }
             }
         }

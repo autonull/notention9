@@ -102,7 +102,7 @@ The plan is a hypothesis. These three pivots will reshape it based on Phase 1–
 | 2.7 Browser stubs for Node-only modules | ✅ Done | 2026-10-31 | Browser-safe stubs for eval/telemetry; conditional exports in core |
 | 2.8 UI build fixes | ✅ Done | 2026-10-31 | Conditional exports, browser stubs, externalize eval/telemetry in Vite |
 | **3. Causal Delivery Slice** | ✅ Done | 2026-11-01 | One real revision decision, C1–C9 core demonstrated |
-| **4. Benchmark + Representation** | 🔄 In Progress | 2026-12-05 | 40 intent / 60 quality cases; F1 + match baselines |
+| **4. Benchmark + Representation** | ✅ Done | 2026-11-01 | 40 intent / 60 quality cases; F1 + match baselines; calibration, correction, coverage, commitment |
 | **4b. Friction Discovery** | ⏳ Parallel | 2026-12-05 | Journal + digest + ≥ 5 triaged |
 | **5. Optimizer** | 🔒 Gated | 2026-12-19 | Two wins or two credible negatives |
 | **6. Synthesis** | 🔒 Deferred | — | S2+ autonomy |
@@ -580,7 +580,7 @@ Phase 2  Measurement Core          ──┤ 2026-10-31
 Phase 3  Causal Delivery Slice     ──┘ 2026-11-01  ✅
                                       Gate: one real decision
 Phase 4a Representation (O2)       ──┐
-Phase 4b Friction (O3)             ──┘ 2026-12-05 (parallel)  🔄 In Progress
+Phase 4b Friction (O3)             ──┘ 2026-12-05 (parallel)  ✅ In Progress
 Phase 5  Optimizer (O1 delivery)   ──  2026-12-19
                                       Gate: two wins or two negatives
 Phase 6  Synthesis                 🔒 deferred
@@ -781,11 +781,11 @@ These are **known unknowns**, classified by the Decision Ladder. Do not assume a
 27. ✅ Expand intent cases to 40 (search/validation/holdout splits) — browser runnable
 28. ✅ Implement browser harness for intent evaluation (Playwright) — clock/RNG freeze, SeedSnapshot replay
 29. ✅ Run baseline evaluation, record results in ledger
-30. Confidence + provenance on inferred values
-31. ECE calibration for extraction confidence (ECE ≤ 0.1)
-32. Correction flow (user corrections → extraction improvement)
-33. Coverage matrix + flat-vs-facet decision
-34. Commitment lifecycle implementation (`open → matched → committed → done` + `lapsed`, `cancelled`)
+30. ✅ Confidence + provenance on inferred values
+31. ✅ ECE calibration for extraction confidence (ECE ≤ 0.1)
+32. ✅ Correction flow (user corrections → extraction improvement)
+33. ✅ Coverage matrix + flat-vs-facet decision
+34. ✅ Commitment lifecycle implementation (`open → matched → committed → done` + `lapsed`, `cancelled`)
 
 ### Week 4b (Parallel): Friction Discovery
 35. Local opt-in friction journal (IndexedDB, 90-day retention) — 7 event kinds

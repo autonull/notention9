@@ -5,8 +5,9 @@ export type NostrEvent = NostrToolsEvent;
 /**
  * Note lifecycle status - tracks the progression from creation to completion
  * open → matched → committed → done → lapsed
+ * cancelled is a terminal state for abandoned commitments
  */
-export type NoteStatus = 'open' | 'matched' | 'committed' | 'done' | 'lapsed';
+export type NoteStatus = 'open' | 'matched' | 'committed' | 'done' | 'lapsed' | 'cancelled';
 
 export interface Note {
   id: string;
@@ -36,8 +37,11 @@ export interface Note {
   
   /** Commitment metadata */
   commitment?: {
-    committedAt: string;
+    committedAt?: string;
     expectedCompletion?: string;
+    completedAt?: string;
+    lapsedAt?: string;
+    cancelledAt?: string;
     relatedNoteIds?: string[];
   };
 }
@@ -55,6 +59,10 @@ export interface Property {
   values: string[];
   unit?: string;
   quantity?: Quantity;
+  /** Confidence score for this property extraction (0-1) */
+  confidence?: number;
+  /** Provenance: which stage/source produced this property */
+  provenance?: 'deterministic' | 'pattern' | 'ai' | 'fuzzy' | 'ontology-key' | 'user' | 'inferred';
 }
 
 export interface ExtractedProperty {
