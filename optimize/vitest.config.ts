@@ -10,7 +10,7 @@ export default defineConfig({
     },
     resolve: {
         alias: {
-            '@notention/core': path.resolve(__dirname, '../core/src'),
+            '@notention/core': path.resolve(__dirname, '../core/dist'),
         },
     },
 });

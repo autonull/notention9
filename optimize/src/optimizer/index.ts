@@ -5,7 +5,7 @@
  * and produces accept/reject decisions with full provenance.
  */
 
-import { StrategyRegistry, type Strategy, type ParamSpec, type Seam } from '@notention/core/ui/strategy';
+import { type ParamSpec, type Seam } from '@notention/core/ui/strategy';
 import { getRevisionStore } from '@notention/core/telemetry/revisionStore';
 import { logEvent, getRunEvents } from '@notention/core/telemetry/ledger';
 import { readManifest, readQualityCases } from '@notention/core/eval/caseManifest';
@@ -29,6 +29,11 @@ import { join } from 'node:path';
 import { DEFAULT_ONTOLOGY } from '@notention/core/ontology';
 import { Cache } from '@notention/core/utils/cache';
 import { createHash } from 'node:crypto';
+import {
+    STRATEGY_PARAM_CONFIGS,
+    getStrategyParamConfigsByRole,
+    type StrategyParamConfig,
+} from '@notention/core/constants/strategyParams';
 
 /**
  * Configuration for a single optimization cycle
@@ -120,11 +125,11 @@ export interface OptimizerResult {
  * For each param, use default + boundaries + some intermediate values
  */
 export function enumerateCandidatesFromParamSpec(
-    strategy: Strategy,
+    strategy: StrategyParamConfig,
     maxCandidates: number
 ): OptimizerCandidate[] {
-    const paramSpec = strategy.params;
-    const defaultProps = strategy.getDefaultProps() as Record<string, unknown>;
+    const paramSpec = strategy.paramSpec;
+    const defaultProps = strategy.defaultProps;
     const candidates: OptimizerCandidate[] = [];
 
     // Get all parameter keys and their possible values
@@ -195,13 +200,13 @@ export function enumerateCandidatesFromParamSpec(
     return candidates;
 }
 
-function createCandidate(strategy: Strategy, patch: Record<string, unknown>): OptimizerCandidate {
+function createCandidate(strategy: StrategyParamConfig, patch: Record<string, unknown>): OptimizerCandidate {
     return {
         id: `cand_${strategy.seam.role}_${strategy.id}_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`,
         seamRole: strategy.seam.role,
         strategyId: strategy.id,
         patch,
-        paramSpec: strategy.params,
+        paramSpec: strategy.paramSpec,
         provenance: {
             generator: 'grid',
             seed: 42,
@@ -399,15 +404,14 @@ export async function runOptimizerCycle(config: OptimizerConfig = defaultOptimiz
         payload: { type: 'optimizer:cycle:started', config, manifestHash: manifest.hash },
     });
 
-    // 1. Enumerate all candidates from target seams
+    // 1. Enumerate all candidates from target seams using shared strategy param configs
     const allCandidates: OptimizerCandidate[] = [];
-    const strategyRegistry = (await import('@notention/core/ui/strategy')).strategyRegistry;
 
     for (const seamRole of config.targetSeams) {
-        const strategies = strategyRegistry.getAll().filter(s => s.seam.role === seamRole);
-        console.log(`   Found ${strategies.length} strategies for seam "${seamRole}"`);
+        const strategyConfigs = getStrategyParamConfigsByRole(seamRole as Seam['role']);
+        console.log(`   Found ${strategyConfigs.length} strategies for seam "${seamRole}"`);
 
-        for (const strategy of strategies) {
+        for (const strategy of strategyConfigs) {
             const candidates = enumerateCandidatesFromParamSpec(strategy, config.maxCandidatesPerSeam);
             console.log(`     ${strategy.id}: ${candidates.length} candidates`);
             allCandidates.push(...candidates);

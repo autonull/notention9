@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { StrategyRegistry, createComponentStrategy, type Seam, type Strategy } from '@notention/core/ui/strategy';
+import { type Seam } from '@notention/core/ui/strategy';
 import {
     enumerateCandidatesFromParamSpec,
     validatePatch,
@@ -12,6 +12,7 @@ import {
     type OptimizerConfig,
     type OptimizerCandidate,
 } from './index.js';
+import type { StrategyParamConfig } from '@notention/core/constants/strategyParams';
 
 // Create a mock seam for testing
 const testSeam: Seam = {
@@ -23,17 +24,24 @@ const testSeam: Seam = {
     role: 'capture',
 };
 
+function createMockStrategyParamConfig(
+    id: string,
+    defaultProps: Record<string, unknown>,
+    paramSpec: StrategyParamConfig['paramSpec']
+): StrategyParamConfig {
+    return {
+        id,
+        seam: testSeam,
+        version: '1.0.0',
+        defaultProps,
+        paramSpec,
+    };
+}
+
 describe('Optimizer', () => {
-    let strategyRegistry: StrategyRegistry;
-
-    beforeEach(() => {
-        strategyRegistry = new StrategyRegistry();
-    });
-
     describe('enumerateCandidatesFromParamSpec', () => {
         it('should return empty array for strategy with no params', () => {
-            const strategy = createComponentStrategy('no-params', testSeam, () => null, '1.0.0', {}, {});
-            expect(strategy.params).toEqual({});
+            const strategy = createMockStrategyParamConfig('no-params', {}, {});
             const candidates = enumerateCandidatesFromParamSpec(strategy, 10);
             expect(candidates).toHaveLength(0);
         });
@@ -43,7 +51,7 @@ describe('Optimizer', () => {
                 enabled: { type: 'boolean' as const, default: true },
                 debug: { type: 'boolean' as const, default: false },
             };
-            const strategy = createComponentStrategy('bool-params', testSeam, () => null, '1.0.0', { enabled: true, debug: false }, paramSpec);
+            const strategy = createMockStrategyParamConfig('bool-params', { enabled: true, debug: false }, paramSpec);
             const candidates = enumerateCandidatesFromParamSpec(strategy, 10);
 
             // Should generate: {enabled: false}, {debug: true}, {enabled: false, debug: true}
@@ -62,7 +70,7 @@ describe('Optimizer', () => {
             const paramSpec = {
                 mode: { type: 'enum' as const, options: ['fast', 'balanced', 'accurate'], default: 'balanced' },
             };
-            const strategy = createComponentStrategy('enum-params', testSeam, () => null, '1.0.0', { mode: 'balanced' }, paramSpec);
+            const strategy = createMockStrategyParamConfig('enum-params', { mode: 'balanced' }, paramSpec);
             const candidates = enumerateCandidatesFromParamSpec(strategy, 10);
 
             // Should generate: {mode: 'fast'}, {mode: 'accurate'} (skip 'balanced' default)
@@ -76,7 +84,7 @@ describe('Optimizer', () => {
                 threshold: { type: 'number' as const, min: 0, max: 1, default: 0.5 },
                 count: { type: 'number' as const, min: 1, max: 10, default: 5 },
             };
-            const strategy = createComponentStrategy('num-params', testSeam, () => null, '1.0.0', { threshold: 0.5, count: 5 }, paramSpec);
+            const strategy = createMockStrategyParamConfig('num-params', { threshold: 0.5, count: 5 }, paramSpec);
             const candidates = enumerateCandidatesFromParamSpec(strategy, 100);
 
             // Should include boundary values and midpoints
@@ -98,8 +106,7 @@ describe('Optimizer', () => {
                 c: { type: 'number' as const, min: 0, max: 10, default: 5 },
                 d: { type: 'number' as const, min: 0, max: 10, default: 5 },
             };
-            const strategy = createComponentStrategy('many-params', testSeam, () => null, '1.0.0', 
-                { a: 5, b: 5, c: 5, d: 5 }, paramSpec);
+            const strategy = createMockStrategyParamConfig('many-params', { a: 5, b: 5, c: 5, d: 5 }, paramSpec);
             const candidates = enumerateCandidatesFromParamSpec(strategy, 5);
             expect(candidates.length).toBeLessThanOrEqual(5);
         });
@@ -108,7 +115,7 @@ describe('Optimizer', () => {
             const paramSpec = {
                 testParam: { type: 'boolean' as const, default: true },
             };
-            const strategy = createComponentStrategy('prov-test', testSeam, () => null, '1.0.0', { testParam: true }, paramSpec);
+            const strategy = createMockStrategyParamConfig('prov-test', { testParam: true }, paramSpec);
             const candidates = enumerateCandidatesFromParamSpec(strategy, 10);
 
             for (const c of candidates) {
@@ -191,7 +198,7 @@ describe('Optimizer', () => {
             // This test primarily verifies the function runs without throwing
             // and returns a valid result structure
             try {
-                // The actual run will attempt to load strategies from the registry
+                // The actual run will attempt to load strategies from the shared configs
                 // Since we don't have the full UI setup in tests, this may fail
                 // But it should fail gracefully with a clear message
                 const result = await runOptimizerCycle(config);
