@@ -8,6 +8,14 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync, appendFileSync } fr
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { getDefaultAdapter } from '../storage/Storage.js';
+import {
+    DEFAULT_JOURNAL_RETENTION_DAYS,
+    EVIDENCE_DECAY_HALF_LIFE_DAYS,
+    JOURNAL_AUTO_FLUSH_INTERVAL_MS,
+    EVIDENCE_CLASS_WEIGHTS,
+    DIGEST_TOP_SIGNALS_PER_WORKFLOW,
+    DIGEST_LOOKBACK_DAYS,
+} from './constants.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = join(__dirname, '..', '..', '..', '.notention', 'journal');
@@ -58,6 +66,11 @@ export interface JournalConfig {
     lastPurge?: string;
 }
 
+const DEFAULT_JOURNAL_CONFIG: JournalConfig = {
+    enabled: false,
+    retentionDays: DEFAULT_JOURNAL_RETENTION_DAYS,
+};
+
 export type EvidenceClass = 'measured' | 'observed' | 'hypothesized' | 'asserted';
 
 export interface FrictionSignal {
@@ -75,19 +88,14 @@ export interface FrictionSignal {
 
 function loadConfig(): JournalConfig {
     if (!existsSync(CONFIG_FILE)) {
-        const defaultConfig: JournalConfig = {
-            enabled: false,
-            retentionDays: 90,
-        };
-        saveConfig(defaultConfig);
-        return defaultConfig;
+        saveConfig(DEFAULT_JOURNAL_CONFIG);
+        return DEFAULT_JOURNAL_CONFIG;
     }
     try {
         return JSON.parse(readFileSync(CONFIG_FILE, 'utf-8')) as JournalConfig;
     } catch {
-        const defaultConfig: JournalConfig = { enabled: false, retentionDays: 90 };
-        saveConfig(defaultConfig);
-        return defaultConfig;
+        saveConfig(DEFAULT_JOURNAL_CONFIG);
+        return DEFAULT_JOURNAL_CONFIG;
     }
 }
 
@@ -108,7 +116,7 @@ export class Journal {
     }
 
     private startAutoFlush(): void {
-        this.flushInterval = setInterval(() => this.flush(), 30_000); // 30s
+        this.flushInterval = setInterval(() => this.flush(), JOURNAL_AUTO_FLUSH_INTERVAL_MS);
     }
 
     /**
@@ -237,9 +245,9 @@ export class Journal {
     }
 
     private computeWeight(count: number, ageDays: number, evidenceClass: EvidenceClass): number {
-        const classWeight = { measured: 1.0, observed: 0.7, hypothesized: 0.4, asserted: 0.1 };
-        const baseWeight = classWeight[evidenceClass] * Math.log10(count + 1);
-        const decay = Math.exp(-ageDays / 30); // 30-day half-life
+        const classWeight = EVIDENCE_CLASS_WEIGHTS[evidenceClass] ?? EVIDENCE_CLASS_WEIGHTS.asserted;
+        const baseWeight = classWeight * Math.log10(count + 1);
+        const decay = Math.exp(-ageDays / EVIDENCE_DECAY_HALF_LIFE_DAYS);
         return baseWeight * decay;
     }
 
@@ -247,7 +255,7 @@ export class Journal {
      * Generate weekly digest (aggregates only, no PII)
      */
     generateWeeklyDigest(): string {
-        const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+        const since = new Date(Date.now() - DIGEST_LOOKBACK_DAYS * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
         const signals = this.getSignals(since);
 
         if (signals.length === 0) {
@@ -265,7 +273,7 @@ export class Journal {
 
         for (const [workflow, items] of byWorkflow) {
             digest += `## ${workflow}\n`;
-            for (const item of items.slice(0, 5)) { // Top 5 per workflow
+            for (const item of items.slice(0, DIGEST_TOP_SIGNALS_PER_WORKFLOW)) {
                 const evidenceIcon = { measured: '🔴', observed: '🟡', hypothesized: '🟢', asserted: '⚪' }[item.evidenceClass];
                 digest += `  ${evidenceIcon} ${item.kind} (${item.seam}): ${item.count}×, ${item.ageDays}d old, weight ${item.weight.toFixed(2)}\n`;
             }

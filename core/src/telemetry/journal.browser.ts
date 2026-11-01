@@ -6,6 +6,14 @@
 import { JsonStore } from '../storage/Storage.js';
 import { getIndexedDBAdapter } from '../storage/indexedDB.js';
 import type { FrictionEvent, FrictionAggregate, FrictionSignal, JournalConfig, FrictionKind, DurationBucket, EvidenceClass } from './journal.js';
+import {
+    DEFAULT_JOURNAL_RETENTION_DAYS,
+    JOURNAL_AUTO_FLUSH_INTERVAL_MS,
+    EVIDENCE_DECAY_HALF_LIFE_DAYS,
+    EVIDENCE_CLASS_WEIGHTS,
+    DIGEST_TOP_SIGNALS_PER_WORKFLOW,
+    DIGEST_LOOKBACK_DAYS,
+} from './constants.js';
 
 const JOURNAL_KEY = 'friction-journal';
 const CONFIG_KEY = 'friction-journal-config';
@@ -28,14 +36,14 @@ export class Journal {
 
     private async init(): Promise<void> {
         if (this.initialized) return;
-        this.config = (await this.configStore.load()) ?? { enabled: false, retentionDays: 90 };
+        this.config = (await this.configStore.load()) ?? { enabled: false, retentionDays: DEFAULT_JOURNAL_RETENTION_DAYS };
         await this.configStore.save(this.config);
         this.startAutoFlush();
         this.initialized = true;
     }
 
     private startAutoFlush(): void {
-        this.flushInterval = setInterval(() => this.flush(), 30_000); // 30s
+        this.flushInterval = setInterval(() => this.flush(), JOURNAL_AUTO_FLUSH_INTERVAL_MS);
     }
 
     /**
@@ -156,9 +164,9 @@ export class Journal {
     }
 
     private computeWeight(count: number, ageDays: number, evidenceClass: EvidenceClass): number {
-        const classWeight = { measured: 1.0, observed: 0.7, hypothesized: 0.4, asserted: 0.1 };
-        const baseWeight = classWeight[evidenceClass] * Math.log10(count + 1);
-        const decay = Math.exp(-ageDays / 30); // 30-day half-life
+        const classWeight = EVIDENCE_CLASS_WEIGHTS[evidenceClass] ?? EVIDENCE_CLASS_WEIGHTS.asserted;
+        const baseWeight = classWeight * Math.log10(count + 1);
+        const decay = Math.exp(-ageDays / EVIDENCE_DECAY_HALF_LIFE_DAYS);
         return baseWeight * decay;
     }
 
@@ -167,7 +175,7 @@ export class Journal {
      */
     async generateWeeklyDigest(): Promise<string> {
         await this.init();
-        const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+        const since = new Date(Date.now() - DIGEST_LOOKBACK_DAYS * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
         const signals = await this.getSignals(since);
 
         if (signals.length === 0) {
@@ -185,7 +193,7 @@ export class Journal {
 
         for (const [workflow, items] of byWorkflow) {
             digest += `## ${workflow}\n`;
-            for (const item of items.slice(0, 5)) {
+            for (const item of items.slice(0, DIGEST_TOP_SIGNALS_PER_WORKFLOW)) {
                 const evidenceIcon = { measured: '🔴', observed: '🟡', hypothesized: '🟢', asserted: '⚪' }[item.evidenceClass];
                 digest += `  ${evidenceIcon} ${item.kind} (${item.seam}): ${item.count}×, ${item.ageDays}d old, weight ${item.weight.toFixed(2)}\n`;
             }

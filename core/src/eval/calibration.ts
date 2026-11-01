@@ -1,7 +1,7 @@
-/**
- * Calibration — Expected Calibration Error (ECE) computation
- * Measures how well predicted confidence matches empirical accuracy
- */
+import {
+    DEFAULT_ECE_THRESHOLD,
+    DEFAULT_ECE_BINS,
+} from '../telemetry/constants.js';
 
 export interface CalibrationPoint {
     /** Predicted confidence (0-1) */
@@ -36,7 +36,7 @@ export interface ECEResult {
  * @param nBins Number of bins (default 10)
  * @returns ECE result with per-bin details
  */
-export function computeECE(predictions: CalibrationPoint[], nBins = 10): ECEResult {
+export function computeECE(predictions: CalibrationPoint[], nBins = DEFAULT_ECE_BINS): ECEResult {
     if (predictions.length === 0) {
         return { ece: 0, mce: 0, n: 0, bins: [] };
     }
@@ -167,6 +167,6 @@ export function getReliabilityDiagram(result: ECEResult): ReliabilityDiagram {
 /**
  * Check if calibration meets threshold
  */
-export function isCalibrated(result: ECEResult, threshold = 0.1): boolean {
+export function isCalibrated(result: ECEResult, threshold = DEFAULT_ECE_THRESHOLD): boolean {
     return result.ece <= threshold;
 }

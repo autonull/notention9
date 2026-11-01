@@ -5,6 +5,11 @@
 
 import type { Note, NoteStatus, Property } from '../types/index.js';
 import { createNote } from '../notes/notes.js';
+import {
+    DEFAULT_AUTO_LAPSE_INTERVAL_MS,
+    DEFAULT_REQUIRE_DEADLINE,
+    DEFAULT_ALLOW_REOPEN,
+} from '../telemetry/constants.js';
 
 export type CommitmentTransition =
     | { from: 'open'; to: 'matched'; trigger: 'match_found' }
@@ -58,9 +63,9 @@ export class CommitmentLifecycle {
 
     constructor(config: Partial<CommitmentLifecycleConfig> = {}) {
         this.config = {
-            autoLapseInterval: 60000, // Check every minute
-            requireDeadline: true,
-            allowReopen: true,
+            autoLapseInterval: DEFAULT_AUTO_LAPSE_INTERVAL_MS,
+            requireDeadline: DEFAULT_REQUIRE_DEADLINE,
+            allowReopen: DEFAULT_ALLOW_REOPEN,
             ...config,
         };
     }

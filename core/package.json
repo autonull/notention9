@@ -64,7 +64,8 @@
       "import": "./dist/telemetry/journal.js",
       "node": "./dist/telemetry/journal.js",
       "browser": "./dist/telemetry/journal.browser.js"
-    }
+    },
+    "./telemetry/constants": "./dist/telemetry/constants.js"
   },
   "scripts": {
     "build": "tsc",

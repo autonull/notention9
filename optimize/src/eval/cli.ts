@@ -17,6 +17,16 @@ import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { DEFAULT_ONTOLOGY } from '@notention/core/ontology';
 import type { IntentRunConfig } from '@notention/eval';
+import {
+    DEFAULT_MDE_COMPLETION,
+    DEFAULT_MDE_STEPS,
+    DEFAULT_MDE_CORRECTIONS,
+    DEFAULT_MDE_PRECISION,
+    DEFAULT_MDE_RECALL,
+    DEFAULT_MDE_F1,
+    DEFAULT_MIN_SAMPLE_SIZE,
+    SCHEMA_VALIDITY_FLOOR,
+} from '@notention/core/telemetry/constants';
 
 const program = new Command();
 
@@ -204,17 +214,17 @@ program
             const verdictConfig: VerdictConfig = {
                 primaryMetric: 'f1',
                 mde: {
-                    completion: 0.10,
-                    steps: -0.5,
-                    corrections: -0.2,
-                    precision: 0.05,
-                    recall: 0.05,
-                    f1: 0.05,
+                    completion: DEFAULT_MDE_COMPLETION,
+                    steps: DEFAULT_MDE_STEPS,
+                    corrections: DEFAULT_MDE_CORRECTIONS,
+                    precision: DEFAULT_MDE_PRECISION,
+                    recall: DEFAULT_MDE_RECALL,
+                    f1: DEFAULT_MDE_F1,
                 },
                 floors: {
-                    schemaValidity: 1.0,
+                    schemaValidity: SCHEMA_VALIDITY_FLOOR,
                 },
-                minSampleSize: 30,
+                minSampleSize: DEFAULT_MIN_SAMPLE_SIZE,
             };
             
             const caseVerdicts = computeCaseVerdictsFromResults(baselineQualityResults, candidateQualityResults, verdictConfig);

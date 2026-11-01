@@ -5,6 +5,16 @@
 
 import type { Property, OntologyNode } from '../types/index.js';
 import { OntologyService } from '../ontology/ontologyService.js';
+import {
+    CORRECTION_MIN_OCCURRENCES,
+    CORRECTION_MIN_CONFIDENCE,
+    CORRECTION_MAX_PATTERNS,
+    CORRECTION_DECAY_FACTOR,
+    CORRECTION_BASE_CONFIDENCE,
+    CORRECTION_CONFIDENCE_INCREMENT,
+    CORRECTION_MAX_CONFIDENCE,
+    CORRECTION_MAX_EXAMPLES,
+} from '../telemetry/constants.js';
 
 export interface Correction {
     /** Unique correction ID */
@@ -72,10 +82,10 @@ export class CorrectionFlow {
 
     constructor(config: Partial<CorrectionFlowConfig> = {}) {
         this.config = {
-            minOccurrences: 3,
-            minConfidence: 0.7,
-            maxPatterns: 1000,
-            decayFactor: 0.95,
+            minOccurrences: CORRECTION_MIN_OCCURRENCES,
+            minConfidence: CORRECTION_MIN_CONFIDENCE,
+            maxPatterns: CORRECTION_MAX_PATTERNS,
+            decayFactor: CORRECTION_DECAY_FACTOR,
             ...config,
         };
     }
@@ -116,11 +126,11 @@ export class CorrectionFlow {
             existing.count++;
             existing.lastSeen = correction.timestamp;
             existing.examples.push(correction.noteId); // Using noteId as proxy for input text
-            if (existing.examples.length > 10) {
+            if (existing.examples.length > CORRECTION_MAX_EXAMPLES) {
                 existing.examples.shift();
             }
             // Recompute confidence based on count
-            existing.confidence = Math.min(0.5 + (existing.count * 0.1), 0.95);
+            existing.confidence = Math.min(CORRECTION_BASE_CONFIDENCE + (existing.count * CORRECTION_CONFIDENCE_INCREMENT), CORRECTION_MAX_CONFIDENCE);
         } else {
             // Create new pattern
             const pattern: CorrectionPattern = {
@@ -132,7 +142,7 @@ export class CorrectionFlow {
                     values: correction.newValues ?? correction.oldValues ?? [],
                 },
                 count: 1,
-                confidence: 0.5,
+                confidence: CORRECTION_BASE_CONFIDENCE,
                 lastSeen: correction.timestamp,
                 examples: [correction.noteId],
             };

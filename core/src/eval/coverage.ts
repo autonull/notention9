@@ -6,6 +6,11 @@
 
 import type { OntologyNode, Property } from '../types/index.js';
 import { collectOntologyKeys } from '../ontology/index.js';
+import {
+    DEFAULT_MIN_OVERALL_COVERAGE,
+    DEFAULT_MIN_NODE_COVERAGE,
+    DEFAULT_MAX_UNCOVERED_CRITICAL,
+} from '../telemetry/constants.js';
 
 export interface CoverageStats {
     /** Total ontology nodes */
@@ -365,9 +370,9 @@ export interface CoverageThresholds {
 }
 
 export const DEFAULT_COVERAGE_THRESHOLDS: CoverageThresholds = {
-    minOverallCoverage: 0.7,    // 70% overall
-    minNodeCoverage: 0.5,       // 50% per node
-    maxUncoveredCritical: 3,    // Max 3 critical uncovered
+    minOverallCoverage: DEFAULT_MIN_OVERALL_COVERAGE,    // 70% overall
+    minNodeCoverage: DEFAULT_MIN_NODE_COVERAGE,       // 50% per node
+    maxUncoveredCritical: DEFAULT_MAX_UNCOVERED_CRITICAL,    // Max 3 critical uncovered
 };
 
 /**
