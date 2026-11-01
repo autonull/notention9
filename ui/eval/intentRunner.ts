@@ -1,6 +1,14 @@
 import { test as base, type Page, type BrowserContext, type Browser } from '@playwright/test';
 import { readIntentCases, type IntentCase } from '@notention/core/eval/caseManifest';
 import { readManifest } from '@notention/core/eval/caseManifest';
+import {
+    captureSnapshot,
+    restoreSnapshot,
+    verifySnapshot,
+    computeDomHash,
+    generateRunId,
+    type SeedSnapshot,
+} from './seedSnapshot.js';
 
 export interface IntentRunConfig {
     split: 'search' | 'validation' | 'holdout';
@@ -11,6 +19,8 @@ export interface IntentRunConfig {
     seed?: number;
     viewport?: { width: number; height: number };
     recordVideo?: boolean;
+    /** Enable SeedSnapshot capture/replay for deterministic runs */
+    useSeedSnapshot?: boolean;
 }
 
 export interface IntentCaseResult {
@@ -25,12 +35,20 @@ export interface IntentCaseResult {
     };
     details: string[];
     error?: string;
+    /** DOM hash for this repetition (for replay verification) */
+    domHash?: string;
+    /** SeedSnapshot verification result (for repetitions > 0) */
+    snapshotVerification?: {
+        match: boolean;
+        details: string[];
+    };
 }
 
 export interface IntentRunResult {
     runId: string;
     manifestHash: string;
     split: string;
+    revisionId: string;
     results: IntentCaseResult[];
     summary: {
         total: number;
@@ -39,11 +57,11 @@ export interface IntentRunResult {
         avgCompletion: number;
         avgSteps: number;
         avgCorrections: number;
+        /** Percentage of repetitions where DOM hash matched on replay */
+        replayFidelity?: number;
     };
-}
-
-function generateRunId(manifestHash: string, split: string, revisionId: string): string {
-    return `run-${manifestHash}-${revisionId}-${split}-${Date.now()}`;
+    /** The captured seed snapshot (from first repetition) */
+    seedSnapshot?: SeedSnapshot;
 }
 
 async function setupContextWithDeterminism(
@@ -102,6 +120,19 @@ async function setupContextWithDeterminism(
     return context;
 }
 
+async function applySeedRevisions(page: Page, caseData: IntentCase): Promise<void> {
+    if (caseData.seed.revisions && caseData.seed.revisions.length > 0) {
+        for (const revId of caseData.seed.revisions) {
+            if (revId !== 'incumbent') {
+                // Apply revision via app API - store in localStorage for app to pick up
+                await page.evaluate((rev) => {
+                    localStorage.setItem('pendingRevision', rev);
+                }, revId);
+            }
+        }
+    }
+}
+
 async function runIntentCase(
     page: Page,
     caseData: IntentCase,
@@ -118,17 +149,7 @@ async function runIntentCase(
         await page.waitForLoadState('networkidle');
 
         // Apply seed revisions if any
-        if (caseData.seed.revisions && caseData.seed.revisions.length > 0) {
-            for (const revId of caseData.seed.revisions) {
-                if (revId !== 'incumbent') {
-                    // Apply revision via settings API
-                    await page.evaluate((rev) => {
-                        // This would apply the revision in the app
-                        console.log('Applying revision:', rev);
-                    }, revId);
-                }
-            }
-        }
+        await applySeedRevisions(page, caseData);
 
         // Type the prompt in the quick capture input
         const editor = page.locator('input[placeholder*="What\'s on your mind"]').first();
@@ -207,10 +228,14 @@ export async function runIntentEvaluation(
     const manifest = readManifest();
     const cases = readIntentCases(config.split);
     const revisionId = 'incumbent'; // Would be dynamic in real implementation
-    const runId = generateRunId(manifest.hash, config.split, revisionId);
+    const runId = generateRunId(manifest.hash, revisionId, config.split, 0);
+    const useSeedSnapshot = config.useSeedSnapshot ?? true;
 
     const results: IntentCaseResult[] = [];
     const repetitions = config.repetitions || 3;
+    let seedSnapshot: SeedSnapshot | undefined;
+    let replayMatchCount = 0;
+    let replayTotalCount = 0;
 
     for (const caseData of cases) {
         for (let rep = 0; rep < repetitions; rep++) {
@@ -218,17 +243,79 @@ export async function runIntentEvaluation(
             const page = await context.newPage();
 
             try {
-                const result = await runIntentCase(page, caseData, config.baseURL || 'http://localhost:5173');
+                let domHash: string | undefined;
+                let snapshotVerification: IntentCaseResult['snapshotVerification'];
 
-                results.push({
-                    caseId: caseData.id,
-                    intent: caseData.intent,
-                    repetition: rep,
-                    success: result.success,
-                    metrics: result.metrics,
-                    details: result.details,
-                    error: result.error,
-                });
+                if (useSeedSnapshot) {
+                    if (rep === 0) {
+                        // First repetition: run the case, then capture snapshot
+                        const result = await runIntentCase(page, caseData, config.baseURL || 'http://localhost:5173');
+                        domHash = await computeDomHash(page);
+                        seedSnapshot = await captureSnapshot(page);
+
+                        results.push({
+                            caseId: caseData.id,
+                            intent: caseData.intent,
+                            repetition: rep,
+                            success: result.success,
+                            metrics: result.metrics,
+                            details: result.details,
+                            error: result.error,
+                            domHash,
+                        });
+                    } else {
+                        // Subsequent repetitions: restore snapshot, then run
+                        if (!seedSnapshot) {
+                            throw new Error('SeedSnapshot not captured yet');
+                        }
+
+                        // Restore the snapshot
+                        await restoreSnapshot(page, seedSnapshot);
+
+                        // Run the case on restored state
+                        const result = await runIntentCase(page, caseData, config.baseURL || 'http://localhost:5173');
+                        domHash = await computeDomHash(page);
+
+                        // Verify snapshot fidelity
+                        const verification = await verifySnapshot(page, seedSnapshot);
+                        snapshotVerification = {
+                            match: verification.match,
+                            details: verification.details,
+                        };
+
+                        if (verification.match) {
+                            replayMatchCount++;
+                        }
+                        replayTotalCount++;
+
+                        results.push({
+                            caseId: caseData.id,
+                            intent: caseData.intent,
+                            repetition: rep,
+                            success: result.success,
+                            metrics: result.metrics,
+                            details: result.details,
+                            error: result.error,
+                            domHash,
+                            snapshotVerification,
+                        });
+                    }
+                } else {
+                    // Without SeedSnapshot: run normally
+                    const result = await runIntentCase(page, caseData, config.baseURL || 'http://localhost:5173');
+                    domHash = await computeDomHash(page);
+
+                    results.push({
+                        caseId: caseData.id,
+                        intent: caseData.intent,
+                        repetition: rep,
+                        success: result.success,
+                        metrics: result.metrics,
+                        details: result.details,
+                        error: result.error,
+                        domHash,
+                    });
+                }
             } finally {
                 await page.close();
                 await context.close();
@@ -244,10 +331,15 @@ export async function runIntentEvaluation(
     const avgSteps = results.reduce((sum, r) => sum + r.metrics.steps, 0) / total;
     const avgCorrections = results.reduce((sum, r) => sum + r.metrics.corrections, 0) / total;
 
+    const replayFidelity = replayTotalCount > 0
+        ? Math.round((replayMatchCount / replayTotalCount) * 100)
+        : undefined;
+
     return {
         runId,
         manifestHash: manifest.hash,
         split: config.split,
+        revisionId,
         results,
         summary: {
             total,
@@ -256,8 +348,11 @@ export async function runIntentEvaluation(
             avgCompletion,
             avgSteps,
             avgCorrections,
+            replayFidelity,
         },
+        seedSnapshot,
     };
 }
 
 export { readManifest, readIntentCases };
+export { captureSnapshot, restoreSnapshot, verifySnapshot, computeDomHash, generateRunId, type SeedSnapshot } from './seedSnapshot.js';

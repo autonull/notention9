@@ -102,11 +102,11 @@ The plan is a hypothesis. These three pivots will reshape it based on Phase 1–
 | 2.7 Browser stubs for Node-only modules | ✅ Done | 2026-10-31 | Browser-safe stubs for eval/telemetry; conditional exports in core |
 | 2.8 UI build fixes | ✅ Done | 2026-10-31 | Conditional exports, browser stubs, externalize eval/telemetry in Vite |
 | **3. Causal Delivery Slice** | ✅ Done | 2026-11-01 | One real revision decision, C1–C9 core demonstrated |
-| **4. Benchmark + Representation** | 🔄 90% done | 2026-12-05 | 40 intent / 60 quality cases; F1 + match baselines; calibration, correction, coverage, commitment |
+| **4. Benchmark + Representation** | 🔄 95% done | 2026-12-05 | 40 intent / 60 quality cases; F1 + match baselines; calibration, correction, coverage, commitment |
 | 4.1 Quality cases (60: 38 extraction + 22 match) | ✅ Done | 2026-11-01 | L1 < 10s, ≥40% non-market |
 | 4.2 Intent cases (40: 21 search + 10 validation + 9 holdout) | ✅ Done | 2026-11-01 | Browser runnable, splits enforced |
 | 4.3 Browser harness (clock/RNG freeze, network block) | ✅ Done | 2026-11-01 | `ui/eval/intentRunner.ts` deterministic setup |
-| 4.4 SeedSnapshot replay (IndexedDB + localStorage + revisions) | 🔄 Partial | 2026-12-05 | Replay restores snapshot, DOM hash identical |
+| 4.4 SeedSnapshot replay (IndexedDB + localStorage + revisions) | ✅ Done | 2026-11-01 | `ui/eval/seedSnapshot.ts` + `intentRunner.ts` integration; capture/restore + DOM hash verification |
 | 4.5 Baseline evaluation + ledger recording | ✅ Done | 2026-11-01 | `pnpm eval run` records run:completed in ledger |
 | 4.6 Confidence + provenance on inferred values | ✅ Done | 2026-11-01 | Extraction pipeline returns confidence, provenance |
 | 4.7 ECE calibration (ECE ≤ 0.1) | ✅ Done | 2026-11-01 | `core/src/eval/calibration.ts` + tests |
@@ -518,7 +518,7 @@ interface FrictionEvent {
 
 **Outcome:** a benchmark large enough to make O2/O3 claims, with baselines recorded.
 
-- **4a Representation (O2):** 60 quality cases (≥ 40% non-market, κ ≥ 0.6); extraction F1 + match P@5/R@5/NDCG@10 baselines; confidence + provenance on inferred values; ECE calibration; correction flow; coverage matrix; flat-vs-facet decision; commitment lifecycle; 40 intent cases. **90% done** — SeedSnapshot replay for browser harness remains.
+- **4a Representation (O2):** 60 quality cases (≥ 40% non-market, κ ≥ 0.6); extraction F1 + match P@5/R@5/NDCG@10 baselines; confidence + provenance on inferred values; ECE calibration; correction flow; coverage matrix; flat-vs-facet decision; commitment lifecycle; 40 intent cases. **95% done** — SeedSnapshot replay implemented; only minor polish remains.
 - **4b Friction (O3):** local opt-in journal; 7 capture points; weekly digest; human triage queue; evidence classes + decay. **80% done** — journal/digest/decay implemented; triage queue is manual only.
 
 **Gate to O2 claims:** baseline + one ontology change with no intent regression.
@@ -801,7 +801,7 @@ These are **known unknowns**, classified by the Decision Ladder. Do not assume a
 32. ✅ Correction flow (user corrections → extraction improvement)
 33. ✅ Coverage matrix + flat-vs-facet decision
 34. ✅ Commitment lifecycle implementation (`open → matched → committed → done` + `lapsed`, `cancelled`)
-35. 🔄 **SeedSnapshot replay** (capture/restore IndexedDB + localStorage + active revision set) — Partial, DOM hash replay not wired
+35. ✅ **SeedSnapshot replay** (capture/restore IndexedDB + localStorage + active revision set) — `ui/eval/seedSnapshot.ts` + `intentRunner.ts` integration; DOM hash verification wired
 
 ### Week 4b (Parallel): Friction Discovery 🔄 **80% DONE**
 35. ✅ Local opt-in friction journal (IndexedDB, 90-day retention) — 7 event kinds
