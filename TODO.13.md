@@ -1,7 +1,7 @@
 # TODO.13 — Generalization Layer: From Kernel to Platform
 
 **Supersedes:** Nothing. Extends TODO.12 Phase 6+.
-**Status:** Draft — Design phase. Not started.
+**Status:** Track 1 Complete — Track 2 In Progress
 **Shape:** Three consolidated tracks + one cross-cutting metaprogramming layer. Each track is a *replaceable module* behind a stable interface. No framework rewrite.
 
 ---
@@ -34,17 +34,17 @@ Make the *mechanisms* of TODO.12 (search, verdict, seams, cases, ledger, frictio
 **Unifies:** ParamSpec reflection (A1), SeamDefinition schema (B1), Case schema (C5), Event schema (D3), Zod codegen (C6, D3)
 **Why first:** All other tracks depend on a single source of truth for schemas.
 
-| Task | Description | Effort | Consolidates |
-|------|-------------|--------|--------------|
-| **S1** | `ParamSpec` → `ZodSchema` compiler (single function, used by all tracks) | S | A1, B1, C5, C6, D3 |
-| **S2** | `SeamDefinition` schema (role, paramSpec, evaluator, governanceLevel, evidenceClasses) | S | B1 |
-| **S3** | Static analysis pass: scan `ui/src/strategies/*.ts` → emit `seam-definitions.json` (content-addressed, hash-verified) | M | B2 |
-| **S4** | `CaseManifest` schema + `CaseStore` interface (filesystem, SQLite, in-memory) | S | C5, C6 |
-| **S5** | `EventSchema` registry (Zod + versioning; replaces hardcoded LedgerEventType/LedgerPayload) | S | D3, D4 |
-| **S6** | `VerdictResult` extended with `evidenceClass` + `judgeProvenance` (measured/observed/hypothesized/asserted) | S | C1, C8-C12 |
-| **S7** | `pnpm lint:schemas` — verifies all emitted definitions match Zod schemas | S | All |
+| Task | Description | Effort | Consolidates | Status |
+|------|-------------|--------|--------------|--------|
+| **S1** | `ParamSpec` → `ZodSchema` compiler (single function, used by all tracks) | S | A1, B1, C5, C6, D3 | ✅ Done |
+| **S2** | `SeamDefinition` schema (role, paramSpec, evaluator, governanceLevel, evidenceClasses) | S | B1 | ✅ Done |
+| **S3** | Static analysis pass: scan `ui/src/strategies/*.ts` → emit `seam-definitions.json` (content-addressed, hash-verified) | M | B2 | ✅ Done |
+| **S4** | `CaseManifest` schema + `CaseStore` interface (filesystem, SQLite, in-memory) | S | C5, C6 | ✅ Done |
+| **S5** | `EventSchema` registry (Zod + versioning; replaces hardcoded LedgerEventType/LedgerPayload) | S | D3, D4 | ✅ Done |
+| **S6** | `VerdictResult` extended with `evidenceClass` + `judgeProvenance` (measured/observed/hypothesized/asserted) | S | C1, C8-C12 | ✅ Done |
+| **S7** | `pnpm lint:schemas` — verifies all emitted definitions match Zod schemas | S | All | ✅ Done |
 
-**Deliverable:** `core/src/schemas/` (ParamSpec→Zod, SeamDefinition, CaseManifest, EventSchema, VerdictResult) + `scripts/generate-definitions.ts` + `pnpm lint:schemas`.
+**Deliverable:** `core/src/schemas/` (ParamSpec→Zod, SeamDefinition, CaseManifest, EventSchema, VerdictResult) + `scripts/generate-definitions.ts` + `pnpm lint:schemas` + `pnpm lint:contracts`. ✅ **Delivered**
 
 ---
 
@@ -101,11 +101,11 @@ Make the *mechanisms* of TODO.12 (search, verdict, seams, cases, ledger, frictio
 
 ## 📋 Phase Plan (Consolidated, Dependency-Ordered)
 
-| Phase | Work | Duration | Gate (Measurable) |
-|-------|------|----------|-------------------|
-| **13.0** | Track 1 (S1-S7) | 2 weeks | `pnpm lint:schemas` passes; `seam-definitions.json` emitted; all Zod schemas compile |
-| **13.1** | Track 2 (R1-R7) | 2 weeks | `strategyResolverInit.ts` < 100 lines; new seam works in < 30 min; optimizer config declarative |
-| **13.2** | Track 3 (E1-E7) | 2 weeks | LLM/Human judge plugins work; matrix tests pass; digest pipeline composable |
+| Phase | Work | Duration | Gate (Measurable) | Status |
+|-------|------|----------|-------------------|--------|
+| **13.0** | Track 1 (S1-S7) | 2 weeks | `pnpm lint:schemas` passes; `seam-definitions.json` emitted; all Zod schemas compile | ✅ **Complete** |
+| **13.1** | Track 2 (R1-R7) | 2 weeks | `strategyResolverInit.ts` < 100 lines; new seam works in < 30 min; optimizer config declarative | 🔄 **In Progress** |
+| **13.2** | Track 3 (E1-E7) | 2 weeks | LLM/Human judge plugins work; matrix tests pass; digest pipeline composable | ⏳ Pending |
 
 **Total: ~6 weeks** (vs. 7 weeks in v1). Sequential dependency order eliminates integration thrash.
 
@@ -173,11 +173,23 @@ Make the *mechanisms* of TODO.12 (search, verdict, seams, cases, ledger, frictio
 
 ## 📝 First Actions (Week 1)
 
-1. **Create `core/src/schemas/`** with `paramSpecToZod`, `getSearchSpace`, `SeamDefinition`, `VerdictResult` (with evidenceClass + judgeProvenance)
-2. **Write `scripts/generate-definitions.ts`** — ts-morph scan of strategies → `seam-definitions.json`
-3. **Add `pnpm lint:schemas`** — validates all emitted JSON against Zod schemas
-4. **Add `pnpm lint:contracts`** — validates plugin interfaces
-5. **Refactor `ProfileRegistry`** to read resolution steps from seam definitions (delete hardcoded arrays)
+1. **Create `core/src/schemas/`** with `paramSpecToZod`, `getSearchSpace`, `SeamDefinition`, `VerdictResult` (with evidenceClass + judgeProvenance) ✅
+2. **Write `scripts/generate-definitions.ts`** — ts-morph scan of strategies → `seam-definitions.json` ✅
+3. **Add `pnpm lint:schemas`** — validates all emitted JSON against Zod schemas ✅
+4. **Add `pnpm lint:contracts`** — validates plugin interfaces ✅
+5. **Refactor `ProfileRegistry`** to read resolution steps from seam definitions (delete hardcoded arrays) ⏳
+
+---
+
+## 📝 Next Actions (Track 2 — Week 2-3)
+
+1. **R1** Create `CandidateGenerator` interface + registry (grid, random, bayesian, LLM-proposed)
+2. **R2** Implement `SearchSpace` derived from `ParamSpec` via S1 (replaces manual grid construction)
+3. **R3** Auto-populate `StrategyRegistry` from `seam-definitions.json` (replaces manual registration)
+4. **R4** Make `ProfileRegistry` resolution steps data-driven (read from seam definitions)
+5. **R5** Add governance level enforcement in revision activation
+6. **R6** Implement budget allocator plugin (successive halving, Hyperband, fixed)
+7. **R7** Make optimizer config declarative (target seams from manifest)
 
 ---
 
