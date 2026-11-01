@@ -24,9 +24,11 @@ import {
 import { ExtractionPipeline, createExtractionPipeline } from '@notention/core/extraction';
 import { MatchEngine } from '@notention/core/matching';
 import { type OntologyNode, type Note, type Property } from '@notention/core/types';
-import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
+import { writeFileSync, mkdirSync, existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { DEFAULT_ONTOLOGY } from '@notention/core/ontology';
+import { Cache } from '@notention/core/utils/cache';
+import { createHash } from 'node:crypto';
 
 /**
  * Configuration for a single optimization cycle
@@ -440,53 +442,66 @@ export async function runOptimizerCycle(config: OptimizerConfig = defaultOptimiz
     // 3. Evaluate candidates
     console.log('\n🚀 Evaluating candidates...');
     const evaluatedCandidates: OptimizerCandidate[] = [];
+    const candidateCache = getCandidateCache();
 
     for (let i = 0; i < allCandidates.length; i++) {
         const candidate = allCandidates[i];
         console.log(`   [${i + 1}/${allCandidates.length}] ${candidate.id} (${candidate.seamRole}/${candidate.strategyId})`);
 
-        // Run quality evaluation for candidate
-        const candidateQualityResults = await runQualityEvaluationForCandidate(candidate, baselineQualityConfig);
+        // Check cache first
+        const cachedEvaluation = candidateCache.get(candidate.seamRole, candidate.strategyId, candidate.patch);
+        let evaluation: CandidateEvaluation;
 
-        // Compute verdict using the eval CLI logic
-        const verdictConfig: VerdictConfig = {
-            primaryMetric: 'f1',
-            mde: {
-                completion: DEFAULT_MDE_COMPLETION,
-                steps: DEFAULT_MDE_STEPS,
-                corrections: DEFAULT_MDE_CORRECTIONS,
-                precision: DEFAULT_MDE_PRECISION,
-                recall: DEFAULT_MDE_RECALL,
-                f1: DEFAULT_MDE_F1,
-            },
-            floors: { schemaValidity: SCHEMA_VALIDITY_FLOOR },
-            minSampleSize: DEFAULT_MIN_SAMPLE_SIZE,
-        };
+        if (cachedEvaluation) {
+            console.log(`     → Cache hit`);
+            evaluation = cachedEvaluation;
+        } else {
+            // Run quality evaluation for candidate
+            const candidateQualityResults = await runQualityEvaluationForCandidate(candidate, baselineQualityConfig);
 
-        // Compute case verdicts (simplified - using quality results directly)
-        const caseVerdicts = computeCaseVerdictsFromQualityResults(baselineQualityResults, candidateQualityResults, verdictConfig);
+            // Compute verdict using the eval CLI logic
+            const verdictConfig: VerdictConfig = {
+                primaryMetric: 'f1',
+                mde: {
+                    completion: DEFAULT_MDE_COMPLETION,
+                    steps: DEFAULT_MDE_STEPS,
+                    corrections: DEFAULT_MDE_CORRECTIONS,
+                    precision: DEFAULT_MDE_PRECISION,
+                    recall: DEFAULT_MDE_RECALL,
+                    f1: DEFAULT_MDE_F1,
+                },
+                floors: { schemaValidity: SCHEMA_VALIDITY_FLOOR },
+                minSampleSize: DEFAULT_MIN_SAMPLE_SIZE,
+            };
 
-        const runVerdict = computeRunVerdict(
-            `${cycleId}-${candidate.id}`,
-            manifest.hash,
-            candidate.id,
-            'baseline',
-            caseVerdicts,
-            'f1'
-        );
+            // Compute case verdicts (simplified - using quality results directly)
+            const caseVerdicts = computeCaseVerdictsFromQualityResults(baselineQualityResults, candidateQualityResults, verdictConfig);
 
-        const evaluation: CandidateEvaluation = {
-            candidateId: candidate.id,
-            revisionId: candidate.id,
-            qualityResults: baselineQualityConfig,
-            verdict: runVerdict.overallVerdict,
-            primaryDelta: runVerdict.primaryMetricAggregate.meanDelta,
-            cost: {
-                browserRuns: 0, // Quality runs are in-process
-                tokensUsed: 0,
-                durationMs: 0,
-            },
-        };
+            const runVerdict = computeRunVerdict(
+                `${cycleId}-${candidate.id}`,
+                manifest.hash,
+                candidate.id,
+                'baseline',
+                caseVerdicts,
+                'f1'
+            );
+
+            evaluation = {
+                candidateId: candidate.id,
+                revisionId: candidate.id,
+                qualityResults: baselineQualityConfig,
+                verdict: runVerdict.overallVerdict,
+                primaryDelta: runVerdict.primaryMetricAggregate.meanDelta,
+                cost: {
+                    browserRuns: 0, // Quality runs are in-process
+                    tokensUsed: 0,
+                    durationMs: 0,
+                },
+            };
+
+            // Cache the evaluation
+            candidateCache.set(candidate.seamRole, candidate.strategyId, candidate.patch, evaluation);
+        }
 
         candidate.evaluation = evaluation;
         evaluatedCandidates.push(candidate);
@@ -630,4 +645,110 @@ export function defaultOptimizerConfig(): OptimizerConfig {
         initialSliceFraction: 0.25,
         minPromote: 2,
     };
+}
+
+/**
+ * Candidate cache entry
+ */
+export interface CandidateCacheEntry {
+    candidateId: string;
+    patchHash: string;
+    evaluation: CandidateEvaluation;
+    cachedAt: string;
+}
+
+/**
+ * Candidate cache - keyed by (target, patchHash) to avoid re-evaluation
+ */
+export class CandidateCache {
+    private cache = new Map<string, CandidateCacheEntry>();
+    private readonly cacheDir: string;
+
+    constructor(cacheDir: string = join('optimize', 'cache')) {
+        this.cacheDir = cacheDir;
+        this.loadFromDisk();
+    }
+
+    private getKey(seamRole: string, strategyId: string, patchHash: string): string {
+        return `${seamRole}:${strategyId}:${patchHash}`;
+    }
+
+    private hashPatch(patch: Record<string, unknown>): string {
+        return createHash('sha256').update(JSON.stringify(patch, Object.keys(patch).sort())).digest('hex').slice(0, 16);
+    }
+
+    get(seamRole: string, strategyId: string, patch: Record<string, unknown>): CandidateEvaluation | undefined {
+        const patchHash = this.hashPatch(patch);
+        const key = this.getKey(seamRole, strategyId, patchHash);
+        return this.cache.get(key)?.evaluation;
+    }
+
+    set(seamRole: string, strategyId: string, patch: Record<string, unknown>, evaluation: CandidateEvaluation): void {
+        const patchHash = this.hashPatch(patch);
+        const key = this.getKey(seamRole, strategyId, patchHash);
+        const entry: CandidateCacheEntry = {
+            candidateId: evaluation.candidateId,
+            patchHash,
+            evaluation,
+            cachedAt: new Date().toISOString(),
+        };
+        this.cache.set(key, entry);
+        this.persistToDisk();
+    }
+
+    has(seamRole: string, strategyId: string, patch: Record<string, unknown>): boolean {
+        const patchHash = this.hashPatch(patch);
+        const key = this.getKey(seamRole, strategyId, patchHash);
+        return this.cache.has(key);
+    }
+
+    private persistToDisk(): void {
+        if (!existsSync(this.cacheDir)) {
+            mkdirSync(this.cacheDir, { recursive: true });
+        }
+        const data = Array.from(this.cache.entries()).map(([key, entry]) => ({ key, ...entry }));
+        writeFileSync(join(this.cacheDir, 'candidate-cache.json'), JSON.stringify(data, null, 2));
+    }
+
+    private loadFromDisk(): void {
+        const cacheFile = join(this.cacheDir, 'candidate-cache.json');
+        if (!existsSync(cacheFile)) return;
+        try {
+            const data = JSON.parse(readFileSync(cacheFile, 'utf-8')) as Array<{ key: string } & CandidateCacheEntry>;
+            for (const item of data) {
+                const { key, ...entry } = item;
+                this.cache.set(key, entry);
+            }
+        } catch {
+            // Ignore corrupt cache
+        }
+    }
+
+    clear(): void {
+        this.cache.clear();
+        const cacheFile = join(this.cacheDir, 'candidate-cache.json');
+        if (existsSync(cacheFile)) {
+            writeFileSync(cacheFile, '[]');
+        }
+    }
+
+    get size(): number {
+        return this.cache.size;
+    }
+}
+
+/**
+ * Global candidate cache instance
+ */
+let candidateCacheInstance: CandidateCache | null = null;
+
+export function getCandidateCache(): CandidateCache {
+    if (!candidateCacheInstance) {
+        candidateCacheInstance = new CandidateCache();
+    }
+    return candidateCacheInstance;
+}
+
+export function resetCandidateCache(): void {
+    candidateCacheInstance = null;
 }

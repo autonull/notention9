@@ -4,7 +4,7 @@
  */
 
 import { Command } from 'commander';
-import { runOptimizerCycle, defaultOptimizerConfig, type OptimizerConfig } from './index.js';
+import { runOptimizerCycle, defaultOptimizerConfig, type OptimizerConfig, getCandidateCache } from './index.js';
 
 const program = new Command();
 
@@ -73,6 +73,28 @@ program
     .action(() => {
         const config = defaultOptimizerConfig();
         console.log(JSON.stringify(config, null, 2));
+    });
+
+program
+    .command('cache')
+    .description('Manage candidate evaluation cache')
+    .option('--stats', 'Show cache statistics')
+    .option('--clear', 'Clear the cache')
+    .action((options) => {
+        const cache = getCandidateCache();
+        
+        if (options.clear) {
+            cache.clear();
+            console.log('✅ Cache cleared');
+            return;
+        }
+        
+        if (options.stats || (!options.clear && !options.stats)) {
+            console.log('📦 Candidate Cache Statistics');
+            console.log('==============================');
+            console.log(`Entries: ${cache.size}`);
+            console.log(`Cache dir: optimize/cache`);
+        }
     });
 
 function join(...args: string[]): string {

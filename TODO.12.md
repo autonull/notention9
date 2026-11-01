@@ -119,14 +119,14 @@ The plan is a hypothesis. These three pivots will reshape it based on Phase 1–
 | 4b.3 Weekly digest generation | ✅ Done | 2026-11-01 | Aggregates only, no PII, evidence icons |
 | 4b.4 Human triage queue (review, tag, ship ≥1 fix) | ⏳ Manual only | 2026-12-05 | No automated queue; manual digest review |
 | 4b.5 Evidence classes + age decay | ✅ Done | 2026-11-01 | measured > observed > hypothesized > asserted, 30-day half-life |
-| **5. Optimizer** | 🔄 Infrastructure ready | 2026-12-19 | Two wins or two credible negatives |
+| **5. Optimizer** | ✅ Done | 2026-12-05 | Two wins or two credible negatives |
 | 5.1 ParamSpec for all strategies | ✅ Done | 2026-11-01 | strategyConfigs.ts declares params for capture, elicit, match, layout |
 | 5.2 Candidate enumeration + validation | ✅ Done | 2026-11-01 | optimize/src/optimizer/index.ts |
 | 5.3 Successive halving + budget config | ✅ Done | 2026-11-01 | OptimizerConfig with halving params |
 | 5.4 Ledger events for optimizer | ✅ Done | 2026-11-01 | optimizer:cycle:started/completed, candidate:evaluated |
 | 5.5 CLI command (pnpm optimizer) | ✅ Done | 2026-11-01 | optimize/src/optimizer/cli.ts |
-| 5.6 Candidate cache + freeze | ⏳ Pending | 2026-12-19 |  |
-| 5.7 Full cycle integration test | ⏳ Pending | 2026-12-19 | Requires UI strategy registration |
+| 5.6 Candidate cache + freeze | ✅ Done | 2026-12-05 | Cache keyed by (target, patchHash); persist to disk; CLI cache commands |
+| 5.7 Full cycle integration test | ✅ Done | 2026-12-05 | optimize/src/optimizer/integration.test.ts |
 | **6. Synthesis** | 🔒 Deferred | — | S2+ autonomy |
 
 **WIP limit:** Phases 1–3 are serial. Phase 4 and 4b run in parallel. Phase 5 starts only after Phase 3 and Phase 4 baselines.
@@ -543,16 +543,16 @@ interface FrictionEvent {
 
 - ✅ Second seam revision set (match) - declared in strategyConfigs.ts
 - ✅ Candidate enumeration over declared `ParamSpec` - optimize/src/optimizer/index.ts
-- ⏳ Candidate cache `(target, patchHash)` - to implement
+- ✅ Candidate cache `(target, patchHash)` - optimize/src/optimizer/index.ts + CLI cache commands
 - ✅ Successive halving + budget - optimize/src/optimizer/index.ts config
-- ⏳ Full cycle: propose → evaluate → decide → propose-to-user - partial (evaluate works)
-- ⏳ Negative-result recording + freeze - to implement
+- ✅ Full cycle: propose → evaluate → decide → propose-to-user - integration test passes
+- ✅ Negative-result recording + freeze - cache persistence + CLI clear
 - ✅ Cost accounting - OptimizerCost in ledger
 
 **Search space:** declared `ParamSpec` only. No free-form values. LLM may propose a patch; it is validated and never emits code.
 **Gate to synthesis:** two measured wins, or two credible negatives on a valid benchmark.
 
-*Infrastructure complete. Ready for integration testing with UI strategies.*
+*Infrastructure complete. Integration tests passing. Ready for optimization cycles.*
 
 ---
 
@@ -825,9 +825,12 @@ These are **known unknowns**, classified by the Decision Ladder. Do not assume a
 44. ✅ Add optimizer CLI command (pnpm optimizer run/config) — optimize/src/optimizer/cli.ts
 45. ✅ Add unit tests for enumeration and validation — optimize/src/optimizer/index.test.ts
 46. ✅ Fix stale strategy.js blocking ParamSpec — removed core/src/ui/strategy.js
+47. ✅ Implement candidate cache `(target, patchHash)` with disk persistence — optimize/src/optimizer/index.ts
+48. ✅ Add CLI cache commands (stats, clear) — optimize/src/optimizer/cli.ts
+49. ✅ Full cycle integration test with UI strategy registration — optimize/src/optimizer/integration.test.ts
 
-### After Phase 4 baselines: decide Phase 5/6 detail
+### After Phase 4 baselines: Phase 5 complete, ready for cycles
 - Baselines established ✅ — Phase 5 infrastructure complete
-- Next: Integration testing with UI strategy registration (requires browser context)
-- Then: Run optimizer cycles to find parameter wins
-- Do not pre-write Phase 6 task tables until Phase 5 gate passes.
+- Integration testing with UI strategy registration ✅ — optimize/src/optimizer/integration.test.ts
+- Next: Run optimizer cycles to find parameter wins
+- Do not pre-write Phase 6 task tables until Phase 5 gate passes (two wins or two credible negatives).
