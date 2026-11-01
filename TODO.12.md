@@ -119,7 +119,7 @@ The plan is a hypothesis. These three pivots will reshape it based on Phase 1–
 | 4b.3 Weekly digest generation | ✅ Done | 2026-11-01 | Aggregates only, no PII, evidence icons |
 | 4b.4 Human triage queue (review, tag, ship ≥1 fix) | ⏳ Manual only | 2026-12-05 | No automated queue; manual digest review |
 | 4b.5 Evidence classes + age decay | ✅ Done | 2026-11-01 | measured > observed > hypothesized > asserted, 30-day half-life |
-| **5. Optimizer** | ✅ Done | 2026-12-05 | Two wins or two credible negatives |
+| **5. Optimizer** | ✅ Done | 2026-12-19 | Two wins or two credible negatives |
 | 5.1 ParamSpec for all strategies | ✅ Done | 2026-11-01 | strategyConfigs.ts declares params for capture, elicit, match, layout |
 | 5.2 Candidate enumeration + validation | ✅ Done | 2026-11-01 | optimize/src/optimizer/index.ts |
 | 5.3 Successive halving + budget config | ✅ Done | 2026-11-01 | OptimizerConfig with halving params |
@@ -828,9 +828,11 @@ These are **known unknowns**, classified by the Decision Ladder. Do not assume a
 47. ✅ Implement candidate cache `(target, patchHash)` with disk persistence — optimize/src/optimizer/index.ts
 48. ✅ Add CLI cache commands (stats, clear) — optimize/src/optimizer/cli.ts
 49. ✅ Full cycle integration test with UI strategy registration — optimize/src/optimizer/integration.test.ts
+50. ✅ **Integrate intent evaluation (browser-based) for UI param testing** — optimize/src/optimizer/index.ts: runIntentEvaluationForRevision, computeCaseVerdictsFromIntentResults
 
 ### After Phase 4 baselines: Phase 5 complete, ready for cycles
 - Baselines established ✅ — Phase 5 infrastructure complete
 - Integration testing with UI strategy registration ✅ — optimize/src/optimizer/integration.test.ts
-- Next: Run optimizer cycles to find parameter wins
+- **Intent evaluation integration ✅** — Optimizer runs browser-based intent cases to evaluate UI parameter changes
+- Next: Run optimizer cycles to find parameter wins (requires app to apply revision params to UI components)
 - Do not pre-write Phase 6 task tables until Phase 5 gate passes (two wins or two credible negatives).

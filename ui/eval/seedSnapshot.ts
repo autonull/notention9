@@ -125,10 +125,12 @@ async function captureIndexedDB(page: Page): Promise<Record<string, unknown>> {
                 getAllRequest.onsuccess = () => {
                     const values = getAllRequest.result;
                     getAllKeysRequest.onsuccess = () => {
-                        const keys = getAllKeysRequest.result;
+                        const keys = getAllKeysRequest.result as IDBValidKey[];
                         const result: Record<string, unknown> = {};
                         for (let i = 0; i < keys.length; i++) {
-                            result[keys[i]] = values[i];
+                            const key = keys[i];
+                            const keyStr = typeof key === 'string' ? key : String(key);
+                            result[keyStr] = values[i];
                         }
                         db.close();
                         resolve(result);

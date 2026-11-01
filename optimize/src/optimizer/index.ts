@@ -8,7 +8,7 @@
 import { type ParamSpec, type Seam } from '@notention/core/ui/strategy';
 import { getRevisionStore } from '@notention/core/telemetry/revisionStore';
 import { logEvent, getRunEvents } from '@notention/core/telemetry/ledger';
-import { readManifest, readQualityCases } from '@notention/core/eval/caseManifest';
+import { readManifest, readQualityCases, readIntentCases } from '@notention/core/eval/caseManifest';
 import { runAllQuality, type QualityRunConfig } from '@notention/core/eval/quality';
 import { computeRunVerdict, computeCaseVerdict, type RunVerdict, type VerdictConfig } from '@notention/core/eval/verdict';
 import {
@@ -27,13 +27,13 @@ import { type OntologyNode, type Note, type Property } from '@notention/core/typ
 import { writeFileSync, mkdirSync, existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { DEFAULT_ONTOLOGY } from '@notention/core/ontology';
-import { Cache } from '@notention/core/utils/cache';
 import { createHash } from 'node:crypto';
 import {
     STRATEGY_PARAM_CONFIGS,
     getStrategyParamConfigsByRole,
     type StrategyParamConfig,
 } from '@notention/core/constants/strategyParams';
+import { chromium, type Browser, type BrowserContext } from '@playwright/test';
 
 /**
  * Configuration for a single optimization cycle
@@ -361,6 +361,255 @@ function createSampleNotes(): Note[] {
 }
 
 /**
+ * Run intent evaluation for a specific revision using Playwright
+ * This tests UI parameter changes by running browser-based intent cases
+ */
+export interface IntentEvaluationConfig {
+    baseURL?: string;
+    headless?: boolean;
+    split?: 'search' | 'validation' | 'holdout';
+    repetitions?: number;
+    seed?: number;
+    viewport?: { width: number; height: number };
+    caseFilter?: string[]; // Optional case IDs to run (for successive halving)
+}
+
+export interface IntentEvaluationResult {
+    runId: string;
+    manifestHash: string;
+    revisionId: string;
+    split: string;
+    results: Array<{
+        caseId: string;
+        intent: string;
+        repetition: number;
+        success: boolean;
+        metrics: { completion: number; steps: number; corrections: number };
+        details: string[];
+        error?: string;
+    }>;
+    summary: {
+        total: number;
+        passed: number;
+        failed: number;
+        avgCompletion: number;
+        avgSteps: number;
+        avgCorrections: number;
+    };
+}
+
+let previewServerProcess: ReturnType<typeof import('child_process').spawn> | null = null;
+const PREVIEW_PORT = 4199;
+const PREVIEW_URL = `http://localhost:${PREVIEW_PORT}`;
+
+async function ensurePreviewServer(): Promise<void> {
+    // Check if server is already running
+    try {
+        const response = await fetch(PREVIEW_URL, { method: 'HEAD' });
+        if (response.ok) {
+            console.log(`   Preview server already running at ${PREVIEW_URL}`);
+            return;
+        }
+    } catch {
+        // Server not running
+    }
+
+    console.log(`   Starting preview server at ${PREVIEW_URL}...`);
+    const { spawn } = await import('child_process');
+    
+    previewServerProcess = spawn('pnpm', ['--filter', '@notention/ui', 'preview', '--port', String(PREVIEW_PORT), '--strictPort'], {
+        cwd: process.cwd(),
+        stdio: ['ignore', 'pipe', 'pipe'],
+        env: { ...process.env, VITE_ENABLE_AGENT: 'false', VITE_LLM_SOURCE: 'none', VITE_DEV_HOOKS: 'true' },
+    });
+
+    previewServerProcess.stdout?.on('data', (data) => {
+        const output = data.toString();
+        if (output.includes('Local:')) {
+            console.log(`   Preview server started`);
+        }
+    });
+
+    previewServerProcess.stderr?.on('data', (data) => {
+        const output = data.toString();
+        if (!output.includes('DEP0205') && !output.includes('ExperimentalWarning')) {
+            console.error(`   Preview server error: ${output}`);
+        }
+    });
+
+    // Wait for server to be ready
+    for (let i = 0; i < 30; i++) {
+        try {
+            const response = await fetch(PREVIEW_URL, { method: 'HEAD' });
+            if (response.ok) {
+                return;
+            }
+        } catch {
+            // Wait and retry
+        }
+        await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+    
+    throw new Error('Preview server failed to start within 30 seconds');
+}
+
+export async function runIntentEvaluationForRevision(
+    revisionId: string,
+    config: IntentEvaluationConfig = {}
+): Promise<IntentEvaluationResult> {
+    await ensurePreviewServer();
+
+    const manifest = readManifest();
+    const cases = readIntentCases(config.split ?? 'search');
+    
+    // Filter cases if specified (for successive halving)
+    const filteredCases = config.caseFilter 
+        ? cases.filter(c => config.caseFilter!.includes(c.id))
+        : cases;
+
+    const runId = `intent-${manifest.hash}-${revisionId}-${Date.now()}`;
+    
+    console.log(`   🌐 Running intent evaluation (${filteredCases.length} cases, ${config.repetitions ?? 1} rep)...`);
+
+    const browser = await chromium.launch({ 
+        headless: config.headless !== false,
+        args: ['--disable-dev-shm-usage', '--disable-gpu', '--no-sandbox']
+    });
+
+    try {
+        const context = await browser.newContext({
+            viewport: config.viewport || { width: 1280, height: 720 },
+        });
+
+        // Seed the revision in localStorage for the test
+        await context.addInitScript((revId: string) => {
+            localStorage.setItem('pendingRevision', revId);
+        }, revisionId);
+
+        const page = await context.newPage();
+        
+        const results: IntentEvaluationResult['results'] = [];
+        const repetitions = config.repetitions ?? 1;
+
+        for (const caseData of filteredCases) {
+            for (let rep = 0; rep < repetitions; rep++) {
+                const startTime = Date.now();
+                let steps = 0;
+                const details: string[] = [];
+                let corrections = 0;
+
+                try {
+                    // Navigate to dashboard
+                    await page.goto(`${config.baseURL || PREVIEW_URL}/#dashboard`);
+                    await page.waitForLoadState('domcontentloaded');
+
+                    // Type the prompt in the quick capture input
+                    const editor = page.locator('input[placeholder*="What\'s on your mind"]').first();
+                    await editor.waitFor({ state: 'visible', timeout: 5000 });
+                    await editor.fill(caseData.prompt);
+                    steps++;
+                    details.push(`Filled prompt: ${caseData.prompt.slice(0, 50)}...`);
+
+                    // Submit
+                    await page.click('button[aria-label="Create note"]');
+                    await page.waitForLoadState('domcontentloaded');
+                    steps++;
+                    details.push('Submitted capture');
+
+                    // Wait for extraction to complete
+                    await page.waitForTimeout(300);
+                    steps++;
+                    details.push('Waited for extraction');
+
+                    // Count extracted properties
+                    const properties = await page.locator('[data-testid="extracted-property"], .badge:has-text(":")').count();
+                    steps++;
+                    details.push(`Extracted ${properties} properties`);
+
+                    // Check expected outcomes
+                    let completion = 0;
+                    const minProperties = caseData.expected.minProperties || 2;
+                    const requiredKeys = caseData.expected.requiredKeys || [];
+
+                    if (properties >= minProperties) {
+                        completion = 1;
+                        details.push(`✓ Met minProperties (${properties} >= ${minProperties})`);
+                    } else {
+                        details.push(`✗ Failed minProperties (${properties} < ${minProperties})`);
+                    }
+
+                    // Check required keys in extracted properties
+                    for (const key of requiredKeys) {
+                        const hasKey = await page.locator(`[data-testid="extracted-property"][data-key="${key}"], .badge:has-text("${key}:")`).count() > 0;
+                        if (hasKey) {
+                            details.push(`✓ Has required key: ${key}`);
+                        } else {
+                            details.push(`✗ Missing required key: ${key}`);
+                            completion = 0;
+                        }
+                    }
+
+                    // Check for corrections needed
+                    if (completion === 1) {
+                        details.push('No corrections needed');
+                    } else {
+                        corrections = 1;
+                        details.push('Corrections needed');
+                    }
+
+                    const success = completion === 1;
+
+                    results.push({
+                        caseId: caseData.id,
+                        intent: caseData.intent,
+                        repetition: rep,
+                        success,
+                        metrics: { completion, steps, corrections },
+                        details,
+                    });
+                } catch (error) {
+                    results.push({
+                        caseId: caseData.id,
+                        intent: caseData.intent,
+                        repetition: rep,
+                        success: false,
+                        metrics: { completion: 0, steps, corrections },
+                        details: [...details, `Error: ${error instanceof Error ? error.message : String(error)}`],
+                        error: error instanceof Error ? error.message : String(error),
+                    });
+                }
+            }
+        }
+
+        const total = results.length;
+        const passed = results.filter(r => r.success).length;
+        const failed = total - passed;
+
+        const avgCompletion = results.reduce((sum, r) => sum + r.metrics.completion, 0) / total;
+        const avgSteps = results.reduce((sum, r) => sum + r.metrics.steps, 0) / total;
+        const avgCorrections = results.reduce((sum, r) => sum + r.metrics.corrections, 0) / total;
+
+        return {
+            runId,
+            manifestHash: manifest.hash,
+            revisionId,
+            split: config.split ?? 'search',
+            results,
+            summary: {
+                total,
+                passed,
+                failed,
+                avgCompletion,
+                avgSteps,
+                avgCorrections,
+            },
+        };
+    } finally {
+        await browser.close();
+    }
+}
+
+/**
  * Run quality evaluation for a specific candidate (via revision)
  */
 async function runQualityEvaluationForCandidate(candidate: OptimizerCandidate, config: QualityRunConfig): Promise<any[]> {
@@ -433,8 +682,8 @@ export async function runOptimizerCycle(config: OptimizerConfig = defaultOptimiz
         };
     }
 
-    // 2. Run baseline evaluation (once per cycle)
-    console.log('\n📏 Running baseline evaluation...');
+    // 2. Run baseline evaluations (quality + intent)
+    console.log('\n📏 Running baseline quality evaluation...');
     const baselineQualityConfig: QualityRunConfig = {
         repetitions: 1, // Single rep for speed in optimizer
     };
@@ -443,14 +692,41 @@ export async function runOptimizerCycle(config: OptimizerConfig = defaultOptimiz
         baselineQualityConfig
     );
 
+    console.log('\n📏 Running baseline intent evaluation (validation split, limited cases)...');
+    const intentCases = readIntentCases('validation'); // Use validation (10 cases) instead of search (21)
+    const intentCaseIds = intentCases.slice(0, 2).map(c => c.id); // Limit to 2 cases for speed
+    const baselineIntentConfig: IntentEvaluationConfig = {
+        split: 'validation',
+        repetitions: 1,
+        headless: true,
+        caseFilter: intentCaseIds,
+    };
+    const baselineIntentResult = await runIntentEvaluationForRevision('incumbent', baselineIntentConfig);
+
     // 3. Evaluate candidates
     console.log('\n🚀 Evaluating candidates...');
     const evaluatedCandidates: OptimizerCandidate[] = [];
     const candidateCache = getCandidateCache();
 
-    for (let i = 0; i < allCandidates.length; i++) {
-        const candidate = allCandidates[i];
-        console.log(`   [${i + 1}/${allCandidates.length}] ${candidate.id} (${candidate.seamRole}/${candidate.strategyId})`);
+    // For successive halving, track candidates by seam for promotion
+    const candidatesBySeam: Map<string, OptimizerCandidate[]> = new Map();
+    for (const candidate of allCandidates) {
+        const list = candidatesBySeam.get(candidate.seamRole) ?? [];
+        list.push(candidate);
+        candidatesBySeam.set(candidate.seamRole, list);
+    }
+
+    // If using successive halving, run first slice
+    let candidatesToEvaluate = allCandidates;
+    if (config.useSuccessiveHalving && allCandidates.length > config.minPromote) {
+        const sliceSize = Math.ceil(allCandidates.length * config.initialSliceFraction);
+        candidatesToEvaluate = allCandidates.slice(0, sliceSize);
+        console.log(`   Using successive halving: evaluating ${candidatesToEvaluate.length}/${allCandidates.length} candidates in first slice`);
+    }
+
+    for (let i = 0; i < candidatesToEvaluate.length; i++) {
+        const candidate = candidatesToEvaluate[i];
+        console.log(`   [${i + 1}/${candidatesToEvaluate.length}] ${candidate.id} (${candidate.seamRole}/${candidate.strategyId})`);
 
         // Check cache first
         const cachedEvaluation = candidateCache.get(candidate.seamRole, candidate.strategyId, candidate.patch);
@@ -463,9 +739,18 @@ export async function runOptimizerCycle(config: OptimizerConfig = defaultOptimiz
             // Run quality evaluation for candidate
             const candidateQualityResults = await runQualityEvaluationForCandidate(candidate, baselineQualityConfig);
 
-            // Compute verdict using the eval CLI logic
+            // Run intent evaluation for candidate (UI params affect capture/match behavior)
+            console.log(`     🌐 Running intent evaluation (${intentCaseIds.length} cases)...`);
+            const candidateIntentResult = await runIntentEvaluationForRevision(candidate.id, {
+                split: 'validation',
+                repetitions: 1,
+                headless: true,
+                caseFilter: intentCaseIds,
+            });
+
+            // Compute verdict based on intent results (primary: completion)
             const verdictConfig: VerdictConfig = {
-                primaryMetric: 'f1',
+                primaryMetric: 'completion',
                 mde: {
                     completion: DEFAULT_MDE_COMPLETION,
                     steps: DEFAULT_MDE_STEPS,
@@ -478,8 +763,12 @@ export async function runOptimizerCycle(config: OptimizerConfig = defaultOptimiz
                 minSampleSize: DEFAULT_MIN_SAMPLE_SIZE,
             };
 
-            // Compute case verdicts (simplified - using quality results directly)
-            const caseVerdicts = computeCaseVerdictsFromQualityResults(baselineQualityResults, candidateQualityResults, verdictConfig);
+            // Compute case verdicts from intent results
+            const caseVerdicts = computeCaseVerdictsFromIntentResults(
+                baselineIntentResult,
+                candidateIntentResult,
+                verdictConfig
+            );
 
             const runVerdict = computeRunVerdict(
                 `${cycleId}-${candidate.id}`,
@@ -487,7 +776,7 @@ export async function runOptimizerCycle(config: OptimizerConfig = defaultOptimiz
                 candidate.id,
                 'baseline',
                 caseVerdicts,
-                'f1'
+                'completion'
             );
 
             evaluation = {
@@ -497,7 +786,7 @@ export async function runOptimizerCycle(config: OptimizerConfig = defaultOptimiz
                 verdict: runVerdict.overallVerdict,
                 primaryDelta: runVerdict.primaryMetricAggregate.meanDelta,
                 cost: {
-                    browserRuns: 0, // Quality runs are in-process
+                    browserRuns: candidateIntentResult.results.length,
                     tokensUsed: 0,
                     durationMs: 0,
                 },
@@ -509,6 +798,93 @@ export async function runOptimizerCycle(config: OptimizerConfig = defaultOptimiz
 
         candidate.evaluation = evaluation;
         evaluatedCandidates.push(candidate);
+    }
+
+    // 4. If using successive halving, promote top candidates and run full evaluation
+    if (config.useSuccessiveHalving && candidatesToEvaluate.length < allCandidates.length) {
+        console.log('\n🔼 Successive halving: promoting top candidates...');
+        
+        // Sort by primaryDelta descending
+        const sortedCandidates = evaluatedCandidates
+            .filter(c => c.evaluation)
+            .sort((a, b) => (b.evaluation!.primaryDelta ?? -Infinity) - (a.evaluation!.primaryDelta ?? -Infinity));
+        
+        const promoteCount = Math.max(config.minPromote, Math.ceil(sortedCandidates.length / 2));
+        const promoted = sortedCandidates.slice(0, promoteCount);
+        
+        console.log(`   Promoted ${promoted.length} candidates for full evaluation`);
+        
+        // Evaluate remaining candidates
+        const remainingCandidates = allCandidates.filter(c => 
+            !evaluatedCandidates.some(e => e.id === c.id)
+        );
+        
+        for (const candidate of remainingCandidates) {
+            console.log(`   [Full] ${candidate.id} (${candidate.seamRole}/${candidate.strategyId})`);
+            
+            const cachedEvaluation = candidateCache.get(candidate.seamRole, candidate.strategyId, candidate.patch);
+            let evaluation: CandidateEvaluation;
+
+            if (cachedEvaluation) {
+                console.log(`     → Cache hit`);
+                evaluation = cachedEvaluation;
+            } else {
+                const candidateQualityResults = await runQualityEvaluationForCandidate(candidate, baselineQualityConfig);
+                const candidateIntentResult = await runIntentEvaluationForRevision(candidate.id, {
+                    split: 'validation',
+                    repetitions: 1,
+                    headless: true,
+                    caseFilter: intentCaseIds,
+                });
+
+                const verdictConfig: VerdictConfig = {
+                    primaryMetric: 'completion',
+                    mde: {
+                        completion: DEFAULT_MDE_COMPLETION,
+                        steps: DEFAULT_MDE_STEPS,
+                        corrections: DEFAULT_MDE_CORRECTIONS,
+                        precision: DEFAULT_MDE_PRECISION,
+                        recall: DEFAULT_MDE_RECALL,
+                        f1: DEFAULT_MDE_F1,
+                    },
+                    floors: { schemaValidity: SCHEMA_VALIDITY_FLOOR },
+                    minSampleSize: DEFAULT_MIN_SAMPLE_SIZE,
+                };
+
+                const caseVerdicts = computeCaseVerdictsFromIntentResults(
+                    baselineIntentResult,
+                    candidateIntentResult,
+                    verdictConfig
+                );
+
+                const runVerdict = computeRunVerdict(
+                    `${cycleId}-${candidate.id}`,
+                    manifest.hash,
+                    candidate.id,
+                    'baseline',
+                    caseVerdicts,
+                    'completion'
+                );
+
+                evaluation = {
+                    candidateId: candidate.id,
+                    revisionId: candidate.id,
+                    qualityResults: baselineQualityConfig,
+                    verdict: runVerdict.overallVerdict,
+                    primaryDelta: runVerdict.primaryMetricAggregate.meanDelta,
+                    cost: {
+                        browserRuns: candidateIntentResult.results.length,
+                        tokensUsed: 0,
+                        durationMs: 0,
+                    },
+                };
+
+                candidateCache.set(candidate.seamRole, candidate.strategyId, candidate.patch, evaluation);
+            }
+
+            candidate.evaluation = evaluation;
+            evaluatedCandidates.push(candidate);
+        }
     }
 
     // 4. Classify winners/losers
@@ -621,6 +997,72 @@ function computeCaseVerdictsFromQualityResults(
                 caseId: `${caseId}-rep-${rep}`,
                 baseline: { caseId, revisionId: baseline.revisionId, repetition: rep, metrics: baseline.metrics, output: baseline, durationMs: 0, success: baseline.success, error: baseline.error },
                 candidate: { caseId, revisionId: candidate.revisionId, repetition: rep, metrics: candidate.metrics, output: candidate, durationMs: 0, success: candidate.success, error: candidate.error },
+            };
+            pairedResults.push(paired);
+        }
+    }
+
+    const verdicts = [];
+    for (const paired of pairedResults) {
+        const verdict = computeCaseVerdict(paired.caseId, paired, config);
+        verdicts.push(verdict);
+    }
+
+    return verdicts;
+}
+
+/**
+ * Compute case verdicts from intent evaluation results
+ * Uses completion metric as primary for intent cases
+ */
+function computeCaseVerdictsFromIntentResults(
+    baselineResult: IntentEvaluationResult,
+    candidateResult: IntentEvaluationResult,
+    config: VerdictConfig
+) {
+    const baselineByCase = new Map<string, any[]>();
+    const candidateByCase = new Map<string, any[]>();
+
+    for (const r of baselineResult.results) {
+        const arr = baselineByCase.get(r.caseId) ?? [];
+        arr.push(r);
+        baselineByCase.set(r.caseId, arr);
+    }
+
+    for (const r of candidateResult.results) {
+        const arr = candidateByCase.get(r.caseId) ?? [];
+        arr.push(r);
+        candidateByCase.set(r.caseId, arr);
+    }
+
+    const allCaseIds = new Set([...baselineByCase.keys(), ...candidateByCase.keys()]);
+    const pairedResults: any[] = [];
+
+    for (const caseId of allCaseIds) {
+        const baselineCase = baselineByCase.get(caseId);
+        const candidateCase = candidateByCase.get(caseId);
+
+        if (!baselineCase || !candidateCase) {
+            pairedResults.push({
+                caseId,
+                verdict: 'invalid',
+                primaryMetric: { metric: config.primaryMetric, baselineMean: 0, candidateMean: 0, delta: 0, deltaPercent: 0, pValue: 1, ci: [0, 0], mde: config.mde[config.primaryMetric] ?? 0, passes: false, direction: 'no-change' },
+                otherMetrics: [], floors: [], excluded: true, excludeReason: 'Missing baseline or candidate results',
+            });
+            continue;
+        }
+
+        const allReps = Math.max(baselineCase.length, candidateCase.length);
+
+        for (let rep = 0; rep < allReps; rep++) {
+            const baseline = baselineCase[rep];
+            const candidate = candidateCase[rep];
+            if (!baseline || !candidate) continue;
+
+            const paired: any = {
+                caseId: `${caseId}-rep-${rep}`,
+                baseline: { caseId, revisionId: baselineResult.revisionId, repetition: rep, metrics: baseline.metrics, output: baseline, durationMs: 0, success: baseline.success, error: baseline.error },
+                candidate: { caseId, revisionId: candidateResult.revisionId, repetition: rep, metrics: candidate.metrics, output: candidate, durationMs: 0, success: candidate.success, error: candidate.error },
             };
             pairedResults.push(paired);
         }
