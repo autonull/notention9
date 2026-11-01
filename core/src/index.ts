@@ -38,6 +38,47 @@ export * from './config/index.js';
 export * from './templates/index.js';
 export * from './export/index.js';
 export * from './storage/index.js';
+// Telemetry: explicit exports to avoid duplicates
+export { 
+    Ledger, 
+    LedgerEvent, 
+    LedgerEventType, 
+    LedgerPayload, 
+    RunConfig, 
+    RunSummary, 
+    // CaseVerdict is also defined in eval/verdict.ts - export from there instead
+    VerdictDetail, 
+    ResolutionReason,
+    logEvent, 
+    queryLedger, 
+    getRunEvents, 
+    exportRun, 
+    pruneLedger 
+} from './telemetry/ledger.js';
+export { 
+    RevisionStore, 
+    Revision, 
+    StrategyArtifact, 
+    RevisionStatus, 
+    RevisionStoreConfig, 
+    getRevisionStore, 
+    resetRevisionStore 
+} from './telemetry/revisionStore.js';
+export { 
+    Journal, 
+    FrictionEvent, 
+    FrictionAggregate, 
+    FrictionSignal, 
+    JournalConfig, 
+    FrictionKind, 
+    DurationBucket, 
+    EvidenceClass,
+    getJournal, 
+    resetJournal, 
+    recordFriction, 
+    getFrictionSignals, 
+    generateFrictionDigest 
+} from './telemetry/journal.js';
 export * from './fixtures/index.js';
 export * from './feedback/index.js';
 

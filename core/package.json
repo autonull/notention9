@@ -59,6 +59,11 @@
       "import": "./dist/telemetry/revisionStore.js",
       "node": "./dist/telemetry/revisionStore.js",
       "browser": "./dist/telemetry/revisionStore.browser.js"
+    },
+    "./telemetry/journal": {
+      "import": "./dist/telemetry/journal.js",
+      "node": "./dist/telemetry/journal.js",
+      "browser": "./dist/telemetry/journal.browser.js"
     }
   },
   "scripts": {

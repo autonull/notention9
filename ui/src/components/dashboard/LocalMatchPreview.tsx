@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Button} from '../ui/Button';
 import {CheckCircleIcon, XCircleIcon, MinusIcon, InformationCircleIcon, ArrowPathIcon, PencilIcon, XMarkIcon} from '../ui/icons';
 import type {MatchResult, PropertyMatch, Property, Note} from '@notention/core';
@@ -12,6 +12,7 @@ interface LocalMatchPreviewProps {
     onSelectNote: (id: string) => void;
     onRejectMatch?: (requestId: string, noteId: string) => void;
     onReviseRequest?: (requestId: string) => void;
+    onView?: () => void;
 }
 
 function getMatchTypeColor(type: PropertyMatch['details']['type']) {
@@ -40,7 +41,7 @@ function getMatchTypeLabel(type: PropertyMatch['details']['type']) {
     }
 }
 
-export function LocalMatchPreview({match, onSelectNote, onRejectMatch, onReviseRequest}: LocalMatchPreviewProps) {
+export function LocalMatchPreview({match, onSelectNote, onRejectMatch, onReviseRequest, onView}: LocalMatchPreviewProps) {
     const {result} = match;
     const totalMatches = result.matches.length;
     const totalConflicts = result.conflicts.length;
@@ -51,6 +52,11 @@ export function LocalMatchPreview({match, onSelectNote, onRejectMatch, onReviseR
                            totalMissing > 0;
     
     const [showRecovery, setShowRecovery] = useState(false);
+
+    // Track match_viewed on mount
+    useEffect(() => {
+        onView?.();
+    }, [onView]);
 
     return (
         <section className="rounded-3xl border border-green-500/20 bg-green-500/5 p-6 animate-slide-in-up stagger-2" data-testid="local-match">

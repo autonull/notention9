@@ -8,6 +8,7 @@ import {
     replacePropertyInString
 } from '@notention/core';
 import { createUpdateHandler } from '../../utils/ui';
+import { useFrictionRecorder } from '../../hooks/useFrictionRecorder';
 
 export function useNoteProperties(
     dirtyNote: Note,
@@ -16,6 +17,9 @@ export function useNoteProperties(
 ) {
     const propertyExtractor = useMemo(() => new PropertyExtractor(ontology), [ontology]);
     const update = useMemo(() => createUpdateHandler(setDirtyNote), [setDirtyNote]);
+
+    // Friction tracking for corrections
+    const { recordCorrection } = useFrictionRecorder('capture', 'editor');
 
     const handleContentSave = useCallback((content: string) => {
         update(prev => ({
@@ -32,12 +36,14 @@ export function useNoteProperties(
     }, [dirtyNote.content, handleContentSave]);
 
     const handleUpdateProperty = useCallback((key: string, value: string) => {
+        recordCorrection();
         update(prev => NotePipeline.upsertProperty(prev, key, value, ontology));
-    }, [update, ontology]);
+    }, [update, ontology, recordCorrection]);
 
     const handleUpdateLocation = useCallback((latlng: string) => {
+        recordCorrection();
         handleUpdateProperty('location', latlng);
-    }, [handleUpdateProperty]);
+    }, [handleUpdateProperty, recordCorrection]);
 
     return {
         handleContentSave,

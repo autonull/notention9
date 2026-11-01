@@ -7,6 +7,7 @@ import {agentService} from '../../services/AgentService';
 import {MatchEngine, PropertyExtractor, getTextFromHtml} from '@notention/core';
 import {sanitizeHTML} from '../../utils/sanitize';
 import {useDemoWorkspace} from '../../hooks/useDemoWorkspace';
+import {useCaptureTracking, useMatchTracking} from '../../hooks/useFrictionRecorder';
 import {DashboardHeader} from './DashboardHeader';
 import {FeatureHighlights} from './FeatureHighlights';
 import {QuickCapture} from './QuickCapture';
@@ -41,6 +42,10 @@ export function DashboardView() {
     const {load: loadSampleWorkspace} = useDemoWorkspace();
     const [showFeatures, setShowFeatures] = useState(false);
 
+    // Friction tracking
+    const { startTracking: startCaptureTracking, stopTracking: stopCaptureTracking, markSubmitted: markCaptureSubmitted } = useCaptureTracking('capture', 'capture');
+    const { markViewed: markMatchViewed, handleAccept: handleMatchAccept, handleReject: handleMatchReject, handleClarification: handleMatchClarification } = useMatchTracking('match', 'match');
+
     const extractor = useMemo(() => new PropertyExtractor(settings.ontology), [settings.ontology]);
     const extractedProps = useMemo(() => {
         if (!quickCaptureInput.trim()) return [];
@@ -63,6 +68,9 @@ export function DashboardView() {
         e.preventDefault();
         if (!quickCaptureInput.trim()) return;
 
+        markCaptureSubmitted();
+        stopCaptureTracking(true);
+
         const note = addNote({
             title: deriveQuickNoteTitle(quickCaptureInput),
             content: sanitizeHTML(`<p>${quickCaptureInput}</p>`),
@@ -73,7 +81,7 @@ export function DashboardView() {
         setSelectedNoteId(note.id);
         setActiveView('notes');
         setQuickCaptureInput('');
-    }, [quickCaptureInput, extractedProps, addNote, setSelectedNoteId, setActiveView]);
+    }, [quickCaptureInput, extractedProps, addNote, setSelectedNoteId, setActiveView, markCaptureSubmitted, stopCaptureTracking]);
 
     const handleQuickTemplate = useCallback((type: 'task' | 'journal' | 'idea') => {
         interface Template {
@@ -105,6 +113,9 @@ export function DashboardView() {
         const template = templates[type];
         const title = typeof template.title === 'function' ? template.title() : template.title;
 
+        markCaptureSubmitted();
+        stopCaptureTracking(true);
+
         const note = addNote({
             title,
             content: template.content,
@@ -113,7 +124,7 @@ export function DashboardView() {
         });
         setSelectedNoteId(note.id);
         setActiveView('notes');
-    }, [addNote, setSelectedNoteId, setActiveView]);
+    }, [addNote, setSelectedNoteId, setActiveView, markCaptureSubmitted, stopCaptureTracking]);
 
     const handleQuickAction = useCallback((action: string) => {
         if (action === 'new-note') {
@@ -150,20 +161,21 @@ export function DashboardView() {
     }, [notes, settings.ontology]);
 
     const handleSelectNote = useCallback((id: string) => {
+        handleMatchAccept();
         setSelectedNoteId(id);
         setActiveView('notes');
-    }, [setSelectedNoteId, setActiveView]);
+    }, [setSelectedNoteId, setActiveView, handleMatchAccept]);
 
     const handleRejectMatch = useCallback((requestId: string, noteId: string) => {
-        // TODO: Record rejection for learning (L16)
+        handleMatchReject();
         console.log('Match rejected:', {requestId, noteId});
-        // Could update the request note to mark this note as rejected
-    }, []);
+    }, [handleMatchReject]);
 
     const handleReviseRequest = useCallback((requestId: string) => {
+        handleMatchClarification();
         setSelectedNoteId(requestId);
         setActiveView('notes');
-    }, [setSelectedNoteId, setActiveView]);
+    }, [setSelectedNoteId, setActiveView, handleMatchClarification]);
 
     const isConnected = agentStatus.status === 'connected';
 
@@ -231,6 +243,8 @@ export function DashboardView() {
                     onSubmit={handleQuickCapture}
                     extractedProps={extractedProps}
                     onTemplateClick={handleQuickTemplate}
+                    onFocus={startCaptureTracking}
+                    onBlur={() => stopCaptureTracking(false)}
                 />
 
                 {notes.length === 0 && <SampleWorkspacePrompt onLoad={loadSampleWorkspace}/>}
@@ -243,6 +257,7 @@ export function DashboardView() {
                         onSelectNote={handleSelectNote}
                         onRejectMatch={handleRejectMatch}
                         onReviseRequest={handleReviseRequest}
+                        onView={markMatchViewed}
                     />
                 )}
 

@@ -9,31 +9,18 @@ export * from './index.js';
 export * from './eval/caseManifest.js';
 export * from './eval/verdict.js';
 export * from './eval/quality.js';
-// Ledger exports (exclude types that conflict with revisionStore)
+// Ledger exports (Node-specific functions only - types already re-exported from index.js)
 export { 
     Ledger, 
     logEvent, 
     queryLedger, 
     getRunEvents, 
     exportRun, 
-    pruneLedger,
-    type LedgerEvent,
-    type LedgerEventType,
-    type LedgerPayload,
-    type RunConfig,
-    type RunSummary,
-    type CaseVerdict as LedgerCaseVerdict,
-    type VerdictDetail,
-    type ResolutionReason,
-    type Revision as LedgerRevision,
+    pruneLedger 
 } from './telemetry/ledger.js';
-// RevisionStore exports (exclude types that conflict with ledger)
+// RevisionStore exports (Node-specific functions only - types already re-exported from index.js)
 export { 
     RevisionStore, 
     getRevisionStore, 
-    resetRevisionStore,
-    type Revision,
-    type StrategyArtifact,
-    type RevisionStatus,
-    type RevisionStoreConfig,
+    resetRevisionStore 
 } from './telemetry/revisionStore.js';
