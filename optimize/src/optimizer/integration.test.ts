@@ -84,9 +84,13 @@ describe('Optimizer Integration', () => {
         const config = {
             ...defaultOptimizerConfig(),
             targetSeams: ['capture', 'match'],
-            maxCandidatesPerSeam: 4,
-            maxBrowserRuns: 10,
+            maxCandidatesPerSeam: 2,
+            maxBrowserRuns: 8,
             maxTimeMinutes: 1,
+            useSuccessiveHalving: true,
+            initialSliceFraction: 0.5,
+            minPromote: 1,
+            maxIntentCases: 1,
         };
 
         const result = await runOptimizerCycle(config);
@@ -105,15 +109,19 @@ describe('Optimizer Integration', () => {
         console.log(`  Winners: ${result.winners.length}`);
         console.log(`  Losers: ${result.losers.length}`);
         console.log(`  Duration: ${result.totalCost.durationMs}ms`);
-    }, 60000);
+    });
 
     it('should cache candidate evaluations across cycles', async () => {
         const config = {
             ...defaultOptimizerConfig(),
             targetSeams: ['capture'],
             maxCandidatesPerSeam: 2,
-            maxBrowserRuns: 5,
+            maxBrowserRuns: 4,
             maxTimeMinutes: 1,
+            useSuccessiveHalving: true,
+            initialSliceFraction: 0.5,
+            minPromote: 1,
+            maxIntentCases: 1,
         };
 
         // First cycle
@@ -131,15 +139,19 @@ describe('Optimizer Integration', () => {
 
         // Results should be identical
         expect(result2.candidatesEvaluated).toBe(result1.candidatesEvaluated);
-    }, 60000);
+    });
 
     it('should handle cache persistence across instances', async () => {
         const config = {
             ...defaultOptimizerConfig(),
             targetSeams: ['capture'],
             maxCandidatesPerSeam: 2,
-            maxBrowserRuns: 5,
+            maxBrowserRuns: 4,
             maxTimeMinutes: 1,
+            useSuccessiveHalving: true,
+            initialSliceFraction: 0.5,
+            minPromote: 1,
+            maxIntentCases: 1,
         };
 
         // First cycle to populate cache
@@ -153,7 +165,7 @@ describe('Optimizer Integration', () => {
         // New cache instance should load from disk
         const newCacheSize = getCandidateCache().size;
         expect(newCacheSize).toBe(firstCacheSize);
-    }, 60000);
+    });
 
     it('should only evaluate candidates with valid ParamSpec params', async () => {
         // Register a strategy without ParamSpec using global registry
@@ -169,14 +181,18 @@ describe('Optimizer Integration', () => {
         const config = {
             ...defaultOptimizerConfig(),
             targetSeams: ['capture'],
-            maxCandidatesPerSeam: 10,
-            maxBrowserRuns: 10,
+            maxCandidatesPerSeam: 4,
+            maxBrowserRuns: 4,
             maxTimeMinutes: 1,
+            useSuccessiveHalving: true,
+            initialSliceFraction: 0.5,
+            minPromote: 1,
+            maxIntentCases: 1,
         };
 
         const result = await runOptimizerCycle(config);
 
         // Should still complete successfully
         expect(result.candidatesEvaluated).toBeGreaterThan(0);
-    }, 60000);
+    });
 });

@@ -7,6 +7,8 @@ export default defineConfig({
         environment: 'node',
         setupFiles: [path.resolve(__dirname, '../core/src/test-utils/vitestSetup.ts')],
         passWithNoTests: true,
+        testTimeout: 300000,
+        fileParallelism: false,
     },
     resolve: {
         alias: {

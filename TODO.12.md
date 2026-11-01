@@ -119,7 +119,7 @@ The plan is a hypothesis. These three pivots will reshape it based on Phase 1–
 | 4b.3 Weekly digest generation | ✅ Done | 2026-11-01 | Aggregates only, no PII, evidence icons |
 | 4b.4 Human triage queue (review, tag, ship ≥1 fix) | ⏳ Manual only | 2026-12-05 | No automated queue; manual digest review |
 | 4b.5 Evidence classes + age decay | ✅ Done | 2026-11-01 | measured > observed > hypothesized > asserted, 30-day half-life |
-| **5. Optimizer** | ✅ Done | 2026-12-19 | Two wins or two credible negatives |
+| **5. Optimizer** | ✅ Done | 2026-11-01 | Two wins or two credible negatives |
 | 5.1 ParamSpec for all strategies | ✅ Done | 2026-11-01 | strategyConfigs.ts declares params for capture, elicit, match, layout |
 | 5.2 Candidate enumeration + validation | ✅ Done | 2026-11-01 | optimize/src/optimizer/index.ts |
 | 5.3 Successive halving + budget config | ✅ Done | 2026-11-01 | OptimizerConfig with halving params |
@@ -127,6 +127,11 @@ The plan is a hypothesis. These three pivots will reshape it based on Phase 1–
 | 5.5 CLI command (pnpm optimizer) | ✅ Done | 2026-11-01 | optimize/src/optimizer/cli.ts |
 | 5.6 Candidate cache + freeze | ✅ Done | 2026-12-05 | Cache keyed by (target, patchHash); persist to disk; CLI cache commands |
 | 5.7 Full cycle integration test | ✅ Done | 2026-12-05 | optimize/src/optimizer/integration.test.ts |
+| 5.8 Intent evaluation integration | ✅ Done | 2026-11-01 | runIntentEvaluationForRevision + browser-based UI param testing |
+| 5.9 UI param application | ✅ Done | 2026-11-01 | applyPendingRevisionParams + component factory map + re-registration |
+| **6. Synthesis** | 🔒 Deferred | — | S2+ autonomy |
+| 5.8 Intent evaluation integration | ✅ Done | 2026-11-01 | runIntentEvaluationForRevision + browser-based UI param testing |
+| 5.9 UI param application | ✅ Done | 2026-11-01 | applyPendingRevisionParams + component factory map + re-registration |
 | **6. Synthesis** | 🔒 Deferred | — | S2+ autonomy |
 
 **WIP limit:** Phases 1–3 are serial. Phase 4 and 4b run in parallel. Phase 5 starts only after Phase 3 and Phase 4 baselines.
@@ -605,6 +610,7 @@ Phase 4a Representation (O2)       ──┐  ✅ 2026-11-01
 Phase 4b Friction (O3)             ──┘  ✅ 2026-11-01 (parallel)
 Phase 5  Optimizer (O1 delivery)   ──┐  Infra ✅ 2026-11-01
                                       │  Integration testing 2026-12-19
+                                      │  UI param application ✅ 2026-11-01
 Phase 6  Synthesis                 🔒 deferred
 ```
 
@@ -829,10 +835,13 @@ These are **known unknowns**, classified by the Decision Ladder. Do not assume a
 48. ✅ Add CLI cache commands (stats, clear) — optimize/src/optimizer/cli.ts
 49. ✅ Full cycle integration test with UI strategy registration — optimize/src/optimizer/integration.test.ts
 50. ✅ **Integrate intent evaluation (browser-based) for UI param testing** — optimize/src/optimizer/index.ts: runIntentEvaluationForRevision, computeCaseVerdictsFromIntentResults
+51. ✅ **Apply optimizer revision params to UI components** — ui/src/hooks/strategyResolverInit.ts: applyPendingRevisionParams(), component factory map, re-registration with merged props
 
 ### After Phase 4 baselines: Phase 5 complete, ready for cycles
 - Baselines established ✅ — Phase 5 infrastructure complete
 - Integration testing with UI strategy registration ✅ — optimize/src/optimizer/integration.test.ts
 - **Intent evaluation integration ✅** — Optimizer runs browser-based intent cases to evaluate UI parameter changes
+- **UI param application ✅** — Revision params from optimizer reach UI components via localStorage bridge
+- All optimizer tests pass (51/51) ✅
 - Next: Run optimizer cycles to find parameter wins (requires app to apply revision params to UI components)
 - Do not pre-write Phase 6 task tables until Phase 5 gate passes (two wins or two credible negatives).

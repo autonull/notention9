@@ -7,6 +7,7 @@ import type { Seam } from '@notention/core/ui/strategy';
 import { strategyRegistry } from '@notention/core/ui/strategy';
 import { resolveSeamId, SEAM_ROLES, type SeamRole } from '@notention/core/constants/seams';
 import { profileRegistry } from '@notention/core/ui/ProfileRegistry';
+import { STRATEGY_PARAM_CONFIGS, getStrategyParamConfig } from '@notention/core/constants/strategyParams';
 
 // Forward declarations for component types
 type QuickCaptureComponent = React.ComponentType<{
@@ -76,6 +77,9 @@ const components = {
     localMatchesPanel: null as LocalMatchesPanelComponent | null,
     propertyPanel: null as PropertyPanelComponent | null,
 };
+
+// Map of strategy ID to component factory for re-registration with revised params
+const strategyComponentFactories = new Map<string, React.ComponentType<any>>();
 
 async function loadComponents(): Promise<void> {
     if (!components.quickCapture) {
@@ -221,41 +225,53 @@ export async function registerUIStrategies(): Promise<void> {
     if (captureSeam) {
         const describeItConfig = getStrategyConfig('describe-it-composer');
         if (describeItConfig) {
-            strategyRegistry.register(createComponentStrategy(
+            const strategy = createComponentStrategy(
                 describeItConfig.id, captureSeam, DescribeItComposerStrategy,
                 describeItConfig.version, describeItConfig.defaultProps, describeItConfig.paramSpec
-            ));
+            );
+            strategyRegistry.register(strategy);
+            strategyComponentFactories.set(describeItConfig.id, DescribeItComposerStrategy);
         }
-        strategyRegistry.register(createComponentStrategy('quick-capture', captureSeam, () => components.quickCapture!));
+        const quickCaptureStrategy = createComponentStrategy('quick-capture', captureSeam, () => components.quickCapture!);
+        strategyRegistry.register(quickCaptureStrategy);
+        strategyComponentFactories.set('quick-capture', () => components.quickCapture!);
     }
 
     // Register elicit strategies
     if (elicitSeam) {
         const tagInputConfig = getStrategyConfig('tag-input');
         if (tagInputConfig) {
-            strategyRegistry.register(createComponentStrategy(
+            const strategy = createComponentStrategy(
                 tagInputConfig.id, elicitSeam, TagInputStrategy,
                 tagInputConfig.version, tagInputConfig.defaultProps, tagInputConfig.paramSpec
-            ));
+            );
+            strategyRegistry.register(strategy);
+            strategyComponentFactories.set(tagInputConfig.id, TagInputStrategy);
         }
-        strategyRegistry.register(createComponentStrategy('insert-property-modal', elicitSeam, () => components.insertPropertyModal!));
+        const insertPropertyModalStrategy = createComponentStrategy('insert-property-modal', elicitSeam, () => components.insertPropertyModal!);
+        strategyRegistry.register(insertPropertyModalStrategy);
+        strategyComponentFactories.set('insert-property-modal', () => components.insertPropertyModal!);
     }
 
     // Register match strategies
     if (matchSeam) {
         const localMatchPreviewConfig = getStrategyConfig('local-match-preview');
         if (localMatchPreviewConfig) {
-            strategyRegistry.register(createComponentStrategy(
+            const strategy = createComponentStrategy(
                 localMatchPreviewConfig.id, matchSeam, () => components.localMatchPreview!,
                 localMatchPreviewConfig.version, localMatchPreviewConfig.defaultProps, localMatchPreviewConfig.paramSpec
-            ));
+            );
+            strategyRegistry.register(strategy);
+            strategyComponentFactories.set(localMatchPreviewConfig.id, () => components.localMatchPreview!);
         }
         const dashboardLocalMatchConfig = getStrategyConfig('dashboard-local-match');
         if (dashboardLocalMatchConfig) {
-            strategyRegistry.register(createComponentStrategy(
+            const strategy = createComponentStrategy(
                 dashboardLocalMatchConfig.id, matchSeam, () => components.dashboardLocalMatch!,
                 dashboardLocalMatchConfig.version, dashboardLocalMatchConfig.defaultProps, dashboardLocalMatchConfig.paramSpec
-            ));
+            );
+            strategyRegistry.register(strategy);
+            strategyComponentFactories.set(dashboardLocalMatchConfig.id, () => components.dashboardLocalMatch!);
         }
     }
 
@@ -263,25 +279,103 @@ export async function registerUIStrategies(): Promise<void> {
     if (layoutSeam) {
         const propertyFormConfig = getStrategyConfig('property-form');
         if (propertyFormConfig) {
-            strategyRegistry.register(createComponentStrategy(
+            const strategy = createComponentStrategy(
                 propertyFormConfig.id, layoutSeam, PropertyFormStrategy,
                 propertyFormConfig.version, propertyFormConfig.defaultProps, propertyFormConfig.paramSpec
-            ));
+            );
+            strategyRegistry.register(strategy);
+            strategyComponentFactories.set(propertyFormConfig.id, PropertyFormStrategy);
         }
         const templateSelectorConfig = getStrategyConfig('template-selector');
         if (templateSelectorConfig) {
-            strategyRegistry.register(createComponentStrategy(
+            const strategy = createComponentStrategy(
                 templateSelectorConfig.id, layoutSeam, TemplateSelectorStrategy,
                 templateSelectorConfig.version, templateSelectorConfig.defaultProps, templateSelectorConfig.paramSpec
-            ));
+            );
+            strategyRegistry.register(strategy);
+            strategyComponentFactories.set(templateSelectorConfig.id, TemplateSelectorStrategy);
         }
         const localMatchesPanelConfig = getStrategyConfig('local-matches-panel');
         if (localMatchesPanelConfig) {
-            strategyRegistry.register(createComponentStrategy(
+            const strategy = createComponentStrategy(
                 localMatchesPanelConfig.id, layoutSeam, () => components.localMatchesPanel!,
                 localMatchesPanelConfig.version, localMatchesPanelConfig.defaultProps, localMatchesPanelConfig.paramSpec
-            ));
+            );
+            strategyRegistry.register(strategy);
+            strategyComponentFactories.set(localMatchesPanelConfig.id, () => components.localMatchesPanel!);
         }
+    }
+}
+
+/**
+ * Apply revision params from localStorage to registered strategies
+ * This enables the optimizer to test parameter changes in browser evaluations
+ */
+export function applyPendingRevisionParams(): void {
+    if (typeof window === 'undefined') return;
+    
+    try {
+        const stored = localStorage.getItem('pendingRevisionData');
+        if (!stored) return;
+        
+        const patch = JSON.parse(stored) as Record<string, unknown>;
+        if (!patch || Object.keys(patch).length === 0) return;
+        
+        console.log('[StrategySystem] Applying pending revision params:', patch);
+        
+        // Find which strategy this patch belongs to by checking paramSpecs
+        for (const strategyConfig of STRATEGY_PARAM_CONFIGS) {
+            const paramSpec = strategyConfig.paramSpec;
+            const paramKeys = Object.keys(paramSpec);
+            
+            // Check if this patch has keys that belong to this strategy's paramSpec
+            const matchingKeys = Object.keys(patch).filter(k => paramKeys.includes(k));
+            if (matchingKeys.length === 0) continue;
+            
+            // This patch applies to this strategy - re-register with merged props
+            const seamId = strategyConfig.seam.id;
+            const existingStrategy = strategyRegistry.get(seamId, strategyConfig.id);
+            
+            if (existingStrategy) {
+                // Get the component factory for this strategy
+                const componentFactory = strategyComponentFactories.get(strategyConfig.id);
+                if (!componentFactory) {
+                    console.warn(`[StrategySystem] No component factory found for strategy ${strategyConfig.id}`);
+                    continue;
+                }
+                
+                // Unregister old strategy
+                strategyRegistry.unregister(seamId, strategyConfig.id);
+                
+                // Merge default props with patch
+                const mergedProps = { ...existingStrategy.getDefaultProps(), ...patch };
+                
+                // Re-register with merged props using the same component
+                const { createComponentStrategy } = require('@notention/core/ui/strategy');
+                const newStrategy = createComponentStrategy(
+                    existingStrategy.id,
+                    existingStrategy.seam,
+                    componentFactory,
+                    existingStrategy.version,
+                    mergedProps,
+                    existingStrategy.params
+                );
+                
+                strategyRegistry.register(newStrategy);
+                // Update the component factory map (though it should be the same)
+                strategyComponentFactories.set(strategyConfig.id, componentFactory);
+                console.log(`[StrategySystem] Updated strategy ${strategyConfig.id} with revision params`);
+            }
+            
+            // Assuming one patch per strategy for now
+            break;
+        }
+        
+        // Clear the pending revision data after applying
+        localStorage.removeItem('pendingRevisionData');
+        localStorage.removeItem('pendingRevision');
+    } catch (err) {
+        console.warn('[StrategySystem] Failed to apply pending revision params:', err);
     }
 }
 
@@ -304,6 +398,8 @@ export async function initializeProfiles(): Promise<void> {
 export async function initializeStrategySystem(): Promise<void> {
     await initializeProfiles();
     await registerUIStrategies();
+    // Apply any pending revision params from optimizer
+    applyPendingRevisionParams();
 }
 
 const USER_CONFIG_KEY = 'notention:user-config';

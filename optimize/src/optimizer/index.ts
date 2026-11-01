@@ -55,6 +55,8 @@ export interface OptimizerConfig {
     initialSliceFraction: number;
     /** Minimum candidates to promote */
     minPromote: number;
+    /** Maximum intent cases to use (for faster test runs) */
+    maxIntentCases?: number;
 }
 
 /**
@@ -372,6 +374,8 @@ export interface IntentEvaluationConfig {
     seed?: number;
     viewport?: { width: number; height: number };
     caseFilter?: string[]; // Optional case IDs to run (for successive halving)
+    /** Revision parameter patch to apply in the browser */
+    revisionPatch?: Record<string, unknown>;
 }
 
 export interface IntentEvaluationResult {
@@ -399,29 +403,64 @@ export interface IntentEvaluationResult {
 }
 
 let previewServerProcess: ReturnType<typeof import('child_process').spawn> | null = null;
-const PREVIEW_PORT = 4199;
-const PREVIEW_URL = `http://localhost:${PREVIEW_PORT}`;
+let previewServerUrl: string | null = null;
+let previewServerPort: number | null = null;
 
-async function ensurePreviewServer(): Promise<void> {
-    // Check if server is already running
-    try {
-        const response = await fetch(PREVIEW_URL, { method: 'HEAD' });
-        if (response.ok) {
-            console.log(`   Preview server already running at ${PREVIEW_URL}`);
-            return;
-        }
-    } catch {
-        // Server not running
+async function getAvailablePort(startPort: number = 4199): Promise<number> {
+    const net = await import('node:net');
+    for (let port = startPort; port < startPort + 100; port++) {
+        const available = await new Promise<boolean>((resolve) => {
+            const server = net.createServer();
+            server.once('error', () => resolve(false));
+            server.once('listening', () => {
+                server.close(() => resolve(true));
+            });
+            server.listen(port);
+        });
+        if (available) return port;
     }
+    throw new Error('No available ports found');
+}
 
-    console.log(`   Starting preview server at ${PREVIEW_URL}...`);
+function killPreviewServer(): void {
+    if (previewServerProcess) {
+        console.log(`   Killing preview server on port ${previewServerPort}`);
+        previewServerProcess.kill('SIGTERM');
+        previewServerProcess = null;
+        previewServerUrl = null;
+        previewServerPort = null;
+    }
+}
+
+async function ensurePreviewServer(): Promise<string> {
+    // Check if server is already running AND process is alive
+    if (previewServerUrl && previewServerProcess && !previewServerProcess.killed) {
+        try {
+            const response = await fetch(previewServerUrl, { method: 'HEAD' });
+            if (response.ok) {
+                console.log(`   Preview server already running at ${previewServerUrl}`);
+                return previewServerUrl;
+            }
+        } catch {
+            // Server not responding, will start new one
+            console.log(`   Preview server not responding, starting new one`);
+        }
+    }
+    
+    // Kill any existing process
+    killPreviewServer();
+
+    const port = await getAvailablePort();
+    const url = `http://localhost:${port}`;
+    console.log(`   Starting preview server at ${url}...`);
     const { spawn } = await import('child_process');
     
-    previewServerProcess = spawn('pnpm', ['--filter', '@notention/ui', 'preview', '--port', String(PREVIEW_PORT), '--strictPort'], {
+    previewServerProcess = spawn('pnpm', ['--filter', '@notention/ui', 'preview', '--port', String(port), '--strictPort'], {
         cwd: process.cwd(),
         stdio: ['ignore', 'pipe', 'pipe'],
         env: { ...process.env, VITE_ENABLE_AGENT: 'false', VITE_LLM_SOURCE: 'none', VITE_DEV_HOOKS: 'true' },
     });
+    previewServerPort = port;
 
     previewServerProcess.stdout?.on('data', (data) => {
         const output = data.toString();
@@ -437,12 +476,23 @@ async function ensurePreviewServer(): Promise<void> {
         }
     });
 
+    // Handle process exit
+    previewServerProcess.on('exit', (code) => {
+        if (code !== 0 && code !== null) {
+            console.error(`   Preview server exited with code ${code}`);
+        }
+        previewServerProcess = null;
+        previewServerUrl = null;
+        previewServerPort = null;
+    });
+
     // Wait for server to be ready
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 120; i++) {
         try {
-            const response = await fetch(PREVIEW_URL, { method: 'HEAD' });
+            const response = await fetch(url, { method: 'HEAD' });
             if (response.ok) {
-                return;
+                previewServerUrl = url;
+                return url;
             }
         } catch {
             // Wait and retry
@@ -450,14 +500,14 @@ async function ensurePreviewServer(): Promise<void> {
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
     
-    throw new Error('Preview server failed to start within 30 seconds');
+    throw new Error('Preview server failed to start within 120 seconds');
 }
 
 export async function runIntentEvaluationForRevision(
     revisionId: string,
     config: IntentEvaluationConfig = {}
 ): Promise<IntentEvaluationResult> {
-    await ensurePreviewServer();
+    const baseURL = await ensurePreviewServer();
 
     const manifest = readManifest();
     const cases = readIntentCases(config.split ?? 'search');
@@ -481,10 +531,11 @@ export async function runIntentEvaluationForRevision(
             viewport: config.viewport || { width: 1280, height: 720 },
         });
 
-        // Seed the revision in localStorage for the test
-        await context.addInitScript((revId: string) => {
-            localStorage.setItem('pendingRevision', revId);
-        }, revisionId);
+        // Seed the revision in localStorage for the test to pick up
+        await context.addInitScript((data: { revisionId: string; patch: Record<string, unknown> }) => {
+            localStorage.setItem('pendingRevision', data.revisionId);
+            localStorage.setItem('pendingRevisionData', JSON.stringify(data.patch));
+        }, { revisionId, patch: config.revisionPatch ?? {} });
 
         const page = await context.newPage();
         
@@ -500,7 +551,7 @@ export async function runIntentEvaluationForRevision(
 
                 try {
                     // Navigate to dashboard
-                    await page.goto(`${config.baseURL || PREVIEW_URL}/#dashboard`);
+                    await page.goto(`${config.baseURL || baseURL}/#dashboard`);
                     await page.waitForLoadState('domcontentloaded');
 
                     // Type the prompt in the quick capture input
@@ -694,12 +745,14 @@ export async function runOptimizerCycle(config: OptimizerConfig = defaultOptimiz
 
     console.log('\n📏 Running baseline intent evaluation (validation split, limited cases)...');
     const intentCases = readIntentCases('validation'); // Use validation (10 cases) instead of search (21)
-    const intentCaseIds = intentCases.slice(0, 2).map(c => c.id); // Limit to 2 cases for speed
+    const maxIntentCases = config.maxIntentCases ?? 2;
+    const intentCaseIds = intentCases.slice(0, maxIntentCases).map(c => c.id); // Limit cases for speed
     const baselineIntentConfig: IntentEvaluationConfig = {
         split: 'validation',
         repetitions: 1,
         headless: true,
         caseFilter: intentCaseIds,
+        revisionPatch: {},
     };
     const baselineIntentResult = await runIntentEvaluationForRevision('incumbent', baselineIntentConfig);
 
@@ -746,6 +799,7 @@ export async function runOptimizerCycle(config: OptimizerConfig = defaultOptimiz
                 repetitions: 1,
                 headless: true,
                 caseFilter: intentCaseIds,
+                revisionPatch: candidate.patch,
             });
 
             // Compute verdict based on intent results (primary: completion)
@@ -835,6 +889,7 @@ export async function runOptimizerCycle(config: OptimizerConfig = defaultOptimiz
                     repetitions: 1,
                     headless: true,
                     caseFilter: intentCaseIds,
+                    revisionPatch: candidate.patch,
                 });
 
                 const verdictConfig: VerdictConfig = {
@@ -1090,6 +1145,7 @@ export function defaultOptimizerConfig(): OptimizerConfig {
         useSuccessiveHalving: true,
         initialSliceFraction: 0.25,
         minPromote: 2,
+        maxIntentCases: 2,
     };
 }
 

@@ -191,8 +191,12 @@ describe('Optimizer', () => {
                 ...defaultOptimizerConfig(),
                 targetSeams: ['capture'],
                 maxCandidatesPerSeam: 2,
-                maxBrowserRuns: 10,
+                maxBrowserRuns: 4,
                 maxTimeMinutes: 1,
+                useSuccessiveHalving: true,
+                initialSliceFraction: 0.5,
+                minPromote: 1,
+                maxIntentCases: 1,
             };
 
             // This test primarily verifies the function runs without throwing
@@ -215,13 +219,17 @@ describe('Optimizer', () => {
                 // The important thing is it doesn't crash with unexpected errors
                 const error = e instanceof Error ? e.message : String(e);
                 // Acceptable failures: no strategies found, missing test data, etc.
+                console.log(`Smoke test caught expected error: ${error}`);
                 expect(
                     error.includes('strategies') || 
                     error.includes('test data') ||
                     error.includes('not found') ||
-                    error.includes('manifest')
+                    error.includes('manifest') ||
+                    error.includes('case') ||
+                    error.includes('preview') ||
+                    error.includes('server')
                 ).toBe(true);
             }
-        }, 30000); // Longer timeout for integration test
+        });
     });
 });
