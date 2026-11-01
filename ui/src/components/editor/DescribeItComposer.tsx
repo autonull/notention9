@@ -11,6 +11,8 @@ interface DescribeItComposerProps {
     onClose: () => void;
     onApply: (properties: Property[]) => void;
     ontology: OntologyNode[];
+    placeholder?: string;
+    autoFocus?: boolean;
 }
 
 const SOURCE_LABEL: Record<string, string> = {
@@ -61,8 +63,9 @@ export function DescribeItComposer({isOpen, onClose, onApply, ontology}: Describ
                         data-testid="describe-it-input"
                         value={text}
                         onChange={event => setText(event.target.value)}
-                        placeholder="e.g. I need a React developer for two weeks, up to 900 USD, starting next week"
+                        placeholder={placeholder ?? "e.g. I need a React developer for two weeks, up to 900 USD, starting next week"}
                         rows={4}
+                        autoFocus={autoFocus}
                         className="w-full rounded-xl border border-gray-700 bg-gray-900/70 p-3 text-sm text-white focus:outline-none focus:border-blue-500/50 resize-none"
                     />
 

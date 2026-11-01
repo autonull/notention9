@@ -1,5 +1,6 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ProfileRegistry, StrategyRegistry, type Seam, type Strategy, SEAM_ROLES, type SeamRole } from '@notention/core';
+import { getRevisionStore, resetRevisionStore } from '../telemetry/revisionStore.js';
 
 // Mock strategy factory
 function createMockStrategy(id: string, seamRole: SeamRole): Strategy {
@@ -119,6 +120,62 @@ describe('ProfileRegistry: 5-layer precedence', () => {
         if (resolved!.reason.kind === 'override') {
             expect(resolved!.reason.strategyId).toBe('override-strategy');
         }
+    });
+
+    it('Layer 1.5: Active revision wins over experiment and profiles (async)', async () => {
+        // Reset revision store for clean test
+        resetRevisionStore();
+        
+        const { profileRegistry, strategyRegistry, seamRole } = createTestRegistries();
+        
+        // Disable experiment
+        const experiment = profileRegistry.getExperiment('test-experiment')!;
+        experiment.isActive = false;
+        profileRegistry.registerExperiment(experiment);
+
+        // Register the revision strategy in the registry
+        const seam: Seam = { id: 'capture-0', name: 'Capture', description: '', propsShape: {}, components: [], role: 'capture' };
+        const revisionStrategy = createMockStrategy('revision-strategy', seamRole);
+        revisionStrategy.getDefaultProps = () => ({ testProp: 'from-revision', autoFocus: true });
+        strategyRegistry.register(seam, revisionStrategy);
+        
+        // Create an active revision for the capture seam
+        const revisionStore = getRevisionStore();
+        
+        await revisionStore.create({
+            seamRole: 'capture',
+            strategy: {
+                id: 'revision-strategy',
+                seamId: 'capture-0',
+                version: '1.0.0',
+                params: { autoFocus: true, placeholder: 'Test placeholder' },
+            },
+            author: 'human',
+            tags: ['test'],
+        });
+        
+        // Get the created revision and activate it
+        const revisions = await revisionStore.getBySeam('capture');
+        const createdRevision = revisions[0];
+        
+        await revisionStore.requestConsent(createdRevision.id, 'test-user');
+        await revisionStore.grantConsent(createdRevision.id, 'test-user');
+        await revisionStore.activate(createdRevision.id, 'test-user');
+
+        // Verify the revision is active
+        const activeRev = await revisionStore.getActive('capture');
+        console.log('Active revision:', activeRev);
+
+        // Use async resolve
+        const resolved = await profileRegistry.resolveStrategyWithMetaAsync(userId, seamRole, strategyRegistry);
+
+        expect(resolved).toBeDefined();
+        expect(resolved!.strategy.id).toBe('revision-strategy');
+        expect(resolved!.reason.kind).toBe('revision');
+        if (resolved!.reason.kind === 'revision') {
+            expect(resolved!.reason.revisionId).toBe(createdRevision.id);
+        }
+        expect(resolved!.resolvedParams.autoFocus).toBe(true);
     });
 
     it('Layer 2: Experiment assignment wins over profiles', () => {

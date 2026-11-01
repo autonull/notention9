@@ -46,6 +46,9 @@
       "node": "./dist/eval/quality.js",
       "browser": "./dist/eval/quality.browser.js"
     },
+    "./matching": "./dist/matching/index.js",
+    "./ontology/ontologyService": "./dist/ontology/ontologyService.js",
+    "./types": "./dist/types/index.js",
     "./telemetry/ledger": {
       "import": "./dist/telemetry/ledger.js",
       "node": "./dist/telemetry/ledger.js",

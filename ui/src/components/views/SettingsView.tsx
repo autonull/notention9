@@ -10,6 +10,7 @@ import {OntologyTab} from '../settings/OntologyTab';
 import {AgentTab} from '../settings/AgentTab';
 import {NetworkManagementSection} from '../settings/NetworkManagementSection';
 import {ProfileSettings} from '../settings/ProfileSettings';
+import {RevisionsTab} from '../settings/RevisionsTab';
 
 export function SettingsView() {
     const {
@@ -28,6 +29,7 @@ export function SettingsView() {
         {id: 'metrics', label: '📊 Metrics'},
         {id: 'ontology', label: '🧬 Ontology Graph'},
         {id: 'profile', label: '👤 Profile & Strategies'},
+        {id: 'revisions', label: '📋 Revisions'},
     ];
 
     return (
@@ -62,6 +64,7 @@ export function SettingsView() {
                 {activeTab === 'metrics' && <MetricsTab/>}
                 {activeTab === 'ontology' && <OntologyTab/>}
                 {activeTab === 'profile' && <ProfileSettings/>}
+                {activeTab === 'revisions' && <RevisionsTab userId="default-user"/>}
             </div>
         </div>
     );

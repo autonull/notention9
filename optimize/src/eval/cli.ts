@@ -4,11 +4,15 @@
  */
 
 import { Command } from 'commander';
-import { readManifest, readIntentCases, readQualityCases, verifyManifest, generateManifest, writeManifest } from '@notention/core/eval/caseManifest.js';
-import { runAllQuality, type QualityRunConfig } from '@notention/core/eval/quality.js';
-import { computeRunVerdict, type RunVerdict, type VerdictConfig } from '@notention/core/eval/verdict.js';
-import { getRevisionStore } from '@notention/core/telemetry/revisionStore.js';
-import { logEvent, getRunEvents, exportRun } from '@notention/core/telemetry/ledger.js';
+import { readManifest, readIntentCases, readQualityCases, verifyManifest, generateManifest, writeManifest } from '@notention/core/eval/caseManifest';
+import { runAllQuality, type QualityRunConfig } from '@notention/core/eval/quality';
+import { computeRunVerdict, type RunVerdict, type VerdictConfig } from '@notention/core/eval/verdict';
+import { getRevisionStore } from '@notention/core/telemetry/revisionStore';
+import { logEvent, getRunEvents, exportRun } from '@notention/core/telemetry/ledger';
+import { ExtractionPipeline, createExtractionPipeline } from '@notention/core/extraction';
+import { MatchEngine } from '@notention/core/matching';
+import { OntologyService } from '@notention/core/ontology/ontologyService';
+import { type OntologyNode, type Note, type Property } from '@notention/core/types';
 import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -55,24 +59,25 @@ program
         const manifest = readManifest();
         console.log(`📋 Running quality evaluation (manifest: ${manifest.hash})`);
         
-        // TODO: Wire up actual extraction/match engines
-        // For now, show the structure
-        console.log('⚠️  Quality engines not yet wired - showing case structure only');
+        const repetitions = parseInt(options.repetitions, 10);
+        const qualityConfig: QualityRunConfig = { repetitions };
         
-        if (options.family === 'extraction' || options.family === 'all') {
-            const cases = readQualityCases('extraction', manifest);
-            console.log(`\nExtraction cases (${cases.length}):`);
-            for (const c of cases) {
-                console.log(`  - ${c.id}: ${c.input.slice(0, 60)}...`);
-            }
+        const results = await runQualityEvaluation(qualityConfig);
+        
+        console.log('\n✅ Quality evaluation complete');
+        console.log(`   Total cases: ${results.length}`);
+        
+        const extractionResults = results.filter(r => r.qualityFamily === 'extraction');
+        const matchResults = results.filter(r => r.qualityFamily === 'match');
+        
+        if (extractionResults.length > 0) {
+            const avgF1 = extractionResults.reduce((sum, r) => sum + (r.metrics.f1 ?? 0), 0) / extractionResults.length;
+            console.log(`   Extraction: ${extractionResults.length} cases, avg F1: ${avgF1.toFixed(3)}`);
         }
         
-        if (options.family === 'match' || options.family === 'all') {
-            const cases = readQualityCases('match', manifest);
-            console.log(`\nMatch cases (${cases.length}):`);
-            for (const c of cases) {
-                console.log(`  - ${c.id}: ${c.input.slice(0, 60)}...`);
-            }
+        if (matchResults.length > 0) {
+            const avgF1 = matchResults.reduce((sum, r) => sum + (r.metrics.f1 ?? 0), 0) / matchResults.length;
+            console.log(`   Match: ${matchResults.length} cases, avg F1: ${avgF1.toFixed(3)}`);
         }
     });
 
@@ -150,12 +155,10 @@ program
             // Run quality evaluation
             console.log('\n🔬 Running quality suite...');
             const qualityConfig: QualityRunConfig = {
-                // extractionEngine and matchEngine to be wired
                 repetitions,
             };
             
-            // For now, simulate results
-            const qualityResults = await runSimulatedQuality(qualityConfig);
+            const qualityResults = await runQualityEvaluation(qualityConfig);
             
             // Run intent evaluation (placeholder)
             console.log('\n🌐 Running intent suite (browser)...');
@@ -372,10 +375,126 @@ program
 
 // --- Helper functions ---
 
-async function runSimulatedQuality(config: QualityRunConfig) {
-    // Placeholder - in real implementation, wire up extraction/match engines
-    console.log('  (simulated - no engines wired)');
-    return [];
+// Default ontology for evaluation
+const DEFAULT_ONTOLOGY: OntologyNode[] = [];
+
+// Create extraction engine adapter
+function createExtractionEngine() {
+    const pipeline = createExtractionPipeline();
+    
+    return {
+        async extract(input: string): Promise<Record<string, string[]>> {
+            const result = await pipeline.extract(input, DEFAULT_ONTOLOGY);
+            const extracted: Record<string, string[]> = {};
+            for (const prop of result.properties) {
+                extracted[prop.key] = prop.values;
+            }
+            return extracted;
+        },
+    };
+}
+
+// Create match engine adapter
+function createMatchEngine() {
+    const matchEngine = new MatchEngine(DEFAULT_ONTOLOGY);
+    
+    return {
+        async match(query: string, notes: Note[]): Promise<Array<{ noteId: string; score: number }>> {
+            // Create a request note from the query
+            const extractionPipeline = createExtractionPipeline();
+            const extractionResult = await extractionPipeline.extract(query, DEFAULT_ONTOLOGY);
+            const requestProps = extractionResult.properties;
+            
+            const now = new Date().toISOString();
+            const requestNote: Note = {
+                id: 'query',
+                title: '',
+                content: query,
+                properties: requestProps,
+                tags: [],
+                createdAt: now,
+                updatedAt: now,
+                status: 'open',
+                source: { type: 'user', identifier: 'test', timestamp: Date.now() },
+                privacy: 'private',
+                priority: 0,
+            };
+            
+            const results: Array<{ noteId: string; score: number }> = [];
+            
+            for (const note of notes) {
+                const matchResult = matchEngine.calculateMatchScore(requestNote, note);
+                results.push({
+                    noteId: note.id,
+                    score: matchResult.score,
+                });
+            }
+            
+            return results.sort((a, b) => b.score - a.score);
+        },
+    };
+}
+
+// Sample notes for match evaluation
+function createSampleNotes(): Note[] {
+    const now = new Date().toISOString();
+    const dayAgo = new Date(Date.now() - 86400000).toISOString();
+    const twoDaysAgo = new Date(Date.now() - 172800000).toISOString();
+    
+    return [
+        {
+            id: 'note-1',
+            title: 'React Developer',
+            content: 'Senior React developer available for 2 weeks, rate 900 USD',
+            properties: [
+                { key: 'role', operator: 'is', values: ['react developer'] },
+                { key: 'duration', operator: 'less than', values: ['2 weeks'] },
+                { key: 'budget', operator: 'less than', values: ['900 USD'] },
+            ],
+            tags: ['dev', 'react'],
+            createdAt: dayAgo,
+            updatedAt: dayAgo,
+            status: 'open',
+            source: { type: 'user', identifier: 'test', timestamp: Date.now() - 86400000 },
+            privacy: 'private',
+            priority: 0,
+        },
+        {
+            id: 'note-2',
+            title: 'Wheelchair Ramp Installation',
+            content: 'Can install wheelchair ramp before Friday, budget 900 USD',
+            properties: [
+                { key: 'task', operator: 'is', values: ['wheelchair ramp'] },
+                { key: 'deadline', operator: 'is', values: ['friday'] },
+                { key: 'budget', operator: 'less than', values: ['900 USD'] },
+            ],
+            tags: ['care', 'accessibility'],
+            createdAt: twoDaysAgo,
+            updatedAt: twoDaysAgo,
+            status: 'open',
+            source: { type: 'user', identifier: 'test', timestamp: Date.now() - 172800000 },
+            privacy: 'private',
+            priority: 0,
+        },
+    ];
+}
+
+async function runQualityEvaluation(config: QualityRunConfig) {
+    console.log('  Running quality evaluation with real engines...');
+    
+    const extractionEngine = createExtractionEngine();
+    const matchEngine = createMatchEngine();
+    const notes = createSampleNotes();
+    
+    const qualityConfig: QualityRunConfig = {
+        ...config,
+        extractionEngine,
+        matchEngine,
+        notes,
+    };
+    
+    const results = await runAllQuality(qualityConfig);
+    return results;
 }
 
 async function runSimulatedIntent(repetitions: number) {

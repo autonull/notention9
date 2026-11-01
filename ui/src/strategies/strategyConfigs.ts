@@ -52,7 +52,7 @@ export const STRATEGY_CONFIGS: StrategyConfig[] = [
         '../components/editor/DescribeItComposer',
         'DescribeItComposer',
         '1.0.0',
-        {}
+        { placeholder: 'e.g. I need a React developer for two weeks, up to 900 USD, starting next week', autoFocus: false }
     ),
     createStrategyConfig(
         'template-selector',

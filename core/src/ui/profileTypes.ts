@@ -165,6 +165,7 @@ export interface ExperimentResult {
 export type ResolutionReason =
     | { kind: 'override'; strategyId: string }
     | { kind: 'experiment'; experimentId: string; variantId: string }
+    | { kind: 'revision'; revisionId: string; seamRole: string }
     | { kind: 'manual-profile'; profileId: string }
     | { kind: 'policy'; policyId: string; ruleId: string }
     | { kind: 'default-profile'; profileId: string }
