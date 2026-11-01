@@ -1,0 +1,22 @@
+{
+  "id": "intent-layout-002",
+  "family": "intent",
+  "intent": "layout_property",
+  "prompt": "Show me the schedule for the tennis coaching",
+  "seed": {
+    "notes": [{ "id": "note-7", "type": "need", "properties": { "need": "tennis coach", "level": "intermediate", "schedule": "weekend mornings", "budget": "60 per hour" } }],
+    "settings": {},
+    "revisions": ["incumbent"]
+  },
+  "expected": {
+    "minProperties": 1,
+    "requiredKeys": ["schedule"],
+    "outcome": "rendered"
+  },
+  "metrics": ["completion", "steps"],
+  "tags": ["sports", "schedule", "property"],
+  "provenance": {
+    "author": "human",
+    "source": "interview-103"
+  }
+}

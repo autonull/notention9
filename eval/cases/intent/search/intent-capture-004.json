@@ -1,0 +1,22 @@
+{
+  "id": "intent-capture-004",
+  "family": "intent",
+  "intent": "capture_need",
+  "prompt": "Need a housekeeper for biweekly cleaning, 3 bedroom house, budget 120 per visit",
+  "seed": {
+    "notes": [],
+    "settings": {},
+    "revisions": ["incumbent"]
+  },
+  "expected": {
+    "minProperties": 2,
+    "requiredKeys": ["need", "frequency", "budget"],
+    "outcome": "captured"
+  },
+  "metrics": ["completion", "steps", "corrections"],
+  "tags": ["home", "schedule", "budget"],
+  "provenance": {
+    "author": "human",
+    "source": "interview-25"
+  }
+}

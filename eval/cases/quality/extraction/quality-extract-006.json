@@ -1,0 +1,17 @@
+{
+  "id": "quality-extract-006",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Need help moving furniture this Saturday, have a truck, paying 100 for 4 hours",
+  "expected": [
+    { "key": "role", "operator": "contains", "values": ["mover", "moving help"] },
+    { "key": "schedule", "operator": "contains", "values": ["Saturday"] },
+    { "key": "budget", "operator": "less than", "values": ["100 USD"] }
+  ],
+  "forbidden": [],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.88
+  },
+  "tags": ["labor", "non-market", "schedule", "budget"]
+}

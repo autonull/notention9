@@ -18,7 +18,9 @@
     "paths": {
       "@notention/optimize": ["./src/index.ts"],
       "@notention/optimize/*": ["./src/*"],
-      "@notention/core/*": ["../core/dist/*"]
+      "@notention/core/*": ["../core/dist/*"],
+      "@notention/eval": ["../ui/eval/dist"],
+      "@notention/eval/*": ["../ui/eval/dist/*"]
     }
   },
   "include": ["src/**/*", "src/prompts/*.json", "src/synthesis/test-data/*.json"],

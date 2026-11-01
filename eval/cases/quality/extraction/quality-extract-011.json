@@ -1,0 +1,17 @@
+{
+  "id": "quality-extract-011",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Need someone to pick up prescription from CVS on Main St and deliver by 3pm today",
+  "expected": [
+    { "key": "role", "operator": "contains", "values": ["delivery", "courier", "pickup"] },
+    { "key": "location", "operator": "contains", "values": ["CVS", "Main St"] },
+    { "key": "deadline", "operator": "contains", "values": ["today", "3pm"] }
+  ],
+  "forbidden": [],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.89
+  },
+  "tags": ["care", "health", "deadline", "location"]
+}

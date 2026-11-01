@@ -1,0 +1,15 @@
+{
+  "id": "quality-match-008",
+  "family": "quality",
+  "qualityFamily": "match",
+  "input": "Looking for Spanish conversation practice twice a week",
+  "expected": [
+    { "noteId": "note-spanish-001", "minScore": 0.4 },
+    { "noteId": "note-spanish-002", "minScore": 0.25 }
+  ],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.86
+  },
+  "tags": ["education", "non-market", "language", "schedule"]
+}

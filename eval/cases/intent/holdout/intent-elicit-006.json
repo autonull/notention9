@@ -1,0 +1,22 @@
+{
+  "id": "intent-elicit-006",
+  "family": "intent",
+  "intent": "elicit_property",
+  "prompt": "Add dietary restrictions to the personal chef request",
+  "seed": {
+    "notes": [{ "id": "note-6", "type": "need", "properties": { "need": "personal chef", "frequency": "weekly" } }],
+    "settings": {},
+    "revisions": ["incumbent"]
+  },
+  "expected": {
+    "minProperties": 1,
+    "requiredKeys": ["dietary"],
+    "outcome": "elicited"
+  },
+  "metrics": ["completion", "steps", "corrections"],
+  "tags": ["food", "health", "dietary", "property"],
+  "provenance": {
+    "author": "human",
+    "source": "interview-34"
+  }
+}

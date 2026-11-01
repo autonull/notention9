@@ -1,0 +1,15 @@
+{
+  "id": "quality-match-003",
+  "family": "quality",
+  "qualityFamily": "match",
+  "input": "Looking for piano lessons for my child on weekends",
+  "expected": [
+    { "noteId": "note-piano-001", "minScore": 0.4 },
+    { "noteId": "note-piano-002", "minScore": 0.3 }
+  ],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.85
+  },
+  "tags": ["education", "non-market", "child", "schedule"]
+}

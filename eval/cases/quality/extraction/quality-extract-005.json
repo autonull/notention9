@@ -1,0 +1,19 @@
+{
+  "id": "quality-extract-005",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Need a ride to the airport tomorrow at 5am, willing to pay 40",
+  "expected": [
+    { "key": "role", "operator": "contains", "values": ["driver", "ride"] },
+    { "key": "deadline", "operator": "contains", "values": ["tomorrow", "5am"] },
+    { "key": "budget", "operator": "less than", "values": ["40 USD"] }
+  ],
+  "forbidden": [
+    { "key": "budget", "operator": "greater than", "values": ["50 USD"] }
+  ],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.93
+  },
+  "tags": ["transport", "deadline", "budget"]
+}

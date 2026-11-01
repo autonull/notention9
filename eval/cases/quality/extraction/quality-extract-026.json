@@ -1,0 +1,19 @@
+{
+  "id": "quality-extract-026",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Need someone to check on elderly neighbor daily, ensure meds taken, budget 20/visit",
+  "expected": [
+    { "key": "role", "operator": "contains", "values": ["wellness check", "caregiver", "check-in"] },
+    { "key": "recipient", "operator": "contains", "values": ["elderly neighbor", "senior"] },
+    { "key": "frequency", "operator": "contains", "values": ["daily"] },
+    { "key": "task", "operator": "contains", "values": ["medication", "meds"] },
+    { "key": "budget", "operator": "less than", "values": ["20 USD"] }
+  ],
+  "forbidden": [],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.91
+  },
+  "tags": ["care", "non-market", "elderly", "health", "schedule", "budget"]
+}

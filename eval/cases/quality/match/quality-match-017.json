@@ -1,0 +1,15 @@
+{
+  "id": "quality-match-017",
+  "family": "quality",
+  "qualityFamily": "match",
+  "input": "Need smart home setup for lights thermostat locks",
+  "expected": [
+    { "noteId": "note-tech-001", "minScore": 0.4 },
+    { "noteId": "note-tech-002", "minScore": 0.25 }
+  ],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.86
+  },
+  "tags": ["tech", "home", "setup"]
+}

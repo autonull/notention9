@@ -1,0 +1,17 @@
+{
+  "id": "quality-extract-004",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Looking for a piano teacher for my 8-year-old, weekends preferred, budget 60 per hour",
+  "expected": [
+    { "key": "role", "operator": "contains", "values": ["piano teacher"] },
+    { "key": "schedule", "operator": "contains", "values": ["weekend"] },
+    { "key": "budget", "operator": "less than", "values": ["60 USD"] }
+  ],
+  "forbidden": [],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.91
+  },
+  "tags": ["education", "non-market", "child", "schedule", "budget"]
+}

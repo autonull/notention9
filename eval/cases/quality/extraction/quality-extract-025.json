@@ -1,0 +1,18 @@
+{
+  "id": "quality-extract-025",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Looking for tennis coach for intermediate player, weekend mornings, budget 60/hr",
+  "expected": [
+    { "key": "role", "operator": "contains", "values": ["tennis coach", "tennis instructor"] },
+    { "key": "level", "operator": "contains", "values": ["intermediate"] },
+    { "key": "schedule", "operator": "contains", "values": ["weekend", "morning"] },
+    { "key": "budget", "operator": "less than", "values": ["60 USD"] }
+  ],
+  "forbidden": [],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.86
+  },
+  "tags": ["sports", "recreation", "schedule", "budget"]
+}

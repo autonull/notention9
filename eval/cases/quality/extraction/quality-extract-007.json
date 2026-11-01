@@ -1,0 +1,19 @@
+{
+  "id": "quality-extract-007",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "My grandmother needs meals delivered daily, dietary restrictions: low sodium, vegetarian, budget 15 per meal",
+  "expected": [
+    { "key": "role", "operator": "contains", "values": ["meal delivery"] },
+    { "key": "dietary", "operator": "contains", "values": ["low sodium", "vegetarian"] },
+    { "key": "budget", "operator": "less than", "values": ["15 USD"] }
+  ],
+  "forbidden": [
+    { "key": "budget", "operator": "greater than", "values": ["20 USD"] }
+  ],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.90
+  },
+  "tags": ["care", "non-market", "elderly", "dietary", "budget"]
+}

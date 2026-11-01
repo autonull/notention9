@@ -1,0 +1,22 @@
+{
+  "id": "intent-capture-016",
+  "family": "intent",
+  "intent": "capture_need",
+  "prompt": "Need a babysitter for Friday night 6-10pm, CPR certified, paying 18/hr",
+  "seed": {
+    "notes": [],
+    "settings": {},
+    "revisions": ["incumbent"]
+  },
+  "expected": {
+    "minProperties": 2,
+    "requiredKeys": ["need", "schedule", "budget"],
+    "outcome": "captured"
+  },
+  "metrics": ["completion", "steps", "corrections"],
+  "tags": ["care", "child", "schedule", "certification", "budget"],
+  "provenance": {
+    "author": "human",
+    "source": "interview-67"
+  }
+}

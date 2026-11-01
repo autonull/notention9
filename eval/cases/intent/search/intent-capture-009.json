@@ -1,0 +1,22 @@
+{
+  "id": "intent-capture-009",
+  "family": "intent",
+  "intent": "capture_need",
+  "prompt": "Need daily wellness check for elderly neighbor, ensure medications taken, budget 20/visit",
+  "seed": {
+    "notes": [],
+    "settings": {},
+    "revisions": ["incumbent"]
+  },
+  "expected": {
+    "minProperties": 3,
+    "requiredKeys": ["need", "frequency", "budget"],
+    "outcome": "captured"
+  },
+  "metrics": ["completion", "steps", "corrections"],
+  "tags": ["care", "elderly", "health", "schedule", "budget"],
+  "provenance": {
+    "author": "human",
+    "source": "interview-40"
+  }
+}

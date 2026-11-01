@@ -1,0 +1,15 @@
+{
+  "id": "quality-match-009",
+  "family": "quality",
+  "qualityFamily": "match",
+  "input": "Need babysitter Friday night, CPR certified",
+  "expected": [
+    { "noteId": "note-sitter-001", "minScore": 0.45 },
+    { "noteId": "note-sitter-002", "minScore": 0.3 }
+  ],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.89
+  },
+  "tags": ["care", "non-market", "child", "schedule", "certification"]
+}

@@ -1,15 +1,15 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-01T12:54:30.608Z",
+  "generatedAt": "2026-11-01T13:47:46.453Z",
   "counts": {
     "intent": {
-      "search": 4,
-      "validation": 2,
-      "holdout": 0
+      "search": 21,
+      "validation": 10,
+      "holdout": 9
     },
     "quality": {
-      "extraction": 2,
-      "match": 1
+      "extraction": 38,
+      "match": 22
     }
   },
   "cases": [
@@ -50,6 +50,85 @@
       ]
     },
     {
+      "id": "intent-capture-004",
+      "family": "intent",
+      "split": "search",
+      "path": "intent/search/intent-capture-004.json",
+      "hash": "d1cf04e99f721cd3",
+      "tags": [
+        "home",
+        "schedule",
+        "budget"
+      ]
+    },
+    {
+      "id": "intent-capture-005",
+      "family": "intent",
+      "split": "search",
+      "path": "intent/search/intent-capture-005.json",
+      "hash": "9931f7cbc9ac6c06",
+      "tags": [
+        "health",
+        "wellness",
+        "pregnancy",
+        "budget"
+      ]
+    },
+    {
+      "id": "intent-capture-006",
+      "family": "intent",
+      "split": "search",
+      "path": "intent/search/intent-capture-006.json",
+      "hash": "52395c02b8536b99",
+      "tags": [
+        "tech",
+        "education",
+        "elderly",
+        "budget"
+      ]
+    },
+    {
+      "id": "intent-capture-007",
+      "family": "intent",
+      "split": "search",
+      "path": "intent/search/intent-capture-007.json",
+      "hash": "1119ae065b5c3ab2",
+      "tags": [
+        "food",
+        "health",
+        "dietary",
+        "schedule",
+        "budget"
+      ]
+    },
+    {
+      "id": "intent-capture-008",
+      "family": "intent",
+      "split": "search",
+      "path": "intent/search/intent-capture-008.json",
+      "hash": "cfc33fb4e81aa27a",
+      "tags": [
+        "sports",
+        "recreation",
+        "schedule",
+        "budget"
+      ]
+    },
+    {
+      "id": "intent-capture-009",
+      "family": "intent",
+      "split": "search",
+      "path": "intent/search/intent-capture-009.json",
+      "hash": "88ee5bc657b72867",
+      "tags": [
+        "care",
+        "elderly",
+        "health",
+        "schedule",
+        "budget"
+      ]
+    },
+    {
       "id": "intent-capture-010",
       "family": "intent",
       "split": "validation",
@@ -76,6 +155,218 @@
       ]
     },
     {
+      "id": "intent-capture-012",
+      "family": "intent",
+      "split": "search",
+      "path": "intent/search/intent-capture-012.json",
+      "hash": "e695334adae919f3",
+      "tags": [
+        "career",
+        "education",
+        "volunteering",
+        "free",
+        "virtual"
+      ]
+    },
+    {
+      "id": "intent-capture-013",
+      "family": "intent",
+      "split": "search",
+      "path": "intent/search/intent-capture-013.json",
+      "hash": "7a3a22a31178ce36",
+      "tags": [
+        "care",
+        "elderly",
+        "groceries",
+        "deadline",
+        "budget"
+      ]
+    },
+    {
+      "id": "intent-capture-014",
+      "family": "intent",
+      "split": "search",
+      "path": "intent/search/intent-capture-014.json",
+      "hash": "ff1a3b859fe8005e",
+      "tags": [
+        "community",
+        "donation",
+        "homeless",
+        "deadline"
+      ]
+    },
+    {
+      "id": "intent-capture-015",
+      "family": "intent",
+      "split": "search",
+      "path": "intent/search/intent-capture-015.json",
+      "hash": "c46e5680c1f3e224",
+      "tags": [
+        "legal",
+        "housing",
+        "volunteering",
+        "schedule",
+        "free"
+      ]
+    },
+    {
+      "id": "intent-capture-016",
+      "family": "intent",
+      "split": "validation",
+      "path": "intent/validation/intent-capture-016.json",
+      "hash": "15b4afedee3e19a9",
+      "tags": [
+        "care",
+        "child",
+        "schedule",
+        "certification",
+        "budget"
+      ]
+    },
+    {
+      "id": "intent-capture-017",
+      "family": "intent",
+      "split": "validation",
+      "path": "intent/validation/intent-capture-017.json",
+      "hash": "fcfb894baa49583f",
+      "tags": [
+        "creative",
+        "family",
+        "schedule",
+        "budget"
+      ]
+    },
+    {
+      "id": "intent-capture-018",
+      "family": "intent",
+      "split": "validation",
+      "path": "intent/validation/intent-capture-018.json",
+      "hash": "76bebab10551327c",
+      "tags": [
+        "education",
+        "teen",
+        "driving",
+        "budget"
+      ]
+    },
+    {
+      "id": "intent-capture-019",
+      "family": "intent",
+      "split": "validation",
+      "path": "intent/validation/intent-capture-019.json",
+      "hash": "4b3f1f55d325a981",
+      "tags": [
+        "tech",
+        "home",
+        "budget"
+      ]
+    },
+    {
+      "id": "intent-capture-020",
+      "family": "intent",
+      "split": "holdout",
+      "path": "intent/holdout/intent-capture-020.json",
+      "hash": "b8b3deb230bcfa0c",
+      "tags": [
+        "education",
+        "youth",
+        "schedule",
+        "free",
+        "volunteering"
+      ]
+    },
+    {
+      "id": "intent-capture-021",
+      "family": "intent",
+      "split": "holdout",
+      "path": "intent/holdout/intent-capture-021.json",
+      "hash": "42b559d481e36e74",
+      "tags": [
+        "health",
+        "care",
+        "newborn",
+        "insurance",
+        "budget"
+      ]
+    },
+    {
+      "id": "intent-capture-022",
+      "family": "intent",
+      "split": "holdout",
+      "path": "intent/holdout/intent-capture-022.json",
+      "hash": "abbb74a9477760e3",
+      "tags": [
+        "education",
+        "volunteering",
+        "schedule",
+        "free"
+      ]
+    },
+    {
+      "id": "intent-capture-023",
+      "family": "intent",
+      "split": "holdout",
+      "path": "intent/holdout/intent-capture-023.json",
+      "hash": "e3f71db8d42b6091",
+      "tags": [
+        "creative",
+        "family",
+        "schedule",
+        "budget"
+      ]
+    },
+    {
+      "id": "intent-capture-024",
+      "family": "intent",
+      "split": "holdout",
+      "path": "intent/holdout/intent-capture-024.json",
+      "hash": "1de7a96c730d17c3",
+      "tags": [
+        "education",
+        "teen",
+        "driving",
+        "budget"
+      ]
+    },
+    {
+      "id": "intent-capture-025",
+      "family": "intent",
+      "split": "holdout",
+      "path": "intent/holdout/intent-capture-025.json",
+      "hash": "62b2957c733e27e2",
+      "tags": [
+        "tech",
+        "home",
+        "budget"
+      ]
+    },
+    {
+      "id": "intent-capture-026",
+      "family": "intent",
+      "split": "validation",
+      "path": "intent/validation/intent-capture-026.json",
+      "hash": "14add7abd68de51f",
+      "tags": [
+        "education",
+        "youth",
+        "schedule",
+        "free",
+        "volunteering"
+      ]
+    },
+    {
+      "id": "intent-capture-027",
+      "family": "intent",
+      "split": "validation",
+      "path": "intent/validation/intent-capture-027.json",
+      "hash": "4efe2cfbab55ef61",
+      "tags": [
+        "home",
+        "schedule",
+        "budget"
+      ]
+    },
+    {
       "id": "intent-elicit-001",
       "family": "intent",
       "split": "search",
@@ -85,6 +376,157 @@
         "care",
         "non-market",
         "property"
+      ]
+    },
+    {
+      "id": "intent-elicit-002",
+      "family": "intent",
+      "split": "search",
+      "path": "intent/search/intent-elicit-002.json",
+      "hash": "5009d7acee6713d2",
+      "tags": [
+        "care",
+        "pet",
+        "deadline",
+        "property"
+      ]
+    },
+    {
+      "id": "intent-elicit-003",
+      "family": "intent",
+      "split": "search",
+      "path": "intent/search/intent-elicit-003.json",
+      "hash": "d67918035e038345",
+      "tags": [
+        "education",
+        "child",
+        "budget",
+        "property"
+      ]
+    },
+    {
+      "id": "intent-elicit-004",
+      "family": "intent",
+      "split": "search",
+      "path": "intent/search/intent-elicit-004.json",
+      "hash": "f5eafdbd8c8c3f48",
+      "tags": [
+        "food",
+        "health",
+        "dietary",
+        "property"
+      ]
+    },
+    {
+      "id": "intent-elicit-005",
+      "family": "intent",
+      "split": "validation",
+      "path": "intent/validation/intent-elicit-005.json",
+      "hash": "eab6239d257c21fc",
+      "tags": [
+        "sports",
+        "schedule",
+        "property"
+      ]
+    },
+    {
+      "id": "intent-elicit-006",
+      "family": "intent",
+      "split": "holdout",
+      "path": "intent/holdout/intent-elicit-006.json",
+      "hash": "3cb158670498b175",
+      "tags": [
+        "food",
+        "health",
+        "dietary",
+        "property"
+      ]
+    },
+    {
+      "id": "intent-layout-001",
+      "family": "intent",
+      "split": "search",
+      "path": "intent/search/intent-layout-001.json",
+      "hash": "6c5c2ab2cc174d17",
+      "tags": [
+        "accessibility",
+        "property",
+        "budget"
+      ]
+    },
+    {
+      "id": "intent-layout-002",
+      "family": "intent",
+      "split": "holdout",
+      "path": "intent/holdout/intent-layout-002.json",
+      "hash": "abad83536e17e967",
+      "tags": [
+        "sports",
+        "schedule",
+        "property"
+      ]
+    },
+    {
+      "id": "intent-match-001",
+      "family": "intent",
+      "split": "search",
+      "path": "intent/search/intent-match-001.json",
+      "hash": "3ad47a3fc6fee289",
+      "tags": [
+        "care",
+        "pet",
+        "matching"
+      ]
+    },
+    {
+      "id": "intent-match-002",
+      "family": "intent",
+      "split": "search",
+      "path": "intent/search/intent-match-002.json",
+      "hash": "ba3796205ac2652a",
+      "tags": [
+        "education",
+        "matching",
+        "schedule"
+      ]
+    },
+    {
+      "id": "intent-match-003",
+      "family": "intent",
+      "split": "search",
+      "path": "intent/search/intent-match-003.json",
+      "hash": "3c210b0454c34429",
+      "tags": [
+        "transport",
+        "matching",
+        "deadline"
+      ]
+    },
+    {
+      "id": "intent-match-004",
+      "family": "intent",
+      "split": "validation",
+      "path": "intent/validation/intent-match-004.json",
+      "hash": "0fdfb64db94ea3b8",
+      "tags": [
+        "care",
+        "child",
+        "matching",
+        "certification",
+        "schedule"
+      ]
+    },
+    {
+      "id": "intent-match-005",
+      "family": "intent",
+      "split": "holdout",
+      "path": "intent/holdout/intent-match-005.json",
+      "hash": "5b6959c693172363",
+      "tags": [
+        "education",
+        "volunteering",
+        "matching",
+        "free"
       ]
     },
     {
@@ -114,6 +556,508 @@
       ]
     },
     {
+      "id": "quality-extract-003",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-003.json",
+      "hash": "5ec92e30dd9de545",
+      "tags": [
+        "care",
+        "non-market",
+        "pet",
+        "schedule",
+        "budget"
+      ]
+    },
+    {
+      "id": "quality-extract-004",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-004.json",
+      "hash": "b8cd8b66e5916d2c",
+      "tags": [
+        "education",
+        "non-market",
+        "child",
+        "schedule",
+        "budget"
+      ]
+    },
+    {
+      "id": "quality-extract-005",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-005.json",
+      "hash": "2d2bd2912b73f3d9",
+      "tags": [
+        "transport",
+        "deadline",
+        "budget"
+      ]
+    },
+    {
+      "id": "quality-extract-006",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-006.json",
+      "hash": "44d2728d809770f4",
+      "tags": [
+        "labor",
+        "non-market",
+        "schedule",
+        "budget"
+      ]
+    },
+    {
+      "id": "quality-extract-007",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-007.json",
+      "hash": "919045887cd2c44d",
+      "tags": [
+        "care",
+        "non-market",
+        "elderly",
+        "dietary",
+        "budget"
+      ]
+    },
+    {
+      "id": "quality-extract-008",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-008.json",
+      "hash": "70c9dc85e620ad5f",
+      "tags": [
+        "education",
+        "non-market",
+        "language",
+        "schedule",
+        "budget"
+      ]
+    },
+    {
+      "id": "quality-extract-009",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-009.json",
+      "hash": "2b8bb8e3566d734e",
+      "tags": [
+        "care",
+        "non-market",
+        "child",
+        "schedule",
+        "certification",
+        "budget"
+      ]
+    },
+    {
+      "id": "quality-extract-010",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-010.json",
+      "hash": "d9553bb0cc8756df",
+      "tags": [
+        "community",
+        "non-market",
+        "donation",
+        "deadline",
+        "homeless"
+      ]
+    },
+    {
+      "id": "quality-extract-011",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-011.json",
+      "hash": "1b15a6a97b1ab53c",
+      "tags": [
+        "care",
+        "health",
+        "deadline",
+        "location"
+      ]
+    },
+    {
+      "id": "quality-extract-012",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-012.json",
+      "hash": "20d2cd909d0e0248",
+      "tags": [
+        "education",
+        "non-market",
+        "volunteering",
+        "schedule",
+        "free"
+      ]
+    },
+    {
+      "id": "quality-extract-013",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-013.json",
+      "hash": "7b4b8411b41fee51",
+      "tags": [
+        "creative",
+        "schedule",
+        "budget",
+        "family"
+      ]
+    },
+    {
+      "id": "quality-extract-014",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-014.json",
+      "hash": "e3d78cea698a77f7",
+      "tags": [
+        "education",
+        "non-market",
+        "teen",
+        "driving",
+        "budget"
+      ]
+    },
+    {
+      "id": "quality-extract-015",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-015.json",
+      "hash": "cbc07d76f281bbbc",
+      "tags": [
+        "tech",
+        "home",
+        "budget",
+        "setup"
+      ]
+    },
+    {
+      "id": "quality-extract-016",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-016.json",
+      "hash": "c0a990a118a96b33",
+      "tags": [
+        "education",
+        "non-market",
+        "volunteering",
+        "schedule",
+        "free",
+        "youth"
+      ]
+    },
+    {
+      "id": "quality-extract-017",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-017.json",
+      "hash": "d5271ba13bfe2ada",
+      "tags": [
+        "health",
+        "care",
+        "non-market",
+        "newborn",
+        "insurance",
+        "budget"
+      ]
+    },
+    {
+      "id": "quality-extract-018",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-018.json",
+      "hash": "a49ae812f9c25051",
+      "tags": [
+        "home",
+        "schedule",
+        "budget"
+      ]
+    },
+    {
+      "id": "quality-extract-019",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-019.json",
+      "hash": "8ee658d96ca694ed",
+      "tags": [
+        "education",
+        "non-market",
+        "volunteering",
+        "career",
+        "free",
+        "virtual"
+      ]
+    },
+    {
+      "id": "quality-extract-020",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-020.json",
+      "hash": "d6e3d035a7a30f17",
+      "tags": [
+        "care",
+        "non-market",
+        "elderly",
+        "deadline",
+        "budget",
+        "groceries"
+      ]
+    },
+    {
+      "id": "quality-extract-021",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-021.json",
+      "hash": "2c162fd7dffc3229",
+      "tags": [
+        "health",
+        "wellness",
+        "pregnancy",
+        "budget",
+        "private"
+      ]
+    },
+    {
+      "id": "quality-extract-022",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-022.json",
+      "hash": "e82cf36fe93dee7b",
+      "tags": [
+        "tech",
+        "education",
+        "non-market",
+        "elderly",
+        "budget"
+      ]
+    },
+    {
+      "id": "quality-extract-023",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-023.json",
+      "hash": "2a3ec7bfa65ebac0",
+      "tags": [
+        "legal",
+        "non-market",
+        "volunteering",
+        "schedule",
+        "free",
+        "housing"
+      ]
+    },
+    {
+      "id": "quality-extract-024",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-024.json",
+      "hash": "a32b05648fd28afa",
+      "tags": [
+        "food",
+        "health",
+        "dietary",
+        "schedule",
+        "budget"
+      ]
+    },
+    {
+      "id": "quality-extract-025",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-025.json",
+      "hash": "9750aa5377c86025",
+      "tags": [
+        "sports",
+        "recreation",
+        "schedule",
+        "budget"
+      ]
+    },
+    {
+      "id": "quality-extract-026",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-026.json",
+      "hash": "9e0c78725c0bc8f4",
+      "tags": [
+        "care",
+        "non-market",
+        "elderly",
+        "health",
+        "schedule",
+        "budget"
+      ]
+    },
+    {
+      "id": "quality-extract-027",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-027.json",
+      "hash": "4af3a4bcbfdea8c7",
+      "tags": [
+        "education",
+        "non-market",
+        "volunteering",
+        "schedule",
+        "free"
+      ]
+    },
+    {
+      "id": "quality-extract-028",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-028.json",
+      "hash": "0b5c5f248b0c2b62",
+      "tags": [
+        "creative",
+        "schedule",
+        "budget",
+        "family"
+      ]
+    },
+    {
+      "id": "quality-extract-029",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-029.json",
+      "hash": "b1880c8cfdf98879",
+      "tags": [
+        "education",
+        "non-market",
+        "teen",
+        "driving",
+        "budget"
+      ]
+    },
+    {
+      "id": "quality-extract-030",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-030.json",
+      "hash": "27b18ce2c6d0353c",
+      "tags": [
+        "tech",
+        "home",
+        "budget",
+        "setup"
+      ]
+    },
+    {
+      "id": "quality-extract-031",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-031.json",
+      "hash": "1b0247da347acfad",
+      "tags": [
+        "education",
+        "non-market",
+        "volunteering",
+        "schedule",
+        "free",
+        "youth"
+      ]
+    },
+    {
+      "id": "quality-extract-032",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-032.json",
+      "hash": "64d14efead487fcb",
+      "tags": [
+        "health",
+        "care",
+        "non-market",
+        "newborn",
+        "insurance",
+        "budget"
+      ]
+    },
+    {
+      "id": "quality-extract-033",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-033.json",
+      "hash": "11f4e0a34535b1bb",
+      "tags": [
+        "home",
+        "schedule",
+        "budget"
+      ]
+    },
+    {
+      "id": "quality-extract-034",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-034.json",
+      "hash": "ff247824c29318fd",
+      "tags": [
+        "education",
+        "non-market",
+        "volunteering",
+        "career",
+        "free",
+        "virtual"
+      ]
+    },
+    {
+      "id": "quality-extract-035",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-035.json",
+      "hash": "4f2ead227802e271",
+      "tags": [
+        "care",
+        "non-market",
+        "elderly",
+        "deadline",
+        "budget",
+        "groceries"
+      ]
+    },
+    {
+      "id": "quality-extract-036",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-036.json",
+      "hash": "588ead25f3a412d1",
+      "tags": [
+        "food",
+        "health",
+        "dietary",
+        "schedule",
+        "budget"
+      ]
+    },
+    {
+      "id": "quality-extract-037",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-037.json",
+      "hash": "c0f5d6efeb21d8b1",
+      "tags": [
+        "sports",
+        "recreation",
+        "schedule",
+        "budget"
+      ]
+    },
+    {
+      "id": "quality-extract-038",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-038.json",
+      "hash": "290706d853c54bf6",
+      "tags": [
+        "care",
+        "non-market",
+        "elderly",
+        "health",
+        "schedule",
+        "budget"
+      ]
+    },
+    {
       "id": "quality-match-001",
       "family": "quality",
       "qualityFamily": "match",
@@ -124,7 +1068,274 @@
         "non-market",
         "accessibility"
       ]
+    },
+    {
+      "id": "quality-match-002",
+      "family": "quality",
+      "qualityFamily": "match",
+      "path": "quality/match/quality-match-002.json",
+      "hash": "7772f4b3f7cf0945",
+      "tags": [
+        "care",
+        "non-market",
+        "pet",
+        "schedule"
+      ]
+    },
+    {
+      "id": "quality-match-003",
+      "family": "quality",
+      "qualityFamily": "match",
+      "path": "quality/match/quality-match-003.json",
+      "hash": "f7e25985fb0f6e12",
+      "tags": [
+        "education",
+        "non-market",
+        "child",
+        "schedule"
+      ]
+    },
+    {
+      "id": "quality-match-004",
+      "family": "quality",
+      "qualityFamily": "match",
+      "path": "quality/match/quality-match-004.json",
+      "hash": "f83fb5cc7a577847",
+      "tags": [
+        "transport",
+        "deadline"
+      ]
+    },
+    {
+      "id": "quality-match-005",
+      "family": "quality",
+      "qualityFamily": "match",
+      "path": "quality/match/quality-match-005.json",
+      "hash": "9702c75d29772c5d",
+      "tags": [
+        "labor",
+        "non-market",
+        "schedule"
+      ]
+    },
+    {
+      "id": "quality-match-006",
+      "family": "quality",
+      "qualityFamily": "match",
+      "path": "quality/match/quality-match-006.json",
+      "hash": "b637a0b430d7d2a0",
+      "tags": [
+        "care",
+        "non-market",
+        "elderly",
+        "dietary"
+      ]
+    },
+    {
+      "id": "quality-match-007",
+      "family": "quality",
+      "qualityFamily": "match",
+      "path": "quality/match/quality-match-007.json",
+      "hash": "290098ebbb2dc8ca",
+      "tags": [
+        "community",
+        "non-market",
+        "donation",
+        "homeless"
+      ]
+    },
+    {
+      "id": "quality-match-008",
+      "family": "quality",
+      "qualityFamily": "match",
+      "path": "quality/match/quality-match-008.json",
+      "hash": "cdc8cffe565e31bc",
+      "tags": [
+        "education",
+        "non-market",
+        "language",
+        "schedule"
+      ]
+    },
+    {
+      "id": "quality-match-009",
+      "family": "quality",
+      "qualityFamily": "match",
+      "path": "quality/match/quality-match-009.json",
+      "hash": "2866b40e3664eeb9",
+      "tags": [
+        "care",
+        "non-market",
+        "child",
+        "schedule",
+        "certification"
+      ]
+    },
+    {
+      "id": "quality-match-010",
+      "family": "quality",
+      "qualityFamily": "match",
+      "path": "quality/match/quality-match-010.json",
+      "hash": "63eae92cfafa066c",
+      "tags": [
+        "education",
+        "non-market",
+        "volunteering",
+        "schedule",
+        "free"
+      ]
+    },
+    {
+      "id": "quality-match-011",
+      "family": "quality",
+      "qualityFamily": "match",
+      "path": "quality/match/quality-match-011.json",
+      "hash": "1be9a5adb0c7442e",
+      "tags": [
+        "creative",
+        "schedule",
+        "family"
+      ]
+    },
+    {
+      "id": "quality-match-012",
+      "family": "quality",
+      "qualityFamily": "match",
+      "path": "quality/match/quality-match-012.json",
+      "hash": "3a7271cf20aead09",
+      "tags": [
+        "education",
+        "non-market",
+        "teen",
+        "driving"
+      ]
+    },
+    {
+      "id": "quality-match-013",
+      "family": "quality",
+      "qualityFamily": "match",
+      "path": "quality/match/quality-match-013.json",
+      "hash": "a05ff1b48cea287a",
+      "tags": [
+        "tech",
+        "home",
+        "setup"
+      ]
+    },
+    {
+      "id": "quality-match-014",
+      "family": "quality",
+      "qualityFamily": "match",
+      "path": "quality/match/quality-match-014.json",
+      "hash": "49db3e113c18a201",
+      "tags": [
+        "education",
+        "non-market",
+        "volunteering",
+        "schedule",
+        "free"
+      ]
+    },
+    {
+      "id": "quality-match-015",
+      "family": "quality",
+      "qualityFamily": "match",
+      "path": "quality/match/quality-match-015.json",
+      "hash": "3da997a39cb84a49",
+      "tags": [
+        "creative",
+        "schedule",
+        "family"
+      ]
+    },
+    {
+      "id": "quality-match-016",
+      "family": "quality",
+      "qualityFamily": "match",
+      "path": "quality/match/quality-match-016.json",
+      "hash": "e9afe18b1b478052",
+      "tags": [
+        "education",
+        "non-market",
+        "teen",
+        "driving"
+      ]
+    },
+    {
+      "id": "quality-match-017",
+      "family": "quality",
+      "qualityFamily": "match",
+      "path": "quality/match/quality-match-017.json",
+      "hash": "e692c173a0d012fb",
+      "tags": [
+        "tech",
+        "home",
+        "setup"
+      ]
+    },
+    {
+      "id": "quality-match-018",
+      "family": "quality",
+      "qualityFamily": "match",
+      "path": "quality/match/quality-match-018.json",
+      "hash": "cbcb092df1f00b19",
+      "tags": [
+        "community",
+        "non-market",
+        "donation",
+        "homeless"
+      ]
+    },
+    {
+      "id": "quality-match-019",
+      "family": "quality",
+      "qualityFamily": "match",
+      "path": "quality/match/quality-match-019.json",
+      "hash": "e4f56e6ec33fe302",
+      "tags": [
+        "home",
+        "schedule"
+      ]
+    },
+    {
+      "id": "quality-match-020",
+      "family": "quality",
+      "qualityFamily": "match",
+      "path": "quality/match/quality-match-020.json",
+      "hash": "5d0f4d76191ca6e0",
+      "tags": [
+        "career",
+        "education",
+        "free",
+        "volunteering"
+      ]
+    },
+    {
+      "id": "quality-match-021",
+      "family": "quality",
+      "qualityFamily": "match",
+      "path": "quality/match/quality-match-021.json",
+      "hash": "aa9ab64842dc5a31",
+      "tags": [
+        "care",
+        "elderly",
+        "groceries",
+        "delivery"
+      ]
+    },
+    {
+      "id": "quality-match-022",
+      "family": "quality",
+      "qualityFamily": "match",
+      "path": "quality/match/quality-match-022.json",
+      "hash": "55aa850e08a160ca",
+      "tags": [
+        "legal",
+        "housing",
+        "free",
+        "volunteering"
+      ]
     }
   ],
-  "hash": "87e70e1a66fb40b0"
+  "hash": "37f9fcbac91fed9d"
 }

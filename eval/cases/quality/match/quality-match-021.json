@@ -1,0 +1,15 @@
+{
+  "id": "quality-match-021",
+  "family": "quality",
+  "qualityFamily": "match",
+  "input": "Looking for grocery delivery for elderly neighbor",
+  "expected": [
+    { "noteId": "note-grocery-001", "minScore": 0.4 },
+    { "noteId": "note-grocery-002", "minScore": 0.25 }
+  ],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.88
+  },
+  "tags": ["care", "elderly", "groceries", "delivery"]
+}

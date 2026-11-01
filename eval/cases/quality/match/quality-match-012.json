@@ -1,0 +1,15 @@
+{
+  "id": "quality-match-012",
+  "family": "quality",
+  "qualityFamily": "match",
+  "input": "Looking for driving instructor for teenager, automatic car",
+  "expected": [
+    { "noteId": "note-drive-001", "minScore": 0.45 },
+    { "noteId": "note-drive-002", "minScore": 0.3 }
+  ],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.84
+  },
+  "tags": ["education", "non-market", "teen", "driving"]
+}

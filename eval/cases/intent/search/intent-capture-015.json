@@ -1,0 +1,22 @@
+{
+  "id": "intent-capture-015",
+  "family": "intent",
+  "intent": "capture_need",
+  "prompt": "Offering free legal clinic for tenants rights, first Saturday monthly 10am-2pm at library",
+  "seed": {
+    "notes": [],
+    "settings": {},
+    "revisions": ["incumbent"]
+  },
+  "expected": {
+    "minProperties": 3,
+    "requiredKeys": ["need", "schedule", "location"],
+    "outcome": "captured"
+  },
+  "metrics": ["completion", "steps", "corrections"],
+  "tags": ["legal", "housing", "volunteering", "schedule", "free"],
+  "provenance": {
+    "author": "human",
+    "source": "interview-52"
+  }
+}

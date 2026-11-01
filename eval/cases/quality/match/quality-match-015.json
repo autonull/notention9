@@ -1,0 +1,15 @@
+{
+  "id": "quality-match-015",
+  "family": "quality",
+  "qualityFamily": "match",
+  "input": "Need photographer for family portraits Sunday",
+  "expected": [
+    { "noteId": "note-photo-001", "minScore": 0.4 },
+    { "noteId": "note-photo-002", "minScore": 0.25 }
+  ],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.85
+  },
+  "tags": ["creative", "schedule", "family"]
+}

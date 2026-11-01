@@ -1,0 +1,26 @@
+{
+  "id": "intent-match-004",
+  "family": "intent",
+  "intent": "match_local",
+  "prompt": "Find babysitters available Friday night with CPR certification",
+  "seed": {
+    "notes": [
+      { "id": "note-sitter-001", "type": "offer", "properties": { "role": "babysitter", "schedule": "Friday evenings", "certification": "CPR", "rate": "18 per hour" } },
+      { "id": "note-sitter-002", "type": "offer", "properties": { "role": "nanny", "schedule": "weekends", "certification": "CPR, First Aid", "rate": "22 per hour" } }
+    ],
+    "settings": {},
+    "revisions": ["incumbent"]
+  },
+  "expected": {
+    "minProperties": 1,
+    "requiredKeys": ["matches"],
+    "outcome": "matched",
+    "matchMinRecall": 0.5
+  },
+  "metrics": ["completion", "steps", "recall", "precision"],
+  "tags": ["care", "child", "matching", "certification", "schedule"],
+  "provenance": {
+    "author": "human",
+    "source": "interview-79"
+  }
+}

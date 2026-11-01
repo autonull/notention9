@@ -1,0 +1,22 @@
+{
+  "id": "intent-elicit-003",
+  "family": "intent",
+  "intent": "elicit_property",
+  "prompt": "Specify the budget for the piano lessons",
+  "seed": {
+    "notes": [{ "id": "note-2", "type": "need", "properties": { "need": "piano teacher", "schedule": "weekends" } }],
+    "settings": {},
+    "revisions": ["incumbent"]
+  },
+  "expected": {
+    "minProperties": 1,
+    "requiredKeys": ["budget"],
+    "outcome": "elicited"
+  },
+  "metrics": ["completion", "steps", "corrections"],
+  "tags": ["education", "child", "budget", "property"],
+  "provenance": {
+    "author": "human",
+    "source": "interview-07"
+  }
+}

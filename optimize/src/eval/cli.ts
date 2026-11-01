@@ -16,6 +16,7 @@ import { type OntologyNode, type Note, type Property } from '@notention/core/typ
 import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { DEFAULT_ONTOLOGY } from '@notention/core/ontology';
+import type { IntentRunConfig } from '@notention/eval';
 
 const program = new Command();
 
@@ -89,15 +90,45 @@ program
     .option('-s, --split <split>', 'Split: search | validation | holdout', 'search')
     .option('-r, --repetitions <n>', 'Repetitions per case', '3')
     .option('--headless', 'Run headless', true)
+    .option('--base-url <url>', 'Base URL for the app', 'http://localhost:5173')
     .action(async (options) => {
         const manifest = readManifest();
         console.log(`📋 Running intent evaluation (split: ${options.split}, manifest: ${manifest.hash})`);
-        console.log('⚠️  Browser harness not yet implemented');
-        
-        const cases = readIntentCases(options.split as 'search' | 'validation' | 'holdout', manifest);
-        console.log(`\nIntent cases (${cases.length}):`);
-        for (const c of cases) {
-            console.log(`  - ${c.id}: ${c.prompt.slice(0, 60)}...`);
+
+        try {
+            const { chromium } = await import('@playwright/test');
+            const { runIntentEvaluation } = await import('@notention/eval');
+
+            const browser = await chromium.launch({ headless: options.headless !== 'false' });
+            
+            const config: IntentRunConfig = {
+                split: options.split as 'search' | 'validation' | 'holdout',
+                baseURL: options.baseUrl,
+                headless: options.headless !== 'false',
+                slowMo: 0,
+                repetitions: parseInt(options.repetitions, 10),
+                seed: 42,
+                viewport: { width: 1280, height: 720 },
+                recordVideo: false,
+            };
+
+            console.log(`🌐 Launching browser (headless: ${config.headless})...`);
+            const result = await runIntentEvaluation(browser, config);
+            
+            await browser.close();
+
+            console.log(`\n✅ Intent evaluation complete`);
+            console.log(`   Run ID: ${result.runId}`);
+            console.log(`   Split: ${result.split}`);
+            console.log(`   Total: ${result.summary.total}`);
+            console.log(`   Passed: ${result.summary.passed}`);
+            console.log(`   Failed: ${result.summary.failed}`);
+            console.log(`   Avg Completion: ${result.summary.avgCompletion.toFixed(3)}`);
+            console.log(`   Avg Steps: ${result.summary.avgSteps.toFixed(1)}`);
+            console.log(`   Avg Corrections: ${result.summary.avgCorrections.toFixed(3)}`);
+        } catch (e) {
+            console.error(`❌ Intent evaluation failed: ${e instanceof Error ? e.message : String(e)}`);
+            process.exit(1);
         }
     });
 
@@ -379,8 +410,6 @@ program
     });
 
 // --- Helper functions ---
-
-import { DEFAULT_ONTOLOGY } from '@notention/core/ontology';
 
 // Create extraction engine adapter
 function createExtractionEngine() {

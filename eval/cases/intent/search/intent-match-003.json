@@ -1,0 +1,26 @@
+{
+  "id": "intent-match-003",
+  "family": "intent",
+  "intent": "match_local",
+  "prompt": "Find someone to drive me to the airport tomorrow at 5am",
+  "seed": {
+    "notes": [
+      { "id": "note-ride-001", "type": "offer", "properties": { "role": "driver", "schedule": "early morning", "rate": "35 to airport" } },
+      { "id": "note-ride-002", "type": "offer", "properties": { "role": "rideshare", "schedule": "24/7", "rate": "40 to airport" } }
+    ],
+    "settings": {},
+    "revisions": ["incumbent"]
+  },
+  "expected": {
+    "minProperties": 1,
+    "requiredKeys": ["matches"],
+    "outcome": "matched",
+    "matchMinRecall": 0.5
+  },
+  "metrics": ["completion", "steps", "recall", "precision"],
+  "tags": ["transport", "matching", "deadline"],
+  "provenance": {
+    "author": "human",
+    "source": "interview-61"
+  }
+}

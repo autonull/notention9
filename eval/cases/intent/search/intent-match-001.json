@@ -1,0 +1,26 @@
+{
+  "id": "intent-match-001",
+  "family": "intent",
+  "intent": "match_local",
+  "prompt": "Find a dog walker for weekday mornings",
+  "seed": {
+    "notes": [
+      { "id": "note-dog-001", "type": "offer", "properties": { "role": "dog walker", "schedule": "weekday mornings", "rate": "15 per walk" } },
+      { "id": "note-dog-002", "type": "offer", "properties": { "role": "pet sitter", "schedule": "flexible", "rate": "20 per visit" } }
+    ],
+    "settings": {},
+    "revisions": ["incumbent"]
+  },
+  "expected": {
+    "minProperties": 1,
+    "requiredKeys": ["matches"],
+    "outcome": "matched",
+    "matchMinRecall": 0.5
+  },
+  "metrics": ["completion", "steps", "recall", "precision"],
+  "tags": ["care", "pet", "matching"],
+  "provenance": {
+    "author": "human",
+    "source": "interview-55"
+  }
+}

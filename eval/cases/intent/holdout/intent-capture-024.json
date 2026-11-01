@@ -1,0 +1,22 @@
+{
+  "id": "intent-capture-024",
+  "family": "intent",
+  "intent": "capture_need",
+  "prompt": "Looking for driving instructor for teenager, patient, automatic car, budget 50/hr",
+  "seed": {
+    "notes": [],
+    "settings": {},
+    "revisions": ["incumbent"]
+  },
+  "expected": {
+    "minProperties": 2,
+    "requiredKeys": ["need", "budget"],
+    "outcome": "captured"
+  },
+  "metrics": ["completion", "steps", "corrections"],
+  "tags": ["education", "teen", "driving", "budget"],
+  "provenance": {
+    "author": "human",
+    "source": "interview-94"
+  }
+}

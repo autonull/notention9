@@ -1,0 +1,26 @@
+{
+  "id": "intent-match-002",
+  "family": "intent",
+  "intent": "match_local",
+  "prompt": "Find piano teachers available on weekends",
+  "seed": {
+    "notes": [
+      { "id": "note-piano-001", "type": "offer", "properties": { "role": "piano teacher", "schedule": "weekends", "rate": "50 per hour" } },
+      { "id": "note-piano-002", "type": "offer", "properties": { "role": "music instructor", "schedule": "weekday evenings", "rate": "45 per hour" } }
+    ],
+    "settings": {},
+    "revisions": ["incumbent"]
+  },
+  "expected": {
+    "minProperties": 1,
+    "requiredKeys": ["matches"],
+    "outcome": "matched",
+    "matchMinRecall": 0.5
+  },
+  "metrics": ["completion", "steps", "recall", "precision"],
+  "tags": ["education", "matching", "schedule"],
+  "provenance": {
+    "author": "human",
+    "source": "interview-58"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "quality-match-005",
+  "family": "quality",
+  "qualityFamily": "match",
+  "input": "Need help moving this Saturday, have truck",
+  "expected": [
+    { "noteId": "note-move-001", "minScore": 0.4 },
+    { "noteId": "note-move-002", "minScore": 0.3 }
+  ],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.86
+  },
+  "tags": ["labor", "non-market", "schedule"]
+}

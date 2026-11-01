@@ -1,0 +1,18 @@
+{
+  "id": "quality-extract-018",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Need a house cleaner for biweekly deep clean, 3 bed 2 bath, budget 120 per visit",
+  "expected": [
+    { "key": "role", "operator": "contains", "values": ["house cleaner", "cleaning"] },
+    { "key": "frequency", "operator": "contains", "values": ["biweekly"] },
+    { "key": "property", "operator": "contains", "values": ["3 bed", "2 bath"] },
+    { "key": "budget", "operator": "less than", "values": ["120 USD"] }
+  ],
+  "forbidden": [],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.88
+  },
+  "tags": ["home", "schedule", "budget"]
+}

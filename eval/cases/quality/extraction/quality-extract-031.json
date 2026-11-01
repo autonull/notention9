@@ -1,0 +1,18 @@
+{
+  "id": "quality-extract-031",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Offering free math tutoring for high school students, Tuesdays and Thursdays 4-6pm at community center",
+  "expected": [
+    { "key": "role", "operator": "contains", "values": ["math tutor", "tutor"] },
+    { "key": "subject", "operator": "contains", "values": ["math", "mathematics"] },
+    { "key": "schedule", "operator": "contains", "values": ["Tuesday", "Thursday", "4pm", "6pm"] },
+    { "key": "price", "operator": "equals", "values": ["0", "free"] }
+  ],
+  "forbidden": [],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.92
+  },
+  "tags": ["education", "non-market", "volunteering", "schedule", "free", "youth"]
+}

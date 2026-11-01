@@ -1,0 +1,22 @@
+{
+  "id": "intent-capture-027",
+  "family": "intent",
+  "intent": "capture_need",
+  "prompt": "Need house cleaner biweekly deep clean 3 bed 2 bath budget 120 per visit",
+  "seed": {
+    "notes": [],
+    "settings": {},
+    "revisions": ["incumbent"]
+  },
+  "expected": {
+    "minProperties": 2,
+    "requiredKeys": ["need", "frequency", "budget"],
+    "outcome": "captured"
+  },
+  "metrics": ["completion", "steps", "corrections"],
+  "tags": ["home", "schedule", "budget"],
+  "provenance": {
+    "author": "human",
+    "source": "interview-109"
+  }
+}
