@@ -3,22 +3,6 @@
  * Ledger is Node.js only (file system)
  */
 
-export interface LedgerEvent {
-    id: string;
-    type: LedgerEventType;
-    runId?: string;
-    caseId?: string;
-    revisionId?: string;
-    evaluationId?: string;
-    actor: 'system' | 'human' | 'model';
-    userId?: string;
-    modelId?: string;
-    payload: LedgerPayload;
-    timestamp: string;
-    durationMs?: number;
-    hash: string;
-}
-
 export type LedgerEventType =
     | 'run:started'
     | 'run:completed'
@@ -40,9 +24,33 @@ export type LedgerEventType =
     | 'revision:rejected'
     | 'consent:requested'
     | 'consent:granted'
-    | 'consent:denied';
+    | 'consent:denied'
+    | 'optimizer:cycle:started'
+    | 'optimizer:cycle:completed'
+    | 'optimizer:candidate:evaluated';
 
 export type LedgerPayload = any;
+
+export interface LedgerEvent {
+    id: string;
+    type: LedgerEventType;
+    runId?: string;
+    caseId?: string;
+    revisionId?: string;
+    evaluationId?: string;
+    actor: 'system' | 'human' | 'model';
+    userId?: string;
+    modelId?: string;
+    payload: LedgerPayload;
+    timestamp: string;
+    durationMs?: number;
+    hash: string;
+}
+
+// Runtime exports for type compatibility (values are never used in browser)
+export const LedgerEventType = {} as Record<LedgerEventType, LedgerEventType>;
+export const LedgerPayload = {} as LedgerPayload;
+export const LedgerEvent = {} as LedgerEvent;
 
 export class Ledger {
     static getInstance(): never {

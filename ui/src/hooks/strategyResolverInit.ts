@@ -4,7 +4,7 @@
  */
 
 import type { Seam } from '@notention/core/ui/strategy';
-import { strategyRegistry } from '@notention/core/ui/strategy';
+import { strategyRegistry, createComponentStrategy } from '@notention/core/ui/strategy';
 import { resolveSeamId, SEAM_ROLES, type SeamRole } from '@notention/core/constants/seams';
 import { profileRegistry } from '@notention/core/ui/ProfileRegistry';
 import { STRATEGY_PARAM_CONFIGS, getStrategyParamConfig } from '@notention/core/constants/strategyParams';
@@ -351,7 +351,6 @@ export function applyPendingRevisionParams(): void {
                 const mergedProps = { ...existingStrategy.getDefaultProps(), ...patch };
                 
                 // Re-register with merged props using the same component
-                const { createComponentStrategy } = require('@notention/core/ui/strategy');
                 const newStrategy = createComponentStrategy(
                     existingStrategy.id,
                     existingStrategy.seam,

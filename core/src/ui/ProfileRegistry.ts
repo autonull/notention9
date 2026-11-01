@@ -220,7 +220,7 @@ export class ProfileRegistry {
         const seamId = this.resolveSeamId(seamRole, strategyRegistry);
 
         // Run pipeline with reason tracking (sync steps only)
-        for (const step of this.resolutionStepsWithReasonSync) {
+        for (const step of this.buildSyncResolutionStepsWithReason()) {
             const result = step.tryResolve(config, seamRole, seamId);
             if (result) {
                 const { strategy, reason } = result;
@@ -254,7 +254,7 @@ export class ProfileRegistry {
         const seamId = this.resolveSeamId(seamRole, strategyRegistry);
 
         // Run pipeline with reason tracking (async steps supported)
-        for (const step of this.resolutionStepsWithReason) {
+        for (const step of this.buildAsyncResolutionStepsWithReason()) {
             const result = await step.tryResolve(config, seamRole, seamId);
             if (result) {
                 const { strategy, reason } = result;
@@ -272,207 +272,215 @@ export class ProfileRegistry {
         return undefined;
     }
 
-    // Sync resolution steps (without revision layer)
-    private readonly resolutionStepsWithReasonSync: Array<{
+    /**
+     * Build synchronous resolution steps with reason tracking (no revision layer)
+     */
+    private buildSyncResolutionStepsWithReason(): Array<{
         tryResolve(config: UserProfileConfig, seamRole: SeamRole, seamId: string): { strategy: Strategy; reason: ResolutionReason } | undefined;
-    }> = [
-        // 1. User overrides (highest priority)
-        {
-            tryResolve: (config, seamRole, seamId) => {
-                const overrideId = (config.overrides.overrides as Record<string, string>)[seamRole];
-                const strategy = overrideId ? this.strategyRegistry?.get(seamId, overrideId) : undefined;
-                return strategy ? { strategy, reason: { kind: 'override', strategyId: overrideId } } : undefined;
+    }> {
+        return [
+            // 1. User overrides (highest priority)
+            {
+                tryResolve: (config: UserProfileConfig, seamRole: SeamRole, seamId: string) => {
+                    const overrideId = (config.overrides.overrides as Record<string, string>)[seamRole];
+                    const strategy = overrideId ? this.strategyRegistry?.get(seamId, overrideId) : undefined;
+                    return strategy ? { strategy, reason: { kind: 'override', strategyId: overrideId } } : undefined;
+                },
             },
-        },
-        // 2. Active experiment assignment
-        {
-            tryResolve: (config, seamRole, seamId) => {
-                for (const experiment of this.experiments.values()) {
-                    if (!experiment.isActive || experiment.seamId !== seamRole) continue;
+            // 2. Active experiment assignment
+            {
+                tryResolve: (config: UserProfileConfig, seamRole: SeamRole, seamId: string) => {
+                    for (const experiment of this.experiments.values()) {
+                        if (!experiment.isActive || experiment.seamId !== seamRole) continue;
 
-                    const assignmentKey = `${experiment.id}:${config.userId}`;
-                    let assignment = this.assignments.get(assignmentKey);
+                        const assignmentKey = `${experiment.id}:${config.userId}`;
+                        let assignment = this.assignments.get(assignmentKey);
 
-                    if (!assignment) {
-                        assignment = this.assignToVariant(experiment, config.userId);
-                        this.assignments.set(assignmentKey, assignment);
-                    }
+                        if (!assignment) {
+                            assignment = this.assignToVariant(experiment, config.userId);
+                            this.assignments.set(assignmentKey, assignment);
+                        }
 
-                    const variant = experiment.variants.find(v => v.id === assignment.variantId);
-                    if (variant) {
-                        const strategy = this.strategyRegistry?.get(seamId, variant.strategyId);
-                        if (strategy) {
-                            return { strategy, reason: { kind: 'experiment', experimentId: experiment.id, variantId: variant.id } };
+                        const variant = experiment.variants.find(v => v.id === assignment.variantId);
+                        if (variant) {
+                            const strategy = this.strategyRegistry?.get(seamId, variant.strategyId);
+                            if (strategy) {
+                                return { strategy, reason: { kind: 'experiment', experimentId: experiment.id, variantId: variant.id } };
+                            }
                         }
                     }
-                }
-                return undefined;
+                    return undefined;
+                },
             },
-        },
-        // 3. Manual mode with active profile
-        {
-            tryResolve: (config, seamRole, seamId) => {
-                if (!config.manualMode) return undefined;
-                const profile = this.profiles.get(config.activeProfileId);
-                const strategyId = (profile?.strategySelections as Record<string, string>)[seamRole];
-                const strategy = strategyId ? this.strategyRegistry?.get(seamId, strategyId) : undefined;
-                return strategy ? { strategy, reason: { kind: 'manual-profile', profileId: config.activeProfileId } } : undefined;
+            // 3. Manual mode with active profile
+            {
+                tryResolve: (config: UserProfileConfig, seamRole: SeamRole, seamId: string) => {
+                    if (!config.manualMode) return undefined;
+                    const profile = this.profiles.get(config.activeProfileId);
+                    const strategyId = (profile?.strategySelections as Record<string, string>)[seamRole];
+                    const strategy = strategyId ? this.strategyRegistry?.get(seamId, strategyId) : undefined;
+                    return strategy ? { strategy, reason: { kind: 'manual-profile', profileId: config.activeProfileId } } : undefined;
+                },
             },
-        },
-        // 4. Auto-select profile via policy
-        {
-            tryResolve: (config, seamRole, seamId) => {
-                const policy = this.getActivePolicy();
-                if (!policy) return undefined;
-                const profile = this.selectProfileByPolicy(policy, config);
-                const strategyId = (profile?.strategySelections as Record<string, string>)[seamRole];
-                const strategy = strategyId ? this.strategyRegistry?.get(seamId, strategyId) : undefined;
-                if (strategy) {
-                    // Find which rule matched
-                    const sortedRules = [...policy.rules].sort((a, b) => a.priority - b.priority);
-                    for (const rule of sortedRules) {
-                        if (this.matchConditions(rule.conditions, config)) {
-                            return { strategy, reason: { kind: 'policy', policyId: policy.id, ruleId: rule.id } };
-                        }
-                    }
-                    return { strategy, reason: { kind: 'policy', policyId: policy.id, ruleId: 'fallback' } };
-                }
-                return undefined;
-            },
-        },
-        // 5. Default profile
-        {
-            tryResolve: (_, seamRole, seamId) => {
-                const defaultProfile = this.getDefaultProfile();
-                const strategyId = (defaultProfile?.strategySelections as Record<string, string>)[seamRole];
-                const strategy = strategyId ? this.strategyRegistry?.get(seamId, strategyId) : undefined;
-                return strategy ? { strategy, reason: { kind: 'default-profile', profileId: defaultProfile!.id } } : undefined;
-            },
-        },
-        // 6. Last resort: first available strategy for seam
-        {
-            tryResolve: (_, seamRole, seamId) => {
-                const seamStrategies = this.strategyRegistry?.getAllForSeam(seamId) ?? [];
-                const strategy = seamStrategies[0];
-                return strategy ? { strategy, reason: { kind: 'fallback', seamId } } : undefined;
-            },
-        },
-    ];
-
-    // Resolution steps with reason tracking (async, includes revision layer)
-    private readonly resolutionStepsWithReason: Array<{
-        tryResolve(config: UserProfileConfig, seamRole: SeamRole, seamId: string): Promise<{ strategy: Strategy; reason: ResolutionReason } | undefined> | { strategy: Strategy; reason: ResolutionReason } | undefined;
-    }> = [
-        // 1. User overrides (highest priority)
-        {
-            tryResolve: (config, seamRole, seamId) => {
-                const overrideId = (config.overrides.overrides as Record<string, string>)[seamRole];
-                const strategy = overrideId ? this.strategyRegistry?.get(seamId, overrideId) : undefined;
-                return strategy ? { strategy, reason: { kind: 'override', strategyId: overrideId } } : undefined;
-            },
-        },
-        // 2. Active experiment assignment
-        {
-            tryResolve: (config, seamRole, seamId) => {
-                for (const experiment of this.experiments.values()) {
-                    if (!experiment.isActive || experiment.seamId !== seamRole) continue;
-
-                    const assignmentKey = `${experiment.id}:${config.userId}`;
-                    let assignment = this.assignments.get(assignmentKey);
-
-                    if (!assignment) {
-                        assignment = this.assignToVariant(experiment, config.userId);
-                        this.assignments.set(assignmentKey, assignment);
-                    }
-
-                    const variant = experiment.variants.find(v => v.id === assignment.variantId);
-                    if (variant) {
-                        const strategy = this.strategyRegistry?.get(seamId, variant.strategyId);
-                        if (strategy) {
-                            return { strategy, reason: { kind: 'experiment', experimentId: experiment.id, variantId: variant.id } };
-                        }
-                    }
-                }
-                return undefined;
-            },
-        },
-        // 3. Active revision for (scope, target) — NEW revision layer
-        {
-            tryResolve: async (config, seamRole, seamId) => {
-                const revisionStore = getRevisionStore();
-                const activeRevision = await revisionStore.getActive(seamRole);
-                
-                if (activeRevision && activeRevision.status === 'active' && activeRevision.consentedBy) {
-                    const strategy = this.strategyRegistry?.get(seamId, activeRevision.strategy.id);
+            // 4. Auto-select profile via policy
+            {
+                tryResolve: (config: UserProfileConfig, seamRole: SeamRole, seamId: string) => {
+                    const policy = this.getActivePolicy();
+                    if (!policy) return undefined;
+                    const profile = this.selectProfileByPolicy(policy, config);
+                    const strategyId = (profile?.strategySelections as Record<string, string>)[seamRole];
+                    const strategy = strategyId ? this.strategyRegistry?.get(seamId, strategyId) : undefined;
                     if (strategy) {
-                        // Apply revision params on top of strategy defaults
-                        const revisionParams = activeRevision.strategy.params ?? {};
-                        const mergedParams = { ...strategy.getDefaultProps(), ...revisionParams };
-                        
-                        // Create a strategy wrapper that uses merged params
-                        const revisionStrategy: Strategy = {
-                            ...strategy,
-                            getDefaultProps: () => mergedParams,
-                        };
-                        
-                        return { 
-                            strategy: revisionStrategy, 
-                            reason: { kind: 'revision', revisionId: activeRevision.id, seamRole } 
-                        };
+                        // Find which rule matched
+                        const sortedRules = [...policy.rules].sort((a, b) => a.priority - b.priority);
+                        for (const rule of sortedRules) {
+                            if (this.matchConditions(rule.conditions, config)) {
+                                return { strategy, reason: { kind: 'policy', policyId: policy.id, ruleId: rule.id } };
+                            }
+                        }
+                        return { strategy, reason: { kind: 'policy', policyId: policy.id, ruleId: 'fallback' } };
                     }
-                }
-                return undefined;
+                    return undefined;
+                },
             },
-        },
-        // 4. Manual mode with active profile
-        {
-            tryResolve: (config, seamRole, seamId) => {
-                if (!config.manualMode) return undefined;
-                const profile = this.profiles.get(config.activeProfileId);
-                const strategyId = (profile?.strategySelections as Record<string, string>)[seamRole];
-                const strategy = strategyId ? this.strategyRegistry?.get(seamId, strategyId) : undefined;
-                return strategy ? { strategy, reason: { kind: 'manual-profile', profileId: config.activeProfileId } } : undefined;
+            // 5. Default profile
+            {
+                tryResolve: (_: UserProfileConfig, seamRole: SeamRole, seamId: string) => {
+                    const defaultProfile = this.getDefaultProfile();
+                    const strategyId = (defaultProfile?.strategySelections as Record<string, string>)[seamRole];
+                    const strategy = strategyId ? this.strategyRegistry?.get(seamId, strategyId) : undefined;
+                    return strategy ? { strategy, reason: { kind: 'default-profile', profileId: defaultProfile!.id } } : undefined;
+                },
             },
-        },
-        // 4. Auto-select profile via policy
-        {
-            tryResolve: (config, seamRole, seamId) => {
-                const policy = this.getActivePolicy();
-                if (!policy) return undefined;
-                const profile = this.selectProfileByPolicy(policy, config);
-                const strategyId = (profile?.strategySelections as Record<string, string>)[seamRole];
-                const strategy = strategyId ? this.strategyRegistry?.get(seamId, strategyId) : undefined;
-                if (strategy) {
-                    // Find which rule matched
-                    const sortedRules = [...policy.rules].sort((a, b) => a.priority - b.priority);
-                    for (const rule of sortedRules) {
-                        if (this.matchConditions(rule.conditions, config)) {
-                            return { strategy, reason: { kind: 'policy', policyId: policy.id, ruleId: rule.id } };
+            // 6. Last resort: first available strategy for seam
+            {
+                tryResolve: (_: UserProfileConfig, seamRole: SeamRole, seamId: string) => {
+                    const seamStrategies = this.strategyRegistry?.getAllForSeam(seamId) ?? [];
+                    const strategy = seamStrategies[0];
+                    return strategy ? { strategy, reason: { kind: 'fallback', seamId } } : undefined;
+                },
+            },
+        ];
+    }
+
+    /**
+     * Build async resolution steps with reason tracking (includes revision layer)
+     */
+    private buildAsyncResolutionStepsWithReason(): Array<{
+        tryResolve(config: UserProfileConfig, seamRole: SeamRole, seamId: string): Promise<{ strategy: Strategy; reason: ResolutionReason } | undefined>;
+    }> {
+        return [
+            // 1. User overrides (highest priority)
+            {
+                tryResolve: async (config: UserProfileConfig, seamRole: SeamRole, seamId: string) => {
+                    const overrideId = (config.overrides.overrides as Record<string, string>)[seamRole];
+                    const strategy = overrideId ? this.strategyRegistry?.get(seamId, overrideId) : undefined;
+                    return strategy ? { strategy, reason: { kind: 'override', strategyId: overrideId } } : undefined;
+                },
+            },
+            // 2. Active experiment assignment
+            {
+                tryResolve: async (config: UserProfileConfig, seamRole: SeamRole, seamId: string) => {
+                    for (const experiment of this.experiments.values()) {
+                        if (!experiment.isActive || experiment.seamId !== seamRole) continue;
+
+                        const assignmentKey = `${experiment.id}:${config.userId}`;
+                        let assignment = this.assignments.get(assignmentKey);
+
+                        if (!assignment) {
+                            assignment = this.assignToVariant(experiment, config.userId);
+                            this.assignments.set(assignmentKey, assignment);
+                        }
+
+                        const variant = experiment.variants.find(v => v.id === assignment.variantId);
+                        if (variant) {
+                            const strategy = this.strategyRegistry?.get(seamId, variant.strategyId);
+                            if (strategy) {
+                                return { strategy, reason: { kind: 'experiment', experimentId: experiment.id, variantId: variant.id } };
+                            }
                         }
                     }
-                    return { strategy, reason: { kind: 'policy', policyId: policy.id, ruleId: 'fallback' } };
-                }
-                return undefined;
+                    return undefined;
+                },
             },
-        },
-        // 5. Default profile
-        {
-            tryResolve: (_, seamRole, seamId) => {
-                const defaultProfile = this.getDefaultProfile();
-                const strategyId = (defaultProfile?.strategySelections as Record<string, string>)[seamRole];
-                const strategy = strategyId ? this.strategyRegistry?.get(seamId, strategyId) : undefined;
-                return strategy ? { strategy, reason: { kind: 'default-profile', profileId: defaultProfile!.id } } : undefined;
+            // 3. Active revision for (scope, target) — NEW revision layer
+            {
+                tryResolve: async (config: UserProfileConfig, seamRole: SeamRole, seamId: string) => {
+                    const revisionStore = getRevisionStore();
+                    const activeRevision = await revisionStore.getActive(seamRole);
+                    
+                    if (activeRevision && activeRevision.status === 'active' && activeRevision.consentedBy) {
+                        const strategy = this.strategyRegistry?.get(seamId, activeRevision.strategy.id);
+                        if (strategy) {
+                            // Apply revision params on top of strategy defaults
+                            const revisionParams = activeRevision.strategy.params ?? {};
+                            const mergedParams = { ...strategy.getDefaultProps(), ...revisionParams };
+                            
+                            // Create a strategy wrapper that uses merged params
+                            const revisionStrategy: Strategy = {
+                                ...strategy,
+                                getDefaultProps: () => mergedParams,
+                            };
+                            
+                            return { 
+                                strategy: revisionStrategy, 
+                                reason: { kind: 'revision', revisionId: activeRevision.id, seamRole } 
+                            };
+                        }
+                    }
+                    return undefined;
+                },
             },
-        },
-        // 6. Last resort: first available strategy for seam
-        {
-            tryResolve: (_, seamRole, seamId) => {
-                const seamStrategies = this.strategyRegistry?.getAllForSeam(seamId) ?? [];
-                const strategy = seamStrategies[0];
-                return strategy ? { strategy, reason: { kind: 'fallback', seamId } } : undefined;
+            // 4. Manual mode with active profile
+            {
+                tryResolve: async (config: UserProfileConfig, seamRole: SeamRole, seamId: string) => {
+                    if (!config.manualMode) return undefined;
+                    const profile = this.profiles.get(config.activeProfileId);
+                    const strategyId = (profile?.strategySelections as Record<string, string>)[seamRole];
+                    const strategy = strategyId ? this.strategyRegistry?.get(seamId, strategyId) : undefined;
+                    return strategy ? { strategy, reason: { kind: 'manual-profile', profileId: config.activeProfileId } } : undefined;
+                },
             },
-        },
-    ];
+            // 5. Auto-select profile via policy
+            {
+                tryResolve: async (config: UserProfileConfig, seamRole: SeamRole, seamId: string) => {
+                    const policy = this.getActivePolicy();
+                    if (!policy) return undefined;
+                    const profile = this.selectProfileByPolicy(policy, config);
+                    const strategyId = (profile?.strategySelections as Record<string, string>)[seamRole];
+                    const strategy = strategyId ? this.strategyRegistry?.get(seamId, strategyId) : undefined;
+                    if (strategy) {
+                        // Find which rule matched
+                        const sortedRules = [...policy.rules].sort((a, b) => a.priority - b.priority);
+                        for (const rule of sortedRules) {
+                            if (this.matchConditions(rule.conditions, config)) {
+                                return { strategy, reason: { kind: 'policy', policyId: policy.id, ruleId: rule.id } };
+                            }
+                        }
+                        return { strategy, reason: { kind: 'policy', policyId: policy.id, ruleId: 'fallback' } };
+                    }
+                    return undefined;
+                },
+            },
+            // 6. Default profile
+            {
+                tryResolve: async (_: UserProfileConfig, seamRole: SeamRole, seamId: string) => {
+                    const defaultProfile = this.getDefaultProfile();
+                    const strategyId = (defaultProfile?.strategySelections as Record<string, string>)[seamRole];
+                    const strategy = strategyId ? this.strategyRegistry?.get(seamId, strategyId) : undefined;
+                    return strategy ? { strategy, reason: { kind: 'default-profile', profileId: defaultProfile!.id } } : undefined;
+                },
+            },
+            // 7. Last resort: first available strategy for seam
+            {
+                tryResolve: async (_: UserProfileConfig, seamRole: SeamRole, seamId: string) => {
+                    const seamStrategies = this.strategyRegistry?.getAllForSeam(seamId) ?? [];
+                    const strategy = seamStrategies[0];
+                    return strategy ? { strategy, reason: { kind: 'fallback', seamId } } : undefined;
+                },
+            },
+        ];
+    }
 
     /**
      * Resolve a seam role to the actual discovered seam ID

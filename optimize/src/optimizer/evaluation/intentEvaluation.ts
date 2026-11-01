@@ -1,5 +1,5 @@
 import { chromium, type Browser, type BrowserContext, type Page } from '@playwright/test';
-import { readManifest, readIntentCases } from '@notention/core/eval/caseManifest';
+import { readManifest, readIntentCases, type IntentCase } from '@notention/core/eval/caseManifest';
 import { ensurePreviewServer, stopPreviewServer } from '../server/previewServer.js';
 import type { IntentEvaluationConfig, IntentEvaluationResult } from '../types.js';
 import {
@@ -7,6 +7,7 @@ import {
     INTENT_NAVIGATION_TIMEOUT_MS,
     INTENT_EXTRACTION_WAIT_MS,
 } from '../constants.js';
+import { runIntentCase, applySeedRevisions, type IntentCaseRunResult, type RunIntentCaseConfig } from './intentCaseRunner.js';
 
 /**
  * Run intent evaluation for a specific revision using Playwright
@@ -51,6 +52,12 @@ export async function runIntentEvaluationForRevision(
         const results: IntentEvaluationResult['results'] = [];
         const repetitions = config.repetitions ?? 1;
 
+        const runConfig: RunIntentCaseConfig = {
+            baseURL: config.baseURL || baseURL,
+            navigationTimeoutMs: INTENT_NAVIGATION_TIMEOUT_MS,
+            extractionWaitMs: INTENT_EXTRACTION_WAIT_MS,
+        };
+
         for (const caseData of filteredCases) {
             for (let rep = 0; rep < repetitions; rep++) {
                 const startTime = Date.now();
@@ -59,73 +66,16 @@ export async function runIntentEvaluationForRevision(
                 let corrections = 0;
 
                 try {
-                    // Navigate to dashboard
-                    await page.goto(`${config.baseURL || baseURL}/#dashboard`);
-                    await page.waitForLoadState('domcontentloaded');
-
-                    // Type the prompt in the quick capture input
-                    const editor = page.locator('input[placeholder*="What\'s on your mind"]').first();
-                    await editor.waitFor({ state: 'visible', timeout: INTENT_NAVIGATION_TIMEOUT_MS });
-                    await editor.fill(caseData.prompt);
-                    steps++;
-                    details.push(`Filled prompt: ${caseData.prompt.slice(0, 50)}...`);
-
-                    // Submit
-                    await page.click('button[aria-label="Create note"]');
-                    await page.waitForLoadState('domcontentloaded');
-                    steps++;
-                    details.push('Submitted capture');
-
-                    // Wait for extraction to complete
-                    await page.waitForTimeout(INTENT_EXTRACTION_WAIT_MS);
-                    steps++;
-                    details.push('Waited for extraction');
-
-                    // Count extracted properties
-                    const properties = await page.locator('[data-testid="extracted-property"], .badge:has-text(":")').count();
-                    steps++;
-                    details.push(`Extracted ${properties} properties`);
-
-                    // Check expected outcomes
-                    let completion = 0;
-                    const minProperties = caseData.expected.minProperties || 2;
-                    const requiredKeys = caseData.expected.requiredKeys || [];
-
-                    if (properties >= minProperties) {
-                        completion = 1;
-                        details.push(`✓ Met minProperties (${properties} >= ${minProperties})`);
-                    } else {
-                        details.push(`✗ Failed minProperties (${properties} < ${minProperties})`);
-                    }
-
-                    // Check required keys in extracted properties
-                    for (const key of requiredKeys) {
-                        const hasKey = await page.locator(`[data-testid="extracted-property"][data-key="${key}"], .badge:has-text("${key}:")`).count() > 0;
-                        if (hasKey) {
-                            details.push(`✓ Has required key: ${key}`);
-                        } else {
-                            details.push(`✗ Missing required key: ${key}`);
-                            completion = 0;
-                        }
-                    }
-
-                    // Check for corrections needed
-                    if (completion === 1) {
-                        details.push('No corrections needed');
-                    } else {
-                        corrections = 1;
-                        details.push('Corrections needed');
-                    }
-
-                    const success = completion === 1;
+                    // Run the shared intent case logic
+                    const result = await runIntentCase(page, caseData, runConfig);
 
                     results.push({
                         caseId: caseData.id,
                         intent: caseData.intent,
                         repetition: rep,
-                        success,
-                        metrics: { completion, steps, corrections },
-                        details,
+                        success: result.success,
+                        metrics: result.metrics,
+                        details: result.details,
                     });
                 } catch (error) {
                     results.push({

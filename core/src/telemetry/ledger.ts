@@ -7,6 +7,7 @@ import { createHash } from 'node:crypto';
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createSingleton } from '../utils/singleton.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = join(__dirname, '..', '..', '..', '.notention', 'ledger');
@@ -17,6 +18,8 @@ const INDEX_FILE = join(DATA_DIR, 'ledger.idx');
 if (!existsSync(DATA_DIR)) {
     mkdirSync(DATA_DIR, { recursive: true });
 }
+
+// --- Types ---
 
 // --- Types ---
 
@@ -176,19 +179,11 @@ function computeHash(payload: LedgerPayload): string {
 // --- Ledger class ---
 
 export class Ledger {
-    private static instance: Ledger;
     private index: Map<string, number[]> = new Map(); // type -> line numbers
     private runIdIndex: Map<string, number[]> = new Map();
     private caseIdIndex: Map<string, number[]> = new Map();
     private revisionIdIndex: Map<string, number[]> = new Map();
     private initialized = false;
-
-    static getInstance(): Ledger {
-        if (!Ledger.instance) {
-            Ledger.instance = new Ledger();
-        }
-        return Ledger.instance;
-    }
 
     private async init(): Promise<void> {
         if (this.initialized) return;
@@ -371,23 +366,34 @@ export class Ledger {
     }
 }
 
+// --- Singleton instance ---
+const { getInstance: getLedgerInstance, resetInstance: resetLedgerInstance } = createSingleton(() => new Ledger());
+
 // Convenience functions
 export function logEvent(event: Omit<LedgerEvent, 'id' | 'timestamp' | 'hash'>): LedgerEvent {
-    return Ledger.getInstance().append(event);
+    return getLedgerInstance().append(event);
 }
 
 export function queryLedger(options: Parameters<Ledger['query']>[0]): LedgerEvent[] {
-    return Ledger.getInstance().query(options);
+    return getLedgerInstance().query(options);
 }
 
 export function getRunEvents(runId: string): LedgerEvent[] {
-    return Ledger.getInstance().getRunEvents(runId);
+    return getLedgerInstance().getRunEvents(runId);
 }
 
 export function exportRun(runId: string): string {
-    return Ledger.getInstance().exportRun(runId);
+    return getLedgerInstance().exportRun(runId);
 }
 
 export async function pruneLedger(daysToKeep: number): Promise<number> {
-    return Ledger.getInstance().prune(daysToKeep);
+    return getLedgerInstance().prune(daysToKeep);
+}
+
+export function getLedger(): Ledger {
+    return getLedgerInstance();
+}
+
+export function resetLedger(): void {
+    resetLedgerInstance();
 }

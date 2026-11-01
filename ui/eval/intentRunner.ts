@@ -9,6 +9,7 @@ import {
     generateRunId,
     type SeedSnapshot,
 } from './seedSnapshot.js';
+import { runIntentCase, applySeedRevisions, type IntentCaseRunResult, type RunIntentCaseConfig } from '@notention/optimizer/evaluation/intentCaseRunner';
 
 export interface IntentRunConfig {
     split: 'search' | 'validation' | 'holdout';
@@ -120,107 +121,6 @@ async function setupContextWithDeterminism(
     return context;
 }
 
-async function applySeedRevisions(page: Page, caseData: IntentCase): Promise<void> {
-    if (caseData.seed.revisions && caseData.seed.revisions.length > 0) {
-        for (const revId of caseData.seed.revisions) {
-            if (revId !== 'incumbent') {
-                // Apply revision via app API - store in localStorage for app to pick up
-                await page.evaluate((rev) => {
-                    localStorage.setItem('pendingRevision', rev);
-                }, revId);
-            }
-        }
-    }
-}
-
-async function runIntentCase(
-    page: Page,
-    caseData: IntentCase,
-    baseURL: string
-): Promise<{ success: boolean; metrics: { completion: number; steps: number; corrections: number }; details: string[]; error?: string }> {
-    const startTime = Date.now();
-    let steps = 0;
-    const details: string[] = [];
-    let corrections = 0;
-
-    try {
-        // Navigate to dashboard
-        await page.goto(`${baseURL}/#dashboard`);
-        await page.waitForLoadState('networkidle');
-
-        // Apply seed revisions if any
-        await applySeedRevisions(page, caseData);
-
-        // Type the prompt in the quick capture input
-        const editor = page.locator('input[placeholder*="What\'s on your mind"]').first();
-        await editor.fill(caseData.prompt);
-        steps++;
-        details.push(`Filled prompt: ${caseData.prompt.slice(0, 50)}...`);
-
-        // Submit
-        await page.click('button[aria-label="Create note"]');
-        await page.waitForLoadState('networkidle');
-        steps++;
-        details.push('Submitted capture');
-
-        // Wait for extraction to complete
-        await page.waitForTimeout(1000);
-        steps++;
-        details.push('Waited for extraction');
-
-        // Count extracted properties
-        const properties = await page.locator('[data-testid="extracted-property"], .badge:has-text(":")').count();
-        steps++;
-        details.push(`Extracted ${properties} properties`);
-
-        // Check expected outcomes
-        let completion = 0;
-        const minProperties = caseData.expected.minProperties || 2;
-        const requiredKeys = caseData.expected.requiredKeys || [];
-
-        if (properties >= minProperties) {
-            completion = 1;
-            details.push(`✓ Met minProperties (${properties} >= ${minProperties})`);
-        } else {
-            details.push(`✗ Failed minProperties (${properties} < ${minProperties})`);
-        }
-
-        // Check required keys in extracted properties
-        for (const key of requiredKeys) {
-            const hasKey = await page.locator(`[data-testid="extracted-property"][data-key="${key}"], .badge:has-text("${key}:")`).count() > 0;
-            if (hasKey) {
-                details.push(`✓ Has required key: ${key}`);
-            } else {
-                details.push(`✗ Missing required key: ${key}`);
-                completion = 0;
-            }
-        }
-
-        // Check for corrections needed (simplified - would need actual correction tracking)
-        if (completion === 1) {
-            details.push('No corrections needed');
-        } else {
-            corrections = 1;
-            details.push('Corrections needed');
-        }
-
-        const success = completion === 1;
-
-        return {
-            success,
-            metrics: { completion, steps, corrections },
-            details,
-        };
-    } catch (error) {
-        return {
-            success: false,
-            metrics: { completion: 0, steps, corrections },
-            details: [...details, `Error: ${error instanceof Error ? error.message : String(error)}`],
-            error: error instanceof Error ? error.message : String(error),
-        };
-    }
-}
-
 export async function runIntentEvaluation(
     browser: Browser,
     config: IntentRunConfig
@@ -237,6 +137,12 @@ export async function runIntentEvaluation(
     let replayMatchCount = 0;
     let replayTotalCount = 0;
 
+    const runConfig: RunIntentCaseConfig = {
+        baseURL: config.baseURL || 'http://localhost:5173',
+        navigationTimeoutMs: 30000,
+        extractionWaitMs: 1000,
+    };
+
     for (const caseData of cases) {
         for (let rep = 0; rep < repetitions; rep++) {
             const context = await setupContextWithDeterminism(browser, config, rep);
@@ -249,7 +155,7 @@ export async function runIntentEvaluation(
                 if (useSeedSnapshot) {
                     if (rep === 0) {
                         // First repetition: run the case, then capture snapshot
-                        const result = await runIntentCase(page, caseData, config.baseURL || 'http://localhost:5173');
+                        const result = await runIntentCase(page, caseData, runConfig);
                         domHash = await computeDomHash(page);
                         seedSnapshot = await captureSnapshot(page);
 
@@ -273,7 +179,7 @@ export async function runIntentEvaluation(
                         await restoreSnapshot(page, seedSnapshot);
 
                         // Run the case on restored state
-                        const result = await runIntentCase(page, caseData, config.baseURL || 'http://localhost:5173');
+                        const result = await runIntentCase(page, caseData, runConfig);
                         domHash = await computeDomHash(page);
 
                         // Verify snapshot fidelity
@@ -302,7 +208,7 @@ export async function runIntentEvaluation(
                     }
                 } else {
                     // Without SeedSnapshot: run normally
-                    const result = await runIntentCase(page, caseData, config.baseURL || 'http://localhost:5173');
+                    const result = await runIntentCase(page, caseData, runConfig);
                     domHash = await computeDomHash(page);
 
                     results.push({
@@ -356,3 +262,4 @@ export async function runIntentEvaluation(
 
 export { readManifest, readIntentCases };
 export { captureSnapshot, restoreSnapshot, verifySnapshot, computeDomHash, generateRunId, type SeedSnapshot } from './seedSnapshot.js';
+export { applySeedRevisions, runIntentCase, type IntentCaseRunResult, type RunIntentCaseConfig } from '@notention/optimizer/evaluation/intentCaseRunner';

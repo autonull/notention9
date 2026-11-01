@@ -395,15 +395,14 @@ export class RevisionStore {
 }
 
 // --- Singleton instance ---
-let revisionStoreInstance: RevisionStore | null = null;
+import { createSingleton } from '../utils/singleton.js';
+const { getInstance: getRevisionStoreInstance, resetInstance: resetRevisionStoreInstance } = createSingleton(() => new RevisionStore());
 
 export function getRevisionStore(config?: RevisionStoreConfig): RevisionStore {
-    if (!revisionStoreInstance) {
-        revisionStoreInstance = new RevisionStore(config);
-    }
-    return revisionStoreInstance;
+    // Note: config is only used on first call
+    return getRevisionStoreInstance();
 }
 
 export function resetRevisionStore(): void {
-    revisionStoreInstance = null;
+    resetRevisionStoreInstance();
 }

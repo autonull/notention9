@@ -89,18 +89,14 @@ export class CandidateCache {
     }
 }
 
-/**
- * Global candidate cache instance
- */
-let candidateCacheInstance: CandidateCache | null = null;
+// --- Global candidate cache instance ---
+import { createSingleton } from '@notention/core/utils/singleton';
+const { getInstance: getCandidateCacheInstance, resetInstance: resetCandidateCacheInstance } = createSingleton(() => new CandidateCache());
 
 export function getCandidateCache(): CandidateCache {
-    if (!candidateCacheInstance) {
-        candidateCacheInstance = new CandidateCache();
-    }
-    return candidateCacheInstance;
+    return getCandidateCacheInstance();
 }
 
 export function resetCandidateCache(): void {
-    candidateCacheInstance = null;
+    resetCandidateCacheInstance();
 }

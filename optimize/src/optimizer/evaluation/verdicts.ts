@@ -1,44 +1,57 @@
-import { computeRunVerdict, computeCaseVerdict, type RunVerdict, type VerdictConfig } from '@notention/core/eval/verdict';
+import { computeRunVerdict, computeCaseVerdict, type RunVerdict, type VerdictConfig, type CaseVerdict, type PairedRunResult } from '@notention/core/eval/verdict';
 import type { IntentEvaluationResult } from '../types.js';
 
 /**
- * Compute case verdicts from quality results
- * Adapted from eval/cli.ts
+ * Common interface for result items that can be paired for verdict computation
  */
-export function computeCaseVerdictsFromQualityResults(
-    baselineResults: any[],
-    candidateResults: any[],
-    config: VerdictConfig
-) {
-    const baselineByCase = new Map<string, Map<number, any>>();
-    const candidateByCase = new Map<string, Map<number, any>>();
+export interface VerdictResultItem {
+    caseId: string;
+    revisionId: string;
+    repetition: number;
+    metrics: Record<string, number>;
+    output: unknown;
+    success: boolean;
+    error?: string;
+}
 
-    for (const r of baselineResults) {
+/**
+ * Build paired run results from baseline and candidate result items
+ */
+export function buildPairedResults(
+    baselineItems: VerdictResultItem[],
+    candidateItems: VerdictResultItem[],
+    config: VerdictConfig
+): PairedRunResult[] {
+    const baselineByCase = new Map<string, Map<number, VerdictResultItem>>();
+    const candidateByCase = new Map<string, Map<number, VerdictResultItem>>();
+
+    for (const r of baselineItems) {
         const caseMap = baselineByCase.get(r.caseId) || new Map();
         caseMap.set(r.repetition, r);
         baselineByCase.set(r.caseId, caseMap);
     }
 
-    for (const r of candidateResults) {
+    for (const r of candidateItems) {
         const caseMap = candidateByCase.get(r.caseId) || new Map();
         caseMap.set(r.repetition, r);
         candidateByCase.set(r.caseId, caseMap);
     }
 
     const allCaseIds = new Set([...baselineByCase.keys(), ...candidateByCase.keys()]);
-    const pairedResults: any[] = [];
+    const pairedResults: PairedRunResult[] = [];
 
     for (const caseId of allCaseIds) {
         const baselineCase = baselineByCase.get(caseId);
         const candidateCase = candidateByCase.get(caseId);
 
         if (!baselineCase || !candidateCase) {
-            pairedResults.push({
+            // Create an invalid paired result for missing case
+            const paired: PairedRunResult = {
                 caseId,
-                verdict: 'invalid',
-                primaryMetric: { metric: config.primaryMetric, baselineMean: 0, candidateMean: 0, delta: 0, deltaPercent: 0, pValue: 1, ci: [0, 0], mde: config.mde[config.primaryMetric] ?? 0, passes: false, direction: 'no-change' },
-                otherMetrics: [], floors: [], excluded: true, excludeReason: 'Missing baseline or candidate results',
-            });
+                baseline: createEmptyRunResult(caseId, 'baseline', config),
+                candidate: createEmptyRunResult(caseId, 'candidate', config),
+            };
+            pairedResults.push(paired);
             continue;
         }
 
@@ -49,62 +62,89 @@ export function computeCaseVerdictsFromQualityResults(
             const candidate = candidateCase.get(rep);
             if (!baseline || !candidate) continue;
 
-            const paired: any = {
+            const paired: PairedRunResult = {
                 caseId: `${caseId}-rep-${rep}`,
-                baseline: { caseId, revisionId: baseline.revisionId, repetition: rep, metrics: baseline.metrics, output: baseline, durationMs: 0, success: baseline.success, error: baseline.error },
-                candidate: { caseId, revisionId: candidate.revisionId, repetition: rep, metrics: candidate.metrics, output: candidate, durationMs: 0, success: candidate.success, error: candidate.error },
+                baseline: {
+                    caseId,
+                    revisionId: baseline.revisionId,
+                    repetition: rep,
+                    metrics: baseline.metrics,
+                    output: baseline,
+                    durationMs: 0,
+                    success: baseline.success,
+                    error: baseline.error,
+                },
+                candidate: {
+                    caseId,
+                    revisionId: candidate.revisionId,
+                    repetition: rep,
+                    metrics: candidate.metrics,
+                    output: candidate,
+                    durationMs: 0,
+                    success: candidate.success,
+                    error: candidate.error,
+                },
             };
             pairedResults.push(paired);
         }
     }
 
-    const verdicts = [];
-    for (const paired of pairedResults) {
-        const verdict = computeCaseVerdict(paired.caseId, paired, config);
-        verdicts.push(verdict);
-    }
-
-    return verdicts;
+    return pairedResults;
 }
 
 /**
- * Compute case verdicts from intent evaluation results
- * Uses completion metric as primary for intent cases
+ * Build paired results from intent evaluation results
  */
-export function computeCaseVerdictsFromIntentResults(
+export function buildPairedResultsFromIntent(
     baselineResult: IntentEvaluationResult,
     candidateResult: IntentEvaluationResult,
     config: VerdictConfig
-) {
-    const baselineByCase = new Map<string, any[]>();
-    const candidateByCase = new Map<string, any[]>();
+): PairedRunResult[] {
+    const baselineByCase = new Map<string, VerdictResultItem[]>();
+    const candidateByCase = new Map<string, VerdictResultItem[]>();
 
     for (const r of baselineResult.results) {
         const arr = baselineByCase.get(r.caseId) ?? [];
-        arr.push(r);
+        arr.push({
+            caseId: r.caseId,
+            revisionId: baselineResult.revisionId,
+            repetition: r.repetition,
+            metrics: r.metrics as Record<string, number>,
+            output: r,
+            success: r.success,
+            error: r.error,
+        });
         baselineByCase.set(r.caseId, arr);
     }
 
     for (const r of candidateResult.results) {
         const arr = candidateByCase.get(r.caseId) ?? [];
-        arr.push(r);
+        arr.push({
+            caseId: r.caseId,
+            revisionId: candidateResult.revisionId,
+            repetition: r.repetition,
+            metrics: r.metrics as Record<string, number>,
+            output: r,
+            success: r.success,
+            error: r.error,
+        });
         candidateByCase.set(r.caseId, arr);
     }
 
     const allCaseIds = new Set([...baselineByCase.keys(), ...candidateByCase.keys()]);
-    const pairedResults: any[] = [];
+    const pairedResults: PairedRunResult[] = [];
 
     for (const caseId of allCaseIds) {
         const baselineCase = baselineByCase.get(caseId);
         const candidateCase = candidateByCase.get(caseId);
 
         if (!baselineCase || !candidateCase) {
-            pairedResults.push({
+            const paired: PairedRunResult = {
                 caseId,
-                verdict: 'invalid',
-                primaryMetric: { metric: config.primaryMetric, baselineMean: 0, candidateMean: 0, delta: 0, deltaPercent: 0, pValue: 1, ci: [0, 0], mde: config.mde[config.primaryMetric] ?? 0, passes: false, direction: 'no-change' },
-                otherMetrics: [], floors: [], excluded: true, excludeReason: 'Missing baseline or candidate results',
-            });
+                baseline: createEmptyRunResult(caseId, baselineResult.revisionId, config),
+                candidate: createEmptyRunResult(caseId, candidateResult.revisionId, config),
+            };
+            pairedResults.push(paired);
             continue;
         }
 
@@ -115,21 +155,48 @@ export function computeCaseVerdictsFromIntentResults(
             const candidate = candidateCase[rep];
             if (!baseline || !candidate) continue;
 
-            const paired: any = {
+            const paired: PairedRunResult = {
                 caseId: `${caseId}-rep-${rep}`,
-                baseline: { caseId, revisionId: baselineResult.revisionId, repetition: rep, metrics: baseline.metrics, output: baseline, durationMs: 0, success: baseline.success, error: baseline.error },
-                candidate: { caseId, revisionId: candidateResult.revisionId, repetition: rep, metrics: candidate.metrics, output: candidate, durationMs: 0, success: candidate.success, error: candidate.error },
+                baseline: {
+                    caseId,
+                    revisionId: baseline.revisionId,
+                    repetition: rep,
+                    metrics: baseline.metrics,
+                    output: baseline,
+                    durationMs: 0,
+                    success: baseline.success,
+                    error: baseline.error,
+                },
+                candidate: {
+                    caseId,
+                    revisionId: candidate.revisionId,
+                    repetition: rep,
+                    metrics: candidate.metrics,
+                    output: candidate,
+                    durationMs: 0,
+                    success: candidate.success,
+                    error: candidate.error,
+                },
             };
             pairedResults.push(paired);
         }
     }
 
-    const verdicts = [];
+    return pairedResults;
+}
+
+/**
+ * Compute case verdicts from paired results
+ */
+export function computeCaseVerdictsFromPairedResults(
+    pairedResults: PairedRunResult[],
+    config: VerdictConfig
+): CaseVerdict[] {
+    const verdicts: CaseVerdict[] = [];
     for (const paired of pairedResults) {
         const verdict = computeCaseVerdict(paired.caseId, paired, config);
         verdicts.push(verdict);
     }
-
     return verdicts;
 }
 
@@ -141,8 +208,67 @@ export function createRunVerdict(
     manifestHash: string,
     candidateId: string,
     baselineId: string,
-    caseVerdicts: any[],
+    caseVerdicts: CaseVerdict[],
     primaryMetric: string
 ): RunVerdict {
     return computeRunVerdict(runId, manifestHash, candidateId, baselineId, caseVerdicts, primaryMetric);
+}
+
+/**
+ * Create an empty run result for missing baseline/candidate
+ */
+function createEmptyRunResult(caseId: string, revisionId: string, config: VerdictConfig): PairedRunResult['baseline'] {
+    return {
+        caseId,
+        revisionId,
+        repetition: 0,
+        metrics: {},
+        output: null,
+        durationMs: 0,
+        success: false,
+        error: 'Missing baseline or candidate results',
+    };
+}
+
+/**
+ * Compute case verdicts from quality results (legacy wrapper)
+ */
+export function computeCaseVerdictsFromQualityResults(
+    baselineResults: any[],
+    candidateResults: any[],
+    config: VerdictConfig
+): CaseVerdict[] {
+    const baselineItems: VerdictResultItem[] = baselineResults.map(r => ({
+        caseId: r.caseId,
+        revisionId: r.revisionId,
+        repetition: r.repetition,
+        metrics: r.metrics,
+        output: r,
+        success: r.success,
+        error: r.error,
+    }));
+    const candidateItems: VerdictResultItem[] = candidateResults.map(r => ({
+        caseId: r.caseId,
+        revisionId: r.revisionId,
+        repetition: r.repetition,
+        metrics: r.metrics,
+        output: r,
+        success: r.success,
+        error: r.error,
+    }));
+
+    const pairedResults = buildPairedResults(baselineItems, candidateItems, config);
+    return computeCaseVerdictsFromPairedResults(pairedResults, config);
+}
+
+/**
+ * Compute case verdicts from intent evaluation results (legacy wrapper)
+ */
+export function computeCaseVerdictsFromIntentResults(
+    baselineResult: IntentEvaluationResult,
+    candidateResult: IntentEvaluationResult,
+    config: VerdictConfig
+): CaseVerdict[] {
+    const pairedResults = buildPairedResultsFromIntent(baselineResult, candidateResult, config);
+    return computeCaseVerdictsFromPairedResults(pairedResults, config);
 }

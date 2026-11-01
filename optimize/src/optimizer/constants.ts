@@ -2,6 +2,19 @@
  * Optimizer module constants - centralized magic numbers and configuration values
  */
 
+import {
+    DEFAULT_MDE_COMPLETION,
+    DEFAULT_MDE_STEPS,
+    DEFAULT_MDE_CORRECTIONS,
+    DEFAULT_MDE_PRECISION,
+    DEFAULT_MDE_RECALL,
+    DEFAULT_MDE_F1,
+    DEFAULT_MIN_SAMPLE_SIZE,
+    SCHEMA_VALIDITY_FLOOR,
+    MS_PER_DAY,
+    MS_PER_HOUR,
+} from '@notention/core/telemetry/constants';
+
 // Preview server constants
 export const PREVIEW_PORT_SEARCH_START = 4199;
 export const PREVIEW_PORT_SEARCH_RANGE = 100;
@@ -13,9 +26,9 @@ export const INTENT_NAVIGATION_TIMEOUT_MS = 5000;
 export const INTENT_EXTRACTION_WAIT_MS = 300;
 export const INTENT_DEFAULT_VIEWPORT = { width: 1280, height: 720 } as const;
 
-// Time constants
-export const MILLISECONDS_PER_DAY = 86_400_000;
-export const MILLISECONDS_PER_TWO_DAYS = 172_800_000;
+// Time constants (re-exported from core)
+export const MILLISECONDS_PER_DAY = MS_PER_DAY;
+export const MILLISECONDS_PER_TWO_DAYS = MS_PER_DAY * 2;
 
 // Cache constants
 export const CACHE_DIR = 'optimize/cache';
@@ -41,14 +54,16 @@ export const DEFAULT_TARGET_SEAMS = ['capture', 'match'] as const;
 export const SUCCESSIVE_HALVING_MIN_CANDIDATES = 2;
 
 // Verdict defaults (re-exported from core for convenience)
-export const DEFAULT_MDE_COMPLETION = 0.05;
-export const DEFAULT_MDE_STEPS = 0.5;
-export const DEFAULT_MDE_CORRECTIONS = 0.1;
-export const DEFAULT_MDE_PRECISION = 0.05;
-export const DEFAULT_MDE_RECALL = 0.05;
-export const DEFAULT_MDE_F1 = 0.05;
-export const DEFAULT_MIN_SAMPLE_SIZE = 10;
-export const SCHEMA_VALIDITY_FLOOR = 0.95;
+export {
+    DEFAULT_MDE_COMPLETION,
+    DEFAULT_MDE_STEPS,
+    DEFAULT_MDE_CORRECTIONS,
+    DEFAULT_MDE_PRECISION,
+    DEFAULT_MDE_RECALL,
+    DEFAULT_MDE_F1,
+    DEFAULT_MIN_SAMPLE_SIZE,
+    SCHEMA_VALIDITY_FLOOR,
+};
 
 // Common timeouts used in steps/journeys
 export const STEP_DEFAULT_TIMEOUT_MS = 5000;
