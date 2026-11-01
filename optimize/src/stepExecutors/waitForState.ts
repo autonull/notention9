@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test';
 import type { Step } from '../journey.js';
 import { StepExecutor, StepExecutionResult } from './index.js';
 import { resolvePath, deepEqual } from '../pathUtils.js';
+import { STATE_WAIT_DEFAULT_TIMEOUT_MS } from '../constants.js';
 
 async function getStateSnapshot(page: Page): Promise<unknown> {
     return page.evaluate(() => (globalThis as any).__NOTENTION__?.state?.());
@@ -10,7 +11,7 @@ async function getStateSnapshot(page: Page): Promise<unknown> {
 export const waitForStateExecutor: StepExecutor = {
     async execute(page: Page, step: Step): Promise<StepExecutionResult> {
         if (step.kind !== 'waitForState') throw new Error('Invalid step for waitForStateExecutor');
-        const timeout = step.timeoutMs ?? 5000;
+        const timeout = step.timeoutMs ?? STATE_WAIT_DEFAULT_TIMEOUT_MS;
         const startTime = Date.now();
         let stateSnapshot: unknown;
         let value: unknown;

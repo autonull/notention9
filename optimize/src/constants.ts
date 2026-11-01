@@ -28,6 +28,13 @@ export const DEFAULT_INFERENCE_OPTIONS = {
 // Provider capability probe timeout
 export const CAPABILITY_PROBE_TIMEOUT = 5000;
 
+// Step execution timeouts
+export const STEP_VISIBLE_TIMEOUT_MS = 10000;
+export const STEP_ATTACHED_TIMEOUT_MS = 5000;
+export const STEP_MODAL_VISIBLE_TIMEOUT_MS = 15000;
+export const STEP_MODAL_ATTACHED_TIMEOUT_MS = 10000;
+export const STATE_WAIT_DEFAULT_TIMEOUT_MS = 5000;
+
 // Provider capability probe test prompt
 export const CAPABILITY_PROBE_PROMPT = `Return a JSON object: {"test": "ok"}`;
 

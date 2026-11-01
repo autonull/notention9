@@ -1,10 +1,17 @@
 import type { Page, Locator } from '@playwright/test';
 import type { Target, Step } from './journey.js';
+import {
+    STEP_VISIBLE_TIMEOUT_MS,
+    STEP_ATTACHED_TIMEOUT_MS,
+    STEP_MODAL_VISIBLE_TIMEOUT_MS,
+    STEP_MODAL_ATTACHED_TIMEOUT_MS,
+} from './constants.js';
 
 export async function waitForReady(locator: Locator, isModal: boolean = false): Promise<void> {
-    const timeout = isModal ? 15000 : 10000;
-    await locator.waitFor({ state: 'visible', timeout });
-    await locator.waitFor({ state: 'attached', timeout: isModal ? 10000 : 5000 });
+    const visibleTimeout = isModal ? STEP_MODAL_VISIBLE_TIMEOUT_MS : STEP_VISIBLE_TIMEOUT_MS;
+    const attachedTimeout = isModal ? STEP_MODAL_ATTACHED_TIMEOUT_MS : STEP_ATTACHED_TIMEOUT_MS;
+    await locator.waitFor({ state: 'visible', timeout: visibleTimeout });
+    await locator.waitFor({ state: 'attached', timeout: attachedTimeout });
 }
 
 function isRegexString(value: string): boolean {
