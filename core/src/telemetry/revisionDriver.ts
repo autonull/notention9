@@ -9,88 +9,23 @@ import type {
     Revision, 
     StrategyArtifact, 
     RevisionStatus,
-    RevisionStoreConfig 
-} from '../telemetry/revisionStore.js';
+    RevisionStoreConfig,
+    RevisionSearchQuery,
+    RevisionDriverConfig,
+    RevisionDriver
+} from './types.js';
 import { FactoryRegistry } from '../utils/Registry.js';
 
-// --- RevisionDriver Config ---
-
-export interface RevisionDriverConfig {
-    // Common config
-    [key: string]: unknown;
-}
-
-export interface RevisionDriver {
-    readonly name: string;
-    readonly description: string;
-    readonly configSchema?: z.ZodSchema;
-    
-    /**
-     * Initialize the driver
-     */
-    init(config: RevisionDriverConfig): Promise<void>;
-    
-    /**
-     * Create a new revision
-     */
-    create(revision: Omit<Revision, 'id' | 'createdAt' | 'updatedAt' | 'status'>): Promise<Revision>;
-    
-    /**
-     * Get revision by ID
-     */
-    get(id: string): Promise<Revision | undefined>;
-    
-    /**
-     * Get active revision for a seam role
-     */
-    getActive(seamRole: string): Promise<Revision | undefined>;
-    
-    /**
-     * Update revision status and metadata
-     */
-    updateStatus(id: string, status: RevisionStatus, metadata: Partial<Revision>): Promise<Revision | undefined>;
-    
-    /**
-     * Activate a revision (automatically rolls back current active)
-     */
-    activate(id: string, userId: string): Promise<Revision | undefined>;
-    
-    /**
-     * Search revisions with filters
-     */
-    search(query: RevisionSearchQuery): Promise<Revision[]>;
-    
-    /**
-     * Get revision count
-     */
-    count(): Promise<number>;
-    
-    /**
-     * Close the driver
-     */
-    close(): Promise<void>;
-    
-    /**
-     * Get default configuration
-     */
-    getDefaultConfig(): RevisionDriverConfig;
-    
-    /**
-     * Validate configuration
-     */
-    validateConfig(config: RevisionDriverConfig): { valid: boolean; errors: string[] };
-}
-
-export interface RevisionSearchQuery {
-    seamRole?: string;
-    status?: RevisionStatus;
-    author?: 'human' | 'model';
-    tags?: string[];
-    since?: string;
-    until?: string;
-    limit?: number;
-    offset?: number;
-}
+// Re-export types from shared location
+export type { 
+    Revision, 
+    StrategyArtifact, 
+    RevisionStatus, 
+    RevisionStoreConfig,
+    RevisionSearchQuery,
+    RevisionDriverConfig,
+    RevisionDriver
+} from './types.js';
 
 // --- RevisionDriver Registrable mixin ---
 type RegistrableRevisionDriver = RevisionDriver & { getDefaultConfig(): RevisionDriverConfig; validateConfig(config: RevisionDriverConfig): { valid: boolean; errors: string[] } };

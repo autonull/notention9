@@ -8,6 +8,11 @@ import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } fr
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createSingleton } from '../utils/singleton.js';
+import type { 
+    LedgerEvent, LedgerEventType, LedgerPayload, 
+    RunConfig, RunSummary, CaseVerdict, VerdictDetail, 
+    ResolutionReason, Revision, OptimizerConfig, OptimizerCost 
+} from './types.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = join(__dirname, '..', '..', '..', '.notention', 'ledger');
@@ -19,150 +24,12 @@ if (!existsSync(DATA_DIR)) {
     mkdirSync(DATA_DIR, { recursive: true });
 }
 
-// --- Types ---
-
-// --- Types ---
-
-export interface LedgerEvent {
-    id: string;                    // ULID
-    type: LedgerEventType;
-    runId?: string;
-    caseId?: string;
-    revisionId?: string;
-    evaluationId?: string;
-    actor: 'system' | 'human' | 'model';
-    userId?: string;
-    modelId?: string;
-    payload: LedgerPayload;
-    timestamp: string;
-    durationMs?: number;
-    hash: string;                  // Content hash for tamper evidence
-}
-
-export type LedgerEventType =
-    | 'run:started'
-    | 'run:completed'
-    | 'run:failed'
-    | 'case:started'
-    | 'case:completed'
-    | 'case:failed'
-    | 'case:skipped'
-    | 'strategy:resolved'
-    | 'strategy:rendered'
-    | 'verdict:computed'
-    | 'gate:evaluated'
-    | 'revision:created'
-    | 'revision:evaluated'
-    | 'revision:consented'
-    | 'revision:activated'
-    | 'revision:rolled-back'
-    | 'revision:superseded'
-    | 'revision:rejected'
-    | 'consent:requested'
-    | 'consent:granted'
-    | 'consent:denied'
-    | 'optimizer:cycle:started'
-    | 'optimizer:cycle:completed'
-    | 'optimizer:candidate:evaluated';
-
-export type LedgerPayload =
-    | { type: 'run:started'; config: RunConfig; caseIds: string[] }
-    | { type: 'run:completed'; summary: RunSummary }
-    | { type: 'run:failed'; error: string }
-    | { type: 'case:started'; caseId: string; strategyId: string }
-    | { type: 'case:completed'; caseId: string; verdict: CaseVerdict; durationMs: number }
-    | { type: 'case:failed'; caseId: string; error: string }
-    | { type: 'case:skipped'; caseId: string; reason: string }
-    | { type: 'strategy:resolved'; seamRole: string; strategyId: string; reason: ResolutionReason; params: Record<string, unknown> }
-    | { type: 'strategy:rendered'; seamRole: string; strategyId: string; outputHash: string }
-    | { type: 'verdict:computed'; caseId: string; verdict: CaseVerdict; details: VerdictDetail[] }
-    | { type: 'gate:evaluated'; gate: 'must-win' | 'schema' | 'floors'; passed: boolean; details: string }
-    | { type: 'revision:created'; revision: Revision }
-    | { type: 'revision:evaluated'; revisionId: string; evaluationId: string; verdict: 'pass' | 'fail' | 'inconclusive' }
-    | { type: 'revision:consented'; revisionId: string; userId: string }
-    | { type: 'revision:activated'; revisionId: string; previousRevisionId?: string }
-    | { type: 'revision:rolled-back'; revisionId: string; reason: string; rolledBackToRevisionId?: string }
-    | { type: 'revision:superseded'; revisionId: string; supersededByRevisionId: string }
-    | { type: 'revision:rejected'; revisionId: string; reason: string }
-    | { type: 'consent:requested'; revisionId: string; userId: string }
-    | { type: 'consent:granted'; revisionId: string; userId: string }
-    | { type: 'consent:denied'; revisionId: string; userId: string; reason: string }
-    | { type: 'optimizer:cycle:started'; config: OptimizerConfig; manifestHash: string }
-    | { type: 'optimizer:cycle:completed'; candidatesEvaluated: number; winners: number; losers: number; inconclusive: number; totalCost: OptimizerCost }
-    | { type: 'optimizer:candidate:evaluated'; candidateId: string; seamRole: string; strategyId: string; verdict: string; primaryDelta: number };
-
-export interface RunConfig {
-    manifestHash: string;
-    revisionId: string;
-    baselineRevisionId: string;
-    caseFilter?: string[];
-    repetitions: number;
-}
-
-export interface RunSummary {
-    totalCases: number;
-    completed: number;
-    failed: number;
-    overallVerdict: string;
-}
-
-export interface CaseVerdict {
-    caseId: string;
-    verdict: string;
-    primaryMetric: string;
-    delta: number;
-    pValue: number;
-}
-
-export interface VerdictDetail {
-    metric: string;
-    baseline: number;
-    candidate: number;
-    delta: number;
-}
-
-export interface ResolutionReason {
-    kind: string;
-    [key: string]: any;
-}
-
-export interface Revision {
-    id: string;
-    seamRole: string;
-    strategy: any;
-    author: 'human' | 'model';
-    model?: string;
-    promptHash?: string;
-    parentRevisionId?: string;
-    evaluationId?: string;
-    verdict?: 'pass' | 'fail' | 'inconclusive';
-    status: string;
-    consentedBy?: string;
-    consentedAt?: string;
-    activatedAt?: string;
-    rolledBackAt?: string;
-    rollbackReason?: string;
-    createdAt: string;
-    updatedAt: string;
-    tags?: string[];
-}
-
-export interface OptimizerConfig {
-    targetSeams: string[];
-    maxCandidatesPerSeam: number;
-    maxBrowserRuns: number;
-    maxTimeMinutes: number;
-    maxTokens: number;
-    useSuccessiveHalving: boolean;
-    initialSliceFraction: number;
-    minPromote: number;
-}
-
-export interface OptimizerCost {
-    browserRuns: number;
-    tokensUsed: number;
-    durationMs: number;
-}
+// Re-export types from shared location
+export type { 
+    LedgerEvent, LedgerEventType, LedgerPayload, 
+    RunConfig, RunSummary, CaseVerdict, VerdictDetail, 
+    ResolutionReason, Revision, OptimizerConfig, OptimizerCost 
+} from './types.js';
 
 // --- ULID generation (simple timestamp + random) ---
 

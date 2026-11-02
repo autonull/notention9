@@ -104,6 +104,14 @@ function findImplementationFiles(contractName: string): string[] {
 function findFilesRecursive(dir: string, contractName: string): string[] {
     const results: string[] = [];
     
+    // Contract-specific implementation patterns
+    // Some contracts use a "Registrable" mixin pattern (e.g., RegistrableRevisionDriver extends RevisionDriver)
+    const implementationPatterns: Record<string, string[]> = {
+        'RevisionDriver': ['implements RevisionDriver', 'implements RegistrableRevisionDriver'],
+    };
+    
+    const patterns = implementationPatterns[contractName] ?? [`implements ${contractName}`];
+    
     try {
         for (const entry of readdirSync(dir)) {
             const fullPath = join(dir, entry);
@@ -114,9 +122,12 @@ function findFilesRecursive(dir: string, contractName: string): string[] {
             } else if (extname(entry) === '.ts' && !entry.endsWith('.test.ts') && !entry.endsWith('.d.ts') && entry !== 'index.ts') {
                 try {
                     const content = readFileSync(fullPath, 'utf-8');
-                    // Only match if the file actually implements the interface (has "implements ContractName")
-                    if (content.includes(`implements ${contractName}`)) {
-                        results.push(fullPath);
+                    // Match any of the implementation patterns for this contract
+                    for (const pattern of patterns) {
+                        if (content.includes(pattern)) {
+                            results.push(fullPath);
+                            break;
+                        }
                     }
                 } catch {
                     // Ignore read errors

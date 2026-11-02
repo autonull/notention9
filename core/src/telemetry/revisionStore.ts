@@ -9,6 +9,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { logEvent, type LedgerEventType, type LedgerPayload } from './ledger.js';
 import { DEFAULT_MAX_REVISIONS_PER_SEAM } from './constants.js';
+import type { Revision, StrategyArtifact, RevisionStatus, RevisionStoreConfig, RevisionSearchQuery } from './types.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = join(__dirname, '..', '..', '..', '.notention', 'revisions');
@@ -19,63 +20,8 @@ if (!existsSync(DATA_DIR)) {
     mkdirSync(DATA_DIR, { recursive: true });
 }
 
-// --- Types ---
-
-export interface Revision {
-    // Identity
-    id: string;                    // rev_<timestamp>_<random>
-    seamRole: string;              // 'capture' | 'elicit' | 'match' | 'layout' | ...
-    
-    // Strategy definition (inline, self-contained)
-    strategy: StrategyArtifact;
-    
-    // Provenance
-    author: 'human' | 'model';
-    model?: string;
-    promptHash?: string;
-    parentRevisionId?: string;
-    
-    // Evaluation linkage
-    evaluationId?: string;
-    verdict?: 'pass' | 'fail' | 'inconclusive';
-    
-    // Consent & activation
-    status: RevisionStatus;
-    consentedBy?: string;
-    consentedAt?: string;
-    activatedAt?: string;
-    rolledBackAt?: string;
-    rollbackReason?: string;
-    
-    // Metadata
-    createdAt: string;
-    updatedAt: string;
-    tags?: string[];
-}
-
-export interface StrategyArtifact {
-    id: string;
-    seamId: string;
-    version: string;
-    params: Record<string, unknown>;
-    code?: string;                 // Source code if model-generated
-    componentType?: string;        // Component identifier for UI
-}
-
-export type RevisionStatus =
-    | 'draft'
-    | 'evaluating'
-    | 'evaluated'
-    | 'awaiting-consent'
-    | 'consented'
-    | 'active'
-    | 'rolled-back'
-    | 'superseded'
-    | 'rejected';
-
-export interface RevisionStoreConfig {
-    maxRevisionsPerSeam?: number;  // Soft limit for cleanup
-}
+// Re-export types from shared location
+export type { Revision, StrategyArtifact, RevisionStatus, RevisionStoreConfig, RevisionSearchQuery } from './types.js';
 
 // --- RevisionStore class ---
 
