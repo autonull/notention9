@@ -128,31 +128,33 @@ export function getSearchSpace(paramSpec: ParamSpec): SearchSpace {
 
 /**
  * Sample random point from search space
+ * @param space - Search space definition
+ * @param random - Optional custom random function (for reproducibility)
  */
-export function sampleSearchSpace(space: SearchSpace): Record<string, unknown> {
+export function sampleSearchSpace(space: SearchSpace, random = Math.random): Record<string, unknown> {
     const params: Record<string, unknown> = {};
     
     for (const dim of space.dimensions) {
         switch (dim.scale) {
             case 'linear': {
                 const [min, max] = dim.bounds ?? [0, 1];
-                params[dim.name] = Math.random() * (max - min) + min;
+                params[dim.name] = random() * (max - min) + min;
                 break;
             }
             case 'log': {
                 const [min, max] = dim.bounds ?? [0.001, 1];
                 const logMin = Math.log(min);
                 const logMax = Math.log(max);
-                params[dim.name] = Math.exp(Math.random() * (logMax - logMin) + logMin);
+                params[dim.name] = Math.exp(random() * (logMax - logMin) + logMin);
                 break;
             }
             case 'categorical': {
                 const cats = dim.categories ?? [];
-                params[dim.name] = cats.length > 0 ? cats[Math.floor(Math.random() * cats.length)] : dim.default;
+                params[dim.name] = cats.length > 0 ? cats[Math.floor(random() * cats.length)] : dim.default;
                 break;
             }
             case 'boolean':
-                params[dim.name] = Math.random() < 0.5;
+                params[dim.name] = random() < 0.5;
                 break;
         }
     }

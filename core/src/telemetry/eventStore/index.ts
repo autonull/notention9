@@ -62,7 +62,7 @@ export function createSQLiteEventStore(dbPath: string): SQLiteEventStore {
 // --- Registry ---
 
 const { registry: eventStoreRegistry, get: getEventStoreRegistry, reset: resetEventStoreRegistry } = 
-    createPluginFactoryRegistry('EventStore', [
+    createPluginFactoryRegistry<EventStore>('EventStore', [
         { name: 'jsonl', create: (path?: string) => new JSONLEventStore(path), description: 'JSONL file-based storage' },
         { name: 'sqlite', create: (path: string) => new SQLiteEventStore(path), description: 'SQLite-backed storage' },
     ]);

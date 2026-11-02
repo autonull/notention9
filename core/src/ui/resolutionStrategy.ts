@@ -19,6 +19,7 @@ import type { StrategyRegistry } from './strategy.js';
 import type { Revision } from '../telemetry/revisionStore.js';
 import { assignToVariant, matchConditions, selectProfileByPolicy } from '../utils/resolutionUtils.js';
 import { PluginRegistry, createPluginRegistry } from '../utils/PluginRegistry.js';
+import { BaseResolutionStrategy } from '../utils/BasePlugin.js';
 
 // --- ResolutionStrategy Config ---
 
@@ -34,32 +35,12 @@ export interface ResolutionStrategy {
     /** Optional: seam roles this strategy applies to (undefined = all) */
     readonly seamRoles?: SeamRole[];
     
-    /**
-     * Get the strategy name
-     */
     getName(): string;
-    
-    /**
-     * Check if this strategy applies to the given seam role
-     */
     appliesTo(seamRole: SeamRole): boolean;
-    
-    /**
-     * Resolve a strategy for a user and seam role
-     * @returns ResolvedStrategy with full provenance, or undefined if cannot resolve
-     */
     resolve(
         context: ResolutionContext
     ): ResolvedStrategy | Promise<ResolvedStrategy | undefined> | undefined;
-    
-    /**
-     * Get default configuration for this strategy
-     */
     getDefaultConfig(): ResolutionStrategyConfig;
-    
-    /**
-     * Validate configuration
-     */
     validateConfig(config: ResolutionStrategyConfig): { valid: boolean; errors: string[] };
 }
 
@@ -85,27 +66,10 @@ export interface ResolutionContext {
 /**
  * OverrideResolutionStrategy - Checks user overrides (highest priority)
  */
-export class OverrideResolutionStrategy implements ResolutionStrategy {
+export class OverrideResolutionStrategy extends BaseResolutionStrategy {
     readonly name = 'override';
     readonly description = 'User strategy overrides (manual per-seam selection)';
-    readonly seamRoles: SeamRole[] | undefined = undefined;
-    
-    getName(): string {
-        return this.name;
-    }
-    
-    appliesTo(seamRole: SeamRole): boolean {
-        return this.seamRoles === undefined || this.seamRoles.includes(seamRole);
-    }
-    
-    getDefaultConfig(): ResolutionStrategyConfig {
-        return {};
-    }
-    
-    validateConfig(_config: ResolutionStrategyConfig): { valid: boolean; errors: string[] } {
-        return { valid: true, errors: [] };
-    }
-    
+
     resolve(context: ResolutionContext): ResolvedStrategy | undefined {
         const { userConfig, seamRole, seamId, strategyRegistry } = context;
         const overrideId = (userConfig.overrides.overrides as Record<string, string>)[seamRole];
@@ -124,27 +88,10 @@ export class OverrideResolutionStrategy implements ResolutionStrategy {
 /**
  * ExperimentResolutionStrategy - Checks active experiment assignments
  */
-export class ExperimentResolutionStrategy implements ResolutionStrategy {
+export class ExperimentResolutionStrategy extends BaseResolutionStrategy {
     readonly name = 'experiment';
     readonly description = 'Active experiment variant assignment';
-    readonly seamRoles: SeamRole[] | undefined = undefined;
-    
-    getName(): string {
-        return this.name;
-    }
-    
-    appliesTo(seamRole: SeamRole): boolean {
-        return this.seamRoles === undefined || this.seamRoles.includes(seamRole);
-    }
-    
-    getDefaultConfig(): ResolutionStrategyConfig {
-        return {};
-    }
-    
-    validateConfig(_config: ResolutionStrategyConfig): { valid: boolean; errors: string[] } {
-        return { valid: true, errors: [] };
-    }
-    
+
     resolve(context: ResolutionContext): ResolvedStrategy | undefined {
         const { userConfig, seamRole, seamId, experiments, assignments, strategyRegistry } = context;
         
@@ -181,27 +128,14 @@ export class ExperimentResolutionStrategy implements ResolutionStrategy {
 /**
  * RevisionResolutionStrategy - Checks for active revision (NEW revision layer)
  */
-export class RevisionResolutionStrategy implements ResolutionStrategy {
+export class RevisionResolutionStrategy extends BaseResolutionStrategy {
     readonly name = 'revision';
     readonly description = 'Active revision for seam role (requires consent)';
-    readonly seamRoles: SeamRole[] | undefined = undefined;
-    
-    getName(): string {
-        return this.name;
-    }
-    
-    appliesTo(seamRole: SeamRole): boolean {
-        return this.seamRoles === undefined || this.seamRoles.includes(seamRole);
-    }
-    
+
     getDefaultConfig(): ResolutionStrategyConfig {
         return { requireConsent: true };
     }
-    
-    validateConfig(config: ResolutionStrategyConfig): { valid: boolean; errors: string[] } {
-        return { valid: true, errors: [] };
-    }
-    
+
     async resolve(context: ResolutionContext): Promise<ResolvedStrategy | undefined> {
         if (!context.revisionStore) return undefined;
         
@@ -238,27 +172,10 @@ export class RevisionResolutionStrategy implements ResolutionStrategy {
 /**
  * ManualProfileResolutionStrategy - Manual mode with active profile
  */
-export class ManualProfileResolutionStrategy implements ResolutionStrategy {
+export class ManualProfileResolutionStrategy extends BaseResolutionStrategy {
     readonly name = 'manual-profile';
     readonly description = 'Manual mode with explicitly selected profile';
-    readonly seamRoles: SeamRole[] | undefined = undefined;
-    
-    getName(): string {
-        return this.name;
-    }
-    
-    appliesTo(seamRole: SeamRole): boolean {
-        return this.seamRoles === undefined || this.seamRoles.includes(seamRole);
-    }
-    
-    getDefaultConfig(): ResolutionStrategyConfig {
-        return {};
-    }
-    
-    validateConfig(_config: ResolutionStrategyConfig): { valid: boolean; errors: string[] } {
-        return { valid: true, errors: [] };
-    }
-    
+
     resolve(context: ResolutionContext): ResolvedStrategy | undefined {
         const { userConfig, seamRole, seamId, profiles, strategyRegistry } = context;
         if (!userConfig.manualMode) return undefined;
@@ -281,27 +198,10 @@ export class ManualProfileResolutionStrategy implements ResolutionStrategy {
 /**
  * PolicyResolutionStrategy - Auto-select profile via policy
  */
-export class PolicyResolutionStrategy implements ResolutionStrategy {
+export class PolicyResolutionStrategy extends BaseResolutionStrategy {
     readonly name = 'policy';
     readonly description = 'Automatic profile selection via policy rules';
-    readonly seamRoles: SeamRole[] | undefined = undefined;
-    
-    getName(): string {
-        return this.name;
-    }
-    
-    appliesTo(seamRole: SeamRole): boolean {
-        return this.seamRoles === undefined || this.seamRoles.includes(seamRole);
-    }
-    
-    getDefaultConfig(): ResolutionStrategyConfig {
-        return {};
-    }
-    
-    validateConfig(_config: ResolutionStrategyConfig): { valid: boolean; errors: string[] } {
-        return { valid: true, errors: [] };
-    }
-    
+
     resolve(context: ResolutionContext): ResolvedStrategy | undefined {
         const { userConfig, seamRole, seamId, profiles, policies, strategyRegistry } = context;
         const policy = Array.from(policies.values()).find(p => p.isEnabled);
@@ -342,27 +242,10 @@ export class PolicyResolutionStrategy implements ResolutionStrategy {
 /**
  * DefaultProfileResolutionStrategy - Falls back to default profile
  */
-export class DefaultProfileResolutionStrategy implements ResolutionStrategy {
+export class DefaultProfileResolutionStrategy extends BaseResolutionStrategy {
     readonly name = 'default-profile';
     readonly description = 'Default profile fallback';
-    readonly seamRoles: SeamRole[] | undefined = undefined;
-    
-    getName(): string {
-        return this.name;
-    }
-    
-    appliesTo(seamRole: SeamRole): boolean {
-        return this.seamRoles === undefined || this.seamRoles.includes(seamRole);
-    }
-    
-    getDefaultConfig(): ResolutionStrategyConfig {
-        return {};
-    }
-    
-    validateConfig(_config: ResolutionStrategyConfig): { valid: boolean; errors: string[] } {
-        return { valid: true, errors: [] };
-    }
-    
+
     resolve(context: ResolutionContext): ResolvedStrategy | undefined {
         const { seamRole, seamId, profiles, strategyRegistry } = context;
         const defaultProfile = Array.from(profiles.values()).find(p => p.isDefault) ?? Array.from(profiles.values())[0];
@@ -383,27 +266,10 @@ export class DefaultProfileResolutionStrategy implements ResolutionStrategy {
 /**
  * FallbackResolutionStrategy - Last resort: first available strategy for seam
  */
-export class FallbackResolutionStrategy implements ResolutionStrategy {
+export class FallbackResolutionStrategy extends BaseResolutionStrategy {
     readonly name = 'fallback';
     readonly description = 'Last resort: first available strategy for seam';
-    readonly seamRoles: SeamRole[] | undefined = undefined;
-    
-    getName(): string {
-        return this.name;
-    }
-    
-    appliesTo(seamRole: SeamRole): boolean {
-        return this.seamRoles === undefined || this.seamRoles.includes(seamRole);
-    }
-    
-    getDefaultConfig(): ResolutionStrategyConfig {
-        return {};
-    }
-    
-    validateConfig(_config: ResolutionStrategyConfig): { valid: boolean; errors: string[] } {
-        return { valid: true, errors: [] };
-    }
-    
+
     resolve(context: ResolutionContext): ResolvedStrategy | undefined {
         const { seamRole, seamId, strategyRegistry } = context;
         const seamStrategies = strategyRegistry.getAllForSeam(seamId);

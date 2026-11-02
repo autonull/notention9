@@ -5,18 +5,12 @@
  */
 
 import { z } from 'zod';
-import { createSingletonRegistry } from './Registry.js';
-
-// --- Base Plugin Interface ---
-
-export interface BasePlugin {
-    readonly name: string;
-    readonly description: string;
-    readonly configSchema?: z.ZodSchema;
-    
-    getDefaultConfig(): Record<string, unknown>;
-    validateConfig(config: Record<string, unknown>): { valid: boolean; errors: string[] };
-}
+import { 
+    FactoryRegistry, 
+    FactoryRegistryOptions, 
+    createSingletonRegistry 
+} from './Registry.js';
+import type { BasePlugin } from './BasePlugin.js';
 
 // --- Instance-based Plugin (stateful, reusable) ---
 
@@ -123,76 +117,11 @@ export class PluginRegistry<P extends BasePlugin> {
     }
 }
 
-// --- Factory Registry (for stateless plugins created per use) ---
-
-export interface FactoryRegistryOptions<P> {
-    errorPrefix?: string;
-}
-
-export class FactoryRegistry<P> {
-    private factories = new Map<string, { create: (...args: any[]) => P; description: string }>();
-    private readonly options: Required<FactoryRegistryOptions<P>>;
-    
-    constructor(options: FactoryRegistryOptions<P> = {}) {
-        this.options = {
-            errorPrefix: 'FactoryRegistry',
-            ...options,
-        };
-    }
-    
-    register(name: string, factory: (...args: any[]) => P, description: string): void {
-        if (this.factories.has(name)) {
-            throw new Error(`${this.options.errorPrefix} '${name}' already registered`);
-        }
-        this.factories.set(name, { create: factory, description });
-    }
-    
-    unregister(name: string): boolean {
-        return this.factories.delete(name);
-    }
-    
-    create(name: string, ...args: any[]): P {
-        const factory = this.factories.get(name);
-        if (!factory) {
-            const available = Array.from(this.factories.keys()).join(', ');
-            throw new Error(`Unknown ${this.options.errorPrefix}: ${name}. Available: ${available}`);
-        }
-        return factory.create(...args);
-    }
-    
-    listNames(): string[] {
-        return Array.from(this.factories.keys());
-    }
-    
-    getDescription(name: string): string | undefined {
-        return this.factories.get(name)?.description;
-    }
-    
-    has(name: string): boolean {
-        return this.factories.has(name);
-    }
-    
-    clear(): void {
-        this.factories.clear();
-    }
-}
-
 // --- Singleton Registry Manager ---
 
 export interface SingletonRegistry<T> {
     get: () => T;
     reset: () => void;
-}
-
-export function createPluginSingleton<T>(factory: () => T): SingletonRegistry<T> {
-    let instance: T | null = null;
-    return {
-        get: () => {
-            if (!instance) instance = factory();
-            return instance;
-        },
-        reset: () => { instance = null; },
-    };
 }
 
 // --- Helper to create standard plugin registry + singleton ---
@@ -207,7 +136,7 @@ export function createPluginRegistry<P extends BasePlugin>(
         registry.register(plugin);
     }
     
-    const { get, reset } = createPluginSingleton(() => registry);
+    const { get, reset } = createSingletonRegistry(() => registry);
     
     return { registry, get, reset };
 }
@@ -224,7 +153,10 @@ export function createPluginFactoryRegistry<P>(
         registry.register(factoryName, create, description);
     }
     
-    const { get, reset } = createPluginSingleton(() => registry);
+    const { get, reset } = createSingletonRegistry(() => registry);
     
     return { registry, get, reset };
 }
+
+// --- Re-export base registry types ---
+export type { FactoryRegistry, FactoryRegistryOptions } from './Registry.js';

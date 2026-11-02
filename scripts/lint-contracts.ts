@@ -50,11 +50,6 @@ const PLUGIN_CONTRACTS: Record<string, PluginContract> = {
         requiredMethods: ['generate', 'getName', 'getSearchSpace'],
         schema: 'candidateGeneratorConfig',
     },
-    'SearchSpace': {
-        interface: 'SearchSpace',
-        requiredMethods: [],
-        schema: 'searchSpace',
-    },
     'ResolutionStrategy': {
         interface: 'ResolutionStrategy',
         requiredMethods: ['resolve', 'getName'],
@@ -64,11 +59,6 @@ const PLUGIN_CONTRACTS: Record<string, PluginContract> = {
         interface: 'RevisionDriver',
         requiredMethods: ['create', 'get', 'getActive', 'activate', 'search'],
         schema: 'revisionSchema',
-    },
-    'DigestPipeline': {
-        interface: 'DigestPipeline',
-        requiredMethods: ['run', 'addStage', 'getStages'],
-        schema: 'digestPipelineConfig',
     },
 };
 
@@ -106,8 +96,15 @@ function findFilesRecursive(dir: string, contractName: string): string[] {
     
     // Contract-specific implementation patterns
     // Some contracts use a "Registrable" mixin pattern (e.g., RegistrableRevisionDriver extends RevisionDriver)
+    // Others use base class extension (e.g., extends BaseCandidateGenerator implements RegistrableGenerator)
     const implementationPatterns: Record<string, string[]> = {
-        'RevisionDriver': ['implements RevisionDriver', 'implements RegistrableRevisionDriver'],
+        'RevisionDriver': ['implements RevisionDriver', 'implements RegistrableRevisionDriver', 'extends BaseRevisionDriver'],
+        'CandidateGenerator': ['implements CandidateGenerator', 'implements RegistrableGenerator', 'extends BaseCandidateGenerator'],
+        'SplitStrategy': ['implements SplitStrategy', 'extends BaseSplitStrategy'],
+        'VerdictEngine': ['implements VerdictEngine', 'extends BaseVerdictEngine'],
+        'ResolutionStrategy': ['implements ResolutionStrategy', 'extends BaseResolutionStrategy'],
+        'EventStore': ['implements EventStore', 'extends BaseEventStore'],
+        'CaseStore': ['implements CaseStore', 'extends BaseCaseStore'],
     };
     
     const patterns = implementationPatterns[contractName] ?? [`implements ${contractName}`];

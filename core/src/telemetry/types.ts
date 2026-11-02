@@ -223,6 +223,12 @@ export interface RevisionDriver {
     validateConfig?(config: RevisionDriverConfig): { valid: boolean; errors: string[] };
 }
 
+// --- Registrable Revision Driver ---
+export interface RegistrableRevisionDriver extends RevisionDriver {
+    getDefaultConfig(): RevisionDriverConfig;
+    validateConfig(config: RevisionDriverConfig): { valid: boolean; errors: string[] };
+}
+
 // --- Friction/Journal Types ---
 
 export type FrictionKind =

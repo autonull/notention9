@@ -69,7 +69,7 @@ export {
     JSONLRevisionDriver, 
     InMemoryRevisionDriver, 
     SQLiteRevisionDriver, 
-    RevisionDriverRegistry,
+    revisionDriverRegistry,
     getRevisionDriverRegistry,
     resetRevisionDriverRegistry,
     type RevisionDriverConfig,

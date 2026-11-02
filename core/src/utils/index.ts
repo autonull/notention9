@@ -20,4 +20,5 @@ export * from './json.js';
 export * from './async.js';
 export * from './Registry.js';
 export * from './PluginRegistry.js';
+export * from './BasePlugin.js';
 export * from './resolutionUtils.js';

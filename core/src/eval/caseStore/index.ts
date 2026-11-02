@@ -50,8 +50,10 @@ export function createSQLiteCaseStore(dbPath: string): SQLiteCaseStore {
 
 // --- Registry for dynamic selection ---
 
+import type { CaseStore } from '../../schemas/caseManifest.js';
+
 const { registry: caseStoreRegistry, get: getCaseStoreRegistry, reset: resetCaseStoreRegistry } = 
-    createPluginFactoryRegistry('CaseStore', [
+    createPluginFactoryRegistry<CaseStore>('CaseStore', [
         { name: 'filesystem', create: () => new FileSystemCaseStore(), description: 'File-based storage with JSON cases' },
         { name: 'memory', create: () => new InMemoryCaseStore(), description: 'In-memory storage for testing' },
         { name: 'sqlite', create: (dbPath: string) => new SQLiteCaseStore(dbPath), description: 'SQLite-backed storage' },
