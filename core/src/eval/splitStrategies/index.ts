@@ -4,13 +4,13 @@
  */
 
 import { z } from 'zod';
-import type { IntentCase, QualityCase, CaseSplit } from '../caseManifest.js';
+import type { IntentCase, QualityCase } from '../caseManifest.js';
 import { FixedSplitStrategy } from './fixed.js';
 import { TemporalSplitStrategy } from './temporal.js';
 import { StratifiedSplitStrategy } from './stratified.js';
 import { AdversarialSplitStrategy } from './adversarial.js';
 import { HoldoutRotationSplitStrategy } from './holdoutRotation.js';
-import { Registry, createSingletonRegistry } from '../../utils/Registry.js';
+import { PluginRegistry, createPluginRegistry } from '../../utils/PluginRegistry.js';
 
 // --- SplitStrategy Interface ---
 
@@ -54,20 +54,21 @@ export interface SplitStrategy {
 }
 
 // --- SplitStrategy Registrable mixin ---
-type RegistrableSplitStrategy = SplitStrategy & { getDefaultConfig(): SplitStrategyConfig; validateConfig(config: SplitStrategyConfig): { valid: boolean; errors: string[] } };
+type RegistrableSplitStrategy = SplitStrategy & { 
+    getDefaultConfig(): SplitStrategyConfig; 
+    validateConfig(config: SplitStrategyConfig): { valid: boolean; errors: string[] } 
+};
 
 // --- Strategy Registry ---
 
-export const splitStrategyRegistry = new Registry<RegistrableSplitStrategy>({
-    errorPrefix: 'SplitStrategyRegistry',
-});
-
-// Register built-in strategies
-splitStrategyRegistry.register(new FixedSplitStrategy());
-splitStrategyRegistry.register(new TemporalSplitStrategy());
-splitStrategyRegistry.register(new StratifiedSplitStrategy());
-splitStrategyRegistry.register(new AdversarialSplitStrategy());
-splitStrategyRegistry.register(new HoldoutRotationSplitStrategy());
+const { registry: splitStrategyRegistry, get: getSplitStrategyRegistry, reset: resetSplitStrategyRegistry } = 
+    createPluginRegistry<RegistrableSplitStrategy>('SplitStrategy', [
+        new FixedSplitStrategy(),
+        new TemporalSplitStrategy(),
+        new StratifiedSplitStrategy(),
+        new AdversarialSplitStrategy(),
+        new HoldoutRotationSplitStrategy(),
+    ]);
 
 // --- Re-export strategies ---
 export { FixedSplitStrategy } from './fixed.js';
@@ -76,9 +77,5 @@ export { StratifiedSplitStrategy } from './stratified.js';
 export { AdversarialSplitStrategy } from './adversarial.js';
 export { HoldoutRotationSplitStrategy } from './holdoutRotation.js';
 
-// --- Singleton ---
-const { get: getSplitStrategyRegistry, reset: resetSplitStrategyRegistry } = createSingletonRegistry(
-    () => splitStrategyRegistry
-);
-
-export { getSplitStrategyRegistry, resetSplitStrategyRegistry };
+// --- Export registry and singleton ---
+export { splitStrategyRegistry, getSplitStrategyRegistry, resetSplitStrategyRegistry };

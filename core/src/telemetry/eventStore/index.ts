@@ -6,7 +6,7 @@
 import type { LedgerEvent } from '../../telemetry/ledger.js';
 import { JSONLEventStore } from './jsonl.js';
 import { SQLiteEventStore } from './sqlite.js';
-import { FactoryRegistry } from '../../utils/Registry.js';
+import { FactoryRegistry, createPluginFactoryRegistry } from '../../utils/PluginRegistry.js';
 
 // --- EventStore Interface ---
 
@@ -61,26 +61,11 @@ export function createSQLiteEventStore(dbPath: string): SQLiteEventStore {
 
 // --- Registry ---
 
-const eventStoreRegistry = new FactoryRegistry({
-    errorPrefix: 'EventStoreRegistry',
-});
+const { registry: eventStoreRegistry, get: getEventStoreRegistry, reset: resetEventStoreRegistry } = 
+    createPluginFactoryRegistry('EventStore', [
+        { name: 'jsonl', create: (path?: string) => new JSONLEventStore(path), description: 'JSONL file-based storage' },
+        { name: 'sqlite', create: (path: string) => new SQLiteEventStore(path), description: 'SQLite-backed storage' },
+    ]);
 
-eventStoreRegistry.register('jsonl', (path?: string) => new JSONLEventStore(path), 'JSONL file-based storage');
-eventStoreRegistry.register('sqlite', (path: string) => new SQLiteEventStore(path), 'SQLite-backed storage');
-
-// --- Backward-compatible singleton functions ---
-
-let eventStoreRegistryInstance: typeof eventStoreRegistry | null = null;
-
-export function getEventStoreRegistry(): typeof eventStoreRegistry {
-    if (!eventStoreRegistryInstance) {
-        eventStoreRegistryInstance = eventStoreRegistry;
-    }
-    return eventStoreRegistryInstance;
-}
-
-export function resetEventStoreRegistry(): void {
-    eventStoreRegistryInstance = null;
-}
-
-export { eventStoreRegistry };
+// --- Export registry and singleton ---
+export { eventStoreRegistry, getEventStoreRegistry, resetEventStoreRegistry };

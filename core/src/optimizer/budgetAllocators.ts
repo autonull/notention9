@@ -3,9 +3,10 @@
  * Pluggable budget allocation strategies: fixed, successive halving, Hyperband
  */
 
+import { z } from 'zod';
 import type { OptimizerCandidate, CandidateEvaluationResult, BudgetConstraints } from './candidateGenerators.js';
 import type { OptimizerConfig } from './types.js';
-import { Registry, createSingletonRegistry } from '../utils/Registry.js';
+import { PluginRegistry, createPluginRegistry } from '../utils/PluginRegistry.js';
 
 // --- Budget Allocator Interface ---
 
@@ -322,18 +323,12 @@ export class HyperbandAllocator implements RegistrableAllocator {
 
 // --- Budget Allocator Registry ---
 
-export const budgetAllocatorRegistry = new Registry<RegistrableAllocator>({
-    errorPrefix: 'BudgetAllocatorRegistry',
-});
-
-// Register built-in allocators
-budgetAllocatorRegistry.register(new FixedBudgetAllocator());
-budgetAllocatorRegistry.register(new SuccessiveHalvingAllocator());
-budgetAllocatorRegistry.register(new HyperbandAllocator());
+const { registry: budgetAllocatorRegistry, get: getBudgetAllocatorRegistry, reset: resetBudgetAllocatorRegistry } = 
+    createPluginRegistry<RegistrableAllocator>('BudgetAllocator', [
+        new FixedBudgetAllocator(),
+        new SuccessiveHalvingAllocator(),
+        new HyperbandAllocator(),
+    ]);
 
 // --- Singleton ---
-const { get: getBudgetAllocatorRegistry, reset: resetBudgetAllocatorRegistry } = createSingletonRegistry(
-    () => budgetAllocatorRegistry
-);
-
-export { getBudgetAllocatorRegistry, resetBudgetAllocatorRegistry };
+export { budgetAllocatorRegistry, getBudgetAllocatorRegistry, resetBudgetAllocatorRegistry };

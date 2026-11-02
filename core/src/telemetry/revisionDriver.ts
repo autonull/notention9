@@ -14,7 +14,7 @@ import type {
     RevisionDriverConfig,
     RevisionDriver
 } from './types.js';
-import { FactoryRegistry } from '../utils/Registry.js';
+import { FactoryRegistry, createPluginFactoryRegistry } from '../utils/PluginRegistry.js';
 
 // Re-export types from shared location
 export type { 
@@ -760,27 +760,12 @@ export class SQLiteRevisionDriver implements RegistrableRevisionDriver {
 
 // --- RevisionDriver Registry ---
 
-const revisionDriverRegistry = new FactoryRegistry({
-    errorPrefix: 'RevisionDriverRegistry',
-});
+const { registry: revisionDriverRegistry, get: getRevisionDriverRegistry, reset: resetRevisionDriverRegistry } = 
+    createPluginFactoryRegistry('RevisionDriver', [
+        { name: 'jsonl', create: (...args: unknown[]) => new JSONLRevisionDriver(...(args as string[])), description: 'JSONL file-based storage' },
+        { name: 'memory', create: () => new InMemoryRevisionDriver(), description: 'In-memory storage (testing)' },
+        { name: 'sqlite', create: (...args: unknown[]) => new SQLiteRevisionDriver(...(args as string[])), description: 'SQLite-backed storage (stub)' },
+    ]);
 
-revisionDriverRegistry.register('jsonl', (...args: unknown[]) => new JSONLRevisionDriver(...(args as string[])), 'JSONL file-based storage');
-revisionDriverRegistry.register('memory', () => new InMemoryRevisionDriver(), 'In-memory storage (testing)');
-revisionDriverRegistry.register('sqlite', (...args: unknown[]) => new SQLiteRevisionDriver(...(args as string[])), 'SQLite-backed storage (stub)');
-
-// --- Backward-compatible singleton functions ---
-
-let revisionDriverRegistryInstance: typeof revisionDriverRegistry | null = null;
-
-export function getRevisionDriverRegistry(): typeof revisionDriverRegistry {
-    if (!revisionDriverRegistryInstance) {
-        revisionDriverRegistryInstance = revisionDriverRegistry;
-    }
-    return revisionDriverRegistryInstance;
-}
-
-export function resetRevisionDriverRegistry(): void {
-    revisionDriverRegistryInstance = null;
-}
-
-export { revisionDriverRegistry, revisionDriverRegistry as RevisionDriverRegistry };
+// --- Export registry and singleton ---
+export { revisionDriverRegistry, getRevisionDriverRegistry, resetRevisionDriverRegistry };

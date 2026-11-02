@@ -1,7 +1,7 @@
 /**
  * Shared Resolution Utilities
  * Eliminates duplication of assignToVariant, matchConditions, resolveSeamId
- * across ProfileRegistry, resolutionPipeline, and resolutionStrategy
+ * across ProfileRegistry and resolutionStrategy
  */
 
 import type { StrategyExperiment, ExperimentAssignment, ProfilePolicy, UserProfileConfig, SeamRole } from '../ui/profileTypes.js';

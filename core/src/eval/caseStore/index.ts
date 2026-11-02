@@ -14,7 +14,7 @@ import type {
 import { FileSystemCaseStore } from './fileSystem.js';
 import { InMemoryCaseStore } from './inMemory.js';
 import { SQLiteCaseStore } from './sqlite.js';
-import { FactoryRegistry } from '../../utils/Registry.js';
+import { FactoryRegistry, createPluginFactoryRegistry } from '../../utils/PluginRegistry.js';
 
 // Re-export types
 export type { 
@@ -50,27 +50,12 @@ export function createSQLiteCaseStore(dbPath: string): SQLiteCaseStore {
 
 // --- Registry for dynamic selection ---
 
-const caseStoreRegistry = new FactoryRegistry({
-    errorPrefix: 'CaseStoreRegistry',
-});
+const { registry: caseStoreRegistry, get: getCaseStoreRegistry, reset: resetCaseStoreRegistry } = 
+    createPluginFactoryRegistry('CaseStore', [
+        { name: 'filesystem', create: () => new FileSystemCaseStore(), description: 'File-based storage with JSON cases' },
+        { name: 'memory', create: () => new InMemoryCaseStore(), description: 'In-memory storage for testing' },
+        { name: 'sqlite', create: (dbPath: string) => new SQLiteCaseStore(dbPath), description: 'SQLite-backed storage' },
+    ]);
 
-caseStoreRegistry.register('filesystem', () => new FileSystemCaseStore(), 'File-based storage with JSON cases');
-caseStoreRegistry.register('memory', () => new InMemoryCaseStore(), 'In-memory storage for testing');
-caseStoreRegistry.register('sqlite', (dbPath: string) => new SQLiteCaseStore(dbPath), 'SQLite-backed storage');
-
-// --- Backward-compatible singleton functions ---
-
-let caseStoreRegistryInstance: typeof caseStoreRegistry | null = null;
-
-export function getCaseStoreRegistry(): typeof caseStoreRegistry {
-    if (!caseStoreRegistryInstance) {
-        caseStoreRegistryInstance = caseStoreRegistry;
-    }
-    return caseStoreRegistryInstance;
-}
-
-export function resetCaseStoreRegistry(): void {
-    caseStoreRegistryInstance = null;
-}
-
-export { caseStoreRegistry };
+// --- Export registry and singleton ---
+export { caseStoreRegistry, getCaseStoreRegistry, resetCaseStoreRegistry };

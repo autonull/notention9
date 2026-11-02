@@ -14,7 +14,7 @@ import type {
     BudgetConstraints,
     CandidateEvaluationResult 
 } from './types.js';
-import { Registry, createSingletonRegistry } from '../utils/Registry.js';
+import { PluginRegistry, createPluginRegistry } from '../utils/PluginRegistry.js';
 
 // --- SearchSpace from S1 (re-exported for convenience) ---
 export { getSearchSpace, sampleSearchSpace, gridSearchSpace, type SearchSpace } from '../schemas/paramSpec.js';
@@ -431,18 +431,12 @@ Only return valid JSON.`;
 
 // --- Candidate Generator Registry ---
 
-export const candidateGeneratorRegistry = new Registry<RegistrableGenerator>({
-    errorPrefix: 'CandidateGeneratorRegistry',
-});
-
-// Register built-in generators
-candidateGeneratorRegistry.register(new GridGenerator());
-candidateGeneratorRegistry.register(new RandomGenerator());
-candidateGeneratorRegistry.register(new SuccessiveHalvingGenerator());
+const { registry: candidateGeneratorRegistry, get: getCandidateGeneratorRegistry, reset: resetCandidateGeneratorRegistry } = 
+    createPluginRegistry<RegistrableGenerator>('CandidateGenerator', [
+        new GridGenerator(),
+        new RandomGenerator(),
+        new SuccessiveHalvingGenerator(),
+    ]);
 
 // --- Singleton instance ---
-const { get: getCandidateGeneratorRegistry, reset: resetCandidateGeneratorRegistry } = createSingletonRegistry(
-    () => candidateGeneratorRegistry
-);
-
-export { getCandidateGeneratorRegistry, resetCandidateGeneratorRegistry };
+export { candidateGeneratorRegistry, getCandidateGeneratorRegistry, resetCandidateGeneratorRegistry };

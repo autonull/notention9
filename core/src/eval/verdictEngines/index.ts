@@ -18,7 +18,7 @@ import { BayesianVerdictEngine } from './bayesian.js';
 import { SequentialVerdictEngine } from './sequential.js';
 import { LLMJudgeVerdictEngine } from './llmJudge.js';
 import { HumanJudgeVerdictEngine } from './humanJudge.js';
-import { Registry, createSingletonRegistry } from '../../utils/Registry.js';
+import { PluginRegistry, createPluginRegistry } from '../../utils/PluginRegistry.js';
 
 // --- VerdictEngine Config ---
 
@@ -72,20 +72,21 @@ export interface VerdictEngine {
 }
 
 // --- VerdictEngine Registrable mixin ---
-type RegistrableVerdictEngine = VerdictEngine & { getDefaultConfig(): VerdictEngineConfig; validateConfig(config: VerdictEngineConfig): { valid: boolean; errors: string[] } };
+type RegistrableVerdictEngine = VerdictEngine & { 
+    getDefaultConfig(): VerdictEngineConfig; 
+    validateConfig(config: VerdictEngineConfig): { valid: boolean; errors: string[] } 
+};
 
 // --- Engine Registry ---
 
-export const verdictEngineRegistry = new Registry<RegistrableVerdictEngine>({
-    errorPrefix: 'VerdictEngineRegistry',
-});
-
-// Register built-in engines
-verdictEngineRegistry.register(new McNemarVerdictEngine());
-verdictEngineRegistry.register(new BayesianVerdictEngine());
-verdictEngineRegistry.register(new SequentialVerdictEngine());
-verdictEngineRegistry.register(new LLMJudgeVerdictEngine());
-verdictEngineRegistry.register(new HumanJudgeVerdictEngine());
+const { registry: verdictEngineRegistry, get: getVerdictEngineRegistry, reset: resetVerdictEngineRegistry } = 
+    createPluginRegistry<RegistrableVerdictEngine>('VerdictEngine', [
+        new McNemarVerdictEngine(),
+        new BayesianVerdictEngine(),
+        new SequentialVerdictEngine(),
+        new LLMJudgeVerdictEngine(),
+        new HumanJudgeVerdictEngine(),
+    ]);
 
 // --- Re-export engines ---
 export { McNemarVerdictEngine } from './mcnemar.js';
@@ -98,9 +99,5 @@ export { HumanJudgeVerdictEngine, type HumanReview } from './humanJudge.js';
 export type { ExtendedCaseVerdict, ExtendedRunVerdict, ExtendedMetricVerdict } from '../../schemas/verdictResult.js';
 export type { EvidenceClass, JudgeProvenance } from '../../schemas/evidence.js';
 
-// --- Singleton instance ---
-const { get: getVerdictEngineRegistry, reset: resetVerdictEngineRegistry } = createSingletonRegistry(
-    () => verdictEngineRegistry
-);
-
-export { getVerdictEngineRegistry, resetVerdictEngineRegistry };
+// --- Export registry and singleton ---
+export { verdictEngineRegistry, getVerdictEngineRegistry, resetVerdictEngineRegistry };

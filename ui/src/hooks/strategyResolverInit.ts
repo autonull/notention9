@@ -4,11 +4,12 @@
  * Uses generated seam-definitions.ts as single source of truth.
  */
 
-import type { Seam } from '@notention/core/ui/strategy';
+import type { Seam, Strategy } from '@notention/core/ui/strategy';
 import { strategyRegistry, createComponentStrategy } from '@notention/core/ui/strategy';
 import { resolveSeamId, SEAM_ROLES, type SeamRole } from '@notention/core/constants/seams';
 import { profileRegistry } from '@notention/core/ui/ProfileRegistry';
-import { STRATEGY_CONFIGS_UI, getStrategyConfig, getAllStrategyConfigs } from '@notention/ui/strategies/strategyConfigs';
+import { STRATEGY_CONFIGS_UI, getAllStrategyConfigs } from '@notention/ui/strategies/strategyConfigs';
+import { SEAM_DEFINITIONS } from '@notention/core/schemas/generated/seam-definitions';
 
 // Forward declarations for component types
 type QuickCaptureComponent = React.ComponentType<{
@@ -69,7 +70,7 @@ type PropertyPanelComponent = React.ComponentType<{
     ontology?: any[];
 }>;
 
-// Lazy-loaded components - keyed by strategy ID
+// Lazy-loaded components - keyed by strategy ID (from generated definitions)
 const componentFactories = new Map<string, () => Promise<React.ComponentType<any>>>();
 
 function registerComponentFactory(strategyId: string, importFn: () => Promise<{ default: React.ComponentType<any> }>): void {
@@ -79,14 +80,14 @@ function registerComponentFactory(strategyId: string, importFn: () => Promise<{ 
     });
 }
 
-// Register all component factories
-registerComponentFactory('property-form', () => import('../components/editor/PropertyForm'));
-registerComponentFactory('describe-it-composer', () => import('../components/editor/DescribeItComposer'));
-registerComponentFactory('template-selector', () => import('../components/editor/TemplateSelector'));
-registerComponentFactory('tag-input', () => import('../components/editor/TagInput'));
-registerComponentFactory('local-match-preview', () => import('../components/dashboard/LocalMatchPreview'));
-registerComponentFactory('dashboard-local-match', () => import('../components/dashboard/DashboardLocalMatch'));
-registerComponentFactory('local-matches-panel', () => import('../components/assistant/LocalMatchesPanel'));
+// Register component factories using generated component paths
+for (const config of STRATEGY_CONFIGS_UI) {
+    if (config.componentPath) {
+        // Dynamic import using the path from generated definitions
+        const path = config.componentPath;
+        registerComponentFactory(config.id, () => import(`../${path}`));
+    }
+}
 
 // Strategy component factories for re-registration with revised params
 const strategyComponentFactories = new Map<string, React.ComponentType<any>>();
@@ -107,112 +108,40 @@ if (isCleanProfile) {
 }
 
 export async function registerUIStrategies(): Promise<void> {
-    // Resolve seam IDs dynamically from the strategy registry (populated by discovery)
-    const captureSeamId = resolveSeamId(SEAM_ROLES.CAPTURE, strategyRegistry);
-    const elicitSeamId = resolveSeamId(SEAM_ROLES.ELICIT, strategyRegistry);
-    const matchSeamId = resolveSeamId(SEAM_ROLES.MATCH, strategyRegistry);
-    const layoutSeamId = resolveSeamId(SEAM_ROLES.LAYOUT, strategyRegistry);
-
-    // Register seams from generated definitions
-    const seams: Seam[] = [
-        {
-            id: captureSeamId,
-            name: 'Capture',
-            description: 'Natural language capture interface',
-            role: 'capture',
-            components: ['QuickCapture', 'DescribeItComposer'],
-            propsShape: {
-                input: 'string',
-                onInputChange: '(value: string) => void',
-                onSubmit: '(e: React.FormEvent) => void',
-                extractedProps: 'Array<{key: string; values: string[]}>',
-                onTemplateClick: '(type: string) => void',
-            },
-        },
-        {
-            id: elicitSeamId,
-            name: 'Elicit',
-            description: 'Property elicitation interface',
-            role: 'elicit',
-            components: ['TagInput', 'InsertPropertyModal'],
-            propsShape: {
-                onInsert: '(key: string, operator: string, value: string, icon?: string) => void',
-                initialKey: 'string',
-                initialOperator: 'string',
-                initialValue: 'string',
-                attributeDef: 'any',
-                ontology: 'any[]',
-                isEditing: 'boolean',
-                onPickLocation: '() => Promise<string>',
-                suggestions: 'any[]',
-            },
-        },
-        {
-            id: matchSeamId,
-            name: 'Match Display',
-            description: 'Match explanation and selection interface',
-            role: 'display',
-            components: ['LocalMatchPreview', 'DashboardLocalMatch'],
-            propsShape: {
-                match: 'any',
-                onSelectNote: '(noteId: string) => void',
-                onRejectMatch: '(matchId: string) => void',
-                onReviseRequest: '() => void',
-                notes: 'any[]',
-            },
-        },
-        {
-            id: layoutSeamId,
-            name: 'Layout',
-            description: 'Workspace layout and panel arrangement',
-            role: 'layout',
-            components: ['PropertyPanel', 'LocalMatchesPanel'],
-            propsShape: {
-                properties: 'any[]',
-                isAddingProperty: 'boolean',
-                setIsAddingProperty: '(adding: boolean) => void',
-                editingPropertyIndex: 'number | null',
-                setEditingPropertyIndex: '(index: number | null) => void',
-                propertyToDelete: 'any | null',
-                setPropertyToDelete: '(prop: any | null) => void',
-                onSaveProperty: '(key: string, op: string, value: string) => void',
-                onCancelEdit: '() => void',
-                onAcceptReview: '(item: any) => void',
-                propertyReview: 'any | null',
-                onDeleteProperty: '() => void',
-                onPickLocation: '() => void',
-                onPickTime: '(key: string) => void',
-                ontology: 'any[]',
-                localMatches: 'any[]',
-                contacts: 'any[]',
-                onSelect: '(match: any) => void',
-            },
-        },
-    ];
-
-    for (const seam of seams) {
+    // Register seams from generated definitions (one per role, using first seam for each role)
+    const seamRoles = Object.values(SEAM_ROLES) as SeamRole[];
+    const seenRoles = new Set<SeamRole>();
+    
+    for (const def of SEAM_DEFINITIONS) {
+        const role = def.role as SeamRole;
+        if (seenRoles.has(role)) continue;
+        seenRoles.add(role);
+        
+        const seamId = resolveSeamId(role, strategyRegistry);
+        const seam: Seam = {
+            id: seamId,
+            name: def.name,
+            description: def.description,
+            role,
+            components: def.components,
+            propsShape: def.propsShape,
+        };
         strategyRegistry.register(seam);
     }
 
-    // Import strategy implementations
+    // Import custom strategy implementations (these have custom logic beyond simple component rendering)
     const { DescribeItComposerStrategy } = await import('../strategies/DescribeItComposerStrategy');
     const { TagInputStrategy } = await import('../strategies/TagInputStrategy');
     const { PropertyFormStrategy } = await import('../strategies/PropertyFormStrategy');
     const { TemplateSelectorStrategy } = await import('../strategies/TemplateSelectorStrategy');
 
-    // Map of strategy ID to strategy implementation (for non-component strategies)
+    // Map of strategy ID to custom strategy implementation
     const strategyImplMap: Record<string, React.ComponentType<any>> = {
         'describe-it-composer': DescribeItComposerStrategy,
         'tag-input': TagInputStrategy,
         'property-form': PropertyFormStrategy,
         'template-selector': TemplateSelectorStrategy,
     };
-
-    // Get seam objects from registry
-    const captureSeam = strategyRegistry.getAllForSeam(captureSeamId)[0]?.seam;
-    const elicitSeam = strategyRegistry.getAllForSeam(elicitSeamId)[0]?.seam;
-    const matchSeam = strategyRegistry.getAllForSeam(matchSeamId)[0]?.seam;
-    const layoutSeam = strategyRegistry.getAllForSeam(layoutSeamId)[0]?.seam;
 
     // Register all strategies from generated configs
     const allConfigs = getAllStrategyConfigs();
