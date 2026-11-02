@@ -17,6 +17,7 @@ import type {
 } from './profileTypes.js';
 import type { StrategyRegistry } from './strategy.js';
 import type { Revision } from '../telemetry/revisionStore.js';
+import { assignToVariant, matchConditions, selectProfileByPolicy } from '../utils/resolutionUtils.js';
 
 // --- ResolutionStrategy Config ---
 
@@ -136,7 +137,7 @@ export class ExperimentResolutionStrategy implements ResolutionStrategy {
             let assignment = assignments.get(assignmentKey);
             
             if (!assignment) {
-                assignment = this.assignToVariant(experiment, userConfig.userId);
+                assignment = assignToVariant(experiment, userConfig.userId);
                 assignments.set(assignmentKey, assignment);
             }
             
@@ -156,34 +157,6 @@ export class ExperimentResolutionStrategy implements ResolutionStrategy {
             }
         }
         return undefined;
-    }
-    
-    private assignToVariant(experiment: StrategyExperiment, userId: string): ExperimentAssignment {
-        const rand = Math.random();
-        let cumulative = 0;
-        
-        for (const variant of experiment.variants) {
-            cumulative += variant.weight;
-            if (rand <= cumulative) {
-                return {
-                    experimentId: experiment.id,
-                    userId,
-                    variantId: variant.id,
-                    assignedAt: new Date().toISOString(),
-                    exposureCount: 0,
-                    lastExposureAt: new Date().toISOString(),
-                };
-            }
-        }
-        
-        return {
-            experimentId: experiment.id,
-            userId,
-            variantId: experiment.variants[0].id,
-            assignedAt: new Date().toISOString(),
-            exposureCount: 0,
-            lastExposureAt: new Date().toISOString(),
-        };
     }
 }
 
@@ -301,7 +274,7 @@ export class PolicyResolutionStrategy implements ResolutionStrategy {
         const policy = Array.from(policies.values()).find(p => p.isEnabled);
         if (!policy) return undefined;
         
-        const profile = this.selectProfileByPolicy(policy, userConfig, profiles);
+        const profile = selectProfileByPolicy(policy, userConfig, profiles);
         const strategyId = (profile?.strategySelections as Record<string, string>)[seamRole];
         const strategy = strategyId ? strategyRegistry.get(seamId, strategyId) : undefined;
         
@@ -309,7 +282,7 @@ export class PolicyResolutionStrategy implements ResolutionStrategy {
             // Find which rule matched
             const sortedRules = [...policy.rules].sort((a, b) => a.priority - b.priority);
             for (const rule of sortedRules) {
-                if (this.matchConditions(rule.conditions, userConfig, profiles)) {
+                if (matchConditions(rule.conditions, userConfig, profiles)) {
                     return { 
                         strategy, 
                         reason: { kind: 'policy', policyId: policy.id, ruleId: rule.id },
@@ -330,30 +303,6 @@ export class PolicyResolutionStrategy implements ResolutionStrategy {
             };
         }
         return undefined;
-    }
-    
-    private selectProfileByPolicy(policy: ProfilePolicy, config: UserProfileConfig, profiles: Map<string, StrategyProfile>): StrategyProfile | undefined {
-        const sortedRules = [...policy.rules].sort((a, b) => a.priority - b.priority);
-        
-        for (const rule of sortedRules) {
-            if (this.matchConditions(rule.conditions, config, profiles)) {
-                return profiles.get(rule.profileId);
-            }
-        }
-        
-        return profiles.get(policy.fallbackProfileId);
-    }
-    
-    private matchConditions(conditions: Record<string, unknown>, config: UserProfileConfig, profiles: Map<string, StrategyProfile>): boolean {
-        const activeProfile = profiles.get(config.activeProfileId);
-        const context = activeProfile?.context ?? {};
-        
-        for (const [key, value] of Object.entries(conditions)) {
-            if (context[key] !== value) {
-                return false;
-            }
-        }
-        return true;
     }
 }
 

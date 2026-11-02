@@ -3,13 +3,28 @@
  * Each revision is an immutable record of a strategy change proposal
  */
 
-import { createHash } from 'node:crypto';
-import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { logEvent, type LedgerEventType, type LedgerPayload } from './ledger.js';
 import { DEFAULT_MAX_REVISIONS_PER_SEAM } from './constants.js';
 import type { Revision, StrategyArtifact, RevisionStatus, RevisionStoreConfig, RevisionSearchQuery } from './types.js';
+import {
+    createRevisionIndexes,
+    RevisionIndexes,
+    indexRevision,
+    updateRevisionStatus,
+    searchRevisions,
+    getActiveRevision,
+    getRevisionsBySeam,
+    getRevisionsByStatus,
+    countRevisions,
+    loadRevisionsFromJSONL,
+    persistRevisionToJSONL,
+    createBaseRevision,
+    statusToEventType,
+    createLedgerPayload,
+} from './revisionUtils.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = join(__dirname, '..', '..', '..', '.notention', 'revisions');
@@ -26,9 +41,7 @@ export type { Revision, StrategyArtifact, RevisionStatus, RevisionStoreConfig, R
 // --- RevisionStore class ---
 
 export class RevisionStore {
-    private revisions: Map<string, Revision> = new Map();
-    private seamIndex: Map<string, string[]> = new Map(); // seamRole -> revisionIds (newest first)
-    private statusIndex: Map<RevisionStatus, Set<string>> = new Map();
+    private indexes: RevisionIndexes = createRevisionIndexes();
     private initialized = false;
     private config: RevisionStoreConfig;
 
@@ -42,40 +55,12 @@ export class RevisionStore {
     private async init(): Promise<void> {
         if (this.initialized) return;
         
-        if (existsSync(REVISIONS_FILE)) {
-            const content = readFileSync(REVISIONS_FILE, 'utf-8');
-            const lines = content.trim().split('\n').filter(l => l.length > 0);
-            
-            for (const line of lines) {
-                try {
-                    const revision = JSON.parse(line) as Revision;
-                    this.indexRevision(revision);
-                } catch {
-                    // Skip malformed
-                }
-            }
-        }
-        
+        await loadRevisionsFromJSONL(REVISIONS_FILE, this.indexes);
         this.initialized = true;
     }
 
-    private indexRevision(revision: Revision): void {
-        this.revisions.set(revision.id, revision);
-        
-        // Seam index
-        const seamRevisions = this.seamIndex.get(revision.seamRole) ?? [];
-        seamRevisions.unshift(revision.id); // Newest first
-        this.seamIndex.set(revision.seamRole, seamRevisions);
-        
-        // Status index
-        const statusSet = this.statusIndex.get(revision.status) ?? new Set();
-        statusSet.add(revision.id);
-        this.statusIndex.set(revision.status, statusSet);
-    }
-
     private persistRevision(revision: Revision): void {
-        const line = JSON.stringify(revision) + '\n';
-        appendFileSync(REVISIONS_FILE, line, 'utf-8');
+        persistRevisionToJSONL(REVISIONS_FILE, revision);
         
         // Log to ledger
         logEvent({
@@ -92,18 +77,9 @@ export class RevisionStore {
     async create(revision: Omit<Revision, 'id' | 'createdAt' | 'updatedAt' | 'status'>): Promise<Revision> {
         await this.init();
         
-        const now = new Date().toISOString();
-        const id = `rev_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
+        const fullRevision = createBaseRevision(revision);
         
-        const fullRevision: Revision = {
-            ...revision,
-            id,
-            status: 'draft',
-            createdAt: now,
-            updatedAt: now,
-        };
-        
-        this.indexRevision(fullRevision);
+        indexRevision(this.indexes, fullRevision);
         this.persistRevision(fullRevision);
         
         return fullRevision;
@@ -114,7 +90,7 @@ export class RevisionStore {
      */
     async get(id: string): Promise<Revision | undefined> {
         await this.init();
-        return this.revisions.get(id);
+        return this.indexes.revisions.get(id);
     }
 
     /**
@@ -122,8 +98,7 @@ export class RevisionStore {
      */
     async getBySeam(seamRole: string): Promise<Revision[]> {
         await this.init();
-        const ids = this.seamIndex.get(seamRole) ?? [];
-        return ids.map(id => this.revisions.get(id)!).filter(Boolean);
+        return getRevisionsBySeam(this.indexes, seamRole);
     }
 
     /**
@@ -131,8 +106,7 @@ export class RevisionStore {
      */
     async getByStatus(status: RevisionStatus): Promise<Revision[]> {
         await this.init();
-        const ids = this.statusIndex.get(status) ?? new Set();
-        return Array.from(ids).map(id => this.revisions.get(id)!).filter(Boolean);
+        return getRevisionsByStatus(this.indexes, status);
     }
 
     /**
@@ -140,8 +114,7 @@ export class RevisionStore {
      */
     async getActive(seamRole: string): Promise<Revision | undefined> {
         await this.init();
-        const revisions = await this.getBySeam(seamRole);
-        return revisions.find(r => r.status === 'active');
+        return getActiveRevision(this.indexes, seamRole);
     }
 
     /**
@@ -150,41 +123,22 @@ export class RevisionStore {
     async updateStatus(id: string, status: RevisionStatus, metadata: Partial<Revision> = {}): Promise<Revision | undefined> {
         await this.init();
         
-        const revision = this.revisions.get(id);
+        const revision = this.indexes.revisions.get(id);
         if (!revision) return undefined;
         
-        // Remove from old status index
-        const oldStatusSet = this.statusIndex.get(revision.status);
-        if (oldStatusSet) {
-            oldStatusSet.delete(id);
-        }
-        
-        // Update revision
-        const updated: Revision = {
-            ...revision,
-            status,
-            updatedAt: new Date().toISOString(),
-            ...metadata,
-        };
-        
-        this.revisions.set(id, updated);
-        
-        // Add to new status index
-        const newStatusSet = this.statusIndex.get(status) ?? new Set();
-        newStatusSet.add(id);
-        this.statusIndex.set(status, newStatusSet);
+        const updated = updateRevisionStatus(this.indexes, revision, status, metadata);
         
         // Persist (append new version)
         this.persistRevision(updated);
         
         // Log status change
-        const eventType = this.statusToEventType(status);
+        const eventType = statusToEventType(status);
         if (eventType) {
             logEvent({
                 type: eventType,
                 actor: 'system',
                 revisionId: id,
-                payload: this.createLedgerPayload(eventType, id, metadata),
+                payload: createLedgerPayload(eventType, id, metadata),
             });
         }
         
@@ -287,48 +241,9 @@ export class RevisionStore {
     /**
      * Search revisions
      */
-    async search(query: {
-        seamRole?: string;
-        status?: RevisionStatus;
-        author?: 'human' | 'model';
-        tags?: string[];
-        since?: string;
-        until?: string;
-        limit?: number;
-    }): Promise<Revision[]> {
+    async search(query: RevisionSearchQuery): Promise<Revision[]> {
         await this.init();
-        
-        let results = Array.from(this.revisions.values());
-        
-        if (query.seamRole) {
-            results = results.filter(r => r.seamRole === query.seamRole);
-        }
-        if (query.status) {
-            results = results.filter(r => r.status === query.status);
-        }
-        if (query.author) {
-            results = results.filter(r => r.author === query.author);
-        }
-        if (query.tags && query.tags.length > 0) {
-            results = results.filter(r => r.tags?.some(t => query.tags!.includes(t)));
-        }
-        if (query.since) {
-            const since = new Date(query.since).getTime();
-            results = results.filter(r => new Date(r.createdAt).getTime() >= since);
-        }
-        if (query.until) {
-            const until = new Date(query.until).getTime();
-            results = results.filter(r => new Date(r.createdAt).getTime() <= until);
-        }
-        
-        // Sort by createdAt descending
-        results.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-        
-        if (query.limit) {
-            results = results.slice(0, query.limit);
-        }
-        
-        return results;
+        return searchRevisions(this.indexes, query);
     }
 
     /**
@@ -336,13 +251,13 @@ export class RevisionStore {
      */
     async count(): Promise<number> {
         await this.init();
-        return this.revisions.size;
+        return countRevisions(this.indexes);
     }
 }
 
 // --- Singleton instance ---
-import { createSingleton } from '../utils/singleton.js';
-const { getInstance: getRevisionStoreInstance, resetInstance: resetRevisionStoreInstance } = createSingleton(() => new RevisionStore());
+import { createSingleton } from '../utils/singletonFactory.js';
+const { get: getRevisionStoreInstance, reset: resetRevisionStoreInstance } = createSingleton(() => new RevisionStore());
 
 export function getRevisionStore(config?: RevisionStoreConfig): RevisionStore {
     // Note: config is only used on first call

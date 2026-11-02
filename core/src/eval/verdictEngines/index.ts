@@ -88,11 +88,11 @@ verdictEngineRegistry.register(new LLMJudgeVerdictEngine());
 verdictEngineRegistry.register(new HumanJudgeVerdictEngine());
 
 // --- Re-export engines ---
-export { McNemarVerdictEngine, type VerdictEngineConfig as McNemarConfig } from './mcnemar.js';
-export { BayesianVerdictEngine, type VerdictEngineConfig as BayesianConfig } from './bayesian.js';
-export { SequentialVerdictEngine, type VerdictEngineConfig as SequentialConfig } from './sequential.js';
-export { LLMJudgeVerdictEngine, type VerdictEngineConfig as LLMJudgeConfig } from './llmJudge.js';
-export { HumanJudgeVerdictEngine, type VerdictEngineConfig as HumanJudgeConfig, type HumanReview } from './humanJudge.js';
+export { McNemarVerdictEngine } from './mcnemar.js';
+export { BayesianVerdictEngine } from './bayesian.js';
+export { SequentialVerdictEngine } from './sequential.js';
+export { LLMJudgeVerdictEngine } from './llmJudge.js';
+export { HumanJudgeVerdictEngine, type HumanReview } from './humanJudge.js';
 
 // --- Re-export extended types from schemas ---
 export type { ExtendedCaseVerdict, ExtendedRunVerdict, ExtendedMetricVerdict } from '../../schemas/verdictResult.js';

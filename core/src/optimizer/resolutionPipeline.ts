@@ -13,6 +13,12 @@ import { getRevisionStore, type Revision } from '../telemetry/revisionStore.js';
 import { getAllSeamDefinitions } from './strategyLoader.js';
 import { passesGovernanceGate } from '../schemas/evidence.js';
 import { logInfo } from '../utils/logging.js';
+import { 
+    assignToVariant, 
+    matchConditions, 
+    selectProfileByPolicy,
+    createResolutionReason,
+} from '../utils/resolutionUtils.js';
 
 // --- Resolution Step Definition ---
 
@@ -182,7 +188,7 @@ export const policyProfileStep: ResolutionStep = {
         const policy = registry.getActivePolicy();
         if (!policy) return undefined;
         
-        const profile = selectProfileByPolicy(registry, policy, config);
+        const profile = selectProfileByPolicy(policy, config, registry);
         const strategyId = (profile?.strategySelections as Record<string, string>)[seamRole];
         if (!strategyId) return undefined;
         
@@ -192,7 +198,7 @@ export const policyProfileStep: ResolutionStep = {
         // Find which rule matched
         const sortedRules = [...policy.rules].sort((a, b) => a.priority - b.priority);
         for (const rule of sortedRules) {
-            if (matchConditions(registry, rule.conditions, config)) {
+            if (matchConditions(rule.conditions, config, registry)) {
                 return {
                     strategy,
                     reason: { kind: 'policy', policyId: policy.id, ruleId: rule.id },
@@ -338,67 +344,6 @@ function resolveSeamId(seamRole: SeamRole, strategyRegistry: StrategyRegistry): 
     const seams = strategyRegistry.listSeams();
     const discovered = seams.find(s => s.id.startsWith(`${seamRole}-`));
     return discovered?.id ?? `${seamRole}-0`;
-}
-
-/**
- * Assign user to experiment variant
- */
-function assignToVariant(experiment: any, userId: string): any {
-    const rand = Math.random();
-    let cumulative = 0;
-    
-    for (const variant of experiment.variants) {
-        cumulative += variant.weight;
-        if (rand <= cumulative) {
-            return {
-                experimentId: experiment.id,
-                userId,
-                variantId: variant.id,
-                assignedAt: new Date().toISOString(),
-                exposureCount: 0,
-                lastExposureAt: new Date().toISOString(),
-            };
-        }
-    }
-    
-    return {
-        experimentId: experiment.id,
-        userId,
-        variantId: experiment.variants[0].id,
-        assignedAt: new Date().toISOString(),
-        exposureCount: 0,
-        lastExposureAt: new Date().toISOString(),
-    };
-}
-
-/**
- * Select profile by policy
- */
-function selectProfileByPolicy(registry: ProfileRegistry, policy: any, config: UserProfileConfig): StrategyProfile | undefined {
-    const sortedRules = [...policy.rules].sort((a, b) => a.priority - b.priority);
-    
-    for (const rule of sortedRules) {
-        if (matchConditions(registry, rule.conditions, config)) {
-            return registry.getProfile(rule.profileId);
-        }
-    }
-    
-    return registry.getProfile(policy.fallbackProfileId);
-}
-
-/**
- * Match policy conditions against user context
- */
-function matchConditions(registry: ProfileRegistry, conditions: Record<string, unknown>, config: UserProfileConfig): boolean {
-    const activeProfile = registry.getProfile(config.activeProfileId);
-    const context = activeProfile?.context ?? {};
-    
-    for (const [key, value] of Object.entries(conditions)) {
-        if (context[key] !== value) {
-            return false;
-        }
-    }
-    return true;
 }
 
 /**

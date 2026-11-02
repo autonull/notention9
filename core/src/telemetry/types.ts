@@ -265,7 +265,8 @@ export interface JournalConfig {
     flushIntervalMs: number;   // Batch flush interval
 }
 
-export type EvidenceClass = 'measured' | 'observed' | 'hypothesized' | 'asserted';
+// EvidenceClass is defined in schemas/evidence.ts as single source of truth
+import type { EvidenceClass } from '../schemas/evidence.js';
 
 export interface FrictionSignal {
     kind: FrictionKind;

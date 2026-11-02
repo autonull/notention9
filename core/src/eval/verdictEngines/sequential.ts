@@ -12,9 +12,10 @@ import type {
     ExtendedCaseVerdict, 
     ExtendedRunVerdict, 
     VerdictEngineConfig,
-    VerdictEngine 
+    VerdictEngine,
+    EvidenceClass,
+    JudgeProvenance
 } from './index.js';
-import type { EvidenceClass, JudgeProvenance } from '../../schemas/evidence.js';
 import { 
     pairedTTest, 
     pairedConfidenceInterval, 
@@ -31,8 +32,7 @@ import {
     extendRunVerdict 
 } from '../../schemas/verdictResult.js';
 import { 
-    createStatisticalProvenance, 
-    EvidenceClass 
+    createStatisticalProvenance 
 } from '../../schemas/evidence.js';
 
 // --- Sequential-specific config schema ---
@@ -180,10 +180,11 @@ export class SequentialVerdictEngine implements VerdictEngine {
         paired: PairedRunResult,
         config: VerdictEngineConfig
     ): CaseVerdict {
-        const alpha = config.alpha ?? 0.05;
-        const beta = config.beta ?? 0.2;
-        const effectSize = config.minEffectSize ?? 0.2;
-        const indifference = config.indifferenceRegion ?? 0.1;
+        const seqConfig = config as any;
+        const alpha = seqConfig.alpha ?? 0.05;
+        const beta = seqConfig.beta ?? 0.2;
+        const effectSize = seqConfig.minEffectSize ?? 0.2;
+        const indifference = seqConfig.indifferenceRegion ?? 0.1;
         
         // SPRT boundaries (Wald's approximation)
         const A = Math.log((1 - beta) / alpha);
@@ -202,7 +203,7 @@ export class SequentialVerdictEngine implements VerdictEngine {
             const sigma = 1; // Assumed known variance
             const logLR = n * effectSize * observedEffect / (sigma * sigma) - n * effectSize * effectSize / (2 * sigma * sigma);
             
-            let decision: 'improved' | 'degraded' | 'inconclusive' = 'inconclusive';
+            let decision: 'improved' | 'degraded' | 'no-change' = 'no-change';
             let passes = false;
             
             if (logLR >= A) {
@@ -212,7 +213,7 @@ export class SequentialVerdictEngine implements VerdictEngine {
                 decision = 'no-change';
                 passes = true; // Accept null
             }
-            // else: continue sampling (inconclusive)
+            // else: continue sampling (inconclusive) - direction stays 'no-change'
             
             // CI for sequential (wider to account for multiple looks)
             const ci = pairedConfidenceInterval([mv.baselineMean], [mv.candidateMean], 0.99); // Wider CI

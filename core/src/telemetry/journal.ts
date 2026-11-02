@@ -10,13 +10,26 @@ import { fileURLToPath } from 'node:url';
 import { getDefaultAdapter } from '../storage/Storage.js';
 import {
     DEFAULT_JOURNAL_RETENTION_DAYS,
-    EVIDENCE_DECAY_HALF_LIFE_DAYS,
     JOURNAL_AUTO_FLUSH_INTERVAL_MS,
-    EVIDENCE_CLASS_WEIGHTS,
-    DIGEST_TOP_SIGNALS_PER_WORKFLOW,
-    DIGEST_LOOKBACK_DAYS,
     MS_PER_DAY,
 } from './constants.js';
+import {
+    FrictionEvent,
+    FrictionAggregate,
+    FrictionSignal,
+    EvidenceClass,
+    FrictionKind,
+    DurationBucket,
+    JournalConfig,
+    DEFAULT_DIGEST_CONFIG,
+    inferEvidenceClass,
+    computeWeight,
+    msToDays,
+    aggregateEvents,
+    filterEventsByTime,
+    rankAggregates,
+    groupSignalsByWorkflow,
+} from './frictionUtils.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = join(__dirname, '..', '..', '..', '.notention', 'journal');
@@ -30,61 +43,13 @@ if (!existsSync(DATA_DIR)) {
 
 // --- Types ---
 
-export type FrictionKind =
-    | 'capture_started'
-    | 'capture_abandoned'
-    | 'correction'
-    | 'match_viewed'
-    | 'match_rejected'
-    | 'match_accepted'
-    | 'clarification_requested';
-
-export type DurationBucket = '<5s' | '5-15s' | '15-60s' | '>60s';
-
-export interface FrictionEvent {
-    bucket: string;                 // ISO date, day granularity (YYYY-MM-DD)
-    workflow: string;               // 'capture' | 'match' | 'elicit' | ...
-    seam: string;                   // seam role/id
-    kind: FrictionKind;
-    count: number;
-    durationBucket?: DurationBucket;
-}
-
-export interface FrictionAggregate {
-    bucket: string;
-    workflow: string;
-    seam: string;
-    kind: FrictionKind;
-    count: number;
-    durationBucket?: DurationBucket;
-    firstSeen: string;
-    lastSeen: string;
-}
-
-export interface JournalConfig {
-    enabled: boolean;
-    retentionDays: number;
-    lastPurge?: string;
-}
+// Re-export types from frictionUtils
+export type { FrictionKind, DurationBucket, EvidenceClass, FrictionEvent, FrictionAggregate, FrictionSignal, JournalConfig } from './frictionUtils.js';
 
 const DEFAULT_JOURNAL_CONFIG: JournalConfig = {
     enabled: false,
     retentionDays: DEFAULT_JOURNAL_RETENTION_DAYS,
 };
-
-export type EvidenceClass = 'measured' | 'observed' | 'hypothesized' | 'asserted';
-
-export interface FrictionSignal {
-    bucket: string;
-    workflow: string;
-    seam: string;
-    kind: FrictionKind;
-    count: number;
-    evidenceClass: EvidenceClass;
-    ageDays: number;
-    weight: number;                 // decayed weight for prioritization
-    durationBucket?: DurationBucket;
-}
 
 // --- Config management ---
 
@@ -175,111 +140,73 @@ export class Journal {
         const sinceTime = since ? new Date(since).getTime() : 0;
         const untilTime = until ? new Date(until).getTime() : Infinity;
 
-        const aggregateMap = new Map<string, FrictionAggregate>();
-
+        const events: FrictionEvent[] = [];
         for (const line of lines) {
             try {
                 const event = JSON.parse(line) as FrictionEvent;
                 const eventTime = new Date(event.bucket).getTime();
 
                 if (eventTime < sinceTime || eventTime > untilTime) continue;
-
-                const key = `${event.bucket}|${event.workflow}|${event.seam}|${event.kind}|${event.durationBucket ?? 'none'}`;
-                const existing = aggregateMap.get(key);
-
-                if (existing) {
-                    existing.count += event.count;
-                    existing.lastSeen = event.bucket;
-                } else {
-                    aggregateMap.set(key, {
-                        bucket: event.bucket,
-                        workflow: event.workflow,
-                        seam: event.seam,
-                        kind: event.kind,
-                        count: event.count,
-                        durationBucket: event.durationBucket,
-                        firstSeen: event.bucket,
-                        lastSeen: event.bucket,
-                    });
-                }
+                events.push(event);
             } catch {
                 // Skip malformed lines
             }
         }
 
-        return Array.from(aggregateMap.values()).sort((a, b) =>
-            b.lastSeen.localeCompare(a.lastSeen)
-        );
+        return aggregateEvents(events);
     }
 
     /**
      * Get signals with evidence class and decay for prioritization
      */
     getSignals(since?: string): FrictionSignal[] {
-        const aggregates = this.getAggregates(since);
-        const now = Date.now();
-
-        return aggregates.map(agg => {
-            const ageDays = this.msToDays(now - new Date(agg.lastSeen).getTime());
-            const evidenceClass = this.inferEvidenceClass(agg.kind, agg.count, ageDays);
-            const weight = this.computeWeight(agg.count, ageDays, evidenceClass);
-
-            return {
-                ...agg,
-                evidenceClass,
-                ageDays,
-                weight,
-            };
-        }).sort((a, b) => b.weight - a.weight);
+        const events = this.getEvents(since);
+        const filtered = filterEventsByTime(events, DEFAULT_DIGEST_CONFIG.lookbackDays);
+        const aggregates = aggregateEvents(filtered);
+        return rankAggregates(aggregates, DEFAULT_DIGEST_CONFIG);
     }
 
-    private inferEvidenceClass(kind: FrictionKind, count: number, ageDays: number): EvidenceClass {
-        // Direct user actions = measured
-        if (kind === 'correction' || kind === 'match_rejected' || kind === 'capture_abandoned') {
-            return count >= 3 && ageDays <= 14 ? 'measured' : 'observed';
+    private getEvents(since?: string): FrictionEvent[] {
+        if (!existsSync(JOURNAL_FILE)) return [];
+
+        const content = readFileSync(JOURNAL_FILE, 'utf-8');
+        const lines = content.trim().split('\n').filter(l => l.length > 0);
+
+        const sinceTime = since ? new Date(since).getTime() : 0;
+
+        const events: FrictionEvent[] = [];
+        for (const line of lines) {
+            try {
+                const event = JSON.parse(line) as FrictionEvent;
+                const eventTime = new Date(event.bucket).getTime();
+                if (eventTime >= sinceTime) {
+                    events.push(event);
+                }
+            } catch {
+                // Skip malformed lines
+            }
         }
-        // Indirect signals = observed
-        if (kind === 'match_accepted' || kind === 'clarification_requested') {
-            return 'observed';
-        }
-        // Start events without completion = hypothesized
-        return 'hypothesized';
-    }
-
-    private computeWeight(count: number, ageDays: number, evidenceClass: EvidenceClass): number {
-        const classWeight = EVIDENCE_CLASS_WEIGHTS[evidenceClass] ?? EVIDENCE_CLASS_WEIGHTS.asserted;
-        const baseWeight = classWeight * Math.log10(count + 1);
-        const decay = Math.exp(-ageDays / EVIDENCE_DECAY_HALF_LIFE_DAYS);
-        return baseWeight * decay;
-    }
-
-    private msToDays(ms: number): number {
-        return Math.floor(ms / MS_PER_DAY);
+        return events;
     }
 
     /**
      * Generate weekly digest (aggregates only, no PII)
      */
     generateWeeklyDigest(): string {
-        const since = new Date(Date.now() - DIGEST_LOOKBACK_DAYS * MS_PER_DAY).toISOString().split('T')[0];
+        const since = new Date(Date.now() - DEFAULT_DIGEST_CONFIG.lookbackDays * MS_PER_DAY).toISOString().split('T')[0];
         const signals = this.getSignals(since);
 
         if (signals.length === 0) {
             return 'No friction events recorded this week.';
         }
 
-        const byWorkflow = new Map<string, FrictionSignal[]>();
-        for (const s of signals) {
-            const arr = byWorkflow.get(s.workflow) ?? [];
-            arr.push(s);
-            byWorkflow.set(s.workflow, arr);
-        }
+        const byWorkflow = groupSignalsByWorkflow(signals);
 
         let digest = `📊 Friction Digest — ${new Date().toISOString().split('T')[0]}\n\n`;
 
         for (const [workflow, items] of byWorkflow) {
             digest += `## ${workflow}\n`;
-            for (const item of items.slice(0, DIGEST_TOP_SIGNALS_PER_WORKFLOW)) {
+            for (const item of items.slice(0, DEFAULT_DIGEST_CONFIG.topSignalsPerWorkflow)) {
                 const evidenceIcon = { measured: '🔴', observed: '🟡', hypothesized: '🟢', asserted: '⚪' }[item.evidenceClass];
                 digest += `  ${evidenceIcon} ${item.kind} (${item.seam}): ${item.count}×, ${item.ageDays}d old, weight ${item.weight.toFixed(2)}\n`;
             }

@@ -12,9 +12,10 @@ import type {
     ExtendedCaseVerdict, 
     ExtendedRunVerdict, 
     VerdictEngineConfig,
-    VerdictEngine 
+    VerdictEngine,
+    EvidenceClass,
+    JudgeProvenance
 } from './index.js';
-import type { EvidenceClass, JudgeProvenance } from '../../schemas/evidence.js';
 import { 
     computeCaseVerdict as baseComputeCaseVerdict,
     computeRunVerdict as baseComputeRunVerdict,
@@ -26,8 +27,7 @@ import {
     extendRunVerdict 
 } from '../../schemas/verdictResult.js';
 import { 
-    createHumanProvenance, 
-    EvidenceClass 
+    createHumanProvenance 
 } from '../../schemas/evidence.js';
 
 // --- Human Judge config schema ---
@@ -99,6 +99,7 @@ export class HumanJudgeVerdictEngine implements VerdictEngine {
         config: VerdictEngineConfig
     ): Promise<ExtendedCaseVerdict> {
         const baseVerdict = baseComputeCaseVerdict(caseId, paired, config as VerdictConfig);
+        const humanConfig = config as any;
         
         // Get human review
         const review = await this.getHumanReview(caseId, paired, config);
@@ -107,7 +108,7 @@ export class HumanJudgeVerdictEngine implements VerdictEngine {
         const enhancedVerdict = this.applyHumanJudgment(baseVerdict, review, config);
         
         const provenance = createHumanProvenance(
-            config.reviewerId ?? 'unknown',
+            humanConfig.reviewerId ?? 'unknown',
             review.confidence,
             { 
                 reviewId: review.id,
@@ -162,8 +163,9 @@ export class HumanJudgeVerdictEngine implements VerdictEngine {
         
         const baseRunVerdict = baseComputeRunVerdict(runId, manifestHash, revisionId, baselineRevisionId, baseVerdicts, primaryMetric);
         
+        const defaultConfig = this.getDefaultConfig() as any;
         const provenance = createHumanProvenance(
-            config.reviewerId ?? 'unknown',
+            defaultConfig.reviewerId ?? 'unknown',
             0.8, // High confidence for human aggregate review
             { method: 'human-aggregate-review' }
         );
@@ -189,14 +191,15 @@ export class HumanJudgeVerdictEngine implements VerdictEngine {
         paired: PairedRunResult,
         config: VerdictEngineConfig
     ): HumanReview {
-        const baselineScore = paired.baseline.metrics[config.primaryMetric] ?? 0;
-        const candidateScore = paired.candidate.metrics[config.primaryMetric] ?? 0;
+        const c = config as any;
+        const baselineScore = paired.baseline.metrics[c.primaryMetric] ?? 0;
+        const candidateScore = paired.candidate.metrics[c.primaryMetric] ?? 0;
         const delta = candidateScore - baselineScore;
         
         return {
             id: `review_${caseId}_${Date.now()}`,
             caseId,
-            reviewerId: config.reviewerId ?? 'mock-reviewer',
+            reviewerId: c.reviewerId ?? 'mock-reviewer',
             verdict: delta > 0 ? 'improved' : (delta < 0 ? 'degraded' : 'inconclusive'),
             confidence: 0.9,
             reasoning: `Human review: baseline=${baselineScore.toFixed(3)}, candidate=${candidateScore.toFixed(3)}, delta=${delta.toFixed(3)}`,
@@ -219,10 +222,13 @@ export class HumanJudgeVerdictEngine implements VerdictEngine {
         const humanVerdict = verdictMap[review.verdict] ?? 'inconclusive';
         
         // Human judgment overrides statistical verdict
+        const direction: 'improved' | 'degraded' | 'no-change' = 
+            humanVerdict === 'improved' ? 'improved' : (humanVerdict === 'degraded' ? 'degraded' : 'no-change');
+        
         const primaryMetric = {
             ...baseVerdict.primaryMetric,
             pValue: review.confidence >= 0.8 ? 0.01 : 0.05, // Very low p-value for confident human judgment
-            direction: humanVerdict === 'improved' ? 'improved' : (humanVerdict === 'degraded' ? 'degraded' : 'no-change'),
+            direction,
             passes: humanVerdict === 'improved',
         };
         

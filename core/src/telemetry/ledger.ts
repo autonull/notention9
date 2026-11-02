@@ -7,7 +7,7 @@ import { createHash } from 'node:crypto';
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createSingleton } from '../utils/singleton.js';
+import { createSingleton } from '../utils/singletonFactory.js';
 import { logWarn } from '../utils/logging.js';
 import type { 
     LedgerEvent, LedgerEventType, LedgerPayload, 
@@ -235,7 +235,7 @@ export class Ledger {
 }
 
 // --- Singleton instance ---
-const { getInstance: getLedgerInstance, resetInstance: resetLedgerInstance } = createSingleton(() => new Ledger());
+const { get: getLedgerInstance, reset: resetLedgerInstance } = createSingleton(() => new Ledger());
 
 // Convenience functions
 export function logEvent(event: Omit<LedgerEvent, 'id' | 'timestamp' | 'hash'>): LedgerEvent {

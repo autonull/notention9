@@ -70,11 +70,11 @@ splitStrategyRegistry.register(new AdversarialSplitStrategy());
 splitStrategyRegistry.register(new HoldoutRotationSplitStrategy());
 
 // --- Re-export strategies ---
-export { FixedSplitStrategy, type SplitStrategyConfig as FixedSplitConfig } from './fixed.js';
-export { TemporalSplitStrategy, type SplitStrategyConfig as TemporalSplitConfig } from './temporal.js';
-export { StratifiedSplitStrategy, type SplitStrategyConfig as StratifiedSplitConfig } from './stratified.js';
-export { AdversarialSplitStrategy, type SplitStrategyConfig as AdversarialSplitConfig } from './adversarial.js';
-export { HoldoutRotationSplitStrategy, type SplitStrategyConfig as HoldoutRotationSplitConfig } from './holdoutRotation.js';
+export { FixedSplitStrategy } from './fixed.js';
+export { TemporalSplitStrategy } from './temporal.js';
+export { StratifiedSplitStrategy } from './stratified.js';
+export { AdversarialSplitStrategy } from './adversarial.js';
+export { HoldoutRotationSplitStrategy } from './holdoutRotation.js';
 
 // --- Singleton ---
 const { get: getSplitStrategyRegistry, reset: resetSplitStrategyRegistry } = createSingletonRegistry(

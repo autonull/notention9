@@ -736,7 +736,7 @@ export class SQLiteRevisionDriver implements RegistrableRevisionDriver {
         
         // Filter tags in memory if needed
         if (query.tags && query.tags.length > 0) {
-            results = results.filter(r => r.tags?.some(t => query.tags!.includes(t)));
+            results = results.filter((r: any) => r.tags?.some((t: string) => query.tags!.includes(t)));
         }
         
         return results;
@@ -784,11 +784,3 @@ export function resetRevisionDriverRegistry(): void {
 }
 
 export { revisionDriverRegistry, revisionDriverRegistry as RevisionDriverRegistry };
-
-// --- Re-export types ---
-export type { 
-    Revision, 
-    StrategyArtifact, 
-    RevisionStatus,
-    RevisionStoreConfig 
-} from '../telemetry/revisionStore.js';

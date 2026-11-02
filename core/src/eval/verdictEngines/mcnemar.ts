@@ -13,9 +13,10 @@ import type {
     ExtendedRunVerdict, 
     ExtendedMetricVerdict,
     VerdictEngineConfig,
-    VerdictEngine 
+    VerdictEngine,
+    EvidenceClass,
+    JudgeProvenance
 } from './index.js';
-import type { EvidenceClass, JudgeProvenance } from '../../schemas/evidence.js';
 import { 
     pairedTTest, 
     pairedConfidenceInterval, 
@@ -30,12 +31,10 @@ import {
 import { 
     extendCaseVerdict, 
     extendRunVerdict, 
-    extendMetricVerdict,
-    type EvidenceClass as EvidenceClassType 
+    extendMetricVerdict 
 } from '../../schemas/verdictResult.js';
 import { 
     createStatisticalProvenance, 
-    EvidenceClass, 
     passesGovernanceGate,
     highestEvidenceClass 
 } from '../../schemas/evidence.js';

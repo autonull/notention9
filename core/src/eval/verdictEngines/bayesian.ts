@@ -12,9 +12,10 @@ import type {
     ExtendedCaseVerdict, 
     ExtendedRunVerdict, 
     VerdictEngineConfig,
-    VerdictEngine 
+    VerdictEngine,
+    EvidenceClass,
+    JudgeProvenance
 } from './index.js';
-import type { EvidenceClass, JudgeProvenance } from '../../schemas/evidence.js';
 import { 
     pairedTTest, 
     pairedConfidenceInterval, 
@@ -31,8 +32,7 @@ import {
     extendRunVerdict 
 } from '../../schemas/verdictResult.js';
 import { 
-    createStatisticalProvenance, 
-    EvidenceClass 
+    createStatisticalProvenance 
 } from '../../schemas/evidence.js';
 
 // --- Bayesian-specific config schema ---
@@ -178,11 +178,12 @@ export class BayesianVerdictEngine implements VerdictEngine {
         config: VerdictEngineConfig
     ): CaseVerdict {
         // For each metric, compute posterior probability of improvement
-        const priorMean = config.priorMean ?? 0;
-        const priorVar = config.priorVariance ?? 1;
-        const likelihoodVar = config.likelihoodVariance ?? 1;
-        const ropeWidth = config.ropeWidth ?? 0.1;
-        const threshold = config.decisionThreshold ?? 0.95;
+        const bc = config as any;
+        const priorMean = bc.priorMean ?? 0;
+        const priorVar = bc.priorVariance ?? 1;
+        const likelihoodVar = bc.likelihoodVariance ?? 1;
+        const ropeWidth = bc.ropeWidth ?? 0.1;
+        const threshold = bc.decisionThreshold ?? 0.95;
         
         const enhancedMetrics: MetricVerdict[] = [];
         

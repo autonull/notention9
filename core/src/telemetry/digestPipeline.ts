@@ -5,43 +5,30 @@
 
 import type { FrictionEvent, FrictionAggregate, FrictionSignal, FrictionKind, DurationBucket } from '../telemetry/journal.js';
 import type { EvidenceClass } from '../schemas/evidence.js';
+import {
+    FrictionEvent as FrictionEventType,
+    FrictionAggregate as FrictionAggregateType,
+    FrictionSignal as FrictionSignalType,
+    DigestPipelineConfig,
+    DEFAULT_DIGEST_CONFIG,
+    filterEventsByTime,
+    aggregateEvents,
+    rankAggregates,
+    groupSignalsByWorkflow,
+    MS_PER_DAY,
+} from './frictionUtils.js';
 
 // --- Types ---
 
 export interface PipelineContext {
-    events: FrictionEvent[];
-    aggregates: FrictionAggregate[];
-    signals: FrictionSignal[];
+    events: FrictionEventType[];
+    aggregates: FrictionAggregateType[];
+    signals: FrictionSignalType[];
     config: DigestPipelineConfig;
     metadata: Record<string, unknown>;
 }
 
-export interface DigestPipelineConfig {
-    lookbackDays: number;
-    topSignalsPerWorkflow: number;
-    evidenceClassWeights: Record<EvidenceClass, number>;
-    decayHalfLifeDays: number;
-    minCountForMeasured: number;
-    minAgeForHypothesized: number;
-}
-
 export type PipelineStage = (context: PipelineContext) => PipelineContext | Promise<PipelineContext>;
-
-// --- Default Config ---
-
-export const DEFAULT_DIGEST_CONFIG: DigestPipelineConfig = {
-    lookbackDays: 7,
-    topSignalsPerWorkflow: 5,
-    evidenceClassWeights: {
-        measured: 1.0,
-        observed: 0.7,
-        hypothesized: 0.4,
-        asserted: 0.1,
-    },
-    decayHalfLifeDays: 30,
-    minCountForMeasured: 3,
-    minAgeForHypothesized: 14,
-};
 
 // --- Built-in Stages ---
 
@@ -50,12 +37,7 @@ export const DEFAULT_DIGEST_CONFIG: DigestPipelineConfig = {
  */
 export function filterStage(context: PipelineContext): PipelineContext {
     const { events, config } = context;
-    const cutoff = Date.now() - config.lookbackDays * 24 * 60 * 60 * 1000;
-    
-    const filtered = events.filter(e => {
-        const eventTime = new Date(e.bucket).getTime();
-        return eventTime >= cutoff;
-    });
+    const filtered = filterEventsByTime(events, config.lookbackDays);
     
     return {
         ...context,
@@ -68,33 +50,7 @@ export function filterStage(context: PipelineContext): PipelineContext {
  */
 export function aggregateStage(context: PipelineContext): PipelineContext {
     const { events } = context;
-    
-    const aggregateMap = new Map<string, FrictionAggregate>();
-    
-    for (const event of events) {
-        const key = `${event.bucket}|${event.workflow}|${event.seam}|${event.kind}|${event.durationBucket ?? 'none'}`;
-        const existing = aggregateMap.get(key);
-        
-        if (existing) {
-            existing.count += event.count;
-            existing.lastSeen = event.bucket;
-        } else {
-            aggregateMap.set(key, {
-                bucket: event.bucket,
-                workflow: event.workflow,
-                seam: event.seam,
-                kind: event.kind,
-                count: event.count,
-                durationBucket: event.durationBucket,
-                firstSeen: event.bucket,
-                lastSeen: event.bucket,
-            });
-        }
-    }
-    
-    const aggregates = Array.from(aggregateMap.values()).sort((a, b) =>
-        b.lastSeen.localeCompare(a.lastSeen)
-    );
+    const aggregates = aggregateEvents(events);
     
     return {
         ...context,
@@ -107,21 +63,7 @@ export function aggregateStage(context: PipelineContext): PipelineContext {
  */
 export function rankStage(context: PipelineContext): PipelineContext {
     const { aggregates, config } = context;
-    const now = Date.now();
-    const MS_PER_DAY = 24 * 60 * 60 * 1000;
-    
-    const signals: FrictionSignal[] = aggregates.map(agg => {
-        const ageDays = Math.floor((now - new Date(agg.lastSeen).getTime()) / MS_PER_DAY);
-        const evidenceClass = inferEvidenceClass(agg.kind, agg.count, ageDays, config);
-        const weight = computeWeight(agg.count, ageDays, evidenceClass, config);
-        
-        return {
-            ...agg,
-            evidenceClass,
-            ageDays,
-            weight,
-        };
-    }).sort((a, b) => b.weight - a.weight);
+    const signals = rankAggregates(aggregates, config);
     
     return {
         ...context,
@@ -142,12 +84,7 @@ export function renderStage(context: PipelineContext): PipelineContext {
         };
     }
     
-    const byWorkflow = new Map<string, FrictionSignal[]>();
-    for (const s of signals) {
-        const arr = byWorkflow.get(s.workflow) ?? [];
-        arr.push(s);
-        byWorkflow.set(s.workflow, arr);
-    }
+    const byWorkflow = groupSignalsByWorkflow(signals);
     
     let digest = `📊 Friction Digest — ${new Date().toISOString().split('T')[0]}\n\n`;
     
@@ -174,12 +111,7 @@ export function renderStage(context: PipelineContext): PipelineContext {
 export function renderJsonStage(context: PipelineContext): PipelineContext {
     const { signals, config } = context;
     
-    const byWorkflow = new Map<string, FrictionSignal[]>();
-    for (const s of signals) {
-        const arr = byWorkflow.get(s.workflow) ?? [];
-        arr.push(s);
-        byWorkflow.set(s.workflow, arr);
-    }
+    const byWorkflow = groupSignalsByWorkflow(signals);
     
     const output = {
         generatedAt: new Date().toISOString(),
@@ -205,38 +137,6 @@ export function renderJsonStage(context: PipelineContext): PipelineContext {
         ...context,
         metadata: { ...context.metadata, jsonDigest: output },
     };
-}
-
-// --- Helper functions ---
-
-function inferEvidenceClass(
-    kind: FrictionKind,
-    count: number,
-    ageDays: number,
-    config: DigestPipelineConfig
-): EvidenceClass {
-    // Direct user actions = measured
-    if (kind === 'correction' || kind === 'match_rejected' || kind === 'capture_abandoned') {
-        return count >= config.minCountForMeasured && ageDays <= config.minAgeForHypothesized ? 'measured' : 'observed';
-    }
-    // Indirect signals = observed
-    if (kind === 'match_accepted' || kind === 'clarification_requested') {
-        return 'observed';
-    }
-    // Start events without completion = hypothesized
-    return 'hypothesized';
-}
-
-function computeWeight(
-    count: number,
-    ageDays: number,
-    evidenceClass: EvidenceClass,
-    config: DigestPipelineConfig
-): number {
-    const classWeight = config.evidenceClassWeights[evidenceClass] ?? config.evidenceClassWeights.asserted;
-    const baseWeight = classWeight * Math.log10(count + 1);
-    const decay = Math.exp(-ageDays / config.decayHalfLifeDays);
-    return baseWeight * decay;
 }
 
 // --- Pipeline Runner ---
@@ -269,7 +169,7 @@ export class DigestPipeline {
     
     /** Run the pipeline */
     async run(
-        events: FrictionEvent[],
+        events: FrictionEventType[],
         config: Partial<DigestPipelineConfig> = {}
     ): Promise<PipelineContext> {
         const fullConfig = { ...DEFAULT_DIGEST_CONFIG, ...config };
@@ -318,7 +218,7 @@ export class DigestPipeline {
 // --- Convenience functions ---
 
 export async function generateDigest(
-    events: FrictionEvent[],
+    events: FrictionEventType[],
     config?: Partial<DigestPipelineConfig>
 ): Promise<string> {
     const pipeline = DigestPipeline.createDefault();
@@ -327,10 +227,14 @@ export async function generateDigest(
 }
 
 export async function generateJsonDigest(
-    events: FrictionEvent[],
+    events: FrictionEventType[],
     config?: Partial<DigestPipelineConfig>
 ): Promise<any> {
     const pipeline = DigestPipeline.createJson();
     const context = await pipeline.run(events, config);
     return context.metadata.jsonDigest;
 }
+
+// Re-export types for convenience
+export type { DigestPipelineConfig } from './frictionUtils.js';
+export { DEFAULT_DIGEST_CONFIG, MS_PER_DAY } from './frictionUtils.js';

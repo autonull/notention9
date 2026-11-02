@@ -12,9 +12,10 @@ import type {
     ExtendedCaseVerdict, 
     ExtendedRunVerdict, 
     VerdictEngineConfig,
-    VerdictEngine 
+    VerdictEngine,
+    EvidenceClass,
+    JudgeProvenance
 } from './index.js';
-import type { EvidenceClass, JudgeProvenance } from '../../schemas/evidence.js';
 import { 
     computeCaseVerdict as baseComputeCaseVerdict,
     computeRunVerdict as baseComputeRunVerdict,
@@ -26,8 +27,7 @@ import {
     extendRunVerdict 
 } from '../../schemas/verdictResult.js';
 import { 
-    createModelProvenance, 
-    EvidenceClass 
+    createModelProvenance 
 } from '../../schemas/evidence.js';
 
 // --- LLM Judge config schema ---
@@ -103,6 +103,7 @@ export class LLMJudgeVerdictEngine implements VerdictEngine {
         config: VerdictEngineConfig
     ): Promise<ExtendedCaseVerdict> {
         const baseVerdict = baseComputeCaseVerdict(caseId, paired, config as VerdictConfig);
+        const llmConfig = config as any;
         
         // Get LLM judgment
         const llmJudgment = await this.getLLMJudgment(paired, config);
@@ -111,12 +112,12 @@ export class LLMJudgeVerdictEngine implements VerdictEngine {
         const enhancedVerdict = this.applyLLMJudgment(baseVerdict, llmJudgment, config);
         
         const provenance = createModelProvenance(
-            config.modelId ?? 'gpt-4o',
+            llmConfig.modelId ?? 'gpt-4o',
             llmJudgment.confidence,
             { 
                 prompt: llmJudgment.prompt,
                 rawResponse: llmJudgment.rawResponse,
-                temperature: config.temperature,
+                temperature: llmConfig.temperature,
             }
         );
         
@@ -131,6 +132,7 @@ export class LLMJudgeVerdictEngine implements VerdictEngine {
         caseVerdicts: ExtendedCaseVerdict[],
         primaryMetric: string
     ): Promise<ExtendedRunVerdict> {
+        const defaultConfig = this.getDefaultConfig() as any;
         const baseVerdicts: CaseVerdict[] = caseVerdicts.map(cv => ({
             caseId: cv.caseId,
             verdict: cv.verdict,
@@ -166,7 +168,7 @@ export class LLMJudgeVerdictEngine implements VerdictEngine {
         const baseRunVerdict = baseComputeRunVerdict(runId, manifestHash, revisionId, baselineRevisionId, baseVerdicts, primaryMetric);
         
         const provenance = createModelProvenance(
-            config.modelId ?? 'gpt-4o',
+            defaultConfig.modelId ?? 'gpt-4o',
             0.5, // Lower confidence for aggregate
             { method: 'llm-aggregate' }
         );
@@ -249,6 +251,7 @@ Respond with ONLY this JSON:
         judgment: { verdict: string; confidence: number; reasoning: string },
         config: VerdictEngineConfig
     ): CaseVerdict {
+        const llmConfig = config as any;
         // Map LLM verdict to our verdict types
         const verdictMap: Record<string, CaseVerdict['verdict']> = {
             'improved': 'improved',
@@ -259,14 +262,17 @@ Respond with ONLY this JSON:
         const llmVerdict = verdictMap[judgment.verdict] ?? 'inconclusive';
         
         // Only override if confidence is above threshold
-        const threshold = config.confidenceThreshold ?? 0.7;
+        const threshold = llmConfig.confidenceThreshold ?? 0.7;
         const finalVerdict = judgment.confidence >= threshold ? llmVerdict : baseVerdict.verdict;
         
         // Adjust p-value to reflect LLM confidence (not a real p-value)
+        const direction: 'improved' | 'degraded' | 'no-change' = 
+            llmVerdict === 'improved' ? 'improved' : (llmVerdict === 'degraded' ? 'degraded' : 'no-change');
+        
         const primaryMetric = {
             ...baseVerdict.primaryMetric,
             pValue: judgment.confidence >= threshold ? (1 - judgment.confidence) : baseVerdict.primaryMetric.pValue,
-            direction: llmVerdict === 'improved' ? 'improved' : (llmVerdict === 'degraded' ? 'degraded' : 'no-change'),
+            direction,
             passes: judgment.confidence >= threshold && llmVerdict === 'improved',
         };
         
