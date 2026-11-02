@@ -17,6 +17,9 @@ importers:
       '@meshtastic/transport-web-serial':
         specifier: ^0.2.5
         version: 0.2.5
+      better-sqlite3:
+        specifier: ^13.0.3
+        version: 13.0.3
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
@@ -3313,6 +3316,10 @@ packages:
     resolution: {integrity: sha512-Asa2krT+XTPZINCS+2QcyS8WTkObE77RwkydwF7h6DmnKqbvlalz93m/dnphUyCa6SWSP51VgtEUf2FN+gelFQ==}
     engines: {node: '>=6.0.0'}
     hasBin: true
+
+  better-sqlite3@13.0.3:
+    resolution: {integrity: sha512-RbOBxmLBG8uvFUc15X9+9SFemKcQ0WBuISBVkpuiaUB2qblC8UWlHEjdWVoZ8AdhSwmoEgsiXKfopX0CQxaACQ==}
+    engines: {node: '>=22'}
 
   bezier-js@6.1.4:
     resolution: {integrity: sha512-PA0FW9ZpcHbojUCMu28z9Vg/fNkwTj5YhusSAjHHDfHDGLxJ6YUKrAN2vk1fP2MMOxVw4Oko16FMlRGVBGqLKg==}
@@ -9501,6 +9508,10 @@ snapshots:
   base64-js@1.5.1: {}
 
   baseline-browser-mapping@2.10.29: {}
+
+  better-sqlite3@13.0.3:
+    dependencies:
+      node-addon-api: 8.3.0
 
   bezier-js@6.1.4: {}
 

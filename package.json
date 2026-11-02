@@ -38,12 +38,14 @@
     "showcase": "tsx scripts/generate-showcases.ts",
     "stranger-test": "tsx scripts/stranger-test.ts",
     "match-relevance": "tsx scripts/match-relevance-test.ts",
-    "preference-exp": "tsx scripts/run-preference-experiment.ts"
+    "preference-exp": "tsx scripts/run-preference-experiment.ts",
+    "bench:plugins": "tsx scripts/bench-plugins.ts"
   },
   "dependencies": {
     "@meshtastic/core": "^2.6.7",
     "@meshtastic/transport-node-serial": "^0.0.2",
     "@meshtastic/transport-web-serial": "^0.2.5",
+    "better-sqlite3": "^13.0.3",
     "date-fns": "^4.1.0",
     "playwright": "^1.60.0",
     "uuid": "^9.0.1",

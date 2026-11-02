@@ -1,7 +1,7 @@
 # TODO.13 — Generalization Layer: From Kernel to Platform
 
 **Supersedes:** Nothing. Extends TODO.12 Phase 6+.
-**Status:** Track 1 Complete — Track 2 Complete — Track 3 Complete — ResolutionStrategy & RevisionDriver Complete — ProfileRegistry Data-Driven Resolution Applied
+**Status:** Track 1 Complete — Track 2 Complete — Track 3 Complete — ResolutionStrategy & RevisionDriver Complete — ProfileRegistry Data-Driven Resolution Applied — Benchmarks Complete — Documentation Complete
 **Shape:** Three consolidated tracks + one cross-cutting metaprogramming layer. Each track is a *replaceable module* behind a stable interface. No framework rewrite.
 
 ---
@@ -204,9 +204,9 @@ All three tracks are complete. The generalization layer is implemented with:
 ### Remaining Work (Optional Enhancements)
 1. ✅ Add `ResolutionStrategy` interface + implementations (7 strategies: override, experiment, revision, manual-profile, policy, default-profile, fallback)
 2. ✅ Add `RevisionDriver` interface + implementations (3 drivers: JSONL, InMemory, SQLite stub)
-3. Performance benchmarks for all plugins
-4. Documentation and usage examples
-5. ✅ Matrix test runner for CI (3 engines × 3 splits × 2 stores = 18 combos minimum — exceeding 24 combo gate)
+3. ✅ Performance benchmarks for all plugins (`pnpm bench:plugins`)
+4. ✅ Documentation and usage examples (`docs/PLUGIN_ARCHITECTURE.md`, `docs/USAGE_EXAMPLES.md`)
+5. ✅ Matrix test runner for CI (5 engines × 5 splits × 3 stores × 2 event stores = 150 combos — exceeding 24 combo gate)
 
 ---
 
