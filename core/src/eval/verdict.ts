@@ -3,79 +3,33 @@
  * No I/O, no randomness, no side effects. Pure functions only.
  */
 
-import type { IntentCase, QualityCase, ExtractionExpectation, MatchExpectation } from './caseManifest.js';
+import type { 
+    MetricValue,
+    RunResult,
+    PairedRunResult,
+    MetricVerdict,
+    FloorCheck,
+    CaseVerdict,
+    RunVerdict,
+    VerdictConfig,
+    VerdictEngineConfig,
+} from '../schemas/verdictTypes.js';
+import type { ExtractionExpectation, MatchExpectation } from '../schemas/caseTypes.js';
 
-export type MetricValue = number;
-
-export interface RunResult {
-    caseId: string;
-    revisionId: string;
-    repetition: number;
-    metrics: Record<string, MetricValue>;
-    output: unknown;           // Raw output for debugging
-    durationMs: number;
-    success: boolean;
-    error?: string;
-}
-
-export interface PairedRunResult {
-    caseId: string;
-    baseline: RunResult;
-    candidate: RunResult;
-}
-
-export interface MetricVerdict {
-    metric: string;
-    baselineMean: number;
-    candidateMean: number;
-    delta: number;
-    deltaPercent: number;
-    pValue: number;
-    ci: [number, number];      // 95% confidence interval for delta
-    mde: number;               // Minimum Detectable Effect
-    passes: boolean;           // |delta| > mde && p < 0.05
-    direction: 'improved' | 'degraded' | 'no-change';
-}
-
-export interface FloorCheck {
-    name: string;
-    value: number;
-    floor: number;
-    pass: boolean;
-}
-
-export interface CaseVerdict {
-    caseId: string;
-    verdict: 'improved' | 'degraded' | 'inconclusive' | 'invalid';
-    primaryMetric: MetricVerdict;
-    otherMetrics: MetricVerdict[];
-    floors: FloorCheck[];
-    excluded: boolean;
-    excludeReason?: string;
-}
-
-export interface RunVerdict {
-    runId: string;
-    manifestHash: string;
-    revisionId: string;
-    baselineRevisionId: string;
-    caseVerdicts: CaseVerdict[];
-    overallVerdict: 'improved' | 'degraded' | 'inconclusive' | 'invalid';
-    summary: {
-        improved: number;
-        degraded: number;
-        inconclusive: number;
-        invalid: number;
-        excluded: number;
-    };
-    primaryMetricAggregate: {
-        metric: string;
-        meanDelta: number;
-        meanDeltaPercent: number;
-        pValue: number;
-        ci: [number, number];
-    };
-}
+// Re-export types for backward compatibility
+export type {
+    MetricValue,
+    RunResult,
+    PairedRunResult,
+    MetricVerdict,
+    FloorCheck,
+    CaseVerdict,
+    RunVerdict,
+    VerdictConfig,
+    VerdictEngineConfig,
+    ExtractionExpectation,
+    MatchExpectation,
+};
 
 // --- Statistical helpers ---
 
@@ -327,13 +281,6 @@ export function evaluateMatch(
 }
 
 // --- Verdict computation ---
-
-export interface VerdictConfig {
-    primaryMetric: string;
-    mde: Record<string, number>;           // metric -> Minimum Detectable Effect
-    floors: Record<string, number>;        // metric -> floor value
-    minSampleSize: number;
-}
 
 export function computeCaseVerdict(
     caseId: string,

@@ -14,7 +14,7 @@ import type {
     QualityCase, 
     CaseSplit, 
     QualityFamily 
-} from '../caseManifest.js';
+} from '../../schemas/caseTypes.js';
 import type { CaseStore } from '../../schemas/caseManifest.js';
 import { logWarn } from '../../utils/logging.js';
 

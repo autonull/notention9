@@ -4,7 +4,7 @@
  */
 
 import { z } from 'zod';
-import type { MetricVerdict, FloorCheck, CaseVerdict, RunVerdict } from '../eval/verdict.js';
+import type { MetricVerdict, FloorCheck, CaseVerdict, RunVerdict } from './verdictTypes.js';
 import { 
     EVIDENCE_CLASSES, 
     type EvidenceClass, 

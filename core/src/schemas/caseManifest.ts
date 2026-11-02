@@ -14,7 +14,7 @@ import type {
     MatchExpectation,
     CaseManifest,
     CaseEntry
-} from '../eval/caseManifest.js';
+} from './caseTypes.js';
 
 // Re-export implementations from eval/caseStore
 export { FileSystemCaseStore } from '../eval/caseStore/fileSystem.js';
@@ -103,7 +103,7 @@ export const caseManifestSchema = z.object({
     cases: z.array(caseEntrySchema),
 });
 
-// Re-export types from eval to avoid duplication
+// Re-export types from caseTypes (single source of truth)
 export type { 
     CaseFamily, 
     CaseSplit, 
@@ -114,7 +114,7 @@ export type {
     MatchExpectation,
     CaseManifest,
     CaseEntry
-} from '../eval/caseManifest.js';
+} from './caseTypes.js';
 
 export interface CaseStore {
     /** Initialize the store */

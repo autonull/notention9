@@ -6,7 +6,7 @@
 import { z } from 'zod';
 import type { OptimizerCandidate, CandidateEvaluationResult, BudgetConstraints } from './candidateGenerators.js';
 import type { OptimizerConfig } from './types.js';
-import { PluginRegistry, createPluginRegistry } from '../utils/PluginRegistry.js';
+import { createPluginRegistry } from '../utils/Registry.js';
 
 // --- Budget Allocator Interface ---
 

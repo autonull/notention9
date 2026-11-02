@@ -8,84 +8,33 @@ import { readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { join, relative, extname, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { logWarn } from '../utils/logging.js';
+import type {
+    CaseFamily,
+    CaseSplit,
+    QualityFamily,
+    CaseManifest,
+    CaseEntry,
+    IntentCase,
+    QualityCase,
+    ExtractionExpectation,
+    MatchExpectation,
+} from '../schemas/caseTypes.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = join(__dirname, '..', '..', '..');
 const CASES_DIR = join(PROJECT_ROOT, 'eval', 'cases');
 
-export type CaseFamily = 'intent' | 'quality';
-export type CaseSplit = 'search' | 'validation' | 'holdout';
-export type QualityFamily = 'extraction' | 'match';
-
-export interface CaseManifest {
-    version: 1;
-    hash: string;              // SHA-256 of canonical manifest (first 16 chars)
-    generatedAt: string;       // ISO timestamp
-    counts: {
-        intent: { search: number; validation: number; holdout: number };
-        quality: { extraction: number; match: number };
-    };
-    cases: CaseEntry[];
-}
-
-export interface CaseEntry {
-    id: string;
-    family: CaseFamily;
-    split?: CaseSplit;         // only for intent
-    qualityFamily?: QualityFamily; // only for quality
-    path: string;              // relative to eval/cases/
-    hash: string;              // SHA-256 of case file (first 16 chars)
-    tags: string[];
-}
-
-export interface IntentCase {
-    id: string;
-    family: 'intent';
-    intent: string;            // e.g., 'capture_need', 'elicit_property', 'match_local', 'layout_property'
-    prompt: string;
-    seed: {
-        notes: any[];
-        settings: Record<string, any>;
-        revisions: string[];   // revision IDs to apply, 'incumbent' = current active
-    };
-    expected: {
-        minProperties?: number;
-        requiredKeys?: string[];
-        outcome: 'captured' | 'elicited' | 'matched' | 'rendered';
-        matchMinRecall?: number;
-        matchMinPrecision?: number;
-    };
-    metrics: ('completion' | 'steps' | 'corrections' | 'recall' | 'precision' | 'f1')[];
-    tags: string[];
-    provenance: {
-        author: 'human' | 'model';
-        source: string;
-    };
-}
-
-export interface QualityCase {
-    id: string;
-    family: 'quality';
-    qualityFamily: QualityFamily;
-    input: string;
-    expected: ExtractionExpectation[] | MatchExpectation[];
-    forbidden?: ExtractionExpectation[];
-    labels?: {
-        annotators: number;
-        agreement: number;     // Cohen's kappa or similar
-    };
-    tags: string[];
-}
-
-export type ExtractionExpectation = {
-    key: string;
-    operator: 'equals' | 'contains' | 'less than' | 'greater than' | 'matches';
-    values: string[];
-};
-
-export type MatchExpectation = {
-    noteId: string;
-    minScore?: number;
+// Re-export types for backward compatibility
+export type {
+    CaseFamily,
+    CaseSplit,
+    QualityFamily,
+    CaseManifest,
+    CaseEntry,
+    IntentCase,
+    QualityCase,
+    ExtractionExpectation,
+    MatchExpectation,
 };
 
 // --- Manifest generation ---

@@ -121,10 +121,12 @@ describe('ProfileRegistry', () => {
         expect(experiment).toBeDefined();
         
         // Register mock strategies for the experiment
+        // Use 'match-0' seam ID format (resolveSeamId expects role-prefixed IDs)
+        const seamId = `${SEAM_ROLES.MATCH}-0`;
         for (const variant of experiment!.variants) {
             const mockStrategy = {
                 id: variant.strategyId,
-                seam: { id: variant.seamId, name: 'test', description: '', components: [], propsShape: {}, role: 'display' as const },
+                seam: { id: seamId, name: 'Match Display', description: '', components: [], propsShape: {}, role: SEAM_ROLES.MATCH },
                 version: '1.0.0',
                 params: {},
                 render: () => null,

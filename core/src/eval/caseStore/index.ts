@@ -10,13 +10,13 @@ import type {
     QualityCase, 
     CaseSplit, 
     QualityFamily 
-} from '../caseManifest.js';
+} from '../../schemas/caseTypes.js';
 import { FileSystemCaseStore } from './fileSystem.js';
 import { InMemoryCaseStore } from './inMemory.js';
 import { SQLiteCaseStore } from './sqlite.js';
-import { FactoryRegistry, createPluginFactoryRegistry } from '../../utils/PluginRegistry.js';
+import { createPluginFactoryRegistry } from '../../utils/Registry.js';
 
-// Re-export types
+// Re-export types from schemas (single source of truth)
 export type { 
     CaseManifest, 
     CaseEntry, 
@@ -24,9 +24,9 @@ export type {
     QualityCase, 
     CaseSplit, 
     QualityFamily 
-} from '../caseManifest.js';
+} from '../../schemas/caseTypes.js';
 
-// Re-export CaseStore interface from schemas (single source of truth)
+// Re-export CaseStore interface from schemas
 export type { CaseStore } from '../../schemas/caseManifest.js';
 
 // Re-export implementations

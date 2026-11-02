@@ -9,7 +9,8 @@ import type {
     RunVerdict, 
     MetricVerdict, 
     PairedRunResult, 
-    VerdictConfig 
+    VerdictConfig,
+    VerdictEngineConfig
 } from '../verdict.js';
 import type { ExtendedCaseVerdict, ExtendedRunVerdict, ExtendedMetricVerdict } from '../../schemas/verdictResult.js';
 import type { EvidenceClass, JudgeProvenance } from '../../schemas/evidence.js';
@@ -18,18 +19,11 @@ import { BayesianVerdictEngine } from './bayesian.js';
 import { SequentialVerdictEngine } from './sequential.js';
 import { LLMJudgeVerdictEngine } from './llmJudge.js';
 import { HumanJudgeVerdictEngine } from './humanJudge.js';
-import { PluginRegistry, createPluginRegistry } from '../../utils/PluginRegistry.js';
+import { createPluginRegistry } from '../../utils/Registry.js';
 
 // --- VerdictEngine Config ---
 
-export interface VerdictEngineConfig {
-    primaryMetric: string;
-    mde: Record<string, number>;
-    floors: Record<string, number>;
-    minSampleSize: number;
-    // Engine-specific config
-    [key: string]: unknown;
-}
+export type { VerdictEngineConfig } from '../verdict.js';
 
 // --- VerdictEngine Interface ---
 

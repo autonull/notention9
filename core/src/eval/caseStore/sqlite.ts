@@ -15,7 +15,7 @@ import type {
     QualityCase, 
     CaseSplit, 
     QualityFamily 
-} from '../caseManifest.js';
+} from '../../schemas/caseTypes.js';
 import type { CaseStore } from '../../schemas/caseManifest.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));

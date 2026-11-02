@@ -11,7 +11,7 @@ import type {
     QualityCase, 
     CaseSplit, 
     QualityFamily 
-} from '../caseManifest.js';
+} from '../../schemas/caseTypes.js';
 import type { CaseStore } from '../../schemas/caseManifest.js';
 
 function sha256(content: string): string {

@@ -15,8 +15,8 @@ import type {
     RevisionDriver,
     RegistrableRevisionDriver
 } from './types.js';
-import { FactoryRegistry, createPluginFactoryRegistry } from '../utils/PluginRegistry.js';
-import { BaseRevisionDriver } from '../utils/BasePlugin.js';
+import { createPluginFactoryRegistry } from '../utils/Registry.js';
+import { RevisionDriverPlugin as BaseRevisionDriver } from '../utils/BasePlugin.js';
 
 // Re-export types from shared location
 export type { 

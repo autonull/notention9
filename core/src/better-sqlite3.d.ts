@@ -5,21 +5,15 @@ declare module 'better-sqlite3' {
         pragma(pragma: string): any;
         close(): void;
     }
-
     interface Statement {
-        run(...params: any[]): RunResult;
+        run(...params: any[]): { changes: number; lastInsertRowid: number | bigint };
         get(...params: any[]): any;
         all(...params: any[]): any[];
+        iterate(...params: any[]): IterableIterator<any>;
+        pluck(): this;
     }
-
-    interface RunResult {
-        changes: number;
-        lastInsertRowid: number | bigint;
-    }
-
     const Database: {
-        new(filename: string, options?: { readonly?: boolean; fileMustExist?: boolean; timeout?: number; verbose?: (sql: string) => void }): Database;
+        new(filename: string, options?: { readonly?: boolean; fileMustExist?: boolean; timeout?: number; verbose?: any }): Database;
     };
-
     export default Database;
 }

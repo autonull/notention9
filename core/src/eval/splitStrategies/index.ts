@@ -10,7 +10,7 @@ import { TemporalSplitStrategy } from './temporal.js';
 import { StratifiedSplitStrategy } from './stratified.js';
 import { AdversarialSplitStrategy } from './adversarial.js';
 import { HoldoutRotationSplitStrategy } from './holdoutRotation.js';
-import { PluginRegistry, createPluginRegistry } from '../../utils/PluginRegistry.js';
+import { createPluginRegistry } from '../../utils/Registry.js';
 
 // --- SplitStrategy Interface ---
 

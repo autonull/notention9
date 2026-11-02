@@ -1,18 +1,18 @@
 /**
  * Unified Registry System
- * Eliminates boilerplate for all plugin/component/factory registries
- * Single implementation replaces Registry, PluginRegistry, and FactoryRegistry
+ * Single implementation for all plugin/component/factory registries
+ * Eliminates boilerplate and duplicate registry patterns
  */
 
 import { z } from 'zod';
 
 /** Base interface for registrable items with config validation */
-export interface Registrable {
+export interface Registrable<C extends Record<string, unknown> = Record<string, unknown>> {
     readonly name: string;
     readonly description: string;
-    readonly configSchema?: z.ZodSchema;
-    getDefaultConfig(): Record<string, unknown>;
-    validateConfig(config: Record<string, unknown>): { valid: boolean; errors: string[] };
+    readonly configSchema?: z.ZodSchema<C>;
+    getDefaultConfig(): C;
+    validateConfig(config: C): { valid: boolean; errors: string[] };
 }
 
 /** Options for registry behavior */
@@ -24,8 +24,8 @@ export interface RegistryOptions<T extends Registrable> {
 }
 
 /**
- * Unified Registry class
- * Handles both instance-based and factory-based plugins
+ * Unified Registry class for instance-based plugins
+ * Handles registration, lookup, and management of plugin instances
  */
 export class Registry<T extends Registrable> {
     private items = new Map<string, T>();
@@ -103,17 +103,17 @@ export class Registry<T extends Registrable> {
 
 /**
  * Factory Registry - creates instances from factories
- * Useful for storage drivers, etc.
+ * Useful for storage drivers, event stores, case stores, etc.
  */
-export interface FactoryRegistryOptions<T> {
+export interface FactoryRegistryOptions {
     errorPrefix?: string;
 }
 
 export class FactoryRegistry<T> {
     private factories = new Map<string, { create: (...args: any[]) => T; description: string }>();
-    private readonly options: Required<FactoryRegistryOptions<T>>;
+    private readonly options: Required<FactoryRegistryOptions>;
 
-    constructor(options: FactoryRegistryOptions<T> = {}) {
+    constructor(options: FactoryRegistryOptions = {}) {
         this.options = {
             errorPrefix: 'FactoryRegistry',
             ...options,
@@ -203,4 +203,51 @@ export function createFactoryRegistry<T>(
     }
     const { get, reset } = createSingletonRegistry(() => registry);
     return { registry, get, reset };
+}
+
+// --- Plugin-specific type aliases ---
+
+/** Instance-based plugin (stateful, reusable) */
+export interface InstancePlugin<C extends Record<string, unknown> = Record<string, unknown>> {
+    readonly name: string;
+    readonly description: string;
+    readonly configSchema?: z.ZodSchema<C>;
+    readonly type?: 'instance';
+    getDefaultConfig(): C;
+    validateConfig(config: C): { valid: boolean; errors: string[] };
+}
+
+/** Factory-based plugin (stateless, created per use) */
+export interface FactoryPlugin<C extends Record<string, unknown> = Record<string, unknown>, A extends unknown[] = unknown[]> {
+    readonly name: string;
+    readonly description: string;
+    readonly configSchema?: z.ZodSchema<C>;
+    readonly factory: (...args: A) => InstancePlugin<C>;
+    getDefaultConfig(): C;
+    validateConfig(config: C): { valid: boolean; errors: string[] };
+}
+
+/** Plugin Registry type alias */
+export type PluginRegistry<P extends InstancePlugin> = Registry<P>;
+
+/** Singleton Registry Manager type alias */
+export type SingletonRegistry<T> = {
+    get: () => T;
+    reset: () => void;
+};
+
+/** Helper to create standard plugin registry + singleton */
+export function createPluginRegistry<P extends InstancePlugin>(
+    name: string,
+    plugins: P[] = []
+): { registry: Registry<P>; get: () => Registry<P>; reset: () => void } {
+    return createRegistry<P>(name, plugins);
+}
+
+/** Helper to create standard factory registry + singleton */
+export function createPluginFactoryRegistry<T>(
+    name: string,
+    factories: Array<{ name: string; create: (...args: any[]) => T; description: string }> = []
+): { registry: FactoryRegistry<T>; get: () => FactoryRegistry<T>; reset: () => void } {
+    return createFactoryRegistry<T>(name, factories);
 }

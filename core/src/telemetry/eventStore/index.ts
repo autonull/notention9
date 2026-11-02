@@ -6,7 +6,7 @@
 import type { LedgerEvent } from '../../telemetry/ledger.js';
 import { JSONLEventStore } from './jsonl.js';
 import { SQLiteEventStore } from './sqlite.js';
-import { FactoryRegistry, createPluginFactoryRegistry } from '../../utils/PluginRegistry.js';
+import { createPluginFactoryRegistry } from '../../utils/Registry.js';
 
 // --- EventStore Interface ---
 

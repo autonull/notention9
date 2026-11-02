@@ -1,6 +1,6 @@
 /**
- * Base Plugin Classes
- * Unified base classes eliminating boilerplate across all plugin types
+ * Unified Base Plugin Classes
+ * Single hierarchy eliminating boilerplate across all plugin types
  */
 
 import { z } from 'zod';
@@ -17,10 +17,10 @@ export interface BasePlugin<C extends Record<string, unknown> = Record<string, u
 }
 
 /**
- * Abstract base class for all instance-based plugins
- * Provides common config handling, init lifecycle, and name/description
+ * Base class for all plugins
+ * Provides config validation and default config
  */
-export abstract class AbstractBasePlugin<C extends Record<string, unknown> = Record<string, unknown>> implements BasePlugin<C> {
+export abstract class Plugin<C extends Record<string, unknown> = Record<string, unknown>> implements BasePlugin<C> {
     abstract readonly name: string;
     abstract readonly description: string;
     abstract readonly configSchema?: z.ZodSchema<C>;
@@ -30,19 +30,17 @@ export abstract class AbstractBasePlugin<C extends Record<string, unknown> = Rec
     validateConfig(_config: C): { valid: boolean; errors: string[] } {
         return { valid: true, errors: [] };
     }
+
+    getName(): string {
+        return this.name;
+    }
 }
 
-// --- Mixin for Registrable plugins ---
-export type RegistrablePlugin<P extends BasePlugin> = P & {
-    getDefaultConfig(): ReturnType<P['getDefaultConfig']>;
-    validateConfig(config: ReturnType<P['getDefaultConfig']>): { valid: boolean; errors: string[] };
-};
-
 /**
- * Base class for plugins with async initialization
- * Adds init lifecycle and config management
+ * Base class for plugins with async initialization lifecycle
+ * Adds init/onInit pattern and config management
  */
-export abstract class AsyncInitPlugin<C extends Record<string, unknown> = Record<string, unknown>> extends AbstractBasePlugin<C> {
+export abstract class AsyncPlugin<C extends Record<string, unknown> = Record<string, unknown>> extends Plugin<C> {
     protected initialized = false;
     protected config: C = {} as C;
 
@@ -63,20 +61,41 @@ export abstract class AsyncInitPlugin<C extends Record<string, unknown> = Record
     }
 }
 
-// --- Base Candidate Generator ---
+// --- Shared utilities ---
+
+export function createSeededRandom(seed: number): () => number {
+    let state = seed >>> 0;
+    return () => {
+        state = (state * 1664525 + 1013904223) >>> 0;
+        return state / 0x100000000;
+    };
+}
+
+function isDefaultPoint(
+    paramSpec: Record<string, { default?: unknown }>,
+    defaultProps: Record<string, unknown>,
+    point: Record<string, unknown>
+): boolean {
+    return Object.entries(point).every(([key, value]) => {
+        const defaultVal = defaultProps[key] ?? paramSpec[key]?.default;
+        return value === defaultVal;
+    });
+}
+
+// --- Candidate Generator Base ---
 
 import type { StrategyParamConfig, OptimizerCandidate, GeneratorOptions, CandidateProvenance } from '../optimizer/types.js';
 import type { SearchSpace } from '../schemas/paramSpec.js';
 
-export abstract class BaseCandidateGenerator extends AbstractBasePlugin<GeneratorOptions> {
+export abstract class CandidateGeneratorPlugin<C extends GeneratorOptions = GeneratorOptions> extends Plugin<C> {
     abstract readonly name: string;
     abstract readonly description: string;
-    readonly configSchema?: z.ZodSchema<GeneratorOptions> = undefined;
+    readonly configSchema?: z.ZodSchema<C> = undefined;
 
-    abstract getDefaultConfig(): GeneratorOptions;
+    abstract getDefaultConfig(): C;
     abstract getSearchSpace(strategy: StrategyParamConfig): SearchSpace;
 
-    validateConfig(config: GeneratorOptions): { valid: boolean; errors: string[] } {
+    validateConfig(config: C): { valid: boolean; errors: string[] } {
         const errors: string[] = [];
         if (config.maxCandidates !== undefined && (typeof config.maxCandidates !== 'number' || config.maxCandidates < 1)) {
             errors.push('maxCandidates must be a positive number');
@@ -84,19 +103,14 @@ export abstract class BaseCandidateGenerator extends AbstractBasePlugin<Generato
         return { valid: errors.length === 0, errors };
     }
 
-    getName(): string {
-        return this.name;
+    protected isDefaultPoint(
+        paramSpec: Record<string, { default?: unknown }>,
+        defaultProps: Record<string, unknown>,
+        point: Record<string, unknown>
+    ): boolean {
+        return isDefaultPoint(paramSpec, defaultProps, point);
     }
 
-    // Shared: check if a point equals the default point
-    protected isDefaultPoint(paramSpec: Record<string, { default?: unknown }>, defaultProps: Record<string, unknown>, point: Record<string, unknown>): boolean {
-        return Object.entries(point).every(([key, value]) => {
-            const defaultVal = defaultProps[key] ?? paramSpec[key]?.default;
-            return value === defaultVal;
-        });
-    }
-
-    // Shared: create a candidate with standard provenance
     protected createCandidate(
         strategy: StrategyParamConfig,
         patch: Record<string, unknown>,
@@ -119,14 +133,14 @@ export abstract class BaseCandidateGenerator extends AbstractBasePlugin<Generato
         };
     }
 
-    abstract generate(strategy: StrategyParamConfig, options: GeneratorOptions): OptimizerCandidate[] | Promise<OptimizerCandidate[]>;
+    abstract generate(strategy: StrategyParamConfig, options: C): OptimizerCandidate[] | Promise<OptimizerCandidate[]>;
 }
 
-// --- Base Revision Driver ---
+// --- Revision Driver Base ---
 
 import type { Revision, RevisionStatus, RevisionSearchQuery, RevisionDriverConfig } from '../telemetry/types.js';
 
-export abstract class BaseRevisionDriver extends AsyncInitPlugin<RevisionDriverConfig> {
+export abstract class RevisionDriverPlugin extends AsyncPlugin<RevisionDriverConfig> {
     abstract readonly name: string;
     abstract readonly description: string;
     readonly configSchema?: z.ZodSchema<RevisionDriverConfig> = undefined;
@@ -149,10 +163,6 @@ export abstract class BaseRevisionDriver extends AsyncInitPlugin<RevisionDriverC
             errors.push('maxRevisionsPerSeam must be a number');
         }
         return { valid: errors.length === 0, errors };
-    }
-
-    getName(): string {
-        return this.name;
     }
 
     protected async onInit(): Promise<void> {
@@ -317,12 +327,12 @@ export abstract class BaseRevisionDriver extends AsyncInitPlugin<RevisionDriverC
     }
 }
 
-// --- Base Resolution Strategy ---
+// --- Resolution Strategy Base ---
 
 import type { SeamRole } from '../ui/strategy.js';
 import type { ResolutionContext, ResolvedStrategy, ResolutionStrategyConfig } from '../ui/resolutionStrategy.js';
 
-export abstract class BaseResolutionStrategy extends AbstractBasePlugin<ResolutionStrategyConfig> {
+export abstract class ResolutionStrategyPlugin extends Plugin<ResolutionStrategyConfig> {
     abstract readonly name: string;
     abstract readonly description: string;
     readonly seamRoles?: SeamRole[];
@@ -336,10 +346,6 @@ export abstract class BaseResolutionStrategy extends AbstractBasePlugin<Resoluti
         return { valid: true, errors: [] };
     }
 
-    getName(): string {
-        return this.name;
-    }
-
     appliesTo(seamRole: SeamRole): boolean {
         return this.seamRoles === undefined || this.seamRoles.includes(seamRole);
     }
@@ -347,12 +353,5 @@ export abstract class BaseResolutionStrategy extends AbstractBasePlugin<Resoluti
     abstract resolve(context: ResolutionContext): ResolvedStrategy | Promise<ResolvedStrategy | undefined> | undefined;
 }
 
-// --- Utility: create seeded random generator ---
-
-export function createSeededRandom(seed: number): () => number {
-    let state = seed >>> 0;
-    return () => {
-        state = (state * 1664525 + 1013904223) >>> 0;
-        return state / 0x100000000;
-    };
-}
+// Re-export types for convenience
+export type { Registrable } from './Registry.js';
