@@ -67,7 +67,6 @@
       "browser": "./dist/telemetry/journal.browser.js"
     },
     "./telemetry/constants": "./dist/telemetry/constants.js",
-    "./utils/singleton": "./dist/utils/singleton.js",
     "./optimizer": "./dist/optimizer/index.js",
     "./optimizer/candidateGenerators": "./dist/optimizer/candidateGenerators.js",
     "./optimizer/budgetAllocators": "./dist/optimizer/budgetAllocators.js",

@@ -4,6 +4,11 @@
  * from Journal (journal.ts) and DigestPipeline (digestPipeline.ts)
  */
 
+import type { EvidenceClass, JudgeProvenance } from '../schemas/evidence.js';
+
+// Re-export EvidenceClass for consumers
+export type { EvidenceClass } from '../schemas/evidence.js';
+
 // --- Types ---
 
 export type FrictionKind =
@@ -16,8 +21,6 @@ export type FrictionKind =
     | 'clarification_requested';
 
 export type DurationBucket = '<5s' | '5-15s' | '15-60s' | '>60s';
-
-export type EvidenceClass = 'measured' | 'observed' | 'hypothesized' | 'asserted';
 
 export interface FrictionEvent {
     bucket: string;                 // ISO date, day granularity (YYYY-MM-DD)
