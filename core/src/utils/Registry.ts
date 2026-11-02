@@ -158,6 +158,44 @@ export class FactoryRegistry<T> {
 }
 
 /**
+ * Unified Registry Manager - handles both instance and factory registries
+ * Single source of truth for registry creation and lifecycle
+ */
+export interface RegistryManager<T> {
+    registry: Registry<T> | FactoryRegistry<T>;
+    get: () => Registry<T> | FactoryRegistry<T>;
+    reset: () => void;
+}
+
+/**
+ * Create a standard instance registry + singleton accessors
+ */
+export function createRegistry<T extends Registrable>(
+    name: string,
+    items: T[] = []
+): RegistryManager<T> {
+    const registry = new Registry<T>({ errorPrefix: `${name}Registry` });
+    for (const item of items) registry.register(item);
+    const { get, reset } = createSingletonRegistry(() => registry);
+    return { registry, get, reset };
+}
+
+/**
+ * Create a standard factory registry + singleton accessors
+ */
+export function createFactoryRegistry<T>(
+    name: string,
+    factories: Array<{ name: string; create: (...args: any[]) => T; description: string }> = []
+): RegistryManager<FactoryRegistry<T>> {
+    const registry = new FactoryRegistry<T>({ errorPrefix: `${name}Registry` });
+    for (const { name: factoryName, create, description } of factories) {
+        registry.register(factoryName, create, description);
+    }
+    const { get, reset } = createSingletonRegistry(() => registry);
+    return { registry, get, reset };
+}
+
+/**
  * Singleton registry manager
  * Provides getXRegistry()/resetXRegistry() pattern consistently
  */
@@ -175,34 +213,6 @@ export function createSingletonRegistry<T>(factory: () => T): {
             instance = null;
         },
     };
-}
-
-/**
- * Create a standard instance registry + singleton accessors
- */
-export function createRegistry<T extends Registrable>(
-    name: string,
-    items: T[] = []
-): { registry: Registry<T>; get: () => Registry<T>; reset: () => void } {
-    const registry = new Registry<T>({ errorPrefix: `${name}Registry` });
-    for (const item of items) registry.register(item);
-    const { get, reset } = createSingletonRegistry(() => registry);
-    return { registry, get, reset };
-}
-
-/**
- * Create a standard factory registry + singleton accessors
- */
-export function createFactoryRegistry<T>(
-    name: string,
-    factories: Array<{ name: string; create: (...args: any[]) => T; description: string }> = []
-): { registry: FactoryRegistry<T>; get: () => FactoryRegistry<T>; reset: () => void } {
-    const registry = new FactoryRegistry<T>({ errorPrefix: `${name}Registry` });
-    for (const { name: factoryName, create, description } of factories) {
-        registry.register(factoryName, create, description);
-    }
-    const { get, reset } = createSingletonRegistry(() => registry);
-    return { registry, get, reset };
 }
 
 // --- Plugin-specific type aliases ---
@@ -236,18 +246,75 @@ export type SingletonRegistry<T> = {
     reset: () => void;
 };
 
-/** Helper to create standard plugin registry + singleton */
+/** Helper to create standard instance plugin registry + singleton */
 export function createPluginRegistry<P extends InstancePlugin>(
     name: string,
     plugins: P[] = []
-): { registry: Registry<P>; get: () => Registry<P>; reset: () => void } {
+): RegistryManager<P> {
     return createRegistry<P>(name, plugins);
 }
 
-/** Helper to create standard factory registry + singleton */
+/** Helper to create standard factory plugin registry + singleton */
 export function createPluginFactoryRegistry<T>(
     name: string,
     factories: Array<{ name: string; create: (...args: any[]) => T; description: string }> = []
-): { registry: FactoryRegistry<T>; get: () => FactoryRegistry<T>; reset: () => void } {
+): RegistryManager<FactoryRegistry<T>> {
     return createFactoryRegistry<T>(name, factories);
 }
+
+/** Common validation helpers */
+export const ValidationHelpers = {
+    /** Validate positive integer */
+    positiveInt(value: unknown, fieldName: string): string | null {
+        if (value !== undefined && (typeof value !== 'number' || !Number.isInteger(value) || value < 1)) {
+            return `${fieldName} must be a positive integer`;
+        }
+        return null;
+    },
+
+    /** Validate positive number */
+    positiveNumber(value: unknown, fieldName: string): string | null {
+        if (value !== undefined && (typeof value !== 'number' || value < 0)) {
+            return `${fieldName} must be a positive number`;
+        }
+        return null;
+    },
+
+    /** Validate number in range */
+    numberInRange(value: unknown, fieldName: string, min: number, max: number): string | null {
+        if (value !== undefined && (typeof value !== 'number' || value < min || value > max)) {
+            return `${fieldName} must be between ${min} and ${max}`;
+        }
+        return null;
+    },
+
+    /** Validate string */
+    string(value: unknown, fieldName: string): string | null {
+        if (value !== undefined && typeof value !== 'string') {
+            return `${fieldName} must be a string`;
+        }
+        return null;
+    },
+
+    /** Validate boolean */
+    boolean(value: unknown, fieldName: string): string | null {
+        if (value !== undefined && typeof value !== 'boolean') {
+            return `${fieldName} must be a boolean`;
+        }
+        return null;
+    },
+
+    /** Validate enum value */
+    enumValue<T extends string>(value: unknown, fieldName: string, allowed: readonly T[]): string | null {
+        if (value !== undefined && !allowed.includes(value as T)) {
+            return `${fieldName} must be one of: ${allowed.join(', ')}`;
+        }
+        return null;
+    },
+
+    /** Combine multiple validation results */
+    combine(...results: (string | null)[]): { valid: boolean; errors: string[] } {
+        const errors = results.filter((r): r is string => r !== null);
+        return { valid: errors.length === 0, errors };
+    },
+};

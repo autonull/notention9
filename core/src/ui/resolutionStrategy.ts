@@ -18,7 +18,7 @@ import type {
 import type { StrategyRegistry } from './strategy.js';
 import type { Revision } from '../telemetry/revisionStore.js';
 import { assignToVariant, matchConditions, selectProfileByPolicy } from '../utils/resolutionUtils.js';
-import { createPluginRegistry } from '../utils/Registry.js';
+import { createPluginRegistry, Registry } from '../utils/Registry.js';
 import { ResolutionStrategyPlugin as BaseResolutionStrategy } from '../utils/BasePlugin.js';
 
 // --- ResolutionStrategy Config ---
@@ -300,7 +300,7 @@ const { registry: resolutionStrategyRegistry, get: getResolutionStrategyRegistry
         new PolicyResolutionStrategy(),
         new DefaultProfileResolutionStrategy(),
         new FallbackResolutionStrategy(),
-    ]);
+    ]) as { registry: Registry<RegistrableResolutionStrategy>; get: () => Registry<RegistrableResolutionStrategy>; reset: () => void };
 
 // Add resolveAll method to registry
 (resolutionStrategyRegistry as any).resolveAll = async function(context: ResolutionContext): Promise<ResolvedStrategy | undefined> {

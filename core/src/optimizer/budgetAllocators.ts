@@ -6,7 +6,7 @@
 import { z } from 'zod';
 import type { OptimizerCandidate, CandidateEvaluationResult, BudgetConstraints } from './candidateGenerators.js';
 import type { OptimizerConfig } from './types.js';
-import { createPluginRegistry } from '../utils/Registry.js';
+import { createPluginRegistry, Registry } from '../utils/Registry.js';
 
 // --- Budget Allocator Interface ---
 
@@ -328,7 +328,7 @@ const { registry: budgetAllocatorRegistry, get: getBudgetAllocatorRegistry, rese
         new FixedBudgetAllocator(),
         new SuccessiveHalvingAllocator(),
         new HyperbandAllocator(),
-    ]);
+    ]) as { registry: Registry<RegistrableAllocator>; get: () => Registry<RegistrableAllocator>; reset: () => void };
 
 // --- Singleton ---
 export { budgetAllocatorRegistry, getBudgetAllocatorRegistry, resetBudgetAllocatorRegistry };

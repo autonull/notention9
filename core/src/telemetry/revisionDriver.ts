@@ -15,7 +15,7 @@ import type {
     RevisionDriver,
     RegistrableRevisionDriver
 } from './types.js';
-import { createPluginFactoryRegistry } from '../utils/Registry.js';
+import { createPluginFactoryRegistry, FactoryRegistry } from '../utils/Registry.js';
 import { RevisionDriverPlugin as BaseRevisionDriver } from '../utils/BasePlugin.js';
 
 // Re-export types from shared location
@@ -452,7 +452,7 @@ const { registry: revisionDriverRegistry, get: getRevisionDriverRegistry, reset:
         { name: 'jsonl', create: (...args: unknown[]) => new JSONLRevisionDriver(...(args as string[])), description: 'JSONL file-based storage' },
         { name: 'memory', create: () => new InMemoryRevisionDriver(), description: 'In-memory storage (testing)' },
         { name: 'sqlite', create: (...args: unknown[]) => new SQLiteRevisionDriver(...(args as string[])), description: 'SQLite-backed storage (stub)' },
-    ]);
+    ]) as { registry: FactoryRegistry<RevisionDriver>; get: () => FactoryRegistry<RevisionDriver>; reset: () => void };
 
 // --- Export registry and singleton ---
 export { revisionDriverRegistry, getRevisionDriverRegistry, resetRevisionDriverRegistry };

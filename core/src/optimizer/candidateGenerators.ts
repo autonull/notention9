@@ -14,7 +14,7 @@ import type {
     BudgetConstraints,
     CandidateEvaluationResult 
 } from './types.js';
-import { createPluginRegistry } from '../utils/Registry.js';
+import { createPluginRegistry, Registry } from '../utils/Registry.js';
 import { CandidateGeneratorPlugin as BaseCandidateGenerator, createSeededRandom } from '../utils/BasePlugin.js';
 
 // --- SearchSpace from S1 (re-exported for convenience) ---
@@ -282,7 +282,7 @@ const { registry: candidateGeneratorRegistry, get: getCandidateGeneratorRegistry
         new GridGenerator(),
         new RandomGenerator(),
         new SuccessiveHalvingGenerator(),
-    ]);
+    ]) as { registry: Registry<RegistrableGenerator>; get: () => Registry<RegistrableGenerator>; reset: () => void };
 
 // --- Singleton instance ---
 export { candidateGeneratorRegistry, getCandidateGeneratorRegistry, resetCandidateGeneratorRegistry };

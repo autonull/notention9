@@ -155,22 +155,6 @@ export class ProfileRegistry {
         };
     }
 
-    /**
-     * Resolve strategy using resolution strategy registry
-     * Single implementation supporting both sync and async strategies
-     */
-    private async resolveWithStrategies<P extends object = Record<string, unknown>>(
-        context: ResolutionContext,
-        strategies: Array<{ resolve(context: ResolutionContext): ResolvedStrategy | Promise<ResolvedStrategy | undefined> | undefined; appliesTo(seamRole: SeamRole): boolean }>
-    ): Promise<ResolvedStrategy<P> | undefined> {
-        for (const strategy of strategies) {
-            if (!strategy.appliesTo(context.seamRole)) continue;
-            const result = await strategy.resolve(context);
-            if (result) return result as ResolvedStrategy<P>;
-        }
-        return undefined;
-    }
-
     // Resolve strategy for a user and seam role (sync - no revision layer)
     resolveStrategy(userId: string, seamRole: SeamRole, strategyRegistry: StrategyRegistry): Strategy | undefined {
         const result = this.resolveStrategyWithMeta(userId, seamRole, strategyRegistry);
@@ -190,9 +174,9 @@ export class ProfileRegistry {
 
         // Use resolution strategy registry (sync strategies only)
         const registry = getResolutionStrategyRegistry();
-        const strategies = registry.getAll().filter(s => s.name !== 'revision');
-
-        for (const strategy of strategies) {
+        const syncStrategies = registry.getAll().filter(s => s.name !== 'revision');
+        
+        for (const strategy of syncStrategies) {
             const result = strategy.resolve(context);
             if (result) return result as ResolvedStrategy<P>;
         }
@@ -216,10 +200,9 @@ export class ProfileRegistry {
             getRevisionStore()
         );
 
-        // Use resolution strategy registry (all strategies including revision)
+        // Use resolution strategy registry's resolveAll method (includes all strategies)
         const registry = getResolutionStrategyRegistry();
-        const strategies = registry.getAll();
-        return this.resolveWithStrategies<P>(context, strategies);
+        return registry.resolveAll(context) as Promise<ResolvedStrategy<P> | undefined>;
     }
 
     /**

@@ -10,7 +10,7 @@ import { TemporalSplitStrategy } from './temporal.js';
 import { StratifiedSplitStrategy } from './stratified.js';
 import { AdversarialSplitStrategy } from './adversarial.js';
 import { HoldoutRotationSplitStrategy } from './holdoutRotation.js';
-import { createPluginRegistry } from '../../utils/Registry.js';
+import { createPluginRegistry, Registry } from '../../utils/Registry.js';
 
 // --- SplitStrategy Interface ---
 
@@ -68,7 +68,7 @@ const { registry: splitStrategyRegistry, get: getSplitStrategyRegistry, reset: r
         new StratifiedSplitStrategy(),
         new AdversarialSplitStrategy(),
         new HoldoutRotationSplitStrategy(),
-    ]);
+    ]) as { registry: Registry<RegistrableSplitStrategy>; get: () => Registry<RegistrableSplitStrategy>; reset: () => void };
 
 // --- Re-export strategies ---
 export { FixedSplitStrategy } from './fixed.js';

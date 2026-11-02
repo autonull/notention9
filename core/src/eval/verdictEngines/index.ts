@@ -19,7 +19,7 @@ import { BayesianVerdictEngine } from './bayesian.js';
 import { SequentialVerdictEngine } from './sequential.js';
 import { LLMJudgeVerdictEngine } from './llmJudge.js';
 import { HumanJudgeVerdictEngine } from './humanJudge.js';
-import { createPluginRegistry } from '../../utils/Registry.js';
+import { createPluginRegistry, Registry } from '../../utils/Registry.js';
 
 // --- VerdictEngine Config ---
 
@@ -80,7 +80,7 @@ const { registry: verdictEngineRegistry, get: getVerdictEngineRegistry, reset: r
         new SequentialVerdictEngine(),
         new LLMJudgeVerdictEngine(),
         new HumanJudgeVerdictEngine(),
-    ]);
+    ]) as { registry: Registry<RegistrableVerdictEngine>; get: () => Registry<RegistrableVerdictEngine>; reset: () => void };
 
 // --- Re-export engines ---
 export { McNemarVerdictEngine } from './mcnemar.js';
