@@ -93,6 +93,10 @@ function findImplementationFiles(contractName: string): string[] {
         const fileName = f.split('/').pop() ?? '';
         // Exclude calibration tracker (has EventStore in imports but isn't an EventStore)
         if (fileName === 'calibrationTracker.ts') return false;
+        // Exclude ProfileRegistry (imports ResolutionStrategy but doesn't implement it)
+        if (fileName === 'ProfileRegistry.ts') return false;
+        // Exclude strategyResolverInit.ts (imports ResolutionStrategy but doesn't implement it)
+        if (fileName === 'strategyResolverInit.ts') return false;
         return true;
     });
 }
@@ -110,7 +114,8 @@ function findFilesRecursive(dir: string, contractName: string): string[] {
             } else if (extname(entry) === '.ts' && !entry.endsWith('.test.ts') && !entry.endsWith('.d.ts') && entry !== 'index.ts') {
                 try {
                     const content = readFileSync(fullPath, 'utf-8');
-                    if (content.includes(contractName) && (content.includes('implements') || content.includes('export class'))) {
+                    // Only match if the file actually implements the interface (has "implements ContractName")
+                    if (content.includes(`implements ${contractName}`)) {
                         results.push(fullPath);
                     }
                 } catch {

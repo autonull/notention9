@@ -1,9 +1,10 @@
 /**
  * Shared strategy ParamSpecs
  * 
- * Single source of truth for strategy parameter definitions.
- * Used by both UI package (for registration) and optimizer package (for candidate enumeration).
- * No React dependencies - pure TypeScript.
+ * This file is the SOURCE FOR GENERATION (read by scripts/generate-definitions.ts).
+ * At runtime, imports should use core/src/schemas/generated/seam-definitions.ts instead.
+ * 
+ * Run `pnpm generate:definitions` to regenerate after strategy changes.
  */
 
 import type { ParamSpec, Seam } from '../ui/strategy.js';

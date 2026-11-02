@@ -16,7 +16,9 @@ export const SEAM_DEFINITIONS: SeamDefinition[] = [
             "extractedProps": "Array<{key: string; values: string[]}>",
             "onTemplateClick": "(type: string) => void"
         },
-        "components": [],
+        "components": [
+            "PropertyForm"
+        ],
         "paramSpec": {
             "isAdding": {
                 "type": "boolean",
@@ -59,8 +61,8 @@ export const SEAM_DEFINITIONS: SeamDefinition[] = [
             "observed"
         ],
         "version": "1.0.0",
-        "createdAt": "2026-11-02T10:31:26.984Z",
-        "updatedAt": "2026-11-02T10:31:26.984Z"
+        "createdAt": "2026-11-02T13:11:20.191Z",
+        "updatedAt": "2026-11-02T13:11:20.191Z"
     },
     {
         "id": "extraction-0",
@@ -68,7 +70,9 @@ export const SEAM_DEFINITIONS: SeamDefinition[] = [
         "description": "capture seam",
         "role": "capture",
         "propsShape": {},
-        "components": [],
+        "components": [
+            "DescribeItComposer"
+        ],
         "paramSpec": {
             "placeholder": {
                 "type": "string",
@@ -103,8 +107,8 @@ export const SEAM_DEFINITIONS: SeamDefinition[] = [
             "observed"
         ],
         "version": "1.0.0",
-        "createdAt": "2026-11-02T10:31:26.984Z",
-        "updatedAt": "2026-11-02T10:31:26.984Z"
+        "createdAt": "2026-11-02T13:11:20.191Z",
+        "updatedAt": "2026-11-02T13:11:20.191Z"
     },
     {
         "id": "template-0",
@@ -112,7 +116,9 @@ export const SEAM_DEFINITIONS: SeamDefinition[] = [
         "description": "capture seam",
         "role": "capture",
         "propsShape": {},
-        "components": [],
+        "components": [
+            "TemplateSelector"
+        ],
         "paramSpec": {},
         "evaluator": {
             "type": "extraction",
@@ -136,8 +142,8 @@ export const SEAM_DEFINITIONS: SeamDefinition[] = [
             "observed"
         ],
         "version": "1.0.0",
-        "createdAt": "2026-11-02T10:31:26.984Z",
-        "updatedAt": "2026-11-02T10:31:26.984Z"
+        "createdAt": "2026-11-02T13:11:20.191Z",
+        "updatedAt": "2026-11-02T13:11:20.191Z"
     },
     {
         "id": "elicit-0",
@@ -155,7 +161,9 @@ export const SEAM_DEFINITIONS: SeamDefinition[] = [
             "onPickLocation": "() => Promise<string>",
             "suggestions": "any[]"
         },
-        "components": [],
+        "components": [
+            "TagInput"
+        ],
         "paramSpec": {
             "autoFocus": {
                 "type": "boolean",
@@ -185,8 +193,8 @@ export const SEAM_DEFINITIONS: SeamDefinition[] = [
             "observed"
         ],
         "version": "1.0.0",
-        "createdAt": "2026-11-02T10:31:26.984Z",
-        "updatedAt": "2026-11-02T10:31:26.984Z"
+        "createdAt": "2026-11-02T13:11:20.191Z",
+        "updatedAt": "2026-11-02T13:11:20.191Z"
     },
     {
         "id": "match-0",
@@ -200,7 +208,10 @@ export const SEAM_DEFINITIONS: SeamDefinition[] = [
             "onReviseRequest": "() => void",
             "notes": "any[]"
         },
-        "components": [],
+        "components": [
+            "LocalMatchPreview",
+            "DashboardLocalMatch"
+        ],
         "paramSpec": {
             "showScore": {
                 "type": "boolean",
@@ -254,8 +265,8 @@ export const SEAM_DEFINITIONS: SeamDefinition[] = [
             "observed"
         ],
         "version": "1.0.0",
-        "createdAt": "2026-11-02T10:31:26.984Z",
-        "updatedAt": "2026-11-02T10:31:26.984Z"
+        "createdAt": "2026-11-02T13:11:20.191Z",
+        "updatedAt": "2026-11-02T13:11:20.191Z"
     },
     {
         "id": "matches-panel-0",
@@ -263,7 +274,9 @@ export const SEAM_DEFINITIONS: SeamDefinition[] = [
         "description": "layout seam",
         "role": "layout",
         "propsShape": {},
-        "components": [],
+        "components": [
+            "LocalMatchesPanel"
+        ],
         "paramSpec": {
             "groupBySeam": {
                 "type": "boolean",
@@ -287,8 +300,8 @@ export const SEAM_DEFINITIONS: SeamDefinition[] = [
             "observed"
         ],
         "version": "1.0.0",
-        "createdAt": "2026-11-02T10:31:26.984Z",
-        "updatedAt": "2026-11-02T10:31:26.984Z"
+        "createdAt": "2026-11-02T13:11:20.191Z",
+        "updatedAt": "2026-11-02T13:11:20.191Z"
     }
 ];
 
@@ -299,8 +312,8 @@ export const STRATEGY_CONFIGS = [
         "seamName": "capture",
         "seamRole": "capture",
         "version": "1.0.0",
-        "componentPath": "",
-        "componentName": "",
+        "componentPath": "../components/editor/PropertyForm",
+        "componentName": "PropertyForm",
         "paramSpec": {
             "isAdding": {
                 "type": "boolean",
@@ -332,8 +345,8 @@ export const STRATEGY_CONFIGS = [
         "seamName": "extraction",
         "seamRole": "capture",
         "version": "1.0.0",
-        "componentPath": "",
-        "componentName": "",
+        "componentPath": "../components/editor/DescribeItComposer",
+        "componentName": "DescribeItComposer",
         "paramSpec": {
             "placeholder": {
                 "type": "string",
@@ -357,8 +370,8 @@ export const STRATEGY_CONFIGS = [
         "seamName": "template-selection",
         "seamRole": "capture",
         "version": "1.0.0",
-        "componentPath": "",
-        "componentName": "",
+        "componentPath": "../components/editor/TemplateSelector",
+        "componentName": "TemplateSelector",
         "paramSpec": {},
         "defaultProps": {}
     },
@@ -368,8 +381,8 @@ export const STRATEGY_CONFIGS = [
         "seamName": "Elicit",
         "seamRole": "elicit",
         "version": "1.0.0",
-        "componentPath": "",
-        "componentName": "",
+        "componentPath": "../components/editor/TagInput",
+        "componentName": "TagInput",
         "paramSpec": {
             "autoFocus": {
                 "type": "boolean",
@@ -387,8 +400,8 @@ export const STRATEGY_CONFIGS = [
         "seamName": "Match Display",
         "seamRole": "match",
         "version": "1.0.0",
-        "componentPath": "",
-        "componentName": "",
+        "componentPath": "../components/dashboard/LocalMatchPreview",
+        "componentName": "LocalMatchPreview",
         "paramSpec": {
             "showScore": {
                 "type": "boolean",
@@ -414,8 +427,8 @@ export const STRATEGY_CONFIGS = [
         "seamName": "Match Display",
         "seamRole": "match",
         "version": "1.0.0",
-        "componentPath": "",
-        "componentName": "",
+        "componentPath": "../components/dashboard/DashboardLocalMatch",
+        "componentName": "DashboardLocalMatch",
         "paramSpec": {
             "minScore": {
                 "type": "number",
@@ -440,8 +453,8 @@ export const STRATEGY_CONFIGS = [
         "seamName": "matches-panel",
         "seamRole": "layout",
         "version": "1.0.0",
-        "componentPath": "",
-        "componentName": "",
+        "componentPath": "../components/assistant/LocalMatchesPanel",
+        "componentName": "LocalMatchesPanel",
         "paramSpec": {
             "groupBySeam": {
                 "type": "boolean",

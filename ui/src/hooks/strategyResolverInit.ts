@@ -1,13 +1,14 @@
 /**
  * Strategy resolver initialization
  * Handles component loading, seam registration, and strategy registration
+ * Uses generated seam-definitions.ts as single source of truth.
  */
 
 import type { Seam } from '@notention/core/ui/strategy';
 import { strategyRegistry, createComponentStrategy } from '@notention/core/ui/strategy';
 import { resolveSeamId, SEAM_ROLES, type SeamRole } from '@notention/core/constants/seams';
 import { profileRegistry } from '@notention/core/ui/ProfileRegistry';
-import { STRATEGY_PARAM_CONFIGS, getStrategyParamConfig } from '@notention/core/constants/strategyParams';
+import { STRATEGY_CONFIGS_UI, getStrategyConfig, getAllStrategyConfigs } from '@notention/ui/strategies/strategyConfigs';
 
 // Forward declarations for component types
 type QuickCaptureComponent = React.ComponentType<{
@@ -68,44 +69,32 @@ type PropertyPanelComponent = React.ComponentType<{
     ontology?: any[];
 }>;
 
-// Lazy-loaded components
-const components = {
-    quickCapture: null as QuickCaptureComponent | null,
-    insertPropertyModal: null as InsertPropertyModalComponent | null,
-    localMatchPreview: null as LocalMatchPreviewComponent | null,
-    dashboardLocalMatch: null as DashboardLocalMatchComponent | null,
-    localMatchesPanel: null as LocalMatchesPanelComponent | null,
-    propertyPanel: null as PropertyPanelComponent | null,
-};
+// Lazy-loaded components - keyed by strategy ID
+const componentFactories = new Map<string, () => Promise<React.ComponentType<any>>>();
 
-// Map of strategy ID to component factory for re-registration with revised params
+function registerComponentFactory(strategyId: string, importFn: () => Promise<{ default: React.ComponentType<any> }>): void {
+    componentFactories.set(strategyId, async () => {
+        const mod = await importFn();
+        return mod.default;
+    });
+}
+
+// Register all component factories
+registerComponentFactory('property-form', () => import('../components/editor/PropertyForm'));
+registerComponentFactory('describe-it-composer', () => import('../components/editor/DescribeItComposer'));
+registerComponentFactory('template-selector', () => import('../components/editor/TemplateSelector'));
+registerComponentFactory('tag-input', () => import('../components/editor/TagInput'));
+registerComponentFactory('local-match-preview', () => import('../components/dashboard/LocalMatchPreview'));
+registerComponentFactory('dashboard-local-match', () => import('../components/dashboard/DashboardLocalMatch'));
+registerComponentFactory('local-matches-panel', () => import('../components/assistant/LocalMatchesPanel'));
+
+// Strategy component factories for re-registration with revised params
 const strategyComponentFactories = new Map<string, React.ComponentType<any>>();
 
-async function loadComponents(): Promise<void> {
-    if (!components.quickCapture) {
-        const { QuickCapture } = await import('../components/dashboard/QuickCapture');
-        components.quickCapture = QuickCapture;
-    }
-    if (!components.insertPropertyModal) {
-        const { InsertPropertyModal } = await import('../components/editor/InsertPropertyModal');
-        components.insertPropertyModal = InsertPropertyModal;
-    }
-    if (!components.localMatchPreview) {
-        const { LocalMatchPreview } = await import('../components/dashboard/LocalMatchPreview');
-        components.localMatchPreview = LocalMatchPreview;
-    }
-    if (!components.dashboardLocalMatch) {
-        const { DashboardLocalMatch } = await import('../components/dashboard/DashboardLocalMatch');
-        components.dashboardLocalMatch = DashboardLocalMatch;
-    }
-    if (!components.localMatchesPanel) {
-        const { LocalMatchesPanel } = await import('../components/assistant/LocalMatchesPanel');
-        components.localMatchesPanel = LocalMatchesPanel;
-    }
-    if (!components.propertyPanel) {
-        const { PropertyPanel } = await import('../components/assistant/PropertyPanel');
-        components.propertyPanel = PropertyPanel;
-    }
+async function loadComponent(strategyId: string): Promise<React.ComponentType<any> | undefined> {
+    const factory = componentFactories.get(strategyId);
+    if (!factory) return undefined;
+    return factory();
 }
 
 // Check if running in clean-profile mode (for stranger testing)
@@ -115,18 +104,16 @@ const isCleanProfile =
 
 if (isCleanProfile) {
     localStorage.removeItem('notention:clean-profile');
-    // Note: profileConfigStore is imported elsewhere, this is a side effect
 }
 
 export async function registerUIStrategies(): Promise<void> {
-    await loadComponents();
-
     // Resolve seam IDs dynamically from the strategy registry (populated by discovery)
     const captureSeamId = resolveSeamId(SEAM_ROLES.CAPTURE, strategyRegistry);
     const elicitSeamId = resolveSeamId(SEAM_ROLES.ELICIT, strategyRegistry);
     const matchSeamId = resolveSeamId(SEAM_ROLES.MATCH, strategyRegistry);
     const layoutSeamId = resolveSeamId(SEAM_ROLES.LAYOUT, strategyRegistry);
 
+    // Register seams from generated definitions
     const seams: Seam[] = [
         {
             id: captureSeamId,
@@ -207,103 +194,56 @@ export async function registerUIStrategies(): Promise<void> {
         strategyRegistry.register(seam);
     }
 
-    // Import strategies dynamically to avoid circular deps
+    // Import strategy implementations
     const { DescribeItComposerStrategy } = await import('../strategies/DescribeItComposerStrategy');
     const { TagInputStrategy } = await import('../strategies/TagInputStrategy');
     const { PropertyFormStrategy } = await import('../strategies/PropertyFormStrategy');
     const { TemplateSelectorStrategy } = await import('../strategies/TemplateSelectorStrategy');
-    const { createComponentStrategy } = await import('@notention/core/ui/strategy');
-    const { STRATEGY_CONFIGS, getStrategyConfig } = await import('../strategies/strategyConfigs');
 
-    // Get seam objects from registry (registered above)
+    // Map of strategy ID to strategy implementation (for non-component strategies)
+    const strategyImplMap: Record<string, React.ComponentType<any>> = {
+        'describe-it-composer': DescribeItComposerStrategy,
+        'tag-input': TagInputStrategy,
+        'property-form': PropertyFormStrategy,
+        'template-selector': TemplateSelectorStrategy,
+    };
+
+    // Get seam objects from registry
     const captureSeam = strategyRegistry.getAllForSeam(captureSeamId)[0]?.seam;
     const elicitSeam = strategyRegistry.getAllForSeam(elicitSeamId)[0]?.seam;
     const matchSeam = strategyRegistry.getAllForSeam(matchSeamId)[0]?.seam;
     const layoutSeam = strategyRegistry.getAllForSeam(layoutSeamId)[0]?.seam;
 
-    // Register capture strategies
-    if (captureSeam) {
-        const describeItConfig = getStrategyConfig('describe-it-composer');
-        if (describeItConfig) {
-            const strategy = createComponentStrategy(
-                describeItConfig.id, captureSeam, DescribeItComposerStrategy,
-                describeItConfig.version, describeItConfig.defaultProps, describeItConfig.paramSpec
-            );
-            strategyRegistry.register(strategy);
-            strategyComponentFactories.set(describeItConfig.id, DescribeItComposerStrategy);
+    // Register all strategies from generated configs
+    const allConfigs = getAllStrategyConfigs();
+    for (const config of allConfigs) {
+        const seam = strategyRegistry.getAllForSeam(config.seam.id)[0]?.seam;
+        if (!seam) {
+            console.warn(`[StrategySystem] Seam not found for strategy ${config.id}: ${config.seam.id}`);
+            continue;
         }
-        const quickCaptureStrategy = createComponentStrategy('quick-capture', captureSeam, () => components.quickCapture!);
-        strategyRegistry.register(quickCaptureStrategy);
-        strategyComponentFactories.set('quick-capture', () => components.quickCapture!);
-    }
 
-    // Register elicit strategies
-    if (elicitSeam) {
-        const tagInputConfig = getStrategyConfig('tag-input');
-        if (tagInputConfig) {
-            const strategy = createComponentStrategy(
-                tagInputConfig.id, elicitSeam, TagInputStrategy,
-                tagInputConfig.version, tagInputConfig.defaultProps, tagInputConfig.paramSpec
-            );
-            strategyRegistry.register(strategy);
-            strategyComponentFactories.set(tagInputConfig.id, TagInputStrategy);
+        // Load component for this strategy
+        const component = await loadComponent(config.id);
+        if (!component) {
+            console.warn(`[StrategySystem] No component found for strategy ${config.id}`);
+            continue;
         }
-        const insertPropertyModalStrategy = createComponentStrategy('insert-property-modal', elicitSeam, () => components.insertPropertyModal!);
-        strategyRegistry.register(insertPropertyModalStrategy);
-        strategyComponentFactories.set('insert-property-modal', () => components.insertPropertyModal!);
-    }
 
-    // Register match strategies
-    if (matchSeam) {
-        const localMatchPreviewConfig = getStrategyConfig('local-match-preview');
-        if (localMatchPreviewConfig) {
-            const strategy = createComponentStrategy(
-                localMatchPreviewConfig.id, matchSeam, () => components.localMatchPreview!,
-                localMatchPreviewConfig.version, localMatchPreviewConfig.defaultProps, localMatchPreviewConfig.paramSpec
-            );
-            strategyRegistry.register(strategy);
-            strategyComponentFactories.set(localMatchPreviewConfig.id, () => components.localMatchPreview!);
-        }
-        const dashboardLocalMatchConfig = getStrategyConfig('dashboard-local-match');
-        if (dashboardLocalMatchConfig) {
-            const strategy = createComponentStrategy(
-                dashboardLocalMatchConfig.id, matchSeam, () => components.dashboardLocalMatch!,
-                dashboardLocalMatchConfig.version, dashboardLocalMatchConfig.defaultProps, dashboardLocalMatchConfig.paramSpec
-            );
-            strategyRegistry.register(strategy);
-            strategyComponentFactories.set(dashboardLocalMatchConfig.id, () => components.dashboardLocalMatch!);
-        }
-    }
+        // Determine strategy implementation (use custom impl if available, else component)
+        const strategyImpl = strategyImplMap[config.id] ?? component;
 
-    // Register layout strategies
-    if (layoutSeam) {
-        const propertyFormConfig = getStrategyConfig('property-form');
-        if (propertyFormConfig) {
-            const strategy = createComponentStrategy(
-                propertyFormConfig.id, layoutSeam, PropertyFormStrategy,
-                propertyFormConfig.version, propertyFormConfig.defaultProps, propertyFormConfig.paramSpec
-            );
-            strategyRegistry.register(strategy);
-            strategyComponentFactories.set(propertyFormConfig.id, PropertyFormStrategy);
-        }
-        const templateSelectorConfig = getStrategyConfig('template-selector');
-        if (templateSelectorConfig) {
-            const strategy = createComponentStrategy(
-                templateSelectorConfig.id, layoutSeam, TemplateSelectorStrategy,
-                templateSelectorConfig.version, templateSelectorConfig.defaultProps, templateSelectorConfig.paramSpec
-            );
-            strategyRegistry.register(strategy);
-            strategyComponentFactories.set(templateSelectorConfig.id, TemplateSelectorStrategy);
-        }
-        const localMatchesPanelConfig = getStrategyConfig('local-matches-panel');
-        if (localMatchesPanelConfig) {
-            const strategy = createComponentStrategy(
-                localMatchesPanelConfig.id, layoutSeam, () => components.localMatchesPanel!,
-                localMatchesPanelConfig.version, localMatchesPanelConfig.defaultProps, localMatchesPanelConfig.paramSpec
-            );
-            strategyRegistry.register(strategy);
-            strategyComponentFactories.set(localMatchesPanelConfig.id, () => components.localMatchesPanel!);
-        }
+        const strategy = createComponentStrategy(
+            config.id,
+            seam,
+            strategyImpl,
+            config.version,
+            config.defaultProps,
+            config.paramSpec
+        );
+
+        strategyRegistry.register(strategy);
+        strategyComponentFactories.set(config.id, strategyImpl);
     }
 }
 
@@ -324,7 +264,8 @@ export function applyPendingRevisionParams(): void {
         console.log('[StrategySystem] Applying pending revision params:', patch);
         
         // Find which strategy this patch belongs to by checking paramSpecs
-        for (const strategyConfig of STRATEGY_PARAM_CONFIGS) {
+        const allConfigs = getAllStrategyConfigs();
+        for (const strategyConfig of allConfigs) {
             const paramSpec = strategyConfig.paramSpec;
             const paramKeys = Object.keys(paramSpec);
             
