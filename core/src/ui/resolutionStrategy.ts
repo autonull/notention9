@@ -302,16 +302,6 @@ const { registry: resolutionStrategyRegistry, get: getResolutionStrategyRegistry
         new FallbackResolutionStrategy(),
     ]) as { registry: Registry<RegistrableResolutionStrategy>; get: () => Registry<RegistrableResolutionStrategy>; reset: () => void };
 
-// Add resolveAll method to registry
-(resolutionStrategyRegistry as any).resolveAll = async function(context: ResolutionContext): Promise<ResolvedStrategy | undefined> {
-    for (const strategy of this.getAll()) {
-        if (!strategy.appliesTo(context.seamRole)) continue;
-        const result = await strategy.resolve(context);
-        if (result) return result;
-    }
-    return undefined;
-};
-
 // --- Singleton instance ---
 export { resolutionStrategyRegistry, getResolutionStrategyRegistry, resetResolutionStrategyRegistry };
 

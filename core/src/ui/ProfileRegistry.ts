@@ -202,7 +202,7 @@ export class ProfileRegistry {
 
         // Use resolution strategy registry's resolveAll method (includes all strategies)
         const registry = getResolutionStrategyRegistry();
-        return registry.resolveAll(context) as Promise<ResolvedStrategy<P> | undefined>;
+        return registry.resolveAll(context, s => s.appliesTo(context.seamRole)) as Promise<ResolvedStrategy<P> | undefined>;
     }
 
     /**

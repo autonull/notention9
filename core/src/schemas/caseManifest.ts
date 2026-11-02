@@ -16,10 +16,6 @@ import type {
     CaseEntry
 } from './caseTypes.js';
 
-// Re-export implementations from eval/caseStore
-export { FileSystemCaseStore } from '../eval/caseStore/fileSystem.js';
-export { InMemoryCaseStore } from '../eval/caseStore/inMemory.js';
-
 // --- Zod schemas for case types ---
 
 export const extractionExpectationSchema = z.object({

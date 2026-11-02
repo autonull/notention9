@@ -5,9 +5,21 @@
  */
 
 import { readFileSync, existsSync } from 'node:fs';
-import { join, dirname } from 'node:path';
+import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createHash } from 'node:crypto';
+import { 
+    canonicalize, 
+    shortSha256, 
+    getGeneratedDir, 
+    getSeamDefinitionsPath,
+    readJsonFile,
+} from '../core/src/utils/common.js';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const PROJECT_ROOT = resolve(__dirname, '..');
+const SEAM_DEFINITIONS_FILE = getSeamDefinitionsPath(import.meta.url);
+const CASE_MANIFEST_FILE = join(PROJECT_ROOT, 'eval', 'cases', 'manifest.json');
+
 import { 
     seamDefinitionSchema,
     caseManifestSchema,
@@ -15,26 +27,10 @@ import {
     type CaseManifest,
 } from '../core/src/schemas/index.js';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const PROJECT_ROOT = join(__dirname, '..');
-const GENERATED_DIR = join(PROJECT_ROOT, 'core', 'src', 'schemas', 'generated');
-const SEAM_DEFINITIONS_FILE = join(GENERATED_DIR, 'seam-definitions.json');
-const CASE_MANIFEST_FILE = join(PROJECT_ROOT, 'eval', 'cases', 'manifest.json');
-
 interface LintResult {
     valid: boolean;
     errors: string[];
     warnings: string[];
-}
-
-function canonicalizeSeamDefinitions(obj: Record<string, unknown>): string {
-    return JSON.stringify(obj, Object.keys(obj).sort(), 2);
-}
-
-function canonicalizeManifest(manifest: Omit<CaseManifest, 'hash'>): string {
-    // Sort cases by id for deterministic output (matches caseManifest.ts)
-    const sorted = { ...manifest, cases: [...manifest.cases].sort((a, b) => a.id.localeCompare(b.id)) };
-    return JSON.stringify(sorted, null, 2);
 }
 
 function lintSeamDefinitions(): LintResult {
@@ -46,8 +42,7 @@ function lintSeamDefinitions(): LintResult {
     }
     
     try {
-        const content = readFileSync(SEAM_DEFINITIONS_FILE, 'utf-8');
-        const data = JSON.parse(content);
+        const data = readJsonFile<any>(SEAM_DEFINITIONS_FILE);
         
         // Validate structure
         if (data.version !== 1) {
@@ -72,12 +67,15 @@ function lintSeamDefinitions(): LintResult {
         }
         
         // Verify hash
-        const { hash, ...rest } = data;
-        const canonical = canonicalizeSeamDefinitions(rest);
-        const computedHash = createHash('sha256').update(canonical).digest('hex').slice(0, 16);
+        const computedHash = shortSha256(canonicalize({ 
+            version: data.version, 
+            generatedAt: data.generatedAt, 
+            strategies: data.strategies, 
+            seams: data.seams 
+        }));
         
-        if (hash !== computedHash) {
-            errors.push(`Hash mismatch: expected ${hash}, computed ${computedHash}`);
+        if (data.hash !== computedHash) {
+            errors.push(`Hash mismatch: expected ${data.hash}, computed ${computedHash}`);
         }
         
     } catch (e) {
@@ -96,8 +94,7 @@ function lintCaseManifest(): LintResult {
     }
     
     try {
-        const content = readFileSync(CASE_MANIFEST_FILE, 'utf-8');
-        const data = JSON.parse(content);
+        const data = readJsonFile<any>(CASE_MANIFEST_FILE);
         
         const result = caseManifestSchema.safeParse(data);
         if (!result.success) {
@@ -106,10 +103,11 @@ function lintCaseManifest(): LintResult {
             }
         }
         
-        // Verify hash
+        // Verify hash - use same canonicalization as manifest generation (sort cases by id, 2-space indent)
         const { hash, ...rest } = data;
-        const canonical = canonicalizeManifest(rest as Omit<CaseManifest, 'hash'>);
-        const computedHash = createHash('sha256').update(canonical).digest('hex').slice(0, 16);
+        const sorted = { ...rest, cases: [...rest.cases].sort((a: any, b: any) => a.id.localeCompare(b.id)) };
+        const canonical = JSON.stringify(sorted, null, 2);
+        const computedHash = shortSha256(canonical);
         
         if (hash !== computedHash) {
             errors.push(`Hash mismatch: expected ${hash}, computed ${computedHash}`);

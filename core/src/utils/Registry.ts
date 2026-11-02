@@ -15,6 +15,11 @@ export interface Registrable<C extends Record<string, unknown> = Record<string, 
     validateConfig(config: C): { valid: boolean; errors: string[] };
 }
 
+/** Optional interface for resolvable strategies (ordered resolution) */
+export interface Resolvable<Context, Result> {
+    resolve(context: Context): Result | Promise<Result | undefined> | undefined;
+}
+
 /** Options for registry behavior */
 export interface RegistryOptions<T extends Registrable> {
     /** Allow duplicate registrations (replace existing) */
@@ -98,6 +103,24 @@ export class Registry<T extends Registrable> {
     /** Get plugins filtered by config key */
     getByConfigKey(key: string, value: unknown): T[] {
         return this.filter(p => p.getDefaultConfig()[key] === value);
+    }
+
+    /**
+     * Resolve using first matching strategy (for Resolvable plugins)
+     * Iterates in registration order, returns first non-undefined result
+     */
+    async resolveAll<Context, Result>(
+        context: Context,
+        filter?: (item: T) => boolean
+    ): Promise<Result | undefined> {
+        for (const item of this.items.values()) {
+            if (filter && !filter(item)) continue;
+            if ('resolve' in item && typeof item.resolve === 'function') {
+                const result = await item.resolve(context);
+                if (result !== undefined) return result;
+            }
+        }
+        return undefined;
     }
 }
 

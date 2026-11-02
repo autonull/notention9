@@ -6,15 +6,20 @@
  * This script imports the core strategy params and UI component map.
  */
 
-import { createHash } from 'node:crypto';
-import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
-import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { 
+    getProjectRoot, 
+    canonicalize, 
+    shortSha256, 
+    getGeneratedDir, 
+    getSeamDefinitionsPath,
+    writeJsonFile 
+} from '../core/src/utils/common.js';
+import { join } from 'node:path';
+import { writeFileSync } from 'node:fs';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const PROJECT_ROOT = join(__dirname, '..');
-const OUTPUT_DIR = join(PROJECT_ROOT, 'core', 'src', 'schemas', 'generated');
-const OUTPUT_FILE = join(OUTPUT_DIR, 'seam-definitions.json');
+const PROJECT_ROOT = getProjectRoot(import.meta.url);
+const OUTPUT_DIR = getGeneratedDir(import.meta.url);
+const OUTPUT_FILE = getSeamDefinitionsPath(import.meta.url);
 
 interface StrategyInfo {
     id: string;
@@ -69,16 +74,6 @@ interface SeamDefinitionsOutput {
     hash: string;
     strategies: StrategyInfo[];
     seams: SeamDefinition[];
-}
-
-// --- Helpers ---
-
-function sha256(content: string): string {
-    return createHash('sha256').update(content).digest('hex');
-}
-
-function canonicalize(obj: unknown): string {
-    return JSON.stringify(obj, Object.keys(obj as object).sort(), 2);
 }
 
 function getEvaluatorForRole(role: string): SeamDefinition['evaluator'] {
@@ -169,17 +164,10 @@ async function main() {
     };
 
     // Compute content hash
-    const { hash, ...rest } = output;
-    const canonical = canonicalize(rest);
-    output.hash = sha256(canonical).slice(0, 16);
-
-    // Ensure output directory exists
-    if (!existsSync(OUTPUT_DIR)) {
-        mkdirSync(OUTPUT_DIR, { recursive: true });
-    }
+    output.hash = shortSha256(canonicalize({ version: 1, generatedAt: output.generatedAt, strategies, seams }));
 
     // Write JSON output
-    writeFileSync(OUTPUT_FILE, JSON.stringify(output, null, 2), 'utf-8');
+    writeJsonFile(OUTPUT_FILE, output);
     console.log(`✅ Written to ${OUTPUT_FILE}`);
     console.log(`   Hash: ${output.hash}`);
     console.log(`   Strategies: ${output.strategies.length}`);

@@ -5,12 +5,11 @@
  */
 
 import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
-import { join, dirname, extname, relative } from 'node:path';
+import { join, dirname, extname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createHash } from 'node:crypto';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const PROJECT_ROOT = join(__dirname, '..');
+const PROJECT_ROOT = resolve(__dirname, '..');
 
 interface LintResult {
     valid: boolean;
@@ -95,16 +94,15 @@ function findFilesRecursive(dir: string, contractName: string): string[] {
     const results: string[] = [];
     
     // Contract-specific implementation patterns
-    // Some contracts use a "Registrable" mixin pattern (e.g., RegistrableRevisionDriver extends RevisionDriver)
-    // Others use base class extension (e.g., extends BaseCandidateGenerator implements RegistrableGenerator)
+    // All plugins use `implements <InterfaceName>` pattern
     const implementationPatterns: Record<string, string[]> = {
         'RevisionDriver': ['implements RevisionDriver', 'implements RegistrableRevisionDriver', 'extends BaseRevisionDriver'],
-        'CandidateGenerator': ['implements CandidateGenerator', 'implements RegistrableGenerator', 'extends BaseCandidateGenerator'],
-        'SplitStrategy': ['implements SplitStrategy', 'extends BaseSplitStrategy'],
-        'VerdictEngine': ['implements VerdictEngine', 'extends BaseVerdictEngine'],
-        'ResolutionStrategy': ['implements ResolutionStrategy', 'extends BaseResolutionStrategy'],
-        'EventStore': ['implements EventStore', 'extends BaseEventStore'],
-        'CaseStore': ['implements CaseStore', 'extends BaseCaseStore'],
+        'CandidateGenerator': ['implements CandidateGenerator', 'implements RegistrableGenerator', 'extends CandidateGeneratorPlugin', 'extends BaseCandidateGenerator'],
+        'SplitStrategy': ['implements SplitStrategy'],
+        'VerdictEngine': ['implements VerdictEngine'],
+        'ResolutionStrategy': ['implements ResolutionStrategy', 'extends ResolutionStrategyPlugin', 'extends BaseResolutionStrategy'],
+        'EventStore': ['implements EventStore'],
+        'CaseStore': ['implements CaseStore'],
     };
     
     const patterns = implementationPatterns[contractName] ?? [`implements ${contractName}`];
