@@ -3,8 +3,7 @@
  * Single source of truth for profile management
  */
 
-import type { Seam, Strategy, StrategyRegistry } from './strategy.js';
-import type { SeamRole } from '../constants/seams.js';
+import type { Seam, Strategy, StrategyRegistry, SeamRole } from './strategy.js';
 import {
     type StrategyProfile,
     type ProfilePolicy,
@@ -642,4 +641,5 @@ export type {
 } from './profileTypes.js';
 
 export { DEFAULT_PROFILES, DEFAULT_POLICY, DEFAULT_MATCH_DISPLAY_EXPERIMENT } from './profileDefaults.js';
-export { SEAM_ROLES, type SeamRole } from '../constants/seams.js';
+export { SEAM_ROLES } from '../constants/seams.js';
+export { type SeamRole } from './strategy.js';

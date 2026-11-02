@@ -3,8 +3,10 @@
  * Single source of truth for profile-related types
  */
 
-import type { SeamRole } from '../constants/seams.js';
-import type { Strategy } from './strategy.js';
+import { type Strategy, type SeamRole } from './strategy.js';
+
+export type { SeamRole } from './strategy.js';
+export type { Strategy } from './strategy.js';
 
 /**
  * Strategy profile - a named collection of strategy selections per seam role

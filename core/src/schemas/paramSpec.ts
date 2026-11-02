@@ -29,11 +29,11 @@ function paramDefToZod(def: ParamDef): z.ZodTypeAny {
             return z.record(z.unknown()).describe(def.description ?? '');
         case 'array':
             return z.array(z.unknown()).describe(def.description ?? '');
-        default:
-            // Exhaustiveness check - ParamDef.type should never reach here
-            const _exhaustive: never = def;
-            return z.unknown();
     }
+    
+    // Exhaustiveness check - ParamDef.type should never reach here
+    const _exhaustive: never = def.type;
+    return z.unknown();
 }
 
 // --- ParamSpec → ZodSchema compiler ---

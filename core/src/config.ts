@@ -185,7 +185,8 @@ export const DAILY_PROMPTS = [
 // Seam Roles - re-exported from dedicated module
 // ============================================================================
 
-export { SEAM_ROLES, type SeamRole, resolveSeamId, getSeamIdsForRole } from './constants/seams.js';
+export { SEAM_ROLES, resolveSeamId, getSeamIdsForRole } from './constants/seams.js';
+// SeamRole is re-exported from ui/strategy via ui/index
 
 // ============================================================================
 // UI Constants (shared)

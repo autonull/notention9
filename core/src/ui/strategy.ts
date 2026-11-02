@@ -12,6 +12,8 @@ export interface Seam {
     role: 'capture' | 'elicit' | 'match' | 'display' | 'layout' | 'explain' | 'ontology' | 'intent';
 }
 
+export type SeamRole = Seam['role'];
+
 /**
  * Strategy interface - all strategies must implement this
  */

@@ -6,19 +6,13 @@
 import { z } from 'zod';
 import type { Seam, SeamRole } from '../ui/strategy.js';
 import type { ParamSpec } from '../ui/strategy.js';
-
-// --- Evidence Class (S6) ---
-
-export const EVIDENCE_CLASSES = [
-    'measured',    // Empirical: A/B test, controlled experiment, statistical verdict
-    'observed',    // Human-verified: expert review, human judge, audit
-    'hypothesized', // LLM-judged: LLM-as-judge, model prediction, proxy metric
-    'asserted',    // Declared: untested assumption, design intent, configuration default
-] as const;
-
-export type EvidenceClass = typeof EVIDENCE_CLASSES[number];
-
-export const evidenceClassSchema = z.enum(EVIDENCE_CLASSES);
+import { 
+    EVIDENCE_CLASSES, 
+    type EvidenceClass, 
+    evidenceClassSchema,
+    type JudgeProvenance,
+    judgeProvenanceSchema 
+} from './evidence.js';
 
 // --- Governance Level ---
 
@@ -32,23 +26,14 @@ export type GovernanceLevel = typeof GOVERNANCE_LEVELS[number];
 
 export const governanceLevelSchema = z.enum(GOVERNANCE_LEVELS);
 
-// --- Judge Provenance ---
-
-export interface JudgeProvenance {
-    judgeId: string;           // 'human:alice', 'model:gpt-4o', 'mcnemar:v1', 'bayesian:v2'
-    judgeType: 'human' | 'model' | 'statistical';
-    timestamp: string;
-    confidence?: number;       // 0-1, when applicable
-    metadata?: Record<string, unknown>;
-}
-
-export const judgeProvenanceSchema = z.object({
-    judgeId: z.string(),
-    judgeType: z.enum(['human', 'model', 'statistical']),
-    timestamp: z.string().datetime(),
-    confidence: z.number().min(0).max(1).optional(),
-    metadata: z.record(z.unknown()).optional(),
-});
+// Re-export evidence types
+export { 
+    EVIDENCE_CLASSES, 
+    type EvidenceClass, 
+    evidenceClassSchema,
+    type JudgeProvenance,
+    judgeProvenanceSchema 
+} from './evidence.js';
 
 // --- Evaluator Config ---
 

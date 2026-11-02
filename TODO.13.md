@@ -1,7 +1,7 @@
 # TODO.13 — Generalization Layer: From Kernel to Platform
 
 **Supersedes:** Nothing. Extends TODO.12 Phase 6+.
-**Status:** Track 1 Complete — Track 2 In Progress
+**Status:** Track 1 Complete — Track 2 Complete — Track 3 Pending
 **Shape:** Three consolidated tracks + one cross-cutting metaprogramming layer. Each track is a *replaceable module* behind a stable interface. No framework rewrite.
 
 ---
@@ -52,15 +52,15 @@ Make the *mechanisms* of TODO.12 (search, verdict, seams, cases, ledger, frictio
 **Depends on:** Track 1 (S1, S2, S3)
 **Unifies:** CandidateGenerator (A2-A6), StrategyRegistry auto-population (B3), ProfileRegistry data-driven resolution (B4-B6)
 
-| Task | Description | Effort | Consolidates |
-|------|-------------|--------|--------------|
-| **R1** | `CandidateGenerator` interface + registry (grid, random, bayesian, LLM-proposed, multi-objective) | M | A2-A6 |
-| **R2** | `SearchSpace` derived from `ParamSpec` via S1 (replaces manual grid construction) | S | A1, A2 |
-| **R3** | `StrategyRegistry` auto-populated from `seam-definitions.json` (replaces manual registration in `strategyResolverInit.ts`) | M | B3 |
-| **R4** | `ProfileRegistry` resolution steps become data-driven (read from seam definitions; no hardcoded step arrays) | M | B4 |
-| **R5** | Governance level enforcement in revision activation (config/structure/interface) | S | B6 |
-| **R6** | Budget allocator plugin (successive halving, Hyperband, fixed) | S | A6 |
-| **R7** | Optimizer config becomes declarative (target seams from manifest, not hardcoded) | S | A6, B5 |
+| Task | Description | Effort | Consolidates | Status |
+|------|-------------|--------|--------------|--------|
+| **R1** | `CandidateGenerator` interface + registry (grid, random, bayesian, LLM-proposed, multi-objective) | M | A2-A6 | ✅ Done |
+| **R2** | `SearchSpace` derived from `ParamSpec` via S1 (replaces manual grid construction) | S | A1, A2 | ✅ Done |
+| **R3** | `StrategyRegistry` auto-populated from `seam-definitions.json` (replaces manual registration in `strategyResolverInit.ts`) | M | B3 | ✅ Done |
+| **R4** | `ProfileRegistry` resolution steps become data-driven (read from seam definitions; no hardcoded step arrays) | M | B4 | ✅ Done |
+| **R5** | Governance level enforcement in revision activation (config/structure/interface) | S | B6 | ✅ Done |
+| **R6** | Budget allocator plugin (successive halving, Hyperband, fixed) | S | A6 | ✅ Done |
+| **R7** | Optimizer config becomes declarative (target seams from manifest, not hardcoded) | S | A6, B5 | ✅ Done |
 
 **Deliverable:** `core/src/optimizer/search/`, `core/src/ui/seamRegistry.ts`, refactored `ProfileRegistry`, `strategyResolverInit.ts` simplified to ~50 lines.
 
@@ -104,7 +104,7 @@ Make the *mechanisms* of TODO.12 (search, verdict, seams, cases, ledger, frictio
 | Phase | Work | Duration | Gate (Measurable) | Status |
 |-------|------|----------|-------------------|--------|
 | **13.0** | Track 1 (S1-S7) | 2 weeks | `pnpm lint:schemas` passes; `seam-definitions.json` emitted; all Zod schemas compile | ✅ **Complete** |
-| **13.1** | Track 2 (R1-R7) | 2 weeks | `strategyResolverInit.ts` < 100 lines; new seam works in < 30 min; optimizer config declarative | 🔄 **In Progress** |
+| **13.1** | Track 2 (R1-R7) | 2 weeks | `strategyResolverInit.ts` < 100 lines; new seam works in < 30 min; optimizer config declarative | ✅ **Complete** |
 | **13.2** | Track 3 (E1-E7) | 2 weeks | LLM/Human judge plugins work; matrix tests pass; digest pipeline composable | ⏳ Pending |
 
 **Total: ~6 weeks** (vs. 7 weeks in v1). Sequential dependency order eliminates integration thrash.
@@ -181,15 +181,15 @@ Make the *mechanisms* of TODO.12 (search, verdict, seams, cases, ledger, frictio
 
 ---
 
-## 📝 Next Actions (Track 2 — Week 2-3)
+## 📝 Next Actions (Track 3 — Week 3-5)
 
-1. **R1** Create `CandidateGenerator` interface + registry (grid, random, bayesian, LLM-proposed)
-2. **R2** Implement `SearchSpace` derived from `ParamSpec` via S1 (replaces manual grid construction)
-3. **R3** Auto-populate `StrategyRegistry` from `seam-definitions.json` (replaces manual registration)
-4. **R4** Make `ProfileRegistry` resolution steps data-driven (read from seam definitions)
-5. **R5** Add governance level enforcement in revision activation
-6. **R6** Implement budget allocator plugin (successive halving, Hyperband, fixed)
-7. **R7** Make optimizer config declarative (target seams from manifest)
+1. **E1** Create `VerdictEngine` interface + registry (McNemar, Bayesian, Sequential, LLM-judge, Human-judge)
+2. **E2** Create `SplitStrategy` interface + registry (fixed, temporal, stratified, adversarial, holdout-rotation)
+3. **E3** Create `CaseStore` interface + implementations (filesystem, SQLite, in-memory)
+4. **E4** Create `EventStore` interface + implementations (JSONL, SQLite)
+5. **E5** `DigestPipeline` as composable stages (filter → aggregate → rank → render)
+6. **E6** Governance gate: only `evidenceClass === 'measured'` can auto-activate (or explicit consent)
+7. **E7** Calibration tracker: LLM vs measured agreement rate in ledger
 
 ---
 

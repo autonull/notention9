@@ -3,7 +3,7 @@
  * Used by discovery, synthesis, runtime, and UI
  */
 
-import type { Seam } from '../ui/strategy.js';
+import type { Seam, SeamRole } from '../ui/strategy.js';
 
 /**
  * Semantic seam roles - stable identifiers used across the system
@@ -18,9 +18,7 @@ export const SEAM_ROLES = {
     EXPLAIN: 'explain',
     ONTOLOGY: 'ontology',
     INTENT: 'intent',
-} as const;
-
-export type SeamRole = typeof SEAM_ROLES[keyof typeof SEAM_ROLES];
+} as const satisfies Record<string, SeamRole>;
 
 /**
  * Built-in seam specifications for synthesis (T1/T2)

@@ -93,6 +93,12 @@ export * from './events/index.js';
 // UI exports
 export * from './ui/index.js';
 
+// Optimizer exports
+export * from './optimizer/index.js';
+
+// Schemas exports
+export * from './schemas/index.js';
+
 // Nostr-specific (keep separate for optional dependency)
 export * from './network/nostr/nostr.js';
 export * from './network/nostr/privacy.js';

@@ -4,7 +4,25 @@
  */
 
 import { z } from 'zod';
-import type { CaseFamily, CaseSplit, QualityFamily, IntentCase, QualityCase, ExtractionExpectation, MatchExpectation } from '../eval/caseManifest.js';
+import { createHash } from 'node:crypto';
+import { readFileSync, writeFileSync, mkdirSync, readdirSync, statSync, unlinkSync } from 'node:fs';
+import { join, relative, extname, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import type { 
+    CaseFamily, 
+    CaseSplit, 
+    QualityFamily, 
+    IntentCase, 
+    QualityCase, 
+    ExtractionExpectation, 
+    MatchExpectation,
+    CaseManifest,
+    CaseEntry
+} from '../eval/caseManifest.js';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const PROJECT_ROOT = join(__dirname, '..', '..', '..');
+const DEFAULT_CASES_DIR = join(PROJECT_ROOT, 'eval', 'cases');
 
 // --- Zod schemas for case types ---
 
@@ -89,12 +107,18 @@ export const caseManifestSchema = z.object({
     cases: z.array(caseEntrySchema),
 });
 
-// --- Types ---
-
-export type CaseManifest = z.infer<typeof caseManifestSchema>;
-export type CaseEntry = z.infer<typeof caseEntrySchema>;
-
-// --- CaseStore Interface (S4) ---
+// Re-export types from eval to avoid duplication
+export type { 
+    CaseFamily, 
+    CaseSplit, 
+    QualityFamily, 
+    IntentCase, 
+    QualityCase, 
+    ExtractionExpectation, 
+    MatchExpectation,
+    CaseManifest,
+    CaseEntry
+} from '../eval/caseManifest.js';
 
 export interface CaseStore {
     /** Initialize the store */
@@ -132,15 +156,6 @@ export interface CaseStore {
 }
 
 // --- Filesystem Implementation ---
-
-import { createHash } from 'node:crypto';
-import { readFileSync, writeFileSync, mkdirSync, readdirSync, statSync, unlinkSync } from 'node:fs';
-import { join, relative, extname, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const PROJECT_ROOT = join(__dirname, '..', '..', '..');
-const DEFAULT_CASES_DIR = join(PROJECT_ROOT, 'eval', 'cases');
 
 function sha256(content: string): string {
     return createHash('sha256').update(content).digest('hex');

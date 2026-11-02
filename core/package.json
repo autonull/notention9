@@ -67,7 +67,20 @@
       "browser": "./dist/telemetry/journal.browser.js"
     },
     "./telemetry/constants": "./dist/telemetry/constants.js",
-    "./utils/singleton": "./dist/utils/singleton.js"
+    "./utils/singleton": "./dist/utils/singleton.js",
+    "./optimizer": "./dist/optimizer/index.js",
+    "./optimizer/candidateGenerators": "./dist/optimizer/candidateGenerators.js",
+    "./optimizer/budgetAllocators": "./dist/optimizer/budgetAllocators.js",
+    "./optimizer/strategyLoader": "./dist/optimizer/strategyLoader.js",
+    "./optimizer/resolutionPipeline": "./dist/optimizer/resolutionPipeline.js",
+    "./optimizer/declarativeConfig": "./dist/optimizer/declarativeConfig.js",
+    "./schemas": "./dist/schemas/index.js",
+    "./schemas/paramSpec": "./dist/schemas/paramSpec.js",
+    "./schemas/seamDefinition": "./dist/schemas/seamDefinition.js",
+    "./schemas/caseManifest": "./dist/schemas/caseManifest.js",
+    "./schemas/eventSchema": "./dist/schemas/eventSchema.js",
+    "./schemas/verdictResult": "./dist/schemas/verdictResult.js",
+    "./schemas/evidence": "./dist/schemas/evidence.js"
   },
   "scripts": {
     "build": "tsc",
