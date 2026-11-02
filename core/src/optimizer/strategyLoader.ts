@@ -10,6 +10,7 @@ import { paramSpecToZod } from '../schemas/paramSpec.js';
 import { readFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { logWarn } from '../utils/logging.js';
 
 function getSeamDefinitionsPath(): string {
     // Allow override via environment variable for flexibility
@@ -74,7 +75,7 @@ export function autoPopulateStrategyRegistry(registry: StrategyRegistry): number
             registered++;
         } catch (e) {
             // Strategy might already be registered (e.g., from UI package)
-            console.warn(`Strategy ${strategy.id} already registered for seam ${seam.id}: ${e}`);
+            logWarn(`Strategy ${strategy.id} already registered for seam ${seam.id}`, e);
         }
     }
     
@@ -98,7 +99,7 @@ function createStrategyFromConfig(seam: Seam, config: StrategyParamConfig): Stra
             // Validate props against schema
             const result = zodSchema.safeParse(props);
             if (!result.success) {
-                console.warn(`Invalid props for strategy ${config.id}:`, result.error.flatten());
+                logWarn(`Invalid props for strategy ${config.id}`, result.error.flatten());
             }
             
             // This is a placeholder - actual rendering happens in UI package

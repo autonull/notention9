@@ -8,6 +8,7 @@ import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } fr
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createSingleton } from '../utils/singleton.js';
+import { logWarn } from '../utils/logging.js';
 import type { 
     LedgerEvent, LedgerEventType, LedgerPayload, 
     RunConfig, RunSummary, CaseVerdict, VerdictDetail, 
@@ -174,7 +175,7 @@ export class Ledger {
                 // Verify hash
                 const computedHash = computeHash(event.payload);
                 if (computedHash !== event.hash) {
-                    console.warn(`Ledger hash mismatch at line ${lineNum}: ${event.id}`);
+                    logWarn(`Ledger hash mismatch`, { lineNum, eventId: event.id });
                     continue;
                 }
                 

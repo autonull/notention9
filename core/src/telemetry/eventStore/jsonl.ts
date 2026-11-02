@@ -9,6 +9,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { LedgerEvent, LedgerEventType, LedgerPayload } from '../../telemetry/ledger.js';
 import type { EventStore } from './index.js';
+import { logWarn } from '../../utils/logging.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = join(__dirname, '..', '..', '..', '.notention', 'events');
@@ -168,7 +169,7 @@ export class JSONLEventStore implements EventStore {
                 // Verify hash
                 const computedHash = computeHash(event.payload);
                 if (computedHash !== event.hash) {
-                    console.warn(`Event hash mismatch at line ${lineNum}: ${event.id}`);
+                    logWarn(`Event hash mismatch`, { lineNum, eventId: event.id });
                     continue;
                 }
                 

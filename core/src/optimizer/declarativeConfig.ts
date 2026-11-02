@@ -6,6 +6,7 @@
 import type { OptimizerConfig } from './types.js';
 import type { SeamDefinition } from '../schemas/seamDefinition.js';
 import { getAllSeamDefinitions } from './strategyLoader.js';
+import { logWarn, logInfo } from '../utils/logging.js';
 
 // --- Config Schema ---
 
@@ -78,7 +79,7 @@ export function loadDeclarativeOptimizerConfig(configPath?: string): OptimizerCo
                 declarativeConfig = JSON.parse(content);
             }
         } catch (e) {
-            console.warn(`Failed to load optimizer config from ${configPath}: ${e}`);
+            logWarn(`Failed to load optimizer config from ${configPath}`, e);
         }
     }
     
@@ -202,7 +203,7 @@ export function writeDefaultOptimizerConfig(outputPath: string): void {
     }
     
     writeFileSync(outputPath, JSON.stringify(config, null, 2), 'utf-8');
-    console.log(`Default optimizer config written to ${outputPath}`);
+    logInfo(`Default optimizer config written to ${outputPath}`);
 }
 
 /**

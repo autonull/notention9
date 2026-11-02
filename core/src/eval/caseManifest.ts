@@ -7,6 +7,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { join, relative, extname, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { logWarn } from '../utils/logging.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = join(__dirname, '..', '..', '..');
@@ -142,7 +143,7 @@ export function generateManifest(): CaseManifest {
                 tags: caseData.tags,
             });
         } catch (e) {
-            console.warn(`Failed to parse intent case ${path}: ${e}`);
+            logWarn(`Failed to parse intent case`, { path, error: e instanceof Error ? e.message : String(e) });
         }
     }
     
@@ -164,7 +165,7 @@ export function generateManifest(): CaseManifest {
                 tags: caseData.tags,
             });
         } catch (e) {
-            console.warn(`Failed to parse quality case ${path}: ${e}`);
+            logWarn(`Failed to parse quality case`, { path, error: e instanceof Error ? e.message : String(e) });
         }
     }
     

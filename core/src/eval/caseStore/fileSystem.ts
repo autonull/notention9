@@ -16,6 +16,7 @@ import type {
     QualityFamily 
 } from '../caseManifest.js';
 import type { CaseStore } from '../../schemas/caseManifest.js';
+import { logWarn } from '../../utils/logging.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = join(__dirname, '..', '..', '..');
@@ -137,7 +138,7 @@ export class FileSystemCaseStore implements CaseStore {
                     tags: caseData.tags,
                 });
             } catch (e) {
-                console.warn(`Failed to parse intent case ${path}: ${e}`);
+                logWarn(`Failed to parse intent case`, { path, error: e instanceof Error ? e.message : String(e) });
             }
         }
         
@@ -159,7 +160,7 @@ export class FileSystemCaseStore implements CaseStore {
                     tags: caseData.tags,
                 });
             } catch (e) {
-                console.warn(`Failed to parse quality case ${path}: ${e}`);
+                logWarn(`Failed to parse quality case`, { path, error: e instanceof Error ? e.message : String(e) });
             }
         }
         

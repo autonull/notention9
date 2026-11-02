@@ -9,6 +9,7 @@ import type { LedgerEvent, LedgerPayload } from '../telemetry/ledger.js';
 import type { EventStore } from '../telemetry/eventStore/index.js';
 import type { ExtendedCaseVerdict, EvidenceClass } from '../schemas/verdictResult.js';
 import type { JudgeProvenance } from '../schemas/evidence.js';
+import { logWarn, logError } from '../utils/logging.js';
 
 // --- Types ---
 
@@ -314,7 +315,7 @@ export class CalibrationTracker {
                 }
             }
         } catch (e) {
-            console.warn('Failed to load calibration records from event store:', e);
+            logWarn('Failed to load calibration records from event store', e);
         }
     }
     
@@ -331,7 +332,7 @@ export class CalibrationTracker {
                 payload: { record },
             });
         } catch (e) {
-            console.warn('Failed to log calibration record to ledger:', e);
+            logWarn('Failed to log calibration record to ledger', e);
         }
     }
     
@@ -364,7 +365,7 @@ export class CalibrationTracker {
                 return this.records.length;
             }
         } catch (e) {
-            console.error('Failed to import calibration records:', e);
+            logError('Failed to import calibration records', e instanceof Error ? e : new Error(String(e)));
         }
         return 0;
     }

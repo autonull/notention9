@@ -12,6 +12,7 @@ import type { ExtendedRunVerdict, EvidenceClass } from '../schemas/verdictResult
 import { getRevisionStore, type Revision } from '../telemetry/revisionStore.js';
 import { getAllSeamDefinitions } from './strategyLoader.js';
 import { passesGovernanceGate } from '../schemas/evidence.js';
+import { logInfo } from '../utils/logging.js';
 
 // --- Resolution Step Definition ---
 
@@ -120,7 +121,7 @@ export const activeRevisionStep: ResolutionStep = {
         
         if (!canActivate) {
             // Log governance rejection
-            console.log(`[Governance] Revision ${activeRevision.id} blocked: evidenceClass='${evidenceClass}', consent=${hasConsent}`);
+            logInfo(`[Governance] Revision ${activeRevision.id} blocked`, { evidenceClass, consent: hasConsent });
             return undefined;
         }
         
