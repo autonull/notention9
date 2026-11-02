@@ -4,7 +4,7 @@
  */
 
 import type { FrictionEvent, FrictionAggregate, FrictionSignal, FrictionKind, DurationBucket } from '../telemetry/journal.js';
-import type { EvidenceClass } from '../../schemas/evidence.js';
+import type { EvidenceClass } from '../schemas/evidence.js';
 
 // --- Types ---
 

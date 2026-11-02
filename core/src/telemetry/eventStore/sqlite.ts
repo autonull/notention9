@@ -7,6 +7,7 @@ import { createHash } from 'node:crypto';
 import { mkdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+// @ts-ignore - better-sqlite3 types not available
 import Database from 'better-sqlite3';
 import type { LedgerEvent, LedgerEventType, LedgerPayload } from '../../telemetry/ledger.js';
 import type { EventStore } from './index.js';

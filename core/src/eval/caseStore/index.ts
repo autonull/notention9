@@ -14,6 +14,7 @@ import type {
 import { FileSystemCaseStore } from './fileSystem.js';
 import { InMemoryCaseStore } from './inMemory.js';
 import { SQLiteCaseStore } from './sqlite.js';
+import { FactoryRegistry } from '../../utils/Registry.js';
 
 // Re-export types
 export type { 
@@ -49,41 +50,21 @@ export function createSQLiteCaseStore(dbPath: string): SQLiteCaseStore {
 
 // --- Registry for dynamic selection ---
 
-export class CaseStoreRegistry {
-    private stores = new Map<string, { create: () => any; description: string }>();
-    
-    constructor() {
-        this.register('filesystem', () => new FileSystemCaseStore(), 'File-based storage with JSON cases');
-        this.register('memory', () => new InMemoryCaseStore(), 'In-memory storage for testing');
-        this.register('sqlite', () => { throw new Error('SQLite store requires dbPath - use createSQLiteCaseStore()'); }, 'SQLite-backed storage');
-    }
-    
-    register(name: string, factory: () => any, description: string): void {
-        this.stores.set(name, { create: factory, description });
-    }
-    
-    create(name: string, ...args: any[]): any {
-        const store = this.stores.get(name);
-        if (!store) {
-            throw new Error(`Unknown CaseStore: ${name}. Available: ${Array.from(this.stores.keys()).join(', ')}`);
-        }
-        return store.create(...args);
-    }
-    
-    listNames(): string[] {
-        return Array.from(this.stores.keys());
-    }
-    
-    getDescription(name: string): string | undefined {
-        return this.stores.get(name)?.description;
-    }
-}
+const caseStoreRegistry = new FactoryRegistry({
+    errorPrefix: 'CaseStoreRegistry',
+});
 
-let caseStoreRegistryInstance: CaseStoreRegistry | null = null;
+caseStoreRegistry.register('filesystem', () => new FileSystemCaseStore(), 'File-based storage with JSON cases');
+caseStoreRegistry.register('memory', () => new InMemoryCaseStore(), 'In-memory storage for testing');
+caseStoreRegistry.register('sqlite', (dbPath: string) => new SQLiteCaseStore(dbPath), 'SQLite-backed storage');
 
-export function getCaseStoreRegistry(): CaseStoreRegistry {
+// --- Backward-compatible singleton functions ---
+
+let caseStoreRegistryInstance: typeof caseStoreRegistry | null = null;
+
+export function getCaseStoreRegistry(): typeof caseStoreRegistry {
     if (!caseStoreRegistryInstance) {
-        caseStoreRegistryInstance = new CaseStoreRegistry();
+        caseStoreRegistryInstance = caseStoreRegistry;
     }
     return caseStoreRegistryInstance;
 }
@@ -91,3 +72,5 @@ export function getCaseStoreRegistry(): CaseStoreRegistry {
 export function resetCaseStoreRegistry(): void {
     caseStoreRegistryInstance = null;
 }
+
+export { caseStoreRegistry };

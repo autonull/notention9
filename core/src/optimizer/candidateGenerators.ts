@@ -14,6 +14,7 @@ import type {
     BudgetConstraints,
     CandidateEvaluationResult 
 } from './types.js';
+import { Registry, createSingletonRegistry } from '../utils/Registry.js';
 
 // --- SearchSpace from S1 (re-exported for convenience) ---
 export { getSearchSpace, sampleSearchSpace, gridSearchSpace, type SearchSpace } from '../schemas/paramSpec.js';
@@ -55,19 +56,37 @@ export interface CandidateGenerator {
      * Get the search space for a strategy
      */
     getSearchSpace(strategy: StrategyParamConfig): SearchSpace;
+    
+    getDefaultConfig(): GeneratorOptions;
+    validateConfig(config: GeneratorOptions): { valid: boolean; errors: string[] };
 }
+
+// --- CandidateGenerator Registrable mixin ---
+type RegistrableGenerator = CandidateGenerator & { getDefaultConfig(): GeneratorOptions; validateConfig(config: GeneratorOptions): { valid: boolean; errors: string[] } };
 
 // --- Built-in Generators ---
 
 /**
  * Grid search generator - exhaustive Cartesian product
  */
-export class GridGenerator implements CandidateGenerator {
+export class GridGenerator implements RegistrableGenerator {
     readonly name = 'grid';
     readonly description = 'Exhaustive grid search over parameter space';
     
     getName(): string {
         return this.name;
+    }
+    
+    getDefaultConfig(): GeneratorOptions {
+        return { maxCandidates: 8, seed: 42 };
+    }
+    
+    validateConfig(config: GeneratorOptions): { valid: boolean; errors: string[] } {
+        const errors: string[] = [];
+        if (config.maxCandidates !== undefined && (typeof config.maxCandidates !== 'number' || config.maxCandidates < 1)) {
+            errors.push('maxCandidates must be a positive number');
+        }
+        return { valid: errors.length === 0, errors };
     }
     
     getSearchSpace(strategy: StrategyParamConfig): SearchSpace {
@@ -126,12 +145,24 @@ export class GridGenerator implements CandidateGenerator {
 /**
  * Random search generator - uniform sampling from search space
  */
-export class RandomGenerator implements CandidateGenerator {
+export class RandomGenerator implements RegistrableGenerator {
     readonly name = 'random';
     readonly description = 'Uniform random sampling from parameter space';
     
     getName(): string {
         return this.name;
+    }
+    
+    getDefaultConfig(): GeneratorOptions {
+        return { maxCandidates: 8, seed: 42 };
+    }
+    
+    validateConfig(config: GeneratorOptions): { valid: boolean; errors: string[] } {
+        const errors: string[] = [];
+        if (config.maxCandidates !== undefined && (typeof config.maxCandidates !== 'number' || config.maxCandidates < 1)) {
+            errors.push('maxCandidates must be a positive number');
+        }
+        return { valid: errors.length === 0, errors };
     }
     
     getSearchSpace(strategy: StrategyParamConfig): SearchSpace {
@@ -205,7 +236,7 @@ export class RandomGenerator implements CandidateGenerator {
  * Successive Halving generator - evaluates many candidates on small budget, promotes best
  * This wraps another generator and adds promotion logic
  */
-export class SuccessiveHalvingGenerator implements CandidateGenerator {
+export class SuccessiveHalvingGenerator implements RegistrableGenerator {
     readonly name = 'successive-halving';
     readonly description = 'Successive halving: evaluate many on small budget, promote top fraction';
     
@@ -217,6 +248,21 @@ export class SuccessiveHalvingGenerator implements CandidateGenerator {
     
     getName(): string {
         return this.name;
+    }
+    
+    getDefaultConfig(): GeneratorOptions {
+        return { maxCandidates: 8, seed: 42, initialFraction: 0.25, minPromote: 2 };
+    }
+    
+    validateConfig(config: GeneratorOptions): { valid: boolean; errors: string[] } {
+        const errors: string[] = [];
+        if (config.maxCandidates !== undefined && (typeof config.maxCandidates !== 'number' || config.maxCandidates < 1)) {
+            errors.push('maxCandidates must be a positive number');
+        }
+        if (config.initialFraction !== undefined && (typeof config.initialFraction !== 'number' || config.initialFraction <= 0 || config.initialFraction > 1)) {
+            errors.push('initialFraction must be between 0 and 1');
+        }
+        return { valid: errors.length === 0, errors };
     }
     
     getSearchSpace(strategy: StrategyParamConfig): SearchSpace {
@@ -234,7 +280,7 @@ export class SuccessiveHalvingGenerator implements CandidateGenerator {
  * LLM-proposed generator - uses LLM to suggest promising candidates
  * Requires model integration
  */
-export class LLMGenerator implements CandidateGenerator {
+export class LLMGenerator implements RegistrableGenerator {
     readonly name = 'llm';
     readonly description = 'LLM-proposed candidates based on prior results';
     
@@ -245,6 +291,18 @@ export class LLMGenerator implements CandidateGenerator {
     
     getName(): string {
         return this.name;
+    }
+    
+    getDefaultConfig(): GeneratorOptions {
+        return { maxCandidates: 8, seed: 42 };
+    }
+    
+    validateConfig(config: GeneratorOptions): { valid: boolean; errors: string[] } {
+        const errors: string[] = [];
+        if (config.maxCandidates !== undefined && (typeof config.maxCandidates !== 'number' || config.maxCandidates < 1)) {
+            errors.push('maxCandidates must be a positive number');
+        }
+        return { valid: errors.length === 0, errors };
     }
     
     getSearchSpace(strategy: StrategyParamConfig): SearchSpace {
@@ -373,55 +431,18 @@ Only return valid JSON.`;
 
 // --- Candidate Generator Registry ---
 
-export class CandidateGeneratorRegistry {
-    private generators = new Map<string, CandidateGenerator>();
-    
-    constructor() {
-        // Register built-in generators
-        this.register(new GridGenerator());
-        this.register(new RandomGenerator());
-        this.register(new SuccessiveHalvingGenerator());
-    }
-    
-    register(generator: CandidateGenerator): void {
-        if (this.generators.has(generator.name)) {
-            throw new Error(`Generator '${generator.name}' already registered`);
-        }
-        this.generators.set(generator.name, generator);
-    }
-    
-    unregister(name: string): boolean {
-        return this.generators.delete(name);
-    }
-    
-    get(name: string): CandidateGenerator | undefined {
-        return this.generators.get(name);
-    }
-    
-    getAll(): CandidateGenerator[] {
-        return Array.from(this.generators.values());
-    }
-    
-    listNames(): string[] {
-        return Array.from(this.generators.keys());
-    }
-    
-    has(name: string): boolean {
-        return this.generators.has(name);
-    }
-}
+export const candidateGeneratorRegistry = new Registry<RegistrableGenerator>({
+    errorPrefix: 'CandidateGeneratorRegistry',
+});
+
+// Register built-in generators
+candidateGeneratorRegistry.register(new GridGenerator());
+candidateGeneratorRegistry.register(new RandomGenerator());
+candidateGeneratorRegistry.register(new SuccessiveHalvingGenerator());
 
 // --- Singleton instance ---
+const { get: getCandidateGeneratorRegistry, reset: resetCandidateGeneratorRegistry } = createSingletonRegistry(
+    () => candidateGeneratorRegistry
+);
 
-let generatorRegistryInstance: CandidateGeneratorRegistry | null = null;
-
-export function getCandidateGeneratorRegistry(): CandidateGeneratorRegistry {
-    if (!generatorRegistryInstance) {
-        generatorRegistryInstance = new CandidateGeneratorRegistry();
-    }
-    return generatorRegistryInstance;
-}
-
-export function resetCandidateGeneratorRegistry(): void {
-    generatorRegistryInstance = null;
-}
+export { getCandidateGeneratorRegistry, resetCandidateGeneratorRegistry };

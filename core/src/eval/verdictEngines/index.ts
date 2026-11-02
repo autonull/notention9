@@ -18,8 +18,9 @@ import { BayesianVerdictEngine } from './bayesian.js';
 import { SequentialVerdictEngine } from './sequential.js';
 import { LLMJudgeVerdictEngine } from './llmJudge.js';
 import { HumanJudgeVerdictEngine } from './humanJudge.js';
+import { Registry, createSingletonRegistry } from '../../utils/Registry.js';
 
-// --- VerdictEngine Interface ---
+// --- VerdictEngine Config ---
 
 export interface VerdictEngineConfig {
     primaryMetric: string;
@@ -29,6 +30,8 @@ export interface VerdictEngineConfig {
     // Engine-specific config
     [key: string]: unknown;
 }
+
+// --- VerdictEngine Interface ---
 
 export interface VerdictEngine {
     readonly name: string;
@@ -68,47 +71,21 @@ export interface VerdictEngine {
     validateConfig(config: VerdictEngineConfig): { valid: boolean; errors: string[] };
 }
 
+// --- VerdictEngine Registrable mixin ---
+type RegistrableVerdictEngine = VerdictEngine & { getDefaultConfig(): VerdictEngineConfig; validateConfig(config: VerdictEngineConfig): { valid: boolean; errors: string[] } };
+
 // --- Engine Registry ---
 
-export class VerdictEngineRegistry {
-    private engines = new Map<string, VerdictEngine>();
-    
-    constructor() {
-        // Register built-in engines
-        this.register(new McNemarVerdictEngine());
-        this.register(new BayesianVerdictEngine());
-        this.register(new SequentialVerdictEngine());
-        this.register(new LLMJudgeVerdictEngine());
-        this.register(new HumanJudgeVerdictEngine());
-    }
-    
-    register(engine: VerdictEngine): void {
-        if (this.engines.has(engine.name)) {
-            throw new Error(`VerdictEngine '${engine.name}' already registered`);
-        }
-        this.engines.set(engine.name, engine);
-    }
-    
-    unregister(name: string): boolean {
-        return this.engines.delete(name);
-    }
-    
-    get(name: string): VerdictEngine | undefined {
-        return this.engines.get(name);
-    }
-    
-    getAll(): VerdictEngine[] {
-        return Array.from(this.engines.values());
-    }
-    
-    listNames(): string[] {
-        return Array.from(this.engines.keys());
-    }
-    
-    has(name: string): boolean {
-        return this.engines.has(name);
-    }
-}
+export const verdictEngineRegistry = new Registry<RegistrableVerdictEngine>({
+    errorPrefix: 'VerdictEngineRegistry',
+});
+
+// Register built-in engines
+verdictEngineRegistry.register(new McNemarVerdictEngine());
+verdictEngineRegistry.register(new BayesianVerdictEngine());
+verdictEngineRegistry.register(new SequentialVerdictEngine());
+verdictEngineRegistry.register(new LLMJudgeVerdictEngine());
+verdictEngineRegistry.register(new HumanJudgeVerdictEngine());
 
 // --- Re-export engines ---
 export { McNemarVerdictEngine, type VerdictEngineConfig as McNemarConfig } from './mcnemar.js';
@@ -117,16 +94,13 @@ export { SequentialVerdictEngine, type VerdictEngineConfig as SequentialConfig }
 export { LLMJudgeVerdictEngine, type VerdictEngineConfig as LLMJudgeConfig } from './llmJudge.js';
 export { HumanJudgeVerdictEngine, type VerdictEngineConfig as HumanJudgeConfig, type HumanReview } from './humanJudge.js';
 
+// --- Re-export extended types from schemas ---
+export type { ExtendedCaseVerdict, ExtendedRunVerdict, ExtendedMetricVerdict } from '../../schemas/verdictResult.js';
+export type { EvidenceClass, JudgeProvenance } from '../../schemas/evidence.js';
+
 // --- Singleton instance ---
-let verdictEngineRegistryInstance: VerdictEngineRegistry | null = null;
+const { get: getVerdictEngineRegistry, reset: resetVerdictEngineRegistry } = createSingletonRegistry(
+    () => verdictEngineRegistry
+);
 
-export function getVerdictEngineRegistry(): VerdictEngineRegistry {
-    if (!verdictEngineRegistryInstance) {
-        verdictEngineRegistryInstance = new VerdictEngineRegistry();
-    }
-    return verdictEngineRegistryInstance;
-}
-
-export function resetVerdictEngineRegistry(): void {
-    verdictEngineRegistryInstance = null;
-}
+export { getVerdictEngineRegistry, resetVerdictEngineRegistry };

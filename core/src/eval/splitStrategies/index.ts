@@ -10,6 +10,7 @@ import { TemporalSplitStrategy } from './temporal.js';
 import { StratifiedSplitStrategy } from './stratified.js';
 import { AdversarialSplitStrategy } from './adversarial.js';
 import { HoldoutRotationSplitStrategy } from './holdoutRotation.js';
+import { Registry, createSingletonRegistry } from '../../utils/Registry.js';
 
 // --- SplitStrategy Interface ---
 
@@ -52,47 +53,21 @@ export interface SplitStrategy {
     validateConfig(config: SplitStrategyConfig): { valid: boolean; errors: string[] };
 }
 
+// --- SplitStrategy Registrable mixin ---
+type RegistrableSplitStrategy = SplitStrategy & { getDefaultConfig(): SplitStrategyConfig; validateConfig(config: SplitStrategyConfig): { valid: boolean; errors: string[] } };
+
 // --- Strategy Registry ---
 
-export class SplitStrategyRegistry {
-    private strategies = new Map<string, SplitStrategy>();
-    
-    constructor() {
-        // Register built-in strategies
-        this.register(new FixedSplitStrategy());
-        this.register(new TemporalSplitStrategy());
-        this.register(new StratifiedSplitStrategy());
-        this.register(new AdversarialSplitStrategy());
-        this.register(new HoldoutRotationSplitStrategy());
-    }
-    
-    register(strategy: SplitStrategy): void {
-        if (this.strategies.has(strategy.name)) {
-            throw new Error(`SplitStrategy '${strategy.name}' already registered`);
-        }
-        this.strategies.set(strategy.name, strategy);
-    }
-    
-    unregister(name: string): boolean {
-        return this.strategies.delete(name);
-    }
-    
-    get(name: string): SplitStrategy | undefined {
-        return this.strategies.get(name);
-    }
-    
-    getAll(): SplitStrategy[] {
-        return Array.from(this.strategies.values());
-    }
-    
-    listNames(): string[] {
-        return Array.from(this.strategies.keys());
-    }
-    
-    has(name: string): boolean {
-        return this.strategies.has(name);
-    }
-}
+export const splitStrategyRegistry = new Registry<RegistrableSplitStrategy>({
+    errorPrefix: 'SplitStrategyRegistry',
+});
+
+// Register built-in strategies
+splitStrategyRegistry.register(new FixedSplitStrategy());
+splitStrategyRegistry.register(new TemporalSplitStrategy());
+splitStrategyRegistry.register(new StratifiedSplitStrategy());
+splitStrategyRegistry.register(new AdversarialSplitStrategy());
+splitStrategyRegistry.register(new HoldoutRotationSplitStrategy());
 
 // --- Re-export strategies ---
 export { FixedSplitStrategy, type SplitStrategyConfig as FixedSplitConfig } from './fixed.js';
@@ -102,15 +77,8 @@ export { AdversarialSplitStrategy, type SplitStrategyConfig as AdversarialSplitC
 export { HoldoutRotationSplitStrategy, type SplitStrategyConfig as HoldoutRotationSplitConfig } from './holdoutRotation.js';
 
 // --- Singleton ---
-let splitStrategyRegistryInstance: SplitStrategyRegistry | null = null;
+const { get: getSplitStrategyRegistry, reset: resetSplitStrategyRegistry } = createSingletonRegistry(
+    () => splitStrategyRegistry
+);
 
-export function getSplitStrategyRegistry(): SplitStrategyRegistry {
-    if (!splitStrategyRegistryInstance) {
-        splitStrategyRegistryInstance = new SplitStrategyRegistry();
-    }
-    return splitStrategyRegistryInstance;
-}
-
-export function resetSplitStrategyRegistry(): void {
-    splitStrategyRegistryInstance = null;
-}
+export { getSplitStrategyRegistry, resetSplitStrategyRegistry };

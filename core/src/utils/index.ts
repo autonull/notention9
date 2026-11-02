@@ -18,3 +18,5 @@ export * from './nostrQuery.js';
 export * from './cache.js';
 export * from './json.js';
 export * from './async.js';
+export * from './Registry.js';
+export * from './resolutionUtils.js';

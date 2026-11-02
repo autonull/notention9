@@ -11,10 +11,20 @@ import { readFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const PROJECT_ROOT = join(__dirname, '..', '..');
-const GENERATED_DIR = join(PROJECT_ROOT, 'core', 'src', 'schemas', 'generated');
-const SEAM_DEFINITIONS_FILE = join(GENERATED_DIR, 'seam-definitions.json');
+function getSeamDefinitionsPath(): string {
+    // Allow override via environment variable for flexibility
+    if (process.env.SEAM_DEFINITIONS_PATH) {
+        return process.env.SEAM_DEFINITIONS_PATH;
+    }
+    
+    // Default: compute from current file location
+    const __dirname = dirname(fileURLToPath(import.meta.url));
+    const PROJECT_ROOT = join(__dirname, '..', '..');
+    const GENERATED_DIR = join(PROJECT_ROOT, 'core', 'src', 'schemas', 'generated');
+    return join(GENERATED_DIR, 'seam-definitions.json');
+}
+
+const SEAM_DEFINITIONS_FILE = getSeamDefinitionsPath();
 
 interface SeamDefinitionsData {
     version: number;

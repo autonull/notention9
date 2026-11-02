@@ -6,6 +6,7 @@
 import type { LedgerEvent } from '../../telemetry/ledger.js';
 import { JSONLEventStore } from './jsonl.js';
 import { SQLiteEventStore } from './sqlite.js';
+import { FactoryRegistry } from '../../utils/Registry.js';
 
 // --- EventStore Interface ---
 
@@ -60,36 +61,20 @@ export function createSQLiteEventStore(dbPath: string): SQLiteEventStore {
 
 // --- Registry ---
 
-export class EventStoreRegistry {
-    private stores = new Map<string, { create: (...args: any[]) => EventStore; description: string }>();
-    
-    constructor() {
-        this.register('jsonl', (path?: string) => new JSONLEventStore(path), 'JSONL file-based storage');
-        this.register('sqlite', (path: string) => new SQLiteEventStore(path), 'SQLite-backed storage');
-    }
-    
-    register(name: string, factory: (...args: any[]) => EventStore, description: string): void {
-        this.stores.set(name, { create: factory, description });
-    }
-    
-    create(name: string, ...args: any[]): EventStore {
-        const store = this.stores.get(name);
-        if (!store) {
-            throw new Error(`Unknown EventStore: ${name}. Available: ${Array.from(this.stores.keys()).join(', ')}`);
-        }
-        return store.create(...args);
-    }
-    
-    listNames(): string[] {
-        return Array.from(this.stores.keys());
-    }
-}
+const eventStoreRegistry = new FactoryRegistry({
+    errorPrefix: 'EventStoreRegistry',
+});
 
-let eventStoreRegistryInstance: EventStoreRegistry | null = null;
+eventStoreRegistry.register('jsonl', (path?: string) => new JSONLEventStore(path), 'JSONL file-based storage');
+eventStoreRegistry.register('sqlite', (path: string) => new SQLiteEventStore(path), 'SQLite-backed storage');
 
-export function getEventStoreRegistry(): EventStoreRegistry {
+// --- Backward-compatible singleton functions ---
+
+let eventStoreRegistryInstance: typeof eventStoreRegistry | null = null;
+
+export function getEventStoreRegistry(): typeof eventStoreRegistry {
     if (!eventStoreRegistryInstance) {
-        eventStoreRegistryInstance = new EventStoreRegistry();
+        eventStoreRegistryInstance = eventStoreRegistry;
     }
     return eventStoreRegistryInstance;
 }
@@ -97,3 +82,5 @@ export function getEventStoreRegistry(): EventStoreRegistry {
 export function resetEventStoreRegistry(): void {
     eventStoreRegistryInstance = null;
 }
+
+export { eventStoreRegistry };

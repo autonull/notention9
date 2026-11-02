@@ -5,6 +5,7 @@
 
 import type { OptimizerCandidate, CandidateEvaluationResult, BudgetConstraints } from './candidateGenerators.js';
 import type { OptimizerConfig } from './types.js';
+import { Registry, createSingletonRegistry } from '../utils/Registry.js';
 
 // --- Budget Allocator Interface ---
 
@@ -37,7 +38,13 @@ export interface BudgetAllocator {
         results: CandidateEvaluationResult[],
         config: OptimizerConfig
     ): string[];
+    
+    getDefaultConfig(): BudgetConstraints;
+    validateConfig(config: BudgetConstraints): { valid: boolean; errors: string[] };
 }
+
+// --- Budget Allocator Registrable mixin ---
+type RegistrableAllocator = BudgetAllocator & { getDefaultConfig(): BudgetConstraints; validateConfig(config: BudgetConstraints): { valid: boolean; errors: string[] } };
 
 export interface BudgetAllocation {
     /** Budget allocated per candidate */
@@ -63,9 +70,27 @@ export interface CandidateCost {
 
 // --- Fixed Budget Allocator (equal allocation) ---
 
-export class FixedBudgetAllocator implements BudgetAllocator {
+export class FixedBudgetAllocator implements RegistrableAllocator {
     readonly name = 'fixed';
     readonly description = 'Equal budget allocation across all candidates';
+    
+    getDefaultConfig(): BudgetConstraints {
+        return { maxBrowserRuns: 160, maxTimeMinutes: 30, maxTokens: 150000 };
+    }
+    
+    validateConfig(config: BudgetConstraints): { valid: boolean; errors: string[] } {
+        const errors: string[] = [];
+        if (config.maxBrowserRuns !== undefined && (typeof config.maxBrowserRuns !== 'number' || config.maxBrowserRuns < 1)) {
+            errors.push('maxBrowserRuns must be a positive number');
+        }
+        if (config.maxTimeMinutes !== undefined && (typeof config.maxTimeMinutes !== 'number' || config.maxTimeMinutes < 1)) {
+            errors.push('maxTimeMinutes must be a positive number');
+        }
+        if (config.maxTokens !== undefined && (typeof config.maxTokens !== 'number' || config.maxTokens < 1)) {
+            errors.push('maxTokens must be a positive number');
+        }
+        return { valid: errors.length === 0, errors };
+    }
     
     allocate(
         candidates: OptimizerCandidate[],
@@ -106,7 +131,7 @@ export class FixedBudgetAllocator implements BudgetAllocator {
 
 // --- Successive Halving Allocator ---
 
-export class SuccessiveHalvingAllocator implements BudgetAllocator {
+export class SuccessiveHalvingAllocator implements RegistrableAllocator {
     readonly name = 'successive-halving';
     readonly description = 'Successive halving: evaluate all on small budget, iteratively promote top fraction';
     
@@ -115,6 +140,24 @@ export class SuccessiveHalvingAllocator implements BudgetAllocator {
         private promotionFraction = 0.5,
         private minPromote = 2
     ) {}
+    
+    getDefaultConfig(): BudgetConstraints {
+        return { maxBrowserRuns: 160, maxTimeMinutes: 30, maxTokens: 150000, initialFraction: 0.25, promotionFraction: 0.5, minPromote: 2 };
+    }
+    
+    validateConfig(config: BudgetConstraints): { valid: boolean; errors: string[] } {
+        const errors: string[] = [];
+        if (config.initialFraction !== undefined && (typeof config.initialFraction !== 'number' || config.initialFraction <= 0 || config.initialFraction > 1)) {
+            errors.push('initialFraction must be between 0 and 1');
+        }
+        if (config.promotionFraction !== undefined && (typeof config.promotionFraction !== 'number' || config.promotionFraction <= 0 || config.promotionFraction > 1)) {
+            errors.push('promotionFraction must be between 0 and 1');
+        }
+        if (config.minPromote !== undefined && (typeof config.minPromote !== 'number' || config.minPromote < 1)) {
+            errors.push('minPromote must be a positive number');
+        }
+        return { valid: errors.length === 0, errors };
+    }
     
     allocate(
         candidates: OptimizerCandidate[],
@@ -194,7 +237,7 @@ export class SuccessiveHalvingAllocator implements BudgetAllocator {
 
 // --- Hyperband Allocator ---
 
-export class HyperbandAllocator implements BudgetAllocator {
+export class HyperbandAllocator implements RegistrableAllocator {
     readonly name = 'hyperband';
     readonly description = 'Hyperband: multiple successive halving brackets with different resource levels';
     
@@ -202,6 +245,21 @@ export class HyperbandAllocator implements BudgetAllocator {
         private maxResource = 81,      // Maximum budget per candidate (e.g., browser runs)
         private reductionFactor = 3    // η (eta) - reduction factor
     ) {}
+    
+    getDefaultConfig(): BudgetConstraints {
+        return { maxBrowserRuns: 160, maxTimeMinutes: 30, maxTokens: 150000, maxResource: 81, reductionFactor: 3 };
+    }
+    
+    validateConfig(config: BudgetConstraints): { valid: boolean; errors: string[] } {
+        const errors: string[] = [];
+        if (config.maxResource !== undefined && (typeof config.maxResource !== 'number' || config.maxResource < 1)) {
+            errors.push('maxResource must be a positive number');
+        }
+        if (config.reductionFactor !== undefined && (typeof config.reductionFactor !== 'number' || config.reductionFactor < 2)) {
+            errors.push('reductionFactor must be at least 2');
+        }
+        return { valid: errors.length === 0, errors };
+    }
     
     allocate(
         candidates: OptimizerCandidate[],
@@ -264,50 +322,18 @@ export class HyperbandAllocator implements BudgetAllocator {
 
 // --- Budget Allocator Registry ---
 
-export class BudgetAllocatorRegistry {
-    private allocators = new Map<string, BudgetAllocator>();
-    
-    constructor() {
-        this.register(new FixedBudgetAllocator());
-        this.register(new SuccessiveHalvingAllocator());
-        this.register(new HyperbandAllocator());
-    }
-    
-    register(allocator: BudgetAllocator): void {
-        if (this.allocators.has(allocator.name)) {
-            throw new Error(`Allocator '${allocator.name}' already registered`);
-        }
-        this.allocators.set(allocator.name, allocator);
-    }
-    
-    unregister(name: string): boolean {
-        return this.allocators.delete(name);
-    }
-    
-    get(name: string): BudgetAllocator | undefined {
-        return this.allocators.get(name);
-    }
-    
-    getAll(): BudgetAllocator[] {
-        return Array.from(this.allocators.values());
-    }
-    
-    listNames(): string[] {
-        return Array.from(this.allocators.keys());
-    }
-}
+export const budgetAllocatorRegistry = new Registry<RegistrableAllocator>({
+    errorPrefix: 'BudgetAllocatorRegistry',
+});
+
+// Register built-in allocators
+budgetAllocatorRegistry.register(new FixedBudgetAllocator());
+budgetAllocatorRegistry.register(new SuccessiveHalvingAllocator());
+budgetAllocatorRegistry.register(new HyperbandAllocator());
 
 // --- Singleton ---
+const { get: getBudgetAllocatorRegistry, reset: resetBudgetAllocatorRegistry } = createSingletonRegistry(
+    () => budgetAllocatorRegistry
+);
 
-let allocatorRegistryInstance: BudgetAllocatorRegistry | null = null;
-
-export function getBudgetAllocatorRegistry(): BudgetAllocatorRegistry {
-    if (!allocatorRegistryInstance) {
-        allocatorRegistryInstance = new BudgetAllocatorRegistry();
-    }
-    return allocatorRegistryInstance;
-}
-
-export function resetBudgetAllocatorRegistry(): void {
-    allocatorRegistryInstance = null;
-}
+export { getBudgetAllocatorRegistry, resetBudgetAllocatorRegistry };

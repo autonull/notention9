@@ -4,18 +4,10 @@
  */
 
 import type { ParamSpec, Seam } from '../ui/strategy.js';
+import type { StrategyParamConfig } from '../constants/strategyParams.js';
 
-/**
- * Strategy parameter configuration from core
- * Re-exported from constants/strategyParams
- */
-export interface StrategyParamConfig {
-    id: string;
-    seam: Seam;
-    version: string;
-    defaultProps: Record<string, unknown>;
-    paramSpec: ParamSpec;
-}
+// Re-export StrategyParamConfig from constants
+export type { StrategyParamConfig } from '../constants/strategyParams.js';
 
 /**
  * Configuration for a single optimization cycle
@@ -95,6 +87,9 @@ export interface GeneratorOptions {
     seed?: number;
     previousCandidates?: OptimizerCandidate[];
     previousResults?: CandidateEvaluationResult[];
+    initialFraction?: number;
+    minPromote?: number;
+    [key: string]: unknown;
 }
 
 /**
@@ -117,4 +112,9 @@ export interface BudgetConstraints {
     maxBrowserRuns?: number;
     maxTimeMinutes?: number;
     maxTokens?: number;
+    promotionFraction?: number;
+    minPromote?: number;
+    maxResource?: number;
+    reductionFactor?: number;
+    [key: string]: unknown;
 }

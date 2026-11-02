@@ -11,6 +11,7 @@ import type {
     RevisionStatus,
     RevisionStoreConfig 
 } from '../telemetry/revisionStore.js';
+import { FactoryRegistry } from '../utils/Registry.js';
 
 // --- RevisionDriver Config ---
 
@@ -91,9 +92,12 @@ export interface RevisionSearchQuery {
     offset?: number;
 }
 
+// --- RevisionDriver Registrable mixin ---
+type RegistrableRevisionDriver = RevisionDriver & { getDefaultConfig(): RevisionDriverConfig; validateConfig(config: RevisionDriverConfig): { valid: boolean; errors: string[] } };
+
 // --- JSONL Driver (Current Implementation) ---
 
-export class JSONLRevisionDriver implements RevisionDriver {
+export class JSONLRevisionDriver implements RegistrableRevisionDriver {
     readonly name = 'jsonl';
     readonly description = 'JSONL file-based revision storage';
     
@@ -329,7 +333,7 @@ export class JSONLRevisionDriver implements RevisionDriver {
 
 // --- In-Memory Driver (for Testing) ---
 
-export class InMemoryRevisionDriver implements RevisionDriver {
+export class InMemoryRevisionDriver implements RegistrableRevisionDriver {
     readonly name = 'memory';
     readonly description = 'In-memory revision storage (for testing)';
     
@@ -337,7 +341,7 @@ export class InMemoryRevisionDriver implements RevisionDriver {
     private seamIndex: Map<string, string[]> = new Map();
     private statusIndex: Map<RevisionStatus, Set<string>> = new Map();
     private initialized = false;
-    private config: RevisionDriverConfig;
+    private config: RevisionDriverConfig = {};
     
     getDefaultConfig(): RevisionDriverConfig {
         return {};
@@ -497,7 +501,7 @@ export class InMemoryRevisionDriver implements RevisionDriver {
 
 // --- SQLite Driver (Stub for Future) ---
 
-export class SQLiteRevisionDriver implements RevisionDriver {
+export class SQLiteRevisionDriver implements RegistrableRevisionDriver {
     readonly name = 'sqlite';
     readonly description = 'SQLite-backed revision storage';
     
@@ -575,37 +579,21 @@ export class SQLiteRevisionDriver implements RevisionDriver {
 
 // --- RevisionDriver Registry ---
 
-export class RevisionDriverRegistry {
-    private drivers = new Map<string, { create: (...args: any[]) => RevisionDriver; description: string }>();
-    
-    constructor() {
-        this.register('jsonl', (...args) => new JSONLRevisionDriver(...args), 'JSONL file-based storage');
-        this.register('memory', (...args) => new InMemoryRevisionDriver(...args), 'In-memory storage (testing)');
-        this.register('sqlite', (...args) => new SQLiteRevisionDriver(...args), 'SQLite-backed storage (stub)');
-    }
-    
-    register(name: string, factory: (...args: any[]) => RevisionDriver, description: string): void {
-        this.drivers.set(name, { create: factory, description });
-    }
-    
-    create(name: string, ...args: any[]): RevisionDriver {
-        const driver = this.drivers.get(name);
-        if (!driver) {
-            throw new Error(`Unknown RevisionDriver: ${name}. Available: ${Array.from(this.drivers.keys()).join(', ')}`);
-        }
-        return driver.create(...args);
-    }
-    
-    listNames(): string[] {
-        return Array.from(this.drivers.keys());
-    }
-}
+const revisionDriverRegistry = new FactoryRegistry({
+    errorPrefix: 'RevisionDriverRegistry',
+});
 
-let revisionDriverRegistryInstance: RevisionDriverRegistry | null = null;
+revisionDriverRegistry.register('jsonl', (...args: unknown[]) => new JSONLRevisionDriver(...(args as string[])), 'JSONL file-based storage');
+revisionDriverRegistry.register('memory', () => new InMemoryRevisionDriver(), 'In-memory storage (testing)');
+revisionDriverRegistry.register('sqlite', (...args: unknown[]) => new SQLiteRevisionDriver(...(args as string[])), 'SQLite-backed storage (stub)');
 
-export function getRevisionDriverRegistry(): RevisionDriverRegistry {
+// --- Backward-compatible singleton functions ---
+
+let revisionDriverRegistryInstance: typeof revisionDriverRegistry | null = null;
+
+export function getRevisionDriverRegistry(): typeof revisionDriverRegistry {
     if (!revisionDriverRegistryInstance) {
-        revisionDriverRegistryInstance = new RevisionDriverRegistry();
+        revisionDriverRegistryInstance = revisionDriverRegistry;
     }
     return revisionDriverRegistryInstance;
 }
@@ -613,6 +601,8 @@ export function getRevisionDriverRegistry(): RevisionDriverRegistry {
 export function resetRevisionDriverRegistry(): void {
     revisionDriverRegistryInstance = null;
 }
+
+export { revisionDriverRegistry, revisionDriverRegistry as RevisionDriverRegistry };
 
 // --- Re-export types ---
 export type { 

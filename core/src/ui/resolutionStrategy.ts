@@ -41,7 +41,7 @@ export interface ResolutionStrategy {
      */
     resolve(
         context: ResolutionContext
-    ): ResolvedStrategy | Promise<ResolvedStrategy | undefined>;
+    ): ResolvedStrategy | Promise<ResolvedStrategy | undefined> | undefined;
     
     /**
      * Get default configuration for this strategy
@@ -428,75 +428,42 @@ export class FallbackResolutionStrategy implements ResolutionStrategy {
     }
 }
 
+import { Registry, createSingletonRegistry } from '../utils/Registry.js';
+
+// --- ResolutionStrategy Registrable mixin ---
+type RegistrableResolutionStrategy = ResolutionStrategy & { getDefaultConfig(): ResolutionStrategyConfig; validateConfig(config: ResolutionStrategyConfig): { valid: boolean; errors: string[] } };
+
 // --- ResolutionStrategy Registry ---
 
-export class ResolutionStrategyRegistry {
-    private strategies = new Map<string, ResolutionStrategy>();
-    
-    constructor() {
-        // Register built-in strategies in priority order (first = highest priority)
-        this.register(new OverrideResolutionStrategy());
-        this.register(new ExperimentResolutionStrategy());
-        this.register(new RevisionResolutionStrategy());
-        this.register(new ManualProfileResolutionStrategy());
-        this.register(new PolicyResolutionStrategy());
-        this.register(new DefaultProfileResolutionStrategy());
-        this.register(new FallbackResolutionStrategy());
+export const resolutionStrategyRegistry = new Registry<RegistrableResolutionStrategy>({
+    errorPrefix: 'ResolutionStrategyRegistry',
+});
+
+// Register built-in strategies in priority order (first = highest priority)
+resolutionStrategyRegistry.register(new OverrideResolutionStrategy());
+resolutionStrategyRegistry.register(new ExperimentResolutionStrategy());
+resolutionStrategyRegistry.register(new RevisionResolutionStrategy());
+resolutionStrategyRegistry.register(new ManualProfileResolutionStrategy());
+resolutionStrategyRegistry.register(new PolicyResolutionStrategy());
+resolutionStrategyRegistry.register(new DefaultProfileResolutionStrategy());
+resolutionStrategyRegistry.register(new FallbackResolutionStrategy());
+
+// Add resolveAll method to registry
+(resolutionStrategyRegistry as any).resolveAll = async function(context: ResolutionContext): Promise<ResolvedStrategy | undefined> {
+    for (const strategy of this.getAll()) {
+        const result = await strategy.resolve(context);
+        if (result) return result;
     }
-    
-    register(strategy: ResolutionStrategy): void {
-        if (this.strategies.has(strategy.name)) {
-            throw new Error(`ResolutionStrategy '${strategy.name}' already registered`);
-        }
-        this.strategies.set(strategy.name, strategy);
-    }
-    
-    unregister(name: string): boolean {
-        return this.strategies.delete(name);
-    }
-    
-    get(name: string): ResolutionStrategy | undefined {
-        return this.strategies.get(name);
-    }
-    
-    getAll(): ResolutionStrategy[] {
-        return Array.from(this.strategies.values());
-    }
-    
-    listNames(): string[] {
-        return Array.from(this.strategies.keys());
-    }
-    
-    has(name: string): boolean {
-        return this.strategies.has(name);
-    }
-    
-    /**
-     * Run all resolution strategies in priority order
-     */
-    async resolveAll(context: ResolutionContext): Promise<ResolvedStrategy | undefined> {
-        for (const strategy of this.getAll()) {
-            const result = await strategy.resolve(context);
-            if (result) return result;
-        }
-        return undefined;
-    }
-}
+    return undefined;
+};
 
 // --- Singleton instance ---
 
-let resolutionStrategyRegistryInstance: ResolutionStrategyRegistry | null = null;
+const { get: getResolutionStrategyRegistry, reset: resetResolutionStrategyRegistry } = createSingletonRegistry(
+    () => resolutionStrategyRegistry
+);
 
-export function getResolutionStrategyRegistry(): ResolutionStrategyRegistry {
-    if (!resolutionStrategyRegistryInstance) {
-        resolutionStrategyRegistryInstance = new ResolutionStrategyRegistry();
-    }
-    return resolutionStrategyRegistryInstance;
-}
-
-export function resetResolutionStrategyRegistry(): void {
-    resolutionStrategyRegistryInstance = null;
-}
+export { getResolutionStrategyRegistry, resetResolutionStrategyRegistry };
 
 // --- Re-export types ---
 export type { 

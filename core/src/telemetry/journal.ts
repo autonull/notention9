@@ -83,6 +83,7 @@ export interface FrictionSignal {
     evidenceClass: EvidenceClass;
     ageDays: number;
     weight: number;                 // decayed weight for prioritization
+    durationBucket?: DurationBucket;
 }
 
 // --- Config management ---
