@@ -58,7 +58,7 @@ export interface CandidateProvenance {
 export interface CandidateEvaluation {
     candidateId: string;
     revisionId: string;
-    qualityResults: QualityRunConfig;
+    qualityResults: QualityRunConfig | null; // Null per-candidate (UI params don't affect core quality)
     intentResults?: any;
     verdict: 'improved' | 'degraded' | 'inconclusive' | 'invalid';
     primaryDelta: number;

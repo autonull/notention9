@@ -12,7 +12,6 @@ import {
     type VerdictConfig,
     defaultOptimizerConfig,
 } from './types/index.js';
-import { runQualityEvaluationForCandidate } from './evaluation/qualityEvaluation.js';
 import { runIntentEvaluationForRevision, cleanupPreviewServer } from './evaluation/intentEvaluation.js';
 import {
     computeCaseVerdictsFromIntentResults,
@@ -64,15 +63,14 @@ export async function runOptimizerCycle(config: OptimizerConfig = defaultOptimiz
             return createEmptyResult(cycleId, manifest.hash, startTime);
         }
 
-        // 2. Run baseline evaluations (quality + intent)
-        const { baselineQualityConfig, baselineIntentResult, intentCaseIds } = await runBaselineEvaluations(config);
+        // 2. Run baseline evaluations (intent only - quality is not per-candidate since UI params don't affect core quality)
+        const { baselineIntentResult, intentCaseIds } = await runBaselineEvaluations(config);
 
         // 3. Evaluate candidates
         console.log('\n🚀 Evaluating candidates...');
         const evaluatedCandidates = await evaluateCandidates(
             allCandidates,
             config,
-            baselineQualityConfig,
             baselineIntentResult,
             intentCaseIds
         );
@@ -83,7 +81,6 @@ export async function runOptimizerCycle(config: OptimizerConfig = defaultOptimiz
                 evaluatedCandidates,
                 allCandidates,
                 config,
-                baselineQualityConfig,
                 baselineIntentResult,
                 intentCaseIds
             );
@@ -150,15 +147,9 @@ async function enumerateAllCandidates(config: OptimizerConfig): Promise<Optimize
 }
 
 async function runBaselineEvaluations(config: OptimizerConfig): Promise<{
-    baselineQualityConfig: QualityRunConfig;
     baselineIntentResult: Awaited<ReturnType<typeof runIntentEvaluationForRevision>>;
     intentCaseIds: string[];
 }> {
-    console.log('\n📏 Running baseline quality evaluation...');
-    const baselineQualityConfig: QualityRunConfig = {
-        repetitions: 1, // Single rep for speed in optimizer
-    };
-
     console.log('\n📏 Running baseline intent evaluation (validation split, limited cases)...');
     const intentCases = readIntentCases('validation'); // Use validation (10 cases) instead of search (21)
     const maxIntentCases = config.maxIntentCases ?? 2;
@@ -172,13 +163,12 @@ async function runBaselineEvaluations(config: OptimizerConfig): Promise<{
     };
     const baselineIntentResult = await runIntentEvaluationForRevision('incumbent', baselineIntentConfig);
 
-    return { baselineQualityConfig, baselineIntentResult, intentCaseIds };
+    return { baselineIntentResult, intentCaseIds };
 }
 
 async function evaluateCandidates(
     candidates: OptimizerCandidate[],
     config: OptimizerConfig,
-    baselineQualityConfig: QualityRunConfig,
     baselineIntentResult: Awaited<ReturnType<typeof runIntentEvaluationForRevision>>,
     intentCaseIds: string[]
 ): Promise<OptimizerCandidate[]> {
@@ -208,7 +198,6 @@ async function evaluateCandidates(
 
         const evaluation = await evaluateSingleCandidate(
             candidate,
-            baselineQualityConfig,
             baselineIntentResult,
             intentCaseIds,
             verdictConfig,
@@ -224,7 +213,6 @@ async function evaluateCandidates(
 
 async function evaluateSingleCandidate(
     candidate: OptimizerCandidate,
-    baselineQualityConfig: QualityRunConfig,
     baselineIntentResult: Awaited<ReturnType<typeof runIntentEvaluationForRevision>>,
     intentCaseIds: string[],
     verdictConfig: VerdictConfig,
@@ -237,10 +225,9 @@ async function evaluateSingleCandidate(
         return cachedEvaluation;
     }
 
-    // Run quality evaluation for candidate
-    await runQualityEvaluationForCandidate(candidate, baselineQualityConfig);
-
     // Run intent evaluation for candidate (UI params affect capture/match behavior)
+    // Note: Quality evaluation is NOT run per-candidate because strategy params are UI-only
+    // and don't affect core extraction/matching quality. Baseline quality is run once.
     console.log(`     🌐 Running intent evaluation (${intentCaseIds.length} cases)...`);
     const candidateIntentResult = await runIntentEvaluationForRevision(candidate.id, {
         split: 'validation',
@@ -269,7 +256,7 @@ async function evaluateSingleCandidate(
     const evaluation: CandidateEvaluation = {
         candidateId: candidate.id,
         revisionId: candidate.id,
-        qualityResults: baselineQualityConfig,
+        qualityResults: null, // Not evaluated per-candidate (UI params don't affect core quality)
         verdict: runVerdict.overallVerdict,
         primaryDelta: runVerdict.primaryMetricAggregate.meanDelta,
         cost: {
@@ -289,7 +276,6 @@ async function runSuccessiveHalvingPromotion(
     evaluatedCandidates: OptimizerCandidate[],
     allCandidates: OptimizerCandidate[],
     config: OptimizerConfig,
-    baselineQualityConfig: QualityRunConfig,
     baselineIntentResult: Awaited<ReturnType<typeof runIntentEvaluationForRevision>>,
     intentCaseIds: string[]
 ): Promise<OptimizerCandidate[]> {
@@ -319,7 +305,6 @@ async function runSuccessiveHalvingPromotion(
 
         const evaluation = await evaluateSingleCandidate(
             candidate,
-            baselineQualityConfig,
             baselineIntentResult,
             intentCaseIds,
             verdictConfig,

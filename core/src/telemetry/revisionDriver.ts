@@ -499,13 +499,14 @@ export class InMemoryRevisionDriver implements RegistrableRevisionDriver {
     }
 }
 
-// --- SQLite Driver (Stub for Future) ---
+// --- SQLite Driver (Production Implementation) ---
 
 export class SQLiteRevisionDriver implements RegistrableRevisionDriver {
     readonly name = 'sqlite';
     readonly description = 'SQLite-backed revision storage';
     
     private dbPath: string;
+    private db: any; // Database from better-sqlite3
     private initialized = false;
     private config: RevisionDriverConfig;
     
@@ -538,41 +539,286 @@ export class SQLiteRevisionDriver implements RegistrableRevisionDriver {
             throw new Error('SQLiteRevisionDriver requires dbPath in config');
         }
         
-        // TODO: Implement SQLite initialization
-        // For now, mark as initialized but operations will throw
+        // Dynamic import to avoid bundling issues
+        const { mkdirSync } = await import('node:fs');
+        const { dirname } = await import('node:path');
+        
+        const dbDir = dirname(this.dbPath);
+        mkdirSync(dbDir, { recursive: true });
+        
+        // @ts-ignore - better-sqlite3 types not available
+        const Database = (await import('better-sqlite3')).default;
+        
+        this.db = new Database(this.dbPath);
+        this.db.pragma('journal_mode = WAL');
+        
+        this.db.exec(`
+            CREATE TABLE IF NOT EXISTS revisions (
+                id TEXT PRIMARY KEY,
+                seam_role TEXT NOT NULL,
+                strategy_id TEXT NOT NULL,
+                seam_id TEXT NOT NULL,
+                version TEXT NOT NULL,
+                params TEXT NOT NULL,          -- JSON
+                code TEXT,
+                component_type TEXT,
+                author TEXT NOT NULL,
+                model TEXT,
+                prompt_hash TEXT,
+                parent_revision_id TEXT,
+                evaluation_id TEXT,
+                verdict TEXT,
+                status TEXT NOT NULL,
+                consented_by TEXT,
+                consented_at TEXT,
+                activated_at TEXT,
+                rolled_back_at TEXT,
+                rollback_reason TEXT,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                tags TEXT
+            );
+            
+            CREATE INDEX IF NOT EXISTS idx_revisions_seam_role ON revisions(seam_role);
+            CREATE INDEX IF NOT EXISTS idx_revisions_status ON revisions(status);
+            CREATE INDEX IF NOT EXISTS idx_revisions_created_at ON revisions(created_at);
+            CREATE INDEX IF NOT EXISTS idx_revisions_strategy_id ON revisions(strategy_id);
+        `);
+        
         this.initialized = true;
-        throw new Error('SQLiteRevisionDriver not yet implemented');
     }
     
-    async create(_revision: Omit<Revision, 'id' | 'createdAt' | 'updatedAt' | 'status'>): Promise<Revision> {
-        throw new Error('SQLiteRevisionDriver not yet implemented');
+    private rowToRevision(row: any): Revision {
+        return {
+            id: row.id,
+            seamRole: row.seam_role,
+            strategy: {
+                id: row.strategy_id,
+                seamId: row.seam_id,
+                version: row.version,
+                params: JSON.parse(row.params),
+                code: row.code ?? undefined,
+                componentType: row.component_type ?? undefined,
+            },
+            author: row.author,
+            model: row.model ?? undefined,
+            promptHash: row.prompt_hash ?? undefined,
+            parentRevisionId: row.parent_revision_id ?? undefined,
+            evaluationId: row.evaluation_id ?? undefined,
+            verdict: row.verdict ?? undefined,
+            status: row.status,
+            consentedBy: row.consented_by ?? undefined,
+            consentedAt: row.consented_at ?? undefined,
+            activatedAt: row.activated_at ?? undefined,
+            rolledBackAt: row.rolled_back_at ?? undefined,
+            rollbackReason: row.rollback_reason ?? undefined,
+            createdAt: row.created_at,
+            updatedAt: row.updated_at,
+            tags: row.tags ? JSON.parse(row.tags) : undefined,
+        };
     }
     
-    async get(_id: string): Promise<Revision | undefined> {
-        throw new Error('SQLiteRevisionDriver not yet implemented');
+    async create(revision: Omit<Revision, 'id' | 'createdAt' | 'updatedAt' | 'status'>): Promise<Revision> {
+        await this.init(this.config);
+        
+        const now = new Date().toISOString();
+        const id = `rev_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
+        
+        const fullRevision: Revision = {
+            ...revision,
+            id,
+            status: 'draft',
+            createdAt: now,
+            updatedAt: now,
+        };
+        
+        this.db.prepare(`
+            INSERT INTO revisions (
+                id, seam_role, strategy_id, seam_id, version, params, code, component_type,
+                author, model, prompt_hash, parent_revision_id, evaluation_id, verdict,
+                status, consented_by, consented_at, activated_at, rolled_back_at, rollback_reason,
+                created_at, updated_at, tags
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `).run(
+            fullRevision.id,
+            fullRevision.seamRole,
+            fullRevision.strategy.id,
+            fullRevision.strategy.seamId,
+            fullRevision.strategy.version,
+            JSON.stringify(fullRevision.strategy.params),
+            fullRevision.strategy.code ?? null,
+            fullRevision.strategy.componentType ?? null,
+            fullRevision.author,
+            fullRevision.model ?? null,
+            fullRevision.promptHash ?? null,
+            fullRevision.parentRevisionId ?? null,
+            fullRevision.evaluationId ?? null,
+            fullRevision.verdict ?? null,
+            fullRevision.status,
+            fullRevision.consentedBy ?? null,
+            fullRevision.consentedAt ?? null,
+            fullRevision.activatedAt ?? null,
+            fullRevision.rolledBackAt ?? null,
+            fullRevision.rollbackReason ?? null,
+            fullRevision.createdAt,
+            fullRevision.updatedAt,
+            fullRevision.tags ? JSON.stringify(fullRevision.tags) : null
+        );
+        
+        return fullRevision;
     }
     
-    async getActive(_seamRole: string): Promise<Revision | undefined> {
-        throw new Error('SQLiteRevisionDriver not yet implemented');
+    async get(id: string): Promise<Revision | undefined> {
+        await this.init(this.config);
+        
+        const row = this.db.prepare('SELECT * FROM revisions WHERE id = ?').get(id);
+        return row ? this.rowToRevision(row) : undefined;
     }
     
-    async updateStatus(_id: string, _status: RevisionStatus, _metadata: Partial<Revision>): Promise<Revision | undefined> {
-        throw new Error('SQLiteRevisionDriver not yet implemented');
+    async getActive(seamRole: string): Promise<Revision | undefined> {
+        await this.init(this.config);
+        
+        const row = this.db.prepare(`
+            SELECT * FROM revisions 
+            WHERE seam_role = ? AND status = 'active' 
+            ORDER BY created_at DESC 
+            LIMIT 1
+        `).get(seamRole);
+        
+        return row ? this.rowToRevision(row) : undefined;
     }
     
-    async activate(_id: string, _userId: string): Promise<Revision | undefined> {
-        throw new Error('SQLiteRevisionDriver not yet implemented');
+    async updateStatus(id: string, status: RevisionStatus, metadata: Partial<Revision>): Promise<Revision | undefined> {
+        await this.init(this.config);
+        
+        const revision = await this.get(id);
+        if (!revision) return undefined;
+        
+        const updated: Revision = {
+            ...revision,
+            status,
+            updatedAt: new Date().toISOString(),
+            ...metadata,
+        };
+        
+        this.db.prepare(`
+            UPDATE revisions SET
+                status = ?,
+                updated_at = ?,
+                verdict = ?,
+                consented_by = ?,
+                consented_at = ?,
+                activated_at = ?,
+                rolled_back_at = ?,
+                rollback_reason = ?,
+                tags = ?
+            WHERE id = ?
+        `).run(
+            updated.status,
+            updated.updatedAt,
+            updated.verdict ?? null,
+            updated.consentedBy ?? null,
+            updated.consentedAt ?? null,
+            updated.activatedAt ?? null,
+            updated.rolledBackAt ?? null,
+            updated.rollbackReason ?? null,
+            updated.tags ? JSON.stringify(updated.tags) : null,
+            id
+        );
+        
+        return updated;
     }
     
-    async search(_query: RevisionSearchQuery): Promise<Revision[]> {
-        throw new Error('SQLiteRevisionDriver not yet implemented');
+    async activate(id: string, userId: string): Promise<Revision | undefined> {
+        await this.init(this.config);
+        
+        const revision = await this.get(id);
+        if (!revision) return undefined;
+        
+        // Find current active for this seam
+        const currentActive = await this.getActive(revision.seamRole);
+        
+        // Roll back current active
+        if (currentActive && currentActive.id !== id) {
+            await this.updateStatus(currentActive.id, 'rolled-back', {
+                rollbackReason: `Superseded by ${id}`,
+                rolledBackAt: new Date().toISOString(),
+            });
+        }
+        
+        // Activate new revision
+        return this.updateStatus(id, 'active', {
+            activatedAt: new Date().toISOString(),
+            consentedBy: userId,
+            consentedAt: new Date().toISOString(),
+        });
+    }
+    
+    async search(query: RevisionSearchQuery): Promise<Revision[]> {
+        await this.init(this.config);
+        
+        let sql = 'SELECT * FROM revisions WHERE 1=1';
+        const params: any[] = [];
+        
+        if (query.seamRole) {
+            sql += ' AND seam_role = ?';
+            params.push(query.seamRole);
+        }
+        if (query.status) {
+            sql += ' AND status = ?';
+            params.push(query.status);
+        }
+        if (query.author) {
+            sql += ' AND author = ?';
+            params.push(query.author);
+        }
+        if (query.tags && query.tags.length > 0) {
+            // For simplicity, we'll filter tags in memory
+            // A proper implementation would use JSON functions
+        }
+        if (query.since) {
+            sql += ' AND created_at >= ?';
+            params.push(query.since);
+        }
+        if (query.until) {
+            sql += ' AND created_at <= ?';
+            params.push(query.until);
+        }
+        
+        sql += ' ORDER BY created_at DESC';
+        
+        if (query.offset) {
+            sql += ' OFFSET ?';
+            params.push(query.offset);
+        }
+        if (query.limit) {
+            sql += ' LIMIT ?';
+            params.push(query.limit);
+        }
+        
+        const rows = this.db.prepare(sql).all(...params);
+        let results = rows.map((row: any) => this.rowToRevision(row));
+        
+        // Filter tags in memory if needed
+        if (query.tags && query.tags.length > 0) {
+            results = results.filter(r => r.tags?.some(t => query.tags!.includes(t)));
+        }
+        
+        return results;
     }
     
     async count(): Promise<number> {
-        throw new Error('SQLiteRevisionDriver not yet implemented');
+        await this.init(this.config);
+        
+        const row = this.db.prepare('SELECT COUNT(*) as count FROM revisions').get();
+        return row?.count ?? 0;
     }
     
     async close(): Promise<void> {
+        if (this.db) {
+            this.db.close();
+            this.db = null;
+        }
         this.initialized = false;
     }
 }
