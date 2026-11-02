@@ -1,7 +1,7 @@
 # TODO.13 — Generalization Layer: From Kernel to Platform
 
 **Supersedes:** Nothing. Extends TODO.12 Phase 6+.
-**Status:** Track 1 Complete — Track 2 Complete — Track 3 Pending
+**Status:** Track 1 Complete — Track 2 Complete — Track 3 Complete
 **Shape:** Three consolidated tracks + one cross-cutting metaprogramming layer. Each track is a *replaceable module* behind a stable interface. No framework rewrite.
 
 ---
@@ -70,15 +70,15 @@ Make the *mechanisms* of TODO.12 (search, verdict, seams, cases, ledger, frictio
 **Depends on:** Track 1 (S1, S4, S5, S6), Track 2 (R3 for seam-aware evaluators)
 **Unifies:** VerdictEngine (C1-C3, C8-C12), SplitStrategy (C4, C7), CaseStore (C5), EventStore (D1-D2), Friction config (D4), Digest pipeline (D5)
 
-| Task | Description | Effort | Consolidates |
-|------|-------------|--------|--------------|
-| **E1** | `VerdictEngine` interface + registry (McNemar, Bayesian, Sequential, LLM-judge, Human-judge) | M | C1-C3, C8-C12 |
-| **E2** | `SplitStrategy` interface + registry (fixed, temporal, stratified, adversarial, holdout-rotation) | S | C4, C7 |
-| **E3** | `CaseStore` interface + implementations (filesystem, SQLite, in-memory) | S | C5 |
-| **E4** | `EventStore` interface + implementations (JSONL, SQLite) | S | D1, D2 |
-| **E5** | `DigestPipeline` as composable stages (filter → aggregate → rank → render) | M | D4, D5 |
-| **E6** | Governance gate: only `evidenceClass === 'measured'` can auto-activate (or explicit consent) | S | C11 |
-| **E7** | Calibration tracker: LLM vs measured agreement rate in ledger | S | C12 |
+| Task | Description | Effort | Consolidates | Status |
+|------|-------------|--------|--------------|--------|
+| **E1** | `VerdictEngine` interface + registry (McNemar, Bayesian, Sequential, LLM-judge, Human-judge) | M | C1-C3, C8-C12 | ✅ Done |
+| **E2** | `SplitStrategy` interface + registry (fixed, temporal, stratified, adversarial, holdout-rotation) | S | C4, C7 | ✅ Done |
+| **E3** | `CaseStore` interface + implementations (filesystem, SQLite, in-memory) | S | C5 | ✅ Done |
+| **E4** | `EventStore` interface + implementations (JSONL, SQLite) | S | D1, D2 | ✅ Done |
+| **E5** | `DigestPipeline` as composable stages (filter → aggregate → rank → render) | M | D4, D5 | ✅ Done |
+| **E6** | Governance gate: only `evidenceClass === 'measured'` can auto-activate (or explicit consent) | S | C11 | ✅ Done |
+| **E7** | Calibration tracker: LLM vs measured agreement rate in ledger | S | C12 | ✅ Done |
 
 **Deliverable:** `core/src/eval/verdictEngines/`, `core/src/eval/splitStrategies/`, `core/src/eval/caseStore/`, `core/src/telemetry/eventStore/`, `core/src/telemetry/digestPipeline/`.
 
@@ -105,7 +105,7 @@ Make the *mechanisms* of TODO.12 (search, verdict, seams, cases, ledger, frictio
 |-------|------|----------|-------------------|--------|
 | **13.0** | Track 1 (S1-S7) | 2 weeks | `pnpm lint:schemas` passes; `seam-definitions.json` emitted; all Zod schemas compile | ✅ **Complete** |
 | **13.1** | Track 2 (R1-R7) | 2 weeks | `strategyResolverInit.ts` < 100 lines; new seam works in < 30 min; optimizer config declarative | ✅ **Complete** |
-| **13.2** | Track 3 (E1-E7) | 2 weeks | LLM/Human judge plugins work; matrix tests pass; digest pipeline composable | ⏳ Pending |
+| **13.2** | Track 3 (E1-E7) | 2 weeks | LLM/Human judge plugins work; matrix tests pass; digest pipeline composable | ✅ **Complete** |
 
 **Total: ~6 weeks** (vs. 7 weeks in v1). Sequential dependency order eliminates integration thrash.
 
@@ -181,15 +181,27 @@ Make the *mechanisms* of TODO.12 (search, verdict, seams, cases, ledger, frictio
 
 ---
 
-## 📝 Next Actions (Track 3 — Week 3-5)
+## 📝 Next Actions (Post-Track 3)
 
-1. **E1** Create `VerdictEngine` interface + registry (McNemar, Bayesian, Sequential, LLM-judge, Human-judge)
-2. **E2** Create `SplitStrategy` interface + registry (fixed, temporal, stratified, adversarial, holdout-rotation)
-3. **E3** Create `CaseStore` interface + implementations (filesystem, SQLite, in-memory)
-4. **E4** Create `EventStore` interface + implementations (JSONL, SQLite)
-5. **E5** `DigestPipeline` as composable stages (filter → aggregate → rank → render)
-6. **E6** Governance gate: only `evidenceClass === 'measured'` can auto-activate (or explicit consent)
-7. **E7** Calibration tracker: LLM vs measured agreement rate in ledger
+All three tracks are complete. The generalization layer is implemented with:
+
+- ✅ **VerdictEngine** registry with 5 engines (McNemar, Bayesian, Sequential, LLM-judge, Human-judge)
+- ✅ **SplitStrategy** registry with 5 strategies (fixed, temporal, stratified, adversarial, holdout-rotation)
+- ✅ **CaseStore** interface with 3 implementations (filesystem, SQLite, in-memory)
+- ✅ **EventStore** interface with 2 implementations (JSONL, SQLite)
+- ✅ **DigestPipeline** composable stages (filter → aggregate → rank → render)
+- ✅ **Governance gate** (evidenceClass = 'measured' required for auto-activation)
+- ✅ **Calibration tracker** (LLM vs measured agreement rate in ledger)
+
+### Matrix Test Gate
+- 5 VerdictEngines × 5 SplitStrategies × 3 CaseStores × 2 EventStores = 150 combinations
+- CI can now run matrix tests to catch cross-product bugs
+
+### Remaining Work (Optional Enhancements)
+1. Add `ResolutionStrategy` interface + implementations
+2. Add `RevisionDriver` interface + implementations
+3. Performance benchmarks for all plugins
+4. Documentation and usage examples
 
 ---
 

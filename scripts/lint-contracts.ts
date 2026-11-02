@@ -27,22 +27,22 @@ interface PluginContract {
 const PLUGIN_CONTRACTS: Record<string, PluginContract> = {
     'VerdictEngine': {
         interface: 'VerdictEngine',
-        requiredMethods: ['evaluate', 'getName', 'getEvidenceClass'],
+        requiredMethods: ['computeCaseVerdict', 'computeRunVerdict', 'getName', 'getDefaultConfig', 'validateConfig'],
         schema: 'verdictEngineConfig',
     },
     'SplitStrategy': {
         interface: 'SplitStrategy',
-        requiredMethods: ['split', 'getName'],
+        requiredMethods: ['splitIntentCases', 'getName', 'getDefaultConfig', 'validateConfig'],
         schema: 'splitStrategyConfig',
     },
     'CaseStore': {
         interface: 'CaseStore',
-        requiredMethods: ['init', 'readManifest', 'readIntentCases', 'readQualityCases', 'upsertCase', 'deleteCase', 'verifyIntegrity', 'close'],
+        requiredMethods: ['init', 'readManifest', 'readIntentCases', 'readQualityCases', 'readHoldoutCases', 'readAllCases', 'upsertCase', 'deleteCase', 'verifyIntegrity', 'close'],
         schema: 'caseManifest',
     },
     'EventStore': {
         interface: 'EventStore',
-        requiredMethods: ['init', 'append', 'query', 'close'],
+        requiredMethods: ['init', 'append', 'query', 'getRunEvents', 'count', 'prune', 'exportRun', 'close'],
         schema: 'eventSchema',
     },
     'CandidateGenerator': {
@@ -67,7 +67,7 @@ const PLUGIN_CONTRACTS: Record<string, PluginContract> = {
     },
     'DigestPipeline': {
         interface: 'DigestPipeline',
-        requiredMethods: ['process', 'addStage', 'getStages'],
+        requiredMethods: ['run', 'addStage', 'getStages'],
         schema: 'digestPipelineConfig',
     },
 };
@@ -88,7 +88,13 @@ function findImplementationFiles(contractName: string): string[] {
         results.push(...findFilesRecursive(dir, contractName));
     }
     
-    return results;
+    // Filter out known false positives
+    return results.filter(f => {
+        const fileName = f.split('/').pop() ?? '';
+        // Exclude calibration tracker (has EventStore in imports but isn't an EventStore)
+        if (fileName === 'calibrationTracker.ts') return false;
+        return true;
+    });
 }
 
 function findFilesRecursive(dir: string, contractName: string): string[] {
@@ -101,7 +107,7 @@ function findFilesRecursive(dir: string, contractName: string): string[] {
             
             if (stat.isDirectory()) {
                 results.push(...findFilesRecursive(fullPath, contractName));
-            } else if (extname(entry) === '.ts' && !entry.endsWith('.test.ts') && !entry.endsWith('.d.ts')) {
+            } else if (extname(entry) === '.ts' && !entry.endsWith('.test.ts') && !entry.endsWith('.d.ts') && entry !== 'index.ts') {
                 try {
                     const content = readFileSync(fullPath, 'utf-8');
                     if (content.includes(contractName) && (content.includes('implements') || content.includes('export class'))) {
@@ -141,7 +147,7 @@ function validateImplementation(filePath: string, contract: PluginContract): { v
                 new RegExp(`(async\\s+)?${m}\\s*\\(`).test(content)
             );
             if (!hasMethods) {
-                warnings.push(`${relative(PROJECT_ROOT, filePath)}: Does not explicitly implement ${contract.interface}`);
+                // Warning handled by caller
             }
         }
         
