@@ -65,6 +65,17 @@ export {
     resetRevisionStore 
 } from './telemetry/revisionStore.js';
 export { 
+    RevisionDriver, 
+    JSONLRevisionDriver, 
+    InMemoryRevisionDriver, 
+    SQLiteRevisionDriver, 
+    RevisionDriverRegistry,
+    getRevisionDriverRegistry,
+    resetRevisionDriverRegistry,
+    type RevisionDriverConfig,
+    type RevisionSearchQuery
+} from './telemetry/revisionDriver.js';
+export { 
     Journal, 
     FrictionEvent, 
     FrictionAggregate, 

@@ -1,7 +1,7 @@
 # TODO.13 — Generalization Layer: From Kernel to Platform
 
 **Supersedes:** Nothing. Extends TODO.12 Phase 6+.
-**Status:** Track 1 Complete — Track 2 Complete — Track 3 Complete
+**Status:** Track 1 Complete — Track 2 Complete — Track 3 Complete — ResolutionStrategy & RevisionDriver Complete
 **Shape:** Three consolidated tracks + one cross-cutting metaprogramming layer. Each track is a *replaceable module* behind a stable interface. No framework rewrite.
 
 ---
@@ -192,14 +192,16 @@ All three tracks are complete. The generalization layer is implemented with:
 - ✅ **DigestPipeline** composable stages (filter → aggregate → rank → render)
 - ✅ **Governance gate** (evidenceClass = 'measured' required for auto-activation)
 - ✅ **Calibration tracker** (LLM vs measured agreement rate in ledger)
+- ✅ **ResolutionStrategy** interface with 7 implementations (override, experiment, revision, manual-profile, policy, default-profile, fallback)
+- ✅ **RevisionDriver** interface with 3 implementations (JSONL, InMemory, SQLite stub)
 
 ### Matrix Test Gate
 - 5 VerdictEngines × 5 SplitStrategies × 3 CaseStores × 2 EventStores = 150 combinations
 - CI can now run matrix tests to catch cross-product bugs
 
 ### Remaining Work (Optional Enhancements)
-1. Add `ResolutionStrategy` interface + implementations
-2. Add `RevisionDriver` interface + implementations
+1. ✅ Add `ResolutionStrategy` interface + implementations (7 strategies: override, experiment, revision, manual-profile, policy, default-profile, fallback)
+2. ✅ Add `RevisionDriver` interface + implementations (3 drivers: JSONL, InMemory, SQLite stub)
 3. Performance benchmarks for all plugins
 4. Documentation and usage examples
 
