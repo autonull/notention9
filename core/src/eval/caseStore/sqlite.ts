@@ -195,13 +195,14 @@ export class SQLiteCaseStore implements CaseStore {
         const rows = this.db.prepare('SELECT content FROM cases WHERE family = ? AND split = ?')
             .all('intent', split) as any[];
         
+        const manifest = await this.readManifest();
+        
         return rows.map(row => {
             const caseData = JSON.parse(row.content) as IntentCase;
             
             // Verify hash
             const content = JSON.stringify(caseData);
             const computedHash = sha256(content).slice(0, 16);
-            const manifest = await this.readManifest();
             const entry = manifest.cases.find(c => c.id === caseData.id);
             if (entry && computedHash !== entry.hash) {
                 throw new Error(`Case hash mismatch for ${caseData.id}: expected ${entry.hash}, got ${computedHash}`);
@@ -217,13 +218,14 @@ export class SQLiteCaseStore implements CaseStore {
         const rows = this.db.prepare('SELECT content FROM cases WHERE family = ? AND quality_family = ?')
             .all('quality', qualityFamily) as any[];
         
+        const manifest = await this.readManifest();
+        
         return rows.map(row => {
             const caseData = JSON.parse(row.content) as QualityCase;
             
             // Verify hash
             const content = JSON.stringify(caseData);
             const computedHash = sha256(content).slice(0, 16);
-            const manifest = await this.readManifest();
             const entry = manifest.cases.find(c => c.id === caseData.id);
             if (entry && computedHash !== entry.hash) {
                 throw new Error(`Case hash mismatch for ${caseData.id}: expected ${entry.hash}, got ${computedHash}`);
