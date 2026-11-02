@@ -17,6 +17,7 @@ import {
 import { DEFAULT_PROFILES, DEFAULT_POLICY, DEFAULT_MATCH_DISPLAY_EXPERIMENT } from './profileDefaults.js';
 import { SEAM_ROLES, resolveSeamId } from '../constants/seams.js';
 import { getRevisionStore, type Revision } from '../telemetry/revisionStore.js';
+import { patchProfileRegistryForDataDrivenResolution } from '../optimizer/resolutionPipeline.js';
 
 /**
  * Profile registry - manages profiles, policies, and user configs
@@ -622,6 +623,9 @@ export class ProfileRegistry {
 
 // Singleton instance
 export const profileRegistry = new ProfileRegistry();
+
+// Apply data-driven resolution patch
+patchProfileRegistryForDataDrivenResolution(profileRegistry);
 
 // Re-export types for consumers
 export type {

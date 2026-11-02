@@ -1,7 +1,7 @@
 # TODO.13 — Generalization Layer: From Kernel to Platform
 
 **Supersedes:** Nothing. Extends TODO.12 Phase 6+.
-**Status:** Track 1 Complete — Track 2 Complete — Track 3 Complete — ResolutionStrategy & RevisionDriver Complete
+**Status:** Track 1 Complete — Track 2 Complete — Track 3 Complete — ResolutionStrategy & RevisionDriver Complete — ProfileRegistry Data-Driven Resolution Applied
 **Shape:** Three consolidated tracks + one cross-cutting metaprogramming layer. Each track is a *replaceable module* behind a stable interface. No framework rewrite.
 
 ---
@@ -177,7 +177,7 @@ Make the *mechanisms* of TODO.12 (search, verdict, seams, cases, ledger, frictio
 2. **Write `scripts/generate-definitions.ts`** — ts-morph scan of strategies → `seam-definitions.json` ✅
 3. **Add `pnpm lint:schemas`** — validates all emitted JSON against Zod schemas ✅
 4. **Add `pnpm lint:contracts`** — validates plugin interfaces ✅
-5. **Refactor `ProfileRegistry`** to read resolution steps from seam definitions (delete hardcoded arrays) ⏳
+5. **Refactor `ProfileRegistry`** to read resolution steps from seam definitions (delete hardcoded arrays) ✅
 
 ---
 
@@ -194,6 +194,7 @@ All three tracks are complete. The generalization layer is implemented with:
 - ✅ **Calibration tracker** (LLM vs measured agreement rate in ledger)
 - ✅ **ResolutionStrategy** interface with 7 implementations (override, experiment, revision, manual-profile, policy, default-profile, fallback)
 - ✅ **RevisionDriver** interface with 3 implementations (JSONL, InMemory, SQLite stub)
+- ✅ **ProfileRegistry** patched for data-driven resolution (reads steps from seam definitions)
 
 ### Matrix Test Gate
 - 5 VerdictEngines × 5 SplitStrategies × 3 CaseStores × 2 EventStores = 150 combinations
@@ -204,6 +205,7 @@ All three tracks are complete. The generalization layer is implemented with:
 2. ✅ Add `RevisionDriver` interface + implementations (3 drivers: JSONL, InMemory, SQLite stub)
 3. Performance benchmarks for all plugins
 4. Documentation and usage examples
+5. Matrix test runner for CI (4 engines × 3 splits × 2 stores = 24 combos minimum)
 
 ---
 
