@@ -61,8 +61,8 @@ export class JSONLRevisionDriver extends BaseRevisionDriver implements Registrab
         return { valid: errors.length === 0, errors };
     }
 
-    async init(config: RevisionDriverConfig): Promise<void> {
-        await super.init(config);
+    protected async onInit(): Promise<void> {
+        await super.onInit();
         
         this.filePath = this.config.filePath as string ?? this.filePath;
         
@@ -99,47 +99,6 @@ export class JSONLRevisionDriver extends BaseRevisionDriver implements Registrab
         const { appendFileSync } = require('node:fs');
         const line = JSON.stringify(revision) + '\n';
         appendFileSync(this.filePath, line, 'utf-8');
-    }
-
-    // Override create to use async persistRevision
-    async create(revision: Omit<Revision, 'id' | 'createdAt' | 'updatedAt' | 'status'>): Promise<Revision> {
-        await this.init(this.config);
-        
-        const now = new Date().toISOString();
-        const id = `rev_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
-        
-        const fullRevision: Revision = {
-            ...revision,
-            id,
-            status: 'draft',
-            createdAt: now,
-            updatedAt: now,
-        };
-        
-        this.indexRevision(fullRevision);
-        await this.persistRevision(fullRevision);
-        
-        return fullRevision;
-    }
-
-    // Override updateStatus to use async persistRevision
-    async updateStatus(id: string, status: RevisionStatus, metadata: Partial<Revision>): Promise<Revision | undefined> {
-        await this.init(this.config);
-        
-        const revision = this.revisions.get(id);
-        if (!revision) return undefined;
-        
-        const updated: Revision = {
-            ...revision,
-            status,
-            updatedAt: new Date().toISOString(),
-            ...metadata,
-        };
-        
-        this.updateIndex(updated);
-        await this.persistRevision(updated);
-        
-        return updated;
     }
 }
 

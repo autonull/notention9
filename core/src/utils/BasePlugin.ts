@@ -1,6 +1,6 @@
 /**
  * Base Plugin Classes
- * Eliminates boilerplate across all plugin types
+ * Unified base classes eliminating boilerplate across all plugin types
  */
 
 import { z } from 'zod';
@@ -16,8 +16,10 @@ export interface BasePlugin<C extends Record<string, unknown> = Record<string, u
     validateConfig(config: C): { valid: boolean; errors: string[] };
 }
 
-// --- Abstract Base Plugin (for instance-based plugins) ---
-
+/**
+ * Abstract base class for all instance-based plugins
+ * Provides common config handling, init lifecycle, and name/description
+ */
 export abstract class AbstractBasePlugin<C extends Record<string, unknown> = Record<string, unknown>> implements BasePlugin<C> {
     abstract readonly name: string;
     abstract readonly description: string;
@@ -31,18 +33,42 @@ export abstract class AbstractBasePlugin<C extends Record<string, unknown> = Rec
 }
 
 // --- Mixin for Registrable plugins ---
-
 export type RegistrablePlugin<P extends BasePlugin> = P & {
     getDefaultConfig(): ReturnType<P['getDefaultConfig']>;
     validateConfig(config: ReturnType<P['getDefaultConfig']>): { valid: boolean; errors: string[] };
 };
+
+/**
+ * Base class for plugins with async initialization
+ * Adds init lifecycle and config management
+ */
+export abstract class AsyncInitPlugin<C extends Record<string, unknown> = Record<string, unknown>> extends AbstractBasePlugin<C> {
+    protected initialized = false;
+    protected config: C = {} as C;
+
+    async init(config?: Partial<C>): Promise<void> {
+        if (this.initialized) return;
+        this.config = { ...this.getDefaultConfig(), ...config } as C;
+        await this.onInit();
+        this.initialized = true;
+    }
+
+    /** Override for plugin-specific initialization logic */
+    protected async onInit(): Promise<void> {
+        // no-op by default
+    }
+
+    getConfig(): C {
+        return this.config;
+    }
+}
 
 // --- Base Candidate Generator ---
 
 import type { StrategyParamConfig, OptimizerCandidate, GeneratorOptions, CandidateProvenance } from '../optimizer/types.js';
 import type { SearchSpace } from '../schemas/paramSpec.js';
 
-export abstract class BaseCandidateGenerator implements BasePlugin<GeneratorOptions> {
+export abstract class BaseCandidateGenerator extends AbstractBasePlugin<GeneratorOptions> {
     abstract readonly name: string;
     abstract readonly description: string;
     readonly configSchema?: z.ZodSchema<GeneratorOptions> = undefined;
@@ -100,7 +126,7 @@ export abstract class BaseCandidateGenerator implements BasePlugin<GeneratorOpti
 
 import type { Revision, RevisionStatus, RevisionSearchQuery, RevisionDriverConfig } from '../telemetry/types.js';
 
-export abstract class BaseRevisionDriver implements BasePlugin<RevisionDriverConfig> {
+export abstract class BaseRevisionDriver extends AsyncInitPlugin<RevisionDriverConfig> {
     abstract readonly name: string;
     abstract readonly description: string;
     readonly configSchema?: z.ZodSchema<RevisionDriverConfig> = undefined;
@@ -108,8 +134,6 @@ export abstract class BaseRevisionDriver implements BasePlugin<RevisionDriverCon
     protected revisions = new Map<string, Revision>();
     protected seamIndex = new Map<string, string[]>();
     protected statusIndex = new Map<RevisionStatus, Set<string>>();
-    protected initialized = false;
-    protected config: RevisionDriverConfig = {};
 
     abstract getDefaultConfig(): RevisionDriverConfig;
 
@@ -131,10 +155,8 @@ export abstract class BaseRevisionDriver implements BasePlugin<RevisionDriverCon
         return this.name;
     }
 
-    async init(config: RevisionDriverConfig): Promise<void> {
-        if (this.initialized) return;
-        this.config = { ...this.getDefaultConfig(), ...config };
-        this.initialized = true;
+    protected async onInit(): Promise<void> {
+        // Default no-op - subclasses can override
     }
 
     protected indexRevision(revision: Revision): void {
@@ -150,14 +172,11 @@ export abstract class BaseRevisionDriver implements BasePlugin<RevisionDriverCon
     }
 
     protected removeFromIndex(revision: Revision): void {
-        // Remove from seam index
         const seamRevisions = this.seamIndex.get(revision.seamRole);
         if (seamRevisions) {
             const idx = seamRevisions.indexOf(revision.id);
             if (idx >= 0) seamRevisions.splice(idx, 1);
         }
-
-        // Remove from status index
         const statusSet = this.statusIndex.get(revision.status);
         if (statusSet) {
             statusSet.delete(revision.id);
@@ -303,7 +322,7 @@ export abstract class BaseRevisionDriver implements BasePlugin<RevisionDriverCon
 import type { SeamRole } from '../ui/strategy.js';
 import type { ResolutionContext, ResolvedStrategy, ResolutionStrategyConfig } from '../ui/resolutionStrategy.js';
 
-export abstract class BaseResolutionStrategy implements BasePlugin<ResolutionStrategyConfig> {
+export abstract class BaseResolutionStrategy extends AbstractBasePlugin<ResolutionStrategyConfig> {
     abstract readonly name: string;
     abstract readonly description: string;
     readonly seamRoles?: SeamRole[];

@@ -76,14 +76,15 @@ export interface Provenance {
 export class StrategyRegistry {
     private strategies = new Map<string, Map<string, Strategy>>(); // seam -> id -> strategy
 
-    register(seam: Seam, strategy: Strategy): void {
-        if (!this.strategies.has(seam.id)) {
-            this.strategies.set(seam.id, new Map());
+    register(strategy: Strategy): void {
+        const seamId = strategy.seam.id;
+        if (!this.strategies.has(seamId)) {
+            this.strategies.set(seamId, new Map());
         }
-        const seamStrategies = this.strategies.get(seam.id)!;
+        const seamStrategies = this.strategies.get(seamId)!;
         
         if (seamStrategies.has(strategy.id)) {
-            throw new Error(`Strategy '${strategy.id}' already registered for seam '${seam.id}'`);
+            throw new Error(`Strategy '${strategy.id}' already registered for seam '${seamId}'`);
         }
         
         seamStrategies.set(strategy.id, strategy);

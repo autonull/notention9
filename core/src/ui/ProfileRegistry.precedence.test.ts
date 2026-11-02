@@ -27,22 +27,14 @@ function createTestRegistries() {
     const strategyRegistry = new StrategyRegistry();
     const seamRole: SeamRole = SEAM_ROLES.CAPTURE;
 
-    // Register a seam
-    const seam: Seam = {
-        id: 'capture-0',
-        name: 'Capture',
-        description: 'Capture seam',
-        propsShape: {},
-        components: [],
-        role: 'capture',
-    };
-    strategyRegistry.register(seam, createMockStrategy('baseline', seamRole));
-    strategyRegistry.register(seam, createMockStrategy('override-strategy', seamRole));
-    strategyRegistry.register(seam, createMockStrategy('experiment-strategy', seamRole));
-    strategyRegistry.register(seam, createMockStrategy('manual-profile-strategy', seamRole));
-    strategyRegistry.register(seam, createMockStrategy('policy-strategy', seamRole));
-    strategyRegistry.register(seam, createMockStrategy('default-profile-strategy', seamRole));
-    strategyRegistry.register(seam, createMockStrategy('fallback-strategy', seamRole));
+    // Register strategies
+    strategyRegistry.register(createMockStrategy('baseline', seamRole));
+    strategyRegistry.register(createMockStrategy('override-strategy', seamRole));
+    strategyRegistry.register(createMockStrategy('experiment-strategy', seamRole));
+    strategyRegistry.register(createMockStrategy('manual-profile-strategy', seamRole));
+    strategyRegistry.register(createMockStrategy('policy-strategy', seamRole));
+    strategyRegistry.register(createMockStrategy('default-profile-strategy', seamRole));
+    strategyRegistry.register(createMockStrategy('fallback-strategy', seamRole));
 
     // Register profiles
     profileRegistry.registerProfile({
@@ -134,10 +126,9 @@ describe('ProfileRegistry: 5-layer precedence', () => {
         profileRegistry.registerExperiment(experiment);
 
         // Register the revision strategy in the registry
-        const seam: Seam = { id: 'capture-0', name: 'Capture', description: '', propsShape: {}, components: [], role: 'capture' };
         const revisionStrategy = createMockStrategy('revision-strategy', seamRole);
         revisionStrategy.getDefaultProps = () => ({ testProp: 'from-revision', autoFocus: true });
-        strategyRegistry.register(seam, revisionStrategy);
+        strategyRegistry.register(revisionStrategy);
         
         // Create an active revision for the capture seam
         const revisionStore = getRevisionStore();
@@ -293,10 +284,9 @@ describe('ProfileRegistry: 5-layer precedence', () => {
         });
 
         // Register seam with only fallback strategy
-        const seam: Seam = { id: 'capture-0', name: 'Capture', description: '', propsShape: {}, components: [], role: 'capture' };
         const fallbackStrategy = createMockStrategy('fallback-strategy', seamRole);
         const newStrategyRegistry = new StrategyRegistry();
-        newStrategyRegistry.register(seam, fallbackStrategy);
+        newStrategyRegistry.register(fallbackStrategy);
 
         const resolved = profileRegistry.resolveStrategyWithMeta(userId, seamRole, newStrategyRegistry);
 

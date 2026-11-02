@@ -129,6 +129,48 @@ export class ProfileRegistry {
         this.userConfigs.set(userId, config);
     }
 
+    /**
+     * Build resolution context - shared between sync and async resolve
+     */
+    private buildResolutionContext(
+        userId: string,
+        seamRole: SeamRole,
+        strategyRegistry: StrategyRegistry,
+        revisionStore?: { getActive(seamRole: string): Promise<any> }
+    ): ResolutionContext {
+        const config = this.getUserConfig(userId);
+        const seamId = resolveSeamId(seamRole, strategyRegistry);
+
+        return {
+            userId,
+            seamRole,
+            seamId,
+            userConfig: config,
+            profiles: this.profiles,
+            policies: this.policies,
+            experiments: this.experiments,
+            assignments: this.assignments,
+            strategyRegistry,
+            revisionStore,
+        };
+    }
+
+    /**
+     * Resolve strategy using resolution strategy registry
+     * Single implementation supporting both sync and async strategies
+     */
+    private async resolveWithStrategies<P extends object = Record<string, unknown>>(
+        context: ResolutionContext,
+        strategies: Array<{ resolve(context: ResolutionContext): ResolvedStrategy | Promise<ResolvedStrategy | undefined> | undefined; appliesTo(seamRole: SeamRole): boolean }>
+    ): Promise<ResolvedStrategy<P> | undefined> {
+        for (const strategy of strategies) {
+            if (!strategy.appliesTo(context.seamRole)) continue;
+            const result = await strategy.resolve(context);
+            if (result) return result as ResolvedStrategy<P>;
+        }
+        return undefined;
+    }
+
     // Resolve strategy for a user and seam role (sync - no revision layer)
     resolveStrategy(userId: string, seamRole: SeamRole, strategyRegistry: StrategyRegistry): Strategy | undefined {
         const result = this.resolveStrategyWithMeta(userId, seamRole, strategyRegistry);
@@ -144,20 +186,7 @@ export class ProfileRegistry {
         seamRole: SeamRole,
         strategyRegistry: StrategyRegistry
     ): ResolvedStrategy<P> | undefined {
-        const config = this.getUserConfig(userId);
-        const seamId = resolveSeamId(seamRole, strategyRegistry);
-
-        const context: ResolutionContext = {
-            userId,
-            seamRole,
-            seamId,
-            userConfig: config,
-            profiles: this.profiles,
-            policies: this.policies,
-            experiments: this.experiments,
-            assignments: this.assignments,
-            strategyRegistry,
-        };
+        const context = this.buildResolutionContext(userId, seamRole, strategyRegistry);
 
         // Use resolution strategy registry (sync strategies only)
         const registry = getResolutionStrategyRegistry();
@@ -180,30 +209,17 @@ export class ProfileRegistry {
         seamRole: SeamRole,
         strategyRegistry: StrategyRegistry
     ): Promise<ResolvedStrategy<P> | undefined> {
-        const config = this.getUserConfig(userId);
-        const seamId = resolveSeamId(seamRole, strategyRegistry);
-
-        const context: ResolutionContext = {
-            userId,
-            seamRole,
-            seamId,
-            userConfig: config,
-            profiles: this.profiles,
-            policies: this.policies,
-            experiments: this.experiments,
-            assignments: this.assignments,
-            strategyRegistry,
-            revisionStore: getRevisionStore(),
-        };
+        const context = this.buildResolutionContext(
+            userId, 
+            seamRole, 
+            strategyRegistry, 
+            getRevisionStore()
+        );
 
         // Use resolution strategy registry (all strategies including revision)
         const registry = getResolutionStrategyRegistry();
         const strategies = registry.getAll();
-        for (const strategy of strategies) {
-            const result = await strategy.resolve(context);
-            if (result) return result as ResolvedStrategy<P>;
-        }
-        return undefined;
+        return this.resolveWithStrategies<P>(context, strategies);
     }
 
     /**

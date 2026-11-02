@@ -25,7 +25,7 @@ function computeHash(payload: LedgerPayload): string {
 }
 
 export class SQLiteEventStore implements EventStore {
-    private db: Database.Database;
+    private db: Database;
     private initialized = false;
     
     constructor(dbPath: string) {

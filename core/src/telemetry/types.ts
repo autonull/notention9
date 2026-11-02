@@ -3,6 +3,8 @@
  * Single source of truth for types used across ledger, revisionStore, revisionDriver
  */
 
+import type { CalibrationRecord } from '../eval/calibrationTracker.js';
+
 // --- Revision Types ---
 
 export interface StrategyArtifact {
@@ -99,7 +101,8 @@ export type LedgerEventType =
     | 'consent:denied'
     | 'optimizer:cycle:started'
     | 'optimizer:cycle:completed'
-    | 'optimizer:candidate:evaluated';
+    | 'optimizer:candidate:evaluated'
+    | 'calibration:recorded';
 
 export type LedgerPayload =
     | { type: 'run:started'; config: RunConfig; caseIds: string[] }
@@ -125,7 +128,8 @@ export type LedgerPayload =
     | { type: 'consent:denied'; revisionId: string; userId: string; reason: string }
     | { type: 'optimizer:cycle:started'; config: OptimizerConfig; manifestHash: string }
     | { type: 'optimizer:cycle:completed'; candidatesEvaluated: number; winners: number; losers: number; inconclusive: number; totalCost: OptimizerCost }
-    | { type: 'optimizer:candidate:evaluated'; candidateId: string; seamRole: string; strategyId: string; verdict: string; primaryDelta: number };
+    | { type: 'optimizer:candidate:evaluated'; candidateId: string; seamRole: string; strategyId: string; verdict: string; primaryDelta: number }
+    | { type: 'calibration:recorded'; record: CalibrationRecord };
 
 export interface RunConfig {
     manifestHash: string;

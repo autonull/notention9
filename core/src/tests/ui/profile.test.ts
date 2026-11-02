@@ -85,7 +85,7 @@ describe('ProfileRegistry', () => {
         
         // Register directly in strategy registry
         const testSeam = { id: 'capture-0', name: 'test', description: '', components: [], propsShape: {}, role: 'capture' as const };
-        strategyRegistry.register(testSeam, mockStrategy);
+        strategyRegistry.register(mockStrategy);
         
         // Set override using role
         profileRegistry.setOverride('test-user-5', 'capture', 'test-strategy');
@@ -130,7 +130,7 @@ describe('ProfileRegistry', () => {
                 render: () => null,
                 getDefaultProps: () => ({}),
             };
-            strategyRegistry.register(mockStrategy.seam, mockStrategy);
+            strategyRegistry.register(mockStrategy);
         }
         
         const resolved = profileRegistry.resolveStrategy('test-user-6', SEAM_ROLES.MATCH, strategyRegistry);

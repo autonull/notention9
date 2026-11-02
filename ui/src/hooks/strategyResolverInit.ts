@@ -126,7 +126,16 @@ export async function registerUIStrategies(): Promise<void> {
             components: def.components,
             propsShape: def.propsShape,
         };
-        strategyRegistry.register(seam);
+        // Create a minimal strategy for seam registration (placeholder component)
+        const seamStrategy = createComponentStrategy(
+            `seam-${role}`,
+            seam,
+            () => null,
+            '1.0.0',
+            {},
+            {}
+        );
+        strategyRegistry.register(seamStrategy);
     }
 
     // Import custom strategy implementations (these have custom logic beyond simple component rendering)

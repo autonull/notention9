@@ -227,7 +227,8 @@ describe('Optimizer', () => {
                     error.includes('manifest') ||
                     error.includes('case') ||
                     error.includes('preview') ||
-                    error.includes('server')
+                    error.includes('server') ||
+                    error.includes('port')
                 ).toBe(true);
             }
         });

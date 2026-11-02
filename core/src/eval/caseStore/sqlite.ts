@@ -25,7 +25,7 @@ function sha256(content: string): string {
 }
 
 export class SQLiteCaseStore implements CaseStore {
-    private db: Database.Database;
+    private db: Database;
     private manifestCache: CaseManifest | null = null;
     private initialized = false;
     

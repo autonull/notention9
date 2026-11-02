@@ -329,7 +329,7 @@ export class CalibrationTracker {
                 caseId: record.caseId,
                 revisionId: record.revisionId,
                 actor: 'system',
-                payload: { record },
+                payload: { type: 'calibration:recorded' as const, record },
             });
         } catch (e) {
             logWarn('Failed to log calibration record to ledger', e);

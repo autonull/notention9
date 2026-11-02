@@ -1,10 +1,12 @@
 /**
- * Generic Registry Base Class
- * Eliminates boilerplate for plugin/component registries
+ * Unified Registry System
+ * Eliminates boilerplate for all plugin/component/factory registries
+ * Single implementation replaces Registry, PluginRegistry, and FactoryRegistry
  */
 
 import { z } from 'zod';
 
+/** Base interface for registrable items with config validation */
 export interface Registrable {
     readonly name: string;
     readonly description: string;
@@ -13,6 +15,7 @@ export interface Registrable {
     validateConfig(config: Record<string, unknown>): { valid: boolean; errors: string[] };
 }
 
+/** Options for registry behavior */
 export interface RegistryOptions<T extends Registrable> {
     /** Allow duplicate registrations (replace existing) */
     allowReplace?: boolean;
@@ -20,6 +23,10 @@ export interface RegistryOptions<T extends Registrable> {
     errorPrefix?: string;
 }
 
+/**
+ * Unified Registry class
+ * Handles both instance-based and factory-based plugins
+ */
 export class Registry<T extends Registrable> {
     private items = new Map<string, T>();
     private readonly options: Required<RegistryOptions<T>>;
@@ -86,6 +93,11 @@ export class Registry<T extends Registrable> {
     /** Filter items by predicate */
     filter(predicate: (item: T) => boolean): T[] {
         return Array.from(this.items.values()).filter(predicate);
+    }
+
+    /** Get plugins filtered by config key */
+    getByConfigKey(key: string, value: unknown): T[] {
+        return this.filter(p => p.getDefaultConfig()[key] === value);
     }
 }
 
@@ -163,4 +175,32 @@ export function createSingletonRegistry<T>(factory: () => T): {
             instance = null;
         },
     };
+}
+
+/**
+ * Create a standard instance registry + singleton accessors
+ */
+export function createRegistry<T extends Registrable>(
+    name: string,
+    items: T[] = []
+): { registry: Registry<T>; get: () => Registry<T>; reset: () => void } {
+    const registry = new Registry<T>({ errorPrefix: `${name}Registry` });
+    for (const item of items) registry.register(item);
+    const { get, reset } = createSingletonRegistry(() => registry);
+    return { registry, get, reset };
+}
+
+/**
+ * Create a standard factory registry + singleton accessors
+ */
+export function createFactoryRegistry<T>(
+    name: string,
+    factories: Array<{ name: string; create: (...args: any[]) => T; description: string }> = []
+): { registry: FactoryRegistry<T>; get: () => FactoryRegistry<T>; reset: () => void } {
+    const registry = new FactoryRegistry<T>({ errorPrefix: `${name}Registry` });
+    for (const { name: factoryName, create, description } of factories) {
+        registry.register(factoryName, create, description);
+    }
+    const { get, reset } = createSingletonRegistry(() => registry);
+    return { registry, get, reset };
 }

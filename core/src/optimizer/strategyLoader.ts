@@ -71,7 +71,7 @@ export function autoPopulateStrategyRegistry(registry: StrategyRegistry): number
         const strategy = createStrategyFromConfig(seam, strategyConfig);
         
         try {
-            registry.register(seam, strategy);
+            registry.register(strategy);
             registered++;
         } catch (e) {
             // Strategy might already be registered (e.g., from UI package)

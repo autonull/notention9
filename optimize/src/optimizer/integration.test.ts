@@ -34,7 +34,7 @@ describe('Optimizer Integration', () => {
         // Register test seams with strategies using the global registry
         
         // Register capture seam strategies
-        strategyRegistry.register(testSeam, createComponentStrategy(
+        strategyRegistry.register(createComponentStrategy(
             'describe-it-composer',
             testSeam,
             () => null,
@@ -47,7 +47,7 @@ describe('Optimizer Integration', () => {
             }
         ));
 
-        strategyRegistry.register(testSeam, createComponentStrategy(
+        strategyRegistry.register(createComponentStrategy(
             'property-form',
             testSeam,
             () => null,
@@ -57,7 +57,7 @@ describe('Optimizer Integration', () => {
         ));
 
         // Register match seam strategies
-        strategyRegistry.register(matchSeam, createComponentStrategy(
+        strategyRegistry.register(createComponentStrategy(
             'local-match-preview',
             matchSeam,
             () => null,
@@ -66,7 +66,7 @@ describe('Optimizer Integration', () => {
             { showScore: { type: 'boolean' as const, default: true }, showDetails: { type: 'boolean' as const, default: false }, compactMode: { type: 'boolean' as const, default: false } }
         ));
 
-        strategyRegistry.register(matchSeam, createComponentStrategy(
+        strategyRegistry.register(createComponentStrategy(
             'dashboard-local-match',
             matchSeam,
             () => null,
@@ -169,7 +169,7 @@ describe('Optimizer Integration', () => {
 
     it('should only evaluate candidates with valid ParamSpec params', async () => {
         // Register a strategy without ParamSpec using global registry
-        strategyRegistry.register(testSeam, createComponentStrategy(
+        strategyRegistry.register(createComponentStrategy(
             'no-params-strategy',
             testSeam,
             () => null,
