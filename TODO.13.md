@@ -1,7 +1,7 @@
 # TODO.13 — Generalization Layer: From Kernel to Platform
 
 **Supersedes:** Nothing. Extends TODO.12 Phase 6+.
-**Status:** Track 1 Complete — Track 2 Complete — Track 3 Complete — ResolutionStrategy & RevisionDriver Complete — ProfileRegistry Data-Driven Resolution Applied — Benchmarks Complete — Documentation Complete
+**Status:** Track 1 Complete — Track 2 Complete — Track 3 Complete — ResolutionStrategy & RevisionDriver Complete — ProfileRegistry Data-Driven Resolution Applied — Benchmarks Complete — Documentation Complete — **Git Committed (677a683)**
 **Shape:** Three consolidated tracks + one cross-cutting metaprogramming layer. Each track is a *replaceable module* behind a stable interface. No framework rewrite.
 
 ---
