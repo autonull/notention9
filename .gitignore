@@ -66,3 +66,6 @@ simulator/src/**/*.d.ts
 eval/runs/
 test-*.ts
 optimize
+
+# Benchmarks
+tmp-bench/
