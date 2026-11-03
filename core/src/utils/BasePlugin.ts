@@ -5,10 +5,10 @@
 
 import { z } from 'zod';
 import { ValidationHelpers } from './Registry.js';
-import { createSeededRandom, generateCandidateId, generateRevisionId } from './common.js';
+import { createSeededRandom, generateCandidateId, generateRevisionId, isDefaultPoint } from './common.js';
 
 // Re-export for consumers
-export { createSeededRandom, generateCandidateId, generateRevisionId };
+export { createSeededRandom, generateCandidateId, generateRevisionId, isDefaultPoint };
 
 // --- Base Plugin Interface ---
 
@@ -65,22 +65,6 @@ export abstract class AsyncPlugin<C extends Record<string, unknown> = Record<str
         return this.config;
     }
 }
-
-// --- Shared utilities ---
-
-function isDefaultPoint(
-    paramSpec: Record<string, { default?: unknown }>,
-    defaultProps: Record<string, unknown>,
-    point: Record<string, unknown>
-): boolean {
-    return Object.entries(point).every(([key, value]) => {
-        const defaultVal = defaultProps[key] ?? paramSpec[key]?.default;
-        return value === defaultVal;
-    });
-}
-
-// Re-export utilities
-export { isDefaultPoint };
 
 // Re-export types for convenience
 export type { Registrable, ValidationHelpers } from './Registry.js';

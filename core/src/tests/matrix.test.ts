@@ -1,7 +1,7 @@
 /**
  * Matrix Test Runner (CI Gate)
- * Tests all plugin combinations: 4 VerdictEngines × 3 SplitStrategies × 2 CaseStores × 2 EventStores = 48 combos
- * Minimum gate: 4 engines × 3 splits × 2 stores = 24 combos
+ * Tests all plugin combinations dynamically from registries
+ * Minimum gate: 3 engines × 3 splits × 2 stores = 18 combos (excluding LLM/Human judges for CI speed)
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
@@ -24,21 +24,13 @@ vi.mock('../telemetry/eventStore/sqlite.ts', () => ({
 // Import after mocks
 import { getVerdictEngineRegistry, resetVerdictEngineRegistry } from '../eval/verdictEngines/index.js';
 import { getSplitStrategyRegistry, resetSplitStrategyRegistry } from '../eval/splitStrategies/index.js';
-import { getCaseStoreRegistry, resetCaseStoreRegistry, createFileSystemCaseStore, createInMemoryCaseStore } from '../eval/caseStore/index.js';
-import { getEventStoreRegistry, resetEventStoreRegistry, createJSONLEventStore, createSQLiteEventStore } from '../telemetry/eventStore/index.js';
-import { McNemarVerdictEngine } from '../eval/verdictEngines/mcnemar.js';
-import { BayesianVerdictEngine } from '../eval/verdictEngines/bayesian.js';
-import { SequentialVerdictEngine } from '../eval/verdictEngines/sequential.js';
-import { FixedSplitStrategy } from '../eval/splitStrategies/fixed.js';
-import { TemporalSplitStrategy } from '../eval/splitStrategies/temporal.js';
-import { StratifiedSplitStrategy } from '../eval/splitStrategies/stratified.js';
-import { FileSystemCaseStore } from '../eval/caseStore/fileSystem.js';
-import { InMemoryCaseStore } from '../eval/caseStore/inMemory.js';
-import { JSONLEventStore } from '../telemetry/eventStore/jsonl.js';
-import { SQLiteEventStore } from '../telemetry/eventStore/sqlite.js';
+import { getCaseStoreRegistry, resetCaseStoreRegistry, createInMemoryCaseStore } from '../eval/caseStore/index.js';
+import { getEventStoreRegistry, resetEventStoreRegistry, createJSONLEventStore } from '../telemetry/eventStore/index.js';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { mkdirSync, rmSync, writeFileSync, existsSync } from 'node:fs';
+
+// --- Test Data Factories ---
 
 function createTestIntentCase(id: string, split: 'search' | 'validation' | 'holdout' = 'search'): IntentCase {
     return {
@@ -111,32 +103,6 @@ function createTestManifest(): CaseManifest {
     };
 }
 
-function createTestCasesDir(tmpDir: string): string {
-    const casesDir = join(tmpDir, 'cases');
-    mkdirSync(casesDir, { recursive: true });
-    
-    const manifest = createTestManifest();
-    
-    // Write manifest
-    writeFileSync(join(casesDir, 'manifest.json'), JSON.stringify(manifest, null, 2));
-    
-    // Write individual case files
-    for (const entry of manifest.cases) {
-        let caseData: IntentCase | QualityCase;
-        if (entry.family === 'intent') {
-            caseData = createTestIntentCase(entry.id, entry.split as any);
-        } else {
-            caseData = createTestQualityCase(entry.id, entry.qualityFamily as any);
-        }
-        writeFileSync(
-            join(casesDir, entry.path),
-            JSON.stringify(caseData, null, 2)
-        );
-    }
-    
-    return casesDir;
-}
-
 function createPairedRunResult(overrides: Partial<Record<string, number>> = {}): any {
     return {
         baseline: { metrics: { completion: 0.8, steps: 3, precision: 0.75, recall: 0.8, ...overrides } },
@@ -145,31 +111,64 @@ function createPairedRunResult(overrides: Partial<Record<string, number>> = {}):
     };
 }
 
-// --- Matrix Configuration ---
+// --- Dynamic Matrix Configuration ---
 
-const VERDICT_ENGINES = ['mcnemar', 'bayesian', 'sequential'] as const; // Exclude LLM/Human for CI speed
-const SPLIT_STRATEGIES = ['fixed', 'temporal', 'stratified'] as const;
-const CASE_STORES = ['memory'] as const; // filesystem requires exact hash match
-const EVENT_STORES = ['jsonl'] as const; // SQLite is stub
+/**
+ * Get testable engine names (exclude LLM/Human for CI speed)
+ */
+function getTestableVerdictEngines(): string[] {
+    const registry = getVerdictEngineRegistry();
+    return registry.getAll()
+        .filter(e => e.evidenceClass === 'measured')
+        .map(e => e.name);
+}
 
-type VerdictEngineName = typeof VERDICT_ENGINES[number];
-type SplitStrategyName = typeof SPLIT_STRATEGIES[number];
-type CaseStoreName = typeof CASE_STORES[number];
-type EventStoreName = typeof EVENT_STORES[number];
+/**
+ * Get testable split strategies (all)
+ */
+function getTestableSplitStrategies(): string[] {
+    const registry = getSplitStrategyRegistry();
+    return registry.getAll().map(s => s.name);
+}
+
+/**
+ * Get testable case stores (exclude filesystem for hash matching)
+ */
+function getTestableCaseStores(): Array<{ name: string; create: () => any }> {
+    const registry = getCaseStoreRegistry();
+    return registry.listNames()
+        .filter(name => name !== 'filesystem' && name !== 'sqlite')
+        .map(name => ({ name, create: () => registry.create(name) }));
+}
+
+/**
+ * Get testable event stores (exclude sqlite stub)
+ */
+function getTestableEventStores(): Array<{ name: string; create: (path: string) => any }> {
+    const registry = getEventStoreRegistry();
+    return registry.listNames()
+        .filter(name => name !== 'sqlite')
+        .map(name => ({ name, create: (path: string) => registry.create(name, path) }));
+}
 
 interface MatrixCombo {
-    verdictEngine: VerdictEngineName;
-    splitStrategy: SplitStrategyName;
-    caseStore: CaseStoreName;
-    eventStore: EventStoreName;
+    verdictEngine: string;
+    splitStrategy: string;
+    caseStore: { name: string; create: () => any };
+    eventStore: { name: string; create: (path: string) => any };
 }
 
 function generateMatrix(): MatrixCombo[] {
+    const engines = getTestableVerdictEngines();
+    const splits = getTestableSplitStrategies();
+    const caseStores = getTestableCaseStores();
+    const eventStores = getTestableEventStores();
+    
     const combos: MatrixCombo[] = [];
-    for (const verdictEngine of VERDICT_ENGINES) {
-        for (const splitStrategy of SPLIT_STRATEGIES) {
-            for (const caseStore of CASE_STORES) {
-                for (const eventStore of EVENT_STORES) {
+    for (const verdictEngine of engines) {
+        for (const splitStrategy of splits) {
+            for (const caseStore of caseStores) {
+                for (const eventStore of eventStores) {
                     combos.push({ verdictEngine, splitStrategy, caseStore, eventStore });
                 }
             }
@@ -181,7 +180,7 @@ function generateMatrix(): MatrixCombo[] {
 // --- Test Suite ---
 
 const MATRIX_COMBOS = generateMatrix();
-console.log(`\n📊 Matrix Test: ${MATRIX_COMBOS.length} combinations (${VERDICT_ENGINES.length} engines × ${SPLIT_STRATEGIES.length} splits × ${CASE_STORES.length} stores × ${EVENT_STORES.length} event stores)`);
+console.log(`\n📊 Matrix Test: ${MATRIX_COMBOS.length} combinations (dynamic from registries)`);
 
 describe('Matrix Test: Plugin Combinations', () => {
     let tmpDir: string;
@@ -201,7 +200,7 @@ describe('Matrix Test: Plugin Combinations', () => {
     
     // Run each combination as a sub-test
     for (const combo of MATRIX_COMBOS) {
-        const label = `${combo.verdictEngine}/${combo.splitStrategy}/${combo.caseStore}/${combo.eventStore}`;
+        const label = `${combo.verdictEngine}/${combo.splitStrategy}/${combo.caseStore.name}/${combo.eventStore.name}`;
         
         it(`combo: ${label}`, async () => {
             // 1. Create components
@@ -214,8 +213,8 @@ describe('Matrix Test: Plugin Combinations', () => {
             expect(verdictEngine).toBeDefined();
             expect(splitStrategy).toBeDefined();
             
-            // Create case store (memory only)
-            const caseStore = createInMemoryCaseStore();
+            // Create case store (dynamic)
+            const caseStore = combo.caseStore.create();
             await caseStore.init({});
             const manifest = createTestManifest();
             // Manually populate in-memory store
@@ -229,9 +228,9 @@ describe('Matrix Test: Plugin Combinations', () => {
                 await caseStore.upsertCase(caseData);
             }
             
-            // Create event store
+            // Create event store (dynamic)
             const eventPath = join(tmpDir, 'events.jsonl');
-            const eventStore = createJSONLEventStore(eventPath);
+            const eventStore = combo.eventStore.create(eventPath);
             await eventStore.init({});
             
             // 2. Test CaseStore operations
@@ -436,7 +435,11 @@ describe('Registry Health', () => {
 // --- Config validation matrix ---
 
 describe('Config Validation Matrix', () => {
-    for (const engineName of VERDICT_ENGINES) {
+    const testableEngines = getTestableVerdictEngines();
+    const allEngines = getVerdictEngineRegistry().listNames();
+    const allSplits = getTestableSplitStrategies();
+    
+    for (const engineName of allEngines) {
         it(`${engineName} validates default config`, () => {
             const registry = getVerdictEngineRegistry();
             const engine = registry.get(engineName)!;
@@ -447,7 +450,7 @@ describe('Config Validation Matrix', () => {
         });
     }
     
-    for (const strategyName of SPLIT_STRATEGIES) {
+    for (const strategyName of allSplits) {
         it(`${strategyName} validates default config`, () => {
             const registry = getSplitStrategyRegistry();
             const strategy = registry.get(strategyName)!;
@@ -464,7 +467,7 @@ describe('Config Validation Matrix', () => {
 describe('Evidence Class Correctness', () => {
     it('measured engines: mcnemar, bayesian, sequential', () => {
         const registry = getVerdictEngineRegistry();
-        for (const name of ['mcnemar', 'bayesian', 'sequential']) {
+        for (const name of getTestableVerdictEngines()) {
             const engine = registry.get(name)!;
             expect(engine.evidenceClass).toBe('measured');
         }

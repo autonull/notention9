@@ -14,9 +14,8 @@ import type {
     BudgetConstraints,
     CandidateEvaluationResult 
 } from './types.js';
-import { createPluginRegistry, ValidationHelpers } from '../utils/Registry.js';
-import { Plugin, isDefaultPoint } from '../utils/BasePlugin.js';
-import { createSeededRandom, generateCandidateId } from '../utils/common.js';
+import { createInstanceRegistry, ValidationHelpers } from '../utils/Registry.js';
+import { Plugin, isDefaultPoint, createSeededRandom, generateCandidateId } from '../utils/BasePlugin.js';
 
 // --- SearchSpace from S1 (re-exported for convenience) ---
 export { getSearchSpace, sampleSearchSpace, gridSearchSpace, type SearchSpace } from '../schemas/paramSpec.js';
@@ -322,7 +321,7 @@ Only return valid JSON.`;
 // --- Candidate Generator Registry ---
 
 const { registry: candidateGeneratorRegistry, get: getCandidateGeneratorRegistry, reset: resetCandidateGeneratorRegistry } = 
-    createPluginRegistry<RegistrableGenerator>('CandidateGenerator', [
+    createInstanceRegistry<RegistrableGenerator>('CandidateGenerator', [
         new GridGenerator(),
         new RandomGenerator(),
         new SuccessiveHalvingGenerator(),

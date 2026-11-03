@@ -279,3 +279,18 @@ export function generateRevisionId(seed: number): string {
     const randomPart = Math.floor(random() * 0x10000000000).toString(36).toUpperCase().padStart(10, '0');
     return `rev_${randomPart}`;
 }
+
+/**
+ * Check if a parameter point equals the default values
+ * Used by candidate generators to skip default configurations
+ */
+export function isDefaultPoint(
+    paramSpec: Record<string, { default?: unknown }>,
+    defaultProps: Record<string, unknown>,
+    point: Record<string, unknown>
+): boolean {
+    return Object.entries(point).every(([key, value]) => {
+        const defaultVal = defaultProps[key] ?? paramSpec[key]?.default;
+        return value === defaultVal;
+    });
+}

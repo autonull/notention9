@@ -14,7 +14,7 @@ import type {
 import { FileSystemCaseStore } from './fileSystem.js';
 import { InMemoryCaseStore } from './inMemory.js';
 import { SQLiteCaseStore } from './sqlite.js';
-import { createPluginFactoryRegistry, FactoryRegistry } from '../../utils/Registry.js';
+import { createFactoryRegistry, FactoryRegistry } from '../../utils/Registry.js';
 
 // Re-export types from schemas (single source of truth)
 export type { 
@@ -53,7 +53,7 @@ export function createSQLiteCaseStore(dbPath: string): SQLiteCaseStore {
 import type { CaseStore } from '../../schemas/sharedTypes.js';
 
 const { registry: caseStoreRegistry, get: getCaseStoreRegistry, reset: resetCaseStoreRegistry } = 
-    createPluginFactoryRegistry<CaseStore>('CaseStore', [
+    createFactoryRegistry<CaseStore>('CaseStore', [
         { name: 'filesystem', create: () => new FileSystemCaseStore(), description: 'File-based storage with JSON cases' },
         { name: 'memory', create: () => new InMemoryCaseStore(), description: 'In-memory storage for testing' },
         { name: 'sqlite', create: (dbPath: string) => new SQLiteCaseStore(dbPath), description: 'SQLite-backed storage' },

@@ -6,7 +6,7 @@
 import type { LedgerEvent } from '../../telemetry/ledger.js';
 import { JSONLEventStore } from './jsonl.js';
 import { SQLiteEventStore } from './sqlite.js';
-import { createPluginFactoryRegistry, FactoryRegistry } from '../../utils/Registry.js';
+import { createFactoryRegistry, FactoryRegistry } from '../../utils/Registry.js';
 
 // --- EventStore Interface ---
 
@@ -62,7 +62,7 @@ export function createSQLiteEventStore(dbPath: string): SQLiteEventStore {
 // --- Registry ---
 
 const { registry: eventStoreRegistry, get: getEventStoreRegistry, reset: resetEventStoreRegistry } = 
-    createPluginFactoryRegistry<EventStore>('EventStore', [
+    createFactoryRegistry<EventStore>('EventStore', [
         { name: 'jsonl', create: (path?: string) => new JSONLEventStore(path), description: 'JSONL file-based storage' },
         { name: 'sqlite', create: (path: string) => new SQLiteEventStore(path), description: 'SQLite-backed storage' },
     ]);

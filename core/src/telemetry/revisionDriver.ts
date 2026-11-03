@@ -15,7 +15,7 @@ import type {
     RevisionDriver,
     RegistrableRevisionDriver
 } from './types.js';
-import { createPluginFactoryRegistry, ValidationHelpers } from '../utils/Registry.js';
+import { createFactoryRegistry, ValidationHelpers } from '../utils/Registry.js';
 import { AsyncPlugin, generateRevisionId } from '../utils/BasePlugin.js';
 import { createSeededRandom } from '../utils/common.js';
 import { appendFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs';
@@ -622,7 +622,7 @@ export class SQLiteRevisionDriver implements RevisionDriver {
 // --- RevisionDriver Registry ---
 
 const { registry: revisionDriverRegistry, get: getRevisionDriverRegistry, reset: resetRevisionDriverRegistry } = 
-    createPluginFactoryRegistry<RevisionDriver>('RevisionDriver', [
+    createFactoryRegistry<RevisionDriver>('RevisionDriver', [
         { name: 'jsonl', create: (...args: unknown[]) => new JSONLRevisionDriver(...(args as string[])), description: 'JSONL file-based storage' },
         { name: 'memory', create: () => new InMemoryRevisionDriver(), description: 'In-memory storage (testing)' },
         { name: 'sqlite', create: (...args: unknown[]) => new SQLiteRevisionDriver(...(args as string[])), description: 'SQLite-backed storage (stub)' },

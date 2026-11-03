@@ -181,40 +181,30 @@ export class FactoryRegistry<T> {
 }
 
 /**
- * Singleton registry manager
- * Provides getXRegistry()/resetXRegistry() pattern consistently
+ * Creates a registry manager with get/reset pattern
  */
-export function createSingletonRegistry<T>(factory: () => T): {
-    get: () => T;
-    reset: () => void;
-} {
+function createRegistryManager<T>(factory: () => T): { get: () => T; reset: () => void } {
     let instance: T | null = null;
     return {
-        get: () => {
-            if (!instance) instance = factory();
-            return instance;
-        },
-        reset: () => {
-            instance = null;
-        },
+        get: () => { if (!instance) instance = factory(); return instance; },
+        reset: () => { instance = null; },
     };
 }
 
 /**
- * Create a standard instance registry + singleton accessors
+ * Creates an instance registry with singleton accessors
  */
-export function createRegistry<T extends Registrable>(
+export function createInstanceRegistry<T extends Registrable>(
     name: string,
     items: T[] = []
 ): { registry: Registry<T>; get: () => Registry<T>; reset: () => void } {
     const registry = new Registry<T>({ errorPrefix: `${name}Registry` });
     for (const item of items) registry.register(item);
-    const { get, reset } = createSingletonRegistry(() => registry);
-    return { registry, get, reset };
+    return { registry, ...createRegistryManager(() => registry) };
 }
 
 /**
- * Create a standard factory registry + singleton accessors
+ * Creates a factory registry with singleton accessors
  */
 export function createFactoryRegistry<T>(
     name: string,
@@ -224,8 +214,7 @@ export function createFactoryRegistry<T>(
     for (const { name: factoryName, create, description } of factories) {
         registry.register(factoryName, create, description);
     }
-    const { get, reset } = createSingletonRegistry(() => registry);
-    return { registry, get, reset };
+    return { registry, ...createRegistryManager(() => registry) };
 }
 
 // --- Plugin-specific type aliases ---
@@ -253,22 +242,6 @@ export type SingletonRegistry<T> = {
     get: () => T;
     reset: () => void;
 };
-
-/** Helper to create standard instance plugin registry + singleton */
-export function createPluginRegistry<P extends InstancePlugin>(
-    name: string,
-    plugins: P[] = []
-): { registry: Registry<P>; get: () => Registry<P>; reset: () => void } {
-    return createRegistry<P>(name, plugins);
-}
-
-/** Helper to create standard factory plugin registry + singleton */
-export function createPluginFactoryRegistry<T>(
-    name: string,
-    factories: Array<{ name: string; create: (...args: any[]) => T; description: string }> = []
-): { registry: FactoryRegistry<T>; get: () => FactoryRegistry<T>; reset: () => void } {
-    return createFactoryRegistry<T>(name, factories);
-}
 
 /** Common validation helpers */
 export const ValidationHelpers = {

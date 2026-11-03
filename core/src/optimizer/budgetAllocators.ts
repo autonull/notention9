@@ -6,7 +6,7 @@
 import { z } from 'zod';
 import type { OptimizerCandidate, CandidateEvaluationResult, BudgetConstraints } from './candidateGenerators.js';
 import type { OptimizerConfig } from './types.js';
-import { createPluginRegistry, ValidationHelpers } from '../utils/Registry.js';
+import { createInstanceRegistry, ValidationHelpers } from '../utils/Registry.js';
 
 // --- Budget Allocator Interface ---
 
@@ -314,7 +314,7 @@ export class HyperbandAllocator implements RegistrableAllocator {
 // --- Budget Allocator Registry ---
 
 const { registry: budgetAllocatorRegistry, get: getBudgetAllocatorRegistry, reset: resetBudgetAllocatorRegistry } = 
-    createPluginRegistry<RegistrableAllocator>('BudgetAllocator', [
+    createInstanceRegistry<RegistrableAllocator>('BudgetAllocator', [
         new FixedBudgetAllocator(),
         new SuccessiveHalvingAllocator(),
         new HyperbandAllocator(),

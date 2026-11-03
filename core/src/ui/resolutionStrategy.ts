@@ -21,7 +21,7 @@ import type {
 import type { StrategyRegistry } from './strategy.js';
 import type { Revision } from '../telemetry/revisionStore.js';
 import { assignToVariant, matchConditions, selectProfileByPolicy } from '../utils/resolutionUtils.js';
-import { createPluginRegistry, ValidationHelpers } from '../utils/Registry.js';
+import { createInstanceRegistry, ValidationHelpers } from '../utils/Registry.js';
 import { Plugin } from '../utils/BasePlugin.js';
 
 // --- ResolutionStrategy Config ---
@@ -318,7 +318,7 @@ type RegistrableResolutionStrategy = ResolutionStrategy & { getDefaultConfig(): 
 // --- ResolutionStrategy Registry ---
 
 const { registry: resolutionStrategyRegistry, get: getResolutionStrategyRegistry, reset: resetResolutionStrategyRegistry } = 
-    createPluginRegistry<RegistrableResolutionStrategy>('ResolutionStrategy', [
+    createInstanceRegistry<RegistrableResolutionStrategy>('ResolutionStrategy', [
         new OverrideResolutionStrategy(),
         new ExperimentResolutionStrategy(),
         new RevisionResolutionStrategy(),
