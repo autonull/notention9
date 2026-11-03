@@ -18,7 +18,7 @@ import type {
 import type { StrategyRegistry } from './strategy.js';
 import type { Revision } from '../telemetry/revisionStore.js';
 import { assignToVariant, matchConditions, selectProfileByPolicy } from '../utils/resolutionUtils.js';
-import { createPluginRegistry, Registry } from '../utils/Registry.js';
+import { createPluginRegistry, ValidationHelpers } from '../utils/Registry.js';
 import { ResolutionStrategyPlugin as BaseResolutionStrategy } from '../utils/BasePlugin.js';
 
 // --- ResolutionStrategy Config ---

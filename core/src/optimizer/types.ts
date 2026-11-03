@@ -1,37 +1,14 @@
 /**
  * Optimizer Config Types
- * Local type definitions to avoid cross-package dependencies
+ * Re-exports from sharedTypes.ts (single source of truth)
  */
 
-import type { ParamSpec, Seam } from '../ui/strategy.js';
+export * from '../schemas/sharedTypes.js';
+
 import type { StrategyParamConfig } from '../constants/strategyParams.js';
 
 // Re-export StrategyParamConfig from constants
 export type { StrategyParamConfig } from '../constants/strategyParams.js';
-
-/**
- * Configuration for a single optimization cycle
- */
-export interface OptimizerConfig {
-    /** Target seam roles to optimize (default: ['capture', 'match']) */
-    targetSeams: string[];
-    /** Maximum candidates per seam to evaluate */
-    maxCandidatesPerSeam: number;
-    /** Total browser run budget */
-    maxBrowserRuns: number;
-    /** Maximum time budget in minutes */
-    maxTimeMinutes: number;
-    /** Maximum tokens for LLM generation (if used) */
-    maxTokens: number;
-    /** Successive halving: evaluate all on slice, promote top half */
-    useSuccessiveHalving: boolean;
-    /** Initial slice fraction (0-1) */
-    initialSliceFraction: number;
-    /** Minimum candidates to promote */
-    minPromote: number;
-    /** Maximum intent cases to use (for faster test runs) */
-    maxIntentCases?: number;
-}
 
 /**
  * Default optimizer configuration
@@ -48,73 +25,4 @@ export function defaultOptimizerConfig(): OptimizerConfig {
         minPromote: 2,
         maxIntentCases: 2,
     };
-}
-
-/**
- * A candidate strategy with its proposed parameter patch
- */
-export interface OptimizerCandidate {
-    id: string;
-    seamRole: string;
-    strategyId: string;
-    /** Parameter patch to apply on top of incumbent */
-    patch: Record<string, unknown>;
-    /** Parameter specification for validation */
-    paramSpec: ParamSpec;
-    /** Generation provenance */
-    provenance: CandidateProvenance;
-    /** Evaluation results (populated after run) */
-    evaluation?: CandidateEvaluationResult;
-}
-
-/**
- * How this candidate was generated
- */
-export interface CandidateProvenance {
-    generator: 'grid' | 'random' | 'model' | 'human';
-    model?: string;
-    seed?: number;
-    parentRevisionId?: string;
-    generatedAt: string;
-}
-
-/**
- * Options for candidate generation
- */
-export interface GeneratorOptions {
-    maxCandidates: number;
-    budget?: BudgetConstraints;
-    seed?: number;
-    previousCandidates?: OptimizerCandidate[];
-    previousResults?: CandidateEvaluationResult[];
-    initialFraction?: number;
-    minPromote?: number;
-    [key: string]: unknown;
-}
-
-/**
- * Evaluation result for a candidate
- */
-export interface CandidateEvaluationResult {
-    candidateId: string;
-    revisionId: string;
-    qualityResults: any;
-    intentResults?: any;
-    verdict: 'improved' | 'degraded' | 'inconclusive' | 'invalid';
-    primaryDelta: number;
-    cost: { browserRuns: number; tokensUsed: number; durationMs: number };
-}
-
-/**
- * Budget constraints for candidate generation
- */
-export interface BudgetConstraints {
-    maxBrowserRuns?: number;
-    maxTimeMinutes?: number;
-    maxTokens?: number;
-    promotionFraction?: number;
-    minPromote?: number;
-    maxResource?: number;
-    reductionFactor?: number;
-    [key: string]: unknown;
 }

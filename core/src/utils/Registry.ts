@@ -181,13 +181,23 @@ export class FactoryRegistry<T> {
 }
 
 /**
- * Unified Registry Manager - handles both instance and factory registries
- * Single source of truth for registry creation and lifecycle
+ * Singleton registry manager
+ * Provides getXRegistry()/resetXRegistry() pattern consistently
  */
-export interface RegistryManager<T> {
-    registry: T;
+export function createSingletonRegistry<T>(factory: () => T): {
     get: () => T;
     reset: () => void;
+} {
+    let instance: T | null = null;
+    return {
+        get: () => {
+            if (!instance) instance = factory();
+            return instance;
+        },
+        reset: () => {
+            instance = null;
+        },
+    };
 }
 
 /**
@@ -196,7 +206,7 @@ export interface RegistryManager<T> {
 export function createRegistry<T extends Registrable>(
     name: string,
     items: T[] = []
-): RegistryManager<Registry<T>> {
+): { registry: Registry<T>; get: () => Registry<T>; reset: () => void } {
     const registry = new Registry<T>({ errorPrefix: `${name}Registry` });
     for (const item of items) registry.register(item);
     const { get, reset } = createSingletonRegistry(() => registry);
@@ -218,36 +228,11 @@ export function createFactoryRegistry<T>(
     return { registry, get, reset };
 }
 
-/**
- * Singleton registry manager
- * Provides getXRegistry()/resetXRegistry() pattern consistently
- */
-export function createSingletonRegistry<T>(factory: () => T): {
-    get: () => T;
-    reset: () => void;
-} {
-    let instance: T | null = null;
-    return {
-        get: () => {
-            if (!instance) instance = factory();
-            return instance;
-        },
-        reset: () => {
-            instance = null;
-        },
-    };
-}
-
 // --- Plugin-specific type aliases ---
 
 /** Instance-based plugin (stateful, reusable) */
-export interface InstancePlugin<C extends Record<string, unknown> = Record<string, unknown>> {
-    readonly name: string;
-    readonly description: string;
-    readonly configSchema?: z.ZodSchema<C>;
+export interface InstancePlugin<C extends Record<string, unknown> = Record<string, unknown>> extends Registrable<C> {
     readonly type?: 'instance';
-    getDefaultConfig(): C;
-    validateConfig(config: C): { valid: boolean; errors: string[] };
 }
 
 /** Factory-based plugin (stateless, created per use) */
@@ -335,9 +320,31 @@ export const ValidationHelpers = {
         return null;
     },
 
+    /** Validate object with required keys */
+    object<T extends Record<string, unknown>>(value: unknown, fieldName: string, requiredKeys: string[]): string | null {
+        if (value === undefined) return null;
+        if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+            return `${fieldName} must be an object`;
+        }
+        const obj = value as T;
+        for (const key of requiredKeys) {
+            if (!(key in obj)) {
+                return `${fieldName} must have required key: ${key}`;
+            }
+        }
+        return null;
+    },
+
     /** Combine multiple validation results */
     combine(...results: (string | null)[]): { valid: boolean; errors: string[] } {
         const errors = results.filter((r): r is string => r !== null);
         return { valid: errors.length === 0, errors };
     },
 };
+
+/** Type for registry manager (both instance and factory) */
+export interface RegistryManager<T> {
+    registry: T;
+    get: () => T;
+    reset: () => void;
+}

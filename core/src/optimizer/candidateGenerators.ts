@@ -14,8 +14,8 @@ import type {
     BudgetConstraints,
     CandidateEvaluationResult 
 } from './types.js';
-import { createPluginRegistry, Registry, ValidationHelpers } from '../utils/Registry.js';
-import { CandidateGeneratorPlugin as BaseCandidateGenerator, createSeededRandom } from '../utils/BasePlugin.js';
+import { createPluginRegistry, ValidationHelpers } from '../utils/Registry.js';
+import { CandidateGeneratorPlugin as BaseCandidateGenerator } from '../utils/BasePlugin.js';
 
 // --- SearchSpace from S1 (re-exported for convenience) ---
 export { getSearchSpace, sampleSearchSpace, gridSearchSpace, type SearchSpace } from '../schemas/paramSpec.js';

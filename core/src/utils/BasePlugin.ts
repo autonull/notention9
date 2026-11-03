@@ -4,6 +4,8 @@
  */
 
 import { z } from 'zod';
+import { ValidationHelpers } from './Registry.js';
+import { createSeededRandom, generateCandidateId, generateRevisionId } from './common.js';
 
 // --- Base Plugin Interface ---
 
@@ -63,8 +65,6 @@ export abstract class AsyncPlugin<C extends Record<string, unknown> = Record<str
 
 // --- Shared utilities ---
 
-import { createSeededRandom } from './common.js';
-
 function isDefaultPoint(
     paramSpec: Record<string, { default?: unknown }>,
     defaultProps: Record<string, unknown>,
@@ -80,7 +80,6 @@ function isDefaultPoint(
 
 import type { StrategyParamConfig, OptimizerCandidate, GeneratorOptions, CandidateProvenance } from '../optimizer/types.js';
 import type { SearchSpace } from '../schemas/paramSpec.js';
-import { generateCandidateId } from './common.js';
 
 export abstract class CandidateGeneratorPlugin<C extends GeneratorOptions = GeneratorOptions> extends Plugin<C> {
     abstract readonly name: string;
@@ -135,8 +134,6 @@ export abstract class CandidateGeneratorPlugin<C extends GeneratorOptions = Gene
 // --- Revision Driver Base ---
 
 import type { Revision, RevisionStatus, RevisionSearchQuery, RevisionDriverConfig } from '../telemetry/types.js';
-import { ValidationHelpers } from './Registry.js';
-import { generateRevisionId } from './common.js';
 
 export abstract class RevisionDriverPlugin extends AsyncPlugin<RevisionDriverConfig> {
     abstract readonly name: string;
@@ -346,4 +343,4 @@ export abstract class ResolutionStrategyPlugin extends Plugin<ResolutionStrategy
 }
 
 // Re-export types for convenience
-export type { Registrable } from './Registry.js';
+export type { Registrable, ValidationHelpers } from './Registry.js';
