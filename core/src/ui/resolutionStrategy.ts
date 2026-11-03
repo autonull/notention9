@@ -6,6 +6,9 @@
 
 import { z } from 'zod';
 import type { Strategy, SeamRole } from './strategy.js';
+
+// Re-export SeamRole for sharedTypes.ts
+export type { SeamRole } from './strategy.js';
 import type { 
     StrategyProfile, 
     ProfilePolicy, 
@@ -19,7 +22,7 @@ import type { StrategyRegistry } from './strategy.js';
 import type { Revision } from '../telemetry/revisionStore.js';
 import { assignToVariant, matchConditions, selectProfileByPolicy } from '../utils/resolutionUtils.js';
 import { createPluginRegistry, ValidationHelpers } from '../utils/Registry.js';
-import { ResolutionStrategyPlugin as BaseResolutionStrategy } from '../utils/BasePlugin.js';
+import { Plugin } from '../utils/BasePlugin.js';
 
 // --- ResolutionStrategy Config ---
 
@@ -61,12 +64,35 @@ export interface ResolutionContext {
     };
 }
 
+// --- Base Resolution Strategy Plugin ---
+
+abstract class BaseResolutionStrategyPlugin extends Plugin<ResolutionStrategyConfig> {
+    abstract readonly name: string;
+    abstract readonly description: string;
+    readonly seamRoles?: SeamRole[];
+    readonly configSchema?: z.ZodSchema<ResolutionStrategyConfig> = undefined;
+
+    getDefaultConfig(): ResolutionStrategyConfig {
+        return {};
+    }
+
+    validateConfig(_config: ResolutionStrategyConfig): { valid: boolean; errors: string[] } {
+        return { valid: true, errors: [] };
+    }
+
+    appliesTo(seamRole: SeamRole): boolean {
+        return this.seamRoles === undefined || this.seamRoles.includes(seamRole);
+    }
+
+    abstract resolve(context: ResolutionContext): ResolvedStrategy | Promise<ResolvedStrategy | undefined> | undefined;
+}
+
 // --- Built-in Resolution Strategies ---
 
 /**
  * OverrideResolutionStrategy - Checks user overrides (highest priority)
  */
-export class OverrideResolutionStrategy extends BaseResolutionStrategy {
+export class OverrideResolutionStrategy extends BaseResolutionStrategyPlugin {
     readonly name = 'override';
     readonly description = 'User strategy overrides (manual per-seam selection)';
 
@@ -88,7 +114,7 @@ export class OverrideResolutionStrategy extends BaseResolutionStrategy {
 /**
  * ExperimentResolutionStrategy - Checks active experiment assignments
  */
-export class ExperimentResolutionStrategy extends BaseResolutionStrategy {
+export class ExperimentResolutionStrategy extends BaseResolutionStrategyPlugin {
     readonly name = 'experiment';
     readonly description = 'Active experiment variant assignment';
 
@@ -128,7 +154,7 @@ export class ExperimentResolutionStrategy extends BaseResolutionStrategy {
 /**
  * RevisionResolutionStrategy - Checks for active revision (NEW revision layer)
  */
-export class RevisionResolutionStrategy extends BaseResolutionStrategy {
+export class RevisionResolutionStrategy extends BaseResolutionStrategyPlugin {
     readonly name = 'revision';
     readonly description = 'Active revision for seam role (requires consent)';
 
@@ -172,7 +198,7 @@ export class RevisionResolutionStrategy extends BaseResolutionStrategy {
 /**
  * ManualProfileResolutionStrategy - Manual mode with active profile
  */
-export class ManualProfileResolutionStrategy extends BaseResolutionStrategy {
+export class ManualProfileResolutionStrategy extends BaseResolutionStrategyPlugin {
     readonly name = 'manual-profile';
     readonly description = 'Manual mode with explicitly selected profile';
 
@@ -198,7 +224,7 @@ export class ManualProfileResolutionStrategy extends BaseResolutionStrategy {
 /**
  * PolicyResolutionStrategy - Auto-select profile via policy
  */
-export class PolicyResolutionStrategy extends BaseResolutionStrategy {
+export class PolicyResolutionStrategy extends BaseResolutionStrategyPlugin {
     readonly name = 'policy';
     readonly description = 'Automatic profile selection via policy rules';
 
@@ -242,7 +268,7 @@ export class PolicyResolutionStrategy extends BaseResolutionStrategy {
 /**
  * DefaultProfileResolutionStrategy - Falls back to default profile
  */
-export class DefaultProfileResolutionStrategy extends BaseResolutionStrategy {
+export class DefaultProfileResolutionStrategy extends BaseResolutionStrategyPlugin {
     readonly name = 'default-profile';
     readonly description = 'Default profile fallback';
 
@@ -266,7 +292,7 @@ export class DefaultProfileResolutionStrategy extends BaseResolutionStrategy {
 /**
  * FallbackResolutionStrategy - Last resort: first available strategy for seam
  */
-export class FallbackResolutionStrategy extends BaseResolutionStrategy {
+export class FallbackResolutionStrategy extends BaseResolutionStrategyPlugin {
     readonly name = 'fallback';
     readonly description = 'Last resort: first available strategy for seam';
 

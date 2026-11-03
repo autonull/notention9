@@ -14,7 +14,7 @@ import type {
     CaseSplit, 
     QualityFamily 
 } from '../../schemas/caseTypes.js';
-import type { CaseStore } from '../../schemas/caseManifest.js';
+import type { CaseStore } from '../../schemas/sharedTypes.js';
 import { logWarn } from '../../utils/logging.js';
 import { 
     sha256, 

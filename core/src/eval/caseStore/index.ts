@@ -26,8 +26,8 @@ export type {
     QualityFamily 
 } from '../../schemas/caseTypes.js';
 
-// Re-export CaseStore interface from schemas
-export type { CaseStore } from '../../schemas/caseManifest.js';
+// Re-export CaseStore interface from sharedTypes (single source of truth)
+export type { CaseStore } from '../../schemas/sharedTypes.js';
 
 // Re-export implementations
 export { FileSystemCaseStore } from './fileSystem.js';
@@ -50,7 +50,7 @@ export function createSQLiteCaseStore(dbPath: string): SQLiteCaseStore {
 
 // --- Registry for dynamic selection ---
 
-import type { CaseStore } from '../../schemas/caseManifest.js';
+import type { CaseStore } from '../../schemas/sharedTypes.js';
 
 const { registry: caseStoreRegistry, get: getCaseStoreRegistry, reset: resetCaseStoreRegistry } = 
     createPluginFactoryRegistry<CaseStore>('CaseStore', [

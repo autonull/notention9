@@ -16,7 +16,8 @@ import type {
     RegistrableRevisionDriver
 } from './types.js';
 import { createPluginFactoryRegistry, ValidationHelpers } from '../utils/Registry.js';
-import { RevisionDriverPlugin as BaseRevisionDriver } from '../utils/BasePlugin.js';
+import { AsyncPlugin, generateRevisionId } from '../utils/BasePlugin.js';
+import { createSeededRandom } from '../utils/common.js';
 
 // Re-export types from shared location
 export type { 
@@ -30,9 +31,192 @@ export type {
     RegistrableRevisionDriver
 } from './types.js';
 
+// --- Base Revision Driver Plugin ---
+
+abstract class BaseRevisionDriverPlugin extends AsyncPlugin<RevisionDriverConfig> {
+    abstract readonly name: string;
+    abstract readonly description: string;
+    readonly configSchema?: z.ZodSchema<RevisionDriverConfig> = undefined;
+
+    protected revisions = new Map<string, Revision>();
+    protected seamIndex = new Map<string, string[]>();
+    protected statusIndex = new Map<RevisionStatus, Set<string>>();
+
+    abstract getDefaultConfig(): RevisionDriverConfig;
+
+    validateConfig(config: RevisionDriverConfig): { valid: boolean; errors: string[] } {
+        return ValidationHelpers.combine(
+            ValidationHelpers.string(config.filePath, 'filePath'),
+            ValidationHelpers.string(config.dbPath, 'dbPath'),
+            ValidationHelpers.positiveInt(config.maxRevisionsPerSeam, 'maxRevisionsPerSeam'),
+        );
+    }
+
+    protected async onInit(): Promise<void> {
+        // Default no-op - subclasses can override
+    }
+
+    protected indexRevision(revision: Revision): void {
+        this.revisions.set(revision.id, revision);
+
+        const seamRevisions = this.seamIndex.get(revision.seamRole) ?? [];
+        seamRevisions.unshift(revision.id);
+        this.seamIndex.set(revision.seamRole, seamRevisions);
+
+        const statusSet = this.statusIndex.get(revision.status) ?? new Set();
+        statusSet.add(revision.id);
+        this.statusIndex.set(revision.status, statusSet);
+    }
+
+    protected removeFromIndex(revision: Revision): void {
+        const seamRevisions = this.seamIndex.get(revision.seamRole);
+        if (seamRevisions) {
+            const idx = seamRevisions.indexOf(revision.id);
+            if (idx >= 0) seamRevisions.splice(idx, 1);
+        }
+        const statusSet = this.statusIndex.get(revision.status);
+        if (statusSet) {
+            statusSet.delete(revision.id);
+        }
+    }
+
+    protected updateIndex(revision: Revision): void {
+        this.removeFromIndex(revision);
+        this.indexRevision(revision);
+    }
+
+    async create(revision: Omit<Revision, 'id' | 'createdAt' | 'updatedAt' | 'status'>): Promise<Revision> {
+        await this.init(this.config);
+
+        const now = new Date().toISOString();
+        const id = generateRevisionId(Date.now());
+
+        const fullRevision: Revision = {
+            ...revision,
+            id,
+            status: 'draft',
+            createdAt: now,
+            updatedAt: now,
+        };
+
+        this.indexRevision(fullRevision);
+        await this.persistRevision(fullRevision);
+
+        return fullRevision;
+    }
+
+    abstract persistRevision(revision: Revision): Promise<void>;
+
+    async get(id: string): Promise<Revision | undefined> {
+        await this.init(this.config);
+        return this.revisions.get(id);
+    }
+
+    async getActive(seamRole: string): Promise<Revision | undefined> {
+        await this.init(this.config);
+        const ids = this.seamIndex.get(seamRole) ?? [];
+        for (const id of ids) {
+            const rev = this.revisions.get(id);
+            if (rev && rev.status === 'active') return rev;
+        }
+        return undefined;
+    }
+
+    async updateStatus(id: string, status: RevisionStatus, metadata: Partial<Revision>): Promise<Revision | undefined> {
+        await this.init(this.config);
+
+        const revision = this.revisions.get(id);
+        if (!revision) return undefined;
+
+        const updated: Revision = {
+            ...revision,
+            status,
+            updatedAt: new Date().toISOString(),
+            ...metadata,
+        };
+
+        this.updateIndex(updated);
+        await this.persistRevision(updated);
+
+        return updated;
+    }
+
+    async activate(id: string, userId: string): Promise<Revision | undefined> {
+        await this.init(this.config);
+
+        const revision = await this.get(id);
+        if (!revision) return undefined;
+
+        const currentActive = await this.getActive(revision.seamRole);
+
+        if (currentActive && currentActive.id !== id) {
+            await this.updateStatus(currentActive.id, 'rolled-back', {
+                rollbackReason: `Superseded by ${id}`,
+                rolledBackAt: new Date().toISOString(),
+            });
+        }
+
+        return this.updateStatus(id, 'active', {
+            activatedAt: new Date().toISOString(),
+            consentedBy: userId,
+            consentedAt: new Date().toISOString(),
+        });
+    }
+
+    async search(query: RevisionSearchQuery): Promise<Revision[]> {
+        await this.init(this.config);
+
+        let results = Array.from(this.revisions.values());
+
+        if (query.seamRole) {
+            results = results.filter(r => r.seamRole === query.seamRole);
+        }
+        if (query.status) {
+            results = results.filter(r => r.status === query.status);
+        }
+        if (query.author) {
+            results = results.filter(r => r.author === query.author);
+        }
+        if (query.tags && query.tags.length > 0) {
+            results = results.filter(r => r.tags?.some(t => query.tags!.includes(t)));
+        }
+        if (query.since) {
+            const since = new Date(query.since).getTime();
+            results = results.filter(r => new Date(r.createdAt).getTime() >= since);
+        }
+        if (query.until) {
+            const until = new Date(query.until).getTime();
+            results = results.filter(r => new Date(r.createdAt).getTime() <= until);
+        }
+
+        results.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+        if (query.offset) {
+            results = results.slice(query.offset);
+        }
+        if (query.limit) {
+            results = results.slice(0, query.limit);
+        }
+
+        return results;
+    }
+
+    async count(): Promise<number> {
+        await this.init(this.config);
+        return this.revisions.size;
+    }
+
+    async close(): Promise<void> {
+        this.revisions.clear();
+        this.seamIndex.clear();
+        this.statusIndex.clear();
+        this.initialized = false;
+    }
+}
+
 // --- JSONL Driver (Current Implementation) ---
 
-export class JSONLRevisionDriver extends BaseRevisionDriver implements RegistrableRevisionDriver {
+export class JSONLRevisionDriver extends BaseRevisionDriverPlugin implements RegistrableRevisionDriver {
     readonly name = 'jsonl';
     readonly description = 'JSONL file-based revision storage';
     
@@ -100,7 +284,7 @@ export class JSONLRevisionDriver extends BaseRevisionDriver implements Registrab
 
 // --- In-Memory Driver (for Testing) ---
 
-export class InMemoryRevisionDriver extends BaseRevisionDriver implements RegistrableRevisionDriver {
+export class InMemoryRevisionDriver extends BaseRevisionDriverPlugin implements RegistrableRevisionDriver {
     readonly name = 'memory';
     readonly description = 'In-memory revision storage (for testing)';
 

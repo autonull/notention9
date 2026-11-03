@@ -8,6 +8,11 @@ import type { CalibrationRecord } from '../eval/calibrationTracker.js';
 import type { EvidenceClass, JudgeProvenance } from './evidence.js';
 import type { ParamSpec, Seam } from '../ui/strategy.js';
 import type { StrategyParamConfig } from '../constants/strategyParams.js';
+import type { CaseManifest, CaseEntry, IntentCase, QualityCase, CaseSplit, QualityFamily } from './caseTypes.js';
+import type { MetricVerdict, FloorCheck, CaseVerdict, RunVerdict, VerdictConfig, VerdictEngineConfig } from './verdictTypes.js';
+import type { ResolutionContext, ResolvedStrategy, ResolutionStrategy, ResolutionStrategyConfig } from '../ui/resolutionStrategy.js';
+import type { SplitStrategyConfig, SplitStrategy } from '../eval/splitStrategies/index.js';
+import type { VerdictEngine } from '../eval/verdictEngines/index.js';
 
 // --- Revision Types ---
 
@@ -112,14 +117,6 @@ export interface RunSummary {
     overallVerdict: string;
 }
 
-export interface CaseVerdict {
-    caseId: string;
-    verdict: string;
-    primaryMetric: string;
-    delta: number;
-    pValue: number;
-}
-
 export interface VerdictDetail {
     metric: string;
     baseline: number;
@@ -129,7 +126,7 @@ export interface VerdictDetail {
 
 export interface ResolutionReason {
     kind: string;
-    [key: string]: any;
+    [key: string]: unknown;
 }
 
 export interface OptimizerConfig {
@@ -141,6 +138,7 @@ export interface OptimizerConfig {
     useSuccessiveHalving: boolean;
     initialSliceFraction: number;
     minPromote: number;
+    maxIntentCases?: number;
 }
 
 export interface OptimizerCost {
@@ -204,7 +202,7 @@ export interface RevisionDriverConfig {
 export interface RevisionDriver {
     readonly name: string;
     readonly description: string;
-    readonly configSchema?: any;
+    readonly configSchema?: import('zod').ZodSchema;
     
     init(config: RevisionDriverConfig): Promise<void>;
     create(revision: Omit<Revision, 'id' | 'createdAt' | 'updatedAt' | 'status'>): Promise<Revision>;
@@ -258,8 +256,8 @@ export interface GeneratorOptions {
 export interface CandidateEvaluationResult {
     candidateId: string;
     revisionId: string;
-    qualityResults: any;
-    intentResults?: any;
+    qualityResults: Record<string, unknown>;
+    intentResults?: Record<string, unknown>;
     verdict: 'improved' | 'degraded' | 'inconclusive' | 'invalid';
     primaryDelta: number;
     cost: { browserRuns: number; tokensUsed: number; durationMs: number };
@@ -281,6 +279,21 @@ export type { StrategyParamConfig } from '../constants/strategyParams.js';
 
 // Re-export EvidenceClass and JudgeProvenance from evidence
 export type { EvidenceClass, JudgeProvenance } from './evidence.js';
+
+// Re-export Case types from caseTypes (single source of truth)
+export type { CaseManifest, CaseEntry, IntentCase, QualityCase, CaseSplit, QualityFamily } from './caseTypes.js';
+
+// Re-export Verdict types from verdictTypes (single source of truth)
+export type { MetricVerdict, FloorCheck, CaseVerdict, RunVerdict, VerdictConfig, VerdictEngineConfig } from './verdictTypes.js';
+
+// Re-export Resolution types from resolutionStrategy (single source of truth)
+export type { ResolutionContext, ResolvedStrategy, ResolutionStrategy, ResolutionStrategyConfig, SeamRole } from '../ui/resolutionStrategy.js';
+
+// Re-export SplitStrategy types from splitStrategies (single source of truth)
+export type { SplitStrategyConfig, SplitStrategy } from '../eval/splitStrategies/index.js';
+
+// Re-export VerdictEngine from verdictEngines (single source of truth)
+export type { VerdictEngine } from '../eval/verdictEngines/index.js';
 
 // --- EventStore Types ---
 
@@ -304,141 +317,20 @@ export interface EventStore {
     close(): Promise<void>;
 }
 
-// --- CaseStore Types (re-export from caseManifest) ---
-
-export interface CaseManifest {
-    version: 1;
-    hash: string;
-    generatedAt: string;
-    counts: {
-        intent: { search: number; validation: number; holdout: number };
-        quality: { extraction: number; match: number };
-    };
-    cases: CaseEntry[];
-}
-
-export interface CaseEntry {
-    id: string;
-    family: 'intent' | 'quality';
-    split?: 'search' | 'validation' | 'holdout';
-    qualityFamily?: 'extraction' | 'match';
-    path: string;
-    hash: string;
-    tags: string[];
-}
+// --- CaseStore Types ---
 
 export interface CaseStore {
     init(): Promise<void>;
     readManifest(): Promise<CaseManifest>;
     writeManifest(manifest: CaseManifest): Promise<void>;
-    readIntentCases(split: 'search' | 'validation' | 'holdout'): Promise<any[]>;
-    readQualityCases(qualityFamily: 'extraction' | 'match'): Promise<any[]>;
-    readHoldoutCases(): Promise<any[]>;
-    readAllCases(): Promise<{ intent: any[]; quality: any[] }>;
-    upsertCase(caseData: any): Promise<void>;
+    readIntentCases(split: CaseSplit): Promise<IntentCase[]>;
+    readQualityCases(qualityFamily: QualityFamily): Promise<QualityCase[]>;
+    readHoldoutCases(): Promise<IntentCase[]>;
+    readAllCases(): Promise<{ intent: IntentCase[]; quality: QualityCase[] }>;
+    upsertCase(caseData: IntentCase | QualityCase): Promise<void>;
     deleteCase(id: string): Promise<boolean>;
     verifyIntegrity(): Promise<{ valid: boolean; errors: string[] }>;
     close(): Promise<void>;
-}
-
-// --- SplitStrategy Types ---
-
-export interface SplitStrategyConfig {
-    seed?: number;
-    [key: string]: unknown;
-}
-
-export interface SplitStrategy {
-    readonly name: string;
-    readonly description: string;
-    readonly configSchema?: any;
-    getName(): string;
-    splitIntentCases(
-        cases: any[],
-        config: SplitStrategyConfig
-    ): { search: any[]; validation: any[]; holdout: any[] } | Promise<{ search: any[]; validation: any[]; holdout: any[] }>;
-    splitQualityCases?(
-        cases: any[],
-        config: SplitStrategyConfig
-    ): { train: any[]; test: any[] } | Promise<{ train: any[]; test: any[] }>;
-    getDefaultConfig(): SplitStrategyConfig;
-    validateConfig(config: SplitStrategyConfig): { valid: boolean; errors: string[] };
-}
-
-// --- VerdictEngine Types ---
-
-export interface VerdictEngineConfig {
-    primaryMetric: string;
-    mde: Record<string, number>;
-    floors: Record<string, number>;
-    minSampleSize: number;
-    [key: string]: unknown;
-}
-
-export interface VerdictEngine {
-    readonly name: string;
-    readonly description: string;
-    readonly evidenceClass: EvidenceClass;
-    readonly configSchema?: any;
-    computeCaseVerdict(
-        caseId: string,
-        paired: any,
-        config: VerdictEngineConfig
-    ): any | Promise<any>;
-    computeRunVerdict(
-        runId: string,
-        manifestHash: string,
-        revisionId: string,
-        baselineRevisionId: string,
-        caseVerdicts: any[],
-        primaryMetric: string
-    ): any | Promise<any>;
-    getDefaultConfig(): VerdictEngineConfig;
-    validateConfig(config: VerdictEngineConfig): { valid: boolean; errors: string[] };
-}
-
-// --- ResolutionStrategy Types ---
-
-export interface ResolutionStrategyConfig {
-    [key: string]: unknown;
-}
-
-export type SeamRole = 'capture' | 'elicit' | 'match' | 'display' | 'layout' | 'explain' | 'ontology' | 'intent';
-
-export interface ResolutionContext {
-    userId: string;
-    seamRole: SeamRole;
-    seamId: string;
-    userConfig: any;
-    profiles: Map<string, any>;
-    policies: Map<string, any>;
-    experiments: Map<string, any>;
-    assignments: Map<string, any>;
-    strategyRegistry: any;
-    revisionStore?: {
-        getActive(seamRole: string): Promise<Revision | undefined>;
-    };
-}
-
-export interface ResolvedStrategy {
-    strategy: any;
-    reason: ResolutionReason;
-    resolvedParams: Record<string, unknown>;
-    resolvedAt: string;
-    userId: string;
-    seamRole: SeamRole;
-}
-
-export interface ResolutionStrategy {
-    readonly name: string;
-    readonly description: string;
-    readonly configSchema?: any;
-    readonly seamRoles?: SeamRole[];
-    getName(): string;
-    appliesTo(seamRole: SeamRole): boolean;
-    resolve(context: ResolutionContext): ResolvedStrategy | Promise<ResolvedStrategy | undefined> | undefined;
-    getDefaultConfig(): ResolutionStrategyConfig;
-    validateConfig(config: ResolutionStrategyConfig): { valid: boolean; errors: string[] };
 }
 
 // --- DigestPipeline Types ---

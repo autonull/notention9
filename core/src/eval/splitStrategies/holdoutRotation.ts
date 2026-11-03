@@ -6,7 +6,7 @@
 import { z } from 'zod';
 import type { IntentCase, QualityCase } from '../caseManifest.js';
 import type { SplitStrategy, SplitStrategyConfig } from './index.js';
-import { hashString, ensureMinimums } from '../../utils/common.js';
+import { hashString, ensureMinimums, validateRatiosSumToOne } from '../../utils/common.js';
 
 // --- Holdout Rotation config schema ---
 export const holdoutRotationConfigSchema = z.object({

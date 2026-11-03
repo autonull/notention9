@@ -5,7 +5,8 @@
 
 export * from '../schemas/sharedTypes.js';
 
-import type { StrategyParamConfig } from '../constants/strategyParams.js';
+import type { OptimizerConfig, StrategyParamConfig } from '../schemas/sharedTypes.js';
+import type { StrategyParamConfig as StrategyParamConfig2 } from '../constants/strategyParams.js';
 
 // Re-export StrategyParamConfig from constants
 export type { StrategyParamConfig } from '../constants/strategyParams.js';

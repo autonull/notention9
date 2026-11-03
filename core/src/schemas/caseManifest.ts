@@ -1,5 +1,5 @@
 /**
- * CaseManifest schema + CaseStore interface (S4)
+ * CaseManifest schema (S4)
  * Replaces hardcoded filesystem case manifest with pluggable storage
  */
 
@@ -112,37 +112,4 @@ export type {
     CaseEntry
 } from './caseTypes.js';
 
-export interface CaseStore {
-    /** Initialize the store */
-    init(): Promise<void>;
-    
-    /** Read the manifest */
-    readManifest(): Promise<CaseManifest>;
-    
-    /** Write the manifest */
-    writeManifest(manifest: CaseManifest): Promise<void>;
-    
-    /** Read intent cases for a split */
-    readIntentCases(split: CaseSplit): Promise<IntentCase[]>;
-    
-    /** Read quality cases for a family */
-    readQualityCases(qualityFamily: QualityFamily): Promise<QualityCase[]>;
-    
-    /** Read holdout cases (audit-only) */
-    readHoldoutCases(): Promise<IntentCase[]>;
-    
-    /** Read all cases */
-    readAllCases(): Promise<{ intent: IntentCase[]; quality: QualityCase[] }>;
-    
-    /** Add or update a case */
-    upsertCase(caseData: IntentCase | QualityCase): Promise<void>;
-    
-    /** Delete a case */
-    deleteCase(id: string): Promise<boolean>;
-    
-    /** Verify integrity of all cases */
-    verifyIntegrity(): Promise<{ valid: boolean; errors: string[] }>;
-    
-    /** Close the store */
-    close(): Promise<void>;
-}
+// CaseStore interface is now in sharedTypes.ts to avoid duplication

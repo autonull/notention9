@@ -15,7 +15,8 @@ import type {
     CandidateEvaluationResult 
 } from './types.js';
 import { createPluginRegistry, ValidationHelpers } from '../utils/Registry.js';
-import { CandidateGeneratorPlugin as BaseCandidateGenerator } from '../utils/BasePlugin.js';
+import { Plugin, isDefaultPoint } from '../utils/BasePlugin.js';
+import { createSeededRandom, generateCandidateId } from '../utils/common.js';
 
 // --- SearchSpace from S1 (re-exported for convenience) ---
 export { getSearchSpace, sampleSearchSpace, gridSearchSpace, type SearchSpace } from '../schemas/paramSpec.js';
@@ -44,6 +45,58 @@ export interface CandidateGenerator {
 }
 
 type RegistrableGenerator = CandidateGenerator & { getDefaultConfig(): GeneratorOptions; validateConfig(config: GeneratorOptions): { valid: boolean; errors: string[] } };
+
+// --- Base Candidate Generator Plugin ---
+
+abstract class BaseCandidateGenerator extends Plugin<GeneratorOptions> {
+    abstract readonly name: string;
+    abstract readonly description: string;
+    readonly configSchema?: z.ZodSchema<GeneratorOptions> = undefined;
+
+    abstract getDefaultConfig(): GeneratorOptions;
+    abstract getSearchSpace(strategy: StrategyParamConfig): SearchSpace;
+
+    validateConfig(config: GeneratorOptions): { valid: boolean; errors: string[] } {
+        const errors: string[] = [];
+        if (config.maxCandidates !== undefined && (typeof config.maxCandidates !== 'number' || config.maxCandidates < 1)) {
+            errors.push('maxCandidates must be a positive number');
+        }
+        return { valid: errors.length === 0, errors };
+    }
+
+    protected isDefaultPoint(
+        paramSpec: Record<string, { default?: unknown }>,
+        defaultProps: Record<string, unknown>,
+        point: Record<string, unknown>
+    ): boolean {
+        return isDefaultPoint(paramSpec, defaultProps, point);
+    }
+
+    protected createCandidate(
+        strategy: StrategyParamConfig,
+        patch: Record<string, unknown>,
+        generator: CandidateProvenance['generator'],
+        seed?: number,
+        extra?: Partial<CandidateProvenance>
+    ): OptimizerCandidate {
+        const effectiveSeed = seed ?? 42;
+        return {
+            id: generateCandidateId(strategy.seam.role, strategy.id, effectiveSeed),
+            seamRole: strategy.seam.role,
+            strategyId: strategy.id,
+            patch,
+            paramSpec: strategy.paramSpec,
+            provenance: {
+                generator,
+                seed: effectiveSeed,
+                generatedAt: new Date().toISOString(),
+                ...extra,
+            },
+        };
+    }
+
+    abstract generate(strategy: StrategyParamConfig, options: GeneratorOptions): OptimizerCandidate[] | Promise<OptimizerCandidate[]>;
+}
 
 // --- Built-in Generators ---
 

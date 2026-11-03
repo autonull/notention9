@@ -12,7 +12,7 @@ import type {
     CaseSplit, 
     QualityFamily 
 } from '../../schemas/caseTypes.js';
-import type { CaseStore } from '../../schemas/caseManifest.js';
+import type { CaseStore } from '../../schemas/sharedTypes.js';
 import { 
     sha256, 
     canonicalizeManifest, 
