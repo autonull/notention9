@@ -6,7 +6,7 @@
 import { z } from 'zod';
 import type { OptimizerCandidate, CandidateEvaluationResult, BudgetConstraints } from './candidateGenerators.js';
 import type { OptimizerConfig } from './types.js';
-import { createPluginRegistry, Registry } from '../utils/Registry.js';
+import { createPluginRegistry, Registry, ValidationHelpers } from '../utils/Registry.js';
 
 // --- Budget Allocator Interface ---
 
@@ -80,17 +80,11 @@ export class FixedBudgetAllocator implements RegistrableAllocator {
     }
     
     validateConfig(config: BudgetConstraints): { valid: boolean; errors: string[] } {
-        const errors: string[] = [];
-        if (config.maxBrowserRuns !== undefined && (typeof config.maxBrowserRuns !== 'number' || config.maxBrowserRuns < 1)) {
-            errors.push('maxBrowserRuns must be a positive number');
-        }
-        if (config.maxTimeMinutes !== undefined && (typeof config.maxTimeMinutes !== 'number' || config.maxTimeMinutes < 1)) {
-            errors.push('maxTimeMinutes must be a positive number');
-        }
-        if (config.maxTokens !== undefined && (typeof config.maxTokens !== 'number' || config.maxTokens < 1)) {
-            errors.push('maxTokens must be a positive number');
-        }
-        return { valid: errors.length === 0, errors };
+        return ValidationHelpers.combine(
+            ValidationHelpers.positiveInt(config.maxBrowserRuns, 'maxBrowserRuns'),
+            ValidationHelpers.positiveInt(config.maxTimeMinutes, 'maxTimeMinutes'),
+            ValidationHelpers.positiveInt(config.maxTokens, 'maxTokens'),
+        );
     }
     
     allocate(
@@ -147,17 +141,11 @@ export class SuccessiveHalvingAllocator implements RegistrableAllocator {
     }
     
     validateConfig(config: BudgetConstraints): { valid: boolean; errors: string[] } {
-        const errors: string[] = [];
-        if (config.initialFraction !== undefined && (typeof config.initialFraction !== 'number' || config.initialFraction <= 0 || config.initialFraction > 1)) {
-            errors.push('initialFraction must be between 0 and 1');
-        }
-        if (config.promotionFraction !== undefined && (typeof config.promotionFraction !== 'number' || config.promotionFraction <= 0 || config.promotionFraction > 1)) {
-            errors.push('promotionFraction must be between 0 and 1');
-        }
-        if (config.minPromote !== undefined && (typeof config.minPromote !== 'number' || config.minPromote < 1)) {
-            errors.push('minPromote must be a positive number');
-        }
-        return { valid: errors.length === 0, errors };
+        return ValidationHelpers.combine(
+            ValidationHelpers.numberInRange(config.initialFraction, 'initialFraction', 0, 1),
+            ValidationHelpers.numberInRange(config.promotionFraction, 'promotionFraction', 0, 1),
+            ValidationHelpers.positiveInt(config.minPromote, 'minPromote'),
+        );
     }
     
     allocate(
@@ -253,11 +241,13 @@ export class HyperbandAllocator implements RegistrableAllocator {
     
     validateConfig(config: BudgetConstraints): { valid: boolean; errors: string[] } {
         const errors: string[] = [];
-        if (config.maxResource !== undefined && (typeof config.maxResource !== 'number' || config.maxResource < 1)) {
-            errors.push('maxResource must be a positive number');
+        if (config.maxResource !== undefined) {
+            const err = ValidationHelpers.positiveInt(config.maxResource, 'maxResource');
+            if (err) errors.push(err);
         }
-        if (config.reductionFactor !== undefined && (typeof config.reductionFactor !== 'number' || config.reductionFactor < 2)) {
-            errors.push('reductionFactor must be at least 2');
+        if (config.reductionFactor !== undefined) {
+            const err = ValidationHelpers.numberInRange(config.reductionFactor, 'reductionFactor', 2, Infinity);
+            if (err) errors.push(err);
         }
         return { valid: errors.length === 0, errors };
     }

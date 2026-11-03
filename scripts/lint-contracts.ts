@@ -26,7 +26,8 @@ interface PluginContract {
 const PLUGIN_CONTRACTS: Record<string, PluginContract> = {
     'VerdictEngine': {
         interface: 'VerdictEngine',
-        requiredMethods: ['computeCaseVerdict', 'computeRunVerdict', 'getName', 'getDefaultConfig', 'validateConfig'],
+        requiredMethods: ['computeCaseVerdict', 'computeRunVerdict', 'getDefaultConfig', 'validateConfig'],
+        requiredProperties: ['name', 'description', 'evidenceClass'],
         schema: 'verdictEngineConfig',
     },
     'SplitStrategy': {
@@ -148,6 +149,17 @@ function validateImplementation(filePath: string, contract: PluginContract): { v
             const methodPattern = new RegExp(`(async\\s+)?${method}\\s*\\(`);
             if (!methodPattern.test(content)) {
                 errors.push(`Missing required method: ${method}`);
+            }
+        }
+        
+        // Check for required properties
+        if (contract.requiredProperties) {
+            for (const prop of contract.requiredProperties) {
+                // Look for property declaration (readonly name: string, etc.)
+                const propPattern = new RegExp(`(readonly\\s+)?${prop}\\s*:`);
+                if (!propPattern.test(content)) {
+                    errors.push(`Missing required property: ${prop}`);
+                }
             }
         }
         

@@ -16,10 +16,21 @@ import {
 } from '../core/src/utils/common.js';
 import { join } from 'node:path';
 import { writeFileSync } from 'node:fs';
+import type { ParamSpec, ParamDef as CoreParamDef } from '../core/src/ui/strategy.js';
+import type { 
+    SeamDefinition as CoreSeamDefinition, 
+    EvaluatorConfig as CoreEvaluatorConfig,
+    GovernanceLevel,
+    EvidenceClass
+} from '../core/src/schemas/seamDefinition.js';
 
 const PROJECT_ROOT = getProjectRoot(import.meta.url);
 const OUTPUT_DIR = getGeneratedDir(import.meta.url);
 const OUTPUT_FILE = getSeamDefinitionsPath(import.meta.url);
+
+// Re-use types from core schemas (single source of truth)
+type ParamDef = CoreParamDef;
+type EvaluatorConfig = CoreEvaluatorConfig;
 
 interface StrategyInfo {
     id: string;
@@ -33,40 +44,8 @@ interface StrategyInfo {
     defaultProps: Record<string, unknown>;
 }
 
-interface ParamDef {
-    type: 'string' | 'number' | 'boolean' | 'enum' | 'object' | 'array';
-    description?: string;
-    required?: boolean;
-    default?: unknown;
-    options?: string[];
-    min?: number;
-    max?: number;
-}
-
-interface SeamDefinition {
-    id: string;
-    name: string;
-    description: string;
-    role: string;
-    propsShape: Record<string, string>;
-    components: string[];
-    paramSpec: Record<string, ParamDef>;
-    evaluator: {
-        type: 'extraction' | 'match' | 'custom';
-        qualityFamily?: 'extraction' | 'match';
-        customEvaluator?: string;
-        metrics: string[];
-        primaryMetric: string;
-        mde?: Record<string, number>;
-        floors?: Record<string, number>;
-    };
-    governanceLevel: 'config' | 'structure' | 'interface';
-    evidenceClasses: ('measured' | 'observed' | 'hypothesized' | 'asserted')[];
-    version: string;
-    createdAt: string;
-    updatedAt: string;
-    tags?: string[];
-}
+// SeamDefinition is imported from core schemas
+type SeamDefinition = CoreSeamDefinition;
 
 interface SeamDefinitionsOutput {
     version: 1;
@@ -76,7 +55,7 @@ interface SeamDefinitionsOutput {
     seams: SeamDefinition[];
 }
 
-function getEvaluatorForRole(role: string): SeamDefinition['evaluator'] {
+function getEvaluatorForRole(role: string): EvaluatorConfig {
     if (role === 'capture' || role === 'elicit') {
         return {
             type: 'extraction',
@@ -200,9 +179,9 @@ function buildSeamDefinitions(
         propsShape: Record<string, string>;
         components: Set<string>;
         paramSpecs: Map<string, Record<string, ParamDef>>;
-        evaluator: SeamDefinition['evaluator'];
-        governanceLevel: 'config' | 'structure' | 'interface';
-        evidenceClasses: ('measured' | 'observed' | 'hypothesized' | 'asserted')[];
+        evaluator: EvaluatorConfig;
+        governanceLevel: GovernanceLevel;
+        evidenceClasses: EvidenceClass[];
     }>();
 
     for (const strat of strategies) {
@@ -225,8 +204,8 @@ function buildSeamDefinitions(
                 components: new Set(),
                 paramSpecs: new Map(),
                 evaluator,
-                governanceLevel: 'config',
-                evidenceClasses: ['measured', 'observed'],
+                governanceLevel: 'config' as GovernanceLevel,
+                evidenceClasses: ['measured', 'observed'] as EvidenceClass[],
             };
             seamMap.set(strat.seamId, seam);
         }

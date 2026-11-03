@@ -15,7 +15,7 @@ import type {
     RevisionDriver,
     RegistrableRevisionDriver
 } from './types.js';
-import { createPluginFactoryRegistry, FactoryRegistry } from '../utils/Registry.js';
+import { createPluginFactoryRegistry, FactoryRegistry, ValidationHelpers } from '../utils/Registry.js';
 import { RevisionDriverPlugin as BaseRevisionDriver } from '../utils/BasePlugin.js';
 
 // Re-export types from shared location
@@ -51,14 +51,10 @@ export class JSONLRevisionDriver extends BaseRevisionDriver implements Registrab
     }
 
     validateConfig(config: RevisionDriverConfig): { valid: boolean; errors: string[] } {
-        const errors: string[] = [];
-        if (config.filePath && typeof config.filePath !== 'string') {
-            errors.push('filePath must be a string');
-        }
-        if (config.maxRevisionsPerSeam && typeof config.maxRevisionsPerSeam !== 'number') {
-            errors.push('maxRevisionsPerSeam must be a number');
-        }
-        return { valid: errors.length === 0, errors };
+        return ValidationHelpers.combine(
+            ValidationHelpers.string(config.filePath, 'filePath'),
+            ValidationHelpers.positiveInt(config.maxRevisionsPerSeam, 'maxRevisionsPerSeam'),
+        );
     }
 
     protected async onInit(): Promise<void> {
@@ -144,11 +140,9 @@ export class SQLiteRevisionDriver implements RevisionDriver {
     }
 
     validateConfig(config: RevisionDriverConfig): { valid: boolean; errors: string[] } {
-        const errors: string[] = [];
-        if (config.dbPath && typeof config.dbPath !== 'string') {
-            errors.push('dbPath must be a string');
-        }
-        return { valid: errors.length === 0, errors };
+        return ValidationHelpers.combine(
+            ValidationHelpers.string(config.dbPath, 'dbPath'),
+        );
     }
 
     async init(config: RevisionDriverConfig): Promise<void> {

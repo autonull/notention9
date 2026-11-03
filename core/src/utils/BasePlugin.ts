@@ -139,6 +139,7 @@ export abstract class CandidateGeneratorPlugin<C extends GeneratorOptions = Gene
 // --- Revision Driver Base ---
 
 import type { Revision, RevisionStatus, RevisionSearchQuery, RevisionDriverConfig } from '../telemetry/types.js';
+import { ValidationHelpers } from './Registry.js';
 
 export abstract class RevisionDriverPlugin extends AsyncPlugin<RevisionDriverConfig> {
     abstract readonly name: string;
@@ -152,17 +153,11 @@ export abstract class RevisionDriverPlugin extends AsyncPlugin<RevisionDriverCon
     abstract getDefaultConfig(): RevisionDriverConfig;
 
     validateConfig(config: RevisionDriverConfig): { valid: boolean; errors: string[] } {
-        const errors: string[] = [];
-        if (config.filePath && typeof config.filePath !== 'string') {
-            errors.push('filePath must be a string');
-        }
-        if (config.dbPath && typeof config.dbPath !== 'string') {
-            errors.push('dbPath must be a string');
-        }
-        if (config.maxRevisionsPerSeam && typeof config.maxRevisionsPerSeam !== 'number') {
-            errors.push('maxRevisionsPerSeam must be a number');
-        }
-        return { valid: errors.length === 0, errors };
+        return ValidationHelpers.combine(
+            ValidationHelpers.string(config.filePath, 'filePath'),
+            ValidationHelpers.string(config.dbPath, 'dbPath'),
+            ValidationHelpers.positiveInt(config.maxRevisionsPerSeam, 'maxRevisionsPerSeam'),
+        );
     }
 
     protected async onInit(): Promise<void> {

@@ -14,7 +14,7 @@ import type {
     BudgetConstraints,
     CandidateEvaluationResult 
 } from './types.js';
-import { createPluginRegistry, Registry } from '../utils/Registry.js';
+import { createPluginRegistry, Registry, ValidationHelpers } from '../utils/Registry.js';
 import { CandidateGeneratorPlugin as BaseCandidateGenerator, createSeededRandom } from '../utils/BasePlugin.js';
 
 // --- SearchSpace from S1 (re-exported for convenience) ---
@@ -136,14 +136,11 @@ export class SuccessiveHalvingGenerator extends BaseCandidateGenerator implement
     }
 
     validateConfig(config: GeneratorOptions): { valid: boolean; errors: string[] } {
-        const errors: string[] = [];
-        if (config.maxCandidates !== undefined && (typeof config.maxCandidates !== 'number' || config.maxCandidates < 1)) {
-            errors.push('maxCandidates must be a positive number');
-        }
-        if (config.initialFraction !== undefined && (typeof config.initialFraction !== 'number' || config.initialFraction <= 0 || config.initialFraction > 1)) {
-            errors.push('initialFraction must be between 0 and 1');
-        }
-        return { valid: errors.length === 0, errors };
+        return ValidationHelpers.combine(
+            ValidationHelpers.positiveInt(config.maxCandidates, 'maxCandidates'),
+            ValidationHelpers.numberInRange(config.initialFraction, 'initialFraction', 0, 1),
+            ValidationHelpers.positiveInt(config.minPromote, 'minPromote'),
+        );
     }
 
     getSearchSpace(strategy: StrategyParamConfig): SearchSpace {

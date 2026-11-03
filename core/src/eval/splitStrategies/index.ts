@@ -27,6 +27,11 @@ export interface SplitStrategy {
     readonly configSchema?: z.ZodSchema;
     
     /**
+     * Get the name of this strategy
+     */
+    getName(): string;
+    
+    /**
      * Split intent cases into search/validation/holdout
      */
     splitIntentCases(

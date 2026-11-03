@@ -105,20 +105,29 @@ export function sleep(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+/** Retry options (compatible with async.ts version) */
+export interface RetryOptions {
+    maxAttempts?: number;
+    baseDelay?: number;
+    maxDelay?: number;
+    onRetry?: (attempt: number, error: unknown) => void;
+}
+
 /** Retry async function with exponential backoff */
 export async function retry<T>(
-    fn: () => Promise<T>,
-    options: { maxAttempts?: number; baseDelay?: number; maxDelay?: number } = {}
+    fn: (attempt: number) => Promise<T>,
+    options: RetryOptions = {}
 ): Promise<T> {
-    const { maxAttempts = 3, baseDelay = 100, maxDelay = 5000 } = options;
+    const { maxAttempts = 3, baseDelay = 100, maxDelay = 5000, onRetry } = options;
     let lastError: Error | undefined;
 
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
         try {
-            return await fn();
+            return await fn(attempt);
         } catch (error) {
             lastError = error as Error;
             if (attempt < maxAttempts) {
+                onRetry?.(attempt, error);
                 const delay = Math.min(baseDelay * Math.pow(2, attempt - 1), maxDelay);
                 await sleep(delay);
             }
@@ -126,4 +135,35 @@ export async function retry<T>(
     }
 
     throw lastError;
+}
+
+/** Generate ULID-style unique ID (timestamp + random) */
+export function generateId(prefix = ''): string {
+    const timestamp = Date.now().toString(36).toUpperCase().padStart(10, '0');
+    const random = Math.random().toString(36).substring(2, 12).toUpperCase();
+    return `${prefix}${timestamp}${random}`;
+}
+
+/** Safe division with default for divide by zero */
+export function safeDivide(numerator: number, denominator: number, defaultValue = 0): number {
+    return denominator !== 0 ? numerator / denominator : defaultValue;
+}
+
+/** Clamp a number between min and max */
+export function clamp(value: number, min: number, max: number): number {
+    return Math.max(min, Math.min(max, value));
+}
+
+/** Calculate average of numbers */
+export function average(values: number[]): number {
+    if (values.length === 0) return 0;
+    return values.reduce((a, b) => a + b, 0) / values.length;
+}
+
+/** Check if two string arrays are equal (order-independent) */
+export function areStringArraysEqual(a: string[], b: string[]): boolean {
+    if (a.length !== b.length) return false;
+    const setA = new Set(a);
+    const setB = new Set(b);
+    return setA.size === setB.size && [...setA].every(x => setB.has(x));
 }

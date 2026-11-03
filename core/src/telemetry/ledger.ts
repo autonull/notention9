@@ -9,6 +9,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createSingleton } from '../utils/singletonFactory.js';
 import { logWarn } from '../utils/logging.js';
+import { generateId } from '../utils/common.js';
 import type { 
     LedgerEvent, LedgerEventType, LedgerPayload, 
     RunConfig, RunSummary, CaseVerdict, VerdictDetail, 
@@ -33,12 +34,6 @@ export type {
 } from './types.js';
 
 // --- ULID generation (simple timestamp + random) ---
-
-function generateId(): string {
-    const timestamp = Date.now().toString(36).toUpperCase().padStart(10, '0');
-    const random = Math.random().toString(36).substring(2, 12).toUpperCase();
-    return `${timestamp}${random}`;
-}
 
 function computeHash(payload: LedgerPayload): string {
     return createHash('sha256').update(JSON.stringify(payload)).digest('hex').slice(0, 16);

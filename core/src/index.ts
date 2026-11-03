@@ -15,21 +15,6 @@ export { DEFAULT_ONTOLOGY } from './ontology/ontology.default.js';
 export { OntologyService } from './ontology/ontologyService.js';
 
 // Utils
-export * from './utils/errors/index.js';
-export * from './utils/common.js';
-export * from './utils/logging.js';
-export * from './utils/encoding.js';
-export * from './utils/string.js';
-export * from './utils/tools.js';
-export * from './utils/commands.js';
-export * from './utils/csvExport.js';
-export * from './utils/baseService.js';
-export * from './utils/inference.js';
-export * from './utils/matching.js';
-export * from './utils/html.js';
-export * from './utils/dateParsing.js';
-export * from './utils/constants.js';
-export * from './utils/geo.js';
 export * from './utils/index.js';
 
 export * from './patternRecognition/index.js';

@@ -31,13 +31,13 @@ export const IS_DEV = env.DEV ?? true;
 export const IS_PROD = env.PROD ?? false;
 export const IS_TEST = env.MODE === 'test';
 
-export function getProjectRoot(): string {
+export function getNotentionProjectRoot(): string {
     // Vite defines import.meta.env.PROJECT_ROOT at build time
     return env.PROJECT_ROOT ?? '/home/me/notention9';
 }
 
 export function getOptimizeDir(): string {
-    return `${getProjectRoot()}/optimize`;
+    return `${getNotentionProjectRoot()}/optimize`;
 }
 
 // ============================================================================
@@ -229,10 +229,10 @@ export async function loadLoopConfigSchema(): Promise<LoopConfigSchema> {
         const { readFile } = await import('fs/promises');
         const { join } = await import('path');
         // Schema is at loop/schema.json relative to monorepo root
-        const schemaText = await readFile(join(getProjectRoot(), 'loop/schema.json'), 'utf-8');
+        const schemaText = await readFile(join(getNotentionProjectRoot(), 'loop/schema.json'), 'utf-8');
         cachedLoopSchema = JSON.parse(schemaText);
     } else {
-        const response = await fetch(`${getProjectRoot()}/loop/schema.json`);
+        const response = await fetch(`${getNotentionProjectRoot()}/loop/schema.json`);
         cachedLoopSchema = await response.json() as LoopConfigSchema;
     }
     return cachedLoopSchema!;

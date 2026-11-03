@@ -11,14 +11,9 @@ import { fileURLToPath } from 'node:url';
 import Database from 'better-sqlite3';
 import type { LedgerEvent, LedgerEventType, LedgerPayload } from '../../telemetry/ledger.js';
 import type { EventStore } from './index.js';
+import { generateId } from '../../utils/common.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-
-function generateId(): string {
-    const timestamp = Date.now().toString(36).toUpperCase().padStart(10, '0');
-    const random = Math.random().toString(36).substring(2, 12).toUpperCase();
-    return `${timestamp}${random}`;
-}
 
 function computeHash(payload: LedgerPayload): string {
     return createHash('sha256').update(JSON.stringify(payload)).digest('hex').slice(0, 16);
