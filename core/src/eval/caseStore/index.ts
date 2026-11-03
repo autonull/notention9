@@ -57,7 +57,7 @@ const { registry: caseStoreRegistry, get: getCaseStoreRegistry, reset: resetCase
         { name: 'filesystem', create: () => new FileSystemCaseStore(), description: 'File-based storage with JSON cases' },
         { name: 'memory', create: () => new InMemoryCaseStore(), description: 'In-memory storage for testing' },
         { name: 'sqlite', create: (dbPath: string) => new SQLiteCaseStore(dbPath), description: 'SQLite-backed storage' },
-    ]) as { registry: FactoryRegistry<CaseStore>; get: () => FactoryRegistry<CaseStore>; reset: () => void };
+    ]);
 
 // --- Export registry and singleton ---
 export { caseStoreRegistry, getCaseStoreRegistry, resetCaseStoreRegistry };

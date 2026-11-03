@@ -282,7 +282,7 @@ const { registry: candidateGeneratorRegistry, get: getCandidateGeneratorRegistry
         new GridGenerator(),
         new RandomGenerator(),
         new SuccessiveHalvingGenerator(),
-    ]) as { registry: Registry<RegistrableGenerator>; get: () => Registry<RegistrableGenerator>; reset: () => void };
+    ]);
 
 // --- Singleton instance ---
 export { candidateGeneratorRegistry, getCandidateGeneratorRegistry, resetCandidateGeneratorRegistry };

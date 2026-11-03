@@ -12,28 +12,17 @@ import type {
     ExtendedCaseVerdict, 
     ExtendedRunVerdict, 
     VerdictEngineConfig,
-    VerdictEngine,
     EvidenceClass,
     JudgeProvenance
 } from './index.js';
 import { 
     pairedTTest, 
     pairedConfidenceInterval, 
-    mean, 
-    std,
-    computeCaseVerdict as baseComputeCaseVerdict,
-    computeRunVerdict as baseComputeRunVerdict,
     type MetricVerdict,
     type CaseVerdict,
     type RunVerdict
 } from '../verdict.js';
-import { 
-    extendCaseVerdict, 
-    extendRunVerdict 
-} from '../../schemas/verdictResult.js';
-import { 
-    createStatisticalProvenance 
-} from '../../schemas/evidence.js';
+import { BaseVerdictEngine } from './baseVerdictEngine.js';
 
 // --- Bayesian-specific config schema ---
 
@@ -52,15 +41,11 @@ export const bayesianConfigSchema = z.object({
 
 // --- Bayesian Engine Implementation ---
 
-export class BayesianVerdictEngine implements VerdictEngine {
+export class BayesianVerdictEngine extends BaseVerdictEngine {
     readonly name = 'bayesian';
     readonly description = 'Bayesian inference with ROPE for practical equivalence testing';
     readonly evidenceClass: EvidenceClass = 'measured';
     readonly configSchema = bayesianConfigSchema;
-    
-    getName(): string {
-        return this.name;
-    }
     
     getDefaultConfig(): VerdictEngineConfig {
         return {
@@ -99,10 +84,10 @@ export class BayesianVerdictEngine implements VerdictEngine {
         paired: PairedRunResult,
         config: VerdictEngineConfig
     ): ExtendedCaseVerdict {
-        const baseVerdict = baseComputeCaseVerdict(caseId, paired, config as VerdictConfig);
+        const baseVerdict = this.computeBaseCaseVerdict(caseId, paired, config);
         const enhancedVerdict = this.enhanceWithBayesian(baseVerdict, paired, config);
         
-        const provenance = createStatisticalProvenance(
+        const provenance = this.createStatisticalProvenance(
             'bayesian',
             'v1',
             0.9,
@@ -114,7 +99,7 @@ export class BayesianVerdictEngine implements VerdictEngine {
             }
         );
         
-        return extendCaseVerdict(enhancedVerdict, 'measured', provenance);
+        return this.extendCaseVerdict(enhancedVerdict, provenance);
     }
     
     computeRunVerdict(
@@ -125,48 +110,18 @@ export class BayesianVerdictEngine implements VerdictEngine {
         caseVerdicts: ExtendedCaseVerdict[],
         primaryMetric: string
     ): ExtendedRunVerdict {
-        const baseVerdicts: CaseVerdict[] = caseVerdicts.map(cv => ({
-            caseId: cv.caseId,
-            verdict: cv.verdict,
-            primaryMetric: {
-                metric: cv.primaryMetric.metric,
-                baselineMean: cv.primaryMetric.baselineMean,
-                candidateMean: cv.primaryMetric.candidateMean,
-                delta: cv.primaryMetric.delta,
-                deltaPercent: cv.primaryMetric.deltaPercent,
-                pValue: cv.primaryMetric.pValue,
-                ci: cv.primaryMetric.ci,
-                mde: cv.primaryMetric.mde,
-                passes: cv.primaryMetric.passes,
-                direction: cv.primaryMetric.direction,
-            },
-            otherMetrics: cv.otherMetrics.map(om => ({
-                metric: om.metric,
-                baselineMean: om.baselineMean,
-                candidateMean: om.candidateMean,
-                delta: om.delta,
-                deltaPercent: om.deltaPercent,
-                pValue: om.pValue,
-                ci: om.ci,
-                mde: om.mde,
-                passes: om.passes,
-                direction: om.direction,
-            })),
-            floors: cv.floors,
-            excluded: cv.excluded,
-            excludeReason: cv.excludeReason,
-        }));
+        const baseVerdicts = this.toBaseCaseVerdicts(caseVerdicts);
         
-        const baseRunVerdict = baseComputeRunVerdict(runId, manifestHash, revisionId, baselineRevisionId, baseVerdicts, primaryMetric);
+        const baseRunVerdict = this.computeBaseRunVerdict(runId, manifestHash, revisionId, baselineRevisionId, baseVerdicts, primaryMetric);
         
-        const provenance = createStatisticalProvenance(
+        const provenance = this.createStatisticalProvenance(
             'bayesian-aggregate',
             'v1',
             0.9,
             { method: 'hierarchical' }
         );
         
-        return extendRunVerdict(baseRunVerdict, 'measured', provenance);
+        return this.extendRunVerdict(baseRunVerdict, provenance);
     }
     
     /**

@@ -13,15 +13,14 @@ import type {
     QualityFamily 
 } from '../../schemas/caseTypes.js';
 import type { CaseStore } from '../../schemas/caseManifest.js';
-
-function sha256(content: string): string {
-    return createHash('sha256').update(content).digest('hex');
-}
-
-function canonicalizeManifest(manifest: Omit<CaseManifest, 'hash'>): string {
-    const sorted = { ...manifest, cases: [...manifest.cases].sort((a, b) => a.id.localeCompare(b.id)) };
-    return JSON.stringify(sorted, null, 2);
-}
+import { 
+    sha256, 
+    canonicalizeManifest, 
+    computeManifestHash, 
+    generateManifestFromCases,
+    buildIntentCaseEntry,
+    buildQualityCaseEntry 
+} from './manifestUtils.js';
 
 export class InMemoryCaseStore implements CaseStore {
     private cases: Map<string, IntentCase | QualityCase> = new Map();
@@ -37,49 +36,13 @@ export class InMemoryCaseStore implements CaseStore {
         
         for (const [id, caseData] of this.cases) {
             if (caseData.family === 'intent') {
-                intentCases.push({
-                    id,
-                    family: 'intent',
-                    split: 'search',
-                    path: `intent/search/${id}.json`,
-                    hash: sha256(JSON.stringify(caseData)).slice(0, 16),
-                    tags: caseData.tags,
-                });
+                intentCases.push(buildIntentCaseEntry(caseData, 'search', `intent/search/${id}.json`));
             } else {
-                qualityCases.push({
-                    id,
-                    family: 'quality',
-                    qualityFamily: caseData.qualityFamily,
-                    path: `quality/${caseData.qualityFamily}/${id}.json`,
-                    hash: sha256(JSON.stringify(caseData)).slice(0, 16),
-                    tags: caseData.tags,
-                });
+                qualityCases.push(buildQualityCaseEntry(caseData, caseData.qualityFamily, `quality/${caseData.qualityFamily}/${id}.json`));
             }
         }
         
-        const allCases = [...intentCases, ...qualityCases].sort((a, b) => a.id.localeCompare(b.id));
-        
-        const manifestWithoutHash: Omit<CaseManifest, 'hash'> = {
-            version: 1,
-            generatedAt: new Date().toISOString(),
-            counts: {
-                intent: {
-                    search: intentCases.filter(c => c.split === 'search').length,
-                    validation: intentCases.filter(c => c.split === 'validation').length,
-                    holdout: intentCases.filter(c => c.split === 'holdout').length,
-                },
-                quality: {
-                    extraction: qualityCases.filter(c => c.qualityFamily === 'extraction').length,
-                    match: qualityCases.filter(c => c.qualityFamily === 'match').length,
-                },
-            },
-            cases: allCases,
-        };
-        
-        const canonical = canonicalizeManifest(manifestWithoutHash);
-        const manifestHash = sha256(canonical).slice(0, 16);
-        
-        this.manifest = { ...manifestWithoutHash, hash: manifestHash };
+        this.manifest = generateManifestFromCases(intentCases, qualityCases);
         return this.manifest;
     }
     

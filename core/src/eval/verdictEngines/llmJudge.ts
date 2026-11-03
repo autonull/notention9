@@ -12,23 +12,14 @@ import type {
     ExtendedCaseVerdict, 
     ExtendedRunVerdict, 
     VerdictEngineConfig,
-    VerdictEngine,
     EvidenceClass,
     JudgeProvenance
 } from './index.js';
 import { 
-    computeCaseVerdict as baseComputeCaseVerdict,
-    computeRunVerdict as baseComputeRunVerdict,
     type CaseVerdict,
     type RunVerdict
 } from '../verdict.js';
-import { 
-    extendCaseVerdict, 
-    extendRunVerdict 
-} from '../../schemas/verdictResult.js';
-import { 
-    createModelProvenance 
-} from '../../schemas/evidence.js';
+import { BaseVerdictEngine } from './baseVerdictEngine.js';
 
 // --- LLM Judge config schema ---
 
@@ -49,7 +40,7 @@ export const llmJudgeConfigSchema = z.object({
 
 // --- LLM Judge Engine Implementation ---
 
-export class LLMJudgeVerdictEngine implements VerdictEngine {
+export class LLMJudgeVerdictEngine extends BaseVerdictEngine {
     readonly name = 'llm-judge';
     readonly description = 'LLM-as-judge for rapid candidate triage (hypothesized evidence)';
     readonly evidenceClass: EvidenceClass = 'hypothesized';
@@ -58,11 +49,8 @@ export class LLMJudgeVerdictEngine implements VerdictEngine {
     private modelProvider: (prompt: string) => Promise<string>;
     
     constructor(modelProvider?: (prompt: string) => Promise<string>) {
+        super();
         this.modelProvider = modelProvider ?? this.defaultMockProvider;
-    }
-    
-    getName(): string {
-        return this.name;
     }
     
     getDefaultConfig(): VerdictEngineConfig {
@@ -102,7 +90,7 @@ export class LLMJudgeVerdictEngine implements VerdictEngine {
         paired: PairedRunResult,
         config: VerdictEngineConfig
     ): Promise<ExtendedCaseVerdict> {
-        const baseVerdict = baseComputeCaseVerdict(caseId, paired, config as VerdictConfig);
+        const baseVerdict = this.computeBaseCaseVerdict(caseId, paired, config);
         const llmConfig = config as any;
         
         // Get LLM judgment
@@ -111,7 +99,7 @@ export class LLMJudgeVerdictEngine implements VerdictEngine {
         // Override with LLM judgment (lower confidence)
         const enhancedVerdict = this.applyLLMJudgment(baseVerdict, llmJudgment, config);
         
-        const provenance = createModelProvenance(
+        const provenance = this.createModelProvenance(
             llmConfig.modelId ?? 'gpt-4o',
             llmJudgment.confidence,
             { 
@@ -121,7 +109,7 @@ export class LLMJudgeVerdictEngine implements VerdictEngine {
             }
         );
         
-        return extendCaseVerdict(enhancedVerdict, 'hypothesized', provenance);
+        return this.extendCaseVerdict(enhancedVerdict, provenance);
     }
     
     async computeRunVerdict(
@@ -133,47 +121,17 @@ export class LLMJudgeVerdictEngine implements VerdictEngine {
         primaryMetric: string
     ): Promise<ExtendedRunVerdict> {
         const defaultConfig = this.getDefaultConfig() as any;
-        const baseVerdicts: CaseVerdict[] = caseVerdicts.map(cv => ({
-            caseId: cv.caseId,
-            verdict: cv.verdict,
-            primaryMetric: {
-                metric: cv.primaryMetric.metric,
-                baselineMean: cv.primaryMetric.baselineMean,
-                candidateMean: cv.primaryMetric.candidateMean,
-                delta: cv.primaryMetric.delta,
-                deltaPercent: cv.primaryMetric.deltaPercent,
-                pValue: cv.primaryMetric.pValue,
-                ci: cv.primaryMetric.ci,
-                mde: cv.primaryMetric.mde,
-                passes: cv.primaryMetric.passes,
-                direction: cv.primaryMetric.direction,
-            },
-            otherMetrics: cv.otherMetrics.map(om => ({
-                metric: om.metric,
-                baselineMean: om.baselineMean,
-                candidateMean: om.candidateMean,
-                delta: om.delta,
-                deltaPercent: om.deltaPercent,
-                pValue: om.pValue,
-                ci: om.ci,
-                mde: om.mde,
-                passes: om.passes,
-                direction: om.direction,
-            })),
-            floors: cv.floors,
-            excluded: cv.excluded,
-            excludeReason: cv.excludeReason,
-        }));
+        const baseVerdicts = this.toBaseCaseVerdicts(caseVerdicts);
         
-        const baseRunVerdict = baseComputeRunVerdict(runId, manifestHash, revisionId, baselineRevisionId, baseVerdicts, primaryMetric);
+        const baseRunVerdict = this.computeBaseRunVerdict(runId, manifestHash, revisionId, baselineRevisionId, baseVerdicts, primaryMetric);
         
-        const provenance = createModelProvenance(
+        const provenance = this.createModelProvenance(
             defaultConfig.modelId ?? 'gpt-4o',
             0.5, // Lower confidence for aggregate
             { method: 'llm-aggregate' }
         );
         
-        return extendRunVerdict(baseRunVerdict, 'hypothesized', provenance);
+        return this.extendRunVerdict(baseRunVerdict, provenance);
     }
     
     private async getLLMJudgment(

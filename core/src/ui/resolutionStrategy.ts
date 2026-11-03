@@ -300,7 +300,7 @@ const { registry: resolutionStrategyRegistry, get: getResolutionStrategyRegistry
         new PolicyResolutionStrategy(),
         new DefaultProfileResolutionStrategy(),
         new FallbackResolutionStrategy(),
-    ]) as { registry: Registry<RegistrableResolutionStrategy>; get: () => Registry<RegistrableResolutionStrategy>; reset: () => void };
+    ]);
 
 // --- Singleton instance ---
 export { resolutionStrategyRegistry, getResolutionStrategyRegistry, resetResolutionStrategyRegistry };

@@ -65,7 +65,7 @@ const { registry: eventStoreRegistry, get: getEventStoreRegistry, reset: resetEv
     createPluginFactoryRegistry<EventStore>('EventStore', [
         { name: 'jsonl', create: (path?: string) => new JSONLEventStore(path), description: 'JSONL file-based storage' },
         { name: 'sqlite', create: (path: string) => new SQLiteEventStore(path), description: 'SQLite-backed storage' },
-    ]) as { registry: FactoryRegistry<EventStore>; get: () => FactoryRegistry<EventStore>; reset: () => void };
+    ]);
 
 // --- Export registry and singleton ---
 export { eventStoreRegistry, getEventStoreRegistry, resetEventStoreRegistry };

@@ -12,23 +12,14 @@ import type {
     ExtendedCaseVerdict, 
     ExtendedRunVerdict, 
     VerdictEngineConfig,
-    VerdictEngine,
     EvidenceClass,
     JudgeProvenance
 } from './index.js';
 import { 
-    computeCaseVerdict as baseComputeCaseVerdict,
-    computeRunVerdict as baseComputeRunVerdict,
     type CaseVerdict,
     type RunVerdict
 } from '../verdict.js';
-import { 
-    extendCaseVerdict, 
-    extendRunVerdict 
-} from '../../schemas/verdictResult.js';
-import { 
-    createHumanProvenance 
-} from '../../schemas/evidence.js';
+import { BaseVerdictEngine } from './baseVerdictEngine.js';
 
 // --- Human Judge config schema ---
 
@@ -46,7 +37,7 @@ export const humanJudgeConfigSchema = z.object({
 
 // --- Human Judge Engine Implementation ---
 
-export class HumanJudgeVerdictEngine implements VerdictEngine {
+export class HumanJudgeVerdictEngine extends BaseVerdictEngine {
     readonly name = 'human-judge';
     readonly description = 'Human expert review for high-stakes decisions (observed evidence)';
     readonly evidenceClass: EvidenceClass = 'observed';
@@ -55,6 +46,7 @@ export class HumanJudgeVerdictEngine implements VerdictEngine {
     private reviewCallback?: (caseId: string, paired: PairedRunResult, config: VerdictEngineConfig) => Promise<HumanReview>;
     
     constructor(reviewCallback?: (caseId: string, paired: PairedRunResult, config: VerdictEngineConfig) => Promise<HumanReview>) {
+        super();
         this.reviewCallback = reviewCallback;
     }
     
@@ -98,7 +90,7 @@ export class HumanJudgeVerdictEngine implements VerdictEngine {
         paired: PairedRunResult,
         config: VerdictEngineConfig
     ): Promise<ExtendedCaseVerdict> {
-        const baseVerdict = baseComputeCaseVerdict(caseId, paired, config as VerdictConfig);
+        const baseVerdict = this.computeBaseCaseVerdict(caseId, paired, config);
         const humanConfig = config as any;
         
         // Get human review
@@ -107,7 +99,7 @@ export class HumanJudgeVerdictEngine implements VerdictEngine {
         // Apply human judgment
         const enhancedVerdict = this.applyHumanJudgment(baseVerdict, review, config);
         
-        const provenance = createHumanProvenance(
+        const provenance = this.createHumanProvenance(
             humanConfig.reviewerId ?? 'unknown',
             review.confidence,
             { 
@@ -118,7 +110,7 @@ export class HumanJudgeVerdictEngine implements VerdictEngine {
             }
         );
         
-        return extendCaseVerdict(enhancedVerdict, 'observed', provenance);
+        return this.extendCaseVerdict(enhancedVerdict, provenance);
     }
     
     async computeRunVerdict(
@@ -129,48 +121,18 @@ export class HumanJudgeVerdictEngine implements VerdictEngine {
         caseVerdicts: ExtendedCaseVerdict[],
         primaryMetric: string
     ): Promise<ExtendedRunVerdict> {
-        const baseVerdicts: CaseVerdict[] = caseVerdicts.map(cv => ({
-            caseId: cv.caseId,
-            verdict: cv.verdict,
-            primaryMetric: {
-                metric: cv.primaryMetric.metric,
-                baselineMean: cv.primaryMetric.baselineMean,
-                candidateMean: cv.primaryMetric.candidateMean,
-                delta: cv.primaryMetric.delta,
-                deltaPercent: cv.primaryMetric.deltaPercent,
-                pValue: cv.primaryMetric.pValue,
-                ci: cv.primaryMetric.ci,
-                mde: cv.primaryMetric.mde,
-                passes: cv.primaryMetric.passes,
-                direction: cv.primaryMetric.direction,
-            },
-            otherMetrics: cv.otherMetrics.map(om => ({
-                metric: om.metric,
-                baselineMean: om.baselineMean,
-                candidateMean: om.candidateMean,
-                delta: om.delta,
-                deltaPercent: om.deltaPercent,
-                pValue: om.pValue,
-                ci: om.ci,
-                mde: om.mde,
-                passes: om.passes,
-                direction: om.direction,
-            })),
-            floors: cv.floors,
-            excluded: cv.excluded,
-            excludeReason: cv.excludeReason,
-        }));
+        const baseVerdicts = this.toBaseCaseVerdicts(caseVerdicts);
         
-        const baseRunVerdict = baseComputeRunVerdict(runId, manifestHash, revisionId, baselineRevisionId, baseVerdicts, primaryMetric);
+        const baseRunVerdict = this.computeBaseRunVerdict(runId, manifestHash, revisionId, baselineRevisionId, baseVerdicts, primaryMetric);
         
         const defaultConfig = this.getDefaultConfig() as any;
-        const provenance = createHumanProvenance(
+        const provenance = this.createHumanProvenance(
             defaultConfig.reviewerId ?? 'unknown',
             0.8, // High confidence for human aggregate review
             { method: 'human-aggregate-review' }
         );
         
-        return extendRunVerdict(baseRunVerdict, 'observed', provenance);
+        return this.extendRunVerdict(baseRunVerdict, provenance);
     }
     
     private async getHumanReview(

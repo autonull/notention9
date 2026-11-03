@@ -328,7 +328,7 @@ const { registry: budgetAllocatorRegistry, get: getBudgetAllocatorRegistry, rese
         new FixedBudgetAllocator(),
         new SuccessiveHalvingAllocator(),
         new HyperbandAllocator(),
-    ]) as { registry: Registry<RegistrableAllocator>; get: () => Registry<RegistrableAllocator>; reset: () => void };
+    ]);
 
 // --- Singleton ---
 export { budgetAllocatorRegistry, getBudgetAllocatorRegistry, resetBudgetAllocatorRegistry };

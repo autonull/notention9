@@ -12,7 +12,6 @@ import type {
     ExtendedCaseVerdict, 
     ExtendedRunVerdict, 
     VerdictEngineConfig,
-    VerdictEngine,
     EvidenceClass,
     JudgeProvenance
 } from './index.js';
@@ -21,19 +20,11 @@ import {
     pairedConfidenceInterval, 
     mean, 
     std,
-    computeCaseVerdict as baseComputeCaseVerdict,
-    computeRunVerdict as baseComputeRunVerdict,
     type MetricVerdict,
     type CaseVerdict,
     type RunVerdict
 } from '../verdict.js';
-import { 
-    extendCaseVerdict, 
-    extendRunVerdict 
-} from '../../schemas/verdictResult.js';
-import { 
-    createStatisticalProvenance 
-} from '../../schemas/evidence.js';
+import { BaseVerdictEngine } from './baseVerdictEngine.js';
 
 // --- Sequential-specific config schema ---
 
@@ -52,7 +43,7 @@ export const sequentialConfigSchema = z.object({
 
 // --- Sequential Engine Implementation ---
 
-export class SequentialVerdictEngine implements VerdictEngine {
+export class SequentialVerdictEngine extends BaseVerdictEngine {
     readonly name = 'sequential';
     readonly description = 'Sequential Probability Ratio Test (SPRT) for early stopping';
     readonly evidenceClass: EvidenceClass = 'measured';
@@ -99,13 +90,13 @@ export class SequentialVerdictEngine implements VerdictEngine {
         paired: PairedRunResult,
         config: VerdictEngineConfig
     ): ExtendedCaseVerdict {
-        const baseVerdict = baseComputeCaseVerdict(caseId, paired, config as VerdictConfig);
+        const baseVerdict = this.computeBaseCaseVerdict(caseId, paired, config);
         
         // For sequential, we'd need multiple observations
         // This computes what the decision would be with current data
         const enhancedVerdict = this.applySequentialTest(baseVerdict, paired, config);
         
-        const provenance = createStatisticalProvenance(
+        const provenance = this.createStatisticalProvenance(
             'sequential-sprt',
             'v1',
             0.9,
@@ -116,7 +107,7 @@ export class SequentialVerdictEngine implements VerdictEngine {
             }
         );
         
-        return extendCaseVerdict(enhancedVerdict, 'measured', provenance);
+        return this.extendCaseVerdict(enhancedVerdict, provenance);
     }
     
     computeRunVerdict(
@@ -127,48 +118,18 @@ export class SequentialVerdictEngine implements VerdictEngine {
         caseVerdicts: ExtendedCaseVerdict[],
         primaryMetric: string
     ): ExtendedRunVerdict {
-        const baseVerdicts: CaseVerdict[] = caseVerdicts.map(cv => ({
-            caseId: cv.caseId,
-            verdict: cv.verdict,
-            primaryMetric: {
-                metric: cv.primaryMetric.metric,
-                baselineMean: cv.primaryMetric.baselineMean,
-                candidateMean: cv.primaryMetric.candidateMean,
-                delta: cv.primaryMetric.delta,
-                deltaPercent: cv.primaryMetric.deltaPercent,
-                pValue: cv.primaryMetric.pValue,
-                ci: cv.primaryMetric.ci,
-                mde: cv.primaryMetric.mde,
-                passes: cv.primaryMetric.passes,
-                direction: cv.primaryMetric.direction,
-            },
-            otherMetrics: cv.otherMetrics.map(om => ({
-                metric: om.metric,
-                baselineMean: om.baselineMean,
-                candidateMean: om.candidateMean,
-                delta: om.delta,
-                deltaPercent: om.deltaPercent,
-                pValue: om.pValue,
-                ci: om.ci,
-                mde: om.mde,
-                passes: om.passes,
-                direction: om.direction,
-            })),
-            floors: cv.floors,
-            excluded: cv.excluded,
-            excludeReason: cv.excludeReason,
-        }));
+        const baseVerdicts = this.toBaseCaseVerdicts(caseVerdicts);
         
-        const baseRunVerdict = baseComputeRunVerdict(runId, manifestHash, revisionId, baselineRevisionId, baseVerdicts, primaryMetric);
+        const baseRunVerdict = this.computeBaseRunVerdict(runId, manifestHash, revisionId, baselineRevisionId, baseVerdicts, primaryMetric);
         
-        const provenance = createStatisticalProvenance(
+        const provenance = this.createStatisticalProvenance(
             'sequential-aggregate',
             'v1',
             0.9,
             { method: 'sprt-combined' }
         );
         
-        return extendRunVerdict(baseRunVerdict, 'measured', provenance);
+        return this.extendRunVerdict(baseRunVerdict, provenance);
     }
     
     /**

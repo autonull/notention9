@@ -19,6 +19,7 @@ import { BayesianVerdictEngine } from './bayesian.js';
 import { SequentialVerdictEngine } from './sequential.js';
 import { LLMJudgeVerdictEngine } from './llmJudge.js';
 import { HumanJudgeVerdictEngine } from './humanJudge.js';
+import { BaseVerdictEngine } from './baseVerdictEngine.js';
 import { createPluginRegistry, Registry } from '../../utils/Registry.js';
 
 // --- VerdictEngine Config ---
@@ -80,7 +81,7 @@ const { registry: verdictEngineRegistry, get: getVerdictEngineRegistry, reset: r
         new SequentialVerdictEngine(),
         new LLMJudgeVerdictEngine(),
         new HumanJudgeVerdictEngine(),
-    ]) as { registry: Registry<RegistrableVerdictEngine>; get: () => Registry<RegistrableVerdictEngine>; reset: () => void };
+    ]);
 
 // --- Re-export engines ---
 export { McNemarVerdictEngine } from './mcnemar.js';
@@ -88,6 +89,7 @@ export { BayesianVerdictEngine } from './bayesian.js';
 export { SequentialVerdictEngine } from './sequential.js';
 export { LLMJudgeVerdictEngine } from './llmJudge.js';
 export { HumanJudgeVerdictEngine, type HumanReview } from './humanJudge.js';
+export { BaseVerdictEngine } from './baseVerdictEngine.js';
 
 // --- Re-export extended types from schemas ---
 export type { ExtendedCaseVerdict, ExtendedRunVerdict, ExtendedMetricVerdict } from '../../schemas/verdictResult.js';

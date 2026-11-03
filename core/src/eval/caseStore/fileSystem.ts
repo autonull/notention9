@@ -17,40 +17,20 @@ import type {
 } from '../../schemas/caseTypes.js';
 import type { CaseStore } from '../../schemas/caseManifest.js';
 import { logWarn } from '../../utils/logging.js';
+import { 
+    sha256, 
+    canonicalizeManifest, 
+    computeManifestHash, 
+    generateManifestFromCases,
+    buildIntentCaseEntry,
+    buildQualityCaseEntry,
+    verifyCaseHash,
+    collectCaseFiles  // keep this local helper
+} from './manifestUtils.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = join(__dirname, '..', '..', '..');
 const DEFAULT_CASES_DIR = join(PROJECT_ROOT, 'eval', 'cases');
-
-function sha256(content: string): string {
-    return createHash('sha256').update(content).digest('hex');
-}
-
-function canonicalizeManifest(manifest: Omit<CaseManifest, 'hash'>): string {
-    const sorted = { ...manifest, cases: [...manifest.cases].sort((a, b) => a.id.localeCompare(b.id)) };
-    return JSON.stringify(sorted, null, 2);
-}
-
-function collectCaseFiles(dir: string, baseDir: string): Array<{ path: string; content: string }> {
-    const results: Array<{ path: string; content: string }> = [];
-    
-    if (!existsSync(dir) || !statSync(dir).isDirectory()) return results;
-    
-    for (const entry of readdirSync(dir)) {
-        const fullPath = join(dir, entry);
-        const stat = statSync(fullPath);
-        
-        if (stat.isDirectory()) {
-            results.push(...collectCaseFiles(fullPath, baseDir));
-        } else if (extname(entry) === '.json') {
-            const content = readFileSync(fullPath, 'utf-8');
-            const relPath = relative(baseDir, fullPath);
-            results.push({ path: relPath, content });
-        }
-    }
-    
-    return results;
-}
 
 export class FileSystemCaseStore implements CaseStore {
     private casesDir: string;
@@ -97,8 +77,7 @@ export class FileSystemCaseStore implements CaseStore {
         
         // Verify hash
         const { hash, ...rest } = manifest;
-        const canonical = canonicalizeManifest(rest as Omit<CaseManifest, 'hash'>);
-        const computedHash = sha256(canonical).slice(0, 16);
+        const computedHash = computeManifestHash(rest as Omit<CaseManifest, 'hash'>);
         
         if (computedHash !== hash) {
             throw new Error(`Manifest hash mismatch! Expected ${hash}, got ${computedHash}.`);
@@ -116,6 +95,9 @@ export class FileSystemCaseStore implements CaseStore {
         this.manifestCache = manifest;
     }
     
+    // Re-export collectCaseFiles for use in manifestUtils (but it's local to this file)
+    // We'll move it to manifestUtils if needed
+    
     private async generateManifest(): Promise<CaseManifest> {
         const intentCases: CaseEntry[] = [];
         const qualityCases: CaseEntry[] = [];
@@ -129,14 +111,7 @@ export class FileSystemCaseStore implements CaseStore {
                 const caseData = JSON.parse(content) as IntentCase;
                 const split = path.split('/')[1] as CaseSplit;
                 
-                intentCases.push({
-                    id: caseData.id,
-                    family: 'intent',
-                    split,
-                    path,
-                    hash: sha256(content).slice(0, 16),
-                    tags: caseData.tags,
-                });
+                intentCases.push(buildIntentCaseEntry(caseData, split, path));
             } catch (e) {
                 logWarn(`Failed to parse intent case`, { path, error: e instanceof Error ? e.message : String(e) });
             }
@@ -151,45 +126,13 @@ export class FileSystemCaseStore implements CaseStore {
                 const caseData = JSON.parse(content) as QualityCase;
                 const qualityFamily = path.split('/')[1] as QualityFamily;
                 
-                qualityCases.push({
-                    id: caseData.id,
-                    family: 'quality',
-                    qualityFamily,
-                    path,
-                    hash: sha256(content).slice(0, 16),
-                    tags: caseData.tags,
-                });
+                qualityCases.push(buildQualityCaseEntry(caseData, qualityFamily, path));
             } catch (e) {
                 logWarn(`Failed to parse quality case`, { path, error: e instanceof Error ? e.message : String(e) });
             }
         }
         
-        const allCases = [...intentCases, ...qualityCases].sort((a, b) => a.id.localeCompare(b.id));
-        
-        const manifestWithoutHash: Omit<CaseManifest, 'hash'> = {
-            version: 1,
-            generatedAt: new Date().toISOString(),
-            counts: {
-                intent: {
-                    search: intentCases.filter(c => c.split === 'search').length,
-                    validation: intentCases.filter(c => c.split === 'validation').length,
-                    holdout: intentCases.filter(c => c.split === 'holdout').length,
-                },
-                quality: {
-                    extraction: qualityCases.filter(c => c.qualityFamily === 'extraction').length,
-                    match: qualityCases.filter(c => c.qualityFamily === 'match').length,
-                },
-            },
-            cases: allCases,
-        };
-        
-        const canonical = canonicalizeManifest(manifestWithoutHash);
-        const manifestHash = sha256(canonical).slice(0, 16);
-        
-        return {
-            ...manifestWithoutHash,
-            hash: manifestHash,
-        };
+        return generateManifestFromCases(intentCases, qualityCases);
     }
     
     async readIntentCases(split: CaseSplit): Promise<IntentCase[]> {
@@ -200,10 +143,9 @@ export class FileSystemCaseStore implements CaseStore {
             const fullPath = join(this.casesDir, entry.path);
             const content = readFileSync(fullPath, 'utf-8');
             
-            // Verify hash
-            const computedHash = sha256(content).slice(0, 16);
-            if (computedHash !== entry.hash) {
-                throw new Error(`Case hash mismatch for ${entry.path}: expected ${entry.hash}, got ${computedHash}`);
+            // Verify hash using shared utility
+            if (!verifyCaseHash(content, entry.hash)) {
+                throw new Error(`Case hash mismatch for ${entry.path}: expected ${entry.hash}`);
             }
             
             return JSON.parse(content) as IntentCase;
@@ -218,10 +160,9 @@ export class FileSystemCaseStore implements CaseStore {
             const fullPath = join(this.casesDir, entry.path);
             const content = readFileSync(fullPath, 'utf-8');
             
-            // Verify hash
-            const computedHash = sha256(content).slice(0, 16);
-            if (computedHash !== entry.hash) {
-                throw new Error(`Case hash mismatch for ${entry.path}: expected ${entry.hash}, got ${computedHash}`);
+            // Verify hash using shared utility
+            if (!verifyCaseHash(content, entry.hash)) {
+                throw new Error(`Case hash mismatch for ${entry.path}: expected ${entry.hash}`);
             }
             
             return JSON.parse(content) as QualityCase;
@@ -266,6 +207,8 @@ export class FileSystemCaseStore implements CaseStore {
         await this.readManifest();
     }
     
+    // Re-export collectCaseFiles for use in manifestUtils
+    
     async deleteCase(id: string): Promise<boolean> {
         await this.init();
         const manifest = await this.readManifest();
@@ -296,9 +239,8 @@ export class FileSystemCaseStore implements CaseStore {
                 const fullPath = join(this.casesDir, entry.path);
                 try {
                     const content = readFileSync(fullPath, 'utf-8');
-                    const computedHash = sha256(content).slice(0, 16);
-                    if (computedHash !== entry.hash) {
-                        errors.push(`Hash mismatch for ${entry.path}: expected ${entry.hash}, got ${computedHash}`);
+                    if (!verifyCaseHash(content, entry.hash)) {
+                        errors.push(`Hash mismatch for ${entry.path}: expected ${entry.hash}`);
                     }
                 } catch (e) {
                     errors.push(`Failed to read ${entry.path}: ${e}`);

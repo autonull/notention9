@@ -185,8 +185,8 @@ export class FactoryRegistry<T> {
  * Single source of truth for registry creation and lifecycle
  */
 export interface RegistryManager<T> {
-    registry: Registry<T> | FactoryRegistry<T>;
-    get: () => Registry<T> | FactoryRegistry<T>;
+    registry: T;
+    get: () => T;
     reset: () => void;
 }
 
@@ -196,7 +196,7 @@ export interface RegistryManager<T> {
 export function createRegistry<T extends Registrable>(
     name: string,
     items: T[] = []
-): RegistryManager<T> {
+): RegistryManager<Registry<T>> {
     const registry = new Registry<T>({ errorPrefix: `${name}Registry` });
     for (const item of items) registry.register(item);
     const { get, reset } = createSingletonRegistry(() => registry);
@@ -209,7 +209,7 @@ export function createRegistry<T extends Registrable>(
 export function createFactoryRegistry<T>(
     name: string,
     factories: Array<{ name: string; create: (...args: any[]) => T; description: string }> = []
-): RegistryManager<FactoryRegistry<T>> {
+): { registry: FactoryRegistry<T>; get: () => FactoryRegistry<T>; reset: () => void } {
     const registry = new FactoryRegistry<T>({ errorPrefix: `${name}Registry` });
     for (const { name: factoryName, create, description } of factories) {
         registry.register(factoryName, create, description);
@@ -273,7 +273,7 @@ export type SingletonRegistry<T> = {
 export function createPluginRegistry<P extends InstancePlugin>(
     name: string,
     plugins: P[] = []
-): RegistryManager<P> {
+): { registry: Registry<P>; get: () => Registry<P>; reset: () => void } {
     return createRegistry<P>(name, plugins);
 }
 
@@ -281,7 +281,7 @@ export function createPluginRegistry<P extends InstancePlugin>(
 export function createPluginFactoryRegistry<T>(
     name: string,
     factories: Array<{ name: string; create: (...args: any[]) => T; description: string }> = []
-): RegistryManager<FactoryRegistry<T>> {
+): { registry: FactoryRegistry<T>; get: () => FactoryRegistry<T>; reset: () => void } {
     return createFactoryRegistry<T>(name, factories);
 }
 
