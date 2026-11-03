@@ -6,6 +6,7 @@
 import { z } from 'zod';
 import type { IntentCase, QualityCase } from '../caseManifest.js';
 import type { SplitStrategy, SplitStrategyConfig } from './index.js';
+import { validateRatiosSumToOne } from '../../utils/common.js';
 
 // --- Temporal Split config schema ---
 export const temporalSplitConfigSchema = z.object({
@@ -42,11 +43,7 @@ export class TemporalSplitStrategy implements SplitStrategy {
             return { valid: false, errors: result.error.errors.map(e => `${e.path.join('.')}: ${e.message}`) };
         }
         const cfg = result.data;
-        const sum = cfg.searchRatio + cfg.validationRatio + cfg.holdoutRatio;
-        if (Math.abs(sum - 1.0) > 0.001) {
-            return { valid: false, errors: ['Ratios must sum to 1.0'] };
-        }
-        return { valid: true, errors: [] };
+        return validateRatiosSumToOne(cfg.searchRatio, cfg.validationRatio, cfg.holdoutRatio);
     }
     
     splitIntentCases(

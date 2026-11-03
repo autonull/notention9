@@ -5,19 +5,18 @@
 
 import { createHash } from 'node:crypto';
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
 import { createSingleton } from '../utils/singletonFactory.js';
 import { logWarn } from '../utils/logging.js';
-import { generateId } from '../utils/common.js';
+import { generateId, getProjectRoot } from '../utils/common.js';
 import type { 
     LedgerEvent, LedgerEventType, LedgerPayload, 
     RunConfig, RunSummary, CaseVerdict, VerdictDetail, 
     ResolutionReason, Revision, OptimizerConfig, OptimizerCost 
 } from './types.js';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const DATA_DIR = join(__dirname, '..', '..', '..', '.notention', 'ledger');
+const PROJECT_ROOT = getProjectRoot(import.meta.url);
+const DATA_DIR = join(PROJECT_ROOT, '.notention', 'ledger');
 const LEDGER_FILE = join(DATA_DIR, 'ledger.jsonl');
 const INDEX_FILE = join(DATA_DIR, 'ledger.idx');
 

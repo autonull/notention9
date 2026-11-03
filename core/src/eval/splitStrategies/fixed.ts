@@ -6,6 +6,7 @@
 import { z } from 'zod';
 import type { IntentCase, QualityCase } from '../caseManifest.js';
 import type { SplitStrategy, SplitStrategyConfig } from './index.js';
+import { hashString } from '../../utils/common.js';
 
 // --- Fixed Split config schema ---
 export const fixedSplitConfigSchema = z.object({
@@ -66,7 +67,7 @@ export class FixedSplitStrategy implements SplitStrategy {
         const test: QualityCase[] = [];
         
         for (const c of cases) {
-            const hash = this.hashString(c.id + seed);
+            const hash = hashString(c.id + seed);
             if (hash % 5 === 0) { // 20% test
                 test.push(c);
             } else {
@@ -86,7 +87,7 @@ export class FixedSplitStrategy implements SplitStrategy {
         const holdout: IntentCase[] = [];
         
         for (const c of cases) {
-            const hash = this.hashString(c.id + seed);
+            const hash = hashString(c.id + seed);
             const bucket = hash % 10;
             
             if (bucket < 6) { // 60% search
@@ -99,16 +100,6 @@ export class FixedSplitStrategy implements SplitStrategy {
         }
         
         return { search, validation, holdout };
-    }
-    
-    private hashString(str: string): number {
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) {
-            const char = str.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash; // Convert to 32bit integer
-        }
-        return Math.abs(hash);
     }
 }
 

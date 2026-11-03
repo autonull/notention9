@@ -63,13 +63,7 @@ export abstract class AsyncPlugin<C extends Record<string, unknown> = Record<str
 
 // --- Shared utilities ---
 
-export function createSeededRandom(seed: number): () => number {
-    let state = seed >>> 0;
-    return () => {
-        state = (state * 1664525 + 1013904223) >>> 0;
-        return state / 0x100000000;
-    };
-}
+import { createSeededRandom } from './common.js';
 
 function isDefaultPoint(
     paramSpec: Record<string, { default?: unknown }>,
@@ -86,6 +80,7 @@ function isDefaultPoint(
 
 import type { StrategyParamConfig, OptimizerCandidate, GeneratorOptions, CandidateProvenance } from '../optimizer/types.js';
 import type { SearchSpace } from '../schemas/paramSpec.js';
+import { generateCandidateId } from './common.js';
 
 export abstract class CandidateGeneratorPlugin<C extends GeneratorOptions = GeneratorOptions> extends Plugin<C> {
     abstract readonly name: string;
@@ -118,15 +113,16 @@ export abstract class CandidateGeneratorPlugin<C extends GeneratorOptions = Gene
         seed?: number,
         extra?: Partial<CandidateProvenance>
     ): OptimizerCandidate {
+        const effectiveSeed = seed ?? 42;
         return {
-            id: `cand_${strategy.seam.role}_${strategy.id}_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`,
+            id: generateCandidateId(strategy.seam.role, strategy.id, effectiveSeed),
             seamRole: strategy.seam.role,
             strategyId: strategy.id,
             patch,
             paramSpec: strategy.paramSpec,
             provenance: {
                 generator,
-                seed: seed ?? 42,
+                seed: effectiveSeed,
                 generatedAt: new Date().toISOString(),
                 ...extra,
             },
@@ -140,6 +136,7 @@ export abstract class CandidateGeneratorPlugin<C extends GeneratorOptions = Gene
 
 import type { Revision, RevisionStatus, RevisionSearchQuery, RevisionDriverConfig } from '../telemetry/types.js';
 import { ValidationHelpers } from './Registry.js';
+import { generateRevisionId } from './common.js';
 
 export abstract class RevisionDriverPlugin extends AsyncPlugin<RevisionDriverConfig> {
     abstract readonly name: string;
@@ -197,7 +194,7 @@ export abstract class RevisionDriverPlugin extends AsyncPlugin<RevisionDriverCon
         await this.init(this.config);
 
         const now = new Date().toISOString();
-        const id = `rev_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
+        const id = generateRevisionId(Date.now());
 
         const fullRevision: Revision = {
             ...revision,

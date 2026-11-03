@@ -6,6 +6,7 @@
 import { z } from 'zod';
 import type { IntentCase, QualityCase } from '../caseManifest.js';
 import type { SplitStrategy, SplitStrategyConfig } from './index.js';
+import { hashString, ensureMinimums } from '../../utils/common.js';
 
 // --- Holdout Rotation config schema ---
 export const holdoutRotationConfigSchema = z.object({
@@ -47,11 +48,7 @@ export class HoldoutRotationSplitStrategy implements SplitStrategy {
             return { valid: false, errors: result.error.errors.map(e => `${e.path.join('.')}: ${e.message}`) };
         }
         const cfg = result.data;
-        const sum = cfg.searchRatio + cfg.validationRatio + cfg.holdoutRatio;
-        if (Math.abs(sum - 1.0) > 0.001) {
-            return { valid: false, errors: ['Ratios must sum to 1.0'] };
-        }
-        return { valid: true, errors: [] };
+        return validateRatiosSumToOne(cfg.searchRatio, cfg.validationRatio, cfg.holdoutRatio);
     }
     
     splitIntentCases(
@@ -70,7 +67,7 @@ export class HoldoutRotationSplitStrategy implements SplitStrategy {
         // Assign each case to a fold deterministically
         const foldAssignments = new Map<string, number>();
         for (const c of cases) {
-            const hash = this.hashString(c.id + seed);
+            const hash = hashString(c.id + seed);
             foldAssignments.set(c.id, hash % cfg.numFolds);
         }
         
@@ -94,7 +91,7 @@ export class HoldoutRotationSplitStrategy implements SplitStrategy {
         }
         
         // Ensure minimum sizes by borrowing from search if needed
-        this.ensureMinimums(search, validation, holdout, cfg);
+        ensureMinimums(search, { array: validation, minSize: 1 }, { array: holdout, minSize: 1 });
         
         return { search, validation, holdout };
     }
@@ -113,7 +110,7 @@ export class HoldoutRotationSplitStrategy implements SplitStrategy {
         
         const foldAssignments = new Map<string, number>();
         for (const c of cases) {
-            const hash = this.hashString(c.id + seed);
+            const hash = hashString(c.id + seed);
             foldAssignments.set(c.id, hash % cfg.numFolds);
         }
         
@@ -132,35 +129,6 @@ export class HoldoutRotationSplitStrategy implements SplitStrategy {
         }
         
         return { train, test };
-    }
-    
-    private ensureMinimums(
-        search: IntentCase[],
-        validation: IntentCase[],
-        holdout: IntentCase[],
-        cfg: any
-    ): void {
-        const minSize = 1;
-        
-        // If validation is empty, take from search
-        if (validation.length < minSize && search.length > minSize) {
-            validation.push(search.pop()!);
-        }
-        
-        // If holdout is empty, take from search
-        if (holdout.length < minSize && search.length > minSize) {
-            holdout.push(search.pop()!);
-        }
-    }
-    
-    private hashString(str: string): number {
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) {
-            const char = str.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash;
-        }
-        return Math.abs(hash);
     }
     
     private getProjectStartTime(): number {

@@ -5,11 +5,11 @@
  */
 
 import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
-import { join, dirname, extname, relative, resolve } from 'node:path';
+import { join, relative, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { getProjectRoot } from '../core/src/utils/common.js';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const PROJECT_ROOT = resolve(__dirname, '..');
+const PROJECT_ROOT = getProjectRoot(import.meta.url);
 
 interface LintResult {
     valid: boolean;
@@ -100,7 +100,7 @@ function findFilesRecursive(dir: string, contractName: string): string[] {
         'RevisionDriver': ['implements RevisionDriver', 'implements RegistrableRevisionDriver', 'extends BaseRevisionDriver'],
         'CandidateGenerator': ['implements CandidateGenerator', 'implements RegistrableGenerator', 'extends CandidateGeneratorPlugin', 'extends BaseCandidateGenerator'],
         'SplitStrategy': ['implements SplitStrategy'],
-        'VerdictEngine': ['implements VerdictEngine'],
+        'VerdictEngine': ['implements VerdictEngine', 'extends BaseVerdictEngine'],
         'ResolutionStrategy': ['implements ResolutionStrategy', 'extends ResolutionStrategyPlugin', 'extends BaseResolutionStrategy'],
         'EventStore': ['implements EventStore'],
         'CaseStore': ['implements CaseStore'],
@@ -109,7 +109,8 @@ function findFilesRecursive(dir: string, contractName: string): string[] {
     const patterns = implementationPatterns[contractName] ?? [`implements ${contractName}`];
     
     try {
-        for (const entry of readdirSync(dir)) {
+        const entries = readdirSync(dir);
+        for (const entry of entries) {
             const fullPath = join(dir, entry);
             const stat = statSync(fullPath);
             
@@ -155,8 +156,8 @@ function validateImplementation(filePath: string, contract: PluginContract): { v
         // Check for required properties
         if (contract.requiredProperties) {
             for (const prop of contract.requiredProperties) {
-                // Look for property declaration (readonly name: string, etc.)
-                const propPattern = new RegExp(`(readonly\\s+)?${prop}\\s*:`);
+                // Look for property declaration (readonly name: string, etc.) or assignment (readonly name = 'value')
+                const propPattern = new RegExp(`(readonly\\s+)?${prop}\\s*[:=]`);
                 if (!propPattern.test(content)) {
                     errors.push(`Missing required property: ${prop}`);
                 }

@@ -12,11 +12,15 @@ import type {
     CaseSplit, 
     QualityFamily 
 } from '../../schemas/caseTypes.js';
+import { getProjectRoot } from '../../utils/common.js';
 
 /** SHA-256 hash function */
 export function sha256(content: string): string {
     return createHash('sha256').update(content).digest('hex');
 }
+
+/** Re-export path utilities */
+export { getProjectRoot } from '../../utils/common.js';
 
 /** Canonicalize manifest for consistent hashing */
 export function canonicalizeManifest(manifest: Omit<CaseManifest, 'hash'>): string {

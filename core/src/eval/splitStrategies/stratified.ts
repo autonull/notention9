@@ -6,6 +6,7 @@
 import { z } from 'zod';
 import type { IntentCase, QualityCase } from '../caseManifest.js';
 import type { SplitStrategy, SplitStrategyConfig } from './index.js';
+import { validateRatiosSumToOne, shuffleArray } from '../../utils/common.js';
 
 // --- Stratified Split config schema ---
 export const stratifiedSplitConfigSchema = z.object({
@@ -46,11 +47,7 @@ export class StratifiedSplitStrategy implements SplitStrategy {
             return { valid: false, errors: result.error.errors.map(e => `${e.path.join('.')}: ${e.message}`) };
         }
         const cfg = result.data;
-        const sum = cfg.searchRatio + cfg.validationRatio + cfg.holdoutRatio;
-        if (Math.abs(sum - 1.0) > 0.001) {
-            return { valid: false, errors: ['Ratios must sum to 1.0'] };
-        }
-        return { valid: true, errors: [] };
+        return validateRatiosSumToOne(cfg.searchRatio, cfg.validationRatio, cfg.holdoutRatio);
     }
     
     splitIntentCases(
@@ -77,7 +74,7 @@ export class StratifiedSplitStrategy implements SplitStrategy {
         
         for (const [key, stratumCases] of strata) {
             // Shuffle within stratum
-            const shuffled = this.shuffleArray([...stratumCases], seed + key.length);
+            const shuffled = shuffleArray([...stratumCases], seed + key.length);
             
             const n = shuffled.length;
             const searchEnd = Math.max(cfg.minPerStratum, Math.floor(n * cfg.searchRatio));
@@ -112,7 +109,7 @@ export class StratifiedSplitStrategy implements SplitStrategy {
         const test: QualityCase[] = [];
         
         for (const [key, stratumCases] of strata) {
-            const shuffled = this.shuffleArray([...stratumCases], seed + key.length);
+            const shuffled = shuffleArray([...stratumCases], seed + key.length);
             const splitIdx = Math.max(cfg.minPerStratum, Math.floor(shuffled.length * (cfg.searchRatio + cfg.validationRatio)));
             
             train.push(...shuffled.slice(0, splitIdx));
@@ -139,19 +136,6 @@ export class StratifiedSplitStrategy implements SplitStrategy {
             default:
                 return c.intent;
         }
-    }
-    
-    private shuffleArray<T>(array: T[], seed: number): T[] {
-        const result = [...array];
-        let random = seed;
-        
-        for (let i = result.length - 1; i > 0; i--) {
-            random = (random * 1664525 + 1013904223) >>> 0;
-            const j = Math.floor((random / 0x100000000) * (i + 1));
-            [result[i], result[j]] = [result[j], result[i]];
-        }
-        
-        return result;
     }
 }
 

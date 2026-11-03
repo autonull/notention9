@@ -5,8 +5,7 @@
 
 import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, statSync, unlinkSync, existsSync } from 'node:fs';
-import { join, relative, extname, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join, relative, extname } from 'node:path';
 import type { 
     CaseManifest, 
     CaseEntry, 
@@ -25,11 +24,11 @@ import {
     buildIntentCaseEntry,
     buildQualityCaseEntry,
     verifyCaseHash,
-    collectCaseFiles  // keep this local helper
+    collectCaseFiles,
+    getProjectRoot,
 } from './manifestUtils.js';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const PROJECT_ROOT = join(__dirname, '..', '..', '..');
+const PROJECT_ROOT = getProjectRoot(import.meta.url);
 const DEFAULT_CASES_DIR = join(PROJECT_ROOT, 'eval', 'cases');
 
 export class FileSystemCaseStore implements CaseStore {

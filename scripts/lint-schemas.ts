@@ -5,20 +5,19 @@
  */
 
 import { readFileSync, existsSync } from 'node:fs';
-import { join, dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
 import { 
     canonicalize, 
     shortSha256, 
-    getGeneratedDir, 
     getSeamDefinitionsPath,
+    getCaseManifestPath,
     readJsonFile,
+    getProjectRoot,
 } from '../core/src/utils/common.js';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const PROJECT_ROOT = resolve(__dirname, '..');
+const PROJECT_ROOT = getProjectRoot(import.meta.url);
 const SEAM_DEFINITIONS_FILE = getSeamDefinitionsPath(import.meta.url);
-const CASE_MANIFEST_FILE = join(PROJECT_ROOT, 'eval', 'cases', 'manifest.json');
+const CASE_MANIFEST_FILE = getCaseManifestPath(import.meta.url);
 
 import { 
     seamDefinitionSchema,

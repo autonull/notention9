@@ -8,24 +8,10 @@ import type { SeamDefinition } from '../schemas/seamDefinition.js';
 import type { StrategyParamConfig } from './types.js';
 import { paramSpecToZod } from '../schemas/paramSpec.js';
 import { readFileSync, existsSync } from 'node:fs';
-import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { getSeamDefinitionsPath } from '../utils/common.js';
 import { logWarn } from '../utils/logging.js';
 
-function getSeamDefinitionsPath(): string {
-    // Allow override via environment variable for flexibility
-    if (process.env.SEAM_DEFINITIONS_PATH) {
-        return process.env.SEAM_DEFINITIONS_PATH;
-    }
-    
-    // Default: compute from current file location
-    const __dirname = dirname(fileURLToPath(import.meta.url));
-    const PROJECT_ROOT = join(__dirname, '..', '..');
-    const GENERATED_DIR = join(PROJECT_ROOT, 'core', 'src', 'schemas', 'generated');
-    return join(GENERATED_DIR, 'seam-definitions.json');
-}
-
-const SEAM_DEFINITIONS_FILE = getSeamDefinitionsPath();
+const SEAM_DEFINITIONS_FILE = getSeamDefinitionsPath(import.meta.url);
 
 interface SeamDefinitionsData {
     version: number;

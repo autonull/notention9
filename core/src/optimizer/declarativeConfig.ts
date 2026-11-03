@@ -233,10 +233,8 @@ export function createOptimizerConfigForSeam(
 
 export function getDefaultOptimizerConfigPath(): string {
     const { join } = require('node:path');
-    const { dirname } = require('node:path');
-    const { fileURLToPath } = require('node:url');
+    const { getProjectRoot } = require('../utils/common.js');
     
-    const __dirname = dirname(fileURLToPath(import.meta.url));
-    const PROJECT_ROOT = join(__dirname, '..', '..');
+    const PROJECT_ROOT = getProjectRoot(import.meta.url);
     return join(PROJECT_ROOT, 'optimize', 'optimizer.config.json');
 }

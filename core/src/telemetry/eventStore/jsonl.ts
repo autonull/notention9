@@ -5,15 +5,14 @@
 
 import { createHash } from 'node:crypto';
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
 import type { LedgerEvent, LedgerEventType, LedgerPayload } from '../../telemetry/ledger.js';
 import type { EventStore } from './index.js';
 import { logWarn } from '../../utils/logging.js';
-import { generateId } from '../../utils/common.js';
+import { generateId, getProjectRoot } from '../../utils/common.js';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const DATA_DIR = join(__dirname, '..', '..', '..', '.notention', 'events');
+const PROJECT_ROOT = getProjectRoot(import.meta.url);
+const DATA_DIR = join(PROJECT_ROOT, '.notention', 'events');
 const DEFAULT_EVENT_FILE = join(DATA_DIR, 'events.jsonl');
 
 function computeHash(payload: LedgerPayload): string {

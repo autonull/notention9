@@ -8,8 +8,22 @@ import { createHash } from 'node:crypto';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-/** Get project root directory */
+/** Get project root directory - finds the workspace root by looking for pnpm-workspace.yaml */
 export function getProjectRoot(importMetaUrl: string): string {
+    const startDir = dirname(fileURLToPath(importMetaUrl));
+    let currentDir = startDir;
+    
+    while (currentDir !== dirname(currentDir)) {
+        try {
+            const { existsSync } = require('node:fs');
+            if (existsSync(join(currentDir, 'pnpm-workspace.yaml'))) {
+                return currentDir;
+            }
+        } catch {}
+        currentDir = dirname(currentDir);
+    }
+    
+    // Fallback: go up two levels from core/src
     return resolve(dirname(fileURLToPath(importMetaUrl)), '..', '..');
 }
 
@@ -166,4 +180,105 @@ export function areStringArraysEqual(a: string[], b: string[]): boolean {
     const setA = new Set(a);
     const setB = new Set(b);
     return setA.size === setB.size && [...setA].every(x => setB.has(x));
+}
+
+/**
+ * Simple string hash (djb2-like) for deterministic bucketing
+ * Used by split strategies for consistent case assignment
+ */
+export function hashString(str: string): number {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+    }
+    return Math.abs(hash);
+}
+
+/**
+ * Validate that ratios sum to 1.0 (within epsilon)
+ */
+export function validateRatiosSumToOne(...ratios: number[]): { valid: boolean; errors: string[] } {
+    const sum = ratios.reduce((a, b) => a + b, 0);
+    if (Math.abs(sum - 1.0) > 0.001) {
+        return { valid: false, errors: ['Ratios must sum to 1.0'] };
+    }
+    return { valid: true, errors: [] };
+}
+
+/**
+ * Ensure minimum array sizes by borrowing from source array
+ */
+export function ensureMinimums<T>(
+    source: T[],
+    ...targets: Array<{ array: T[]; minSize: number }>
+): void {
+    for (const { array, minSize } of targets) {
+        if (array.length < minSize && source.length > minSize) {
+            const borrowed = source.splice(source.length - (array.length + minSize), array.length + minSize - array.length);
+            array.push(...borrowed);
+        }
+    }
+}
+
+/**
+ * Deterministic shuffle using seeded random
+ */
+export function shuffleArray<T>(array: T[], seed: number): T[] {
+    const result = [...array];
+    let random = seed;
+    
+    for (let i = result.length - 1; i > 0; i--) {
+        random = (random * 1664525 + 1013904223) >>> 0;
+        const j = Math.floor((random / 0x100000000) * (i + 1));
+        [result[i], result[j]] = [result[j], result[i]];
+    }
+    
+    return result;
+}
+
+/**
+ * Create seeded random function (LCG)
+ * Uses Park-Miller LCG for deterministic randomness
+ */
+export function createSeededRandom(seed: number): () => number {
+    let state = seed >>> 0;
+    return () => {
+        state = (state * 1664525 + 1013904223) >>> 0;
+        return state / 0x100000000;
+    };
+}
+
+/**
+ * Generate a deterministic ID using seeded random
+ * Avoids Math.random() for reproducibility
+ */
+export function generateDeterministicId(prefix: string, seed: number): string {
+    const random = createSeededRandom(seed);
+    const timestamp = Date.now().toString(36).toUpperCase().padStart(10, '0');
+    const randomPart = Math.floor(random() * 0x100000000).toString(36).toUpperCase().padStart(8, '0');
+    return `${prefix}${timestamp}_${randomPart}`;
+}
+
+/**
+ * Generate candidate ID with strategy context
+ */
+export function generateCandidateId(
+    strategyRole: string,
+    strategyId: string,
+    seed: number
+): string {
+    const random = createSeededRandom(seed);
+    const randomPart = Math.floor(random() * 0x100000000).toString(36).toUpperCase().padStart(8, '0');
+    return `cand_${strategyRole}_${strategyId}_${randomPart}`;
+}
+
+/**
+ * Generate revision ID
+ */
+export function generateRevisionId(seed: number): string {
+    const random = createSeededRandom(seed);
+    const randomPart = Math.floor(random() * 0x10000000000).toString(36).toUpperCase().padStart(10, '0');
+    return `rev_${randomPart}`;
 }
