@@ -4,6 +4,8 @@
  */
 
 import { createHash } from 'node:crypto';
+import { readdirSync, statSync, readFileSync, existsSync } from 'node:fs';
+import { join, extname, relative } from 'node:path';
 import type { 
     CaseManifest, 
     CaseEntry, 
@@ -109,8 +111,6 @@ export function createManifestEntryForCase(caseData: IntentCase | QualityCase, c
 
 /** Collect case files recursively from a directory */
 export function collectCaseFiles(dir: string, baseDir: string): Array<{ path: string; content: string }> {
-    const { readdirSync, statSync, readFileSync, existsSync, join } = require('node:fs');
-    const { extname, relative } = require('node:path');
     const results: Array<{ path: string; content: string }> = [];
     
     if (!existsSync(dir) || !statSync(dir).isDirectory()) return results;

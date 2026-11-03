@@ -18,6 +18,8 @@ import type {
 import { createPluginFactoryRegistry, ValidationHelpers } from '../utils/Registry.js';
 import { AsyncPlugin, generateRevisionId } from '../utils/BasePlugin.js';
 import { createSeededRandom } from '../utils/common.js';
+import { appendFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs';
+import { dirname } from 'node:path';
 
 // Re-export types from shared location
 export type { 
@@ -250,10 +252,6 @@ export class JSONLRevisionDriver extends BaseRevisionDriverPlugin implements Reg
             throw new Error('JSONLRevisionDriver requires filePath in config');
         }
         
-        // Import fs dynamically
-        const { existsSync, mkdirSync, readFileSync } = await import('node:fs');
-        const { dirname } = await import('node:path');
-        
         const dir = dirname(this.filePath);
         if (!existsSync(dir)) {
             mkdirSync(dir, { recursive: true });
@@ -275,8 +273,6 @@ export class JSONLRevisionDriver extends BaseRevisionDriverPlugin implements Reg
     }
 
     async persistRevision(revision: Revision): Promise<void> {
-        // Import fs dynamically
-        const { appendFileSync } = require('node:fs');
         const line = JSON.stringify(revision) + '\n';
         appendFileSync(this.filePath, line, 'utf-8');
     }

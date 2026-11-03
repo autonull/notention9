@@ -7,6 +7,9 @@ import type { OptimizerConfig } from './types.js';
 import type { SeamDefinition } from '../schemas/seamDefinition.js';
 import { getAllSeamDefinitions } from './strategyLoader.js';
 import { logWarn, logInfo } from '../utils/logging.js';
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { getProjectRoot } from '../utils/common.js';
 
 // --- Config Schema ---
 
@@ -73,7 +76,6 @@ export function loadDeclarativeOptimizerConfig(configPath?: string): OptimizerCo
     let declarativeConfig: Partial<DeclarativeOptimizerConfig> = {};
     if (configPath) {
         try {
-            const { readFileSync, existsSync } = require('node:fs');
             if (existsSync(configPath)) {
                 const content = readFileSync(configPath, 'utf-8');
                 declarativeConfig = JSON.parse(content);
@@ -192,9 +194,6 @@ export function generateDefaultDeclarativeConfig(): DeclarativeOptimizerConfig {
  * Write default config file for user customization
  */
 export function writeDefaultOptimizerConfig(outputPath: string): void {
-    const { writeFileSync, mkdirSync, existsSync } = require('node:fs');
-    const { dirname } = require('node:path');
-    
     const config = generateDefaultDeclarativeConfig();
     const dir = dirname(outputPath);
     
@@ -232,9 +231,6 @@ export function createOptimizerConfigForSeam(
 // --- Config file path resolution ---
 
 export function getDefaultOptimizerConfigPath(): string {
-    const { join } = require('node:path');
-    const { getProjectRoot } = require('../utils/common.js');
-    
     const PROJECT_ROOT = getProjectRoot(import.meta.url);
     return join(PROJECT_ROOT, 'optimize', 'optimizer.config.json');
 }

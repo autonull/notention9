@@ -4,6 +4,8 @@
  */
 
 import type { Revision, RevisionStatus, RevisionSearchQuery } from './types.js';
+import { appendFileSync, existsSync, mkdirSync } from 'node:fs';
+import { dirname } from 'node:path';
 
 // --- Indexing ---
 
@@ -200,15 +202,11 @@ export async function loadRevisionsFromJSONL(
 }
 
 export function persistRevisionToJSONL(filePath: string, revision: Revision): void {
-    const { appendFileSync } = require('node:fs');
     const line = JSON.stringify(revision) + '\n';
     appendFileSync(filePath, line, 'utf-8');
 }
 
-export async function ensureJSONLDir(filePath: string): Promise<void> {
-    const { existsSync, mkdirSync } = await import('node:fs');
-    const { dirname } = await import('node:path');
-
+export function ensureJSONLDir(filePath: string): void {
     const dir = dirname(filePath);
     if (!existsSync(dir)) {
         mkdirSync(dir, { recursive: true });

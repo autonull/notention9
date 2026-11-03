@@ -7,6 +7,7 @@
 import { createHash } from 'node:crypto';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 
 /** Get project root directory - finds the workspace root by looking for pnpm-workspace.yaml */
 export function getProjectRoot(importMetaUrl: string): string {
@@ -15,7 +16,6 @@ export function getProjectRoot(importMetaUrl: string): string {
     
     while (currentDir !== dirname(currentDir)) {
         try {
-            const { existsSync } = require('node:fs');
             if (existsSync(join(currentDir, 'pnpm-workspace.yaml'))) {
                 return currentDir;
             }
@@ -82,7 +82,6 @@ export function getCaseManifestPath(importMetaUrl: string): string {
 
 /** Read and parse JSON file */
 export function readJsonFile<T>(filePath: string): T {
-    const { readFileSync, existsSync } = require('node:fs');
     if (!existsSync(filePath)) {
         throw new Error(`File not found: ${filePath}`);
     }
@@ -92,8 +91,6 @@ export function readJsonFile<T>(filePath: string): T {
 
 /** Write JSON file with directory creation */
 export function writeJsonFile(filePath: string, data: unknown): void {
-    const { writeFileSync, mkdirSync, existsSync } = require('node:fs');
-    const { dirname } = require('node:path');
     const dir = dirname(filePath);
     if (!existsSync(dir)) {
         mkdirSync(dir, { recursive: true });

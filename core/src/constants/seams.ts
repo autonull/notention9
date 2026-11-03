@@ -8,6 +8,7 @@
  */
 
 import type { Seam, SeamRole } from '../ui/strategy.js';
+import type { SeamDefinition } from '../schemas/seamDefinition.js';
 
 /**
  * Semantic seam roles - stable identifiers used across the system
@@ -115,14 +116,53 @@ export interface SeamSpec {
     components: string[];
 }
 
+// --- Lazy-loaded generated definitions cache ---
+
+let generatedSeamDefinitions: SeamDefinition[] | null = null;
+let generatedStrategyConfigs: StrategyInfo[] | null = null;
+
+async function loadGeneratedDefs(): Promise<void> {
+    if (generatedSeamDefinitions !== null) return;
+    try {
+        const mod = await import('../schemas/generated/seam-definitions.js');
+        generatedSeamDefinitions = mod.SEAM_DEFINITIONS;
+        generatedStrategyConfigs = mod.STRATEGY_CONFIGS;
+    } catch {
+        generatedSeamDefinitions = [];
+        generatedStrategyConfigs = [];
+    }
+}
+
+function getGeneratedSeams(): SeamDefinition[] {
+    return generatedSeamDefinitions ?? [];
+}
+
+function getGeneratedStrategies(): StrategyInfo[] {
+    return generatedStrategyConfigs ?? [];
+}
+
+// Preload in background (non-blocking)
+loadGeneratedDefs();
+
+interface StrategyInfo {
+    id: string;
+    seamId: string;
+    seamName: string;
+    seamRole: string;
+    version: string;
+    componentPath: string;
+    componentName: string;
+    paramSpec: Record<string, any>;
+    defaultProps: Record<string, unknown>;
+}
+
 /**
  * Get built-in seam spec by dynamic seam ID (from generated definitions at runtime, from BUILTIN_SEAM_SPECS at generation time)
  */
 export function getBuiltinSeamSpec(seamId: string): SeamSpec | undefined {
-    // Try generated definitions first (runtime)
-    try {
-        const { SEAM_DEFINITIONS } = require('../schemas/generated/seam-definitions.js');
-        const def = SEAM_DEFINITIONS.find((d: any) => d.id === seamId);
+    const generated = getGeneratedSeams();
+    if (generated.length > 0) {
+        const def = generated.find(d => d.id === seamId);
         if (def) {
             return {
                 id: def.id,
@@ -133,8 +173,6 @@ export function getBuiltinSeamSpec(seamId: string): SeamSpec | undefined {
                 components: def.components,
             };
         }
-    } catch {
-        // Generated definitions not available (e.g., during generation), fall back to BUILTIN_SEAM_SPECS
     }
     return BUILTIN_SEAM_SPECS[seamId];
 }
@@ -143,10 +181,9 @@ export function getBuiltinSeamSpec(seamId: string): SeamSpec | undefined {
  * Get all built-in seam specs (from generated definitions at runtime, from BUILTIN_SEAM_SPECS at generation time)
  */
 export function getAllBuiltinSeamSpecs(): SeamSpec[] {
-    // Try generated definitions first (runtime)
-    try {
-        const { SEAM_DEFINITIONS } = require('../schemas/generated/seam-definitions.js');
-        return SEAM_DEFINITIONS.map((def: any) => ({
+    const generated = getGeneratedSeams();
+    if (generated.length > 0) {
+        return generated.map(def => ({
             id: def.id,
             name: def.name,
             description: def.description,
@@ -154,10 +191,8 @@ export function getAllBuiltinSeamSpecs(): SeamSpec[] {
             propsShape: def.propsShape,
             components: def.components,
         }));
-    } catch {
-        // Generated definitions not available (e.g., during generation), fall back to BUILTIN_SEAM_SPECS
-        return Object.values(BUILTIN_SEAM_SPECS);
     }
+    return Object.values(BUILTIN_SEAM_SPECS);
 }
 
 /**
@@ -206,36 +241,29 @@ export function getSeamIdsForRole(
  * Get strategy config by ID (from generated definitions at runtime)
  */
 export function getStrategyConfig(id: string) {
-    try {
-        const { STRATEGY_CONFIGS } = require('../schemas/generated/seam-definitions.js');
-        return STRATEGY_CONFIGS.find((c: any) => c.id === id);
-    } catch {
-        return undefined;
+    const generated = getGeneratedStrategies();
+    if (generated.length > 0) {
+        return generated.find(c => c.id === id);
     }
+    return undefined;
 }
 
 /**
  * Get all strategy configs (from generated definitions at runtime)
  */
 export function getAllStrategyConfigs() {
-    try {
-        const { STRATEGY_CONFIGS } = require('../schemas/generated/seam-definitions.js');
-        return STRATEGY_CONFIGS;
-    } catch {
-        return [];
-    }
+    return getGeneratedStrategies();
 }
 
 /**
  * Get strategy configs by seam role (from generated definitions at runtime)
  */
 export function getStrategyConfigsByRole(role: Seam['role']) {
-    try {
-        const { STRATEGY_CONFIGS } = require('../schemas/generated/seam-definitions.js');
-        return STRATEGY_CONFIGS.filter((c: any) => c.seamRole === role);
-    } catch {
-        return [];
+    const generated = getGeneratedStrategies();
+    if (generated.length > 0) {
+        return generated.filter(c => c.seamRole === role);
     }
+    return [];
 }
 
 /**

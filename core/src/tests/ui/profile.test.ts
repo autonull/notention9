@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { profileRegistry, DEFAULT_PROFILES, DEFAULT_POLICY, DEFAULT_MATCH_DISPLAY_EXPERIMENT } from '@notention/core/ui/profile';
+import { profileRegistry, DEFAULT_PROFILES, DEFAULT_POLICY, DEFAULT_MATCH_DISPLAY_EXPERIMENT, ProfileRegistry } from '@notention/core/ui/profile';
 import { strategyRegistry } from '@notention/core/ui/strategy';
 import { SEAM_ROLES } from '@notention/core/constants/seams';
 
@@ -102,7 +102,6 @@ describe('ProfileRegistry', () => {
         expect(json.policies.length).toBeGreaterThanOrEqual(1);
         expect(json.experiments.length).toBeGreaterThanOrEqual(1);
         
-        const { ProfileRegistry } = require('@notention/core/ui/profile');
         const restored = ProfileRegistry.fromJSON(json);
         expect(restored.getAllProfiles().length).toBe(json.profiles.length);
     });

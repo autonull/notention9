@@ -6,7 +6,7 @@
 import type { Seam, Strategy, StrategyRegistry } from '../ui/strategy.js';
 import type { SeamDefinition } from '../schemas/seamDefinition.js';
 import type { StrategyParamConfig } from './types.js';
-import { paramSpecToZod } from '../schemas/paramSpec.js';
+import { paramSpecToZod, getSearchSpace } from '../schemas/paramSpec.js';
 import { readFileSync, existsSync } from 'node:fs';
 import { getSeamDefinitionsPath } from '../utils/common.js';
 import { logWarn } from '../utils/logging.js';
@@ -127,8 +127,7 @@ export function getStrategySearchSpace(strategyId: string): { dimensions: Array<
     const definitions = loadSeamDefinitions();
     const strategy = definitions.strategies.find(s => s.id === strategyId);
     if (!strategy) return null;
-    
-    const { getSearchSpace } = require('../schemas/paramSpec.js');
+
     return getSearchSpace(strategy.paramSpec);
 }
 

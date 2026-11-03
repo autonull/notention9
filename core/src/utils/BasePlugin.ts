@@ -8,7 +8,7 @@ import { ValidationHelpers } from './Registry.js';
 import { createSeededRandom, generateCandidateId, generateRevisionId } from './common.js';
 
 // Re-export for consumers
-export { generateRevisionId };
+export { createSeededRandom, generateCandidateId, generateRevisionId };
 
 // --- Base Plugin Interface ---
 

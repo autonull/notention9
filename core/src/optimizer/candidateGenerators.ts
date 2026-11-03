@@ -64,13 +64,7 @@ abstract class BaseCandidateGenerator extends Plugin<GeneratorOptions> {
         return { valid: errors.length === 0, errors };
     }
 
-    protected isDefaultPoint(
-        paramSpec: Record<string, { default?: unknown }>,
-        defaultProps: Record<string, unknown>,
-        point: Record<string, unknown>
-    ): boolean {
-        return isDefaultPoint(paramSpec, defaultProps, point);
-    }
+    
 
     protected createCandidate(
         strategy: StrategyParamConfig,
@@ -122,7 +116,7 @@ export class GridGenerator extends BaseCandidateGenerator implements Registrable
 
         for (const point of gridPoints) {
             if (candidates.length >= options.maxCandidates) break;
-            if (this.isDefaultPoint(strategy.paramSpec, strategy.defaultProps, point)) continue;
+            if (isDefaultPoint(strategy.paramSpec, strategy.defaultProps, point)) continue;
             candidates.push(this.createCandidate(strategy, point, 'grid', options.seed));
         }
 
@@ -159,7 +153,7 @@ export class RandomGenerator extends BaseCandidateGenerator implements Registrab
             if (tried.has(hash)) continue;
             tried.add(hash);
 
-            if (this.isDefaultPoint(strategy.paramSpec, strategy.defaultProps, point)) continue;
+            if (isDefaultPoint(strategy.paramSpec, strategy.defaultProps, point)) continue;
 
             candidates.push(this.createCandidate(strategy, point, 'random', options.seed));
         }
