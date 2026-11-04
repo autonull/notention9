@@ -5,7 +5,8 @@
  */
 
 import { z } from 'zod';
-import type { Strategy, SeamRole } from './strategy.js';
+import type { Strategy, SeamRole, StrategyRegistrable } from './strategy.js';
+import { getStrategy, getStrategiesForSeam } from './strategy.js';
 
 // Re-export SeamRole for sharedTypes.ts
 export type { SeamRole } from './strategy.js';
@@ -18,11 +19,11 @@ import type {
     ResolutionReason,
     ResolvedStrategy 
 } from './profileTypes.js';
-import type { StrategyRegistry } from './strategy.js';
 import type { Revision } from '../telemetry/revisionStore.js';
 import { assignToVariant, matchConditions, selectProfileByPolicy } from '../utils/resolutionUtils.js';
 import { createInstanceRegistry, ValidationHelpers } from '../utils/Registry.js';
 import { Plugin } from '../utils/BasePlugin.js';
+import { Registry } from '../utils/Registry.js';
 
 // --- ResolutionStrategy Config ---
 
@@ -58,7 +59,7 @@ export interface ResolutionContext {
     policies: Map<string, ProfilePolicy>;
     experiments: Map<string, StrategyExperiment>;
     assignments: Map<string, ExperimentAssignment>;
-    strategyRegistry: StrategyRegistry;
+    strategyRegistry: Registry<StrategyRegistrable>;
     revisionStore?: {
         getActive(seamRole: string): Promise<Revision | undefined>;
     };
@@ -99,7 +100,7 @@ export class OverrideResolutionStrategy extends BaseResolutionStrategyPlugin {
     resolve(context: ResolutionContext): ResolvedStrategy | undefined {
         const { userConfig, seamRole, seamId, strategyRegistry } = context;
         const overrideId = (userConfig.overrides.overrides as Record<string, string>)[seamRole];
-        const strategy = overrideId ? strategyRegistry.get(seamId, overrideId) : undefined;
+        const strategy = overrideId ? getStrategy(seamId, overrideId) : undefined;
         return strategy ? { 
             strategy, 
             reason: { kind: 'override', strategyId: overrideId },
@@ -119,7 +120,7 @@ export class ExperimentResolutionStrategy extends BaseResolutionStrategyPlugin {
     readonly description = 'Active experiment variant assignment';
 
     resolve(context: ResolutionContext): ResolvedStrategy | undefined {
-        const { userConfig, seamRole, seamId, experiments, assignments, strategyRegistry } = context;
+        const { userConfig, seamRole, seamId, experiments, assignments } = context;
         
         for (const experiment of experiments.values()) {
             if (!experiment.isActive || experiment.seamId !== seamRole) continue;
@@ -134,7 +135,7 @@ export class ExperimentResolutionStrategy extends BaseResolutionStrategyPlugin {
             
             const variant = experiment.variants.find(v => v.id === assignment.variantId);
             if (variant) {
-                const strategy = strategyRegistry.get(seamId, variant.strategyId);
+                const strategy = getStrategy(seamId, variant.strategyId);
                 if (strategy) {
                     return { 
                         strategy, 
@@ -165,11 +166,11 @@ export class RevisionResolutionStrategy extends BaseResolutionStrategyPlugin {
     async resolve(context: ResolutionContext): Promise<ResolvedStrategy | undefined> {
         if (!context.revisionStore) return undefined;
         
-        const { seamRole, seamId, strategyRegistry } = context;
+        const { seamRole, seamId } = context;
         const activeRevision = await context.revisionStore.getActive(seamRole);
         
         if (activeRevision && activeRevision.status === 'active' && activeRevision.consentedBy) {
-            const strategy = strategyRegistry.get(seamId, activeRevision.strategy.id);
+            const strategy = getStrategy(seamId, activeRevision.strategy.id);
             if (strategy) {
                 // Apply revision params on top of strategy defaults
                 const revisionParams = activeRevision.strategy.params ?? {};
@@ -203,12 +204,12 @@ export class ManualProfileResolutionStrategy extends BaseResolutionStrategyPlugi
     readonly description = 'Manual mode with explicitly selected profile';
 
     resolve(context: ResolutionContext): ResolvedStrategy | undefined {
-        const { userConfig, seamRole, seamId, profiles, strategyRegistry } = context;
+        const { userConfig, seamRole, seamId, profiles } = context;
         if (!userConfig.manualMode) return undefined;
         
         const profile = profiles.get(userConfig.activeProfileId);
         const strategyId = (profile?.strategySelections as Record<string, string>)[seamRole];
-        const strategy = strategyId ? strategyRegistry.get(seamId, strategyId) : undefined;
+        const strategy = strategyId ? getStrategy(seamId, strategyId) : undefined;
         
         return strategy ? { 
             strategy, 
@@ -229,13 +230,13 @@ export class PolicyResolutionStrategy extends BaseResolutionStrategyPlugin {
     readonly description = 'Automatic profile selection via policy rules';
 
     resolve(context: ResolutionContext): ResolvedStrategy | undefined {
-        const { userConfig, seamRole, seamId, profiles, policies, strategyRegistry } = context;
+        const { userConfig, seamRole, seamId, profiles, policies } = context;
         const policy = Array.from(policies.values()).find(p => p.isEnabled);
         if (!policy) return undefined;
         
         const profile = selectProfileByPolicy(policy, userConfig, profiles);
         const strategyId = (profile?.strategySelections as Record<string, string>)[seamRole];
-        const strategy = strategyId ? strategyRegistry.get(seamId, strategyId) : undefined;
+        const strategy = strategyId ? getStrategy(seamId, strategyId) : undefined;
         
         if (strategy) {
             // Find which rule matched
@@ -273,10 +274,10 @@ export class DefaultProfileResolutionStrategy extends BaseResolutionStrategyPlug
     readonly description = 'Default profile fallback';
 
     resolve(context: ResolutionContext): ResolvedStrategy | undefined {
-        const { seamRole, seamId, profiles, strategyRegistry } = context;
+        const { seamRole, seamId, profiles } = context;
         const defaultProfile = Array.from(profiles.values()).find(p => p.isDefault) ?? Array.from(profiles.values())[0];
         const strategyId = (defaultProfile?.strategySelections as Record<string, string>)[seamRole];
-        const strategy = strategyId ? strategyRegistry.get(seamId, strategyId) : undefined;
+        const strategy = strategyId ? getStrategy(seamId, strategyId) : undefined;
         
         return strategy ? { 
             strategy, 
@@ -297,8 +298,8 @@ export class FallbackResolutionStrategy extends BaseResolutionStrategyPlugin {
     readonly description = 'Last resort: first available strategy for seam';
 
     resolve(context: ResolutionContext): ResolvedStrategy | undefined {
-        const { seamRole, seamId, strategyRegistry } = context;
-        const seamStrategies = strategyRegistry.getAllForSeam(seamId);
+        const { seamRole, seamId } = context;
+        const seamStrategies = getStrategiesForSeam(seamId);
         const strategy = seamStrategies[0];
         
         return strategy ? { 

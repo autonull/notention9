@@ -5,8 +5,8 @@
 
 import { z } from 'zod';
 import type { OptimizerCandidate, CandidateEvaluationResult, BudgetConstraints, OptimizerConfig } from './candidateGenerators.js';
-import { Plugin, ValidationHelpers } from '../utils/Registry.js';
-import { BudgetAllocation, CandidateBudget, CandidateCost } from './budgetAllocators.js';
+import { Plugin, ValidationHelpers } from '../utils/BasePlugin.js';
+import { BudgetAllocation, CandidateBudget, CandidateCost } from './types.js';
 
 export abstract class BaseBudgetAllocator extends Plugin<BudgetConstraints> {
     abstract readonly name: string;

@@ -3,7 +3,8 @@
  * Single source of truth for profile management
  */
 
-import type { Seam, Strategy, StrategyRegistry, SeamRole } from './strategy.js';
+import type { Seam, Strategy, StrategyRegistrable, SeamRole } from './strategy.js';
+import { Registry } from '../utils/Registry.js';
 import {
     type StrategyProfile,
     type ProfilePolicy,
@@ -135,11 +136,11 @@ export class ProfileRegistry {
     private buildResolutionContext(
         userId: string,
         seamRole: SeamRole,
-        strategyRegistry: StrategyRegistry,
+        strategyRegistry: Registry<StrategyRegistrable>,
         revisionStore?: { getActive(seamRole: string): Promise<any> }
     ): ResolutionContext {
         const config = this.getUserConfig(userId);
-        const seamId = resolveSeamId(seamRole, strategyRegistry);
+        const seamId = resolveSeamId(seamRole);
 
         return {
             userId,
@@ -173,7 +174,7 @@ export class ProfileRegistry {
     }
 
     // Resolve strategy for a user and seam role (sync - no revision layer)
-    resolveStrategy(userId: string, seamRole: SeamRole, strategyRegistry: StrategyRegistry): Strategy | undefined {
+    resolveStrategy(userId: string, seamRole: SeamRole, strategyRegistry: Registry<StrategyRegistrable>): Strategy | undefined {
         const result = this.resolveStrategyWithMeta(userId, seamRole, strategyRegistry);
         return result?.strategy;
     }
@@ -185,7 +186,7 @@ export class ProfileRegistry {
     resolveStrategyWithMeta<P extends object = Record<string, unknown>>(
         userId: string,
         seamRole: SeamRole,
-        strategyRegistry: StrategyRegistry
+        strategyRegistry: Registry<StrategyRegistrable>
     ): ResolvedStrategy<P> | undefined {
         const context = this.buildResolutionContext(userId, seamRole, strategyRegistry);
         // Sync resolution: skip async revision strategy
@@ -218,7 +219,7 @@ export class ProfileRegistry {
     async resolveStrategyWithMetaAsync<P extends object = Record<string, unknown>>(
         userId: string,
         seamRole: SeamRole,
-        strategyRegistry: StrategyRegistry
+        strategyRegistry: Registry<StrategyRegistrable>
     ): Promise<ResolvedStrategy<P> | undefined> {
         const context = this.buildResolutionContext(
             userId, 

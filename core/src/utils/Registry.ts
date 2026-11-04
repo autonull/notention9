@@ -198,9 +198,21 @@ export function createInstanceRegistry<T extends Registrable>(
     name: string,
     items: T[] = []
 ): { registry: Registry<T>; get: () => Registry<T>; reset: () => void } {
-    const registry = new Registry<T>({ errorPrefix: `${name}Registry` });
+    let registry = new Registry<T>({ errorPrefix: `${name}Registry` });
     for (const item of items) registry.register(item);
-    return { registry, ...createRegistryManager(() => registry) };
+    
+    const factory = () => registry;
+    let instance: Registry<T> | null = null;
+    
+    return { 
+        registry, 
+        get: () => { if (!instance) instance = factory(); return instance; },
+        reset: () => { 
+            instance = null; 
+            registry = new Registry<T>({ errorPrefix: `${name}Registry` });
+            for (const item of items) registry.register(item);
+        }
+    };
 }
 
 /**
@@ -210,11 +222,25 @@ export function createFactoryRegistry<T>(
     name: string,
     factories: Array<{ name: string; create: (...args: any[]) => T; description: string }> = []
 ): { registry: FactoryRegistry<T>; get: () => FactoryRegistry<T>; reset: () => void } {
-    const registry = new FactoryRegistry<T>({ errorPrefix: `${name}Registry` });
+    let registry = new FactoryRegistry<T>({ errorPrefix: `${name}Registry` });
     for (const { name: factoryName, create, description } of factories) {
         registry.register(factoryName, create, description);
     }
-    return { registry, ...createRegistryManager(() => registry) };
+    
+    const factory = () => registry;
+    let instance: FactoryRegistry<T> | null = null;
+    
+    return { 
+        registry, 
+        get: () => { if (!instance) instance = factory(); return instance; },
+        reset: () => { 
+            instance = null; 
+            registry = new FactoryRegistry<T>({ errorPrefix: `${name}Registry` });
+            for (const { name: factoryName, create, description } of factories) {
+                registry.register(factoryName, create, description);
+            }
+        }
+    };
 }
 
 // --- Plugin-specific type aliases ---

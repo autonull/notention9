@@ -17,6 +17,7 @@ import { logWarn } from '../../utils/logging.js';
 import { 
     collectCaseFiles,
     getProjectRoot,
+    canonicalizeManifest,
 } from './manifestUtils.js';
 import { BaseCaseStore } from './baseCaseStore.js';
 

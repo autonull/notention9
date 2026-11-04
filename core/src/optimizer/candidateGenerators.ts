@@ -8,6 +8,7 @@ import type { ParamSpec } from '../ui/strategy.js';
 import { getSearchSpace, sampleSearchSpace, gridSearchSpace, type SearchSpace } from '../schemas/paramSpec.js';
 import type { 
     StrategyParamConfig, 
+    OptimizerConfig,
     OptimizerCandidate, 
     CandidateProvenance, 
     GeneratorOptions, 
@@ -23,6 +24,7 @@ export { getSearchSpace, sampleSearchSpace, gridSearchSpace, type SearchSpace } 
 // Re-export types
 export type { 
     StrategyParamConfig, 
+    OptimizerConfig,
     OptimizerCandidate, 
     CandidateProvenance, 
     GeneratorOptions, 

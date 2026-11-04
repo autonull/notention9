@@ -11,6 +11,30 @@ import type { StrategyParamConfig as StrategyParamConfig2 } from '../constants/s
 // Re-export StrategyParamConfig from constants
 export type { StrategyParamConfig } from '../constants/strategyParams.js';
 
+// --- Budget Allocator Types ---
+
+export interface BudgetAllocation {
+    /** Budget allocated per candidate */
+    perCandidate: Map<string, CandidateBudget>;
+    /** Total estimated cost */
+    totalEstimatedCost: CandidateCost;
+    /** Whether this is the final round */
+    isFinalRound: boolean;
+}
+
+export interface CandidateBudget {
+    browserRuns: number;
+    timeMinutes: number;
+    tokens: number;
+    sliceFraction?: number; // For successive halving
+}
+
+export interface CandidateCost {
+    browserRuns: number;
+    tokensUsed: number;
+    durationMs: number;
+}
+
 /**
  * Default optimizer configuration
  */

@@ -8,7 +8,7 @@ import { ValidationHelpers, type Registrable } from './Registry.js';
 import { createSeededRandom, generateCandidateId, generateRevisionId, isDefaultPoint } from './common.js';
 
 // Re-export for consumers
-export { createSeededRandom, generateCandidateId, generateRevisionId, isDefaultPoint, ValidationHelpers };
+export { createSeededRandom, generateCandidateId, generateRevisionId, isDefaultPoint };
 
 // --- Base Plugin Interface ---
 
@@ -61,4 +61,5 @@ export abstract class AsyncPlugin<C extends Record<string, unknown> = Record<str
 }
 
 // Re-export types for convenience
-export type { Registrable, ValidationHelpers } from './Registry.js';
+export type { Registrable } from './Registry.js';
+export { ValidationHelpers } from './Registry.js';

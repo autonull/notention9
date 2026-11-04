@@ -5,7 +5,7 @@
 
 import { z } from 'zod';
 import type { OptimizerCandidate, CandidateEvaluationResult, BudgetConstraints } from './candidateGenerators.js';
-import type { OptimizerConfig } from './types.js';
+import type { OptimizerConfig, BudgetAllocation, CandidateBudget, CandidateCost } from './types.js';
 import { createInstanceRegistry, ValidationHelpers } from '../utils/Registry.js';
 import { BaseBudgetAllocator } from './baseBudgetAllocator.js';
 
@@ -47,28 +47,6 @@ export interface BudgetAllocator {
 
 // --- Budget Allocator Registrable mixin ---
 type RegistrableAllocator = BudgetAllocator & { getDefaultConfig(): BudgetConstraints; validateConfig(config: BudgetConstraints): { valid: boolean; errors: string[] } };
-
-export interface BudgetAllocation {
-    /** Budget allocated per candidate */
-    perCandidate: Map<string, CandidateBudget>;
-    /** Total estimated cost */
-    totalEstimatedCost: CandidateCost;
-    /** Whether this is the final round */
-    isFinalRound: boolean;
-}
-
-export interface CandidateBudget {
-    browserRuns: number;
-    timeMinutes: number;
-    tokens: number;
-    sliceFraction?: number; // For successive halving
-}
-
-export interface CandidateCost {
-    browserRuns: number;
-    tokensUsed: number;
-    durationMs: number;
-}
 
 // --- Fixed Budget Allocator (equal allocation) ---
 

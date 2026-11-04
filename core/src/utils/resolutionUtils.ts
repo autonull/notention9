@@ -5,7 +5,6 @@
  */
 
 import type { StrategyExperiment, ExperimentAssignment, ProfilePolicy, UserProfileConfig, SeamRole } from '../ui/profileTypes.js';
-import type { StrategyRegistry } from '../ui/strategy.js';
 import type { ProfileRegistry } from '../ui/ProfileRegistry.js';
 
 /**

@@ -1,6 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { ProfileRegistry, StrategyRegistry, type Seam, type Strategy, SEAM_ROLES, type SeamRole } from '@notention/core';
+import { ProfileRegistry, type Seam, type Strategy, type StrategyRegistrable, SEAM_ROLES, type SeamRole, getStrategyRegistry, resetStrategyRegistry } from '@notention/core';
 import { getRevisionStore, resetRevisionStore } from '../telemetry/revisionStore.js';
+
+beforeEach(() => {
+    // Clear the global strategy registry between tests
+    resetStrategyRegistry();
+});
 
 // Mock strategy factory
 function createMockStrategy(id: string, seamRole: SeamRole): Strategy {
@@ -17,14 +22,19 @@ function createMockStrategy(id: string, seamRole: SeamRole): Strategy {
         seam,
         version: '1.0.0',
         params: {},
+        name: id,
+        description: '',
         render: () => null as any,
         getDefaultProps: () => ({ testProp: `default-${id}` }),
+        getName: () => id,
+        getDefaultConfig: () => ({}),
+        validateConfig: () => ({ valid: true, errors: [] }),
     };
 }
 
 function createTestRegistries() {
     const profileRegistry = new ProfileRegistry();
-    const strategyRegistry = new StrategyRegistry();
+    const strategyRegistry = getStrategyRegistry();
     const seamRole: SeamRole = SEAM_ROLES.CAPTURE;
 
     // Register strategies
@@ -283,12 +293,15 @@ describe('ProfileRegistry: 5-layer precedence', () => {
             updatedAt: new Date().toISOString(),
         });
 
+        // Create a fresh strategy registry by resetting the global one
+        // Note: In tests, we use the global registry but can clear it
+        baseStrategyRegistry.clear();
+        
         // Register seam with only fallback strategy
         const fallbackStrategy = createMockStrategy('fallback-strategy', seamRole);
-        const newStrategyRegistry = new StrategyRegistry();
-        newStrategyRegistry.register(fallbackStrategy);
+        baseStrategyRegistry.register(fallbackStrategy);
 
-        const resolved = profileRegistry.resolveStrategyWithMeta(userId, seamRole, newStrategyRegistry);
+        const resolved = profileRegistry.resolveStrategyWithMeta(userId, seamRole, baseStrategyRegistry);
 
         expect(resolved).toBeDefined();
         expect(resolved!.strategy.id).toBe('fallback-strategy');

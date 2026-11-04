@@ -3,13 +3,14 @@
  * Replaces manual strategy registration with data-driven approach
  */
 
-import type { Seam, Strategy, StrategyRegistry } from '../ui/strategy.js';
+import type { Seam, Strategy, StrategyRegistrable } from '../ui/strategy.js';
 import type { SeamDefinition } from '../schemas/seamDefinition.js';
 import type { StrategyParamConfig } from './types.js';
 import { paramSpecToZod, getSearchSpace } from '../schemas/paramSpec.js';
 import { readFileSync, existsSync } from 'node:fs';
 import { getSeamDefinitionsPath } from '../utils/common.js';
 import { logWarn } from '../utils/logging.js';
+import { Registry } from '../utils/Registry.js';
 
 const SEAM_DEFINITIONS_FILE = getSeamDefinitionsPath(import.meta.url);
 
@@ -45,7 +46,7 @@ function loadSeamDefinitions(): SeamDefinitionsData {
  * Auto-populate StrategyRegistry from seam-definitions.json
  * Returns the number of strategies registered
  */
-export function autoPopulateStrategyRegistry(registry: StrategyRegistry): number {
+export function autoPopulateStrategyRegistry(registry: Registry<StrategyRegistrable>): number {
     const definitions = loadSeamDefinitions();
     let registered = 0;
     
@@ -81,6 +82,8 @@ function createStrategyFromConfig(seam: Seam, config: StrategyParamConfig): Stra
         seam,
         version: config.version,
         params: config.paramSpec,
+        name: config.id,
+        description: '',
         render: (props: Record<string, unknown>) => {
             // Validate props against schema
             const result = zodSchema.safeParse(props);
@@ -93,6 +96,9 @@ function createStrategyFromConfig(seam: Seam, config: StrategyParamConfig): Stra
             return null as any; // React.ReactElement
         },
         getDefaultProps: () => defaultProps,
+        getName: () => config.id,
+        getDefaultConfig: () => ({ params: config.paramSpec, version: config.version, defaultProps }),
+        validateConfig: () => ({ valid: true, errors: [] }),
     };
 }
 

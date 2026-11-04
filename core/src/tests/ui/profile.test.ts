@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { profileRegistry, DEFAULT_PROFILES, DEFAULT_POLICY, DEFAULT_MATCH_DISPLAY_EXPERIMENT, ProfileRegistry } from '@notention/core/ui/profile';
-import { strategyRegistry } from '@notention/core/ui/strategy';
+import { strategyRegistry, getStrategyRegistry } from '@notention/core/ui/strategy';
 import { SEAM_ROLES } from '@notention/core/constants/seams';
 
 describe('ProfileRegistry', () => {
@@ -11,7 +11,7 @@ describe('ProfileRegistry', () => {
         profileRegistry.userConfigs.clear();
         profileRegistry.experiments.clear();
         profileRegistry.assignments.clear();
-        strategyRegistry.strategies.clear();
+        strategyRegistry.clear();
         
         // Re-register defaults
         for (const profile of DEFAULT_PROFILES) {
@@ -79,8 +79,13 @@ describe('ProfileRegistry', () => {
             seam: { id: 'capture-0', name: 'test', description: '', components: [], propsShape: {}, role: 'capture' as const },
             version: '1.0.0',
             params: {},
+            name: 'test-strategy',
+            description: '',
             render: () => null,
             getDefaultProps: () => ({}),
+            getName: () => 'test-strategy',
+            getDefaultConfig: () => ({}),
+            validateConfig: () => ({ valid: true, errors: [] }),
         };
         
         // Register directly in strategy registry
@@ -128,8 +133,13 @@ describe('ProfileRegistry', () => {
                 seam: { id: seamId, name: 'Match Display', description: '', components: [], propsShape: {}, role: SEAM_ROLES.MATCH },
                 version: '1.0.0',
                 params: {},
+                name: variant.strategyId,
+                description: '',
                 render: () => null,
                 getDefaultProps: () => ({}),
+                getName: () => variant.strategyId,
+                getDefaultConfig: () => ({}),
+                validateConfig: () => ({ valid: true, errors: [] }),
             };
             strategyRegistry.register(mockStrategy);
         }

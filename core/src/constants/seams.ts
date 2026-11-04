@@ -9,6 +9,7 @@
 
 import type { Seam, SeamRole } from '../ui/strategy.js';
 import type { SeamDefinition } from '../schemas/seamDefinition.js';
+import { getSeams } from '../ui/strategy.js';
 
 /**
  * Semantic seam roles - stable identifiers used across the system
@@ -214,12 +215,9 @@ export function toCoreSeam(spec: SeamSpec): Seam {
  * Falls back to role name if no discovered seam matches
  */
 export function resolveSeamId(
-    role: SeamRole,
-    strategyRegistry?: { listSeams(): Array<{ id: string }> }
+    role: SeamRole
 ): string {
-    if (!strategyRegistry) return `${role}-0`;
-
-    const seams = strategyRegistry.listSeams();
+    const seams = getSeams();
     const discovered = seams.find(s => s.id.startsWith(`${role}-`));
     return discovered?.id ?? `${role}-0`;
 }
@@ -228,12 +226,9 @@ export function resolveSeamId(
  * Get all seam IDs for a given role
  */
 export function getSeamIdsForRole(
-    role: SeamRole,
-    strategyRegistry?: { listSeams(): Array<{ id: string }> }
+    role: SeamRole
 ): string[] {
-    if (!strategyRegistry) return [`${role}-0`];
-
-    const seams = strategyRegistry.listSeams();
+    const seams = getSeams();
     return seams.filter(s => s.id.startsWith(`${role}-`)).map(s => s.id);
 }
 
