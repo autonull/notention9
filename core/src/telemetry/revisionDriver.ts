@@ -299,18 +299,16 @@ export class InMemoryRevisionDriver extends BaseRevisionDriverPlugin implements 
 
 // --- SQLite Driver (Production Implementation) ---
 
-export class SQLiteRevisionDriver implements RevisionDriver {
+export class SQLiteRevisionDriver extends BaseRevisionDriverPlugin implements RegistrableRevisionDriver {
     readonly name = 'sqlite';
     readonly description = 'SQLite-backed revision storage';
     
     private dbPath: string;
     private db: any; // Database from better-sqlite3
-    private initialized = false;
-    private config: RevisionDriverConfig;
 
     constructor(dbPath?: string) {
+        super();
         this.dbPath = dbPath ?? '';
-        this.config = {};
     }
 
     getDefaultConfig(): RevisionDriverConfig {
@@ -325,10 +323,9 @@ export class SQLiteRevisionDriver implements RevisionDriver {
         );
     }
 
-    async init(config: RevisionDriverConfig): Promise<void> {
-        if (this.initialized) return;
+    protected async onInit(): Promise<void> {
+        await super.onInit();
         
-        this.config = { ...this.getDefaultConfig(), ...config };
         this.dbPath = this.config.dbPath as string ?? this.dbPath;
         
         if (!this.dbPath) {
@@ -381,7 +378,12 @@ export class SQLiteRevisionDriver implements RevisionDriver {
             CREATE INDEX IF NOT EXISTS idx_revisions_strategy_id ON revisions(strategy_id);
         `);
         
-        this.initialized = true;
+        // Load existing revisions into memory indexes
+        const rows = this.db.prepare('SELECT * FROM revisions ORDER BY created_at DESC').all();
+        for (const row of rows) {
+            const revision = this.rowToRevision(row);
+            this.indexRevision(revision);
+        }
     }
 
     private rowToRevision(row: any): Revision {
@@ -414,12 +416,77 @@ export class SQLiteRevisionDriver implements RevisionDriver {
         };
     }
 
+    async persistRevision(revision: Revision): Promise<void> {
+        const isNew = !this.revisions.has(revision.id);
+        
+        if (isNew) {
+            this.db.prepare(`
+                INSERT INTO revisions (
+                    id, seam_role, strategy_id, seam_id, version, params, code, component_type,
+                    author, model, prompt_hash, parent_revision_id, evaluation_id, verdict,
+                    status, consented_by, consented_at, activated_at, rolled_back_at, rollback_reason,
+                    created_at, updated_at, tags
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `).run(
+                revision.id,
+                revision.seamRole,
+                revision.strategy.id,
+                revision.strategy.seamId,
+                revision.strategy.version,
+                JSON.stringify(revision.strategy.params),
+                revision.strategy.code ?? null,
+                revision.strategy.componentType ?? null,
+                revision.author,
+                revision.model ?? null,
+                revision.promptHash ?? null,
+                revision.parentRevisionId ?? null,
+                revision.evaluationId ?? null,
+                revision.verdict ?? null,
+                revision.status,
+                revision.consentedBy ?? null,
+                revision.consentedAt ?? null,
+                revision.activatedAt ?? null,
+                revision.rolledBackAt ?? null,
+                revision.rollbackReason ?? null,
+                revision.createdAt,
+                revision.updatedAt,
+                revision.tags ? JSON.stringify(revision.tags) : null
+            );
+        } else {
+            this.db.prepare(`
+                UPDATE revisions SET
+                    status = ?,
+                    updated_at = ?,
+                    verdict = ?,
+                    consented_by = ?,
+                    consented_at = ?,
+                    activated_at = ?,
+                    rolled_back_at = ?,
+                    rollback_reason = ?,
+                    tags = ?
+                WHERE id = ?
+            `).run(
+                revision.status,
+                revision.updatedAt,
+                revision.verdict ?? null,
+                revision.consentedBy ?? null,
+                revision.consentedAt ?? null,
+                revision.activatedAt ?? null,
+                revision.rolledBackAt ?? null,
+                revision.rollbackReason ?? null,
+                revision.tags ? JSON.stringify(revision.tags) : null,
+                revision.id
+            );
+        }
+    }
+    
+    // Override create to use base class persistRevision
     async create(revision: Omit<Revision, 'id' | 'createdAt' | 'updatedAt' | 'status'>): Promise<Revision> {
         await this.init(this.config);
-        
+
         const now = new Date().toISOString();
         const id = `rev_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
-        
+
         const fullRevision: Revision = {
             ...revision,
             id,
@@ -427,113 +494,60 @@ export class SQLiteRevisionDriver implements RevisionDriver {
             createdAt: now,
             updatedAt: now,
         };
-        
-        this.db.prepare(`
-            INSERT INTO revisions (
-                id, seam_role, strategy_id, seam_id, version, params, code, component_type,
-                author, model, prompt_hash, parent_revision_id, evaluation_id, verdict,
-                status, consented_by, consented_at, activated_at, rolled_back_at, rollback_reason,
-                created_at, updated_at, tags
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `).run(
-            fullRevision.id,
-            fullRevision.seamRole,
-            fullRevision.strategy.id,
-            fullRevision.strategy.seamId,
-            fullRevision.strategy.version,
-            JSON.stringify(fullRevision.strategy.params),
-            fullRevision.strategy.code ?? null,
-            fullRevision.strategy.componentType ?? null,
-            fullRevision.author,
-            fullRevision.model ?? null,
-            fullRevision.promptHash ?? null,
-            fullRevision.parentRevisionId ?? null,
-            fullRevision.evaluationId ?? null,
-            fullRevision.verdict ?? null,
-            fullRevision.status,
-            fullRevision.consentedBy ?? null,
-            fullRevision.consentedAt ?? null,
-            fullRevision.activatedAt ?? null,
-            fullRevision.rolledBackAt ?? null,
-            fullRevision.rollbackReason ?? null,
-            fullRevision.createdAt,
-            fullRevision.updatedAt,
-            fullRevision.tags ? JSON.stringify(fullRevision.tags) : null
-        );
-        
+
+        this.indexRevision(fullRevision);
+        await this.persistRevision(fullRevision);
+
         return fullRevision;
     }
-
+    
+    // Override get to use base class
     async get(id: string): Promise<Revision | undefined> {
         await this.init(this.config);
-        
-        const row = this.db.prepare('SELECT * FROM revisions WHERE id = ?').get(id);
-        return row ? this.rowToRevision(row) : undefined;
+        return this.revisions.get(id);
     }
-
+    
+    // Override getActive to use base class index
     async getActive(seamRole: string): Promise<Revision | undefined> {
         await this.init(this.config);
-        
-        const row = this.db.prepare(`
-            SELECT * FROM revisions 
-            WHERE seam_role = ? AND status = 'active' 
-            ORDER BY created_at DESC 
-            LIMIT 1
-        `).get(seamRole);
-        
-        return row ? this.rowToRevision(row) : undefined;
+        const ids = this.seamIndex.get(seamRole) ?? [];
+        for (const id of ids) {
+            const rev = this.revisions.get(id);
+            if (rev && rev.status === 'active') return rev;
+        }
+        return undefined;
     }
-
+    
+    // Override updateStatus to use base class index management
     async updateStatus(id: string, status: RevisionStatus, metadata: Partial<Revision>): Promise<Revision | undefined> {
         await this.init(this.config);
-        
-        const revision = await this.get(id);
+
+        const revision = this.revisions.get(id);
         if (!revision) return undefined;
-        
+
         const updated: Revision = {
             ...revision,
             status,
             updatedAt: new Date().toISOString(),
             ...metadata,
         };
-        
-        this.db.prepare(`
-            UPDATE revisions SET
-                status = ?,
-                updated_at = ?,
-                verdict = ?,
-                consented_by = ?,
-                consented_at = ?,
-                activated_at = ?,
-                rolled_back_at = ?,
-                rollback_reason = ?,
-                tags = ?
-            WHERE id = ?
-        `).run(
-            updated.status,
-            updated.updatedAt,
-            updated.verdict ?? null,
-            updated.consentedBy ?? null,
-            updated.consentedAt ?? null,
-            updated.activatedAt ?? null,
-            updated.rolledBackAt ?? null,
-            updated.rollbackReason ?? null,
-            updated.tags ? JSON.stringify(updated.tags) : null,
-            id
-        );
-        
+
+        this.updateIndex(updated);
+        await this.persistRevision(updated);
+
         return updated;
     }
-
+    
+    // Override activate to use base class index
     async activate(id: string, userId: string): Promise<Revision | undefined> {
         await this.init(this.config);
-        
-        const revision = await this.get(id);
+
+        const revision = this.revisions.get(id);
         if (!revision) return undefined;
-        
+
         // Find current active for this seam
         const currentActive = await this.getActive(revision.seamRole);
-        
+
         // Roll back current active
         if (currentActive && currentActive.id !== id) {
             await this.updateStatus(currentActive.id, 'rolled-back', {
@@ -541,7 +555,7 @@ export class SQLiteRevisionDriver implements RevisionDriver {
                 rolledBackAt: new Date().toISOString(),
             });
         }
-        
+
         // Activate new revision
         return this.updateStatus(id, 'active', {
             activatedAt: new Date().toISOString(),
@@ -549,72 +563,61 @@ export class SQLiteRevisionDriver implements RevisionDriver {
             consentedAt: new Date().toISOString(),
         });
     }
-
+    
+    // Override search to use base class in-memory index
     async search(query: RevisionSearchQuery): Promise<Revision[]> {
         await this.init(this.config);
-        
-        let sql = 'SELECT * FROM revisions WHERE 1=1';
-        const params: any[] = [];
-        
+
+        let results = Array.from(this.revisions.values());
+
         if (query.seamRole) {
-            sql += ' AND seam_role = ?';
-            params.push(query.seamRole);
+            results = results.filter(r => r.seamRole === query.seamRole);
         }
         if (query.status) {
-            sql += ' AND status = ?';
-            params.push(query.status);
+            results = results.filter(r => r.status === query.status);
         }
         if (query.author) {
-            sql += ' AND author = ?';
-            params.push(query.author);
+            results = results.filter(r => r.author === query.author);
         }
         if (query.tags && query.tags.length > 0) {
-            // For simplicity, we'll filter tags in memory
-            // A proper implementation would use JSON functions
+            results = results.filter(r => r.tags?.some(t => query.tags!.includes(t)));
         }
         if (query.since) {
-            sql += ' AND created_at >= ?';
-            params.push(query.since);
+            const since = new Date(query.since).getTime();
+            results = results.filter(r => new Date(r.createdAt).getTime() >= since);
         }
         if (query.until) {
-            sql += ' AND created_at <= ?';
-            params.push(query.until);
+            const until = new Date(query.until).getTime();
+            results = results.filter(r => new Date(r.createdAt).getTime() <= until);
         }
-        
-        sql += ' ORDER BY created_at DESC';
-        
+
+        results.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
         if (query.offset) {
-            sql += ' OFFSET ?';
-            params.push(query.offset);
+            results = results.slice(query.offset);
         }
         if (query.limit) {
-            sql += ' LIMIT ?';
-            params.push(query.limit);
+            results = results.slice(0, query.limit);
         }
-        
-        const rows = this.db.prepare(sql).all(...params);
-        let results = rows.map((row: any) => this.rowToRevision(row));
-        
-        // Filter tags in memory if needed
-        if (query.tags && query.tags.length > 0) {
-            results = results.filter((r: any) => r.tags?.some((t: string) => query.tags!.includes(t)));
-        }
-        
+
         return results;
     }
-
+    
+    // Override count to use base class
     async count(): Promise<number> {
         await this.init(this.config);
-        
-        const row = this.db.prepare('SELECT COUNT(*) as count FROM revisions').get();
-        return row?.count ?? 0;
+        return this.revisions.size;
     }
-
+    
+    // Override close
     async close(): Promise<void> {
         if (this.db) {
             this.db.close();
             this.db = null;
         }
+        this.revisions.clear();
+        this.seamIndex.clear();
+        this.statusIndex.clear();
         this.initialized = false;
     }
 }

@@ -4,21 +4,15 @@
  */
 
 import { z } from 'zod';
-import { ValidationHelpers } from './Registry.js';
+import { ValidationHelpers, type Registrable } from './Registry.js';
 import { createSeededRandom, generateCandidateId, generateRevisionId, isDefaultPoint } from './common.js';
 
 // Re-export for consumers
-export { createSeededRandom, generateCandidateId, generateRevisionId, isDefaultPoint };
+export { createSeededRandom, generateCandidateId, generateRevisionId, isDefaultPoint, ValidationHelpers };
 
 // --- Base Plugin Interface ---
 
-export interface BasePlugin<C extends Record<string, unknown> = Record<string, unknown>> {
-    readonly name: string;
-    readonly description: string;
-    readonly configSchema?: z.ZodSchema<C>;
-
-    getDefaultConfig(): C;
-    validateConfig(config: C): { valid: boolean; errors: string[] };
+export interface BasePlugin<C extends Record<string, unknown> = Record<string, unknown>> extends Registrable<C> {
 }
 
 /**

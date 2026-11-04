@@ -17,6 +17,10 @@ export abstract class BaseSplitStrategy extends Plugin<SplitStrategyConfig> {
     abstract readonly description: string;
     readonly configSchema?: z.ZodSchema<SplitStrategyConfig> = undefined;
 
+    getName(): string {
+        return this.name;
+    }
+
     getDefaultConfig(): SplitStrategyConfig {
         return { seed: 42 };
     }

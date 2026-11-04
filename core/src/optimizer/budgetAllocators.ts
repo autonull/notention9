@@ -7,6 +7,7 @@ import { z } from 'zod';
 import type { OptimizerCandidate, CandidateEvaluationResult, BudgetConstraints } from './candidateGenerators.js';
 import type { OptimizerConfig } from './types.js';
 import { createInstanceRegistry, ValidationHelpers } from '../utils/Registry.js';
+import { BaseBudgetAllocator } from './baseBudgetAllocator.js';
 
 // --- Budget Allocator Interface ---
 
@@ -71,7 +72,7 @@ export interface CandidateCost {
 
 // --- Fixed Budget Allocator (equal allocation) ---
 
-export class FixedBudgetAllocator implements RegistrableAllocator {
+export class FixedBudgetAllocator extends BaseBudgetAllocator {
     readonly name = 'fixed';
     readonly description = 'Equal budget allocation across all candidates';
     
@@ -92,33 +93,10 @@ export class FixedBudgetAllocator implements RegistrableAllocator {
         config: OptimizerConfig,
         budget: BudgetConstraints
     ): BudgetAllocation {
-        const candidateCount = candidates.length;
-        const perCandidate = new Map<string, CandidateBudget>();
-        
-        const runsPerCandidate = Math.max(1, Math.floor((budget.maxBrowserRuns ?? config.maxBrowserRuns) / candidateCount));
-        const timePerCandidate = (budget.maxTimeMinutes ?? config.maxTimeMinutes) / candidateCount;
-        const tokensPerCandidate = Math.floor((budget.maxTokens ?? config.maxTokens) / candidateCount);
-        
-        for (const candidate of candidates) {
-            perCandidate.set(candidate.id, {
-                browserRuns: runsPerCandidate,
-                timeMinutes: timePerCandidate,
-                tokens: tokensPerCandidate,
-            });
-        }
-        
-        return {
-            perCandidate,
-            totalEstimatedCost: {
-                browserRuns: runsPerCandidate * candidateCount,
-                tokensUsed: tokensPerCandidate * candidateCount,
-                durationMs: timePerCandidate * 60 * 1000 * candidateCount,
-            },
-            isFinalRound: true,
-        };
+        return this.equalAllocation(candidates, budget, config);
     }
     
-    promote(results: CandidateEvaluationResult[], config: OptimizerConfig): string[] {
+    promote(results: CandidateEvaluationResult[], _config: OptimizerConfig): string[] {
         // In fixed budget, all candidates are evaluated equally, no promotion
         return results.map(r => r.candidateId);
     }
@@ -126,7 +104,7 @@ export class FixedBudgetAllocator implements RegistrableAllocator {
 
 // --- Successive Halving Allocator ---
 
-export class SuccessiveHalvingAllocator implements RegistrableAllocator {
+export class SuccessiveHalvingAllocator extends BaseBudgetAllocator {
     readonly name = 'successive-halving';
     readonly description = 'Successive halving: evaluate all on small budget, iteratively promote top fraction';
     
@@ -134,7 +112,9 @@ export class SuccessiveHalvingAllocator implements RegistrableAllocator {
         private initialFraction = 0.25,
         private promotionFraction = 0.5,
         private minPromote = 2
-    ) {}
+    ) {
+        super();
+    }
     
     getDefaultConfig(): BudgetConstraints {
         return { maxBrowserRuns: 160, maxTimeMinutes: 30, maxTokens: 150000, initialFraction: 0.25, promotionFraction: 0.5, minPromote: 2 };
@@ -198,16 +178,13 @@ export class SuccessiveHalvingAllocator implements RegistrableAllocator {
         };
     }
     
-    promote(results: CandidateEvaluationResult[], config: OptimizerConfig): string[] {
-        // Sort by primary delta descending (best first)
-        const sorted = [...results].sort((a, b) => b.primaryDelta - a.primaryDelta);
+    promote(results: CandidateEvaluationResult[], _config: OptimizerConfig): string[] {
+        const sorted = this.sortByPrimaryDelta(results);
         const promoteCount = Math.max(this.minPromote, Math.ceil(sorted.length * this.promotionFraction));
         return sorted.slice(0, promoteCount).map(r => r.candidateId);
     }
     
     private getCurrentRound(previousResults: CandidateEvaluationResult[]): number {
-        // Determine round from slice fractions in previous results
-        // For simplicity, assume each call to allocate is a new round
         return previousResults.length > 0 ? 1 : 0; // Simplified
     }
     
@@ -218,7 +195,6 @@ export class SuccessiveHalvingAllocator implements RegistrableAllocator {
     ): OptimizerCandidate[] {
         if (previousResults.length === 0) return candidates;
         
-        // Get promoted candidates from last round
         const promotedIds = this.promote(previousResults, config);
         return candidates.filter(c => promotedIds.includes(c.id));
     }
@@ -226,14 +202,16 @@ export class SuccessiveHalvingAllocator implements RegistrableAllocator {
 
 // --- Hyperband Allocator ---
 
-export class HyperbandAllocator implements RegistrableAllocator {
+export class HyperbandAllocator extends BaseBudgetAllocator {
     readonly name = 'hyperband';
     readonly description = 'Hyperband: multiple successive halving brackets with different resource levels';
     
     constructor(
         private maxResource = 81,      // Maximum budget per candidate (e.g., browser runs)
         private reductionFactor = 3    // η (eta) - reduction factor
-    ) {}
+    ) {
+        super();
+    }
     
     getDefaultConfig(): BudgetConstraints {
         return { maxBrowserRuns: 160, maxTimeMinutes: 30, maxTokens: 150000, maxResource: 81, reductionFactor: 3 };
@@ -284,7 +262,7 @@ export class HyperbandAllocator implements RegistrableAllocator {
             });
         }
         
-        const isFinalRound = bracket === sMax && candidates.length <= this.minPromote;
+        const isFinalRound = bracket === sMax && candidates.length <= 1;
         
         return {
             perCandidate,
@@ -297,13 +275,11 @@ export class HyperbandAllocator implements RegistrableAllocator {
         };
     }
     
-    promote(results: CandidateEvaluationResult[], config: OptimizerConfig): string[] {
-        const sorted = [...results].sort((a, b) => b.primaryDelta - a.primaryDelta);
+    promote(results: CandidateEvaluationResult[], _config: OptimizerConfig): string[] {
+        const sorted = this.sortByPrimaryDelta(results);
         const promoteCount = Math.max(1, Math.ceil(sorted.length / this.reductionFactor));
         return sorted.slice(0, promoteCount).map(r => r.candidateId);
     }
-    
-    private minPromote = 1;
     
     private selectBracket(sMax: number, previousResults: CandidateEvaluationResult[]): number {
         // Round-robin bracket selection

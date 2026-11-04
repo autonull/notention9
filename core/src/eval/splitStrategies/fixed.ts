@@ -20,6 +20,10 @@ export class FixedSplitStrategy extends BaseSplitStrategy {
     readonly description = 'Use pre-assigned splits from case metadata (backward compatible)';
     readonly configSchema = fixedSplitConfigSchema;
     
+    getName(): string {
+        return this.name;
+    }
+
     getDefaultConfig(): SplitStrategyConfig {
         return { seed: 42 };
     }

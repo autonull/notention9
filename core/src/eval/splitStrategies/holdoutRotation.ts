@@ -28,6 +28,10 @@ export class HoldoutRotationSplitStrategy extends BaseSplitStrategy {
     readonly description = 'Rotating holdout: cycles cases through holdout over time to prevent overfitting';
     readonly configSchema = holdoutRotationConfigSchema;
     
+    getName(): string {
+        return this.name;
+    }
+
     getDefaultConfig(): SplitStrategyConfig {
         return {
             seed: 42,

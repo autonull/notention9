@@ -99,7 +99,7 @@ function findFilesRecursive(dir: string, contractName: string): string[] {
     const implementationPatterns: Record<string, string[]> = {
         'RevisionDriver': ['implements RevisionDriver', 'implements RegistrableRevisionDriver', 'extends BaseRevisionDriver'],
         'CandidateGenerator': ['implements CandidateGenerator', 'implements RegistrableGenerator', 'extends CandidateGeneratorPlugin', 'extends BaseCandidateGenerator'],
-        'SplitStrategy': ['implements SplitStrategy'],
+        'SplitStrategy': ['implements SplitStrategy', 'extends BaseSplitStrategy'],
         'VerdictEngine': ['implements VerdictEngine', 'extends BaseVerdictEngine'],
         'ResolutionStrategy': ['implements ResolutionStrategy', 'extends ResolutionStrategyPlugin', 'extends BaseResolutionStrategy'],
         'EventStore': ['implements EventStore'],

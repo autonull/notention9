@@ -27,6 +27,10 @@ export class StratifiedSplitStrategy extends BaseSplitStrategy {
     readonly description = 'Stratified sampling: balanced representation of intents/tags across splits';
     readonly configSchema = stratifiedSplitConfigSchema;
     
+    getName(): string {
+        return this.name;
+    }
+
     getDefaultConfig(): SplitStrategyConfig {
         return {
             seed: 42,

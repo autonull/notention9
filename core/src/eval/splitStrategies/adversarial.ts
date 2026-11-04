@@ -28,6 +28,10 @@ export class AdversarialSplitStrategy extends BaseSplitStrategy {
     readonly description = 'Adversarial split: difficult cases in validation/holdout to stress-test candidates';
     readonly configSchema = adversarialSplitConfigSchema;
     
+    getName(): string {
+        return this.name;
+    }
+
     getDefaultConfig(): SplitStrategyConfig {
         return {
             seed: 42,

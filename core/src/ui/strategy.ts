@@ -1,5 +1,7 @@
 import React from 'react';
-import { Registry, createInstanceRegistry } from '../utils/Registry.js';
+import { z } from 'zod';
+import { Registry, createInstanceRegistry, ValidationHelpers } from '../utils/Registry.js';
+import { Plugin } from '../utils/BasePlugin.js';
 
 /**
  * Seam definition - shared between discovery, synthesis, and runtime
@@ -166,19 +168,51 @@ export async function registerDiscoveredStrategies(
 }
 
 /**
+ * Component strategy config for Plugin validation
+ */
+export interface ComponentStrategyConfig {
+    params: ParamSpec;
+    version: string;
+    defaultProps: Record<string, unknown>;
+}
+
+/**
  * Base class for component-based strategies
  * Derives params from the component's prop types
+ * Extends Plugin for unified config validation and defaults
  */
-export abstract class ComponentStrategy<P extends object> implements StrategyRegistrable<P> {
+export abstract class ComponentStrategy<P extends object> extends Plugin<ComponentStrategyConfig> implements StrategyRegistrable<P> {
     abstract readonly id: string;
     abstract readonly seam: Seam;
     readonly version: string = '1.0.0';
     readonly name: string;
     readonly description: string = '';
     readonly params: ParamSpec = {};
+    readonly type = 'strategy';
     
     constructor(protected readonly defaultProps: Partial<P> = {}) {
+        super();
         this.name = this.id;
+    }
+
+    readonly configSchema = z.object({
+        params: z.record(z.unknown()).optional(),
+        version: z.string().optional(),
+        defaultProps: z.record(z.unknown()).optional(),
+    });
+
+    getDefaultConfig(): ComponentStrategyConfig {
+        return {
+            params: this.params,
+            version: this.version,
+            defaultProps: this.defaultProps,
+        };
+    }
+
+    validateConfig(config: ComponentStrategyConfig): { valid: boolean; errors: string[] } {
+        return ValidationHelpers.combine(
+            ValidationHelpers.object(config.params, 'params', []),
+        );
     }
 
     abstract render(props: P): React.ReactElement;

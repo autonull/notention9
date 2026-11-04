@@ -24,6 +24,10 @@ export class TemporalSplitStrategy extends BaseSplitStrategy {
     readonly description = 'Split cases chronologically: older -> search, newer -> validation, newest -> holdout';
     readonly configSchema = temporalSplitConfigSchema;
     
+    getName(): string {
+        return this.name;
+    }
+
     getDefaultConfig(): SplitStrategyConfig {
         return {
             seed: 42,
