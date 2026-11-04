@@ -479,146 +479,14 @@ export class SQLiteRevisionDriver extends BaseRevisionDriverPlugin implements Re
             );
         }
     }
-    
-    // Override create to use base class persistRevision
-    async create(revision: Omit<Revision, 'id' | 'createdAt' | 'updatedAt' | 'status'>): Promise<Revision> {
-        await this.init(this.config);
 
-        const now = new Date().toISOString();
-        const id = `rev_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
-
-        const fullRevision: Revision = {
-            ...revision,
-            id,
-            status: 'draft',
-            createdAt: now,
-            updatedAt: now,
-        };
-
-        this.indexRevision(fullRevision);
-        await this.persistRevision(fullRevision);
-
-        return fullRevision;
-    }
-    
-    // Override get to use base class
-    async get(id: string): Promise<Revision | undefined> {
-        await this.init(this.config);
-        return this.revisions.get(id);
-    }
-    
-    // Override getActive to use base class index
-    async getActive(seamRole: string): Promise<Revision | undefined> {
-        await this.init(this.config);
-        const ids = this.seamIndex.get(seamRole) ?? [];
-        for (const id of ids) {
-            const rev = this.revisions.get(id);
-            if (rev && rev.status === 'active') return rev;
-        }
-        return undefined;
-    }
-    
-    // Override updateStatus to use base class index management
-    async updateStatus(id: string, status: RevisionStatus, metadata: Partial<Revision>): Promise<Revision | undefined> {
-        await this.init(this.config);
-
-        const revision = this.revisions.get(id);
-        if (!revision) return undefined;
-
-        const updated: Revision = {
-            ...revision,
-            status,
-            updatedAt: new Date().toISOString(),
-            ...metadata,
-        };
-
-        this.updateIndex(updated);
-        await this.persistRevision(updated);
-
-        return updated;
-    }
-    
-    // Override activate to use base class index
-    async activate(id: string, userId: string): Promise<Revision | undefined> {
-        await this.init(this.config);
-
-        const revision = this.revisions.get(id);
-        if (!revision) return undefined;
-
-        // Find current active for this seam
-        const currentActive = await this.getActive(revision.seamRole);
-
-        // Roll back current active
-        if (currentActive && currentActive.id !== id) {
-            await this.updateStatus(currentActive.id, 'rolled-back', {
-                rollbackReason: `Superseded by ${id}`,
-                rolledBackAt: new Date().toISOString(),
-            });
-        }
-
-        // Activate new revision
-        return this.updateStatus(id, 'active', {
-            activatedAt: new Date().toISOString(),
-            consentedBy: userId,
-            consentedAt: new Date().toISOString(),
-        });
-    }
-    
-    // Override search to use base class in-memory index
-    async search(query: RevisionSearchQuery): Promise<Revision[]> {
-        await this.init(this.config);
-
-        let results = Array.from(this.revisions.values());
-
-        if (query.seamRole) {
-            results = results.filter(r => r.seamRole === query.seamRole);
-        }
-        if (query.status) {
-            results = results.filter(r => r.status === query.status);
-        }
-        if (query.author) {
-            results = results.filter(r => r.author === query.author);
-        }
-        if (query.tags && query.tags.length > 0) {
-            results = results.filter(r => r.tags?.some(t => query.tags!.includes(t)));
-        }
-        if (query.since) {
-            const since = new Date(query.since).getTime();
-            results = results.filter(r => new Date(r.createdAt).getTime() >= since);
-        }
-        if (query.until) {
-            const until = new Date(query.until).getTime();
-            results = results.filter(r => new Date(r.createdAt).getTime() <= until);
-        }
-
-        results.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
-        if (query.offset) {
-            results = results.slice(query.offset);
-        }
-        if (query.limit) {
-            results = results.slice(0, query.limit);
-        }
-
-        return results;
-    }
-    
-    // Override count to use base class
-    async count(): Promise<number> {
-        await this.init(this.config);
-        return this.revisions.size;
-    }
-    
-    // Override close
+    // Override close to properly close DB connection
     async close(): Promise<void> {
         if (this.db) {
             this.db.close();
             this.db = null;
         }
-        this.revisions.clear();
-        this.seamIndex.clear();
-        this.statusIndex.clear();
-        this.initialized = false;
+        await super.close();
     }
 }
 
@@ -628,7 +496,7 @@ const { registry: revisionDriverRegistry, get: getRevisionDriverRegistry, reset:
     createFactoryRegistry<RevisionDriver>('RevisionDriver', [
         { name: 'jsonl', create: (...args: unknown[]) => new JSONLRevisionDriver(...(args as string[])), description: 'JSONL file-based storage' },
         { name: 'memory', create: () => new InMemoryRevisionDriver(), description: 'In-memory storage (testing)' },
-        { name: 'sqlite', create: (...args: unknown[]) => new SQLiteRevisionDriver(...(args as string[])), description: 'SQLite-backed storage (stub)' },
+        { name: 'sqlite', create: (...args: unknown[]) => new SQLiteRevisionDriver(...(args as string[])), description: 'SQLite-backed storage' },
     ]);
 
 // --- Export registry and singleton ---
