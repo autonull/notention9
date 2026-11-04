@@ -16,7 +16,15 @@ import type {
     CaseSplit, 
     QualityFamily 
 } from '../../schemas/caseTypes.js';
-import type { CaseStore } from '../../schemas/sharedTypes.js';
+import { 
+    computeManifestHash,
+    canonicalizeManifest, 
+    generateManifestFromCases,
+    buildIntentCaseEntry,
+    buildQualityCaseEntry,
+    verifyCaseHash,
+} from './manifestUtils.js';
+import { BaseCaseStore } from './baseCaseStore.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -24,12 +32,12 @@ function sha256(content: string): string {
     return createHash('sha256').update(content).digest('hex');
 }
 
-export class SQLiteCaseStore implements CaseStore {
+export class SQLiteCaseStore extends BaseCaseStore {
     private db: Database;
-    private manifestCache: CaseManifest | null = null;
-    private initialized = false;
     
     constructor(dbPath: string) {
+        super();
+        
         // Ensure directory exists
         const dbDir = dirname(dbPath);
         mkdirSync(dbDir, { recursive: true });
@@ -38,9 +46,7 @@ export class SQLiteCaseStore implements CaseStore {
         this.db.pragma('journal_mode = WAL');
     }
     
-    async init(): Promise<void> {
-        if (this.initialized) return;
-        
+    protected async doInit(): Promise<void> {
         // Create tables
         this.db.exec(`
             CREATE TABLE IF NOT EXISTS cases (
@@ -69,48 +75,26 @@ export class SQLiteCaseStore implements CaseStore {
                 cases TEXT NOT NULL             -- JSON array of CaseEntry
             );
         `);
-        
-        this.initialized = true;
     }
     
-    async readManifest(): Promise<CaseManifest> {
-        await this.init();
-        
-        if (this.manifestCache) return this.manifestCache;
-        
+    protected async loadManifest(): Promise<CaseManifest> {
         const row = this.db.prepare('SELECT * FROM manifest WHERE key = ?').get('current') as any;
         
         if (!row) {
             // Generate initial manifest from cases table
-            const manifest = await this.generateManifest();
-            await this.writeManifest(manifest);
-            return manifest;
+            return this.generateManifest();
         }
         
-        const manifest: CaseManifest = {
+        return {
             version: row.version,
             hash: row.hash,
             generatedAt: row.generated_at,
             counts: JSON.parse(row.counts),
             cases: JSON.parse(row.cases),
         };
-        
-        // Verify hash
-        const { hash, ...rest } = manifest;
-        const canonical = this.canonicalizeManifest(rest as Omit<CaseManifest, 'hash'>);
-        const computedHash = sha256(canonical).slice(0, 16);
-        
-        if (computedHash !== hash) {
-            throw new Error(`Manifest hash mismatch! Expected ${hash}, got ${computedHash}.`);
-        }
-        
-        this.manifestCache = manifest;
-        return manifest;
     }
     
-    async writeManifest(manifest: CaseManifest): Promise<void> {
-        await this.init();
-        
+    protected async persistManifest(manifest: CaseManifest): Promise<void> {
         const canonical = this.canonicalizeManifest(manifest);
         const manifestHash = sha256(canonical).slice(0, 16);
         
@@ -127,8 +111,6 @@ export class SQLiteCaseStore implements CaseStore {
             JSON.stringify(manifestWithHash.counts),
             JSON.stringify(manifestWithHash.cases)
         );
-        
-        this.manifestCache = manifestWithHash;
     }
     
     private canonicalizeManifest(manifest: Omit<CaseManifest, 'hash'>): string {
@@ -136,7 +118,7 @@ export class SQLiteCaseStore implements CaseStore {
         return JSON.stringify(sorted, null, 2);
     }
     
-    private async generateManifest(): Promise<CaseManifest> {
+    protected async generateManifest(): Promise<CaseManifest> {
         const rows = this.db.prepare('SELECT * FROM cases').all() as any[];
         
         const intentCases: CaseEntry[] = [];
@@ -189,71 +171,27 @@ export class SQLiteCaseStore implements CaseStore {
         };
     }
     
-    async readIntentCases(split: CaseSplit): Promise<IntentCase[]> {
-        await this.init();
-        
+    protected async loadIntentCases(split: CaseSplit): Promise<IntentCase[]> {
         const rows = this.db.prepare('SELECT content FROM cases WHERE family = ? AND split = ?')
             .all('intent', split) as any[];
         
-        const manifest = await this.readManifest();
-        
-        return rows.map(row => {
-            const caseData = JSON.parse(row.content) as IntentCase;
-            
-            // Verify hash
-            const content = JSON.stringify(caseData);
-            const computedHash = sha256(content).slice(0, 16);
-            const entry = manifest.cases.find(c => c.id === caseData.id);
-            if (entry && computedHash !== entry.hash) {
-                throw new Error(`Case hash mismatch for ${caseData.id}: expected ${entry.hash}, got ${computedHash}`);
-            }
-            
-            return caseData;
-        });
+        return rows.map(row => JSON.parse(row.content) as IntentCase);
     }
     
-    async readQualityCases(qualityFamily: QualityFamily): Promise<QualityCase[]> {
-        await this.init();
-        
+    protected async loadQualityCases(qualityFamily: QualityFamily): Promise<QualityCase[]> {
         const rows = this.db.prepare('SELECT content FROM cases WHERE family = ? AND quality_family = ?')
             .all('quality', qualityFamily) as any[];
         
-        const manifest = await this.readManifest();
-        
-        return rows.map(row => {
-            const caseData = JSON.parse(row.content) as QualityCase;
-            
-            // Verify hash
-            const content = JSON.stringify(caseData);
-            const computedHash = sha256(content).slice(0, 16);
-            const entry = manifest.cases.find(c => c.id === caseData.id);
-            if (entry && computedHash !== entry.hash) {
-                throw new Error(`Case hash mismatch for ${caseData.id}: expected ${entry.hash}, got ${computedHash}`);
-            }
-            
-            return caseData;
-        });
+        return rows.map(row => JSON.parse(row.content) as QualityCase);
     }
     
-    async readHoldoutCases(): Promise<IntentCase[]> {
-        return this.readIntentCases('holdout');
+    protected async loadCaseById(id: string): Promise<IntentCase | QualityCase | null> {
+        const row = this.db.prepare('SELECT content FROM cases WHERE id = ?').get(id) as any;
+        if (!row) return null;
+        return JSON.parse(row.content) as IntentCase | QualityCase;
     }
     
-    async readAllCases(): Promise<{ intent: IntentCase[]; quality: QualityCase[] }> {
-        await this.init();
-        
-        const intentRows = this.db.prepare('SELECT content FROM cases WHERE family = ?').all('intent') as any[];
-        const qualityRows = this.db.prepare('SELECT content FROM cases WHERE family = ?').all('quality') as any[];
-        
-        return {
-            intent: intentRows.map(r => JSON.parse(r.content) as IntentCase),
-            quality: qualityRows.map(r => JSON.parse(r.content) as QualityCase),
-        };
-    }
-    
-    async upsertCase(caseData: IntentCase | QualityCase): Promise<void> {
-        await this.init();
-        
+    protected async storeCase(caseData: IntentCase | QualityCase): Promise<void> {
         const content = JSON.stringify(caseData);
         const hash = sha256(content).slice(0, 16);
         const now = new Date().toISOString();
@@ -297,54 +235,14 @@ export class SQLiteCaseStore implements CaseStore {
                 now
             );
         }
-        
-        this.manifestCache = null;
-        await this.readManifest(); // Regenerate
     }
     
-    async deleteCase(id: string): Promise<boolean> {
-        await this.init();
-        
+    protected async removeCase(id: string): Promise<boolean> {
         const result = this.db.prepare('DELETE FROM cases WHERE id = ?').run(id);
-        
-        if (result.changes > 0) {
-            this.manifestCache = null;
-            await this.readManifest(); // Regenerate
-            return true;
-        }
-        
-        return false;
+        return result.changes > 0;
     }
     
-    async verifyIntegrity(): Promise<{ valid: boolean; errors: string[] }> {
-        await this.init();
-        const errors: string[] = [];
-        
-        try {
-            const manifest = await this.readManifest();
-            
-            for (const entry of manifest.cases) {
-                const row = this.db.prepare('SELECT content FROM cases WHERE id = ?').get(entry.id) as any;
-                if (!row) {
-                    errors.push(`Case ${entry.id} missing from database`);
-                    continue;
-                }
-                
-                const content = row.content;
-                const computedHash = sha256(content).slice(0, 16);
-                if (computedHash !== entry.hash) {
-                    errors.push(`Hash mismatch for ${entry.id}: expected ${entry.hash}, got ${computedHash}`);
-                }
-            }
-        } catch (e) {
-            errors.push(`Manifest error: ${e}`);
-        }
-        
-        return { valid: errors.length === 0, errors };
-    }
-    
-    async close(): Promise<void> {
-        this.manifestCache = null;
+    protected async doClose(): Promise<void> {
         this.db.close();
     }
     

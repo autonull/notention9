@@ -3,7 +3,6 @@
  * For testing and ephemeral use cases
  */
 
-import { createHash } from 'node:crypto';
 import type { 
     CaseManifest, 
     CaseEntry, 
@@ -12,25 +11,27 @@ import type {
     CaseSplit, 
     QualityFamily 
 } from '../../schemas/caseTypes.js';
-import type { CaseStore } from '../../schemas/sharedTypes.js';
 import { 
-    sha256, 
     canonicalizeManifest, 
     computeManifestHash, 
     generateManifestFromCases,
     buildIntentCaseEntry,
     buildQualityCaseEntry 
 } from './manifestUtils.js';
+import { BaseCaseStore } from './baseCaseStore.js';
 
-export class InMemoryCaseStore implements CaseStore {
+export class InMemoryCaseStore extends BaseCaseStore {
     private cases: Map<string, IntentCase | QualityCase> = new Map();
-    private manifest: CaseManifest | null = null;
     
-    async init(): Promise<void> {}
+    constructor() {
+        super();
+        // In-memory store doesn't need manifest caching
+        this.config.manifestCacheEnabled = false;
+    }
     
-    async readManifest(): Promise<CaseManifest> {
-        if (this.manifest) return this.manifest;
-        
+    protected async doInit(): Promise<void> {}
+    
+    protected async loadManifest(): Promise<CaseManifest> {
         const intentCases: CaseEntry[] = [];
         const qualityCases: CaseEntry[] = [];
         
@@ -42,15 +43,14 @@ export class InMemoryCaseStore implements CaseStore {
             }
         }
         
-        this.manifest = generateManifestFromCases(intentCases, qualityCases);
-        return this.manifest;
+        return generateManifestFromCases(intentCases, qualityCases);
     }
     
-    async writeManifest(manifest: CaseManifest): Promise<void> {
-        this.manifest = manifest;
+    protected async persistManifest(manifest: CaseManifest): Promise<void> {
+        // No-op for in-memory
     }
     
-    async readIntentCases(split: CaseSplit): Promise<IntentCase[]> {
+    protected async loadIntentCases(split: CaseSplit): Promise<IntentCase[]> {
         const results: IntentCase[] = [];
         for (const [id, caseData] of this.cases) {
             if (caseData.family === 'intent') {
@@ -60,7 +60,7 @@ export class InMemoryCaseStore implements CaseStore {
         return results;
     }
     
-    async readQualityCases(qualityFamily: QualityFamily): Promise<QualityCase[]> {
+    protected async loadQualityCases(qualityFamily: QualityFamily): Promise<QualityCase[]> {
         const results: QualityCase[] = [];
         for (const [id, caseData] of this.cases) {
             if (caseData.family === 'quality' && caseData.qualityFamily === qualityFamily) {
@@ -70,43 +70,20 @@ export class InMemoryCaseStore implements CaseStore {
         return results;
     }
     
-    async readHoldoutCases(): Promise<IntentCase[]> {
-        return this.readIntentCases('holdout');
+    protected async loadCaseById(id: string): Promise<IntentCase | QualityCase | null> {
+        return this.cases.get(id) ?? null;
     }
     
-    async readAllCases(): Promise<{ intent: IntentCase[]; quality: QualityCase[] }> {
-        const intent: IntentCase[] = [];
-        const quality: QualityCase[] = [];
-        
-        for (const [id, caseData] of this.cases) {
-            if (caseData.family === 'intent') {
-                intent.push(caseData);
-            } else {
-                quality.push(caseData);
-            }
-        }
-        
-        return { intent, quality };
-    }
-    
-    async upsertCase(caseData: IntentCase | QualityCase): Promise<void> {
+    protected async storeCase(caseData: IntentCase | QualityCase): Promise<void> {
         this.cases.set(caseData.id, caseData);
-        this.manifest = null;
     }
     
-    async deleteCase(id: string): Promise<boolean> {
-        const deleted = this.cases.delete(id);
-        if (deleted) this.manifest = null;
-        return deleted;
+    protected async removeCase(id: string): Promise<boolean> {
+        return this.cases.delete(id);
     }
     
     async verifyIntegrity(): Promise<{ valid: boolean; errors: string[] }> {
         return { valid: true, errors: [] };
-    }
-    
-    async close(): Promise<void> {
-        this.cases.clear();
-        this.manifest = null;
     }
     
     // --- Test helpers ---
@@ -114,7 +91,6 @@ export class InMemoryCaseStore implements CaseStore {
     /** Clear all cases (for test isolation) */
     clear(): void {
         this.cases.clear();
-        this.manifest = null;
     }
     
     /** Get case count */
@@ -125,5 +101,9 @@ export class InMemoryCaseStore implements CaseStore {
     /** Check if case exists */
     has(id: string): boolean {
         return this.cases.has(id);
+    }
+    
+    protected async doClose(): Promise<void> {
+        this.cases.clear();
     }
 }

@@ -87,6 +87,8 @@ function findImplementationFiles(contractName: string): string[] {
         if (fileName === 'ProfileRegistry.ts') return false;
         // Exclude strategyResolverInit.ts (imports ResolutionStrategy but doesn't implement it)
         if (fileName === 'strategyResolverInit.ts') return false;
+        // Exclude base classes (abstract base implementations)
+        if (fileName.startsWith('base') && fileName.endsWith('.ts')) return false;
         return true;
     });
 }
@@ -102,8 +104,8 @@ function findFilesRecursive(dir: string, contractName: string): string[] {
         'SplitStrategy': ['implements SplitStrategy', 'extends BaseSplitStrategy'],
         'VerdictEngine': ['implements VerdictEngine', 'extends BaseVerdictEngine'],
         'ResolutionStrategy': ['implements ResolutionStrategy', 'extends ResolutionStrategyPlugin', 'extends BaseResolutionStrategy'],
-        'EventStore': ['implements EventStore'],
-        'CaseStore': ['implements CaseStore'],
+        'EventStore': ['implements EventStore', 'extends BaseEventStore'],
+        'CaseStore': ['implements CaseStore', 'extends BaseCaseStore'],
     };
     
     const patterns = implementationPatterns[contractName] ?? [`implements ${contractName}`];
@@ -144,11 +146,23 @@ function validateImplementation(filePath: string, contract: PluginContract): { v
     try {
         const content = readFileSync(filePath, 'utf-8');
         
+        // Check if class extends a known base class that implements the interface
+        const extendsBasePattern = new RegExp(`extends\\s+Base${contract.interface.replace('Interface$', '')}`);
+        const extendsKnownBase = extendsBasePattern.test(content) || 
+            content.includes(`extends BaseCaseStore`) ||
+            content.includes(`extends BaseEventStore`) ||
+            content.includes(`extends BaseRevisionDriverPlugin`) ||
+            content.includes(`extends BaseVerdictEngine`) ||
+            content.includes(`extends BaseSplitStrategy`) ||
+            content.includes(`extends BaseCandidateGenerator`) ||
+            content.includes(`extends BaseResolutionStrategyPlugin`) ||
+            content.includes(`extends BaseBudgetAllocator`);
+        
         // Check for required methods
         for (const method of contract.requiredMethods) {
             // Simple check - look for method declaration
             const methodPattern = new RegExp(`(async\\s+)?${method}\\s*\\(`);
-            if (!methodPattern.test(content)) {
+            if (!methodPattern.test(content) && !extendsKnownBase) {
                 errors.push(`Missing required method: ${method}`);
             }
         }
@@ -158,14 +172,14 @@ function validateImplementation(filePath: string, contract: PluginContract): { v
             for (const prop of contract.requiredProperties) {
                 // Look for property declaration (readonly name: string, etc.) or assignment (readonly name = 'value')
                 const propPattern = new RegExp(`(readonly\\s+)?${prop}\\s*[:=]`);
-                if (!propPattern.test(content)) {
+                if (!propPattern.test(content) && !extendsKnownBase) {
                     errors.push(`Missing required property: ${prop}`);
                 }
             }
         }
         
         // Check for 'implements' keyword or explicit interface implementation
-        if (!content.includes(`implements ${contract.interface}`) && !content.includes(`implements ${contract.interface}`)) {
+        if (!content.includes(`implements ${contract.interface}`) && !extendsKnownBase) {
             // Also check for implicit implementation (structural typing)
             const hasMethods = contract.requiredMethods.every(m => 
                 new RegExp(`(async\\s+)?${m}\\s*\\(`).test(content)

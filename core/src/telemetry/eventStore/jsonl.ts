@@ -10,24 +10,21 @@ import type { LedgerEvent, LedgerEventType, LedgerPayload } from '../../telemetr
 import type { EventStore } from './index.js';
 import { logWarn } from '../../utils/logging.js';
 import { generateId, getProjectRoot } from '../../utils/common.js';
+import { BaseEventStore } from './baseEventStore.js';
 
 const PROJECT_ROOT = getProjectRoot(import.meta.url);
 const DATA_DIR = join(PROJECT_ROOT, '.notention', 'events');
 const DEFAULT_EVENT_FILE = join(DATA_DIR, 'events.jsonl');
 
-function computeHash(payload: LedgerPayload): string {
-    return createHash('sha256').update(JSON.stringify(payload)).digest('hex').slice(0, 16);
-}
-
-export class JSONLEventStore implements EventStore {
+export class JSONLEventStore extends BaseEventStore {
     private filePath: string;
     private index: Map<string, number[]> = new Map(); // type -> line numbers
     private runIdIndex: Map<string, number[]> = new Map();
     private caseIdIndex: Map<string, number[]> = new Map();
     private revisionIdIndex: Map<string, number[]> = new Map();
-    private initialized = false;
     
     constructor(filePath?: string) {
+        super();
         this.filePath = filePath ?? DEFAULT_EVENT_FILE;
         
         if (!existsSync(DATA_DIR)) {
@@ -35,13 +32,14 @@ export class JSONLEventStore implements EventStore {
         }
     }
     
-    async init(): Promise<void> {
-        if (this.initialized) return;
-        
+    protected computeHash(payload: LedgerPayload): string {
+        return createHash('sha256').update(JSON.stringify(payload)).digest('hex').slice(0, 16);
+    }
+    
+    protected async doInit(): Promise<void> {
         if (existsSync(this.filePath)) {
             await this.rebuildIndex();
         }
-        this.initialized = true;
     }
     
     private async rebuildIndex(): Promise<void> {
@@ -58,7 +56,7 @@ export class JSONLEventStore implements EventStore {
         }
     }
     
-    private indexEvent(event: LedgerEvent, lineNum: number): void {
+    protected indexEvent(event: LedgerEvent, lineNum: number): void {
         // Index by type
         const typeLines = this.index.get(event.type) ?? [];
         typeLines.push(lineNum);
@@ -86,33 +84,17 @@ export class JSONLEventStore implements EventStore {
         }
     }
     
-    async append(event: Omit<LedgerEvent, 'id' | 'timestamp' | 'hash'>): Promise<LedgerEvent> {
-        await this.init();
-        
-        const fullEvent: LedgerEvent = {
-            ...event,
-            id: generateId(),
-            timestamp: new Date().toISOString(),
-            hash: computeHash(event.payload),
-        };
-        
-        const line = JSON.stringify(fullEvent) + '\n';
+    protected async doAppend(event: LedgerEvent): Promise<void> {
+        const line = JSON.stringify(event) + '\n';
         appendFileSync(this.filePath, line, 'utf-8');
-        
-        // Update index
+    }
+    
+    protected async doIndexEvent(event: LedgerEvent): Promise<void> {
         const lineNum = this.getLineCount() - 1;
-        this.indexEvent(fullEvent, lineNum);
-        
-        return fullEvent;
+        this.indexEvent(event, lineNum);
     }
     
-    private getLineCount(): number {
-        if (!existsSync(this.filePath)) return 0;
-        const content = readFileSync(this.filePath, 'utf-8');
-        return content.trim().split('\n').filter(l => l.length > 0).length;
-    }
-    
-    async query(options: {
+    protected async doQuery(options: {
         type?: string;
         runId?: string;
         caseId?: string;
@@ -122,8 +104,6 @@ export class JSONLEventStore implements EventStore {
         limit?: number;
         offset?: number;
     }): Promise<LedgerEvent[]> {
-        await this.init();
-        
         let candidateLines: number[] = [];
         
         if (options.type) {
@@ -161,7 +141,7 @@ export class JSONLEventStore implements EventStore {
                 if (eventTime < sinceTime || eventTime > untilTime) continue;
                 
                 // Verify hash
-                const computedHash = computeHash(event.payload);
+                const computedHash = this.computeHash(event.payload);
                 if (computedHash !== event.hash) {
                     logWarn(`Event hash mismatch`, { lineNum, eventId: event.id });
                     continue;
@@ -176,18 +156,18 @@ export class JSONLEventStore implements EventStore {
         return results;
     }
     
-    async getRunEvents(runId: string): Promise<LedgerEvent[]> {
-        return this.query({ runId });
+    private getLineCount(): number {
+        if (!existsSync(this.filePath)) return 0;
+        const content = readFileSync(this.filePath, 'utf-8');
+        return content.trim().split('\n').filter(l => l.length > 0).length;
     }
     
-    async count(options?: { type?: string; runId?: string; since?: string; until?: string }): Promise<number> {
-        const events = await this.query({ ...options, limit: Infinity });
+    protected async doCount(options?: { type?: string; runId?: string; since?: string; until?: string }): Promise<number> {
+        const events = await this.doQuery({ ...options, limit: Infinity });
         return events.length;
     }
     
-    async prune(olderThan: string): Promise<number> {
-        await this.init();
-        
+    protected async doPrune(olderThan: string): Promise<number> {
         const cutoff = new Date(olderThan).getTime();
         const content = readFileSync(this.filePath, 'utf-8');
         const lines = content.trim().split('\n').filter(l => l.length > 0);
@@ -222,16 +202,10 @@ export class JSONLEventStore implements EventStore {
         return removed;
     }
     
-    async exportRun(runId: string): Promise<string> {
-        const events = await this.getRunEvents(runId);
-        return JSON.stringify(events, null, 2);
-    }
-    
-    async close(): Promise<void> {
+    protected async doClose(): Promise<void> {
         this.index.clear();
         this.runIdIndex.clear();
         this.caseIdIndex.clear();
         this.revisionIdIndex.clear();
-        this.initialized = false;
     }
 }

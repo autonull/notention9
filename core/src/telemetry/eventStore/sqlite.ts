@@ -12,18 +12,16 @@ import Database from 'better-sqlite3';
 import type { LedgerEvent, LedgerEventType, LedgerPayload } from '../../telemetry/ledger.js';
 import type { EventStore } from './index.js';
 import { generateId } from '../../utils/common.js';
+import { BaseEventStore } from './baseEventStore.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-function computeHash(payload: LedgerPayload): string {
-    return createHash('sha256').update(JSON.stringify(payload)).digest('hex').slice(0, 16);
-}
-
-export class SQLiteEventStore implements EventStore {
+export class SQLiteEventStore extends BaseEventStore {
     private db: Database;
-    private initialized = false;
     
     constructor(dbPath: string) {
+        super();
+        
         const dbDir = dirname(dbPath);
         mkdirSync(dbDir, { recursive: true });
         
@@ -31,9 +29,11 @@ export class SQLiteEventStore implements EventStore {
         this.db.pragma('journal_mode = WAL');
     }
     
-    async init(): Promise<void> {
-        if (this.initialized) return;
-        
+    protected computeHash(payload: LedgerPayload): string {
+        return createHash('sha256').update(JSON.stringify(payload)).digest('hex').slice(0, 16);
+    }
+    
+    protected async doInit(): Promise<void> {
         this.db.exec(`
             CREATE TABLE IF NOT EXISTS events (
                 id TEXT PRIMARY KEY,
@@ -59,44 +59,39 @@ export class SQLiteEventStore implements EventStore {
             CREATE INDEX IF NOT EXISTS idx_events_timestamp ON events(timestamp);
             CREATE INDEX IF NOT EXISTS idx_events_actor ON events(actor);
         `);
-        
-        this.initialized = true;
     }
     
-    async append(event: Omit<LedgerEvent, 'id' | 'timestamp' | 'hash'>): Promise<LedgerEvent> {
-        await this.init();
-        
-        const fullEvent: LedgerEvent = {
-            ...event,
-            id: generateId(),
-            timestamp: new Date().toISOString(),
-            hash: computeHash(event.payload),
-        };
-        
+    protected async doAppend(event: LedgerEvent): Promise<void> {
         this.db.prepare(`
             INSERT INTO events (id, type, run_id, case_id, revision_id, evaluation_id, actor, user_id, model_id, payload, timestamp, duration_ms, hash, created_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `).run(
-            fullEvent.id,
-            fullEvent.type,
-            fullEvent.runId ?? null,
-            fullEvent.caseId ?? null,
-            fullEvent.revisionId ?? null,
-            fullEvent.evaluationId ?? null,
-            fullEvent.actor,
-            fullEvent.userId ?? null,
-            fullEvent.modelId ?? null,
-            JSON.stringify(fullEvent.payload),
-            fullEvent.timestamp,
-            fullEvent.durationMs ?? null,
-            fullEvent.hash,
-            fullEvent.timestamp
+            event.id,
+            event.type,
+            event.runId ?? null,
+            event.caseId ?? null,
+            event.revisionId ?? null,
+            event.evaluationId ?? null,
+            event.actor,
+            event.userId ?? null,
+            event.modelId ?? null,
+            JSON.stringify(event.payload),
+            event.timestamp,
+            event.durationMs ?? null,
+            event.hash,
+            event.timestamp
         );
-        
-        return fullEvent;
     }
     
-    async query(options: {
+    protected indexEvent(event: LedgerEvent): void {
+        // No in-memory index needed for SQLite - uses database indexes
+    }
+    
+    protected async doIndexEvent(event: LedgerEvent): Promise<void> {
+        // No-op - SQLite uses database indexes
+    }
+    
+    protected async doQuery(options: {
         type?: string;
         runId?: string;
         caseId?: string;
@@ -106,8 +101,6 @@ export class SQLiteEventStore implements EventStore {
         limit?: number;
         offset?: number;
     }): Promise<LedgerEvent[]> {
-        await this.init();
-        
         const conditions: string[] = [];
         const params: any[] = [];
         
@@ -162,13 +155,7 @@ export class SQLiteEventStore implements EventStore {
         }));
     }
     
-    async getRunEvents(runId: string): Promise<LedgerEvent[]> {
-        return this.query({ runId, limit: 10000 });
-    }
-    
-    async count(options?: { type?: string; runId?: string; since?: string; until?: string }): Promise<number> {
-        await this.init();
-        
+    protected async doCount(options?: { type?: string; runId?: string; since?: string; until?: string }): Promise<number> {
         const conditions: string[] = [];
         const params: any[] = [];
         
@@ -196,21 +183,13 @@ export class SQLiteEventStore implements EventStore {
         return row.c;
     }
     
-    async prune(olderThan: string): Promise<number> {
-        await this.init();
-        
+    protected async doPrune(olderThan: string): Promise<number> {
         const result = this.db.prepare('DELETE FROM events WHERE timestamp < ?').run(olderThan);
         return result.changes;
     }
     
-    async exportRun(runId: string): Promise<string> {
-        const events = await this.getRunEvents(runId);
-        return JSON.stringify(events, null, 2);
-    }
-    
-    async close(): Promise<void> {
+    protected async doClose(): Promise<void> {
         this.db.close();
-        this.initialized = false;
     }
     
     // --- Additional methods ---
@@ -228,7 +207,7 @@ export class SQLiteEventStore implements EventStore {
         return {
             totalEvents: total.c,
             byType,
-            dbSizeBytes: (this.db.prepare('PRAGMA page_count * page_size').get() as any),
+            dbSizeBytes: this.db.prepare('PRAGMA page_count * page_size').get() as any,
         };
     }
 }
