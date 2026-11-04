@@ -61,8 +61,8 @@ export const SEAM_DEFINITIONS: SeamDefinition[] = [
             "observed"
         ],
         "version": "1.0.0",
-        "createdAt": "2026-11-03T14:41:05.727Z",
-        "updatedAt": "2026-11-03T14:41:05.727Z"
+        "createdAt": "2026-11-04T13:48:37.686Z",
+        "updatedAt": "2026-11-04T13:48:37.686Z"
     },
     {
         "id": "extraction-0",
@@ -107,8 +107,8 @@ export const SEAM_DEFINITIONS: SeamDefinition[] = [
             "observed"
         ],
         "version": "1.0.0",
-        "createdAt": "2026-11-03T14:41:05.727Z",
-        "updatedAt": "2026-11-03T14:41:05.727Z"
+        "createdAt": "2026-11-04T13:48:37.686Z",
+        "updatedAt": "2026-11-04T13:48:37.686Z"
     },
     {
         "id": "template-0",
@@ -142,8 +142,8 @@ export const SEAM_DEFINITIONS: SeamDefinition[] = [
             "observed"
         ],
         "version": "1.0.0",
-        "createdAt": "2026-11-03T14:41:05.727Z",
-        "updatedAt": "2026-11-03T14:41:05.727Z"
+        "createdAt": "2026-11-04T13:48:37.686Z",
+        "updatedAt": "2026-11-04T13:48:37.686Z"
     },
     {
         "id": "elicit-0",
@@ -193,8 +193,8 @@ export const SEAM_DEFINITIONS: SeamDefinition[] = [
             "observed"
         ],
         "version": "1.0.0",
-        "createdAt": "2026-11-03T14:41:05.727Z",
-        "updatedAt": "2026-11-03T14:41:05.727Z"
+        "createdAt": "2026-11-04T13:48:37.686Z",
+        "updatedAt": "2026-11-04T13:48:37.686Z"
     },
     {
         "id": "match-0",
@@ -265,8 +265,8 @@ export const SEAM_DEFINITIONS: SeamDefinition[] = [
             "observed"
         ],
         "version": "1.0.0",
-        "createdAt": "2026-11-03T14:41:05.727Z",
-        "updatedAt": "2026-11-03T14:41:05.727Z"
+        "createdAt": "2026-11-04T13:48:37.686Z",
+        "updatedAt": "2026-11-04T13:48:37.686Z"
     },
     {
         "id": "matches-panel-0",
@@ -300,8 +300,8 @@ export const SEAM_DEFINITIONS: SeamDefinition[] = [
             "observed"
         ],
         "version": "1.0.0",
-        "createdAt": "2026-11-03T14:41:05.727Z",
-        "updatedAt": "2026-11-03T14:41:05.727Z"
+        "createdAt": "2026-11-04T13:48:37.686Z",
+        "updatedAt": "2026-11-04T13:48:37.686Z"
     }
 ];
 

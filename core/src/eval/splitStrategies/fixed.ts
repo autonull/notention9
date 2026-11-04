@@ -5,8 +5,8 @@
 
 import { z } from 'zod';
 import type { IntentCase, QualityCase } from '../caseManifest.js';
-import type { SplitStrategy, SplitStrategyConfig } from './index.js';
-import { hashString } from '../../utils/common.js';
+import type { SplitStrategyConfig } from './index.js';
+import { BaseSplitStrategy } from './baseSplitStrategy.js';
 
 // --- Fixed Split config schema ---
 export const fixedSplitConfigSchema = z.object({
@@ -15,19 +15,13 @@ export const fixedSplitConfigSchema = z.object({
     // No additional config needed
 });
 
-export class FixedSplitStrategy implements SplitStrategy {
+export class FixedSplitStrategy extends BaseSplitStrategy {
     readonly name = 'fixed';
     readonly description = 'Use pre-assigned splits from case metadata (backward compatible)';
     readonly configSchema = fixedSplitConfigSchema;
     
-    getName(): string {
-        return this.name;
-    }
-    
     getDefaultConfig(): SplitStrategyConfig {
-        return {
-            seed: 42,
-        };
+        return { seed: 42 };
     }
     
     validateConfig(config: SplitStrategyConfig): { valid: boolean; errors: string[] } {
@@ -51,7 +45,7 @@ export class FixedSplitStrategy implements SplitStrategy {
         
         // If no explicit split tags, use deterministic hash-based assignment
         if (search.length === 0 && validation.length === 0 && holdout.length === 0) {
-            return this.hashBasedSplit(cases, config.seed ?? 42);
+            return this.hashBasedSplit(cases, config.seed ?? 42, { search: 0.6, validation: 0.2, holdout: 0.2 });
         }
         
         return { search, validation, holdout };
@@ -62,44 +56,7 @@ export class FixedSplitStrategy implements SplitStrategy {
         config: SplitStrategyConfig
     ): { train: QualityCase[]; test: QualityCase[] } {
         // Quality cases don't typically have splits - use 80/20 hash-based
-        const seed = config.seed ?? 42;
-        const train: QualityCase[] = [];
-        const test: QualityCase[] = [];
-        
-        for (const c of cases) {
-            const hash = hashString(c.id + seed);
-            if (hash % 5 === 0) { // 20% test
-                test.push(c);
-            } else {
-                train.push(c);
-            }
-        }
-        
-        return { train, test };
-    }
-    
-    private hashBasedSplit(
-        cases: IntentCase[],
-        seed: number
-    ): { search: IntentCase[]; validation: IntentCase[]; holdout: IntentCase[] } {
-        const search: IntentCase[] = [];
-        const validation: IntentCase[] = [];
-        const holdout: IntentCase[] = [];
-        
-        for (const c of cases) {
-            const hash = hashString(c.id + seed);
-            const bucket = hash % 10;
-            
-            if (bucket < 6) { // 60% search
-                search.push(c);
-            } else if (bucket < 8) { // 20% validation
-                validation.push(c);
-            } else { // 20% holdout
-                holdout.push(c);
-            }
-        }
-        
-        return { search, validation, holdout };
+        return this.qualitySplit(cases, config.seed ?? 42, 0.2);
     }
 }
 

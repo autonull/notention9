@@ -5,12 +5,17 @@
 
 import { z } from 'zod';
 import type { IntentCase, QualityCase } from '../caseManifest.js';
+import { createInstanceRegistry, ValidationHelpers } from '../../utils/Registry.js';
+import { Plugin } from '../../utils/BasePlugin.js';
+import { hashString } from '../../utils/common.js';
+import { BaseSplitStrategy } from './baseSplitStrategy.js';
+
+// Import strategy implementations for registration
 import { FixedSplitStrategy } from './fixed.js';
 import { TemporalSplitStrategy } from './temporal.js';
 import { StratifiedSplitStrategy } from './stratified.js';
 import { AdversarialSplitStrategy } from './adversarial.js';
 import { HoldoutRotationSplitStrategy } from './holdoutRotation.js';
-import { createInstanceRegistry, Registry } from '../../utils/Registry.js';
 
 // --- SplitStrategy Interface ---
 
@@ -81,6 +86,7 @@ export { TemporalSplitStrategy } from './temporal.js';
 export { StratifiedSplitStrategy } from './stratified.js';
 export { AdversarialSplitStrategy } from './adversarial.js';
 export { HoldoutRotationSplitStrategy } from './holdoutRotation.js';
+export { BaseSplitStrategy } from './baseSplitStrategy.js';
 
 // --- Export registry and singleton ---
 export { splitStrategyRegistry, getSplitStrategyRegistry, resetSplitStrategyRegistry };

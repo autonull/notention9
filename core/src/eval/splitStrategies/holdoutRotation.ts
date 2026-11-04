@@ -5,7 +5,8 @@
 
 import { z } from 'zod';
 import type { IntentCase, QualityCase } from '../caseManifest.js';
-import type { SplitStrategy, SplitStrategyConfig } from './index.js';
+import type { SplitStrategyConfig } from './index.js';
+import { BaseSplitStrategy } from './baseSplitStrategy.js';
 import { hashString, ensureMinimums, validateRatiosSumToOne } from '../../utils/common.js';
 
 // --- Holdout Rotation config schema ---
@@ -22,14 +23,10 @@ export const holdoutRotationConfigSchema = z.object({
     numFolds: z.number().int().positive().default(5),
 });
 
-export class HoldoutRotationSplitStrategy implements SplitStrategy {
+export class HoldoutRotationSplitStrategy extends BaseSplitStrategy {
     readonly name = 'holdout-rotation';
     readonly description = 'Rotating holdout: cycles cases through holdout over time to prevent overfitting';
     readonly configSchema = holdoutRotationConfigSchema;
-    
-    getName(): string {
-        return this.name;
-    }
     
     getDefaultConfig(): SplitStrategyConfig {
         return {

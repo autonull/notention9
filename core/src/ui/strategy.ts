@@ -1,4 +1,5 @@
 import React from 'react';
+import { Registry, createInstanceRegistry } from '../utils/Registry.js';
 
 /**
  * Seam definition - shared between discovery, synthesis, and runtime
@@ -71,60 +72,87 @@ export interface Provenance {
 }
 
 /**
- * Registry for discovered strategies
+ * StrategyRegistrable - Strategy with registry metadata
+ * Uses unified Registry system
  */
-export class StrategyRegistry {
-    private strategies = new Map<string, Map<string, Strategy>>(); // seam -> id -> strategy
+export interface StrategyRegistrable<P extends object = Record<string, unknown>> extends Strategy<P> {
+    readonly type?: 'strategy';
+}
 
-    register(strategy: Strategy): void {
-        const seamId = strategy.seam.id;
-        if (!this.strategies.has(seamId)) {
-            this.strategies.set(seamId, new Map());
+/**
+ * Unified Strategy Registry using the common Registry class
+ * Provides consistent API with other registries (VerdictEngine, SplitStrategy, etc.)
+ */
+export class StrategyRegistry extends Registry<StrategyRegistrable> {
+    constructor() {
+        super({ errorPrefix: 'StrategyRegistry' });
+    }
+
+    /** Register a strategy for a seam */
+    registerStrategy(strategy: StrategyRegistrable): void {
+        this.register(strategy);
+    }
+
+    /** Unregister a strategy by seam and strategy ID */
+    unregisterStrategy(seamId: string, strategyId: string): boolean {
+        const strategy = this.get(seamId, strategyId);
+        if (!strategy) return false;
+        // Note: Registry doesn't support composite keys directly, so we use the strategy's name
+        // Strategy names are unique across seams (strategy.id is globally unique)
+        return this.unregister(strategy.name);
+    }
+
+    /** Get a strategy by seam ID and strategy ID */
+    getStrategy(seamId: string, strategyId: string): StrategyRegistrable | undefined {
+        // Strategies are registered with their strategy.id as name
+        const strategy = this.get(strategyId);
+        return strategy?.seam.id === seamId ? strategy : undefined;
+    }
+
+    /** Get all strategies for a seam */
+    getStrategiesForSeam(seamId: string): StrategyRegistrable[] {
+        return this.filter(s => s.seam.id === seamId);
+    }
+
+    /** Get all registered seams */
+    getSeams(): Seam[] {
+        const seamMap = new Map<string, Seam>();
+        for (const strategy of this.getAll()) {
+            if (!seamMap.has(strategy.seam.id)) {
+                seamMap.set(strategy.seam.id, strategy.seam);
+            }
         }
-        const seamStrategies = this.strategies.get(seamId)!;
-        
-        if (seamStrategies.has(strategy.id)) {
-            throw new Error(`Strategy '${strategy.id}' already registered for seam '${seamId}'`);
-        }
-        
-        seamStrategies.set(strategy.id, strategy);
+        return Array.from(seamMap.values());
     }
 
-    unregister(seamId: string, strategyId: string): boolean {
-        const seamStrategies = this.strategies.get(seamId);
-        if (!seamStrategies) return false;
-        return seamStrategies.delete(strategyId);
-    }
-
-    get(seamId: string, strategyId: string): Strategy | undefined {
-        return this.strategies.get(seamId)?.get(strategyId);
-    }
-
-    getAllForSeam(seamId: string): Strategy[] {
-        return Array.from(this.strategies.get(seamId)?.values() ?? []);
-    }
-
-    getAll(): Strategy[] {
-        const all: Strategy[] = [];
-        for (const seamStrategies of this.strategies.values()) {
-            all.push(...seamStrategies.values());
-        }
-        return all;
-    }
-
+    /** Legacy alias for getSeams() */
     listSeams(): Seam[] {
-        return Array.from(this.strategies.keys()).map(id => {
-            const firstStrat = this.strategies.get(id)?.values().next().value;
-            return firstStrat?.seam ?? { id, name: id, description: '', components: [], propsShape: {}, role: 'display' };
-        });
+        return this.getSeams();
     }
 
+    /** Get all strategy IDs for a seam */
+    getStrategyIds(seamId: string): string[] {
+        return this.getStrategiesForSeam(seamId).map(s => s.id);
+    }
+
+    /** Legacy alias for getStrategyIds() */
     listStrategyIds(seamId: string): string[] {
-        return Array.from(this.strategies.get(seamId)?.keys() ?? []);
+        return this.getStrategyIds(seamId);
+    }
+
+    /** Legacy alias for getStrategy() */
+    get(seamId: string, strategyId: string): StrategyRegistrable | undefined {
+        return this.getStrategy(seamId, strategyId);
+    }
+
+    /** Legacy alias for getStrategiesForSeam() */
+    getAllForSeam(seamId: string): StrategyRegistrable[] {
+        return this.getStrategiesForSeam(seamId);
     }
 }
 
-export const strategyRegistry = new StrategyRegistry();
+const { registry: strategyRegistry, get: getStrategyRegistry, reset: resetStrategyRegistry } = 
+    createInstanceRegistry<StrategyRegistrable>('Strategy', []);
 
 /**
  * Auto-register discovered strategies from component scanner output
@@ -134,28 +162,33 @@ export async function registerDiscoveredStrategies(
     seam: Seam,
     strategyDir: string
 ): Promise<number> {
-    return strategyRegistry.listStrategyIds(seam.id).length;
+    return getStrategyRegistry().getStrategyIds(seam.id).length;
 }
 
 /**
  * Base class for component-based strategies
  * Derives params from the component's prop types
  */
-export abstract class ComponentStrategy<P extends object> implements Strategy<P> {
+export abstract class ComponentStrategy<P extends object> implements StrategyRegistrable<P> {
     abstract readonly id: string;
     abstract readonly seam: Seam;
     readonly version: string = '1.0.0';
+    readonly name: string;
+    readonly description: string = '';
+    readonly params: ParamSpec = {};
     
-    constructor(protected readonly defaultProps: Partial<P> = {}) {}
-
-    get params(): ParamSpec {
-        return this.deriveParams();
+    constructor(protected readonly defaultProps: Partial<P> = {}) {
+        this.name = this.id;
     }
 
     abstract render(props: P): React.ReactElement;
 
     getDefaultProps(): Partial<P> {
         return this.defaultProps;
+    }
+
+    getName(): string {
+        return this.name;
     }
 
     /**
@@ -177,13 +210,18 @@ export function createComponentStrategy<P extends object>(
     version: string = '1.0.0',
     defaultProps: Partial<P> = {},
     paramSpec: ParamSpec = {}
-): Strategy<P> {
+): StrategyRegistrable<P> {
     return {
         id,
         seam,
         version,
         params: paramSpec,
+        name: id,
+        description: '',
         render: (props: P) => React.createElement(component, props),
         getDefaultProps: () => defaultProps,
+        getName: () => id,
     };
 }
+
+export { strategyRegistry, getStrategyRegistry, resetStrategyRegistry };

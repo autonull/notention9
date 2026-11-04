@@ -5,7 +5,8 @@
 
 import { z } from 'zod';
 import type { IntentCase, QualityCase } from '../caseManifest.js';
-import type { SplitStrategy, SplitStrategyConfig } from './index.js';
+import type { SplitStrategyConfig } from './index.js';
+import { BaseSplitStrategy } from './baseSplitStrategy.js';
 import { validateRatiosSumToOne } from '../../utils/common.js';
 
 // --- Adversarial Split config schema ---
@@ -22,14 +23,10 @@ export const adversarialSplitConfigSchema = z.object({
     historicalData: z.record(z.record(z.number())).optional(),
 });
 
-export class AdversarialSplitStrategy implements SplitStrategy {
+export class AdversarialSplitStrategy extends BaseSplitStrategy {
     readonly name = 'adversarial';
     readonly description = 'Adversarial split: difficult cases in validation/holdout to stress-test candidates';
     readonly configSchema = adversarialSplitConfigSchema;
-    
-    getName(): string {
-        return this.name;
-    }
     
     getDefaultConfig(): SplitStrategyConfig {
         return {

@@ -5,7 +5,8 @@
 
 import { z } from 'zod';
 import type { IntentCase, QualityCase } from '../caseManifest.js';
-import type { SplitStrategy, SplitStrategyConfig } from './index.js';
+import type { SplitStrategyConfig } from './index.js';
+import { BaseSplitStrategy } from './baseSplitStrategy.js';
 import { validateRatiosSumToOne } from '../../utils/common.js';
 
 // --- Temporal Split config schema ---
@@ -18,14 +19,10 @@ export const temporalSplitConfigSchema = z.object({
     sortField: z.enum(['createdAt', 'updatedAt', 'id']).default('createdAt'),
 });
 
-export class TemporalSplitStrategy implements SplitStrategy {
+export class TemporalSplitStrategy extends BaseSplitStrategy {
     readonly name = 'temporal';
     readonly description = 'Split cases chronologically: older -> search, newer -> validation, newest -> holdout';
     readonly configSchema = temporalSplitConfigSchema;
-    
-    getName(): string {
-        return this.name;
-    }
     
     getDefaultConfig(): SplitStrategyConfig {
         return {

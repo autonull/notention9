@@ -156,7 +156,7 @@ export class ProfileRegistry {
     }
 
     /**
-     * Core resolution logic - shared between sync and async
+     * Core resolution logic - uses Registry.resolveAll for first-match semantics
      * @param context - Resolution context
      * @param includeAsync - Whether to include async strategies (revision)
      */
@@ -165,37 +165,11 @@ export class ProfileRegistry {
         includeAsync = false
     ): Promise<ResolvedStrategy<P> | undefined> {
         const registry = getResolutionStrategyRegistry();
-        const strategies = registry.getAll().filter(s => s.appliesTo(context.seamRole));
+        const filter = includeAsync 
+            ? undefined 
+            : (s: any) => s.name !== 'revision';
         
-        for (const strategy of strategies) {
-            // Skip async-only strategies (revision) in sync mode
-            if (!includeAsync && strategy.name === 'revision') continue;
-            
-            const result = await strategy.resolve(context);
-            if (result) return result as ResolvedStrategy<P>;
-        }
-
-        return undefined;
-    }
-
-    /**
-     * Synchronous core resolution logic (for non-async strategies only)
-     */
-    private resolveCoreSync<P extends object = Record<string, unknown>>(
-        context: ResolutionContext
-    ): ResolvedStrategy<P> | undefined {
-        const registry = getResolutionStrategyRegistry();
-        const strategies = registry.getAll().filter(s => s.appliesTo(context.seamRole));
-        
-        for (const strategy of strategies) {
-            // Skip async-only strategies (revision)
-            if (strategy.name === 'revision') continue;
-            
-            const result = strategy.resolve(context);
-            if (result) return result as ResolvedStrategy<P>;
-        }
-
-        return undefined;
+        return registry.resolveAll<ResolutionContext, ResolvedStrategy<P>>(context, filter);
     }
 
     // Resolve strategy for a user and seam role (sync - no revision layer)
@@ -215,7 +189,26 @@ export class ProfileRegistry {
     ): ResolvedStrategy<P> | undefined {
         const context = this.buildResolutionContext(userId, seamRole, strategyRegistry);
         // Sync resolution: skip async revision strategy
-        return this.resolveCoreSync<P>(context);
+        // Note: Registry.resolveAll is async, but all sync strategies return sync results
+        // We use a synchronous fallback for backward compatibility
+        return this.resolveCoreSync(context);
+    }
+
+    /**
+     * Synchronous fallback for sync-only resolution
+     * Iterates sync strategies in priority order
+     */
+    private resolveCoreSync<P extends object = Record<string, unknown>>(
+        context: ResolutionContext
+    ): ResolvedStrategy<P> | undefined {
+        const registry = getResolutionStrategyRegistry();
+        const strategies = registry.getAll().filter(s => s.appliesTo(context.seamRole) && s.name !== 'revision');
+        
+        for (const strategy of strategies) {
+            const result = strategy.resolve(context);
+            if (result) return result as ResolvedStrategy<P>;
+        }
+        return undefined;
     }
 
     /**

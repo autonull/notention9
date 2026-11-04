@@ -5,7 +5,8 @@
 
 import { z } from 'zod';
 import type { IntentCase, QualityCase } from '../caseManifest.js';
-import type { SplitStrategy, SplitStrategyConfig } from './index.js';
+import type { SplitStrategyConfig } from './index.js';
+import { BaseSplitStrategy } from './baseSplitStrategy.js';
 import { validateRatiosSumToOne, shuffleArray } from '../../utils/common.js';
 
 // --- Stratified Split config schema ---
@@ -21,14 +22,10 @@ export const stratifiedSplitConfigSchema = z.object({
     minPerStratum: z.number().int().positive().default(1),
 });
 
-export class StratifiedSplitStrategy implements SplitStrategy {
+export class StratifiedSplitStrategy extends BaseSplitStrategy {
     readonly name = 'stratified';
     readonly description = 'Stratified sampling: balanced representation of intents/tags across splits';
     readonly configSchema = stratifiedSplitConfigSchema;
-    
-    getName(): string {
-        return this.name;
-    }
     
     getDefaultConfig(): SplitStrategyConfig {
         return {
