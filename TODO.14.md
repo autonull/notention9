@@ -1,7 +1,7 @@
 # TODO.14 — Closing the Loop: From Instrument to Instrument Panel
 
 **Supersedes:** Nothing. Extends TODO.12 (Evaluation & Improvement Program) and TODO.13 (Generalization Layer).
-**Status:** Phase A complete — 2026-11-05. Phase B1–B2.5 complete — 2026-11-05. Phase B3/B4.2/B4.3 complete — 2026-11-05. Phase B4.1 in progress.
+**Status:** Phase A complete — 2026-11-05. Phase B1–B2.5 complete — 2026-11-05. Phase B3/B4 complete — 2026-11-05.
 **Shape:** Four phases, dependency-ordered. Phase A is integrity (no features). Phases B–C close the measurement→delivery loop and make the UI its instrument panel. Phase D positions the result.
 **Basis:** Deep study of `simulator/` and `optimize/` (state verified 2026-11-05). Every claim in this file was checked against the repo at HEAD.
 
@@ -156,11 +156,11 @@ Make the loop capable of producing a true statement.
 | B3.2 | Feed into `loop/prioritize.ts` — it already scores impact; add a `--source friction` mode mapping friction kinds → seam/param hypotheses (e.g. `capture_abandoned` → capture seam params; `correction` → extraction param) | M | ✅ |
 | B3.3 | Candidate hypothesis template: each friction-driven candidate carries `provenance: {class: 'observed', source: 'journal', kinds, counts}` — no more anonymous grid points | S | ✅ |
 
-### B4. Delivery path audit — **PARTIAL**
+### B4. Delivery path audit — **COMPLETE**
 
 | # | Item | Notes | Effort | Status |
 |---|------|-------|--------|--------|
-| B4.1 | End-to-end param flow test: candidate patch → `pendingRevisionData` → `applyPendingRevisionParams()` → DOM/behavior assertion (extend `NR1` param-visibility pattern to *all* wired seams) | M | ⏳ |
+| B4.1 | End-to-end param flow test: candidate patch → `pendingRevisionData` → `applyPendingRevisionParams()` → DOM/behavior assertion (extend `NR1` param-visibility pattern to *all* wired seams) | M | ✅ |
 | B4.2 | RevisionsTab: surface `ResolvedStrategy.reason[]`, verdict summary (n, MDE, evidenceClass), and rollback-with-confirm | M | ✅ |
 | B4.3 | Verify `ApplyPendingRevision` failure modes: malformed `pendingRevisionData`, stale schema version, unknown strategyId → visible warning, never silent no-op | S | ✅ |
 

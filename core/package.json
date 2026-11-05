@@ -79,7 +79,8 @@
     "./schemas/caseManifest": "./dist/schemas/caseManifest.js",
     "./schemas/eventSchema": "./dist/schemas/eventSchema.js",
     "./schemas/verdictResult": "./dist/schemas/verdictResult.js",
-    "./schemas/evidence": "./dist/schemas/evidence.js"
+    "./schemas/evidence": "./dist/schemas/evidence.js",
+    "./schemas/generated/seam-definitions": "./dist/schemas/generated/seam-definitions.js"
   },
   "scripts": {
     "build": "tsc",

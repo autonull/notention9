@@ -29,6 +29,9 @@ export default defineConfig(({mode}) => {
                 '@notention/core/src/matching': path.resolve(__dirname, '../core/dist/matching'),
                 '@notention/core/skills': path.resolve(__dirname, '../core/dist/skills/index.js'),
                 '@notention/core/skills/metaphor/MetaphorRegistry': path.resolve(__dirname, '../core/dist/skills/metaphor/MetaphorRegistry.js'),
+                // @notention/ui internal modules
+                '@notention/ui/strategies/strategyConfigs': path.resolve(__dirname, './src/strategies/strategyConfigs.ts'),
+                '@notention/ui/strategies/componentMap': path.resolve(__dirname, './src/strategies/componentMap.ts'),
                 // Browser stubs for Node.js-only modules (with and without .js extension)
                 '@notention/core/eval/caseManifest': path.resolve(__dirname, '../core/dist/eval/caseManifest.browser.js'),
                 '@notention/core/eval/caseManifest.js': path.resolve(__dirname, '../core/dist/eval/caseManifest.browser.js'),
