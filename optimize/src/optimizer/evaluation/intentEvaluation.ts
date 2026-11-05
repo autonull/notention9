@@ -5,7 +5,7 @@ import type { IntentEvaluationConfig, IntentEvaluationResult } from '../types/in
 import {
     INTENT_DEFAULT_VIEWPORT,
     INTENT_NAVIGATION_TIMEOUT_MS,
-    INTENT_EXTRACTION_WAIT_MS,
+    DEFAULT_INTENT_EXTRACTION_WAIT_MS,
 } from '../constants.js';
 import { runIntentCase, applySeedRevisions, type IntentCaseRunResult, type RunIntentCaseConfig } from './intentCaseRunner.js';
 
@@ -55,7 +55,9 @@ export async function runIntentEvaluationForRevision(
         const runConfig: RunIntentCaseConfig = {
             baseURL: config.baseURL || baseURL,
             navigationTimeoutMs: INTENT_NAVIGATION_TIMEOUT_MS,
-            extractionWaitMs: INTENT_EXTRACTION_WAIT_MS,
+            extractionWaitMs: DEFAULT_INTENT_EXTRACTION_WAIT_MS,
+            extractionSelector: '[data-testid="extracted-property"]', // Event-driven wait for extraction
+            seed: { baseURL: config.baseURL || baseURL }, // For browser context seeding (B1.4)
         };
 
         for (const caseData of filteredCases) {
@@ -83,7 +85,7 @@ export async function runIntentEvaluationForRevision(
                         intent: caseData.intent,
                         repetition: rep,
                         success: false,
-                        metrics: { completion: 0, steps, corrections },
+                        metrics: { completion: 0, steps, corrections, timeToCaptureMs: Date.now() - startTime },
                         details: [...details, `Error: ${error instanceof Error ? error.message : String(error)}`],
                         error: error instanceof Error ? error.message : String(error),
                     });
@@ -98,6 +100,7 @@ export async function runIntentEvaluationForRevision(
         const avgCompletion = results.reduce((sum: number, r) => sum + r.metrics.completion, 0) / total;
         const avgSteps = results.reduce((sum: number, r) => sum + r.metrics.steps, 0) / total;
         const avgCorrections = results.reduce((sum: number, r) => sum + r.metrics.corrections, 0) / total;
+        const avgTimeToCaptureMs = results.reduce((sum: number, r) => sum + (r.metrics.timeToCaptureMs ?? 0), 0) / total;
 
         return {
             runId,
@@ -112,6 +115,7 @@ export async function runIntentEvaluationForRevision(
                 avgCompletion,
                 avgSteps,
                 avgCorrections,
+                avgTimeToCaptureMs,
             },
         };
     } finally {

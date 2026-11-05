@@ -7,6 +7,7 @@ export interface UXMetric {
     unit: string;
     description: string;
     threshold?: { min?: number; max?: number; target?: number; unit?: string };
+    evidenceClass: 'hypothesized'; // Static estimates from scenario config, not measured from runs
 }
 
 export interface ScenarioUXReport {
@@ -114,6 +115,7 @@ export class UXEvaluator {
                 unit: 'ratio',
                 description: 'Estimated relevance of matches based on property overlap',
                 threshold: thresholds['match-relevance'],
+                evidenceClass: 'hypothesized' as const,
             },
             {
                 name: 'time-to-first-match',
@@ -121,6 +123,7 @@ export class UXEvaluator {
                 unit: 'seconds',
                 description: 'Estimated time until first relevant match appears',
                 threshold: thresholds['time-to-first-match'],
+                evidenceClass: 'hypothesized' as const,
             },
             {
                 name: 'match-acceptance-rate',
@@ -128,6 +131,7 @@ export class UXEvaluator {
                 unit: 'ratio',
                 description: 'Estimated rate of match acceptance by users',
                 threshold: thresholds['match-acceptance-rate'],
+                evidenceClass: 'hypothesized' as const,
             },
             {
                 name: 'agent-engagement',
@@ -135,6 +139,7 @@ export class UXEvaluator {
                 unit: 'ratio',
                 description: 'Proportion of agents that publish at least one event',
                 threshold: thresholds['agent-engagement'],
+                evidenceClass: 'hypothesized' as const,
             },
             {
                 name: 'dashboard-clarity',
@@ -142,6 +147,7 @@ export class UXEvaluator {
                 unit: 'ratio',
                 description: 'Estimated clarity of dashboard for this scenario complexity',
                 threshold: thresholds['dashboard-clarity'],
+                evidenceClass: 'hypothesized' as const,
             },
             {
                 name: 'notification-timeliness',
@@ -149,6 +155,7 @@ export class UXEvaluator {
                 unit: 'seconds',
                 description: 'Estimated notification delivery latency',
                 threshold: thresholds['notification-timeliness'],
+                evidenceClass: 'hypothesized' as const,
             },
             {
                 name: 'property-entry-reduction',
@@ -156,6 +163,7 @@ export class UXEvaluator {
                 unit: 'ratio',
                 description: 'Estimated reduction in manual property entry via suggestions',
                 threshold: thresholds['property-entry-reduction'],
+                evidenceClass: 'hypothesized' as const,
             },
             {
                 name: 'template-usage-rate',
@@ -163,6 +171,7 @@ export class UXEvaluator {
                 unit: 'ratio',
                 description: 'Estimated rate of template usage for note creation',
                 threshold: thresholds['template-usage-rate'],
+                evidenceClass: 'hypothesized' as const,
             },
             {
                 name: 'confirmation-clarity',
@@ -170,6 +179,7 @@ export class UXEvaluator {
                 unit: 'ratio',
                 description: 'Estimated clarity of confirmation/publish gate UI',
                 threshold: thresholds['confirmation-clarity'],
+                evidenceClass: 'hypothesized' as const,
             },
             {
                 name: 'export-success-rate',
@@ -177,6 +187,7 @@ export class UXEvaluator {
                 unit: 'ratio',
                 description: 'Estimated success rate of export/import round-trip',
                 threshold: thresholds['export-success-rate'],
+                evidenceClass: 'hypothesized' as const,
             },
         ];
     }

@@ -12,6 +12,7 @@ import {
 } from '@notention/core';
 import { finalizeEvent, generateSecretKey, getPublicKey } from 'nostr-tools';
 import { SIMULATION_CONFIG, AGENT_COLORS } from './constants.js';
+import type { RunEventSink, RunEventType } from './types.js';
 
 export interface AgentProfile {
     name: string;
@@ -49,6 +50,7 @@ export class Agent {
     #engine: MatchEngine;
     #seenEvents = new Set<string>();
     #relay: WebSocket;
+    #runEventSink?: RunEventSink;
 
     public get secretKey(): string {
         return this.#privkey;
@@ -58,19 +60,30 @@ export class Agent {
         public readonly profile: AgentProfile,
         relayUrl: string,
         ontology: OntologyNode[],
-        private readonly color: chalk.Chalk
+        private readonly color: chalk.Chalk,
+        runEventSink?: RunEventSink
     ) {
         const sk = generateSecretKey();
         this.#privkey = Buffer.from(sk).toString('hex');
         this.pubkey = getPublicKey(sk);
         this.id = this.pubkey.slice(0, 8);
         this.#engine = new MatchEngine(ontology);
+        this.#runEventSink = runEventSink;
 
         this.#relay = new WebSocket(relayUrl);
-        this.#relay.on('error', () => {
-            // Silently handle connection errors - relay may not be available in tests
+        this.#relay.on('error', (err) => {
+            this.#emitRunEvent('error', { agentName: this.profile.name, error: String(err), context: 'relay_connection' });
         });
         this.#setupNetwork();
+    }
+
+    #emitRunEvent(type: RunEventType, data: Record<string, unknown>): void {
+        this.#runEventSink?.({
+            type,
+            timestamp: Date.now(),
+            scenarioName: '', // Will be filled by ScenarioRunner
+            data,
+        });
     }
 
     #setupNetwork() {
@@ -83,8 +96,8 @@ export class Agent {
             try {
                 const msg = JSON.parse(data.toString());
                 if (msg[0] === 'EVENT') this.#handleEvent(msg[2]);
-            } catch {
-                // Ignore parse errors
+            } catch (err) {
+                this.#emitRunEvent('error', { agentName: this.profile.name, error: String(err), context: 'message_parse' });
             }
         });
     }
@@ -112,6 +125,7 @@ export class Agent {
             note = convertEventToNote(event);
         } catch (e) {
             this.#log(`Error converting event to note: ${e}`);
+            this.#emitRunEvent('error', { agentName: this.profile.name, error: String(e), context: 'note_conversion' });
             return;
         }
 
@@ -127,6 +141,20 @@ export class Agent {
             this.#log(`Matched event from ${event.pubkey.slice(0, 8)} (Score: ${score.toFixed(2)})`);
             matches.forEach(m => {
                 this.#log(`  - Matched: ${m.requestProp.key} ${m.requestProp.operator} ${m.offerProp.values.join(', ')}`);
+            });
+
+            // Emit match:found event (B2.1)
+            this.#emitRunEvent('match:found', {
+                agentId: this.id,
+                agentName: this.profile.name,
+                matchedEventId: event.id,
+                matchedPubkey: event.pubkey.slice(0, 8),
+                score,
+                matches: matches.map(m => ({
+                    request: `${m.requestProp.key} ${m.requestProp.operator}`,
+                    offer: m.offerProp.values.join(', '),
+                    score: m.compatibility,
+                })),
             });
 
             this.#publishExplanation(event.pubkey, score, matches);

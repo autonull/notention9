@@ -127,7 +127,7 @@ export interface IntentEvaluationResult {
         intent: string;
         repetition: number;
         success: boolean;
-        metrics: { completion: number; steps: number; corrections: number };
+        metrics: { completion: number; steps: number; corrections: number; timeToCaptureMs: number };
         details: string[];
         error?: string;
     }>;
@@ -138,6 +138,7 @@ export interface IntentEvaluationResult {
         avgCompletion: number;
         avgSteps: number;
         avgCorrections: number;
+        avgTimeToCaptureMs: number;
     };
 }
 
@@ -174,6 +175,6 @@ export function defaultOptimizerConfig(): OptimizerConfig {
         useSuccessiveHalving: true,
         initialSliceFraction: 0.25,
         minPromote: 2,
-        maxIntentCases: 2,
+        maxIntentCases: 10,
     };
 }

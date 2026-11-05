@@ -16,6 +16,7 @@ import { runIntentEvaluationForRevision, cleanupPreviewServer } from './evaluati
 import {
     computeCaseVerdictsFromIntentResults,
     createRunVerdict,
+    checkEvaluationPower,
 } from './evaluation/verdicts.js';
 import { getCandidateCache } from './cache/index.js';
 import { enumerateCandidatesFromParamSpec } from './candidates/index.js';
@@ -65,6 +66,36 @@ export async function runOptimizerCycle(config: OptimizerConfig = defaultOptimiz
 
         // 2. Run baseline evaluations (intent only - quality is not per-candidate since UI params don't affect core quality)
         const { baselineIntentResult, intentCaseIds } = await runBaselineEvaluations(config);
+
+        // Power check: refuse to run if underpowered
+        const verdictConfig = createVerdictConfig();
+        const powerCheck = checkEvaluationPower(verdictConfig, intentCaseIds.length, 3); // full evaluation uses 3 reps
+        if (!powerCheck.powered) {
+            console.log(`\n⛔ Refusing to run: ${powerCheck.reason}`);
+            logEvent({
+                type: 'optimizer:cycle:completed',
+                actor: 'system',
+                revisionId: cycleId,
+                payload: {
+                    type: 'optimizer:cycle:completed',
+                    candidatesEvaluated: 0,
+                    winners: 0,
+                    losers: 0,
+                    inconclusive: 0,
+                    totalCost: { browserRuns: 0, tokensUsed: 0, durationMs: Date.now() - startTime },
+                },
+            });
+            return {
+                cycleId,
+                timestamp: new Date().toISOString(),
+                candidatesEvaluated: 0,
+                winners: [],
+                losers: [],
+                totalCost: { browserRuns: 0, tokensUsed: 0, durationMs: Date.now() - startTime },
+                manifestHash: manifest.hash,
+            };
+        }
+        console.log(`✅ Power check passed: ${intentCaseIds.length} cases × 3 reps = ${intentCaseIds.length * 3} samples (min ${DEFAULT_MIN_SAMPLE_SIZE})`);
 
         // 3. Evaluate candidates
         console.log('\n🚀 Evaluating candidates...');
@@ -150,13 +181,13 @@ async function runBaselineEvaluations(config: OptimizerConfig): Promise<{
     baselineIntentResult: Awaited<ReturnType<typeof runIntentEvaluationForRevision>>;
     intentCaseIds: string[];
 }> {
-    console.log('\n📏 Running baseline intent evaluation (validation split, limited cases)...');
-    const intentCases = readIntentCases('validation'); // Use validation (10 cases) instead of search (21)
-    const maxIntentCases = config.maxIntentCases ?? 2;
-    const intentCaseIds = intentCases.slice(0, maxIntentCases).map(c => c.id); // Limit cases for speed
+    console.log('\n📏 Running baseline intent evaluation (validation split)...');
+    const intentCases = readIntentCases('validation'); // Use validation (10 cases)
+    const maxIntentCases = config.maxIntentCases ?? 10;
+    const intentCaseIds = intentCases.slice(0, maxIntentCases).map(c => c.id);
     const baselineIntentConfig: IntentEvaluationConfig = {
         split: 'validation',
-        repetitions: 1,
+        repetitions: 3, // Match full evaluation for powered comparison
         headless: true,
         caseFilter: intentCaseIds,
         revisionPatch: {},
@@ -216,7 +247,8 @@ async function evaluateSingleCandidate(
     baselineIntentResult: Awaited<ReturnType<typeof runIntentEvaluationForRevision>>,
     intentCaseIds: string[],
     verdictConfig: VerdictConfig,
-    candidateCache: ReturnType<typeof getCandidateCache>
+    candidateCache: ReturnType<typeof getCandidateCache>,
+    fullEvaluation = false
 ): Promise<CandidateEvaluation> {
     // Check cache first
     const cachedEvaluation = candidateCache.get(candidate.seamRole, candidate.strategyId, candidate.patch);
@@ -225,15 +257,19 @@ async function evaluateSingleCandidate(
         return cachedEvaluation;
     }
 
+    // Determine evaluation intensity based on phase
+    const repetitions = fullEvaluation ? 3 : 1;
+    const caseFilter = fullEvaluation ? intentCaseIds : intentCaseIds.slice(0, Math.max(1, Math.floor(intentCaseIds.length * 0.25)));
+
     // Run intent evaluation for candidate (UI params affect capture/match behavior)
     // Note: Quality evaluation is NOT run per-candidate because strategy params are UI-only
     // and don't affect core extraction/matching quality. Baseline quality is run once.
-    console.log(`     🌐 Running intent evaluation (${intentCaseIds.length} cases)...`);
+    console.log(`     🌐 Running intent evaluation (${caseFilter.length} cases × ${repetitions} reps)...`);
     const candidateIntentResult = await runIntentEvaluationForRevision(candidate.id, {
         split: 'validation',
-        repetitions: 1,
+        repetitions,
         headless: true,
-        caseFilter: intentCaseIds,
+        caseFilter,
         revisionPatch: candidate.patch,
     });
 
@@ -286,29 +322,28 @@ async function runSuccessiveHalvingPromotion(
         .filter(c => c.evaluation)
         .sort((a, b) => (b.evaluation!.primaryDelta ?? -Infinity) - (a.evaluation!.primaryDelta ?? -Infinity));
 
-    const promoteCount = Math.max(config.minPromote, Math.ceil(sortedCandidates.length / 2));
+    const promoteCount = Math.max(config.minPromote, Math.ceil(sortedCandidates.length * config.initialSliceFraction));
     const promoted = sortedCandidates.slice(0, promoteCount);
 
-    console.log(`   Promoted ${promoted.length} candidates for full evaluation`);
+    console.log(`   Promoted ${promoted.length} candidates for full evaluation (${config.initialSliceFraction * 100}% slice)`);
 
-    // Evaluate remaining candidates
-    const remainingCandidates = allCandidates.filter(c =>
-        !evaluatedCandidates.some(e => e.id === c.id)
-    );
-
+    // Evaluate ONLY the promoted candidates with full evaluation (more cases, more repetitions)
+    // The non-promoted candidates keep their initial evaluation (already done in first slice)
     const promotedEvaluated: OptimizerCandidate[] = [];
     const candidateCache = getCandidateCache();
     const verdictConfig = createVerdictConfig();
 
-    for (const candidate of remainingCandidates) {
+    for (const candidate of promoted) {
         console.log(`   [Full] ${candidate.id} (${candidate.seamRole}/${candidate.strategyId})`);
 
+        // Re-evaluate with full case set and repetitions
         const evaluation = await evaluateSingleCandidate(
             candidate,
             baselineIntentResult,
-            intentCaseIds,
+            intentCaseIds, // Full case set
             verdictConfig,
-            candidateCache
+            candidateCache,
+            true // fullEvaluation flag
         );
 
         candidate.evaluation = evaluation;

@@ -13,11 +13,47 @@ const ACTION_HANDLERS: Record<string, ActionHandler> = {
     send_message: (agent, _inputMethod, targetId) => targetId ? agent.sendMessage(targetId, 'Hello!') : Promise.resolve(),
 };
 
+/**
+ * Virtual clock for fast simulation mode
+ * Replaces real-time setTimeout with immediate execution
+ */
+class VirtualClock {
+    private time = 0;
+    private readonly tasks: Array<{ at: number; fn: () => void }> = [];
+    private running = false;
+
+    schedule(at: number, fn: () => void): void {
+        this.tasks.push({ at, fn });
+        this.tasks.sort((a, b) => a.at - b.at);
+    }
+
+    async run(): Promise<void> {
+        this.running = true;
+        for (const task of this.tasks) {
+            if (!this.running) break;
+            // In fast mode, we don't actually wait - just advance virtual time
+            this.time = task.at;
+            task.fn();
+        }
+        this.tasks.length = 0;
+    }
+
+    stop(): void {
+        this.running = false;
+    }
+
+    get currentTime(): number {
+        return this.time;
+    }
+}
+
 export class ScenarioRunner {
     public readonly agents: Agent[] = [];
     #colors = AGENT_COLORS.map(c => chalk[c] as chalk.Chalk);
     #onEvent?: (event: EventConfig) => void;
     #runEventSink?: RunEventSink;
+    #fastMode = false;
+    #virtualClock?: VirtualClock;
 
     constructor(
         readonly relayUrl: string,
@@ -30,6 +66,14 @@ export class ScenarioRunner {
 
     get runEventSink(): RunEventSink | undefined {
         return this.#runEventSink;
+    }
+
+    /** Enable fast mode for measurement runs (B2.2) */
+    setFastMode(enabled: boolean): void {
+        this.#fastMode = enabled;
+        if (enabled) {
+            this.#virtualClock = new VirtualClock();
+        }
     }
 
     #emitRunEvent(type: RunEventType, scenarioName: string, data: Record<string, unknown>): void {
@@ -51,9 +95,17 @@ export class ScenarioRunner {
     }
 
     async execute(scenario: Scenario) {
-        this.#scheduleEvents(scenario.events);
-        await new Promise(resolve => setTimeout(resolve, scenario.duration * 1000));
-        console.log(chalk.bold.green(`\nScenario Completed.`));
+        if (this.#fastMode && this.#virtualClock) {
+            // Fast mode: schedule all events on virtual clock and run immediately
+            this.#scheduleEventsVirtual(scenario.events);
+            await this.#virtualClock.run();
+            console.log(chalk.bold.green(`\nScenario Completed (fast mode).`));
+        } else {
+            // Real-time mode
+            this.#scheduleEvents(scenario.events);
+            await new Promise(resolve => setTimeout(resolve, scenario.duration * 1000));
+            console.log(chalk.bold.green(`\nScenario Completed.`));
+        }
         this.#emitRunEvent('scenario:end', scenario.name, { duration: scenario.duration });
     }
 
@@ -79,7 +131,8 @@ export class ScenarioRunner {
                     profile,
                     this.relayUrl,
                     this.ontology,
-                    this.#colors[colorIdx++ % this.#colors.length]
+                    this.#colors[colorIdx++ % this.#colors.length],
+                    this.#runEventSink
                 );
 
                 this.agents.push(agent);
@@ -109,6 +162,20 @@ export class ScenarioRunner {
                     await this.#executeAction(event.actorRole, event.action, event.inputMethod, event.targetAgentId);
                 }
             }, event.at * 1000);
+        }
+    }
+
+    #scheduleEventsVirtual(events: EventConfig[]) {
+        for (const event of events) {
+            this.#virtualClock?.schedule(event.at, async () => {
+                console.log(chalk.bold(`\n[${event.at}s] Event: ${event.actorRole} -> ${event.action} (${event.inputMethod ?? 'raw'})`));
+                this.#onEvent?.(event);
+                this.#emitRunEvent('event:scheduled', '', { ...event });
+
+                if (event.action !== 'camera') {
+                    await this.#executeAction(event.actorRole, event.action, event.inputMethod, event.targetAgentId);
+                }
+            });
         }
     }
 

@@ -32,6 +32,8 @@ export interface ParamDef {
     options?: string[]; // for enum
     min?: number;       // for number
     max?: number;       // for number
+    /** Mechanism documentation: which component reads this param, when, and how it affects behavior */
+    mechanism?: string;
 }
 
 /**

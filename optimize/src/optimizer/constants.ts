@@ -45,7 +45,11 @@ export const DEFAULT_MAX_TOKENS = 150_000;
 export const DEFAULT_USE_SUCCESSIVE_HALVING = true;
 export const DEFAULT_INITIAL_SLICE_FRACTION = 0.25;
 export const DEFAULT_MIN_PROMOTE = 2;
-export const DEFAULT_MAX_INTENT_CASES = 2;
+export const DEFAULT_MAX_INTENT_CASES = 10;
+
+// Intent evaluation defaults
+export const DEFAULT_INTENT_REPETITIONS = 3;
+export const DEFAULT_INTENT_EXTRACTION_WAIT_MS = 2000; // Event-driven max wait
 
 // Default target seams
 export const DEFAULT_TARGET_SEAMS = ['capture', 'match'] as const;

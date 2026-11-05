@@ -1,7 +1,7 @@
 # TODO.14 — Closing the Loop: From Instrument to Instrument Panel
 
 **Supersedes:** Nothing. Extends TODO.12 (Evaluation & Improvement Program) and TODO.13 (Generalization Layer).
-**Status:** Phase A complete — 2026-11-05. Phase B in progress.
+**Status:** Phase A complete — 2026-11-05. Phase B1–B2.4 complete — 2026-11-05. Phase B2.5/B3/B4 in progress.
 **Shape:** Four phases, dependency-ordered. Phase A is integrity (no features). Phases B–C close the measurement→delivery loop and make the UI its instrument panel. Phase D positions the result.
 **Basis:** Deep study of `simulator/` and `optimize/` (state verified 2026-11-05). Every claim in this file was checked against the repo at HEAD.
 
@@ -19,7 +19,7 @@ reproducible end-to-end from a clean checkout with one command.
 - `optimize/` compiles: 0 `tsc --noEmit` errors (was **82**, now **0** ✅).
 - Root `pnpm test` green and includes `simulator` (was excluded, now **included** ✅; optimize vitest fixed).
 - CI exists and runs `pnpm verify` + UI typecheck on every push (was **zero** CI, now **created** ✅).
-- Optimizer evaluation is powered: ≥ 10 intent cases × ≥ 3 repetitions, holdout enforced, cycle refuses to run underpowered (currently **2 cases × 1 rep, n=2, nominal halving** — Phase B).
+- Optimizer evaluation is powered: ≥ 10 intent cases × ≥ 3 repetitions, holdout enforced, cycle refuses to run underpowered (was **2 cases × 1 rep, n=2, nominal halving** — **now ✅**).
 - `simulator/movies/` debris ≤ 100 MB (was **8.6 GB**, now **absent** ✅).
 
 ---
@@ -126,27 +126,27 @@ Verified 2026-11-05: **82 `tsc --noEmit` errors** → **0 errors** ✅.
 
 Make the loop capable of producing a true statement.
 
-### B1. Optimizer, powered
+### B1. Optimizer, powered — **COMPLETE**
 
-| # | Item | Notes | Effort |
-|---|------|-------|--------|
-| B1.1 | Fix successive halving: the 25% promoted slice — not `allCandidates` — is what gets fully evaluated. Add a test that fails if unpromoted candidates consume budget | `optimizer/index.ts` | M |
-| B1.2 | Raise defaults: `maxIntentCases: 10` (validation split) + holdout audit run of the winner; `repetitions: 3`; `INTENT_EXTRACTION_WAIT_MS` → event-driven (`waitForSelector` on `[data-testid="extracted-property"]`, timeout 2000), not fixed 300 ms | `optimizer/constants.ts`, `intentEvaluation.ts`, `ui/eval/intentRunner.ts` | M |
-| B1.3 | Refuse-to-run gate: if achievable paired n × repetitions yields MDE > effect size of interest (per `core/telemetry/constants`), abort with `verdict: invalid — underpowered`; never emit `improved` | `verdicts.ts` | S |
-| B1.4 | Seed the browser context: freeze clock + RNG in `intentCaseRunner` (reuse `ui/eval/harness.ts` seedSnapshot), block network egress except the preview origin | M |
-| B1.5 | Preview server lifecycle: single `ensurePreviewServer` per cycle with finally-guarded `stopPreviewServer`; assert port-free after exit; integration test against an ephemeral port allocator | M |
-| B1.6 | ParamSpec gap review: `templateSelectorParamSpec = {}` and `describeItComposerParamSpec.placeholder` are the only honestly-evaluable specs today; `localMatchPreview`, `dashboardLocalMatch`, `localMatchesPanel`, `propertyForm`, `tagInput` — document per-param *mechanism* (which component reads it, when) or fix the param. A param with no causal path is a lie with extra steps | M |
-| B1.7 | Metrics beyond `completion`: add `steps`, `corrections`, `timeToCapture` from the same browser run; completion stays primary, others recorded as secondary evidence | S |
+| # | Item | Notes | Effort | Status |
+|---|------|-------|--------|--------|
+| B1.1 | Fix successive halving: the 25% promoted slice — not `allCandidates` — is what gets fully evaluated. Add a test that fails if unpromoted candidates consume budget | `optimizer/index.ts` | M | ✅ |
+| B1.2 | Raise defaults: `maxIntentCases: 10` (validation split) + holdout audit run of the winner; `repetitions: 3`; `INTENT_EXTRACTION_WAIT_MS` → event-driven (`waitForSelector` on `[data-testid="extracted-property"]`, timeout 2000), not fixed 300 ms | `optimizer/constants.ts`, `intentEvaluation.ts`, `ui/eval/intentRunner.ts` | M | ✅ |
+| B1.3 | Refuse-to-run gate: if achievable paired n × repetitions yields MDE > effect size of interest (per `core/telemetry/constants`), abort with `verdict: invalid — underpowered`; never emit `improved` | `verdicts.ts` | S | ✅ |
+| B1.4 | Seed the browser context: freeze clock + RNG in `intentCaseRunner` (reuse `ui/eval/harness.ts` seedSnapshot), block network egress except the preview origin | M | ✅ |
+| B1.5 | Preview server lifecycle: single `ensurePreviewServer` per cycle with finally-guarded `stopPreviewServer`; assert port-free after exit; integration test against an ephemeral port allocator | M | ✅ |
+| B1.6 | ParamSpec gap review: `templateSelectorParamSpec = {}` and `describeItComposerParamSpec.placeholder` are the only honestly-evaluable specs today; `localMatchPreview`, `dashboardLocalMatch`, `localMatchesPanel`, `propertyForm`, `tagInput` — document per-param *mechanism* (which component reads it, when) or fix the param. A param with no causal path is a lie with extra steps | M | ✅ |
+| B1.7 | Metrics beyond `completion`: add `steps`, `corrections`, `timeToCapture` from the same browser run; completion stays primary, others recorded as secondary evidence | S | ✅ |
 
-### B2. Simulator as measurement source
+### B2. Simulator as measurement source — **IN PROGRESS**
 
-| # | Item | Notes | Effort |
-|---|------|-------|--------|
-| B2.1 | Emit `RunEvent`s: `match:found` (agentId, eventId, score, at) and `error` — declared in `types.ts` since Oct 29, never emitted. Wire in `agent.ts` match path and error paths | S |
-| B2.2 | Replace real-time `setTimeout` scheduling with a virtual clock in `ScenarioRunner` (`--fast` flag): 10–100× simulation throughput for measurement runs; movie mode keeps real-time | `scenario.ts` | M |
-| B2.3 | Metrics collector (`optimize/src/metrics/`): consumes `RunEvent` stream → per-run `{timeToFirstMatchMs, matchesPerMinute, unmatchedRate, matchScoreDistribution, perDomainBreakdown}`; writes to ledger + `~/.notention/runs/…/metrics.json` | M |
-| B2.4 | `uxEvaluator.ts`: relabel its outputs `evidenceClass: hypothesized` (they are estimates); delete `ux-evaluation-report.json` from repo root (regenerable); wire into loop so a *measured* report supersedes it | S |
-| B2.5 | 13 scenarios → measurement suite: define per-scenario expected distributions (seeded, deterministic); `SimulatorRegression` evolves from structural assert-equality into statistical assertion (match counts within CI) | M |
+| # | Item | Notes | Effort | Status |
+|---|------|-------|--------|--------|
+| B2.1 | Emit `RunEvent`s: `match:found` (agentId, eventId, score, at) and `error` — declared in `types.ts` since Oct 29, never emitted. Wire in `agent.ts` match path and error paths | S | ✅ |
+| B2.2 | Replace real-time `setTimeout` scheduling with a virtual clock in `ScenarioRunner` (`--fast` flag): 10–100× simulation throughput for measurement runs; movie mode keeps real-time | `scenario.ts` | M | ✅ |
+| B2.3 | Metrics collector (`simulator/src/metricsCollector.ts`): consumes `RunEvent` stream → per-run `{timeToFirstMatchMs, matchesPerMinute, unmatchedRate, matchScoreDistribution, perDomainBreakdown}`; writes to ledger + `~/.notention/runs/…/metrics.json` | M | ✅ |
+| B2.4 | `uxEvaluator.ts`: relabel its outputs `evidenceClass: hypothesized` (they are estimates); delete `ux-evaluation-report.json` from repo root (regenerable); wire into loop so a *measured* report supersedes it | S | ✅ |
+| B2.5 | 13 scenarios → measurement suite: define per-scenario expected distributions (seeded, deterministic); `SimulatorRegression` evolves from structural assert-equality into statistical assertion (match counts within CI) | M | ⏳ |
 
 ### B3. Friction → prioritize → candidate
 

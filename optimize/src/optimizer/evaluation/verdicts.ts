@@ -1,5 +1,9 @@
-import { computeRunVerdict, computeCaseVerdict, type RunVerdict, type VerdictConfig, type CaseVerdict, type PairedRunResult } from '@notention/core/eval/verdict';
+import { computeRunVerdict, computeCaseVerdict, type RunVerdict, type VerdictConfig, type CaseVerdict, type PairedRunResult, pairedTTest, pairedConfidenceInterval, mean, std } from '@notention/core/eval/verdict';
 import type { IntentEvaluationResult } from '../types/index.js';
+import {
+    DEFAULT_MDE_COMPLETION,
+    DEFAULT_MIN_SAMPLE_SIZE,
+} from '@notention/core/telemetry/constants';
 
 /**
  * Common interface for result items that can be paired for verdict computation
@@ -12,6 +16,48 @@ export interface VerdictResultItem {
     output: unknown;
     success: boolean;
     error?: string;
+}
+
+/**
+ * Check if an evaluation would be underpowered given the configuration
+ * Returns null if powered, or an error message if underpowered
+ */
+export function checkEvaluationPower(
+    config: VerdictConfig,
+    caseCount: number,
+    repetitions: number
+): { powered: boolean; reason?: string; achievableMDE?: number } {
+    const totalSamples = caseCount * repetitions;
+    const minSampleSize = config.minSampleSize ?? DEFAULT_MIN_SAMPLE_SIZE;
+    const mde = config.mde[config.primaryMetric] ?? DEFAULT_MDE_COMPLETION;
+
+    // Minimum sample size check
+    if (totalSamples < minSampleSize) {
+        return {
+            powered: false,
+            reason: `Underpowered: ${totalSamples} samples (${caseCount} cases × ${repetitions} reps) < minimum ${minSampleSize}`,
+            achievableMDE: calculateAchievableMDE(totalSamples, mde),
+        };
+    }
+
+    // Check if achievable MDE is reasonable (not larger than effect of interest)
+    // With paired design, MDE scales with 1/sqrt(n)
+    const achievableMDE = mde * Math.sqrt(minSampleSize / totalSamples);
+    if (achievableMDE > mde * 2) { // If achievable MDE is more than 2x the target MDE
+        return {
+            powered: false,
+            reason: `Underpowered: achievable MDE (${achievableMDE.toFixed(3)}) > 2× target MDE (${mde})`,
+            achievableMDE,
+        };
+    }
+
+    return { powered: true };
+}
+
+function calculateAchievableMDE(totalSamples: number, targetMDE: number): number {
+    // Simplified: MDE scales with sqrt(minSampleSize / totalSamples)
+    const minSampleSize = DEFAULT_MIN_SAMPLE_SIZE;
+    return targetMDE * Math.sqrt(minSampleSize / Math.max(totalSamples, 1));
 }
 
 /**

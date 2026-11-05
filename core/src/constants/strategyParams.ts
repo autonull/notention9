@@ -44,14 +44,35 @@ const layoutSpec = BUILTIN_SEAM_SPECS['layout-0']!;
 
 /** PropertyForm - controls the property input form behavior */
 export const propertyFormParamSpec: ParamSpec = {
-    isAdding: { type: 'boolean', description: 'Whether the form is in add mode (vs edit mode)', default: true },
-    initialOp: { type: 'enum', description: 'Default operator for new properties', default: 'is', options: ['is', 'equals', 'contains', 'less than', 'greater than', 'matches'] },
+    isAdding: { 
+        type: 'boolean', 
+        description: 'Whether the form is in add mode (vs edit mode)', 
+        default: true,
+        mechanism: 'PropertyForm.tsx reads this prop on mount to determine initial UI state (add vs edit). Affects: shows/hides "Add Property" button, pre-fills operator dropdown.'
+    },
+    initialOp: { 
+        type: 'enum', 
+        description: 'Default operator for new properties', 
+        default: 'is', 
+        options: ['is', 'equals', 'contains', 'less than', 'greater than', 'matches'],
+        mechanism: 'PropertyForm.tsx reads this when rendering the operator selector for a new property row. Affects: default comparison operator in extraction, influences match scoring downstream.'
+    },
 };
 
 /** DescribeItComposer - controls the natural language extraction UI */
 export const describeItComposerParamSpec: ParamSpec = {
-    placeholder: { type: 'string', description: 'Placeholder text for the input textarea', default: 'e.g. I need a React developer for two weeks, up to 900 USD, starting next week' },
-    autoFocus: { type: 'boolean', description: 'Whether to auto-focus the input on open', default: false },
+    placeholder: { 
+        type: 'string', 
+        description: 'Placeholder text for the input textarea', 
+        default: 'e.g. I need a React developer for two weeks, up to 900 USD, starting next week',
+        mechanism: 'DescribeItComposer.tsx reads this prop on mount for the textarea placeholder attribute. Affects: user guidance for extraction prompts, may influence extraction quality via priming.'
+    },
+    autoFocus: { 
+        type: 'boolean', 
+        description: 'Whether to auto-focus the input on open', 
+        default: false,
+        mechanism: 'DescribeItComposer.tsx useEffect on mount calls textareaRef.current?.focus() when true. Affects: capture latency (time-to-first-keystroke), UX friction.'
+    },
 };
 
 /** TemplateSelector - currently no tunable params */
@@ -59,26 +80,70 @@ export const templateSelectorParamSpec: ParamSpec = {};
 
 /** TagInput */
 export const tagInputParamSpec: ParamSpec = {
-    autoFocus: { type: 'boolean', description: 'Whether to auto-focus the tag input', default: false },
+    autoFocus: { 
+        type: 'boolean', 
+        description: 'Whether to auto-focus the tag input', 
+        default: false,
+        mechanism: 'TagInput.tsx useEffect on mount calls inputRef.current?.focus() when true. Affects: tag entry latency, correction rate for tag-heavy workflows.'
+    },
 };
 
 /** LocalMatchPreview - match display configuration */
 export const localMatchPreviewParamSpec: ParamSpec = {
-    showScore: { type: 'boolean', description: 'Show match score percentage', default: true },
-    showDetails: { type: 'boolean', description: 'Show detailed match explanations by default', default: false },
-    compactMode: { type: 'boolean', description: 'Use compact layout for dashboard', default: false },
+    showScore: { 
+        type: 'boolean', 
+        description: 'Show match score percentage', 
+        default: true,
+        mechanism: 'LocalMatchPreview.tsx conditionally renders score badge when true. Affects: user trust calibration, decision time for match acceptance/rejection.'
+    },
+    showDetails: { 
+        type: 'boolean', 
+        description: 'Show detailed match explanations by default', 
+        default: false,
+        mechanism: 'LocalMatchPreview.tsx toggles expansion of match detail accordion on mount. Affects: information density, cognitive load, match verification accuracy.'
+    },
+    compactMode: { 
+        type: 'boolean', 
+        description: 'Use compact layout for dashboard', 
+        default: false,
+        mechanism: 'LocalMatchPreview.tsx applies compact CSS class reducing padding/font-size. Affects: scan density on dashboard, match discovery rate per unit time.'
+    },
 };
 
 /** DashboardLocalMatch */
 export const dashboardLocalMatchParamSpec: ParamSpec = {
-    minScore: { type: 'number', description: 'Minimum score to show a match', default: 0.4, min: 0, max: 1 },
-    maxResults: { type: 'number', description: 'Maximum number of matches to display', default: 5, min: 1, max: 20 },
+    minScore: { 
+        type: 'number', 
+        description: 'Minimum score to show a match', 
+        default: 0.4, 
+        min: 0, 
+        max: 1,
+        mechanism: 'DashboardLocalMatch.tsx filters match engine results client-side before rendering. Affects: precision/recall tradeoff directly - higher = fewer false positives but more missed matches.'
+    },
+    maxResults: { 
+        type: 'number', 
+        description: 'Maximum number of matches to display', 
+        default: 5, 
+        min: 1, 
+        max: 20,
+        mechanism: 'DashboardLocalMatch.tsx slices sorted match array after minScore filter. Affects: dashboard clutter, user attention allocation, discovery of lower-ranked matches.'
+    },
 };
 
 /** LocalMatchesPanel */
 export const localMatchesPanelParamSpec: ParamSpec = {
-    groupBySeam: { type: 'boolean', description: 'Group matches by seam type', default: true },
-    showScores: { type: 'boolean', description: 'Show match scores', default: true },
+    groupBySeam: { 
+        type: 'boolean', 
+        description: 'Group matches by seam type', 
+        default: true,
+        mechanism: 'LocalMatchesPanel.tsx renders matches in seam-grouped sections vs flat list. Affects: mental model alignment, cross-seam comparison efficiency.'
+    },
+    showScores: { 
+        type: 'boolean', 
+        description: 'Show match scores', 
+        default: true,
+        mechanism: 'LocalMatchesPanel.tsx conditionally renders score column in match table. Affects: same as LocalMatchPreview.showScore but at panel level.'
+    },
 };
 
 // --- Strategy Configs ---

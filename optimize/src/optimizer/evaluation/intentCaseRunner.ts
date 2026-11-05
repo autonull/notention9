@@ -10,6 +10,7 @@ export interface IntentCaseMetrics {
     completion: number;
     steps: number;
     corrections: number;
+    timeToCaptureMs: number;
 }
 
 export interface IntentCaseRunResult {
@@ -23,6 +24,8 @@ export interface RunIntentCaseConfig {
     baseURL: string;
     navigationTimeoutMs: number;
     extractionWaitMs: number;
+    extractionSelector?: string; // Event-driven wait selector
+    seed?: Record<string, unknown>; // For browser context seeding (B1.4)
 }
 
 /**
@@ -48,9 +51,13 @@ export async function runIntentCase(
     caseData: IntentCase,
     config: RunIntentCaseConfig
 ): Promise<IntentCaseRunResult> {
+    // Seed browser context for determinism (B1.4)
+    await seedBrowserContext(page, caseData.seed ?? {});
+
     let steps = 0;
     const details: string[] = [];
     let corrections = 0;
+    const startTime = Date.now();
 
     try {
         // Navigate to dashboard
@@ -73,10 +80,22 @@ export async function runIntentCase(
         steps++;
         details.push('Submitted capture');
 
-        // Wait for extraction to complete
-        await page.waitForTimeout(config.extractionWaitMs);
+        // Wait for extraction to complete - event-driven with timeout fallback
+        if (config.extractionSelector) {
+            try {
+                await page.waitForSelector(config.extractionSelector, { state: 'visible', timeout: config.extractionWaitMs });
+                details.push('Extraction completed (event-driven)');
+            } catch {
+                details.push('Extraction selector timeout, continuing...');
+            }
+        } else {
+            await page.waitForTimeout(config.extractionWaitMs);
+            details.push('Waited for extraction (fixed timeout)');
+        }
         steps++;
         details.push('Waited for extraction');
+
+        const timeToCaptureMs = Date.now() - startTime;
 
         // Count extracted properties
         const properties = await page.locator('[data-testid="extracted-property"], .badge:has-text(":")').count();
@@ -118,15 +137,49 @@ export async function runIntentCase(
 
         return {
             success,
-            metrics: { completion, steps, corrections },
+            metrics: { completion, steps, corrections, timeToCaptureMs },
             details,
         };
     } catch (error) {
+        const timeToCaptureMs = Date.now() - startTime;
         return {
             success: false,
-            metrics: { completion: 0, steps, corrections },
+            metrics: { completion: 0, steps, corrections, timeToCaptureMs },
             details: [...details, `Error: ${error instanceof Error ? error.message : String(error)}`],
             error: error instanceof Error ? error.message : String(error),
         };
     }
+}
+
+/**
+ * Seed browser context for deterministic runs (B1.4)
+ * Freezes clock, seeds RNG, blocks network egress except preview origin
+ */
+async function seedBrowserContext(page: Page, seed: Record<string, unknown>): Promise<void> {
+    // Freeze time to a fixed timestamp for deterministic behavior
+    const fixedTime = new Date('2026-01-01T00:00:00Z').getTime();
+    await page.addInitScript((time) => {
+        // Freeze Date.now() - simpler approach that works
+        const originalNow = Date.now;
+        (Date as any).now = () => time;
+        
+        // Seed Math.random with a deterministic PRNG
+        let seedValue = time;
+        const random = (): number => {
+            seedValue = (seedValue * 1664525 + 1013904223) % 4294967296;
+            return seedValue / 4294967296;
+        };
+        globalThis.Math.random = random;
+    }, fixedTime);
+
+    // Block all network requests except to the preview origin
+    const previewOrigin = new URL((seed.baseURL as string) || 'http://localhost:4199').origin;
+    await page.route('**/*', async (route) => {
+        const url = route.request().url();
+        if (url.startsWith(previewOrigin)) {
+            await route.continue();
+        } else {
+            await route.abort('blockedbyclient');
+        }
+    });
 }
