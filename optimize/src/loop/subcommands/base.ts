@@ -17,6 +17,8 @@ export interface SubcommandOptions {
     outputDir: string;
     dry: boolean;
     json: boolean;
+    source?: 'discovery' | 'friction';
+    since?: string;
 }
 
 export interface SubcommandResult {

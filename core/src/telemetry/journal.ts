@@ -320,3 +320,26 @@ export function getFrictionSignals(since?: string): FrictionSignal[] {
 export function generateFrictionDigest(): string {
     return getJournal().generateWeeklyDigest();
 }
+
+/**
+ * Get aggregated friction counts with half-life weighted counts
+ * Returns { kind, count, halfLifeWeightedCount } for each friction kind
+ */
+export function getFrictionCounts(since?: string): Array<{ kind: FrictionKind; count: number; halfLifeWeightedCount: number }> {
+    const signals = getJournal().getSignals(since);
+    
+    const byKind = new Map<FrictionKind, { count: number; halfLifeWeightedCount: number }>();
+    
+    for (const signal of signals) {
+        const existing = byKind.get(signal.kind) ?? { count: 0, halfLifeWeightedCount: 0 };
+        existing.count += signal.count;
+        existing.halfLifeWeightedCount += signal.weight;
+        byKind.set(signal.kind, existing);
+    }
+    
+    return Array.from(byKind.entries()).map(([kind, data]) => ({
+        kind,
+        count: data.count,
+        halfLifeWeightedCount: data.halfLifeWeightedCount,
+    })).sort((a, b) => b.halfLifeWeightedCount - a.halfLifeWeightedCount);
+}

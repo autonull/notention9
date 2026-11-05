@@ -29,6 +29,8 @@ interface LoopParsedFlags {
     dry: boolean;
     output: string;
     positionals: string[];
+    source?: string;
+    since?: string;
 }
 
 function parseLoopFlags(args: string[]): LoopParsedFlags {
@@ -44,15 +46,37 @@ function parseLoopFlags(args: string[]): LoopParsedFlags {
         if (outputFlag) output = outputFlag.split('=')[1];
     }
 
-    const flagSet = new Set(['--json', '--dry', '--output']);
+    let source: string | undefined;
+    const sourceIndex = args.findIndex(r => r === '--source');
+    if (sourceIndex !== -1 && sourceIndex + 1 < args.length) {
+        source = args[sourceIndex + 1];
+    } else {
+        const sourceFlag = args.find(r => r.startsWith('--source='));
+        if (sourceFlag) source = sourceFlag.split('=')[1];
+    }
+
+    let since: string | undefined;
+    const sinceIndex = args.findIndex(r => r === '--since');
+    if (sinceIndex !== -1 && sinceIndex + 1 < args.length) {
+        since = args[sinceIndex + 1];
+    } else {
+        const sinceFlag = args.find(r => r.startsWith('--since='));
+        if (sinceFlag) since = sinceFlag.split('=')[1];
+    }
+
+    const flagSet = new Set(['--json', '--dry', '--output', '--source', '--since']);
     const positionals = args.filter((r, i) => {
         if (flagSet.has(r)) return false;
         if (r.startsWith('--output=')) return false;
+        if (r.startsWith('--source=')) return false;
+        if (r.startsWith('--since=')) return false;
         if (i === outputIndex + 1 && args[outputIndex] === '--output') return false;
+        if (i === sourceIndex + 1 && args[sourceIndex] === '--source') return false;
+        if (i === sinceIndex + 1 && args[sinceIndex] === '--since') return false;
         return true;
     });
 
-    return { json, dry, output, positionals };
+    return { json, dry, output, positionals, source, since };
 }
 
 function printLoopHelp(): void {
@@ -61,7 +85,7 @@ Usage: pnpm loop <command> [args]
 
 Commands:
   discover [--dry] [--output <dir>]     Discover seams, strategies, tasks, golden cases
-  prioritize [--dry] [--output <dir>]   Prioritize discovered problems by impact
+  prioritize [--dry] [--output <dir>] [--source <discovery|friction>] [--since <date>]  Prioritize problems by impact
   synthesize [--dry] [--output <dir>]   Synthesize candidate strategies (T1-T2)
   evaluate [--dry] [--output <dir>]     Evaluate candidates against baseline
   adopt [--dry] [--output <dir>]        Adopt winning candidate with evidence gate
@@ -74,6 +98,8 @@ Options:
   --json                   Output as JSON
   --dry                    Dry run (no file writes)
   --output <dir>           Output directory for artifacts (default: loop/runs)
+  --source <type>          Source for prioritize: discovery (default) or friction
+  --since <date>           Only consider signals since date (ISO format, e.g. 2026-01-01)
 `);
 }
 
@@ -85,7 +111,7 @@ export async function main(): Promise<number> {
         return 0;
     }
 
-    const { json, dry, output, positionals } = parseLoopFlags(rawArgs);
+    const { json, dry, output, positionals, source, since } = parseLoopFlags(rawArgs);
 
     if (positionals.length === 0) {
         printLoopHelp();
@@ -104,7 +130,7 @@ export async function main(): Promise<number> {
                 return runDiscover(config, output, dry, json);
             }
             case 'prioritize': {
-                return runPrioritize(config, output, dry, json);
+                return runPrioritize(config, output, dry, json, source as 'discovery' | 'friction' | undefined, since);
             }
             case 'synthesize': {
                 return runSynthesize(config, output, dry, json);

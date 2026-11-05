@@ -4,7 +4,12 @@
 
 import { BaseSubcommand, SubcommandConfig, SubcommandOptions } from './base.js';
 import { loadDiscoveredArtifact } from '../artifactIO.js';
-import { deriveProblemsFromDiscovery, prioritizeProblems } from '../../loop/prioritize.js';
+import { 
+    deriveProblemsFromDiscovery, 
+    prioritizeProblems,
+    deriveProblemsFromFriction,
+    createCandidateHypothesesFromFriction,
+} from '../../loop/prioritize.js';
 
 export class PrioritizeSubcommand extends BaseSubcommand {
     constructor(config: SubcommandConfig, options: SubcommandOptions) {
@@ -17,6 +22,42 @@ export class PrioritizeSubcommand extends BaseSubcommand {
 
     protected async execute(): Promise<number> {
         this.logStep('PRIORITIZE');
+        
+        // Handle --source friction mode
+        if (this.options.source === 'friction') {
+            this.logInfo('Prioritizing problems from friction journal...\n');
+            
+            const problems = deriveProblemsFromFriction(this.options.since);
+            this.logInfo(`Derived ${problems.length} problems from friction journal`);
+            
+            const prioritized = prioritizeProblems(problems);
+            
+            this.logInfo('Prioritized Problems (from friction):');
+            for (const p of prioritized) {
+                console.log(`   ${p.rank}. [${p.impactScore}] ${p.type}: ${p.description}`);
+                if (!this.options.dry) console.log(`      Evidence: ${p.evidence.join('; ')}`);
+            }
+            
+            // Also output candidate hypotheses
+            const hypotheses = createCandidateHypothesesFromFriction(this.options.since);
+            if (hypotheses.length > 0) {
+                this.logInfo('\nCandidate Hypotheses:');
+                for (const h of hypotheses) {
+                    console.log(`   - ${h.id}: ${h.seamRole} seam params [${h.paramHypotheses.join(', ')}]`);
+                    console.log(`     Priority: ${h.priority} | Provenance: ${h.provenance.class}/${h.provenance.source}`);
+                    console.log(`     ${h.description}`);
+                }
+            }
+            
+            if (!this.options.dry) {
+                await this.saveArtifact(this.paths.prioritized, { problems: prioritized, hypotheses });
+                this.logSuccess(`Prioritized problems and hypotheses written to ${this.paths.prioritized}`);
+            }
+            
+            this.printDryRun({ problems: prioritized, hypotheses });
+            return 0;
+        }
+        
         this.logInfo('Prioritizing discovered problems by impact...\n');
 
         // Load discovered artifacts
@@ -56,8 +97,10 @@ export async function runPrioritize(
     config: SubcommandConfig,
     outputDir: string,
     dry: boolean,
-    json: boolean
+    json: boolean,
+    source?: 'discovery' | 'friction',
+    since?: string
 ): Promise<number> {
-    const subcommand = new PrioritizeSubcommand(config, { outputDir, dry, json });
+    const subcommand = new PrioritizeSubcommand(config, { outputDir, dry, json, source, since });
     return subcommand.run();
 }

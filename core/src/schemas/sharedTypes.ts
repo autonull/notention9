@@ -25,6 +25,16 @@ export interface StrategyArtifact {
     componentType?: string;
 }
 
+export interface VerdictSummary {
+    n: number;              // Sample size (cases × repetitions)
+    mde: number;            // Minimum detectable effect
+    evidenceClass: 'measured' | 'observed' | 'hypothesized' | 'asserted';
+    primaryMetric: string;  // e.g., 'completion'
+    primaryDelta: number;   // Effect size
+    pValue?: number;        // Statistical significance
+    confidenceInterval?: [number, number];
+}
+
 export interface Revision {
     id: string;
     seamRole: string;
@@ -35,6 +45,8 @@ export interface Revision {
     parentRevisionId?: string;
     evaluationId?: string;
     verdict?: 'pass' | 'fail' | 'inconclusive';
+    verdictSummary?: VerdictSummary;  // B4.2: Verdict summary with n, MDE, evidenceClass
+    reason?: ResolutionReason;         // B4.2: Resolution reason (why this revision)
     status: RevisionStatus;
     consentedBy?: string;
     consentedAt?: string;

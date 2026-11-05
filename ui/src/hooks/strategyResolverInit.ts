@@ -188,21 +188,47 @@ export async function registerUIStrategies(): Promise<void> {
 /**
  * Apply revision params from localStorage to registered strategies
  * This enables the optimizer to test parameter changes in browser evaluations
+ * B4.3: Proper error handling for failure modes - visible warnings, never silent no-op
  */
 export function applyPendingRevisionParams(): void {
     if (typeof window === 'undefined') return;
     
+    // Track if we successfully applied any patch
+    let appliedAny = false;
+    let hadErrors = false;
+    
     try {
         const stored = localStorage.getItem('pendingRevisionData');
-        if (!stored) return;
+        if (!stored) {
+            console.log('[StrategySystem] No pending revision data to apply');
+            return;
+        }
         
-        const patch = JSON.parse(stored) as Record<string, unknown>;
-        if (!patch || Object.keys(patch).length === 0) return;
+        // B4.3: Handle malformed JSON
+        let patch: Record<string, unknown>;
+        try {
+            patch = JSON.parse(stored) as Record<string, unknown>;
+        } catch (parseErr) {
+            console.error('[StrategySystem] ❌ Malformed pendingRevisionData JSON:', parseErr);
+            // Clear corrupted data
+            localStorage.removeItem('pendingRevisionData');
+            localStorage.removeItem('pendingRevision');
+            hadErrors = true;
+            return;
+        }
+        
+        if (!patch || Object.keys(patch).length === 0) {
+            console.log('[StrategySystem] Empty patch, nothing to apply');
+            localStorage.removeItem('pendingRevisionData');
+            localStorage.removeItem('pendingRevision');
+            return;
+        }
         
         console.log('[StrategySystem] Applying pending revision params:', patch);
         
         // Find which strategy this patch belongs to by checking paramSpecs
         const allConfigs = getAllStrategyConfigs();
+        
         for (const strategyConfig of allConfigs) {
             const paramSpec = strategyConfig.paramSpec;
             const paramKeys = Object.keys(paramSpec);
@@ -211,50 +237,125 @@ export function applyPendingRevisionParams(): void {
             const matchingKeys = Object.keys(patch).filter(k => paramKeys.includes(k));
             if (matchingKeys.length === 0) continue;
             
+            // B4.3: Check for unknown parameters in patch
+            const unknownKeys = Object.keys(patch).filter(k => !paramKeys.includes(k));
+            if (unknownKeys.length > 0) {
+                console.warn(`[StrategySystem] ⚠️ Patch contains unknown parameters for ${strategyConfig.id}: ${unknownKeys.join(', ')}. They will be ignored.`);
+            }
+            
             // This patch applies to this strategy - re-register with merged props
             const seamId = strategyConfig.seam.id;
             const existingStrategy = strategyRegistry.get(seamId, strategyConfig.id);
             
-            if (existingStrategy) {
-                // Get the component factory for this strategy
-                const componentFactory = strategyComponentFactories.get(strategyConfig.id);
-                if (!componentFactory) {
-                    console.warn(`[StrategySystem] No component factory found for strategy ${strategyConfig.id}`);
-                    continue;
-                }
-                
-                // Unregister old strategy
-                strategyRegistry.unregister(seamId, strategyConfig.id);
-                
-                // Merge default props with patch
-                const mergedProps = { ...existingStrategy.getDefaultProps(), ...patch };
-                
-                // Re-register with merged props using the same component
-                const newStrategy = createComponentStrategy(
-                    existingStrategy.id,
-                    existingStrategy.seam,
-                    componentFactory,
-                    existingStrategy.version,
-                    mergedProps,
-                    existingStrategy.params
-                );
-                
-                strategyRegistry.register(newStrategy);
-                // Update the component factory map (though it should be the same)
-                strategyComponentFactories.set(strategyConfig.id, componentFactory);
-                console.log(`[StrategySystem] Updated strategy ${strategyConfig.id} with revision params`);
+            // B4.3: Unknown strategyId
+            if (!existingStrategy) {
+                console.error(`[StrategySystem] ❌ Unknown strategyId: ${strategyConfig.id} for seam ${seamId}. Available strategies: ${strategyRegistry.getAllForSeam(seamId).map(s => s.id).join(', ')}`);
+                hadErrors = true;
+                continue;
             }
+            
+            // Get the component factory for this strategy
+            const componentFactory = strategyComponentFactories.get(strategyConfig.id);
+            if (!componentFactory) {
+                console.error(`[StrategySystem] ❌ No component factory found for strategy ${strategyConfig.id}`);
+                hadErrors = true;
+                continue;
+            }
+            
+            // Validate patch against paramSpec (check for invalid values)
+            const validation = validatePatchAgainstSpec(paramSpec, patch);
+            if (!validation.valid) {
+                console.error(`[StrategySystem] ❌ Patch validation failed for ${strategyConfig.id}: ${validation.errors.join('; ')}`);
+                hadErrors = true;
+                continue;
+            }
+            
+            // Unregister old strategy
+            strategyRegistry.unregister(seamId, strategyConfig.id);
+            
+            // Merge default props with patch
+            const mergedProps = { ...existingStrategy.getDefaultProps(), ...patch };
+            
+            // Re-register with merged props using the same component
+            const newStrategy = createComponentStrategy(
+                existingStrategy.id,
+                existingStrategy.seam,
+                componentFactory,
+                existingStrategy.version,
+                mergedProps,
+                existingStrategy.params
+            );
+            
+            strategyRegistry.register(newStrategy);
+            // Update the component factory map (though it should be the same)
+            strategyComponentFactories.set(strategyConfig.id, componentFactory);
+            console.log(`[StrategySystem] ✅ Updated strategy ${strategyConfig.id} with revision params: ${matchingKeys.join(', ')}`);
+            appliedAny = true;
             
             // Assuming one patch per strategy for now
             break;
         }
         
-        // Clear the pending revision data after applying
-        localStorage.removeItem('pendingRevisionData');
-        localStorage.removeItem('pendingRevision');
+        if (!appliedAny && !hadErrors) {
+            console.warn('[StrategySystem] ⚠️ No matching strategy found for patch keys:', Object.keys(patch));
+            // Don't clear - let it persist for debugging
+        } else if (appliedAny) {
+            // Clear the pending revision data after successful apply
+            localStorage.removeItem('pendingRevisionData');
+            localStorage.removeItem('pendingRevision');
+        }
     } catch (err) {
-        console.warn('[StrategySystem] Failed to apply pending revision params:', err);
+        console.error('[StrategySystem] ❌ Unexpected error applying pending revision params:', err);
+        hadErrors = true;
     }
+    
+    // Show user-visible notification if there were errors
+    if (hadErrors) {
+        // In a real app, this would show a toast/notification
+        // For now, we log visibly
+        console.error('[StrategySystem] ⚠️ Revision application completed with errors. Check console for details.');
+    }
+}
+
+/**
+ * Validate a patch against a ParamSpec
+ * Returns { valid: boolean, errors: string[] }
+ */
+function validatePatchAgainstSpec(paramSpec: Record<string, any>, patch: Record<string, unknown>): { valid: boolean; errors: string[] } {
+    const errors: string[] = [];
+    
+    for (const [key, value] of Object.entries(patch)) {
+        const def = paramSpec[key];
+        if (!def) continue; // Unknown keys handled separately
+        
+        switch (def.type) {
+            case 'number':
+                if (typeof value !== 'number') {
+                    errors.push(`${key}: expected number, got ${typeof value}`);
+                } else {
+                    if (def.min !== undefined && value < def.min) errors.push(`${key}: ${value} below minimum ${def.min}`);
+                    if (def.max !== undefined && value > def.max) errors.push(`${key}: ${value} above maximum ${def.max}`);
+                }
+                break;
+            case 'boolean':
+                if (typeof value !== 'boolean') {
+                    errors.push(`${key}: expected boolean, got ${typeof value}`);
+                }
+                break;
+            case 'enum':
+                if (!def.options?.includes(value as string)) {
+                    errors.push(`${key}: '${value}' not in allowed options [${def.options?.join(', ')}]`);
+                }
+                break;
+            case 'string':
+                if (typeof value !== 'string') {
+                    errors.push(`${key}: expected string, got ${typeof value}`);
+                }
+                break;
+        }
+    }
+    
+    return { valid: errors.length === 0, errors };
 }
 
 import { DEFAULT_PROFILES, DEFAULT_MATCH_DISPLAY_EXPERIMENT } from '@notention/core/ui/profileDefaults';

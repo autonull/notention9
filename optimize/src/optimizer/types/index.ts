@@ -24,6 +24,8 @@ export interface OptimizerConfig {
     minPromote: number;
     /** Maximum intent cases to use (for faster test runs) */
     maxIntentCases?: number;
+    /** Enable friction-driven candidate generation (default: true) */
+    useFrictionCandidates?: boolean;
 }
 
 /**
@@ -47,11 +49,17 @@ export interface OptimizerCandidate {
  * How this candidate was generated
  */
 export interface CandidateProvenance {
-    generator: 'grid' | 'random' | 'model' | 'human';
+    generator: 'grid' | 'random' | 'model' | 'human' | 'friction';
     model?: string;
     seed?: number;
     parentRevisionId?: string;
     generatedAt: string;
+    frictionProvenance?: {
+        class: 'observed' | 'hypothesized' | 'measured' | 'asserted';
+        source: 'journal' | 'simulator' | 'human' | 'model';
+        kinds: string[];
+        counts: Record<string, number>;
+    };
 }
 
 /**
@@ -176,5 +184,6 @@ export function defaultOptimizerConfig(): OptimizerConfig {
         initialSliceFraction: 0.25,
         minPromote: 2,
         maxIntentCases: 10,
+        useFrictionCandidates: true,
     };
 }

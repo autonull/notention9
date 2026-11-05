@@ -11,6 +11,7 @@ import {
     COMPLEXITY_WEIGHTS,
     MISSING_SEAM_FREQUENCY,
 } from './prioritizeConstants.js';
+import { getFrictionCounts, type FrictionKind } from '@notention/core/telemetry/journal';
 
 export interface DiscoveredProblem {
     id: string;
@@ -276,4 +277,174 @@ export function deriveProblemsFromDiscovery(
     }
 
     return problems;
+}
+
+/**
+ * Mapping from friction kinds to seam roles and candidate parameter hypotheses
+ * Based on TODO.14 B3.2 - friction kinds → seam/param hypotheses
+ */
+export interface FrictionToSeamMapping {
+    seamRole: string;
+    paramHypotheses: string[]; // ParamSpec keys to investigate
+    problemType: DiscoveredProblem['type'];
+}
+
+/**
+ * Maps friction kind to seam role and parameter hypotheses
+ * - capture_abandoned → capture seam params (debounceMs, minChars, etc.)
+ * - correction → extraction params (matchThreshold, etc.)
+ * - match_rejected → match seam params (scoreThreshold, etc.)
+ * - match_viewed → match seam params (resultLimit, etc.)
+ * - match_accepted → match seam params (positive signal, but low friction)
+ * - clarification_requested → elicit seam params
+ * - capture_started → capture seam params (baseline)
+ */
+const FRICTION_TO_SEAM_MAP: Record<FrictionKind, FrictionToSeamMapping> = {
+    capture_abandoned: {
+        seamRole: 'capture',
+        paramHypotheses: ['debounceMs', 'minChars', 'maxSuggestions', 'showOnFocus'],
+        problemType: 'abandoned-task',
+    },
+    correction: {
+        seamRole: 'match',
+        paramHypotheses: ['matchThreshold', 'fuzzyThreshold', 'maxResults'],
+        problemType: 'repeated-correction',
+    },
+    match_rejected: {
+        seamRole: 'match',
+        paramHypotheses: ['scoreThreshold', 'rankingStrategy', 'maxResults'],
+        problemType: 'failed-match',
+    },
+    match_viewed: {
+        seamRole: 'match',
+        paramHypotheses: ['resultLimit', 'previewEnabled', 'groupByType'],
+        problemType: 'failed-match',
+    },
+    match_accepted: {
+        seamRole: 'match',
+        paramHypotheses: ['scoreThreshold', 'rankingStrategy'],
+        problemType: 'failed-match',
+    },
+    clarification_requested: {
+        seamRole: 'elicit',
+        paramHypotheses: ['maxQuestions', 'questionStrategy', 'autoElicit'],
+        problemType: 'failed-match',
+    },
+    capture_started: {
+        seamRole: 'capture',
+        paramHypotheses: ['debounceMs', 'minChars'],
+        problemType: 'abandoned-task',
+    },
+};
+
+/**
+ * Derive problems from friction journal signals
+ * Maps friction kinds to seam/param hypotheses with provenance
+ */
+export function deriveProblemsFromFriction(since?: string): DiscoveredProblem[] {
+    const frictionCounts = getFrictionCounts(since);
+    const problems: DiscoveredProblem[] = [];
+
+    for (const { kind, count, halfLifeWeightedCount } of frictionCounts) {
+        const mapping = FRICTION_TO_SEAM_MAP[kind as FrictionKind];
+        if (!mapping) continue;
+
+        // Only create problems for friction kinds that indicate actual issues
+        // capture_started and match_accepted are positive/neutral signals
+        if (kind === 'capture_started' || kind === 'match_accepted') continue;
+
+        // Apply variation threshold (O6) - require repeated patterns
+        const thresholdKey = kind === 'correction' ? 'repeatedCorrection' :
+                           kind === 'match_rejected' ? 'failedMatch' : 'abandonedTask';
+        const threshold = DEFAULT_VARIATION_THRESHOLDS[thresholdKey as keyof typeof DEFAULT_VARIATION_THRESHOLDS] ?? 3;
+        
+        if (count < threshold) continue; // Not enough evidence yet
+
+        const id = `friction-${kind}-${mapping.seamRole}`;
+        problems.push(createProblem(
+            id,
+            mapping.problemType,
+            `Friction: ${kind} (${count}×, weight ${halfLifeWeightedCount.toFixed(2)}) → ${mapping.seamRole} seam params: ${mapping.paramHypotheses.join(', ')}`,
+            {
+                seamId: mapping.seamRole,
+                frequency: count,
+                severity: Math.min(5, Math.max(2, Math.floor(halfLifeWeightedCount / 2) + 2)),
+                recoverability: 3,
+                reach: 4,
+                evidence: [
+                    `Friction kind: ${kind}`,
+                    `Count: ${count}`,
+                    `Half-life weighted count: ${halfLifeWeightedCount.toFixed(2)}`,
+                    `Affected seam: ${mapping.seamRole}`,
+                    `Candidate params: ${mapping.paramHypotheses.join(', ')}`,
+                    `Provenance: observed/journal`,
+                ],
+            }
+        ));
+    }
+
+    return problems;
+}
+
+/**
+ * Create candidate hypothesis template with provenance
+ * Each friction-driven candidate carries provenance: {class: 'observed', source: 'journal', kinds, counts}
+ */
+export interface CandidateHypothesis {
+    id: string;
+    seamRole: string;
+    paramHypotheses: string[];
+    provenance: {
+        class: 'observed' | 'hypothesized' | 'measured' | 'asserted';
+        source: 'journal' | 'simulator' | 'human' | 'model';
+        kinds: FrictionKind[];
+        counts: Record<FrictionKind, number>;
+    };
+    description: string;
+    priority: number; // Higher = more urgent
+}
+
+export function createCandidateHypothesesFromFriction(since?: string): CandidateHypothesis[] {
+    const frictionCounts = getFrictionCounts(since);
+    const hypotheses: CandidateHypothesis[] = [];
+
+    const kindCounts: Record<FrictionKind, number> = {
+        capture_started: 0,
+        capture_abandoned: 0,
+        correction: 0,
+        match_viewed: 0,
+        match_rejected: 0,
+        match_accepted: 0,
+        clarification_requested: 0,
+    };
+
+    for (const { kind, count, halfLifeWeightedCount } of frictionCounts) {
+        kindCounts[kind as FrictionKind] = count;
+        
+        const mapping = FRICTION_TO_SEAM_MAP[kind as FrictionKind];
+        if (!mapping) continue;
+        if (kind === 'capture_started' || kind === 'match_accepted') continue;
+
+        const thresholdKey = kind === 'correction' ? 'repeatedCorrection' :
+                           kind === 'match_rejected' ? 'failedMatch' : 'abandonedTask';
+        const threshold = DEFAULT_VARIATION_THRESHOLDS[thresholdKey as keyof typeof DEFAULT_VARIATION_THRESHOLDS] ?? 3;
+        
+        if (count < threshold) continue;
+
+        hypotheses.push({
+            id: `hyp-${kind}-${mapping.seamRole}-${Date.now()}`,
+            seamRole: mapping.seamRole,
+            paramHypotheses: mapping.paramHypotheses,
+            provenance: {
+                class: 'observed',
+                source: 'journal',
+                kinds: [kind as FrictionKind],
+                counts: kindCounts,
+            },
+            description: `Observed friction: ${kind} (${count}×). Investigate ${mapping.seamRole} seam params: ${mapping.paramHypotheses.join(', ')}`,
+            priority: Math.floor(halfLifeWeightedCount * 10),
+        });
+    }
+
+    return hypotheses.sort((a, b) => b.priority - a.priority);
 }

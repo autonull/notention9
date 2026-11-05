@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useToast } from '../../hooks/useToast';
 import { getRevisionStore } from '@notention/core/telemetry/revisionStore';
-import { type Revision } from '@notention/core/telemetry/revisionStore';
+import { type Revision, type VerdictSummary, type ResolutionReason } from '@notention/core/telemetry/revisionStore';
 
 const STATUS_COLORS: Record<string, string> = {
     draft: 'text-gray-400 bg-gray-800',
@@ -27,8 +27,97 @@ const STATUS_LABELS: Record<string, string> = {
     rejected: 'Rejected',
 };
 
+const EVIDENCE_CLASS_COLORS: Record<string, string> = {
+    measured: 'text-red-400 bg-red-900/30',
+    observed: 'text-yellow-400 bg-yellow-900/30',
+    hypothesized: 'text-green-400 bg-green-900/30',
+    asserted: 'text-gray-400 bg-gray-800',
+};
+
 interface RevisionsTabProps {
     userId?: string;
+}
+
+function formatDate(iso: string) {
+    return new Date(iso).toLocaleString(undefined, {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
+}
+
+function formatReason(reason: ResolutionReason | undefined): string {
+    if (!reason) return 'Unknown';
+    switch (reason.kind) {
+        case 'override':
+            return `Override: ${reason.strategyId}`;
+        case 'experiment':
+            return `Experiment: ${reason.experimentId} (variant: ${reason.variantId})`;
+        case 'revision':
+            return `Revision: ${reason.revisionId} (${reason.seamRole})`;
+        case 'manual-profile':
+            return `Manual Profile: ${reason.profileId}`;
+        case 'policy':
+            return `Policy: ${reason.policyId} (rule: ${reason.ruleId})`;
+        case 'default-profile':
+            return `Default Profile: ${reason.profileId}`;
+        case 'fallback':
+            return `Fallback: ${reason.seamId}`;
+        default:
+            return 'Unknown';
+    }
+}
+
+function renderVerdictSummary(verdict?: VerdictSummary) {
+    if (!verdict) return null;
+    
+    const evidenceColor = EVIDENCE_CLASS_COLORS[verdict.evidenceClass] ?? 'text-gray-400 bg-gray-800';
+    
+    return (
+        <details className="group">
+            <summary className="cursor-pointer text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1">
+                <span>Verdict Summary</span>
+                <span className="text-gray-500">▼</span>
+            </summary>
+            <div className="mt-2 p-3 bg-gray-900 rounded text-xs text-gray-300 space-y-1">
+                <div className="flex justify-between">
+                    <span>Evidence Class:</span>
+                    <span className={`px-1.5 py-0.5 rounded text-xs ${evidenceColor}`}>{verdict.evidenceClass}</span>
+                </div>
+                <div className="flex justify-between">
+                    <span>Sample Size (n):</span>
+                    <span>{verdict.n}</span>
+                </div>
+                <div className="flex justify-between">
+                    <span>MDE:</span>
+                    <span>{verdict.mde.toFixed(3)}</span>
+                </div>
+                <div className="flex justify-between">
+                    <span>Primary Metric:</span>
+                    <span>{verdict.primaryMetric}</span>
+                </div>
+                <div className="flex justify-between">
+                    <span>Primary Delta:</span>
+                    <span className={verdict.primaryDelta >= 0 ? 'text-green-400' : 'text-red-400'}>
+                        {verdict.primaryDelta >= 0 ? '+' : ''}{verdict.primaryDelta.toFixed(3)}
+                    </span>
+                </div>
+                {verdict.pValue !== undefined && (
+                    <div className="flex justify-between">
+                        <span>P-value:</span>
+                        <span>{verdict.pValue.toFixed(4)}</span>
+                    </div>
+                )}
+                {verdict.confidenceInterval && (
+                    <div className="flex justify-between">
+                        <span>95% CI:</span>
+                        <span>[{verdict.confidenceInterval[0].toFixed(3)}, {verdict.confidenceInterval[1].toFixed(3)}]</span>
+                    </div>
+                )}
+            </div>
+        </details>
+    );
 }
 
 export function RevisionsTab({ userId = 'default-user' }: RevisionsTabProps) {
@@ -37,6 +126,7 @@ export function RevisionsTab({ userId = 'default-user' }: RevisionsTabProps) {
     const [loading, setLoading] = useState(true);
     const [selectedSeam, setSelectedSeam] = useState<string>('capture');
     const [seamRoles] = useState<string[]>(['capture', 'elicit', 'match', 'layout']);
+    const [confirmRollbackId, setConfirmRollbackId] = useState<string | null>(null);
 
     const revisionStore = getRevisionStore();
 
@@ -82,25 +172,22 @@ export function RevisionsTab({ userId = 'default-user' }: RevisionsTabProps) {
     };
 
     const handleRollback = async (revisionId: string) => {
-        try {
-            await revisionStore.updateStatus(revisionId, 'rolled-back', {
-                rollbackReason: 'Manual rollback by user',
-                rolledBackAt: new Date().toISOString(),
-            });
-            addToast('Revision rolled back', 'success');
-            loadRevisions();
-        } catch (e) {
-            addToast(`Failed to rollback: ${e instanceof Error ? e.message : String(e)}`, 'error');
+        if (confirmRollbackId === revisionId) {
+            try {
+                await revisionStore.updateStatus(revisionId, 'rolled-back', {
+                    rollbackReason: 'Manual rollback by user (confirmed)',
+                    rolledBackAt: new Date().toISOString(),
+                });
+                addToast('Revision rolled back', 'success');
+                setConfirmRollbackId(null);
+                loadRevisions();
+            } catch (e) {
+                addToast(`Failed to rollback: ${e instanceof Error ? e.message : String(e)}`, 'error');
+            }
+        } else {
+            setConfirmRollbackId(revisionId);
+            addToast('Click again to confirm rollback', 'warning');
         }
-    };
-
-    const formatDate = (iso: string) => {
-        return new Date(iso).toLocaleString(undefined, {
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-        });
     };
 
     const getStatusBadge = (status: string) => {
@@ -175,61 +262,95 @@ export function RevisionsTab({ userId = 'default-user' }: RevisionsTabProps) {
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center gap-2 flex-wrap">
-                                        <details className="group">
-                                            <summary className="cursor-pointer text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1">
-                                                <span>Params</span>
-                                                <span className="text-gray-500">▼</span>
-                                            </summary>
-                                            <div className="mt-2 p-3 bg-gray-900 rounded text-xs text-gray-300 font-mono max-h-40 overflow-auto">
-                                                {JSON.stringify(revision.strategy.params ?? {}, null, 2)}
-                                            </div>
-                                        </details>
+                                    {/* Resolution Reason (B4.2) */}
+                                    {revision.reason && (
+                                        <div className="flex items-center gap-2 text-sm text-gray-300">
+                                            <span className="text-gray-500">Reason:</span>
+                                            <code className="bg-gray-900 px-2 py-1 rounded text-xs">{formatReason(revision.reason)}</code>
+                                        </div>
+                                    )}
 
-                                        {revision.status === 'awaiting-consent' && (
-                                            <>
-                                                <button
-                                                    onClick={() => handleConsent(revision.id, true)}
-                                                    className="px-3 py-1.5 text-sm bg-green-900/50 border border-green-500 text-green-300 rounded-lg hover:bg-green-900 transition-colors"
-                                                >
-                                                    Grant Consent
-                                                </button>
-                                                <button
-                                                    onClick={() => handleConsent(revision.id, false)}
-                                                    className="px-3 py-1.5 text-sm bg-red-900/50 border border-red-500 text-red-300 rounded-lg hover:bg-red-900 transition-colors"
-                                                >
-                                                    Deny
-                                                </button>
-                                            </>
-                                        )}
+                                    {/* Verdict Summary (B4.2) */}
+                                    {revision.verdictSummary && (
+                                        <div className="flex items-center gap-2">
+                                            {renderVerdictSummary(revision.verdictSummary)}
+                                        </div>
+                                    )}
+                                </div>
 
-                                        {revision.status === 'consented' && (
-                                            <button
-                                                onClick={() => handleActivate(revision.id)}
-                                                className="px-3 py-1.5 text-sm bg-blue-900/50 border border-blue-500 text-blue-300 rounded-lg hover:bg-blue-900 transition-colors"
-                                            >
-                                                Activate
-                                            </button>
-                                        )}
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    <details className="group">
+                                        <summary className="cursor-pointer text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1">
+                                            <span>Params</span>
+                                            <span className="text-gray-500">▼</span>
+                                        </summary>
+                                        <div className="mt-2 p-3 bg-gray-900 rounded text-xs text-gray-300 font-mono max-h-40 overflow-auto">
+                                            {JSON.stringify(revision.strategy.params ?? {}, null, 2)}
+                                        </div>
+                                    </details>
 
-                                        {revision.status === 'active' && (
-                                            <button
-                                                onClick={() => handleRollback(revision.id)}
-                                                className="px-3 py-1.5 text-sm bg-red-900/50 border border-red-500 text-red-300 rounded-lg hover:bg-red-900 transition-colors"
-                                            >
-                                                Rollback
-                                            </button>
-                                        )}
-
-                                        {revision.status === 'draft' && (
+                                    {revision.status === 'awaiting-consent' && (
+                                        <>
                                             <button
                                                 onClick={() => handleConsent(revision.id, true)}
-                                                className="px-3 py-1.5 text-sm bg-orange-900/50 border border-orange-500 text-orange-300 rounded-lg hover:bg-orange-900 transition-colors"
+                                                className="px-3 py-1.5 text-sm bg-green-900/50 border border-green-500 text-green-300 rounded-lg hover:bg-green-900 transition-colors"
                                             >
-                                                Request Consent
+                                                Grant Consent
                                             </button>
-                                        )}
-                                    </div>
+                                            <button
+                                                onClick={() => handleConsent(revision.id, false)}
+                                                className="px-3 py-1.5 text-sm bg-red-900/50 border border-red-500 text-red-300 rounded-lg hover:bg-red-900 transition-colors"
+                                            >
+                                                Deny
+                                            </button>
+                                        </>
+                                    )}
+
+                                    {revision.status === 'consented' && (
+                                        <button
+                                            onClick={() => handleActivate(revision.id)}
+                                            className="px-3 py-1.5 text-sm bg-blue-900/50 border border-blue-500 text-blue-300 rounded-lg hover:bg-blue-900 transition-colors"
+                                        >
+                                            Activate
+                                        </button>
+                                    )}
+
+                                    {revision.status === 'active' && (
+                                        <>
+                                            {confirmRollbackId === revision.id ? (
+                                                <>
+                                                    <button
+                                                        onClick={() => handleRollback(revision.id)}
+                                                        className="px-3 py-1.5 text-sm bg-red-600 border border-red-400 text-white rounded-lg hover:bg-red-700 transition-colors"
+                                                    >
+                                                        Confirm Rollback
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setConfirmRollbackId(null)}
+                                                        className="px-3 py-1.5 text-sm bg-gray-700 border border-gray-500 text-gray-300 rounded-lg hover:bg-gray-600 transition-colors"
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <button
+                                                    onClick={() => handleRollback(revision.id)}
+                                                    className="px-3 py-1.5 text-sm bg-red-900/50 border border-red-500 text-red-300 rounded-lg hover:bg-red-900 transition-colors"
+                                                >
+                                                    Rollback
+                                                </button>
+                                            )}
+                                        </>
+                                    )}
+
+                                    {revision.status === 'draft' && (
+                                        <button
+                                            onClick={() => handleConsent(revision.id, true)}
+                                            className="px-3 py-1.5 text-sm bg-orange-900/50 border border-orange-500 text-orange-300 rounded-lg hover:bg-orange-900 transition-colors"
+                                        >
+                                            Request Consent
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </div>

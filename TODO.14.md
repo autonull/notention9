@@ -1,7 +1,7 @@
 # TODO.14 — Closing the Loop: From Instrument to Instrument Panel
 
 **Supersedes:** Nothing. Extends TODO.12 (Evaluation & Improvement Program) and TODO.13 (Generalization Layer).
-**Status:** Phase A complete — 2026-11-05. Phase B1–B2.5 complete — 2026-11-05. Phase B3/B4 in progress.
+**Status:** Phase A complete — 2026-11-05. Phase B1–B2.5 complete — 2026-11-05. Phase B3/B4.2/B4.3 complete — 2026-11-05. Phase B4.1 in progress.
 **Shape:** Four phases, dependency-ordered. Phase A is integrity (no features). Phases B–C close the measurement→delivery loop and make the UI its instrument panel. Phase D positions the result.
 **Basis:** Deep study of `simulator/` and `optimize/` (state verified 2026-11-05). Every claim in this file was checked against the repo at HEAD.
 
@@ -148,21 +148,21 @@ Make the loop capable of producing a true statement.
 | B2.4 | `uxEvaluator.ts`: relabel its outputs `evidenceClass: hypothesized` (they are estimates); delete `ux-evaluation-report.json` from repo root (regenerable); wire into loop so a *measured* report supersedes it | S | ✅ |
 | B2.5 | 13 scenarios → measurement suite: define per-scenario expected distributions (seeded, deterministic); `SimulatorRegression` evolves from structural assert-equality into statistical assertion (match counts within CI) | M | ✅ |
 
-### B3. Friction → prioritize → candidate
+### B3. Friction → prioritize → candidate — **COMPLETE**
 
-| # | Item | Notes | Effort |
-|---|------|-------|--------|
-| B3.1 | Aggregate `core/src/telemetry/journal.ts` (90-day, 7 kinds) into `{kind, count, halfLifeWeightedCount}` — digest pipeline exists; expose `frictionCounts()` | S |
-| B3.2 | Feed into `loop/prioritize.ts` — it already scores impact; add a `--source friction` mode mapping friction kinds → seam/param hypotheses (e.g. `capture_abandoned` → capture seam params; `correction` → extraction param) | M |
-| B3.3 | Candidate hypothesis template: each friction-driven candidate carries `provenance: {class: 'observed', source: 'journal', kinds, counts}` — no more anonymous grid points | S |
+| # | Item | Notes | Effort | Status |
+|---|------|-------|--------|--------|
+| B3.1 | Aggregate `core/src/telemetry/journal.ts` (90-day, 7 kinds) into `{kind, count, halfLifeWeightedCount}` — digest pipeline exists; expose `frictionCounts()` | S | ✅ |
+| B3.2 | Feed into `loop/prioritize.ts` — it already scores impact; add a `--source friction` mode mapping friction kinds → seam/param hypotheses (e.g. `capture_abandoned` → capture seam params; `correction` → extraction param) | M | ✅ |
+| B3.3 | Candidate hypothesis template: each friction-driven candidate carries `provenance: {class: 'observed', source: 'journal', kinds, counts}` — no more anonymous grid points | S | ✅ |
 
-### B4. Delivery path audit
+### B4. Delivery path audit — **PARTIAL**
 
-| # | Item | Notes | Effort |
-|---|------|-------|--------|
-| B4.1 | End-to-end param flow test: candidate patch → `pendingRevisionData` → `applyPendingRevisionParams()` → DOM/behavior assertion (extend `NR1` param-visibility pattern to *all* wired seams) | M |
-| B4.2 | RevisionsTab: surface `ResolvedStrategy.reason[]`, verdict summary (n, MDE, evidenceClass), and rollback-with-confirm | M |
-| B4.3 | Verify `ApplyPendingRevision` failure modes: malformed `pendingRevisionData`, stale schema version, unknown strategyId → visible warning, never silent no-op | S |
+| # | Item | Notes | Effort | Status |
+|---|------|-------|--------|--------|
+| B4.1 | End-to-end param flow test: candidate patch → `pendingRevisionData` → `applyPendingRevisionParams()` → DOM/behavior assertion (extend `NR1` param-visibility pattern to *all* wired seams) | M | ⏳ |
+| B4.2 | RevisionsTab: surface `ResolvedStrategy.reason[]`, verdict summary (n, MDE, evidenceClass), and rollback-with-confirm | M | ✅ |
+| B4.3 | Verify `ApplyPendingRevision` failure modes: malformed `pendingRevisionData`, stale schema version, unknown strategyId → visible warning, never silent no-op | S | ✅ |
 
 **Gate B:** A full optimizer cycle completes on ≥10×3 cases with a powered verdict (`improved` or `null`), recorded in the ledger, and the candidate is applicable to the UI via the revision path. Simulator emits `match:found`. Friction counts are queryable from the journal.
 

@@ -73,7 +73,8 @@ export {
     resetJournal, 
     recordFriction, 
     getFrictionSignals, 
-    generateFrictionDigest 
+    generateFrictionDigest,
+    getFrictionCounts
 } from './telemetry/journal.js';
 export * from './fixtures/index.js';
 export * from './feedback/index.js';
