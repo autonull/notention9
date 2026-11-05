@@ -1,6 +1,5 @@
 import type { Property, Note } from '@notention/core';
 import type { ExtractionTestCase, MatchTestCase, CaptureTestCase } from './testCaseTypes.js';
-import type { EvaluationResult, TestCaseEvaluator } from './types.js';
 
 /**
  * Evaluation result for a single test case

@@ -1,6 +1,6 @@
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
-import type { CorpusAnalysis } from '../ingest.js';
+import type { CorpusAnalysis } from './types.js';
 
 /**
  * Write corpus analysis output files

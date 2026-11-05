@@ -4,8 +4,8 @@
 
 import { mkdir, writeFile, readFile, readdir } from 'fs/promises';
 import { join } from 'path';
-import { loadOrRunFastBaseline, runFastEvaluation } from '../synthesis/evaluation.js';
-import type { BaselineResult } from '../synthesis/evaluation.js';
+import { loadOrRunFastBaseline, runFastEvaluation } from '../synthesis/evaluation/index.js';
+import type { BaselineResult } from '../synthesis/evaluation/index.js';
 
 export async function ensureDir(dir: string): Promise<void> {
     await mkdir(dir, { recursive: true });
@@ -81,7 +81,7 @@ export async function loadBaseline(outputDir: string): Promise<BaselineResult[] 
 }
 
 export async function loadCandidatesFromDir(candidatesDir: string): Promise<any> {
-    const { loadCandidates } = await import('../synthesis/StrategySpec.js');
+    const { loadCandidates } = await import('../synthesis/spec/index.js');
     return loadCandidates(candidatesDir);
 }
 

@@ -1,4 +1,4 @@
-import type { CandidateStrategy, CandidateDir, Seam } from './StrategySpec.js';
+import type { CandidateStrategy, CandidateDir, Seam } from './spec/index.js';
 
 export interface GateResult {
     pass: boolean;

@@ -1,7 +1,26 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { hashPatch } from '../candidates/index.js';
-import type { CandidateEvaluation } from '../types.js';
+import type { CandidateEvaluation } from '../types/index.js';
+
+/**
+ * Create a singleton instance with get/reset functions
+ */
+function createSingleton<T>(factory: () => T): { get(): T; reset(): void } {
+    let instance: T | null = null;
+
+    return {
+        get(): T {
+            if (!instance) {
+                instance = factory();
+            }
+            return instance;
+        },
+        reset(): void {
+            instance = null;
+        },
+    };
+}
 
 /**
  * Candidate cache entry
@@ -90,8 +109,7 @@ export class CandidateCache {
 }
 
 // --- Global candidate cache instance ---
-import { createSingleton } from '@notention/core/utils/singleton';
-const { getInstance: getCandidateCacheInstance, resetInstance: resetCandidateCacheInstance } = createSingleton(() => new CandidateCache());
+const { get: getCandidateCacheInstance, reset: resetCandidateCacheInstance } = createSingleton(() => new CandidateCache());
 
 export function getCandidateCache(): CandidateCache {
     return getCandidateCacheInstance();

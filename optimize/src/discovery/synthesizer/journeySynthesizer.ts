@@ -40,7 +40,7 @@ export class JourneySynthesizer {
     }
 
     synthesize(goal: string, options: SynthesisOptions = {}): JourneySpec {
-        const projectRoot = options.projectRoot || getProjectRoot();
+        const projectRoot = options.projectRoot || getProjectRoot(import.meta.url);
 
         // Discover components, selectors, and state paths
         const discovery = this.discoveryEngine.discoverWithTypes(projectRoot);

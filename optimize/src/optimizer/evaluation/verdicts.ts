@@ -1,5 +1,5 @@
 import { computeRunVerdict, computeCaseVerdict, type RunVerdict, type VerdictConfig, type CaseVerdict, type PairedRunResult } from '@notention/core/eval/verdict';
-import type { IntentEvaluationResult } from '../types.js';
+import type { IntentEvaluationResult } from '../types/index.js';
 
 /**
  * Common interface for result items that can be paired for verdict computation

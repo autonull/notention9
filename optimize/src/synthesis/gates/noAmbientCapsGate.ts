@@ -1,4 +1,4 @@
-import type { CandidateStrategy } from '../StrategySpec.js';
+import type { CandidateStrategy } from '../spec/index.js';
 import type { GateResult } from '../gates.js';
 
 export function runNoAmbientCapsGate(candidate: CandidateStrategy): GateResult {

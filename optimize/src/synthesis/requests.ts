@@ -1,7 +1,7 @@
 import { readFile, writeFile, mkdir, readdir, access } from 'fs/promises';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import type { StrategySpec } from './StrategySpec.js';
+import type { StrategySpec } from './spec/types.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

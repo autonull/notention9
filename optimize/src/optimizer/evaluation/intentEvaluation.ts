@@ -1,7 +1,7 @@
 import { chromium, type Browser, type BrowserContext, type Page } from '@playwright/test';
 import { readManifest, readIntentCases, type IntentCase } from '@notention/core/eval/caseManifest';
 import { ensurePreviewServer, stopPreviewServer } from '../server/previewServer.js';
-import type { IntentEvaluationConfig, IntentEvaluationResult } from '../types.js';
+import type { IntentEvaluationConfig, IntentEvaluationResult } from '../types/index.js';
 import {
     INTENT_DEFAULT_VIEWPORT,
     INTENT_NAVIGATION_TIMEOUT_MS,
@@ -92,12 +92,12 @@ export async function runIntentEvaluationForRevision(
         }
 
         const total = results.length;
-        const passed = results.filter(r => r.success).length;
+        const passed = results.filter((r) => r.success).length;
         const failed = total - passed;
 
-        const avgCompletion = results.reduce((sum, r) => sum + r.metrics.completion, 0) / total;
-        const avgSteps = results.reduce((sum, r) => sum + r.metrics.steps, 0) / total;
-        const avgCorrections = results.reduce((sum, r) => sum + r.metrics.corrections, 0) / total;
+        const avgCompletion = results.reduce((sum: number, r) => sum + r.metrics.completion, 0) / total;
+        const avgSteps = results.reduce((sum: number, r) => sum + r.metrics.steps, 0) / total;
+        const avgCorrections = results.reduce((sum: number, r) => sum + r.metrics.corrections, 0) / total;
 
         return {
             runId,

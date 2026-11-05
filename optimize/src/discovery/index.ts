@@ -184,37 +184,42 @@ export class DiscoveryEngine {
     private typeSchema: ReturnType<TypeSchemaBuilder['build']> | null = null;
     private statePathRegistry = new StatePathRegistry();
 
-    private defaultRoot(): string {
-        return getProjectRoot();
+    private defaultRoot(importMetaUrl: string): string {
+        return getProjectRoot(importMetaUrl);
     }
 
-    discoverAll(projectRoot: string = this.defaultRoot()) {
-        const discovery = this.components.scan(projectRoot);
-        const stateSchema = this.stateSchema.infer(projectRoot);
-        const traceEmitters = this.traces.scan(projectRoot);
+    discoverAll(projectRoot?: string, importMetaUrl?: string) {
+        const root = projectRoot ?? this.defaultRoot(importMetaUrl ?? import.meta.url);
+        const discovery = this.components.scan(root);
+        const stateSchema = this.stateSchema.infer(root);
+        const traceEmitters = this.traces.scan(root);
         const selectors = this.selectors.infer(discovery);
 
         return { discovery, stateSchema, traceEmitters, selectors };
     }
 
-    discoverWithTypes(projectRoot: string = this.defaultRoot()) {
-        const base = this.discoverAll(projectRoot);
-        const typeSchema = TypeSchemaBuilder.fromProject(projectRoot);
+    discoverWithTypes(projectRoot?: string, importMetaUrl?: string) {
+        const root = projectRoot ?? this.defaultRoot(importMetaUrl ?? import.meta.url);
+        const base = this.discoverAll(root);
+        const typeSchema = TypeSchemaBuilder.fromProject(root);
         this.typeSchema = typeSchema;
         this.statePathRegistry.merge(typeSchema.statePathRegistry);
         return { ...base, typeSchema, statePathRegistry: this.statePathRegistry };
     }
 
-    generateJourney(name: string, projectRoot: string = this.defaultRoot()): JourneySpec {
-        return this.journeys.generate(name, { projectRoot });
+    generateJourney(name: string, projectRoot?: string, importMetaUrl?: string): JourneySpec {
+        const root = projectRoot ?? this.defaultRoot(importMetaUrl ?? import.meta.url);
+        return this.journeys.generate(name, { projectRoot: root });
     }
 
-    generateFromIntent(intent: string, projectRoot: string = this.defaultRoot()): JourneySpec | null {
-        return this.journeys.generateFromIntent(intent, { projectRoot });
+    generateFromIntent(intent: string, projectRoot?: string, importMetaUrl?: string): JourneySpec | null {
+        const root = projectRoot ?? this.defaultRoot(importMetaUrl ?? import.meta.url);
+        return this.journeys.generateFromIntent(intent, { projectRoot: root });
     }
 
-    getSelectors(projectRoot: string = this.defaultRoot()) {
-        const discovery = this.components.scan(projectRoot);
+    getSelectors(projectRoot?: string, importMetaUrl?: string) {
+        const root = projectRoot ?? this.defaultRoot(importMetaUrl ?? import.meta.url);
+        const discovery = this.components.scan(root);
         return this.selectors.infer(discovery);
     }
 

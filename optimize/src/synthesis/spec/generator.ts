@@ -1,5 +1,7 @@
-import { getBuiltinSpec, getAllBuiltinSpecs } from './builtinSpecs.js';
-import type { StrategySpec, CandidateStrategy, CandidateProvenance } from './types.js';
+import { getBuiltinSpec, getAllBuiltinSpecs } from '../builtinSpecs.js';
+import type { StrategySpec, CandidateStrategy, CandidateProvenance, CandidateDir } from './types.js';
+import { StrategySpecSchema } from './types.js';
+import { createCandidateDir, saveCandidate } from './io.js';
 
 /**
  * StrategySpec generator - creates StrategySpec from seam + requirements
@@ -67,7 +69,6 @@ export class StrategySpecGenerator {
  * Validate a StrategySpec against the schema
  */
 export function validateStrategySpec(spec: unknown): StrategySpec {
-    const { StrategySpecSchema } = await import('./types.js');
     return StrategySpecSchema.parse(spec);
 }
 
@@ -168,6 +169,3 @@ export async function generateAllCandidates(
 
     return dir;
 }
-
-// Re-export CandidateDir from types
-import type { CandidateDir } from './types.js';

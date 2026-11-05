@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import type { CandidateStrategy } from '../StrategySpec.js';
+import type { CandidateStrategy } from '../spec/index.js';
 import type { GateResult } from '../gates.js';
 
 export async function runTypeScriptGate(candidate: CandidateStrategy): Promise<GateResult> {

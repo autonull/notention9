@@ -13,7 +13,8 @@ export { ResourceMonitor } from './resourceMonitor.js';
 
 // Evaluator factories
 export { createExtractionEvaluator, createMatchEvaluator, createCaptureEvaluator } from './evaluators.js';
-export type { BaseTestCaseEvaluator, TestCaseEvaluator, EvaluationResult } from './evaluators.js';
+export type { BaseTestCaseEvaluator, TestCaseEvaluator } from './evaluators.js';
+export type { EvaluationResult } from './evaluators.js';
 export { checkPropertyMatch, createNoteFromText } from './evaluators.js';
 
 // Dependencies
@@ -24,7 +25,7 @@ export type { EvaluationDependencies } from './dependencies.js';
 export { loadCorpusTestCasesForEvaluation, prepareEvaluationTestCases, buildTestCasesWithFlags } from './corpusLoader.js';
 
 // Baseline evaluation
-export { runFastBaselineEvaluation, runTestCases, createBaselineResultAsync, loadOrRunFastBaseline } from './baseline.js';
+export { runFastBaselineEvaluation, runTestCases, createBaselineResultAsync } from './baseline.js';
 
 // Candidate evaluation
-export { evaluateCandidateFast, runFastEvaluation } from './candidateEvaluation.js';
+export { evaluateCandidateFast, runFastEvaluation, loadOrRunFastBaseline } from './candidateEvaluation.js';

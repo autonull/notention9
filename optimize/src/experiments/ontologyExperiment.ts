@@ -12,7 +12,7 @@ import {
     CORE_EXTRACTION_TEST_CASES,
     CORE_MATCH_TEST_CASES,
     CORE_CAPTURE_TEST_CASE,
-} from '../synthesis/evaluation.js';
+} from '../synthesis/evaluation/index.js';
 
 interface OntologyExperimentResult {
     flat: {
@@ -69,7 +69,7 @@ async function runBaselineWithOntology(
             p90Duration: duration,
             medianSteps: 1,
             p90Steps: 1,
-            errors: success ? [] : [`Extracted ${properties.length} properties, expected ≥${testCase.expectedMinProperties}. Missing: ${check.details.filter(d => d.startsWith('✗')).join('; ')}`],
+            errors: success ? [] : [`Extracted ${properties.length} properties, expected ≥${testCase.expectedMinProperties}. Missing: ${check.details.filter((d: string) => d.startsWith('✗')).join('; ')}`],
             isCorpusTest: false,
         });
     }

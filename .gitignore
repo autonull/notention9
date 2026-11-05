@@ -65,7 +65,12 @@ simulator/src/**/*.d.ts
 .notention/
 eval/runs/
 test-*.ts
-optimize
+/optimize/optimize/
+/optimize/runs/
+/optimize/cache/
+/optimize/tsconfig.tsbuildinfo
+/optimize/dist/
+/optimize/ux-evaluation-report.json
 
 # Benchmarks
 tmp-bench/

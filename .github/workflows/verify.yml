@@ -1,0 +1,70 @@
+name: Verify
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+env:
+  NODE_VERSION: '22'
+  PNPM_VERSION: '9'
+  VITE_LLM_SOURCE: 'none'
+  VITE_ENABLE_AGENT: 'false'
+
+jobs:
+  verify:
+    name: Verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run verify script
+        run: pnpm verify
+
+      - name: Typecheck UI
+        run: pnpm --filter @notention/ui typecheck
+
+      - name: Lint fabricated paths
+        run: pnpm lint:fabricated
+
+      - name: Lint schemas
+        run: pnpm lint:schemas
+
+      - name: Lint contracts
+        run: pnpm lint:contracts
+
+      - name: Upload test results on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            **/test-results/
+            **/coverage/
+          retention-days: 7
+
+      - name: Upload evaluation report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ux-evaluation-report
+          path: |
+            **/ux-evaluation-report.json
+          retention-days: 7

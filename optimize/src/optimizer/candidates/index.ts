@@ -3,7 +3,7 @@ import {
     type CandidateProvenance,
     type StrategyParamConfig,
     type ParamSpec,
-} from '../types.js';
+} from '../types/index.js';
 import { createHash } from 'node:crypto';
 
 /**

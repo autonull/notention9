@@ -5,9 +5,9 @@ import {
 } from './testCaseTypes.js';
 
 // Static imports for core test data — fail loud if missing
-import coreExtractionCases from './test-data/core-extraction.json' with { type: 'json' };
-import coreMatchCases from './test-data/core-match.json' with { type: 'json' };
-import coreCaptureCases from './test-data/core-capture.json' with { type: 'json' };
+import coreExtractionCases from '../test-data/core-extraction.json' with { type: 'json' };
+import coreMatchCases from '../test-data/core-match.json' with { type: 'json' };
+import coreCaptureCases from '../test-data/core-capture.json' with { type: 'json' };
 
 /**
  * Core extraction test cases (loaded from JSON via static import)

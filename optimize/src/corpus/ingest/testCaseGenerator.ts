@@ -1,7 +1,7 @@
 import type { ExtractionTestCase, MatchTestCase } from '../../shared/types/testCaseTypes.js';
-import type { ExtractedTerm } from '../ingest.js';
+import type { ExtractedTerm } from './types.js';
 import { VALID_PROPERTY_KEYS, inferPropertyKey } from './propertyKeys.js';
-import { createNaturalInput } from './naturalInput.ts';
+import { createNaturalInput } from './naturalInput.js';
 
 /**
  * Generate extraction test cases from corpus terms

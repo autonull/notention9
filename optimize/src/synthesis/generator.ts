@@ -1,4 +1,4 @@
-import { StrategySpecGenerator, type StrategySpec, type CandidateStrategy, type CandidateDir, createCandidateDir, saveCandidate, loadCandidates } from './StrategySpec.js';
+import { StrategySpecGenerator, type StrategySpec, type CandidateStrategy, type CandidateDir, createCandidateDir, saveCandidate, loadCandidates } from './spec/index.js';
 import { generateStrategyCode, hashPrompt } from './templateGenerator.js';
 import { getBuiltinSpec } from './builtinSpecs.js';
 

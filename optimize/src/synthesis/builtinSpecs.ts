@@ -1,5 +1,10 @@
-import type { StrategySpec } from './StrategySpec.js';
+import type { StrategySpec } from './spec/types.js';
 import builtinSpecsJson from './test-data/builtin-specs.json' with { type: 'json' };
+
+/**
+ * Built-in strategy specification type
+ */
+export type BuiltinSpec = StrategySpec;
 
 /**
  * Built-in strategy specifications

@@ -1,6 +1,6 @@
-import type { CandidateStrategy, CandidateDir } from '../StrategySpec.js';
+import type { CandidateStrategy, CandidateDir } from '../spec/index.js';
 import type { BaselineResult, CandidateEvaluation, EvaluationReport } from './types.js';
-import { runFastBaselineEvaluation, loadOrRunFastBaseline } from './baseline.js';
+import { runFastBaselineEvaluation } from './baseline.js';
 import { getDefaultDependencies } from './dependencies.js';
 
 /**
@@ -89,8 +89,10 @@ export async function loadOrRunFastBaseline(
     }
 
     const baseline = await runFastBaselineEvaluation();
-    await import('fs/promises').then(m => m.mkdir(import('path').then(p => p.dirname(baselinePath)), { recursive: true }));
-    await import('fs/promises').then(m => m.writeFile(baselinePath, JSON.stringify(baseline, null, 2)));
+    const { dirname } = await import('path');
+    const { mkdir, writeFile } = await import('fs/promises');
+    await mkdir(dirname(baselinePath), { recursive: true });
+    await writeFile(baselinePath, JSON.stringify(baseline, null, 2));
 
     return baseline;
 }

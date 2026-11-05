@@ -1,6 +1,6 @@
 import { readFile, readdir, mkdir } from 'fs/promises';
 import { join, extname, relative } from 'path';
-import type { CorpusConfig, CorpusAnalysis, ExtractedTerm } from '../ingest.js';
+import type { CorpusConfig, CorpusAnalysis, ExtractedTerm, ExtractionTestCase, MatchTestCase } from './types.js';
 import { extractTerms, extractPhrases, extractContext } from './textProcessor.js';
 import { categorizeTerm } from './categorizer.js';
 import { generateTestCasesFromCorpus } from './testCaseGenerator.js';
@@ -81,7 +81,7 @@ export async function ingestCorpus(config: Partial<CorpusConfig> = {}): Promise<
                     }
                 }
             } else {
-                const category = categorizeTerm(term);
+                const category = categorizeTerm(term) || 'general';
                 termMap.set(term, {
                     term,
                     frequency: 1,
@@ -139,7 +139,7 @@ export async function ingestCorpus(config: Partial<CorpusConfig> = {}): Promise<
 }
 
 // Re-export types for external use
-export type { CorpusConfig, CorpusAnalysis, ExtractedTerm } from '../ingest.js';
+export type { CorpusConfig, CorpusAnalysis, ExtractedTerm } from './types.js';
 
 // Re-export loadCorpusTestCases
-export { loadCorpusTestCases } from './loader.ts';
+export { loadCorpusTestCases } from './loader.js';

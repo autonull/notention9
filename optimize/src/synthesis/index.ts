@@ -1,5 +1,4 @@
 export * from './spec/index.js';
-export * from './generator.js';
 export * from './gates.js';
 export * from './evaluation/index.js';
 export * from './adoption.js';

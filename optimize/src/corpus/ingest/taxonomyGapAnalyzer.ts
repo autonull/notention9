@@ -1,4 +1,4 @@
-import type { ExtractedTerm } from '../ingest.js';
+import type { ExtractedTerm } from './types.js';
 
 /**
  * Identify taxonomy gaps from corpus terms

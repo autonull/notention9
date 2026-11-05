@@ -1,14 +1,16 @@
 import { readFile, writeFile, mkdir, rm, readdir } from 'fs/promises';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import type { CandidateStrategy, CandidateDir, StrategyArtifact } from './StrategySpec.js';
-import type { EvaluationReport, CandidateEvaluation } from './evaluation.js';
+import type { CandidateStrategy, CandidateDir, StrategyArtifact } from './spec/index.js';
+import type { EvaluationReport, CandidateEvaluation } from './evaluation/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 /**
  * Strategy adoption system - handles versioning, feature flags, rollback, and provenance
+ * @deprecated Use RevisionStore instead. Ledger-as-delivery-record is dead; revisions are the record.
+ * This module will be removed in a future version.
  */
 
 export interface AdoptionConfig {
@@ -46,6 +48,7 @@ export class StrategyAdoption {
     private ledger: LedgerEntry[] = [];
 
     constructor(config: Partial<AdoptionConfig> = {}) {
+        console.warn('⚠️  StrategyAdoption is deprecated. Use RevisionStore instead. Ledger-as-delivery-record is dead; revisions are the record.');
         this.config = {
             strategiesDir: config.strategiesDir || 'adopted-strategies',
             flagsDir: config.flagsDir || 'feature-flags',

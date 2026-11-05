@@ -2,7 +2,7 @@
  * Template generation utilities for strategy synthesis
  */
 
-import type { StrategySpec } from './StrategySpec.js';
+import type { StrategySpec } from './spec/types.js';
 
 /**
  * Generate a PascalCase component name from a seam ID

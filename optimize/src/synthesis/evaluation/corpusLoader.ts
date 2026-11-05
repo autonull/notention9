@@ -1,7 +1,8 @@
 import { readFile, access } from 'fs/promises';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { loadCorpusTestCases, CORPUS_OUTPUT_DIRS } from '../../corpus/index.js';
+import { loadCorpusTestCases } from '../../corpus/index.js';
+import { CORPUS_OUTPUT_DIRS } from '../../constants.js';
 import type { ExtractionTestCase, MatchTestCase } from './testCaseTypes.js';
 import { testCaseRegistry } from './testCaseRegistry.js';
 

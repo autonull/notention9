@@ -399,7 +399,7 @@ export {
     type OptimizerConfig,
     type OptimizerCandidate,
     type OptimizerResult,
-    type CandidateEvaluation,
+    type CandidateEvaluation as OptimizerCandidateEvaluation,
     defaultOptimizerConfig,
 } from './types/index.js';
 export {

@@ -23,4 +23,4 @@ export {
     getBuiltinSpec,
     hasBuiltinSpec,
     getAllBuiltinSpecs,
-} from './builtinSpecs.js';
+} from '../builtinSpecs.js';

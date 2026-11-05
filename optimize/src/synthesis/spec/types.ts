@@ -56,4 +56,4 @@ export interface CandidateDir {
 /**
  * Builtin spec types for re-export
  */
-export type { BuiltinSpec } from './builtinSpecs.js';
+export type { BuiltinSpec } from '../builtinSpecs.js';

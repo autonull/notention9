@@ -13,7 +13,7 @@
   "scripts": {
     "build": "npm run build --workspaces",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "test": "pnpm --filter @notention/core test && pnpm --filter @notention/agent test && pnpm --filter @notention/cli test && pnpm --filter @notention/optimize test",
+    "test": "pnpm --filter @notention/core test && pnpm --filter @notention/agent test && pnpm --filter @notention/cli test && pnpm --filter @notention/optimize test && pnpm --filter @notention/simulator test",
     "test:ui": "tsx scripts/test-ui-batched.ts",
     "verify": "tsx scripts/verify.ts",
     "lint:fabricated": "tsx scripts/grep-fabricated-paths.ts",

@@ -1,6 +1,6 @@
-import type { CandidateStrategy } from '../StrategySpec.js';
+import type { CandidateStrategy } from '../spec/index.js';
 import type { GateResult } from '../gates.js';
-import { validateStrategySpec } from '../StrategySpec.js';
+import { validateStrategySpec } from '../spec/index.js';
 
 export function runSpecValidationGate(candidate: CandidateStrategy): GateResult {
     const errors: string[] = [];

@@ -1,5 +1,7 @@
 import { type ParamSpec, type Seam } from '@notention/core/ui/strategy';
 
+export type { ParamSpec };
+
 /**
  * Configuration for a single optimization cycle
  */

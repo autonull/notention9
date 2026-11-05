@@ -87,7 +87,7 @@ export class EvaluateSubcommand extends BaseSubcommand {
 
         this.printDryRun(report);
 
-        const passedCandidates = report.candidates.filter((c) => c.passed).length;
+        const passedCandidates = report.candidates.filter((c: CandidateEvaluation) => c.passed).length;
         return passedCandidates > 0 ? 0 : 1;
     }
 

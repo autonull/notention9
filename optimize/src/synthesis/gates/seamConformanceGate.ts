@@ -1,4 +1,4 @@
-import type { CandidateStrategy, Seam } from '../StrategySpec.js';
+import type { CandidateStrategy, Seam } from '../spec/index.js';
 import type { GateResult } from '../gates.js';
 
 export function runSeamConformanceGate(candidate: CandidateStrategy, seams: Seam[]): GateResult {

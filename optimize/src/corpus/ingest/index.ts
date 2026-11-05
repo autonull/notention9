@@ -5,4 +5,4 @@ export { ingestCorpus } from './orchestrator.js';
 export { loadCorpusTestCases } from './loader.js';
 
 // Types
-export type { CorpusConfig, CorpusAnalysis, ExtractedTerm } from '../ingest.js';
+export type { CorpusConfig, CorpusAnalysis, ExtractedTerm } from './types.js';
