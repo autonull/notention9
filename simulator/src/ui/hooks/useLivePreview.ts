@@ -1,15 +1,18 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useToast } from '../components/ui';
+import type { RunEvent, RunEventType } from '../../types.js';
 
 export interface JobStatus {
   status: 'running' | 'completed' | 'failed' | 'cancelled';
   scenario: string;
   logs: string[];
+  runEvents: RunEvent[];
   dashboardPort: number;
 }
 
 export type LogLevel = 'all' | 'info' | 'warn' | 'error' | 'debug';
 export type ConnectionState = 'connecting' | 'connected' | 'disconnected' | 'error';
+export type RunEventFilterType = RunEventType | 'all';
 
 export function useJobStatus() {
   const [job, setJob] = useState<JobStatus | null>(null);

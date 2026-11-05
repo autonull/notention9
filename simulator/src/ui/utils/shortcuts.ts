@@ -76,6 +76,9 @@ export const GLOBAL_SHORTCUTS: Record<string, Omit<ShortcutHandler, 'handler'>> 
   navStudio: { key: '1', description: 'Go to Studio', category: 'navigation' },
   navLibrary: { key: '2', description: 'Go to Library', category: 'navigation' },
   navLive: { key: '3', description: 'Go to Live Preview', category: 'navigation' },
+  navCompare: { key: '4', description: 'Go to Compare', category: 'navigation' },
+  navSuggestions: { key: '5', description: 'Go to Suggestions', category: 'navigation' },
+  navLab: { key: '6', description: 'Go to Lab', category: 'navigation' },
 } as const;
 
 export const COMMAND_PALETTE_SHORTCUTS = [
@@ -85,6 +88,9 @@ export const COMMAND_PALETTE_SHORTCUTS = [
       { label: 'Studio', keys: ['1'] },
       { label: 'Library', keys: ['2'] },
       { label: 'Live Preview', keys: ['3'] },
+      { label: 'Compare', keys: ['4'] },
+      { label: 'Suggestions', keys: ['5'] },
+      { label: 'Lab', keys: ['6'] },
     ],
   },
   {
@@ -98,7 +104,7 @@ export const COMMAND_PALETTE_SHORTCUTS = [
 ];
 
 export function getNavShortcut(index: number): { key: string; ctrl?: boolean; shift?: boolean; alt?: boolean; meta?: boolean } {
-  const navKeys = ['1', '2', '3'];
+  const navKeys = ['1', '2', '3', '4', '5', '6'];
   if (index >= 0 && index < navKeys.length) {
     return { key: navKeys[index] };
   }

@@ -6,6 +6,7 @@ import { MovieMaker, MovieOptions } from './movie_maker.js';
 import { SCENARIOS, generateScenario } from './scenarios/index.js';
 import { startDashboard } from './dashboard/server.js';
 import { MOVIE_SERVER_CONFIG } from './constants.js';
+import type { RunEvent } from './types.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -15,6 +16,7 @@ export class MovieServer {
     private currentJob: {
         maker: MovieMaker;
         logs: string[];
+        runEvents: RunEvent[];
         status: 'running' | 'completed' | 'failed' | 'cancelled';
         scenarioName: string;
         dashboardPort: number;
@@ -47,6 +49,7 @@ export class MovieServer {
                     status: this.currentJob.status,
                     scenario: this.currentJob.scenarioName,
                     logs: this.currentJob.logs,
+                    runEvents: this.currentJob.runEvents,
                     dashboardPort: this.currentJob.dashboardPort
                 } : null
             });
@@ -67,6 +70,7 @@ export class MovieServer {
             }
 
             const logs: string[] = [];
+            const runEvents: RunEvent[] = [];
             const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
             const outputDir = path.resolve(process.cwd(), 'movies', `${scenario.name}-${timestamp}`);
             const dashboardPort = MOVIE_SERVER_CONFIG.dashboardPortBase + Math.floor(Math.random() * MOVIE_SERVER_CONFIG.dashboardPortRange);
@@ -83,9 +87,12 @@ export class MovieServer {
             };
 
             const maker = new MovieMaker(this.relayUrl, options);
+            // Hook into run events
+            maker.onRunEvent = (event) => runEvents.push(event);
             this.currentJob = {
                 maker,
                 logs,
+                runEvents,
                 status: 'running',
                 scenarioName: scenario.name,
                 dashboardPort
@@ -117,12 +124,32 @@ export class MovieServer {
 
             const movies = fs.readdirSync(moviesDir)
                 .filter(f => fs.statSync(path.join(moviesDir, f)).isDirectory())
-                .map(d => ({
-                    name: d,
-                    hasVideo: fs.existsSync(path.join(moviesDir, d, 'simulation.mp4')),
-                    path: `/movies/${d}/simulation.mp4`
-                }))
-                .filter(m => m.hasVideo);
+                .map(d => {
+                    const movieDir = path.join(moviesDir, d);
+                    const videoPath = path.join(movieDir, 'simulation.mp4');
+                    const hasVideo = fs.existsSync(videoPath);
+                    if (!hasVideo) return null;
+
+                    const stats = fs.statSync(videoPath);
+                    let duration: number | undefined;
+                    // Try to read duration from metadata file if available
+                    const metaPath = path.join(movieDir, 'metadata.json');
+                    if (fs.existsSync(metaPath)) {
+                        try {
+                            const meta = JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
+                            duration = meta.duration;
+                        } catch {}
+                    }
+
+                    return {
+                        name: d,
+                        path: `/movies/${d}/simulation.mp4`,
+                        size: stats.size,
+                        createdAt: stats.mtime.toISOString(),
+                        duration,
+                    };
+                })
+                .filter((m): m is NonNullable<typeof m> => m !== null);
 
             res.json(movies);
         });

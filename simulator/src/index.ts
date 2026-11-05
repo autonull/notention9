@@ -138,7 +138,8 @@ Options:
                 uiPort: ports.ui,
                 dashboardPort: ports.dashboard,
                 outputDir: path.resolve(process.cwd(), 'movies'),
-                view: (parseArg(args, '--view=') ?? DEFAULT_MOVIE_OPTIONS.view) as 'dashboard' | 'ontology'
+                view: (parseArg(args, '--view=') ?? DEFAULT_MOVIE_OPTIONS.view) as 'dashboard' | 'ontology',
+                skipUiServer: true,
             };
 
             const movieMaker = new MovieMaker(serverManager.relayUrl, options);

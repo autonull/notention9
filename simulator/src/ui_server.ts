@@ -42,6 +42,7 @@ export class UIServer {
                 env: { ...process.env, VITE_PORT: String(this.port) }
             });
 
+            const startTime = Date.now();
             const checkServer = async () => {
                 try {
                     const res = await fetch(`http://localhost:${this.port}`);
@@ -52,6 +53,12 @@ export class UIServer {
                         return;
                     }
                 } catch {}
+
+                if (Date.now() - startTime > UI_SERVER_CONFIG.startupTimeout) {
+                    reject(new Error(`UI Server startup timeout after ${UI_SERVER_CONFIG.startupTimeout}ms`));
+                    return;
+                }
+
                 setTimeout(checkServer, UI_SERVER_CONFIG.checkInterval);
             };
             checkServer();

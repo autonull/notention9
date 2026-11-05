@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { StopCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useJobStatus, useDashboardConnection, type JobStatus, type ConnectionState } from '../hooks/useLivePreview';
+import { useJobStatus, useDashboardConnection, type JobStatus, type ConnectionState, STATUS_CONFIG } from '../hooks/useLivePreview';
 import { useToast } from '../components/ui';
 import { Button, Skeleton } from '../components/ui';
 import { cn } from '../utils';

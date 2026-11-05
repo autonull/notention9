@@ -6,8 +6,9 @@ import { SIMULATION_CONFIG } from './constants.js';
 import { BrowserManager } from './browser_manager.js';
 import { RecordingManager } from './recording_manager.js';
 import { DashboardManager } from './dashboard_manager.js';
-import { writeFileSync, existsSync } from 'fs';
+import { writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
+import type { RunEvent } from './types.js';
 
 export interface CaptionEntry {
     startTime: number;  // seconds
@@ -31,6 +32,7 @@ export interface MovieOptions {
     skipUiServer?: boolean;
     onProgress?: (message: string) => void;
     onError?: (error: Error) => void;
+    onRunEvent?: (event: RunEvent) => void;
     // New options for S4
     enableCaptions?: boolean;
     enableNarration?: boolean;
@@ -58,12 +60,14 @@ export class MovieMaker {
     private cancelled = false;
     private captions: CaptionEntry[] = [];
     private narration: NarrationEntry[] = [];
+    public onRunEvent?: (event: RunEvent) => void;
 
     constructor(
         private readonly relayUrl: string,
         private readonly options: MovieOptions
     ) {
         this.options = { ...DEFAULT_CAPTION_OPTIONS, ...options };
+        this.onRunEvent = options.onRunEvent;
     }
 
     private log(message: string) {
@@ -91,14 +95,17 @@ export class MovieMaker {
             if (this.cancelled) return;
 
             this.runner = new ScenarioRunner(this.relayUrl, DEFAULT_ONTOLOGY);
-            await this.runner.prepare(scenario);
-            if (this.cancelled) return;
+            // Ensure output directory exists before writing captions/metadata
+            mkdirSync(this.options.outputDir, { recursive: true });
 
-            // Generate captions from scenario events
-            if (this.options.enableCaptions) {
-                this.captions = this.generateCaptions(scenario);
-                this.saveCaptions();
-            }
+        await this.runner.prepare(scenario);
+        if (this.cancelled) return;
+
+        // Generate captions from scenario events
+        if (this.options.enableCaptions) {
+            this.captions = this.generateCaptions(scenario);
+            this.saveCaptions();
+        }
 
             // Generate narration if enabled
             if (this.options.enableNarration) {
@@ -317,6 +324,7 @@ export class MovieMaker {
         
         this.runner.runEventSink = (runEvent) => {
             this.log(`[RunEvent] ${runEvent.type}: ${JSON.stringify(runEvent.data)}`);
+            this.onRunEvent?.(runEvent);
         };
 
         if (this.runner) await this.runner.execute(scenario);
@@ -333,6 +341,9 @@ export class MovieMaker {
             if (this.options.enableCaptions && this.captions.length > 0) {
                 await this.burnCaptions();
             }
+
+            // Write metadata.json for the Movie Library
+            await this.writeMetadata(scenario);
         }
     }
 
@@ -439,5 +450,50 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
         this.dashboardManager = null;
         this.uiServer = null;
         this.recordingManager = null;
+    }
+
+    private async writeMetadata(scenario: Scenario): Promise<void> {
+        const metaPath = join(this.options.outputDir, 'metadata.json');
+        const videoPath = join(this.options.outputDir, 'simulation.mp4');
+        let duration: number | undefined;
+        
+        // Try to get video duration using ffprobe
+        try {
+            const [ffprobeModule] = await Promise.all([import('fluent-ffmpeg')]);
+            const ffprobe = ffprobeModule.default;
+            duration = await new Promise((resolve) => {
+                ffprobe.ffprobe(videoPath, (err, data) => {
+                    if (!err && data.format.duration) {
+                        resolve(data.format.duration);
+                    } else {
+                        resolve(scenario.duration);
+                    }
+                });
+            });
+        } catch {
+            duration = scenario.duration;
+        }
+
+        const metadata = {
+            scenario: {
+                name: scenario.name,
+                description: scenario.description,
+                duration: scenario.duration,
+                agentCount: scenario.agents.reduce((sum, a) => sum + a.count, 0),
+                events: scenario.events.length,
+            },
+            recording: {
+                framerate: this.options.framerate,
+                resolution: this.options.resolution,
+                view: this.options.view,
+                duration,
+                createdAt: new Date().toISOString(),
+            },
+            captions: this.options.enableCaptions ? this.captions.length : 0,
+            narration: this.options.enableNarration ? this.narration.length : 0,
+        };
+
+        writeFileSync(metaPath, JSON.stringify(metadata, null, 2));
+        this.log(`📝 Metadata saved to ${metaPath}`);
     }
 }

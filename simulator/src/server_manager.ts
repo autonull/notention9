@@ -29,8 +29,19 @@ export class ServerManager {
     private uiServer: UIServer | null = null;
     private ports: ServerPorts = { relay: 0, dashboard: 0, ui: 0 };
     private isShuttingDown = false;
+    private signalHandlersRegistered = false;
 
-    constructor(private readonly options: ServerManagerOptions = {}) {}
+    constructor(private readonly options: ServerManagerOptions = {}) {
+        this.registerSignalHandlers();
+    }
+
+    private registerSignalHandlers(): void {
+        if (this.signalHandlersRegistered) return;
+        process.on('SIGINT', () => this.shutdown());
+        process.on('SIGTERM', () => this.shutdown());
+        process.on('exit', () => this.shutdown());
+        this.signalHandlersRegistered = true;
+    }
 
     async start(agents: DashboardAgent[], requestedUiPort: number = DEFAULT_PORTS.ui): Promise<ServerPorts> {
         // 1. Find Ports
@@ -52,11 +63,6 @@ export class ServerManager {
             await this.uiServer.start();
         }
 
-        // Handle Shutdown
-        process.on('SIGINT', () => this.shutdown());
-        process.on('SIGTERM', () => this.shutdown());
-        process.on('exit', () => this.shutdown());
-
         return this.ports;
     }
 
@@ -77,13 +83,17 @@ export class ServerManager {
         }
     }
 
-    private findFreePort(startPort: number): Promise<number> {
+    private findFreePort(startPort: number, maxAttempts = 100): Promise<number> {
         return new Promise((resolve, reject) => {
             const server = net.createServer();
             server.unref();
             server.on('error', () => {
                 // Port in use, try next one
-                this.findFreePort(startPort + 1).then(resolve, reject);
+                if (maxAttempts <= 1) {
+                    reject(new Error(`Could not find free port after ${100} attempts`));
+                } else {
+                    this.findFreePort(startPort + 1, maxAttempts - 1).then(resolve, reject);
+                }
             });
             server.listen(startPort, () => {
                 const port = (server.address() as net.AddressInfo).port;

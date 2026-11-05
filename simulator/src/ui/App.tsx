@@ -4,6 +4,9 @@ import { Clapperboard, Film, MonitorPlay, HelpCircle, Keyboard, Command, Menu, X
 import Studio from './components/Studio';
 import MovieLibrary from './components/MovieLibrary';
 import LivePreview from './components/LivePreview';
+import CompareView from './components/CompareView';
+import SuggestionsView from './components/SuggestionsView';
+import LabView from './components/LabView';
 import HelpModal from './components/HelpModal';
 import CommandPalette from './components/CommandPalette';
 import { ToastProvider } from './components/ui';
@@ -27,6 +30,9 @@ const AppContent = () => {
     { ...GLOBAL_SHORTCUTS.navStudio, handler: () => navigate('/') },
     { ...GLOBAL_SHORTCUTS.navLibrary, handler: () => navigate('/movies') },
     { ...GLOBAL_SHORTCUTS.navLive, handler: () => navigate('/live') },
+    { ...GLOBAL_SHORTCUTS.navCompare, handler: () => navigate('/compare') },
+    { ...GLOBAL_SHORTCUTS.navSuggestions, handler: () => navigate('/suggestions') },
+    { ...GLOBAL_SHORTCUTS.navLab, handler: () => navigate('/lab') },
     { ...GLOBAL_SHORTCUTS.commandPalette, handler: () => setShowCommandPalette(true) },
     { ...GLOBAL_SHORTCUTS.help, handler: () => setShowHelp(true) },
     { ...GLOBAL_SHORTCUTS.closeModals, handler: () => { setShowHelp(false); setShowCommandPalette(false); setSidebarOpen(false); } },
@@ -70,6 +76,9 @@ const AppContent = () => {
             <Route path="/" element={<ErrorBoundary><Studio /></ErrorBoundary>} />
             <Route path="/movies" element={<ErrorBoundary><MovieLibrary /></ErrorBoundary>} />
             <Route path="/live" element={<ErrorBoundary><LivePreview /></ErrorBoundary>} />
+            <Route path="/compare" element={<ErrorBoundary><CompareView /></ErrorBoundary>} />
+            <Route path="/suggestions" element={<ErrorBoundary><SuggestionsView /></ErrorBoundary>} />
+            <Route path="/lab" element={<ErrorBoundary><LabView /></ErrorBoundary>} />
           </Routes>
         </main>
       </div>

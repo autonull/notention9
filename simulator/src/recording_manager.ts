@@ -6,8 +6,8 @@ import ffmpegPath from 'ffmpeg-static';
 import chalk from 'chalk';
 import { FILE_PATTERNS, SIMULATION_CONFIG } from './constants.js';
 
-// Use system ffmpeg - ffmpeg-static binary not reliably available in pnpm
-const ffmpegBinary = '/usr/bin/ffmpeg';
+// Use ffmpeg-static binary
+const ffmpegBinary: string = (ffmpegPath as unknown as string) || '/usr/bin/ffmpeg';
 ffmpeg.setFfmpegPath(ffmpegBinary);
 
 export interface RecordingManagerOptions {

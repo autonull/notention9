@@ -1,4 +1,4 @@
-import { Clapperboard, Film, MonitorPlay, HelpCircle, Keyboard, Command, Menu, X, Search, Settings } from 'lucide-react';
+import { Clapperboard, Film, MonitorPlay, HelpCircle, Keyboard, Command, Menu, X, Search, Settings, GitBranch, Zap, Terminal } from 'lucide-react';
 import { formatShortcut, isMac, GLOBAL_SHORTCUTS, COMMAND_PALETTE_SHORTCUTS, getNavShortcut } from '../utils/shortcuts';
 
 export interface NavItem {
@@ -30,6 +30,27 @@ export const NAV_ITEMS: NavItem[] = [
     icon: MonitorPlay,
     description: 'Watch running simulations',
     keywords: ['live', 'preview', 'watch', 'running'],
+  },
+  {
+    path: '/compare',
+    label: 'Compare',
+    icon: GitBranch,
+    description: 'A/B compare configurations headless',
+    keywords: ['compare', 'ab', 'experiment', 'benchmark'],
+  },
+  {
+    path: '/suggestions',
+    label: 'Suggestions',
+    icon: Zap,
+    description: 'Review and approve improvement suggestions',
+    keywords: ['suggestions', 'improvements', 'review', 'approve'],
+  },
+  {
+    path: '/lab',
+    label: 'Lab',
+    icon: Terminal,
+    description: 'Developer experimentation lab',
+    keywords: ['lab', 'experiment', 'developer', 'test'],
   },
 ];
 
@@ -80,6 +101,36 @@ export const createCommandItems = (
     icon: <MonitorPlay size={18} />,
     action: () => navigate('/live'),
     keywords: ['live', 'preview', 'watch', 'running'],
+    category: 'Navigation',
+  },
+  {
+    id: 'nav-compare',
+    label: 'Go to Compare',
+    description: 'A/B compare configurations headless',
+    shortcut: '4',
+    icon: <GitBranch size={18} />,
+    action: () => navigate('/compare'),
+    keywords: ['compare', 'ab', 'experiment', 'benchmark'],
+    category: 'Navigation',
+  },
+  {
+    id: 'nav-suggestions',
+    label: 'Go to Suggestions',
+    description: 'Review and approve improvement suggestions',
+    shortcut: '5',
+    icon: <Zap size={18} />,
+    action: () => navigate('/suggestions'),
+    keywords: ['suggestions', 'improvements', 'review', 'approve'],
+    category: 'Navigation',
+  },
+  {
+    id: 'nav-lab',
+    label: 'Go to Lab',
+    description: 'Developer experimentation lab',
+    shortcut: '6',
+    icon: <Terminal size={18} />,
+    action: () => navigate('/lab'),
+    keywords: ['lab', 'experiment', 'developer', 'test'],
     category: 'Navigation',
   },
   {
