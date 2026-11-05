@@ -13,6 +13,8 @@ export { MovieServer } from './movie_server.js';
 export { SCENARIOS, generateScenario, getScenarioNames, getScenario, getAllScenarios } from './scenarios/index.js';
 export { DEFAULT_ONTOLOGY } from '@notention/core';
 export { SIMULATION_CONFIG, AGENT_COLORS, DEFAULT_PORTS, DEFAULT_MOVIE_OPTIONS, SCENARIO_DEFAULTS } from './constants.js';
+export { MetricsCollector, attachMetricsCollector, type RunMetrics } from './metricsCollector.js';
+export { startRelay, stopRelay, stopAllRelays, withFreshRelay, getRelayUrl } from './testRelay.js';
 import type { Scenario } from './types.js';
 import chalk from 'chalk';
 import ora from 'ora';

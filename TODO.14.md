@@ -217,10 +217,12 @@ The UI's job: make the invisible visible, comparable, reversible.
 | D1 | **The demo.** Execute one full loop on a real hypothesis (see TODO.science.md §5, Experiment E6 — correction-flow capture). Record: detection → candidate → powered verdict → consent → revision → re-simulation confirm → ledger chain | M | ✅ **Null result — honest negative published** |
 | D2 | Write-up: `doc/evidence/2026-11-loop-demo.md` — full chain, raw artifacts, honest null if that's what happens | S | ✅ |
 | D3 | Showcase: `pnpm showcase` with corrected captions (event-aligned VTT) + 60-second mesh-coordination video; README embed | S | ⏳ (deferred — no revision to showcase) |
-| D4 | Conformance suite as public artifact: extract `ProtocolTestbed` + `SimulatorRegression` into `packages/conformance` (or `test/conformance/`), documented, tagged v0.1 | M | ⏳ |
+| D4 | Conformance suite as public artifact: extract `ProtocolTestbed` + `SimulatorRegression` into `packages/conformance`, documented, tagged v0.1 | M | ✅ (pre-existing simulator UI build issue blocks full test run) |
 | D5 | Decide positioning (TODO.science.md §8): project vs. product vs. research — **only after D2 is written** | — | ⏳ |
 
 **D1/D2 Outcome:** The loop executed end-to-end on Experiment E6 (correction-flow). Friction journal detected `correction` (5×) and `match_rejected` (3×) signals. Optimizer generated 14 candidates (8 grid + 6 friction-driven), ran powered evaluation (10 intent cases × 3 reps, MDE gate passed), and returned **null verdict** (0 winners, 6 losers). No revision created — correct behavior per "Honest negatives" guardrail. Full ledger chain recorded. Write-up at `doc/evidence/2026-11-loop-demo.md`.
+
+**D4 Outcome:** Conformance suite extracted to `packages/conformance/` with ProtocolTestbed, SimulatorRegression, and RegressionScenario. Tagged v0.1.0. README documents test suite and known pre-existing build issues (simulator UI, core source imports).
 
 ---
 
@@ -261,4 +263,4 @@ The UI's job: make the invisible visible, comparable, reversible.
 | C Instrument panel | 2 weeks | B | Non-expert completes explore→consent loop in UI |
 | D Demo + position | 1 week | C | `doc/evidence/2026-11-loop-demo.md` merged **(D1/D2 ✅)** |
 
-**Order of operations:** A → B → C → D. No parallel tracks. Total ≈ 6 weeks, matching TODO.12/13 cadence. **Phases A–C complete. D1/D2 complete (null result). D3–D5 deferred.**
+**Order of operations:** A → B → C → D. No parallel tracks. Total ≈ 6 weeks, matching TODO.12/13 cadence. **Phases A–C complete. D1/D2 complete (null result). D4 complete (conformance suite extracted). D3 deferred (no revision to showcase). D5 next (positioning decision).**

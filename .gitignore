@@ -5,6 +5,7 @@ build/
 .env
 core/src/**/*.js
 core/src/**/*.d.ts
+core/src/**/*.map
 !core/src/**/*.test.ts
 !core/src/**/*.test.tsx
 
@@ -14,6 +15,7 @@ agent/node_modules/
 agent/dist/
 agent/src/**/*.js
 agent/src/**/*.d.ts
+agent/src/**/*.map
 !agent/src/**/*.test.ts
 !agent/src/**/*.test.tsx
 
@@ -24,12 +26,14 @@ ui/dev-dist/
 ui/.vite/
 ui/src/**/*.js
 ui/src/**/*.d.ts
+ui/src/**/*.map
 !ui/src/**/*.test.ts
 !ui/src/**/*.test.tsx
 
 # Misc
 .DS_Store
 *.log
+*.map
 .idea
 **/bin/
 
@@ -45,6 +49,7 @@ ux-evaluation-report.json
 # Optimizer
 optimize/src/**/*.js
 optimize/src/**/*.d.ts
+optimize/src/**/*.map
 !optimize/src/**/*.test.ts
 !optimize/src/**/*.test.tsx
 
@@ -60,6 +65,7 @@ loop/replay-records.jsonl
 # Simulator
 simulator/src/**/*.js
 simulator/src/**/*.d.ts
+simulator/src/**/*.map
 !simulator/src/**/*.test.ts
 !simulator/src/**/*.test.tsx
 .notention/

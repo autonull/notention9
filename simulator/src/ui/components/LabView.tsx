@@ -428,13 +428,13 @@ const LabResultsPanel = ({ run, running, onRun, onCancel }: {
           />
           <HistogramCard
             title="Per-Agent Matches"
-            data={Object.values(run.metrics.perAgentMatches).map(v => v)},
+            data={Object.values(run.metrics.perAgentMatches).map(v => v)}
             bins={5}
             color="yellow"
           />
           <HistogramCard
             title="Per-Domain Matches"
-            data={Object.values(run.metrics.perDomainMatches).map(v => v)},
+            data={Object.values(run.metrics.perDomainMatches).map(v => v)}
             bins={5}
             color="purple"
           />

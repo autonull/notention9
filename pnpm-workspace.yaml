@@ -6,3 +6,4 @@ packages:
   - 'simulator'
   - 'optimize'
   - 'ui/eval'
+  - 'packages/conformance'

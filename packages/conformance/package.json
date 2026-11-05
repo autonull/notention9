@@ -1,0 +1,49 @@
+{
+  "name": "@notention/conformance",
+  "version": "0.1.0",
+  "description": "Notention protocol conformance and simulator regression test suite",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./scenarios": {
+      "import": "./dist/scenarios/index.js",
+      "types": "./dist/scenarios/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "echo 'No build step - this is a test suite. Run tests with: pnpm test'",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "notention",
+    "conformance",
+    "protocol",
+    "simulator",
+    "regression",
+    "nostr"
+  ],
+  "author": "Notention Contributors",
+  "license": "MIT",
+  "peerDependencies": {
+    "@notention/core": "workspace:*",
+    "@notention/simulator": "workspace:*",
+    "vitest": "^2.0.0"
+  },
+  "devDependencies": {
+    "@notention/core": "workspace:*",
+    "@notention/simulator": "workspace:*",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}

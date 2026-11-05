@@ -549,7 +549,7 @@ export const LogsPanel = () => {
               </div>
             ) : (
               <>
-                filteredRunEvents.map((event, originalIndex) => (
+                {filteredRunEvents.map((event, originalIndex) => (
                   <RunEventEntry
                     key={originalIndex}
                     event={event}
@@ -557,7 +557,7 @@ export const LogsPanel = () => {
                     searchQuery={logSearch}
                     onClick={() => navigator.clipboard.writeText(`[${originalIndex}] ${event.type}: ${JSON.stringify(event.data)}`).then(() => {})}
                   />
-                ))
+                ))}
                 <div ref={runEventsEndRef} />
               </>
             )
@@ -571,7 +571,7 @@ export const LogsPanel = () => {
               </div>
             ) : (
               <>
-                filteredLogs.map((log, originalIndex) => (
+                {filteredLogs.map((log, originalIndex) => (
                   <LogEntry
                     key={originalIndex}
                     log={log}
@@ -580,7 +580,7 @@ export const LogsPanel = () => {
                     level={logFilter}
                     onClick={() => navigator.clipboard.writeText(`[${originalIndex}] ${log}`).then(() => {})}
                   />
-                ))
+                ))}
                 <div ref={logsEndRef} />
               </>
             )
