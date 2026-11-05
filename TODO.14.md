@@ -1,7 +1,7 @@
 # TODO.14 — Closing the Loop: From Instrument to Instrument Panel
 
 **Supersedes:** Nothing. Extends TODO.12 (Evaluation & Improvement Program) and TODO.13 (Generalization Layer).
-**Status:** Phase A complete — 2026-11-05. Phase B1–B2.5 complete — 2026-11-05. Phase B3/B4 complete — 2026-11-05. Phase C complete — 2026-11-05.
+**Status:** Phase A complete — 2026-11-05. Phase B1–B2.5 complete — 2026-11-05. Phase B3/B4 complete — 2026-11-05. Phase C complete — 2026-11-05. Phase D1/D2 complete — 2026-11-05.
 **Shape:** Four phases, dependency-ordered. Phase A is integrity (no features). Phases B–C close the measurement→delivery loop and make the UI its instrument panel. Phase D positions the result.
 **Basis:** Deep study of `simulator/` and `optimize/` (state verified 2026-11-05). Every claim in this file was checked against the repo at HEAD.
 
@@ -210,15 +210,17 @@ The UI's job: make the invisible visible, comparable, reversible.
 
 ---
 
-## Phase D — One Real Improvement + Positioning (Week 6)
+## Phase D — One Real Improvement + Positioning (Week 6) — **D1/D2 COMPLETE**
 
-| # | Item | Effort |
-|---|------|--------|
-| D1 | **The demo.** Execute one full loop on a real hypothesis (see TODO.science.md §5, Experiment E6 — correction-flow capture). Record: detection → candidate → powered verdict → consent → revision → re-simulation confirm → ledger chain | M |
-| D2 | Write-up: `doc/evidence/2026-11-loop-demo.md` — full chain, raw artifacts, honest null if that's what happens | S |
-| D3 | Showcase: `pnpm showcase` with corrected captions (event-aligned VTT) + 60-second mesh-coordination video; README embed | S |
-| D4 | Conformance suite as public artifact: extract `ProtocolTestbed` + `SimulatorRegression` into `packages/conformance` (or `test/conformance/`), documented, tagged v0.1 | M |
-| D5 | Decide positioning (TODO.science.md §8): project vs. product vs. research — **only after D2 is written** | — |
+| # | Item | Effort | Status |
+|---|------|--------|--------|
+| D1 | **The demo.** Execute one full loop on a real hypothesis (see TODO.science.md §5, Experiment E6 — correction-flow capture). Record: detection → candidate → powered verdict → consent → revision → re-simulation confirm → ledger chain | M | ✅ **Null result — honest negative published** |
+| D2 | Write-up: `doc/evidence/2026-11-loop-demo.md` — full chain, raw artifacts, honest null if that's what happens | S | ✅ |
+| D3 | Showcase: `pnpm showcase` with corrected captions (event-aligned VTT) + 60-second mesh-coordination video; README embed | S | ⏳ (deferred — no revision to showcase) |
+| D4 | Conformance suite as public artifact: extract `ProtocolTestbed` + `SimulatorRegression` into `packages/conformance` (or `test/conformance/`), documented, tagged v0.1 | M | ⏳ |
+| D5 | Decide positioning (TODO.science.md §8): project vs. product vs. research — **only after D2 is written** | — | ⏳ |
+
+**D1/D2 Outcome:** The loop executed end-to-end on Experiment E6 (correction-flow). Friction journal detected `correction` (5×) and `match_rejected` (3×) signals. Optimizer generated 14 candidates (8 grid + 6 friction-driven), ran powered evaluation (10 intent cases × 3 reps, MDE gate passed), and returned **null verdict** (0 winners, 6 losers). No revision created — correct behavior per "Honest negatives" guardrail. Full ledger chain recorded. Write-up at `doc/evidence/2026-11-loop-demo.md`.
 
 ---
 
@@ -257,6 +259,6 @@ The UI's job: make the invisible visible, comparable, reversible.
 | A Integrity | 1 week | — | Build/test/CI green; 8.6 GB gone |
 | B Measurement truth | 2 weeks | A | Powered verdict + emitted `match:found` + journal query |
 | C Instrument panel | 2 weeks | B | Non-expert completes explore→consent loop in UI |
-| D Demo + position | 1 week | C | `doc/evidence/2026-11-loop-demo.md` merged |
+| D Demo + position | 1 week | C | `doc/evidence/2026-11-loop-demo.md` merged **(D1/D2 ✅)** |
 
-**Order of operations:** A → B → C → D. No parallel tracks. Total ≈ 6 weeks, matching TODO.12/13 cadence.
+**Order of operations:** A → B → C → D. No parallel tracks. Total ≈ 6 weeks, matching TODO.12/13 cadence. **Phases A–C complete. D1/D2 complete (null result). D3–D5 deferred.**
