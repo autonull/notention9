@@ -1,7 +1,7 @@
 # TODO.14 — Closing the Loop: From Instrument to Instrument Panel
 
 **Supersedes:** Nothing. Extends TODO.12 (Evaluation & Improvement Program) and TODO.13 (Generalization Layer).
-**Status:** Phase A complete — 2026-11-05. Phase B1–B2.4 complete — 2026-11-05. Phase B2.5/B3/B4 in progress.
+**Status:** Phase A complete — 2026-11-05. Phase B1–B2.5 complete — 2026-11-05. Phase B3/B4 in progress.
 **Shape:** Four phases, dependency-ordered. Phase A is integrity (no features). Phases B–C close the measurement→delivery loop and make the UI its instrument panel. Phase D positions the result.
 **Basis:** Deep study of `simulator/` and `optimize/` (state verified 2026-11-05). Every claim in this file was checked against the repo at HEAD.
 
@@ -138,7 +138,7 @@ Make the loop capable of producing a true statement.
 | B1.6 | ParamSpec gap review: `templateSelectorParamSpec = {}` and `describeItComposerParamSpec.placeholder` are the only honestly-evaluable specs today; `localMatchPreview`, `dashboardLocalMatch`, `localMatchesPanel`, `propertyForm`, `tagInput` — document per-param *mechanism* (which component reads it, when) or fix the param. A param with no causal path is a lie with extra steps | M | ✅ |
 | B1.7 | Metrics beyond `completion`: add `steps`, `corrections`, `timeToCapture` from the same browser run; completion stays primary, others recorded as secondary evidence | S | ✅ |
 
-### B2. Simulator as measurement source — **IN PROGRESS**
+### B2. Simulator as measurement source — **COMPLETE**
 
 | # | Item | Notes | Effort | Status |
 |---|------|-------|--------|--------|
@@ -146,7 +146,7 @@ Make the loop capable of producing a true statement.
 | B2.2 | Replace real-time `setTimeout` scheduling with a virtual clock in `ScenarioRunner` (`--fast` flag): 10–100× simulation throughput for measurement runs; movie mode keeps real-time | `scenario.ts` | M | ✅ |
 | B2.3 | Metrics collector (`simulator/src/metricsCollector.ts`): consumes `RunEvent` stream → per-run `{timeToFirstMatchMs, matchesPerMinute, unmatchedRate, matchScoreDistribution, perDomainBreakdown}`; writes to ledger + `~/.notention/runs/…/metrics.json` | M | ✅ |
 | B2.4 | `uxEvaluator.ts`: relabel its outputs `evidenceClass: hypothesized` (they are estimates); delete `ux-evaluation-report.json` from repo root (regenerable); wire into loop so a *measured* report supersedes it | S | ✅ |
-| B2.5 | 13 scenarios → measurement suite: define per-scenario expected distributions (seeded, deterministic); `SimulatorRegression` evolves from structural assert-equality into statistical assertion (match counts within CI) | M | ⏳ |
+| B2.5 | 13 scenarios → measurement suite: define per-scenario expected distributions (seeded, deterministic); `SimulatorRegression` evolves from structural assert-equality into statistical assertion (match counts within CI) | M | ✅ |
 
 ### B3. Friction → prioritize → candidate
 
