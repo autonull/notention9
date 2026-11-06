@@ -15,7 +15,7 @@
     "build": "tsc && npm run build:ui",
     "build:ui": "vite build --config vite.config.ts",
     "ui:dev": "vite dev --config vite.config.ts",
-    "test": "vitest run --passWithNoTests"
+    "test": "NODE_OPTIONS='--no-warnings=ExperimentalWarning' vitest run --passWithNoTests"
   },
   "dependencies": {
     "@notention/core": "workspace:*",

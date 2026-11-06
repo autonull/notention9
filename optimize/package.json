@@ -27,7 +27,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "vitest run",
+    "test": "NODE_OPTIONS='--no-warnings=ExperimentalWarning' vitest run",
     "lint": "eslint src --ext .ts",
     "optimizer": "tsx src/optimizer/cli.ts",
     "prompts:eval": "tsx src/prompts/cli.ts"

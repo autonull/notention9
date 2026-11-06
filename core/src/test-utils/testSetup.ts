@@ -4,7 +4,7 @@ export const MEMORY_THRESHOLD_MB = 500;
 export const MEMORY_THRESHOLD_BYTES = MEMORY_THRESHOLD_MB * 1024 * 1024;
 
 export function setupTestEnvironment(): void {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && window.HTMLElement?.prototype) {
         window.HTMLElement.prototype.scrollIntoView = vi.fn();
 
         const localStorageMock = {

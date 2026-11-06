@@ -9,6 +9,7 @@ export default defineConfig({
         passWithNoTests: true,
         testTimeout: 300000,
         fileParallelism: false,
+        localStorage: { file: '.vitest-localstorage' },
     },
     resolve: {
         alias: {
