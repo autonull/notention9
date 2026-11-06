@@ -134,6 +134,30 @@ async function loadQualityCases(): Promise<QualityCase[]> {
     return cases;
 }
 
+async function loadLoopGoldenCases(): Promise<QualityCase[]> {
+    const goldenPath = join(__dirname, '..', '..', '..', 'loop', 'golden-cases.json');
+    try {
+        const content = readFileSync(goldenPath, 'utf-8');
+        const data = JSON.parse(content);
+        const cases: QualityCase[] = [];
+        
+        for (const gc of data.cases) {
+            cases.push({
+                name: gc.id,
+                input: gc.input,
+                expected: gc.expected ?? [],
+                forbidden: [],
+                expectedOutcome: gc.expectedOutcome ?? 'suggested',
+            });
+        }
+        
+        return cases;
+    } catch (error) {
+        console.warn(`Could not load loop golden cases: ${error}`);
+        return [];
+    }
+}
+
 function computeKeyStats(cases: QualityCase[]): KeyStats[] {
     const keyMap = new Map<string, KeyStats>();
     const totalCases = cases.length;
@@ -367,21 +391,31 @@ function findOperatorDrift(keyStats: KeyStats[], ontologyKeys: Map<string, any>)
     return results.sort((a, b) => b.driftScore - a.driftScore);
 }
 
-export async function runOntologyAudit(): Promise<AuditResult> {
+export async function runOntologyAudit(options: { includeGolden?: boolean } = {}): Promise<AuditResult> {
     console.log('🔬 E7 Ontology Drift & Co-occurrence Audit');
     console.log('===========================================\n');
     
     // Load quality cases
     const qualityCases = await loadQualityCases();
-    console.log(`Loaded ${qualityCases.length} quality cases`);
+    console.log(`Loaded ${qualityCases.length} quality extraction cases`);
+    
+    // Optionally load loop golden cases
+    let allCases = qualityCases;
+    if (options.includeGolden) {
+        const goldenCases = await loadLoopGoldenCases();
+        console.log(`Loaded ${goldenCases.length} loop golden cases`);
+        allCases = [...qualityCases, ...goldenCases];
+    }
+    
+    console.log(`Total cases for analysis: ${allCases.length}\n`);
     
     // Collect ontology keys
     const ontologyKeys = collectAllOntologyKeys(DEFAULT_ONTOLOGY);
     console.log(`Ontology has ${ontologyKeys.size} keys\n`);
     
     // Compute statistics
-    const keyStats = computeKeyStats(qualityCases);
-    console.log(`Found ${keyStats.length} keys in quality cases\n`);
+    const keyStats = computeKeyStats(allCases);
+    console.log(`Found ${keyStats.length} keys in cases\n`);
     
     // Run analyses
     const orphanKeys = findOrphanKeys(keyStats, ontologyKeys);
@@ -391,7 +425,7 @@ export async function runOntologyAudit(): Promise<AuditResult> {
     console.log(`Keys with operator drift: ${overBroadOperators.length}`);
     
     const missingHierarchies = findMissingHierarchies(keyStats);
-    console.log(`Missing hierarchy candidates (lift ≥ 0.9, size ≥ 3): ${missingHierarchies.length}`);
+    console.log(`Missing hierarchy candidates (lift ≥ 3.0, size ≥ 3): ${missingHierarchies.length}`);
     
     const operatorDrift = findOperatorDrift(keyStats, ontologyKeys);
     console.log(`Keys with default operator drift: ${operatorDrift.length}`);
@@ -454,8 +488,8 @@ export async function runOntologyAudit(): Promise<AuditResult> {
     return result;
 }
 
-export async function runAuditAndSave(outputPath?: string): Promise<void> {
-    const result = await runOntologyAudit();
+export async function runAuditAndSave(outputPath?: string, options: { includeGolden?: boolean } = {}): Promise<void> {
+    const result = await runOntologyAudit(options);
     
     if (outputPath) {
         const serializable = {

@@ -269,7 +269,7 @@ The UI's job: make the invisible visible, comparable, reversible.
 | C Instrument panel | 2 weeks | B | Non-expert completes explore→consent loop in UI |
 | D Demo + position | 1 week | C | `doc/evidence/2026-11-loop-demo.md` merged **(D1/D2/D4/D5 ✅)** |
 
-**Order of operations:** A → B → C → D. No parallel tracks. Total ≈ 6 weeks, matching TODO.12/13 cadence. **Phases A–D complete. D1/D2/D4/D5 complete (null result, conformance suite, positioning decided). D3 deferred (no revision to showcase). Remaining: next hypothesis cycle (E2, E13, E7, E14 per TODO.science.md).**
+**Order of operations:** A → B → C → D. No parallel tracks. Total ≈ 6 weeks, matching TODO.12/13 cadence. **Phases A–D complete. D1/D2/D4/D5 complete (null result, conformance suite, positioning decided). D3 deferred (no revision to showcase). Remaining: next hypothesis cycle (E2, E13, E7, E14 per TODO.science.md) — E7/E14/E2 infrastructure complete, E13 pending LLM.**
 
 ---
 
@@ -280,7 +280,7 @@ Per TODO.science.md §5, the next cycle targets the three optimization surfaces 
 | Experiment | Surface | Description | Status |
 |------------|---------|-------------|--------|
 | **E13** | S-PROMPT | Prompt ablation & revision cycle — 6 variants (few-shot, ontology-embedded, two-step, schema-constrained) on 38 quality extraction cases ×3 reps | **INFRASTRUCTURE COMPLETE** — variants.ts, CLI ablation command, quality case loading, F1/ECE metrics. All variants currently identical (deterministic fallback); needs LLM provider for true differentiation |
-| **E7** | S-ONT | Ontology drift & co-occurrence audit — orphan keys, operator misuse, missing hierarchies from local notes (opt-in) + corpus | **INFRASTRUCTURE COMPLETE** — `optimizer audit` CLI, key frequency, co-occurrence lift, operator drift detection, hierarchy clustering. Ran on 38 quality extraction cases + 79 ontology keys |
+| **E7** | S-ONT | Ontology drift & co-occurrence audit — orphan keys, operator misuse, missing hierarchies from local notes (opt-in) + corpus | **INFRASTRUCTURE COMPLETE** — `optimizer audit` CLI with `--golden`, key frequency, co-occurrence lift, operator drift, hierarchy clustering. Ran on 50 cases (38 quality + 12 golden) + 79 keys. 32 keys used, 9 operator drifts, 1 hierarchy (19 keys, lift=5.30) |
 | **E14** | S-ONT | Ontology patch generalization test — top 2 E7 proposals → held-out quality cases + simulator distribution | **INFRASTRUCTURE COMPLETE** — `optimizer patch-test` CLI, operator default patch (role/location/subject/deadline→contains, budget→less than, price→equals), hierarchy patch, combined patch. Match quality evaluation framework working. All 3 patches non-regressive (ΔF1=0.000). Simulator integration pending. | ✅ INFRASTRUCTURE |
 | **E2** | S-UI | Capture-flow parameter A/B — autoFocus+placeholder vs initialOp=enum-hint on 10 intent cases ×3 reps | **INFRASTRUCTURE COMPLETE** — `optimizer e2-capture` CLI, McNemar + Wilcoxon statistical tests, 10 validation capture cases, paired design. Requires preview server + Playwright browser. |
 
@@ -293,13 +293,15 @@ Per TODO.science.md §5, the next cycle targets the three optimization surfaces 
 
 ### E7 Progress (2026-11-06)
 - ✅ `optimize/src/ontology/audit.ts` — Full audit pipeline: key frequency, pairwise co-occurrence lift, operator distribution, orphan detection, hierarchy clustering
-- ✅ `optimize/src/optimizer/cli.ts` — Added `optimizer audit` command with `--output` option
+- ✅ `optimize/src/optimizer/cli.ts` — Added `optimizer audit` command with `--output` and `--golden` options
 - ✅ Ran on 38 quality extraction cases + 79 ontology keys (5 domains: entity, communication, event, work, commerce)
-- Key findings:
-  - **23/79 keys used** in quality extraction cases (56 orphan keys)
-  - **6 keys with operator drift**: role/location/subject/deadline use `contains` instead of `is`; budget uses `less than`; price uses `equals`
-  - **1 hierarchy candidate**: 14 keys co-occur frequently (lift=5.43) — audience, deadline, dietary, focus, format, frequency, location, patient, price, property, recipient, subject, task, topic — suggests missing domain grouping
-  - **Top keys**: role (37), budget (29), schedule (16), price (8), frequency (6)
+- ✅ Extended to **loop golden cases (12 cases)** — total 50 cases, 32 keys used
+- Key findings (with golden cases):
+  - **32/79 keys used** (67 orphan keys including communication/event/commerce domains)
+  - **9 keys with operator drift**: role/location/subject/deadline→contains, budget→less than, price→equals, rate→less than, status→is not, to→send to
+  - **1 hierarchy candidate**: 19 keys co-occur frequently (lift=5.30) — audience, certification, client, deadline, dietary, event, focus, format, frequency, level, location, patient, price, property, recipient, schedule, subject, task, topic — suggests missing domain grouping
+  - **Top keys**: role (37), budget (30), schedule (16), price (10), frequency/format/deadline (6)
+- ⏳ Human review of top 2 proposals for E14
 ### E14 Progress (2026-11-06)
 - ✅ `optimize/src/ontology/patchTest.ts` — E14 patch test framework with 4 configurations (baseline, operator-defaults, hierarchy, combined)
 - ✅ `optimize/src/optimizer/cli.ts` — Added `optimizer patch-test` command with `--output` option

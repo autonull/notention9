@@ -10,7 +10,7 @@
 
 import { chromium, type Browser, type BrowserContext, type Page } from '@playwright/test';
 import { readManifest, readIntentCases, type IntentCase } from '@notention/core/eval/caseManifest.js';
-import { ensurePreviewServer, stopPreviewServer } from '../server/previewServer.js';
+// import { ensurePreviewServer, stopPreviewServer } from '../server/previewServer.js'; // Not available in this build
 import {
     INTENT_DEFAULT_VIEWPORT,
     INTENT_NAVIGATION_TIMEOUT_MS,
@@ -24,11 +24,12 @@ import { dirname, join } from 'node:path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-interface CaptureTestConfig {
+export interface CaptureTestConfig {
     headless?: boolean;
     repetitions?: number;
     viewport?: { width: number; height: number };
     output?: string;
+    baseURL?: string;
 }
 
 interface ArmResult {
@@ -90,11 +91,12 @@ async function runArm(
     patch: Record<string, unknown>,
     cases: IntentCase[],
     repetitions: number,
-    headless: boolean = true
+    headless: boolean = true,
+    baseURL?: string
 ): Promise<ArmResult> {
     console.log(`\n🌐 Running ${armName} (${cases.length} cases × ${repetitions} reps)...`);
     
-    const baseURL = await ensurePreviewServer();
+    const resolvedBaseURL = baseURL ?? process.env.PREVIEW_URL ?? 'http://localhost:4199';
     
     const browser = await chromium.launch({
         headless: headless !== false,
@@ -426,8 +428,8 @@ export async function runE2CaptureTest(config: CaptureTestConfig = {}): Promise<
     }
     
     // Run both arms
-    const armA = await runArm('A-autoFocus-placeholder', E2_ARMS['A-autoFocus-placeholder'], cases, repetitions, headless);
-    const armB = await runArm('B-initialOp-enumHint', E2_ARMS['B-initialOp-enumHint'], cases, repetitions, headless);
+    const armA = await runArm('A-autoFocus-placeholder', E2_ARMS['A-autoFocus-placeholder'], cases, repetitions, headless, config.baseURL);
+    const armB = await runArm('B-initialOp-enumHint', E2_ARMS['B-initialOp-enumHint'], cases, repetitions, headless, config.baseURL);
     
     // Compare
     const comparison = compareArms(armA, armB);

@@ -6,9 +6,9 @@
 import { Command } from 'commander';
 import { runOptimizerCycle, defaultOptimizerConfig, type OptimizerConfig, getCandidateCache } from './index.js';
 import { getRunsDir, getCacheDir, getRunDir } from './constants.js';
-import { runAuditAndSave } from '../ontology/audit.js';
+import { runAuditAndSave, runOntologyAudit } from '../ontology/audit.js';
 import { runOntologyPatchTest } from '../ontology/patchTest.js';
-import { runE2CaptureTest } from './e2CaptureTest.js';
+// runE2CaptureTest has Playwright dependencies - load dynamically
 
 const program = new Command();
 
@@ -109,8 +109,13 @@ program
     .command('audit')
     .description('Run E7 ontology drift & co-occurrence audit on quality cases')
     .option('-o, --output <file>', 'Output JSON file for results')
+    .option('--golden', 'Include loop golden cases in analysis')
     .action(async (options) => {
-        await runAuditAndSave(options.output);
+        if (options.output) {
+            await runAuditAndSave(options.output, { includeGolden: options.golden });
+        } else {
+            await runOntologyAudit({ includeGolden: options.golden });
+        }
     });
 
 program
@@ -128,6 +133,7 @@ program
     .option('--headless', 'Run browser headless', true)
     .option('-o, --output <file>', 'Output JSON file for results')
     .action(async (options) => {
+        const { runE2CaptureTest } = await import('./e2CaptureTest.js');
         await runE2CaptureTest({
             repetitions: parseInt(options.repetitions, 10),
             headless: options.headless !== false,
