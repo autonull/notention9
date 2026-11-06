@@ -6,6 +6,7 @@
 import { Command } from 'commander';
 import { runOptimizerCycle, defaultOptimizerConfig, type OptimizerConfig, getCandidateCache } from './index.js';
 import { getRunsDir, getCacheDir, getRunDir } from './constants.js';
+import { runAuditAndSave } from '../ontology/audit.js';
 
 const program = new Command();
 
@@ -101,5 +102,13 @@ program
 function join(...args: string[]): string {
     return args.join('/');
 }
+
+program
+    .command('audit')
+    .description('Run E7 ontology drift & co-occurrence audit on quality cases')
+    .option('-o, --output <file>', 'Output JSON file for results')
+    .action(async (options) => {
+        await runAuditAndSave(options.output);
+    });
 
 program.parse();

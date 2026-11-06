@@ -280,7 +280,7 @@ Per TODO.science.md §5, the next cycle targets the three optimization surfaces 
 | Experiment | Surface | Description | Status |
 |------------|---------|-------------|--------|
 | **E13** | S-PROMPT | Prompt ablation & revision cycle — 6 variants (few-shot, ontology-embedded, two-step, schema-constrained) on 38 quality extraction cases ×3 reps | **INFRASTRUCTURE COMPLETE** — variants.ts, CLI ablation command, quality case loading, F1/ECE metrics. All variants currently identical (deterministic fallback); needs LLM provider for true differentiation |
-| **E7** | S-ONT | Ontology drift & co-occurrence audit — orphan keys, operator misuse, missing hierarchies from local notes (opt-in) + corpus | ⏳ |
+| **E7** | S-ONT | Ontology drift & co-occurrence audit — orphan keys, operator misuse, missing hierarchies from local notes (opt-in) + corpus | **INFRASTRUCTURE COMPLETE** — `optimizer audit` CLI, key frequency, co-occurrence lift, operator drift detection, hierarchy clustering. Ran on 38 quality extraction cases + 79 ontology keys |
 | **E14** | S-ONT | Ontology patch generalization test — top 2 E7 proposals → held-out quality cases + simulator distribution | ⏳ (depends on E7) |
 | **E2** | S-UI | Capture-flow parameter A/B — autoFocus+placeholder vs initialOp=enum-hint on 10 intent cases ×3 reps | ⏳ |
 
@@ -290,3 +290,15 @@ Per TODO.science.md §5, the next cycle targets the three optimization surfaces 
 - ✅ `optimize/src/prompts/evaluate.ts` — Golden set evaluation framework (DeterministicProvider, CannedProvider, RegistryProvider)
 - ⏳ LLM provider integration — variants currently identical because all use deterministic fallback; true ablation requires LLM (OpenAI-compatible, WebLLM, or local)
 - ⏳ Register winner as `property-extraction@2` and wire `pnpm prompts:eval` into CI (E16)
+
+### E7 Progress (2026-11-06)
+- ✅ `optimize/src/ontology/audit.ts` — Full audit pipeline: key frequency, pairwise co-occurrence lift, operator distribution, orphan detection, hierarchy clustering
+- ✅ `optimize/src/optimizer/cli.ts` — Added `optimizer audit` command with `--output` option
+- ✅ Ran on 38 quality extraction cases + 79 ontology keys (5 domains: entity, communication, event, work, commerce)
+- Key findings:
+  - **23/79 keys used** in quality extraction cases (56 orphan keys)
+  - **6 keys with operator drift**: role/location/subject/deadline use `contains` instead of `is`; budget uses `less than`; price uses `equals`
+  - **1 hierarchy candidate**: 14 keys co-occur frequently (lift=5.43) — audience, deadline, dietary, focus, format, frequency, location, patient, price, property, recipient, subject, task, topic — suggests missing domain grouping
+  - **Top keys**: role (37), budget (29), schedule (16), price (8), frequency (6)
+- ⏳ Extend to local notes (opt-in) and loop golden cases for broader coverage
+- ⏳ Human review of top 2 proposals for E14
