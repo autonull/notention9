@@ -270,3 +270,23 @@ The UI's job: make the invisible visible, comparable, reversible.
 | D Demo + position | 1 week | C | `doc/evidence/2026-11-loop-demo.md` merged **(D1/D2/D4/D5 ✅)** |
 
 **Order of operations:** A → B → C → D. No parallel tracks. Total ≈ 6 weeks, matching TODO.12/13 cadence. **Phases A–D complete. D1/D2/D4/D5 complete (null result, conformance suite, positioning decided). D3 deferred (no revision to showcase). Remaining: next hypothesis cycle (E2, E13, E7, E14 per TODO.science.md).**
+
+---
+
+## Next Hypothesis Cycle — **IN PROGRESS**
+
+Per TODO.science.md §5, the next cycle targets the three optimization surfaces in order:
+
+| Experiment | Surface | Description | Status |
+|------------|---------|-------------|--------|
+| **E13** | S-PROMPT | Prompt ablation & revision cycle — 6 variants (few-shot, ontology-embedded, two-step, schema-constrained) on 38 quality extraction cases ×3 reps | **INFRASTRUCTURE COMPLETE** — variants.ts, CLI ablation command, quality case loading, F1/ECE metrics. All variants currently identical (deterministic fallback); needs LLM provider for true differentiation |
+| **E7** | S-ONT | Ontology drift & co-occurrence audit — orphan keys, operator misuse, missing hierarchies from local notes (opt-in) + corpus | ⏳ |
+| **E14** | S-ONT | Ontology patch generalization test — top 2 E7 proposals → held-out quality cases + simulator distribution | ⏳ (depends on E7) |
+| **E2** | S-UI | Capture-flow parameter A/B — autoFocus+placeholder vs initialOp=enum-hint on 10 intent cases ×3 reps | ⏳ |
+
+### E13 Progress (2026-11-06)
+- ✅ `optimize/src/prompts/variants.ts` — 6 prompt variants generated with ontology embedding, few-shot, two-step, schema-constrained
+- ✅ `optimize/src/prompts/cli.ts` — `pnpm prompts:eval ablation` command with quality case loading, F1/ECE per case, macro averaging
+- ✅ `optimize/src/prompts/evaluate.ts` — Golden set evaluation framework (DeterministicProvider, CannedProvider, RegistryProvider)
+- ⏳ LLM provider integration — variants currently identical because all use deterministic fallback; true ablation requires LLM (OpenAI-compatible, WebLLM, or local)
+- ⏳ Register winner as `property-extraction@2` and wire `pnpm prompts:eval` into CI (E16)

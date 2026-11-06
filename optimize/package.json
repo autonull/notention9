@@ -29,7 +29,8 @@
     "build": "tsc",
     "test": "vitest run",
     "lint": "eslint src --ext .ts",
-    "optimizer": "tsx src/optimizer/cli.ts"
+    "optimizer": "tsx src/optimizer/cli.ts",
+    "prompts:eval": "tsx src/prompts/cli.ts"
   },
   "dependencies": {
     "@notention/core": "workspace:*",
