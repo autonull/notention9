@@ -8,6 +8,7 @@ import { runOptimizerCycle, defaultOptimizerConfig, type OptimizerConfig, getCan
 import { getRunsDir, getCacheDir, getRunDir } from './constants.js';
 import { runAuditAndSave } from '../ontology/audit.js';
 import { runOntologyPatchTest } from '../ontology/patchTest.js';
+import { runE2CaptureTest } from './e2CaptureTest.js';
 
 const program = new Command();
 
@@ -118,6 +119,20 @@ program
     .option('-o, --output <file>', 'Output JSON file for results')
     .action(async (options) => {
         await runOntologyPatchTest(options.output);
+    });
+
+program
+    .command('e2-capture')
+    .description('Run E2 capture-flow parameter A/B test (10 validation cases × 3 reps)')
+    .option('--repetitions <n>', 'Repetitions per case', '3')
+    .option('--headless', 'Run browser headless', true)
+    .option('-o, --output <file>', 'Output JSON file for results')
+    .action(async (options) => {
+        await runE2CaptureTest({
+            repetitions: parseInt(options.repetitions, 10),
+            headless: options.headless !== false,
+            output: options.output,
+        });
     });
 
 program.parse();

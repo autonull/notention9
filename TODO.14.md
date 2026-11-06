@@ -282,7 +282,7 @@ Per TODO.science.md §5, the next cycle targets the three optimization surfaces 
 | **E13** | S-PROMPT | Prompt ablation & revision cycle — 6 variants (few-shot, ontology-embedded, two-step, schema-constrained) on 38 quality extraction cases ×3 reps | **INFRASTRUCTURE COMPLETE** — variants.ts, CLI ablation command, quality case loading, F1/ECE metrics. All variants currently identical (deterministic fallback); needs LLM provider for true differentiation |
 | **E7** | S-ONT | Ontology drift & co-occurrence audit — orphan keys, operator misuse, missing hierarchies from local notes (opt-in) + corpus | **INFRASTRUCTURE COMPLETE** — `optimizer audit` CLI, key frequency, co-occurrence lift, operator drift detection, hierarchy clustering. Ran on 38 quality extraction cases + 79 ontology keys |
 | **E14** | S-ONT | Ontology patch generalization test — top 2 E7 proposals → held-out quality cases + simulator distribution | **INFRASTRUCTURE COMPLETE** — `optimizer patch-test` CLI, operator default patch (role/location/subject/deadline→contains, budget→less than, price→equals), hierarchy patch, combined patch. Match quality evaluation framework working. All 3 patches non-regressive (ΔF1=0.000). Simulator integration pending. | ✅ INFRASTRUCTURE |
-| **E2** | S-UI | Capture-flow parameter A/B — autoFocus+placeholder vs initialOp=enum-hint on 10 intent cases ×3 reps | ⏳ |
+| **E2** | S-UI | Capture-flow parameter A/B — autoFocus+placeholder vs initialOp=enum-hint on 10 intent cases ×3 reps | **INFRASTRUCTURE COMPLETE** — `optimizer e2-capture` CLI, McNemar + Wilcoxon statistical tests, 10 validation capture cases, paired design. Requires preview server + Playwright browser. |
 
 ### E13 Progress (2026-11-06)
 - ✅ `optimize/src/prompts/variants.ts` — 6 prompt variants generated with ontology embedding, few-shot, two-step, schema-constrained
@@ -310,3 +310,14 @@ Per TODO.science.md §5, the next cycle targets the three optimization surfaces 
 - ⏳ Full match case coverage — current sample notes (3) only cover 1/22 cases; need comprehensive note corpus
 - ⏳ Simulator distribution test (200 runs) — requires simulator ontology injection
 - ⏳ Holdout split evaluation
+
+### E2 Progress (2026-11-06)
+- ✅ `optimize/src/optimizer/e2CaptureTest.ts` — E2 A/B test framework with paired design
+- ✅ `optimize/src/optimizer/cli.ts` — Added `optimizer e2-capture` command with `--repetitions`, `--headless`, `--output` options
+- ✅ Two arms: A (autoFocus+placeholder) vs B (initialOp=enum-hint=contains)
+- ✅ McNemar test for completion (paired binary), Wilcoxon signed-rank for timeToCapture (paired continuous)
+- ✅ Corrections as guardrail metric
+- ✅ Loads 10 validation capture intent cases from manifest
+- ⏳ Full browser run — requires preview server + Playwright; not yet executed
+- ⏳ MDE power check before run
+- ⏳ Holdout read once
