@@ -9,14 +9,15 @@
  */
 
 import { chromium, type Browser, type BrowserContext, type Page } from '@playwright/test';
-import { readManifest, readIntentCases, type IntentCase } from '@notention/core/eval/caseManifest.js';
-// import { ensurePreviewServer, stopPreviewServer } from '../server/previewServer.js'; // Not available in this build
+import { readManifest, readIntentCases, type IntentCase, CaseSplit } from '@notention/core/eval/caseManifest.js';
+import { ensurePreviewServer, stopPreviewServer } from './server/previewServer.js';
 import {
     INTENT_DEFAULT_VIEWPORT,
     INTENT_NAVIGATION_TIMEOUT_MS,
     DEFAULT_INTENT_EXTRACTION_WAIT_MS,
-} from '../constants.js';
-import { runIntentCase, applySeedRevisions, type IntentCaseRunResult, type RunIntentCaseConfig } from './intentCaseRunner.js';
+    STATE_WAIT_DEFAULT_TIMEOUT_MS,
+} from './constants.js';
+import { runIntentCase, applySeedRevisions, type IntentCaseRunResult, type RunIntentCaseConfig } from './evaluation/intentCaseRunner.js';
 import { writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -74,16 +75,13 @@ const E2_ARMS = {
 };
 
 function loadValidationCaptureCases(): IntentCase[] {
-    const manifest = readManifest();
-    // Filter for validation split, capture intent
-    const cases = manifest.cases.filter(c => 
-        c.split === 'validation' && 
-        c.intent === 'capture_need' &&
-        c.path.includes('intent-capture')
-    );
+    // Load validation intent cases
+    const cases = readIntentCases('validation');
+    // Filter for capture_need intent
+    const captureCases = cases.filter(c => c.intent === 'capture_need');
     
-    console.log(`Loaded ${cases.length} validation capture intent cases`);
-    return cases.slice(0, 10); // E2 specifies 10 cases
+    console.log(`Loaded ${captureCases.length} validation capture intent cases`);
+    return captureCases.slice(0, 10); // E2 specifies 10 cases
 }
 
 async function runArm(
@@ -96,7 +94,7 @@ async function runArm(
 ): Promise<ArmResult> {
     console.log(`\n🌐 Running ${armName} (${cases.length} cases × ${repetitions} reps)...`);
     
-    const resolvedBaseURL = baseURL ?? process.env.PREVIEW_URL ?? 'http://localhost:4199';
+    const resolvedBaseURL = baseURL ?? process.env.PREVIEW_URL ?? 'http://127.0.0.1:4199';
     
     const browser = await chromium.launch({
         headless: headless !== false,
@@ -115,11 +113,11 @@ async function runArm(
             localStorage.setItem('paramPatch', JSON.stringify(patchData));
         }, patch);
         
-        const page = await context.newPage();
+        const page = await context.newPage();;
         
         const runConfig: RunIntentCaseConfig = {
-            baseURL,
-            navigationTimeoutMs: INTENT_NAVIGATION_TIMEOUT_MS,
+            baseURL: resolvedBaseURL,
+            navigationTimeoutMs: 30000, // 30s for page load + hydration
             extractionWaitMs: DEFAULT_INTENT_EXTRACTION_WAIT_MS,
             extractionSelector: '[data-testid="extracted-property"]',
         };
@@ -161,7 +159,7 @@ async function runArm(
                         details: [...details, `Error: ${error instanceof Error ? error.message : String(error)}`],
                         error: error instanceof Error ? error.message : String(error),
                     });
-                    console.log(`   ${caseData.id} rep${rep}: ✗ ERROR`);
+                    console.log(`   ${caseData.id} rep${rep}: ✗ ERROR: ${error instanceof Error ? error.message : String(error)}`);
                 }
             }
         }
@@ -427,13 +425,29 @@ export async function runE2CaptureTest(config: CaptureTestConfig = {}): Promise<
         return;
     }
     
-    // Run both arms
-    const armA = await runArm('A-autoFocus-placeholder', E2_ARMS['A-autoFocus-placeholder'], cases, repetitions, headless, config.baseURL);
-    const armB = await runArm('B-initialOp-enumHint', E2_ARMS['B-initialOp-enumHint'], cases, repetitions, headless, config.baseURL);
+    // Start preview server
+    console.log('\n🚀 Starting preview server...');
+    let baseURL = config.baseURL ?? await ensurePreviewServer();
+    // Convert localhost to 127.0.0.1 to avoid ERR_BLOCKED_BY_CLIENT
+    baseURL = baseURL.replace('http://localhost:', 'http://127.0.0.1:');
     
-    // Compare
-    const comparison = compareArms(armA, armB);
-    printComparison(comparison);
+    let armA: ArmResult;
+    let armB: ArmResult;
+    let comparison: ComparisonResult;
+    
+    try {
+        // Run both arms
+        armA = await runArm('A-autoFocus-placeholder', E2_ARMS['A-autoFocus-placeholder'], cases, repetitions, headless, baseURL);
+        armB = await runArm('B-initialOp-enumHint', E2_ARMS['B-initialOp-enumHint'], cases, repetitions, headless, baseURL);
+
+        // Compare
+        comparison = compareArms(armA, armB);
+        printComparison(comparison);
+    } finally {
+        // Stop preview server
+        console.log('\n🛑 Stopping preview server...');
+        stopPreviewServer();
+    }
     
     // Save results
     if (output) {

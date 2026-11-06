@@ -282,7 +282,7 @@ Per TODO.science.md §5, the next cycle targets the three optimization surfaces 
 | **E13** | S-PROMPT | Prompt ablation & revision cycle — 6 variants (few-shot, ontology-embedded, two-step, schema-constrained) on 38 quality extraction cases ×3 reps | **INFRASTRUCTURE COMPLETE** — variants.ts, CLI ablation command, quality case loading, F1/ECE metrics. All variants currently identical (deterministic fallback); needs LLM provider for true differentiation |
 | **E7** | S-ONT | Ontology drift & co-occurrence audit — orphan keys, operator misuse, missing hierarchies from local notes (opt-in) + corpus | **INFRASTRUCTURE COMPLETE** — `optimizer audit` CLI with `--golden`, key frequency, co-occurrence lift, operator drift, hierarchy clustering. Ran on 50 cases (38 quality + 12 golden) + 79 keys. 32 keys used, 9 operator drifts, 1 hierarchy (19 keys, lift=5.30) |
 | **E14** | S-ONT | Ontology patch generalization test — top 2 E7 proposals → held-out quality cases + simulator distribution | **INFRASTRUCTURE COMPLETE** — `optimizer patch-test` CLI, operator default patch (role/location/subject/deadline→contains, budget→less than, price→equals), hierarchy patch, combined patch. Match quality evaluation framework working. All 3 patches non-regressive (ΔF1=0.000). Simulator integration pending. | ✅ INFRASTRUCTURE |
-| **E2** | S-UI | Capture-flow parameter A/B — autoFocus+placeholder vs initialOp=enum-hint on 10 intent cases ×3 reps | **INFRASTRUCTURE COMPLETE** — `optimizer e2-capture` CLI, McNemar + Wilcoxon statistical tests, 10 validation capture cases, paired design. Requires preview server + Playwright browser. |
+| **E2** | S-UI | Capture-flow parameter A/B — autoFocus+placeholder vs initialOp=enum-hint on 10 intent cases ×3 reps | **INFRASTRUCTURE COMPLETE** — `optimizer e2-capture` CLI, McNemar + Wilcoxon statistical tests, 10 validation capture cases, paired design. Preview server + Playwright integration working. **BLOCKED**: `ERR_BLOCKED_BY_CLIENT` in headless Chrome (Chrome security feature blocking localhost). Requires environment fix (custom Chrome flags, container, or non-headless with profile). |
 
 ### E13 Progress (2026-11-06)
 - ✅ `optimize/src/prompts/variants.ts` — 6 prompt variants generated with ontology embedding, few-shot, two-step, schema-constrained
@@ -320,6 +320,7 @@ Per TODO.science.md §5, the next cycle targets the three optimization surfaces 
 - ✅ McNemar test for completion (paired binary), Wilcoxon signed-rank for timeToCapture (paired continuous)
 - ✅ Corrections as guardrail metric
 - ✅ Loads 10 validation capture intent cases from manifest
-- ⏳ Full browser run — requires preview server + Playwright; not yet executed
+- ✅ Preview server + Playwright integration working
+- ⏳ **BLOCKED**: `ERR_BLOCKED_BY_CLIENT` in headless Chrome — Chrome security feature blocking localhost/127.0.0.1 requests. Flags tested: `--disable-web-security`, `--disable-features=BlockInsecurePrivateNetworkRequests`, `--allow-running-insecure-content`, `127.0.0.1` vs `localhost`. Requires environment fix (custom Chrome profile, container with proper flags, or non-headless with user data dir).
 - ⏳ MDE power check before run
 - ⏳ Holdout read once

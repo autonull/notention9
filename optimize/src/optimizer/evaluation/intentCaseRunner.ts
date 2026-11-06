@@ -60,10 +60,20 @@ export async function runIntentCase(
     const startTime = Date.now();
 
     try {
-        // Navigate to dashboard
-        await page.goto(`${config.baseURL}/#dashboard`);
+        // Navigate to dashboard - handle hash routing for SPA
+        await page.goto(config.baseURL);
         await page.waitForLoadState('domcontentloaded');
-
+        await page.waitForLoadState('networkidle');
+        
+        // Wait for React app to mount
+        await page.waitForSelector('body', { state: 'attached', timeout: 10000 });
+        
+        // Set hash to dashboard
+        await page.evaluate(() => {
+            window.location.hash = 'dashboard';
+        });
+        await page.waitForTimeout(3000); // Allow React to render
+        
         // Apply seed revisions if any
         await applySeedRevisions(page, caseData);
 
