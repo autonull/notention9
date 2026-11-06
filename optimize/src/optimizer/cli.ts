@@ -5,6 +5,7 @@
 
 import { Command } from 'commander';
 import { runOptimizerCycle, defaultOptimizerConfig, type OptimizerConfig, getCandidateCache } from './index.js';
+import { getRunsDir, getCacheDir, getRunDir } from './constants.js';
 
 const program = new Command();
 
@@ -21,7 +22,7 @@ program
     .option('--max-runs <n>', 'Max browser runs', '160')
     .option('--max-minutes <n>', 'Max time budget in minutes', '30')
     .option('--no-halving', 'Disable successive halving')
-    .option('-o, --output <dir>', 'Output directory', 'optimize/runs')
+    .option('-o, --output <dir>', 'Output directory', getRunsDir())
     .action(async (options) => {
         const config: OptimizerConfig = {
             ...defaultOptimizerConfig(),
@@ -50,7 +51,7 @@ program
             console.log(`   Winners: ${result.winners.length}`);
             console.log(`   Losers: ${result.losers.length}`);
             console.log(`   Total time: ${(result.totalCost.durationMs / 1000).toFixed(1)}s`);
-            console.log(`   Results: ${join('optimize/runs', result.cycleId, 'results.json')}`);
+            console.log(`   Results: ${getRunDir(result.cycleId)}/results.json`);
 
             if (result.winners.length > 0) {
                 console.log('\n🏆 Winners:');
@@ -93,7 +94,7 @@ program
             console.log('📦 Candidate Cache Statistics');
             console.log('==============================');
             console.log(`Entries: ${cache.size}`);
-            console.log(`Cache dir: optimize/cache`);
+            console.log(`Cache dir: ${getCacheDir()}`);
         }
     });
 

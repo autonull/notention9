@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { hashPatch } from '../candidates/index.js';
 import type { CandidateEvaluation } from '../types/index.js';
+import { getCacheDir } from '../constants.js';
 
 /**
  * Create a singleton instance with get/reset functions
@@ -39,7 +40,7 @@ export class CandidateCache {
     private cache = new Map<string, CandidateCacheEntry>();
     private readonly cacheDir: string;
 
-    constructor(cacheDir: string = join('optimize', 'cache')) {
+    constructor(cacheDir: string = getCacheDir()) {
         this.cacheDir = cacheDir;
         this.loadFromDisk();
     }

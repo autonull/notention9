@@ -1,5 +1,5 @@
 // Browser-compatible path utilities - no Node.js builtins in browser bundle
-function joinPath(...segments: string[]): string {
+export function joinPath(...segments: string[]): string {
     return segments.filter(Boolean).join('/');
 }
 
@@ -7,16 +7,15 @@ function getHomeDirSync(): string {
     if (typeof window !== 'undefined') {
         return '/home/user';
     }
-    const os = require('node:os');
-    return os.homedir();
+    // Use process.env for home directory - works in Node.js without require
+    return process.env.HOME || process.env.USERPROFILE || '/home/user';
 }
 
-function getHomeDir(): Promise<string> {
+async function getHomeDir(): Promise<string> {
     if (typeof window !== 'undefined') {
-        return Promise.resolve('/home/user');
+        return '/home/user';
     }
-    // Dynamic import to avoid bundling Node.js builtins
-    return import('node:os').then(os => os.homedir());
+    return process.env.HOME || process.env.USERPROFILE || '/home/user';
 }
 
 export async function getNotentionDir(): Promise<string> {

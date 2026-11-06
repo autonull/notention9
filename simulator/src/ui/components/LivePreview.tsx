@@ -79,7 +79,8 @@ export const LivePreviewContent = () => {
   }
 
   const isRunning = job.status === 'running';
-  const config = STATUS_CONFIG[job.status];
+  const config = STATUS_CONFIG[job.status as keyof typeof STATUS_CONFIG];
+  const statusLabel = config?.label ?? job.status;
 
   return (
     <div className="flex flex-col h-full gap-4">
@@ -95,11 +96,10 @@ export const LivePreviewContent = () => {
                 isRunning && 'bg-blue-900/30 text-blue-400',
                 job.status === 'completed' && 'bg-green-900/30 text-green-400',
                 job.status === 'failed' && 'bg-red-900/30 text-red-400',
-                job.status === 'cancelled' && 'bg-yellow-900/30 text-yellow-400',
-                job.status === 'pending' && 'bg-gray-900/30 text-gray-400'
+                job.status === 'cancelled' && 'bg-yellow-900/30 text-yellow-400'
               )}
             >
-              {config.label}
+              {statusLabel}
             </span>
           </div>
         </div>

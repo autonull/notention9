@@ -14,6 +14,7 @@ import {
     MS_PER_DAY,
     MS_PER_HOUR,
 } from '@notention/core/telemetry/constants';
+import { getNotentionDirSync, joinPath } from '@notention/core/constants/paths';
 
 // Preview server constants
 export const PREVIEW_PORT_SEARCH_START = 4199;
@@ -31,11 +32,19 @@ export const MILLISECONDS_PER_DAY = MS_PER_DAY;
 export const MILLISECONDS_PER_TWO_DAYS = MS_PER_DAY * 2;
 
 // Cache constants
-export const CACHE_DIR = 'optimize/cache';
 export const CACHE_FILE_NAME = 'candidate-cache.json';
+export function getCacheDir(): string {
+    return joinPath(getNotentionDirSync(), 'cache');
+}
 
 // Output constants
-export const RUNS_DIR = 'optimize/runs';
+export const RUNS_DIR_NAME = 'runs';
+export function getRunsDir(): string {
+    return joinPath(getNotentionDirSync(), 'runs');
+}
+export function getRunDir(cycleId: string): string {
+    return joinPath(getRunsDir(), cycleId);
+}
 
 // Default optimizer configuration values
 export const DEFAULT_MAX_CANDIDATES_PER_SEAM = 8;

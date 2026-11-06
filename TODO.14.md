@@ -1,7 +1,7 @@
 # TODO.14 — Closing the Loop: From Instrument to Instrument Panel
 
 **Supersedes:** Nothing. Extends TODO.12 (Evaluation & Improvement Program) and TODO.13 (Generalization Layer).
-**Status:** Phase A complete — 2026-11-05. Phase B1–B2.5 complete — 2026-11-05. Phase B3/B4 complete — 2026-11-05. Phase C complete — 2026-11-05. Phase D1/D2/D4/D5 complete — 2026-11-06.
+**Status:** Phase A complete — 2026-11-05. Phase B1–B2.5 complete — 2026-11-05. Phase B3/B4 complete — 2026-11-05. Phase C complete — 2026-11-05. Phase D1/D2/D4/D5 complete — 2026-11-06. A3.5, A4.1, A4.2 complete — 2026-11-06.
 **Shape:** Four phases, dependency-ordered. Phase A is integrity (no features). Phases B–C close the measurement→delivery loop and make the UI its instrument panel. Phase D positions the result.
 **Basis:** Deep study of `simulator/` and `optimize/` (state verified 2026-11-05). Every claim in this file was checked against the repo at HEAD.
 
@@ -92,7 +92,7 @@ Verified 2026-11-05: **82 `tsc --noEmit` errors** → **0 errors** ✅.
 | A3.2 | `git rm --cached optimize/tsconfig.tsbuildinfo` (tracked, 201 KB) | S | ✅ |
 | A3.3 | Delete tracked-in-HEAD dead duplidate `optimize/ui/test/optimize/regressions/a11y-…journey.ts` (divergent copy; legacy handler output path) | S | ✅ |
 | A3.4 | Remove empty `optimize/loop/` (Oct 29 leftover); `git status` clean | S | ✅ |
-| A3.5 | Decide artifact root: all optimizer output moves to `~/.notention/runs/<cycleId>/results.json` and `~/.notention/cache/candidate-cache.json` via `getNotentionDir()` — never cwd-relative. Migrate the two recorded "credible negative" cycles from `optimize/runs/` into `~/.notention/runs/` with a note | S | ⏳ (deferred to Phase B) |
+| A3.5 | Decide artifact root: all optimizer output moves to `~/.notention/runs/<cycleId>/results.json` and `~/.notention/cache/candidate-cache.json` via `getNotentionDir()` — never cwd-relative. Migrate the two recorded "credible negative" cycles from `optimize/runs/` into `~/.notention/runs/` with a note | S | ✅ |
 | A3.6 | Delete `simulator/movies/` (8.6 GB, 140k files, gitignored). Add `simulator/movies/` purge to README troubleshooting | S | ✅ (already absent) |
 | A3.7 | `adoption-ledger.jsonl` (repo root, 2,047 lines / 11 IDs, corrupt re-read+rewrite): delete file; mark `synthesis/adoption.ts` deprecated with a runtime warning; verify `pnpm loop adopt` routes to RevisionStore, not the ledger. Ledger-as-delivery-record is dead; revisions are the record | S | ✅ |
 | A3.8 | Declare missing deps: `commander` (optimizer/eval CLIs), `undici` (previewServer) in owning packages; remove unused `@notention/eval` dep if truly unused; align `@playwright/test` versions (root `^1.60.0` vs simulator `^1.41.0`); remove `pkg`/`ts-node` from simulator devDeps | S | ✅ |
@@ -100,12 +100,12 @@ Verified 2026-11-05: **82 `tsc --noEmit` errors** → **0 errors** ✅.
 
 **Gate A:** Clean `git status`; `du -sh simulator/movies` absent; `git ls-files | grep tsbuildinfo` empty; fresh clone builds and tests green ✅.
 
-### A4. Simulator correctness (minimal) — **NOT STARTED** (Phase B prerequisite)
+### A4. Simulator correctness (minimal) — **PARTIAL** (A4.1–A4.2 done; A4.3–A4.11 deferred)
 
 | # | Item | Effort | Status |
 |---|------|--------|--------|
-| A4.1 | `LivePreview.tsx:82`: import `STATUS_CONFIG` (crash on any job-existing render) + remove impossible `'pending'` compare | S | ⏳ |
-| A4.2 | `LogsPanel.tsx:8`: fix `./useLivePreview` type path | S | ⏳ |
+| A4.1 | `LivePreview.tsx:82`: import `STATUS_CONFIG` (crash on any job-existing render) + remove impossible `'pending'` compare | S | ✅ |
+| A4.2 | `LogsPanel.tsx:8`: fix `./useLivePreview` type path | S | ✅ |
 | A4.3 | Delete dead: `hooks/movies/` split, `hooks/index.ts` barrel, `hooks/useToast.ts`, `ui_server.ts` `startUIServer`/`startStaticUIServer`, `dashboard_manager.error()`, `recording_manager.ts` unused `ffmpegPath` import, `RunEvent.ts` `match:found`/`error` (or emit them — see B2; decide there, not twice) | S | ⏳ |
 | A4.4 | `MovieServer`: mkdir `outputDir` before caption writes (ENOSPC ordering bug); `RecordingManager` screenshot loop: guard `page.screenshot()` rejections into the recording promise so unhandled rejection can't kill the loop silently; hardcoded `/usr/bin/ffmpeg` → resolve via `ffmpeg-static` | S | ⏳ |
 | A4.5 | Reconcile movie output layout: CLI and UI jobs both write `movies/{name}-{iso}/`; Library metadata endpoint (`/api/movies`) returns real `{name, size, createdAt, duration, hasVideo}` | M | ⏳ |

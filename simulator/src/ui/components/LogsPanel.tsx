@@ -5,7 +5,8 @@ import { Card, CardHeader, CardContent } from '../components/ui';
 import { Badge } from '../components/ui';
 import { DesignTokens } from '../components/ui';
 import { cn } from '../utils';
-import type { JobStatus, LogLevel, RunEvent, RunEventFilterType, RunEventType } from '../hooks/useLivePreview';
+import type { JobStatus, LogLevel, RunEventFilterType } from '../hooks/useLivePreview';
+import type { RunEvent, RunEventType } from '../../types.js';
 
 interface LogsPanelContextType {
   logFilter: LogLevel;

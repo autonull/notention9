@@ -20,6 +20,7 @@ import {
 } from './evaluation/verdicts.js';
 import { getCandidateCache } from './cache/index.js';
 import { enumerateCandidatesFromParamSpec } from './candidates/index.js';
+import { getRunDir } from './constants.js';
 import {
     DEFAULT_MDE_COMPLETION,
     DEFAULT_MDE_STEPS,
@@ -466,7 +467,7 @@ async function saveResults(
     inconclusive: OptimizerCandidate[],
     totalCost: { browserRuns: number; tokensUsed: number; durationMs: number }
 ): Promise<void> {
-    const outputDir = join('optimize/runs', cycleId);
+    const outputDir = getRunDir(cycleId);
     if (!existsSync(outputDir)) {
         mkdirSync(outputDir, { recursive: true });
     }

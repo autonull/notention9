@@ -18,3 +18,4 @@ export * from './AlertModal';
 export * from './Dropdown';
 export * from './DropdownTrigger';
 export * from './Toast';
+export * from './Tabs';

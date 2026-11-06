@@ -6,6 +6,7 @@ build/
 core/src/**/*.js
 core/src/**/*.d.ts
 core/src/**/*.map
+core/tsconfig.tsbuildinfo
 !core/src/**/*.test.ts
 !core/src/**/*.test.tsx
 

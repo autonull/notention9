@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
-import { Play, Pause, Stop, RotateCcw, BarChart2, Download, Settings, FileText, Zap, GitBranch, Code, Terminal, Save, Trash2, ChevronLeft, ChevronRight, X, Check, AlertCircle, Info, Layers, SlidersHorizontal, Database, Download as DownloadIcon } from 'lucide-react';
+import { Play, Pause, StopCircle, RotateCcw, BarChart2, Download, Settings, FileText, Zap, GitBranch, Code, Terminal, Save, Trash2, ChevronLeft, ChevronRight, X, Check, AlertCircle, Info, Layers, SlidersHorizontal, Database, Download as DownloadIcon } from 'lucide-react';
 import { Button, IconButton, Input, Select, Card, CardHeader, CardContent, Badge, Tabs, TabList, Tab, TabPanels, TabPanel, Textarea, Modal, ConfirmModal } from '../components/ui';
 import { DesignTokens } from '../components/ui';
 import { cn, formatDuration } from '../utils';
@@ -391,7 +391,7 @@ const LabResultsPanel = ({ run, running, onRun, onCancel }: {
           </div>
           <div className="flex items-center gap-2">
             {running ? (
-              <Button variant="danger" onClick={onCancel} icon={<Stop size={16} />} size="lg">Cancel</Button>
+              <Button variant="danger" onClick={onCancel} icon={<StopCircle size={16} />} size="lg">Cancel</Button>
             ) : run.status === 'completed' ? (
               <Button variant="primary" onClick={onRun} icon={<RotateCcw size={16} />} size="lg">Re-run</Button>
             ) : (
