@@ -1,7 +1,7 @@
 # TODO.14 — Closing the Loop: From Instrument to Instrument Panel
 
 **Supersedes:** Nothing. Extends TODO.12 (Evaluation & Improvement Program) and TODO.13 (Generalization Layer).
-**Status:** Phase A complete — 2026-11-05. Phase B1–B2.5 complete — 2026-11-05. Phase B3/B4 complete — 2026-11-05. Phase C complete — 2026-11-05. Phase D1/D2 complete — 2026-11-05.
+**Status:** Phase A complete — 2026-11-05. Phase B1–B2.5 complete — 2026-11-05. Phase B3/B4 complete — 2026-11-05. Phase C complete — 2026-11-05. Phase D1/D2/D4/D5 complete — 2026-11-06.
 **Shape:** Four phases, dependency-ordered. Phase A is integrity (no features). Phases B–C close the measurement→delivery loop and make the UI its instrument panel. Phase D positions the result.
 **Basis:** Deep study of `simulator/` and `optimize/` (state verified 2026-11-05). Every claim in this file was checked against the repo at HEAD.
 
@@ -210,7 +210,7 @@ The UI's job: make the invisible visible, comparable, reversible.
 
 ---
 
-## Phase D — One Real Improvement + Positioning (Week 6) — **D1/D2 COMPLETE**
+## Phase D — One Real Improvement + Positioning (Week 6) — **D1/D2/D4/D5 COMPLETE**
 
 | # | Item | Effort | Status |
 |---|------|--------|--------|
@@ -218,11 +218,17 @@ The UI's job: make the invisible visible, comparable, reversible.
 | D2 | Write-up: `doc/evidence/2026-11-loop-demo.md` — full chain, raw artifacts, honest null if that's what happens | S | ✅ |
 | D3 | Showcase: `pnpm showcase` with corrected captions (event-aligned VTT) + 60-second mesh-coordination video; README embed | S | ⏳ (deferred — no revision to showcase) |
 | D4 | Conformance suite as public artifact: extract `ProtocolTestbed` + `SimulatorRegression` into `packages/conformance`, documented, tagged v0.1 | M | ✅ (pre-existing simulator UI build issue blocks full test run) |
-| D5 | Decide positioning (TODO.science.md §8): project vs. product vs. research — **only after D2 is written** | — | ⏳ |
+| D5 | Decide positioning (TODO.science.md §8): project vs. product vs. research — **only after D2 is written** | — | ✅ **Research-first instrument; project-structured; not a commercial product** |
 
 **D1/D2 Outcome:** The loop executed end-to-end on Experiment E6 (correction-flow). Friction journal detected `correction` (5×) and `match_rejected` (3×) signals. Optimizer generated 14 candidates (8 grid + 6 friction-driven), ran powered evaluation (10 intent cases × 3 reps, MDE gate passed), and returned **null verdict** (0 winners, 6 losers). No revision created — correct behavior per "Honest negatives" guardrail. Full ledger chain recorded. Write-up at `doc/evidence/2026-11-loop-demo.md`.
 
 **D4 Outcome:** Conformance suite extracted to `packages/conformance/` with ProtocolTestbed, SimulatorRegression, and RegressionScenario. Tagged v0.1.0. README documents test suite and known pre-existing build issues (simulator UI, core source imports).
+
+**D5 Outcome (Positioning Decision):** Notention is a **research-first coordination instrument** that happens to be usable software.
+- **Research-first**: Evidence classes (`measured > observed > hypothesized > asserted`), MDE-gated verdicts, honest-negative publishing, calibration requirements, reproducibility drills — these are scientific practices, not engineering hygiene.
+- **Project-structured**: Open source (MIT), local-first, community-governed ontology (forkable, mergeable), no extraction, free exit — the legitimacy conditions in TODO.science.md §9.3 are structural, not aspirational.
+- **Not a commercial product**: No engagement optimization, no telemetry upload, no dark patterns, no algorithmic rationing of matches. The consent gate (E10) is mandatory before any auto-apply; "success = the app helped you leave it" (§9.3).
+- **Pilot target**: One mutual-aid community (2026 Q1, §9.5) — this is the validation step that separates instrument from product. Until pilot shows measurable coordination-cost reduction, all claims are local, labeled, and reversible (§1.2).
 
 ---
 
@@ -261,6 +267,6 @@ The UI's job: make the invisible visible, comparable, reversible.
 | A Integrity | 1 week | — | Build/test/CI green; 8.6 GB gone |
 | B Measurement truth | 2 weeks | A | Powered verdict + emitted `match:found` + journal query |
 | C Instrument panel | 2 weeks | B | Non-expert completes explore→consent loop in UI |
-| D Demo + position | 1 week | C | `doc/evidence/2026-11-loop-demo.md` merged **(D1/D2 ✅)** |
+| D Demo + position | 1 week | C | `doc/evidence/2026-11-loop-demo.md` merged **(D1/D2/D4/D5 ✅)** |
 
-**Order of operations:** A → B → C → D. No parallel tracks. Total ≈ 6 weeks, matching TODO.12/13 cadence. **Phases A–C complete. D1/D2 complete (null result). D4 complete (conformance suite extracted). D3 deferred (no revision to showcase). D5 next (positioning decision).**
+**Order of operations:** A → B → C → D. No parallel tracks. Total ≈ 6 weeks, matching TODO.12/13 cadence. **Phases A–D complete. D1/D2/D4/D5 complete (null result, conformance suite, positioning decided). D3 deferred (no revision to showcase). Remaining: next hypothesis cycle (E2, E13, E7, E14 per TODO.science.md).**
