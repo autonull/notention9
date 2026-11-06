@@ -7,6 +7,7 @@ import { Command } from 'commander';
 import { runOptimizerCycle, defaultOptimizerConfig, type OptimizerConfig, getCandidateCache } from './index.js';
 import { getRunsDir, getCacheDir, getRunDir } from './constants.js';
 import { runAuditAndSave } from '../ontology/audit.js';
+import { runOntologyPatchTest } from '../ontology/patchTest.js';
 
 const program = new Command();
 
@@ -109,6 +110,14 @@ program
     .option('-o, --output <file>', 'Output JSON file for results')
     .action(async (options) => {
         await runAuditAndSave(options.output);
+    });
+
+program
+    .command('patch-test')
+    .description('Run E14 ontology patch generalization test')
+    .option('-o, --output <file>', 'Output JSON file for results')
+    .action(async (options) => {
+        await runOntologyPatchTest(options.output);
     });
 
 program.parse();
