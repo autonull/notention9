@@ -1,0 +1,48 @@
+// Browser-compatible fs/promises polyfill
+const noopPromise = () => Promise.reject(new Error('fs/promises operation not supported in browser'));
+
+// Promises API
+export const promises = {
+    readFile: noopPromise,
+    writeFile: noopPromise,
+    mkdir: noopPromise,
+    appendFile: noopPromise,
+    readdir: noopPromise,
+    stat: noopPromise,
+    unlink: noopPromise,
+    rm: noopPromise,
+    copyFile: noopPromise,
+    rename: noopPromise,
+    readlink: noopPromise,
+    symlink: noopPromise,
+    lstat: noopPromise,
+    fstat: noopPromise,
+    fsync: noopPromise,
+    fdatasync: noopPromise,
+    ftruncate: noopPromise,
+    truncate: noopPromise,
+    chmod: noopPromise,
+    lchmod: noopPromise,
+    fchmod: noopPromise,
+    chown: noopPromise,
+    lchown: noopPromise,
+    fchown: noopPromise,
+    utimes: noopPromise,
+    futimes: noopPromise,
+    lutimes: noopPromise,
+    link: noopPromise,
+    symlink: noopPromise,
+    readlink: noopPromise,
+    realpath: noopPromise,
+    mkdtemp: noopPromise,
+    rmdir: noopPromise,
+    mkdir: noopPromise,
+    open: noopPromise,
+    close: noopPromise,
+    read: noopPromise,
+    write: noopPromise,
+    writev: noopPromise,
+    readv: noopPromise,
+};
+
+export default promises;

@@ -1,0 +1,790 @@
+{
+  "timestamp": "2026-11-07T17:27:12.437Z",
+  "config": {
+    "repetitions": 3,
+    "headless": false
+  },
+  "arms": {
+    "A": {
+      "name": "A-autoFocus-placeholder",
+      "patch": {
+        "placeholder": "What do you need? e.g. \"I need a wheelchair ramp before Friday, budget 900\"",
+        "autoFocus": true
+      },
+      "caseResults": [
+        {
+          "caseId": "intent-capture-010",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 35820.864318
+          },
+          "details": [
+            "Error: locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"quick-capture-input\"]').first() to be visible\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-010",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 35701.008266
+          },
+          "details": [
+            "Error: locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"quick-capture-input\"]').first() to be visible\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-010",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 35923.16958
+          },
+          "details": [
+            "Error: locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"quick-capture-input\"]').first() to be visible\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-011",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 35712.828773999994
+          },
+          "details": [
+            "Error: locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"quick-capture-input\"]').first() to be visible\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-011",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 36467.21703100001
+          },
+          "details": [
+            "Error: locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"quick-capture-input\"]').first() to be visible\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-011",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 37406.53614899999
+          },
+          "details": [
+            "Error: locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"quick-capture-input\"]').first() to be visible\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-016",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 36486.187250999996
+          },
+          "details": [
+            "Error: locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"quick-capture-input\"]').first() to be visible\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-016",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 42757.720551000006
+          },
+          "details": [
+            "Error: locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"quick-capture-input\"]').first() to be visible\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-016",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 41965.06157600001
+          },
+          "details": [
+            "Error: locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"quick-capture-input\"]').first() to be visible\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-017",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 36485.30364499998
+          },
+          "details": [
+            "Error: locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"quick-capture-input\"]').first() to be visible\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-017",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 38402.039945000026
+          },
+          "details": [
+            "Error: locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"quick-capture-input\"]').first() to be visible\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-017",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 36865.147153
+          },
+          "details": [
+            "Error: locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"quick-capture-input\"]').first() to be visible\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-018",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 36015.45133000001
+          },
+          "details": [
+            "Error: locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"quick-capture-input\"]').first() to be visible\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-018",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 35691.660906000005
+          },
+          "details": [
+            "Error: locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"quick-capture-input\"]').first() to be visible\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-018",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 36170.741871999926
+          },
+          "details": [
+            "Error: locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"quick-capture-input\"]').first() to be visible\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-019",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 9.237510000006296
+          },
+          "details": [
+            "Error: page.addInitScript: Target crashed "
+          ],
+          "error": "page.addInitScript: Target crashed "
+        },
+        {
+          "caseId": "intent-capture-019",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 0.7123400000855327
+          },
+          "details": [
+            "Error: page.addInitScript: Target crashed "
+          ],
+          "error": "page.addInitScript: Target crashed "
+        },
+        {
+          "caseId": "intent-capture-019",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 0.4397099999478087
+          },
+          "details": [
+            "Error: page.addInitScript: Target crashed "
+          ],
+          "error": "page.addInitScript: Target crashed "
+        },
+        {
+          "caseId": "intent-capture-026",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 0.3739800000330433
+          },
+          "details": [
+            "Error: page.addInitScript: Target crashed "
+          ],
+          "error": "page.addInitScript: Target crashed "
+        },
+        {
+          "caseId": "intent-capture-026",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 0.44987000001128763
+          },
+          "details": [
+            "Error: page.addInitScript: Target crashed "
+          ],
+          "error": "page.addInitScript: Target crashed "
+        },
+        {
+          "caseId": "intent-capture-026",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 0.35371000005397946
+          },
+          "details": [
+            "Error: page.addInitScript: Target crashed "
+          ],
+          "error": "page.addInitScript: Target crashed "
+        },
+        {
+          "caseId": "intent-capture-027",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 0.39104999997653067
+          },
+          "details": [
+            "Error: page.addInitScript: Target crashed "
+          ],
+          "error": "page.addInitScript: Target crashed "
+        },
+        {
+          "caseId": "intent-capture-027",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 0.3837899999925867
+          },
+          "details": [
+            "Error: page.addInitScript: Target crashed "
+          ],
+          "error": "page.addInitScript: Target crashed "
+        },
+        {
+          "caseId": "intent-capture-027",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 0.605710000032559
+          },
+          "details": [
+            "Error: page.addInitScript: Target crashed "
+          ],
+          "error": "page.addInitScript: Target crashed "
+        }
+      ]
+    },
+    "B": {
+      "name": "B-initialOp-enumHint",
+      "patch": {
+        "initialOp": "contains"
+      },
+      "caseResults": [
+        {
+          "caseId": "intent-capture-010",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 21797.9791329999
+          },
+          "details": [
+            "Error: locator.waitFor: Target page, context or browser has been closed\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"quick-capture-input\"]').first() to be visible\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-010",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 0.610480000032112
+          },
+          "details": [
+            "Error: page.addInitScript: Target page, context or browser has been closed"
+          ],
+          "error": "page.addInitScript: Target page, context or browser has been closed"
+        },
+        {
+          "caseId": "intent-capture-010",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 0.3023699999321252
+          },
+          "details": [
+            "Error: page.addInitScript: Target page, context or browser has been closed"
+          ],
+          "error": "page.addInitScript: Target page, context or browser has been closed"
+        },
+        {
+          "caseId": "intent-capture-011",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 0.2672499999171123
+          },
+          "details": [
+            "Error: page.addInitScript: Target page, context or browser has been closed"
+          ],
+          "error": "page.addInitScript: Target page, context or browser has been closed"
+        },
+        {
+          "caseId": "intent-capture-011",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 0.2552600000053644
+          },
+          "details": [
+            "Error: page.addInitScript: Target page, context or browser has been closed"
+          ],
+          "error": "page.addInitScript: Target page, context or browser has been closed"
+        },
+        {
+          "caseId": "intent-capture-011",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 0.3821600000374019
+          },
+          "details": [
+            "Error: page.addInitScript: Target page, context or browser has been closed"
+          ],
+          "error": "page.addInitScript: Target page, context or browser has been closed"
+        },
+        {
+          "caseId": "intent-capture-016",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 0.3001400000648573
+          },
+          "details": [
+            "Error: page.addInitScript: Target page, context or browser has been closed"
+          ],
+          "error": "page.addInitScript: Target page, context or browser has been closed"
+        },
+        {
+          "caseId": "intent-capture-016",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 0.6844900000141934
+          },
+          "details": [
+            "Error: page.addInitScript: Target page, context or browser has been closed"
+          ],
+          "error": "page.addInitScript: Target page, context or browser has been closed"
+        },
+        {
+          "caseId": "intent-capture-016",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 0.32673000008799136
+          },
+          "details": [
+            "Error: page.addInitScript: Target page, context or browser has been closed"
+          ],
+          "error": "page.addInitScript: Target page, context or browser has been closed"
+        },
+        {
+          "caseId": "intent-capture-017",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 0.2345099999802187
+          },
+          "details": [
+            "Error: page.addInitScript: Target page, context or browser has been closed"
+          ],
+          "error": "page.addInitScript: Target page, context or browser has been closed"
+        },
+        {
+          "caseId": "intent-capture-017",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 0.26074000005610287
+          },
+          "details": [
+            "Error: page.addInitScript: Target page, context or browser has been closed"
+          ],
+          "error": "page.addInitScript: Target page, context or browser has been closed"
+        },
+        {
+          "caseId": "intent-capture-017",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 0.22758000006433576
+          },
+          "details": [
+            "Error: page.addInitScript: Target page, context or browser has been closed"
+          ],
+          "error": "page.addInitScript: Target page, context or browser has been closed"
+        },
+        {
+          "caseId": "intent-capture-018",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 0.2308000000193715
+          },
+          "details": [
+            "Error: page.addInitScript: Target page, context or browser has been closed"
+          ],
+          "error": "page.addInitScript: Target page, context or browser has been closed"
+        },
+        {
+          "caseId": "intent-capture-018",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 0.21997999993618578
+          },
+          "details": [
+            "Error: page.addInitScript: Target page, context or browser has been closed"
+          ],
+          "error": "page.addInitScript: Target page, context or browser has been closed"
+        },
+        {
+          "caseId": "intent-capture-018",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 0.3376700000371784
+          },
+          "details": [
+            "Error: page.addInitScript: Target page, context or browser has been closed"
+          ],
+          "error": "page.addInitScript: Target page, context or browser has been closed"
+        },
+        {
+          "caseId": "intent-capture-019",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 1.2713000000221655
+          },
+          "details": [
+            "Error: page.addInitScript: Target page, context or browser has been closed"
+          ],
+          "error": "page.addInitScript: Target page, context or browser has been closed"
+        },
+        {
+          "caseId": "intent-capture-019",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 0.3539500000188127
+          },
+          "details": [
+            "Error: page.addInitScript: Target page, context or browser has been closed"
+          ],
+          "error": "page.addInitScript: Target page, context or browser has been closed"
+        },
+        {
+          "caseId": "intent-capture-019",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 0.27289000002201647
+          },
+          "details": [
+            "Error: page.addInitScript: Target page, context or browser has been closed"
+          ],
+          "error": "page.addInitScript: Target page, context or browser has been closed"
+        },
+        {
+          "caseId": "intent-capture-026",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 0.2302399999462068
+          },
+          "details": [
+            "Error: page.addInitScript: Target page, context or browser has been closed"
+          ],
+          "error": "page.addInitScript: Target page, context or browser has been closed"
+        },
+        {
+          "caseId": "intent-capture-026",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 0.21481999999377877
+          },
+          "details": [
+            "Error: page.addInitScript: Target page, context or browser has been closed"
+          ],
+          "error": "page.addInitScript: Target page, context or browser has been closed"
+        },
+        {
+          "caseId": "intent-capture-026",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 0.23345000005792826
+          },
+          "details": [
+            "Error: page.addInitScript: Target page, context or browser has been closed"
+          ],
+          "error": "page.addInitScript: Target page, context or browser has been closed"
+        },
+        {
+          "caseId": "intent-capture-027",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 0.23037000000476837
+          },
+          "details": [
+            "Error: page.addInitScript: Target page, context or browser has been closed"
+          ],
+          "error": "page.addInitScript: Target page, context or browser has been closed"
+        },
+        {
+          "caseId": "intent-capture-027",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 0.49657000007573515
+          },
+          "details": [
+            "Error: page.addInitScript: Target page, context or browser has been closed"
+          ],
+          "error": "page.addInitScript: Target page, context or browser has been closed"
+        },
+        {
+          "caseId": "intent-capture-027",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 0.23066999996080995
+          },
+          "details": [
+            "Error: page.addInitScript: Target page, context or browser has been closed"
+          ],
+          "error": "page.addInitScript: Target page, context or browser has been closed"
+        }
+      ]
+    }
+  },
+  "comparison": {
+    "mcNemar": {
+      "pValue": 1,
+      "significant": false
+    },
+    "wilcoxon": {
+      "pValue": 0.000020719610970720836,
+      "significant": true,
+      "medianDiff": 35712.56152400008
+    },
+    "correctionsDiff": 0
+  }
+}

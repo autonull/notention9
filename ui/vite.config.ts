@@ -5,6 +5,28 @@ import {configDefaults} from 'vitest/config';
 import nodePolyfills from 'rollup-plugin-node-polyfills';
 // import {VitePWA} from 'vite-plugin-pwa'; // Temporarily disabled due to Node.js module resolution issues
 
+// Plugin to exclude test files from production build
+const excludeTestsPlugin = {
+    name: 'exclude-tests',
+    enforce: 'pre',
+    resolveId(id) {
+        if (!id.includes('node_modules') && (id.includes('.test.') || id.includes('.spec.') || id.includes('/tests/') || id.includes('/test/'))) {
+            return { id, external: true };
+        }
+    },
+};
+
+// Plugin to remove __name (Vite dev-only) from production builds
+const removeDevOnlyPlugin = {
+    name: 'remove-dev-only',
+    enforce: 'post',
+    renderChunk(code) {
+        if (code.includes('__name')) {
+            return code.replace(/__name\s*=/g, '/* __name */ void 0 =');
+        }
+    },
+};
+
 export default defineConfig(({mode}) => {
     const env = loadEnv(mode, '.', '');
     const isDev = mode === 'development';
@@ -17,7 +39,7 @@ export default defineConfig(({mode}) => {
             'import.meta.env.VITE_DEV_HOOKS': JSON.stringify(env.VITE_DEV_HOOKS === 'true'),
         },
         optimizeDeps: {
-            exclude: ['@notention/optimize'],
+            exclude: ['@notention/optimize', 'playwright-core', 'playwright', 'chromium-bidi', 'http', 'fs', 'child_process', 'cluster', 'dns', 'net', 'tls', 'http2', 'dgram', '@playwright/test'],
             include: [
                 'crypto-browserify',
                 'stream-browserify',
@@ -37,7 +59,21 @@ export default defineConfig(({mode}) => {
                 'util',
             ],
             esbuildOptions: {
-                plugins: [],
+                plugins: [
+                    {
+                        name: 'mark-node-builtins-external',
+                        setup(build) {
+                            build.onResolve({ filter: /^(http|fs|child_process|cluster|dns|net|tls|http2|dgram|playwright-core|playwright|chromium-bidi|@playwright\/test)$/ }, args => ({ external: true }));
+                        },
+                    },
+                ],
+            },
+            // Only scan the main entry point to avoid test files importing playwright
+            entries: ['index.html'],
+        },
+        server: {
+            watch: {
+                ignored: ['**/tests/**', '**/test/**', '**/visual/**'],
             },
         },
         resolve: {
@@ -48,8 +84,8 @@ export default defineConfig(({mode}) => {
                 { find: '@notention/ui/strategies/strategyConfigs', replacement: path.resolve(__dirname, './src/strategies/strategyConfigs.ts') },
                 { find: '@notention/ui/strategies/componentMap', replacement: path.resolve(__dirname, './src/strategies/componentMap.ts') },
                 // @notention/core - directory-based resolution for main entry
-                // Dev: src directory, Production: dist/browser directory
-                { find: '@notention/core', replacement: path.resolve(__dirname, isDev ? '../core/src' : '../core/dist/browser') },
+                // Dev: src/index.browser.ts (browser entry), Production: dist/browser directory
+                { find: '@notention/core', replacement: path.resolve(__dirname, isDev ? '../core/src/index.browser.ts' : '../core/dist/browser') },
                 // Explicit subpath aliases for imports used in UI codebase
                 { find: '@notention/core/ui', replacement: path.resolve(__dirname, isDev ? '../core/src/ui' : '../core/dist/browser/ui') },
                 { find: '@notention/core/ui/strategy', replacement: path.resolve(__dirname, isDev ? '../core/src/ui/strategy.ts' : '../core/dist/browser/ui/strategy.js') },
@@ -101,7 +137,8 @@ export default defineConfig(({mode}) => {
                 { find: 'path', replacement: path.resolve(__dirname, './node_modules/path-browserify/index.js') },
                 { find: 'os', replacement: path.resolve(__dirname, './node_modules/os-browserify/browser.js') },
                 { find: 'util', replacement: path.resolve(__dirname, './node_modules/util/util.js') },
-                { find: 'fs', replacement: path.resolve(__dirname, './public/polyfills/fs.js') },
+                // fs polyfill for browser - provides all required fs functions (directory-based)
+                { find: 'fs', replacement: path.resolve(__dirname, './public/polyfills/fs') },
                 // Redirect node:* protocol imports to polyfills
                 { find: /^node:crypto$/, replacement: path.resolve(__dirname, './node_modules/crypto-browserify/index.js') },
                 { find: /^node:path$/, replacement: path.resolve(__dirname, './node_modules/path-browserify/index.js') },
@@ -150,6 +187,8 @@ export default defineConfig(({mode}) => {
         // Enable PWA functionality
         publicDir: 'public',
         plugins: [
+            excludeTestsPlugin,
+            removeDevOnlyPlugin,
             // VitePWA temporarily disabled due to Node.js module resolution issues with eval/telemetry
             // VitePWA({
             //     registerType: 'autoUpdate',
@@ -198,36 +237,47 @@ export default defineConfig(({mode}) => {
             // })
         ],
         build: {
+            cssCodeSplit: false,
             rollupOptions: {
                 input: {
                     main: path.resolve(__dirname, 'index.html'),
                 },
+                output: {
+                    manualChunks: undefined,
+                },
                 external: (id) => {
+                    // Explicitly do NOT externalize these Node.js built-ins (they'll be polyfilled)
+                    if (id === 'crypto' || id === 'stream' || id === 'assert' || id === 'buffer' || 
+                        id === 'process' || id === 'events' || id === 'querystring' || 
+                        id === 'string_decoder' || id === 'punycode' || id === 'url' || 
+                        id === 'vm' || id === 'zlib' || id === 'constants' || id === 'path' || 
+                        id === 'os' || id === 'util' || id === 'fs' || id.startsWith('node:')) {
+                        return false;
+                    }
                     // Externalize only truly Node.js-only modules (fs, child_process, cluster, etc.)
                     // Do NOT externalize node:* or polyfill modules
-                    if (id.startsWith('fs') || id.startsWith('child_process') || 
+                    if (id.startsWith('child_process') || 
                         id.startsWith('cluster') || id.startsWith('dns') || id.startsWith('net') || 
                         id.startsWith('tls') || id.startsWith('http') || id.startsWith('https') || 
                         id.startsWith('http2') || id.startsWith('dgram') ||
                         id === '@notention/optimize' || id.startsWith('@notention/optimize/')) {
                         return true;
                     }
-                    // Explicitly do NOT externalize these Node.js built-ins (they'll be polyfilled)
-                    if (id === 'crypto' || id === 'stream' || id === 'assert' || id === 'buffer' || 
-                        id === 'process' || id === 'events' || id === 'querystring' || 
-                        id === 'string_decoder' || id === 'punycode' || id === 'url' || 
-                        id === 'vm' || id === 'zlib' || id === 'constants' || id === 'path' || 
-                        id === 'os' || id === 'util' || id.startsWith('node:')) {
-                        return false;
-                    }
                     return false;
                 },
                 plugins: [
                     nodePolyfills({
-                        include: ['os', 'path', 'url', 'util', 'buffer', 'process', 'events', 'stream', 'crypto', 'assert', 'constants', 'querystring', 'string_decoder', 'punycode', 'sys', 'tty', 'vm', 'zlib'],
+                        include: ['os', 'path', 'url', 'util', 'buffer', 'process', 'events', 'stream', 'crypto', 'assert', 'constants', 'querystring', 'string_decoder', 'punycode', 'sys', 'tty', 'vm', 'zlib', 'fs'],
                     }),
                 ],
-            }
+            },
+            // Exclude test files from production build
+            // Note: Vite doesn't have a direct exclude option for build, but we can use modulePreload or other approaches
+            // The test files are being picked up because they're in src/
+            // We'll use a plugin to exclude them
+            modulePreload: {
+                polyfill: false,
+            },
         },
     };
 });

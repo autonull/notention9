@@ -2,7 +2,9 @@
 
 **Supersedes:** TODO.14.md (replaces entire next-hypothesis-cycle section)
 **Date:** 2026-11-07
-**Status:** P0 ✅ COMPLETE. Production build unblocked. E2 infrastructure ready (Vite aliases fixed, dev server + production build both work). E2.1 ✅ COMPLETE.
+**Status:** P0 ✅ COMPLETE. Production build unblocked. E2 infrastructure ready (Vite aliases fixed, dev server works, production build works but has memory issues). E2.1 ✅ COMPLETE.
+
+**E2 Experiment Status:** Infrastructure complete. React app not mounting in preview server due to browser errors (`__name is not defined`, `fs` module leaks). Production build succeeds but gets killed by OOM (9.6 MB main bundle). Dev server runs but has dependency optimization issues with playwright-core. Need to resolve browser build issues before E2 can yield valid results.
 
 ---
 
@@ -55,17 +57,18 @@ Success metric: `simulator:friction-detected → candidate:evaluated (measured, 
 ## 🧪 Experiment Pipeline (One at a Time)
 
 ### **E2: Capture-Flow A/B (S-UI)** — 2 days
-**Status:** Infrastructure ✅ (Chrome PNA fixed, test runs, stats work). **Production build fixed** — Vite dev server works, production build works with proper ESM re-exports.
-**Blocker:** ~~Production build~~ → **RESOLVED** — Vite alias resolution fixed for `@notention/core` subpaths via directory-based resolution + generated ESM re-export file.
+**Status:** Infrastructure ✅ (Chrome PNA fixed, test runs, stats work). **Production build works but OOM** — Vite dev server works, production build succeeds but gets killed by OOM (9.6 MB main bundle). **Browser errors block React mount** — `__name is not defined` (dev-only leak), `fs` module leaks in production bundle.
+**Blocker:** Browser build issues prevent React app from mounting in preview server. Need to fix production bundle before E2 can yield valid results.
 **Goal:** 10 intent cases × 3 reps, powered verdict
 
 | Step | Action | Time | Status |
 |------|--------|------|--------|
 | E2.1 | Fix Vite aliases for `@notention/core` subpaths | 2h | ✅ COMPLETE |
-| E2.2 | Run against Vite dev server (10×3) | 4h | Ready |
-| E2.3 | If null: add 5 more cases, re-run | 2h | Pending |
-| E2.4 | If improved: create revision, consent, re-sim | 2h | Pending |
-| E2.5 | Ledger chain + write-up | 1h | Pending |
+| E2.2 | Fix production bundle browser errors (`__name`, `fs` leaks) | 4h | In Progress |
+| E2.3 | Run against preview server (10×3) | 4h | Blocked |
+| E2.4 | If null: add 5 more cases, re-run | 2h | Pending |
+| E2.5 | If improved: create revision, consent, re-sim | 2h | Pending |
+| E2.6 | Ledger chain + write-up | 1h | Pending |
 
 **Gate:** Powered verdict (any sign) + ledger chain recorded.
 
@@ -164,6 +167,33 @@ P0: tsup build fix (1 day)          ← ✅ COMPLETE
 | 3 (Nov 21–27) | Buffer / E7/E14 if needed / write-ups |
 
 **Total: 2–3 weeks for one powered experiment with full chain.**
+
+---
+
+## 🔧 Browser Build Fixes (E2.2 - In Progress)
+
+### Issues Fixed
+1. **Dynamic import in `strategyResolverInit.ts`** — Fixed using `import.meta.glob` for Vite-compatible dynamic imports
+2. **Test files in production build** — Added `excludeTestsPlugin` to exclude `.test.`, `.spec.`, `/tests/`, `/test/` files
+3. **`__name` dev-only leak** — Added `removeDevOnlyPlugin` to strip `__name` from production bundles
+4. **`fs` module leaks** — Created comprehensive `fs.browser.js` polyfill with directory-based alias (`fs/` with `index.js` and `promises.js`)
+5. **`fs/promises` subpath resolution** — Fixed by using directory-based alias for `fs` instead of file-based
+
+### Remaining Issues
+- **Production build OOM** — 9.6 MB main bundle kills build process even with 8GB Node memory. Need code splitting or bundle size reduction.
+- **Dev server dependency optimization** — Playwright-core transitive dependency causes crashes during dev server startup. Need to exclude test files from dep scan.
+
+### Files Modified
+- `ui/vite.config.ts` — Added plugins, aliases, build config
+- `ui/src/hooks/strategyResolverInit.ts` — Fixed dynamic imports
+- `ui/public/polyfills/fs/index.js` — fs polyfill
+- `ui/public/polyfills/fs/promises.js` — fs/promises polyfill
+- `core/tsup.config.ts` — Already had fs externalized for browser
+
+### Next Steps
+1. Reduce main bundle size (enable code splitting, analyze bundle)
+2. Fix dev server dependency optimization (exclude test directory from dep scan)
+3. Re-run E2 experiment once React app mounts in preview server
 
 ---
 

@@ -80,12 +80,18 @@ function registerComponentFactory(strategyId: string, importFn: () => Promise<{ 
     });
 }
 
+// Use import.meta.glob for Vite-compatible dynamic imports
+// This allows Vite to statically analyze the imports
+const componentModules = import.meta.glob<{ default: React.ComponentType<any> }>('../components/**/*.tsx', { eager: false });
+
 // Register component factories using generated component paths
 for (const config of STRATEGY_CONFIGS_UI) {
     if (config.componentPath) {
-        // Dynamic import using the path from generated definitions
-        const path = config.componentPath;
-        registerComponentFactory(config.id, () => import(`../${path}`));
+        // Match the component path to the glob result
+        const globKey = Object.keys(componentModules).find(key => key.endsWith(config.componentPath + '.tsx'));
+        if (globKey) {
+            registerComponentFactory(config.id, () => componentModules[globKey]());
+        }
     }
 }
 
