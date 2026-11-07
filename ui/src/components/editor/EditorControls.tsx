@@ -116,6 +116,7 @@ export function EditorControls({
                         variant="ghost"
                         isActive={isInspectorOpen}
                         size="sm"
+                        data-testid="toggle-inspector"
                     />
                 )}
                 <IconButton

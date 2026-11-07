@@ -2,6 +2,7 @@
 import path from 'path';
 import {defineConfig, loadEnv} from 'vite';
 import {configDefaults} from 'vitest/config';
+import nodePolyfills from 'rollup-plugin-node-polyfills';
 // import {VitePWA} from 'vite-plugin-pwa'; // Temporarily disabled due to Node.js module resolution issues
 
 export default defineConfig(({mode}) => {
@@ -15,40 +16,94 @@ export default defineConfig(({mode}) => {
         },
         optimizeDeps: {
             exclude: ['@notention/optimize'],
+            include: [
+                'crypto-browserify',
+                'stream-browserify',
+                'assert',
+                'buffer',
+                'process/browser',
+                'events',
+                'querystring-es3',
+                'string_decoder',
+                'punycode',
+                'url',
+                'vm-browserify',
+                'zlib-browserify',
+                'constants-browserify',
+                'path-browserify',
+                'os-browserify/browser',
+                'util',
+            ],
+            esbuildOptions: {
+                plugins: [],
+            },
         },
         resolve: {
             conditions: ['browser'],
-            alias: {
-                '@': path.resolve(__dirname, './src'),
+            alias: [
+                { find: '@', replacement: path.resolve(__dirname, './src') },
                 // Use package.json exports for @notention/core subpaths
-                '@notention/core/constants/storageKeys': path.resolve(__dirname, '../core/dist/constants/storageKeys.js'),
-                '@notention/core/constants/paths': path.resolve(__dirname, '../core/dist/constants/paths.js'),
-                '@notention/core/constants/seams': path.resolve(__dirname, '../core/dist/constants/seams.js'),
-                '@notention/core/extraction': path.resolve(__dirname, '../core/dist/extraction/index.js'),
-                '@notention/core/extraction/deterministic': path.resolve(__dirname, '../core/dist/extraction/deterministic.js'),
-                '@notention/core/src/matching': path.resolve(__dirname, '../core/dist/matching'),
-                '@notention/core/skills': path.resolve(__dirname, '../core/dist/skills/index.js'),
-                '@notention/core/skills/metaphor/MetaphorRegistry': path.resolve(__dirname, '../core/dist/skills/metaphor/MetaphorRegistry.js'),
+                { find: '@notention/core/constants/storageKeys', replacement: path.resolve(__dirname, '../core/dist/constants/storageKeys.js') },
+                { find: '@notention/core/constants/paths', replacement: path.resolve(__dirname, '../core/dist/constants/paths.js') },
+                { find: '@notention/core/constants/seams', replacement: path.resolve(__dirname, '../core/dist/constants/seams.js') },
+                { find: '@notention/core/extraction', replacement: path.resolve(__dirname, '../core/dist/extraction/index.js') },
+                { find: '@notention/core/extraction/deterministic', replacement: path.resolve(__dirname, '../core/dist/extraction/deterministic.js') },
+                { find: '@notention/core/src/matching', replacement: path.resolve(__dirname, '../core/dist/matching') },
+                { find: '@notention/core/skills', replacement: path.resolve(__dirname, '../core/dist/skills/index.js') },
+                { find: '@notention/core/skills/metaphor/MetaphorRegistry', replacement: path.resolve(__dirname, '../core/dist/skills/metaphor/MetaphorRegistry.js') },
                 // @notention/ui internal modules
-                '@notention/ui/strategies/strategyConfigs': path.resolve(__dirname, './src/strategies/strategyConfigs.ts'),
-                '@notention/ui/strategies/componentMap': path.resolve(__dirname, './src/strategies/componentMap.ts'),
+                { find: '@notention/ui/strategies/strategyConfigs', replacement: path.resolve(__dirname, './src/strategies/strategyConfigs.ts') },
+                { find: '@notention/ui/strategies/componentMap', replacement: path.resolve(__dirname, './src/strategies/componentMap.ts') },
                 // Browser stubs for Node.js-only modules (with and without .js extension)
-                '@notention/core/eval/caseManifest': path.resolve(__dirname, '../core/dist/eval/caseManifest.browser.js'),
-                '@notention/core/eval/caseManifest.js': path.resolve(__dirname, '../core/dist/eval/caseManifest.browser.js'),
-                '@notention/core/eval/verdict': path.resolve(__dirname, '../core/dist/eval/verdict.browser.js'),
-                '@notention/core/eval/verdict.js': path.resolve(__dirname, '../core/dist/eval/verdict.browser.js'),
-                '@notention/core/eval/quality': path.resolve(__dirname, '../core/dist/eval/quality.browser.js'),
-                '@notention/core/eval/quality.js': path.resolve(__dirname, '../core/dist/eval/quality.browser.js'),
-                '@notention/core/telemetry/ledger': path.resolve(__dirname, '../core/dist/telemetry/ledger.browser.js'),
-                '@notention/core/telemetry/ledger.js': path.resolve(__dirname, '../core/dist/telemetry/ledger.browser.js'),
-                '@notention/core/telemetry/revisionStore': path.resolve(__dirname, '../core/dist/telemetry/revisionStore.browser.js'),
-                '@notention/core/telemetry/revisionStore.js': path.resolve(__dirname, '../core/dist/telemetry/revisionStore.browser.js'),
-                '@notention/core/telemetry/journal': path.resolve(__dirname, '../core/dist/telemetry/journal.browser.js'),
-                '@notention/core/telemetry/journal.js': path.resolve(__dirname, '../core/dist/telemetry/journal.browser.js'),
-                'path': 'path-browserify',
-                'os': 'os-browserify/browser',
-                'util': 'util',
-            },
+                { find: '@notention/core/eval/caseManifest', replacement: path.resolve(__dirname, '../core/dist/eval/caseManifest.browser.js') },
+                { find: '@notention/core/eval/caseManifest.js', replacement: path.resolve(__dirname, '../core/dist/eval/caseManifest.browser.js') },
+                { find: '@notention/core/eval/verdict', replacement: path.resolve(__dirname, '../core/dist/eval/verdict.browser.js') },
+                { find: '@notention/core/eval/verdict.js', replacement: path.resolve(__dirname, '../core/dist/eval/verdict.browser.js') },
+                { find: '@notention/core/eval/quality', replacement: path.resolve(__dirname, '../core/dist/eval/quality.browser.js') },
+                { find: '@notention/core/eval/quality.js', replacement: path.resolve(__dirname, '../core/dist/eval/quality.browser.js') },
+                { find: '@notention/core/telemetry/ledger', replacement: path.resolve(__dirname, '../core/dist/telemetry/ledger.browser.js') },
+                { find: '@notention/core/telemetry/ledger.js', replacement: path.resolve(__dirname, '../core/dist/telemetry/ledger.browser.js') },
+                { find: '@notention/core/telemetry/revisionStore', replacement: path.resolve(__dirname, '../core/dist/telemetry/revisionStore.browser.js') },
+                { find: '@notention/core/telemetry/revisionStore.js', replacement: path.resolve(__dirname, '../core/dist/telemetry/revisionStore.browser.js') },
+                { find: '@notention/core/telemetry/journal', replacement: path.resolve(__dirname, '../core/dist/telemetry/journal.browser.js') },
+                { find: '@notention/core/telemetry/journal.js', replacement: path.resolve(__dirname, '../core/dist/telemetry/journal.browser.js') },
+                // Node.js built-in polyfills - use direct file paths for packages without proper ESM exports
+                { find: 'crypto', replacement: path.resolve(__dirname, './node_modules/crypto-browserify/index.js') },
+                { find: 'stream', replacement: path.resolve(__dirname, './node_modules/stream-browserify/index.js') },
+                { find: 'assert', replacement: 'assert' },
+                { find: 'buffer', replacement: path.resolve(__dirname, './node_modules/buffer/index.js') },
+                { find: 'process', replacement: path.resolve(__dirname, './node_modules/process/browser.js') },
+                { find: 'events', replacement: 'events' },
+                { find: 'querystring', replacement: path.resolve(__dirname, './node_modules/querystring/index.js') },
+                { find: 'string_decoder', replacement: path.resolve(__dirname, './node_modules/string_decoder/lib/string_decoder.js') },
+                { find: 'punycode', replacement: path.resolve(__dirname, './node_modules/punycode/punycode.js') },
+                { find: 'url', replacement: path.resolve(__dirname, './node_modules/url/url.js') },
+                { find: 'vm', replacement: path.resolve(__dirname, './node_modules/vm-browserify/index.js') },
+                { find: 'zlib', replacement: path.resolve(__dirname, './node_modules/zlib-browserify/index.js') },
+                { find: 'constants', replacement: path.resolve(__dirname, './node_modules/constants-browserify/constants.json') },
+                { find: 'querystring', replacement: path.resolve(__dirname, './node_modules/querystring/index.js') },
+                { find: 'path', replacement: path.resolve(__dirname, './node_modules/path-browserify/index.js') },
+                { find: 'os', replacement: path.resolve(__dirname, './node_modules/os-browserify/browser.js') },
+                { find: 'util', replacement: path.resolve(__dirname, './node_modules/util/util.js') },
+                { find: 'fs', replacement: path.resolve(__dirname, './public/polyfills/fs.js') },
+                // Redirect node:* protocol imports to polyfills
+                { find: /^node:crypto$/, replacement: path.resolve(__dirname, './node_modules/crypto-browserify/index.js') },
+                { find: /^node:path$/, replacement: path.resolve(__dirname, './node_modules/path-browserify/index.js') },
+                { find: /^node:url$/, replacement: path.resolve(__dirname, './node_modules/url/url.js') },
+                { find: /^node:fs$/, replacement: path.resolve(__dirname, './public/polyfills/fs.js') },
+                { find: /^node:buffer$/, replacement: path.resolve(__dirname, './node_modules/buffer/index.js') },
+                { find: /^node:util$/, replacement: path.resolve(__dirname, './node_modules/util/util.js') },
+                { find: /^node:stream$/, replacement: path.resolve(__dirname, './node_modules/stream-browserify/index.js') },
+                { find: /^node:events$/, replacement: 'events' },
+                { find: /^node:process$/, replacement: path.resolve(__dirname, './node_modules/process/browser.js') },
+                { find: /^node:assert$/, replacement: 'assert' },
+                { find: /^node:constants$/, replacement: path.resolve(__dirname, './node_modules/constants-browserify/constants.js') },
+                { find: /^node:querystring$/, replacement: path.resolve(__dirname, './node_modules/querystring-es3/index.js') },
+                { find: /^node:string_decoder$/, replacement: path.resolve(__dirname, './node_modules/string_decoder/index.js') },
+                { find: /^node:punycode$/, replacement: path.resolve(__dirname, './node_modules/punycode/index.js') },
+                { find: /^node:vm$/, replacement: path.resolve(__dirname, './node_modules/vm-browserify/index.js') },
+                { find: /^node:zlib$/, replacement: path.resolve(__dirname, './node_modules/zlib-browserify/index.js') },
+            ],
         },
         test: {
             globals: true,
@@ -132,16 +187,31 @@ export default defineConfig(({mode}) => {
                     main: path.resolve(__dirname, 'index.html'),
                 },
                 external: (id) => {
-                    // Externalize Node.js-only modules and optimize package
-                    if (id.startsWith('fs') || id.startsWith('path') || id.startsWith('os') || 
-                        id.startsWith('url') || id.startsWith('node:') ||
-                        id.includes('/eval/') || id.includes('/telemetry/') ||
+                    // Externalize only truly Node.js-only modules (fs, child_process, cluster, etc.)
+                    // Do NOT externalize node:* or polyfill modules
+                    if (id.startsWith('fs') || id.startsWith('child_process') || 
+                        id.startsWith('cluster') || id.startsWith('dns') || id.startsWith('net') || 
+                        id.startsWith('tls') || id.startsWith('http') || id.startsWith('https') || 
+                        id.startsWith('http2') || id.startsWith('dgram') ||
                         id === '@notention/optimize' || id.startsWith('@notention/optimize/')) {
                         return true;
                     }
+                    // Explicitly do NOT externalize these Node.js built-ins (they'll be polyfilled)
+                    if (id === 'crypto' || id === 'stream' || id === 'assert' || id === 'buffer' || 
+                        id === 'process' || id === 'events' || id === 'querystring' || 
+                        id === 'string_decoder' || id === 'punycode' || id === 'url' || 
+                        id === 'vm' || id === 'zlib' || id === 'constants' || id === 'path' || 
+                        id === 'os' || id === 'util' || id.startsWith('node:')) {
+                        return false;
+                    }
                     return false;
                 },
+                plugins: [
+                    nodePolyfills({
+                        include: ['os', 'path', 'url', 'util', 'buffer', 'process', 'events', 'stream', 'crypto', 'assert', 'constants', 'querystring', 'string_decoder', 'punycode', 'sys', 'tty', 'vm', 'zlib'],
+                    }),
+                ],
             }
-        }
+        },
     };
 });

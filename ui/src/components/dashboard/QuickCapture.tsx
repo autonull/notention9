@@ -67,6 +67,7 @@ export function QuickCapture({input, onInputChange, onSubmit, extractedProps, on
                             leftIcon={<SearchIcon className="w-5 h-5" />}
                             className="text-lg py-4 pr-16"
                             autoComplete="off"
+                            data-testid="quick-capture-input"
                         />
                         <Button
                             type="submit"

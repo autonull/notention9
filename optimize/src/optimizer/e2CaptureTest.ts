@@ -96,19 +96,11 @@ async function runArm(
 ): Promise<ArmResult> {
     console.log(`\n🌐 Running ${armName} (${cases.length} cases × ${repetitions} reps)...`);
     
-    const resolvedBaseURL = baseURL ?? process.env.PREVIEW_URL ?? 'http://127.0.0.1:4199';
+    const resolvedBaseURL = baseURL ?? process.env.PREVIEW_URL ?? 'http://localhost:4199';
     
-    const resolvedUserDataDir = userDataDir ?? join(
-        process.env.HOME ?? '/tmp',
-        '.notention',
-        'chrome-profiles',
-        'e2-capture'
-    );
-    
-    console.log(`   Chrome profile: ${resolvedUserDataDir}`);
-    console.log(`   Headed mode: ${!headless}`);
-    
-    const context = await chromium.launchPersistentContext(resolvedUserDataDir, {
+    // Use regular browser context with PNA bypass flags (no persistent profile)
+    // The persistent profile was causing React app to not mount
+    const browser = await chromium.launch({
         headless: headless,
         args: [
             '--disable-dev-shm-usage',
@@ -117,35 +109,38 @@ async function runArm(
             '--disable-features=BlockInsecurePrivateNetworkRequests',
             '--allow-insecure-localhost',
         ],
-        viewport: INTENT_DEFAULT_VIEWPORT,
     });
     
     const caseResults: CaseArmResult[] = [];
     
     try {
+        const context = await browser.newContext({
+            viewport: INTENT_DEFAULT_VIEWPORT,
+        });
+        
         // Add init script to apply the parameter patch
         await context.addInitScript((patchData: Record<string, unknown>) => {
-            localStorage.setItem('paramPatch', JSON.stringify(patchData));
+            localStorage.setItem('pendingRevision', 'e2-test-revision');
+            localStorage.setItem('pendingRevisionData', JSON.stringify(patchData));
         }, patch);
         
         const page = await context.newPage();
         
         const runConfig: RunIntentCaseConfig = {
             baseURL: resolvedBaseURL,
-            navigationTimeoutMs: 30000, // 30s for page load + hydration
+            navigationTimeoutMs: 30000,
             extractionWaitMs: DEFAULT_INTENT_EXTRACTION_WAIT_MS,
             extractionSelector: '[data-testid="extracted-property"]',
         };
         
         for (const caseData of cases) {
             for (let rep = 0; rep < repetitions; rep++) {
-                const startTime = Date.now();
+                const startTime = performance.now();
                 let steps = 0;
                 const details: string[] = [];
                 let corrections = 0;
                 
                 try {
-                    // Run the shared intent case logic
                     const result = await runIntentCase(page, caseData, runConfig);
                     
                     caseResults.push({
@@ -157,7 +152,7 @@ async function runArm(
                         details: result.details,
                     });
                     
-                    console.log(`   ${caseData.id} rep${rep}: ${result.success ? '✓' : '✗'} completion=${result.metrics.completion} time=${result.metrics.timeToCaptureMs}ms`);
+                    console.log(`   ${caseData.id} rep${rep}: ${result.success ? '✓' : '✗'} completion=${result.metrics.completion} time=${Math.round(result.metrics.timeToCaptureMs)}ms`);
                     
                 } catch (error) {
                     caseResults.push({
@@ -169,7 +164,7 @@ async function runArm(
                             completion: 0, 
                             steps, 
                             corrections, 
-                            timeToCaptureMs: Date.now() - startTime 
+                            timeToCaptureMs: performance.now() - startTime 
                         },
                         details: [...details, `Error: ${error instanceof Error ? error.message : String(error)}`],
                         error: error instanceof Error ? error.message : String(error),
@@ -179,7 +174,7 @@ async function runArm(
             }
         }
     } finally {
-        await context.close();
+        await browser.close();
     }
     
     return { armName, patch, caseResults };
@@ -425,12 +420,10 @@ export async function runE2CaptureTest(config: CaptureTestConfig = {}): Promise<
     const repetitions = config.repetitions ?? 3;
     const headless = config.headless ?? false; // Default to headed for PNA bypass
     const output = config.output;
-    const userDataDir = config.userDataDir;
     
     console.log(`Arms: ${Object.keys(E2_ARMS).join(' vs ')}`);
     console.log(`Repetitions: ${repetitions}`);
     console.log(`Headless: ${headless}`);
-    if (userDataDir) console.log(`User data dir: ${userDataDir}`);
     
     // Load validation capture cases
     const cases = loadValidationCaptureCases();
@@ -444,8 +437,8 @@ export async function runE2CaptureTest(config: CaptureTestConfig = {}): Promise<
     // Start preview server
     console.log('\n🚀 Starting preview server...');
     let baseURL = config.baseURL ?? await ensurePreviewServer();
-    // Convert localhost to 127.0.0.1 to avoid ERR_BLOCKED_BY_CLIENT
-    baseURL = baseURL.replace('http://localhost:', 'http://127.0.0.1:');
+    // Keep localhost for Vite preview asset loading
+    // baseURL = baseURL.replace('http://localhost:', 'http://127.0.0.1:');
     
     let armA: ArmResult;
     let armB: ArmResult;
@@ -453,8 +446,8 @@ export async function runE2CaptureTest(config: CaptureTestConfig = {}): Promise<
     
     try {
         // Run both arms
-        armA = await runArm('A-autoFocus-placeholder', E2_ARMS['A-autoFocus-placeholder'], cases, repetitions, headless, baseURL, userDataDir);
-        armB = await runArm('B-initialOp-enumHint', E2_ARMS['B-initialOp-enumHint'], cases, repetitions, headless, baseURL, userDataDir);
+        armA = await runArm('A-autoFocus-placeholder', E2_ARMS['A-autoFocus-placeholder'], cases, repetitions, headless, baseURL);
+        armB = await runArm('B-initialOp-enumHint', E2_ARMS['B-initialOp-enumHint'], cases, repetitions, headless, baseURL);
 
         // Compare
         comparison = compareArms(armA, armB);
@@ -469,7 +462,7 @@ export async function runE2CaptureTest(config: CaptureTestConfig = {}): Promise<
     if (output) {
         const saveData = {
             timestamp: new Date().toISOString(),
-            config: { repetitions, headless, userDataDir },
+            config: { repetitions, headless },
             arms: {
                 A: { name: armA.armName, patch: armA.patch, caseResults: armA.caseResults },
                 B: { name: armB.armName, patch: armB.patch, caseResults: armB.caseResults },

@@ -343,17 +343,22 @@ Per TODO.science.md §5, the next cycle targets three optimization surfaces. **P
 
 ---
 
-### E2 Progress (2026-11-06) — **CHROME FIX IMPLEMENTED**
+### E2 Progress (2026-11-06) — **CHROME FIX WORKING, REACT APP PRE-EXISTING ISSUES**
 - ✅ `optimize/src/optimizer/e2CaptureTest.ts` — E2 A/B test framework with paired design
 - ✅ `optimize/src/optimizer/cli.ts` — Added `optimizer e2-capture` command
 - ✅ Two arms: A (autoFocus+placeholder) vs B (initialOp=enum-hint=contains)
 - ✅ McNemar + Wilcoxon + corrections guardrail
 - ✅ 10 validation capture intent cases loaded
 - ✅ Preview server + Playwright integration working
-- ✅ **Chrome fix**: `launchPersistentContext` + userDataDir + headed mode (default)
+- ✅ **Chrome fix**: `chromium.launch()` with PNA bypass flags (`--disable-features=BlockInsecurePrivateNetworkRequests`, `--allow-insecure-localhost`) — **ERR_BLOCKED_BY_CLIENT eliminated**
 - ✅ `optimize/src/optimizer/evaluation/intentEvaluation.ts` — Same fix for optimizer intent evaluation
-- ✅ CLI options: `--headed` (default), `--headless`, `--user-data-dir`
-- ⏳ **NEXT**: Run E2 end-to-end (10×3) to verify fix works
+- ✅ CLI options: `--headed` (default), `--headless`
+- ⚠️ **BLOCKED**: React app fails to mount in test due to pre-existing core package issues:
+  - Node.js-only telemetry code (`ledger.js`, `journal.js`) bundled for browser
+  - `url` polyfill missing `fileURLToPath` (Node.js-only API)
+  - `__name is not defined` React component errors
+  - Core package relative imports bypass Vite aliases for browser stubs
+- 🔧 **NEXT**: Fix core package browser bundling (separate task) before E2 can run end-to-end
 
 ### E13 Progress (2026-11-06) — **WAITING ON E2**
 - ✅ `optimize/src/prompts/variants.ts` — 6 prompt variants

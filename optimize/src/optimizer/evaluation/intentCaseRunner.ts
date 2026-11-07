@@ -51,13 +51,14 @@ export async function runIntentCase(
     caseData: IntentCase,
     config: RunIntentCaseConfig
 ): Promise<IntentCaseRunResult> {
-    // Seed browser context for determinism (B1.4)
-    await seedBrowserContext(page, caseData.seed ?? {});
+    // Seed browser context for determinism (B1.4) - but don't freeze time for E2 timing
+    // Disable network blocking for E2 since we need preview server access
+    await seedBrowserContext(page, caseData.seed ?? {}, { freezeTime: false, baseURL: config.baseURL, blockNetwork: false });
 
     let steps = 0;
     const details: string[] = [];
     let corrections = 0;
-    const startTime = Date.now();
+    const startTime = performance.now(); // Use performance.now() which isn't frozen
 
     try {
         // Navigate to dashboard - handle hash routing for SPA
@@ -65,20 +66,35 @@ export async function runIntentCase(
         await page.waitForLoadState('domcontentloaded');
         await page.waitForLoadState('networkidle');
         
-        // Wait for React app to mount
+        // Listen for console errors
+        page.on('console', msg => {
+            if (msg.type() === 'error') {
+                console.log(`[BROWSER ERROR] ${msg.text()}`);
+            }
+        });
+        page.on('pageerror', error => {
+            console.log(`[BROWSER PAGE ERROR] ${error.message}`);
+        });
+        
+        // Wait for React app to mount and notes to load (default view is 'notes' which shows DashboardView when empty)
         await page.waitForSelector('body', { state: 'attached', timeout: 10000 });
         
-        // Set hash to dashboard
-        await page.evaluate(() => {
-            window.location.hash = 'dashboard';
-        });
-        await page.waitForTimeout(3000); // Allow React to render
+        // Wait for app to fully hydrate
+        await page.waitForTimeout(5000);
+        
+        // Debug: log page content
+        const pageContent = await page.content();
+        console.log(`[DEBUG] Page title: ${await page.title()}`);
+        console.log(`[DEBUG] Page has quick-capture-input: ${pageContent.includes('quick-capture-input')}`);
+        console.log(`[DEBUG] Page has DashboardView: ${pageContent.includes('Quick Capture')}`);
+        console.log(`[DEBUG] Page has EditorManager: ${pageContent.includes('EditorManager') || pageContent.includes('TiptapEditor')}`);
+        console.log(`[DEBUG] Page content length: ${pageContent.length}`);
         
         // Apply seed revisions if any
         await applySeedRevisions(page, caseData);
 
         // Type the prompt in the quick capture input
-        const editor = page.locator('input[placeholder*="What\'s on your mind"]').first();
+        const editor = page.locator('[data-testid="quick-capture-input"]').first();
         await editor.waitFor({ state: 'visible', timeout: config.navigationTimeoutMs });
         await editor.fill(caseData.prompt);
         steps++;
@@ -87,8 +103,21 @@ export async function runIntentCase(
         // Submit
         await page.click('button[aria-label="Create note"]');
         await page.waitForLoadState('domcontentloaded');
+        await page.waitForLoadState('networkidle');
         steps++;
         details.push('Submitted capture');
+
+        // Wait for note view to load
+        await page.waitForTimeout(2000);
+
+        // Open inspector sidebar to see extracted properties
+        try {
+            await page.click('[data-testid="toggle-inspector"]', { timeout: 10000 });
+            await page.waitForTimeout(1000); // Wait for sidebar animation
+            details.push('Opened inspector sidebar');
+        } catch (e) {
+            details.push(`Inspector toggle not found: ${e instanceof Error ? e.message : String(e)}`);
+        }
 
         // Wait for extraction to complete - event-driven with timeout fallback
         if (config.extractionSelector) {
@@ -105,7 +134,7 @@ export async function runIntentCase(
         steps++;
         details.push('Waited for extraction');
 
-        const timeToCaptureMs = Date.now() - startTime;
+        const timeToCaptureMs = performance.now() - startTime;
 
         // Count extracted properties
         const properties = await page.locator('[data-testid="extracted-property"], .badge:has-text(":")').count();
@@ -151,7 +180,7 @@ export async function runIntentCase(
             details,
         };
     } catch (error) {
-        const timeToCaptureMs = Date.now() - startTime;
+        const timeToCaptureMs = performance.now() - startTime;
         return {
             success: false,
             metrics: { completion: 0, steps, corrections, timeToCaptureMs },
@@ -165,31 +194,49 @@ export async function runIntentCase(
  * Seed browser context for deterministic runs (B1.4)
  * Freezes clock, seeds RNG, blocks network egress except preview origin
  */
-async function seedBrowserContext(page: Page, seed: Record<string, unknown>): Promise<void> {
-    // Freeze time to a fixed timestamp for deterministic behavior
-    const fixedTime = new Date('2026-01-01T00:00:00Z').getTime();
-    await page.addInitScript((time) => {
-        // Freeze Date.now() - simpler approach that works
-        const originalNow = Date.now;
-        (Date as any).now = () => time;
-        
-        // Seed Math.random with a deterministic PRNG
-        let seedValue = time;
-        const random = (): number => {
-            seedValue = (seedValue * 1664525 + 1013904223) % 4294967296;
-            return seedValue / 4294967296;
-        };
-        globalThis.Math.random = random;
-    }, fixedTime);
+async function seedBrowserContext(page: Page, seed: Record<string, unknown>, options: { freezeTime?: boolean; baseURL?: string; blockNetwork?: boolean } = {}): Promise<void> {
+    const { freezeTime = true, baseURL, blockNetwork = true } = options;
+    
+    if (freezeTime) {
+        // Freeze time to a fixed timestamp for deterministic behavior
+        const fixedTime = new Date('2026-01-01T00:00:00Z').getTime();
+        await page.addInitScript((time) => {
+            // Freeze Date.now() - simpler approach that works
+            const originalNow = Date.now;
+            (Date as any).now = () => time;
+            
+            // Seed Math.random with a deterministic PRNG
+            let seedValue = time;
+            const random = (): number => {
+                seedValue = (seedValue * 1664525 + 1013904223) % 4294967296;
+                return seedValue / 4294967296;
+            };
+            globalThis.Math.random = random;
+        }, fixedTime);
+    } else {
+        // Still seed Math.random but don't freeze time
+        const fixedTime = new Date('2026-01-01T00:00:00Z').getTime();
+        await page.addInitScript((time) => {
+            // Seed Math.random with a deterministic PRNG
+            let seedValue = time;
+            const random = (): number => {
+                seedValue = (seedValue * 1664525 + 1013904223) % 4294967296;
+                return seedValue / 4294967296;
+            };
+            globalThis.Math.random = random;
+        }, fixedTime);
+    }
 
-    // Block all network requests except to the preview origin
-    const previewOrigin = new URL((seed.baseURL as string) || 'http://localhost:4199').origin;
-    await page.route('**/*', async (route) => {
-        const url = route.request().url();
-        if (url.startsWith(previewOrigin)) {
-            await route.continue();
-        } else {
-            await route.abort('blockedbyclient');
-        }
-    });
+    // Block all network requests except to the preview origin (optional)
+    if (blockNetwork) {
+        const previewOrigin = new URL(baseURL || (seed.baseURL as string) || 'http://localhost:4199').origin;
+        await page.route('**/*', async (route) => {
+            const url = route.request().url();
+            if (url.startsWith(previewOrigin)) {
+                await route.continue();
+            } else {
+                await route.abort('blockedbyclient');
+            }
+        });
+    }
 }

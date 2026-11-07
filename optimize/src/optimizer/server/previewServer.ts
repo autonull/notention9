@@ -93,7 +93,7 @@ export async function ensurePreviewServer(config: PreviewServerConfig = {}): Pro
         VITE_DEV_HOOKS: 'true',
     };
 
-    previewServerProcess = spawn('pnpm', ['--filter', '@notention/ui', 'preview', '--port', String(port), '--strictPort'], {
+    previewServerProcess = spawn('pnpm', ['--filter', '@notention/ui', 'preview', '--port', String(port), '--host', '0.0.0.0', '--strictPort'], {
         cwd: process.cwd(),
         stdio: ['ignore', 'pipe', 'pipe'],
         env: { ...process.env, ...defaultEnv, ...config.env },

@@ -99,6 +99,8 @@ export function PropertyBlock({
     return (
         <div
             ref={blockRef}
+            data-testid="extracted-property"
+            data-key={property.key}
             className={`
                 property-block relative group transition-all duration-200 border rounded-md mb-1.5 overflow-hidden
                 ${isEditing
