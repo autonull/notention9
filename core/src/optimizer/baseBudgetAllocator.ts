@@ -9,15 +9,15 @@ import { Plugin, ValidationHelpers } from '../utils/BasePlugin.js';
 import { BudgetAllocation, CandidateBudget, CandidateCost } from './types.js';
 
 export abstract class BaseBudgetAllocator extends Plugin<BudgetConstraints> {
-    abstract readonly name: string;
-    abstract readonly description: string;
-    readonly configSchema?: z.ZodSchema<BudgetConstraints> = undefined;
+    abstract override readonly name: string;
+    abstract override readonly description: string;
+    override readonly configSchema?: z.ZodSchema<BudgetConstraints> = undefined;
 
-    getDefaultConfig(): BudgetConstraints {
+    override getDefaultConfig(): BudgetConstraints {
         return { maxBrowserRuns: 160, maxTimeMinutes: 30, maxTokens: 150000 };
     }
 
-    validateConfig(config: BudgetConstraints): { valid: boolean; errors: string[] } {
+    override validateConfig(config: BudgetConstraints): { valid: boolean; errors: string[] } {
         return ValidationHelpers.combine(
             ValidationHelpers.positiveInt(config.maxBrowserRuns, 'maxBrowserRuns'),
             ValidationHelpers.positiveInt(config.maxTimeMinutes, 'maxTimeMinutes'),

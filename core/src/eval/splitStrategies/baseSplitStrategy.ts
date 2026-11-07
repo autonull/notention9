@@ -13,19 +13,19 @@ import { hashString } from '../../utils/common.js';
 // --- Base Split Strategy Plugin ---
 
 export abstract class BaseSplitStrategy extends Plugin<SplitStrategyConfig> {
-    abstract readonly name: string;
-    abstract readonly description: string;
-    readonly configSchema?: z.ZodSchema<SplitStrategyConfig> = undefined;
+    abstract override readonly name: string;
+    abstract override readonly description: string;
+    override readonly configSchema?: z.ZodSchema<SplitStrategyConfig> = undefined;
 
-    getName(): string {
+    override getName(): string {
         return this.name;
     }
 
-    getDefaultConfig(): SplitStrategyConfig {
+    override getDefaultConfig(): SplitStrategyConfig {
         return { seed: 42 };
     }
 
-    validateConfig(config: SplitStrategyConfig): { valid: boolean; errors: string[] } {
+    override validateConfig(config: SplitStrategyConfig): { valid: boolean; errors: string[] } {
         return ValidationHelpers.combine(
             ValidationHelpers.positiveInt(config.seed, 'seed'),
         );

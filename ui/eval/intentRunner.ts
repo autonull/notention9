@@ -9,7 +9,7 @@ import {
     generateRunId,
     type SeedSnapshot,
 } from './seedSnapshot.js';
-import { runIntentCase, applySeedRevisions, type IntentCaseRunResult, type RunIntentCaseConfig } from '@notention/optimizer/evaluation/intentCaseRunner';
+import { runIntentCase, applySeedRevisions, type IntentCaseRunResult, type RunIntentCaseConfig } from '../../optimize/dist/optimizer/evaluation/intentCaseRunner.js';
 
 export interface IntentRunConfig {
     split: 'search' | 'validation' | 'holdout';
@@ -262,4 +262,4 @@ export async function runIntentEvaluation(
 
 export { readManifest, readIntentCases };
 export { captureSnapshot, restoreSnapshot, verifySnapshot, computeDomHash, generateRunId, type SeedSnapshot } from './seedSnapshot.js';
-export { applySeedRevisions, runIntentCase, type IntentCaseRunResult, type RunIntentCaseConfig } from '@notention/optimizer/evaluation/intentCaseRunner';
+export { applySeedRevisions, runIntentCase, type IntentCaseRunResult, type RunIntentCaseConfig } from '../../optimize/dist/optimizer/evaluation/intentCaseRunner.js';

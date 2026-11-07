@@ -10,7 +10,7 @@
     "strict": true,
     "skipLibCheck": true,
     "types": ["vitest/globals"],
-    "composite": true,
+    "composite": false,
     "declarationMap": true,
     "jsx": "react-jsx",
     "verbatimModuleSyntax": false

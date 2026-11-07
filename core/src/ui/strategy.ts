@@ -168,7 +168,7 @@ export abstract class ComponentStrategy<P extends object> extends Plugin<Compone
         defaultProps: z.record(z.unknown()).optional(),
     }) as z.ZodSchema<ComponentStrategyConfig>;
 
-    getDefaultConfig(): ComponentStrategyConfig {
+    override getDefaultConfig(): ComponentStrategyConfig {
         return {
             params: this.params,
             version: this.version,
@@ -176,7 +176,7 @@ export abstract class ComponentStrategy<P extends object> extends Plugin<Compone
         };
     }
 
-    validateConfig(config: ComponentStrategyConfig): { valid: boolean; errors: string[] } {
+    override validateConfig(config: ComponentStrategyConfig): { valid: boolean; errors: string[] } {
         return ValidationHelpers.combine(
             ValidationHelpers.object(config.params, 'params', []),
         );
@@ -188,7 +188,7 @@ export abstract class ComponentStrategy<P extends object> extends Plugin<Compone
         return this.defaultProps;
     }
 
-    getName(): string {
+    override getName(): string {
         return this.name;
     }
 

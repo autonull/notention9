@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "type": "module",
+  "files": [
+    "dist"
+  ],
   "exports": {
     ".": "./dist/index.js",
     "./journey": "./dist/journey.js",
@@ -23,7 +26,9 @@
     "./loop/prioritize": "./dist/loop/prioritize.js",
     "./utils/taxonomy": "./dist/utils/taxonomy.js",
     "./discovery/seams": "./dist/discovery/index.js",
-    "./optimizer": "./dist/optimizer/index.js"
+    "./optimizer": "./dist/optimizer/index.js",
+    "./evaluation/intentCaseRunner": "./dist/optimizer/evaluation/intentCaseRunner.js",
+    "./evaluation/intentEvaluation": "./dist/optimizer/evaluation/intentEvaluation.js"
   },
   "scripts": {
     "build": "tsc",

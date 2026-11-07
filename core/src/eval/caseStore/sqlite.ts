@@ -8,6 +8,7 @@ import { mkdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Database from 'better-sqlite3';
+import type { Database as DatabaseType } from 'better-sqlite3';
 import type { 
     CaseManifest, 
     CaseEntry, 
@@ -33,7 +34,7 @@ function sha256(content: string): string {
 }
 
 export class SQLiteCaseStore extends BaseCaseStore {
-    private db: Database;
+    private db: DatabaseType;
     
     constructor(dbPath: string) {
         super();

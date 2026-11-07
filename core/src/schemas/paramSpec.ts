@@ -30,10 +30,6 @@ function paramDefToZod(def: ParamDef): z.ZodTypeAny {
         case 'array':
             return z.array(z.unknown()).describe(def.description ?? '');
     }
-    
-    // Exhaustiveness check - ParamDef.type should never reach here
-    const _exhaustive: never = def.type;
-    return z.unknown();
 }
 
 // --- ParamSpec → ZodSchema compiler ---

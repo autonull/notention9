@@ -23,15 +23,15 @@ export const stratifiedSplitConfigSchema = z.object({
 });
 
 export class StratifiedSplitStrategy extends BaseSplitStrategy {
-    readonly name = 'stratified';
-    readonly description = 'Stratified sampling: balanced representation of intents/tags across splits';
-    readonly configSchema = stratifiedSplitConfigSchema;
+    override readonly name = 'stratified';
+    override readonly description = 'Stratified sampling: balanced representation of intents/tags across splits';
+    override readonly configSchema = stratifiedSplitConfigSchema;
     
-    getName(): string {
+    override getName(): string {
         return this.name;
     }
 
-    getDefaultConfig(): SplitStrategyConfig {
+    override getDefaultConfig(): SplitStrategyConfig {
         return {
             seed: 42,
             searchRatio: 0.6,
@@ -42,7 +42,7 @@ export class StratifiedSplitStrategy extends BaseSplitStrategy {
         };
     }
     
-    validateConfig(config: SplitStrategyConfig): { valid: boolean; errors: string[] } {
+    override validateConfig(config: SplitStrategyConfig): { valid: boolean; errors: string[] } {
         const result = stratifiedSplitConfigSchema.safeParse(config);
         if (!result.success) {
             return { valid: false, errors: result.error.errors.map(e => `${e.path.join('.')}: ${e.message}`) };
@@ -51,7 +51,7 @@ export class StratifiedSplitStrategy extends BaseSplitStrategy {
         return validateRatiosSumToOne(cfg.searchRatio, cfg.validationRatio, cfg.holdoutRatio);
     }
     
-    splitIntentCases(
+    override splitIntentCases(
         cases: IntentCase[],
         config: SplitStrategyConfig
     ): { search: IntentCase[]; validation: IntentCase[]; holdout: IntentCase[] } {
@@ -89,7 +89,7 @@ export class StratifiedSplitStrategy extends BaseSplitStrategy {
         return { search, validation, holdout };
     }
     
-    splitQualityCases(
+    override splitQualityCases(
         cases: QualityCase[],
         config: SplitStrategyConfig
     ): { train: QualityCase[]; test: QualityCase[] } {

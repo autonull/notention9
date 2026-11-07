@@ -24,15 +24,15 @@ export const holdoutRotationConfigSchema = z.object({
 });
 
 export class HoldoutRotationSplitStrategy extends BaseSplitStrategy {
-    readonly name = 'holdout-rotation';
-    readonly description = 'Rotating holdout: cycles cases through holdout over time to prevent overfitting';
-    readonly configSchema = holdoutRotationConfigSchema;
+    override readonly name = 'holdout-rotation';
+    override readonly description = 'Rotating holdout: cycles cases through holdout over time to prevent overfitting';
+    override readonly configSchema = holdoutRotationConfigSchema;
     
-    getName(): string {
+    override getName(): string {
         return this.name;
     }
 
-    getDefaultConfig(): SplitStrategyConfig {
+    override getDefaultConfig(): SplitStrategyConfig {
         return {
             seed: 42,
             searchRatio: 0.6,
@@ -43,7 +43,7 @@ export class HoldoutRotationSplitStrategy extends BaseSplitStrategy {
         };
     }
     
-    validateConfig(config: SplitStrategyConfig): { valid: boolean; errors: string[] } {
+    override validateConfig(config: SplitStrategyConfig): { valid: boolean; errors: string[] } {
         const result = holdoutRotationConfigSchema.safeParse(config);
         if (!result.success) {
             return { valid: false, errors: result.error.errors.map(e => `${e.path.join('.')}: ${e.message}`) };
@@ -52,7 +52,7 @@ export class HoldoutRotationSplitStrategy extends BaseSplitStrategy {
         return validateRatiosSumToOne(cfg.searchRatio, cfg.validationRatio, cfg.holdoutRatio);
     }
     
-    splitIntentCases(
+    override splitIntentCases(
         cases: IntentCase[],
         config: SplitStrategyConfig
     ): { search: IntentCase[]; validation: IntentCase[]; holdout: IntentCase[] } {
@@ -97,7 +97,7 @@ export class HoldoutRotationSplitStrategy extends BaseSplitStrategy {
         return { search, validation, holdout };
     }
     
-    splitQualityCases(
+    override splitQualityCases(
         cases: QualityCase[],
         config: SplitStrategyConfig
     ): { train: QualityCase[]; test: QualityCase[] } {

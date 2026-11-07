@@ -21,3 +21,4 @@ export * from './async.js';
 export * from './Registry.js';
 export * from './BasePlugin.js';
 export * from './resolutionUtils.js';
+export * from './mutex.js';

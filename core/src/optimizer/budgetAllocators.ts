@@ -54,11 +54,11 @@ export class FixedBudgetAllocator extends BaseBudgetAllocator {
     readonly name = 'fixed';
     readonly description = 'Equal budget allocation across all candidates';
     
-    getDefaultConfig(): BudgetConstraints {
+    override getDefaultConfig(): BudgetConstraints {
         return { maxBrowserRuns: 160, maxTimeMinutes: 30, maxTokens: 150000 };
     }
     
-    validateConfig(config: BudgetConstraints): { valid: boolean; errors: string[] } {
+    override validateConfig(config: BudgetConstraints): { valid: boolean; errors: string[] } {
         return ValidationHelpers.combine(
             ValidationHelpers.positiveInt(config.maxBrowserRuns, 'maxBrowserRuns'),
             ValidationHelpers.positiveInt(config.maxTimeMinutes, 'maxTimeMinutes'),
@@ -66,7 +66,7 @@ export class FixedBudgetAllocator extends BaseBudgetAllocator {
         );
     }
     
-    allocate(
+    override allocate(
         candidates: OptimizerCandidate[],
         config: OptimizerConfig,
         budget: BudgetConstraints
@@ -74,7 +74,7 @@ export class FixedBudgetAllocator extends BaseBudgetAllocator {
         return this.equalAllocation(candidates, budget, config);
     }
     
-    promote(results: CandidateEvaluationResult[], _config: OptimizerConfig): string[] {
+    override promote(results: CandidateEvaluationResult[], _config: OptimizerConfig): string[] {
         // In fixed budget, all candidates are evaluated equally, no promotion
         return results.map(r => r.candidateId);
     }
@@ -94,11 +94,11 @@ export class SuccessiveHalvingAllocator extends BaseBudgetAllocator {
         super();
     }
     
-    getDefaultConfig(): BudgetConstraints {
+    override getDefaultConfig(): BudgetConstraints {
         return { maxBrowserRuns: 160, maxTimeMinutes: 30, maxTokens: 150000, initialFraction: 0.25, promotionFraction: 0.5, minPromote: 2 };
     }
     
-    validateConfig(config: BudgetConstraints): { valid: boolean; errors: string[] } {
+    override validateConfig(config: BudgetConstraints): { valid: boolean; errors: string[] } {
         return ValidationHelpers.combine(
             ValidationHelpers.numberInRange(config.initialFraction, 'initialFraction', 0, 1),
             ValidationHelpers.numberInRange(config.promotionFraction, 'promotionFraction', 0, 1),
@@ -106,7 +106,7 @@ export class SuccessiveHalvingAllocator extends BaseBudgetAllocator {
         );
     }
     
-    allocate(
+    override allocate(
         candidates: OptimizerCandidate[],
         config: OptimizerConfig,
         budget: BudgetConstraints,
@@ -156,7 +156,7 @@ export class SuccessiveHalvingAllocator extends BaseBudgetAllocator {
         };
     }
     
-    promote(results: CandidateEvaluationResult[], _config: OptimizerConfig): string[] {
+    override promote(results: CandidateEvaluationResult[], _config: OptimizerConfig): string[] {
         const sorted = this.sortByPrimaryDelta(results);
         const promoteCount = Math.max(this.minPromote, Math.ceil(sorted.length * this.promotionFraction));
         return sorted.slice(0, promoteCount).map(r => r.candidateId);
@@ -191,11 +191,11 @@ export class HyperbandAllocator extends BaseBudgetAllocator {
         super();
     }
     
-    getDefaultConfig(): BudgetConstraints {
+    override getDefaultConfig(): BudgetConstraints {
         return { maxBrowserRuns: 160, maxTimeMinutes: 30, maxTokens: 150000, maxResource: 81, reductionFactor: 3 };
     }
     
-    validateConfig(config: BudgetConstraints): { valid: boolean; errors: string[] } {
+    override validateConfig(config: BudgetConstraints): { valid: boolean; errors: string[] } {
         const errors: string[] = [];
         if (config.maxResource !== undefined) {
             const err = ValidationHelpers.positiveInt(config.maxResource, 'maxResource');
@@ -208,7 +208,7 @@ export class HyperbandAllocator extends BaseBudgetAllocator {
         return { valid: errors.length === 0, errors };
     }
     
-    allocate(
+    override allocate(
         candidates: OptimizerCandidate[],
         config: OptimizerConfig,
         budget: BudgetConstraints,
@@ -253,7 +253,7 @@ export class HyperbandAllocator extends BaseBudgetAllocator {
         };
     }
     
-    promote(results: CandidateEvaluationResult[], _config: OptimizerConfig): string[] {
+    override promote(results: CandidateEvaluationResult[], _config: OptimizerConfig): string[] {
         const sorted = this.sortByPrimaryDelta(results);
         const promoteCount = Math.max(1, Math.ceil(sorted.length / this.reductionFactor));
         return sorted.slice(0, promoteCount).map(r => r.candidateId);

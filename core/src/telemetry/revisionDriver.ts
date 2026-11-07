@@ -36,17 +36,17 @@ export type {
 // --- Base Revision Driver Plugin ---
 
 abstract class BaseRevisionDriverPlugin extends AsyncPlugin<RevisionDriverConfig> {
-    abstract readonly name: string;
-    abstract readonly description: string;
-    readonly configSchema?: z.ZodSchema<RevisionDriverConfig> = undefined;
+    abstract override readonly name: string;
+    abstract override readonly description: string;
+    override readonly configSchema?: z.ZodSchema<RevisionDriverConfig> = undefined;
 
     protected revisions = new Map<string, Revision>();
     protected seamIndex = new Map<string, string[]>();
     protected statusIndex = new Map<RevisionStatus, Set<string>>();
 
-    abstract getDefaultConfig(): RevisionDriverConfig;
+    abstract override getDefaultConfig(): RevisionDriverConfig;
 
-    validateConfig(config: RevisionDriverConfig): { valid: boolean; errors: string[] } {
+    override validateConfig(config: RevisionDriverConfig): { valid: boolean; errors: string[] } {
         return ValidationHelpers.combine(
             ValidationHelpers.string(config.filePath, 'filePath'),
             ValidationHelpers.string(config.dbPath, 'dbPath'),
@@ -54,7 +54,7 @@ abstract class BaseRevisionDriverPlugin extends AsyncPlugin<RevisionDriverConfig
         );
     }
 
-    protected async onInit(): Promise<void> {
+    protected override async onInit(): Promise<void> {
         // Default no-op - subclasses can override
     }
 
@@ -229,21 +229,21 @@ export class JSONLRevisionDriver extends BaseRevisionDriverPlugin implements Reg
         this.filePath = filePath ?? '';
     }
 
-    getDefaultConfig(): RevisionDriverConfig {
+    override getDefaultConfig(): RevisionDriverConfig {
         return { 
             filePath: '.notention/revisions/revisions.jsonl',
             maxRevisionsPerSeam: 1000,
         };
     }
 
-    validateConfig(config: RevisionDriverConfig): { valid: boolean; errors: string[] } {
+    override validateConfig(config: RevisionDriverConfig): { valid: boolean; errors: string[] } {
         return ValidationHelpers.combine(
             ValidationHelpers.string(config.filePath, 'filePath'),
             ValidationHelpers.positiveInt(config.maxRevisionsPerSeam, 'maxRevisionsPerSeam'),
         );
     }
 
-    protected async onInit(): Promise<void> {
+    protected override async onInit(): Promise<void> {
         await super.onInit();
         
         this.filePath = this.config.filePath as string ?? this.filePath;
@@ -272,7 +272,7 @@ export class JSONLRevisionDriver extends BaseRevisionDriverPlugin implements Reg
         }
     }
 
-    async persistRevision(revision: Revision): Promise<void> {
+    override async persistRevision(revision: Revision): Promise<void> {
         const line = JSON.stringify(revision) + '\n';
         appendFileSync(this.filePath, line, 'utf-8');
     }
@@ -284,15 +284,15 @@ export class InMemoryRevisionDriver extends BaseRevisionDriverPlugin implements 
     readonly name = 'memory';
     readonly description = 'In-memory revision storage (for testing)';
 
-    getDefaultConfig(): RevisionDriverConfig {
+    override getDefaultConfig(): RevisionDriverConfig {
         return {};
     }
 
-    validateConfig(_config: RevisionDriverConfig): { valid: boolean; errors: string[] } {
+    override validateConfig(_config: RevisionDriverConfig): { valid: boolean; errors: string[] } {
         return { valid: true, errors: [] };
     }
 
-    async persistRevision(_revision: Revision): Promise<void> {
+    override async persistRevision(_revision: Revision): Promise<void> {
         // No-op for in-memory
     }
 }
@@ -311,19 +311,19 @@ export class SQLiteRevisionDriver extends BaseRevisionDriverPlugin implements Re
         this.dbPath = dbPath ?? '';
     }
 
-    getDefaultConfig(): RevisionDriverConfig {
+    override getDefaultConfig(): RevisionDriverConfig {
         return { 
             dbPath: '.notention/revisions/revisions.db',
         };
     }
 
-    validateConfig(config: RevisionDriverConfig): { valid: boolean; errors: string[] } {
+    override validateConfig(config: RevisionDriverConfig): { valid: boolean; errors: string[] } {
         return ValidationHelpers.combine(
             ValidationHelpers.string(config.dbPath, 'dbPath'),
         );
     }
 
-    protected async onInit(): Promise<void> {
+    protected override async onInit(): Promise<void> {
         await super.onInit();
         
         this.dbPath = this.config.dbPath as string ?? this.dbPath;
@@ -416,7 +416,7 @@ export class SQLiteRevisionDriver extends BaseRevisionDriverPlugin implements Re
         };
     }
 
-    async persistRevision(revision: Revision): Promise<void> {
+    override async persistRevision(revision: Revision): Promise<void> {
         const isNew = !this.revisions.has(revision.id);
         
         if (isNew) {
@@ -481,7 +481,7 @@ export class SQLiteRevisionDriver extends BaseRevisionDriverPlugin implements Re
     }
 
     // Override close to properly close DB connection
-    async close(): Promise<void> {
+    override async close(): Promise<void> {
         if (this.db) {
             this.db.close();
             this.db = null;

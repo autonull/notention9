@@ -307,7 +307,7 @@ export class EventSchemaRegistry {
      */
     parse(event: unknown): z.infer<typeof baseEventSchema> {
         const result = this.validate(event);
-        if (!result.success) {
+        if ('error' in result) {
             throw result.error;
         }
         return result.data;

@@ -16,19 +16,19 @@ export const fixedSplitConfigSchema = z.object({
 });
 
 export class FixedSplitStrategy extends BaseSplitStrategy {
-    readonly name = 'fixed';
-    readonly description = 'Use pre-assigned splits from case metadata (backward compatible)';
-    readonly configSchema = fixedSplitConfigSchema;
+    override readonly name = 'fixed';
+    override readonly description = 'Use pre-assigned splits from case metadata (backward compatible)';
+    override readonly configSchema = fixedSplitConfigSchema;
     
-    getName(): string {
+    override getName(): string {
         return this.name;
     }
 
-    getDefaultConfig(): SplitStrategyConfig {
+    override getDefaultConfig(): SplitStrategyConfig {
         return { seed: 42 };
     }
     
-    validateConfig(config: SplitStrategyConfig): { valid: boolean; errors: string[] } {
+    override validateConfig(config: SplitStrategyConfig): { valid: boolean; errors: string[] } {
         const result = fixedSplitConfigSchema.safeParse(config);
         if (!result.success) {
             return { valid: false, errors: result.error.errors.map(e => `${e.path.join('.')}: ${e.message}`) };
@@ -36,7 +36,7 @@ export class FixedSplitStrategy extends BaseSplitStrategy {
         return { valid: true, errors: [] };
     }
     
-    splitIntentCases(
+    override splitIntentCases(
         cases: IntentCase[],
         config: SplitStrategyConfig
     ): { search: IntentCase[]; validation: IntentCase[]; holdout: IntentCase[] } {
@@ -55,7 +55,7 @@ export class FixedSplitStrategy extends BaseSplitStrategy {
         return { search, validation, holdout };
     }
     
-    splitQualityCases(
+    override splitQualityCases(
         cases: QualityCase[],
         config: SplitStrategyConfig
     ): { train: QualityCase[]; test: QualityCase[] } {

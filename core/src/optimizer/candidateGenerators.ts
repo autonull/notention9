@@ -50,14 +50,14 @@ type RegistrableGenerator = CandidateGenerator & { getDefaultConfig(): Generator
 // --- Base Candidate Generator Plugin ---
 
 abstract class BaseCandidateGenerator extends Plugin<GeneratorOptions> {
-    abstract readonly name: string;
-    abstract readonly description: string;
-    readonly configSchema?: z.ZodSchema<GeneratorOptions> = undefined;
+    abstract override readonly name: string;
+    abstract override readonly description: string;
+    override readonly configSchema?: z.ZodSchema<GeneratorOptions> = undefined;
 
-    abstract getDefaultConfig(): GeneratorOptions;
+    abstract override getDefaultConfig(): GeneratorOptions;
     abstract getSearchSpace(strategy: StrategyParamConfig): SearchSpace;
 
-    validateConfig(config: GeneratorOptions): { valid: boolean; errors: string[] } {
+    override validateConfig(config: GeneratorOptions): { valid: boolean; errors: string[] } {
         const errors: string[] = [];
         if (config.maxCandidates !== undefined && (typeof config.maxCandidates !== 'number' || config.maxCandidates < 1)) {
             errors.push('maxCandidates must be a positive number');
@@ -102,15 +102,15 @@ export class GridGenerator extends BaseCandidateGenerator implements Registrable
     readonly name = 'grid';
     readonly description = 'Exhaustive grid search over parameter space';
 
-    getDefaultConfig(): GeneratorOptions {
+    override getDefaultConfig(): GeneratorOptions {
         return { maxCandidates: 8, seed: 42 };
     }
 
-    getSearchSpace(strategy: StrategyParamConfig): SearchSpace {
+    override getSearchSpace(strategy: StrategyParamConfig): SearchSpace {
         return getSearchSpace(strategy.paramSpec);
     }
 
-    generate(strategy: StrategyParamConfig, options: GeneratorOptions): OptimizerCandidate[] {
+    override generate(strategy: StrategyParamConfig, options: GeneratorOptions): OptimizerCandidate[] {
         const space = this.getSearchSpace(strategy);
         const gridPoints = gridSearchSpace(space, 5);
         const candidates: OptimizerCandidate[] = [];
@@ -132,15 +132,15 @@ export class RandomGenerator extends BaseCandidateGenerator implements Registrab
     readonly name = 'random';
     readonly description = 'Uniform random sampling from parameter space';
 
-    getDefaultConfig(): GeneratorOptions {
+    override getDefaultConfig(): GeneratorOptions {
         return { maxCandidates: 8, seed: 42 };
     }
 
-    getSearchSpace(strategy: StrategyParamConfig): SearchSpace {
+    override getSearchSpace(strategy: StrategyParamConfig): SearchSpace {
         return getSearchSpace(strategy.paramSpec);
     }
 
-    generate(strategy: StrategyParamConfig, options: GeneratorOptions): OptimizerCandidate[] {
+    override generate(strategy: StrategyParamConfig, options: GeneratorOptions): OptimizerCandidate[] {
         const space = this.getSearchSpace(strategy);
         const candidates: OptimizerCandidate[] = [];
         const tried = new Set<string>();
@@ -179,11 +179,11 @@ export class SuccessiveHalvingGenerator extends BaseCandidateGenerator implement
         super();
     }
 
-    getDefaultConfig(): GeneratorOptions {
+    override getDefaultConfig(): GeneratorOptions {
         return { maxCandidates: 8, seed: 42, initialFraction: 0.25, minPromote: 2 };
     }
 
-    validateConfig(config: GeneratorOptions): { valid: boolean; errors: string[] } {
+    override validateConfig(config: GeneratorOptions): { valid: boolean; errors: string[] } {
         return ValidationHelpers.combine(
             ValidationHelpers.positiveInt(config.maxCandidates, 'maxCandidates'),
             ValidationHelpers.numberInRange(config.initialFraction, 'initialFraction', 0, 1),
@@ -191,11 +191,11 @@ export class SuccessiveHalvingGenerator extends BaseCandidateGenerator implement
         );
     }
 
-    getSearchSpace(strategy: StrategyParamConfig): SearchSpace {
+    override getSearchSpace(strategy: StrategyParamConfig): SearchSpace {
         return this.baseGenerator.getSearchSpace(strategy);
     }
 
-    async generate(strategy: StrategyParamConfig, options: GeneratorOptions): Promise<OptimizerCandidate[]> {
+    override async generate(strategy: StrategyParamConfig, options: GeneratorOptions): Promise<OptimizerCandidate[]> {
         // For now, delegate to base generator
         // The halving logic is applied in the optimizer loop, not here
         return this.baseGenerator.generate(strategy, options) as OptimizerCandidate[];
@@ -217,15 +217,15 @@ export class LLMGenerator extends BaseCandidateGenerator implements RegistrableG
         super();
     }
 
-    getDefaultConfig(): GeneratorOptions {
+    override getDefaultConfig(): GeneratorOptions {
         return { maxCandidates: 8, seed: 42 };
     }
 
-    getSearchSpace(strategy: StrategyParamConfig): SearchSpace {
+    override getSearchSpace(strategy: StrategyParamConfig): SearchSpace {
         return getSearchSpace(strategy.paramSpec);
     }
 
-    async generate(strategy: StrategyParamConfig, options: GeneratorOptions): Promise<OptimizerCandidate[]> {
+    override async generate(strategy: StrategyParamConfig, options: GeneratorOptions): Promise<OptimizerCandidate[]> {
         if (!options.previousResults || options.previousResults.length === 0) {
             return new RandomGenerator().generate(strategy, options) as OptimizerCandidate[];
         }

@@ -9,7 +9,8 @@
     ".": {
       "import": "./dist/index.node.js",
       "node": "./dist/index.node.js",
-      "browser": "./dist/browser/index.browser.js"
+      "browser": "./dist/browser/index.browser.js",
+      "types": "./dist/index.d.ts"
     },
     "./constants/storageKeys": {
       "import": "./dist/constants/storageKeys.js",
@@ -253,7 +254,7 @@
     }
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && pnpm run build:types",
     "build:types": "tsc --emitDeclarationOnly",
     "dev": "tsup --watch",
     "test": "NODE_OPTIONS='--no-warnings=ExperimentalWarning' vitest run",

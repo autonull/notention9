@@ -45,8 +45,8 @@ export async function connectCliClient(url: string, interactive: boolean, label:
     const cli = new CliClient(url);
 
     await retry(() => cli.connect(), {
-        attempts: 3,
-        delayMs: 2000,
+        maxAttempts: 3,
+        baseDelay: 2000,
         onRetry: (attempt, error) => {
             if (interactive) {
                 log.warn(`Connection failed, retrying... (${3 - attempt} attempts left)`, error);

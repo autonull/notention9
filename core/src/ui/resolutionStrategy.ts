@@ -68,16 +68,16 @@ export interface ResolutionContext {
 // --- Base Resolution Strategy Plugin ---
 
 abstract class BaseResolutionStrategyPlugin extends Plugin<ResolutionStrategyConfig> {
-    abstract readonly name: string;
-    abstract readonly description: string;
+    abstract override readonly name: string;
+    abstract override readonly description: string;
     readonly seamRoles?: SeamRole[];
-    readonly configSchema?: z.ZodSchema<ResolutionStrategyConfig> = undefined;
+    override readonly configSchema?: z.ZodSchema<ResolutionStrategyConfig> = undefined;
 
-    getDefaultConfig(): ResolutionStrategyConfig {
+    override getDefaultConfig(): ResolutionStrategyConfig {
         return {};
     }
 
-    validateConfig(_config: ResolutionStrategyConfig): { valid: boolean; errors: string[] } {
+    override validateConfig(_config: ResolutionStrategyConfig): { valid: boolean; errors: string[] } {
         return { valid: true, errors: [] };
     }
 
@@ -97,7 +97,7 @@ export class OverrideResolutionStrategy extends BaseResolutionStrategyPlugin {
     readonly name = 'override';
     readonly description = 'User strategy overrides (manual per-seam selection)';
 
-    resolve(context: ResolutionContext): ResolvedStrategy | undefined {
+    override resolve(context: ResolutionContext): ResolvedStrategy | undefined {
         const { userConfig, seamRole, seamId, strategyRegistry } = context;
         const overrideId = (userConfig.overrides.overrides as Record<string, string>)[seamRole];
         const strategy = overrideId ? getStrategy(seamId, overrideId) : undefined;
@@ -119,7 +119,7 @@ export class ExperimentResolutionStrategy extends BaseResolutionStrategyPlugin {
     readonly name = 'experiment';
     readonly description = 'Active experiment variant assignment';
 
-    resolve(context: ResolutionContext): ResolvedStrategy | undefined {
+    override resolve(context: ResolutionContext): ResolvedStrategy | undefined {
         const { userConfig, seamRole, seamId, experiments, assignments } = context;
         
         for (const experiment of experiments.values()) {
@@ -159,11 +159,11 @@ export class RevisionResolutionStrategy extends BaseResolutionStrategyPlugin {
     readonly name = 'revision';
     readonly description = 'Active revision for seam role (requires consent)';
 
-    getDefaultConfig(): ResolutionStrategyConfig {
+    override getDefaultConfig(): ResolutionStrategyConfig {
         return { requireConsent: true };
     }
 
-    async resolve(context: ResolutionContext): Promise<ResolvedStrategy | undefined> {
+    override async resolve(context: ResolutionContext): Promise<ResolvedStrategy | undefined> {
         if (!context.revisionStore) return undefined;
         
         const { seamRole, seamId } = context;
@@ -203,7 +203,7 @@ export class ManualProfileResolutionStrategy extends BaseResolutionStrategyPlugi
     readonly name = 'manual-profile';
     readonly description = 'Manual mode with explicitly selected profile';
 
-    resolve(context: ResolutionContext): ResolvedStrategy | undefined {
+    override resolve(context: ResolutionContext): ResolvedStrategy | undefined {
         const { userConfig, seamRole, seamId, profiles } = context;
         if (!userConfig.manualMode) return undefined;
         
@@ -229,7 +229,7 @@ export class PolicyResolutionStrategy extends BaseResolutionStrategyPlugin {
     readonly name = 'policy';
     readonly description = 'Automatic profile selection via policy rules';
 
-    resolve(context: ResolutionContext): ResolvedStrategy | undefined {
+    override resolve(context: ResolutionContext): ResolvedStrategy | undefined {
         const { userConfig, seamRole, seamId, profiles, policies } = context;
         const policy = Array.from(policies.values()).find(p => p.isEnabled);
         if (!policy) return undefined;
@@ -273,7 +273,7 @@ export class DefaultProfileResolutionStrategy extends BaseResolutionStrategyPlug
     readonly name = 'default-profile';
     readonly description = 'Default profile fallback';
 
-    resolve(context: ResolutionContext): ResolvedStrategy | undefined {
+    override resolve(context: ResolutionContext): ResolvedStrategy | undefined {
         const { seamRole, seamId, profiles } = context;
         const defaultProfile = Array.from(profiles.values()).find(p => p.isDefault) ?? Array.from(profiles.values())[0];
         const strategyId = (defaultProfile?.strategySelections as Record<string, string>)[seamRole];
@@ -297,7 +297,7 @@ export class FallbackResolutionStrategy extends BaseResolutionStrategyPlugin {
     readonly name = 'fallback';
     readonly description = 'Last resort: first available strategy for seam';
 
-    resolve(context: ResolutionContext): ResolvedStrategy | undefined {
+    override resolve(context: ResolutionContext): ResolvedStrategy | undefined {
         const { seamRole, seamId } = context;
         const seamStrategies = getStrategiesForSeam(seamId);
         const strategy = seamStrategies[0];

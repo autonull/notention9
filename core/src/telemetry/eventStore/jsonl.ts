@@ -32,11 +32,11 @@ export class JSONLEventStore extends BaseEventStore {
         }
     }
     
-    protected computeHash(payload: LedgerPayload): string {
+    protected override computeHash(payload: LedgerPayload): string {
         return createHash('sha256').update(JSON.stringify(payload)).digest('hex').slice(0, 16);
     }
     
-    protected async doInit(): Promise<void> {
+    protected override async doInit(): Promise<void> {
         if (existsSync(this.filePath)) {
             await this.rebuildIndex();
         }
@@ -84,17 +84,17 @@ export class JSONLEventStore extends BaseEventStore {
         }
     }
     
-    protected async doAppend(event: LedgerEvent): Promise<void> {
+    protected override async doAppend(event: LedgerEvent): Promise<void> {
         const line = JSON.stringify(event) + '\n';
         appendFileSync(this.filePath, line, 'utf-8');
     }
     
-    protected async doIndexEvent(event: LedgerEvent): Promise<void> {
+    protected override async doIndexEvent(event: LedgerEvent): Promise<void> {
         const lineNum = this.getLineCount() - 1;
         this.indexEvent(event, lineNum);
     }
     
-    protected async doQuery(options: {
+    protected override async doQuery(options: {
         type?: string;
         runId?: string;
         caseId?: string;
@@ -162,12 +162,12 @@ export class JSONLEventStore extends BaseEventStore {
         return content.trim().split('\n').filter(l => l.length > 0).length;
     }
     
-    protected async doCount(options?: { type?: string; runId?: string; since?: string; until?: string }): Promise<number> {
+    protected override async doCount(options?: { type?: string; runId?: string; since?: string; until?: string }): Promise<number> {
         const events = await this.doQuery({ ...options, limit: Infinity });
         return events.length;
     }
     
-    protected async doPrune(olderThan: string): Promise<number> {
+    protected override async doPrune(olderThan: string): Promise<number> {
         const cutoff = new Date(olderThan).getTime();
         const content = readFileSync(this.filePath, 'utf-8');
         const lines = content.trim().split('\n').filter(l => l.length > 0);
@@ -202,7 +202,7 @@ export class JSONLEventStore extends BaseEventStore {
         return removed;
     }
     
-    protected async doClose(): Promise<void> {
+    protected override async doClose(): Promise<void> {
         this.index.clear();
         this.runIdIndex.clear();
         this.caseIdIndex.clear();

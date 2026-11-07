@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
+    "module": "NodeNext",
+    "moduleResolution": "nodeNext",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "outDir": "dist",
     "rootDir": ".",
@@ -16,7 +16,11 @@
     "isolatedModules": true,
     "noEmit": false,
     "downlevelIteration": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@notention/optimizer/evaluation/*": ["../../optimize/dist/optimizer/evaluation/*"]
+    }
   },
   "include": ["*.ts"],
   "exclude": ["node_modules", "dist", "*.test.ts"]

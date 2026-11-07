@@ -7,8 +7,8 @@ import { createHash } from 'node:crypto';
 import { mkdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-// @ts-ignore - better-sqlite3 types not available
 import Database from 'better-sqlite3';
+import type { Database as DatabaseType } from 'better-sqlite3';
 import type { LedgerEvent, LedgerEventType, LedgerPayload } from '../../telemetry/ledger.js';
 import type { EventStore } from './index.js';
 import { generateId } from '../../utils/common.js';
@@ -17,7 +17,7 @@ import { BaseEventStore } from './baseEventStore.js';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export class SQLiteEventStore extends BaseEventStore {
-    private db: Database;
+    private db: DatabaseType;
     
     constructor(dbPath: string) {
         super();
@@ -29,11 +29,11 @@ export class SQLiteEventStore extends BaseEventStore {
         this.db.pragma('journal_mode = WAL');
     }
     
-    protected computeHash(payload: LedgerPayload): string {
+    protected override computeHash(payload: LedgerPayload): string {
         return createHash('sha256').update(JSON.stringify(payload)).digest('hex').slice(0, 16);
     }
     
-    protected async doInit(): Promise<void> {
+    protected override async doInit(): Promise<void> {
         this.db.exec(`
             CREATE TABLE IF NOT EXISTS events (
                 id TEXT PRIMARY KEY,
@@ -61,7 +61,7 @@ export class SQLiteEventStore extends BaseEventStore {
         `);
     }
     
-    protected async doAppend(event: LedgerEvent): Promise<void> {
+    protected override async doAppend(event: LedgerEvent): Promise<void> {
         this.db.prepare(`
             INSERT INTO events (id, type, run_id, case_id, revision_id, evaluation_id, actor, user_id, model_id, payload, timestamp, duration_ms, hash, created_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -87,11 +87,11 @@ export class SQLiteEventStore extends BaseEventStore {
         // No in-memory index needed for SQLite - uses database indexes
     }
     
-    protected async doIndexEvent(event: LedgerEvent): Promise<void> {
+    protected override async doIndexEvent(event: LedgerEvent): Promise<void> {
         // No-op - SQLite uses database indexes
     }
     
-    protected async doQuery(options: {
+    protected override async doQuery(options: {
         type?: string;
         runId?: string;
         caseId?: string;
@@ -155,7 +155,7 @@ export class SQLiteEventStore extends BaseEventStore {
         }));
     }
     
-    protected async doCount(options?: { type?: string; runId?: string; since?: string; until?: string }): Promise<number> {
+    protected override async doCount(options?: { type?: string; runId?: string; since?: string; until?: string }): Promise<number> {
         const conditions: string[] = [];
         const params: any[] = [];
         
@@ -183,12 +183,12 @@ export class SQLiteEventStore extends BaseEventStore {
         return row.c;
     }
     
-    protected async doPrune(olderThan: string): Promise<number> {
+    protected override async doPrune(olderThan: string): Promise<number> {
         const result = this.db.prepare('DELETE FROM events WHERE timestamp < ?').run(olderThan);
         return result.changes;
     }
     
-    protected async doClose(): Promise<void> {
+    protected override async doClose(): Promise<void> {
         this.db.close();
     }
     

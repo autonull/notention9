@@ -20,15 +20,15 @@ export const temporalSplitConfigSchema = z.object({
 });
 
 export class TemporalSplitStrategy extends BaseSplitStrategy {
-    readonly name = 'temporal';
-    readonly description = 'Split cases chronologically: older -> search, newer -> validation, newest -> holdout';
-    readonly configSchema = temporalSplitConfigSchema;
+    override readonly name = 'temporal';
+    override readonly description = 'Split cases chronologically: older -> search, newer -> validation, newest -> holdout';
+    override readonly configSchema = temporalSplitConfigSchema;
     
-    getName(): string {
+    override getName(): string {
         return this.name;
     }
 
-    getDefaultConfig(): SplitStrategyConfig {
+    override getDefaultConfig(): SplitStrategyConfig {
         return {
             seed: 42,
             searchRatio: 0.6,
@@ -38,7 +38,7 @@ export class TemporalSplitStrategy extends BaseSplitStrategy {
         };
     }
     
-    validateConfig(config: SplitStrategyConfig): { valid: boolean; errors: string[] } {
+    override validateConfig(config: SplitStrategyConfig): { valid: boolean; errors: string[] } {
         const result = temporalSplitConfigSchema.safeParse(config);
         if (!result.success) {
             return { valid: false, errors: result.error.errors.map(e => `${e.path.join('.')}: ${e.message}`) };
@@ -47,7 +47,7 @@ export class TemporalSplitStrategy extends BaseSplitStrategy {
         return validateRatiosSumToOne(cfg.searchRatio, cfg.validationRatio, cfg.holdoutRatio);
     }
     
-    splitIntentCases(
+    override splitIntentCases(
         cases: IntentCase[],
         config: SplitStrategyConfig
     ): { search: IntentCase[]; validation: IntentCase[]; holdout: IntentCase[] } {
@@ -71,7 +71,7 @@ export class TemporalSplitStrategy extends BaseSplitStrategy {
         };
     }
     
-    splitQualityCases(
+    override splitQualityCases(
         cases: QualityCase[],
         config: SplitStrategyConfig
     ): { train: QualityCase[]; test: QualityCase[] } {
