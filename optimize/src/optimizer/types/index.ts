@@ -113,6 +113,7 @@ export interface QualityRunConfig {
 export interface IntentEvaluationConfig {
     baseURL?: string;
     headless?: boolean;
+    userDataDir?: string;
     split?: 'search' | 'validation' | 'holdout';
     repetitions?: number;
     seed?: number;

@@ -130,13 +130,16 @@ program
     .command('e2-capture')
     .description('Run E2 capture-flow parameter A/B test (10 validation cases × 3 reps)')
     .option('--repetitions <n>', 'Repetitions per case', '3')
-    .option('--headless', 'Run browser headless', true)
+    .option('--headless', 'Run browser headless (default: false for PNA bypass)')
+    .option('--headed', 'Run browser in headed mode (default)')
+    .option('--user-data-dir <path>', 'Chrome user data directory', '~/.notention/chrome-profiles/e2-capture')
     .option('-o, --output <file>', 'Output JSON file for results')
     .action(async (options) => {
         const { runE2CaptureTest } = await import('./e2CaptureTest.js');
         await runE2CaptureTest({
             repetitions: parseInt(options.repetitions, 10),
-            headless: options.headless !== false,
+            headless: options.headless === true,
+            userDataDir: options.userDataDir,
             output: options.output,
         });
     });

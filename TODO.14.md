@@ -269,58 +269,109 @@ The UI's job: make the invisible visible, comparable, reversible.
 | C Instrument panel | 2 weeks | B | Non-expert completes explore→consent loop in UI |
 | D Demo + position | 1 week | C | `doc/evidence/2026-11-loop-demo.md` merged **(D1/D2/D4/D5 ✅)** |
 
-**Order of operations:** A → B → C → D. No parallel tracks. Total ≈ 6 weeks, matching TODO.12/13 cadence. **Phases A–D complete. D1/D2/D4/D5 complete (null result, conformance suite, positioning decided). D3 deferred (no revision to showcase). Remaining: next hypothesis cycle (E2, E13, E7, E14 per TODO.science.md) — E7/E14/E2 infrastructure complete, E13 pending LLM.**
+**Order of operations:** A → B → C → D. No parallel tracks. Total ≈ 6 weeks, matching TODO.12/13 cadence. **Phases A–D complete. D1/D2/D4/D5 complete (null result, conformance suite, positioning decided). D3 deferred (no revision to showcase). Remaining: next hypothesis cycle — priority order revised to E2 → E13 → E7/E14.**
 
 ---
 
-## Next Hypothesis Cycle — **IN PROGRESS**
+## Next Hypothesis Cycle — **REVISED PLAN** (2026-11-06)
 
-Per TODO.science.md §5, the next cycle targets the three optimization surfaces in order:
+Per TODO.science.md §5, the next cycle targets three optimization surfaces. **Priority order revised based on unblockedness and leverage:**
 
-| Experiment | Surface | Description | Status |
-|------------|---------|-------------|--------|
-| **E13** | S-PROMPT | Prompt ablation & revision cycle — 6 variants (few-shot, ontology-embedded, two-step, schema-constrained) on 38 quality extraction cases ×3 reps | **INFRASTRUCTURE COMPLETE** — variants.ts, CLI ablation command, quality case loading, F1/ECE metrics. All variants currently identical (deterministic fallback); needs LLM provider for true differentiation |
-| **E7** | S-ONT | Ontology drift & co-occurrence audit — orphan keys, operator misuse, missing hierarchies from local notes (opt-in) + corpus | **INFRASTRUCTURE COMPLETE** — `optimizer audit` CLI with `--golden`, key frequency, co-occurrence lift, operator drift, hierarchy clustering. Ran on 50 cases (38 quality + 12 golden) + 79 keys. 32 keys used, 9 operator drifts, 1 hierarchy (19 keys, lift=5.30) |
-| **E14** | S-ONT | Ontology patch generalization test — top 2 E7 proposals → held-out quality cases + simulator distribution | **INFRASTRUCTURE COMPLETE** — `optimizer patch-test` CLI, operator default patch (role/location/subject/deadline→contains, budget→less than, price→equals), hierarchy patch, combined patch. Match quality evaluation framework working. All 3 patches non-regressive (ΔF1=0.000). Simulator integration pending. | ✅ INFRASTRUCTURE |
-| **E2** | S-UI | Capture-flow parameter A/B — autoFocus+placeholder vs initialOp=enum-hint on 10 intent cases ×3 reps | **INFRASTRUCTURE COMPLETE** — `optimizer e2-capture` CLI, McNemar + Wilcoxon statistical tests, 10 validation capture cases, paired design. Preview server + Playwright integration working. **BLOCKED**: `ERR_BLOCKED_BY_CLIENT` in headless Chrome (Chrome security feature blocking localhost). Requires environment fix (custom Chrome flags, container, or non-headless with profile). |
+| Priority | Experiment | Surface | Description | Status | Next Action |
+|----------|------------|---------|-------------|--------|-------------|
+| **1** | **E2** | S-UI | Capture-flow parameter A/B — autoFocus+placeholder vs initialOp=enum-hint on 10 intent cases ×3 reps | **INFRASTRUCTURE COMPLETE, CHROME FIX DONE** | Run E2 end-to-end (10×3) to verify |
+| **2** | **E13** | S-PROMPT | Prompt ablation & revision — 6 variants on 38 quality cases ×3 reps | **INFRASTRUCTURE COMPLETE** | Add llama.cpp provider (embedded + OpenAI-compatible server) |
+| **3** | **E7→E14** | S-ONT | Ontology drift audit → patch generalization test | **AUDIT DONE, PATCH TEST NON-REGRESSIVE** | Keep as option; don't block. Collect corpus, revisit after E2/E13 |
 
-### E13 Progress (2026-11-06)
-- ✅ `optimize/src/prompts/variants.ts` — 6 prompt variants generated with ontology embedding, few-shot, two-step, schema-constrained
-- ✅ `optimize/src/prompts/cli.ts` — `pnpm prompts:eval ablation` command with quality case loading, F1/ECE per case, macro averaging
-- ✅ `optimize/src/prompts/evaluate.ts` — Golden set evaluation framework (DeterministicProvider, CannedProvider, RegistryProvider)
-- ⏳ LLM provider integration — variants currently identical because all use deterministic fallback; true ablation requires LLM (OpenAI-compatible, WebLLM, or local)
-- ⏳ Register winner as `property-extraction@2` and wire `pnpm prompts:eval` into CI (E16)
+### Revised Execution Strategy
 
-### E7 Progress (2026-11-06)
-- ✅ `optimize/src/ontology/audit.ts` — Full audit pipeline: key frequency, pairwise co-occurrence lift, operator distribution, orphan detection, hierarchy clustering
-- ✅ `optimize/src/optimizer/cli.ts` — Added `optimizer audit` command with `--output` and `--golden` options
-- ✅ Ran on 38 quality extraction cases + 79 ontology keys (5 domains: entity, communication, event, work, commerce)
-- ✅ Extended to **loop golden cases (12 cases)** — total 50 cases, 32 keys used
-- Key findings (with golden cases):
-  - **32/79 keys used** (67 orphan keys including communication/event/commerce domains)
-  - **9 keys with operator drift**: role/location/subject/deadline→contains, budget→less than, price→equals, rate→less than, status→is not, to→send to
-  - **1 hierarchy candidate**: 19 keys co-occur frequently (lift=5.30) — audience, certification, client, deadline, dietary, event, focus, format, frequency, level, location, patient, price, property, recipient, schedule, subject, task, topic — suggests missing domain grouping
-  - **Top keys**: role (37), budget (30), schedule (16), price (10), frequency/format/deadline (6)
-- ⏳ Human review of top 2 proposals for E14
-### E14 Progress (2026-11-06)
-- ✅ `optimize/src/ontology/patchTest.ts` — E14 patch test framework with 4 configurations (baseline, operator-defaults, hierarchy, combined)
-- ✅ `optimize/src/optimizer/cli.ts` — Added `optimizer patch-test` command with `--output` option
-- ✅ Operator default patch from E7: role/location/subject/deadline→contains, budget→less than, price→equals
-- ✅ Hierarchy patch: adds cross-cutting "activityContext" grouping for 14 co-occurring keys
-- ✅ Match quality evaluation: runs 22 match cases, computes F1/precision/recall per case
-- ✅ All 3 patches non-regressive vs baseline (ΔF1=0.000)
-- ⏳ Full match case coverage — current sample notes (3) only cover 1/22 cases; need comprehensive note corpus
-- ⏳ Simulator distribution test (200 runs) — requires simulator ontology injection
-- ⏳ Holdout split evaluation
+**Principle: One unblocked experiment at a time. No parallel tracks.**
 
-### E2 Progress (2026-11-06)
+1. **E2 first** — Highest leverage (UI capture flow), closest to unblocked. Fix: persistent user data dir + headed Chrome via `chromium.launchPersistentContext`. This bypasses Private Network Access blocks cleanly.
+
+2. **E13 second** — High leverage (prompt quality affects all extraction). Integrate llama.cpp as dual-mode provider:
+   - Embedded: `llama.cpp` Node bindings for zero-config local dev
+   - Server: OpenAI-compatible `/v1/chat/completions` endpoint for CI/production
+   - RegistryProvider in `evaluate.ts` already supports this abstraction
+
+3. **E7/E14 on deck** — Audit findings are solid (67 orphan keys, 9 operator drifts, 1 hierarchy candidate). Patch test shows non-regressive (ΔF1=0.000). Next step: comprehensive note corpus for real signal. Not blocked, but lower priority until E2/E13 yield results.
+
+### E2: Chrome Fix — Implementation Plan
+
+**Root cause:** Chrome's Private Network Access (PNA) blocks requests to `localhost`/`127.0.0.1` from insecure contexts in headless mode. Flags (`--disable-features=BlockInsecurePrivateNetworkRequests`, `--allow-insecure-localhost`) are unreliable.
+
+**Solution:** `chromium.launchPersistentContext({ userDataDir, headless: false, ... })`
+- Persistent profile stores PNA permissions
+- Headed mode avoids headless-specific security restrictions
+- Reuses profile across runs → no re-prompting
+- Works with existing preview server (HTTP on 127.0.0.1)
+
+**Files to modify:**
+- `optimize/src/optimizer/e2CaptureTest.ts` — browser launch
+- `optimize/src/optimizer/evaluation/intentEvaluation.ts` — browser launch (shared infrastructure)
+
+**Config additions:**
+- `--headless` flag → default `false` for E2 (can override)
+- `--user-data-dir` flag → default `~/.notention/chrome-profiles/e2-capture`
+
+### E13: llama.cpp Provider — Implementation Plan
+
+**Architecture:** Add `LlamaCppProvider` implementing `PromptProvider` interface (same as `RegistryProvider`, `CannedProvider`, `DeterministicProvider` in `evaluate.ts`).
+
+**Two modes:**
+1. **Embedded** — `@llama-node/llama-cpp` or `node-llama-cpp` bindings; loads GGUF model directly in Node process
+2. **Server** — Thin wrapper around `llama-server` (from llama.cpp) exposing OpenAI-compatible API; `OpenAICompatibleProvider` hits `http://localhost:8080/v1/chat/completions`
+
+**Files to create/modify:**
+- `optimize/src/prompts/providers/llamaCppProvider.ts` — new provider
+- `optimize/src/prompts/providers/index.ts` — export
+- `optimize/src/prompts/evaluate.ts` — wire into provider registry
+- `optimize/src/prompts/cli.ts` — `--provider llama-cpp` + `--model-path` / `--server-url` options
+
+**Model management:** Document recommended models (e.g., `Qwen2.5-7B-Instruct-GGUF`, `Llama-3.2-3B-Instruct-GGUF`); download script in `scripts/`.
+
+### Success Criteria (Revised — No Premature Conclusions)
+
+| Criterion | Definition |
+|-----------|------------|
+| **Infrastructure working** | E2 runs end-to-end (10×3) without Chrome errors; E13 runs ablation with real LLM |
+| **Powered evaluation** | MDE gate passes (n≥10, reps≥3, effect size detectable) |
+| **Honest result** | Any verdict (`improved`, `null`, `invalid`) published with full chain |
+| **No convergence pressure** | Null result = valid outcome; do not tune cases/params to force `improved` |
+
+**Gate for "cycle complete":** One experiment produces a powered verdict (any sign) with full ledger chain recorded. Not "one improvement found."
+
+---
+
+### E2 Progress (2026-11-06) — **CHROME FIX IMPLEMENTED**
 - ✅ `optimize/src/optimizer/e2CaptureTest.ts` — E2 A/B test framework with paired design
-- ✅ `optimize/src/optimizer/cli.ts` — Added `optimizer e2-capture` command with `--repetitions`, `--headless`, `--output` options
+- ✅ `optimize/src/optimizer/cli.ts` — Added `optimizer e2-capture` command
 - ✅ Two arms: A (autoFocus+placeholder) vs B (initialOp=enum-hint=contains)
-- ✅ McNemar test for completion (paired binary), Wilcoxon signed-rank for timeToCapture (paired continuous)
-- ✅ Corrections as guardrail metric
-- ✅ Loads 10 validation capture intent cases from manifest
+- ✅ McNemar + Wilcoxon + corrections guardrail
+- ✅ 10 validation capture intent cases loaded
 - ✅ Preview server + Playwright integration working
-- ⏳ **BLOCKED**: `ERR_BLOCKED_BY_CLIENT` in headless Chrome — Chrome security feature blocking localhost/127.0.0.1 requests. Flags tested: `--disable-web-security`, `--disable-features=BlockInsecurePrivateNetworkRequests`, `--allow-running-insecure-content`, `127.0.0.1` vs `localhost`. Requires environment fix (custom Chrome profile, container with proper flags, or non-headless with user data dir).
-- ⏳ MDE power check before run
-- ⏳ Holdout read once
+- ✅ **Chrome fix**: `launchPersistentContext` + userDataDir + headed mode (default)
+- ✅ `optimize/src/optimizer/evaluation/intentEvaluation.ts` — Same fix for optimizer intent evaluation
+- ✅ CLI options: `--headed` (default), `--headless`, `--user-data-dir`
+- ⏳ **NEXT**: Run E2 end-to-end (10×3) to verify fix works
+
+### E13 Progress (2026-11-06) — **WAITING ON E2**
+- ✅ `optimize/src/prompts/variants.ts` — 6 prompt variants
+- ✅ `optimize/src/prompts/cli.ts` — `pnpm prompts:eval ablation` command
+- ✅ `optimize/src/prompts/evaluate.ts` — Provider framework (Deterministic/Canned/Registry)
+- ⏳ llama.cpp provider (embedded + server)
+- ⏳ Register winner as `property-extraction@2`, wire into CI (E16)
+
+### E7 Progress (2026-11-06) — **COMPLETE (Audit)**
+- ✅ `optimize/src/ontology/audit.ts` — Full audit pipeline
+- ✅ `optimize/src/optimizer/cli.ts` — `optimizer audit` command
+- ✅ Ran on 50 cases (38 quality + 12 golden), 79 keys
+- ✅ Findings: 32/79 keys used, 67 orphans, 9 operator drifts, 1 hierarchy (lift=5.30)
+- ⏸️ **ON DECK**: Human review of top 2 proposals for E14 patch test
+
+### E14 Progress (2026-11-06) — **ON DECK**
+- ✅ `optimize/src/ontology/patchTest.ts` — Patch test framework (4 configs)
+- ✅ `optimize/src/optimizer/cli.ts` — `optimizer patch-test` command
+- ✅ Operator default patch + hierarchy patch + combined
+- ✅ All 3 patches non-regressive (ΔF1=0.000)
+- ⏸️ **ON DECK**: Comprehensive note corpus, simulator integration, holdout

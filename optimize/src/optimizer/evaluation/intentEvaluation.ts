@@ -1,4 +1,4 @@
-import { chromium, type Browser, type BrowserContext, type Page } from '@playwright/test';
+import { chromium, type BrowserContext, type Page } from '@playwright/test';
 import { readManifest, readIntentCases, type IntentCase } from '@notention/core/eval/caseManifest';
 import { ensurePreviewServer, stopPreviewServer } from '../server/previewServer.js';
 import type { IntentEvaluationConfig, IntentEvaluationResult } from '../types/index.js';
@@ -8,6 +8,7 @@ import {
     DEFAULT_INTENT_EXTRACTION_WAIT_MS,
 } from '../constants.js';
 import { runIntentCase, applySeedRevisions, type IntentCaseRunResult, type RunIntentCaseConfig } from './intentCaseRunner.js';
+import { join } from 'node:path';
 
 /**
  * Run intent evaluation for a specific revision using Playwright
@@ -31,16 +32,31 @@ export async function runIntentEvaluationForRevision(
 
     console.log(`   🌐 Running intent evaluation (${filteredCases.length} cases, ${config.repetitions ?? 1} rep)...`);
 
-    const browser = await chromium.launch({
-        headless: config.headless !== false,
-        args: ['--disable-dev-shm-usage', '--disable-gpu', '--no-sandbox'],
+    // Default to headed + persistent profile to bypass Chrome PNA blocks
+    const headless = config.headless ?? false;
+    const userDataDir = config.userDataDir ?? join(
+        process.env.HOME ?? '/tmp',
+        '.notention',
+        'chrome-profiles',
+        'intent-eval'
+    );
+
+    console.log(`   Chrome profile: ${userDataDir}`);
+    console.log(`   Headed mode: ${!headless}`);
+
+    const context = await chromium.launchPersistentContext(userDataDir, {
+        headless: headless,
+        args: [
+            '--disable-dev-shm-usage',
+            '--disable-gpu',
+            '--no-sandbox',
+            '--disable-features=BlockInsecurePrivateNetworkRequests',
+            '--allow-insecure-localhost',
+        ],
+        viewport: config.viewport || INTENT_DEFAULT_VIEWPORT,
     });
 
     try {
-        const context = await browser.newContext({
-            viewport: config.viewport || INTENT_DEFAULT_VIEWPORT,
-        });
-
         // Seed the revision in localStorage for the test to pick up
         await context.addInitScript((data: { revisionId: string; patch: Record<string, unknown> }) => {
             localStorage.setItem('pendingRevision', data.revisionId);
@@ -119,7 +135,7 @@ export async function runIntentEvaluationForRevision(
             },
         };
     } finally {
-        await browser.close();
+        await context.close();
     }
 }
 

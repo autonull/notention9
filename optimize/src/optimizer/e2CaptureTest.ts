@@ -31,6 +31,7 @@ export interface CaptureTestConfig {
     viewport?: { width: number; height: number };
     output?: string;
     baseURL?: string;
+    userDataDir?: string;
 }
 
 interface ArmResult {
@@ -89,31 +90,45 @@ async function runArm(
     patch: Record<string, unknown>,
     cases: IntentCase[],
     repetitions: number,
-    headless: boolean = true,
-    baseURL?: string
+    headless: boolean = false,
+    baseURL?: string,
+    userDataDir?: string
 ): Promise<ArmResult> {
     console.log(`\n🌐 Running ${armName} (${cases.length} cases × ${repetitions} reps)...`);
     
     const resolvedBaseURL = baseURL ?? process.env.PREVIEW_URL ?? 'http://127.0.0.1:4199';
     
-    const browser = await chromium.launch({
-        headless: headless !== false,
-        args: ['--disable-dev-shm-usage', '--disable-gpu', '--no-sandbox'],
+    const resolvedUserDataDir = userDataDir ?? join(
+        process.env.HOME ?? '/tmp',
+        '.notention',
+        'chrome-profiles',
+        'e2-capture'
+    );
+    
+    console.log(`   Chrome profile: ${resolvedUserDataDir}`);
+    console.log(`   Headed mode: ${!headless}`);
+    
+    const context = await chromium.launchPersistentContext(resolvedUserDataDir, {
+        headless: headless,
+        args: [
+            '--disable-dev-shm-usage',
+            '--disable-gpu',
+            '--no-sandbox',
+            '--disable-features=BlockInsecurePrivateNetworkRequests',
+            '--allow-insecure-localhost',
+        ],
+        viewport: INTENT_DEFAULT_VIEWPORT,
     });
     
     const caseResults: CaseArmResult[] = [];
     
     try {
-        const context = await browser.newContext({
-            viewport: INTENT_DEFAULT_VIEWPORT,
-        });
-        
         // Add init script to apply the parameter patch
         await context.addInitScript((patchData: Record<string, unknown>) => {
             localStorage.setItem('paramPatch', JSON.stringify(patchData));
         }, patch);
         
-        const page = await context.newPage();;
+        const page = await context.newPage();
         
         const runConfig: RunIntentCaseConfig = {
             baseURL: resolvedBaseURL,
@@ -164,8 +179,7 @@ async function runArm(
             }
         }
     } finally {
-        await browser.close();
-        // Don't stop preview server - might be reused
+        await context.close();
     }
     
     return { armName, patch, caseResults };
@@ -409,12 +423,14 @@ export async function runE2CaptureTest(config: CaptureTestConfig = {}): Promise<
     console.log('=============================================\n');
     
     const repetitions = config.repetitions ?? 3;
-    const headless = config.headless !== false;
+    const headless = config.headless ?? false; // Default to headed for PNA bypass
     const output = config.output;
+    const userDataDir = config.userDataDir;
     
     console.log(`Arms: ${Object.keys(E2_ARMS).join(' vs ')}`);
     console.log(`Repetitions: ${repetitions}`);
     console.log(`Headless: ${headless}`);
+    if (userDataDir) console.log(`User data dir: ${userDataDir}`);
     
     // Load validation capture cases
     const cases = loadValidationCaptureCases();
@@ -437,8 +453,8 @@ export async function runE2CaptureTest(config: CaptureTestConfig = {}): Promise<
     
     try {
         // Run both arms
-        armA = await runArm('A-autoFocus-placeholder', E2_ARMS['A-autoFocus-placeholder'], cases, repetitions, headless, baseURL);
-        armB = await runArm('B-initialOp-enumHint', E2_ARMS['B-initialOp-enumHint'], cases, repetitions, headless, baseURL);
+        armA = await runArm('A-autoFocus-placeholder', E2_ARMS['A-autoFocus-placeholder'], cases, repetitions, headless, baseURL, userDataDir);
+        armB = await runArm('B-initialOp-enumHint', E2_ARMS['B-initialOp-enumHint'], cases, repetitions, headless, baseURL, userDataDir);
 
         // Compare
         comparison = compareArms(armA, armB);
@@ -453,7 +469,7 @@ export async function runE2CaptureTest(config: CaptureTestConfig = {}): Promise<
     if (output) {
         const saveData = {
             timestamp: new Date().toISOString(),
-            config: { repetitions, headless },
+            config: { repetitions, headless, userDataDir },
             arms: {
                 A: { name: armA.armName, patch: armA.patch, caseResults: armA.caseResults },
                 B: { name: armB.armName, patch: armB.patch, caseResults: armB.caseResults },

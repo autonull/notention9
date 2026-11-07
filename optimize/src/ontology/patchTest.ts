@@ -301,15 +301,10 @@ async function runMatchQualityCases(ontology: OntologyNode[], patchName: string)
     };
 }
 
-async function runSimulatorDistribution(ontology: OntologyNode[], patchName: string, runs = 200): Promise<number> {
-    console.log(`\n🎮 Running simulator distribution with ${patchName} (${runs} runs)...`);
+async function runSimulatorDistribution(_ontology: OntologyNode[], patchName: string, _runs = 200): Promise<number> {
+    console.log(`\n🎮 Running simulator distribution with ${patchName} (${_runs} runs)...`);
     
-    // Import simulator dynamically
-    const { runScenario } = await import('../simulator/Scenarios.js');
-    const { SIMULATION_CONFIG } = await import('../simulator/SimulationConfig.js');
-    
-    // This would require the simulator to accept a custom ontology
-    // For now, return a placeholder
+    // Simulator integration not yet implemented - requires ontology injection
     console.log(`   Simulator integration not yet implemented - skipping`);
     return 0;
 }
