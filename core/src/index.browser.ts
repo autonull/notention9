@@ -16,13 +16,10 @@ import type {
     MatchResult,
     ScoredMatch,
     AgentStatus,
-    MatchingService,
-    NetworkGate,
-    PrivacyError,
     SuggestedAttribute,
 } from './schemas/index.js';
 
-// Runtime imports for types that are also values
+// Runtime imports for types that are also values (MatchingService, NetworkGate, PrivacyError)
 import { MatchingService } from './matching/MatchingService.js';
 import { NetworkGate } from './network/networkGate.js';
 import { PrivacyError } from './network/networkGate.js';
@@ -280,18 +277,12 @@ export type {
     MatchResult,
     ScoredMatch,
     AgentStatus,
-    MatchingService,
-    NetworkGate,
-    PrivacyError,
     SuggestedAttribute,
 } from './schemas/index.js';
 
-// Runtime exports for schema types that are also values
-export {
-    MatchingService,
-    NetworkGate,
-    PrivacyError,
-} from './schemas/index.js';
+// Runtime exports for schema types that are also values (from their actual source files)
+export { MatchingService } from './matching/MatchingService.js';
+export { NetworkGate, PrivacyError } from './network/networkGate.js';
 
 // Validation - from validation/index.js
 export {
@@ -300,7 +291,6 @@ export {
 
 // New extensibility modules (namespace exports)
 export * as suggestions from './suggestions/SuggestionStore.browser.js';
-export * as testUtils from './test-utils/index.js';
 export * as validation from './validation/index.js';
 export * as events from './events/index.js';
 export * as patternRecognition from './patternRecognition/index.js';

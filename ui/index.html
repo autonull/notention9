@@ -20,6 +20,25 @@
             href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
             rel="stylesheet"
     />
+    <script>
+        // Polyfill for __name helper used by minifiers (must run before any module code)
+        if (typeof window.__name === 'undefined') {
+            window.__name = function __name(fn, name) {
+                try {
+                    Object.defineProperty(fn, 'name', { value: name, configurable: true });
+                } catch (e) {}
+                return fn;
+            };
+        }
+        if (typeof globalThis.__name === 'undefined') {
+            globalThis.__name = function __name(fn, name) {
+                try {
+                    Object.defineProperty(fn, 'name', { value: name, configurable: true });
+                } catch (e) {}
+                return fn;
+            };
+        }
+    </script>
 </head>
 <body class="bg-gray-900 text-gray-200">
 <script>

@@ -22,7 +22,12 @@ const removeDevOnlyPlugin = {
     enforce: 'post',
     renderChunk(code) {
         if (code.includes('__name')) {
-            return code.replace(/__name\s*=/g, '/* __name */ void 0 =');
+            // Handle var/let/const __name = ... declarations by replacing with void 0;
+            // Handle __name = ... assignments by replacing with void 0 =
+            // But don't match property assignments like globalThis.__name = or window.__name =
+            return code
+                .replace(/\b(var|let|const)\s+__name\s*=[^;]*;/g, 'void 0;')
+                .replace(/(^|[^a-zA-Z_$.])__name\s*=/g, '$1void 0 =');
         }
     },
 };
@@ -45,15 +50,14 @@ export default defineConfig(({mode}) => {
                 'stream-browserify',
                 'assert',
                 'buffer',
-                'process/browser',
+                'process',
                 'events',
-                'querystring-es3',
+                'querystring',
                 'string_decoder',
                 'punycode',
                 'url',
                 'vm-browserify',
                 'zlib-browserify',
-                'constants-browserify',
                 'path-browserify',
                 'os-browserify/browser',
                 'util',
@@ -237,13 +241,31 @@ export default defineConfig(({mode}) => {
             // })
         ],
         build: {
-            cssCodeSplit: false,
+            cssCodeSplit: true,
             rollupOptions: {
                 input: {
                     main: path.resolve(__dirname, 'index.html'),
                 },
                 output: {
-                    manualChunks: undefined,
+                    manualChunks(id) {
+                        // Vendor chunk for React and related
+                        if (id.includes('node_modules/react') || id.includes('node_modules/react-dom') || id.includes('node_modules/scheduler')) {
+                            return 'vendor-react';
+                        }
+                        // Vendor chunk for UI libraries
+                        if (id.includes('node_modules/@tiptap') || id.includes('node_modules/tippy.js') || id.includes('node_modules/react-big-calendar') || id.includes('node_modules/react-force-graph')) {
+                            return 'vendor-ui';
+                        }
+                        // Vendor chunk for crypto, buffer, etc.
+                        if (id.includes('node_modules/crypto-browserify') || id.includes('node_modules/buffer') || id.includes('node_modules/stream-browserify') || id.includes('node_modules/url') || id.includes('node_modules/vm-browserify') || id.includes('node_modules/zlib-browserify') || id.includes('node_modules/querystring') || id.includes('node_modules/string_decoder') || id.includes('node_modules/punycode') || id.includes('node_modules/path-browserify') || id.includes('node_modules/os-browserify') || id.includes('node_modules/process') || id.includes('node_modules/events') || id.includes('node_modules/assert') || id.includes('node_modules/constants-browserify') || id.includes('node_modules/util')) {
+                            return 'vendor-polyfills';
+                        }
+                        // Vendor chunk for remaining node_modules
+                        if (id.includes('node_modules')) {
+                            return 'vendor';
+                        }
+                    },
+                    banner: `// Polyfill for __name helper used by minifiers\nif (typeof globalThis.__name === 'undefined') { globalThis.__name = function __name(fn, name) { try { Object.defineProperty(fn, 'name', { value: name, configurable: true }); } catch (e) {} return fn; }; }`,
                 },
                 external: (id) => {
                     // Explicitly do NOT externalize these Node.js built-ins (they'll be polyfilled)

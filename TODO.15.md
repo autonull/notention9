@@ -2,9 +2,9 @@
 
 **Supersedes:** TODO.14.md (replaces entire next-hypothesis-cycle section)
 **Date:** 2026-11-07
-**Status:** P0 ✅ COMPLETE. Production build unblocked. E2 infrastructure ready (Vite aliases fixed, dev server works, production build works but has memory issues). E2.1 ✅ COMPLETE.
+**Status:** P0 ✅ COMPLETE. E2.1 ✅. E2.2 substring-fixes: OOM FIXED ✅ (code splitting), vitest-leak FIXED ✅, dev-server dep-scan errors FIXED ✅. Remaining blocker: `__name is not defined` browser errors — **continue here next session**.
 
-**E2 Experiment Status:** Infrastructure complete. React app not mounting in preview server due to browser errors (`__name is not defined`, `fs` module leaks). Production build succeeds but gets killed by OOM (9.6 MB main bundle). Dev server runs but has dependency optimization issues with playwright-core. Need to resolve browser build issues before E2 can yield valid results.
+**E2 Experiment Status:** Preview server serves app HTML but React never mounts: `__name is not defined` errors accumulate per page load, then browser target crashes. All cases fail completion=0, so E2.3 (run 10×3) remains blocked on E2.2.
 
 ---
 
@@ -64,8 +64,8 @@ Success metric: `simulator:friction-detected → candidate:evaluated (measured, 
 | Step | Action | Time | Status |
 |------|--------|------|--------|
 | E2.1 | Fix Vite aliases for `@notention/core` subpaths | 2h | ✅ COMPLETE |
-| E2.2 | Fix production bundle browser errors (`__name`, `fs` leaks) | 4h | In Progress |
-| E2.3 | Run against preview server (10×3) | 4h | Blocked |
+| E2.2 | Fix production bundle browser errors (`__name`, `fs` leaks) | 4h | OOM+leaks ✅; `__name` blocker → Next Steps above |
+| E2.3 | Run against preview server (10×3) | 4h | Blocked (E2.2 `__name`) |
 | E2.4 | If null: add 5 more cases, re-run | 2h | Pending |
 | E2.5 | If improved: create revision, consent, re-sim | 2h | Pending |
 | E2.6 | Ledger chain + write-up | 1h | Pending |
@@ -180,8 +180,8 @@ P0: tsup build fix (1 day)          ← ✅ COMPLETE
 5. **`fs/promises` subpath resolution** — Fixed by using directory-based alias for `fs` instead of file-based
 
 ### Remaining Issues
-- **Production build OOM** — 9.6 MB main bundle kills build process even with 8GB Node memory. Need code splitting or bundle size reduction.
-- **Dev server dependency optimization** — Playwright-core transitive dependency causes crashes during dev server startup. Need to exclude test files from dep scan.
+- **`__name is not defined` browser errors** — NOT FIXED. Root cause: the built `main-*.js` chunk contains chai deep-equal code (`@vitest/*` transitive deps) full of `__name(fn,"label")` calls; the minifier helper is never defined in any bundle → ReferenceError → React never mounts. `Cannot set properties of undefined (setting 'byteLength')` appears only after this first error — treat as secondary.
+- Tried and failed: `removeDevOnlyPlugin` regex rewrites (strips `__name =` assignments but chai CALLS `__name(fn,label)` survive); inline `<head>` polyfill + `ui/public/polyfills/name.js` + chunk `banner` (errors persist; banner may be evaluated after module code — verify with `head -3 ui/dist/assets/main-*.js` that the banner survives [not mangled by the regex plugin]).
 
 ### Files Modified
 - `ui/vite.config.ts` — Added plugins, aliases, build config
@@ -191,23 +191,13 @@ P0: tsup build fix (1 day)          ← ✅ COMPLETE
 - `core/tsup.config.ts` — Already had fs externalized for browser
 
 ### Next Steps
-1. Reduce main bundle size (enable code splitting, analyze bundle)
-2. Fix dev server dependency optimization (exclude test directory from dep scan)
-3. Re-run E2 experiment once React app mounts in preview server
+1. Find where chai enters the MAIN bundle via `manualChunks` — grep `dist/main-*.js` for `deep-eql`/`chai` module banners, find the import path pulling it in, either route it to a vendor chunk or remove from the prod graph.
+2. Once no `__name` calls remain in main chunk (or polyfill provably loads first), re-run: `cd optimize && pnpm optimizer e2-capture --headless`, confirm React mounts (`quick-capture-input: true`).
+3. Then fix `byteLength` error if still present (buffer polyfill path).
+4. Then E2.3 run, per plan below.
 
----
-
-## 🔄 If P0 tsup Fails (Fallback)
-
-```bash
-# Keep tsc for Node.js, use tsup only for browser bundle
-# core/package.json:
-"scripts": {
-  "build": "tsc && tsup --config tsup.config.ts",
-  "build:browser": "tsup --config tsup.config.ts"
-}
-```
-- Browser bundle from `dist/browser/` via package.json `browser` export
-- Node.js from `dist/` via `tsc`
-- Vite uses `browser` condition → gets tsup bundle
-- No source changes required
+### Files Modified (this session)
+- `core/src/index.browser.ts` — removed `testUtils` export + deduped `MatchingService`/`NetworkGate`/`PrivacyError` decls (fixes vitest leak + dev-server parse errors)
+- `ui/vite.config.ts` — `manualChunks` code splitting (OOM fix), fixed `removeDevOnlyPlugin` regex, cleaned `optimizeDeps.include` names (`process`, `querystring`), `__name` banner attempt
+- `ui/index.html` — inline `__name` polyfill in `<head>`
+- `ui/public/polyfills/name.js` — NEW polyfill file (attempt)
