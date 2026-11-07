@@ -9,7 +9,7 @@
     ".": {
       "import": "./dist/index.node.js",
       "node": "./dist/index.node.js",
-      "browser": "./dist/browser/index.browser.js",
+      "browser": "./dist/browser/index.js",
       "types": "./dist/index.d.ts"
     },
     "./constants/storageKeys": {
@@ -254,8 +254,9 @@
     }
   },
   "scripts": {
-    "build": "tsup && pnpm run build:types",
+    "build": "tsup && pnpm run build:types && pnpm run generate:browser-index",
     "build:types": "tsc --emitDeclarationOnly",
+    "generate:browser-index": "node scripts/generate-browser-index.mjs",
     "dev": "tsup --watch",
     "test": "NODE_OPTIONS='--no-warnings=ExperimentalWarning' vitest run",
     "prepublishOnly": "pnpm run build"

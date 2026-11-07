@@ -2,7 +2,7 @@
 
 **Supersedes:** TODO.14.md (replaces entire next-hypothesis-cycle section)
 **Date:** 2026-11-07
-**Status:** P0 ✅ COMPLETE. Production build unblocked. E2 infrastructure ready. Phases A–D complete.
+**Status:** P0 ✅ COMPLETE. Production build unblocked. E2 infrastructure ready (Vite aliases fixed, dev server + production build both work). E2.1 ✅ COMPLETE.
 
 ---
 
@@ -55,17 +55,17 @@ Success metric: `simulator:friction-detected → candidate:evaluated (measured, 
 ## 🧪 Experiment Pipeline (One at a Time)
 
 ### **E2: Capture-Flow A/B (S-UI)** — 2 days
-**Status:** Infrastructure ✅ (Chrome PNA fixed, test runs, stats work). **Browser bundle has Node.js leakage (`fs` imports, minification issues) preventing React app mount in headless tests.**
-**Blocker:** Production build → use **Vite dev server** (Vite alias resolution needs fixes for `@notention/core` subpaths)
+**Status:** Infrastructure ✅ (Chrome PNA fixed, test runs, stats work). **Production build fixed** — Vite dev server works, production build works with proper ESM re-exports.
+**Blocker:** ~~Production build~~ → **RESOLVED** — Vite alias resolution fixed for `@notention/core` subpaths via directory-based resolution + generated ESM re-export file.
 **Goal:** 10 intent cases × 3 reps, powered verdict
 
-| Step | Action | Time |
-|------|--------|------|
-| E2.1 | Fix Vite aliases for `@notention/core` subpaths | 2h |
-| E2.2 | Run against Vite dev server (10×3) | 4h |
-| E2.3 | If null: add 5 more cases, re-run | 2h |
-| E2.4 | If improved: create revision, consent, re-sim | 2h |
-| E2.5 | Ledger chain + write-up | 1h |
+| Step | Action | Time | Status |
+|------|--------|------|--------|
+| E2.1 | Fix Vite aliases for `@notention/core` subpaths | 2h | ✅ COMPLETE |
+| E2.2 | Run against Vite dev server (10×3) | 4h | Ready |
+| E2.3 | If null: add 5 more cases, re-run | 2h | Pending |
+| E2.4 | If improved: create revision, consent, re-sim | 2h | Pending |
+| E2.5 | Ledger chain + write-up | 1h | Pending |
 
 **Gate:** Powered verdict (any sign) + ledger chain recorded.
 
@@ -109,10 +109,11 @@ Success metric: `simulator:friction-detected → candidate:evaluated (measured, 
 ## 📋 Execution Order (No Parallel Tracks)
 
 ```
-P0: tsup build fix (1 day)          ← UNBLOCKS EVERYTHING
+P0: tsup build fix (1 day)          ← ✅ COMPLETE
   │
   ├─→ E2: Fix Vite aliases → dev server, 10×3, verdict (2-3 days)
-  │     └─→ If null: more cases / If improved: revision + re-sim
+  │     ├─→ E2.1: Fix Vite aliases ✅ COMPLETE
+  │     └─→ E2.2–E2.5: Run experiment (Ready)
   │
   ├─→ E13: llama.cpp provider + ablation (3 days)
   │     └─→ Winner → property-extraction@2

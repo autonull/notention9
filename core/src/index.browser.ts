@@ -22,6 +22,11 @@ import type {
     SuggestedAttribute,
 } from './schemas/index.js';
 
+// Runtime imports for types that are also values
+import { MatchingService } from './matching/MatchingService.js';
+import { NetworkGate } from './network/networkGate.js';
+import { PrivacyError } from './network/networkGate.js';
+
 // Types
 export * as types from './types/index.js';
 
@@ -29,7 +34,7 @@ export * as types from './types/index.js';
 export * as notes from './notes/index.js';
 export * as matching from './matching/index.js';
 export * as ontology from './ontology/index.js';
-export * as network from './network/index.js';
+// export * as network from './network/index.js'; // Replaced with direct named exports below
 export * as skills from './skills/index.js';
 export * as extraction from './extraction/index.js';
 export * as constants from './constants/index.js';
@@ -56,12 +61,22 @@ export {
     generateId,
 } from './utils/common.browser.js';
 
+// Utils - from utils/string.js
+export {
+    levenshteinDistance,
+} from './utils/string.js';
+
 // Utils - from utils/html.js
 export {
     sanitizeHTML,
     getTextFromHtml,
     prettyPrintHtml,
 } from './utils/html.js';
+
+// Constants - from constants/index.js
+export {
+    STORAGE_KEYS,
+} from './constants/index.js';
 
 // Utils - from notes/index.js (re-exported from notes/parsing and notes/serialization)
 export {
@@ -129,11 +144,13 @@ export {
     GeoCoords,
     PrivacyLevel,
     SortOrder,
+    isNoteActive,
 } from './notes/index.js';
 
 // Tracing - from tracing/index.js
 export {
     setTraceSink,
+    emitActionTrace,
 } from './tracing/index.js';
 
 // Fixtures - from fixtures/index.js
@@ -147,6 +164,11 @@ export {
     parseNaturalDate,
     DATE_PROPERTY_KEYS,
 } from './utils/dateParsing.js';
+
+// CSV Export - from utils/csvExport.js
+export {
+    generateNotesCSV,
+} from './utils/csvExport.js';
 
 // Pattern recognition - from patternRecognition/index.js
 export {
@@ -165,7 +187,6 @@ export {
     extractPropertiesFromTags,
     formatPropertyTag,
     formatNpub,
-    networkRegistry,
     NostrNetworkProvider,
     MeshtasticNetworkProvider,
     SEMANTIC_NOTE_KIND,
@@ -174,18 +195,47 @@ export {
     getCanonicalKey as nostrGetCanonicalKey,
 } from './network/nostr/nostr.js';
 
+// Network - from network/index.js
+export {
+    RobustWebSocket,
+    networkRegistry,
+} from './network/index.js';
+
+// Network Discovery - from network/nostr/discovery.js
+export {
+    NetworkDiscoveryService,
+} from './network/nostr/discovery.js';
+
 // Export - from export/index.js
 export {
     SHARED_COMMANDS,
     buildSingleNoteExport,
-    generateTemplatesFromOntology,
 } from './export/index.js';
+
+// Templates - from templates/index.js
+export {
+    generateTemplatesFromOntology,
+} from './templates/index.js';
+
+// Export - from export/exportEnvelope.js
+export {
+    buildExportEnvelope,
+    readExportEnvelope,
+    readSingleNote,
+} from './export/exportEnvelope.js';
 
 // Config - from config/NoteBasedConfig.js
 export {
     mergeConfigs,
     parseConfigFromNote,
 } from './config/NoteBasedConfig.js';
+
+// Config - from config.ts
+export {
+    EMERGENT_NODE_ID,
+    EMERGENT_NODE_LABEL,
+    SUGGESTION_THRESHOLD,
+} from './config.js';
 
 // Storage - from storage/recovery.js
 export {
@@ -199,7 +249,7 @@ export {
 
 // Security - from security/index.js
 export {
-    RobustWebSocket,
+    CapabilityManager,
 } from './security/index.js';
 
 // Metaphor - from skills/metaphor/MetaphorRegistry.js
@@ -208,6 +258,12 @@ export {
     metaphorRegistry,
     metaphorMapper,
 } from './skills/metaphor/MetaphorRegistry.js';
+
+// Policy/Presentation - from policy/presentation.js
+export {
+    resolvePresentation,
+    isHighRiskProperty,
+} from './policy/presentation.js';
 
 // Schemas - types only
 export type {
@@ -228,6 +284,13 @@ export type {
     NetworkGate,
     PrivacyError,
     SuggestedAttribute,
+} from './schemas/index.js';
+
+// Runtime exports for schema types that are also values
+export {
+    MatchingService,
+    NetworkGate,
+    PrivacyError,
 } from './schemas/index.js';
 
 // Validation - from validation/index.js
