@@ -3,7 +3,7 @@
  * Local opt-in event aggregation for friction discovery
  */
 
-import { JsonStore } from '../storage/Storage.js';
+import { JsonStore } from '../storage/Storage.browser.js';
 import { getIndexedDBAdapter } from '../storage/indexedDB.js';
 import type { FrictionEvent, FrictionAggregate, FrictionSignal, JournalConfig, FrictionKind, DurationBucket, EvidenceClass } from './journal.js';
 import {

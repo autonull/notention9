@@ -16,5 +16,5 @@
     "verbatimModuleSyntax": false
   },
   "include": ["src", "src/ui", "src/types"],
-  "exclude": ["src/tests"]
+  "exclude": ["src/tests", "src/index.browser.ts"]
 }

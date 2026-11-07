@@ -1,19 +1,14 @@
 /**
  * Browser-safe entry point for Storage
- * Excludes Node.js-only NodeStorageAdapter
+ * Completely independent from Node.js Storage to avoid pulling in fs/promises
  */
 
-import type { StorageAdapter } from './Storage.js';
-import { JsonStore, setDefaultAdapter } from './Storage.js';
-
-// Re-export all types and browser-safe classes
-export type { StorageAdapter } from './Storage.js';
-export { JsonStore, setDefaultAdapter } from './Storage.js';
-
-// Override getDefaultAdapter to never use NodeStorageAdapter in browser
-const isBrowser = typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
-
-let defaultAdapter: StorageAdapter | null = null;
+export interface StorageAdapter {
+    getItem(key: string): Promise<string | null>;
+    setItem(key: string, value: string): Promise<void>;
+    removeItem(key: string): Promise<void>;
+    clear(): Promise<void>;
+}
 
 class BrowserStorageAdapter implements StorageAdapter {
     async getItem(key: string): Promise<string | null> {
@@ -47,12 +42,60 @@ class MemoryStorageAdapter implements StorageAdapter {
     }
 }
 
+// Default adapter selection
+let defaultAdapter: StorageAdapter | null = null;
+
 export function getDefaultAdapter(): StorageAdapter {
     if (defaultAdapter) return defaultAdapter;
-    if (isBrowser) {
+    if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
         defaultAdapter = new BrowserStorageAdapter();
     } else {
         defaultAdapter = new MemoryStorageAdapter();
     }
     return defaultAdapter;
+}
+
+export function setDefaultAdapter(adapter: StorageAdapter): void {
+    defaultAdapter = adapter;
+}
+
+/** High-level JSON storage with typed get/set */
+export class JsonStore<T> {
+    private data: T | null = null;
+    private loaded = false;
+
+    constructor(
+        private key: string,
+        private adapter: StorageAdapter = getDefaultAdapter()
+    ) {}
+
+    async load(): Promise<T | null> {
+        if (this.loaded) return this.data;
+        const stored = await this.adapter.getItem(this.key);
+        if (stored) {
+            try {
+                this.data = JSON.parse(stored);
+            } catch {
+                this.data = null;
+            }
+        }
+        this.loaded = true;
+        return this.data;
+    }
+
+    async save(data: T): Promise<void> {
+        this.data = data;
+        this.loaded = true;
+        await this.adapter.setItem(this.key, JSON.stringify(data));
+    }
+
+    async clear(): Promise<void> {
+        this.data = null;
+        this.loaded = false;
+        await this.adapter.removeItem(this.key);
+    }
+
+    get(): T | null {
+        return this.data;
+    }
 }

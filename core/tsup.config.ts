@@ -17,7 +17,8 @@ const browserEntries = [
   'src/policy/index.ts',
   'src/export/index.ts',
   // Utils
-  'src/utils/index.ts',
+  'src/utils/index.browser.ts',
+  'src/utils/common.browser.ts',
   'src/patternRecognition/index.ts',
   'src/security/index.ts',
   'src/config.browser.ts',
@@ -34,9 +35,9 @@ const browserEntries = [
   'src/validation/index.ts',
   'src/events/index.ts',
   // UI
-  'src/ui/index.ts',
+  'src/ui/index.browser.ts',
   'src/ui/strategy.ts',
-  'src/ui/ProfileRegistry.ts',
+  'src/ui/ProfileRegistry.browser.ts',
   'src/ui/profile.ts',
   'src/ui/profileDefaults.ts',
   // Telemetry (browser stubs)

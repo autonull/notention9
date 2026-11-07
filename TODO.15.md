@@ -55,16 +55,17 @@ Success metric: `simulator:friction-detected → candidate:evaluated (measured, 
 ## 🧪 Experiment Pipeline (One at a Time)
 
 ### **E2: Capture-Flow A/B (S-UI)** — 2 days
-**Status:** Infrastructure ✅ (Chrome PNA fixed, test runs, stats work)
-**Blocker:** Production build → use **Vite dev server** (works today)
+**Status:** Infrastructure ✅ (Chrome PNA fixed, test runs, stats work). **Browser bundle has Node.js leakage (`fs` imports, minification issues) preventing React app mount in headless tests.**
+**Blocker:** Production build → use **Vite dev server** (Vite alias resolution needs fixes for `@notention/core` subpaths)
 **Goal:** 10 intent cases × 3 reps, powered verdict
 
 | Step | Action | Time |
 |------|--------|------|
-| E2.1 | Run against Vite dev server (10×3) | 4h |
-| E2.2 | If null: add 5 more cases, re-run | 2h |
-| E2.3 | If improved: create revision, consent, re-sim | 2h |
-| E2.4 | Ledger chain + write-up | 1h |
+| E2.1 | Fix Vite aliases for `@notention/core` subpaths | 2h |
+| E2.2 | Run against Vite dev server (10×3) | 4h |
+| E2.3 | If null: add 5 more cases, re-run | 2h |
+| E2.4 | If improved: create revision, consent, re-sim | 2h |
+| E2.5 | Ledger chain + write-up | 1h |
 
 **Gate:** Powered verdict (any sign) + ledger chain recorded.
 
@@ -110,7 +111,7 @@ Success metric: `simulator:friction-detected → candidate:evaluated (measured, 
 ```
 P0: tsup build fix (1 day)          ← UNBLOCKS EVERYTHING
   │
-  ├─→ E2: dev server, 10×3, verdict (2 days)
+  ├─→ E2: Fix Vite aliases → dev server, 10×3, verdict (2-3 days)
   │     └─→ If null: more cases / If improved: revision + re-sim
   │
   ├─→ E13: llama.cpp provider + ablation (3 days)
@@ -157,7 +158,7 @@ P0: tsup build fix (1 day)          ← UNBLOCKS EVERYTHING
 
 | Week | Focus |
 |------|-------|
-| 1 (Nov 7–13) | P0 tsup fix → E2 dev server run → verdict |
+| 1 (Nov 7–13) | P0 tsup fix → Fix Vite aliases → E2 dev server run → verdict |
 | 2 (Nov 14–20) | E13 llama.cpp provider → ablation → winner |
 | 3 (Nov 21–27) | Buffer / E7/E14 if needed / write-ups |
 
