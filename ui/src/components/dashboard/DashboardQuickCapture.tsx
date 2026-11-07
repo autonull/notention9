@@ -21,10 +21,8 @@ import {
     CheckCircleIcon,
     NoteIcon,
     ClockIcon,
-    EyeIcon,
-    MessageSquareIcon,
     HomeIcon,
-    ZapIcon,
+    MessageIcon,
 } from '../ui/icons';
 import {modShortcut} from '../../utils/platform';
 import {getTextFromHtml} from '@notention/core';
@@ -87,7 +85,7 @@ const TEMPLATES: Record<string, QuickCaptureTemplate> = {
             {key: 'frequency', operator: 'is', values: ['continuous']},
         ],
         tags: ['automation', 'rule'],
-        icon: ZapIcon,
+        icon: BoltIcon,
         color: 'text-blue-400',
         bgColor: 'bg-blue-900/20',
         borderColor: 'border-blue-500/30',
@@ -119,7 +117,7 @@ const TEMPLATES: Record<string, QuickCaptureTemplate> = {
             {key: 'do', operator: 'is', values: ['response']},
         ],
         tags: ['automation', 'monitoring'],
-        icon: EyeIcon,
+        icon: SearchIcon,
         color: 'text-purple-400',
         bgColor: 'bg-purple-900/20',
         borderColor: 'border-purple-500/30',
@@ -135,7 +133,7 @@ const TEMPLATES: Record<string, QuickCaptureTemplate> = {
             {key: 'message', operator: 'is', values: ['what']},
         ],
         tags: ['automation', 'communication'],
-        icon: MessageSquareIcon,
+        icon: MessageIcon,
         color: 'text-pink-400',
         bgColor: 'bg-pink-900/20',
         borderColor: 'border-pink-500/30',

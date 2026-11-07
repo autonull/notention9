@@ -358,6 +358,9 @@ Per TODO.science.md §5, the next cycle targets three optimization surfaces. **P
 - ✅ **Core browser bundle**: Created with `tsup` (esbuild) — preserves type exports, no empty files
 - ✅ **Core package.json exports**: Updated with `browser` condition pointing to `dist/browser/index.browser.js`
 - ✅ **Vite config simplified**: Relies on package.json exports, no manual alias overrides needed
+- ✅ **Icon imports fixed**: DashboardQuickCapture.tsx uses available icons (BoltIcon, SearchIcon, MessageIcon)
+- ✅ **MetaphorViewPlugin test fixed**: Uses instance export `metaphorViewPlugin`
+- ✅ **Ontology exports fixed**: Added deleteAttribute, mergeAttributes, renameAttribute, renameNode to ontology/index.ts
 
 ⚠️ **KNOWN LIMITATION**: React app doesn't mount in production build (0% completion rate)
 - Root cause: TypeScript `export *` strips type-only re-exports → `export {}` in dist

@@ -1,13 +1,13 @@
 import {describe, it, expect, vi, beforeEach} from 'vitest';
 import {render, screen} from '@testing-library/react';
-import {MetaphorViewPlugin, getMetaphorViewForNote} from './MetaphorViewPlugin.js';
+import {metaphorViewPlugin, getMetaphorViewForNote} from './MetaphorViewPlugin.js';
 import {ConditionalAutomationView} from './ConditionalAutomationView.js';
 
 describe('MetaphorViewPlugin', () => {
-    let plugin: MetaphorViewPlugin;
+    let plugin: typeof metaphorViewPlugin;
 
     beforeEach(() => {
-        plugin = new MetaphorViewPlugin();
+        plugin = metaphorViewPlugin;
     });
 
     it('registers and retrieves metaphor views', () => {
