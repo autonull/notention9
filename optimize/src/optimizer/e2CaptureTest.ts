@@ -32,6 +32,7 @@ export interface CaptureTestConfig {
     output?: string;
     baseURL?: string;
     userDataDir?: string;
+    useExternalServer?: boolean;
 }
 
 interface ArmResult {
@@ -434,9 +435,23 @@ export async function runE2CaptureTest(config: CaptureTestConfig = {}): Promise<
         return;
     }
     
-    // Start preview server
-    console.log('\n🚀 Starting preview server...');
-    let baseURL = config.baseURL ?? await ensurePreviewServer();
+    // Start preview server (unless using external server)
+    let baseURL = config.baseURL;
+    let shouldStopServer = false;
+    
+    if (!config.useExternalServer && !baseURL) {
+        console.log('\n🚀 Starting preview server...');
+        baseURL = await ensurePreviewServer();
+        shouldStopServer = true;
+    } else if (config.useExternalServer && baseURL) {
+        console.log(`\n🔗 Using external preview server at ${baseURL}`);
+    } else if (baseURL) {
+        console.log(`\n🔗 Using provided baseURL: ${baseURL}`);
+    } else {
+        console.log('\n🚀 Starting preview server...');
+        baseURL = await ensurePreviewServer();
+        shouldStopServer = true;
+    }
     // Keep localhost for Vite preview asset loading
     // baseURL = baseURL.replace('http://localhost:', 'http://127.0.0.1:');
     
@@ -453,9 +468,11 @@ export async function runE2CaptureTest(config: CaptureTestConfig = {}): Promise<
         comparison = compareArms(armA, armB);
         printComparison(comparison);
     } finally {
-        // Stop preview server
-        console.log('\n🛑 Stopping preview server...');
-        stopPreviewServer();
+        // Stop preview server only if we started it
+        if (shouldStopServer) {
+            console.log('\n🛑 Stopping preview server...');
+            stopPreviewServer();
+        }
     }
     
     // Save results

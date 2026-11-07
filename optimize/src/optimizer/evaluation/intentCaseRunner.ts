@@ -61,10 +61,12 @@ export async function runIntentCase(
     const startTime = performance.now(); // Use performance.now() which isn't frozen
 
     try {
+        console.log(`[DEBUG] Navigating to ${config.baseURL}`);
         // Navigate to dashboard - handle hash routing for SPA
-        await page.goto(config.baseURL);
-        await page.waitForLoadState('domcontentloaded');
+        await page.goto(config.baseURL, { waitUntil: 'domcontentloaded' });
+        console.log(`[DEBUG] Page loaded, title: ${await page.title()}`);
         await page.waitForLoadState('networkidle');
+        console.log(`[DEBUG] Network idle`);
         
         // Listen for console errors
         page.on('console', msg => {
@@ -181,11 +183,13 @@ export async function runIntentCase(
         };
     } catch (error) {
         const timeToCaptureMs = performance.now() - startTime;
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        console.log(`[DEBUG] runIntentCase caught error: ${errorMsg}`);
         return {
             success: false,
             metrics: { completion: 0, steps, corrections, timeToCaptureMs },
-            details: [...details, `Error: ${error instanceof Error ? error.message : String(error)}`],
-            error: error instanceof Error ? error.message : String(error),
+            details: [...details, `Error: ${errorMsg}`],
+            error: errorMsg,
         };
     }
 }

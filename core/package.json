@@ -9,7 +9,7 @@
     ".": {
       "import": "./dist/index.node.js",
       "node": "./dist/index.node.js",
-      "browser": "./dist/browser/index.js"
+      "browser": "./dist/browser/index.browser.js"
     },
     "./constants/storageKeys": {
       "import": "./dist/constants/storageKeys.js",
@@ -276,6 +276,7 @@
     "@types/node": "^20.11.0",
     "esbuild": "^0.28.0",
     "pkg": "^5.8.1",
+    "tsup": "^9.0.0",
     "tsx": "^4.7.1",
     "typescript": "~5.9.2",
     "vitest": "^4.0.18"
