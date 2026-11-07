@@ -9,43 +9,123 @@
     ".": {
       "import": "./dist/index.node.js",
       "node": "./dist/index.node.js",
-      "browser": "./dist/index.browser.js"
+      "browser": "./dist/browser/index.js"
     },
-    "./constants/storageKeys": "./dist/constants/storageKeys.js",
-    "./constants/paths": "./dist/constants/paths.js",
-    "./constants/seams": "./dist/constants/seams.js",
-    "./constants/strategyParams": "./dist/constants/strategyParams.js",
+    "./constants/storageKeys": {
+      "import": "./dist/constants/storageKeys.js",
+      "node": "./dist/constants/storageKeys.js",
+      "browser": "./dist/browser/constants/storageKeys.js"
+    },
+    "./constants/paths": {
+      "import": "./dist/constants/paths.js",
+      "node": "./dist/constants/paths.js",
+      "browser": "./dist/browser/constants/paths.js"
+    },
+    "./constants/seams": {
+      "import": "./dist/constants/seams.js",
+      "node": "./dist/constants/seams.js",
+      "browser": "./dist/browser/constants/seams.js"
+    },
+    "./constants/strategyParams": {
+      "import": "./dist/constants/strategyParams.js",
+      "node": "./dist/constants/strategyParams.js",
+      "browser": "./dist/browser/constants/strategyParams.js"
+    },
     "./storage": {
       "import": "./dist/storage/index.js",
       "node": "./dist/storage/index.js",
-      "browser": "./dist/storage/Storage.browser.js"
+      "browser": "./dist/browser/storage/index.js"
     },
     "./config": {
       "import": "./dist/config.js",
       "node": "./dist/config.js",
-      "browser": "./dist/config.browser.js"
+      "browser": "./dist/browser/config/index.js"
     },
     "./suggestions": {
       "import": "./dist/suggestions/SuggestionStore.js",
       "node": "./dist/suggestions/SuggestionStore.js",
-      "browser": "./dist/suggestions/SuggestionStore.browser.js"
+      "browser": "./dist/browser/suggestions/index.js"
     },
-    "./extraction": "./dist/extraction/index.js",
-    "./extraction/deterministic": "./dist/extraction/deterministic.js",
-    "./prompts": "./dist/prompts/index.js",
-    "./prompts/registry": "./dist/prompts/registry.js",
-    "./prompts/propertyExtraction": "./dist/prompts/propertyExtraction.js",
-    "./skills": "./dist/skills/index.js",
-    "./skills/metaphor": "./dist/skills/metaphor/MetaphorRegistry.js",
-    "./ontology/domains.facets": "./dist/ontology/domains.facets.js",
-    "./ontology/schema": "./dist/ontology/schema.js",
-    "./test-utils": "./dist/test-utils/index.js",
-    "./validation": "./dist/validation/index.js",
-    "./ui": "./dist/ui/index.js",
-    "./ui/profile": "./dist/ui/profile.js",
-    "./ui/strategy": "./dist/ui/strategy.js",
-    "./ui/ProfileRegistry": "./dist/ui/ProfileRegistry.js",
-    "./ui/profileDefaults": "./dist/ui/profileDefaults.js",
+    "./extraction": {
+      "import": "./dist/extraction/index.js",
+      "node": "./dist/extraction/index.js",
+      "browser": "./dist/browser/extraction/index.js"
+    },
+    "./extraction/deterministic": {
+      "import": "./dist/extraction/deterministic.js",
+      "node": "./dist/extraction/deterministic.js",
+      "browser": "./dist/browser/extraction/deterministic.js"
+    },
+    "./prompts": {
+      "import": "./dist/prompts/index.js",
+      "node": "./dist/prompts/index.js",
+      "browser": "./dist/browser/prompts/index.js"
+    },
+    "./prompts/registry": {
+      "import": "./dist/prompts/registry.js",
+      "node": "./dist/prompts/registry.js",
+      "browser": "./dist/browser/prompts/registry.js"
+    },
+    "./prompts/propertyExtraction": {
+      "import": "./dist/prompts/propertyExtraction.js",
+      "node": "./dist/prompts/propertyExtraction.js",
+      "browser": "./dist/browser/prompts/propertyExtraction.js"
+    },
+    "./skills": {
+      "import": "./dist/skills/index.js",
+      "node": "./dist/skills/index.js",
+      "browser": "./dist/browser/skills/index.js"
+    },
+    "./skills/metaphor": {
+      "import": "./dist/skills/metaphor/MetaphorRegistry.js",
+      "node": "./dist/skills/metaphor/MetaphorRegistry.js",
+      "browser": "./dist/browser/skills/metaphor/MetaphorRegistry.js"
+    },
+    "./ontology/domains.facets": {
+      "import": "./dist/ontology/domains.facets.js",
+      "node": "./dist/ontology/domains.facets.js",
+      "browser": "./dist/browser/ontology/domains.facets.js"
+    },
+    "./ontology/schema": {
+      "import": "./dist/ontology/schema.js",
+      "node": "./dist/ontology/schema.js",
+      "browser": "./dist/browser/ontology/schema.js"
+    },
+    "./test-utils": {
+      "import": "./dist/test-utils/index.js",
+      "node": "./dist/test-utils/index.js",
+      "browser": "./dist/browser/test-utils/index.js"
+    },
+    "./validation": {
+      "import": "./dist/validation/index.js",
+      "node": "./dist/validation/index.js",
+      "browser": "./dist/browser/validation/index.js"
+    },
+    "./ui": {
+      "import": "./dist/ui/index.js",
+      "node": "./dist/ui/index.js",
+      "browser": "./dist/browser/ui/index.js"
+    },
+    "./ui/profile": {
+      "import": "./dist/ui/profile.js",
+      "node": "./dist/ui/profile.js",
+      "browser": "./dist/browser/ui/profile.js"
+    },
+    "./ui/strategy": {
+      "import": "./dist/ui/strategy.js",
+      "node": "./dist/ui/strategy.js",
+      "browser": "./dist/browser/ui/strategy.js"
+    },
+    "./ui/ProfileRegistry": {
+      "import": "./dist/ui/ProfileRegistry.js",
+      "node": "./dist/ui/ProfileRegistry.js",
+      "browser": "./dist/browser/ui/ProfileRegistry.js"
+    },
+    "./ui/profileDefaults": {
+      "import": "./dist/ui/profileDefaults.js",
+      "node": "./dist/ui/profileDefaults.js",
+      "browser": "./dist/browser/ui/profileDefaults.js"
+    },
     "./eval/caseManifest": {
       "import": "./dist/eval/caseManifest.js",
       "node": "./dist/eval/caseManifest.js",
@@ -61,10 +141,26 @@
       "node": "./dist/eval/quality.js",
       "browser": "./dist/eval/quality.browser.js"
     },
-    "./matching": "./dist/matching/index.js",
-    "./ontology/ontologyService": "./dist/ontology/ontologyService.js",
-    "./ontology": "./dist/ontology/index.js",
-    "./types": "./dist/types/index.js",
+    "./matching": {
+      "import": "./dist/matching/index.js",
+      "node": "./dist/matching/index.js",
+      "browser": "./dist/browser/matching/index.js"
+    },
+    "./ontology/ontologyService": {
+      "import": "./dist/ontology/ontologyService.js",
+      "node": "./dist/ontology/ontologyService.js",
+      "browser": "./dist/browser/ontology/ontologyService.js"
+    },
+    "./ontology": {
+      "import": "./dist/ontology/index.js",
+      "node": "./dist/ontology/index.js",
+      "browser": "./dist/browser/ontology/index.js"
+    },
+    "./types": {
+      "import": "./dist/types/index.js",
+      "node": "./dist/types/index.js",
+      "browser": "./dist/browser/types/index.js"
+    },
     "./telemetry/ledger": {
       "import": "./dist/telemetry/ledger.js",
       "node": "./dist/telemetry/ledger.js",
@@ -80,21 +176,81 @@
       "node": "./dist/telemetry/journal.js",
       "browser": "./dist/telemetry/journal.browser.js"
     },
-    "./telemetry/constants": "./dist/telemetry/constants.js",
-    "./optimizer": "./dist/optimizer/index.js",
-    "./optimizer/candidateGenerators": "./dist/optimizer/candidateGenerators.js",
-    "./optimizer/budgetAllocators": "./dist/optimizer/budgetAllocators.js",
-    "./optimizer/strategyLoader": "./dist/optimizer/strategyLoader.js",
-    "./optimizer/resolutionPipeline": "./dist/optimizer/resolutionPipeline.js",
-    "./optimizer/declarativeConfig": "./dist/optimizer/declarativeConfig.js",
-    "./schemas": "./dist/schemas/index.js",
-    "./schemas/paramSpec": "./dist/schemas/paramSpec.js",
-    "./schemas/seamDefinition": "./dist/schemas/seamDefinition.js",
-    "./schemas/caseManifest": "./dist/schemas/caseManifest.js",
-    "./schemas/eventSchema": "./dist/schemas/eventSchema.js",
-    "./schemas/verdictResult": "./dist/schemas/verdictResult.js",
-    "./schemas/evidence": "./dist/schemas/evidence.js",
-    "./schemas/generated/seam-definitions": "./dist/schemas/generated/seam-definitions.js"
+    "./telemetry/constants": {
+      "import": "./dist/telemetry/constants.js",
+      "node": "./dist/telemetry/constants.js",
+      "browser": "./dist/browser/telemetry/constants.js"
+    },
+    "./optimizer": {
+      "import": "./dist/optimizer/index.js",
+      "node": "./dist/optimizer/index.js",
+      "browser": "./dist/browser/optimizer/index.js"
+    },
+    "./optimizer/candidateGenerators": {
+      "import": "./dist/optimizer/candidateGenerators.js",
+      "node": "./dist/optimizer/candidateGenerators.js",
+      "browser": "./dist/browser/optimizer/candidateGenerators.js"
+    },
+    "./optimizer/budgetAllocators": {
+      "import": "./dist/optimizer/budgetAllocators.js",
+      "node": "./dist/optimizer/budgetAllocators.js",
+      "browser": "./dist/browser/optimizer/budgetAllocators.js"
+    },
+    "./optimizer/strategyLoader": {
+      "import": "./dist/optimizer/strategyLoader.js",
+      "node": "./dist/optimizer/strategyLoader.js",
+      "browser": "./dist/browser/optimizer/strategyLoader.js"
+    },
+    "./optimizer/resolutionPipeline": {
+      "import": "./dist/optimizer/resolutionPipeline.js",
+      "node": "./dist/optimizer/resolutionPipeline.js",
+      "browser": "./dist/browser/optimizer/resolutionPipeline.js"
+    },
+    "./optimizer/declarativeConfig": {
+      "import": "./dist/optimizer/declarativeConfig.js",
+      "node": "./dist/optimizer/declarativeConfig.js",
+      "browser": "./dist/browser/optimizer/declarativeConfig.js"
+    },
+    "./schemas": {
+      "import": "./dist/schemas/index.js",
+      "node": "./dist/schemas/index.js",
+      "browser": "./dist/browser/schemas/index.js"
+    },
+    "./schemas/paramSpec": {
+      "import": "./dist/schemas/paramSpec.js",
+      "node": "./dist/schemas/paramSpec.js",
+      "browser": "./dist/browser/schemas/paramSpec.js"
+    },
+    "./schemas/seamDefinition": {
+      "import": "./dist/schemas/seamDefinition.js",
+      "node": "./dist/schemas/seamDefinition.js",
+      "browser": "./dist/browser/schemas/seamDefinition.js"
+    },
+    "./schemas/caseManifest": {
+      "import": "./dist/schemas/caseManifest.js",
+      "node": "./dist/schemas/caseManifest.js",
+      "browser": "./dist/browser/schemas/caseManifest.js"
+    },
+    "./schemas/eventSchema": {
+      "import": "./dist/schemas/eventSchema.js",
+      "node": "./dist/schemas/eventSchema.js",
+      "browser": "./dist/browser/schemas/eventSchema.js"
+    },
+    "./schemas/verdictResult": {
+      "import": "./dist/schemas/verdictResult.js",
+      "node": "./dist/schemas/verdictResult.js",
+      "browser": "./dist/browser/schemas/verdictResult.js"
+    },
+    "./schemas/evidence": {
+      "import": "./dist/schemas/evidence.js",
+      "node": "./dist/schemas/evidence.js",
+      "browser": "./dist/browser/schemas/evidence.js"
+    },
+    "./schemas/generated/seam-definitions": {
+      "import": "./dist/schemas/generated/seam-definitions.js",
+      "node": "./dist/schemas/generated/seam-definitions.js",
+      "browser": "./dist/browser/schemas/generated/seam-definitions.js"
+    }
   },
   "scripts": {
     "build": "tsc",

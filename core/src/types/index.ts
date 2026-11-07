@@ -1,4 +1,4 @@
-export * from './domain.js';
-export * from './infra.js';
-export * from './ui.js';
-export * from './metaphor.js';
+export type * from './domain.js';
+export type * from './infra.js';
+export type * from './ui.js';
+export type * from './metaphor.js';

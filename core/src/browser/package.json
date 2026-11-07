@@ -1,0 +1,15 @@
+{
+  "name": "@notention/core/browser",
+  "version": "1.0.0",
+  "description": "Browser-safe entry point for @notention/core",
+  "main": "index.js",
+  "module": "index.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": "./index.js",
+    "./storage": "./storage/index.js",
+    "./config": "./config/index.js",
+    "./suggestions": "./suggestions/index.js"
+  },
+  "type": "module"
+}

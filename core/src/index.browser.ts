@@ -1,53 +1,50 @@
-/**
- * Browser-safe entry point for @notention/core
- * Excludes Node.js-only modules (eval, telemetry, storage, etc.)
- */
+// Browser-safe entry point for @notention/core
+// Explicit named exports to ensure Rollup/Vite can follow them
 
-export * from './types/index.js';
+// Types
+export * as types from './types/index.js';
 
-// Domain barrels (browser-safe)
-export * from './notes/index.js';
-export * from './matching/index.js';
-export * from './ontology/index.js';
-export * from './network/index.js';
-export * from './skills/index.js';
-export * from './extraction/index.js';
-export * from './constants/index.js';
-export * from './tracing/index.js';
-export * from './prompts/index.js';
-export * from './policy/index.js';
-export * from './export/index.js';
+// Domain barrels
+export * as notes from './notes/index.js';
+export * as matching from './matching/index.js';
+export * as ontology from './ontology/index.js';
+export * as network from './network/index.js';
+export * as skills from './skills/index.js';
+export * as extraction from './extraction/index.js';
+export * as constants from './constants/index.js';
+export * as tracing from './tracing/index.js';
+export * as prompts from './prompts/index.js';
+export * as policy from './policy/index.js';
+export * as exportModule from './export/index.js';
 export { DEFAULT_ONTOLOGY } from './ontology/ontology.default.js';
 export { OntologyService } from './ontology/ontologyService.js';
 
-// Utils (browser-safe)
-export * from './utils/index.js';
+// Utils
+export * as utils from './utils/index.js';
+export * as patternRecognition from './patternRecognition/index.js';
+export * as security from './security/index.js';
+export * as config from './config.browser.js';
+export * as noteBasedConfig from './config/NoteBasedConfig.js';
+export * as storage from './storage/Storage.browser.js';
+export * as recovery from './storage/recovery.js';
+export * as templates from './templates/index.js';
+export * as fixtures from './fixtures/index.js';
+export * as feedback from './feedback/index.js';
 
-export * from './patternRecognition/index.js';
-export * from './security/index.js';
-export * from './config.browser.js';
-export * from './config/NoteBasedConfig.js';
-export * from './storage/Storage.browser.js';
-export * from './storage/recovery.js';
-export * from './templates/index.js';
-export * from './fixtures/index.js';
-export * from './feedback/index.js';
+// New extensibility modules
+export * as suggestions from './suggestions/SuggestionStore.browser.js';
+export * as testUtils from './test-utils/index.js';
+export * as validation from './validation/index.js';
+export * as events from './events/index.js';
 
-// New extensibility modules (browser-safe)
-export * from './ontology/index.js';
-export * from './suggestions/SuggestionStore.browser.js';
-export * from './test-utils/index.js';
-export * from './validation/index.js';
-export * from './events/index.js';
+// UI
+export * as ui from './ui/index.js';
 
-// UI (browser-safe)
-export * from './ui/index.js';
-
-// Nostr-specific (browser-safe, optional dependency)
-export * from './network/nostr/nostr.js';
-export * from './network/nostr/privacy.js';
-export * from './network/nostr/discovery.js';
-export * from './network/nostr/relay.js';
+// Nostr
+export * as nostr from './network/nostr/nostr.js';
+export * as nostrPrivacy from './network/nostr/privacy.js';
+export * as nostrDiscovery from './network/nostr/discovery.js';
+export * as nostrRelay from './network/nostr/relay.js';
 export {
     PROTOCOL_VERSION,
     encodeEventToCBOR,

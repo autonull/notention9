@@ -12,7 +12,8 @@
     "types": ["vitest/globals"],
     "composite": true,
     "declarationMap": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "verbatimModuleSyntax": false
   },
   "include": ["src", "src/ui", "src/types"],
   "exclude": ["src/tests"]

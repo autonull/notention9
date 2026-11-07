@@ -132,12 +132,14 @@ program
     .option('--repetitions <n>', 'Repetitions per case', '3')
     .option('--headless', 'Run browser headless (default: false for PNA bypass)')
     .option('--headed', 'Run browser in headed mode (default)')
+    .option('--baseURL <url>', 'Base URL of preview server (if not provided, starts own server)')
     .option('-o, --output <file>', 'Output JSON file for results')
     .action(async (options) => {
         const { runE2CaptureTest } = await import('./e2CaptureTest.js');
         await runE2CaptureTest({
             repetitions: parseInt(options.repetitions, 10),
             headless: options.headless === true,
+            baseURL: options.baseURL,
             output: options.output,
         });
     });

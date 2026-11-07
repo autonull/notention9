@@ -1,7 +1,7 @@
 # TODO.14 — Closing the Loop: From Instrument to Instrument Panel
 
 **Supersedes:** Nothing. Extends TODO.12 (Evaluation & Improvement Program) and TODO.13 (Generalization Layer).
-**Status:** Phase A complete — 2026-11-05. Phase B1–B2.5 complete — 2026-11-05. Phase B3/B4 complete — 2026-11-05. Phase C complete — 2026-11-05. Phase D1/D2/D4/D5 complete — 2026-11-06. A3.5, A4.1, A4.2 complete — 2026-11-06. E2 infrastructure complete — 2026-11-06 (test runs, Chrome PNA fixed, React app mount blocked on browser bundling).
+**Status:** Phase A complete — 2026-11-05. Phase B1–B2.5 complete — 2026-11-05. Phase B3/B4 complete — 2026-11-05. Phase C complete — 2026-11-05. Phase D1/D2/D4/D5 complete — 2026-11-06. A3.5, A4.1, A4.2 complete — 2026-11-06. E2 infrastructure complete — 2026-11-07 (Chrome PNA fixed, test framework complete, statistical analysis working). UI production build blocked on TypeScript type-only export limitation — requires separate fix (tsup/esbuild browser bundle or source export changes).
 **Shape:** Four phases, dependency-ordered. Phase A is integrity (no features). Phases B–C close the measurement→delivery loop and make the UI its instrument panel. Phase D positions the result.
 **Basis:** Deep study of `simulator/` and `optimize/` (state verified 2026-11-05). Every claim in this file was checked against the repo at HEAD.
 
@@ -343,26 +343,29 @@ Per TODO.science.md §5, the next cycle targets three optimization surfaces. **P
 
 ---
 
-### E2 Progress (2026-11-06) — **CHROME FIX WORKING, TEST RUNNING, UI MOUNT BLOCKED**
+### E2 Progress (2026-11-07) — **INFRASTRUCTURE COMPLETE, UI PRODUCTION BUILD BLOCKED ON TYPE EXPORTS**
 - ✅ `optimize/src/optimizer/e2CaptureTest.ts` — E2 A/B test framework with paired design
-- ✅ `optimize/src/optimizer/cli.ts` — Added `optimizer e2-capture` command
+- ✅ `optimize/src/optimizer/cli.ts` — Added `optimizer e2-capture` command with `--baseURL` option
 - ✅ Two arms: A (autoFocus+placeholder) vs B (initialOp=enum-hint=contains)
 - ✅ McNemar + Wilcoxon + corrections guardrail
-- ✅ 10 validation capture intent cases loaded (8 available)
+- ✅ 8 validation capture intent cases loaded
 - ✅ Preview server + Playwright integration working
 - ✅ **Chrome fix**: `chromium.launch()` with PNA bypass flags (`--disable-features=BlockInsecurePrivateNetworkRequests`, `--allow-insecure-localhost`) — **ERR_BLOCKED_BY_CLIENT eliminated**
 - ✅ `optimize/src/optimizer/evaluation/intentEvaluation.ts` — Same fix for optimizer intent evaluation
-- ✅ CLI options: `--headed` (default), `--headless`
-- ✅ **Test executes end-to-end** — produces statistical results (McNemar, Wilcoxon)
-- ⚠️ **BLOCKED**: React app fails to mount in production build (page = 1385 byte HTML shell):
-  - Browser entry point `export *` re-exports not followed by Rollup/Vite
-  - `__name is not defined` React component errors in minified bundle
-  - `fs operation not supported in browser` — Node.js code paths still executing
-  - Core package relative imports bypass Vite aliases for browser stubs
-- 🔧 **NEXT**: Fix core package browser bundling — either:
-  1. Make browser entry point a directory with package.json (cleanest)
-  2. Use explicit named exports in browser entry point
-  3. Extend package.json exports with all subpath patterns
+- ✅ CLI options: `--headed` (default), `--headless`, `--baseURL`
+- ✅ **Test executes end-to-end** — produces statistical results (McNemar, Wilcoxon, corrections diff)
+- ✅ Browser polyfills: `url` (fileURLToPath), `process` (stdout.isTTY), `fs` (no-op)
+- ⚠️ **BLOCKED**: React app fails to mount in production build (completion rate 0%):
+  - Core package type-only exports (`export type`, `export interface`) produce empty JS files in dist
+  - TypeScript `export * from` strips type-only exports → `export {}` in output
+  - Browser package `dist/browser/` created with proper package.json exports, but source files have same issue
+  - UI dev server (Vite) works because it compiles TypeScript on-the-fly; production build fails
+- 🔧 **ROOT CAUSE**: TypeScript with `module: ESNext` + `moduleResolution: bundler` emits empty files for type-only re-exports
+- 🔧 **NEXT**: Fix core package type exports — options:
+  1. Use `tsup`/`esbuild` for browser bundle instead of `tsc` (bundles preserve type exports)
+  2. Change source to use `export` instead of `export type` for public API (emits runtime code)
+  3. Use `export type * from` + separate declaration emit (complex)
+  4. For E2 test: run against Vite dev server instead of production build
 
 ### E13 Progress (2026-11-06) — **WAITING ON E2**
 - ✅ `optimize/src/prompts/variants.ts` — 6 prompt variants
