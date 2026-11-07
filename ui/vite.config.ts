@@ -42,7 +42,7 @@ export default defineConfig(({mode}) => {
             conditions: ['browser'],
             alias: [
                 { find: '@', replacement: path.resolve(__dirname, './src') },
-                // Use package.json exports for @notention/core subpaths
+                // Use package.json exports for @notention/core subpaths (specific subpaths first)
                 { find: '@notention/core/constants/storageKeys', replacement: path.resolve(__dirname, '../core/dist/constants/storageKeys.js') },
                 { find: '@notention/core/constants/paths', replacement: path.resolve(__dirname, '../core/dist/constants/paths.js') },
                 { find: '@notention/core/constants/seams', replacement: path.resolve(__dirname, '../core/dist/constants/seams.js') },
@@ -51,6 +51,23 @@ export default defineConfig(({mode}) => {
                 { find: '@notention/core/src/matching', replacement: path.resolve(__dirname, '../core/dist/matching') },
                 { find: '@notention/core/skills', replacement: path.resolve(__dirname, '../core/dist/skills/index.js') },
                 { find: '@notention/core/skills/metaphor/MetaphorRegistry', replacement: path.resolve(__dirname, '../core/dist/skills/metaphor/MetaphorRegistry.js') },
+                // UI subpaths - point to individual files
+                { find: '@notention/core/ui/strategy', replacement: path.resolve(__dirname, '../core/dist/ui/strategy.js') },
+                { find: '@notention/core/ui/ProfileRegistry', replacement: path.resolve(__dirname, '../core/dist/ui/ProfileRegistry.js') },
+                { find: '@notention/core/ui/profile', replacement: path.resolve(__dirname, '../core/dist/ui/profile.js') },
+                { find: '@notention/core/ui/profileDefaults', replacement: path.resolve(__dirname, '../core/dist/ui/profileDefaults.js') },
+                { find: '@notention/core/ui', replacement: path.resolve(__dirname, '../core/dist/ui/index.js') },
+                // Storage - use browser stub
+                { find: '@notention/core/storage', replacement: path.resolve(__dirname, '../core/dist/storage/Storage.browser.js') },
+                // Test utils - use browser stub
+                { find: '@notention/core/test-utils', replacement: path.resolve(__dirname, '../core/dist/test-utils/index.js') },
+                // Telemetry - use browser stubs
+                { find: '@notention/core/telemetry/journal', replacement: path.resolve(__dirname, '../core/dist/telemetry/journal.browser.js') },
+                { find: '@notention/core/telemetry/revisionStore', replacement: path.resolve(__dirname, '../core/dist/telemetry/revisionStore.browser.js') },
+                // Validation - should be browser-safe
+                { find: '@notention/core/validation', replacement: path.resolve(__dirname, '../core/dist/validation/index.js') },
+                // Schemas
+                { find: '@notention/core/schemas/generated/seam-definitions', replacement: path.resolve(__dirname, '../core/dist/schemas/generated/seam-definitions.js') },
                 // @notention/ui internal modules
                 { find: '@notention/ui/strategies/strategyConfigs', replacement: path.resolve(__dirname, './src/strategies/strategyConfigs.ts') },
                 { find: '@notention/ui/strategies/componentMap', replacement: path.resolve(__dirname, './src/strategies/componentMap.ts') },
@@ -72,12 +89,12 @@ export default defineConfig(({mode}) => {
                 { find: 'stream', replacement: path.resolve(__dirname, './node_modules/stream-browserify/index.js') },
                 { find: 'assert', replacement: 'assert' },
                 { find: 'buffer', replacement: path.resolve(__dirname, './node_modules/buffer/index.js') },
-                { find: 'process', replacement: path.resolve(__dirname, './node_modules/process/browser.js') },
+                { find: 'process', replacement: path.resolve(__dirname, './public/polyfills/process.js') },
                 { find: 'events', replacement: 'events' },
                 { find: 'querystring', replacement: path.resolve(__dirname, './node_modules/querystring/index.js') },
                 { find: 'string_decoder', replacement: path.resolve(__dirname, './node_modules/string_decoder/lib/string_decoder.js') },
                 { find: 'punycode', replacement: path.resolve(__dirname, './node_modules/punycode/punycode.js') },
-                { find: 'url', replacement: path.resolve(__dirname, './node_modules/url/url.js') },
+                { find: 'url', replacement: path.resolve(__dirname, './public/polyfills/url.js') },
                 { find: 'vm', replacement: path.resolve(__dirname, './node_modules/vm-browserify/index.js') },
                 { find: 'zlib', replacement: path.resolve(__dirname, './node_modules/zlib-browserify/index.js') },
                 { find: 'constants', replacement: path.resolve(__dirname, './node_modules/constants-browserify/constants.json') },
@@ -89,13 +106,13 @@ export default defineConfig(({mode}) => {
                 // Redirect node:* protocol imports to polyfills
                 { find: /^node:crypto$/, replacement: path.resolve(__dirname, './node_modules/crypto-browserify/index.js') },
                 { find: /^node:path$/, replacement: path.resolve(__dirname, './node_modules/path-browserify/index.js') },
-                { find: /^node:url$/, replacement: path.resolve(__dirname, './node_modules/url/url.js') },
+                { find: /^node:url$/, replacement: path.resolve(__dirname, './public/polyfills/url.js') },
                 { find: /^node:fs$/, replacement: path.resolve(__dirname, './public/polyfills/fs.js') },
                 { find: /^node:buffer$/, replacement: path.resolve(__dirname, './node_modules/buffer/index.js') },
                 { find: /^node:util$/, replacement: path.resolve(__dirname, './node_modules/util/util.js') },
                 { find: /^node:stream$/, replacement: path.resolve(__dirname, './node_modules/stream-browserify/index.js') },
                 { find: /^node:events$/, replacement: 'events' },
-                { find: /^node:process$/, replacement: path.resolve(__dirname, './node_modules/process/browser.js') },
+                { find: /^node:process$/, replacement: path.resolve(__dirname, './public/polyfills/process.js') },
                 { find: /^node:assert$/, replacement: 'assert' },
                 { find: /^node:constants$/, replacement: path.resolve(__dirname, './node_modules/constants-browserify/constants.js') },
                 { find: /^node:querystring$/, replacement: path.resolve(__dirname, './node_modules/querystring-es3/index.js') },
@@ -103,6 +120,8 @@ export default defineConfig(({mode}) => {
                 { find: /^node:punycode$/, replacement: path.resolve(__dirname, './node_modules/punycode/index.js') },
                 { find: /^node:vm$/, replacement: path.resolve(__dirname, './node_modules/vm-browserify/index.js') },
                 { find: /^node:zlib$/, replacement: path.resolve(__dirname, './node_modules/zlib-browserify/index.js') },
+                // Main entry point - must be last so subpath aliases take precedence
+                { find: '@notention/core', replacement: path.resolve(__dirname, '../core/dist/index.browser.js') },
             ],
         },
         test: {

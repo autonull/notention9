@@ -16,6 +16,7 @@ export * from './constants/index.js';
 export * from './tracing/index.js';
 export * from './prompts/index.js';
 export * from './policy/index.js';
+export * from './export/index.js';
 export { DEFAULT_ONTOLOGY } from './ontology/ontology.default.js';
 export { OntologyService } from './ontology/ontologyService.js';
 
@@ -24,17 +25,19 @@ export * from './utils/index.js';
 
 export * from './patternRecognition/index.js';
 export * from './security/index.js';
-export * from './config/index.js';
+export * from './config.browser.js';
+export * from './config/NoteBasedConfig.js';
+export * from './storage/Storage.browser.js';
+export * from './storage/recovery.js';
 export * from './templates/index.js';
 export * from './fixtures/index.js';
 export * from './feedback/index.js';
 
 // New extensibility modules (browser-safe)
 export * from './ontology/index.js';
-export * from './suggestions/index.js';
+export * from './suggestions/SuggestionStore.browser.js';
 export * from './test-utils/index.js';
 export * from './validation/index.js';
-export * from './config.js';
 export * from './events/index.js';
 
 // UI (browser-safe)

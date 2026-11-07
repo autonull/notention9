@@ -1,0 +1,759 @@
+{
+  "timestamp": "2026-11-07T00:23:15.799Z",
+  "config": {
+    "repetitions": 3,
+    "headless": false,
+    "userDataDir": "~/.notention/chrome-profiles/e2-capture"
+  },
+  "arms": {
+    "A": {
+      "name": "A-autoFocus-placeholder",
+      "patch": {
+        "placeholder": "What do you need? e.g. \"I need a wheelchair ramp before Friday, budget 900\"",
+        "autoFocus": true
+      },
+      "caseResults": [
+        {
+          "caseId": "intent-capture-010",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 15
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-010",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 13
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-010",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 11
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-011",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 13
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-011",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 11
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-011",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 12
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-016",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 10
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-016",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 10
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-016",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 13
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-017",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 11
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-017",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 11
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-017",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 12
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-018",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 11
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-018",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 12
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-018",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 10
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-019",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 12
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-019",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 10
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-019",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 12
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-026",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 9
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-026",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 10
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-026",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 12
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-027",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 11
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-027",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 11
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-027",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 11
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        }
+      ]
+    },
+    "B": {
+      "name": "B-initialOp-enumHint",
+      "patch": {
+        "initialOp": "contains"
+      },
+      "caseResults": [
+        {
+          "caseId": "intent-capture-010",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 13
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-010",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 10
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-010",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 10
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-011",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 12
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-011",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 12
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-011",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 14
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-016",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 10
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-016",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 9
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-016",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 10
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-017",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 10
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-017",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 13
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-017",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 12
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-018",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 10
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-018",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 12
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-018",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 12
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-019",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 10
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-019",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 10
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-019",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 12
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-026",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 10
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-026",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 10
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-026",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 12
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-027",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 10
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-027",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 11
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-027",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 11
+          },
+          "details": [
+            "Error: page.goto: net::ERR_BLOCKED_BY_CLIENT at http://127.0.0.1:4200/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4200/\", waiting until \"load\"\u001b[22m\n"
+          ]
+        }
+      ]
+    }
+  },
+  "comparison": {
+    "mcNemar": {
+      "pValue": 1,
+      "significant": false
+    },
+    "wilcoxon": {
+      "pValue": 0.3066241598397028,
+      "significant": false,
+      "medianDiff": 1
+    },
+    "correctionsDiff": 0
+  }
+}

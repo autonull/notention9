@@ -1,7 +1,7 @@
 # TODO.14 — Closing the Loop: From Instrument to Instrument Panel
 
 **Supersedes:** Nothing. Extends TODO.12 (Evaluation & Improvement Program) and TODO.13 (Generalization Layer).
-**Status:** Phase A complete — 2026-11-05. Phase B1–B2.5 complete — 2026-11-05. Phase B3/B4 complete — 2026-11-05. Phase C complete — 2026-11-05. Phase D1/D2/D4/D5 complete — 2026-11-06. A3.5, A4.1, A4.2 complete — 2026-11-06.
+**Status:** Phase A complete — 2026-11-05. Phase B1–B2.5 complete — 2026-11-05. Phase B3/B4 complete — 2026-11-05. Phase C complete — 2026-11-05. Phase D1/D2/D4/D5 complete — 2026-11-06. A3.5, A4.1, A4.2 complete — 2026-11-06. E2 infrastructure complete — 2026-11-06 (test runs, Chrome PNA fixed, React app mount blocked on browser bundling).
 **Shape:** Four phases, dependency-ordered. Phase A is integrity (no features). Phases B–C close the measurement→delivery loop and make the UI its instrument panel. Phase D positions the result.
 **Basis:** Deep study of `simulator/` and `optimize/` (state verified 2026-11-05). Every claim in this file was checked against the repo at HEAD.
 
@@ -343,22 +343,26 @@ Per TODO.science.md §5, the next cycle targets three optimization surfaces. **P
 
 ---
 
-### E2 Progress (2026-11-06) — **CHROME FIX WORKING, REACT APP PRE-EXISTING ISSUES**
+### E2 Progress (2026-11-06) — **CHROME FIX WORKING, TEST RUNNING, UI MOUNT BLOCKED**
 - ✅ `optimize/src/optimizer/e2CaptureTest.ts` — E2 A/B test framework with paired design
 - ✅ `optimize/src/optimizer/cli.ts` — Added `optimizer e2-capture` command
 - ✅ Two arms: A (autoFocus+placeholder) vs B (initialOp=enum-hint=contains)
 - ✅ McNemar + Wilcoxon + corrections guardrail
-- ✅ 10 validation capture intent cases loaded
+- ✅ 10 validation capture intent cases loaded (8 available)
 - ✅ Preview server + Playwright integration working
 - ✅ **Chrome fix**: `chromium.launch()` with PNA bypass flags (`--disable-features=BlockInsecurePrivateNetworkRequests`, `--allow-insecure-localhost`) — **ERR_BLOCKED_BY_CLIENT eliminated**
 - ✅ `optimize/src/optimizer/evaluation/intentEvaluation.ts` — Same fix for optimizer intent evaluation
 - ✅ CLI options: `--headed` (default), `--headless`
-- ⚠️ **BLOCKED**: React app fails to mount in test due to pre-existing core package issues:
-  - Node.js-only telemetry code (`ledger.js`, `journal.js`) bundled for browser
-  - `url` polyfill missing `fileURLToPath` (Node.js-only API)
-  - `__name is not defined` React component errors
+- ✅ **Test executes end-to-end** — produces statistical results (McNemar, Wilcoxon)
+- ⚠️ **BLOCKED**: React app fails to mount in production build (page = 1385 byte HTML shell):
+  - Browser entry point `export *` re-exports not followed by Rollup/Vite
+  - `__name is not defined` React component errors in minified bundle
+  - `fs operation not supported in browser` — Node.js code paths still executing
   - Core package relative imports bypass Vite aliases for browser stubs
-- 🔧 **NEXT**: Fix core package browser bundling (separate task) before E2 can run end-to-end
+- 🔧 **NEXT**: Fix core package browser bundling — either:
+  1. Make browser entry point a directory with package.json (cleanest)
+  2. Use explicit named exports in browser entry point
+  3. Extend package.json exports with all subpath patterns
 
 ### E13 Progress (2026-11-06) — **WAITING ON E2**
 - ✅ `optimize/src/prompts/variants.ts` — 6 prompt variants

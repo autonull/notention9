@@ -15,7 +15,21 @@
     "./constants/paths": "./dist/constants/paths.js",
     "./constants/seams": "./dist/constants/seams.js",
     "./constants/strategyParams": "./dist/constants/strategyParams.js",
-    "./storage": "./dist/storage/index.js",
+    "./storage": {
+      "import": "./dist/storage/index.js",
+      "node": "./dist/storage/index.js",
+      "browser": "./dist/storage/Storage.browser.js"
+    },
+    "./config": {
+      "import": "./dist/config.js",
+      "node": "./dist/config.js",
+      "browser": "./dist/config.browser.js"
+    },
+    "./suggestions": {
+      "import": "./dist/suggestions/SuggestionStore.js",
+      "node": "./dist/suggestions/SuggestionStore.js",
+      "browser": "./dist/suggestions/SuggestionStore.browser.js"
+    },
     "./extraction": "./dist/extraction/index.js",
     "./extraction/deterministic": "./dist/extraction/deterministic.js",
     "./prompts": "./dist/prompts/index.js",
