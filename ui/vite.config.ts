@@ -45,6 +45,18 @@ export default defineConfig(({mode}) => {
                 // @notention/ui internal modules
                 { find: '@notention/ui/strategies/strategyConfigs', replacement: path.resolve(__dirname, './src/strategies/strategyConfigs.ts') },
                 { find: '@notention/ui/strategies/componentMap', replacement: path.resolve(__dirname, './src/strategies/componentMap.ts') },
+                // Explicit @notention/core browser subpath aliases (ensure Vite resolves via package.json exports)
+                { find: '@notention/core/ui/ProfileRegistry', replacement: path.resolve(__dirname, '../core/dist/browser/ui/ProfileRegistry.js') },
+                { find: '@notention/core/ui/strategy', replacement: path.resolve(__dirname, '../core/dist/browser/ui/strategy.js') },
+                { find: '@notention/core/ui/profile', replacement: path.resolve(__dirname, '../core/dist/browser/ui/profile.js') },
+                { find: '@notention/core/ui/profileDefaults', replacement: path.resolve(__dirname, '../core/dist/browser/ui/profileDefaults.js') },
+                { find: '@notention/core/ui', replacement: path.resolve(__dirname, '../core/dist/browser/ui/index.js') },
+                { find: '@notention/core/storage', replacement: path.resolve(__dirname, '../core/dist/browser/storage/index.js') },
+                { find: '@notention/core/constants/seams', replacement: path.resolve(__dirname, '../core/dist/browser/constants/seams.js') },
+                { find: '@notention/core/schemas/generated/seam-definitions', replacement: path.resolve(__dirname, '../core/dist/browser/schemas/generated/seam-definitions.js') },
+                { find: '@notention/core/telemetry/journal', replacement: path.resolve(__dirname, '../core/dist/browser/telemetry/journal.browser.js') },
+                { find: '@notention/core/validation', replacement: path.resolve(__dirname, '../core/dist/browser/validation/index.js') },
+                { find: '@notention/core/telemetry/revisionStore', replacement: path.resolve(__dirname, '../core/dist/browser/telemetry/revisionStore.browser.js') },
                 // Node.js built-in polyfills - use direct file paths for packages without proper ESM exports
                 { find: 'crypto', replacement: path.resolve(__dirname, './node_modules/crypto-browserify/index.js') },
                 { find: 'stream', replacement: path.resolve(__dirname, './node_modules/stream-browserify/index.js') },
