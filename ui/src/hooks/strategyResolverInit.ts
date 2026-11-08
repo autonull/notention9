@@ -84,17 +84,25 @@ function registerComponentFactory(strategyId: string, importFn: () => Promise<{ 
 }
 
 // Use import.meta.glob for Vite-compatible dynamic imports
-// This allows Vite to statically analyze the imports
-const componentModules = import.meta.glob<{ default: React.ComponentType<any> }>('../components/**/*.tsx', { eager: false });
+// Paths in componentMap are relative to src/strategies/, so from src/hooks/ we need ../../components
+const componentModules = import.meta.glob<{ default: React.ComponentType<any> }>('../../components/**/*.tsx', { eager: false });
 
 // Register component factories using generated component paths
 for (const config of STRATEGY_CONFIGS_UI) {
     if (config.componentPath) {
         // Match the component path to the glob result
-        const globKey = Object.keys(componentModules).find(key => key.endsWith(config.componentPath + '.tsx'));
+        // componentMap paths are like '../components/editor/PropertyForm' (from strategies dir)
+        // glob keys are like '../../components/editor/PropertyForm.tsx' (from hooks dir)
+        const globKey = Object.keys(componentModules).find(key => key.endsWith(config.componentPath + '.tsx') || key.endsWith(config.componentPath.replace('../', '../../') + '.tsx'));
         if (globKey) {
             registerComponentFactory(config.id, () => componentModules[globKey]());
+            console.log(`[StrategySystem] Registered component factory for ${config.id} via ${globKey}`);
+        } else {
+            console.warn(`[StrategySystem] No component module found for ${config.id} (path: ${config.componentPath})`);
+            console.warn(`[StrategySystem] Available glob keys: ${Object.keys(componentModules).join(', ')}`);
         }
+    } else {
+        console.warn(`[StrategySystem] No componentPath for config ${config.id}`);
     }
 }
 
