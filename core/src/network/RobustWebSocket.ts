@@ -61,12 +61,14 @@ export class RobustWebSocket {
       this.reconnectAttempts = 0;
       this.handlers.onOpen?.(event);
       this.emit('open', event);
+      this.emit('status_change', { status: 'connected', isOnline: true });
       resolve();
     };
 
     this.ws.onclose = (event) => {
       this.handlers.onClose?.(event);
       this.emit('close', event);
+      this.emit('status_change', { status: this.shouldReconnect ? 'connecting' : 'offline', isOnline: false });
       if (this.shouldReconnect && this.reconnectAttempts < this.maxReconnectAttempts) {
         this.reconnectAttempts++;
         setTimeout(() => this.connect(), this.reconnectInterval * this.reconnectAttempts);
@@ -106,6 +108,14 @@ export class RobustWebSocket {
 
   get isOnlineMode(): boolean {
     return this.isConnected;
+  }
+
+  /** Mark as offline without reconnect attempts; emits legacy status events */
+  fallbackToOfflineMode(): void {
+    this.shouldReconnect = false;
+    this.ws?.close();
+    this.emit('status_change', { status: 'offline', isOnline: false });
+    this.emit('connected', null);
   }
 
   on(event: string, handler: EventHandler): void {

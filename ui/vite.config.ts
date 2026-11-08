@@ -248,19 +248,9 @@ export default defineConfig(({mode}) => {
                 },
                 output: {
                     manualChunks(id) {
-                        // Vendor chunk for React and related
-                        if (id.includes('node_modules/react') || id.includes('node_modules/react-dom') || id.includes('node_modules/scheduler')) {
-                            return 'vendor-react';
-                        }
-                        // Vendor chunk for UI libraries
-                        if (id.includes('node_modules/@tiptap') || id.includes('node_modules/tippy.js') || id.includes('node_modules/react-big-calendar') || id.includes('node_modules/react-force-graph')) {
-                            return 'vendor-ui';
-                        }
-                        // Vendor chunk for crypto, buffer, etc.
-                        if (id.includes('node_modules/crypto-browserify') || id.includes('node_modules/buffer') || id.includes('node_modules/stream-browserify') || id.includes('node_modules/url') || id.includes('node_modules/vm-browserify') || id.includes('node_modules/zlib-browserify') || id.includes('node_modules/querystring') || id.includes('node_modules/string_decoder') || id.includes('node_modules/punycode') || id.includes('node_modules/path-browserify') || id.includes('node_modules/os-browserify') || id.includes('node_modules/process') || id.includes('node_modules/events') || id.includes('node_modules/assert') || id.includes('node_modules/constants-browserify') || id.includes('node_modules/util')) {
-                            return 'vendor-polyfills';
-                        }
-                        // Vendor chunk for remaining node_modules
+                        // Single chunk for ALL node_modules — Rollup's shared CJS helpers
+                        // (e.g. commonjsGlobal) live in arbitrary chunks; splitting node_modules
+                        // creates cross-chunk cycles that break CommonJS lazy-init at runtime.
                         if (id.includes('node_modules')) {
                             return 'vendor';
                         }

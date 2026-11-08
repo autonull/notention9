@@ -1,4 +1,28 @@
 import { defineConfig } from 'tsup';
+import { dirname, resolve } from 'node:path';
+
+// Rewrite relative imports to sibling `.browser.ts` twins in the browser build
+// (entries re-export node variants via plain `./module.js` paths, e.g. profile.ts).
+// Only the twin set whose browser variant is a complete replacement — other
+// `.browser.ts` files (config, etc.) are functional stubs, not replacements.
+const BROWSER_TWINS = [
+    'telemetry/journal',
+    'telemetry/revisionStore',
+    'telemetry/ledger',
+    'ui/ProfileRegistry',
+    'utils/common',
+];
+const browserVariantRewrite = {
+    name: 'browser-variant-rewrite',
+    setup(build) {
+        build.onResolve({ filter: /^\.{1,2}\/.+\.js$/ }, (args) => {
+            const base = resolve(dirname(args.importer), args.path).replace(/\.js$/, '');
+            return BROWSER_TWINS.some(twin => base.endsWith(`/${twin}`))
+                ? { path: `${base}.browser.ts` }
+                : null;
+        });
+    },
+};
 
 const browserEntries = {
   // Main entry - output as index.js for directory-based resolution
@@ -175,6 +199,7 @@ export default defineConfig([
     ],
     noExternal: ['@notention/core/**'],
     esbuildPlugins: [
+      browserVariantRewrite,
       {
         name: 'ignore-node-imports',
         setup(build) {

@@ -1,38 +1,32 @@
-import type { Seam, StrategyConfig as CoreStrategyConfig } from '@notention/core/ui/strategy';
-import { STRATEGY_CONFIGS } from '@notention/core/schemas/generated/seam-definitions';
-import { componentMap } from './componentMap.js';
+import type {ParamSpec, Seam} from '@notention/core/ui/strategy';
+import {STRATEGY_CONFIGS} from '@notention/core/schemas/generated/seam-definitions';
+import {componentMap} from './componentMap.js';
 
 /**
  * UI-specific strategy configuration
- * Extends core ParamSpecs with component paths and names
- * 
+ *
  * SINGLE SOURCE OF TRUTH: core/src/schemas/generated/seam-definitions.ts
- * This file adds component paths/names for UI registration.
+ * Generated configs carry flat seam fields (seamId/seamName/seamRole); the UI
+ * registry API expects a nested `seam`, so createStrategyConfigs adapts below.
  */
-export interface StrategyConfig extends CoreStrategyConfig {
+export interface StrategyConfig {
+    id: string;
+    seam: Pick<Seam, 'id' | 'name' | 'role'>;
+    version: string;
+    paramSpec: ParamSpec;
+    defaultProps: Record<string, unknown>;
     componentPath: string;
     componentName: string;
 }
 
-function createStrategyConfig(
-    coreConfig: CoreStrategyConfig,
-    componentPath: string,
-    componentName: string
-): StrategyConfig {
+export const STRATEGY_CONFIGS_UI: StrategyConfig[] = STRATEGY_CONFIGS.map(({seamId, seamName, seamRole, ...generated}) => {
+    const componentInfo = componentMap[generated.id] ?? {path: '', name: ''};
     return {
-        ...coreConfig,
-        componentPath,
-        componentName,
+        ...generated,
+        seam: {id: seamId, name: seamName, role: seamRole as Seam['role']},
+        componentPath: componentInfo.path,
+        componentName: componentInfo.name,
     };
-}
-
-export const STRATEGY_CONFIGS_UI: StrategyConfig[] = STRATEGY_CONFIGS.map(coreConfig => {
-    const componentInfo = componentMap[coreConfig.id];
-    return createStrategyConfig(
-        coreConfig,
-        componentInfo?.path ?? '',
-        componentInfo?.name ?? ''
-    );
 });
 
 /**

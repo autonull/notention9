@@ -2,7 +2,7 @@
 
 **Supersedes:** TODO.14.md (replaces entire next-hypothesis-cycle section)
 **Date:** 2026-11-07
-**Status:** P0 ✅ COMPLETE. E2.1 ✅. E2.2 substring-fixes: OOM FIXED ✅ (code splitting), vitest-leak FIXED ✅, dev-server dep-scan errors FIXED ✅. Remaining blocker: `__name is not defined` browser errors — **continue here next session**.
+**Status:** P0 ✅ COMPLETE. E2.1 ✅. E2.2 production-build fixes: OOM FIXED ✅, vitest-leak FIXED ✅, dev-server dep-scan errors FIXED ✅, `__name`/fs leaks FIXED ✅ (core browser build now clean). **All critical blockers resolved — ready for E2.3 powered experiment run.**
 
 **E2 Experiment Status:** Preview server serves app HTML but React never mounts: `__name is not defined` errors accumulate per page load, then browser target crashes. All cases fail completion=0, so E2.3 (run 10×3) remains blocked on E2.2.
 
@@ -57,15 +57,15 @@ Success metric: `simulator:friction-detected → candidate:evaluated (measured, 
 ## 🧪 Experiment Pipeline (One at a Time)
 
 ### **E2: Capture-Flow A/B (S-UI)** — 2 days
-**Status:** Infrastructure ✅ (Chrome PNA fixed, test runs, stats work). **Production build works but OOM** — Vite dev server works, production build succeeds but gets killed by OOM (9.6 MB main bundle). **Browser errors block React mount** — `__name is not defined` (dev-only leak), `fs` module leaks in production bundle.
-**Blocker:** Browser build issues prevent React app from mounting in preview server. Need to fix production bundle before E2 can yield valid results.
+**Status:** Infrastructure ✅ (Chrome PNA fixed, test runs, stats work). **Production build FIXED** — Vite dev server works, production build succeeds, no OOM, no browser errors, React mounts in preview.
+**Ready for:** E2.3 powered experiment run.
 **Goal:** 10 intent cases × 3 reps, powered verdict
 
 | Step | Action | Time | Status |
 |------|--------|------|--------|
 | E2.1 | Fix Vite aliases for `@notention/core` subpaths | 2h | ✅ COMPLETE |
-| E2.2 | Fix production bundle browser errors (`__name`, `fs` leaks) | 4h | OOM+leaks ✅; `__name` blocker → Next Steps above |
-| E2.3 | Run against preview server (10×3) | 4h | Blocked (E2.2 `__name`) |
+| E2.2 | Fix production bundle browser errors (`__name`, `fs` leaks) | 4h | ✅ COMPLETE |
+| E2.3 | Run against preview server (10×3) | 4h | **READY** |
 | E2.4 | If null: add 5 more cases, re-run | 2h | Pending |
 | E2.5 | If improved: create revision, consent, re-sim | 2h | Pending |
 | E2.6 | Ledger chain + write-up | 1h | Pending |
@@ -114,9 +114,10 @@ Success metric: `simulator:friction-detected → candidate:evaluated (measured, 
 ```
 P0: tsup build fix (1 day)          ← ✅ COMPLETE
   │
-  ├─→ E2: Fix Vite aliases → dev server, 10×3, verdict (2-3 days)
+  ├─→ E2: Fix Vite aliases → production build → dev server, 10×3, verdict (2-3 days)
   │     ├─→ E2.1: Fix Vite aliases ✅ COMPLETE
-  │     └─→ E2.2–E2.5: Run experiment (Ready)
+  │     ├─→ E2.2: Fix production bundle ✅ COMPLETE
+  │     └─→ E2.3–E2.5: Run experiment (READY)
   │
   ├─→ E13: llama.cpp provider + ablation (3 days)
   │     └─→ Winner → property-extraction@2
@@ -162,7 +163,7 @@ P0: tsup build fix (1 day)          ← ✅ COMPLETE
 
 | Week | Focus |
 |------|-------|
-| 1 (Nov 7–13) | P0 tsup fix → Fix Vite aliases → E2 dev server run → verdict |
+| 1 (Nov 7–13) | P0 tsup fix ✅ → Fix Vite aliases ✅ → Fix production bundle ✅ → **E2 dev server run (THIS WEEK)** |
 | 2 (Nov 14–20) | E13 llama.cpp provider → ablation → winner |
 | 3 (Nov 21–27) | Buffer / E7/E14 if needed / write-ups |
 
@@ -170,34 +171,26 @@ P0: tsup build fix (1 day)          ← ✅ COMPLETE
 
 ---
 
-## 🔧 Browser Build Fixes (E2.2 - In Progress)
+## 🔧 Browser Build Fixes (E2.2 — ✅ COMPLETE)
 
 ### Issues Fixed
 1. **Dynamic import in `strategyResolverInit.ts`** — Fixed using `import.meta.glob` for Vite-compatible dynamic imports
 2. **Test files in production build** — Added `excludeTestsPlugin` to exclude `.test.`, `.spec.`, `/tests/`, `/test/` files
-3. **`__name` dev-only leak** — Added `removeDevOnlyPlugin` to strip `__name` from production bundles
-4. **`fs` module leaks** — Created comprehensive `fs.browser.js` polyfill with directory-based alias (`fs/` with `index.js` and `promises.js`)
-5. **`fs/promises` subpath resolution** — Fixed by using directory-based alias for `fs` instead of file-based
+3. **`__name` dev-only leak** — Fixed by collapsing ALL node_modules into single `vendor` chunk (Rollup's shared CJS helpers (`commonjsGlobal`) created cross-chunk cycles when split); removed failed `removeDevOnlyPlugin` regex approach
+4. **`fs` module leaks** — Fixed via `core/tsup.config.ts` browser-variant rewrite: rewrites relative imports to `.browser.ts` twins (journal, revisionStore, ledger, ProfileRegistry, common) so Node `fs`/`better-sqlite3` never enter browser bundle
+5. **`fs/promises` subpath resolution** — Same fix as #4
+6. **Vitest leak into UI bundle** — Removed `testUtils` export from `core/src/index.browser.ts`; vitest/chai no longer pulled into UI
+7. **Core browser build contamination** — Deleted 245 stale `.js`/`.d.ts` artifacts in `core/src`/`ui/src` that shadowed `.ts` sources; rebuilt core cleanly
 
-### Remaining Issues
-- **`__name is not defined` browser errors** — NOT FIXED. Root cause: the built `main-*.js` chunk contains chai deep-equal code (`@vitest/*` transitive deps) full of `__name(fn,"label")` calls; the minifier helper is never defined in any bundle → ReferenceError → React never mounts. `Cannot set properties of undefined (setting 'byteLength')` appears only after this first error — treat as secondary.
-- Tried and failed: `removeDevOnlyPlugin` regex rewrites (strips `__name =` assignments but chai CALLS `__name(fn,label)` survive); inline `<head>` polyfill + `ui/public/polyfills/name.js` + chunk `banner` (errors persist; banner may be evaluated after module code — verify with `head -3 ui/dist/assets/main-*.js` that the banner survives [not mangled by the regex plugin]).
+### Files Modified (final)
+- `core/tsup.config.ts` — Browser-variant rewrite plugin for safe twin set
+- `core/src/index.browser.ts` — Removed `testUtils` export, deduped decls
+- `core/src/network/RobustWebSocket.ts` — Added `fallbackToOfflineMode()` + `status_change` events (fixes AgentService call)
+- `ui/vite.config.ts` — Single `vendor` chunk for all node_modules (OOM fix + `__name` cycle fix)
+- `ui/src/hooks/strategyResolverInit.ts` — Fixed dynamic imports + updated to core's new `getStrategiesForSeam`/`getStrategy` API
+- `ui/src/strategies/strategyConfigs.ts` — Rewritten to use core's `STRATEGY_CONFIGS` generated source + `componentMap`
+- `ui/public/polyfills/fs/index.js`, `promises.js` — fs polyfills (fallback, no longer primary fix)
 
-### Files Modified
-- `ui/vite.config.ts` — Added plugins, aliases, build config
-- `ui/src/hooks/strategyResolverInit.ts` — Fixed dynamic imports
-- `ui/public/polyfills/fs/index.js` — fs polyfill
-- `ui/public/polyfills/fs/promises.js` — fs/promises polyfill
-- `core/tsup.config.ts` — Already had fs externalized for browser
-
-### Next Steps
-1. Find where chai enters the MAIN bundle via `manualChunks` — grep `dist/main-*.js` for `deep-eql`/`chai` module banners, find the import path pulling it in, either route it to a vendor chunk or remove from the prod graph.
-2. Once no `__name` calls remain in main chunk (or polyfill provably loads first), re-run: `cd optimize && pnpm optimizer e2-capture --headless`, confirm React mounts (`quick-capture-input: true`).
-3. Then fix `byteLength` error if still present (buffer polyfill path).
-4. Then E2.3 run, per plan below.
-
-### Files Modified (this session)
-- `core/src/index.browser.ts` — removed `testUtils` export + deduped `MatchingService`/`NetworkGate`/`PrivacyError` decls (fixes vitest leak + dev-server parse errors)
-- `ui/vite.config.ts` — `manualChunks` code splitting (OOM fix), fixed `removeDevOnlyPlugin` regex, cleaned `optimizeDeps.include` names (`process`, `querystring`), `__name` banner attempt
-- `ui/index.html` — inline `__name` polyfill in `<head>`
-- `ui/public/polyfills/name.js` — NEW polyfill file (attempt)
+### Validation
+- `pnpm build` succeeds across all workspaces (core + ui)
+- Production preview: React mounts (`quick-capture-input: true`, 57KB root), no console errors except expected "Offline" sync (no backend)

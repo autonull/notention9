@@ -5,7 +5,7 @@
  */
 
 import type { Seam, Strategy } from '@notention/core/ui/strategy';
-import { strategyRegistry, createComponentStrategy } from '@notention/core/ui/strategy';
+import { strategyRegistry, createComponentStrategy, getStrategiesForSeam, getStrategy } from '@notention/core/ui/strategy';
 import { resolveSeamId, SEAM_ROLES, type SeamRole } from '@notention/core/constants/seams';
 import { profileRegistry } from '@notention/core/ui/ProfileRegistry';
 import { STRATEGY_CONFIGS_UI, getAllStrategyConfigs } from '@notention/ui/strategies/strategyConfigs';
@@ -123,7 +123,7 @@ export async function registerUIStrategies(): Promise<void> {
         if (seenRoles.has(role)) continue;
         seenRoles.add(role);
         
-        const seamId = resolveSeamId(role, strategyRegistry);
+        const seamId = resolveSeamId(role);
         const seam: Seam = {
             id: seamId,
             name: def.name,
@@ -161,7 +161,7 @@ export async function registerUIStrategies(): Promise<void> {
     // Register all strategies from generated configs
     const allConfigs = getAllStrategyConfigs();
     for (const config of allConfigs) {
-        const seam = strategyRegistry.getAllForSeam(config.seam.id)[0]?.seam;
+        const seam = getStrategiesForSeam(config.seam.id)[0]?.seam;
         if (!seam) {
             console.warn(`[StrategySystem] Seam not found for strategy ${config.id}: ${config.seam.id}`);
             continue;
@@ -251,11 +251,11 @@ export function applyPendingRevisionParams(): void {
             
             // This patch applies to this strategy - re-register with merged props
             const seamId = strategyConfig.seam.id;
-            const existingStrategy = strategyRegistry.get(seamId, strategyConfig.id);
+            const existingStrategy = getStrategy(seamId, strategyConfig.id);
             
             // B4.3: Unknown strategyId
             if (!existingStrategy) {
-                console.error(`[StrategySystem] ❌ Unknown strategyId: ${strategyConfig.id} for seam ${seamId}. Available strategies: ${strategyRegistry.getAllForSeam(seamId).map(s => s.id).join(', ')}`);
+                console.error(`[StrategySystem] ❌ Unknown strategyId: ${strategyConfig.id} for seam ${seamId}. Available strategies: ${getStrategiesForSeam(seamId).map(s => s.id).join(', ')}`);
                 hadErrors = true;
                 continue;
             }
@@ -277,7 +277,7 @@ export function applyPendingRevisionParams(): void {
             }
             
             // Unregister old strategy
-            strategyRegistry.unregister(seamId, strategyConfig.id);
+            strategyRegistry.unregister(strategyConfig.id);
             
             // Merge default props with patch
             const mergedProps = { ...existingStrategy.getDefaultProps(), ...patch };
