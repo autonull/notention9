@@ -9,7 +9,6 @@
  */
 
 import { chromium, type Browser, type BrowserContext, type Page } from '@playwright/test';
-import { readManifest, readIntentCases, type IntentCase, CaseSplit } from '@notention/core/eval/caseManifest.js';
 import { ensurePreviewServer, stopPreviewServer } from './server/previewServer.js';
 import {
     INTENT_DEFAULT_VIEWPORT,
@@ -18,12 +17,39 @@ import {
     STATE_WAIT_DEFAULT_TIMEOUT_MS,
 } from './constants.js';
 import { runIntentCase, applySeedRevisions, type IntentCaseRunResult, type RunIntentCaseConfig } from './evaluation/intentCaseRunner.js';
-import { writeFileSync } from 'node:fs';
+import { writeFileSync, readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+const PROJECT_ROOT = join(__dirname, '..', '..', '..');
+const CASES_DIR = join(PROJECT_ROOT, 'eval', 'cases');
+
+interface IntentCase {
+    id: string;
+    family: 'intent';
+    intent: string;
+    prompt: string;
+    seed: {
+        notes: unknown[];
+        settings: Record<string, unknown>;
+        revisions: string[];
+    };
+    expected: {
+        minProperties?: number;
+        requiredKeys?: string[];
+        outcome: 'captured' | 'elicited' | 'matched' | 'rendered';
+        matchMinRecall?: number;
+        matchMinPrecision?: number;
+    };
+    metrics: ('completion' | 'steps' | 'corrections' | 'recall' | 'precision' | 'f1')[];
+    tags: string[];
+    provenance: {
+        author: 'human' | 'model';
+        source: string;
+    };
+}
 
 export interface CaptureTestConfig {
     headless?: boolean;
@@ -77,13 +103,21 @@ const E2_ARMS = {
 };
 
 function loadValidationCaptureCases(): IntentCase[] {
-    // Load validation intent cases
-    const cases = readIntentCases('validation');
-    // Filter for capture_need intent
-    const captureCases = cases.filter(c => c.intent === 'capture_need');
+    // Load validation intent cases directly from filesystem
+    const validationDir = join(CASES_DIR, 'intent', 'validation');
+    const files = readdirSync(validationDir).filter(f => f.endsWith('.json'));
     
-    console.log(`Loaded ${captureCases.length} validation capture intent cases`);
-    return captureCases.slice(0, 10); // E2 specifies 10 cases
+    const cases: IntentCase[] = [];
+    for (const file of files) {
+        const content = readFileSync(join(validationDir, file), 'utf-8');
+        const caseData = JSON.parse(content) as IntentCase;
+        if (caseData.intent === 'capture_need') {
+            cases.push(caseData);
+        }
+    }
+    
+    console.log(`Loaded ${cases.length} validation capture intent cases`);
+    return cases.slice(0, 10); // E2 specifies 10 cases
 }
 
 async function runArm(

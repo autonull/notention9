@@ -8,7 +8,10 @@ import type { Seam, Strategy } from '@notention/core/ui/strategy';
 import { strategyRegistry, createComponentStrategy, getStrategiesForSeam, getStrategy } from '@notention/core/ui/strategy';
 import { resolveSeamId, SEAM_ROLES, type SeamRole } from '@notention/core/constants/seams';
 import { profileRegistry } from '@notention/core/ui/ProfileRegistry';
-import { STRATEGY_CONFIGS_UI, getAllStrategyConfigs } from '@notention/ui/strategies/strategyConfigs';
+import { STRATEGY_CONFIGS_UI } from '../strategies/strategyConfigs';
+
+// Use STRATEGY_CONFIGS_UI directly (synchronous, no async loading)
+const getAllStrategyConfigs = (): typeof STRATEGY_CONFIGS_UI => STRATEGY_CONFIGS_UI;
 import { SEAM_DEFINITIONS } from '@notention/core/schemas/generated/seam-definitions';
 
 // Forward declarations for component types
@@ -114,18 +117,11 @@ if (isCleanProfile) {
 }
 
 export async function registerUIStrategies(): Promise<void> {
-    // Register seams from generated definitions (one per role, using first seam for each role)
-    const seamRoles = Object.values(SEAM_ROLES) as SeamRole[];
-    const seenRoles = new Set<SeamRole>();
-    
+    // Register all seams from generated definitions with their actual IDs
     for (const def of SEAM_DEFINITIONS) {
         const role = def.role as SeamRole;
-        if (seenRoles.has(role)) continue;
-        seenRoles.add(role);
-        
-        const seamId = resolveSeamId(role);
         const seam: Seam = {
-            id: seamId,
+            id: def.id,
             name: def.name,
             description: def.description,
             role,
@@ -134,7 +130,7 @@ export async function registerUIStrategies(): Promise<void> {
         };
         // Create a minimal strategy for seam registration (placeholder component)
         const seamStrategy = createComponentStrategy(
-            `seam-${role}`,
+            `seam-${def.id}`,
             seam,
             () => null,
             '1.0.0',

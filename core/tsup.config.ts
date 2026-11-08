@@ -159,6 +159,8 @@ export default defineConfig([
     target: 'node20',
     external: [
       '@notention/optimize',
+      'ws',
+      'events',
     ],
     noExternal: [
       '@notention/core/**',

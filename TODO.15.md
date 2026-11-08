@@ -58,17 +58,19 @@ Success metric: `simulator:friction-detected → candidate:evaluated (measured, 
 
 ### **E2: Capture-Flow A/B (S-UI)** — 2 days
 **Status:** Infrastructure ✅ (Chrome PNA fixed, test runs, stats work). **Production build FIXED** — Vite dev server works, production build succeeds, no OOM, no browser errors, React mounts in preview.
-**Ready for:** E2.3 powered experiment run.
+**E2.3 attempted:** Test executes end-to-end, statistical analysis runs, but 0% completion due to strategy registration bug (UI issue, not infrastructure).
 **Goal:** 10 intent cases × 3 reps, powered verdict
 
 | Step | Action | Time | Status |
 |------|--------|------|--------|
 | E2.1 | Fix Vite aliases for `@notention/core` subpaths | 2h | ✅ COMPLETE |
 | E2.2 | Fix production bundle browser errors (`__name`, `fs` leaks) | 4h | ✅ COMPLETE |
-| E2.3 | Run against preview server (10×3) | 4h | **READY** |
-| E2.4 | If null: add 5 more cases, re-run | 2h | Pending |
-| E2.5 | If improved: create revision, consent, re-sim | 2h | Pending |
-| E2.6 | Ledger chain + write-up | 1h | Pending |
+| E2.3 | Run against preview server (10×3) | 4h | ✅ INFRASTRUCTURE WORKS; 0% completion (strategy registration bug) |
+| E2.4 | Fix strategy registration bug | 2h | **NEXT** |
+| E2.5 | Re-run experiment | 2h | Pending |
+| E2.6 | If null: add 5 more cases, re-run | 2h | Pending |
+| E2.7 | If improved: create revision, consent, re-sim | 2h | Pending |
+| E2.8 | Ledger chain + write-up | 1h | Pending |
 
 **Gate:** Powered verdict (any sign) + ledger chain recorded.
 
