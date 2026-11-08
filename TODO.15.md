@@ -1,10 +1,10 @@
 # TODO.15 — Consolidated Experiment Execution Plan
 
 **Supersedes:** TODO.14.md (replaces entire next-hypothesis-cycle section)
-**Date:** 2026-11-07
-**Status:** P0 ✅ COMPLETE. E2.1 ✅. E2.2 production-build fixes: OOM FIXED ✅, vitest-leak FIXED ✅, dev-server dep-scan errors FIXED ✅, `__name`/fs leaks FIXED ✅ (core browser build now clean). **All critical blockers resolved — ready for E2.3 powered experiment run.**
+**Date:** 2026-11-08
+**Status:** P0 ✅ COMPLETE. E2.1 ✅. E2.2 production-build fixes: OOM FIXED ✅, vitest-leak FIXED ✅, dev-server dep-scan errors FIXED ✅, `__name`/fs leaks FIXED ✅. **All critical blockers resolved — E2 infrastructure ready.**
 
-**E2 Experiment Status:** Preview server serves app HTML but React never mounts: `__name is not defined` errors accumulate per page load, then browser target crashes. All cases fail completion=0, so E2.3 (run 10×3) remains blocked on E2.2.
+**E2 Experiment Status:** Preview server starts, React mounts, Playwright test executes 10 cases × 3 reps × 2 arms with statistical analysis (McNemar, Wilcoxon). Completion 0% due to strategy registration bug: `componentPath` in `componentMap` (relative to `strategies/`) doesn't match `import.meta.glob` keys (relative to `hooks/`). One path fix away from powered run.
 
 ---
 
@@ -66,7 +66,7 @@ Success metric: `simulator:friction-detected → candidate:evaluated (measured, 
 | E2.1 | Fix Vite aliases for `@notention/core` subpaths | 2h | ✅ COMPLETE |
 | E2.2 | Fix production bundle browser errors (`__name`, `fs` leaks) | 4h | ✅ COMPLETE |
 | E2.3 | Run against preview server (10×3) | 4h | ✅ INFRASTRUCTURE WORKS; 0% completion (strategy registration bug) |
-| E2.4 | Fix strategy registration bug | 2h | **NEXT** |
+| E2.4 | Fix strategy registration bug (glob path match) | 1h | **NEXT** |
 | E2.5 | Re-run experiment | 2h | Pending |
 | E2.6 | If null: add 5 more cases, re-run | 2h | Pending |
 | E2.7 | If improved: create revision, consent, re-sim | 2h | Pending |
@@ -119,7 +119,8 @@ P0: tsup build fix (1 day)          ← ✅ COMPLETE
   ├─→ E2: Fix Vite aliases → production build → dev server, 10×3, verdict (2-3 days)
   │     ├─→ E2.1: Fix Vite aliases ✅ COMPLETE
   │     ├─→ E2.2: Fix production bundle ✅ COMPLETE
-  │     └─→ E2.3–E2.5: Run experiment (READY)
+  │     ├─→ E2.3: E2 test infrastructure ✅ COMPLETE
+  │     └─→ E2.4–E2.5: Fix glob path match → run experiment (READY)
   │
   ├─→ E13: llama.cpp provider + ablation (3 days)
   │     └─→ Winner → property-extraction@2
