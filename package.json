@@ -1,6 +1,17 @@
 {
-  "name": "notention-monorepo",
+  "name": "notention",
+  "version": "1.0.0",
   "private": true,
+  "exports": {
+    ".": "./core/dist/index.node.js",
+    "./core": "./core/dist/index.node.js",
+    "./agent": "./agent/dist/index.js",
+    "./cli": "./cli/dist/index.js",
+    "./optimize": "./optimize/dist/index.js",
+    "./simulator": "./simulator/dist/index.js",
+    "./eval": "./ui/eval/dist/index.js",
+    "./conformance": "./packages/conformance/dist/index.js"
+  },
   "workspaces": [
     "ui",
     "agent",
@@ -11,6 +22,7 @@
     "ui/eval"
   ],
   "scripts": {
+    "prepare": "npm run build",
     "build": "npm run build --workspaces",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "pnpm --filter @notention/core test && pnpm --filter @notention/agent test && pnpm --filter @notention/cli test && pnpm --filter @notention/optimize test && pnpm --filter @notention/simulator test",

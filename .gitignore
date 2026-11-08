@@ -81,3 +81,4 @@ test-*.ts
 
 # Benchmarks
 tmp-bench/
+data
