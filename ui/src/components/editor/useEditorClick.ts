@@ -6,13 +6,14 @@ interface InitialModalData {
     operator: string;
     value: string;
     icon?: string;
+    propertyId?: string;
 }
 
 import {View} from '@notention/core';
 
 interface UseEditorClickProps {
     editor: Editor | null;
-    setEditingPropertyPos: (pos: number) => void;
+    setEditingPropertyId: (id: string | null) => void;
     setInitialModalData: (data: InitialModalData | undefined) => void;
     setIsPropertyModalOpen: (open: boolean) => void;
     setSearchTerm: (term: string) => void;
@@ -22,53 +23,43 @@ interface UseEditorClickProps {
 }
 
 export const useEditorClick = ({
-                                   editor,
-                                   setEditingPropertyPos,
-                                   setInitialModalData,
-                                   setIsPropertyModalOpen,
-                                   setSearchTerm,
-                                   setActiveView,
-                                   addToast,
-                                   setSelectedNoteId
-                               }: UseEditorClickProps) => {
+                                    editor,
+                                    setEditingPropertyId,
+                                    setInitialModalData,
+                                    setIsPropertyModalOpen,
+                                    setSearchTerm,
+                                    setActiveView,
+                                    addToast,
+                                    setSelectedNoteId
+                                }: UseEditorClickProps) => {
 
     const handleEditorClick = useCallback((e: React.MouseEvent) => {
         const target = e.target as HTMLElement;
 
-        // Check if clicked inside a property node
+        // Check if clicked inside a property mark
         const propertyNode = target.closest('.node-property');
         if (propertyNode && editor) {
             e.preventDefault();
             e.stopPropagation();
 
-            // Try finding the node by searching from the click pos.
+            // Try finding the mark by searching from the click pos.
             const coords = {left: e.clientX, top: e.clientY};
             const posInfo = editor.view.posAtCoords(coords);
             if (posInfo) {
                 const {pos} = posInfo;
 
-                // Check specific node at pos
-                const nodeAt = editor.state.doc.nodeAt(pos);
-                if (nodeAt && nodeAt.type.name === 'property') {
-                    setEditingPropertyPos(pos);
+                // Check marks at pos
+                const marks = editor.state.doc.resolve(pos).marks();
+                const propertyMark = marks.find(m => m.type.name === 'propertyMark');
+                if (propertyMark) {
+                    const attrs = propertyMark.attrs as Record<string, unknown>;
+                    setEditingPropertyId(attrs.propertyId as string);
                     setInitialModalData({
-                        key: nodeAt.attrs.name,
-                        operator: nodeAt.attrs.operator,
-                        value: nodeAt.attrs.value,
-                        icon: nodeAt.attrs.icon
-                    });
-                    setIsPropertyModalOpen(true);
-                    return;
-                }
-                // Check before (if we clicked right side)
-                const nodeBefore = editor.state.doc.nodeAt(pos - 1);
-                if (nodeBefore && nodeBefore.type.name === 'property') {
-                    setEditingPropertyPos(pos - 1);
-                    setInitialModalData({
-                        key: nodeBefore.attrs.name,
-                        operator: nodeBefore.attrs.operator,
-                        value: nodeBefore.attrs.value,
-                        icon: nodeBefore.attrs.icon
+                        key: attrs.name as string,
+                        operator: attrs.operator as string,
+                        value: attrs.value as string,
+                        icon: attrs.icon as string | undefined,
+                        propertyId: attrs.propertyId as string,
                     });
                     setIsPropertyModalOpen(true);
                     return;
@@ -100,7 +91,7 @@ export const useEditorClick = ({
                 setActiveView('notes');
             }
         }
-    }, [editor, setEditingPropertyPos, setInitialModalData, setIsPropertyModalOpen, setSearchTerm, setActiveView, addToast, setSelectedNoteId]);
+    }, [editor, setEditingPropertyId, setInitialModalData, setIsPropertyModalOpen, setSearchTerm, setActiveView, addToast, setSelectedNoteId]);
 
     return handleEditorClick;
 };

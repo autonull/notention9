@@ -2,54 +2,52 @@ import {useCallback, useState} from 'react';
 import type {Editor} from '@tiptap/react';
 import type {OntologyAttribute, OntologyNode, Property} from '@notention/core';
 
+function generatePropertyId(): string {
+    return `prop_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+}
+
 export function usePropertyInsertion() {
     const [isPropertyModalOpen, setIsPropertyModalOpen] = useState(false);
-    const [editingPropertyPos, setEditingPropertyPos] = useState<number | null>(null);
+    const [editingPropertyId, setEditingPropertyId] = useState<string | null>(null);
     const [initialModalData, setInitialModalData] = useState<{
         key: string;
         operator: string;
         value: string;
         icon?: string;
+        propertyId?: string;
     } | undefined>(undefined);
 
-    const handleOpenPropertyModal = useCallback((key?: string) => {
-        setInitialModalData(key ? {key, operator: 'is', value: ''} : undefined);
+    const handleOpenPropertyModal = useCallback((key?: string, propertyId?: string) => {
+        setInitialModalData(key ? {key, operator: 'is', value: '', propertyId} : undefined);
+        if (propertyId) setEditingPropertyId(propertyId);
         setIsPropertyModalOpen(true);
     }, []);
 
     const handleInsertProperty = (editor: Editor | null, key: string, operator: string, value: string, icon?: string) => {
-        if (editor) {
-            if (editingPropertyPos !== null) {
-                // Replace existing node
-                editor.chain().focus().setNodeSelection(editingPropertyPos).deleteSelection().insertContent({
-                    type: 'property',
-                    attrs: {
-                        name: key,
-                        operator: operator,
-                        value: value,
-                        icon: icon,
-                    },
-                }).run();
-            } else {
-                // Insert new
-                editor
-                    .chain()
-                    .focus()
-                    .insertContent({
-                        type: 'property',
-                        attrs: {
-                            name: key,
-                            operator: operator,
-                            value: value,
-                            icon: icon,
-                        },
-                    })
-                    .insertContent(' ')
-                    .run();
-            }
+        if (!editor) return;
+
+        const propertyId = editingPropertyId || generatePropertyId();
+
+        if (editingPropertyId) {
+            // Remove existing mark with this propertyId
+            editor.chain().focus().unsetMark('propertyMark', {propertyId: editingPropertyId}).run();
         }
+
+        // Add new mark at current selection
+        editor
+            .chain()
+            .focus()
+            .setMark('propertyMark', {
+                propertyId,
+                name: key,
+                operator,
+                value,
+                icon,
+            })
+            .run();
+
         setIsPropertyModalOpen(false);
-        setEditingPropertyPos(null);
+        setEditingPropertyId(null);
         setInitialModalData(undefined);
     };
 
@@ -57,17 +55,15 @@ export function usePropertyInsertion() {
         if (!editor || properties.length === 0) return;
 
         properties.forEach(property => {
-            editor.chain().focus().insertContent({
-                type: 'property',
-                attrs: {
-                    name: property.key,
-                    operator: property.operator,
-                    value: property.values.join(', '),
-                },
+            const propertyId = generatePropertyId();
+            editor.chain().focus().setMark('propertyMark', {
+                propertyId,
+                name: property.key,
+                operator: property.operator,
+                value: property.values.join(', '),
+                icon: undefined,
             }).run();
         });
-
-        editor.chain().focus().insertContent(' ').run();
     };
 
     const findAttributeDef = (key: string, nodes: OntologyNode[]): OntologyAttribute | undefined => {
@@ -85,21 +81,28 @@ export function usePropertyInsertion() {
 
     const handleClosePropertyModal = () => {
         setIsPropertyModalOpen(false);
-        setEditingPropertyPos(null);
+        setEditingPropertyId(null);
         setInitialModalData(undefined);
     };
 
     const handlePrepareNewProperty = () => {
-        setEditingPropertyPos(null);
+        setEditingPropertyId(null);
         setInitialModalData(undefined);
         setIsPropertyModalOpen(true);
     };
 
+    // Helper to remove a property mark by propertyId
+    const removePropertyMark = useCallback((editor: Editor | null, propertyId: string) => {
+        if (editor) {
+            editor.chain().focus().unsetMark('propertyMark', {propertyId}).run();
+        }
+    }, []);
+
     return {
         isPropertyModalOpen,
         setIsPropertyModalOpen,
-        editingPropertyPos,
-        setEditingPropertyPos,
+        editingPropertyId,
+        setEditingPropertyId,
         initialModalData,
         setInitialModalData,
         handleOpenPropertyModal,
@@ -107,6 +110,7 @@ export function usePropertyInsertion() {
         insertProperties,
         findAttributeDef,
         handleClosePropertyModal,
-        handlePrepareNewProperty
+        handlePrepareNewProperty,
+        removePropertyMark,
     };
 }

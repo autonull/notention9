@@ -1,20 +1,31 @@
-import React, { useMemo } from 'react';
-import {NodeViewProps, NodeViewWrapper} from '@tiptap/react';
+import React, {useMemo} from 'react';
+import {MarkViewProps, NodeViewWrapper} from '@tiptap/react';
 import {ExclamationTriangleIcon, TagIcon} from '../ui/icons';
 import {ICON_MAP} from '../layout/iconMap';
 import {useSettings} from '../../hooks/useSettingsContext';
 import {useOntologyIndex} from '../../hooks/useOntologyIndex';
 import {validateAttributeValue, getCanonicalKey} from '@notention/core';
 
-export function PropertyChip(props: NodeViewProps) {
-    const {node} = props;
-    const {name, operator, value, icon} = node.attrs;
+// Support both NodeViewProps (legacy) and MarkViewProps (new)
+interface PropertyViewProps {
+    node?: {attrs: Record<string, unknown>};
+    mark?: {attrs: Record<string, unknown>};
+    updateAttributes?: (attrs: Record<string, unknown>) => void;
+    deleteNode?: () => void;
+    getPos?: () => number | undefined;
+    editor?: {view: {domAtPos: (pos: number) => {node: Node}}; state: {doc: {nodeAt: (pos: number) => {type: {name: string}; attrs: Record<string, unknown>}}}};
+}
+
+export function PropertyChip(props: PropertyViewProps) {
+    // Support both node (legacy) and mark (new) views
+    const attrs = props.node?.attrs ?? props.mark?.attrs ?? {};
+    const {name, operator, value, icon, propertyId} = attrs;
 
     const {settings} = useSettings();
     const {propertyTypes} = useOntologyIndex(settings.ontology ?? []);
 
     const canonicalKey = useMemo(() => {
-        return getCanonicalKey(name, settings.ontology ?? []);
+        return getCanonicalKey(name as string, settings.ontology ?? []);
     }, [name, settings.ontology]);
 
     // Enhanced Validation Logic - Use canonical key to look up definition
@@ -27,7 +38,7 @@ export function PropertyChip(props: NodeViewProps) {
     const isAlias = canonicalKey !== name;
 
     const validation = useMemo(() => {
-        return validateAttributeValue(name, operator, value, definition);
+        return validateAttributeValue(name as string, operator as string, value as string, definition);
     }, [name, operator, value, definition]);
 
     // Styling

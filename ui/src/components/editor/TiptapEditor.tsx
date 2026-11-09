@@ -61,7 +61,8 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
     const {
         isPropertyModalOpen,
         setIsPropertyModalOpen,
-        setEditingPropertyPos,
+        editingPropertyId,
+        setEditingPropertyId,
         initialModalData,
         setInitialModalData,
         handleOpenPropertyModal,
@@ -69,7 +70,8 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
         insertProperties,
         findAttributeDef,
         handleClosePropertyModal,
-        handlePrepareNewProperty
+        handlePrepareNewProperty,
+        removePropertyMark
     } = usePropertyInsertion();
 
     const {suggestions: ontologySuggestions} = useOntologySuggestions();
@@ -136,7 +138,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
 
     const handleEditorClick = useEditorClick({
         editor,
-        setEditingPropertyPos,
+        setEditingPropertyId,
         setInitialModalData,
         setIsPropertyModalOpen,
         setSearchTerm,
@@ -167,10 +169,11 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
             <InsertPropertyModal
                 isOpen={isPropertyModalOpen}
                 onClose={handleClosePropertyModal}
-                onInsert={(key, op, val, icon) => handleInsertProperty(editor, key, op, val, icon)}
+                onInsert={(key, op, val, icon, propertyId) => handleInsertProperty(editor, key, op, val, icon)}
                 initialKey={initialModalData?.key}
                 initialOperator={initialModalData?.operator}
                 initialValue={initialModalData?.value}
+                initialPropertyId={initialModalData?.propertyId}
                 attributeDef={initialModalData?.key ? findAttributeDef(initialModalData.key, ontology) : undefined}
                 ontology={ontology}
                 isEditing={!!initialModalData}

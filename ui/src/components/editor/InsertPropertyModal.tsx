@@ -12,10 +12,11 @@ import {useMetrics, Metrics} from '../../hooks/useMetrics';
 interface InsertPropertyModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onInsert: (key: string, operator: string, value: string, icon?: string) => void;
+    onInsert: (key: string, operator: string, value: string, icon?: string, propertyId?: string) => void;
     initialKey?: string;
     initialOperator?: string;
     initialValue?: string;
+    initialPropertyId?: string;
     attributeDef?: OntologyAttribute;
     ontology?: OntologyNode[];
     isEditing?: boolean;
@@ -30,6 +31,7 @@ export function InsertPropertyModal({
     initialKey = '',
     initialOperator = 'is',
     initialValue = '',
+    initialPropertyId,
     attributeDef,
     ontology,
     isEditing = false,
@@ -57,7 +59,7 @@ export function InsertPropertyModal({
             setValue(initialValue || '');
             setTouched(false);
         }
-    }, [isOpen, initialKey, initialOperator, initialValue]);
+    }, [isOpen, initialKey, initialOperator, initialValue, initialPropertyId]);
 
     const validation = useMemo(() => {
         return validateAttributeValue(key, operator, value, activeDef);
@@ -101,7 +103,7 @@ export function InsertPropertyModal({
         setTouched(true);
         if (!key.trim() || !value.trim() || !validation.isValid) return;
 
-        onInsert(key.trim(), operator, value.trim(), activeDef?.icon);
+        onInsert(key.trim(), operator, value.trim(), activeDef?.icon, initialPropertyId);
         onClose();
     };
 
