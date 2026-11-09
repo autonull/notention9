@@ -2,7 +2,7 @@
 
 **Supersedes:** TODO.15.md
 **Date:** 2026-11-09
-**Status:** P0 Tooling/Deps ✅. P0 Build ✅ (tsup node `splitting` fixed). P1 Core/UI ✅ (E2.1–E2.5, E2.5a–f). **E15.0 ✅ (React 19 unblock)**. **E15.1 ✅ (Structured NoteDocument)**. **E15.2 ✅ (Chip UX on structured model)**. **E15.3 ✅ (Engine decision: stay Tiptap 3.x)**. **E15 complete. P3 Experiment E2 NEXT** (E2.6–E2.9). **P4 E13/E7/E14 DEFERRED**.
+**Status:** P0 Tooling/Deps ✅. P0 Build ✅ (tsup node `splitting` fixed). P1 Core/UI ✅ (E2.1–E2.5, E2.5a–f). **E15.0 ✅ (React 19 unblock)**. **E15.1 ✅ (Structured NoteDocument)**. **E15.2 ✅ (Chip UX on structured model)**. **E15.3 ✅ (Engine decision: stay Tiptap 3.x)**. **E15 complete.** **P2 Runtime Fixes NEXT** (blocking E2). **P3 Experiment E2 DEFERRED**. **P4 E13/E7/E14 DEFERRED**.
 
 ---
 
@@ -23,13 +23,14 @@ Success metric: `simulator:friction-detected → candidate:evaluated (measured, 
 | **P0** | **Tooling/Dependencies** | T1–T5: Update all deps across workspaces | ✅ COMPLETE |
 | **P0** | **Build/Type System** | tsup migration, type exports | ✅ COMPLETE |
 | **P1** | **Core/UI Runtime** | Vite aliases, production bundle, strategy registration, component errors, screenshot tests | E2.1–E2.5 ✅, **E2.5a–f ✅**, **E2 DEFERRED** |
-| **P2** | **Editor Modernization** | E15.0 React 19 unblock → E15.1 structured document → E15.2 chip UX → E15.3 engine gate | **E15.0 ✅** |
-| **P3** | **Experiment Execution** | E2.6–E2.9 run, verdict, ledger | Deferred until E15 complete |
+| **P2** | **Runtime Fixes (NEW)** | `__name` polyfill in all chunks, strategy `enabled` resolution, Nostr noise suppression | **BLOCKING E2** |
+| **P2** | **Editor Modernization** | E15.0 React 19 unblock → E15.1 structured document → E15.2 chip UX → E15.3 engine gate | **E15.0–15.3 ✅** |
+| **P3** | **Experiment Execution** | E2.6–E2.9 run, verdict, ledger | Deferred until P2 Runtime Fixes complete |
 | **P4** | **Peripheral/Optional** | E13 llama.cpp ablation, E7/E14 ontology drift | Deferred until P3 done |
 
 **Rule:** No work on P2/P3 until P1 complete. No parallel tracks. P0 Tooling must complete before P0 Build.
 
-**New Order:** E15 (editor modernization) runs first. E2 (experiment) runs after E15 complete. E13 may jump ahead only when its local llama.cpp provider is ready; never interleave tracks.
+**New Order:** E15 (editor modernization) runs first → **P2 Runtime Fixes** → E2 (experiment) runs after P2 complete. E13 may jump ahead only when its local llama.cpp provider is ready; never interleave tracks.
 
 ---
 
@@ -174,6 +175,20 @@ Persistence    → JSON (later CBOR/CRDT/agent-native)
 
 ---
 
+## 🔧 P2 Runtime Fixes (Blocking E2 — Must Complete Before Experiments)
+
+The following runtime errors block reliable E2 measurement. All must be fixed before running experiments.
+
+| Issue | Root Cause | Fix Required | Files |
+|-------|------------|--------------|-------|
+| **P2.1** `__name is not defined` in dynamic chunks | Vite code-splits into multiple chunks; `namePolyfillPlugin` only injects into main entry chunk. Each chunk needs the polyfill at module scope. | Modify `namePolyfillPlugin` to inject `__name` polyfill into **every** chunk via `generateBundle`, or add polyfill to `optimizeDeps.include` so it's pre-bundled into vendor chunk. | `ui/vite.config.ts` |
+| **P2.2** `Cannot read properties of undefined (reading 'enabled')` | Strategy resolution returns `undefined` for some seams; dashboard/match preview components access `.enabled` on undefined strategy config. | Fix strategy registration/resolution for `match-0` and `layout` seams; add defensive checks in components. | `ui/src/strategies/strategyConfigs.ts`, `ui/src/components/dashboard/LocalMatchPreview.tsx`, `ui/src/components/dashboard/DashboardLocalMatch.tsx` |
+| **P2.3** Nostr relay connection errors (noise) | No backend relays available; `RobustWebSocket` falls back to offline mode, spamming console. | Suppress expected "Offline" errors in dev/test; configure local relay for testing; or mock `AgentService` in test harness. | `core/src/network/RobustWebSocket.ts`, `ui/src/services/AgentService.ts` |
+
+**Gate:** All three issues resolved → E2 experiment can run with clean console and reliable measurements.
+
+---
+
 ## 🚫 Explicitly Deferred / Removed (Peripheral or Invasive)
 
 | Item | Category | Reason |
@@ -198,18 +213,23 @@ Persistence    → JSON (later CBOR/CRDT/agent-native)
 P0: Tooling/Deps update (T1–T5)  ← ✅ COMPLETE
 P0: tsup build fix (1 day)       ← ✅ COMPLETE
   │
-  ├─→ E15: Editor Modernization (P2; NOW)
+  ├─→ E15: Editor Modernization (P2)
   │     ├─→ E15.0: React 19 unblock (Fast Refresh + bump)  ← ✅ COMPLETE
   │     ├─→ E15.1: Structured NoteDocument (JSON canonical, HTML export-only)  ← ✅ COMPLETE
   │     ├─→ E15.2: Chip UX on structured model  ← ✅ COMPLETE
   │     ├─→ E15.3: Engine decision gate (stay Tiptap / PM / Lexical)  ← ✅ COMPLETE
   │     └─→ E15.4: CRDT/CBOR/agent-native (deferred)
   │
-  ├─→ E2: Capture-Flow A/B Experiment (P3; after E15)
+  ├─→ P2: Runtime Fixes (NEW; BLOCKING E2)
+  │     ├─→ P2.1: __name polyfill in all chunks  ← NEXT
+  │     ├─→ P2.2: Strategy 'enabled' resolution
+  │     └─→ P2.3: Nostr relay noise suppression
+  │
+  ├─→ E2: Capture-Flow A/B Experiment (P3; after P2 Runtime Fixes)
   │     ├─→ E2.1–E2.5, E2.5a–f: ✅ COMPLETE
   │     └─→ E2.6–E2.9: Run experiment, verdict, ledger chain  ← DEFERRED
   │
-  ├─→ E13: llama.cpp provider + ablation (P4; after E15)
+  ├─→ E13: llama.cpp provider + ablation (P4; after E2)
   │     └─→ Winner → property-extraction@2
   │
   └─→ E7/E14: Only if corpus available & E2/E13 null (P4)
@@ -234,8 +254,9 @@ P0: tsup build fix (1 day)       ← ✅ COMPLETE
 | Experiment / Track | Required Artifacts | Timing |
 |------------|-------------------|--------|
 | **E15** | `doc/decisions/012-note-document.md` + `doc/decisions/013-editor-engine.md` + migration/round-trip tests | **E15.0–15.3 ✅** (schema, adapters, chip UX, engine ADR done) |
-| E2 | `doc/evidence/2026-11-e2-results.md` + ledger chain | After E15 |
-| E13 | `doc/evidence/2026-11-e13-results.md` + `property-extraction@2` | After E15 |
+| **P2 Runtime Fixes** | Clean console (no `__name`, no `enabled` errors, no Nostr noise) + dev server + production preview both mount | **Before E2** |
+| E2 | `doc/evidence/2026-11-e2-results.md` + ledger chain | After P2 Runtime Fixes |
+| E13 | `doc/evidence/2026-11-e13-results.md` + `property-extraction@2` | After E2 |
 | E7/E14 | `doc/evidence/2026-11-e7-results.md` (if run) | After E2/E13 |
 
 ---
