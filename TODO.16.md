@@ -78,12 +78,13 @@ Updated all tooling and dependencies across workspaces. Fixed breaking changes f
 | **E2.5c** | **Screenshot: Playwright localStorage warning — `--localstorage-file` not provided** | **NEXT** |
 | **E2.5d** | **UI unit tests: matching/soft-match failures (4 tests)** | **NEXT** |
 | **E2.5e** | **UI unit tests: matching_overlap failures (2 tests)** | **NEXT** |
-| E2.6 | Run experiment (10 cases × 3 reps × 2 arms) | Blocked on E2.5a–e |
+| **E2.5f** | **Optimize unit test: cannot resolve `@notention/core` in extractionSchema.test.ts** | **NEXT** |
+| E2.6 | Run experiment (10 cases × 3 reps × 2 arms) | Blocked on E2.5a–f |
 | E2.7 | If null: add 5 more cases, re-run | Pending |
 | E2.8 | If improved: create revision, consent, re-sim | Pending |
 | E2.9 | Ledger chain + write-up | Pending |
 
-**Gate:** Powered verdict (any sign) + ledger chain recorded. All screenshot tests pass. All UI unit tests pass.
+**Gate:** Powered verdict (any sign) + ledger chain recorded. **All tests pass** (core, agent, cli, simulator, optimize, ui unit, screenshots).
 
 #### E2.5 root-cause fixes (2026-11-09)
 
