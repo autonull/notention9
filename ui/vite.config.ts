@@ -2,6 +2,7 @@
 import path from 'path';
 import {defineConfig, loadEnv} from 'vite';
 import {configDefaults} from 'vitest/config';
+import react from '@vitejs/plugin-react';
 import nodePolyfills from 'rollup-plugin-node-polyfills';
 // import {VitePWA} from 'vite-plugin-pwa'; // Temporarily disabled due to Node.js module resolution issues
 
@@ -16,21 +17,63 @@ const excludeTestsPlugin = {
     },
 };
 
-// Plugin to inject __name polyfill into all chunks that use it
-const injectNamePolyfillPlugin = {
-    name: 'inject-name-polyfill',
+// Plugin to inject __name polyfill into production JS chunks via renderChunk
+const namePolyfillPlugin = {
+    name: 'name-polyfill',
     enforce: 'post',
-    renderChunk(code) {
-        // Detect Rollup's __name helper pattern (both minified and unminified)
-        const hasNameHelper = /\b__name\s*\(/.test(code) || /var __name\s*=/.test(code);
-        const hasPolyfill = /var __name\s*=\s*function __name\(/.test(code);
-        if (hasNameHelper && !hasPolyfill) {
-            const polyfill = `var __name = function __name(fn, name) { try { Object.defineProperty(fn, 'name', { value: name, configurable: true }); } catch (e) {} return fn; };`;
-            return polyfill + '\n' + code;
+    renderChunk(code, chunk) {
+        if (chunk.fileName.endsWith('.js')) {
+            const polyfill = `var __name = function __name(fn, name) { try { Object.defineProperty(fn, 'name', { value: name, configurable: true }); } catch (e) {} return fn; };\n`;
+            if (!/var __name\s*=\s*function __name\(/.test(code)) {
+                return polyfill + code;
+            }
         }
         return code;
     },
 };
+
+// Mirror core's tsup browser-variant rewrite for the dev server:
+// Node-only core modules (fs/sqlite) must resolve to their `.browser.ts` twins.
+const CORE_BROWSER_TWINS = [
+    'telemetry/journal',
+    'telemetry/revisionStore',
+    'telemetry/ledger',
+    'ui/ProfileRegistry',
+    'utils/common',
+];
+const coreBrowserVariantPlugin = {
+    name: 'core-browser-variant',
+    enforce: 'pre',
+    resolveId(source, importer) {
+        if (!importer || !source.startsWith('.') || !source.endsWith('.js')) return null;
+        const cleanImporter = importer.split('?')[0];
+        if (!cleanImporter.includes('/core/src/')) return null;
+        const base = path.resolve(path.dirname(cleanImporter), source).replace(/\.js$/, '');
+        return CORE_BROWSER_TWINS.some(twin => base.endsWith(`/${twin}`))
+            ? `${base}.browser.ts`
+            : null;
+    },
+};
+
+// Plugin to preserve React's named exports by converting to namespace imports
+const preserveReactExportsPlugin = {
+    name: 'preserve-react-exports',
+    enforce: 'post',
+    renderChunk(code) {
+        // Convert named React imports to namespace imports to avoid chunk splitting issues
+        // import { useRef, useState, useEffect } from 'react'
+        // -> import * as React from 'react'; const { useRef, useState, useEffect } = React;
+        return code
+            .replace(/import\s*\{\s*([^}]+)\s*\}\s*from\s*['"]react['"]/g, (match, imports) => {
+                const namedImports = imports.split(',').map(i => i.trim()).filter(Boolean);
+                const destructured = namedImports.join(', ');
+                return `import * as React from 'react'; const { ${destructured} } = React;`;
+            })
+            .replace(/import\s+React\s+from\s+['"]react['"]/g, "import * as React from 'react'");
+    },
+};
+
+
 
 // Plugin to remove __name (Vite dev-only) from production builds
 const removeDevOnlyPlugin = {
@@ -55,6 +98,7 @@ export default defineConfig(({mode}) => {
 
     return {
         define: {
+            global: 'globalThis',
             'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
             'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
             'import.meta.env.VITE_DEV_HOOKS': JSON.stringify(env.VITE_DEV_HOOKS === 'true'),
@@ -103,9 +147,7 @@ export default defineConfig(({mode}) => {
                 // @notention/ui internal modules
                 { find: '@notention/ui/strategies/strategyConfigs', replacement: path.resolve(__dirname, './src/strategies/strategyConfigs.ts') },
                 { find: '@notention/ui/strategies/componentMap', replacement: path.resolve(__dirname, './src/strategies/componentMap.ts') },
-                // @notention/core - directory-based resolution for main entry
-                // Dev: src/index.browser.ts (browser entry), Production: dist/browser directory
-                { find: '@notention/core', replacement: path.resolve(__dirname, isDev ? '../core/src/index.browser.ts' : '../core/dist/browser') },
+                // @notention/core - EXPLICIT subpath aliases MUST come before general @notention/core alias
                 // Explicit subpath aliases for imports used in UI codebase
                 { find: '@notention/core/ui', replacement: path.resolve(__dirname, isDev ? '../core/src/ui' : '../core/dist/browser/ui') },
                 { find: '@notention/core/ui/strategy', replacement: path.resolve(__dirname, isDev ? '../core/src/ui/strategy.ts' : '../core/dist/browser/ui/strategy.js') },
@@ -139,6 +181,9 @@ export default defineConfig(({mode}) => {
                 { find: '@notention/core/events', replacement: path.resolve(__dirname, isDev ? '../core/src/events/index.ts' : '../core/dist/browser/events/index.js') },
                 { find: '@notention/core/utils', replacement: path.resolve(__dirname, isDev ? '../core/src/utils/index.browser.ts' : '../core/dist/browser/utils/index.js') },
                 { find: '@notention/core/constants', replacement: path.resolve(__dirname, isDev ? '../core/src/constants/index.ts' : '../core/dist/browser/constants/index.js') },
+                // @notention/core - directory-based resolution for main entry (MUST be LAST to not shadow subpath aliases)
+                // Dev: src/index.browser.ts (browser entry), Production: dist/browser directory
+                { find: '@notention/core', replacement: path.resolve(__dirname, isDev ? '../core/src/index.browser.ts' : '../core/dist/browser') },
                 // Node.js built-in polyfills - use direct file paths for packages without proper ESM exports
                 { find: 'crypto', replacement: path.resolve(__dirname, './node_modules/crypto-browserify/index.js') },
                 { find: 'stream', replacement: path.resolve(__dirname, './node_modules/stream-browserify/index.js') },
@@ -207,9 +252,12 @@ export default defineConfig(({mode}) => {
         // Enable PWA functionality
         publicDir: 'public',
         plugins: [
+            react(),
+            coreBrowserVariantPlugin,
             excludeTestsPlugin,
-            injectNamePolyfillPlugin,
-            // removeDevOnlyPlugin disabled - injectNamePolyfillPlugin handles __name
+            namePolyfillPlugin,
+            preserveReactExportsPlugin,
+            // removeDevOnlyPlugin disabled - namePolyfillPlugin handles __name
             // VitePWA temporarily disabled due to Node.js module resolution issues with eval/telemetry
             // VitePWA({
             //     registerType: 'autoUpdate',
@@ -259,6 +307,8 @@ export default defineConfig(({mode}) => {
         ],
         build: {
             cssCodeSplit: true,
+            // Prevent chunk splitting to avoid React export mangling
+            experimentalMinChunkSize: 5000000, // 5MB - keep main chunk together
             terserOptions: {
                 compress: {
                     // Disable __name helper used for function name preservation
@@ -271,14 +321,40 @@ export default defineConfig(({mode}) => {
                 },
             },
             rollupOptions: {
+                // Preserve modules to prevent chunk splitting that breaks React exports
+                preserveModules: true,
+                preserveModulesRoot: 'src',
                 input: {
                     main: path.resolve(__dirname, 'index.html'),
                 },
                 output: {
                     manualChunks(id) {
-                        // Single chunk for ALL node_modules — Rollup's shared CJS helpers
-                        // (e.g. commonjsGlobal) live in arbitrary chunks; splitting node_modules
-                        // creates cross-chunk cycles that break CommonJS lazy-init at runtime.
+                        // Keep ALL React ecosystem + Tiptap + UI code in main chunk to preserve exports
+                        // Only split truly independent vendor libraries
+                        if (id.includes('node_modules/@tiptap/') ||
+                            id.includes('node_modules/react') ||
+                            id.includes('node_modules/react-dom') ||
+                            id.includes('node_modules/scheduler') ||
+                            id.includes('node_modules/jsx-runtime') ||
+                            id.includes('node_modules/@tiptap/') ||
+                            id.includes('node_modules/tippy.js') ||
+                            id.includes('node_modules/leaflet') ||
+                            id.includes('node_modules/react-force-graph') ||
+                            id.includes('node_modules/react-big-calendar') ||
+                            id.includes('node_modules/date-fns') ||
+                            id.includes('node_modules/dompurify') ||
+                            id.includes('node_modules/nostr-tools') ||
+                            id.includes('node_modules/@noble/') ||
+                            id.includes('node_modules/@meshtastic/') ||
+                            id.includes('node_modules/cbor-x') ||
+                            id.includes('node_modules/uuid') ||
+                            id.includes('node_modules/ai') ||
+                            id.includes('node_modules/zod') ||
+                            id.includes('node_modules/express') ||
+                            id.includes('node_modules/playwright')) {
+                            return; // Keep in main bundle
+                        }
+                        // Other vendor libs (polyfills, utilities)
                         if (id.includes('node_modules')) {
                             return 'vendor';
                         }

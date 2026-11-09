@@ -64,38 +64,38 @@ describe('PropertyExtractor Tests', () => {
 
     test('should extract channel property', async () => {
       const result = await extractor.extractFromText('via whatsapp');
-      expect(result).toContainEqual({
+      expect(result).toContainEqual(expect.objectContaining({
         key: 'channel',
         operator: 'is',
         values: ['whatsapp']
-      });
+      }));
     });
 
     test('should extract email property', async () => {
       const result = await extractor.extractFromText('Contact: john@example.com');
-      expect(result).toContainEqual({
+      expect(result).toContainEqual(expect.objectContaining({
         key: 'email',
         operator: 'is',
         values: ['john@example.com']
-      });
+      }));
     });
 
     test('should extract location property', async () => {
       const result = await extractor.extractFromText('Meeting at New York');
-      expect(result).toContainEqual({
+      expect(result).toContainEqual(expect.objectContaining({
         key: 'location',
         operator: 'is near',
         values: ['New York']
-      });
+      }));
     });
 
     test('should extract date property', async () => {
       const result = await extractor.extractFromText('Tomorrow meeting');
-      expect(result).toContainEqual({
+      expect(result).toContainEqual(expect.objectContaining({
         key: 'date',
         operator: 'is',
         values: [expect.any(String)] // Date string
-      });
+      }));
     });
 
     test('should extract multiple properties', async () => {

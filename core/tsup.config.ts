@@ -150,7 +150,7 @@ export default defineConfig([
     entry: nodeEntries,
     format: ['esm'],
     dts: false,
-    splitting: false,
+    splitting: true,
     sourcemap: true,
     clean: true,
     outDir: 'dist',

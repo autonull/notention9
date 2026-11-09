@@ -151,7 +151,9 @@ export async function registerUIStrategies(): Promise<void> {
             {},
             {}
         );
-        strategyRegistry.register(seamStrategy);
+        if (!strategyRegistry.has(seamStrategy.name)) {
+            strategyRegistry.register(seamStrategy);
+        }
     }
 
     // Import custom strategy implementations (these have custom logic beyond simple component rendering)
@@ -196,7 +198,9 @@ export async function registerUIStrategies(): Promise<void> {
             config.paramSpec
         );
 
-        strategyRegistry.register(strategy);
+        if (!strategyRegistry.has(strategy.name)) {
+            strategyRegistry.register(strategy);
+        }
         strategyComponentFactories.set(config.id, strategyImpl);
     }
 }
@@ -390,11 +394,16 @@ export async function initializeProfiles(): Promise<void> {
     });
 }
 
-export async function initializeStrategySystem(): Promise<void> {
-    await initializeProfiles();
-    await registerUIStrategies();
-    // Apply any pending revision params from optimizer
-    applyPendingRevisionParams();
+let initPromise: Promise<void> | null = null;
+
+export function initializeStrategySystem(): Promise<void> {
+    initPromise ??= (async () => {
+        await initializeProfiles();
+        await registerUIStrategies();
+        // Apply any pending revision params from optimizer
+        applyPendingRevisionParams();
+    })();
+    return initPromise;
 }
 
 const USER_CONFIG_KEY = 'notention:user-config';

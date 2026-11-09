@@ -103,6 +103,16 @@ export function PropertyForm({
         }
     };
 
+    const handlePickLocation = async (): Promise<string> => {
+        if (isAdding && !key) setKey('location');
+        const result = onPickLocation!();
+        if (result instanceof Promise) {
+            const loc = await result;
+            return loc ?? '';
+        }
+        return '';
+    };
+
     const currentAttr = key ? getAttributeDetails(key, ontology) : undefined;
     const type = currentAttr?.type;
     const description = currentAttr?.description;
@@ -244,15 +254,7 @@ export function PropertyForm({
                 value={value}
                 onChange={setValue}
                 attributeDef={currentAttr}
-                onPickLocation={onPickLocation ? async (): Promise<string> => {
-                    if (isAdding && !key) setKey('location');
-                    const result = onPickLocation();
-                    if (result instanceof Promise) {
-                        const loc = await result;
-                        return loc ?? '';
-                    }
-                    return '';
-                } : undefined}
+                onPickLocation={onPickLocation ? handlePickLocation : undefined}
             />
             <div className="flex justify-end gap-2 pt-1">
                 <IconButton

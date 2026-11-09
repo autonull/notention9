@@ -21,7 +21,7 @@ const SOURCE_LABEL: Record<string, string> = {
     remote: 'A model runs elsewhere. The text leaves the device once you allow it.',
 };
 
-export function DescribeItComposer({isOpen, onClose, onApply, ontology}: DescribeItComposerProps) {
+export function DescribeItComposer({isOpen, onClose, onApply, ontology, placeholder, autoFocus}: DescribeItComposerProps) {
     const [text, setText] = useState('');
     const {
         proposals,

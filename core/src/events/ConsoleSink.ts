@@ -46,7 +46,7 @@ export class ConsoleSink implements EventSink {
         this.enabled = options.enabled ?? true;
         this.sampleRate = options.sampleRate ?? 1.0;
         this.prettyPrint = options.prettyPrint ?? true;
-        this.colors = options.colors ?? (typeof process !== 'undefined' && process.stdout.isTTY);
+        this.colors = options.colors ?? (typeof process !== 'undefined' && !!process.stdout?.isTTY);
         this.minSeverity = options.minSeverity ?? 'warning';
     }
 

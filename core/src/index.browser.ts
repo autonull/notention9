@@ -106,9 +106,13 @@ export {
     mergeAttributes,
     renameAttribute,
     renameNode,
-    detectConflicts,
     buildWidgetMetadata,
 } from './ontology/index.js';
+
+// Notes - from notes/index.js
+export {
+    detectConflicts,
+} from './notes/index.js';
 
 export {
     DEFAULT_ONTOLOGY,
@@ -120,29 +124,40 @@ export {
 
 // Extraction - from extraction/index.js
 export {
-    MatchEngine,
-    PropertyExtractor,
     ExtractionPipeline,
-    ExtractionPipelineResult,
 } from './extraction/index.js';
+
+// PropertyExtractor - from notes/propertyExtractor/index.js
+export {
+    PropertyExtractor,
+} from './notes/propertyExtractor/index.js';
+
+// Matching - from matching/index.js
+export {
+    MatchEngine,
+} from './matching/index.js';
 
 // Notes - from notes/index.js
 export {
     createNote,
-    Note,
     NotePipeline,
-    NOTE_STATUS,
     normalizeNoteProperties,
     NoteFilter,
     inferNoteIntent,
     replacePropertyInString,
-    parseGeoFromValues,
-    haversineDistance,
-    GeoCoords,
-    PrivacyLevel,
-    SortOrder,
     isNoteActive,
 } from './notes/index.js';
+
+// Status constants - from utils/constants.js
+export {
+    NOTE_STATUS,
+} from './utils/constants.js';
+
+// Geo helpers - from utils/geo.js
+export {
+    parseGeoFromValues,
+    haversineDistance,
+} from './utils/geo.js';
 
 // Tracing - from tracing/index.js
 export {
@@ -159,8 +174,12 @@ export {
 // Date parsing - from utils/dateParsing.js
 export {
     parseNaturalDate,
-    DATE_PROPERTY_KEYS,
 } from './utils/dateParsing.js';
+
+// Date property keys - from utils/constants.js
+export {
+    DATE_PROPERTY_KEYS,
+} from './utils/constants.js';
 
 // CSV Export - from utils/csvExport.js
 export {
@@ -170,7 +189,6 @@ export {
 // Pattern recognition - from patternRecognition/index.js
 export {
     patternRecognitionService,
-    SuggestedAttribute,
 } from './patternRecognition/index.js';
 
 // Nostr - from network/nostr/nostr.js
@@ -178,19 +196,26 @@ export {
     DEFAULT_RELAYS,
     pool,
     resolveRelays,
-    hexToBytes,
     convertEventToNote,
     publishNoteToNostr,
     extractPropertiesFromTags,
-    formatPropertyTag,
     formatNpub,
-    NostrNetworkProvider,
-    MeshtasticNetworkProvider,
-    SEMANTIC_NOTE_KIND,
     queryEvents,
-    getAliases as nostrGetAliases,
-    getCanonicalKey as nostrGetCanonicalKey,
 } from './network/nostr/nostr.js';
+
+// Encoding - from utils/encoding.js
+export {
+    hexToBytes,
+} from './utils/encoding.js';
+
+// Property tags - from notes/parsing/formatting.js
+export {
+    formatPropertyTag,
+} from './notes/parsing/formatting.js';
+
+// Network providers
+export { NostrNetworkProvider } from './network/nostr/NostrNetworkProvider.js';
+export { MeshtasticNetworkProvider } from './network/meshtastic/MeshtasticNetworkProvider.js';
 
 // Network - from network/index.js
 export {
@@ -203,9 +228,13 @@ export {
     NetworkDiscoveryService,
 } from './network/nostr/discovery.js';
 
-// Export - from export/index.js
+// Export commands - from utils/commands.js
 export {
     SHARED_COMMANDS,
+} from './utils/commands.js';
+
+// Export - from export/index.js
+export {
     buildSingleNoteExport,
 } from './export/index.js';
 
@@ -232,6 +261,7 @@ export {
     EMERGENT_NODE_ID,
     EMERGENT_NODE_LABEL,
     SUGGESTION_THRESHOLD,
+    SEMANTIC_NOTE_KIND,
 } from './config.js';
 
 // Storage - from storage/recovery.js
@@ -239,10 +269,10 @@ export {
     storageRecovery,
 } from './storage/recovery.js';
 
-// Tools - from utils/tools.js
+// Notes equality - from notes/index.js
 export {
     areNotesEqual,
-} from './utils/tools.js';
+} from './notes/index.js';
 
 // Security - from security/index.js
 export {
@@ -253,8 +283,12 @@ export {
 export {
     MetaphorRegistry,
     metaphorRegistry,
-    metaphorMapper,
 } from './skills/metaphor/MetaphorRegistry.js';
+
+// Metaphor mapper - from skills/metaphor/MetaphorMapper.js
+export {
+    metaphorMapper,
+} from './skills/metaphor/MetaphorMapper.js';
 
 // Policy/Presentation - from policy/presentation.js
 export {
@@ -280,14 +314,26 @@ export type {
     SuggestedAttribute,
 } from './schemas/index.js';
 
+// Domain types - from types/domain.js
+export type {
+    Note,
+    PrivacyLevel,
+    SortOrder,
+} from './types/index.js';
+
+// Geo types - from utils/geo.js
+export type {
+    GeoCoords,
+} from './utils/geo.js';
+
 // Runtime exports for schema types that are also values (from their actual source files)
 export { MatchingService } from './matching/MatchingService.js';
 export { NetworkGate, PrivacyError } from './network/networkGate.js';
 
-// Validation - from validation/index.js
+// Validation - from utils/attributeValidation.js
 export {
     validateAttributeValue,
-} from './validation/index.js';
+} from './utils/attributeValidation.js';
 
 // New extensibility modules (namespace exports)
 export * as suggestions from './suggestions/SuggestionStore.browser.js';

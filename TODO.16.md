@@ -1,8 +1,8 @@
-# TODO.16 — Consolidated Experiment Execution Plan
+# TODO.16 — Consolidated Experiment + Editor Plan
 
 **Supersedes:** TODO.15.md
 **Date:** 2026-11-09
-**Status:** P0 Tooling/Deps update ✅. P0 Build fix ✅. P1 Core/UI: strategy registration ✅, component errors blocking (E2.5 NEXT).
+**Status:** P0 Tooling/Deps ✅. P0 Build ✅ (tsup node `splitting` fixed). P1 Core/UI ✅ (E2.1–E2.5). **P2 Experiment E2.6 NEXT** (unblocked). P3 Editor Modernization planned (E15).
 
 ---
 
@@ -22,24 +22,29 @@ Success metric: `simulator:friction-detected → candidate:evaluated (measured, 
 |----------|----------|-------|--------|
 | **P0** | **Tooling/Dependencies** | T1–T5: Update all deps across workspaces | ✅ COMPLETE |
 | **P0** | **Build/Type System** | tsup migration, type exports | ✅ COMPLETE |
-| **P1** | **Core/UI Runtime** | Vite aliases, production bundle, strategy registration, component errors | E2.1–E2.4 ✅, **E2.5 NEXT** |
-| **P2** | **Experiment Execution** | E2.6–E2.9 run, verdict, ledger | Blocked on P1 |
-| **P3** | **Peripheral/Optional** | E13 llama.cpp ablation, E7/E14 ontology drift | Deferred until P2 done |
+| **P1** | **Core/UI Runtime** | Vite aliases, production bundle, strategy registration, component errors | ✅ E2.1–E2.5 |
+| **P2** | **Experiment Execution** | E2.6–E2.9 run, verdict, ledger | **Unblocked — E2.6 NEXT** |
+| **P3** | **Editor Modernization** | E15.0 React 19 unblock → E15.1 structured document → E15.2 chip UX → E15.3 engine gate | Planned; blocked on P2 |
+| **P4** | **Peripheral/Optional** | E13 llama.cpp ablation, E7/E14 ontology drift | Deferred until P3 done |
 
 **Rule:** No work on P3 until P1 + P2 complete. No parallel tracks. P0 Tooling must complete before P0 Build.
+
+**Exception (E15.0 only):** React 19 unblock is a small, isolated branch. It MAY run before E2.6 *only if* `pnpm build` + E2 harness stay green on the same commit; otherwise it waits behind P2. E15.1+ never preempts E2.
+
+**Default after E2:** E15 (editor modernization). E13 may jump ahead only when its local llama.cpp provider is ready; never interleave tracks.
 
 ---
 
 ## 🔧 Tooling & Dependencies Update (P0 — ✅ COMPLETE)
 
-Updated all tooling and dependencies across workspaces. Fixed breaking changes from TypeScript 7.0, Zod v3 (pinned), React 19, Express 5, Vite 6, and other major versions.
+Updated all tooling and dependencies across workspaces. Fixed breaking changes from TypeScript 7.0, Zod v3 (pinned), Express 5, Vite 6, and other major versions. React standardized on 18.3.1 (React 19 unblock is E15.0).
 
 | Task | Scope | Key Updates Applied |
 |------|-------|---------------------|
 | **T1** | Root workspace | Playwright 1.65, Vitest 5.1, Zod 3.25 (pinned), TS 7.0, uuid 14, ai 4.0, express 5.3 |
 | **T2** | Core | TS 7.0, Vitest 5.1, @types/node 26.6, nostr-tools 2.26, cbor-x 1.6.9 |
 | **T3** | UI | Tiptap 3.33, Tailwind 4.3.5, TS ESLint 8.72, dompurify 3.4.17, Vitest 5.1 |
-| **T4** | Simulator | React 19, Express 5, Vite 6.4, @vitejs/plugin-react 5, chalk 6.0 |
+| **T4** | Simulator | React 18.3.1 (standardized with UI), Express 5, Vite 6.4, @vitejs/plugin-react 5, chalk 6.0 |
 | **T5** | Agent/CLI | AI SDK v4, MCP SDK 1.32, Express 5, uuid v14, deprecated @types removed |
 
 **Breaking changes fixed:**
@@ -56,7 +61,7 @@ Updated all tooling and dependencies across workspaces. Fixed breaking changes f
 
 ### **E2: Capture-Flow A/B (S-UI)**
 
-**Status:** Infrastructure ✅ (Chrome PNA fixed, test runs, stats work). Production build FIXED — Vite dev server works, production build succeeds, no OOM, no browser errors, React mounts in preview. Strategy registration FIXED ✅ — all 7 strategies register. **Experiment blocked by 3 pre-existing component errors** (see E2.5).
+**Status:** Infrastructure ✅. Production build ✅. Dev server ✅. Strategy registration ✅ (idempotent under StrictMode/HMR, all 7 register). **E2.5 ✅ — UI renders in dev and production preview** (`quick-capture-input` present, root ~57.5KB, only expected offline-sync console noise). Experiment harness NOT yet run (foundational-first rule).
 
 | Step | Action | Status |
 |------|--------|--------|
@@ -64,16 +69,37 @@ Updated all tooling and dependencies across workspaces. Fixed breaking changes f
 | E2.2 | Fix production bundle browser errors (`__name`, `fs` leaks) | ✅ COMPLETE |
 | E2.3 | E2 test infrastructure | ✅ COMPLETE |
 | E2.4 | Fix strategy registration bug (glob path match) | ✅ COMPLETE |
-| **E2.5** | **Fix pre-existing component errors blocking experiment** | **NEXT** |
-| | └─ E2.5a: `ReferenceError: suggestions is not defined` in `useSmartNoteAssistant` | Pending |
-| | └─ E2.5b: `__name is not defined` in lazy chunks (polyfill all dynamic imports) | Pending |
-| | └─ E2.5c: `Cannot read properties of undefined (reading 'enabled')` — prop drilling fix | Pending |
-| E2.6 | Run experiment (10 cases × 3 reps × 2 arms) | Pending |
+| **E2.5** | **Fix pre-existing component errors blocking experiment** | **✅ COMPLETE** |
+| | └─ E2.5a: `suggestions is not defined` — `TiptapEditor` now passes `allSuggestions` to `useTiptapConfig` | ✅ |
+| | └─ E2.5b: `__name is not defined` — root cause was 247 stale compiled `.js` files in `core/src` shadowing `.ts`; deleted. Dev transform hack reverted; production `renderChunk` polyfill retained | ✅ |
+| | └─ E2.5c: `reading 'enabled'` — not reproducible after stale-artifact cleanup; treated as stale-dist symptom, not a live prop-drilling bug | ✅ |
+| E2.6 | Run experiment (10 cases × 3 reps × 2 arms) | **NEXT** |
 | E2.7 | If null: add 5 more cases, re-run | Pending |
 | E2.8 | If improved: create revision, consent, re-sim | Pending |
 | E2.9 | Ledger chain + write-up | Pending |
 
 **Gate:** Powered verdict (any sign) + ledger chain recorded.
+
+#### E2.5 root-cause fixes (2026-11-09)
+
+| Fix | File(s) |
+|-----|---------|
+| Deleted 247 stale compiled `.js`/`.js.map` files in `core/src` (gitignored, shadowed `.ts` sources in Vite; caused false "module has no export" and `__name` errors) | `core/src/**` (untracked artifacts) |
+| Corrected all 113 named re-exports in the browser entry; removed type-only values (`Note`, `SortOrder`, `PrivacyLevel`, `GeoCoords`, `SuggestedAttribute`, `ExtractionResult`) from runtime blocks; pointed `detectConflicts`, `MatchEngine`, `PropertyExtractor`, `NOTE_STATUS`, geo helpers, `SHARED_COMMANDS`, `DATE_PROPERTY_KEYS`, `hexToBytes`, `formatPropertyTag`, providers, `SEMANTIC_NOTE_KIND`, `areNotesEqual`, `metaphorMapper`, `validateAttributeValue` at their real modules | `core/src/index.browser.ts` |
+| Vite alias order: explicit `@notention/core/*` subpaths must precede the general `@notention/core` alias | `ui/vite.config.ts` |
+| Mirror core's tsup browser-twin rewrite in the dev server (`telemetry/ledger` etc. → `.browser.ts`), restricted to `core/src` importers | `ui/vite.config.ts` |
+| Define `global`; add `Buffer` polyfill import; add `browser`/`version` to `window.process` shim (readable-stream v2) | `ui/vite.config.ts`, `ui/index.html`, `ui/src/index.tsx`, `ui/src/polyfills/buffer.ts` |
+| Guard `process.stdout?.isTTY` | `core/src/events/ConsoleSink.ts` |
+| Idempotent strategy registration + single-flight `initializeStrategySystem` (StrictMode double-effect) | `ui/src/hooks/strategyResolverInit.ts` |
+| `tsup` node build `splitting: true` (was `false` → each entry inlined its own singleton registries; `ui/strategy.js` and `ui/profile.js` disagreed) | `core/tsup.config.ts` |
+| Fixed syntax errors: duplicate `ClockIcon` import; inline async arrow in JSX prop | `ui/src/components/sidebar/SortSelector.tsx`, `ui/src/components/editor/PropertyForm.tsx` |
+| Aligned property-extractor tests with `confidence`/`provenance` fields (`objectContaining`) | `core/src/tests/propertyExtractor.test.ts` |
+
+**Validation:** `pnpm build` exit 0 (all workspaces); `core` tests 485/485; dev server + production preview both mount React.
+
+**E2.6 clarification:** only **8** `capture_need` validation cases currently exist (`eval/cases/intent/validation/intent-capture-{010,011,016,017,018,019,026,027}.json`). Plan says 10 — either run 8×3×2 or add 2 cases first. Harness loads max 10.
+
+**Known non-blocking noise:** expected "Offline" sync error (no backend); React warnings for ref on `Search` (`Input` needs `forwardRef`) and `tooltipPosition` leaking to DOM in `Button`. These do not block E2; fix under E15/UI cleanup only if they affect measurement.
 
 ---
 
@@ -89,6 +115,57 @@ Updated all tooling and dependencies across workspaces. Fixed breaking changes f
 
 ---
 
+## ✏️ Editor Modernization (E15 — Strategic, P3)
+
+**Premise correction:** Tiptap `3.33.0` already supports React 19 (`peer: react ^17 || ^18 || ^19`). The earlier React 19 blocker was `@vitejs/plugin-react@6.3.0` importing `vite/internal` (not exported by Vite 6/7), **unrelated to Tiptap**. UI also has no React plugin at all (no Fast Refresh). React 19 is therefore an independent, small unblock — not a reason to replace the editor.
+
+**Diagnosis (why the editor feels wrong):**
+
+| # | Problem | Evidence |
+|---|---------|----------|
+| 1 | HTML is source of truth; properties re-derived on every save | `core/src/types/domain.ts:15`, `core/src/notes/notes.ts:52` |
+| 2 | Double representation: `<span data-type="property">` + `Property[]`, synced by string surgery | `core/src/notes/serialization.ts:37`, `ui/src/hooks/editor/useNoteProperties.ts:34` |
+| 3 | Chips are inline atoms (`group:'inline', atom:true`) — fragile selection/move/backspace | `ui/src/components/editor/PropertyExtension.ts:7` |
+| 4 | React-in-ProseMirror coupling; 12 files import `@tiptap/*` | `TiptapEditor.tsx`, `extensions.ts`, `EditorBubbleMenu.tsx` |
+| 5 | Full-content reparse per edit | `core/src/notes/notes.ts:52` |
+| 6 | Progressive disclosure unmet (no canonical/raw view, no parser debugger) | README2 §12.4 |
+| 7 | CRDT/CBOR/agent paths all begin by parsing HTML | README2 (specified, not complete) |
+
+**Target architecture:**
+
+```
+Note
+├─ document: NoteDocument (JSON, canonical)      ← new source of truth
+│   ├─ blocks[]            (paragraph | heading | list | quote | code)
+│   ├─ text runs           (plain text + marks)
+│   └─ propertyRefs[]      (stable id → Property) ← inline annotation, not markup
+├─ properties: Property[]  (projection; deterministic, stable ids)
+└─ contentHtml: string     (export/import only — Nostr, clipboard, preview)
+
+Editor engine  → renders NoteDocument (Tiptap/PM/Lexical interchangeable)
+Persistence    → JSON (later CBOR/CRDT/agent-native)
+```
+
+**Gate:** Better editor UX + lossless structured persistence, without breaking E2 or Nostr tag parity. No engine swap before E15.3 data.
+
+| Step | Action | Effort | Status |
+|------|--------|--------|--------|
+| **E15.0** | **React 19 unblock** — add Vite-compatible React Fast Refresh plugin; bump UI + simulator to React 19; verify Tiptap 3.33 | 0.5–1d | Pending |
+| **E15.1** | **Structured `NoteDocument`** — schema + PM JSON ⇄ NoteDocument adapters; importer for existing HTML notes; JSON canonical; HTML export-only | 2–3d | Pending |
+| **E15.2** | **Chip UX on structured model** — annotation selection/edit/move/delete, keyboard/undo, paste/export, suggestion palette rework | 2–3d | Pending |
+| **E15.3** | **Engine decision gate** — measure suggestion authoring, NodeView/plugin complexity, bundle size, React 19 behavior; ADR (stay Tiptap / PM-direct / Lexical) | 0.5d | Pending |
+| **E15.4** | *(Future)* CRDT (`y-prosemirror`/Yjs), canonical CBOR content addressing, agent-native edits | deferred | Deferred |
+
+**ADRs / deliverables:**
+- `doc/decisions/012-note-document.md` — structured document schema + migration
+- `doc/decisions/013-editor-engine.md` — engine decision from E15.3 data
+
+**What the investment buys:** lossless structured persistence, CRDT-ready documents, agent-native editing, canonical identity, real progressive disclosure, metaphor/note-defined UI projection, engine independence, no per-keystroke reparse.
+
+**Risks:** migration needs importer + round-trip tests; verify Nostr tag parity (tags derive from `properties`); keep sanitization for pasted/remote HTML; never rebuild selection/IME/undo; defer CRDT/CBOR until after E2.
+
+---
+
 ## 🚫 Explicitly Deferred / Removed (Peripheral or Invasive)
 
 | Item | Category | Reason |
@@ -101,6 +178,9 @@ Updated all tooling and dependencies across workspaces. Fixed breaking changes f
 | New scenarios | Data (peripheral) | 13 existing carry signal per B2.5 |
 | E13 llama.cpp provider | Optimize (peripheral) | Blocked on P1 core/UI fixes |
 | E7/E14 ontology drift | Simulator/Optimize (peripheral) | Deferred until E2/E13 yield results |
+| Editor engine swap (Lexical / PM-direct) | Editor (invasive) | Defer to E15.3 data-backed decision; no swap before structured model |
+| Custom contenteditable from scratch | Editor (high risk) | Tarpit (selection/IME/undo); rejected unless editor stops being rich text |
+| CRDT / canonical CBOR / agent-native doc | Editor/Protocol (future) | Behind E15.1 structure + E2; specified, not complete |
 
 ---
 
@@ -115,13 +195,20 @@ P0: tsup build fix (1 day)       ← ✅ COMPLETE
   │     ├─→ E2.2: Fix production bundle ✅ COMPLETE
   │     ├─→ E2.3: E2 test infrastructure ✅ COMPLETE
   │     ├─→ E2.4: Fix glob path match ✅ COMPLETE (all 7 strategies register)
-  │     ├─→ E2.5: Fix pre-existing component errors (suggestions, __name, enabled)
-  │     └─→ E2.6–E2.9: Run experiment, verdict, ledger chain
+  │     ├─→ E2.5: Fix pre-existing component errors ✅ COMPLETE (React mounts, dev + preview)
+  │     └─→ E2.6–E2.9: Run experiment, verdict, ledger chain  ← NEXT
   │
-  ├─→ E13: llama.cpp provider + ablation
+  ├─→ E15: Editor Modernization (P3; after E2)
+  │     ├─→ E15.0: React 19 unblock (Fast Refresh + bump)  ← may run isolated if green
+  │     ├─→ E15.1: Structured NoteDocument (JSON canonical, HTML export-only)
+  │     ├─→ E15.2: Chip UX on structured model
+  │     ├─→ E15.3: Engine decision gate (stay Tiptap / PM / Lexical)
+  │     └─→ E15.4: CRDT/CBOR/agent-native (deferred)
+  │
+  ├─→ E13: llama.cpp provider + ablation (P4; after E15)
   │     └─→ Winner → property-extraction@2
   │
-  └─→ E7/E14: Only if corpus available & E2/E13 null
+  └─→ E7/E14: Only if corpus available & E2/E13 null (P4)
 ```
 
 ---
@@ -138,13 +225,14 @@ P0: tsup build fix (1 day)       ← ✅ COMPLETE
 
 ---
 
-## 📦 Deliverables per Experiment
+## 📦 Deliverables per Experiment / Track
 
-| Experiment | Required Artifacts |
+| Experiment / Track | Required Artifacts |
 |------------|-------------------|
 | E2 | `doc/evidence/2026-11-e2-results.md` + ledger chain |
 | E13 | `doc/evidence/2026-11-e13-results.md` + `property-extraction@2` |
 | E7/E14 | `doc/evidence/2026-11-e7-results.md` (if run) |
+| E15 | `doc/decisions/012-note-document.md` + `doc/decisions/013-editor-engine.md` + migration/round-trip tests |
 
 ---
 
@@ -156,6 +244,8 @@ P0: tsup build fix (1 day)       ← ✅ COMPLETE
 4. **Embedded llama.cpp first** — Zero-config, no server management. Server mode later if needed.
 5. **Skip simulator for E2** — UI eval harness is the measurement tool per B1/B2.
 6. **No new test infrastructure** — Reuse existing `optimizer e2-capture` and `prompts:eval`.
+7. **Structure before engine** — E15 makes `NoteDocument` JSON canonical before any engine swap. Never migrate engines to fix a data-model problem.
+8. **React 19 is not an editor decision** — Tiptap 3.33 supports React 19; unblock it separately (E15.0), with Fast Refresh.
 
 ---
 
@@ -184,13 +274,16 @@ P0: tsup build fix (1 day)       ← ✅ COMPLETE
 ### Validation
 
 - `pnpm build` succeeds across all workspaces (core + ui)
-- Production preview: React mounts (`quick-capture-input: true`, 57KB root), no console errors except expected "Offline" sync (no backend)
-- Strategy registration: All 7 strategies now register correctly (was 0/7 before fix)
+- Core tests: 485/485 pass (`pnpm --filter @notention/core test`) — includes shared-singleton fixes from `splitting: true`
+- Dev server: React mounts (`quick-capture-input: true`, 57,555-char root), no page errors
+- Production preview: same mount, no page errors
+- Console: only expected "Offline" sync (no backend) plus two pre-existing React warnings (ref on `Input`, `tooltipPosition` on `Button`)
+- Strategy registration: all 7 register; re-initialization is idempotent
 
-### Remaining Component Errors (pre-existing, not strategy registration)
+### Remaining Component Errors — ✅ RESOLVED (E2.5)
 
-1. `ReferenceError: suggestions is not defined` — in `useSmartNoteAssistant` hook, likely minification variable collision
-2. `__name is not defined` in lazy-loaded chunks — Rollup helper not polyfilled in dynamic imports
-3. `Cannot read properties of undefined (reading 'enabled')` — prop drilling issue in editor components
+1. `ReferenceError: suggestions is not defined` — resolved: `TiptapEditor` passes `allSuggestions`; stale compiled JS in `core/src` was the actual trigger.
+2. `__name is not defined` — resolved: deleted 247 stale `.js` artifacts in `core/src`; production `renderChunk` polyfill retained.
+3. `Cannot read properties of undefined (reading 'enabled')` — not reproducible after the stale-artifact cleanup; no live prop-drilling bug found. Re-open only if it reappears in E2.6 with a stack.
 
-These are separate from the strategy registration fix and require dedicated debugging.
+E2.5 stayed narrow: no editor refactor. Chip UX work remains E15.2.

@@ -1,3 +1,7 @@
+// __name polyfill for Rollup's CommonJS helper - MUST BE FIRST IMPORT
+import './polyfills/name';
+import './polyfills/buffer';
+
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import 'tippy.js/dist/tippy.css';

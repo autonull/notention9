@@ -41,14 +41,14 @@ async function waitForServerReady(url: string, timeoutMs: number = PREVIEW_START
     const startTime = Date.now();
     while (Date.now() - startTime < timeoutMs) {
         try {
-            const response = await fetch(url, { method: 'HEAD' });
+            const response = await fetch(url, { method: 'GET' });
             if (response.ok) return;
         } catch {
             // Wait and retry
         }
         await new Promise(resolve => setTimeout(resolve, PREVIEW_POLL_INTERVAL_MS));
     }
-    throw new Error(`Preview server failed to start within ${timeoutMs / 1000} seconds`);
+    throw new Error(`Dev server failed to start within ${timeoutMs / 1000} seconds`);
 }
 
 export interface PreviewServerConfig {
@@ -85,7 +85,7 @@ export async function ensurePreviewServer(config: PreviewServerConfig = {}): Pro
 
     const port = config.port ?? await getAvailablePort();
     const url = `http://localhost:${port}`;
-    console.log(`   Starting preview server at ${url}...`);
+    console.log(`   Starting dev server at ${url}...`);
 
     const defaultEnv = {
         VITE_ENABLE_AGENT: 'false',
@@ -93,7 +93,7 @@ export async function ensurePreviewServer(config: PreviewServerConfig = {}): Pro
         VITE_DEV_HOOKS: 'true',
     };
 
-    previewServerProcess = spawn('pnpm', ['--filter', '@notention/ui', 'preview', '--port', String(port), '--host', '0.0.0.0', '--strictPort'], {
+    previewServerProcess = spawn('pnpm', ['--filter', '@notention/ui', 'dev', '--port', String(port), '--host', '0.0.0.0', '--strictPort'], {
         cwd: process.cwd(),
         stdio: ['ignore', 'pipe', 'pipe'],
         env: { ...process.env, ...defaultEnv, ...config.env },

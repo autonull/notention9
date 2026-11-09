@@ -15,8 +15,6 @@ const SORT_OPTIONS: {value: SortOrder; label: string; icon: React.ComponentType<
     {value: "tags", label: "Tags (Count)", icon: TagIcon, description: "Most tags first"},
 ];
 
-import {ClockIcon} from '../ui/icons';
-
 interface SortSelectorProps {
     sortOrder: SortOrder;
     onSortChange: (order: SortOrder) => void;

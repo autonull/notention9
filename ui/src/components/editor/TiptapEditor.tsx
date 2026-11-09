@@ -102,7 +102,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
         notes,
         onOpenPropertyModal: handleOpenPropertyModal,
         onMagic,
-        suggestions
+        suggestions: allSuggestions
     });
 
     useEffect(() => {
