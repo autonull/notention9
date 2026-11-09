@@ -11,9 +11,4 @@ export default defineConfig({
         fileParallelism: false,
         localStorage: { file: '.vitest-localstorage' },
     },
-    resolve: {
-        alias: {
-            '@notention/core': path.resolve(__dirname, '../core/dist'),
-        },
-    },
 });
