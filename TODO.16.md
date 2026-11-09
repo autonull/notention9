@@ -2,7 +2,7 @@
 
 **Supersedes:** TODO.15.md
 **Date:** 2026-11-09
-**Status:** P0 Tooling/Deps ✅. P0 Build ✅ (tsup node `splitting` fixed). P1 Core/UI ✅ (E2.1–E2.5, E2.5a–f). **P2 Experiment E2 DEFERRED**. **P3 Editor Modernization E15.0 NEXT** (unblocked).
+**Status:** P0 Tooling/Deps ✅. P0 Build ✅ (tsup node `splitting` fixed). P1 Core/UI ✅ (E2.1–E2.5, E2.5a–f). **E15.0 ✅ (React 19 unblock)**. **P2 Editor Modernization E15.1 NEXT** (structured NoteDocument). **P3 Experiment E2 DEFERRED**.
 
 ---
 
@@ -23,7 +23,7 @@ Success metric: `simulator:friction-detected → candidate:evaluated (measured, 
 | **P0** | **Tooling/Dependencies** | T1–T5: Update all deps across workspaces | ✅ COMPLETE |
 | **P0** | **Build/Type System** | tsup migration, type exports | ✅ COMPLETE |
 | **P1** | **Core/UI Runtime** | Vite aliases, production bundle, strategy registration, component errors, screenshot tests | E2.1–E2.5 ✅, **E2.5a–f ✅**, **E2 DEFERRED** |
-| **P2** | **Editor Modernization** | E15.0 React 19 unblock → E15.1 structured document → E15.2 chip UX → E15.3 engine gate | **E15.0 NEXT** |
+| **P2** | **Editor Modernization** | E15.0 React 19 unblock → E15.1 structured document → E15.2 chip UX → E15.3 engine gate | **E15.0 ✅** |
 | **P3** | **Experiment Execution** | E2.6–E2.9 run, verdict, ledger | Deferred until E15 complete |
 | **P4** | **Peripheral/Optional** | E13 llama.cpp ablation, E7/E14 ontology drift | Deferred until P3 done |
 
@@ -42,7 +42,7 @@ Updated all tooling and dependencies across workspaces. Fixed breaking changes f
 | **T1** | Root workspace | Playwright 1.65, Vitest 5.1, Zod 3.25 (pinned), TS 7.0, uuid 14, ai 4.0, express 5.3 |
 | **T2** | Core | TS 7.0, Vitest 5.1, @types/node 26.6, nostr-tools 2.26, cbor-x 1.6.9 |
 | **T3** | UI | Tiptap 3.33, Tailwind 4.3.5, TS ESLint 8.72, dompurify 3.4.17, Vitest 5.1 |
-| **T4** | Simulator | React 18.3.1 (standardized with UI), Express 5, Vite 6.4, @vitejs/plugin-react 5, chalk 6.0 |
+| **T4** | Simulator | React 19.0.0, Express 5, Vite 6.4, @vitejs/plugin-react 5, chalk 6.0 |
 | **T5** | Agent/CLI | AI SDK v4, MCP SDK 1.32, Express 5, uuid v14, deprecated @types removed |
 
 **Breaking changes fixed:**
@@ -154,7 +154,8 @@ Persistence    → JSON (later CBOR/CRDT/agent-native)
 
 | Step | Action | Effort | Status |
 |------|--------|--------|--------|
-| **E15.0** | **React 19 unblock** — add Vite-compatible React Fast Refresh plugin; bump UI + simulator to React 19; verify Tiptap 3.33 | 0.5–1d | Pending |
+| **E15.0** | **React 19 unblock** — add Vite-compatible React Fast Refresh plugin; bump UI + simulator to React 19; verify Tiptap 3.33 | 0.5–1d | ✅ COMPLETE |
+| | **Validation** | `pnpm build` succeeds (all workspaces); core tests 485/485; agent 17/17; cli 6/6; optimize 47/47; simulator 37/37; UI tests pass (known pre-existing failures only); dev server + production preview both mount React; Tiptap 3.33 peer dep satisfied (`react ^17 || ^18 || ^19`) | |
 | **E15.1** | **Structured `NoteDocument`** — schema + PM JSON ⇄ NoteDocument adapters; importer for existing HTML notes; JSON canonical; HTML export-only | 2–3d | Pending |
 | **E15.2** | **Chip UX on structured model** — annotation selection/edit/move/delete, keyboard/undo, paste/export, suggestion palette rework | 2–3d | Pending |
 | **E15.3** | **Engine decision gate** — measure suggestion authoring, NodeView/plugin complexity, bundle size, React 19 behavior; ADR (stay Tiptap / PM-direct / Lexical) | 0.5d | Pending |
@@ -195,8 +196,8 @@ P0: Tooling/Deps update (T1–T5)  ← ✅ COMPLETE
 P0: tsup build fix (1 day)       ← ✅ COMPLETE
   │
   ├─→ E15: Editor Modernization (P2; NOW)
-  │     ├─→ E15.0: React 19 unblock (Fast Refresh + bump)  ← NEXT
-  │     ├─→ E15.1: Structured NoteDocument (JSON canonical, HTML export-only)
+  │     ├─→ E15.0: React 19 unblock (Fast Refresh + bump)  ← ✅ COMPLETE
+  │     ├─→ E15.1: Structured NoteDocument (JSON canonical, HTML export-only)  ← NEXT
   │     ├─→ E15.2: Chip UX on structured model
   │     ├─→ E15.3: Engine decision gate (stay Tiptap / PM / Lexical)
   │     └─→ E15.4: CRDT/CBOR/agent-native (deferred)
