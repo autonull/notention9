@@ -2,7 +2,7 @@
 
 **Supersedes:** TODO.15.md
 **Date:** 2026-11-09
-**Status:** P0 Tooling/Deps ✅. P0 Build ✅ (tsup node `splitting` fixed). P1 Core/UI ✅ (E2.1–E2.5, E2.5a–f). **E15.0 ✅ (React 19 unblock)**. **E15.1 ✅ (Structured NoteDocument)**. **E15.2 ✅ (Chip UX on structured model)**. **P2 Editor Modernization E15.3 NEXT** (Engine decision gate). **P3 Experiment E2 DEFERRED**.
+**Status:** P0 Tooling/Deps ✅. P0 Build ✅ (tsup node `splitting` fixed). P1 Core/UI ✅ (E2.1–E2.5, E2.5a–f). **E15.0 ✅ (React 19 unblock)**. **E15.1 ✅ (Structured NoteDocument)**. **E15.2 ✅ (Chip UX on structured model)**. **E15.3 ✅ (Engine decision: stay Tiptap 3.x)**. **P2 Editor Modernization E15.4 NEXT** (CRDT/CBOR/agent-native). **P3 Experiment E2 DEFERRED**.
 
 ---
 
@@ -161,7 +161,7 @@ Persistence    → JSON (later CBOR/CRDT/agent-native)
 | **E15.2** | **Chip UX on structured model** — annotation selection/edit/move/delete, keyboard/undo, paste/export, suggestion palette rework | 2–3d | ✅ COMPLETE |
 | | **Validation** | `pnpm build` succeeds (all workspaces); all tests pass; PropertyMark in `ui/src/components/editor/PropertyMark.ts`; PropertyChip updated for mark view; usePropertyInsertion uses marks with propertyId; useEditorClick detects marks; InsertPropertyModal passes propertyId; TiptapEditor updated | |
 | **E15.3** | **Engine decision gate** — measure suggestion authoring, NodeView/plugin complexity, bundle size, React 19 behavior; ADR (stay Tiptap / PM-direct / Lexical) | 0.5d | ✅ COMPLETE |
-| | **Validation** | ADR 013 written: stay Tiptap 3.x (React 19 verified, bundle acceptable, NoteDocument aligned, zero migration); ADR 012 written for NoteDocument schema | |
+| | **Validation** | ADR 013 written: stay Tiptap 3.x (React 19 verified, bundle acceptable, NoteDocument aligned, zero migration); React 19 Fast Refresh works; PropertyMark eliminates NodeView fragility; Tiptap 3.33 peer dep satisfied | |
 | **E15.4** | *(Future)* CRDT (`y-prosemirror`/Yjs), canonical CBOR content addressing, agent-native edits | deferred | Deferred |
 
 **ADRs / deliverables:**
@@ -202,7 +202,7 @@ P0: tsup build fix (1 day)       ← ✅ COMPLETE
   │     ├─→ E15.0: React 19 unblock (Fast Refresh + bump)  ← ✅ COMPLETE
   │     ├─→ E15.1: Structured NoteDocument (JSON canonical, HTML export-only)  ← ✅ COMPLETE
   │     ├─→ E15.2: Chip UX on structured model  ← ✅ COMPLETE
-  │     ├─→ E15.3: Engine decision gate (stay Tiptap / PM / Lexical)  ← NEXT
+  │     ├─→ E15.3: Engine decision gate (stay Tiptap / PM / Lexical)  ← ✅ COMPLETE
   │     └─→ E15.4: CRDT/CBOR/agent-native (deferred)
   │
   ├─→ E2: Capture-Flow A/B Experiment (P3; after E15)
@@ -233,7 +233,7 @@ P0: tsup build fix (1 day)       ← ✅ COMPLETE
 
 | Experiment / Track | Required Artifacts | Timing |
 |------------|-------------------|--------|
-| **E15** | `doc/decisions/012-note-document.md` + `doc/decisions/013-editor-engine.md` + migration/round-trip tests | **E15.0–15.2 ✅** (schema, adapters, chip UX done); E15.3 pending |
+| **E15** | `doc/decisions/012-note-document.md` + `doc/decisions/013-editor-engine.md` + migration/round-trip tests | **E15.0–15.3 ✅** (schema, adapters, chip UX, engine ADR done) |
 | E2 | `doc/evidence/2026-11-e2-results.md` + ledger chain | After E15 |
 | E13 | `doc/evidence/2026-11-e13-results.md` + `property-extraction@2` | After E15 |
 | E7/E14 | `doc/evidence/2026-11-e7-results.md` (if run) | After E2/E13 |
