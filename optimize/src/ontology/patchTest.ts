@@ -11,12 +11,12 @@
  * - Simulator distribution (200 runs)
  */
 
-import { DEFAULT_ONTOLOGY } from '@notention/core/ontology/domains.js';
-import type { OntologyNode, OntologyAttribute, Note } from '@notention/core/types/index.js';
+import { DEFAULT_ONTOLOGY } from '@notention/core/ontology';
+import type { OntologyNode, OntologyAttribute, Note } from '@notention/core/types';
 import { MatchEngine } from '@notention/core/matching';
 import { ExtractionPipeline, createExtractionPipeline } from '@notention/core/extraction';
-import { readQualityCases, type QualityCase, type MatchExpectation } from '@notention/core/eval/caseManifest.js';
-import { evaluateMatch } from '@notention/core/eval/verdict.js';
+import { readQualityCases, type QualityCase, type MatchExpectation } from '@notention/core/eval/caseManifest';
+import { evaluateMatch } from '@notention/core/eval/verdict';
 import { MILLISECONDS_PER_DAY, MILLISECONDS_PER_TWO_DAYS } from '../optimizer/constants.js';
 import { writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';

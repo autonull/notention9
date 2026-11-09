@@ -28,10 +28,10 @@ export function useNoteAnalysis(note: Note) {
 
     const propertyExtractor = useMemo(() => new PropertyExtractor(settings.ontology), [settings.ontology]);
 
-    const analyzeNote = useCallback(() => {
+    const analyzeNote = useCallback(async () => {
         if (!settings.ontology || settings.ontology.length === 0) return; // Skip if no ontology
         const plainText = getTextFromHtml(note.content);
-        const extractedProperties = propertyExtractor.extractFromText(plainText);
+        const extractedProperties = await propertyExtractor.extractFromText(plainText);
 
         const analysisNote = {
             ...note,
@@ -70,7 +70,9 @@ export function useNoteAnalysis(note: Note) {
     }, [note, settings.ontology, propertyExtractor]);
 
     useEffect(() => {
-        const timer = setTimeout(analyzeNote, 1000);
+        const timer = setTimeout(() => {
+            analyzeNote();
+        }, 1000);
         return () => clearTimeout(timer);
     }, [analyzeNote]);
 

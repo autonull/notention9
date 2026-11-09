@@ -9,6 +9,7 @@ import { strategyRegistry, createComponentStrategy, getStrategiesForSeam, getStr
 import { resolveSeamId, SEAM_ROLES, type SeamRole } from '@notention/core/constants/seams';
 import { profileRegistry } from '@notention/core/ui/ProfileRegistry';
 import { STRATEGY_CONFIGS_UI } from '../strategies/strategyConfigs';
+import { componentMap } from '../strategies/componentMap';
 
 // Use STRATEGY_CONFIGS_UI directly (synchronous, no async loading)
 const getAllStrategyConfigs = (): typeof STRATEGY_CONFIGS_UI => STRATEGY_CONFIGS_UI;
@@ -76,30 +77,35 @@ type PropertyPanelComponent = React.ComponentType<{
 // Lazy-loaded components - keyed by strategy ID (from generated definitions)
 const componentFactories = new Map<string, () => Promise<React.ComponentType<any>>>();
 
-function registerComponentFactory(strategyId: string, importFn: () => Promise<{ default: React.ComponentType<any> }>): void {
+function registerComponentFactory(strategyId: string, importFn: () => Promise<Record<string, React.ComponentType<any>>>): void {
+    const exportName = componentMap[strategyId]?.name;
+    if (!exportName) {
+        console.warn(`[StrategySystem] No export name in componentMap for ${strategyId}`);
+        return;
+    }
     componentFactories.set(strategyId, async () => {
         const mod = await importFn();
-        return mod.default;
+        return mod[exportName];
     });
 }
 
 // Use import.meta.glob for Vite-compatible dynamic imports
-// Paths in componentMap are relative to src/strategies/, so from src/hooks/ we need ../../components
-const componentModules = import.meta.glob<{ default: React.ComponentType<any> }>('../../components/**/*.tsx', { eager: false });
+// Use @ alias (resolves to src/) to avoid relative path issues
+const componentModules = import.meta.glob<{ default: React.ComponentType<any> }>('@/components/**/*.tsx', { eager: false });
 
 // Register component factories using generated component paths
 for (const config of STRATEGY_CONFIGS_UI) {
     if (config.componentPath) {
-        // Match the component path to the glob result
         // componentMap paths are like '../components/editor/PropertyForm' (from strategies dir)
-        // glob keys are like '../../components/editor/PropertyForm.tsx' (from hooks dir)
-        const globKey = Object.keys(componentModules).find(key => key.endsWith(config.componentPath + '.tsx') || key.endsWith(config.componentPath.replace('../', '../../') + '.tsx'));
+        // glob keys are like '/src/components/editor/PropertyForm.tsx' (resolved @ alias)
+        // Normalize: strip leading '../' from componentPath, prepend '/src/'
+        const normalizedPath = config.componentPath.replace(/^\.\.\//, '');
+        const expectedGlobKey = `/src/${normalizedPath}.tsx`;
+        const globKey = Object.keys(componentModules).find(key => key === expectedGlobKey || key.endsWith('/' + expectedGlobKey));
         if (globKey) {
             registerComponentFactory(config.id, () => componentModules[globKey]());
-            console.log(`[StrategySystem] Registered component factory for ${config.id} via ${globKey}`);
         } else {
-            console.warn(`[StrategySystem] No component module found for ${config.id} (path: ${config.componentPath})`);
-            console.warn(`[StrategySystem] Available glob keys: ${Object.keys(componentModules).join(', ')}`);
+            console.warn(`[StrategySystem] No component module found for ${config.id} (path: ${config.componentPath}, expected: ${expectedGlobKey})`);
         }
     } else {
         console.warn(`[StrategySystem] No componentPath for config ${config.id}`);

@@ -47,9 +47,20 @@ export function DashboardView() {
     const { markViewed: markMatchViewed, handleAccept: handleMatchAccept, handleReject: handleMatchReject, handleClarification: handleMatchClarification } = useMatchTracking('match', 'match');
 
     const extractor = useMemo(() => new PropertyExtractor(settings.ontology), [settings.ontology]);
-    const extractedProps = useMemo(() => {
-        if (!quickCaptureInput.trim()) return [];
-        return extractor.extractFromText(quickCaptureInput);
+    const [extractedProps, setExtractedProps] = useState<Array<{key: string; values: string[]}>>([]);
+
+    useEffect(() => {
+        if (!quickCaptureInput.trim()) {
+            setExtractedProps([]);
+            return;
+        }
+        let cancelled = false;
+        extractor.extractFromText(quickCaptureInput).then(props => {
+            if (!cancelled) {
+                setExtractedProps(props.map(p => ({ key: p.key, values: p.values })));
+            }
+        });
+        return () => { cancelled = true; };
     }, [quickCaptureInput, extractor]);
 
     useEffect(() => {

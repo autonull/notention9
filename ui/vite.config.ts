@@ -16,6 +16,22 @@ const excludeTestsPlugin = {
     },
 };
 
+// Plugin to inject __name polyfill into all chunks that use it
+const injectNamePolyfillPlugin = {
+    name: 'inject-name-polyfill',
+    enforce: 'post',
+    renderChunk(code) {
+        // Detect Rollup's __name helper pattern (both minified and unminified)
+        const hasNameHelper = /\b__name\s*\(/.test(code) || /var __name\s*=/.test(code);
+        const hasPolyfill = /var __name\s*=\s*function __name\(/.test(code);
+        if (hasNameHelper && !hasPolyfill) {
+            const polyfill = `var __name = function __name(fn, name) { try { Object.defineProperty(fn, 'name', { value: name, configurable: true }); } catch (e) {} return fn; };`;
+            return polyfill + '\n' + code;
+        }
+        return code;
+    },
+};
+
 // Plugin to remove __name (Vite dev-only) from production builds
 const removeDevOnlyPlugin = {
     name: 'remove-dev-only',
@@ -192,7 +208,8 @@ export default defineConfig(({mode}) => {
         publicDir: 'public',
         plugins: [
             excludeTestsPlugin,
-            removeDevOnlyPlugin,
+            injectNamePolyfillPlugin,
+            // removeDevOnlyPlugin disabled - injectNamePolyfillPlugin handles __name
             // VitePWA temporarily disabled due to Node.js module resolution issues with eval/telemetry
             // VitePWA({
             //     registerType: 'autoUpdate',
@@ -242,6 +259,17 @@ export default defineConfig(({mode}) => {
         ],
         build: {
             cssCodeSplit: true,
+            terserOptions: {
+                compress: {
+                    // Disable __name helper used for function name preservation
+                    // This prevents "ReferenceError: __name is not defined" in module scope
+                    unsafe: true,
+                },
+                mangle: {
+                    // Don't use __name helper for function names
+                    keep_fnames: false,
+                },
+            },
             rollupOptions: {
                 input: {
                     main: path.resolve(__dirname, 'index.html'),
@@ -255,7 +283,6 @@ export default defineConfig(({mode}) => {
                             return 'vendor';
                         }
                     },
-                    banner: `// Polyfill for __name helper used by minifiers\nif (typeof globalThis.__name === 'undefined') { globalThis.__name = function __name(fn, name) { try { Object.defineProperty(fn, 'name', { value: name, configurable: true }); } catch (e) {} return fn; }; }`,
                 },
                 external: (id) => {
                     // Explicitly do NOT externalize these Node.js built-ins (they'll be polyfilled)
