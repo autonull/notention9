@@ -17,12 +17,12 @@
   "dependencies": {
     "@notention/core": "workspace:*",
     "@notention/optimize": "workspace:*",
-    "zod": "^3.23.8"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@playwright/test": "^1.60.0",
-    "@types/node": "^22.0.0",
-    "typescript": "^5.5.0",
-    "vitest": "^4.1.6"
+    "@playwright/test": "^1.65.0",
+    "@types/node": "^26.6.0",
+    "typescript": "^7.0.0",
+    "vitest": "^5.1.0"
   }
 }

@@ -10,11 +10,9 @@
     "strict": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "downlevelIteration": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
-    "baseUrl": ".",
     "paths": {
       "@notention/optimize": ["./src/index.ts"],
       "@notention/optimize/*": ["./src/*"],

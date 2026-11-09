@@ -1,6 +1,6 @@
 import { Agent, AgentProfile } from './agent.js';
 import type { Property, OntologyNode, Scenario, AgentConfig, EventConfig, InputMethod, RunEvent, RunEventSink, RunEventType } from './types.js';
-import chalk from 'chalk';
+import { default as chalk, type ChalkInstance } from 'chalk';
 import { SIMULATION_CONFIG, AGENT_COLORS } from './constants.js';
 
 export type { Property, Scenario, AgentConfig, EventConfig, InputMethod, RunEvent, RunEventSink, RunEventType };
@@ -49,7 +49,7 @@ class VirtualClock {
 
 export class ScenarioRunner {
     public readonly agents: Agent[] = [];
-    #colors = AGENT_COLORS.map(c => chalk[c] as chalk.Chalk);
+    #colors = AGENT_COLORS.map(c => chalk[c] as ChalkInstance);
     #onEvent?: (event: EventConfig) => void;
     #runEventSink?: RunEventSink;
     #fastMode = false;

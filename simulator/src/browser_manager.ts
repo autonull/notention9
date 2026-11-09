@@ -1,5 +1,5 @@
 import { chromium, Browser, BrowserContext, Page } from 'playwright';
-import chalk from 'chalk';
+import { default as chalk } from 'chalk';
 import type { Agent } from './agent.js';
 import { DEFAULT_ONTOLOGY } from '@notention/core';
 import type { OntologyNode } from '@notention/core';

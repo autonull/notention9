@@ -89,7 +89,9 @@ export class RobustWebSocket {
 
   send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void {
     if (this.ws?.readyState === WebSocket.OPEN) {
-      this.ws.send(data);
+      // BufferSource = ArrayBufferView<ArrayBuffer>, ArrayBufferLike includes SharedArrayBuffer
+      // Cast to BufferSource for TS 7.0 compatibility
+      this.ws.send(data as string | Blob | BufferSource);
     }
   }
 

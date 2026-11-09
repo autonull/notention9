@@ -1,5 +1,5 @@
 import { startDashboard } from './dashboard/server.js';
-import chalk from 'chalk';
+import { default as chalk } from 'chalk';
 import type { Agent } from './agent.js';
 
 export interface DashboardManagerOptions {

@@ -16,7 +16,7 @@ export { SIMULATION_CONFIG, AGENT_COLORS, DEFAULT_PORTS, DEFAULT_MOVIE_OPTIONS, 
 export { MetricsCollector, attachMetricsCollector, type RunMetrics } from './metricsCollector.js';
 export { startRelay, stopRelay, stopAllRelays, withFreshRelay, getRelayUrl } from './testRelay.js';
 import type { Scenario } from './types.js';
-import chalk from 'chalk';
+import { default as chalk } from 'chalk';
 import ora from 'ora';
 import path from 'path';
 import fs from 'fs';

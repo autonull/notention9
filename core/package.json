@@ -270,19 +270,19 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "cbor-x": "^1.6.4",
+    "cbor-x": "^1.6.9",
     "date-fns": "^4.1.0",
-    "nostr-tools": "^2.20.0",
+    "nostr-tools": "^2.26.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@types/node": "^20.11.0",
+    "@types/node": "^26.6.0",
     "esbuild": "^0.28.0",
     "pkg": "^5.8.1",
     "tsup": "^9.0.0",
     "tsx": "^4.7.1",
-    "typescript": "~5.9.2",
-    "vitest": "^4.0.18"
+    "typescript": "^7.0.0",
+    "vitest": "^5.1.0"
   },
   "type": "module"
 }

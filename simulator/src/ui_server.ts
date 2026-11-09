@@ -3,7 +3,7 @@ import express from 'express';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
-import chalk from 'chalk';
+import { default as chalk } from 'chalk';
 import { UI_SERVER_CONFIG } from './constants.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

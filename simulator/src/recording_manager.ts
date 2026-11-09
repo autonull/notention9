@@ -3,7 +3,7 @@ import fs from 'fs';
 import crypto from 'crypto';
 import ffmpeg from 'fluent-ffmpeg';
 import ffmpegPath from 'ffmpeg-static';
-import chalk from 'chalk';
+import { default as chalk } from 'chalk';
 import { FILE_PATTERNS, SIMULATION_CONFIG } from './constants.js';
 
 // Use ffmpeg-static binary

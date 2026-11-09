@@ -5,7 +5,7 @@ import net from 'net';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
-import chalk from 'chalk';
+import { default as chalk } from 'chalk';
 import { NostrRelay } from '@notention/core';
 import { startDashboard, DashboardAgent } from './dashboard/server.js';
 import { UIServer } from './ui_server.js';

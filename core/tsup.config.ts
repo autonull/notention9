@@ -53,7 +53,6 @@ const browserEntries = {
   'fixtures/index': 'src/fixtures/index.ts',
   'feedback/index': 'src/feedback/index.ts',
   // Extensibility
-  'ontology/index': 'src/ontology/index.ts',
   'suggestions/SuggestionStore': 'src/suggestions/SuggestionStore.browser.ts',
   'test-utils/index': 'src/test-utils/index.ts',
   'validation/index': 'src/validation/index.ts',

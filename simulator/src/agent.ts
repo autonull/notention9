@@ -1,5 +1,5 @@
 import { WebSocket } from 'ws';
-import chalk from 'chalk';
+import { default as chalk, type ChalkInstance } from 'chalk';
 import {
     NostrEvent,
     MatchEngine,
@@ -60,7 +60,7 @@ export class Agent {
         public readonly profile: AgentProfile,
         relayUrl: string,
         ontology: OntologyNode[],
-        private readonly color: chalk.Chalk,
+        private readonly color: ChalkInstance,
         runEventSink?: RunEventSink
     ) {
         const sk = generateSecretKey();

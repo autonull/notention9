@@ -2,7 +2,7 @@
 
 **Supersedes:** TODO.15.md
 **Date:** 2026-11-09
-**Status:** P0 Tooling/Deps update next. P0 Build fix ✅. P1 Core/UI: strategy registration ✅, component errors blocking.
+**Status:** P0 Tooling/Deps update ✅. P0 Build fix ✅. P1 Core/UI: strategy registration ✅, component errors blocking (E2.5 NEXT).
 
 ---
 
@@ -20,7 +20,7 @@ Success metric: `simulator:friction-detected → candidate:evaluated (measured, 
 
 | Priority | Category | Items | Status |
 |----------|----------|-------|--------|
-| **P0** | **Tooling/Dependencies** | T1–T5: Update all deps across workspaces | **NEXT** |
+| **P0** | **Tooling/Dependencies** | T1–T5: Update all deps across workspaces | ✅ COMPLETE |
 | **P0** | **Build/Type System** | tsup migration, type exports | ✅ COMPLETE |
 | **P1** | **Core/UI Runtime** | Vite aliases, production bundle, strategy registration, component errors | E2.1–E2.4 ✅, **E2.5 NEXT** |
 | **P2** | **Experiment Execution** | E2.6–E2.9 run, verdict, ledger | Blocked on P1 |
@@ -30,19 +30,25 @@ Success metric: `simulator:friction-detected → candidate:evaluated (measured, 
 
 ---
 
-## 🔧 Tooling & Dependencies Update (P0 — Do First)
+## 🔧 Tooling & Dependencies Update (P0 — ✅ COMPLETE)
 
-Update all tooling and dependencies before any code changes. This prevents version conflicts, deprecated package issues, and ensures compatibility with modern APIs.
+Updated all tooling and dependencies across workspaces. Fixed breaking changes from TypeScript 7.0, Zod v3 (pinned), React 19, Express 5, Vite 6, and other major versions.
 
-| Task | Scope | Key Updates |
-|------|-------|-------------|
-| **T1** | Root workspace | Playwright 1.65, Vitest 5.1, Zod 4.6, TS 7.0, uuid 14, ai 7.0, express 5.3, etc. |
-| **T2** | Core | TS 7.0, Vitest 5.1, Zod 4.6, @types/node 26.6, nostr-tools 2.26, cbor-x 1.6.9 |
-| **T3** | UI | Tiptap 3.33, React 19 (simulator), Tailwind 4.3.5, TS ESLint 8.72, dompurify 3.17 |
-| **T4** | Simulator | React 19, Express 5, Vite React plugin 6.3, fluent-ffmpeg (deprecated), chalk 6.0 |
-| **T5** | Agent/CLI | AI SDK v4, MCP SDK 1.32, Express 5, zod v4, uuid v14, deprecated @types removal |
+| Task | Scope | Key Updates Applied |
+|------|-------|---------------------|
+| **T1** | Root workspace | Playwright 1.65, Vitest 5.1, Zod 3.25 (pinned), TS 7.0, uuid 14, ai 4.0, express 5.3 |
+| **T2** | Core | TS 7.0, Vitest 5.1, @types/node 26.6, nostr-tools 2.26, cbor-x 1.6.9 |
+| **T3** | UI | Tiptap 3.33, Tailwind 4.3.5, TS ESLint 8.72, dompurify 3.4.17, Vitest 5.1 |
+| **T4** | Simulator | React 19, Express 5, Vite 6.4, @vitejs/plugin-react 5, chalk 6.0 |
+| **T5** | Agent/CLI | AI SDK v4, MCP SDK 1.32, Express 5, uuid v14, deprecated @types removed |
 
-**Action:** Run `pnpm up -L --latest` in each workspace, then `pnpm install`, then `pnpm build` to verify. Fix breaking changes before proceeding.
+**Breaking changes fixed:**
+- TypeScript 7.0: removed `baseUrl`, `downlevelIteration`; added explicit `rootDir`
+- Zod v4 migration blocked → pinned to v3.25.76 across all workspaces
+- Chalk v6 ESM: changed imports to `import { default as chalk } from 'chalk'`
+- @vitejs/plugin-react v6 incompatible with Vite 7/6 → downgraded to v5 for simulator
+- TypeScript compiler API v7: simplified `typeScriptGate.ts` and `goldenCaseMiner.ts`
+- Agent tsconfig: set `rootDir: "../"` for cross-workspace imports
 
 ---
 
@@ -101,7 +107,7 @@ Update all tooling and dependencies before any code changes. This prevents versi
 ## 📋 Execution Order (No Parallel Tracks)
 
 ```
-P0: Tooling/Deps update (T1–T5)  ← NEXT
+P0: Tooling/Deps update (T1–T5)  ← ✅ COMPLETE
 P0: tsup build fix (1 day)       ← ✅ COMPLETE
   │
   ├─→ E2: Fix Vite aliases → production build → dev server, 10×3, verdict
