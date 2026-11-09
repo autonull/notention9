@@ -54,6 +54,21 @@ Success metric: `simulator:friction-detected → candidate:evaluated (measured, 
 
 ---
 
+## 🏗️ Prioritization: Foundational First (Non-Negotiable)
+
+**Core/UI/Build fixes MUST complete before any peripheral work (simulator, optimize, ablation).**
+
+| Priority | Category | Items | Status |
+|----------|----------|-------|--------|
+| **P0** | **Build/Type System** | tsup migration, type exports | ✅ COMPLETE |
+| **P1** | **Core/UI Runtime** | Vite aliases, production bundle, strategy registration, component errors | E2.1–E2.4 ✅, **E2.5 NEXT** |
+| **P2** | **Experiment Execution** | E2.6–E2.9 run, verdict, ledger | Blocked on P1 |
+| **P3** | **Peripheral/Optional** | E13 llama.cpp ablation, E7/E14 ontology drift | Deferred until P2 done |
+
+**Rule:** No work on P3 until P1 + P2 complete. No parallel tracks.
+
+---
+
 ## 🧪 Experiment Pipeline (One at a Time)
 
 ### **E2: Capture-Flow A/B (S-UI)** — 2 days
@@ -102,16 +117,18 @@ Success metric: `simulator:friction-detected → candidate:evaluated (measured, 
 
 ---
 
-## 🚫 Explicitly Deferred / Removed
+## 🚫 Explicitly Deferred / Removed (Peripheral or Invasive)
 
-| Item | Reason |
-|------|--------|
-| Production build fix via `export type` → `export` | Invasive, breaks type safety |
-| Persistent Chrome profile (`launchPersistentContext`) | PNA bypass flags work; keep simple |
-| Full simulator regression suite for E2 | E2 uses UI eval harness, not simulator |
-| Fleet/telemetry/upload | Local-first is the moat |
-| Phase 6 Synthesis | Wait for first `improved` verdict |
-| New scenarios | 13 existing carry signal per B2.5 |
+| Item | Category | Reason |
+|------|----------|--------|
+| Production build fix via `export type` → `export` | Core (invasive) | Breaks type safety |
+| Persistent Chrome profile (`launchPersistentContext`) | UI/Peripheral | PNA bypass flags work; keep simple |
+| Full simulator regression suite for E2 | Simulator (peripheral) | E2 uses UI eval harness, not simulator |
+| Fleet/telemetry/upload | Infra (peripheral) | Local-first is the moat |
+| Phase 6 Synthesis | Process (peripheral) | Wait for first `improved` verdict |
+| New scenarios | Data (peripheral) | 13 existing carry signal per B2.5 |
+| E13 llama.cpp provider | Optimize (peripheral) | Blocked on P1 core/UI fixes |
+| E7/E14 ontology drift | Simulator/Optimize (peripheral) | Deferred until E2/E13 yield results |
 
 ---
 
@@ -160,11 +177,12 @@ P0: tsup build fix (1 day)          ← ✅ COMPLETE
 
 ## ⚡ Acceleration Tactics
 
-1. **Dev server for E2** — Works today, no build fix needed. Use for E2 only.
-2. **tsup for all builds** — Single config change fixes production build for E13+.
-3. **Embedded llama.cpp first** — Zero-config, no server management. Server mode later if needed.
-4. **Skip simulator for E2** — UI eval harness is the measurement tool per B1/B2.
-5. **No new test infrastructure** — Reuse existing `optimizer e2-capture` and `prompts:eval`.
+1. **Foundational first** — Core/UI/build fixes (P0–P1) block everything else. No peripheral work until done.
+2. **Dev server for E2** — Works today, no build fix needed. Use for E2 only.
+3. **tsup for all builds** — Single config change fixes production build for E13+.
+4. **Embedded llama.cpp first** — Zero-config, no server management. Server mode later if needed.
+5. **Skip simulator for E2** — UI eval harness is the measurement tool per B1/B2.
+6. **No new test infrastructure** — Reuse existing `optimizer e2-capture` and `prompts:eval`.
 
 ---
 
