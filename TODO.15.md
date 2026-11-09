@@ -16,6 +16,24 @@ Success metric: `simulator:friction-detected → candidate:evaluated (measured, 
 
 ---
 
+## 🔧 Tooling & Dependencies Update (P0 — Do First)
+
+**Update all tooling and dependencies before any code changes.** This prevents version conflicts, deprecated package issues, and ensures compatibility with modern APIs.
+
+| Task | Scope | Current → Latest | Risk |
+|------|-------|------------------|------|
+| **T1** | Root workspace | `@playwright/test` 1.60→1.65, `playwright` 1.60→1.65, `vitest` 4.1→5.1, `zod` 3.25→4.6, `date-fns` 4.1→4.4, `uuid` 9.0→14.0, `ws` 8.20→8.22, `typescript` 5.9→7.0, `tsx` 4.21→4.23, `esbuild` 0.28→0.28.2, `boxen` 8.0→9.0, `ts-morph` 27.0→28.0, `commander` 11.1→15.1, `glob` 13.0→14.0, `undici` 6.29→8.12, `@ai-sdk/openai` 0.0.48→4.0.111, `ai` 3.4→7.0, `express` 4.22→5.3, `ora` 5.4→10.0, `chalk` 4.1→6.0 | Medium — breaking changes in zod v4, ai v7, express v5, playwright v1.65 |
+| **T2** | Core | `typescript` 5.9→7.0, `vitest` 4.1→5.1, `zod` 3.25→4.6, `tsx` 4.21→4.23, `@types/node` 20.19→26.6, `esbuild` 0.28→0.28.2, `date-fns` 4.1→4.4, `nostr-tools` 2.23→2.26, `cbor-x` 1.6.4→1.6.9 | High — zod v4, TS 7.0 breaking changes |
+| **T3** | UI | `@tiptap/*` 3.23→3.33, `@playwright/test` 1.60→1.65, `dompurify` 3.4→3.17, `@noble/hashes` 2.2→2.4, `tailwindcss` 4.3→4.3.5, `@typescript-eslint/*` 8.59→8.72, `postcss` 8.5→8.5.32, `autoprefixer` 10.5→10.6, `react` 18.3→19.3 (simulator) | High — Tiptap v3.33, React 19, TS ESLint breaking changes |
+| **T4** | Simulator | `react` 18.3→19.3, `react-dom` 18.3→19.3, `react-router-dom` 7.15→7.18, `@vitejs/plugin-react` 5.2→6.3, `express` 4.22→5.3, `fluent-ffmpeg` 2.1 (deprecated), `nostr-tools` 2.23→2.26, `chalk` 4.1→6.0 | High — React 19, Express 5, Vite plugin 6 |
+| **T5** | Agent/CLI | `ai` 3.4→7.0, `@ai-sdk/openai` 0.0.48→4.0.111, `@modelcontextprotocol/sdk` 1.29→1.32, `express` 4.22→5.3, `typescript` 5.9→7.0, `zod` 3.25→4.6, `uuid` 9.0→14.0, `vitest` 4.1→5.1, `@types/*` deprecated → removed | High — AI SDK v4, MCP SDK, Express 5, zod v4 |
+
+**Action:** Run `pnpm up -L --latest` in each workspace, then `pnpm install`, then `pnpm build` to verify. Fix breaking changes before proceeding.
+
+**Estimated time:** 1 day (parallel across workspaces)
+
+---
+
 ## 🔴 Critical Blocker (Must Fix First) — ✅ RESOLVED
 
 ### **P0: Production Build Type Export Fix** — ✅ COMPLETE (1 day)
@@ -60,12 +78,13 @@ Success metric: `simulator:friction-detected → candidate:evaluated (measured, 
 
 | Priority | Category | Items | Status |
 |----------|----------|-------|--------|
+| **P0** | **Tooling/Dependencies** | T1–T5: Update all deps across workspaces (playwright, vitest, zod, typescript, ai, react, etc.) | **NEXT — Do First** |
 | **P0** | **Build/Type System** | tsup migration, type exports | ✅ COMPLETE |
 | **P1** | **Core/UI Runtime** | Vite aliases, production bundle, strategy registration, component errors | E2.1–E2.4 ✅, **E2.5 NEXT** |
 | **P2** | **Experiment Execution** | E2.6–E2.9 run, verdict, ledger | Blocked on P1 |
 | **P3** | **Peripheral/Optional** | E13 llama.cpp ablation, E7/E14 ontology drift | Deferred until P2 done |
 
-**Rule:** No work on P3 until P1 + P2 complete. No parallel tracks.
+**Rule:** No work on P3 until P1 + P2 complete. No parallel tracks. P0 Tooling must complete before P0 Build.
 
 ---
 
@@ -135,7 +154,8 @@ Success metric: `simulator:friction-detected → candidate:evaluated (measured, 
 ## 📋 Execution Order (No Parallel Tracks)
 
 ```
-P0: tsup build fix (1 day)          ← ✅ COMPLETE
+P0: Tooling/Deps update (T1–T5) (1 day)  ← **NEXT — Do First**
+P0: tsup build fix (1 day)               ← ✅ COMPLETE
   │
   ├─→ E2: Fix Vite aliases → production build → dev server, 10×3, verdict (2-3 days)
   │     ├─→ E2.1: Fix Vite aliases ✅ COMPLETE
@@ -190,12 +210,12 @@ P0: tsup build fix (1 day)          ← ✅ COMPLETE
 
 | Week | Focus |
 |------|-------|
-| 1 (Nov 7–13) | P0 tsup fix ✅ → Fix Vite aliases ✅ → Fix production bundle ✅ → E2.4 strategy fix ✅ → **E2.5 component fixes** |
-| 2 (Nov 14–20) | E2.6 run experiment → E2.7/E2.8 verdict/consent/sim → E2.9 ledger chain |
+| 1 (Nov 7–13) | **P0 Tooling/Deps (T1–T5)** → P0 tsup fix ✅ → Fix Vite aliases ✅ → Fix production bundle ✅ → E2.4 strategy fix ✅ |
+| 2 (Nov 14–20) | **E2.5 component fixes** → E2.6 run experiment → E2.7/E2.8 verdict/consent/sim → E2.9 ledger chain |
 | 3 (Nov 21–27) | E13 llama.cpp provider → ablation → winner |
 | 4 (Nov 28–Dec 4) | Buffer / E7/E14 if needed / write-ups |
 
-**Total: 3–4 weeks for one powered experiment with full chain.**
+**Total: 4 weeks for one powered experiment with full chain (incl. tooling update).**
 
 ---
 
