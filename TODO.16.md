@@ -2,7 +2,7 @@
 
 **Supersedes:** TODO.15.md
 **Date:** 2026-11-09
-**Status:** P0 Tooling/Deps ✅. P0 Build ✅ (tsup node `splitting` fixed). P1 Core/UI ✅ (E2.1–E2.5, E2.5a–f). **P2 Experiment E2.6 NEXT** (unblocked). P3 Editor Modernization planned (E15).
+**Status:** P0 Tooling/Deps ✅. P0 Build ✅ (tsup node `splitting` fixed). P1 Core/UI ✅ (E2.1–E2.5, E2.5a–f). **P2 Experiment E2 DEFERRED**. **P3 Editor Modernization E15.0 NEXT** (unblocked).
 
 ---
 
@@ -22,16 +22,14 @@ Success metric: `simulator:friction-detected → candidate:evaluated (measured, 
 |----------|----------|-------|--------|
 | **P0** | **Tooling/Dependencies** | T1–T5: Update all deps across workspaces | ✅ COMPLETE |
 | **P0** | **Build/Type System** | tsup migration, type exports | ✅ COMPLETE |
-| **P1** | **Core/UI Runtime** | Vite aliases, production bundle, strategy registration, component errors, screenshot tests | E2.1–E2.5 ✅, **E2.5a–f ✅**, **E2.6 NEXT** |
-| **P2** | **Experiment Execution** | E2.6–E2.9 run, verdict, ledger | Blocked on P1 |
-| **P3** | **Editor Modernization** | E15.0 React 19 unblock → E15.1 structured document → E15.2 chip UX → E15.3 engine gate | Planned; blocked on P2 |
+| **P1** | **Core/UI Runtime** | Vite aliases, production bundle, strategy registration, component errors, screenshot tests | E2.1–E2.5 ✅, **E2.5a–f ✅**, **E2 DEFERRED** |
+| **P2** | **Editor Modernization** | E15.0 React 19 unblock → E15.1 structured document → E15.2 chip UX → E15.3 engine gate | **E15.0 NEXT** |
+| **P3** | **Experiment Execution** | E2.6–E2.9 run, verdict, ledger | Deferred until E15 complete |
 | **P4** | **Peripheral/Optional** | E13 llama.cpp ablation, E7/E14 ontology drift | Deferred until P3 done |
 
-**Rule:** No work on P3 until P1 + P2 complete. No parallel tracks. P0 Tooling must complete before P0 Build.
+**Rule:** No work on P2/P3 until P1 complete. No parallel tracks. P0 Tooling must complete before P0 Build.
 
-**Exception (E15.0 only):** React 19 unblock is a small, isolated branch. It MAY run before E2.6 *only if* `pnpm build` + E2 harness stay green on the same commit; otherwise it waits behind P2. E15.1+ never preempts E2.
-
-**Default after E2:** E15 (editor modernization). E13 may jump ahead only when its local llama.cpp provider is ready; never interleave tracks.
+**New Order:** E15 (editor modernization) runs first. E2 (experiment) runs after E15 complete. E13 may jump ahead only when its local llama.cpp provider is ready; never interleave tracks.
 
 ---
 
@@ -59,9 +57,9 @@ Updated all tooling and dependencies across workspaces. Fixed breaking changes f
 
 ## 🧪 Experiment Pipeline (One at a Time)
 
-### **E2: Capture-Flow A/B (S-UI)**
+### **E2: Capture-Flow A/B (S-UI)** — **DEFERRED**
 
-**Status:** Infrastructure ✅. Production build ✅. Dev server ✅. Strategy registration ✅ (idempotent under StrictMode/HMR, all 7 register). **E2.5 ✅ — UI renders in dev and production preview** (`quick-capture-input` present, root ~57.5KB, only expected offline-sync console noise). **E2.5a–f ✅ — UI unit tests pass, screenshot tests pass** (14/16 showcase tests pass, 2 skipped for editor bugs). Experiment harness ready (E2.6 next).
+**Status:** Infrastructure ✅. Production build ✅. Dev server ✅. Strategy registration ✅ (idempotent under StrictMode/HMR, all 7 register). **E2.5 ✅ — UI renders in dev and production preview** (`quick-capture-input` present, root ~57.5KB, only expected offline-sync console noise). **E2.5a–f ✅ — UI unit tests pass, screenshot tests pass** (14/16 showcase tests pass, 2 skipped for editor bugs). **Experiment deferred until after E15 (editor modernization) complete.**
 
 | Step | Action | Status |
 |------|--------|--------|
@@ -79,10 +77,10 @@ Updated all tooling and dependencies across workspaces. Fixed breaking changes f
 | **E2.5d** | **Screenshot: DevBridge missing in preview — tests wait for `__NOTENTION__` bridge only in dev mode** | **✅ COMPLETE** |
 | **E2.5e** | **Screenshot: chat fixture bug — `maya` undefined** | **✅ COMPLETE** |
 | **E2.5f** | **Screenshot: Playwright localStorage warning — `--localstorage-file` not provided** | **✅ COMPLETE** |
-| E2.6 | Run experiment (10 cases × 3 reps × 2 arms) | Blocked on E2.5a–f |
-| E2.7 | If null: add 5 more cases, re-run | Pending |
-| E2.8 | If improved: create revision, consent, re-sim | Pending |
-| E2.9 | Ledger chain + write-up | Pending |
+| E2.6 | Run experiment (10 cases × 3 reps × 2 arms) | **DEFERRED** (after E15) |
+| E2.7 | If null: add 5 more cases, re-run | **DEFERRED** |
+| E2.8 | If improved: create revision, consent, re-sim | **DEFERRED** |
+| E2.9 | Ledger chain + write-up | **DEFERRED** |
 
 **Gate:** Powered verdict (any sign) + ledger chain recorded. **All tests pass** (core, agent, cli, simulator, optimize, ui unit, screenshots).
 
@@ -111,13 +109,13 @@ Updated all tooling and dependencies across workspaces. Fixed breaking changes f
 
 ### **E13: Prompt Ablation (S-PROMPT)**
 
-**Status:** 6 variants ready, 38 quality cases, CLI `prompts:eval ablation` exists. **Blocked:** No local LLM provider (needs llama.cpp). **Deferred** until E2 complete.
+**Status:** 6 variants ready, 38 quality cases, CLI `prompts:eval ablation` exists. **Blocked:** No local LLM provider (needs llama.cpp). **Deferred** until E15 complete.
 
 ---
 
 ### **E7/E14: Ontology Drift (S-ONT)**
 
-**Status:** Audit done (67 orphans, 9 drifts, 1 hierarchy lift=5.30). Patch test non-regressive (ΔF1=0.000). **Deferred** until E2/E13 yield results. No corpus → no signal.
+**Status:** Audit done (67 orphans, 9 drifts, 1 hierarchy lift=5.30). Patch test non-regressive (ΔF1=0.000). **Deferred** until E15/E2/E13 yield results. No corpus → no signal.
 
 ---
 
@@ -196,21 +194,16 @@ Persistence    → JSON (later CBOR/CRDT/agent-native)
 P0: Tooling/Deps update (T1–T5)  ← ✅ COMPLETE
 P0: tsup build fix (1 day)       ← ✅ COMPLETE
   │
-  ├─→ E2: Fix Vite aliases → production build → dev server, 10×3, verdict
-  │     ├─→ E2.1: Fix Vite aliases ✅ COMPLETE
-  │     ├─→ E2.2: Fix production bundle ✅ COMPLETE
-  │     ├─→ E2.3: E2 test infrastructure ✅ COMPLETE
-  │     ├─→ E2.4: Fix glob path match ✅ COMPLETE (all 7 strategies register)
-  │     ├─→ E2.5: Fix pre-existing component errors ✅ COMPLETE (React mounts, dev + preview)
-  │     ├─→ E2.5a–f: UI unit tests, optimize test, screenshot infra ✅ COMPLETE
-  │     └─→ E2.6–E2.9: Run experiment, verdict, ledger chain  ← NEXT
-  │
-  ├─→ E15: Editor Modernization (P3; after E2)
-  │     ├─→ E15.0: React 19 unblock (Fast Refresh + bump)  ← may run isolated if green
+  ├─→ E15: Editor Modernization (P2; NOW)
+  │     ├─→ E15.0: React 19 unblock (Fast Refresh + bump)  ← NEXT
   │     ├─→ E15.1: Structured NoteDocument (JSON canonical, HTML export-only)
   │     ├─→ E15.2: Chip UX on structured model
   │     ├─→ E15.3: Engine decision gate (stay Tiptap / PM / Lexical)
   │     └─→ E15.4: CRDT/CBOR/agent-native (deferred)
+  │
+  ├─→ E2: Capture-Flow A/B Experiment (P3; after E15)
+  │     ├─→ E2.1–E2.5, E2.5a–f: ✅ COMPLETE
+  │     └─→ E2.6–E2.9: Run experiment, verdict, ledger chain  ← DEFERRED
   │
   ├─→ E13: llama.cpp provider + ablation (P4; after E15)
   │     └─→ Winner → property-extraction@2
@@ -234,12 +227,12 @@ P0: tsup build fix (1 day)       ← ✅ COMPLETE
 
 ## 📦 Deliverables per Experiment / Track
 
-| Experiment / Track | Required Artifacts |
-|------------|-------------------|
-| E2 | `doc/evidence/2026-11-e2-results.md` + ledger chain |
-| E13 | `doc/evidence/2026-11-e13-results.md` + `property-extraction@2` |
-| E7/E14 | `doc/evidence/2026-11-e7-results.md` (if run) |
-| E15 | `doc/decisions/012-note-document.md` + `doc/decisions/013-editor-engine.md` + migration/round-trip tests |
+| Experiment / Track | Required Artifacts | Timing |
+|------------|-------------------|--------|
+| **E15** | `doc/decisions/012-note-document.md` + `doc/decisions/013-editor-engine.md` + migration/round-trip tests | **NEXT** |
+| E2 | `doc/evidence/2026-11-e2-results.md` + ledger chain | After E15 |
+| E13 | `doc/evidence/2026-11-e13-results.md` + `property-extraction@2` | After E15 |
+| E7/E14 | `doc/evidence/2026-11-e7-results.md` (if run) | After E2/E13 |
 
 ---
 
