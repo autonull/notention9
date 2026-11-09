@@ -110,15 +110,18 @@ export function IconButton({
         className
     );
 
+    // Filter out non-DOM props
+    const { tooltip: _tooltip, tooltipPosition: _tooltipPosition, icon: _icon, isActive: _isActive, label: _label, containerClassName: _containerClassName, touchTarget: _touchTarget, ...domProps } = props;
+
     const button = (
         <button
             className={buttonClasses}
             disabled={disabled}
             title={tooltip ? undefined : title}
-            aria-label={props['aria-label'] || title || tooltip}
+            aria-label={domProps['aria-label'] || title || tooltip}
             type="button"
             aria-pressed={isActive}
-            {...props}
+            {...domProps}
         >
             <Icon className={iconSizes[size]} />
             {label && (

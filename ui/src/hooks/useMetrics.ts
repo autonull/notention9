@@ -95,7 +95,7 @@ export function useMetrics() {
         } catch {
             return Math.random().toString(36).slice(2);
         }
-    })();
+    });
 
     useEffect(() => {
         const initialConsent = hasConsent();

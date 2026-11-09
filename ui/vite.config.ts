@@ -17,18 +17,19 @@ const excludeTestsPlugin = {
     },
 };
 
-// Plugin to inject __name polyfill into production JS chunks via renderChunk
+// Plugin to inject __name polyfill into production JS chunks via generateBundle
 const namePolyfillPlugin = {
     name: 'name-polyfill',
-    enforce: 'post',
-    renderChunk(code, chunk) {
-        if (chunk.fileName.endsWith('.js')) {
-            const polyfill = `var __name = function __name(fn, name) { try { Object.defineProperty(fn, 'name', { value: name, configurable: true }); } catch (e) {} return fn; };\n`;
-            if (!/var __name\s*=\s*function __name\(/.test(code)) {
-                return polyfill + code;
+    generateBundle(options, bundle) {
+        const polyfill = `var __name = function __name(fn, name) { try { Object.defineProperty(fn, 'name', { value: name, configurable: true }); } catch (e) {} return fn; };\n`;
+        for (const [fileName, chunk] of Object.entries(bundle)) {
+            if (fileName.endsWith('.js') && chunk.type === 'chunk') {
+                const code = chunk.code;
+                if (!/var __name\s*=\s*function __name\(/.test(code)) {
+                    chunk.code = polyfill + code;
+                }
             }
         }
-        return code;
     },
 };
 
@@ -70,6 +71,19 @@ const preserveReactExportsPlugin = {
                 return `import * as React from 'react'; const { ${destructured} } = React;`;
             })
             .replace(/import\s+React\s+from\s+['"]react['"]/g, "import * as React from 'react'");
+    },
+};
+
+// Plugin to inject __name polyfill in dev mode (Rollup's CommonJS helper)
+const namePolyfillDevPlugin = {
+    name: 'name-polyfill-dev',
+    enforce: 'pre',
+    transform(code, id) {
+        // Only inject in development mode
+        if (!id.includes('node_modules') && !id.endsWith('.css') && !code.includes('var __name')) {
+            const polyfill = `var __name = function __name(fn, name) { try { Object.defineProperty(fn, 'name', { value: name, configurable: true }); } catch (e) {} return fn; };\n`;
+            return polyfill + code;
+        }
     },
 };
 
@@ -256,6 +270,7 @@ export default defineConfig(({mode}) => {
             excludeTestsPlugin,
             namePolyfillPlugin,
             preserveReactExportsPlugin,
+            isDev && namePolyfillDevPlugin,
             // removeDevOnlyPlugin disabled - namePolyfillPlugin handles __name
             // VitePWA temporarily disabled due to Node.js module resolution issues with eval/telemetry
             // VitePWA({
@@ -311,8 +326,8 @@ export default defineConfig(({mode}) => {
             terserOptions: {
                 compress: {
                     // Disable __name helper used for function name preservation
-                    // This prevents "ReferenceError: __name is not defined" in module scope
-                    unsafe: true,
+                    // unsafe: true removes Rollup's __name helper causing "ReferenceError: __name is not defined"
+                    unsafe: false,
                 },
                 mangle: {
                     // Don't use __name helper for function names

@@ -119,7 +119,7 @@ class PluginManager {
 
         // Activate enabled plugins
         for (const [id, plugin] of this.plugins) {
-            if (plugin.manifest.enabled) {
+            if (plugin.manifest?.enabled) {
                 this.activatePlugin(id);
             }
         }
