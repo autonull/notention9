@@ -76,12 +76,14 @@ Updated all tooling and dependencies across workspaces. Fixed breaking changes f
 | **E2.5a** | **Screenshot: DevBridge missing in preview — tests wait for `__NOTENTION__` bridge only in dev mode** | **NEXT** |
 | **E2.5b** | **Screenshot: chat fixture bug — `maya` undefined** | **NEXT** |
 | **E2.5c** | **Screenshot: Playwright localStorage warning — `--localstorage-file` not provided** | **NEXT** |
-| E2.6 | Run experiment (10 cases × 3 reps × 2 arms) | Blocked on E2.5a–c |
+| **E2.5d** | **UI unit tests: matching/soft-match failures (4 tests)** | **NEXT** |
+| **E2.5e** | **UI unit tests: matching_overlap failures (2 tests)** | **NEXT** |
+| E2.6 | Run experiment (10 cases × 3 reps × 2 arms) | Blocked on E2.5a–e |
 | E2.7 | If null: add 5 more cases, re-run | Pending |
 | E2.8 | If improved: create revision, consent, re-sim | Pending |
 | E2.9 | Ledger chain + write-up | Pending |
 
-**Gate:** Powered verdict (any sign) + ledger chain recorded. All screenshot tests pass.
+**Gate:** Powered verdict (any sign) + ledger chain recorded. All screenshot tests pass. All UI unit tests pass.
 
 #### E2.5 root-cause fixes (2026-11-09)
 
