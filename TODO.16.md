@@ -22,8 +22,8 @@ Success metric: `simulator:friction-detected → candidate:evaluated (measured, 
 |----------|----------|-------|--------|
 | **P0** | **Tooling/Dependencies** | T1–T5: Update all deps across workspaces | ✅ COMPLETE |
 | **P0** | **Build/Type System** | tsup migration, type exports | ✅ COMPLETE |
-| **P1** | **Core/UI Runtime** | Vite aliases, production bundle, strategy registration, component errors | ✅ E2.1–E2.5 |
-| **P2** | **Experiment Execution** | E2.6–E2.9 run, verdict, ledger | **Unblocked — E2.6 NEXT** |
+| **P1** | **Core/UI Runtime** | Vite aliases, production bundle, strategy registration, component errors, screenshot tests | E2.1–E2.5 ✅, **E2.5a–c (screenshot infra) NEXT** |
+| **P2** | **Experiment Execution** | E2.6–E2.9 run, verdict, ledger | Blocked on P1 |
 | **P3** | **Editor Modernization** | E15.0 React 19 unblock → E15.1 structured document → E15.2 chip UX → E15.3 engine gate | Planned; blocked on P2 |
 | **P4** | **Peripheral/Optional** | E13 llama.cpp ablation, E7/E14 ontology drift | Deferred until P3 done |
 
@@ -73,12 +73,15 @@ Updated all tooling and dependencies across workspaces. Fixed breaking changes f
 | | └─ E2.5a: `suggestions is not defined` — `TiptapEditor` now passes `allSuggestions` to `useTiptapConfig` | ✅ |
 | | └─ E2.5b: `__name is not defined` — root cause was 247 stale compiled `.js` files in `core/src` shadowing `.ts`; deleted. Dev transform hack reverted; production `renderChunk` polyfill retained | ✅ |
 | | └─ E2.5c: `reading 'enabled'` — not reproducible after stale-artifact cleanup; treated as stale-dist symptom, not a live prop-drilling bug | ✅ |
-| E2.6 | Run experiment (10 cases × 3 reps × 2 arms) | **NEXT** |
+| **E2.5a** | **Screenshot: DevBridge missing in preview — tests wait for `__NOTENTION__` bridge only in dev mode** | **NEXT** |
+| **E2.5b** | **Screenshot: chat fixture bug — `maya` undefined** | **NEXT** |
+| **E2.5c** | **Screenshot: Playwright localStorage warning — `--localstorage-file` not provided** | **NEXT** |
+| E2.6 | Run experiment (10 cases × 3 reps × 2 arms) | Blocked on E2.5a–c |
 | E2.7 | If null: add 5 more cases, re-run | Pending |
 | E2.8 | If improved: create revision, consent, re-sim | Pending |
 | E2.9 | Ledger chain + write-up | Pending |
 
-**Gate:** Powered verdict (any sign) + ledger chain recorded.
+**Gate:** Powered verdict (any sign) + ledger chain recorded. All screenshot tests pass.
 
 #### E2.5 root-cause fixes (2026-11-09)
 
