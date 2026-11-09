@@ -46,6 +46,7 @@ export default defineConfig({
                 '--no-first-run',
                 '--no-default-browser-check',
             ],
+            localStorageFile: path.resolve(ROOT, 'test-results', 'localstorage.json'),
         },
     },
     projects: [

@@ -90,8 +90,10 @@ test('network no identity', async ({page}) => {
 });
 
 test('settings networks', async ({page}) => {
-    await seed(page, {notes: demoNotes(), settings: defaultSettings(), hash: '#settings'});
-    await page.getByRole('tab', {name: /Networks/}).click();
+    await seed(page, {notes: demoNotes(), settings: defaultSettings()});
+    await page.locator('header button[aria-label="Settings"]').click();
+    await page.waitForSelector('header button[aria-label="Settings"][aria-pressed="true"]');
+    await page.getByRole('tab', {name: /🌐 Networks/}).click();
     await page.waitForTimeout(200);
     await snap(page, {
         area: 'settings',

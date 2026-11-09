@@ -1,7 +1,7 @@
 import {describe, expect, it} from 'vitest';
-import {MatchingService, MatchEngine} from '@notention/core';
+import {MatchingService, MatchEngine} from '@notention/core/matching';
 import type {Property} from '@notention/core';
-import {createNote as createTestNote} from '@notention/core';
+import {createNote as createTestNote} from '@notention/core/notes';
 
 // Use empty ontology for testing to match old behavior (type inference from operators)
 const service = new MatchingService([]);

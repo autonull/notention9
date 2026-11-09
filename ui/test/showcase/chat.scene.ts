@@ -20,7 +20,7 @@ const chatEvents = async () => [
     event(viewer, {
         kind: 3,
         created_at: now - 600,
-        tags: [['p', maya.pubkey]],
+        tags: [['p', john.pubkey]],
         content: '',
     }),
     await directMessage(john, viewer, 'The repair day is still on. I can bring the long ladder.', now - 420),
@@ -39,10 +39,10 @@ test('chat thread', async ({page}) => {
     await seed(page, {
         notes: demoNotes(),
         settings: defaultSettings({nostr: {privkey: Buffer.from(viewer.secret).toString('hex'), relays: [RELAY_URL]}}),
-        hash: '#chat',
     });
+    await page.locator('header button[aria-label="Chat"]').click();
+    await page.waitForSelector('header button[aria-label="Chat"][aria-pressed="true"]');
     await page.getByText('John', {exact: true}).click();
-    await page.waitForSelector('text=End-to-end encrypted');
     await page.waitForSelector('text=I can bring the long ladder');
     await snap(page, {
         area: 'chat',

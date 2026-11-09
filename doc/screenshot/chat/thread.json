@@ -1,0 +1,7 @@
+{
+  "area": "chat",
+  "state": "thread",
+  "file": "chat/thread.png",
+  "viewport": "desktop",
+  "description": "An encrypted conversation over the local relay, with the encryption notice."
+}

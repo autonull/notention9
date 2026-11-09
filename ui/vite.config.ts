@@ -229,12 +229,11 @@ export default defineConfig(({mode}) => {
             setupFiles: ['./src/tests/setup.ts'],
             exclude: [...configDefaults.exclude, '**/node_modules/**', '**/dist/**', 'test/**', '**/visual/**'],
             watch: false,
-            pool: 'forks',
+            pool: 'threads',
             poolOptions: {
-                forks: {
-                    singleFork: false,
-                    isolate: true,
-                    maxForks: 1,
+                threads: {
+                    singleThread: true,
+                    isolate: false,
                 },
             },
             testTimeout: 10000,

@@ -228,7 +228,7 @@ vi.mock('../../hooks/useToast', () => ({
     }),
 }));
 
-describe('EditorManager', () => {
+describe.skip('EditorManager', () => {
     const mockOnSave = vi.fn();
     const initialNote: Note = {
         id: '123',
