@@ -73,12 +73,12 @@ Updated all tooling and dependencies across workspaces. Fixed breaking changes f
 | | └─ E2.5a: `suggestions is not defined` — `TiptapEditor` now passes `allSuggestions` to `useTiptapConfig` | ✅ |
 | | └─ E2.5b: `__name is not defined` — root cause was 247 stale compiled `.js` files in `core/src` shadowing `.ts`; deleted. Dev transform hack reverted; production `renderChunk` polyfill retained | ✅ |
 | | └─ E2.5c: `reading 'enabled'` — not reproducible after stale-artifact cleanup; treated as stale-dist symptom, not a live prop-drilling bug | ✅ |
-| **E2.5a** | **Screenshot: DevBridge missing in preview — tests wait for `__NOTENTION__` bridge only in dev mode** | **NEXT** |
-| **E2.5b** | **Screenshot: chat fixture bug — `maya` undefined** | **NEXT** |
-| **E2.5c** | **Screenshot: Playwright localStorage warning — `--localstorage-file` not provided** | **NEXT** |
-| **E2.5d** | **UI unit tests: matching/soft-match failures (4 tests)** | **NEXT** |
-| **E2.5e** | **UI unit tests: matching_overlap failures (2 tests)** | **NEXT** |
-| **E2.5f** | **Optimize unit test: cannot resolve `@notention/core` in extractionSchema.test.ts** | **NEXT** |
+| **E2.5a** | **UI unit tests: matching/soft-match failures (4 tests)** | **NEXT** |
+| **E2.5b** | **UI unit tests: matching_overlap failures (2 tests)** | **NEXT** |
+| **E2.5c** | **Optimize unit test: cannot resolve `@notention/core` in extractionSchema.test.ts** | **NEXT** |
+| **E2.5d** | **Screenshot: DevBridge missing in preview — tests wait for `__NOTENTION__` bridge only in dev mode** | **NEXT** |
+| **E2.5e** | **Screenshot: chat fixture bug — `maya` undefined** | **NEXT** |
+| **E2.5f** | **Screenshot: Playwright localStorage warning — `--localstorage-file` not provided** | **NEXT** |
 | E2.6 | Run experiment (10 cases × 3 reps × 2 arms) | Blocked on E2.5a–f |
 | E2.7 | If null: add 5 more cases, re-run | Pending |
 | E2.8 | If improved: create revision, consent, re-sim | Pending |
