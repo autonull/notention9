@@ -2,7 +2,7 @@
 
 **Supersedes:** TODO.15.md
 **Date:** 2026-11-09
-**Status:** P0 Tooling/Deps ✅. P0 Build ✅ (tsup node `splitting` fixed). P1 Core/UI ✅ (E2.1–E2.5, E2.5a–f). **E15.0 ✅ (React 19 unblock)**. **E15.1 ✅ (Structured NoteDocument)**. **E15.2 ✅ (Chip UX on structured model)**. **E15.3 ✅ (Engine decision: stay Tiptap 3.x)**. **P2 Editor Modernization E15.4 NEXT** (CRDT/CBOR/agent-native). **P3 Experiment E2 DEFERRED**.
+**Status:** P0 Tooling/Deps ✅. P0 Build ✅ (tsup node `splitting` fixed). P1 Core/UI ✅ (E2.1–E2.5, E2.5a–f). **E15.0 ✅ (React 19 unblock)**. **E15.1 ✅ (Structured NoteDocument)**. **E15.2 ✅ (Chip UX on structured model)**. **E15.3 ✅ (Engine decision: stay Tiptap 3.x)**. **E15 complete. P3 Experiment E2 NEXT** (E2.6–E2.9). **P4 E13/E7/E14 DEFERRED**.
 
 ---
 
