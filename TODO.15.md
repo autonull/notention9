@@ -2,9 +2,9 @@
 
 **Supersedes:** TODO.14.md (replaces entire next-hypothesis-cycle section)
 **Date:** 2026-11-08
-**Status:** P0 ✅ COMPLETE. E2.1 ✅. E2.2 production-build fixes: OOM FIXED ✅, vitest-leak FIXED ✅, dev-server dep-scan errors FIXED ✅, `__name`/fs leaks FIXED ✅. **E2.4 strategy registration bug FIXED ✅** — all 7 strategies register. All critical blockers resolved — E2 infrastructure ready. Remaining: pre-existing component errors.
+**Status:** P0 ✅ COMPLETE. E2.1 ✅. E2.2 production-build fixes: OOM FIXED ✅, vitest-leak FIXED ✅, dev-server dep-scan errors FIXED ✅, `__name`/fs leaks FIXED ✅. **E2.4 strategy registration bug FIXED ✅** — all 7 strategies register. **E2.5: Pre-existing component errors block experiment** — `suggestions` ReferenceError, `__name` in lazy chunks, `enabled` prop drilling. Must fix before E2.6 run.
 
-**E2 Experiment Status:** Preview server starts, React mounts, Playwright test executes 10 cases × 3 reps × 2 arms with statistical analysis (McNemar, Wilcoxon). Strategy registration bug FIXED ✅ — all 7 strategies now register. Component errors remain (`suggestions is not defined`, `__name` in lazy chunks, `enabled` prop) — pre-existing, not strategy registration.
+**E2 Experiment Status:** Preview server starts, React mounts, Playwright test executes 10 cases × 3 reps × 2 arms with statistical analysis (McNemar, Wilcoxon). Strategy registration bug FIXED ✅ — all 7 strategies now register. **Experiment blocked by 3 pre-existing component errors** (see E2.5): `suggestions is not defined`, `__name` in lazy chunks, `enabled` prop drilling. Must fix before powered run.
 
 ---
 
@@ -67,10 +67,14 @@ Success metric: `simulator:friction-detected → candidate:evaluated (measured, 
 | E2.2 | Fix production bundle browser errors (`__name`, `fs` leaks) | 4h | ✅ COMPLETE |
 | E2.3 | Run against preview server (10×3) | 4h | ✅ INFRASTRUCTURE WORKS; 0% completion (strategy registration bug) |
 | E2.4 | Fix strategy registration bug (glob path match) | 1h | ✅ COMPLETE |
-| E2.5 | Re-run experiment | 2h | Pending |
-| E2.6 | If null: add 5 more cases, re-run | 2h | Pending |
-| E2.7 | If improved: create revision, consent, re-sim | 2h | Pending |
-| E2.8 | Ledger chain + write-up | 1h | Pending |
+| E2.5 | Fix pre-existing component errors blocking experiment | 2h | **NEXT** |
+|   | └─ E2.5a: `ReferenceError: suggestions is not defined` in `useSmartNoteAssistant` | 1h | Pending |
+|   | └─ E2.5b: `__name is not defined` in lazy chunks (polyfill all dynamic imports) | 30m | Pending |
+|   | └─ E2.5c: `Cannot read properties of undefined (reading 'enabled')` — prop drilling fix | 30m | Pending |
+| E2.6 | Re-run experiment (10×3) | 2h | Pending |
+| E2.7 | If null: add 5 more cases, re-run | 2h | Pending |
+| E2.8 | If improved: create revision, consent, re-sim | 2h | Pending |
+| E2.9 | Ledger chain + write-up | 1h | Pending |
 
 **Gate:** Powered verdict (any sign) + ledger chain recorded.
 
@@ -121,7 +125,8 @@ P0: tsup build fix (1 day)          ← ✅ COMPLETE
   │     ├─→ E2.2: Fix production bundle ✅ COMPLETE
   │     ├─→ E2.3: E2 test infrastructure ✅ COMPLETE
   │     ├─→ E2.4: Fix glob path match ✅ COMPLETE (all 7 strategies register)
-  │     └─→ E2.5: Run experiment — blocked by pre-existing component errors
+  │     ├─→ E2.5: Fix pre-existing component errors (suggestions, __name, enabled)
+  │     └─→ E2.6–E2.9: Run experiment, verdict, ledger chain
   │
   ├─→ E13: llama.cpp provider + ablation (3 days)
   │     └─→ Winner → property-extraction@2
@@ -167,11 +172,12 @@ P0: tsup build fix (1 day)          ← ✅ COMPLETE
 
 | Week | Focus |
 |------|-------|
-| 1 (Nov 7–13) | P0 tsup fix ✅ → Fix Vite aliases ✅ → Fix production bundle ✅ → **E2 dev server run (THIS WEEK)** |
-| 2 (Nov 14–20) | E13 llama.cpp provider → ablation → winner |
-| 3 (Nov 21–27) | Buffer / E7/E14 if needed / write-ups |
+| 1 (Nov 7–13) | P0 tsup fix ✅ → Fix Vite aliases ✅ → Fix production bundle ✅ → E2.4 strategy fix ✅ → **E2.5 component fixes** |
+| 2 (Nov 14–20) | E2.6 run experiment → E2.7/E2.8 verdict/consent/sim → E2.9 ledger chain |
+| 3 (Nov 21–27) | E13 llama.cpp provider → ablation → winner |
+| 4 (Nov 28–Dec 4) | Buffer / E7/E14 if needed / write-ups |
 
-**Total: 2–3 weeks for one powered experiment with full chain.**
+**Total: 3–4 weeks for one powered experiment with full chain.**
 
 ---
 
