@@ -24,16 +24,9 @@ export * from './templates/index.js';
 export * from './export/index.js';
 export * from './storage/index.js';
 // Telemetry: explicit exports to avoid duplicates
+// Runtime classes/functions only - types moved to type-only section below
 export { 
     Ledger, 
-    LedgerEvent, 
-    LedgerEventType, 
-    LedgerPayload, 
-    RunConfig, 
-    RunSummary, 
-    // CaseVerdict is also defined in eval/verdict.ts - export from there instead
-    VerdictDetail, 
-    ResolutionReason,
     logEvent, 
     queryLedger, 
     getRunEvents, 
@@ -42,33 +35,19 @@ export {
 } from './telemetry/ledger.js';
 export { 
     RevisionStore, 
-    Revision, 
-    StrategyArtifact, 
-    RevisionStatus, 
-    RevisionStoreConfig, 
     getRevisionStore, 
     resetRevisionStore 
 } from './telemetry/revisionStore.js';
 export { 
-    RevisionDriver, 
     JSONLRevisionDriver, 
     InMemoryRevisionDriver, 
     SQLiteRevisionDriver, 
     revisionDriverRegistry,
     getRevisionDriverRegistry,
-    resetRevisionDriverRegistry,
-    type RevisionDriverConfig,
-    type RevisionSearchQuery
+    resetRevisionDriverRegistry
 } from './telemetry/revisionDriver.js';
 export { 
     Journal, 
-    FrictionEvent, 
-    FrictionAggregate, 
-    FrictionSignal, 
-    JournalConfig, 
-    FrictionKind, 
-    DurationBucket, 
-    EvidenceClass,
     getJournal, 
     resetJournal, 
     recordFriction, 
@@ -78,6 +57,36 @@ export {
 } from './telemetry/journal.js';
 export * from './fixtures/index.js';
 export * from './feedback/index.js';
+
+// Type-only exports for types that are not runtime values
+export type { 
+    DurationBucket, 
+    EvidenceClass, 
+    FrictionEvent, 
+    FrictionAggregate, 
+    FrictionSignal, 
+    JournalConfig, 
+    FrictionKind 
+} from './telemetry/frictionUtils.js';
+export type { 
+    LedgerEvent, 
+    LedgerEventType, 
+    LedgerPayload, 
+    RunConfig, 
+    RunSummary, 
+    VerdictDetail, 
+    ResolutionReason 
+} from './telemetry/types.js';
+export type { 
+    Revision, 
+    StrategyArtifact, 
+    RevisionStatus, 
+    RevisionStoreConfig 
+} from './telemetry/revisionStore.js';
+export type { 
+    RevisionDriverConfig,
+    RevisionSearchQuery 
+} from './telemetry/revisionDriver.js';
 
 // New extensibility modules
 export * from './ontology/index.js';
