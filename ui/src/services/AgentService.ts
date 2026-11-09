@@ -8,6 +8,9 @@ interface AgentMessage<T = any> {
     error?: string;
 }
 
+// Detect if running in development or test mode
+const isDevOrTest = typeof import.meta !== 'undefined' && (import.meta.env?.MODE === 'development' || import.meta.vitest);
+
 class AgentService extends RobustWebSocket {
     private _enabled: boolean;
     private _url: string | null = null;
@@ -29,7 +32,9 @@ class AgentService extends RobustWebSocket {
     async connect(url?: string): Promise<void> {
         // If explicitly disabled via internal state, do not connect
         if (!this._enabled) {
-            this.logger.info('Agent subsystem disabled by user setting');
+            if (!isDevOrTest) {
+                this.logger.info('Agent subsystem disabled by user setting');
+            }
             return;
         }
 
@@ -42,11 +47,15 @@ class AgentService extends RobustWebSocket {
                 try {
                     await super.connect(resolvedUrl);
                 } catch (e) {
-                    this.logger.warn('Initial connection failed, falling back to offline', e);
+                    if (!isDevOrTest) {
+                        this.logger.warn('Initial connection failed, falling back to offline', e);
+                    }
                     this.fallbackToOfflineMode();
                 }
             } else {
-                this.logger.info('Operating in offline mode');
+                if (!isDevOrTest) {
+                    this.logger.info('Operating in offline mode');
+                }
                 this.fallbackToOfflineMode();
             }
         })();
