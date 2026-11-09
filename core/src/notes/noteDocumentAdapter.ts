@@ -92,12 +92,16 @@ const markToPM = (mark: Mark): PMMark => {
 /**
  * Convert ProseMirror JSON to NoteDocument
  */
-export const pmToNoteDocument = (pmDoc: PMDocument, existingProperties: Property[] = [], existingPropertyRefs: PropertyRef[] = []): NoteDocument => {
+export const pmToNoteDocument = (
+  pmDoc: PMDocument,
+  existingProperties: Property[] = [],
+  existingPropertyRefs: PropertyRef[] = [],
+  options: { title?: string; tags?: string[] } = {}
+): NoteDocument => {
   const blocks: Block[] = [];
   const propertyRefs: PropertyRef[] = [...existingPropertyRefs];
   const propertyMap = new Map(existingProperties.map(p => [p.key, p]));
   let blockIndex = 0;
-  let charOffset = 0;
 
   for (const node of pmDoc.content || []) {
     const block = pmNodeToBlock(node, blockIndex, propertyRefs, propertyMap);
@@ -113,8 +117,8 @@ export const pmToNoteDocument = (pmDoc: PMDocument, existingProperties: Property
     blocks,
     propertyRefs,
     properties,
-    title: 'Untitled Note',
-    tags: [],
+    title: options.title || 'Untitled Note',
+    tags: options.tags || [],
   };
 };
 
@@ -203,15 +207,18 @@ const rebuildProperties = (propertyRefs: PropertyRef[], blocks: Block[]): Proper
       if (block) {
         let charCount = 0;
         let foundText = '';
+        let remainingLength = ref.length;
         
         for (const run of block.content) {
-          if (charCount + run.text.length > ref.anchor.offset) {
+          const runLength = run.text.length;
+          if (charCount + runLength > ref.anchor.offset) {
             const start = ref.anchor.offset - charCount;
-            const end = Math.min(start + ref.length, run.text.length);
-            foundText = run.text.slice(start, end);
-            break;
+            const end = Math.min(start + remainingLength, runLength);
+            foundText += run.text.slice(start, end);
+            remainingLength -= (end - start);
+            if (remainingLength <= 0) break;
           }
-          charCount += run.text.length;
+          charCount += runLength;
         }
         
         propertyMap.set(ref.id, {
@@ -229,40 +236,237 @@ const rebuildProperties = (propertyRefs: PropertyRef[], blocks: Block[]): Proper
 
 /**
  * Import HTML content to NoteDocument
- * Uses simple parsing - can be enhanced with a proper HTML parser
+ * Parses HTML structure into blocks (headings, paragraphs, lists, quotes, code)
  */
-export const htmlToNoteDocument = (html: string, properties: Property[] = []): NoteDocument => {
-  // Strip HTML tags and extract text
-  const text = html
-    .replace(/<[^>]*>/g, '')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .trim();
+export const htmlToNoteDocument = (html: string, properties: Property[] = [], options: { title?: string; tags?: string[] } = {}): NoteDocument => {
+  if (!html || !html.trim()) {
+    return createNoteDocument({ title: options.title || 'Untitled Note', tags: options.tags || [] });
+  }
 
-  // Create a simple paragraph block
-  const block: Block = {
-    id: generateId(),
-    type: 'paragraph',
-    content: [{ text }],
-  };
-
+  // Parse HTML into structured blocks
+  const blocks = parseHtmlToBlocks(html);
+  
   // Create propertyRefs from properties
   const propertyRefs: PropertyRef[] = properties.map((prop, index) => ({
     id: prop.key,
-    anchor: { blockIndex: 0, offset: index * 10 }, // rough approximation
+    anchor: { blockIndex: 0, offset: index * 10 },
     length: prop.values.join(', ').length,
   }));
 
   return {
     version: 1,
-    blocks: [block],
+    blocks: blocks.length > 0 ? blocks : [{ id: generateId(), type: 'paragraph', content: [{ text: '' }] }],
     propertyRefs,
     properties,
-    title: 'Untitled Note',
-    tags: [],
+    title: options.title || 'Untitled Note',
+    tags: options.tags || [],
   };
+};
+
+/**
+ * Parse HTML string into NoteDocument blocks
+ * Works in both browser (DOMParser) and Node (regex fallback)
+ */
+const parseHtmlToBlocks = (html: string): Block[] => {
+  const blocks: Block[] = [];
+
+  if (typeof window !== 'undefined' && typeof DOMParser !== 'undefined') {
+    // Browser: use DOMParser
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    parseDOMToBlocks(doc.body, blocks);
+  } else {
+    // Node: use regex-based parsing
+    parseHtmlRegexToBlocks(html, blocks);
+  }
+
+  return blocks;
+};
+
+/**
+ * Parse DOM nodes to blocks (browser)
+ */
+const parseDOMToBlocks = (node: Node, blocks: Block[], listParentType?: 'ul' | 'ol'): void => {
+  for (const child of Array.from(node.childNodes)) {
+    if (child.nodeType === Node.TEXT_NODE) {
+      const text = child.textContent?.trim();
+      if (text) {
+        // Add as paragraph if no current block or last block is not a paragraph
+        if (blocks.length === 0 || blocks[blocks.length - 1].type !== 'paragraph') {
+          blocks.push({ id: generateId(), type: 'paragraph', content: [{ text }] });
+        } else {
+          blocks[blocks.length - 1].content.push({ text });
+        }
+      }
+    } else if (child.nodeType === Node.ELEMENT_NODE) {
+      const element = child as Element;
+      const tagName = element.tagName.toLowerCase();
+
+      switch (tagName) {
+        case 'h1':
+        case 'h2':
+        case 'h3':
+        case 'h4':
+        case 'h5':
+        case 'h6':
+          blocks.push({
+            id: generateId(),
+            type: 'heading',
+            level: parseInt(tagName[1]),
+            content: [{ text: element.textContent?.trim() || '' }],
+          });
+          break;
+        case 'p':
+          blocks.push({
+            id: generateId(),
+            type: 'paragraph',
+            content: [{ text: element.textContent?.trim() || '' }],
+          });
+          break;
+        case 'ul':
+        case 'ol':
+          const listItems: Block['content'] = [];
+          for (const li of Array.from(element.children)) {
+            if (li.tagName.toLowerCase() === 'li') {
+              listItems.push({ text: li.textContent?.trim() || '' });
+            }
+          }
+          if (listItems.length > 0) {
+            blocks.push({
+              id: generateId(),
+              type: 'list',
+              listType: tagName === 'ol' ? 'ordered' : 'bullet',
+              content: listItems,
+            });
+          }
+          break;
+        case 'blockquote':
+          blocks.push({
+            id: generateId(),
+            type: 'quote',
+            content: [{ text: element.textContent?.trim() || '' }],
+          });
+          break;
+        case 'pre':
+          const code = element.querySelector('code');
+          blocks.push({
+            id: generateId(),
+            type: 'code',
+            content: [{ text: code?.textContent || element.textContent?.trim() || '' }],
+          });
+          break;
+        case 'br':
+          // Force new paragraph
+          if (blocks.length > 0 && blocks[blocks.length - 1].type === 'paragraph') {
+            blocks[blocks.length - 1].content.push({ text: '\n' });
+          } else {
+            blocks.push({ id: generateId(), type: 'paragraph', content: [{ text: '' }] });
+          }
+          break;
+        default:
+          // Recursively parse other elements
+          parseDOMToBlocks(element, blocks, listParentType);
+      }
+    }
+  }
+};
+
+/**
+ * Parse HTML with regex (Node.js fallback)
+ */
+const parseHtmlRegexToBlocks = (html: string, blocks: Block[]): void => {
+  // Simple regex-based block parsing
+  const blockPatterns = [
+    { regex: /<h([1-6])[^>]*>(.*?)<\/h[1-6]>/gis, type: 'heading' as const, levelExtractor: (match: RegExpMatchArray) => parseInt(match[1]) },
+    { regex: /<p[^>]*>(.*?)<\/p>/gis, type: 'paragraph' as const },
+    { regex: /<ul[^>]*>(.*?)<\/ul>/gis, type: 'list' as const, listType: 'bullet' as const },
+    { regex: /<ol[^>]*>(.*?)<\/ol>/gis, type: 'list' as const, listType: 'ordered' as const },
+    { regex: /<blockquote[^>]*>(.*?)<\/blockquote>/gis, type: 'quote' as const },
+    { regex: /<pre[^>]*><code[^>]*>(.*?)<\/code><\/pre>/gis, type: 'code' as const },
+  ];
+
+  let remainingHtml = html;
+  let lastIndex = 0;
+
+  // Sort matches by position to maintain order
+  const allMatches: Array<{ index: number; match: RegExpMatchArray; pattern: typeof blockPatterns[0] }> = [];
+
+  for (const pattern of blockPatterns) {
+    let match;
+    const regex = new RegExp(pattern.regex.source, pattern.regex.flags);
+    while ((match = regex.exec(html)) !== null) {
+      allMatches.push({ index: match.index, match, pattern });
+    }
+  }
+
+  allMatches.sort((a, b) => a.index - b.index);
+
+  for (const { match, pattern } of allMatches) {
+    const content = match[pattern.type === 'heading' ? 2 : 1] || '';
+    const cleanContent = content
+      .replace(/<[^>]*>/g, '')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&/g, '&')
+      .replace(/</g, '<')
+      .replace(/>/g, '>')
+      .replace(/"/g, '"')
+      .trim();
+
+    if (!cleanContent && pattern.type !== 'list') continue;
+
+    if (pattern.type === 'list') {
+      // Parse list items into a single list block
+      const listHtml = match[1] || '';
+      const liMatches = listHtml.match(/<li[^>]*>(.*?)<\/li>/gis) || [];
+      const listItems: Block['content'] = [];
+      for (const liMatch of liMatches) {
+        const liContent = liMatch
+          .replace(/<[^>]*>/g, '')
+          .replace(/&nbsp;/g, ' ')
+          .replace(/&/g, '&')
+          .replace(/</g, '<')
+          .replace(/>/g, '>')
+          .replace(/"/g, '"')
+          .trim();
+        if (liContent) {
+          listItems.push({ text: liContent });
+        }
+      }
+      if (listItems.length > 0) {
+        blocks.push({
+          id: generateId(),
+          type: 'list',
+          listType: pattern.listType,
+          content: listItems,
+        });
+      }
+    } else {
+      const block: Block = {
+        id: generateId(),
+        type: pattern.type,
+        content: [{ text: cleanContent }],
+      };
+      if (pattern.type === 'heading' && 'levelExtractor' in pattern) {
+        block.level = pattern.levelExtractor(match);
+      }
+      blocks.push(block);
+    }
+  }
+
+  // If no blocks found, treat as single paragraph
+  if (blocks.length === 0) {
+    const text = html
+      .replace(/<[^>]*>/g, '')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&/g, '&')
+      .replace(/</g, '<')
+      .replace(/>/g, '>')
+      .replace(/"/g, '"')
+      .trim();
+    if (text) {
+      blocks.push({ id: generateId(), type: 'paragraph', content: [{ text }] });
+    }
+  }
 };
 
 /**

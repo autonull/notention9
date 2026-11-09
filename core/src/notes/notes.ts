@@ -239,11 +239,7 @@ export const NoteDocumentPipeline = {
    * Update document content from ProseMirror JSON
    */
   updateFromPM: (doc: NoteDocument, pmDoc: ReturnType<typeof noteDocumentToPM>, ontology?: OntologyNode[]): NoteDocument => {
-    const newDoc = pmToNoteDocument(pmDoc, doc.properties, doc.propertyRefs);
-    newDoc.title = doc.title;
-    newDoc.tags = doc.tags;
-    newDoc.version = doc.version;
-    return newDoc;
+    return pmToNoteDocument(pmDoc, doc.properties, doc.propertyRefs, { title: doc.title, tags: doc.tags });
   },
 
   /**
