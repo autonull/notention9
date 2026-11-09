@@ -1,4 +1,4 @@
-import type { Note, Property, OntologyNode } from '../types/index.js';
+import type { Note, Property, OntologyNode, NoteDocument } from '../types/index.js';
 import { arePropertyArraysEqual, isIndefiniteProperty, arePropertiesEqual } from './properties.js';
 import { formatPropertyTag, parseProperties, replacePropertyInString, appendPropertyToText } from './parsing/index.js';
 import { NOTE_STATUS } from '../utils/constants.js';
@@ -8,6 +8,8 @@ import { inferNoteIntent, type NoteIntent } from './NoteIntentInferencer.js';
 import { memoize1, memoize2 } from '../utils/cache.js';
 import { areStringArraysEqual } from '../utils/common.js';
 import { emitActionTrace } from '../tracing/index.js';
+import { noteDocumentToHtml, noteDocumentToPM, pmToNoteDocument, htmlToNoteDocument } from './noteDocumentAdapter.js';
+import { createNoteDocument } from '../types/noteDocument.js';
 
 export const createNote = (overrides?: Partial<Note>): Note => {
   const now = new Date().toISOString();
@@ -193,4 +195,105 @@ export const NotePipeline = {
     const newContent = appendPropertyToText(note.content, propertyTag);
     return NotePipeline.updateContent(note, newContent, ontology);
   }
+};
+
+/**
+ * Convert legacy Note (HTML-based) to NoteDocument
+ */
+export const noteToNoteDocument = (note: Note): NoteDocument => {
+  if (note.document) return note.document;
+  
+  const doc = htmlToNoteDocument(note.content, note.properties);
+  doc.title = note.title;
+  doc.tags = note.tags;
+  return doc;
+};
+
+/**
+ * Convert NoteDocument to legacy Note (for compatibility)
+ */
+export const noteDocumentToNote = (doc: NoteDocument, baseNote?: Partial<Note>): Note => {
+  const contentHtml = noteDocumentToHtml(doc);
+  return {
+    id: baseNote?.id || crypto.randomUUID(),
+    title: doc.title,
+    content: contentHtml, // legacy field - HTML content
+    contentHtml, // explicit export field
+    tags: doc.tags,
+    properties: doc.properties,
+    createdAt: baseNote?.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    source: baseNote?.source || { type: 'user', identifier: 'user-default', timestamp: Date.now() },
+    privacy: baseNote?.privacy || 'private',
+    priority: baseNote?.priority || 1,
+    document: doc,
+    ...baseNote,
+  };
+};
+
+/**
+ * NoteDocument Pipeline - operates on structured document
+ */
+export const NoteDocumentPipeline = {
+  /**
+   * Update document content from ProseMirror JSON
+   */
+  updateFromPM: (doc: NoteDocument, pmDoc: ReturnType<typeof noteDocumentToPM>, ontology?: OntologyNode[]): NoteDocument => {
+    const newDoc = pmToNoteDocument(pmDoc, doc.properties, doc.propertyRefs);
+    newDoc.title = doc.title;
+    newDoc.tags = doc.tags;
+    newDoc.version = doc.version;
+    return newDoc;
+  },
+
+  /**
+   * Get ProseMirror JSON from document
+   */
+  toPM: (doc: NoteDocument) => noteDocumentToPM(doc),
+
+  /**
+   * Export to HTML (for Nostr, clipboard, preview)
+   */
+  toHtml: (doc: NoteDocument) => noteDocumentToHtml(doc),
+
+  /**
+   * Upsert a property in the document
+   */
+  upsertProperty: (doc: NoteDocument, property: Property): NoteDocument => {
+    const existingIndex = doc.properties.findIndex(p => p.key === property.key);
+    const newProperties = existingIndex >= 0
+      ? doc.properties.map((p, i) => i === existingIndex ? property : p)
+      : [...doc.properties, property];
+    
+    // Add propertyRef if new
+    const newPropertyRefs = doc.propertyRefs.some(r => r.id === property.key)
+      ? doc.propertyRefs
+      : [...doc.propertyRefs, {
+          id: property.key,
+          anchor: { blockIndex: 0, offset: 0 },
+          length: property.values.join(', ').length,
+        }];
+
+    return {
+      ...doc,
+      properties: newProperties,
+      propertyRefs: newPropertyRefs,
+    };
+  },
+
+  /**
+   * Remove a property from the document
+   */
+  removeProperty: (doc: NoteDocument, key: string): NoteDocument => {
+    return {
+      ...doc,
+      properties: doc.properties.filter(p => p.key !== key),
+      propertyRefs: doc.propertyRefs.filter(r => r.id !== key),
+    };
+  },
+
+  /**
+   * Create empty document
+   */
+  create: createNoteDocument,
 };

@@ -1,4 +1,5 @@
 import type { Event as NostrToolsEvent } from 'nostr-tools';
+import type { NoteDocument } from './noteDocument.js';
 
 export type NostrEvent = NostrToolsEvent;
 
@@ -44,6 +45,12 @@ export interface Note {
     cancelledAt?: string;
     relatedNoteIds?: string[];
   };
+
+  /** Canonical structured document (JSON) - new source of truth */
+  document?: NoteDocument;
+  
+  /** HTML export for Nostr, clipboard, preview - derived from document */
+  contentHtml?: string;
 }
 
 export type NoteSource = {

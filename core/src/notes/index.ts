@@ -7,3 +7,4 @@ export * from './conflicts.js';
 export * from './quantities/index.js';
 export * from './propertyExtractor/index.js';
 export * from './NoteIntentInferencer.js';
+export * from './noteDocumentAdapter.js';
