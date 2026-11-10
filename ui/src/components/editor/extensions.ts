@@ -22,7 +22,7 @@ interface SlashCommandAttrs extends MentionNodeAttrs {
 const createMentionConfig = (name: string, className: string, trigger: string, resolver: (query: string) => any[], command?: any) =>
     Mention.configure({
         HTMLAttributes: { class: className },
-        suggestion: { ...configureSuggestions(resolver, trigger), ...(command ? { command } : {}) }
+        suggestion: { ...configureSuggestions(resolver, trigger), ...(command ? { command } : {}) } as any
     }).extend({ name });
 
 export const getExtensions = ({
@@ -86,14 +86,14 @@ export const getExtensions = ({
         }, ({ editor, range, props }: any) => {
             editor.chain().focus().deleteRange(range).run();
             const p = props as SlashCommandAttrs;
-            if (p.type === 'property' && onOpenPropertyModal) return onOpenPropertyModal(p.label);
+            if (p.type === 'property' && onOpenPropertyModal && p.label) return onOpenPropertyModal(p.label);
             if (p.type === 'command') {
                 if (p.id === 'magic') onMagic?.();
                 else if (p.id === 'date') editor.chain().focus().insertContent(new Date().toISOString().split('T')[0]).run();
                 else if (p.id === 'time') editor.chain().focus().insertContent(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })).run();
                 return;
             }
-            editor.chain().focus().insertContent(p.id || '').run();
+            editor.chain().focus().insertContent(p.id ?? '').run();
         }),
     ];
 };

@@ -13,10 +13,9 @@ export function NetworkManagementSection() {
     const {
         providers,
         toggleProvider,
+        updateProviderSettings,
         isPrivateMode,
-        updateMeshtasticSettings,
         meshtasticSettings,
-        updateNostrSettings,
         nostrSettings
     } = useNetworkManagement();
     const [meshPort, setMeshPort] = useState(meshtasticSettings.port || '/dev/ttyUSB0');
@@ -38,7 +37,7 @@ export function NetworkManagementSection() {
 
     useEffect(() => {
         const interval = setInterval(async () => {
-            if (connectionType === 'server-proxy' && agentService.isConnected()) {
+            if (connectionType === 'server-proxy' && agentService.isConnected) {
                 try {
                     const status = await agentService.getMeshStatus();
                     setMeshStatus(status);
@@ -55,7 +54,7 @@ export function NetworkManagementSection() {
 
     const handleConnect = async () => {
         setIsConnecting(true);
-        updateMeshtasticSettings({ connectionType, port: meshPort });
+        updateProviderSettings('meshtastic', { connectionType, port: meshPort });
         try {
             if (connectionType === 'server-proxy') {
                 await agentService.meshConnect(meshPort);
@@ -68,14 +67,14 @@ export function NetworkManagementSection() {
                 const provider = networkRegistry.getProvider('meshtastic') as MeshtasticNetworkProvider;
                 if (provider) {
                     provider.setTransport({
-                        send: async (data) => {
+                        send: async (data: Uint8Array) => {
                             await device.sendPacket({
                                 data: { data, portnum: 120 },
                                 destination: 0xFFFFFFFF
                             });
                         },
                         onData: (callback) => {
-                            device.onTextPacket((packet) => {
+                            device.on('text', (packet) => {
                                 if (packet.data.data) {
                                     callback(packet.data.data as Uint8Array, packet.from.toString());
                                 }
@@ -84,14 +83,12 @@ export function NetworkManagementSection() {
                     });
 
                     // Listen for telemetry/position in WebSerial mode as well
-                    device.onTelemetryPacket(async (packet) => {
+                    device.on('telemetry', async (packet) => {
                         const nodeId = packet.from.toString();
-                        // This logic should ideally be consolidated into a hook or provider method
-                        // But for now we match what the Agent does
                         provider.emit('telemetry', { nodeId, telemetry: packet.data });
                     });
 
-                    device.onPositionPacket(async (packet) => {
+                    device.on('position', async (packet) => {
                         const nodeId = packet.from.toString();
                         provider.emit('position', { nodeId, position: packet.data });
                     });
@@ -155,9 +152,9 @@ export function NetworkManagementSection() {
                                         onChange={(e) => {
                                             const enabled = e.target.checked;
                                             if (provider.id === 'nostr') {
-                                                updateNostrSettings({ publishEnabled: enabled });
+                                                updateProviderSettings('nostr', { publishEnabled: enabled });
                                             } else {
-                                                updateMeshtasticSettings({ publishEnabled: enabled });
+                                                updateProviderSettings('meshtastic', { publishEnabled: enabled });
                                             }
                                         }}
                                     />
@@ -216,7 +213,7 @@ export function NetworkManagementSection() {
                                                 checked={meshtasticSettings.saveReceivedNotes}
                                                 onChange={(e) => {
                                                     const saveReceivedNotes = e.target.checked;
-                                                    updateMeshtasticSettings({ saveReceivedNotes });
+                                                    updateProviderSettings('meshtastic', { saveReceivedNotes });
                                                     if (connectionType === 'server-proxy') {
                                                         agentService.meshUpdateConfig({ saveReceivedNotes });
                                                     }
@@ -229,7 +226,7 @@ export function NetworkManagementSection() {
                                             variant="primary"
                                             onClick={handleConnect}
                                             disabled={isConnecting}
-                                            leftIcon={isConnecting ? LoadingSpinner : SignalIcon}
+                                            icon={isConnecting ? LoadingSpinner : SignalIcon}
                                         >
                                             {isConnecting ? 'Connecting...' : (meshStatus.connected ? 'Reconnect' : 'Connect')}
                                         </Button>

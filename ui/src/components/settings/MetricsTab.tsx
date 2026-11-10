@@ -81,13 +81,13 @@ export function MetricsTab() {
                             <strong>{totalEvents}</strong> events in current session
                         </p>
                         <div className="flex gap-2 flex-wrap">
-                            <Button variant="secondary" leftIcon={ArrowUpTrayIcon} onClick={handleExport} disabled={totalEvents === 0}>
+                            <Button variant="secondary" icon={ArrowUpTrayIcon} onClick={handleExport} disabled={totalEvents === 0}>
                                 Export JSON
                             </Button>
-                            <Button variant="ghost" leftIcon={TrashIcon} onClick={handleClear} disabled={totalEvents === 0}>
+                            <Button variant="ghost" icon={TrashIcon} onClick={handleClear} disabled={totalEvents === 0}>
                                 Clear
                             </Button>
-                            <Button variant="ghost" leftIcon={showRaw ? ChevronUpIcon : ChevronDownIcon} onClick={() => setShowRaw(!showRaw)}>
+                            <Button variant="ghost" icon={showRaw ? ChevronUpIcon : ChevronDownIcon} onClick={() => setShowRaw(!showRaw)}>
                                 {showRaw ? 'Hide Raw' : 'Show Raw'}
                             </Button>
                         </div>

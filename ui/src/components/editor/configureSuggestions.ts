@@ -6,7 +6,7 @@ import {SuggestionItem, SuggestionList} from './SuggestionList';
 interface SuggestionProps {
     query: string;
     editor: Editor;
-    clientRect: any; // Loosen type to avoid Tippy/Tiptap mismatch
+    clientRect: any;
     event?: KeyboardEvent;
     text: string;
     range: { from: number; to: number };
@@ -22,7 +22,7 @@ export const configureSuggestions = (
 ) => {
     return {
         char,
-        items: ({query}: { query: string }) => {
+        items: (query: string) => {
             return getItems(query);
         },
         render: () => {
@@ -30,7 +30,7 @@ export const configureSuggestions = (
             let popup: TippyInstance[];
 
             return {
-                onStart: (props: SuggestionProps) => {
+                onStart: (props: any) => {
                     component = new ReactRenderer(SuggestionList, {
                         props,
                         editor: props.editor,
@@ -51,7 +51,7 @@ export const configureSuggestions = (
                     });
                 },
 
-                onUpdate: (props: SuggestionProps) => {
+                onUpdate: (props: any) => {
                     component.updateProps(props);
 
                     if (!props.clientRect) {
@@ -63,13 +63,13 @@ export const configureSuggestions = (
                     });
                 },
 
-                onKeyDown: (props: SuggestionProps) => {
+                onKeyDown: (props: any) => {
                     if (props.event?.key === 'Escape') {
                         popup[0].hide();
                         return true;
                     }
 
-                    return (component.ref as SuggestionListRef)?.onKeyDown(props);
+                    return (component.ref as SuggestionListRef)?.onKeyDown({event: props.event!});
                 },
 
                 onExit: () => {
@@ -82,5 +82,5 @@ export const configureSuggestions = (
                 },
             };
         },
-    };
+    } as const;
 };

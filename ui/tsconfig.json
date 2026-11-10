@@ -11,8 +11,7 @@
     ],
     "types": [
       "vitest/globals",
-      "vite/client",
-      "@testing-library/jest-dom"
+      "vite/client"
     ],
     "skipLibCheck": true,
     "moduleResolution": "bundler",
@@ -36,6 +35,7 @@
     "noEmit": true
   },
   "include": [
-    "src"
+    "src",
+    "src/tests/vitest-env.d.ts"
   ]
 }

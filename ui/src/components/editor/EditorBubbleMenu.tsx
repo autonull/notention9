@@ -1,6 +1,6 @@
 import React from 'react';
 import {Editor} from '@tiptap/react';
-import {BubbleMenu} from '@tiptap/react/menus';
+import {BubbleMenu as BubbleMenuComponent} from '@tiptap/react/menus';
 import {BoldIcon, CodeBracketsIcon, ItalicIcon, LinkIcon, QuoteIcon, StrikethroughIcon} from '../ui/icons';
 
 interface EditorBubbleMenuProps {
@@ -31,6 +31,8 @@ const BubbleButton = ({
         <Icon className="h-3.5 w-3.5"/>
     </button>
 );
+
+const BubbleMenu = BubbleMenuComponent as any;
 
 export function EditorBubbleMenu({editor}: EditorBubbleMenuProps) {
     if (!editor) return null;

@@ -1,15 +1,25 @@
 import React, {useMemo} from 'react';
-import {MarkViewProps, NodeViewWrapper} from '@tiptap/react';
+import {MarkViewProps, NodeViewWrapper as NodeViewWrapperComponent} from '@tiptap/react';
 import {ExclamationTriangleIcon, TagIcon} from '../ui/icons';
 import {ICON_MAP} from '../layout/iconMap';
 import {useSettings} from '../../hooks/useSettingsContext';
 import {useOntologyIndex} from '../../hooks/useOntologyIndex';
 import {validateAttributeValue, getCanonicalKey} from '@notention/core';
 
+const NodeViewWrapper = NodeViewWrapperComponent as any;
+
 // Support both NodeViewProps (legacy) and MarkViewProps (new)
+interface PropertyAttrs {
+    name: string;
+    operator: string;
+    value: string;
+    icon?: string;
+    propertyId?: string;
+}
+
 interface PropertyViewProps {
-    node?: {attrs: Record<string, unknown>};
-    mark?: {attrs: Record<string, unknown>};
+    node?: {attrs: PropertyAttrs};
+    mark?: {attrs: PropertyAttrs};
     updateAttributes?: (attrs: Record<string, unknown>) => void;
     deleteNode?: () => void;
     getPos?: () => number | undefined;
@@ -18,7 +28,7 @@ interface PropertyViewProps {
 
 export function PropertyChip(props: PropertyViewProps) {
     // Support both node (legacy) and mark (new) views
-    const attrs = props.node?.attrs ?? props.mark?.attrs ?? {};
+    const attrs: PropertyAttrs = (props.node?.attrs ?? props.mark?.attrs ?? {}) as PropertyAttrs;
     const {name, operator, value, icon, propertyId} = attrs;
 
     const {settings} = useSettings();
@@ -33,7 +43,7 @@ export function PropertyChip(props: PropertyViewProps) {
 
     // Use icon from definition if available (for aliases or typed properties), fallback to node attr or default
     const effectiveIcon = definition?.icon || icon;
-    const IconComponent = effectiveIcon && ICON_MAP[effectiveIcon] ? ICON_MAP[effectiveIcon] : TagIcon;
+    const IconComponent = effectiveIcon && effectiveIcon in ICON_MAP ? ICON_MAP[effectiveIcon] : TagIcon;
 
     const isAlias = canonicalKey !== name;
 

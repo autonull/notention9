@@ -76,11 +76,11 @@ export function DataTab() {
                     Existing notes are never overwritten.
                 </p>
                 <div className="flex gap-3">
-                    <Button variant="primary" leftIcon={SparklesIcon} onClick={demo.load}>
+                    <Button variant="primary" icon={SparklesIcon} onClick={demo.load}>
                         {demo.hasSampleData ? 'Reload sample workspace' : 'Load sample workspace'}
                     </Button>
                     {demo.hasSampleData && (
-                        <Button variant="secondary" leftIcon={TrashIcon} onClick={demo.remove}>
+                        <Button variant="secondary" icon={TrashIcon} onClick={demo.remove}>
                             Remove sample data
                         </Button>
                     )}
@@ -97,7 +97,7 @@ export function DataTab() {
                 </p>
                 <Button
                     variant="secondary"
-                    leftIcon={DocumentDuplicateIcon}
+                    icon={DocumentDuplicateIcon}
                     onClick={() => setActiveView('trash')}
                 >
                     Recently deleted

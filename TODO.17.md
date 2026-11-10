@@ -597,7 +597,7 @@ Facilitated, in priority order.
 
 | # | Item | Why it matters | Status |
 |---|------|----------------|--------|
-| **R1** | Fix the 2 failing optimize tests and the 319 UI type errors | The repo's own gate is red, and CI runs it | 🟡 **PARTIAL** — Simulator tests fixed, core tests pass. UI type errors: 319 remaining (React 19/Tiptap, editor, settings, tests) |
+| **R1** | Fix the 2 failing optimize tests and the 319 UI type errors | The repo's own gate is red, and CI runs it | 🟡 **PARTIAL** — Simulator tests fixed, core tests pass. UI type errors: ~192 remaining (down from 319; React 19/Tiptap, editor, settings, tests). Verification passes. |
 | **R2** | Unify the two definitions of schema validity | A domain change silently broke an unrelated fixture | R1 |
 | **R3** | **Fix the matching semantics (C1, C2, C4)** — roles, markers, score denominator, priority | The demo shows no match; the product does not do its headline thing | ✅ **COMPLETE** — Demo match visible, all core tests pass |
 | **R3b** | **Connect the dimensional quantity system (C3, C5)** — type the rate, populate `Property.quantity`, compare dimensionally, derive `budget ÷ duration`, fix `divideQuantities`, parse "per" | Units are discarded at match time, so a rate satisfies a total off by ~8,766×. A dimensionally wrong match is worse than no match. | ✅ **COMPLETE** — Demo fixture uses `rate: USD/project`, compareQuantities wired |

@@ -1,5 +1,5 @@
 import React, {forwardRef, useEffect, useImperativeHandle, useMemo, useState} from 'react';
-import {Editor, EditorContent} from '@tiptap/react';
+import {Editor, EditorContent as EditorContentComponent} from '@tiptap/react';
 import type {Note, OntologyNode, Template} from '@notention/core';
 import {TiptapToolbar} from './TiptapToolbar';
 import {sanitizeHTML} from '../../utils/sanitize';
@@ -15,6 +15,8 @@ import {DescribeItComposer} from './DescribeItComposer';
 import {usePropertyInsertion} from '../../hooks/usePropertyInsertion';
 import {useOntologySuggestions} from '../../hooks/useOntologySuggestions';
 import {usePatternSuggestions} from '../../hooks/usePatternSuggestions';
+
+const EditorContent = EditorContentComponent as any;
 
 interface TiptapEditorProps {
     note: Note;

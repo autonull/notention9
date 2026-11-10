@@ -1,7 +1,7 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "types": ["@playwright/test", "node"],
+    "types": ["@playwright/test", "node", "@testing-library/jest-dom", "vitest/globals"],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "noEmit": true

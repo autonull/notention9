@@ -1,5 +1,5 @@
 import {Mark, mergeAttributes} from '@tiptap/core';
-import {ReactNodeViewRenderer} from '@tiptap/react';
+import {ReactMarkViewRenderer} from '@tiptap/react';
 import {PropertyChip} from './PropertyChip';
 
 export const PropertyMark = Mark.create({
@@ -89,7 +89,7 @@ export const PropertyMark = Mark.create({
         return ['span', mergeAttributes(HTMLAttributes, {'data-type': 'property'})];
     },
 
-    addNodeView() {
-        return ReactNodeViewRenderer(PropertyChip);
+    addMarkView() {
+        return ReactMarkViewRenderer(PropertyChip as any);
     },
 });

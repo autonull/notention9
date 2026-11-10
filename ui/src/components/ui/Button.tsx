@@ -48,13 +48,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             className
         );
 
-        // Filter out non-DOM props that might be passed via spread
+        // Filter out non-DOM props that might be passed via spread (from IconButton usage)
         const domProps = { ...props };
-        delete domProps.icon;
-        delete domProps.tooltipPosition;
-        delete domProps.isActive;
-        delete domProps.label;
-        delete domProps.containerClassName;
+        delete (domProps as any).tooltip;
+        delete (domProps as any).tooltipPosition;
+        delete (domProps as any).isActive;
+        delete (domProps as any).label;
+        delete (domProps as any).containerClassName;
 
         // Resolve leftIcon: explicit leftIcon takes precedence, then icon component
         const resolvedLeftIcon = leftIcon ?? (icon ? <icon className={iconSizes[size]} /> : null);
@@ -125,21 +125,19 @@ export function IconButton({
     );
 
     // Filter out non-DOM props explicitly to prevent React warnings
-    // Create domProps from props, then remove known non-DOM props
     const domProps = { ...props };
-    // Delete all known non-DOM props that might be passed via spread
-    delete domProps.tooltip;
-    delete domProps.tooltipPosition;
-    delete domProps.icon;
-    delete domProps.isActive;
-    delete domProps.label;
-    delete domProps.containerClassName;
-    delete domProps.touchTarget;
-    delete domProps.variant;
-    delete domProps.size;
-    delete domProps.className;
-    delete domProps.title;
-    delete domProps.disabled;
+    delete (domProps as any).tooltip;
+    delete (domProps as any).tooltipPosition;
+    delete (domProps as any).icon;
+    delete (domProps as any).isActive;
+    delete (domProps as any).label;
+    delete (domProps as any).containerClassName;
+    delete (domProps as any).touchTarget;
+    delete (domProps as any).variant;
+    delete (domProps as any).size;
+    delete (domProps as any).className;
+    delete (domProps as any).title;
+    delete (domProps as any).disabled;
 
     const button = (
         <button
