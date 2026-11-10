@@ -11,19 +11,16 @@ const ontology: OntologyNode[] = [
                 type: 'string',
                 description: 'A job role',
                 operators: { real: ['is'], imaginary: ['is'] },
-                aliases: ['job', 'position', 'dev']
             },
             'location': {
                 type: 'string',
                 description: 'A place',
                 operators: { real: ['is'], imaginary: ['is'] },
-                aliases: ['city', 'place']
             },
             'price': {
                 type: 'number',
                 description: 'Cost',
                 operators: { real: ['is', '<', '>'], imaginary: ['is', 'between'] },
-                aliases: []
             }
         },
         children: []
@@ -41,7 +38,7 @@ const createNote = (props: Property[]): Note => ({
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     privacy: 'public',
-    priority: 0,
+    priority: 1,
     author: 'user',
     source: { type: 'user', identifier: 'test', timestamp: Date.now() },
     nostrEventId: undefined
@@ -49,21 +46,6 @@ const createNote = (props: Property[]): Note => ({
 
 describe('MatchEngine', () => {
     const engine = new MatchEngine(ontology);
-
-    describe('Alias Matching', () => {
-        it('should detect alias usage in matches', () => {
-            const req = createNote([{ key: 'role', operator: 'is', values: ['Engineer'] }]);
-            // Offer uses 'dev' which is an alias for 'role'
-            const off = createNote([{ key: 'dev', operator: 'is', values: ['Engineer'] }]);
-
-            const res = engine.calculateMatchScore(req, off);
-            const match = res.matches[0];
-
-            expect(match).toBeDefined();
-            expect(match.details?.type).toBe('alias');
-            expect(match.details?.aliasUsed).toBe('dev');
-        });
-    });
 
     describe('Fuzzy String Matching', () => {
         it('should detect fuzzy matches for strings', () => {
@@ -151,17 +133,6 @@ describe('MatchEngine', () => {
             expect(missingKeys).toContain('price');
         });
 
-        it('should not mark aliased matches as missing', () => {
-             const req = createNote([{ key: 'role', operator: 'is', values: ['Engineer'] }]);
-             // Offer has 'dev' (alias of role)
-             const off = createNote([{ key: 'dev', operator: 'is', values: ['Engineer'] }]);
-
-             const res = engine.calculateMatchScore(req, off);
-
-             expect(res.matches.length).toBe(1);
-             expect(res.missing.length).toBe(0);
-        });
-
         it('should not mark conflicts as missing', () => {
              const req = createNote([{ key: 'price', operator: 'is', values: ['100'] }]);
              // Offer has price but value mismatch (conflict)
@@ -171,6 +142,29 @@ describe('MatchEngine', () => {
 
              expect(res.conflicts.length).toBe(1);
              expect(res.missing.length).toBe(0);
+        });
+    });
+
+    describe('Marker properties are excluded from matching', () => {
+        it('should not evaluate marker properties as constraints', () => {
+            const req = createNote([
+                { key: 'intent', operator: 'is', values: ['request'], role: 'marker' },
+                { key: 'role', operator: 'is', values: ['Engineer'], role: 'constraint' },
+            ]);
+            const off = createNote([
+                { key: 'intent', operator: 'is', values: ['offer'], role: 'marker' },
+                { key: 'role', operator: 'is', values: ['Engineer'], role: 'constraint' },
+            ]);
+
+            const res = engine.calculateMatchScore(req, off);
+
+            // intent is a marker, should not be evaluated
+            // role matches exactly
+            expect(res.matches.length).toBe(1);
+            expect(res.matches[0].requestProp.key).toBe('role');
+            expect(res.missing.length).toBe(0);
+            // Score should be 1.0 (1 constraint matched / 1 required)
+            expect(res.score).toBe(1.0);
         });
     });
 });

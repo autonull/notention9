@@ -14,7 +14,7 @@ interface DemoNoteInput {
 
 const HOUR = 60 * 60 * 1000;
 
-const property = (key: string, values: string[], operator = 'is'): Property => ({key, operator, values});
+const property = (key: string, values: string[], operator = 'is', role?: 'constraint' | 'fact' | 'marker', unit?: string): Property => ({key, operator, values, role, unit});
 
 const buildNote = (
     input: DemoNoteInput,
@@ -49,10 +49,10 @@ const DEMO_NOTES: DemoNoteInput[] = [
         content: '<p>We are building a small community tool and need help with the interface. Two weeks of work, flexible hours.</p>',
         tags: ['request', 'work'],
         properties: [
-            property('intent', ['request']),
-            property('skill', ['React']),
-            property('budget', ['800', '1200'], 'between'),
-            property('status', ['open']),
+            property('intent', ['request'], 'is', 'marker'),
+            property('skill', ['React'], 'is', 'constraint'),
+            property('rate', ['900', '1200'], 'between', 'constraint', 'USD/project'),
+            property('status', ['open'], 'is', 'marker'),
         ],
         privacy: 'public',
         offsetHours: 2,
@@ -65,10 +65,10 @@ const DEMO_NOTES: DemoNoteInput[] = [
         content: '<p>Frontend developer in Berlin. I can take on a focused two-week project and help shape the interface.</p>',
         tags: ['offer', 'work'],
         properties: [
-            property('intent', ['offer']),
-            property('skill', ['React']),
-            property('rate', ['900']),
-            property('status', ['available']),
+            property('intent', ['offer'], 'is', 'marker'),
+            property('skill', ['React'], 'is', 'constraint'),
+            property('rate', ['900'], 'is', 'constraint', 'USD/project'),
+            property('status', ['available'], 'is', 'marker'),
         ],
         privacy: 'public',
         offsetHours: 5,
@@ -80,10 +80,10 @@ const DEMO_NOTES: DemoNoteInput[] = [
         content: '<p>Happy to help with small garden projects around the neighbourhood. Tools included.</p>',
         tags: ['offer', 'neighbourhood'],
         properties: [
-            property('intent', ['offer']),
-            property('skill', ['Gardening']),
-            property('rate', ['25']),
-            property('status', ['available']),
+            property('intent', ['offer'], 'is', 'marker'),
+            property('skill', ['Gardening'], 'is', 'constraint'),
+            property('rate', ['25'], 'is', 'constraint', 'USD/hour'),
+            property('status', ['available'], 'is', 'marker'),
         ],
         offsetHours: 9,
         geo: {lat: 52.531, lng: 13.384},
@@ -94,9 +94,9 @@ const DEMO_NOTES: DemoNoteInput[] = [
         content: '<p>Monthly meetup at the community hall. Bring something you are working on and meet your neighbours.</p>',
         tags: ['event', 'community'],
         properties: [
-            property('type', ['event']),
-            property('start', ['2026-10-24T18:00']),
-            property('location', ['Community Hall, Berlin']),
+            property('type', ['event'], 'is', 'marker'),
+            property('start', ['2026-10-24T18:00'], 'is', 'constraint'),
+            property('location', ['Community Hall, Berlin'], 'is', 'constraint'),
         ],
         privacy: 'public',
         offsetHours: 14,
@@ -108,9 +108,9 @@ const DEMO_NOTES: DemoNoteInput[] = [
         content: '<p>Design is ready. Print 100 copies and bring them to the hall on Friday.</p>',
         tags: ['task'],
         properties: [
-            property('status', ['todo']),
-            property('deadline', ['2026-10-23']),
-            property('type', ['task']),
+            property('status', ['todo'], 'is', 'marker'),
+            property('deadline', ['2026-10-23'], 'is', 'constraint'),
+            property('type', ['task'], 'is', 'marker'),
         ],
         offsetHours: 20,
     },
@@ -120,9 +120,9 @@ const DEMO_NOTES: DemoNoteInput[] = [
         content: '<p>John looks after the shared garden and knows everyone on the street. Reach out for plant swaps.</p>',
         tags: ['person', 'community'],
         properties: [
-            property('type', ['person']),
-            property('skill', ['Gardening']),
-            property('status', ['available']),
+            property('type', ['person'], 'is', 'marker'),
+            property('skill', ['Gardening'], 'is', 'constraint'),
+            property('status', ['available'], 'is', 'marker'),
         ],
         offsetHours: 26,
         geo: {lat: 52.525, lng: 13.393},
@@ -133,9 +133,9 @@ const DEMO_NOTES: DemoNoteInput[] = [
         content: '<p>Three-speed city bike, recently serviced. Pick up in Kreuzberg.</p>',
         tags: ['marketplace'],
         properties: [
-            property('type', ['item']),
-            property('price', ['120']),
-            property('condition', ['good']),
+            property('type', ['item'], 'is', 'marker'),
+            property('price', ['120'], 'is', 'constraint'),
+            property('condition', ['good'], 'is', 'constraint'),
         ],
         privacy: 'public',
         offsetHours: 32,
@@ -147,9 +147,9 @@ const DEMO_NOTES: DemoNoteInput[] = [
         content: '<p>Need a stepladder for an hour on Saturday to reach a high shelf. Can pick it up and return it the same day.</p>',
         tags: ['request', 'neighbourhood'],
         properties: [
-            property('intent', ['request']),
-            property('item', ['ladder']),
-            property('status', ['open']),
+            property('intent', ['request'], 'is', 'marker'),
+            property('item', ['ladder'], 'is', 'constraint'),
+            property('status', ['open'], 'is', 'marker'),
         ],
         offsetHours: 38,
         geo: {lat: 52.536, lng: 13.401},
@@ -159,7 +159,7 @@ const DEMO_NOTES: DemoNoteInput[] = [
         title: 'This week in the neighbourhood',
         content: '<p>Quiet week. Fixed the garden gate, met two new neighbours, and started planning the winter repair day.</p>',
         tags: ['journal'],
-        properties: [property('type', ['journal'])],
+        properties: [property('type', ['journal'], 'is', 'marker')],
         offsetHours: 50,
     },
     {
@@ -167,7 +167,7 @@ const DEMO_NOTES: DemoNoteInput[] = [
         title: 'Winter repair day ideas',
         content: '<p>Collect tools, list small repairs, ask who can bring soup. Keep it simple and local.</p>',
         tags: ['idea', 'community'],
-        properties: [property('type', ['idea']), property('status', ['open'])],
+        properties: [property('type', ['idea'], 'is', 'marker'), property('status', ['open'], 'is', 'marker')],
         offsetHours: 60,
     },
 ];

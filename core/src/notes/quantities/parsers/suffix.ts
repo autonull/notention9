@@ -3,7 +3,15 @@ import { createCompoundQuantityResult, getSemanticTypeForUnit } from '../semanti
 import type { Quantity } from '../../../types/index.js';
 
 export const parseSuffixUnits = (clean: string): Quantity | null => {
-  const match = clean.match(/^([\d,\.]+)\s*([a-zA-Z°\/\$€£¥₹²³µ]+)$/);
+  // Handle "per" format: "50 USD per year" -> "50 USD/year"
+  let normalized = clean;
+  const perMatch = clean.match(/^([\d,\.]+)\s+([a-zA-Z$€£¥₹]+)\s+per\s+([a-zA-Z]+)$/i);
+  if (perMatch) {
+    const [, valStr, numUnit, denUnit] = perMatch;
+    normalized = `${valStr} ${numUnit}/${denUnit}`;
+  }
+
+  const match = normalized.match(/^([\d,\.]+)\s*([a-zA-Z°\/\$€£¥₹²³µ]+)$/);
   if (!match) return null;
 
   const [, valStr, rawUnit] = match;

@@ -7,6 +7,7 @@ import {
     matchStrings,
     StringMatchResult
 } from './matchUtils.js';
+import { parseQuantity, compareQuantities, areQuantitiesCompatible } from '../notes/quantities/index.js';
 
 /**
  * Shared helper functions for matchers
@@ -61,6 +62,48 @@ const isRangeRequest = (request: Property): boolean =>
  * Number matcher - handles numeric comparisons and ranges
  */
 export const evaluateNumber = (request: Property, offer: Property): PropertyMatch => {
+    // Try to parse as quantities first (for dimensional comparison)
+    const requestQuantity = request.quantity ?? parseQuantity(request.values[0]);
+    const offerQuantity = offer.quantity ?? parseQuantity(offer.values[0]);
+
+    // If both have quantities with units, use dimensional comparison
+    if (requestQuantity && offerQuantity && requestQuantity.unit && offerQuantity.unit) {
+        const compatible = areQuantitiesCompatible(requestQuantity, offerQuantity);
+        if (!compatible) {
+            return createMatch(request, offer, 0, `Incompatible dimensions: ${requestQuantity.unit} vs ${offerQuantity.unit}`, { 
+                type: 'incompatible', 
+                valueMatch: 'incompatible',
+                dimensions: { request: requestQuantity.unit, offer: offerQuantity.unit }
+            });
+        }
+        
+        const comparison = compareQuantities(offerQuantity, requestQuantity);
+        if (comparison === null) {
+            // Fall back to magnitude comparison if conversion not possible
+            return evaluateNumberMagnitude(request, offer, offerQuantity.value, requestQuantity.value);
+        }
+        
+        // For 'between' operator, we need special handling
+        if (isRangeRequest(request)) {
+            return evaluateNumberRange(request, offer, offerQuantity.value);
+        }
+        
+        const op = OPERATOR_MAP[request.operator] ?? request.operator;
+        const res = OPERATOR_RESULTS[op];
+        if (!res) return createMatch(request, offer, 0, `Unknown operator ${request.operator}`, { type: 'unknown' });
+
+        // For dimensional comparison, we check if offer satisfies request
+        // comparison = 1 means offer > request, -1 means offer < request, 0 means equal
+        const satisfied = (comparison >= 0 && (op === '>=' || op === '>' || op === 'is' || op === '=')) ||
+                          (comparison <= 0 && (op === '<=' || op === '<' || op === 'is' || op === '=')) ||
+                          (comparison === 0 && (op === 'is' || op === '='));
+        
+        return satisfied
+            ? createMatch(request, offer, 1, `${offerQuantity.value} ${offerQuantity.unit} ${res.msg(offerQuantity.value, requestQuantity.value)}`, { type: 'exact', valueMatch: res.vm, unit: requestQuantity.unit })
+            : createMatch(request, offer, -1, `${offerQuantity.value} ${offerQuantity.unit} ${res.nokMsg(offerQuantity.value, requestQuantity.value)}`, { type: 'exact', valueMatch: res.nvm, unit: requestQuantity.unit });
+    }
+
+    // Fall back to magnitude-only comparison (existing behavior)
     const offerValue = parseNumber(offer.values[0]);
     if (offerValue === null) return createMatch(request, offer, 0, 'Invalid number');
 
@@ -71,6 +114,10 @@ export const evaluateNumber = (request: Property, offer: Property): PropertyMatc
     const requestValue = parseNumber(request.values[0]);
     if (requestValue === null) return createMatch(request, offer, 0, 'Invalid comparison value');
 
+    return evaluateNumberMagnitude(request, offer, offerValue, requestValue);
+};
+
+const evaluateNumberMagnitude = (request: Property, offer: Property, offerValue: number, requestValue: number): PropertyMatch => {
     const op = OPERATOR_MAP[request.operator] ?? request.operator;
     const res = OPERATOR_RESULTS[op];
     if (!res) return createMatch(request, offer, 0, `Unknown operator ${request.operator}`, { type: 'unknown' });

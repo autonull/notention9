@@ -38,11 +38,9 @@ export class MatchingService {
     * Calculates a match score between a Request Note (Query) and an Offer Note (Target).
     *
     * Logic:
-    * - The Request Note's properties are ALL treated as constraints (requirements).
-    *   - [key:is:value] -> Requires target to have key:is:value (Equality)
-    *   - [key > value]  -> Requires target to have key:is:X where X > value (Condition)
-    *
-    * - The Offer Note's properties are treated as Facts.
+    * - The Request Note's constraint-role properties are treated as constraints (requirements).
+    * - The Offer Note's fact-role properties are treated as Facts.
+    * - Marker properties (intent, status, type) are excluded from matching.
     *
     * Uses MatchEngine's weighted scoring (exact=1, fuzzy<1, conflict=-1, partial=0.8, etc.)
     */
@@ -55,8 +53,9 @@ export class MatchingService {
     * Enhanced matching that distinguishes between Real (facts) and Imaginary (constraints)
     * as described in the architecture documentation.
     *
-    * Real (Facts): Properties with 'is' operator represent facts about the note
-    * Imaginary (Constraints): Properties with other operators represent requirements
+    * Real (Facts): Properties with role 'fact' or 'is' operator represent facts about the note
+    * Imaginary (Constraints): Properties with role 'constraint' represent requirements
+    * Marker: Properties with role 'marker' (intent, status, type) are excluded
     */
     matchNotesWithRealVsImaginary(request: Note, offer: Note): MatchResultDetails {
         // 1. Request Constraints vs Offer Facts
@@ -100,7 +99,7 @@ export class MatchingService {
             score,
             satisfied: matches.map(m => m.requestProp),
             failed: [...conflicts.map(c => c.requestProp), ...missing],
-            totalConstraints: request.properties.length
+            totalConstraints: request.properties.filter(p => p.role !== 'marker').length
         };
     }
 

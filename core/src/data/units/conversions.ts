@@ -41,6 +41,8 @@ export const conversions: Record<string, number> = {
   "yr": 31557600,
   "decade": 315576000,
   "century": 3155760000,
+  "project": 1209600,
+  "projects": 1209600,
   "m²": 1,
   "km²": 1000000,
   "ha": 10000,

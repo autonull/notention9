@@ -160,6 +160,8 @@ describe('Quantities System Tests', () => {
         value: 50,
         unit: 'km/h',
         unitType: 'compound',
+        numerator: 'km',
+        denominator: 'h',
         semanticType: 'ratio'
       });
     });

@@ -1,7 +1,8 @@
 export const arrays = {
   TIME_UNITS: [
     "s", "min", "h", "d", "wk", "mo", "yr", "decade", "century",
-    "second", "minute", "hour", "day", "week", "month", "year", "decades", "centuries"
+    "second", "minute", "hour", "day", "week", "month", "year", "decades", "centuries",
+    "project", "projects"
   ],
   DISTANCE_UNITS: [
     "m", "km", "cm", "mm", "μm", "nm", "in", "ft", "yd", "mi", "nmi", "au", "ly", "pc",

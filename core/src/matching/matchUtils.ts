@@ -186,7 +186,8 @@ export function matchValues(
 }
 
 /**
- * Filter note properties into facts (operator === 'is') and constraints (operator !== 'is')
+ * Filter note properties into facts (role === 'fact' or operator === 'is') and constraints (role === 'constraint')
+ * Markers are excluded from both.
  */
 export function partitionProperties(properties: Property[]): {
     facts: Property[];
@@ -196,7 +197,8 @@ export function partitionProperties(properties: Property[]): {
     const constraints: Property[] = [];
     
     for (const prop of properties) {
-        if (prop.operator === 'is') {
+        if (prop.role === 'marker') continue;
+        if (prop.role === 'fact' || prop.operator === 'is') {
             facts.push(prop);
         } else {
             constraints.push(prop);

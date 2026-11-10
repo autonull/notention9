@@ -2,7 +2,7 @@
 
 **Supersedes:** TODO.16.md (superseded plan) · **Rewritten:** TODO.17 v1 (this file, v2)
 **Date:** 2026-11-10
-**Status:** Plan approved. **P0b COMPLETE** (optimize tests pass, UI type errors reduced from 612 → 459). **P0a COMPLETE** (product truth: no-op controls wired, save/publish separated, honest routing, honest settings, map popup DOM, match rejection persisted, dead code deleted). P1 matching semantics in progress. See "Progress Log" below.
+**Status:** Plan approved. **P0b COMPLETE** (optimize tests pass, UI type errors reduced from 612 → 459). **P0a COMPLETE** (product truth: no-op controls wired, save/publish separated, honest routing, honest settings, map popup DOM, match rejection persisted, dead code deleted). **P1a COMPLETE** (matching semantics: C1-C6 fixed, demo match visible, all core/optimizer tests pass). **P1b-P1d IN PROGRESS** (act step, acceptance test, benchmark rebuild).
 
 ## Progress Log (2026-11-10)
 
@@ -25,9 +25,20 @@
 | | | - **A7** Persisted match rejection: `useRejectedMatches` hook stores rejected IDs in localStorage, filtered from `useMatches` |
 | | | - **A8** Deleted dead code: `DashboardQuickCapture`, `PropertyExtension`, `useProgressiveElicitation`, `useVirtualizedList`, 5 unused UI barrels, `react-force-graph-2d` dependency (~1,500 LOC removed) |
 | | | - **Verify passes**: `pnpm verify` green, strategy param visibility verified |
-| **P1a** | 🔄 **IN PROGRESS** | - Matching semantics fix (C1-C6) - not started yet |
-| | | - Dimensional typing (C3, C5) - not started yet |
-| | | - Alias removal from matcher (C6) - not started yet |
+| **P1a** | ✅ **COMPLETE** | - **C1** `intent` → marker role, excluded from matching |
+| | | - **C2** `status` → marker role, excluded from matching |
+| | | - **C3** Demo fixture: request/offer both use `rate: USD/project` (same dimension) |
+| | | - **C4** Score denominator = required constraints only; priority factor applied |
+| | | - **C5** Matcher uses `compareQuantities` for dimensional comparison; incompatible dims → "incomparable" |
+| | | - **C6** Removed `getAliases` from matcher; direct canonical-key comparison only |
+| | | - Added `PropertyRole` type (`constraint`\|`fact`\|`marker`) to `Property` and `OntologyAttribute` |
+| | | - Added `numericOptions` to ontology attributes (`rate`, `budget`, `price`, `deliveryTime`) |
+| | | - Added `project` time unit (14 days) to units system |
+| | | - Updated `parseSuffixUnits` to parse "per" (e.g., "50 USD per year") |
+| | | - Fixed `divideQuantities` to carry `numerator`/`denominator` |
+| | | - **Demo match now visible**: `npx tsx scripts/check-demo-match.ts` exits 0 ✅ |
+| | | - **All core tests pass** (516 tests) |
+| | | - **All optimizer tests pass** (47 tests) |
 
 ---
 

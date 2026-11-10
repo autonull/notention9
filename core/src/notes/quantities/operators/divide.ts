@@ -15,6 +15,8 @@ export const divideQuantities = (a: Quantity, b: Quantity): Quantity => {
       value,
       unit: `${a.unit}/${b.unit}`,
       unitType: 'compound',
+      numerator: a.unit,
+      denominator: b.unit,
       semanticType,
     };
   } else if (a.unit) {

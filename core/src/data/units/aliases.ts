@@ -153,6 +153,8 @@ export const aliases: Record<string, string> = {
   "decades": "decade",
   "century": "century",
   "centuries": "century",
+  "project": "project",
+  "projects": "project",
   "°C": "°C",
   "celsius": "°C",
   "degC": "°C",

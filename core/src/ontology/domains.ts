@@ -35,7 +35,8 @@ export const entityDomain: OntologyNode[] = [
                     role: { type: 'string', description: 'Professional role or position', icon: 'briefcase', operators: { real: ['is'], imaginary: ['is not', 'contains'] }, aliases: ['job', 'position', 'dev', 'title'] },
                     organization: { type: 'string', description: 'Associated organization', icon: 'building', operators: { real: ['is'], imaginary: ['is not', 'contains'] } },
                     relationships: { type: 'relationship', description: 'Relationships to other entities', icon: 'link', operators: { real: ['has'], imaginary: ['not has'] }, referenceType: 'entity' },
-                    intent: { type: 'enum', options: ['request', 'offer', 'reminder', 'schedule', 'task', 'shopping', 'health', 'communication', 'monitor', 'automation'], description: 'The inferred intent of the note', icon: 'brain', operators: { real: ['is'], imaginary: ['is not'] } }
+                    type: { type: 'enum', options: ['event', 'task', 'person', 'item', 'journal', 'idea', 'request', 'offer', 'project', 'meeting', 'conference'], description: 'The type of note', icon: 'document', operators: { real: ['is'], imaginary: ['is not'] }, role: 'marker' },
+                    intent: { type: 'enum', options: ['request', 'offer', 'reminder', 'schedule', 'task', 'shopping', 'health', 'communication', 'monitor', 'automation'], description: 'The inferred intent of the note', icon: 'brain', operators: { real: ['is'], imaginary: ['is not'] }, role: 'marker' }
                 },
             },
             {
@@ -48,7 +49,7 @@ export const entityDomain: OntologyNode[] = [
                     industry: { type: 'string', description: 'Industry or sector', icon: 'industry', operators: { real: ['is'], imaginary: ['is not', 'contains'] } },
                     employees: { type: 'number', description: 'Number of employees', icon: 'users', operators: { real: ['is'], imaginary: ['less than', 'greater than', 'between'] } },
                     founded: { type: 'date', description: 'Founding date', icon: 'calendar', operators: { real: ['is'], imaginary: ['before', 'after'] } },
-                    location: { type: 'geo', description: 'Headquarters location', icon: 'map-pin', operators: { real: ['is'], imaginary: ['near'] } }
+                    location: { type: 'geo', description: 'Headquarters location', icon: 'map-pin', operators: { real: ['is'], imaginary: ['near'] }, role: 'constraint' }
                 },
             },
             {
@@ -94,7 +95,7 @@ export const communicationDomain: OntologyNode[] = [
                     bcc: { type: 'string', description: 'Blind carbon copy recipients', icon: 'eye-off', operators: { real: ['is'], imaginary: ['contains'] } },
                     messageType: { type: 'enum', options: ['text', 'image', 'voice', 'video', 'file', 'link', 'reaction', 'status'], description: 'Type of message content', icon: 'document', operators: { real: ['is'], imaginary: ['is not'] } },
                     priority: { type: 'enum', options: ['low', 'normal', 'high', 'urgent'], description: 'Priority level of the message', icon: 'priority', operators: { real: ['is'], imaginary: ['is not'] } },
-                    status: { type: 'enum', options: ['sent', 'delivered', 'read', 'failed'], description: 'Delivery status of the message', icon: 'status', operators: { real: ['is'], imaginary: ['is not'] } },
+                    status: { type: 'enum', options: ['sent', 'delivered', 'read', 'failed'], description: 'Delivery status of the message', icon: 'status', operators: { real: ['is'], imaginary: ['is not'] }, role: 'marker' },
                     attachments: { type: 'number', description: 'Number of attachments', icon: 'attachment', operators: { real: ['is'], imaginary: ['greater than', 'less than'] } },
                     sentiment: { type: 'enum', options: ['positive', 'neutral', 'negative', 'mixed'], description: 'Sentiment of the message', icon: 'sentiment', operators: { real: ['is'], imaginary: ['is not'] } }
                 },
@@ -119,9 +120,9 @@ export const eventDomain: OntologyNode[] = [
             endDateTime: { type: 'datetime', description: 'The end date and time', icon: 'clock', operators: { real: ['is'], imaginary: ['is after', 'is before'] } },
             duration: { type: 'number', description: 'Duration in minutes', icon: 'timer', operators: { real: ['is'], imaginary: ['greater than', 'less than'] } },
             venue: { type: 'string', description: 'The name of the place where the event takes place', icon: 'map-pin', operators: { real: ['is'], imaginary: ['is not'] } },
-            location: { type: 'geo', description: 'Geographic coordinates of the venue', icon: 'map', operators: { real: ['is'], imaginary: ['is near'] } },
+            location: { type: 'geo', description: 'Geographic coordinates of the venue', icon: 'map', operators: { real: ['is'], imaginary: ['is near'] }, role: 'constraint' },
             eventType: { type: 'enum', options: ['meeting', 'conference', 'workshop', 'seminar', 'training', 'social', 'celebration', 'performance', 'sports', 'other'], description: 'Type of event', icon: 'calendar', operators: { real: ['is'], imaginary: ['is not'] } },
-            status: { type: 'enum', options: ['planned', 'confirmed', 'in-progress', 'completed', 'cancelled', 'postponed'], description: 'Current status of the event', icon: 'status', operators: { real: ['is'], imaginary: ['is not'] } },
+            status: { type: 'enum', options: ['planned', 'confirmed', 'in-progress', 'completed', 'cancelled', 'postponed'], description: 'Current status of the event', icon: 'status', operators: { real: ['is'], imaginary: ['is not'] }, role: 'marker' },
             capacity: { type: 'number', description: 'Maximum number of attendees', icon: 'people', operators: { real: ['is'], imaginary: ['greater than', 'less than'] } },
             attendees: { type: 'number', description: 'Number of registered attendees', icon: 'users', operators: { real: ['is'], imaginary: ['greater than', 'less than'] } },
             organizer: { type: 'string', description: 'Organizer of the event', icon: 'organizer', operators: { real: ['is'], imaginary: ['is not', 'contains'] } },
@@ -179,12 +180,12 @@ export const workDomain: OntologyNode[] = [
                     role: { type: 'string', description: 'The job title or role.', icon: 'briefcase', operators: { real: ['is'], imaginary: ['is not', 'contains'] } },
                     description: { type: 'string', description: 'Detailed job description', icon: 'info', operators: { real: ['is'], imaginary: ['contains'] } },
                     company: { type: 'string', description: 'Company offering the job', icon: 'building', operators: { real: ['is'], imaginary: ['is not', 'contains'] } },
-                    location: { type: 'string', description: 'Job location', icon: 'location', operators: { real: ['is'], imaginary: ['is not', 'contains'] } },
+                    location: { type: 'string', description: 'Job location', icon: 'location', operators: { real: ['is'], imaginary: ['is not', 'contains'] }, role: 'constraint' },
                     employmentType: { type: 'enum', options: ['full-time', 'part-time', 'contract', 'temporary', 'internship', 'volunteer'], description: 'Type of employment', icon: 'employment', operators: { real: ['is'], imaginary: ['is not'] } },
                     experienceLevel: { type: 'enum', options: ['entry', 'mid', 'senior', 'executive'], description: 'Required experience level', icon: 'experience', operators: { real: ['is'], imaginary: ['is not'] } },
-                    skills: { type: 'string', description: 'Required skills', icon: 'skills', operators: { real: ['is'], imaginary: ['contains'] } },
-                    budget: { type: 'number', description: 'Total budget amount.', icon: 'cash', operators: { real: ['is'], imaginary: ['greater than', 'less than'] } },
-                    budgetRate: { type: 'number', description: 'Budget rate (e.g., per hour, per day).', icon: 'cash-clock', operators: { real: ['is'], imaginary: ['greater than', 'less than'] } },
+                    skills: { type: 'string', description: 'Required skills', icon: 'skills', operators: { real: ['is'], imaginary: ['contains'] }, role: 'constraint' },
+                    budget: { type: 'number', description: 'Total budget amount.', icon: 'cash', operators: { real: ['is'], imaginary: ['greater than', 'less than', 'between'] }, numericOptions: { unit: 'USD', precision: 2 }, role: 'constraint' },
+                    rate: { type: 'number', description: 'Service rate (e.g., per hour, per day, per project).', icon: 'cash-clock', operators: { real: ['is'], imaginary: ['greater than', 'less than', 'between'] }, numericOptions: { unit: 'USD/project', precision: 2 }, role: 'constraint' },
                     remote: { type: 'enum', options: ['true', 'false', 'hybrid'], description: 'Whether the job is remote', icon: 'remote', operators: { real: ['is'], imaginary: ['is not'] } }
                 }
             },
@@ -199,10 +200,10 @@ export const workDomain: OntologyNode[] = [
                     title: { type: 'string', description: 'Service title', icon: 'title', operators: { real: ['is'], imaginary: ['is not', 'contains'] } },
                     role: { type: 'string', description: 'The role offered.', icon: 'briefcase', operators: { real: ['is'], imaginary: ['is not', 'contains'] } },
                     description: { type: 'string', description: 'Detailed service description', icon: 'info', operators: { real: ['is'], imaginary: ['contains'] } },
-                    skills: { type: 'string', description: 'Skills offered', icon: 'skills', operators: { real: ['is'], imaginary: ['contains'] } },
-                    rate: { type: 'number', description: 'Service rate (e.g., per hour, per day, per project).', icon: 'cash-clock', operators: { real: ['is'], imaginary: ['greater than', 'less than'] } },
+                    skills: { type: 'string', description: 'Skills offered', icon: 'skills', operators: { real: ['is'], imaginary: ['contains'] }, role: 'constraint' },
+                    rate: { type: 'number', description: 'Service rate (e.g., per hour, per day, per project).', icon: 'cash-clock', operators: { real: ['is'], imaginary: ['greater than', 'less than', 'between'] }, numericOptions: { unit: 'USD/project', precision: 2 }, role: 'constraint' },
                     availability: { type: 'string', description: 'When the service is available', icon: 'calendar', operators: { real: ['is'], imaginary: ['contains'] } },
-                    deliveryTime: { type: 'number', description: 'Expected delivery time in days', icon: 'timer', operators: { real: ['is'], imaginary: ['greater than', 'less than'] } }
+                    deliveryTime: { type: 'number', description: 'Expected delivery time in days', icon: 'timer', operators: { real: ['is'], imaginary: ['greater than', 'less than'] }, numericOptions: { unit: 'day', precision: 0 }, role: 'constraint' }
                 }
             },
             {
@@ -213,10 +214,10 @@ export const workDomain: OntologyNode[] = [
                 attributes: {
                     title: { type: 'string', description: 'Project title', icon: 'title', operators: { real: ['is'], imaginary: ['is not', 'contains'] } },
                     description: { type: 'string', description: 'Project description', icon: 'info', operators: { real: ['is'], imaginary: ['contains'] } },
-                    status: { type: 'enum', options: ['planning', 'active', 'on-hold', 'completed', 'cancelled'], description: 'Project status', icon: 'status', operators: { real: ['is'], imaginary: ['is not'] } },
+                    status: { type: 'enum', options: ['planning', 'active', 'on-hold', 'completed', 'cancelled'], description: 'Project status', icon: 'status', operators: { real: ['is'], imaginary: ['is not'] }, role: 'marker' },
                     priority: { type: 'enum', options: ['low', 'medium', 'high', 'critical'], description: 'Project priority', icon: 'priority', operators: { real: ['is'], imaginary: ['is not'] } },
                     deadline: { type: 'date', description: 'Project deadline', icon: 'calendar', operators: { real: ['is'], imaginary: ['is after', 'is before'] } },
-                    budget: { type: 'number', description: 'Total project budget', icon: 'cash', operators: { real: ['is'], imaginary: ['less than', 'greater than', 'between'] } },
+                    budget: { type: 'number', description: 'Total project budget', icon: 'cash', operators: { real: ['is'], imaginary: ['less than', 'greater than', 'between'] }, numericOptions: { unit: 'USD', precision: 2 }, role: 'constraint' },
                     teamSize: { type: 'number', description: 'Number of team members', icon: 'team', operators: { real: ['is'], imaginary: ['greater than', 'less than'] } }
                 }
             },
@@ -227,7 +228,7 @@ export const workDomain: OntologyNode[] = [
                 attributes: {
                     title: { type: 'string', description: 'Task title', icon: 'title', operators: { real: ['is'], imaginary: ['is not', 'contains'] } },
                     description: { type: 'string', description: 'Task description', icon: 'info', operators: { real: ['is'], imaginary: ['contains'] } },
-                    status: { type: 'enum', options: ['todo', 'in-progress', 'review', 'done', 'blocked'], description: 'Task status', icon: 'status', operators: { real: ['is'], imaginary: ['is not'] } },
+                    status: { type: 'enum', options: ['todo', 'in-progress', 'review', 'done', 'blocked'], description: 'Task status', icon: 'status', operators: { real: ['is'], imaginary: ['is not'] }, role: 'marker' },
                     priority: { type: 'enum', options: ['low', 'medium', 'high', 'urgent'], description: 'Task priority', icon: 'priority', operators: { real: ['is'], imaginary: ['is not'] } },
                     dueDate: { type: 'date', description: 'Task due date', icon: 'calendar', operators: { real: ['is'], imaginary: ['is after', 'is before'] } },
                     estimatedHours: { type: 'number', description: 'Estimated hours to complete', icon: 'clock', operators: { real: ['is'], imaginary: ['greater than', 'less than'] } },
@@ -256,14 +257,14 @@ export const commerceDomain: OntologyNode[] = [
                 description: 'An article or substance that is manufactured or refined for sale.',
                 attributes: {
                     name: { type: 'string', description: 'Product name', icon: 'package', operators: { real: ['is'], imaginary: ['is not', 'contains'] } },
-                    price: { type: 'number', description: 'Sale price', icon: 'cash', operators: { real: ['is'], imaginary: ['less than', 'greater than', 'between'] } },
+                    price: { type: 'number', description: 'Sale price', icon: 'cash', operators: { real: ['is'], imaginary: ['less than', 'greater than', 'between'] }, numericOptions: { unit: 'USD', precision: 2 }, role: 'constraint' },
                     condition: { type: 'enum', options: ['new', 'like-new', 'used', 'refurbished'], description: 'Product condition', icon: 'star', operators: { real: ['is'], imaginary: ['is not'] } },
                     category: { type: 'string', description: 'Product category', icon: 'tag', operators: { real: ['is'], imaginary: ['contains'] } },
                     brand: { type: 'string', description: 'Product brand', icon: 'copyright', operators: { real: ['is'], imaginary: ['is not', 'contains'] } },
                     sku: { type: 'string', description: 'Stock Keeping Unit', icon: 'barcode', operators: { real: ['is'], imaginary: ['is not'] } },
                     stock: { type: 'number', description: 'Items in stock', icon: 'inventory', operators: { real: ['is'], imaginary: ['greater than', 'less than'] } },
-                    purchasePrice: { type: 'number', description: 'Purchase price', icon: 'cash', operators: { real: ['is'], imaginary: ['less than', 'greater than'] } },
-                    priceRate: { type: 'number', description: 'Price rate', icon: 'cash-clock', operators: { real: ['is'], imaginary: ['less than', 'greater than'] } }
+                    purchasePrice: { type: 'number', description: 'Purchase price', icon: 'cash', operators: { real: ['is'], imaginary: ['less than', 'greater than'] }, numericOptions: { unit: 'USD', precision: 2 }, role: 'constraint' },
+                    priceRate: { type: 'number', description: 'Price rate', icon: 'cash-clock', operators: { real: ['is'], imaginary: ['less than', 'greater than'] }, numericOptions: { unit: 'USD/hour', precision: 2 }, role: 'constraint' }
                 }
             }
         ]

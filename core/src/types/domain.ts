@@ -60,12 +60,16 @@ export type NoteSource = {
   url?: string;
 };
 
+export type PropertyRole = 'constraint' | 'fact' | 'marker';
+
 export interface Property {
   key: string;
   operator: string;
   values: string[];
   unit?: string;
   quantity?: Quantity;
+  /** Role in matching: constraint (requirement), fact (attribute), marker (direction/lifecycle) */
+  role?: PropertyRole;
   /** Confidence score for this property extraction (0-1) */
   confidence?: number;
   /** Provenance: which stage/source produced this property */
@@ -108,6 +112,8 @@ export interface OntologyAttribute {
   affinityOptions?: {bipolar?: boolean; targetType?: 'tag' | 'ontology_class' | 'peer'};
   arity?: {min: number; max: number};
   readonly?: boolean;
+  /** Role in matching: constraint (requirement), fact (attribute), marker (direction/lifecycle) */
+  role?: PropertyRole;
 }
 
 export interface Template {

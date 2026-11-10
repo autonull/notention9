@@ -41,6 +41,8 @@ export const categories: Record<string, string> = {
   "yr": "time",
   "decade": "time",
   "century": "time",
+  "project": "time",
+  "projects": "time",
   "°C": "temperature",
   "°F": "temperature",
   "K": "temperature",
