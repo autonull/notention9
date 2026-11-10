@@ -169,7 +169,7 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                     onSave={handleContentSave}
                     onNoteUpdate={handleNoteUpdate}
                     ontology={settings.ontology ?? []}
-                    templates={settings.customTemplates}
+                    templates={settings.customTemplates ?? []}
                     showToolbar={isToolbarVisible}
                     onMagic={() => {
                         if (settings.aiProvider === 'webllm' && settings.aiEnabled) {
@@ -199,7 +199,7 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                     onUpdateProperty={handleUpdateTextFromInspector}
                     onPickLocation={handleRequestLocationPick}
                     onPickTime={handlePickTime}
-                    ontology={settings.ontology}
+                    ontology={settings.ontology ?? []}
                 />
             </div>
             <EditorModals

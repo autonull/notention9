@@ -3,7 +3,7 @@ import { cn } from '../../utils/ui';
 import { componentTokens } from '../../styles/tokens';
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-    variant?: 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'purple' | 'default';
+    variant?: 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info' | 'purple' | 'default' | 'outline';
     size?: 'sm' | 'md';
     pill?: boolean;
     icon?: React.ReactNode;

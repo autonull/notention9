@@ -3,6 +3,14 @@ import { Note, patternRecognitionService, PropertyExtractor, OntologyNode, Sugge
 import { useSettings } from './useSettingsContext';
 import { getTextFromHtml } from '../utils/html';
 
+export interface UseNoteAnalysisReturn {
+    suggestions: Suggestion[];
+    showSuggestions: boolean;
+    dismissSuggestions: () => void;
+    openSuggestions: () => void;
+    removeSuggestion: (id: string) => void;
+}
+
 const generateOntologySuggestions = (content: string, ontology: OntologyNode[], seenTexts: Set<string>): Suggestion[] => {
     const contentLower = content.toLowerCase();
     const relatedNodes = ontology.filter(node => contentLower.includes(node.label.toLowerCase()));

@@ -27,29 +27,35 @@ export function useEditorPublishing({
 
     const [privacyConfirmation, setPrivacyConfirmation] = useState<{
         isOpen: boolean;
-        resolve: (value: boolean) => void;
+        onClose: () => void;
+        onConfirm: () => void;
     } | null>(null);
 
     const promptUser = useCallback(() => {
         return new Promise<boolean>((resolve) => {
             setPrivacyConfirmation({
                 isOpen: true,
-                resolve,
+                onClose: () => {
+                    resolve(false);
+                    setPrivacyConfirmation(null);
+                },
+                onConfirm: () => {
+                    resolve(true);
+                    setPrivacyConfirmation(null);
+                },
             });
         });
     }, []);
 
     const handlePrivacyConfirm = useCallback(() => {
         if (privacyConfirmation) {
-            privacyConfirmation.resolve(true);
-            setPrivacyConfirmation(null);
+            privacyConfirmation.onConfirm();
         }
     }, [privacyConfirmation]);
 
     const handlePrivacyCancel = useCallback(() => {
         if (privacyConfirmation) {
-            privacyConfirmation.resolve(false);
-            setPrivacyConfirmation(null);
+            privacyConfirmation.onClose();
         }
     }, [privacyConfirmation]);
 

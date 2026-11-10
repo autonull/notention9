@@ -75,7 +75,7 @@ function ProfileEditorModal({
                     <Button
                         type="submit"
                         disabled={isSaving}
-                        isLoading={isSaving}
+                        loading={isSaving}
                         variant="primary"
                     >
                         Save

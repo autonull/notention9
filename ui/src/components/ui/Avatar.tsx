@@ -10,6 +10,8 @@ export interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
     shape?: 'circle' | 'square';
     status?: 'online' | 'offline' | 'busy' | 'away';
     statusPosition?: 'bottom-right' | 'top-right' | 'bottom-left' | 'top-left';
+    /** Nostr public key for profile linking */
+    pubkey?: string;
 }
 
 export function Avatar({

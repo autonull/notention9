@@ -162,7 +162,7 @@ export function InsertPropertyModal({
                                      onClick={() => {
                                          track(Metrics.PATTERN_SUGGESTION_ACCEPTED, {
                                              suggestionKey: s.key,
-                                             parentContext: s.parentContext,
+                                             parentContext: s.parentContext ?? "",
                                              confidence: s.confidence
                                          });
                                          setKey(s.key);

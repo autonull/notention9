@@ -147,7 +147,7 @@ export function AITab({settings, setSettings}: AITabProps) {
                 >
                     <Toggle
                         id="ai-toggle"
-                        checked={settings.aiEnabled}
+                        checked={settings.aiEnabled ?? false}
                         onChange={handleToggleAI}
                         disabled={!isWebLLM && !apiKeyAvailable}
                         ariaLabel="Enable AI Features"

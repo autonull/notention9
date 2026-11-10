@@ -250,6 +250,7 @@ export const componentTokens = {
     variants: {
       default: `${colors.background.tertiary} ${colors.border.default} ${colors.text.muted}`,
       primary: `${colors.semantic.info.bg} ${colors.semantic.info.border} ${colors.semantic.info.text}`,
+      secondary: 'bg-gray-700/50 border-gray-600 text-gray-300',
       success: `${colors.semantic.success.bg} ${colors.semantic.success.border} ${colors.semantic.success.text}`,
       warning: `${colors.semantic.warning.bg} ${colors.semantic.warning.border} ${colors.semantic.warning.text}`,
       danger: `${colors.semantic.danger.bg} ${colors.semantic.danger.border} ${colors.semantic.danger.text}`,

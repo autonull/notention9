@@ -78,7 +78,7 @@ export function DescribeItComposer({isOpen, onClose, onApply, ontology, placehol
                             onClick={() => suggest(text)}
                             disabled={status === 'loading' || !text.trim()}
                             variant="primary"
-                            leftIcon={SparklesIcon}
+                            icon={SparklesIcon}
                         >
                             {status === 'loading' ? 'Thinking…' : 'Suggest details'}
                         </Button>

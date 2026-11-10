@@ -12,8 +12,8 @@ interface AutomationNote {
     content: string;
     properties: Property[];
     tags: string[];
-    createdAt: number;
-    updatedAt: number;
+    createdAt: string;
+    updatedAt: string;
 }
 
 function formatRelativeTime(timestamp: number): string {
@@ -59,7 +59,7 @@ export function AutomationsView() {
     const automationNotes = useMemo(() => {
         return notes
             .filter(note => hasMetaphor(note.properties, 'conditional-automation') || inferAutomationMetaphor(note.properties))
-            .sort((a, b) => b.updatedAt - a.updatedAt);
+            .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
     }, [notes]);
 
     const handleCreateAutomation = () => {

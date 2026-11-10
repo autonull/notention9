@@ -6,6 +6,12 @@ import { ExtractionReview } from '../editor/ExtractionReview';
 import { Property, OntologyNode } from '@notention/core';
 import type {PropertyReviewItem} from '../../hooks/usePropertyReview';
 
+interface PropertyReviewState {
+    items: PropertyReviewItem[];
+    accept: (item: PropertyReviewItem) => void;
+    reject: (item: PropertyReviewItem) => void;
+}
+
 interface PropertyPanelProps {
     properties: Property[];
     isAddingProperty: boolean;
@@ -17,7 +23,7 @@ interface PropertyPanelProps {
     onSaveProperty: (key: string, op: string, value: string) => void;
     onCancelEdit: () => void;
     onAcceptReview: (item: PropertyReviewItem) => void;
-    propertyReview: PropertyReviewItem | null;
+    propertyReview: PropertyReviewState;
     onDeleteProperty: () => void;
     onPickLocation?: () => void;
     onPickTime?: (key: string) => void;
@@ -92,7 +98,7 @@ export function PropertyPanel({
                 </div>
             )}
 
-            {!isAddingProperty && (
+            {!isAddingProperty && propertyReview && (
                 <ExtractionReview
                     items={propertyReview.items}
                     onAccept={onAcceptReview}

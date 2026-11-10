@@ -5,6 +5,12 @@ import { NetworkMatchesPanel } from './NetworkMatchesPanel';
 import { Property, ScoredMatch, OntologyNode, Suggestion, Contact, Note } from '@notention/core';
 import type {PropertyReviewItem} from '../../hooks/usePropertyReview';
 
+interface PropertyReviewState {
+    items: PropertyReviewItem[];
+    accept: (item: PropertyReviewItem) => void;
+    reject: (item: PropertyReviewItem) => void;
+}
+
 interface AssistantContentProps {
     activeTab: string;
     properties: Property[];
@@ -25,7 +31,7 @@ interface AssistantContentProps {
     onSaveProperty: (key: string, op: string, value: string) => void;
     onCancelEdit: () => void;
     onAcceptReview: (item: PropertyReviewItem) => void;
-    propertyReview: PropertyReviewItem | null;
+    propertyReview: PropertyReviewState;
     onDeleteProperty: () => void;
     onPickLocation?: () => void;
     onPickTime?: (key: string) => void;

@@ -11,7 +11,8 @@
     ],
     "types": [
       "vitest/globals",
-      "vite/client"
+      "vite/client",
+      "@testing-library/jest-dom"
     ],
     "skipLibCheck": true,
     "moduleResolution": "bundler",

@@ -5,7 +5,7 @@
 import React from 'react';
 import {SmartNoteAssistant} from '../SmartNoteAssistant';
 import {cn} from '../../utils/ui';
-import type {Note} from '@notention/core';
+import type {Note, OntologyNode, Property} from '@notention/core';
 
 interface EditorSidebarProps {
     isOpen: boolean;
@@ -13,7 +13,7 @@ interface EditorSidebarProps {
     note: Note;
     onNoteUpdate: (content: string) => void;
     properties: Note['properties'];
-    onUpdateProperty: (key: string, value: string) => void;
+    onUpdateProperty?: (oldProp: Property | null, newProp: Property | null) => void;
     onPickLocation: () => void;
     onPickTime: (key: string) => void;
     ontology: OntologyNode[];

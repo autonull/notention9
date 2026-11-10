@@ -107,7 +107,7 @@ export function OntologyNodeItem({
                 {isOpen && (
                     <div className="relative">
                         {node.attributes && Object.keys(node.attributes).length > 0 && (
-                            <AttributeList attributes={node.attributes} usageStats={usageStats} level={level + 1}/>
+                            <AttributeList attributes={node.attributes} usageStats={usageStats}/>
                         )}
 
                         {hasChildren && (

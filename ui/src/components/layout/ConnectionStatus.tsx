@@ -2,12 +2,12 @@ import React from 'react';
 import {useAgentStatus} from '../../hooks/useAgentStatus';
 
 export function ConnectionStatus() {
-    const {isOnline, status, queueSize} = useAgentStatus();
+    const {status, queueSize, connected} = useAgentStatus();
 
     let colorClass = 'bg-gray-500';
     let title = 'Disconnected';
 
-    if (status === 'connected') {
+    if (connected && status === 'connected') {
         colorClass = 'bg-green-500';
         title = 'Online';
     } else if (status === 'connecting' || status === 'reconnecting') {
@@ -16,6 +16,9 @@ export function ConnectionStatus() {
     } else if (status === 'offline') {
         colorClass = 'bg-gray-400';
         title = 'Offline Mode';
+    } else if (!connected) {
+        colorClass = 'bg-gray-500';
+        title = 'Disconnected';
     }
 
     return (

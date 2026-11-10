@@ -5,6 +5,7 @@ import {useSettings} from '../../hooks/useSettingsContext';
 import {useOntologySuggestions} from '../../hooks/useOntologySuggestions';
 import {SelectorRegistryProvider} from '../properties/SelectorRegistry';
 import {builtInSelectors} from '../properties/NicheSelectors';
+import type {Note} from '@notention/core';
 
 interface HybridEditorProps extends React.ComponentProps<typeof TiptapEditor> {
     onNoteUpdate?: (note: Partial<Note>) => void;

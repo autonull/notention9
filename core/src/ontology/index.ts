@@ -3,5 +3,6 @@ export { collectOntologyKeys, getCanonicalKey, getAliases, buildAttributeIndex, 
 export { buildWidgetMetadata, WidgetType } from './widgets.js';
 export * from './lifecycle.js';
 export * from './schema.js';
+export * from './statistics.js';
 export { DEFAULT_ONTOLOGY } from './ontology.default.js';
 export { OntologyService } from './ontologyService.js';

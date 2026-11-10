@@ -223,4 +223,4 @@ const formatValue = (prop: Property): string => {
     return prop.values[0] || '(empty)';
 };
 
-const isValid = (prop: Property): boolean => prop.values[0] && prop.values[0].length > 0;
+const isValid = (prop: Property): boolean => Boolean(prop.values[0] && prop.values[0].length > 0);

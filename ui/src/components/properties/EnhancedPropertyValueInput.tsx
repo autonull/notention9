@@ -34,9 +34,10 @@ export function EnhancedPropertyValueInput({
     testId
 }: EnhancedPropertyValueInputProps) {
     const type = attributeDef?.type ?? 'string';
+    const attrDef = attributeDef;
 
-    if (type === 'enum' && (attributeDef.options || selectOptions)) {
-        const options = attributeDef.options || selectOptions || [];
+    if (type === 'enum' && (attrDef?.options || selectOptions)) {
+        const options = attrDef?.options || selectOptions || [];
         return (
             <select
                 className="w-full bg-gray-900/50 border border-gray-700/50 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all"

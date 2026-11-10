@@ -1,8 +1,8 @@
-import React, {useState, useCallback, useMemo} from 'react';
+import React, {useState, useCallback, useMemo, useEffect} from 'react';
 import {useView} from '../../hooks/useViewContext';
 import {useNotes} from '../../hooks/useNotes';
 import {useSettings} from '../../hooks/useSettingsContext';
-import {PropertyExtractor} from '@notention/core';
+import {PropertyExtractor, Property} from '@notention/core';
 import {sanitizeHTML} from '../../utils/sanitize';
 import {Input} from '../ui';
 import {Button} from '../ui';
@@ -178,16 +178,27 @@ interface DashboardQuickCaptureProps {
 }
 
 export function DashboardQuickCapture({onCreateNote, loadSampleWorkspace, showSampleWorkspace = false}: DashboardQuickCaptureProps) {
-    const {addNote, setSelectedNoteId, setActiveView} = useNotes();
+    const {addNote} = useNotes();
+    const {setSelectedNoteId, setActiveView} = useView();
     const {settings} = useSettings();
     const [quickCaptureInput, setQuickCaptureInput] = useState('');
     const [showFeatures, setShowFeatures] = useState(false);
+    const [extractedProps, setExtractedProps] = useState<Property[]>([]);
     const {track} = useMetrics();
 
     const extractor = useMemo(() => new PropertyExtractor(settings.ontology), [settings.ontology]);
-    const extractedProps = useMemo(() => {
-        if (!quickCaptureInput.trim()) return [];
-        return extractor.extractFromText(quickCaptureInput);
+
+    // Extract properties asynchronously
+    useEffect(() => {
+        if (!quickCaptureInput.trim()) {
+            setExtractedProps([]);
+            return;
+        }
+        let cancelled = false;
+        extractor.extractFromText(quickCaptureInput).then(props => {
+            if (!cancelled) setExtractedProps(props);
+        });
+        return () => { cancelled = true; };
     }, [quickCaptureInput, extractor]);
 
     const handleQuickCapture = useCallback((e: React.FormEvent) => {

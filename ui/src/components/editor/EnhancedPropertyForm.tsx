@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {CheckIcon, ClockIcon, InformationCircleIcon, MapPinIcon, SearchSparkleIcon, XIcon, SparklesIcon} from '../ui/icons';
-import type {OntologyNode} from '@notention/core';
+import type {OntologyNode, OntologyAttribute} from '@notention/core';
 import {Logger} from '@notention/core';
 import {getCurrentPosition} from '../../utils/geolocation';
 import {useToast} from '../../hooks/useToast';

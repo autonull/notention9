@@ -1,4 +1,5 @@
 import {describe, it, expect, vi, beforeEach, afterEach} from 'vitest';
+import type {Mock} from 'vitest';
 import {render, screen, fireEvent, waitFor} from '@testing-library/react';
 import {DataTab} from './DataTab';
 import {useNotes} from '../../hooks/useNotes';
@@ -35,10 +36,10 @@ vi.mock('../ui/Primitives', () => ({
     )
 }));
 
-const mockUseNotes = useNotes as vi.Mock;
-const mockUseSettings = useSettings as vi.Mock;
-const mockUseView = useView as vi.Mock;
-const mockUseDemoWorkspace = useDemoWorkspace as vi.Mock;
+const mockUseNotes = useNotes as Mock;
+const mockUseSettings = useSettings as Mock;
+const mockUseView = useView as Mock;
+const mockUseDemoWorkspace = useDemoWorkspace as Mock;
 
 describe('DataTab', () => {
     const mockNotes = [

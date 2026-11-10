@@ -2,7 +2,7 @@ import React from 'react';
 
 export interface ToggleProps {
     checked: boolean;
-    onChange: () => void;
+    onChange: (checked: boolean) => void;
     disabled?: boolean;
     id?: string;
     ariaLabel?: string;
@@ -17,11 +17,17 @@ export function Toggle({
     ariaLabel,
     label
 }: ToggleProps) {
+    const handleClick = () => {
+        if (!disabled) {
+            onChange(!checked);
+        }
+    };
+
     return (
         <div className="flex items-center gap-3">
             <button
                 id={id}
-                onClick={onChange}
+                onClick={handleClick}
                 disabled={disabled}
                 aria-label={ariaLabel || label}
                 aria-checked={checked}

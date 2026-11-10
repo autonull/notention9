@@ -42,7 +42,7 @@ export function RelayStatusBanner({relays, detailed = false}: RelayStatusBannerP
                 <span>
                     Relay unavailable: <span className="font-mono">{down.join(', ')}</span>. Local notes still work.
                 </span>
-                <Button size="xs" variant="secondary" onClick={retry} isLoading={checking}>
+                <Button size="xs" variant="secondary" onClick={retry} loading={checking}>
                     Retry
                 </Button>
             </div>
@@ -56,7 +56,7 @@ export function RelayStatusBanner({relays, detailed = false}: RelayStatusBannerP
         >
             <div className="flex items-center justify-between mb-3">
                 <h4 className="text-sm font-medium text-gray-200">Relay Status</h4>
-                <Button size="xs" variant="secondary" onClick={retry} isLoading={checking}>
+                <Button size="xs" variant="secondary" onClick={retry} loading={checking}>
                     Retry All
                 </Button>
             </div>

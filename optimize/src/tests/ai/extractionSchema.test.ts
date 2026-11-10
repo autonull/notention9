@@ -91,6 +91,7 @@ describe('Repair Loop (L15)', () => {
         role: 'developer',
         rate: 100,
         deadline: '2024-12-31',
+        need: 'testing',
     };
 
     it('repairs malformed JSON', async () => {

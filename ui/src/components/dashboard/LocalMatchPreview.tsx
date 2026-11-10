@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {Button} from '../ui/Button';
 import {CheckCircleIcon, XCircleIcon, MinusIcon, InformationCircleIcon, ArrowPathIcon, PencilIcon, XMarkIcon} from '../ui/icons';
-import type {MatchResult, PropertyMatch, Property, Note} from '@notention/core';
+import type {MatchResult, PropertyMatch, Property, Note, MatchDetails} from '@notention/core';
 
 interface LocalMatchPreviewProps {
     match: {
@@ -15,8 +15,9 @@ interface LocalMatchPreviewProps {
     onView?: () => void;
 }
 
-function getMatchTypeColor(type: PropertyMatch['details']['type']) {
-    switch (type) {
+function getMatchTypeColor(details?: MatchDetails) {
+    if (!details) return 'text-gray-400';
+    switch (details.type) {
         case 'exact': return 'text-green-400';
         case 'alias': return 'text-blue-400';
         case 'fuzzy': return 'text-yellow-400';
@@ -28,8 +29,9 @@ function getMatchTypeColor(type: PropertyMatch['details']['type']) {
     }
 }
 
-function getMatchTypeLabel(type: PropertyMatch['details']['type']) {
-    switch (type) {
+function getMatchTypeLabel(details?: MatchDetails) {
+    if (!details) return 'Matched';
+    switch (details.type) {
         case 'exact': return 'Exact match';
         case 'alias': return 'Alias match';
         case 'fuzzy': return 'Fuzzy match';
@@ -96,8 +98,8 @@ export function LocalMatchPreview({match, onSelectNote, onRejectMatch, onReviseR
                                                             <span className="text-gray-300">{m.requestProp.values.join(', ')}</span>
                                                         </div>
                                                         <div className="flex items-center gap-2 mt-1">
-                                                            <span className={`text-[10px] font-mono ${getMatchTypeColor(m.details?.type)}`}>
-                                                                {m.details?.type ? getMatchTypeLabel(m.details.type) : 'Matched'}
+                                                            <span className={`text-[10px] font-mono ${getMatchTypeColor(m.details)}`}>
+                                                                {m.details ? getMatchTypeLabel(m.details) : 'Matched'}
                                                             </span>
                                                             {m.reason && (
                                                                 <span className="text-gray-500 text-[10px]">{m.reason}</span>

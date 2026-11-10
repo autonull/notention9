@@ -107,6 +107,7 @@ export interface OntologyAttribute {
   numericOptions?: {unit?: string; precision?: number; min?: number; max?: number};
   affinityOptions?: {bipolar?: boolean; targetType?: 'tag' | 'ontology_class' | 'peer'};
   arity?: {min: number; max: number};
+  readonly?: boolean;
 }
 
 export interface Template {

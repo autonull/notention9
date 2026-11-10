@@ -12,6 +12,7 @@ export interface ModalProps {
     size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
     closeOnOverlayClick?: boolean;
     showCloseButton?: boolean;
+    className?: string;
 }
 
 export function Modal({
@@ -23,6 +24,7 @@ export function Modal({
     size = 'md',
     closeOnOverlayClick = true,
     showCloseButton = true,
+    className = '',
 }: ModalProps) {
     const contentRef = useFocusTrap(isOpen, onClose);
     const tokens = componentTokens.modal;
@@ -58,7 +60,8 @@ export function Modal({
                 tabIndex={-1}
                 className={cn(
                     tokens.container,
-                    tokens.sizes[size]
+                    tokens.sizes[size],
+                    className
                 )}
             >
                 {(title || showCloseButton) && (
