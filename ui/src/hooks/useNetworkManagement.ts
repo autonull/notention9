@@ -75,7 +75,7 @@ export function useNetworkManagement() {
     const { upsertNote } = useNotes();
     upsertNoteRef.current = upsertNote;
     
-    const [providers, setProviders] = useState(() => networkRegistry.getAllProviders());
+    const [providers, setProviders] = useState(() => networkRegistry.getAllProviders().filter(Boolean));
 
     const nostr = useMemo(() => networkRegistry.getProvider('nostr') as NostrNetworkProvider | null, [providers]);
     const mesh = useMemo(() => networkRegistry.getProvider('meshtastic') as MeshtasticNetworkProvider | null, [providers]);
@@ -107,7 +107,8 @@ export function useNetworkManagement() {
                 config.update(provider, settings);
             }
         });
-        setProviders(networkRegistry.getAllProviders());
+        // Filter out any undefined values defensively
+        setProviders(networkRegistry.getAllProviders().filter(Boolean));
     }, [settings]);
 
     // Handle privacy mode

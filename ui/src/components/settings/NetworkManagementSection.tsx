@@ -229,7 +229,7 @@ export function NetworkManagementSection() {
                                             variant="primary"
                                             onClick={handleConnect}
                                             disabled={isConnecting}
-                                            icon={isConnecting ? LoadingSpinner : SignalIcon}
+                                            leftIcon={isConnecting ? LoadingSpinner : SignalIcon}
                                         >
                                             {isConnecting ? 'Connecting...' : (meshStatus.connected ? 'Reconnect' : 'Connect')}
                                         </Button>

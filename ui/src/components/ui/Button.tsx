@@ -45,12 +45,20 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             className
         );
 
+        // Filter out non-DOM props that might be passed via spread
+        const domProps = { ...props };
+        delete domProps.icon;
+        delete domProps.tooltipPosition;
+        delete domProps.isActive;
+        delete domProps.label;
+        delete domProps.containerClassName;
+
         return (
             <button
                 ref={ref}
                 className={baseClasses}
                 disabled={disabled || loading}
-                {...props}
+                {...domProps}
             >
                 {loading ? (
                     <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
@@ -110,8 +118,22 @@ export function IconButton({
         className
     );
 
-    // Filter out non-DOM props
-    const { tooltip: _tooltip, tooltipPosition: _tooltipPosition, icon: _icon, isActive: _isActive, label: _label, containerClassName: _containerClassName, touchTarget: _touchTarget, ...domProps } = props;
+    // Filter out non-DOM props explicitly to prevent React warnings
+    // Create domProps from props, then remove known non-DOM props
+    const domProps = { ...props };
+    // Delete all known non-DOM props that might be passed via spread
+    delete domProps.tooltip;
+    delete domProps.tooltipPosition;
+    delete domProps.icon;
+    delete domProps.isActive;
+    delete domProps.label;
+    delete domProps.containerClassName;
+    delete domProps.touchTarget;
+    delete domProps.variant;
+    delete domProps.size;
+    delete domProps.className;
+    delete domProps.title;
+    delete domProps.disabled;
 
     const button = (
         <button

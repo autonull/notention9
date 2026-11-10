@@ -80,9 +80,16 @@ const namePolyfillDevPlugin = {
     enforce: 'pre',
     transform(code, id) {
         // Only inject in development mode
-        if (!id.includes('node_modules') && !id.endsWith('.css') && !code.includes('var __name')) {
-            const polyfill = `var __name = function __name(fn, name) { try { Object.defineProperty(fn, 'name', { value: name, configurable: true }); } catch (e) {} return fn; };\n`;
-            return polyfill + code;
+        // Apply to ALL modules (including node_modules) that might use __name
+        if (!id.endsWith('.css') && !code.includes('var __name = function __name')) {
+            // Check if this module calls __name (indicating it needs the polyfill)
+            const callsName = code.includes('__name(');
+            const hasDefineProperty = code.includes('Object.defineProperty(fn, \'name\')');
+            const notNodeModules = !id.includes('node_modules');
+            if (callsName || hasDefineProperty || notNodeModules) {
+                const polyfill = `var __name = function __name(fn, name) { try { Object.defineProperty(fn, 'name', { value: name, configurable: true }); } catch (e) {} return fn; };\n`;
+                return polyfill + code;
+            }
         }
     },
 };
@@ -135,6 +142,8 @@ export default defineConfig(({mode}) => {
                 'path-browserify',
                 'os-browserify/browser',
                 'util',
+                // Ensure __name polyfill is pre-bundled and available early
+                '@/polyfills/name',
             ],
             esbuildOptions: {
                 plugins: [

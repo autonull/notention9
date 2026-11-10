@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { cn } from '../../utils/ui';
 import { componentTokens } from '../../styles/tokens';
 
@@ -12,7 +12,7 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
     touchTarget?: boolean;
 }
 
-export function Input({
+export const Input = forwardRef<HTMLInputElement, InputProps>(({
     label,
     error,
     hint,
@@ -23,7 +23,7 @@ export function Input({
     id,
     touchTarget = false,
     ...props
-}: InputProps) {
+}, ref) => {
     const generatedId = React.useId();
     const inputId = id || `input-${generatedId}`;
     const errorId = error ? `${inputId}-error` : undefined;
@@ -47,6 +47,7 @@ export function Input({
                     </div>
                 )}
                 <input
+                    ref={ref}
                     id={inputId}
                     className={cn(
                         tokens.base,
@@ -79,4 +80,6 @@ export function Input({
             )}
         </div>
     );
-}
+});
+
+Input.displayName = 'Input';
