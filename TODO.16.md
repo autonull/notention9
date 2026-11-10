@@ -2,7 +2,7 @@
 
 **Supersedes:** TODO.15.md
 **Date:** 2026-11-09
-**Status:** P0 Tooling/Deps ✅. P0 Build ✅ (tsup node `splitting` fixed). P1 Core/UI ✅ (E2.1–E2.5, E2.5a–f). **E15.0 ✅ (React 19 unblock)**. **E15.1 ✅ (Structured NoteDocument)**. **E15.2 ✅ (Chip UX on structured model)**. **E15.3 ✅ (Engine decision: stay Tiptap 3.x)**. **E15 complete.** **P2 Runtime Fixes ✅** (P2.1 `__name` polyfill, P2.2 stale-artifact, P2.3 Nostr noise). **E2.6 ✅ (Experiment executed, null verdict)**. **E2.7–E2.9 NEXT**. **P4 E13/E7/E14 DEFERRED**.
+**Status:** P0 Tooling/Deps ✅. P0 Build ✅ (tsup node `splitting` fixed). P1 Core/UI ✅ (E2.1–E2.5, E2.5a–f). **E15.0 ✅ (React 19 unblock)**. **E15.1 ✅ (Structured NoteDocument)**. **E15.2 ✅ (Chip UX on structured model)**. **E15.3 ✅ (Engine decision: stay Tiptap 3.x)**. **E15 complete.** **P2 Runtime Fixes: PRODUCTION ✅ / DEV MODE ❌** (P2.1 `__name` polyfill works in prod, fails in dev; P2.2 `enabled` error reappears in dev; P2.3 Nostr noise suppressed). **E2.6 RE-RUN NEEDED** (experiment executed but dev server unstable, measurement incomplete). **E2.7–E2.9 BLOCKED** on dev-mode fixes. **P4 E13/E7/E14 DEFERRED**.
 
 ---
 
@@ -58,9 +58,9 @@ Updated all tooling and dependencies across workspaces. Fixed breaking changes f
 
 ## 🧪 Experiment Pipeline (One at a Time)
 
-### **E2: Capture-Flow A/B (S-UI)** — **EXECUTED (NULL VERDICT)**
+### **E2: Capture-Flow A/B (S-UI)** — **INFRASTRUCTURE READY / DEV MODE UNSTABLE**
 
-**Status:** Infrastructure ✅. Production build ✅. Dev server ✅. Strategy registration ✅ (idempotent under StrictMode/HMR, all 7 register). **E2.5 ✅ — UI renders in dev and production preview** (`quick-capture-input` present, root ~57.5KB, only expected offline-sync console noise). **E2.5a–f ✅ — UI unit tests pass, screenshot tests pass** (14/16 showcase tests pass, 2 skipped for editor bugs). **E2.6 ✅ — Experiment executed 2026-11-10: 8 validation cases × 3 reps × 2 arms, null verdict (p=1.000 McNemar, p=0.162 Wilcoxon), honest null recorded.**
+**Status:** Infrastructure ✅. Production build ✅. Dev server ❌ (crashes after arm A, `__name`/`enabled` errors, React prop warnings). Strategy registration ✅ (idempotent under StrictMode/HMR, all 7 register). **E2.5 ✅ — UI renders in dev and production preview** (`quick-capture-input` present, root ~57.5KB). **E2.5a–f ✅ — UI unit tests pass, screenshot tests pass** (14/16 showcase tests pass, 2 skipped for editor bugs). **E2.6 PARTIAL** — Experiment started but dev server crashed mid-run; measurement incomplete.
 
 | Step | Action | Status |
 |------|--------|--------|
@@ -70,20 +70,20 @@ Updated all tooling and dependencies across workspaces. Fixed breaking changes f
 | E2.4 | Fix strategy registration bug (glob path match) | ✅ COMPLETE |
 | **E2.5** | **Fix pre-existing component errors blocking experiment** | **✅ COMPLETE** |
 | | └─ E2.5a: `suggestions is not defined` — `TiptapEditor` now passes `allSuggestions` to `useTiptapConfig` | ✅ |
-| | └─ E2.5b: `__name is not defined` — root cause was 247 stale compiled `.js` files in `core/src` shadowing `.ts`; deleted. Dev transform hack reverted; production `renderChunk` polyfill retained | ✅ |
-| | └─ E2.5c: `reading 'enabled'` — not reproducible after stale-artifact cleanup; treated as stale-dist symptom, not a live prop-drilling bug | ✅ |
+| | └─ E2.5b: `__name is not defined` — root cause was 247 stale compiled `.js` files in `core/src` shadowing `.ts`; deleted. Dev transform hack reverted; production `renderChunk` polyfill retained | **PROD ✅ / DEV ❌** |
+| | └─ E2.5c: `reading 'enabled'` — **reproduced in dev mode** (25+ occurrences/page load). Source not yet identified. | **DEV ❌** |
 | **E2.5a** | **UI unit tests: matching/soft-match failures (4 tests)** | **✅ COMPLETE** |
 | **E2.5b** | **UI unit tests: matching_overlap failures (2 tests)** | **✅ COMPLETE** |
 | **E2.5c** | **Optimize unit test: cannot resolve `@notention/core` in extractionSchema.test.ts** | **✅ COMPLETE** |
 | **E2.5d** | **Screenshot: DevBridge missing in preview — tests wait for `__NOTENTION__` bridge only in dev mode** | **✅ COMPLETE** |
 | **E2.5e** | **Screenshot: chat fixture bug — `maya` undefined** | **✅ COMPLETE** |
 | **E2.5f** | **Screenshot: Playwright localStorage warning — `--localstorage-file` not provided** | **✅ COMPLETE** |
-| **E2.6** | **Run experiment (8 cases × 3 reps × 2 arms) — null verdict** | **✅ COMPLETE (2026-11-10)** |
-| E2.7 | If null: add 5 more cases, re-run | **NEXT** (only 8 cases exist; need 2 more or accept null) |
-| E2.8 | If improved: create revision, consent, re-sim | N/A (null verdict) |
-| E2.9 | Ledger chain + write-up | **NEXT** |
+| **E2.6** | **Run experiment (10 cases × 3 reps × 2 arms)** | **STARTED — dev server crashed after arm A** |
+| E2.7 | If null: add cases, re-run | **BLOCKED** on dev-mode fixes |
+| E2.8 | If improved: create revision, consent, re-sim | **BLOCKED** |
+| E2.9 | Ledger chain + write-up | **BLOCKED** |
 
-**Gate:** Powered verdict (any sign) + ledger chain recorded. **All tests pass** (core, agent, cli, simulator, optimize, ui unit, screenshots).
+**Gate:** Dev mode must be clean (no `__name`, no `enabled` errors, no React prop warnings, stable dev server) before E2 experiment can complete with reliable measurements.
 
 #### E2.5 root-cause fixes (2026-11-09)
 
@@ -175,17 +175,18 @@ Persistence    → JSON (later CBOR/CRDT/agent-native)
 
 ---
 
-## 🔧 P2 Runtime Fixes (Blocking E2 — Must Complete Before Experiments) — ✅ COMPLETE
+## 🔧 P2 Runtime Fixes (Blocking E2 — Must Complete Before Experiments) — **PRODUCTION ✅ / DEV MODE ❌**
 
-The following runtime errors blocked reliable E2 measurement. All have been fixed.
+The following runtime errors blocked reliable E2 measurement. Production build issues are fixed; dev mode issues remain.
 
-| Issue | Root Cause | Fix Applied | Files |
-|-------|------------|-------------|-------|
-| **P2.1** `__name is not defined` in dynamic chunks | Vite code-splits into multiple chunks; `namePolyfillPlugin` only injected into main entry chunk. | `namePolyfillPlugin.generateBundle` now injects `__name` polyfill into **every** chunk (verified all chunks have polyfill). | `ui/vite.config.ts` |
-| **P2.2** `Cannot read properties of undefined (reading 'enabled')` | Strategy resolution returned `undefined` for some seams; components accessed `.enabled` on undefined. | **Not reproducible after stale-artifact cleanup** (247 stale `.js` files in `core/src` shadowed `.ts` sources). Treated as stale-dist symptom, not a live prop-drilling bug. Re-open only if reappears with stack trace. | — |
-| **P2.3** Nostr relay connection errors (noise) | No backend relays available; `AgentService` logged "Operating in offline mode" and connection failures in dev/test. | Suppressed expected offline logs in dev/test mode via `import.meta.env.MODE` / `import.meta.vitest` detection. | `ui/src/services/AgentService.ts` |
+| Issue | Root Cause | Fix Applied | Status |
+|-------|------------|-------------|--------|
+| **P2.1** `__name is not defined` in dynamic chunks (prod) | Vite code-splits into multiple chunks; `namePolyfillPlugin` only injected into main entry chunk. | `namePolyfillPlugin.generateBundle` now injects `__name` polyfill into **every** chunk (verified all chunks have polyfill). | **PROD ✅** |
+| **P2.1b** `__name is not defined` in dev mode | Vite dev mode loads modules before HTML polyfill executes; `namePolyfillDevPlugin` doesn't transform all modules. | HTML polyfill added (module + regular script); `namePolyfillDevPlugin` retained. **Not yet working** — modules execute before polyfill. | **DEV ❌** |
+| **P2.2** `Cannot read properties of undefined (reading 'enabled')` | Strategy resolution returned `undefined` for some seams; components accessed `.enabled` on undefined. | **Reproduced in dev mode** (25+ occurrences/page load). Source not yet identified — likely in strategy resolution or network provider access. | **DEV ❌** |
+| **P2.3** Nostr relay connection errors (noise) | No backend relays available; `AgentService` logged "Operating in offline mode" and connection failures in dev/test. | Suppressed expected offline logs in dev/test mode via `import.meta.env.MODE` / `import.meta.vitest` detection. | **✅ COMPLETE** |
 
-**Gate:** ✅ All three issues resolved → E2 experiment can run with clean console and reliable measurements.
+**Gate:** Dev mode must be clean (no `__name`, no `enabled` errors, no React prop warnings) before E2 experiment can run with reliable measurements.
 
 ---
 
@@ -221,16 +222,19 @@ P0: tsup build fix (1 day)       ← ✅ COMPLETE
   │     └─→ E15.4: CRDT/CBOR/agent-native (deferred)
   │
   ├─→ P2: Runtime Fixes (NEW; BLOCKING E2)
-  │     ├─→ P2.1: __name polyfill in all chunks  ← ✅ COMPLETE
-  │     ├─→ P2.2: Strategy 'enabled' resolution  ← ✅ COMPLETE (stale-artifact)
-  │     └─→ P2.3: Nostr relay noise suppression  ← ✅ COMPLETE
+  │     ├─→ P2.1: __name polyfill in all chunks (prod)  ← ✅ COMPLETE
+  │     ├─→ P2.1b: __name polyfill in dev mode  ← **IN PROGRESS**
+  │     ├─→ P2.2: Strategy 'enabled' resolution (dev)  ← **IN PROGRESS**
+  │     ├─→ P2.3: Nostr relay noise suppression  ← ✅ COMPLETE
+  │     └─→ P2.4: React prop warnings (tooltipPosition, icon)  ← **NEW**
+  │     └─→ P2.5: Dev server stability (crash after arm A)  ← **NEW**
   │
   ├─→ E2: Capture-Flow A/B Experiment (P3; after P2 Runtime Fixes)
   │     ├─→ E2.1–E2.5, E2.5a–f: ✅ COMPLETE
-  │     ├─→ E2.6: Run experiment, null verdict  ← ✅ COMPLETE
-  │     ├─→ E2.7: Add cases & re-run (null path)  ← **NEXT**
+  │     ├─→ E2.6: Run experiment  ← **BLOCKED** on P2 dev-mode fixes
+  │     ├─→ E2.7: Add cases & re-run (null path)  ← **BLOCKED**
   │     ├─→ E2.8: N/A (null verdict)
-  │     └─→ E2.9: Ledger chain + write-up  ← **NEXT**
+  │     └─→ E2.9: Ledger chain + write-up  ← **BLOCKED**
   │
   ├─→ E13: llama.cpp provider + ablation (P4; after E2)
   │     └─→ Winner → property-extraction@2
@@ -252,13 +256,30 @@ P0: tsup build fix (1 day)       ← ✅ COMPLETE
 
 ---
 
+## 🐛 Dev-Mode Fixes Required (P2.1b–P2.5) — **BLOCKING E2**
+
+The following issues were discovered during E2.6 test run and must be fixed before the experiment can complete:
+
+| Issue | Symptom | Count | Suspected Location | Fix Approach |
+|-------|---------|-------|-------------------|--------------|
+| **P2.1b** `__name is not defined` | ReferenceError in browser console | 100+ | Vite dev mode: modules load before HTML polyfill; `namePolyfillDevPlugin` incomplete | Move polyfill to Vite entry point (`src/index.tsx` already has it) + ensure it executes first via `optimizeDeps.include` or preload script |
+| **P2.2** `Cannot read properties of undefined (reading 'enabled')` | TypeError in browser console | 25+/page load | Strategy resolution or network provider access — likely `networkRegistry.getAllProviders()` returning undefined in race condition | Add defensive checks in `useNetworkManagement` hook; trace call stack via error boundary |
+| **P2.4** React prop warnings: `tooltipPosition` | "React does not recognize the `%s` prop on a DOM element" | 25+/page load | `IconButton` component — destructuring filter not working in compiled output | Verify compiled JS; use explicit prop allowlist instead of destructuring exclusion |
+| **P2.4b** React prop warnings: `icon` on `button` | "Invalid value for prop `%s` on `<%s>` tag" | 25+/page load | `Button` component receiving `icon` prop via spread — 7 locations fixed, may be more | Audit all `<Button>` usages; ensure only `leftIcon`/`rightIcon` used |
+| **P2.5** Dev server crashes after arm A | `Preview server exited with code 143` (SIGTERM) | 1/run | Vite dev server process killed — possibly OOM, unhandled error, or test timeout | Add error handling to preview server; increase timeout; check Vite logs |
+
+**Validation:** Dev server runs E2.6 (10 cases × 3 reps × 2 arms) to completion with clean console (only expected "Offline" sync noise).
+
+---
+
 ## 📦 Deliverables per Experiment / Track
 
 | Experiment / Track | Required Artifacts | Timing |
 |------------|-------------------|--------|
 | **E15** | `doc/decisions/012-note-document.md` + `doc/decisions/013-editor-engine.md` + migration/round-trip tests | **E15.0–15.3 ✅** (schema, adapters, chip UX, engine ADR done) |
-| **P2 Runtime Fixes** | Clean console (no `__name`, no `enabled` errors, no Nostr noise) + dev server + production preview both mount | **✅ COMPLETE** |
-| **E2** | `doc/evidence/2026-11-e2-results.md` + ledger chain (honest null) | **E2.6 ✅, E2.7–E2.9 NEXT** |
+| **P2 Runtime Fixes (PROD)** | Clean console (no `__name`, no `enabled` errors, no Nostr noise) + dev server + production preview both mount | **✅ COMPLETE** |
+| **P2 Runtime Fixes (DEV)** | Clean dev-mode console (no `__name`, no `enabled` errors, no React prop warnings) + stable dev server | **IN PROGRESS (BLOCKING E2)** |
+| **E2** | `doc/evidence/2026-11-e2-results.md` + ledger chain (honest null) | **BLOCKED** on P2 dev-mode fixes |
 | E13 | `doc/evidence/2026-11-e13-results.md` + `property-extraction@2` | After E2 |
 | E7/E14 | `doc/evidence/2026-11-e7-results.md` (if run) | After E2/E13 |
 

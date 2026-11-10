@@ -474,20 +474,18 @@ export async function runE2CaptureTest(config: CaptureTestConfig = {}): Promise<
     let shouldStopServer = false;
     
     if (!config.useExternalServer && !baseURL) {
-        console.log('\n🚀 Starting preview server...');
-        baseURL = await ensurePreviewServer();
+        console.log('\n🚀 Starting dev server...');
+        baseURL = await ensurePreviewServer({ useProductionPreview: false });
         shouldStopServer = true;
     } else if (config.useExternalServer && baseURL) {
         console.log(`\n🔗 Using external preview server at ${baseURL}`);
     } else if (baseURL) {
         console.log(`\n🔗 Using provided baseURL: ${baseURL}`);
     } else {
-        console.log('\n🚀 Starting preview server...');
-        baseURL = await ensurePreviewServer();
+        console.log('\n🚀 Starting dev server...');
+        baseURL = await ensurePreviewServer({ useProductionPreview: false });
         shouldStopServer = true;
     }
-    // Keep localhost for Vite preview asset loading
-    // baseURL = baseURL.replace('http://localhost:', 'http://127.0.0.1:');
     
     let armA: ArmResult;
     let armB: ArmResult;

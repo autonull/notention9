@@ -114,7 +114,7 @@ export function useNetworkManagement() {
     useEffect(() => {
         const isPrivate = settings.privacyMode === 'local-only';
         networkRegistry.getAllProviders().forEach(p => {
-            if (isPrivate) {
+            if (p) {
                 p.enabled = false;
             }
         });

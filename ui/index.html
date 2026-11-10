@@ -20,9 +20,22 @@
             href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
             rel="stylesheet"
     />
-    <script>
+    <script type="module">
         // Polyfill for __name helper used by minifiers (must run before any module code)
         // Use var to create global binding accessible as bare identifier in module scope
+        var __name = function __name(fn, name) {
+            try {
+                Object.defineProperty(fn, 'name', { value: name, configurable: true });
+            } catch (e) {}
+            return fn;
+        };
+        if (typeof window !== 'undefined') window.__name = __name;
+        if (typeof globalThis !== 'undefined') globalThis.__name = __name;
+        // Export for modules that import it
+        export { __name };
+    </script>
+    <script>
+        // Also define as regular script for non-module access
         var __name = function __name(fn, name) {
             try {
                 Object.defineProperty(fn, 'name', { value: name, configurable: true });

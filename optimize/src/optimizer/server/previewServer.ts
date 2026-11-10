@@ -54,6 +54,7 @@ async function waitForServerReady(url: string, timeoutMs: number = PREVIEW_START
 export interface PreviewServerConfig {
     port?: number;
     env?: Record<string, string>;
+    useProductionPreview?: boolean;
 }
 
 export interface PreviewServerResult {
@@ -87,13 +88,15 @@ export async function ensurePreviewServer(config: PreviewServerConfig = {}): Pro
     const url = `http://localhost:${port}`;
     console.log(`   Starting dev server at ${url}...`);
 
+    const isProduction = config.useProductionPreview === true;
     const defaultEnv = {
         VITE_ENABLE_AGENT: 'false',
         VITE_LLM_SOURCE: 'none',
-        VITE_DEV_HOOKS: 'true',
+        VITE_DEV_HOOKS: isProduction ? 'false' : 'true',
     };
 
-    previewServerProcess = spawn('pnpm', ['--filter', '@notention/ui', 'dev', '--port', String(port), '--host', '0.0.0.0', '--strictPort'], {
+    const command = isProduction ? 'preview' : 'dev';
+    previewServerProcess = spawn('pnpm', ['--filter', '@notention/ui', command, '--port', String(port), '--host', '0.0.0.0', '--strictPort'], {
         cwd: process.cwd(),
         stdio: ['ignore', 'pipe', 'pipe'],
         env: { ...process.env, ...defaultEnv, ...config.env },

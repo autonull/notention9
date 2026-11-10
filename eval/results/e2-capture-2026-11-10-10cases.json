@@ -1,0 +1,1197 @@
+{
+  "timestamp": "2026-11-10T14:24:05.359Z",
+  "config": {
+    "repetitions": 3,
+    "headless": true
+  },
+  "arms": {
+    "A": {
+      "name": "A-autoFocus-placeholder",
+      "patch": {
+        "placeholder": "What do you need? e.g. \"I need a wheelchair ramp before Friday, budget 900\"",
+        "autoFocus": true
+      },
+      "caseResults": [
+        {
+          "caseId": "intent-capture-010",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 4,
+            "corrections": 1,
+            "timeToCaptureMs": 14432.428752
+          },
+          "details": [
+            "Filled prompt: My elderly father needs grab bars installed in the...",
+            "Submitted capture",
+            "Opened inspector sidebar",
+            "Extraction selector timeout, continuing...",
+            "Waited for extraction",
+            "Extracted 0 properties",
+            "✗ Failed minProperties (0 < 2)",
+            "✗ Missing required key: need",
+            "✗ Missing required key: deadline",
+            "Corrections needed"
+          ]
+        },
+        {
+          "caseId": "intent-capture-010",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 4,
+            "corrections": 1,
+            "timeToCaptureMs": 11700.006458000002
+          },
+          "details": [
+            "Filled prompt: My elderly father needs grab bars installed in the...",
+            "Submitted capture",
+            "Opened inspector sidebar",
+            "Extraction selector timeout, continuing...",
+            "Waited for extraction",
+            "Extracted 0 properties",
+            "✗ Failed minProperties (0 < 2)",
+            "✗ Missing required key: need",
+            "✗ Missing required key: deadline",
+            "Corrections needed"
+          ]
+        },
+        {
+          "caseId": "intent-capture-010",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 4,
+            "corrections": 1,
+            "timeToCaptureMs": 11637.778099
+          },
+          "details": [
+            "Filled prompt: My elderly father needs grab bars installed in the...",
+            "Submitted capture",
+            "Opened inspector sidebar",
+            "Extraction selector timeout, continuing...",
+            "Waited for extraction",
+            "Extracted 0 properties",
+            "✗ Failed minProperties (0 < 2)",
+            "✗ Missing required key: need",
+            "✗ Missing required key: deadline",
+            "Corrections needed"
+          ]
+        },
+        {
+          "caseId": "intent-capture-011",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 4,
+            "corrections": 1,
+            "timeToCaptureMs": 9615.955768
+          },
+          "details": [
+            "Filled prompt: Need to organize a meal train for the new parents ...",
+            "Submitted capture",
+            "Opened inspector sidebar",
+            "Extraction completed (event-driven)",
+            "Waited for extraction",
+            "Extracted 1 properties",
+            "✗ Failed minProperties (1 < 2)",
+            "✗ Missing required key: need",
+            "✗ Missing required key: deadline",
+            "Corrections needed"
+          ]
+        },
+        {
+          "caseId": "intent-capture-011",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 4,
+            "corrections": 1,
+            "timeToCaptureMs": 9633.634989999999
+          },
+          "details": [
+            "Filled prompt: Need to organize a meal train for the new parents ...",
+            "Submitted capture",
+            "Opened inspector sidebar",
+            "Extraction completed (event-driven)",
+            "Waited for extraction",
+            "Extracted 1 properties",
+            "✗ Failed minProperties (1 < 2)",
+            "✗ Missing required key: need",
+            "✗ Missing required key: deadline",
+            "Corrections needed"
+          ]
+        },
+        {
+          "caseId": "intent-capture-011",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 4,
+            "corrections": 1,
+            "timeToCaptureMs": 9692.417683999993
+          },
+          "details": [
+            "Filled prompt: Need to organize a meal train for the new parents ...",
+            "Submitted capture",
+            "Opened inspector sidebar",
+            "Extraction completed (event-driven)",
+            "Waited for extraction",
+            "Extracted 1 properties",
+            "✗ Failed minProperties (1 < 2)",
+            "✗ Missing required key: need",
+            "✗ Missing required key: deadline",
+            "Corrections needed"
+          ]
+        },
+        {
+          "caseId": "intent-capture-016",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 4,
+            "corrections": 1,
+            "timeToCaptureMs": 9812.717612000008
+          },
+          "details": [
+            "Filled prompt: Need a babysitter for Friday night 6-10pm, CPR cer...",
+            "Submitted capture",
+            "Opened inspector sidebar",
+            "Extraction completed (event-driven)",
+            "Waited for extraction",
+            "Extracted 2 properties",
+            "✓ Met minProperties (2 >= 2)",
+            "✗ Missing required key: need",
+            "✗ Missing required key: schedule",
+            "✗ Missing required key: budget",
+            "Corrections needed"
+          ]
+        },
+        {
+          "caseId": "intent-capture-016",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 4,
+            "corrections": 1,
+            "timeToCaptureMs": 11115.585194999992
+          },
+          "details": [
+            "Filled prompt: Need a babysitter for Friday night 6-10pm, CPR cer...",
+            "Submitted capture",
+            "Opened inspector sidebar",
+            "Extraction completed (event-driven)",
+            "Waited for extraction",
+            "Extracted 2 properties",
+            "✓ Met minProperties (2 >= 2)",
+            "✗ Missing required key: need",
+            "✗ Missing required key: schedule",
+            "✗ Missing required key: budget",
+            "Corrections needed"
+          ]
+        },
+        {
+          "caseId": "intent-capture-016",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 4,
+            "corrections": 1,
+            "timeToCaptureMs": 11998.071594000008
+          },
+          "details": [
+            "Filled prompt: Need a babysitter for Friday night 6-10pm, CPR cer...",
+            "Submitted capture",
+            "Opened inspector sidebar",
+            "Extraction completed (event-driven)",
+            "Waited for extraction",
+            "Extracted 2 properties",
+            "✓ Met minProperties (2 >= 2)",
+            "✗ Missing required key: need",
+            "✗ Missing required key: schedule",
+            "✗ Missing required key: budget",
+            "Corrections needed"
+          ]
+        },
+        {
+          "caseId": "intent-capture-017",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 4,
+            "corrections": 1,
+            "timeToCaptureMs": 10335.639105999988
+          },
+          "details": [
+            "Filled prompt: Looking for photographer for family portraits next...",
+            "Submitted capture",
+            "Opened inspector sidebar",
+            "Extraction completed (event-driven)",
+            "Waited for extraction",
+            "Extracted 2 properties",
+            "✓ Met minProperties (2 >= 2)",
+            "✗ Missing required key: need",
+            "✗ Missing required key: schedule",
+            "✓ Has required key: budget",
+            "Corrections needed"
+          ]
+        },
+        {
+          "caseId": "intent-capture-017",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 4,
+            "corrections": 1,
+            "timeToCaptureMs": 12114.829685000004
+          },
+          "details": [
+            "Filled prompt: Looking for photographer for family portraits next...",
+            "Submitted capture",
+            "Opened inspector sidebar",
+            "Extraction completed (event-driven)",
+            "Waited for extraction",
+            "Extracted 2 properties",
+            "✓ Met minProperties (2 >= 2)",
+            "✗ Missing required key: need",
+            "✗ Missing required key: schedule",
+            "✓ Has required key: budget",
+            "Corrections needed"
+          ]
+        },
+        {
+          "caseId": "intent-capture-017",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 4,
+            "corrections": 1,
+            "timeToCaptureMs": 11910.372455999997
+          },
+          "details": [
+            "Filled prompt: Looking for photographer for family portraits next...",
+            "Submitted capture",
+            "Opened inspector sidebar",
+            "Extraction completed (event-driven)",
+            "Waited for extraction",
+            "Extracted 2 properties",
+            "✓ Met minProperties (2 >= 2)",
+            "✗ Missing required key: need",
+            "✗ Missing required key: schedule",
+            "✓ Has required key: budget",
+            "Corrections needed"
+          ]
+        },
+        {
+          "caseId": "intent-capture-018",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 4,
+            "corrections": 1,
+            "timeToCaptureMs": 12300.238978000009
+          },
+          "details": [
+            "Filled prompt: Need driving instructor for teenager, patient, aut...",
+            "Submitted capture",
+            "Opened inspector sidebar",
+            "Extraction completed (event-driven)",
+            "Waited for extraction",
+            "Extracted 2 properties",
+            "✓ Met minProperties (2 >= 2)",
+            "✗ Missing required key: need",
+            "✓ Has required key: budget",
+            "Corrections needed"
+          ]
+        },
+        {
+          "caseId": "intent-capture-018",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 4,
+            "corrections": 1,
+            "timeToCaptureMs": 12475.199854999984
+          },
+          "details": [
+            "Filled prompt: Need driving instructor for teenager, patient, aut...",
+            "Submitted capture",
+            "Opened inspector sidebar",
+            "Extraction completed (event-driven)",
+            "Waited for extraction",
+            "Extracted 2 properties",
+            "✓ Met minProperties (2 >= 2)",
+            "✗ Missing required key: need",
+            "✓ Has required key: budget",
+            "Corrections needed"
+          ]
+        },
+        {
+          "caseId": "intent-capture-018",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 4,
+            "corrections": 1,
+            "timeToCaptureMs": 10398.553561000008
+          },
+          "details": [
+            "Filled prompt: Need driving instructor for teenager, patient, aut...",
+            "Submitted capture",
+            "Opened inspector sidebar",
+            "Extraction completed (event-driven)",
+            "Waited for extraction",
+            "Extracted 2 properties",
+            "✓ Met minProperties (2 >= 2)",
+            "✗ Missing required key: need",
+            "✓ Has required key: budget",
+            "Corrections needed"
+          ]
+        },
+        {
+          "caseId": "intent-capture-019",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 4,
+            "corrections": 1,
+            "timeToCaptureMs": 9861.743473999988
+          },
+          "details": [
+            "Filled prompt: Need smart home setup for lights thermostat locks,...",
+            "Submitted capture",
+            "Opened inspector sidebar",
+            "Extraction completed (event-driven)",
+            "Waited for extraction",
+            "Extracted 1 properties",
+            "✗ Failed minProperties (1 < 2)",
+            "✗ Missing required key: need",
+            "✓ Has required key: budget",
+            "Corrections needed"
+          ]
+        },
+        {
+          "caseId": "intent-capture-019",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 4,
+            "corrections": 1,
+            "timeToCaptureMs": 10068.14676199999
+          },
+          "details": [
+            "Filled prompt: Need smart home setup for lights thermostat locks,...",
+            "Submitted capture",
+            "Opened inspector sidebar",
+            "Extraction completed (event-driven)",
+            "Waited for extraction",
+            "Extracted 1 properties",
+            "✗ Failed minProperties (1 < 2)",
+            "✗ Missing required key: need",
+            "✓ Has required key: budget",
+            "Corrections needed"
+          ]
+        },
+        {
+          "caseId": "intent-capture-019",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 4,
+            "corrections": 1,
+            "timeToCaptureMs": 9853.964180999988
+          },
+          "details": [
+            "Filled prompt: Need smart home setup for lights thermostat locks,...",
+            "Submitted capture",
+            "Opened inspector sidebar",
+            "Extraction completed (event-driven)",
+            "Waited for extraction",
+            "Extracted 1 properties",
+            "✗ Failed minProperties (1 < 2)",
+            "✗ Missing required key: need",
+            "✓ Has required key: budget",
+            "Corrections needed"
+          ]
+        },
+        {
+          "caseId": "intent-capture-020",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 4,
+            "corrections": 1,
+            "timeToCaptureMs": 9839.933917999995
+          },
+          "details": [
+            "Filled prompt: Need math tutor for high school student, Tuesdays ...",
+            "Submitted capture",
+            "Opened inspector sidebar",
+            "Extraction completed (event-driven)",
+            "Waited for extraction",
+            "Extracted 2 properties",
+            "✓ Met minProperties (2 >= 2)",
+            "✗ Missing required key: need",
+            "✗ Missing required key: schedule",
+            "✓ Has required key: price",
+            "Corrections needed"
+          ]
+        },
+        {
+          "caseId": "intent-capture-020",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 4,
+            "corrections": 1,
+            "timeToCaptureMs": 9792.786029999988
+          },
+          "details": [
+            "Filled prompt: Need math tutor for high school student, Tuesdays ...",
+            "Submitted capture",
+            "Opened inspector sidebar",
+            "Extraction completed (event-driven)",
+            "Waited for extraction",
+            "Extracted 2 properties",
+            "✓ Met minProperties (2 >= 2)",
+            "✗ Missing required key: need",
+            "✗ Missing required key: schedule",
+            "✓ Has required key: price",
+            "Corrections needed"
+          ]
+        },
+        {
+          "caseId": "intent-capture-020",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 4,
+            "corrections": 1,
+            "timeToCaptureMs": 9913.81429899999
+          },
+          "details": [
+            "Filled prompt: Need math tutor for high school student, Tuesdays ...",
+            "Submitted capture",
+            "Opened inspector sidebar",
+            "Extraction completed (event-driven)",
+            "Waited for extraction",
+            "Extracted 2 properties",
+            "✓ Met minProperties (2 >= 2)",
+            "✗ Missing required key: need",
+            "✗ Missing required key: schedule",
+            "✓ Has required key: price",
+            "Corrections needed"
+          ]
+        },
+        {
+          "caseId": "intent-capture-021",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 4,
+            "corrections": 1,
+            "timeToCaptureMs": 9824.70590500001
+          },
+          "details": [
+            "Filled prompt: Need lactation consultant for newborn, virtual ses...",
+            "Submitted capture",
+            "Opened inspector sidebar",
+            "Extraction completed (event-driven)",
+            "Waited for extraction",
+            "Extracted 1 properties",
+            "✗ Failed minProperties (1 < 2)",
+            "✗ Missing required key: need",
+            "✓ Has required key: budget",
+            "Corrections needed"
+          ]
+        },
+        {
+          "caseId": "intent-capture-021",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 4,
+            "corrections": 1,
+            "timeToCaptureMs": 9782.32978
+          },
+          "details": [
+            "Filled prompt: Need lactation consultant for newborn, virtual ses...",
+            "Submitted capture",
+            "Opened inspector sidebar",
+            "Extraction completed (event-driven)",
+            "Waited for extraction",
+            "Extracted 1 properties",
+            "✗ Failed minProperties (1 < 2)",
+            "✗ Missing required key: need",
+            "✓ Has required key: budget",
+            "Corrections needed"
+          ]
+        },
+        {
+          "caseId": "intent-capture-021",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 4,
+            "corrections": 1,
+            "timeToCaptureMs": 9959.029210000008
+          },
+          "details": [
+            "Filled prompt: Need lactation consultant for newborn, virtual ses...",
+            "Submitted capture",
+            "Opened inspector sidebar",
+            "Extraction completed (event-driven)",
+            "Waited for extraction",
+            "Extracted 1 properties",
+            "✗ Failed minProperties (1 < 2)",
+            "✗ Missing required key: need",
+            "✓ Has required key: budget",
+            "Corrections needed"
+          ]
+        },
+        {
+          "caseId": "intent-capture-026",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 4,
+            "corrections": 1,
+            "timeToCaptureMs": 10095.254404000036
+          },
+          "details": [
+            "Filled prompt: Need math tutor for high school student Tuesdays T...",
+            "Submitted capture",
+            "Opened inspector sidebar",
+            "Extraction completed (event-driven)",
+            "Waited for extraction",
+            "Extracted 2 properties",
+            "✓ Met minProperties (2 >= 2)",
+            "✗ Missing required key: need",
+            "✗ Missing required key: schedule",
+            "✓ Has required key: price",
+            "Corrections needed"
+          ]
+        },
+        {
+          "caseId": "intent-capture-026",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 4,
+            "corrections": 1,
+            "timeToCaptureMs": 9782.206717000052
+          },
+          "details": [
+            "Filled prompt: Need math tutor for high school student Tuesdays T...",
+            "Submitted capture",
+            "Opened inspector sidebar",
+            "Extraction completed (event-driven)",
+            "Waited for extraction",
+            "Extracted 2 properties",
+            "✓ Met minProperties (2 >= 2)",
+            "✗ Missing required key: need",
+            "✗ Missing required key: schedule",
+            "✓ Has required key: price",
+            "Corrections needed"
+          ]
+        },
+        {
+          "caseId": "intent-capture-026",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 4,
+            "corrections": 1,
+            "timeToCaptureMs": 10364.554275000002
+          },
+          "details": [
+            "Filled prompt: Need math tutor for high school student Tuesdays T...",
+            "Submitted capture",
+            "Opened inspector sidebar",
+            "Extraction completed (event-driven)",
+            "Waited for extraction",
+            "Extracted 2 properties",
+            "✓ Met minProperties (2 >= 2)",
+            "✗ Missing required key: need",
+            "✗ Missing required key: schedule",
+            "✓ Has required key: price",
+            "Corrections needed"
+          ]
+        },
+        {
+          "caseId": "intent-capture-027",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 2,
+            "corrections": 0,
+            "timeToCaptureMs": 9042.304712000012
+          },
+          "details": [
+            "Filled prompt: Need house cleaner biweekly deep clean 3 bed 2 bat...",
+            "Submitted capture",
+            "Error: page.waitForTimeout: Target page, context or browser has been closed"
+          ]
+        },
+        {
+          "caseId": "intent-capture-027",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 5.774473000026774
+          },
+          "details": [
+            "Error: page.addInitScript: Target page, context or browser has been closed"
+          ],
+          "error": "page.addInitScript: Target page, context or browser has been closed"
+        },
+        {
+          "caseId": "intent-capture-027",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 0.3608409999869764
+          },
+          "details": [
+            "Error: page.addInitScript: Target page, context or browser has been closed"
+          ],
+          "error": "page.addInitScript: Target page, context or browser has been closed"
+        }
+      ]
+    },
+    "B": {
+      "name": "B-initialOp-enumHint",
+      "patch": {
+        "initialOp": "contains"
+      },
+      "caseResults": [
+        {
+          "caseId": "intent-capture-010",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 7.334227000013925
+          },
+          "details": [
+            "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:4202/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:4202/\", waiting until \"domcontentloaded\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-010",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 9.215221000020392
+          },
+          "details": [
+            "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:4202/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:4202/\", waiting until \"domcontentloaded\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-010",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 6.545314999995753
+          },
+          "details": [
+            "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:4202/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:4202/\", waiting until \"domcontentloaded\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-011",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 5.129880999971647
+          },
+          "details": [
+            "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:4202/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:4202/\", waiting until \"domcontentloaded\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-011",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 6.696914999978617
+          },
+          "details": [
+            "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:4202/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:4202/\", waiting until \"domcontentloaded\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-011",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 9.847731999994721
+          },
+          "details": [
+            "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:4202/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:4202/\", waiting until \"domcontentloaded\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-016",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 7.651157999993302
+          },
+          "details": [
+            "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:4202/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:4202/\", waiting until \"domcontentloaded\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-016",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 7.528496999992058
+          },
+          "details": [
+            "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:4202/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:4202/\", waiting until \"domcontentloaded\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-016",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 6.910084999981336
+          },
+          "details": [
+            "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:4202/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:4202/\", waiting until \"domcontentloaded\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-017",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 12.148367999994662
+          },
+          "details": [
+            "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:4202/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:4202/\", waiting until \"domcontentloaded\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-017",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 7.381296999985352
+          },
+          "details": [
+            "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:4202/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:4202/\", waiting until \"domcontentloaded\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-017",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 7.201545999967493
+          },
+          "details": [
+            "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:4202/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:4202/\", waiting until \"domcontentloaded\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-018",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 7.9094480000203475
+          },
+          "details": [
+            "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:4202/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:4202/\", waiting until \"domcontentloaded\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-018",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 7.320787000004202
+          },
+          "details": [
+            "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:4202/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:4202/\", waiting until \"domcontentloaded\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-018",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 4.652100000006612
+          },
+          "details": [
+            "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:4202/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:4202/\", waiting until \"domcontentloaded\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-019",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 7.128296000009868
+          },
+          "details": [
+            "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:4202/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:4202/\", waiting until \"domcontentloaded\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-019",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 6.651765000016894
+          },
+          "details": [
+            "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:4202/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:4202/\", waiting until \"domcontentloaded\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-019",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 5.947663999977522
+          },
+          "details": [
+            "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:4202/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:4202/\", waiting until \"domcontentloaded\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-020",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 6.366984000022057
+          },
+          "details": [
+            "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:4202/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:4202/\", waiting until \"domcontentloaded\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-020",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 5.56975299998885
+          },
+          "details": [
+            "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:4202/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:4202/\", waiting until \"domcontentloaded\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-020",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 5.228350999997929
+          },
+          "details": [
+            "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:4202/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:4202/\", waiting until \"domcontentloaded\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-021",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 6.4493839999777265
+          },
+          "details": [
+            "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:4202/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:4202/\", waiting until \"domcontentloaded\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-021",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 25.879719000018667
+          },
+          "details": [
+            "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:4202/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:4202/\", waiting until \"domcontentloaded\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-021",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 5.681052999978419
+          },
+          "details": [
+            "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:4202/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:4202/\", waiting until \"domcontentloaded\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-026",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 6.370185000007041
+          },
+          "details": [
+            "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:4202/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:4202/\", waiting until \"domcontentloaded\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-026",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 4.824881000036839
+          },
+          "details": [
+            "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:4202/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:4202/\", waiting until \"domcontentloaded\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-026",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 6.278034000017215
+          },
+          "details": [
+            "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:4202/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:4202/\", waiting until \"domcontentloaded\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-027",
+          "intent": "capture_need",
+          "repetition": 0,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 5.728372999990825
+          },
+          "details": [
+            "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:4202/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:4202/\", waiting until \"domcontentloaded\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-027",
+          "intent": "capture_need",
+          "repetition": 1,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 6.503154999983963
+          },
+          "details": [
+            "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:4202/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:4202/\", waiting until \"domcontentloaded\"\u001b[22m\n"
+          ]
+        },
+        {
+          "caseId": "intent-capture-027",
+          "intent": "capture_need",
+          "repetition": 2,
+          "success": false,
+          "metrics": {
+            "completion": 0,
+            "steps": 0,
+            "corrections": 0,
+            "timeToCaptureMs": 5.951104000036139
+          },
+          "details": [
+            "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:4202/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:4202/\", waiting until \"domcontentloaded\"\u001b[22m\n"
+          ]
+        }
+      ]
+    }
+  },
+  "comparison": {
+    "mcNemar": {
+      "pValue": 1,
+      "significant": false
+    },
+    "wilcoxon": {
+      "pValue": 0.000002356211549647824,
+      "significant": true,
+      "medianDiff": 9953.34815700003
+    },
+    "correctionsDiff": -27
+  }
+}
