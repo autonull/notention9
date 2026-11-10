@@ -99,7 +99,7 @@ describe('Phase 2.3: Multi-Instance Coordination', () => {
         await publishNoteToNostr(aliceNote, DUMMY_PRIVKEY, ['wss://dummy'], undefined, 'public');
 
         const bobEngine = new MatchEngine([]);
-        const bobDiscovery = new NetworkDiscoveryService(bobEngine);
+        const bobDiscovery = new NetworkDiscoveryService(bobEngine, []);
         const bobInterests = roleNote('bob1', 'freelancer');
         const matches = await bobDiscovery.discoverMatches(bobInterests, ['wss://dummy'], 'public');
 
@@ -112,7 +112,7 @@ describe('Phase 2.3: Multi-Instance Coordination', () => {
         await publishNoteToNostr(aliceNote, DUMMY_PRIVKEY, ['wss://dummy'], undefined, 'private');
 
         const bobEngine = new MatchEngine([]);
-        const bobDiscovery = new NetworkDiscoveryService(bobEngine);
+        const bobDiscovery = new NetworkDiscoveryService(bobEngine, []);
         const bobInterests = roleNote('bob_spy', 'spy');
         const matches = await bobDiscovery.discoverMatches(bobInterests, ['wss://dummy'], 'private');
 
@@ -126,7 +126,7 @@ describe('Phase 2.3: Multi-Instance Coordination', () => {
         await publishNoteToNostr(aliceNote, DUMMY_PRIVKEY, ['wss://dummy'], undefined, 'private');
 
         const eveEngine = new MatchEngine([]);
-        const eveDiscovery = new NetworkDiscoveryService(eveEngine);
+        const eveDiscovery = new NetworkDiscoveryService(eveEngine, []);
         const eveNote = roleNote('eve', 'something_else');
         const matches = await eveDiscovery.discoverMatches(eveNote, ['wss://dummy'], 'public');
 

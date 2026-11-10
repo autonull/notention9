@@ -87,7 +87,7 @@ class NostrService {
     async findMatches(note: Note, ontology: OntologyNode[]): Promise<ScoredMatch[]> {
         try {
             const engine = new MatchEngine(ontology);
-            const discovery = new NetworkDiscoveryService(engine);
+            const discovery = new NetworkDiscoveryService(engine, ontology);
             return await discovery.discoverMatches(note, this.relays, note.privacy);
         } catch (e) {
             this.logger.error("Failed to discover matches", e instanceof Error ? e : new Error(String(e)));

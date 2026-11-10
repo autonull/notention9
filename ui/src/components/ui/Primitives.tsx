@@ -6,6 +6,7 @@ export * from './Badge';
 export * from './Avatar';
 export * from './Modal';
 export * from './Toast';
+export * from './StatItem';
 
 // Composite components (built on top of base components)
 export * from './ConfirmationModal';
@@ -32,6 +33,7 @@ export type {BadgeProps} from './Badge';
 export type {AvatarProps} from './Avatar';
 export type {ModalProps} from './Modal';
 export type {ToastProps, ToastContainerProps} from './Toast';
+export type {StatItemProps} from './StatItem';
 export type {ConfirmationModalProps} from './ConfirmationModal';
 export type {CopyableFieldProps} from './CopyableField';
 export type {DropdownMenuProps, DropdownMenuItem} from './DropdownMenu';

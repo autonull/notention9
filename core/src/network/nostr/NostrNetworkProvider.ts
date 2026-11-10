@@ -95,7 +95,7 @@ export class NostrNetworkProvider extends BaseNetworkProvider implements Network
 
     async discoverMatches(note: Note, ontology: OntologyNode[], privacyMode: PrivacyLevel): Promise<ScoredMatch[]> {
         if (!this.enabled) return [];
-        const discovery = new NetworkDiscoveryService(new MatchEngine(ontology));
+        const discovery = new NetworkDiscoveryService(new MatchEngine(ontology), ontology);
         return await discovery.discoverMatches(note, this.relays, privacyMode);
     }
 

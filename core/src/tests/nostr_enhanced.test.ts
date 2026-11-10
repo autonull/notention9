@@ -100,7 +100,7 @@ describe('NetworkDiscoveryService Enhanced', () => {
     ];
 
     const engine = new MatchEngine(ontology);
-    const service = new NetworkDiscoveryService(engine);
+    const service = new NetworkDiscoveryService(engine, ontology);
 
     beforeEach(() => {
         mockQueryEvents.mockReset();

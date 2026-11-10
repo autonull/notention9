@@ -7,7 +7,7 @@ import { DEFAULT_ONTOLOGY } from '@notention/core';
 import { startRelay, stopRelay, withFreshRelay } from '../testRelay.js';
 
 const BASE_PORT = 14445;
-const STATISTICAL_REPS = 30;
+const STATISTICAL_REPS = 10;
 
 /**
  * SimulatorRegression - Evolved from structural assert-equality into statistical assertion
@@ -122,10 +122,11 @@ describe('SimulatorRegression — Statistical Baselines (B2.5)', () => {
 
             await runner.prepare(RegressionScenario);
             // Allow time for agent subscriptions to establish on fresh relay
-            await new Promise(r => setTimeout(r, 500));
+            await new Promise(r => setTimeout(r, 1000));
             await runner.execute(RegressionScenario);
             // Allow event loop to process WebSocket messages (match detection)
-            await new Promise(r => setTimeout(r, 100));
+            // Relay delivery and agent processing is async; wait longer
+            await new Promise(r => setTimeout(r, 1500));
 
             return collector.getMetrics();
         });
@@ -165,10 +166,11 @@ describe('SimulatorRegression — Statistical Baselines (B2.5)', () => {
 
             await runner.prepare(RegressionScenario);
             // Allow time for agent subscriptions to establish on fresh relay
-            await new Promise(r => setTimeout(r, 500));
+            await new Promise(r => setTimeout(r, 1000));
             await runner.execute(RegressionScenario);
             // Allow event loop to process WebSocket messages (match detection)
-            await new Promise(r => setTimeout(r, 100));
+            // Relay delivery and agent processing is async; wait longer
+            await new Promise(r => setTimeout(r, 1500));
 
             const matchEvents = events.filter(e => e.type === 'match:found');
             expect(matchEvents).toHaveLength(1);

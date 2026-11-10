@@ -133,6 +133,7 @@ export class Agent {
             ...note,
             id: `interest-${this.id}`,
             properties: this.profile.interests,
+            priority: 1.0, // Use full priority for interest matching; don't inherit incoming note's priority
         };
 
         const { score, matches } = this.#engine.calculateMatchScore(myInterestsNote, note);

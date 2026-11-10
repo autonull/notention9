@@ -44,7 +44,7 @@ function getMatchTypeLabel(details?: MatchDetails) {
     }
 }
 
-export function LocalMatchPreview({match, onSelectNote, onRejectMatch, onReviseRequest, onView}: LocalMatchPreviewProps) {
+export function LocalMatchPreview({match, onSelectNote, onAcceptMatch, onRejectMatch, onReviseRequest, onView}: LocalMatchPreviewProps) {
     const {result} = match;
     const totalMatches = result.matches.length;
     const totalConflicts = result.conflicts.length;

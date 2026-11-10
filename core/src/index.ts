@@ -31,7 +31,10 @@ export {
     queryLedger, 
     getRunEvents, 
     exportRun, 
-    pruneLedger 
+    pruneLedger,
+    logMatchAccepted,
+    logMatchWithdrawn,
+    logMatchRejected
 } from './telemetry/ledger.js';
 export { 
     RevisionStore, 

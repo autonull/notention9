@@ -40,11 +40,9 @@ export class MatchEngine {
   }
 
   private isRequiredConstraint(prop: Property): boolean {
-    // Only constraint-role properties with non-marker operators count as required
-    if (prop.role === 'marker' || prop.role === 'fact') return false;
-    // 'is' operator on enum/string could be a fact, not a constraint
-    // But we default to constraint for backwards compatibility
-    return prop.role !== 'marker';
+    // Only marker and fact roles are excluded from required constraints
+    // undefined role defaults to constraint for backwards compatibility
+    return prop.role !== 'marker' && prop.role !== 'fact';
   }
 
   private aggregateResults(results: PropertyMatch[]) {

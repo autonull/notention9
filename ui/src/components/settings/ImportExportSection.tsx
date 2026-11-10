@@ -30,7 +30,15 @@ interface PendingImport {
     message: string;
 }
 
-export function ImportExportSection({notes, settings, onExportWorkspace, onExportNote, onImportSuccess, onImportFailed}: ImportExportSectionProps) {
+export function ImportExportSection({
+    notes,
+    settings,
+    onExportWorkspace,
+    onExportNote,
+    onImportSuccess,
+    onImportFailed,
+    onImportNote,
+}: ImportExportSectionProps) {
     const {addToast} = useToast();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [pendingImport, setPendingImport] = useState<PendingImport | null>(null);

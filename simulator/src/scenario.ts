@@ -19,10 +19,10 @@ const ACTION_HANDLERS: Record<string, ActionHandler> = {
  */
 class VirtualClock {
     private time = 0;
-    private readonly tasks: Array<{ at: number; fn: () => void }> = [];
+    private readonly tasks: Array<{ at: number; fn: () => Promise<void> }> = [];
     private running = false;
 
-    schedule(at: number, fn: () => void): void {
+    schedule(at: number, fn: () => Promise<void>): void {
         this.tasks.push({ at, fn });
         this.tasks.sort((a, b) => a.at - b.at);
     }
@@ -33,7 +33,7 @@ class VirtualClock {
             if (!this.running) break;
             // In fast mode, we don't actually wait - just advance virtual time
             this.time = task.at;
-            task.fn();
+            await task.fn();
         }
         this.tasks.length = 0;
     }

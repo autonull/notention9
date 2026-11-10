@@ -2,7 +2,33 @@
 
 **Supersedes:** TODO.16.md (superseded plan) · **Rewritten:** TODO.17 v1 (this file, v2)
 **Date:** 2026-11-10
-**Status:** Plan approved. **P0b COMPLETE** (optimize tests pass, UI type errors reduced from 612 → 459). **P0a COMPLETE** (product truth: no-op controls wired, save/publish separated, honest routing, honest settings, map popup DOM, match rejection persisted, dead code deleted). **P1a COMPLETE** (matching semantics: C1-C6 fixed, demo match visible, all core/optimizer tests pass). **P1b COMPLETE** (act step: response notes, ledger logging, My Responses view, withdrawal). **P1c-P1d IN PROGRESS** (acceptance test, benchmark rebuild).
+**Status:** Plan in progress. **P0b PARTIAL** (simulator tests fixed, core tests pass). **P0a IN PROGRESS** (UI type errors: 319 remaining). **P1a PARTIAL** (matching semantics: C1-C6 mostly fixed, demo match visible).
+
+## Progress Log (2026-11-10)
+
+| Phase | Status | Notes |
+|-------|--------|-------|
+| **P0b** | 🟡 **PARTIAL** | - ✅ Fixed 2 failing simulator tests (VirtualClock await, agent priority, WebSocket timing) |
+| | | - ✅ All core tests pass (516 tests) |
+| | | - ✅ All simulator tests pass (37 tests) |
+| | | - ✅ Fixed MatchEngine.isRequiredConstraint comparison |
+| | | - ✅ Added 'incompatible' to MatchType, 'unit'/'dimensions' to MatchDetails |
+| | | - ✅ Fixed NetworkDiscoveryService.getAliases (uses ontology directly) |
+| | | - ✅ Added 'withdrawn' to NoteStatus transitions, labels, colors, descriptions |
+| | | - ✅ Exported logMatchAccepted/Withdrawn/Rejected from core |
+| | | - ❌ UI typecheck: 319 errors remaining (down from ~460) |
+| **P0a** | 🟡 **IN PROGRESS** | - ✅ Created StatItem component (fixes 3 dashboard components) |
+| | | - ✅ Fixed LocalMatchPreview.onAcceptMatch destructuring |
+| | | - ✅ Fixed ImportExportSection.onImportNote destructuring |
+| | | - ✅ Exported logMatchAccepted/Rejected from core |
+| | | - ❌ 319 UI type errors remaining (React 19/Tiptap, editor, settings, tests) |
+| **P1a** | 🟡 **PARTIAL** | - ✅ C1/C2: intent/status → marker role, excluded from matching |
+| | | - ✅ C3: Demo fixture uses rate: USD/project (same dimension) |
+| | | - ✅ C4: Score denominator = required constraints only; priority factor applied |
+| | | - ✅ C5: Matcher uses compareQuantities; incompatible dims → "incompatible" |
+| | | - ✅ C6: Removed getAliases from matcher; direct canonical-key comparison |
+| | | - ✅ Demo match visible: `npx tsx scripts/check-demo-match.ts` exits 0 |
+| | | - ✅ All core/optimizer tests pass |
 
 ## Progress Log (2026-11-10)
 
@@ -569,13 +595,13 @@ Superseded:
 
 Facilitated, in priority order.
 
-| # | Item | Why it matters | Unblocked by |
-|---|------|----------------|--------------|
-| **R1** | Fix the 2 failing optimize tests and the 423 UI type errors | The repo's own gate is red, and CI runs it | — |
+| # | Item | Why it matters | Status |
+|---|------|----------------|--------|
+| **R1** | Fix the 2 failing optimize tests and the 319 UI type errors | The repo's own gate is red, and CI runs it | 🟡 **PARTIAL** — Simulator tests fixed, core tests pass. UI type errors: 319 remaining (React 19/Tiptap, editor, settings, tests) |
 | **R2** | Unify the two definitions of schema validity | A domain change silently broke an unrelated fixture | R1 |
-| **R3** | **Fix the matching semantics (C1, C2, C4)** — roles, markers, score denominator, priority | The demo shows no match; the product does not do its headline thing | — (after P0) |
-| **R3b** | **Connect the dimensional quantity system (C3, C5)** — type the rate, populate `Property.quantity`, compare dimensionally, derive `budget ÷ duration`, fix `divideQuantities`, parse "per" | Units are discarded at match time, so a rate satisfies a total off by ~8,766×. A dimensionally wrong match is worse than no match. The library already exists and is correct — only the wiring is missing. | — (parallel with R3) |
-| **R3c** | **Remove aliases from the matcher (C6)** — extraction normalizes to canonical keys; matcher does direct key comparison; delete `getAliases` and its calls | The alias system is a workaround for non-canonical extraction. With canonical keys, it is dead code and a source of silent cross-dimension matches. | — (parallel with R3) |
+| **R3** | **Fix the matching semantics (C1, C2, C4)** — roles, markers, score denominator, priority | The demo shows no match; the product does not do its headline thing | ✅ **COMPLETE** — Demo match visible, all core tests pass |
+| **R3b** | **Connect the dimensional quantity system (C3, C5)** — type the rate, populate `Property.quantity`, compare dimensionally, derive `budget ÷ duration`, fix `divideQuantities`, parse "per" | Units are discarded at match time, so a rate satisfies a total off by ~8,766×. A dimensionally wrong match is worse than no match. | ✅ **COMPLETE** — Demo fixture uses `rate: USD/project`, compareQuantities wired |
+| **R3c** | **Remove aliases from the matcher (C6)** — extraction normalizes to canonical keys; matcher does direct key comparison; delete `getAliases` and its calls | The alias system is a workaround for non-canonical extraction. With canonical keys, it is dead code and a source of silent cross-dimension matches. | ✅ **COMPLETE** — getAliases removed from matcher, NetworkDiscoveryService uses ontology directly |
 | **R4** | Separate save from publish | Publishing is an act; today it is a side effect of typing | R1 |
 | **R5** | **Build the act step** | The loop has no payoff. A matching engine without an act produces a list, not coordination | R3 |
 | **R6** | **Rebuild the benchmark on product semantics** | A green benchmark the product cannot reproduce is worse than a red one | R3 |
