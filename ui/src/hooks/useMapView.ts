@@ -2,6 +2,7 @@ import {useCallback, useEffect, useMemo, useRef} from 'react';
 import L from 'leaflet';
 import {useNotes} from './useNotes';
 import {useView} from './useViewContext';
+import {useToast} from './useToast';
 import {convertEventToNote, parseGeoFromValues} from '@notention/core';
 
 interface GeoPoint {
@@ -14,7 +15,8 @@ interface GeoPoint {
 
 export function useMapView() {
     const {notes} = useNotes();
-    const {setActiveView, setSelectedNoteId, matches} = useView();
+    const {setActiveView, setSelectedNoteId, setMatchingNoteId, matches} = useView();
+    const {addToast} = useToast();
     const mapRef = useRef<L.Map | null>(null);
     const mapContainerRef = useRef<HTMLDivElement | null>(null);
     const markersRef = useRef<L.Marker[]>([]);
@@ -25,12 +27,12 @@ export function useMapView() {
                 setActiveView('notes');
                 setSelectedNoteId(id);
             } else {
-                // For now, maybe just toast or log?
-                // Ideally we open a "Match Detail" view or show more info in popup.
-                console.log('Selected match:', id);
+                setMatchingNoteId(id);
+                setActiveView('network');
+                addToast('Match selected', 'info');
             }
         },
-        [setActiveView, setSelectedNoteId]
+        [setActiveView, setSelectedNoteId, setMatchingNoteId, addToast]
     );
 
     const geoPoints = useMemo<GeoPoint[]>(() => {
@@ -100,44 +102,47 @@ export function useMapView() {
 
         if (geoPoints.length > 0) {
             geoPoints.forEach((point) => {
-                // Determine icon color/style based on type
-                // Leaflet default is blue.
-                // We can use a custom icon or CSS filter.
-                // Simple hack: CSS filter hue-rotate for 'match'
-
                 const marker = L.marker([point.lat, point.lng]).addTo(map);
 
-                // Add class for styling matches differently?
-                // Leaflet markers are tricky to style without custom Icon objects.
-                // Let's stick to default for now, but customize popup content.
+                // Create popup content as DOM (no innerHTML injection)
+                const popupDiv = document.createElement('div');
+                popupDiv.className = 'font-sans p-1';
 
-                const typeLabel = point.type === 'match' ? '<span class="text-xs bg-green-900 text-green-300 px-1 rounded">Match</span>' : '';
+                const headerDiv = document.createElement('div');
+                headerDiv.className = 'flex items-center gap-2 mb-1';
 
-                const popupContent = `
-                    <div class="font-sans">
-                        <div class="flex items-center gap-2 mb-1">
-                            <h3 class="font-bold text-base">${point.title || 'Untitled'}</h3>
-                            ${typeLabel}
-                        </div>
-                        ${point.type === 'local'
-                            ? `<a href="#" id="note-link-${point.id}" class="text-blue-400 hover:underline">View Note &rarr;</a>`
-                            : `<span class="text-xs text-gray-400">Remote Match</span>`
-                        }
-                    </div>
-                `;
-                marker.bindPopup(popupContent);
+                const title = document.createElement('h3');
+                title.className = 'font-bold text-base';
+                title.textContent = point.title || 'Untitled';
+                headerDiv.appendChild(title);
+
+                if (point.type === 'match') {
+                    const badge = document.createElement('span');
+                    badge.className = 'text-xs bg-green-900 text-green-300 px-1 rounded';
+                    badge.textContent = 'Match';
+                    headerDiv.appendChild(badge);
+                }
+
+                popupDiv.appendChild(headerDiv);
 
                 if (point.type === 'local') {
-                    marker.on('popupopen', () => {
-                        const link = document.getElementById(`note-link-${point.id}`);
-                        if (link) {
-                            link.onclick = (e) => {
-                                e.preventDefault();
-                                onSelectNote(point.id, point.type);
-                            };
-                        }
-                    });
+                    const link = document.createElement('a');
+                    link.href = '#';
+                    link.className = 'text-blue-400 hover:underline';
+                    link.textContent = 'View Note →';
+                    link.onclick = (e) => {
+                        e.preventDefault();
+                        onSelectNote(point.id, point.type);
+                    };
+                    popupDiv.appendChild(link);
+                } else {
+                    const span = document.createElement('span');
+                    span.className = 'text-xs text-gray-400';
+                    span.textContent = 'Remote Match';
+                    popupDiv.appendChild(span);
                 }
+
+                marker.bindPopup(popupDiv);
                 markersRef.current.push(marker);
             });
         }

@@ -2,7 +2,7 @@
 
 **Supersedes:** TODO.16.md (superseded plan) · **Rewritten:** TODO.17 v1 (this file, v2)
 **Date:** 2026-11-10
-**Status:** Plan approved. **P0b COMPLETE** (optimize tests pass, UI type errors reduced from 612 → 459). P0a (product truth / no-op controls) and P1 matching semantics in progress. See "Progress Log" below.
+**Status:** Plan approved. **P0b COMPLETE** (optimize tests pass, UI type errors reduced from 612 → 459). **P0a COMPLETE** (product truth: no-op controls wired, save/publish separated, honest routing, honest settings, map popup DOM, match rejection persisted, dead code deleted). P1 matching semantics in progress. See "Progress Log" below.
 
 ## Progress Log (2026-11-10)
 
@@ -16,7 +16,15 @@
 | | | - Fixed various component prop mismatches (PropertyPanel, EditorSidebar, EditorContent, etc.) |
 | | | - Added `@testing-library/jest-dom` types for test matchers |
 | | | - **All tests pass** (core, agent, cli, optimize, simulator) |
-| **P0a** | 🔄 **IN PROGRESS** | - Need to verify no-op controls in UI (manual pass log) |
+| **P0a** | ✅ **COMPLETE** | - **A1** Wired no-op controls: EditorContent.onMatchClick, AssistantContent.onSelectLocalMatch, MapView match markers, AutomationsView create buttons |
+| | | - **A2** Unified status vocabulary: `todo` used everywhere (was `todo`/`queued` split) |
+| | | - **A3** Separated save from publish: `notePersistence.ts` now has `saveLocal` + `persistPublish`; autosave no longer transmits |
+| | | - **A4** Honest routing: removed `simulator` from validViews (route was dead) |
+| | | - **A5** Honest settings: replaced non-existent `insert-property-modal`/`property-panel` with `tag-input`/`local-matches-panel` |
+| | | - **A6** Map popup as DOM: removed innerHTML injection, build popup via `document.createElement` |
+| | | - **A7** Persisted match rejection: `useRejectedMatches` hook stores rejected IDs in localStorage, filtered from `useMatches` |
+| | | - **A8** Deleted dead code: `DashboardQuickCapture`, `PropertyExtension`, `useProgressiveElicitation`, `useVirtualizedList`, 5 unused UI barrels, `react-force-graph-2d` dependency (~1,500 LOC removed) |
+| | | - **Verify passes**: `pnpm verify` green, strategy param visibility verified |
 | **P1a** | 🔄 **IN PROGRESS** | - Matching semantics fix (C1-C6) - not started yet |
 | | | - Dimensional typing (C3, C5) - not started yet |
 | | | - Alias removal from matcher (C6) - not started yet |

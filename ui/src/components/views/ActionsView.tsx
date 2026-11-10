@@ -45,7 +45,7 @@ export function ActionsView() {
         notes.filter(n => n.properties.some(p => p.key === 'status' && p.values.includes(status)));
 
     const runningNotes = byStatus('running');
-    const queuedNotes = byStatus('queued');
+    const todoNotes = byStatus('todo');
     const completedNotes = byStatus('completed');
 
     const handleNoteClick = (id: string) => {
@@ -56,7 +56,7 @@ export function ActionsView() {
     const handleNewTask = () => {
         const note = addNote({
             title: 'New Task',
-            properties: [{key: 'status', operator: 'is', values: ['queued']}],
+            properties: [{key: 'status', operator: 'is', values: ['todo']}],
             tags: ['task'],
         });
         setSelectedNoteId(note.id);
@@ -91,11 +91,11 @@ export function ActionsView() {
             </div>
 
             <div className="mb-6">
-                <h2 className="text-lg font-bold mb-3 text-gray-300">QUEUED ({queuedNotes.length})</h2>
-                {queuedNotes.length > 0 ? (
-                    queuedNotes.map(renderNoteCard)
+                <h2 className="text-lg font-bold mb-3 text-gray-300">TODO ({todoNotes.length})</h2>
+                {todoNotes.length > 0 ? (
+                    todoNotes.map(renderNoteCard)
                 ) : (
-                    <div className="text-gray-500 italic p-4 bg-gray-800 rounded-lg">No queued tasks.</div>
+                    <div className="text-gray-500 italic p-4 bg-gray-800 rounded-lg">No todo tasks.</div>
                 )}
             </div>
 

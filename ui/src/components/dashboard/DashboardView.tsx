@@ -8,6 +8,7 @@ import {MatchEngine, PropertyExtractor, getTextFromHtml} from '@notention/core';
 import {sanitizeHTML} from '../../utils/sanitize';
 import {useDemoWorkspace} from '../../hooks/useDemoWorkspace';
 import {useCaptureTracking, useMatchTracking} from '../../hooks/useFrictionRecorder';
+import {useRejectedMatches} from '../../hooks/useRejectedMatches';
 import {DashboardHeader} from './DashboardHeader';
 import {FeatureHighlights} from './FeatureHighlights';
 import {SampleWorkspacePrompt} from './SampleWorkspacePrompt';
@@ -46,6 +47,7 @@ export function DashboardView() {
     // Friction tracking
     const { startTracking: startCaptureTracking, stopTracking: stopCaptureTracking, markSubmitted: markCaptureSubmitted } = useCaptureTracking('capture', 'capture');
     const { markViewed: markMatchViewed, handleAccept: handleMatchAccept, handleReject: handleMatchReject, handleClarification: handleMatchClarification } = useMatchTracking('match', 'match');
+    const {rejectMatch} = useRejectedMatches();
 
     const extractor = useMemo(() => new PropertyExtractor(settings.ontology), [settings.ontology]);
     const [extractedProps, setExtractedProps] = useState<Array<{key: string; operator: string; values: string[]}>>([]);
@@ -183,8 +185,8 @@ export function DashboardView() {
 
     const handleRejectMatch = useCallback((requestId: string, noteId: string) => {
         handleMatchReject();
-        console.log('Match rejected:', {requestId, noteId});
-    }, [handleMatchReject]);
+        rejectMatch(noteId);
+    }, [handleMatchReject, rejectMatch]);
 
     const handleReviseRequest = useCallback((requestId: string) => {
         handleMatchClarification();

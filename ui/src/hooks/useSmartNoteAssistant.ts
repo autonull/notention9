@@ -76,6 +76,7 @@ interface UseSmartNoteAssistantReturn {
     handleConfirmAddAlias: (nodeId: string, attributeKey: string) => void;
     handleKeyDown: (e: React.KeyboardEvent) => void;
     toggleOpen: (e?: React.MouseEvent) => void;
+    handleSelectLocalMatch: (match: ScoredMatch) => void;
 }
 
 export function useSmartNoteAssistant({
@@ -219,6 +220,10 @@ export function useSmartNoteAssistant({
         setIsOpen(prev => !prev);
     }, []);
 
+    const handleSelectLocalMatch = useCallback((match: ScoredMatch) => {
+        setSelectedNoteId(match.note.id);
+    }, [setSelectedNoteId]);
+
     const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
         if (!isOpen || activeTab !== 'suggestions' || suggestions.length === 0) return;
 
@@ -278,6 +283,7 @@ export function useSmartNoteAssistant({
         handleConfirmAddAttribute,
         handleConfirmAddAlias,
         handleKeyDown,
-        toggleOpen
+        toggleOpen,
+        handleSelectLocalMatch
     };
 }

@@ -53,7 +53,7 @@ function inferAutomationMetaphor(properties: Property[]): boolean {
 }
 
 export function AutomationsView() {
-    const {notes} = useNotes();
+    const {notes, addNote} = useNotes();
     const {setActiveView, setSelectedNoteId} = useView();
 
     const automationNotes = useMemo(() => {
@@ -63,7 +63,7 @@ export function AutomationsView() {
     }, [notes]);
 
     const handleCreateAutomation = () => {
-        const newNote = {
+        const note = addNote({
             title: 'New Automation',
             content: '<p>Describe your automation rule...</p>',
             tags: ['automation'],
@@ -72,9 +72,9 @@ export function AutomationsView() {
                 {key: 'if', operator: 'is', values: ['condition']},
                 {key: 'then', operator: 'is', values: ['action']},
             ],
-        };
-        // Use useNotes addNote - need to get it from context
-        // For now, we'll dispatch an event or use a different approach
+        });
+        setSelectedNoteId(note.id);
+        setActiveView('notes');
     };
 
     if (automationNotes.length === 0) {

@@ -8,7 +8,7 @@ import {TemplateSelector} from './TemplateSelector';
 import {MetaphorRenderer} from '../metaphor/MetaphorRenderer';
 import {ContextPanel} from './ContextPanel';
 import {MatchReplies} from '../match/MatchReplies';
-import type {Note, OntologyNode, Template} from '@notention/core';
+import type {Note, OntologyNode, Template, ScoredMatch} from '@notention/core';
 import type {TiptapEditorRef} from './TiptapEditor';
 import {metaphorMapper} from '@notention/core';
 import {useMatches} from '../../hooks/useMatches';
@@ -30,6 +30,7 @@ interface EditorContentProps {
     isTemplateSelectorOpen: boolean;
     onCloseTemplateSelector: () => void;
     onInsertTemplate: (template: OntologyNode) => void;
+    onMatchClick: (match: ScoredMatch) => void;
 }
 
 export function EditorContent({
@@ -49,6 +50,7 @@ export function EditorContent({
     isTemplateSelectorOpen,
     onCloseTemplateSelector,
     onInsertTemplate,
+    onMatchClick
 }: EditorContentProps) {
     const activeMetaphor = metaphorMapper.mapToMetaphor(dirtyNote);
     const matches = useMatches(dirtyNote);
@@ -92,7 +94,7 @@ export function EditorContent({
             )}
 
             <div className="px-8 pb-8 max-w-4xl mx-auto w-full">
-                <MatchReplies matches={matches} onMatchClick={() => {}} />
+                <MatchReplies matches={matches} onMatchClick={onMatchClick} />
             </div>
         </div>
     );

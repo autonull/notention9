@@ -66,7 +66,8 @@ export function SmartNoteAssistant({
         handleConfirmAddAttribute,
         handleConfirmAddAlias,
         handleKeyDown,
-        toggleOpen
+        toggleOpen,
+        handleSelectLocalMatch
     } = useSmartNoteAssistant({
         note,
         onNoteUpdate,
@@ -135,6 +136,7 @@ export function SmartNoteAssistant({
                             setAliasModalOpen(true);
                         }}
                         noteId={note.id}
+                        onSelectLocalMatch={handleSelectLocalMatch}
                     />
                 </div>
             )}

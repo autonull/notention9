@@ -43,7 +43,6 @@ export function useUrlRouting({
                 'chat',
                 'ontology',
                 'settings',
-                'simulator',
                 'trash',
                 'actions',
                 'dashboard',

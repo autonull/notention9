@@ -3,11 +3,13 @@ import type {Note, ScoredMatch} from '@notention/core';
 import {findLocalMatches} from '../../../core/src/matching/bidirectional.js';
 import {useNotes} from './useNotes';
 import {useMatching} from '../components/contexts/MatchingContext';
+import {useRejectedMatches} from './useRejectedMatches';
 
 // Hook to find matches for a specific note against all other local notes
 export function useMatches(note: Note | null): ScoredMatch[] {
     const {notes} = useNotes();
     const {engine} = useMatching();
+    const {isRejected} = useRejectedMatches();
 
     const [matches, setMatches] = useState<ScoredMatch[]>([]);
 
@@ -20,9 +22,12 @@ export function useMatches(note: Note | null): ScoredMatch[] {
         // Use common bidirectional matching utility
         const results = findLocalMatches(engine, note, notes, 0.3);
 
-        setMatches(results);
+        // Filter out rejected matches
+        const filtered = results.filter(m => !isRejected(m.note.id));
 
-    }, [note, notes, engine]);
+        setMatches(filtered);
+
+    }, [note, notes, engine, isRejected]);
 
     return matches;
 }

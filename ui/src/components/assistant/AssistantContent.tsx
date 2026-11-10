@@ -43,6 +43,7 @@ interface AssistantContentProps {
     onAddDiscovered: (key: string, type: string) => void;
     onLinkDiscovered: (key: string, type: string) => void;
     noteId: string;
+    onSelectLocalMatch: (match: ScoredMatch) => void;
 }
 
 export function AssistantContent({
@@ -76,7 +77,8 @@ export function AssistantContent({
     onMouseEnterSuggestion,
     onAddDiscovered,
     onLinkDiscovered,
-    noteId
+    noteId,
+    onSelectLocalMatch
 }: AssistantContentProps) {
     return (
         <div className="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-2">
@@ -114,7 +116,7 @@ export function AssistantContent({
                 <LocalMatchesPanel
                     localMatches={localMatches}
                     contacts={contacts}
-                    onSelect={(m) => {}}
+                    onSelect={onSelectLocalMatch}
                 />
             )}
 

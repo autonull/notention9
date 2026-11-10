@@ -37,7 +37,6 @@
     "react": "^19.0.0",
     "react-big-calendar": "^1.19.4",
     "react-dom": "^19.0.0",
-    "react-force-graph-2d": "^1.29.1",
     "tippy.js": "^6.3.7",
     "xmlchars": "^2.2.0"
   },

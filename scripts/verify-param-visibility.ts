@@ -18,16 +18,16 @@ function main(): void {
     
     // 1. Check that PropertyForm strategy has isAdding param with different defaults
     console.log('\n1. Checking strategy configs for capture strategies...');
-    const configOutput = run('cat ui/src/strategies/strategyConfigs.ts');
+    const configOutput = run('cat core/src/schemas/generated/seam-definitions.json');
     
-    if (configOutput.includes('isAdding')) {
+    if (configOutput.includes('"isAdding"')) {
         console.log('   ✅ PropertyForm strategy has isAdding param');
     } else {
         console.error('   ❌ PropertyForm strategy missing isAdding param');
         process.exit(1);
     }
     
-    if (configOutput.includes('initialOp')) {
+    if (configOutput.includes('"initialOp"')) {
         console.log('   ✅ PropertyForm strategy has initialOp param');
     } else {
         console.error('   ❌ PropertyForm strategy missing initialOp param');
@@ -55,7 +55,7 @@ function main(): void {
     // 3. Verify resolver passes params through
     console.log('\n3. Checking resolver passes resolvedParams...');
     const resolverOutput = run('cat ui/src/hooks/useStrategyResolver.tsx');
-    const registryOutput = run('cat core/src/ui/ProfileRegistry.ts');
+    const resolutionOutput = run('cat core/src/ui/resolutionStrategy.ts');
     
     if (resolverOutput.includes('ResolvedStrategy')) {
         console.log('   ✅ Resolver returns ResolvedStrategy (includes resolvedParams)');
@@ -71,10 +71,10 @@ function main(): void {
         process.exit(1);
     }
     
-    if (registryOutput.includes('getDefaultProps')) {
-        console.log('   ✅ ProfileRegistry uses getDefaultProps for params');
+    if (resolutionOutput.includes('getDefaultProps')) {
+        console.log('   ✅ ResolutionStrategy uses getDefaultProps for params');
     } else {
-        console.error('   ❌ ProfileRegistry does not use getDefaultProps');
+        console.error('   ❌ ResolutionStrategy does not use getDefaultProps');
         process.exit(1);
     }
     

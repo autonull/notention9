@@ -12,12 +12,14 @@ interface PersistenceContext {
 
 /**
  * Consolidated persistence logic for saving notes to agent and publishing to networks.
- * Eliminates duplication between addNote, updateNote, upsertNote, deleteNote, restoreNote.
+ * Save and publish are separate operations - save is local, publish is explicit.
  */
 export function createNotePersistence({ settingsOntology, log = createScopedLogger('notePersistence') }: PersistenceContext) {
-    const saveAndPublish = (note: Note) => {
+    const saveLocal = (note: Note) => {
         agentService.saveNote(note);
+    };
 
+    const publish = (note: Note) => {
         networkRegistry.getActiveProviders().forEach((provider) => {
             provider.sendNote(note, settingsOntology).catch((error) => {
                 log.warn('Background publish failed', error as Error);
@@ -26,13 +28,15 @@ export function createNotePersistence({ settingsOntology, log = createScopedLogg
     };
 
     return {
-        saveAndPublish,
-        persistAdd: (note: Note) => saveAndPublish(note),
-        persistUpdate: (note: Note) => saveAndPublish(note),
+        saveLocal,
+        publish,
+        persistAdd: (note: Note) => saveLocal(note),
+        persistUpdate: (note: Note) => saveLocal(note),
         persistDelete: (note: Note) => {
             agentService.saveNote(note);
         },
-        persistRestore: (note: Note) => saveAndPublish(note),
+        persistRestore: (note: Note) => saveLocal(note),
+        persistPublish: (note: Note) => publish(note),
         persistHardDelete: (id: string) => {
             agentService.deleteNote(id);
         }

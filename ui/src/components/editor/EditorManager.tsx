@@ -122,8 +122,8 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
     };
 
     const handleMatchClick = useCallback((match: ScoredMatch) => {
-        addToast(`Selected match: ${match.note.title || 'Untitled'}`, 'info');
-    }, [addToast]);
+        setSelectedNoteId(match.note.id);
+    }, [setSelectedNoteId]);
 
     return (
         <div className="flex flex-col h-full relative">
@@ -185,6 +185,7 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                     isTemplateSelectorOpen={isTemplateSelectorOpen}
                     onCloseTemplateSelector={() => setIsTemplateSelectorOpen(false)}
                     onInsertTemplate={handleInsertTemplate}
+                    onMatchClick={handleMatchClick}
                 />
                 <MobileBackdrop
                     isVisible={isInspectorOpen}
