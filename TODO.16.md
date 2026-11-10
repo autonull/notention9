@@ -2,7 +2,7 @@
 
 **Supersedes:** TODO.15.md
 **Date:** 2026-11-09
-**Status:** P0 Tooling/Deps ✅. P0 Build ✅ (tsup node `splitting` fixed). P1 Core/UI ✅ (E2.1–E2.5, E2.5a–f). **E15.0 ✅ (React 19 unblock)**. **E15.1 ✅ (Structured NoteDocument)**. **E15.2 ✅ (Chip UX on structured model)**. **E15.3 ✅ (Engine decision: stay Tiptap 3.x)**. **E15 complete.** **P2 Runtime Fixes ✅** (P2.1 `__name` polyfill, P2.2 stale-artifact, P2.3 Nostr noise). **P3 Experiment E2 NEXT**. **P4 E13/E7/E14 DEFERRED**.
+**Status:** P0 Tooling/Deps ✅. P0 Build ✅ (tsup node `splitting` fixed). P1 Core/UI ✅ (E2.1–E2.5, E2.5a–f). **E15.0 ✅ (React 19 unblock)**. **E15.1 ✅ (Structured NoteDocument)**. **E15.2 ✅ (Chip UX on structured model)**. **E15.3 ✅ (Engine decision: stay Tiptap 3.x)**. **E15 complete.** **P2 Runtime Fixes ✅** (P2.1 `__name` polyfill, P2.2 stale-artifact, P2.3 Nostr noise). **E2.6 ✅ (Experiment executed, null verdict)**. **E2.7–E2.9 NEXT**. **P4 E13/E7/E14 DEFERRED**.
 
 ---
 
@@ -58,9 +58,9 @@ Updated all tooling and dependencies across workspaces. Fixed breaking changes f
 
 ## 🧪 Experiment Pipeline (One at a Time)
 
-### **E2: Capture-Flow A/B (S-UI)** — **DEFERRED**
+### **E2: Capture-Flow A/B (S-UI)** — **EXECUTED (NULL VERDICT)**
 
-**Status:** Infrastructure ✅. Production build ✅. Dev server ✅. Strategy registration ✅ (idempotent under StrictMode/HMR, all 7 register). **E2.5 ✅ — UI renders in dev and production preview** (`quick-capture-input` present, root ~57.5KB, only expected offline-sync console noise). **E2.5a–f ✅ — UI unit tests pass, screenshot tests pass** (14/16 showcase tests pass, 2 skipped for editor bugs). **Experiment deferred until after E15 (editor modernization) complete.**
+**Status:** Infrastructure ✅. Production build ✅. Dev server ✅. Strategy registration ✅ (idempotent under StrictMode/HMR, all 7 register). **E2.5 ✅ — UI renders in dev and production preview** (`quick-capture-input` present, root ~57.5KB, only expected offline-sync console noise). **E2.5a–f ✅ — UI unit tests pass, screenshot tests pass** (14/16 showcase tests pass, 2 skipped for editor bugs). **E2.6 ✅ — Experiment executed 2026-11-10: 8 validation cases × 3 reps × 2 arms, null verdict (p=1.000 McNemar, p=0.162 Wilcoxon), honest null recorded.**
 
 | Step | Action | Status |
 |------|--------|--------|
@@ -78,10 +78,10 @@ Updated all tooling and dependencies across workspaces. Fixed breaking changes f
 | **E2.5d** | **Screenshot: DevBridge missing in preview — tests wait for `__NOTENTION__` bridge only in dev mode** | **✅ COMPLETE** |
 | **E2.5e** | **Screenshot: chat fixture bug — `maya` undefined** | **✅ COMPLETE** |
 | **E2.5f** | **Screenshot: Playwright localStorage warning — `--localstorage-file` not provided** | **✅ COMPLETE** |
-| E2.6 | Run experiment (10 cases × 3 reps × 2 arms) | **DEFERRED** (after E15) |
-| E2.7 | If null: add 5 more cases, re-run | **DEFERRED** |
-| E2.8 | If improved: create revision, consent, re-sim | **DEFERRED** |
-| E2.9 | Ledger chain + write-up | **DEFERRED** |
+| **E2.6** | **Run experiment (8 cases × 3 reps × 2 arms) — null verdict** | **✅ COMPLETE (2026-11-10)** |
+| E2.7 | If null: add 5 more cases, re-run | **NEXT** (only 8 cases exist; need 2 more or accept null) |
+| E2.8 | If improved: create revision, consent, re-sim | N/A (null verdict) |
+| E2.9 | Ledger chain + write-up | **NEXT** |
 
 **Gate:** Powered verdict (any sign) + ledger chain recorded. **All tests pass** (core, agent, cli, simulator, optimize, ui unit, screenshots).
 
@@ -227,7 +227,10 @@ P0: tsup build fix (1 day)       ← ✅ COMPLETE
   │
   ├─→ E2: Capture-Flow A/B Experiment (P3; after P2 Runtime Fixes)
   │     ├─→ E2.1–E2.5, E2.5a–f: ✅ COMPLETE
-  │     └─→ E2.6–E2.9: Run experiment, verdict, ledger chain  ← **NEXT**
+  │     ├─→ E2.6: Run experiment, null verdict  ← ✅ COMPLETE
+  │     ├─→ E2.7: Add cases & re-run (null path)  ← **NEXT**
+  │     ├─→ E2.8: N/A (null verdict)
+  │     └─→ E2.9: Ledger chain + write-up  ← **NEXT**
   │
   ├─→ E13: llama.cpp provider + ablation (P4; after E2)
   │     └─→ Winner → property-extraction@2
@@ -255,7 +258,7 @@ P0: tsup build fix (1 day)       ← ✅ COMPLETE
 |------------|-------------------|--------|
 | **E15** | `doc/decisions/012-note-document.md` + `doc/decisions/013-editor-engine.md` + migration/round-trip tests | **E15.0–15.3 ✅** (schema, adapters, chip UX, engine ADR done) |
 | **P2 Runtime Fixes** | Clean console (no `__name`, no `enabled` errors, no Nostr noise) + dev server + production preview both mount | **✅ COMPLETE** |
-| E2 | `doc/evidence/2026-11-e2-results.md` + ledger chain | **NEXT** |
+| **E2** | `doc/evidence/2026-11-e2-results.md` + ledger chain (honest null) | **E2.6 ✅, E2.7–E2.9 NEXT** |
 | E13 | `doc/evidence/2026-11-e13-results.md` + `property-extraction@2` | After E2 |
 | E7/E14 | `doc/evidence/2026-11-e7-results.md` (if run) | After E2/E13 |
 

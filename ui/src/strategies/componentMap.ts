@@ -5,6 +5,7 @@
  */
 
 export const componentMap: Record<string, { path: string; name: string }> = {
+    'quick-capture': { path: '../components/dashboard/QuickCapture', name: 'QuickCapture' },
     'property-form': { path: '../components/editor/PropertyForm', name: 'PropertyForm' },
     'describe-it-composer': { path: '../components/editor/DescribeItComposer', name: 'DescribeItComposer' },
     'template-selector': { path: '../components/editor/TemplateSelector', name: 'TemplateSelector' },

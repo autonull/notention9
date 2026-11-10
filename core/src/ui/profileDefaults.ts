@@ -14,7 +14,7 @@ export const DEFAULT_PROFILES: StrategyProfile[] = [
         name: 'Default',
         description: 'Balanced experience for all users',
         strategySelections: {
-            [SEAM_ROLES.CAPTURE]: 'describe-it-composer',
+            [SEAM_ROLES.CAPTURE]: 'quick-capture',
             [SEAM_ROLES.ELICIT]: 'tag-input',
             [SEAM_ROLES.MATCH]: 'local-match-preview',
             [SEAM_ROLES.LAYOUT]: 'property-panel',
@@ -42,7 +42,7 @@ export const DEFAULT_PROFILES: StrategyProfile[] = [
         name: 'Guided',
         description: 'More explanations, progressive disclosure',
         strategySelections: {
-            [SEAM_ROLES.CAPTURE]: 'describe-it-composer',
+            [SEAM_ROLES.CAPTURE]: 'quick-capture',
             [SEAM_ROLES.ELICIT]: 'insert-property-modal',
             [SEAM_ROLES.MATCH]: 'local-match-preview',
             [SEAM_ROLES.LAYOUT]: 'property-panel',
@@ -56,7 +56,7 @@ export const DEFAULT_PROFILES: StrategyProfile[] = [
         name: 'Accessible',
         description: 'High contrast, full keyboard support, screen reader optimized',
         strategySelections: {
-            [SEAM_ROLES.CAPTURE]: 'describe-it-composer',
+            [SEAM_ROLES.CAPTURE]: 'quick-capture',
             [SEAM_ROLES.ELICIT]: 'tag-input',
             [SEAM_ROLES.MATCH]: 'local-match-preview',
             [SEAM_ROLES.LAYOUT]: 'property-panel',

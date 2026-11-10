@@ -78,6 +78,29 @@ export const describeItComposerParamSpec: ParamSpec = {
 /** TemplateSelector - currently no tunable params */
 export const templateSelectorParamSpec: ParamSpec = {};
 
+/** QuickCapture - main capture interface on dashboard */
+export const quickCaptureParamSpec: ParamSpec = {
+    placeholder: { 
+        type: 'string', 
+        description: 'Placeholder text for the quick capture input', 
+        default: `What's on your mind? Try: "Buy milk #shopping" or "Meeting at 3pm"`,
+        mechanism: 'QuickCapture.tsx reads this prop for the Input placeholder attribute. Affects: user guidance for capture syntax, may influence property/tag usage.'
+    },
+    autoFocus: { 
+        type: 'boolean', 
+        description: 'Whether to auto-focus the input on mount', 
+        default: false,
+        mechanism: 'QuickCapture.tsx useEffect on mount calls inputRef.current?.focus() when true. Affects: capture latency (time-to-first-keystroke), UX friction.'
+    },
+    initialOp: { 
+        type: 'enum', 
+        description: 'Default operator for extracted properties', 
+        default: 'is', 
+        options: ['is', 'equals', 'contains', 'less than', 'greater than', 'matches'],
+        mechanism: 'QuickCapture.tsx uses this when rendering extracted property badges. Affects: default comparison operator in extraction display, influences match scoring downstream.'
+    },
+};
+
 /** TagInput */
 export const tagInputParamSpec: ParamSpec = {
     autoFocus: { 
@@ -150,6 +173,13 @@ export const localMatchesPanelParamSpec: ParamSpec = {
 
 export const STRATEGY_PARAM_CONFIGS: StrategyParamConfig[] = [
     // Capture strategies
+    createStrategyParamConfig(
+        'quick-capture',
+        { ...captureSpec, id: 'capture-0', name: 'capture', description: 'Main quick capture interface' },
+        '1.0.0',
+        { placeholder: `What's on your mind? Try: "Buy milk #shopping" or "Meeting at 3pm"`, autoFocus: false, initialOp: 'is' },
+        quickCaptureParamSpec
+    ),
     createStrategyParamConfig(
         'property-form',
         { ...captureSpec, id: 'capture-0', name: 'capture', description: 'Capture properties' },

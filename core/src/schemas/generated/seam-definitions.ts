@@ -17,13 +17,19 @@ export const SEAM_DEFINITIONS: SeamDefinition[] = [
             "onTemplateClick": "(type: string) => void"
         },
         "components": [
+            "QuickCapture",
             "PropertyForm"
         ],
         "paramSpec": {
-            "isAdding": {
+            "placeholder": {
+                "type": "string",
+                "description": "Placeholder text for the quick capture input",
+                "default": "What's on your mind? Try: \"Buy milk #shopping\" or \"Meeting at 3pm\""
+            },
+            "autoFocus": {
                 "type": "boolean",
-                "description": "Whether the form is in add mode (vs edit mode)",
-                "default": true
+                "description": "Whether to auto-focus the input on mount",
+                "default": false
             },
             "initialOp": {
                 "type": "enum",
@@ -37,6 +43,11 @@ export const SEAM_DEFINITIONS: SeamDefinition[] = [
                     "greater than",
                     "matches"
                 ]
+            },
+            "isAdding": {
+                "type": "boolean",
+                "description": "Whether the form is in add mode (vs edit mode)",
+                "default": true
             }
         },
         "evaluator": {
@@ -61,8 +72,8 @@ export const SEAM_DEFINITIONS: SeamDefinition[] = [
             "observed"
         ],
         "version": "1.0.0",
-        "createdAt": "2026-11-04T14:26:52.481Z",
-        "updatedAt": "2026-11-04T14:26:52.481Z"
+        "createdAt": "2026-11-10T12:43:32.604Z",
+        "updatedAt": "2026-11-10T12:43:32.604Z"
     },
     {
         "id": "extraction-0",
@@ -107,8 +118,8 @@ export const SEAM_DEFINITIONS: SeamDefinition[] = [
             "observed"
         ],
         "version": "1.0.0",
-        "createdAt": "2026-11-04T14:26:52.481Z",
-        "updatedAt": "2026-11-04T14:26:52.481Z"
+        "createdAt": "2026-11-10T12:43:32.604Z",
+        "updatedAt": "2026-11-10T12:43:32.604Z"
     },
     {
         "id": "template-0",
@@ -142,8 +153,8 @@ export const SEAM_DEFINITIONS: SeamDefinition[] = [
             "observed"
         ],
         "version": "1.0.0",
-        "createdAt": "2026-11-04T14:26:52.481Z",
-        "updatedAt": "2026-11-04T14:26:52.481Z"
+        "createdAt": "2026-11-10T12:43:32.604Z",
+        "updatedAt": "2026-11-10T12:43:32.604Z"
     },
     {
         "id": "elicit-0",
@@ -193,8 +204,8 @@ export const SEAM_DEFINITIONS: SeamDefinition[] = [
             "observed"
         ],
         "version": "1.0.0",
-        "createdAt": "2026-11-04T14:26:52.481Z",
-        "updatedAt": "2026-11-04T14:26:52.481Z"
+        "createdAt": "2026-11-10T12:43:32.604Z",
+        "updatedAt": "2026-11-10T12:43:32.604Z"
     },
     {
         "id": "match-0",
@@ -265,8 +276,8 @@ export const SEAM_DEFINITIONS: SeamDefinition[] = [
             "observed"
         ],
         "version": "1.0.0",
-        "createdAt": "2026-11-04T14:26:52.481Z",
-        "updatedAt": "2026-11-04T14:26:52.481Z"
+        "createdAt": "2026-11-10T12:43:32.604Z",
+        "updatedAt": "2026-11-10T12:43:32.604Z"
     },
     {
         "id": "matches-panel-0",
@@ -300,12 +311,51 @@ export const SEAM_DEFINITIONS: SeamDefinition[] = [
             "observed"
         ],
         "version": "1.0.0",
-        "createdAt": "2026-11-04T14:26:52.481Z",
-        "updatedAt": "2026-11-04T14:26:52.481Z"
+        "createdAt": "2026-11-10T12:43:32.604Z",
+        "updatedAt": "2026-11-10T12:43:32.604Z"
     }
 ];
 
 export const STRATEGY_CONFIGS = [
+    {
+        "id": "quick-capture",
+        "seamId": "capture-0",
+        "seamName": "capture",
+        "seamRole": "capture",
+        "version": "1.0.0",
+        "componentPath": "../components/dashboard/QuickCapture",
+        "componentName": "QuickCapture",
+        "paramSpec": {
+            "placeholder": {
+                "type": "string",
+                "description": "Placeholder text for the quick capture input",
+                "default": "What's on your mind? Try: \"Buy milk #shopping\" or \"Meeting at 3pm\""
+            },
+            "autoFocus": {
+                "type": "boolean",
+                "description": "Whether to auto-focus the input on mount",
+                "default": false
+            },
+            "initialOp": {
+                "type": "enum",
+                "description": "Default operator for extracted properties",
+                "default": "is",
+                "options": [
+                    "is",
+                    "equals",
+                    "contains",
+                    "less than",
+                    "greater than",
+                    "matches"
+                ]
+            }
+        },
+        "defaultProps": {
+            "placeholder": "What's on your mind? Try: \"Buy milk #shopping\" or \"Meeting at 3pm\"",
+            "autoFocus": false,
+            "initialOp": "is"
+        }
+    },
     {
         "id": "property-form",
         "seamId": "capture-0",

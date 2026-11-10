@@ -10,7 +10,6 @@ import {useDemoWorkspace} from '../../hooks/useDemoWorkspace';
 import {useCaptureTracking, useMatchTracking} from '../../hooks/useFrictionRecorder';
 import {DashboardHeader} from './DashboardHeader';
 import {FeatureHighlights} from './FeatureHighlights';
-import {QuickCapture} from './QuickCapture';
 import {SampleWorkspacePrompt} from './SampleWorkspacePrompt';
 import {LocalMatchPreview} from './LocalMatchPreview';
 import {StatsGrid} from './StatsGrid';
@@ -24,6 +23,7 @@ import {cn} from '../../utils/ui';
 import {modShortcut} from '../../utils/platform';
 import {DashboardStatSkeleton, ActivityFeedSkeleton, QuickActionsSkeleton} from '../ui/Skeleton';
 import {Skeleton} from '../ui/Skeleton';
+import {StrategyResolver, SEAM_ROLES} from '../StrategyResolver';
 
 const QUICK_CAPTURE_MARKUP = /(?:^|\s)(?:#[\w-]+|\b[\w.-]+:\S+)/g;
 
@@ -248,14 +248,18 @@ export function DashboardView() {
 
                 {showFeatures && <FeatureHighlights/>}
 
-                <QuickCapture
-                    input={quickCaptureInput}
-                    onInputChange={setQuickCaptureInput}
-                    onSubmit={handleQuickCapture}
-                    extractedProps={extractedProps}
-                    onTemplateClick={handleQuickTemplate}
-                    onFocus={startCaptureTracking}
-                    onBlur={() => stopCaptureTracking(false)}
+                <StrategyResolver
+                    seamRole={SEAM_ROLES.CAPTURE}
+                    props={{
+                        input: quickCaptureInput,
+                        onInputChange: setQuickCaptureInput,
+                        onSubmit: handleQuickCapture,
+                        extractedProps,
+                        onTemplateClick: handleQuickTemplate,
+                        onFocus: startCaptureTracking,
+                        onBlur: () => stopCaptureTracking(false),
+                    }}
+                    fallback={<div data-testid="quick-capture-fallback">Loading capture...</div>}
                 />
 
                 {notes.length === 0 && <SampleWorkspacePrompt onLoad={loadSampleWorkspace}/>}
