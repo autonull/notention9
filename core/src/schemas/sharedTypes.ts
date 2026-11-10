@@ -112,7 +112,10 @@ export type LedgerEventType =
     | 'optimizer:cycle:started'
     | 'optimizer:cycle:completed'
     | 'optimizer:candidate:evaluated'
-    | 'calibration:recorded';
+    | 'calibration:recorded'
+    | 'match:accepted'
+    | 'match:withdrawn'
+    | 'match:rejected';
 
 export interface RunConfig {
     manifestHash: string;
@@ -186,7 +189,10 @@ export type LedgerPayload =
     | { type: 'optimizer:cycle:started'; config: OptimizerConfig; manifestHash: string }
     | { type: 'optimizer:cycle:completed'; candidatesEvaluated: number; winners: number; losers: number; inconclusive: number; totalCost: OptimizerCost }
     | { type: 'optimizer:candidate:evaluated'; candidateId: string; seamRole: string; strategyId: string; verdict: string; primaryDelta: number }
-    | { type: 'calibration:recorded'; record: CalibrationRecord };
+    | { type: 'calibration:recorded'; record: CalibrationRecord }
+    | { type: 'match:accepted'; requestNoteId: string; offerNoteId: string; responseNoteId: string; score: number; userId?: string }
+    | { type: 'match:withdrawn'; responseNoteId: string; requestNoteId: string; offerNoteId: string; userId?: string }
+    | { type: 'match:rejected'; requestNoteId: string; offerNoteId: string; userId?: string };
 
 // --- Revision Store Types ---
 

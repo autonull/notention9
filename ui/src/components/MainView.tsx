@@ -16,6 +16,7 @@ import {NotesView} from './views/NotesView';
 import {TrashView} from './views/TrashView';
 import {OntologyView} from './views/OntologyView';
 import {SettingsView} from './views/SettingsView';
+import {ResponsesView} from './views/ResponsesView';
 import {DashboardView} from './dashboard/DashboardView';
 import {ActionsView} from './views/ActionsView';
 
@@ -51,6 +52,8 @@ export function MainView({sortedNotes}: MainViewProps) {
                 return <TrashView/>;
             case 'actions':
                 return <ActionsView/>;
+            case 'responses':
+                return <ResponsesView/>;
             case 'ontology':
                 return <OntologyView/>;
             case 'map':

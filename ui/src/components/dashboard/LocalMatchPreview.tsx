@@ -10,6 +10,7 @@ interface LocalMatchPreviewProps {
         result: MatchResult;
     };
     onSelectNote: (id: string) => void;
+    onAcceptMatch: (requestId: string, noteId: string, score: number) => void;
     onRejectMatch?: (requestId: string, noteId: string) => void;
     onReviseRequest?: (requestId: string) => void;
     onView?: () => void;
@@ -174,6 +175,13 @@ export function LocalMatchPreview({match, onSelectNote, onRejectMatch, onReviseR
                             onClick={() => onSelectNote(match.note.id)}
                         >
                             Open match
+                        </Button>
+                        <Button
+                            size="sm"
+                            variant="success"
+                            onClick={() => onAcceptMatch(match.request.id, match.note.id, match.result.score)}
+                        >
+                            <CheckCircleIcon className="w-4 h-4 mr-1"/> Respond
                         </Button>
                         <Button
                             size="sm"

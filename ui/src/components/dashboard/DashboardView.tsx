@@ -1,10 +1,10 @@
 import React, {useEffect, useState, useMemo, useCallback} from 'react';
-import type {View} from '@notention/core';
+import type {View, Note, MatchResult} from '@notention/core';
 import {useNotes} from '../../hooks/useNotes';
 import {useView} from '../../hooks/useViewContext';
 import {useSettings} from '../../hooks/useSettingsContext';
 import {agentService} from '../../services/AgentService';
-import {MatchEngine, PropertyExtractor, getTextFromHtml} from '@notention/core';
+import {MatchEngine, PropertyExtractor, getTextFromHtml, createResponseNote, logMatchAccepted, logMatchRejected} from '@notention/core';
 import {sanitizeHTML} from '../../utils/sanitize';
 import {useDemoWorkspace} from '../../hooks/useDemoWorkspace';
 import {useCaptureTracking, useMatchTracking} from '../../hooks/useFrictionRecorder';
@@ -183,8 +183,31 @@ export function DashboardView() {
         setActiveView('notes');
     }, [setSelectedNoteId, setActiveView, handleMatchAccept]);
 
+    const handleAcceptMatch = useCallback((requestId: string, noteId: string, score: number) => {
+        const request = notes.find(n => n.id === requestId);
+        const offer = notes.find(n => n.id === noteId);
+        if (!request || !offer) return;
+
+        // Create response note
+        const responseNote = createResponseNote(request, offer, score);
+        
+        // Add to local notes
+        addNote(responseNote);
+        
+        // Log to ledger
+        logMatchAccepted(requestId, noteId, responseNote.id, score);
+        
+        // Record friction event
+        handleMatchAccept();
+        
+        // Navigate to the response note
+        setSelectedNoteId(responseNote.id);
+        setActiveView('notes');
+    }, [notes, addNote, setSelectedNoteId, setActiveView, handleMatchAccept]);
+
     const handleRejectMatch = useCallback((requestId: string, noteId: string) => {
         handleMatchReject();
+        logMatchRejected(requestId, noteId);
         rejectMatch(noteId);
     }, [handleMatchReject, rejectMatch]);
 
@@ -276,6 +299,7 @@ export function DashboardView() {
                     <LocalMatchPreview
                         match={localMatch}
                         onSelectNote={handleSelectNote}
+                        onAcceptMatch={handleAcceptMatch}
                         onRejectMatch={handleRejectMatch}
                         onReviseRequest={handleReviseRequest}
                         onView={markMatchViewed}

@@ -337,6 +337,28 @@ export {
 
 // New extensibility modules (namespace exports)
 export * as suggestions from './suggestions/SuggestionStore.browser.js';
+
+// Telemetry - Ledger
+export {
+    logMatchAccepted,
+    logMatchWithdrawn,
+    logMatchRejected,
+    logEvent,
+    queryLedger,
+    getRunEvents,
+    exportRun,
+    pruneLedger,
+    getLedger,
+    resetLedger,
+} from './telemetry/ledger.js';
+
+// Telemetry - Journal
+export {
+    recordFriction,
+    getFrictionSignals,
+    generateFrictionDigest,
+    getFrictionCounts,
+} from './telemetry/journal.js';
 export * as validation from './validation/index.js';
 export * as events from './events/index.js';
 export * as patternRecognition from './patternRecognition/index.js';

@@ -210,6 +210,76 @@ export const noteToNoteDocument = (note: Note): NoteDocument => {
 };
 
 /**
+ * Create a response note linking a request and an offer
+ * This is the "act" step - accepting a match creates a durable response
+ */
+export const createResponseNote = (
+  requestNote: Note,
+  offerNote: Note,
+  matchScore: number,
+  overrides?: Partial<Note>
+): Note => {
+  const now = new Date().toISOString();
+  const responseId = crypto.randomUUID();
+
+  return {
+    id: responseId,
+    title: `Response: ${requestNote.title} ↔ ${offerNote.title}`,
+    content: `<p>Response to <strong>${requestNote.title}</strong> from <strong>${offerNote.title}</strong></p>
+<p>Match score: ${(matchScore * 100).toFixed(0)}%</p>`,
+    tags: ['response', 'match'],
+    properties: [
+      { key: 'intent', operator: 'is', values: ['response'], role: 'marker' },
+      { key: 'requestId', operator: 'is', values: [requestNote.id], role: 'fact' },
+      { key: 'offerId', operator: 'is', values: [offerNote.id], role: 'fact' },
+      { key: 'matchScore', operator: 'is', values: [matchScore.toFixed(2)], role: 'fact' },
+      { key: 'status', operator: 'is', values: ['open'], role: 'marker' },
+    ],
+    createdAt: now,
+    updatedAt: now,
+    source: { type: 'user', identifier: 'user-default', timestamp: Date.now() },
+    privacy: 'private',
+    priority: 1,
+    status: 'open',
+    ...overrides,
+  };
+};
+
+/**
+ * Create a withdrawal note for a response
+ * Reversibility: withdrawal is a note, not a deletion
+ */
+export const createWithdrawalNote = (
+  responseNote: Note,
+  overrides?: Partial<Note>
+): Note => {
+  const now = new Date().toISOString();
+  const withdrawalId = crypto.randomUUID();
+
+  const requestId = responseNote.properties.find(p => p.key === 'requestId')?.values[0];
+  const offerId = responseNote.properties.find(p => p.key === 'offerId')?.values[0];
+
+  return {
+    id: withdrawalId,
+    title: `Withdrawal: ${responseNote.title}`,
+    content: `<p>Withdrawn response to <strong>${requestId || 'request'}</strong> from <strong>${offerId || 'offer'}</strong></p>`,
+    tags: ['withdrawal', 'response'],
+    properties: [
+      { key: 'intent', operator: 'is', values: ['withdrawal'], role: 'marker' },
+      { key: 'responseId', operator: 'is', values: [responseNote.id], role: 'fact' },
+      { key: 'status', operator: 'is', values: ['withdrawn'], role: 'marker' },
+    ],
+    createdAt: now,
+    updatedAt: now,
+    source: { type: 'user', identifier: 'user-default', timestamp: Date.now() },
+    privacy: 'private',
+    priority: 1,
+    status: 'withdrawn',
+    ...overrides,
+  };
+};
+
+/**
  * Convert NoteDocument to legacy Note (for compatibility)
  */
 export const noteDocumentToNote = (doc: NoteDocument, baseNote?: Partial<Note>): Note => {

@@ -2,7 +2,7 @@
 
 **Supersedes:** TODO.16.md (superseded plan) · **Rewritten:** TODO.17 v1 (this file, v2)
 **Date:** 2026-11-10
-**Status:** Plan approved. **P0b COMPLETE** (optimize tests pass, UI type errors reduced from 612 → 459). **P0a COMPLETE** (product truth: no-op controls wired, save/publish separated, honest routing, honest settings, map popup DOM, match rejection persisted, dead code deleted). **P1a COMPLETE** (matching semantics: C1-C6 fixed, demo match visible, all core/optimizer tests pass). **P1b-P1d IN PROGRESS** (act step, acceptance test, benchmark rebuild).
+**Status:** Plan approved. **P0b COMPLETE** (optimize tests pass, UI type errors reduced from 612 → 459). **P0a COMPLETE** (product truth: no-op controls wired, save/publish separated, honest routing, honest settings, map popup DOM, match rejection persisted, dead code deleted). **P1a COMPLETE** (matching semantics: C1-C6 fixed, demo match visible, all core/optimizer tests pass). **P1b COMPLETE** (act step: response notes, ledger logging, My Responses view, withdrawal). **P1c-P1d IN PROGRESS** (acceptance test, benchmark rebuild).
 
 ## Progress Log (2026-11-10)
 
@@ -39,6 +39,14 @@
 | | | - **Demo match now visible**: `npx tsx scripts/check-demo-match.ts` exits 0 ✅ |
 | | | - **All core tests pass** (516 tests) |
 | | | - **All optimizer tests pass** (47 tests) |
+| **P1b** | ✅ **COMPLETE** | - **P1b.1** Response note created on match accept: `createResponseNote()` links request + offer, carries `intent: response` |
+| | | - **P1b.2** "My Responses" view: `ResponsesView.tsx` shows active responses + withdrawn, with withdraw button |
+| | | - **P1b.3** Reversibility: `createWithdrawalNote()` creates withdrawal note (not deletion); linked to response |
+| | | - **P1b.4** Ledger logging: `logMatchAccepted()`, `logMatchWithdrawn()`, `logMatchRejected()` events added |
+| | | - **P1b.5** Reject path symmetry: `logMatchRejected()` called on reject; rejection persisted via existing `useRejectedMatches` |
+| | | - Navigation: Added 'responses' to View type, NAV_ITEMS (Alt+8), MobileNavigation, MainView |
+| | | - New icon: `ResponseIcon` added to icons.tsx |
+| | | - New note status: `withdrawn` added to `NoteStatus` type |
 
 ---
 

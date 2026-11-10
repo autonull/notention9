@@ -259,3 +259,47 @@ export function getLedger(): Ledger {
 export function resetLedger(): void {
     resetLedgerInstance();
 }
+
+// --- Match act step convenience functions ---
+
+export function logMatchAccepted(
+    requestNoteId: string,
+    offerNoteId: string,
+    responseNoteId: string,
+    score: number,
+    userId?: string
+): LedgerEvent {
+    return logEvent({
+        type: 'match:accepted',
+        actor: 'human',
+        userId,
+        payload: { type: 'match:accepted', requestNoteId, offerNoteId, responseNoteId, score, userId },
+    });
+}
+
+export function logMatchWithdrawn(
+    responseNoteId: string,
+    requestNoteId: string,
+    offerNoteId: string,
+    userId?: string
+): LedgerEvent {
+    return logEvent({
+        type: 'match:withdrawn',
+        actor: 'human',
+        userId,
+        payload: { type: 'match:withdrawn', responseNoteId, requestNoteId, offerNoteId, userId },
+    });
+}
+
+export function logMatchRejected(
+    requestNoteId: string,
+    offerNoteId: string,
+    userId?: string
+): LedgerEvent {
+    return logEvent({
+        type: 'match:rejected',
+        actor: 'human',
+        userId,
+        payload: { type: 'match:rejected', requestNoteId, offerNoteId, userId },
+    });
+}

@@ -7,8 +7,9 @@ export type NostrEvent = NostrToolsEvent;
  * Note lifecycle status - tracks the progression from creation to completion
  * open → matched → committed → done → lapsed
  * cancelled is a terminal state for abandoned commitments
+ * withdrawn is for responses that have been retracted
  */
-export type NoteStatus = 'open' | 'matched' | 'committed' | 'done' | 'lapsed' | 'cancelled';
+export type NoteStatus = 'open' | 'matched' | 'committed' | 'done' | 'lapsed' | 'cancelled' | 'withdrawn';
 
 export interface Note {
   id: string;
