@@ -1,5 +1,6 @@
 import { type Page } from '@playwright/test';
 import type { IntentCase } from '@notention/core/eval/caseManifest';
+import { installNamePolyfill } from './browserEnv.js';
 
 /**
  * Shared intent case execution logic
@@ -17,6 +18,10 @@ export interface IntentCaseRunResult {
     success: boolean;
     metrics: IntentCaseMetrics;
     details: string[];
+    /** Property keys the capture actually carried — the scored contract. */
+    extractedKeys: string[];
+    /** What the app looked like when the candidate patch was supposed to take effect. */
+    interventionObservation: Record<string, unknown>;
     error?: string;
 }
 
@@ -26,6 +31,10 @@ export interface RunIntentCaseConfig {
     extractionWaitMs: number;
     extractionSelector?: string; // Event-driven wait selector
     seed?: Record<string, unknown>; // For browser context seeding (B1.4)
+    /** Runs once the app is mounted, before the capture — input-level candidate effects. */
+    observeBefore?: (page: Page) => Promise<Record<string, unknown>>;
+    /** Runs once the capture landed — note-level candidate effects. */
+    observeAfter?: (page: Page) => Promise<Record<string, unknown>>;
 }
 
 /**
@@ -44,6 +53,26 @@ export async function applySeedRevisions(page: Page, caseData: IntentCase): Prom
 }
 
 /**
+ * Attach browser diagnostics once per page so load-time errors are captured
+ * and listeners do not accumulate across cases.
+ */
+const diagnosedPages = new WeakSet<Page>();
+
+function attachDiagnostics(page: Page): void {
+    if (diagnosedPages.has(page)) return;
+    diagnosedPages.add(page);
+
+    page.on('console', msg => {
+        if (msg.type() === 'error') {
+            console.log(`[BROWSER ERROR] ${msg.text()}`);
+        }
+    });
+    page.on('pageerror', error => {
+        console.log(`[BROWSER PAGE ERROR] ${error.stack ?? error.message}`);
+    });
+}
+
+/**
  * Run a single intent case and return metrics
  */
 export async function runIntentCase(
@@ -51,6 +80,8 @@ export async function runIntentCase(
     caseData: IntentCase,
     config: RunIntentCaseConfig
 ): Promise<IntentCaseRunResult> {
+    attachDiagnostics(page);
+
     // Seed browser context for determinism (B1.4) - but don't freeze time for E2 timing
     // Disable network blocking for E2 since we need preview server access
     await seedBrowserContext(page, caseData.seed ?? {}, { freezeTime: false, baseURL: config.baseURL, blockNetwork: false });
@@ -67,17 +98,7 @@ export async function runIntentCase(
         console.log(`[DEBUG] Page loaded, title: ${await page.title()}`);
         await page.waitForLoadState('networkidle');
         console.log(`[DEBUG] Network idle`);
-        
-        // Listen for console errors
-        page.on('console', msg => {
-            if (msg.type() === 'error') {
-                console.log(`[BROWSER ERROR] ${msg.text()}`);
-            }
-        });
-        page.on('pageerror', error => {
-            console.log(`[BROWSER PAGE ERROR] ${error.message}`);
-        });
-        
+
         // Wait for React app to mount and notes to load (default view is 'notes' which shows DashboardView when empty)
         await page.waitForSelector('body', { state: 'attached', timeout: 10000 });
         
@@ -91,7 +112,10 @@ export async function runIntentCase(
         console.log(`[DEBUG] Page has DashboardView: ${pageContent.includes('Quick Capture')}`);
         console.log(`[DEBUG] Page has EditorManager: ${pageContent.includes('EditorManager') || pageContent.includes('TiptapEditor')}`);
         console.log(`[DEBUG] Page content length: ${pageContent.length}`);
-        
+
+        // Verify the candidate patch reached the running app before capturing
+        const observedBefore = config.observeBefore ? await config.observeBefore(page) : {};
+
         // Apply seed revisions if any
         await applySeedRevisions(page, caseData);
 
@@ -139,9 +163,13 @@ export async function runIntentCase(
         const timeToCaptureMs = performance.now() - startTime;
 
         // Count extracted properties
+        const propertyNodes = page.locator('[data-testid="extracted-property"]');
         const properties = await page.locator('[data-testid="extracted-property"], .badge:has-text(":")').count();
+        const extractedKeys = await propertyNodes.evaluateAll(nodes =>
+            nodes.map(n => n.getAttribute('data-key')).filter((key): key is string => !!key)
+        );
         steps++;
-        details.push(`Extracted ${properties} properties`);
+        details.push(`Extracted ${properties} properties: ${extractedKeys.join(', ') || 'none'}`);
 
         // Check expected outcomes
         let completion = 0;
@@ -175,11 +203,14 @@ export async function runIntentCase(
         }
 
         const success = completion === 1;
+        const observedAfter = config.observeAfter ? await config.observeAfter(page) : {};
 
         return {
             success,
             metrics: { completion, steps, corrections, timeToCaptureMs },
             details,
+            extractedKeys,
+            interventionObservation: { before: observedBefore, after: observedAfter },
         };
     } catch (error) {
         const timeToCaptureMs = performance.now() - startTime;
@@ -189,6 +220,8 @@ export async function runIntentCase(
             success: false,
             metrics: { completion: 0, steps, corrections, timeToCaptureMs },
             details: [...details, `Error: ${errorMsg}`],
+            extractedKeys: [],
+            interventionObservation: {},
             error: errorMsg,
         };
     }
@@ -198,37 +231,38 @@ export async function runIntentCase(
  * Seed browser context for deterministic runs (B1.4)
  * Freezes clock, seeds RNG, blocks network egress except preview origin
  */
+const FIXED_SEED_TIME = new Date('2026-01-01T00:00:00Z').getTime();
+
+/**
+ * Init scripts are injected as source text: functions passed to Playwright are
+ * serialized from their compiled source, which under esbuild `keepNames` carries
+ * `__name(...)` calls whose helper is not present in the page.
+ */
+const RNG_SEED_SCRIPT = `
+(() => {
+    let seedValue = ${FIXED_SEED_TIME};
+    const random = () => {
+        seedValue = (seedValue * 1664525 + 1013904223) % 4294967296;
+        return seedValue / 4294967296;
+    };
+    globalThis.Math.random = random;
+})();
+`;
+
+const FROZEN_CLOCK_SCRIPT = `globalThis.Date.now = () => ${FIXED_SEED_TIME};`;
+
+const seededPages = new WeakSet<Page>();
+
 async function seedBrowserContext(page: Page, seed: Record<string, unknown>, options: { freezeTime?: boolean; baseURL?: string; blockNetwork?: boolean } = {}): Promise<void> {
     const { freezeTime = true, baseURL, blockNetwork = true } = options;
-    
-    if (freezeTime) {
-        // Freeze time to a fixed timestamp for deterministic behavior
-        const fixedTime = new Date('2026-01-01T00:00:00Z').getTime();
-        await page.addInitScript((time) => {
-            // Freeze Date.now() - simpler approach that works
-            const originalNow = Date.now;
-            (Date as any).now = () => time;
-            
-            // Seed Math.random with a deterministic PRNG
-            let seedValue = time;
-            const random = (): number => {
-                seedValue = (seedValue * 1664525 + 1013904223) % 4294967296;
-                return seedValue / 4294967296;
-            };
-            globalThis.Math.random = random;
-        }, fixedTime);
-    } else {
-        // Still seed Math.random but don't freeze time
-        const fixedTime = new Date('2026-01-01T00:00:00Z').getTime();
-        await page.addInitScript((time) => {
-            // Seed Math.random with a deterministic PRNG
-            let seedValue = time;
-            const random = (): number => {
-                seedValue = (seedValue * 1664525 + 1013904223) % 4294967296;
-                return seedValue / 4294967296;
-            };
-            globalThis.Math.random = random;
-        }, fixedTime);
+
+    if (!seededPages.has(page)) {
+        seededPages.add(page);
+        await installNamePolyfill(page);
+        await page.addInitScript(RNG_SEED_SCRIPT);
+        if (freezeTime) {
+            await page.addInitScript(FROZEN_CLOCK_SCRIPT);
+        }
     }
 
     // Block all network requests except to the preview origin (optional)

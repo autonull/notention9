@@ -271,6 +271,31 @@ export const commerceDomain: OntologyNode[] = [
 ];
 
 // ============================================================================
+// REQUEST DOMAIN - Needs, offers, and requests for things
+// ============================================================================
+
+export const requestDomain: OntologyNode[] = [
+    {
+        id: 'request',
+        label: 'Request',
+        description: 'A stated need or request for a service, item, or action.',
+        children: [
+            {
+                id: 'need-request',
+                label: 'Need Request',
+                description: 'Something a person is looking for.',
+                requiredAttributes: ['need'],
+                attributes: {
+                    need: { type: 'string', description: 'What is needed.', icon: 'sparkles', operators: { real: ['is', 'contains'], imaginary: ['is not', 'contains'] } },
+                    schedule: { type: 'string', description: 'When the need applies.', icon: 'clock', operators: { real: ['is', 'contains'], imaginary: ['is not', 'contains'] } },
+                    frequency: { type: 'string', description: 'How often the need recurs.', icon: 'refresh', operators: { real: ['is'], imaginary: ['is not'] } }
+                }
+            }
+        ]
+    }
+];
+
+// ============================================================================
 // COMBINE DOMAINS
 // ============================================================================
 
@@ -289,5 +314,6 @@ export const DEFAULT_ONTOLOGY: OntologyNode[] = combineDomains(
     communicationDomain,
     eventDomain,
     workDomain,
-    commerceDomain
+    commerceDomain,
+    requestDomain
 );

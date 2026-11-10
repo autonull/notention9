@@ -64,7 +64,8 @@ export function StrategyResolver({ seamRole, props, fallback, resolutionKey = 0 
     }
     
     const Component = strategy.render as (props: Record<string, unknown>) => React.ReactElement;
-    return <Component {...props} />;
+    const strategyProps = (strategy.getDefaultProps?.() ?? {}) as Record<string, unknown>;
+    return <Component {...strategyProps} {...props} />;
 }
 
 /**

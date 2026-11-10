@@ -15,6 +15,7 @@ import {
     DATE_PATTERNS,
     STOP_WORDS
 } from '../notes/propertyExtractor/patterns.js';
+import { extractRequestSlots } from './requestSlots.js';
 import { DEFAULT_DETERMINISTIC_CONFIDENCE } from '../telemetry/constants.js';
 
 /**
@@ -76,6 +77,22 @@ export function extractPrices(
 ): void {
     if (options.price === false) return;
 
+    // Price ranges come first — a range is more specific than its endpoints.
+    // An explicit currency or the word "between" is required so that time
+    // ranges ("4-6pm") are never read as money.
+    let hasRange = false;
+    if (options.ranges !== false) {
+        const currencyRange = text.match(/(?:\$|€|£)\s*\d+(?:,\d{3})*(?:\.\d+)?\s*(?:and|to|-)\s*(?:\$|€|£)?\s*\d+(?:,\d{3})*(?:\.\d+)?/);
+        const wordRange = text.match(/\bbetween\s+(\d+(?:,\d{3})*(?:\.\d+)?)\s+and\s+(\d+(?:,\d{3})*(?:\.\d+)?)/i);
+        const [min, max] = currencyRange
+            ? [currencyRange[0].match(/\d+(?:,\d{3})*(?:\.\d+)?/)?.[0], currencyRange[0].match(/\d+(?:,\d{3})*(?:\.\d+)?$/)?.[0]]
+            : [wordRange?.[1], wordRange?.[2]];
+        if (min && max && Number(max.replace(/,/g, '')) > Number(min.replace(/,/g, ''))) {
+            addProperty(properties, 'price', 'between', `${min},${max}`, confidence, provenance);
+            hasRange = true;
+        }
+    }
+
     // Comparative prices (under/over)
     const lessThanMatch = text.match(/(?:under|below|less than)\s*([$€£])?\s*(\d+(?:,\d{3})*(?:\.\d{1,2})?)(?:\s*(usd|eur|gbp|sats))?/i);
     if (lessThanMatch) {
@@ -93,8 +110,8 @@ export function extractPrices(
         addProperty(properties, 'price', 'greater than', quantity ? `${quantity.value} ${quantity.unit}` : greaterThanMatch[2], confidence, provenance);
     }
 
-    // Exact prices (if no comparative match)
-    if (!lessThanMatch && !greaterThanMatch) {
+    // Exact prices (if no comparative or range match)
+    if (!lessThanMatch && !greaterThanMatch && !hasRange) {
         const priceMatch = text.match(/([$€£])\s*(\d+(?:,\d{3})*(?:\.\d{1,2})?)/);
         if (priceMatch) {
             const quantity = parseQuantity(`${priceMatch[1]}${priceMatch[2]}`);
@@ -104,17 +121,6 @@ export function extractPrices(
             if (currencyMatch) {
                 const quantity = parseQuantity(`${currencyMatch[1]} ${currencyMatch[2]}`);
                 addProperty(properties, 'price', 'is', quantity ? `${quantity.value} ${quantity.unit}` : currencyMatch[1], confidence, provenance);
-            }
-        }
-    }
-
-    // Price ranges
-    if (options.ranges !== false) {
-        const rangeMatch = text.match(/(?:between|from)?\s*(\$|€|£)?\s*(\d+)\s*(?:and|to|-)\s*(\$|€|£)?\s*(\d+)\s*(?:usd|eur|gbp)?/i);
-        if (rangeMatch) {
-            const [, , min, , max] = rangeMatch;
-            if (min && max && Number(max) > Number(min)) {
-                addProperty(properties, 'price', 'between', `${min},${max}`, confidence, provenance);
             }
         }
     }
@@ -237,6 +243,7 @@ export interface DeterministicExtractionOptions {
     price?: boolean;
     roles?: boolean;
     ranges?: boolean;
+    request?: boolean;
 }
 
 /**
@@ -257,6 +264,7 @@ export function runDeterministicExtraction(
     extractDates(text, lowerText, properties, options, 0.95, 'deterministic');
     extractPrices(text, properties, options, 0.95, 'deterministic');
     extractRoles(text, properties, options, 0.95, 'deterministic');
+    extractRequestSlots(text, properties, options, 0.95, 'deterministic');
 
     return getProperties(properties);
 }

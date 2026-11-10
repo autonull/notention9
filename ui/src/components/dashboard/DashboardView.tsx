@@ -24,6 +24,7 @@ import {modShortcut} from '../../utils/platform';
 import {DashboardStatSkeleton, ActivityFeedSkeleton, QuickActionsSkeleton} from '../ui/Skeleton';
 import {Skeleton} from '../ui/Skeleton';
 import {StrategyResolver, SEAM_ROLES} from '../StrategyResolver';
+import {useSeamStrategy} from '../../hooks/useStrategyResolver';
 
 const QUICK_CAPTURE_MARKUP = /(?:^|\s)(?:#[\w-]+|\b[\w.-]+:\S+)/g;
 
@@ -47,7 +48,10 @@ export function DashboardView() {
     const { markViewed: markMatchViewed, handleAccept: handleMatchAccept, handleReject: handleMatchReject, handleClarification: handleMatchClarification } = useMatchTracking('match', 'match');
 
     const extractor = useMemo(() => new PropertyExtractor(settings.ontology), [settings.ontology]);
-    const [extractedProps, setExtractedProps] = useState<Array<{key: string; values: string[]}>>([]);
+    const [extractedProps, setExtractedProps] = useState<Array<{key: string; operator: string; values: string[]}>>([]);
+
+    const captureStrategy = useSeamStrategy(SEAM_ROLES.CAPTURE);
+    const initialOp = (captureStrategy?.getDefaultProps() as {initialOp?: string} | undefined)?.initialOp ?? 'is';
 
     useEffect(() => {
         if (!quickCaptureInput.trim()) {
@@ -57,7 +61,7 @@ export function DashboardView() {
         let cancelled = false;
         extractor.extractFromText(quickCaptureInput).then(props => {
             if (!cancelled) {
-                setExtractedProps(props.map(p => ({ key: p.key, values: p.values })));
+                setExtractedProps(props.map(p => ({ key: p.key, operator: p.operator, values: p.values })));
             }
         });
         return () => { cancelled = true; };
@@ -86,13 +90,13 @@ export function DashboardView() {
             title: deriveQuickNoteTitle(quickCaptureInput),
             content: sanitizeHTML(`<p>${quickCaptureInput}</p>`),
             tags: ['quick-capture', ...deriveQuickTags(quickCaptureInput)],
-            properties: extractedProps
+            properties: extractedProps.map(prop => ({...prop, operator: initialOp}))
         });
 
         setSelectedNoteId(note.id);
         setActiveView('notes');
         setQuickCaptureInput('');
-    }, [quickCaptureInput, extractedProps, addNote, setSelectedNoteId, setActiveView, markCaptureSubmitted, stopCaptureTracking]);
+    }, [quickCaptureInput, extractedProps, initialOp, addNote, setSelectedNoteId, setActiveView, markCaptureSubmitted, stopCaptureTracking]);
 
     const handleQuickTemplate = useCallback((type: 'task' | 'journal' | 'idea') => {
         interface Template {

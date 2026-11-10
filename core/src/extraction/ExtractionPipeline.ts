@@ -78,6 +78,8 @@ export interface ExtractionOptions {
     dates?: boolean;
     /** Enable role extraction */
     roles?: boolean;
+    /** Enable request-slot extraction (need, schedule, frequency, budget, price, deadline) */
+    request?: boolean;
     /** Enable range extraction */
     ranges?: boolean;
     /** Maximum properties to extract */
@@ -121,6 +123,7 @@ export class DeterministicStage implements ExtractionStage {
             price: options.price,
             roles: options.roles,
             ranges: options.ranges,
+            request: options.request,
         });
     }
 }

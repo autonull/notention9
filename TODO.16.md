@@ -2,7 +2,9 @@
 
 **Supersedes:** TODO.15.md
 **Date:** 2026-11-10
-**Status:** P0 Tooling/Deps ✅. P0 Build ✅ (tsup node `splitting` fixed). P1 Core/UI ✅ (E2.1–E2.5, E2.5a–f). **E15.0 ✅ (React 19 unblock)**. **E15.1 ✅ (Structured NoteDocument)**. **E15.2 ✅ (Chip UX on structured model)**. **E15.3 ✅ (Engine decision: stay Tiptap 3.x)**. **E15 complete.** **P2 Runtime Fixes: PRODUCTION ✅ / DEV MODE ✅** (P2.1b `__name` polyfill works in dev; P2.2 `enabled` error fixed; P2.3 Nostr noise suppressed; P2.4/P2.4b React prop warnings fixed). **E2.6 READY TO RUN** (dev server stable, clean console). **E2.7–E2.9 BLOCKED** on E2.6 completion. **P4 E13/E7/E14 DEFERRED**.
+**Status:** P0 Tooling/Deps ✅. P0 Build ✅. P1 Core/UI ✅ (E2.1–E2.5, E2.5a–f). E15 ✅ (E15.0–E15.3). **P2 Runtime Fixes ✅ — real fixes landed and verified by a clean E2 run (the earlier "✅ COMPLETE" marks were wrong; see §P2).** **P2x Instrument Integrity ✅.** **E2.6 EXECUTED — verdict `invalid: metric-cannot-discriminate` (honest, instrument-backed). E2.8 N/A (no winner). E2.9 ✅ (ledger + write-up).** **Next: R4 — pick one measurable experiment. P4 E13/E7/E14 DEFERRED.**
+
+> **Correction (2026-11-10).** This file previously marked P2.1b (`__name`) and P2.2 (`enabled`) as ✅ COMPLETE. They were not: both errors were still live in the E2 run, and the E2 harness itself was also producing `__name` failures. Root causes are now identified and fixed (see §P2). Treat every status in this file as "verified by a run", not "believed".
 
 ---
 
@@ -11,6 +13,8 @@
 **Execute one powered experiment end-to-end with full ledger chain**, then stop and evaluate.
 
 Success metric: `simulator:friction-detected → candidate:evaluated (measured, powered) → verdict → revision:consented → simulator:confirmed → journal:friction-reduced` (or honest null).
+
+**2026-11-10 status:** the chain reaches `candidate:evaluated` → `verdict` with a real ledger entry. `revision:consented` is only reachable if a candidate actually wins; the current instrument cannot show a win (see §E2 — "What the automated harness can and cannot measure").
 
 ---
 
@@ -22,15 +26,16 @@ Success metric: `simulator:friction-detected → candidate:evaluated (measured, 
 |----------|----------|-------|--------|
 | **P0** | **Tooling/Dependencies** | T1–T5: Update all deps across workspaces | ✅ COMPLETE |
 | **P0** | **Build/Type System** | tsup migration, type exports | ✅ COMPLETE |
-| **P1** | **Core/UI Runtime** | Vite aliases, production bundle, strategy registration, component errors, screenshot tests | E2.1–E2.5 ✅, **E2.5a–f ✅**, **E2 DEFERRED** |
-| **P2** | **Runtime Fixes (NEW)** | `__name` polyfill in all chunks, strategy `enabled` resolution, Nostr noise suppression | **✅ COMPLETE** |
-| **P2** | **Editor Modernization** | E15.0 React 19 unblock → E15.1 structured document → E15.2 chip UX → E15.3 engine gate | **E15.0–15.3 ✅** |
-| **P3** | **Experiment Execution** | E2.6–E2.9 run, verdict, ledger | **NEXT** (after P2 complete) |
-| **P4** | **Peripheral/Optional** | E13 llama.cpp ablation, E7/E14 ontology drift | Deferred until P3 done |
+| **P1** | **Core/UI Runtime** | Vite aliases, production bundle, strategy registration, component errors, screenshot tests | ✅ COMPLETE |
+| **P2** | **Runtime Fixes** | `__name` polyfill, strategy `enabled` resolution, Nostr noise suppression | ✅ COMPLETE **and verified by a clean E2 run (2026-11-10)** |
+| **P2** | **Editor Modernization** | E15.0 React 19 unblock → E15.1 structured document → E15.2 chip UX → E15.3 engine gate | ✅ COMPLETE |
+| **P2** | **Instrument Integrity (NEW)** | Candidate patches must reach the app; verdicts must be `invalid` when unmeasurable | ✅ COMPLETE (2026-11-10) |
+| **P3** | **Experiment Execution** | E2.6 run, verdict, ledger | **✅ E2.6 EXECUTED — verdict `invalid` (metric cannot discriminate); E2.8 N/A; E2.9 ✅** |
+| **P4** | **Peripheral/Optional** | E13 llama.cpp ablation, E7/E14 ontology drift | Deferred — next step is R4 (pick one measurable experiment) |
 
 **Rule:** No work on P2/P3 until P1 complete. No parallel tracks. P0 Tooling must complete before P0 Build.
 
-**New Order:** E15 (editor modernization) runs first → **P2 Runtime Fixes** → E2 (experiment) runs after P2 complete. E13 may jump ahead only when its local llama.cpp provider is ready; never interleave tracks.
+**New Order:** E15 (editor modernization) → **P2 Runtime Fixes** → **P2 Instrument Integrity** → E2 (experiment) → E13 → E7/E14.
 
 ---
 
@@ -60,7 +65,7 @@ Updated all tooling and dependencies across workspaces. Fixed breaking changes f
 
 ### **E2: Capture-Flow A/B (S-UI)** — **INFRASTRUCTURE READY / DEV MODE UNSTABLE**
 
-**Status:** Infrastructure ✅. Production build ✅. Dev server ❌ (crashes after arm A, `__name`/`enabled` errors, React prop warnings). Strategy registration ✅ (idempotent under StrictMode/HMR, all 7 register). **E2.5 ✅ — UI renders in dev and production preview** (`quick-capture-input` present, root ~57.5KB). **E2.5a–f ✅ — UI unit tests pass, screenshot tests pass** (14/16 showcase tests pass, 2 skipped for editor bugs). **E2.6 PARTIAL** — Experiment started but dev server crashed mid-run; measurement incomplete.
+**Status:** Infrastructure ✅. Production build ✅. Dev server ✅ stable, clean console. Strategy registration ✅ (idempotent under StrictMode/HMR, all 7 register). **E2.5 ✅ — UI renders in dev and production preview.** **E2.5a–f ✅ — UI unit tests pass, screenshot tests pass.** **E2.6 EXECUTED (2026-11-10) — verdict `invalid: metric-cannot-discriminate`; the run itself is clean (0 console/page errors, 60/60 interventions observed, completion 90 %).**
 
 | Step | Action | Status |
 |------|--------|--------|
@@ -70,20 +75,40 @@ Updated all tooling and dependencies across workspaces. Fixed breaking changes f
 | E2.4 | Fix strategy registration bug (glob path match) | ✅ COMPLETE |
 | **E2.5** | **Fix pre-existing component errors blocking experiment** | **✅ COMPLETE** |
 | | └─ E2.5a: `suggestions is not defined` — `TiptapEditor` now passes `allSuggestions` to `useTiptapConfig` | ✅ |
-| | └─ E2.5b: `__name is not defined` — root cause was 247 stale compiled `.js` files in `core/src` shadowing `.ts`; deleted. Dev transform hack reverted; production `renderChunk` polyfill retained | **PROD ✅ / DEV ❌** |
-| | └─ E2.5c: `reading 'enabled'` — **reproduced in dev mode** (25+ occurrences/page load). Source not yet identified. | **DEV ❌** |
-| **E2.5a** | **UI unit tests: matching/soft-match failures (4 tests)** | **✅ COMPLETE** |
-| **E2.5b** | **UI unit tests: matching_overlap failures (2 tests)** | **✅ COMPLETE** |
-| **E2.5c** | **Optimize unit test: cannot resolve `@notention/core` in extractionSchema.test.ts** | **✅ COMPLETE** |
-| **E2.5d** | **Screenshot: DevBridge missing in preview — tests wait for `__NOTENTION__` bridge only in dev mode** | **✅ COMPLETE** |
-| **E2.5e** | **Screenshot: chat fixture bug — `maya` undefined** | **✅ COMPLETE** |
-| **E2.5f** | **Screenshot: Playwright localStorage warning — `--localstorage-file` not provided** | **✅ COMPLETE** |
-| **E2.6** | **Run experiment (10 cases × 3 reps × 2 arms)** | **STARTED — dev server crashed after arm A** |
-| E2.7 | If null: add cases, re-run | **BLOCKED** on dev-mode fixes |
-| E2.8 | If improved: create revision, consent, re-sim | **BLOCKED** |
-| E2.9 | Ledger chain + write-up | **BLOCKED** |
+| | └─ E2.5b: `__name is not defined` — stale compiled `.js` shadowed `.ts` sources; deleted. **But dev mode still threw `__name`** — the real dev-mode cause was `tsx`'s esbuild `keepNames` (see P2.1b) | ✅ (both causes fixed) |
+| | └─ E2.5c: `reading 'enabled'` — **root cause found 2026-11-10**: `Journal.record()` read `this.config.enabled` before the async IndexedDB config load resolved | ✅ (see P2.2) |
+| | └─ E2.5a–f: unit/screenshot test failures | ✅ COMPLETE |
+| **E2.6** | **Run experiment (10 cases × 3 reps × 2 arms)** | **✅ EXECUTED — verdict `invalid: metric-cannot-discriminate`** (completion 90 % both arms, 0 discordant pairs, 0 console/page errors across 60 runs) |
+| **E2.6a** | **Instrument integrity: candidate patch must reach the app** | **✅ COMPLETE** (arms were no-ops; 60/60 interventions now observed) |
+| **E2.6b** | **Criterion reachability: request-slot extraction** | **✅ COMPLETE** (completion 0 % → 90 %) |
+| **E2.6c** | **Verdict honesty: `invalid` instead of a false "no difference"** | **✅ COMPLETE** |
+| E2.7 | Next step from the verdict | ⏳ **The verdict is `invalid`, not null** — more cases cannot help; the capture-UX seam needs an arm whose effect is machine-observable (or human raters). See R1/R4. |
+| E2.8 | If improved: create revision, consent, re-sim | ⏸ **N/A** — no candidate won; there is nothing to consent to. |
+| E2.9 | Ledger chain + write-up | ✅ Ledger chain emitted by the harness (`optimizer:cycle:started` → `optimizer:candidate:evaluated` ×2 → `optimizer:cycle:completed`); write-up in `doc/evidence/2026-11-e2-results.md` |
 
-**Gate:** Dev mode must be clean (no `__name`, no `enabled` errors, no React prop warnings, stable dev server) before E2 experiment can complete with reliable measurements.
+**Gate (met, 2026-11-10):** dev mode clean — the E2 run produced **0 browser console errors and 0 page errors** across 60 runs.
+
+#### E2.6 — what the first run actually measured (2026-11-10)
+
+The first E2.6 run reported *"No significant difference — retain incumbent"*. **That conclusion was false.** The instrument measured
+nothing; three independent defects, all now fixed:
+
+| # | Defect | Evidence | Fix |
+|---|--------|----------|-----|
+| **D1** | **The arms were no-ops.** `applyPendingRevisionParams()` re-registered the strategy with patched props, but `StrategyResolver` rendered `<Component {...props} />` — the strategy's `defaultProps` never reached the component. `QuickCapture` also hardcoded its placeholder and never read `autoFocus`/`initialOp`. The `ParamSpec` promised behaviour the code did not implement, so *no* capture-flow candidate could ever have an effect. | The patched placeholder never appeared in the DOM; captured properties never carried the patched operator. | `StrategyResolver` merges `strategy.getDefaultProps()`; `QuickCapture` consumes `placeholder`/`autoFocus`; `DashboardView` applies `initialOp` to the created note's properties. |
+| **D2** | **The completion criterion was unreachable.** Cases require request slots (`need`, `schedule`, `frequency`, `budget`, `price`, `deadline`); the ontology had no such attributes and the extractor had no such patterns. Both arms sat at 0% — a floor effect, not a null. | Case 020 extracted only `intent=task` plus a bogus `price` (`4-6pm` read as money). | New `request` ontology domain (`need`, `schedule`, `frequency`) + `core/src/extraction/requestSlots.ts`; price-range regex no longer reads time ranges as money. |
+| **D3** | **The harness could not distinguish "no effect" from "cannot detect".** Zero discordant pairs produced `p=1.0` and the runner printed a verdict it could not support. | The pre-fix run: 0/10 completion in both arms → "retain incumbent". | The runner now emits an explicit verdict — `improved` / `degraded` / `no-difference` / **`invalid`** — and raises `invalid` for: intervention not applied, underpowered (< 30 paired samples), or a metric that cannot discriminate. Every run also records whether the candidate's effect was observed in the running app. |
+
+#### What the automated harness can and cannot measure (read before E2.8)
+
+- **Can** measure: whether the capture pipeline produces the requested slots (extraction quality), and whether a candidate
+  parameter reached the app at all.
+- **Cannot** measure: whether a *capture-UX* parameter makes a human faster or more accurate. `placeholder`, `autoFocus` and
+  `initialOp` change guidance, focus and operator defaults — with an automated driver the completion outcome is identical in
+  both arms, so the arms can only ever tie on the completion metric.
+- **Consequence:** an `improved` verdict on the capture seam requires either (a) an arm whose effect is machine-observable in
+  the outcome (e.g. an extraction-affecting parameter), or (b) a human-in-the-loop protocol. E2.8 must not be attempted on the
+  strength of an automated `no-difference`.
 
 #### E2.5 root-cause fixes (2026-11-09)
 
@@ -100,11 +125,17 @@ Updated all tooling and dependencies across workspaces. Fixed breaking changes f
 | Fixed syntax errors: duplicate `ClockIcon` import; inline async arrow in JSX prop | `ui/src/components/sidebar/SortSelector.tsx`, `ui/src/components/editor/PropertyForm.tsx` |
 | Aligned property-extractor tests with `confidence`/`provenance` fields (`objectContaining`) | `core/src/tests/propertyExtractor.test.ts` |
 
-**Validation:** `pnpm build` exit 0 (all workspaces); `core` tests 485/485; dev server + production preview both mount React.
+**Validation:** `pnpm build` exit 0 (all workspaces); `core` tests 522/522; dev server + production preview both mount React.
 
-**E2.6 clarification:** only **8** `capture_need` validation cases currently exist (`eval/cases/intent/validation/intent-capture-{010,011,016,017,018,019,026,027}.json`). Plan says 10 — either run 8×3×2 or add 2 cases first. Harness loads max 10.
+**E2.6 clarification (resolved):** the validation split now holds **10** `capture_need` cases (`intent-capture-{010,011,016,017,018,019,020,021,026,027}.json`). Harness loads max 10.
 
-**Known non-blocking noise:** expected "Offline" sync error (no backend); React warnings for ref on `Search` (`Input` needs `forwardRef`) and `tooltipPosition` leaking to DOM in `Button`. These do not block E2; fix under E15/UI cleanup only if they affect measurement.
+**Case-level caveat:** `intent-capture-011` ("Need to organize a meal train for the new parents on Maple Street") requires a
+`deadline` but its prompt carries no temporal cue, so no text-only extractor can satisfy it. It fails identically in both
+arms and therefore does not bias the comparison; it caps the completion rate at 90%. The case file was **not** edited — the
+evaluation set is ground truth.
+
+**Known non-blocking noise:** expected "Offline" sync error (no backend). React warnings for ref on `Search` (`Input` needs
+`forwardRef`) and `tooltipPosition` leaking to DOM in `Button` were fixed under P2.4/P2.4b.
 
 ---
 
@@ -182,13 +213,15 @@ The following runtime errors blocked reliable E2 measurement. Production build i
 | Issue | Root Cause | Fix Applied | Status |
 |-------|------------|-------------|--------|
 | **P2.1** `__name is not defined` in dynamic chunks (prod) | Vite code-splits into multiple chunks; `namePolyfillPlugin` only injected into main entry chunk. | `namePolyfillPlugin.generateBundle` now injects `__name` polyfill into **every** chunk (verified all chunks have polyfill). | **PROD ✅** |
-| **P2.1b** `__name is not defined` in dev mode | Vite dev mode loads modules before HTML polyfill executes; `namePolyfillDevPlugin` incomplete. | Added polyfill to `optimizeDeps.include`; enhanced `namePolyfillDevPlugin` to transform all modules; entry point polyfill executes first. | **DEV ✅** |
-| **P2.2** `Cannot read properties of undefined (reading 'enabled')` | `networkRegistry.getAllProviders()` could return undefined values in race condition; components accessed `.enabled` on undefined. | Added defensive filtering in `useNetworkManagement` hook (initial state + effect updates); `filter(Boolean)` on providers array. | **DEV ✅** |
-| **P2.3** Nostr relay connection errors (noise) | No backend relays available; `AgentService` logged "Operating in offline mode" and connection failures in dev/test. | Suppressed expected offline logs in dev/test mode via `import.meta.env.MODE` / `import.meta.vitest` detection. | **✅ COMPLETE** |
+| **P2.1b** `__name is not defined` in dev mode | **Misdiagnosed on 2026-11-09.** The real cause is not the browser polyfill: `tsx` compiles with esbuild `keepNames: true`, which wraps every nested function in a `__name(...)` call. Playwright serializes evaluated functions into the page — the *call* survives, its helper definition does not. | Init scripts that cross the Playwright boundary are now injected as **source text** (no function reference), and a `globalThis.__name` shim is installed as the very first init script so any remaining evaluated function resolves it. | **DEV ✅ (verified: 0 `__name` errors in the E2 run)** |
+| **P2.2** `Cannot read properties of undefined (reading 'enabled')` | **Misdiagnosed on 2026-11-09.** Not the network registry: `Journal.record()` (browser build) read `this.config.enabled` while `this.config` was still `undefined` — the IndexedDB config load is async, the record call is sync. | `Journal` now initialises `config` to the disabled default, hydrates it through a single-flight `init()` promise, and queues events recorded before hydration instead of dropping them. | **DEV ✅ (verified: 0 `enabled` errors in the E2 run)** |
+| **P2.3** Nostr relay connection errors (noise) | App logs were suppressed, but the *browser* still logged handshake failures: `useBackgroundMatcher` subscribed to public relays as soon as a note existed. | Added a `network` capability (default off outside production). Outbound relay traffic is opt-in; dev/test stay local-first. | **✅ COMPLETE (verified: 0 relay errors in the E2 run)** |
 | **P2.4** React prop warnings: `tooltipPosition` | `IconButton` component spread `tooltipPosition` to DOM button element via `...domProps`. | Added explicit `delete domProps.tooltipPosition` in `IconButton`; verified no leakage. | **DEV ✅** |
 | **P2.4b** React prop warnings: `icon` on `button` | `Button` component received `icon` prop via spread in `NetworkManagementSection`; spread to DOM button. | Fixed `NetworkManagementSection` to use `leftIcon`; added defensive `delete domProps.icon` in `Button` component. | **DEV ✅** |
+| **P2.5** Dev server crash after arm A | Vite dev server process killed (SIGTERM). | Not reproducible: the dev server stayed up for the full 60-run E2 execution. | **✅ VERIFIED** |
+| **P2.6** Harness diagnostics | The runner registered `console`/`pageerror` listeners *after* `page.goto`, so load-time errors were silently missed, and it re-registered them on every case (duplicating output). | Listeners are attached once per page, before navigation, and print full stacks. | **✅ COMPLETE** |
 
-**Gate:** Dev mode must be clean (no `__name`, no `enabled` errors, no React prop warnings) before E2 experiment can run with reliable measurements. **✅ GATE PASSED**
+**Gate:** Dev mode must be clean (no `__name`, no `enabled` errors, no React prop warnings) before E2 experiment can run with reliable measurements. **✅ GATE PASSED — verified by the 2026-11-10 E2 run: 0 console errors, 0 page errors across 60 runs.**
 
 ---
 
@@ -223,20 +256,27 @@ P0: tsup build fix (1 day)       ← ✅ COMPLETE
   │     ├─→ E15.3: Engine decision gate (stay Tiptap / PM / Lexical)  ← ✅ COMPLETE
   │     └─→ E15.4: CRDT/CBOR/agent-native (deferred)
   │
-  ├─→ P2: Runtime Fixes (NEW; BLOCKING E2)
+  ├─→ P2: Runtime Fixes (BLOCKING E2)
   │     ├─→ P2.1: __name polyfill in all chunks (prod)  ← ✅ COMPLETE
-  │     ├─→ P2.1b: __name polyfill in dev mode  ← ✅ COMPLETE
-  │     ├─→ P2.2: Strategy 'enabled' resolution (dev)  ← ✅ COMPLETE
-  │     ├─→ P2.3: Nostr relay noise suppression  ← ✅ COMPLETE
+  │     ├─→ P2.1b: __name in dev mode (tsx keepNames, not the browser)  ← ✅ COMPLETE
+  │     ├─→ P2.2: Journal config race ('enabled')  ← ✅ COMPLETE
+  │     ├─→ P2.3: Nostr relay noise (network egress opt-in)  ← ✅ COMPLETE
   │     ├─→ P2.4: React prop warnings (tooltipPosition, icon)  ← ✅ COMPLETE
-  │     └─→ P2.5: Dev server stability (crash after arm A)  ← **VERIFY DURING E2.6**
+  │     ├─→ P2.5: Dev server stability  ← ✅ VERIFIED during E2.6
+  │     └─→ P2.6: Harness diagnostics (listeners before navigation, no duplicates)  ← ✅ COMPLETE
   │
-  ├─→ E2: Capture-Flow A/B Experiment (P3; after P2 Runtime Fixes)
+  ├─→ P2x: Instrument Integrity (BLOCKING any verdict)
+  │     ├─→ Candidate patch must reach the app (StrategyResolver merges defaultProps)  ← ✅ COMPLETE
+  │     ├─→ Criterion reachability (request-slot extraction + request ontology domain)  ← ✅ COMPLETE
+  │     └─→ Explicit verdict: invalid when unmeasurable  ← ✅ COMPLETE
+  │
+  ├─→ E2: Capture-Flow A/B Experiment (P3; after P2 + P2x)
   │     ├─→ E2.1–E2.5, E2.5a–f: ✅ COMPLETE
-  │     ├─→ E2.6: Run experiment  ← **READY TO RUN**
-  │     ├─→ E2.7: Add cases & re-run (null path)  ← **BLOCKED** on E2.6 result
-  │     ├─→ E2.8: N/A (null verdict)
-  │     └─→ E2.9: Ledger chain + write-up  ← **BLOCKED** on E2.6 result
+  │     ├─→ E2.6: Run experiment  ← ✅ EXECUTED (verdict: invalid — metric cannot discriminate)
+  │     ├─→ E2.6a–c: Instrument integrity  ← ✅ COMPLETE
+  │     ├─→ E2.7: Next step from the verdict  ← ⏳ R4 (pick a measurable experiment)
+  │     ├─→ E2.8: Revision + consent  ← ✅ N/A (no winner)
+  │     └─→ E2.9: Ledger chain + write-up  ← ✅ `doc/evidence/2026-11-e2-results.md`
   │
   ├─→ E13: llama.cpp provider + ablation (P4; after E2)
   │     └─→ Winner → property-extraction@2
@@ -255,22 +295,27 @@ P0: tsup build fix (1 day)       ← ✅ COMPLETE
 | **Honest negatives** | Null verdict = publish with full chain |
 | **Consent is product** | Revision consent flow mandatory |
 | **WIP limit** | One experiment at a time |
+| **Intervention must land** (new, 2026-11-10) | The harness observes the candidate's effect in the running app; if it never appears → `invalid: intervention-not-applied` |
+| **Unmeasurable ≠ null** (new, 2026-11-10) | Zero discordant pairs → `invalid: metric-cannot-discriminate`; never "no significant difference — retain incumbent" |
 
 ---
 
-## 🐛 Dev-Mode Fixes Required (P2.1b–P2.5) — **✅ COMPLETE (P2.1b–P2.4b), P2.5 PENDING E2.6 VERIFICATION**
+## 🐛 Dev-Mode Fixes Required (P2.1b–P2.6) — **✅ COMPLETE AND VERIFIED**
 
-The following issues were discovered during E2.6 test run and have been fixed:
+The issues below were discovered during the E2.6 runs. The first diagnosis (2026-11-09) was wrong on P2.1b and P2.2;
+the corrected root causes are in §P2 above.
 
-| Issue | Symptom | Count | Root Cause | Fix Applied |
-|-------|---------|-------|------------|-------------|
-| **P2.1b** `__name is not defined` | ReferenceError in browser console | 100+ | Vite dev mode: modules load before HTML polyfill; `namePolyfillDevPlugin` incomplete | Added polyfill to `optimizeDeps.include` (`@/polyfills/name`); enhanced `namePolyfillDevPlugin` to transform all modules; entry point polyfill executes first |
-| **P2.2** `Cannot read properties of undefined (reading 'enabled')` | TypeError in browser console | 25+/page load | `networkRegistry.getAllProviders()` could return undefined in race condition | Added defensive `filter(Boolean)` in `useNetworkManagement` hook (initial state + effect updates) |
+| Issue | Symptom | Count | Corrected Root Cause | Fix Applied |
+|-------|---------|-------|----------------------|-------------|
+| **P2.1b** `__name is not defined` | ReferenceError in browser console | 1 per page load | `tsx` compiles with esbuild `keepNames: true`; Playwright serializes evaluated functions into the page, so the `__name(...)` call survives without its helper | Init scripts crossing the Playwright boundary are injected as source text; a `globalThis.__name` shim is installed as the first init script (`optimize/src/optimizer/evaluation/browserEnv.ts`) |
+| **P2.2** `Cannot read properties of undefined (reading 'enabled')` | TypeError in browser console | 2 per capture | `Journal.record()` read `this.config.enabled` before the async IndexedDB config load resolved | `Journal` defaults `config` to disabled, hydrates via a single-flight promise, and queues early events (`core/src/telemetry/journal.browser.ts`) |
+| **P2.3** Nostr relay handshake failures | Browser console noise | 2 per page | `useBackgroundMatcher` subscribed to public relays whenever a note existed | `network` capability — outbound relay traffic is opt-in, off by default outside production |
 | **P2.4** React prop warnings: `tooltipPosition` | "React does not recognize the `%s` prop on a DOM element" | 25+/page load | `IconButton` spread `tooltipPosition` to DOM button via `...domProps` | Added explicit `delete domProps.tooltipPosition` in `IconButton` |
 | **P2.4b** React prop warnings: `icon` on `button` | "Invalid value for prop `%s` on `<%s>` tag" | 25+/page load | `Button` received `icon` prop via spread in `NetworkManagementSection` | Fixed `NetworkManagementSection` to use `leftIcon`; added defensive `delete domProps.icon` in `Button` |
-| **P2.5** Dev server crashes after arm A | `Preview server exited with code 143` (SIGTERM) | 1/run | Vite dev server process killed — possibly OOM, unhandled error, or test timeout | **To verify during E2.6 run**; dev server stable in manual testing |
+| **P2.5** Dev server crashes after arm A | `Preview server exited with code 143` (SIGTERM) | 1/run | Vite dev server process killed | Not reproducible — the dev server stayed up for the whole 60-run E2 execution |
+| **P2.6** Missing load-time errors | Silent failures | — | The runner attached `pageerror` listeners *after* `page.goto` | Listeners attached once per page, before navigation, printing full stacks |
 
-**Validation:** Dev server runs with clean console (only expected "Offline" sync noise). **✅ MANUALLY VERIFIED** — Ready for E2.6 execution.
+**Validation:** the 2026-11-10 E2 run (60 browser runs) produced **0 console errors and 0 page errors**.
 
 ---
 
@@ -280,10 +325,28 @@ The following issues were discovered during E2.6 test run and have been fixed:
 |------------|-------------------|--------|
 | **E15** | `doc/decisions/012-note-document.md` + `doc/decisions/013-editor-engine.md` + migration/round-trip tests | **E15.0–15.3 ✅** (schema, adapters, chip UX, engine ADR done) |
 | **P2 Runtime Fixes (PROD)** | Clean console (no `__name`, no `enabled` errors, no Nostr noise) + dev server + production preview both mount | **✅ COMPLETE** |
-| **P2 Runtime Fixes (DEV)** | Clean dev-mode console (no `__name`, no `enabled` errors, no React prop warnings) + stable dev server | **✅ COMPLETE** |
-| **E2** | `doc/evidence/2026-11-e2-results.md` + ledger chain (honest null) | **READY TO RUN** |
+| **P2 Runtime Fixes (DEV)** | Clean dev-mode console + stable dev server | **✅ COMPLETE — verified by a 60-run E2 execution** |
+| **P2x Instrument Integrity** | Candidate patch observable in the app; verdict is `invalid` when unmeasurable | **✅ COMPLETE** |
+| **E2** | `doc/evidence/2026-11-e2-results.md` + ledger chain (`optimizer:cycle:started` → `optimizer:candidate:evaluated` ×2 → `optimizer:cycle:completed`) + raw run `optimize/results/e2-capture-2026-11-10.json` (void pre-fix run kept as `…-void.json`) | **✅ COMPLETE — verdict `invalid` (honest, instrument-backed)** |
 | E13 | `doc/evidence/2026-11-e13-results.md` + `property-extraction@2` | After E2 |
 | E7/E14 | `doc/evidence/2026-11-e7-results.md` (if run) | After E2/E13 |
+
+---
+
+## 🔭 Remaining Work (facilitated — what to do next)
+
+Ordered by what unblocks the most.
+
+| # | Item | Why it matters | Unblocked by |
+|---|------|----------------|--------------|
+| **R1** | **Close E2 as `invalid`, not null.** Record that the capture-UX seam needs either an arm whose effect is machine-observable in the outcome (e.g. `maxProperties`, `fuzzyThreshold`) or a human-in-the-loop protocol. | An `improved` verdict is unreachable for `placeholder`/`autoFocus` with an automated driver — the arms can only tie on completion. | ✅ done (E2.6, `doc/evidence/2026-11-e2-results.md`) |
+| **R2** | **E2.8 (revision + consent)** — mark **N/A**: no candidate won, so there is nothing to consent to. | Consent is a product gate; a revision without a winner would be theatre. | ✅ done |
+| **R3** | **E2.9 close-out** — ledger chain + write-up committed with the raw run. | The plan must reflect the run that happened. | ✅ done |
+| **R4** | **Pick the next experiment (one at a time).** Candidates: (a) an extraction-affecting parameter on the capture seam (machine-observable), (b) E13 prompt ablation once a local provider exists, (c) E7/E14 ontology drift once a corpus exists. | Keeps the WIP limit at one experiment and avoids re-running an unmeasurable design. | R1 |
+| **R5** | **Re-verify the ontology after the `request` domain landed.** The new `need`/`schedule`/`frequency` attributes change key counts; E7's orphan/drift numbers (67 orphans, 9 drifts) are stale. | Ontology drift metrics are only meaningful against a current ontology. | R4 |
+| **R6** | **Wire the `property-form` strategy's `initialOp`/`isAdding`** the same way `quick-capture` now is — the ParamSpec still promises behaviour the editor's property form does not implement. | Same defect class as D1; it will bite the next capture-seam candidate. | R4 |
+| **R7** | **Remove or wire `DashboardQuickCapture`** — dead component (exported from the barrel, rendered nowhere) that duplicates the capture flow and would drift. | Duplicated capture logic is a trap for the next candidate. | R4 |
+| **R8** | **Add a `timeToCapture` metric that is not harness-dominated** (e.g. time from first keystroke to submit) if timing is ever to be a primary metric. | The current metric is ~90 % fixed waits; it moves with machine load, not with the candidate. | R4 |
 
 ---
 

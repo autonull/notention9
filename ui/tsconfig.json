@@ -10,7 +10,8 @@
       "DOM.Iterable"
     ],
     "types": [
-      "vitest/globals"
+      "vitest/globals",
+      "vite/client"
     ],
     "skipLibCheck": true,
     "moduleResolution": "bundler",

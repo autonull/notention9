@@ -5,6 +5,7 @@ import {useView} from './useViewContext';
 import {useToast} from './useToast';
 import {useMatching} from '../components/contexts/MatchingContext';
 import {convertEventToNote, DEFAULT_RELAYS, pool} from '@notention/core';
+import {capabilities} from '../config/Capabilities';
 
 export function useBackgroundMatcher() {
     const {settings} = useSettings();
@@ -19,6 +20,8 @@ export function useBackgroundMatcher() {
     useEffect(() => {
         // Only run if we have local notes to match against
         if (notes.length === 0) return;
+        // Outbound relay traffic is opt-in (local-first by default)
+        if (!capabilities.network) return;
 
         const relays = settings.nostr.relays || DEFAULT_RELAYS;
 
