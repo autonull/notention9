@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useState } from 'react';
+import React, { useMemo, useEffect, useState, Suspense } from 'react';
 import { useStrategy } from '../hooks/useStrategyResolver';
 import { SEAM_ROLES, type SeamRole } from '../constants/seams';
 import { type Strategy } from '@notention/core/ui/strategy';
@@ -55,12 +55,12 @@ export function StrategyResolver({ seamRole, props, fallback, resolutionKey = 0 
     }, [resolveStrategyOnly, seamRole, resolutionKey, initialized]);
     
     if (!initialized) {
-        return <>{fallback ?? <div data-testid="strategy-resolver-loading">Loading strategy...</div>}</>;
+        return <div data-testid="strategy-resolver-loading">{fallback ?? 'Loading strategy...'}</div>;
     }
     
     if (!strategy) {
         console.warn(`[StrategyResolver] No strategy resolved for seam role: ${seamRole}`);
-        return <>{fallback}</>;
+        return <div>{fallback ?? ''}</div>;
     }
     
     const strategyProps = (strategy.getDefaultProps?.() ?? {}) as Record<string, unknown>;
@@ -76,7 +76,13 @@ export function StrategyResolver({ seamRole, props, fallback, resolutionKey = 0 
     const mergedProps = {...filteredStrategyProps, ...props};
     console.log('[StrategyResolver] mergedProps:', mergedProps);
     const element = strategy.render(mergedProps);
-    return element;
+    
+    // Wrap in Suspense to handle potential lazy-loaded component chunks in production
+    return (
+        <Suspense fallback={<div data-testid="strategy-resolver-loading">{fallback ?? 'Loading strategy...'}</div>}>
+            {element}
+        </Suspense>
+    );
 }
 
 /**

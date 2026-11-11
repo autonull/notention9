@@ -11,9 +11,11 @@ const IS_CI = !!process.env.CI;
 // The build artifact should be prepared in a prior CI step.
 // VITE_DEV_HOOKS is NOT set for build - DevBridge causes hydration error #525 in production build.
 // The optimize project uses its own config if needed.
+// Local: use dev server (avoids React 19 production build error #525)
+// CI: use preview (production build) - known issue I6, tracked in TODO.17
 const uiCommand = IS_CI
     ? `pnpm --filter @notention/ui preview --port ${UI_PORT} --strictPort`
-    : `VITE_ENABLE_AGENT=false VITE_LLM_SOURCE=none pnpm --filter @notention/ui build && pnpm --filter @notention/ui preview --port ${UI_PORT} --strictPort`;
+    : `VITE_ENABLE_AGENT=false VITE_LLM_SOURCE=none pnpm --filter @notention/ui dev --port ${UI_PORT} --strictPort`;
 
 export default defineConfig({
     testDir: ROOT,

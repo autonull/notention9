@@ -219,7 +219,9 @@ export function AppShell() {
                         )}
 
                         <main id="main-content" className={mainClasses} tabIndex={-1}>
-                            <MainView sortedNotes={sortedNotes}/>
+                            <Suspense fallback={<div className="flex-1 flex items-center justify-center bg-gray-950"><div className="text-gray-500">Loading view…</div></div>}>
+                                <MainView sortedNotes={sortedNotes}/>
+                            </Suspense>
                         </main>
                     </div>
                     <MobileNavigation/>

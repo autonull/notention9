@@ -7,6 +7,8 @@
 > **Note:** P1c's golden path acceptance tests (`golden-demo.spec.ts`, `compose-match.spec.ts`) exist but fail in `pnpm verify` L3 due to React error #525 ("A component suspended while responding to synchronous input") in the production preview build. The core matching functionality is verified by `check-demo-match.ts` ✅. Error #525 is a React 19 production-build issue (tracked as I6) that blocks E2E browser runs. E2E test infrastructure fix is deferred; it does not block P2. Workaround: use `check-demo-match.ts` for matching verification and dev server for manual testing.
 >
 > **Fixed (2026-11-11):** I7 (VITE_DEV_HOOKS leakage) — moved `VITE_DEV_HOOKS=true` from `.env` to `.env.development`; production preview now shows `VITE_DEV_HOOKS: undefined isDev: false`.
+>
+> **Attempted fixes for I6 (2026-11-11):** Eager-loaded all 8 strategy components (static imports), added Suspense boundaries in StrategyResolver and AppShell, started strategy system init at module load time. None resolved the production preview error #525. Dev server works correctly. Root cause appears to be React 19 + Vite production build interaction with dynamic chunk loading for core dependencies.
 
 ## Progress Log (2026-11-11)
 
@@ -17,6 +19,7 @@
 | | | - Affects StrategyResolver → QuickCapture element reconciliation |
 | | | - Works in dev server (development mode); fails in preview (production mode) |
 | | | - Root cause: React 19 production build issue with element reconciliation |
+| | | - Attempted: eager-loaded 8 strategy components, Suspense boundaries, early init |
 | | | - Workaround: `check-demo-match.ts` verifies matching; dev server for manual testing |
 | **P0b** | ✅ **COMPLETE** | - All core tests pass (516) |
 | | | - All simulator tests pass (37) |

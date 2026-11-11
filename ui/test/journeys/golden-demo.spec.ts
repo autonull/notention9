@@ -50,12 +50,12 @@ test('sample workspace shows explained match for React developer', async ({page}
     });
 
     // Debug: check what's on the page
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(5000);
     const pageState = await page.evaluate(() => {
         return {
             hasDataReady: !!document.querySelector('[data-ready]'),
             hasRoot: !!document.querySelector('#root'),
-            bodyHTML: document.body.innerHTML.slice(0, 1000),
+            bodyHTML: document.body.innerHTML.slice(0, 2000),
             locationHash: window.location.hash
         };
     });

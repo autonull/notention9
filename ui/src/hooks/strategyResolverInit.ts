@@ -11,6 +11,17 @@ import { profileRegistry } from '@notention/core/ui/ProfileRegistry';
 import { STRATEGY_CONFIGS_UI } from '../strategies/strategyConfigs';
 import { componentMap } from '../strategies/componentMap';
 
+// Eagerly import all strategy components to avoid React 19 hydration error #525
+// from lazy-loaded chunks in production build
+import { QuickCapture } from '../components/dashboard/QuickCapture';
+import { PropertyForm } from '../components/editor/PropertyForm';
+import { DescribeItComposer } from '../components/editor/DescribeItComposer';
+import { TemplateSelector } from '../components/editor/TemplateSelector';
+import { TagInput } from '../components/editor/TagInput';
+import { LocalMatchPreview } from '../components/dashboard/LocalMatchPreview';
+import { DashboardLocalMatch } from '../components/dashboard/DashboardLocalMatch';
+import { LocalMatchesPanel } from '../components/assistant/LocalMatchesPanel';
+
 // Use STRATEGY_CONFIGS_UI directly (synchronous, no async loading)
 const getAllStrategyConfigs = (): typeof STRATEGY_CONFIGS_UI => STRATEGY_CONFIGS_UI;
 import { SEAM_DEFINITIONS } from '@notention/core/schemas/generated/seam-definitions';
@@ -74,53 +85,6 @@ type PropertyPanelComponent = React.ComponentType<{
     ontology?: any[];
 }>;
 
-// Lazy-loaded components - keyed by strategy ID (from generated definitions)
-const componentFactories = new Map<string, () => Promise<React.ComponentType<any>>>();
-
-function registerComponentFactory(strategyId: string, importFn: () => Promise<Record<string, React.ComponentType<any>>>): void {
-    const exportName = componentMap[strategyId]?.name;
-    if (!exportName) {
-        console.warn(`[StrategySystem] No export name in componentMap for ${strategyId}`);
-        return;
-    }
-    componentFactories.set(strategyId, async () => {
-        const mod = await importFn();
-        return mod[exportName];
-    });
-}
-
-// Use import.meta.glob for Vite-compatible dynamic imports
-// Use @ alias (resolves to src/) to avoid relative path issues
-const componentModules = import.meta.glob<{ default: React.ComponentType<any> }>('@/components/**/*.tsx', { eager: false });
-
-// Register component factories using generated component paths
-for (const config of STRATEGY_CONFIGS_UI) {
-    if (config.componentPath) {
-        // componentMap paths are like '../components/editor/PropertyForm' (from strategies dir)
-        // glob keys are like '/src/components/editor/PropertyForm.tsx' (resolved @ alias)
-        // Normalize: strip leading '../' from componentPath, prepend '/src/'
-        const normalizedPath = config.componentPath.replace(/^\.\.\//, '');
-        const expectedGlobKey = `/src/${normalizedPath}.tsx`;
-        const globKey = Object.keys(componentModules).find(key => key === expectedGlobKey || key.endsWith('/' + expectedGlobKey));
-        if (globKey) {
-            registerComponentFactory(config.id, () => componentModules[globKey]());
-        } else {
-            console.warn(`[StrategySystem] No component module found for ${config.id} (path: ${config.componentPath}, expected: ${expectedGlobKey})`);
-        }
-    } else {
-        console.warn(`[StrategySystem] No componentPath for config ${config.id}`);
-    }
-}
-
-// Strategy component factories for re-registration with revised params
-const strategyComponentFactories = new Map<string, React.ComponentType<any>>();
-
-async function loadComponent(strategyId: string): Promise<React.ComponentType<any> | undefined> {
-    const factory = componentFactories.get(strategyId);
-    if (!factory) return undefined;
-    return factory();
-}
-
 // Check if running in clean-profile mode (for stranger testing)
 const isCleanProfile =
     typeof window !== 'undefined' &&
@@ -156,20 +120,17 @@ export async function registerUIStrategies(): Promise<void> {
         }
     }
 
-    // Import custom strategy components (the underlying components, not the Strategy wrappers)
-    const { DescribeItComposer } = await import('../components/editor/DescribeItComposer');
-    const { TagInput } = await import('../components/editor/TagInput');
-    const { PropertyForm } = await import('../components/editor/PropertyForm');
-    const { TemplateSelector } = await import('../components/editor/TemplateSelector');
-    const { QuickCapture } = await import('../components/dashboard/QuickCapture');
-
     // Map of strategy ID to custom strategy component (not Strategy wrapper)
+    // Using statically imported components to avoid React 19 hydration error #525
     const strategyImplMap: Record<string, React.ComponentType<any>> = {
         'describe-it-composer': DescribeItComposer,
         'tag-input': TagInput,
         'property-form': PropertyForm,
         'template-selector': TemplateSelector,
         'quick-capture': QuickCapture,
+        'local-match-preview': LocalMatchPreview,
+        'dashboard-local-match': DashboardLocalMatch,
+        'local-matches-panel': LocalMatchesPanel,
     };
 
     // Register all strategies from generated configs
@@ -181,15 +142,12 @@ export async function registerUIStrategies(): Promise<void> {
             continue;
         }
 
-        // Load component for this strategy
-        const component = await loadComponent(config.id);
-        if (!component) {
+        // Determine strategy implementation (use statically imported component)
+        const strategyImpl = strategyImplMap[config.id];
+        if (!strategyImpl) {
             console.warn(`[StrategySystem] No component found for strategy ${config.id}`);
             continue;
         }
-
-        // Determine strategy implementation (use custom impl if available, else component)
-        const strategyImpl = strategyImplMap[config.id] ?? component;
 
         const strategy = createComponentStrategy(
             config.id,
@@ -398,6 +356,10 @@ export async function initializeProfiles(): Promise<void> {
 }
 
 let initPromise: Promise<void> | null = null;
+
+// Start strategy system initialization early (at module load time) to avoid
+// React 19 hydration error #525 from lazy initialization during render
+const _initPromise = initializeStrategySystem();
 
 export function initializeStrategySystem(): Promise<void> {
     initPromise ??= (async () => {
