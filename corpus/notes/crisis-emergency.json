@@ -1,0 +1,1147 @@
+[
+  {
+    "id": "note_mwbksnll_zbpgc8u",
+    "title": "URGENT: Need emergency shelter for family of 4 after house fire. Red Cross conta...",
+    "content": "URGENT: Need emergency shelter for family of 4 after house fire. Red Cross contacted, need immediate temporary housing.",
+    "tags": [
+      "crisis-emergency",
+      "emergency-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-23T22:29:46.501Z",
+    "updatedAt": "2026-10-23T22:29:46.501Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702073
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnll_9oxx2yy",
+    "title": "Medical emergency: Parent needs urgent surgery, need caregiver for children (age...",
+    "content": "Medical emergency: Parent needs urgent surgery, need caregiver for children (ages 3 and 6) for 2 weeks. Can compensate.",
+    "tags": [
+      "crisis-emergency",
+      "emergency-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "duration",
+        "operator": "is",
+        "values": [
+          "2 wk"
+        ],
+        "unit": "wk",
+        "quantity": {
+          "value": 2,
+          "unit": "wk",
+          "unitType": "simple",
+          "numerator": "wk",
+          "semanticType": "duration"
+        },
+        "role": "fact",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-16T11:47:59.525Z",
+    "updatedAt": "2026-10-16T11:47:59.525Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702073
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnll_8eydxnr",
+    "title": "Flood evacuation: Need transportation for elderly neighbor (85) and wheelchair. ...",
+    "content": "Flood evacuation: Need transportation for elderly neighbor (85) and wheelchair. Shelter at community center, 10 miles away.",
+    "tags": [
+      "crisis-emergency",
+      "emergency-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-30T06:36:31.225Z",
+    "updatedAt": "2026-10-30T06:36:31.225Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702073
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnll_p22prvf",
+    "title": "Power outage: 72 hours without electricity, need generator for medical equipment...",
+    "content": "Power outage: 72 hours without electricity, need generator for medical equipment (CPAP, refrigerated meds). Rural area.",
+    "tags": [
+      "crisis-emergency",
+      "emergency-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "location",
+        "operator": "is",
+        "values": [
+          "Rural area"
+        ],
+        "role": "constraint",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-26T05:41:12.054Z",
+    "updatedAt": "2026-10-26T05:41:12.054Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702073
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnll_gpgfgex",
+    "title": "Water contamination: Boil water notice for 30 days. Need bulk water delivery for...",
+    "content": "Water contamination: Boil water notice for 30 days. Need bulk water delivery for household of 6, including infant formula.",
+    "tags": [
+      "crisis-emergency",
+      "emergency-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "duration",
+        "operator": "is",
+        "values": [
+          "30 d"
+        ],
+        "unit": "d",
+        "quantity": {
+          "value": 30,
+          "unit": "d",
+          "unitType": "simple",
+          "numerator": "d",
+          "semanticType": "duration"
+        },
+        "role": "fact",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-16T08:10:25.683Z",
+    "updatedAt": "2026-10-16T08:10:25.683Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702073
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnll_zar3hr1",
+    "title": "Emergency responder offering: CERT trained, first aid/CPR certified, own transpo...",
+    "content": "Emergency responder offering: CERT trained, first aid/CPR certified, own transportation, available 24/7 for local disasters.",
+    "tags": [
+      "crisis-emergency",
+      "volunteer-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-12T04:05:58.251Z",
+    "updatedAt": "2026-10-12T04:05:58.251Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702073
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnll_l3q0s1i",
+    "title": "Licensed therapist offering crisis counseling: trauma-informed, grief support, f...",
+    "content": "Licensed therapist offering crisis counseling: trauma-informed, grief support, free for disaster victims. Telehealth available.",
+    "tags": [
+      "crisis-emergency",
+      "volunteer-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-12T15:08:04.383Z",
+    "updatedAt": "2026-10-12T15:08:04.383Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702073
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnll_aw2hjvp",
+    "title": "Construction crew volunteering: 5 people, tools, equipment, debris removal, temp...",
+    "content": "Construction crew volunteering: 5 people, tools, equipment, debris removal, temporary repairs, tarping roofs. Weekend availability.",
+    "tags": [
+      "crisis-emergency",
+      "volunteer-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-30T10:40:07.920Z",
+    "updatedAt": "2026-10-30T10:40:07.920Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702073
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnll_3cl78q0",
+    "title": "Food bank coordinator: can organize bulk food distribution, dietary restrictions...",
+    "content": "Food bank coordinator: can organize bulk food distribution, dietary restrictions, delivery to homebound. Network of 20 volunteers.",
+    "tags": [
+      "crisis-emergency",
+      "volunteer-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-20T11:55:29.521Z",
+    "updatedAt": "2026-10-20T11:55:29.521Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702073
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnlm_hdfppsb",
+    "title": "Ham radio operator: emergency communications, backup when cell towers down, ARES...",
+    "content": "Ham radio operator: emergency communications, backup when cell towers down, ARES/RACES member. Mobile and base station.",
+    "tags": [
+      "crisis-emergency",
+      "volunteer-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-02T07:12:17.816Z",
+    "updatedAt": "2026-11-02T07:12:17.816Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnlm_p6h0ngc",
+    "title": "Neighborhood mutual aid network: grocery runs for immunocompromised, medication ...",
+    "content": "Neighborhood mutual aid network: grocery runs for immunocompromised, medication pickup, tech support, childcare exchange.",
+    "tags": [
+      "crisis-emergency",
+      "community-mutual-aid"
+    ],
+    "properties": [],
+    "createdAt": "2026-11-08T03:28:04.036Z",
+    "updatedAt": "2026-11-08T03:28:04.036Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_tw4lh8u",
+    "title": "Community fridge program: 24/7 free food, donations welcome, volunteer stockers ...",
+    "content": "Community fridge program: 24/7 free food, donations welcome, volunteer stockers needed, located at library.",
+    "tags": [
+      "crisis-emergency",
+      "community-mutual-aid"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-15T07:02:18.066Z",
+    "updatedAt": "2026-10-15T07:02:18.066Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnlm_1usj7k6",
+    "title": "Tool lending library: power tools, gardening equipment, repair items. Membership...",
+    "content": "Tool lending library: power tools, gardening equipment, repair items. Membership free, donation-based maintenance.",
+    "tags": [
+      "crisis-emergency",
+      "community-mutual-aid"
+    ],
+    "properties": [],
+    "createdAt": "2026-10-22T20:52:52.895Z",
+    "updatedAt": "2026-10-22T20:52:52.895Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_pmsehc1",
+    "title": "Skill share workshops: first aid, water purification, emergency cooking, shelter...",
+    "content": "Skill share workshops: first aid, water purification, emergency cooking, shelter building, navigation. Monthly free classes.",
+    "tags": [
+      "crisis-emergency",
+      "community-mutual-aid"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-28T14:08:58.995Z",
+    "updatedAt": "2026-10-28T14:08:58.995Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_b249cmj",
+    "title": "Carpool for medical appointments: volunteer drivers, wheelchair accessible vehic...",
+    "content": "Carpool for medical appointments: volunteer drivers, wheelchair accessible vehicles, rural area coverage.",
+    "tags": [
+      "crisis-emergency",
+      "community-mutual-aid"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "location",
+        "operator": "is",
+        "values": [
+          "rural area"
+        ],
+        "role": "constraint",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-17T14:07:02.951Z",
+    "updatedAt": "2026-10-17T14:07:02.951Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnlm_452gjxd",
+    "title": "Building 72-hour emergency kits: water, food, first aid, documents, cash, medica...",
+    "content": "Building 72-hour emergency kits: water, food, first aid, documents, cash, medications, pet supplies. Family of 4.",
+    "tags": [
+      "crisis-emergency",
+      "disaster-preparedness"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-30T11:42:09.071Z",
+    "updatedAt": "2026-10-30T11:42:09.071Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_jxr8ll2",
+    "title": "Creating family emergency plan: meeting points, out-of-state contact, evacuation...",
+    "content": "Creating family emergency plan: meeting points, out-of-state contact, evacuation routes, utility shutoff, pet plan.",
+    "tags": [
+      "crisis-emergency",
+      "disaster-preparedness"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-18T23:58:22.873Z",
+    "updatedAt": "2026-10-18T23:58:22.873Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_0gcmcia",
+    "title": "Home hardening for wildfire: defensible space, ember-resistant vents, Class A ro...",
+    "content": "Home hardening for wildfire: defensible space, ember-resistant vents, Class A roof, evacuation go-bags.",
+    "tags": [
+      "crisis-emergency",
+      "disaster-preparedness"
+    ],
+    "properties": [
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "go"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-04T06:41:10.489Z",
+    "updatedAt": "2026-11-04T06:41:10.489Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_cdgx8qh",
+    "title": "Earthquake retrofit: foundation bolting, cripple wall bracing, water heater stra...",
+    "content": "Earthquake retrofit: foundation bolting, cripple wall bracing, water heater strapping, gas shutoff valve.",
+    "tags": [
+      "crisis-emergency",
+      "disaster-preparedness"
+    ],
+    "properties": [],
+    "createdAt": "2026-11-06T12:39:34.312Z",
+    "updatedAt": "2026-11-06T12:39:34.312Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_zgwlrdw",
+    "title": "Community emergency response team: training, drills, equipment cache, neighborho...",
+    "content": "Community emergency response team: training, drills, equipment cache, neighborhood captains, communication tree.",
+    "tags": [
+      "crisis-emergency",
+      "disaster-preparedness"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-17T16:13:46.270Z",
+    "updatedAt": "2026-10-17T16:13:46.270Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_m41sudi",
+    "title": "Post-disaster case management: FEMA applications, insurance claims, SBA loans, h...",
+    "content": "Post-disaster case management: FEMA applications, insurance claims, SBA loans, housing assistance, legal aid.",
+    "tags": [
+      "crisis-emergency",
+      "long-term-recovery"
+    ],
+    "properties": [],
+    "createdAt": "2026-11-03T10:50:14.616Z",
+    "updatedAt": "2026-11-03T10:50:14.616Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_ku6uum5",
+    "title": "Mental health support groups: weekly meetings, professional facilitator, trauma ...",
+    "content": "Mental health support groups: weekly meetings, professional facilitator, trauma processing, resilience building.",
+    "tags": [
+      "crisis-emergency",
+      "long-term-recovery"
+    ],
+    "properties": [],
+    "createdAt": "2026-11-10T02:58:33.445Z",
+    "updatedAt": "2026-11-10T02:58:33.445Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_ohmsqr7",
+    "title": "Home reconstruction coordination: contractor vetting, permit navigation, code co...",
+    "content": "Home reconstruction coordination: contractor vetting, permit navigation, code compliance, funding sources.",
+    "tags": [
+      "crisis-emergency",
+      "long-term-recovery"
+    ],
+    "properties": [],
+    "createdAt": "2026-10-17T06:02:58.235Z",
+    "updatedAt": "2026-10-17T06:02:58.235Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_ypcpk4q",
+    "title": "Small business recovery: bridge loans, inventory replacement, customer communica...",
+    "content": "Small business recovery: bridge loans, inventory replacement, customer communication, reopening planning.",
+    "tags": [
+      "crisis-emergency",
+      "long-term-recovery"
+    ],
+    "properties": [],
+    "createdAt": "2026-10-22T18:51:38.814Z",
+    "updatedAt": "2026-10-22T18:51:38.814Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_6kfi8oe",
+    "title": "Community resilience planning: hazard mitigation, infrastructure hardening, equi...",
+    "content": "Community resilience planning: hazard mitigation, infrastructure hardening, equity-centered recovery, climate adaptation.",
+    "tags": [
+      "crisis-emergency",
+      "long-term-recovery"
+    ],
+    "properties": [
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "cli"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-08T15:41:04.765Z",
+    "updatedAt": "2026-11-08T15:41:04.765Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_djmxln8",
+    "title": "URGENT: Emergency shelter needed for family of 4 after house fire. Red Cross con...",
+    "content": "URGENT: Emergency shelter needed for family of 4 after house fire. Red Cross contacted, need housing.",
+    "tags": [
+      "crisis-emergency",
+      "emergency-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-06T12:49:05.601Z",
+    "updatedAt": "2026-11-06T12:49:05.601Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_abeu5qz",
+    "title": "Medical emergency: parent needs surgery, need caregiver for kids (3, 6) for 2 we...",
+    "content": "Medical emergency: parent needs surgery, need caregiver for kids (3, 6) for 2 weeks. Can pay.",
+    "tags": [
+      "crisis-emergency",
+      "emergency-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "duration",
+        "operator": "is",
+        "values": [
+          "2 wk"
+        ],
+        "unit": "wk",
+        "quantity": {
+          "value": 2,
+          "unit": "wk",
+          "unitType": "simple",
+          "numerator": "wk",
+          "semanticType": "duration"
+        },
+        "role": "fact",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-05T03:12:07.444Z",
+    "updatedAt": "2026-11-05T03:12:07.444Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_6qa9nuf",
+    "title": "Flood evacuation: transport for elderly neighbor (85) + wheelchair. Shelter 10 m...",
+    "content": "Flood evacuation: transport for elderly neighbor (85) + wheelchair. Shelter 10 miles at community center.",
+    "tags": [
+      "crisis-emergency",
+      "emergency-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-27T08:47:25.082Z",
+    "updatedAt": "2026-10-27T08:47:25.082Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_rm4q62j",
+    "title": "Power outage 72hrs: need generator for medical equipment (CPAP, refrigerated med...",
+    "content": "Power outage 72hrs: need generator for medical equipment (CPAP, refrigerated meds). Rural area.",
+    "tags": [
+      "crisis-emergency",
+      "emergency-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "location",
+        "operator": "is",
+        "values": [
+          "Rural area"
+        ],
+        "role": "constraint",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-02T00:27:09.407Z",
+    "updatedAt": "2026-11-02T00:27:09.407Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_7e7yich",
+    "title": "Water contamination: boil notice 30 days. Need bulk water for household of 6 inc...",
+    "content": "Water contamination: boil notice 30 days. Need bulk water for household of 6 including infant formula.",
+    "tags": [
+      "crisis-emergency",
+      "emergency-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "duration",
+        "operator": "is",
+        "values": [
+          "30 d"
+        ],
+        "unit": "d",
+        "quantity": {
+          "value": 30,
+          "unit": "d",
+          "unitType": "simple",
+          "numerator": "d",
+          "semanticType": "duration"
+        },
+        "role": "fact",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-20T00:01:17.432Z",
+    "updatedAt": "2026-10-20T00:01:17.432Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_zyzlndk",
+    "title": "CERT trained responder offering: first aid/CPR, own transport, available 24/7 fo...",
+    "content": "CERT trained responder offering: first aid/CPR, own transport, available 24/7 for local disasters.",
+    "tags": [
+      "crisis-emergency",
+      "volunteer-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-06T04:39:41.061Z",
+    "updatedAt": "2026-11-06T04:39:41.061Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnlm_signvux",
+    "title": "Therapist offering crisis counseling: trauma-informed, grief support, free for d...",
+    "content": "Therapist offering crisis counseling: trauma-informed, grief support, free for disaster victims. Telehealth.",
+    "tags": [
+      "crisis-emergency",
+      "volunteer-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-23T18:02:42.308Z",
+    "updatedAt": "2026-10-23T18:02:42.308Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnlm_1fi4yiu",
+    "title": "Construction crew volunteering: 5 people, tools, debris removal, temp repairs, t...",
+    "content": "Construction crew volunteering: 5 people, tools, debris removal, temp repairs, tarping. Weekends.",
+    "tags": [
+      "crisis-emergency",
+      "volunteer-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-13T16:27:08.959Z",
+    "updatedAt": "2026-10-13T16:27:08.959Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnlm_iuyhufk",
+    "title": "Food bank coordinator: bulk food distribution, dietary restrictions, delivery to...",
+    "content": "Food bank coordinator: bulk food distribution, dietary restrictions, delivery to homebound. 20 volunteers.",
+    "tags": [
+      "crisis-emergency",
+      "volunteer-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-11T03:33:05.077Z",
+    "updatedAt": "2026-11-11T03:33:05.077Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnlm_ryvd09w",
+    "title": "Ham radio operator: emergency comms, backup when cell down, ARES/RACES. Mobile a...",
+    "content": "Ham radio operator: emergency comms, backup when cell down, ARES/RACES. Mobile and base station.",
+    "tags": [
+      "crisis-emergency",
+      "volunteer-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-29T11:51:46.464Z",
+    "updatedAt": "2026-10-29T11:51:46.464Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-crisis-emergency",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  }
+]

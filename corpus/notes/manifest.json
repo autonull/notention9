@@ -1,0 +1,88 @@
+{
+  "version": "1.0",
+  "createdAt": "2026-11-11T03:45:02.070Z",
+  "domains": {
+    "generational": {
+      "file": "generational.json",
+      "noteCount": 35,
+      "sections": [
+        "Retirement & Financial Planning",
+        "Family & Caregiving",
+        "Legacy & Impact",
+        "Long-term Projects",
+        "Generational Business",
+        "Legal Service Offers"
+      ]
+    },
+    "legal-contracts": {
+      "file": "legal-contracts.json",
+      "noteCount": 35,
+      "sections": [
+        "Contract Requests",
+        "Legal Service Offers",
+        "Compliance & Regulatory",
+        "Dispute Resolution",
+        "Policy & Governance"
+      ]
+    },
+    "crisis-emergency": {
+      "file": "crisis-emergency.json",
+      "noteCount": 35,
+      "sections": [
+        "Emergency Requests",
+        "Volunteer Offers",
+        "Community Mutual Aid",
+        "Disaster Preparedness",
+        "Long-term Recovery"
+      ]
+    },
+    "open-source": {
+      "file": "open-source.json",
+      "noteCount": 40,
+      "sections": [
+        "Project Maintenance",
+        "Contribution Requests",
+        "Good First Issues",
+        "Community Events",
+        "Project Governance",
+        "Funding & Sustainability"
+      ]
+    },
+    "mentorship-career": {
+      "file": "mentorship-career.json",
+      "noteCount": 35,
+      "sections": [
+        "Mentorship Requests",
+        "Mentorship Offers",
+        "Learning Communities",
+        "Career Transitions",
+        "Apprenticeship & Junior Programs"
+      ]
+    },
+    "software-dev": {
+      "file": "software-dev.json",
+      "noteCount": 35,
+      "sections": [
+        "Project Requests",
+        "Job Offers",
+        "Project Descriptions",
+        "Technical Discussions",
+        "Career & Learning"
+      ]
+    }
+  },
+  "totalNotes": 215,
+  "provenance": {
+    "source": "self-authored corpus",
+    "license": "CC0-1.0",
+    "description": "Synthetic corpus for match quality evaluation. No third-party personal data.",
+    "domains": [
+      "generational",
+      "legal-contracts",
+      "crisis-emergency",
+      "open-source",
+      "mentorship-career",
+      "software-dev"
+    ]
+  }
+}

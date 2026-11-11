@@ -1,0 +1,1470 @@
+[
+  {
+    "id": "note_mwbksnln_6ageym0",
+    "title": "Looking for a senior software architect to mentor me on system design and scalab...",
+    "content": "Looking for a senior software architect to mentor me on system design and scalability. Monthly 1-hour sessions, willing to pay $200/session.",
+    "tags": [
+      "mentorship-career",
+      "mentorship-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "senior"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-23T07:40:03.700Z",
+    "updatedAt": "2026-10-23T07:40:03.700Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_9xqc8kq",
+    "title": "Seeking a career mentor who has transitioned from IC to engineering manager. Nee...",
+    "content": "Seeking a career mentor who has transitioned from IC to engineering manager. Need guidance on leadership, delegation, and strategy.",
+    "tags": [
+      "mentorship-career",
+      "mentorship-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "lead"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-27T04:11:07.733Z",
+    "updatedAt": "2026-10-27T04:11:07.733Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_2trzgce",
+    "title": "Want a mentor experienced in startup CTO role. Technical strategy, fundraising, ...",
+    "content": "Want a mentor experienced in startup CTO role. Technical strategy, fundraising, hiring, culture building. Equity or cash compensation.",
+    "tags": [
+      "mentorship-career",
+      "mentorship-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "experienced"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-19T07:47:25.118Z",
+    "updatedAt": "2026-10-19T07:47:25.118Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_bunbsxz",
+    "title": "Looking for a Rust expert to mentor me on systems programming, async, and perfor...",
+    "content": "Looking for a Rust expert to mentor me on systems programming, async, and performance optimization. Weekly pair programming sessions.",
+    "tags": [
+      "mentorship-career",
+      "mentorship-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "rust"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-20T13:00:59.963Z",
+    "updatedAt": "2026-10-20T13:00:59.963Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_r1mc234",
+    "title": "Need guidance on technical writing and developer advocacy. Building a personal b...",
+    "content": "Need guidance on technical writing and developer advocacy. Building a personal brand, speaking at conferences, content creation.",
+    "tags": [
+      "mentorship-career",
+      "mentorship-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-02T04:41:29.823Z",
+    "updatedAt": "2026-11-02T04:41:29.823Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_hvud7ct",
+    "title": "Senior engineering manager offering mentorship: career growth, leadership skills...",
+    "content": "Senior engineering manager offering mentorship: career growth, leadership skills, org design, performance reviews. 10 years experience. Free for underrepresented groups.",
+    "tags": [
+      "mentorship-career",
+      "mentorship-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "duration",
+        "operator": "is",
+        "values": [
+          "10 yr"
+        ],
+        "unit": "yr",
+        "quantity": {
+          "value": 10,
+          "unit": "yr",
+          "unitType": "simple",
+          "numerator": "yr",
+          "semanticType": "duration"
+        },
+        "role": "fact",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "senior"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-22T04:47:16.901Z",
+    "updatedAt": "2026-10-22T04:47:16.901Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnln_rwkjb6b",
+    "title": "Staff engineer available for mentoring: system architecture, code review, techni...",
+    "content": "Staff engineer available for mentoring: system architecture, code review, technical decision making, staff+ promotion packets. $150/hr.",
+    "tags": [
+      "mentorship-career",
+      "mentorship-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "staff"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-18T18:57:34.311Z",
+    "updatedAt": "2026-10-18T18:57:34.311Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnln_w2cgvvo",
+    "title": "Engineering director offering executive coaching: strategy, stakeholder manageme...",
+    "content": "Engineering director offering executive coaching: strategy, stakeholder management, hiring at scale, culture transformation. $300/hr.",
+    "tags": [
+      "mentorship-career",
+      "mentorship-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "director"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-10T20:34:13.665Z",
+    "updatedAt": "2026-11-10T20:34:13.665Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnln_aqkbrix",
+    "title": "Open source maintainer mentoring contributors: first PR, code review process, pr...",
+    "content": "Open source maintainer mentoring contributors: first PR, code review process, project governance, community building. Free.",
+    "tags": [
+      "mentorship-career",
+      "mentorship-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "go"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-10T00:55:48.498Z",
+    "updatedAt": "2026-11-10T00:55:48.498Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnln_ne1cixc",
+    "title": "Principal engineer mentoring on distributed systems, consensus algorithms, datab...",
+    "content": "Principal engineer mentoring on distributed systems, consensus algorithms, database internals. Academic background, 15 years industry. $250/hr.",
+    "tags": [
+      "mentorship-career",
+      "mentorship-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "go"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "principal"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-20T02:36:02.694Z",
+    "updatedAt": "2026-10-20T02:36:02.694Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnln_tfen7wc",
+    "title": "Weekly Rust study group: reading \"Programming Rust\", doing exercises together. I...",
+    "content": "Weekly Rust study group: reading \"Programming Rust\", doing exercises together. Intermediate level, Saturdays 10am PST.",
+    "tags": [
+      "mentorship-career",
+      "learning-communities"
+    ],
+    "properties": [
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "rust"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      },
+      {
+        "key": "location",
+        "operator": "is",
+        "values": [
+          "PST"
+        ],
+        "role": "constraint",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-14T11:02:30.121Z",
+    "updatedAt": "2026-10-14T11:02:30.121Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_cnp0ldt",
+    "title": "Distributed systems reading group: papers on consensus, replication, consistency...",
+    "content": "Distributed systems reading group: papers on consensus, replication, consistency. Monthly meetings, paper presentations.",
+    "tags": [
+      "mentorship-career",
+      "learning-communities"
+    ],
+    "properties": [],
+    "createdAt": "2026-10-14T02:15:36.526Z",
+    "updatedAt": "2026-10-14T02:15:36.526Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_0vdu5gu",
+    "title": "Frontend architecture book club: \"Micro Frontends\", \"Module Federation\", \"Design...",
+    "content": "Frontend architecture book club: \"Micro Frontends\", \"Module Federation\", \"Design Systems\". Bi-weekly discussions.",
+    "tags": [
+      "mentorship-career",
+      "learning-communities"
+    ],
+    "properties": [],
+    "createdAt": "2026-11-02T23:00:44.926Z",
+    "updatedAt": "2026-11-02T23:00:44.926Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_5p7lq12",
+    "title": "Kubernetes learning cohort: CKAD preparation, hands-on labs, mock exams. 8-week ...",
+    "content": "Kubernetes learning cohort: CKAD preparation, hands-on labs, mock exams. 8-week program, Slack community.",
+    "tags": [
+      "mentorship-career",
+      "learning-communities"
+    ],
+    "properties": [
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "kubernetes"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-26T09:02:20.606Z",
+    "updatedAt": "2026-10-26T09:02:20.606Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_6wy65nc",
+    "title": "Machine learning engineering study group: MLOps, feature stores, model serving, ...",
+    "content": "Machine learning engineering study group: MLOps, feature stores, model serving, monitoring. Practitioners welcome.",
+    "tags": [
+      "mentorship-career",
+      "learning-communities"
+    ],
+    "properties": [],
+    "createdAt": "2026-10-29T01:34:14.874Z",
+    "updatedAt": "2026-10-29T01:34:14.874Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_6e2v8ru",
+    "title": "IC to EM transition: what skills transfer, what's new, common pitfalls, recommen...",
+    "content": "IC to EM transition: what skills transfer, what's new, common pitfalls, recommended resources.",
+    "tags": [
+      "mentorship-career",
+      "career-transitions"
+    ],
+    "properties": [],
+    "createdAt": "2026-10-26T05:14:26.221Z",
+    "updatedAt": "2026-10-26T05:14:26.221Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_lqecf0c",
+    "title": "Backend to full-stack: frontend fundamentals, React ecosystem, state management,...",
+    "content": "Backend to full-stack: frontend fundamentals, React ecosystem, state management, testing strategies.",
+    "tags": [
+      "mentorship-career",
+      "career-transitions"
+    ],
+    "properties": [
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "react"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-04T13:09:28.190Z",
+    "updatedAt": "2026-11-04T13:09:28.190Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_z2jcpde",
+    "title": "Startup to big tech: interview prep, system design scale, promotion processes, c...",
+    "content": "Startup to big tech: interview prep, system design scale, promotion processes, compensation negotiation.",
+    "tags": [
+      "mentorship-career",
+      "career-transitions"
+    ],
+    "properties": [
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "go"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-08T09:44:59.375Z",
+    "updatedAt": "2026-11-08T09:44:59.375Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_s9uuuk7",
+    "title": "Academia to industry: research to production, software engineering practices, in...",
+    "content": "Academia to industry: research to production, software engineering practices, industry tooling, culture shock.",
+    "tags": [
+      "mentorship-career",
+      "career-transitions"
+    ],
+    "properties": [],
+    "createdAt": "2026-10-13T13:28:18.749Z",
+    "updatedAt": "2026-10-13T13:28:18.749Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_fo2ikvn",
+    "title": "Freelance to full-time: portfolio building, interview prep, benefits evaluation,...",
+    "content": "Freelance to full-time: portfolio building, interview prep, benefits evaluation, stability vs freedom.",
+    "tags": [
+      "mentorship-career",
+      "career-transitions"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-05T20:19:44.197Z",
+    "updatedAt": "2026-11-05T20:19:44.197Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnln_62mucta",
+    "title": "Company apprenticeship program: 6 months, paid, rotation through teams, mentor a...",
+    "content": "Company apprenticeship program: 6 months, paid, rotation through teams, mentor assigned, conversion possible.",
+    "tags": [
+      "mentorship-career",
+      "apprenticeship-&-junior-programs"
+    ],
+    "properties": [
+      {
+        "key": "duration",
+        "operator": "is",
+        "values": [
+          "6 mo"
+        ],
+        "unit": "mo",
+        "quantity": {
+          "value": 6,
+          "unit": "mo",
+          "unitType": "simple",
+          "numerator": "mo",
+          "semanticType": "duration"
+        },
+        "role": "fact",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-14T09:21:22.235Z",
+    "updatedAt": "2026-10-14T09:21:22.235Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_5iocfn3",
+    "title": "Bootcamp graduate seeking apprenticeship: React, Node.js, PostgreSQL, Git, CI/CD...",
+    "content": "Bootcamp graduate seeking apprenticeship: React, Node.js, PostgreSQL, Git, CI/CD. Eager to learn, strong portfolio.",
+    "tags": [
+      "mentorship-career",
+      "apprenticeship-&-junior-programs"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "react",
+          "node.js",
+          "postgresql"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-02T02:44:49.190Z",
+    "updatedAt": "2026-11-02T02:44:49.190Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_smp9fmm",
+    "title": "Junior developer looking for first role: TypeScript, React, testing, accessibili...",
+    "content": "Junior developer looking for first role: TypeScript, React, testing, accessibility. Completed 3-month intensive program.",
+    "tags": [
+      "mentorship-career",
+      "apprenticeship-&-junior-programs"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "typescript",
+          "react"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "junior"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-04T14:08:59.543Z",
+    "updatedAt": "2026-11-04T14:08:59.543Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_5avwzci",
+    "title": "Self-taught programmer seeking mentorship: Python, Django, REST APIs, Docker. 1 ...",
+    "content": "Self-taught programmer seeking mentorship: Python, Django, REST APIs, Docker. 1 year self-study, built 5 projects.",
+    "tags": [
+      "mentorship-career",
+      "apprenticeship-&-junior-programs"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "python",
+          "go",
+          "docker"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      },
+      {
+        "key": "duration",
+        "operator": "is",
+        "values": [
+          "1 yr"
+        ],
+        "unit": "yr",
+        "quantity": {
+          "value": 1,
+          "unit": "yr",
+          "unitType": "simple",
+          "numerator": "yr",
+          "semanticType": "duration"
+        },
+        "role": "fact",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-19T11:56:46.610Z",
+    "updatedAt": "2026-10-19T11:56:46.610Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_gz44jqe",
+    "title": "Career changer from finance to tech: analytical skills, Excel/VBA, learning Java...",
+    "content": "Career changer from finance to tech: analytical skills, Excel/VBA, learning JavaScript, React, SQL.",
+    "tags": [
+      "mentorship-career",
+      "apprenticeship-&-junior-programs"
+    ],
+    "properties": [
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "react"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-25T00:56:25.951Z",
+    "updatedAt": "2026-10-25T00:56:25.951Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_rr6ewjq",
+    "title": "Looking for senior software architect mentor: system design, scalability. Monthl...",
+    "content": "Looking for senior software architect mentor: system design, scalability. Monthly 1hr, $200/session.",
+    "tags": [
+      "mentorship-career",
+      "mentorship-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "senior"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-30T20:24:14.434Z",
+    "updatedAt": "2026-10-30T20:24:14.434Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_fm4ekk8",
+    "title": "Seeking career mentor: IC to EM transition. Leadership, delegation, strategy gui...",
+    "content": "Seeking career mentor: IC to EM transition. Leadership, delegation, strategy guidance.",
+    "tags": [
+      "mentorship-career",
+      "mentorship-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "lead"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-20T11:57:08.072Z",
+    "updatedAt": "2026-10-20T11:57:08.072Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_ldv45vi",
+    "title": "Want mentor experienced in startup CTO role: tech strategy, fundraising, hiring,...",
+    "content": "Want mentor experienced in startup CTO role: tech strategy, fundraising, hiring, culture. Equity/cash.",
+    "tags": [
+      "mentorship-career",
+      "mentorship-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "experienced"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-26T17:50:53.114Z",
+    "updatedAt": "2026-10-26T17:50:53.114Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_0dnyvxs",
+    "title": "Looking for Rust expert mentor: systems programming, async, performance. Weekly ...",
+    "content": "Looking for Rust expert mentor: systems programming, async, performance. Weekly pair programming.",
+    "tags": [
+      "mentorship-career",
+      "mentorship-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "rust"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-25T09:19:48.866Z",
+    "updatedAt": "2026-10-25T09:19:48.866Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_auxmava",
+    "title": "Need guidance on technical writing and dev advocacy: personal brand, speaking, c...",
+    "content": "Need guidance on technical writing and dev advocacy: personal brand, speaking, content creation.",
+    "tags": [
+      "mentorship-career",
+      "mentorship-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-16T14:23:27.024Z",
+    "updatedAt": "2026-10-16T14:23:27.024Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_rw7r8vc",
+    "title": "Senior EM offering mentorship: career growth, leadership, org design, perf revie...",
+    "content": "Senior EM offering mentorship: career growth, leadership, org design, perf reviews. 10yr exp. Free for URG.",
+    "tags": [
+      "mentorship-career",
+      "mentorship-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "senior"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-23T01:31:57.059Z",
+    "updatedAt": "2026-10-23T01:31:57.059Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnln_axda11w",
+    "title": "Staff engineer available: system architecture, code review, tech decisions, staf...",
+    "content": "Staff engineer available: system architecture, code review, tech decisions, staff+ promo packets. $150/hr.",
+    "tags": [
+      "mentorship-career",
+      "mentorship-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "staff"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-29T11:01:45.279Z",
+    "updatedAt": "2026-10-29T11:01:45.279Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnln_hefgot5",
+    "title": "Eng director offering executive coaching: strategy, stakeholder mgmt, hiring at ...",
+    "content": "Eng director offering executive coaching: strategy, stakeholder mgmt, hiring at scale, culture. $300/hr.",
+    "tags": [
+      "mentorship-career",
+      "mentorship-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "director"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-13T11:09:53.941Z",
+    "updatedAt": "2026-10-13T11:09:53.941Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnln_qvp7p54",
+    "title": "OS maintainer mentoring contributors: first PR, code review, governance, communi...",
+    "content": "OS maintainer mentoring contributors: first PR, code review, governance, community building. Free.",
+    "tags": [
+      "mentorship-career",
+      "mentorship-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "go"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-18T19:35:49.286Z",
+    "updatedAt": "2026-10-18T19:35:49.286Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnln_gb6ubuu",
+    "title": "Principal engineer mentoring: distributed systems, consensus, DB internals. Acad...",
+    "content": "Principal engineer mentoring: distributed systems, consensus, DB internals. Academic, 15yr industry. $250/hr.",
+    "tags": [
+      "mentorship-career",
+      "mentorship-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "principal"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-18T19:30:10.824Z",
+    "updatedAt": "2026-10-18T19:30:10.824Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-mentorship-career",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  }
+]

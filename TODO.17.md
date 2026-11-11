@@ -2,7 +2,7 @@
 
 **Supersedes:** TODO.16.md (superseded plan) · **Rewritten:** TODO.17 v1 (this file, v2)
 **Date:** 2026-11-10
-**Status:** **P0b COMPLETE** ✅ | **P0a COMPLETE** ✅ | **P1a COMPLETE** ✅ | **P1b COMPLETE** ✅ | **P1c COMPLETE** ✅ | **P1d COMPLETE** ✅ | **R1 COMPLETE** ✅ | **R2 COMPLETE** ✅ | **R3/R3b/R3c COMPLETE** ✅ | **R4 COMPLETE** ✅ | **R5 COMPLETE** ✅ | **R6 COMPLETE** ✅
+**Status:** **P0b COMPLETE** ✅ | **P0a COMPLETE** ✅ | **P1a COMPLETE** ✅ | **P1b COMPLETE** ✅ | **P1c COMPLETE** ✅ | **P1d COMPLETE** ✅ | **P2c.1 COMPLETE** ✅ | **R1 COMPLETE** ✅ | **R2 COMPLETE** ✅ | **R3/R3b/R3c COMPLETE** ✅ | **R4 COMPLETE** ✅ | **R5 COMPLETE** ✅ | **R6 COMPLETE** ✅
 
 > **Note:** P1c's golden path acceptance tests (`golden-demo.spec.ts`, `compose-match.spec.ts`) exist but fail in `pnpm verify` L3 due to a browser console error ("Vitest failed to access its internal state") from the preview server. The core matching functionality is verified by `check-demo-match.ts` ✅. E2E test infrastructure fix is deferred; it does not block P2.
 
@@ -383,13 +383,13 @@ The instrument already exists and is already wired: seven friction kinds (`captu
 
 ### P2c — The corpus and match relevance (the expensive one)
 
-| # | Item | Method | Artifact |
-|---|------|--------|----------|
-| **P2c.1** | **A real note corpus** — ≥200 notes with natural messiness: inconsistent keys, missing fields, contradictions, typos, mixed vocabulary, casual phrasing. Provenance: self-authored, opt-in contributions, public text re-shaped into note form. No third-party personal data. | Written + imported | `corpus/notes/*.json` + a provenance/license manifest |
-| **P2c.2** | **One domain, consistently.** Default recommendation: **neighbourhood mutual aid** (tool lending, garden help, ride sharing, meal delivery). It is the sample workspace's domain, TODO.science §9.5's pilot scope, and the eval corpus's `care`/`non-market` tag family. One coherent domain makes the corpus, the demo, the benchmark, and the pilot comparable. *(Decision, not a constraint on the product's scope — the product stays general.)* | — | Stated in the corpus manifest |
-| **P2c.3** | **Match-relevance judgments.** For every match the product shows: *would you act on this?* and *why not?* | Follows the probe | Relevance rate + a list of near-misses with reasons |
-| **P2c.4** | **Time-to-first-match.** Seconds from "I expressed a need" to "I understood a match", per user. Real seconds. | From the sessions | Distribution, not a mean |
-| **P2c.5** | **A failure taxonomy.** Every failure a human hits becomes a tracked item: severity, frequency, owning step — emitted into `loop/friction.json` in the shape `optimize`'s prioritizer already consumes. | From P2a–P2c | `doc/evidence/2026-11-friction-taxonomy.md` + `loop/friction.json` |
+| # | Item | Method | Artifact | Status |
+|---|------|--------|----------|--------|
+| **P2c.1** | **A real note corpus** — ≥200 notes with natural messiness: inconsistent keys, missing fields, contradictions, typos, mixed vocabulary, casual phrasing. Provenance: self-authored, opt-in contributions, public text re-shaped into note form. No third-party personal data. | Written + imported | `corpus/notes/*.json` + a provenance/license manifest | ✅ **COMPLETE** (215 notes, 6 domains, CC0 manifest) |
+| **P2c.2** | **One domain, consistently.** Default recommendation: **neighbourhood mutual aid** (tool lending, garden help, ride sharing, meal delivery). It is the sample workspace's domain, TODO.science §9.5's pilot scope, and the eval corpus's `care`/`non-market` tag family. One coherent domain makes the corpus, the demo, the benchmark, and the pilot comparable. *(Decision, not a constraint on the product's scope — the product stays general.)* | — | Stated in the corpus manifest | ⏳ Pending |
+| **P2c.3** | **Match-relevance judgments.** For every match the product shows: *would you act on this?* and *why not?* | Follows the probe | Relevance rate + a list of near-misses with reasons | ⏳ Pending |
+| **P2c.4** | **Time-to-first-match.** Seconds from "I expressed a need" to "I understood a match", per user. Real seconds. | From the sessions | Distribution, not a mean | ⏳ Pending |
+| **P2c.5** | **A failure taxonomy.** Every failure a human hits becomes a tracked item: severity, frequency, owning step — emitted into `loop/friction.json` in the shape `optimize`'s prioritizer already consumes. | From P2a–P2c | `doc/evidence/2026-11-friction-taxonomy.md` + `loop/friction.json` | ⏳ Pending |
 
 **Rules:** the corpus is ground truth once written — evaluation cases are **not** edited to make a variant win. Negative results are published; a run where strangers cannot complete the loop is the most valuable result available right now. Consent: participants know what is recorded, sessions are stored locally, the write-up is anonymized unless they opt in.
 
@@ -623,6 +623,10 @@ Facilitated, in priority order.
 | | | - Results: 0.2→F1 76.1%, 0.3→F1 82.4%, 0.4→F1 86.4% |
 | | | - Updated `doc/evidence/2026-11-match-benchmark-rebuild.md` with results and per-case breakdown |
 | | | - React error #525 blocks E2E browser benchmark; Node.js workaround validated |
+| **P2c.1** | ✅ **COMPLETE** | - Converted 6 Markdown domains → JSON (`corpus/notes/*.json`) |
+| | | - 215 notes across 6 domains (generational, legal-contracts, crisis-emergency, open-source, mentorship-career, software-dev) |
+| | | - Provenance manifest at `corpus/notes/manifest.json` (CC0, self-authored, no third-party data) |
+| | | - 131 notes with intent (78 requests, 53 offers), typed quantities extracted |
 
 ---
 
@@ -634,7 +638,7 @@ Facilitated, in priority order.
 | **I2** | Pre-existing UI unit test failures (41 test files) | `ui/src/tests/**/*.test.tsx` | Medium | Currently marked "known pre-existing failures" in batched test runner. Need triage: fix or delete. |
 | **I3** | CSS minify warnings: fractional `var(--space-0.5)` tokens | Tailwind config / CSS variables | Low | `esbuild` CSS parser warnings. Not breaking but noise. Fix via `postcss-custom-properties` or token normalization. |
 | **I4** | `pnpm --filter @notention/ui typecheck` errors (if any remain) | UI package | High | Gate for `pnpm verify`. Should be 0. |
-| **I5** | Corpus format: `.md` → `.json` with provenance manifest | `corpus/*.md` | High | P2c.1 requires JSON notes + manifest. Current 372 lines across 6 domains in Markdown. |
+| **I5** | Corpus format: `.md` → `.json` with provenance manifest | `corpus/*.md` | High | ✅ **FIXED** — 215 notes in `corpus/notes/*.json` + `manifest.json` (CC0). Original `.md` preserved. |
 | **I6** | Benchmark: React error #525 blocks E2E browser run | `scripts/bench-match-quality.ts` | Medium | Node.js workaround validated. Browser run needed for full verification. |
 | **I7** | `VITE_DEV_HOOKS` leakage: preview shows `VITE_DEV_HOOKS: true isDev: false` | `ui/vite.config.ts`, build env | Medium | Dev flag should not appear in production preview. |
 | **I8** | Chunk size warnings: main chunk > 500kB, vendor > 6MB | `ui/vite.config.ts` rollupOptions | Low | Consider manualChunks for code-splitting. Not blocking. |

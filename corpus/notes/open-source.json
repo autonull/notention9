@@ -1,0 +1,1431 @@
+[
+  {
+    "id": "note_mwbksnlm_owng8m3",
+    "title": "Looking for contributors to help with issue triage, bug fixes, and documentation...",
+    "content": "Looking for contributors to help with issue triage, bug fixes, and documentation. React + TypeScript project, 50k weekly downloads.",
+    "tags": [
+      "open-source",
+      "project-maintenance"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "react",
+          "typescript"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-12T12:19:42.634Z",
+    "updatedAt": "2026-10-12T12:19:42.634Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_1vmyqiq",
+    "title": "Maintainer seeking co-maintainers for popular CLI tool. Go, Cobra, 10k stars. Ne...",
+    "content": "Maintainer seeking co-maintainers for popular CLI tool. Go, Cobra, 10k stars. Need help with releases, reviews, community.",
+    "tags": [
+      "open-source",
+      "project-maintenance"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "cli",
+          "go",
+          "cobra"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-19T11:26:31.839Z",
+    "updatedAt": "2026-10-19T11:26:31.839Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_80n1b1j",
+    "title": "Open source project needs design system contributors. Figma, Storybook, React, a...",
+    "content": "Open source project needs design system contributors. Figma, Storybook, React, accessibility expertise welcome.",
+    "tags": [
+      "open-source",
+      "project-maintenance"
+    ],
+    "properties": [
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "figma",
+          "storybook",
+          "react"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-28T08:09:01.255Z",
+    "updatedAt": "2026-10-28T08:09:01.255Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_gpsa6t0",
+    "title": "Security-focused library needs auditors and contributors. Rust, cryptography, fo...",
+    "content": "Security-focused library needs auditors and contributors. Rust, cryptography, formal verification experience a plus.",
+    "tags": [
+      "open-source",
+      "project-maintenance"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "rust"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-15T09:08:23.682Z",
+    "updatedAt": "2026-10-15T09:08:23.682Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_npf7iqf",
+    "title": "Documentation sprint: help us write guides, API docs, tutorials for our GraphQL ...",
+    "content": "Documentation sprint: help us write guides, API docs, tutorials for our GraphQL framework. Technical writers welcome.",
+    "tags": [
+      "open-source",
+      "project-maintenance"
+    ],
+    "properties": [
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "graphql"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-01T04:10:49.977Z",
+    "updatedAt": "2026-11-01T04:10:49.977Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_pqg4u7f",
+    "title": "Want to contribute to TypeScript compiler but don't know where to start. Looking...",
+    "content": "Want to contribute to TypeScript compiler but don't know where to start. Looking for good-first-issues and mentorship.",
+    "tags": [
+      "open-source",
+      "contribution-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "typescript",
+          "go"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-25T08:59:32.675Z",
+    "updatedAt": "2026-10-25T08:59:32.675Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_ime8di3",
+    "title": "Interested in contributing to React core. Need guidance on codebase navigation, ...",
+    "content": "Interested in contributing to React core. Need guidance on codebase navigation, testing, and PR process.",
+    "tags": [
+      "open-source",
+      "contribution-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "react"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-17T20:40:14.714Z",
+    "updatedAt": "2026-10-17T20:40:14.714Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_64gtdnb",
+    "title": "Looking to contribute to VS Code extensions marketplace. TypeScript, Electron, e...",
+    "content": "Looking to contribute to VS Code extensions marketplace. TypeScript, Electron, extension API experience.",
+    "tags": [
+      "open-source",
+      "contribution-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "vs code",
+          "typescript",
+          "electron"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-31T23:33:31.921Z",
+    "updatedAt": "2026-10-31T23:33:31.921Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_e683cbw",
+    "title": "Want to help with Rust standard library. Familiar with RFC process, stabilizatio...",
+    "content": "Want to help with Rust standard library. Familiar with RFC process, stabilization, backward compatibility.",
+    "tags": [
+      "open-source",
+      "contribution-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "rust"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-25T19:38:35.860Z",
+    "updatedAt": "2026-10-25T19:38:35.860Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_00hwqnl",
+    "title": "Seeking to contribute to Kubernetes SIG. Go, controllers, operators, CRDs. Need ...",
+    "content": "Seeking to contribute to Kubernetes SIG. Go, controllers, operators, CRDs. Need onboarding guidance.",
+    "tags": [
+      "open-source",
+      "contribution-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "kubernetes",
+          "go"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-10T00:32:49.600Z",
+    "updatedAt": "2026-11-10T00:32:49.600Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_19b6zcx",
+    "title": "Good first issue: Add TypeScript types for undocumented config options. Friendly...",
+    "content": "Good first issue: Add TypeScript types for undocumented config options. Friendly maintainers, quick review.",
+    "tags": [
+      "open-source",
+      "good-first-issues"
+    ],
+    "properties": [
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "go",
+          "typescript"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-23T21:01:22.555Z",
+    "updatedAt": "2026-10-23T21:01:22.555Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_txcoqik",
+    "title": "Help wanted: Improve error messages for invalid CLI arguments. Go project, well-...",
+    "content": "Help wanted: Improve error messages for invalid CLI arguments. Go project, well-scoped, good for beginners.",
+    "tags": [
+      "open-source",
+      "good-first-issues"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "cli",
+          "go"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-29T00:12:16.529Z",
+    "updatedAt": "2026-10-29T00:12:16.529Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_2v4jpq4",
+    "title": "Good first issue: Add missing test cases for edge cases in date parsing. JavaScr...",
+    "content": "Good first issue: Add missing test cases for edge cases in date parsing. JavaScript, Jest, clear examples.",
+    "tags": [
+      "open-source",
+      "good-first-issues"
+    ],
+    "properties": [
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "go",
+          "jest"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-14T03:02:10.344Z",
+    "updatedAt": "2026-10-14T03:02:10.344Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_5uprooc",
+    "title": "Help wanted: Update documentation screenshots for new UI. Design skills helpful,...",
+    "content": "Help wanted: Update documentation screenshots for new UI. Design skills helpful, no code required.",
+    "tags": [
+      "open-source",
+      "good-first-issues"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-05T01:01:20.345Z",
+    "updatedAt": "2026-11-05T01:01:20.345Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_9yskc9s",
+    "title": "Good first issue: Fix accessibility warnings in component library. React, Testin...",
+    "content": "Good first issue: Fix accessibility warnings in component library. React, Testing Library, axe-core.",
+    "tags": [
+      "open-source",
+      "good-first-issues"
+    ],
+    "properties": [
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "go",
+          "react"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-19T03:05:36.215Z",
+    "updatedAt": "2026-10-19T03:05:36.215Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_9im3mh3",
+    "title": "Monthly contributor meetup: virtual, 1 hour, project updates, Q&A, social. All c...",
+    "content": "Monthly contributor meetup: virtual, 1 hour, project updates, Q&A, social. All contributors welcome.",
+    "tags": [
+      "open-source",
+      "community-events"
+    ],
+    "properties": [],
+    "createdAt": "2026-11-05T22:34:57.219Z",
+    "updatedAt": "2026-11-05T22:34:57.219Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_ypfrcal",
+    "title": "Hacktoberfest participation: labeled issues, swag, mentorship available. October...",
+    "content": "Hacktoberfest participation: labeled issues, swag, mentorship available. October 1-31.",
+    "tags": [
+      "open-source",
+      "community-events"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-19T22:27:52.635Z",
+    "updatedAt": "2026-10-19T22:27:52.635Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnlm_pvnsd8l",
+    "title": "Annual contributor summit: 3 days, workshops, planning, celebration. Travel gran...",
+    "content": "Annual contributor summit: 3 days, workshops, planning, celebration. Travel grants available.",
+    "tags": [
+      "open-source",
+      "community-events"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "duration",
+        "operator": "is",
+        "values": [
+          "3 d"
+        ],
+        "unit": "d",
+        "quantity": {
+          "value": 3,
+          "unit": "d",
+          "unitType": "simple",
+          "numerator": "d",
+          "semanticType": "duration"
+        },
+        "role": "fact",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-04T23:08:46.850Z",
+    "updatedAt": "2026-11-04T23:08:46.850Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnlm_54gv4u0",
+    "title": "Weekly office hours: maintainers available for questions, PR reviews, design dis...",
+    "content": "Weekly office hours: maintainers available for questions, PR reviews, design discussions. Discord voice.",
+    "tags": [
+      "open-source",
+      "community-events"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-14T14:18:58.140Z",
+    "updatedAt": "2026-10-14T14:18:58.140Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnlm_qp9ngqj",
+    "title": "Quarterly roadmap planning: community input on priorities, RFC discussions, feat...",
+    "content": "Quarterly roadmap planning: community input on priorities, RFC discussions, feature voting.",
+    "tags": [
+      "open-source",
+      "community-events"
+    ],
+    "properties": [],
+    "createdAt": "2026-10-29T07:10:00.539Z",
+    "updatedAt": "2026-10-29T07:10:00.539Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_0ry8zbo",
+    "title": "Moving to RFC-based governance: proposal process, review periods, consensus buil...",
+    "content": "Moving to RFC-based governance: proposal process, review periods, consensus building, decision recording.",
+    "tags": [
+      "open-source",
+      "project-governance"
+    ],
+    "properties": [
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "go"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-25T05:45:23.850Z",
+    "updatedAt": "2026-10-25T05:45:23.850Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_fp6ierz",
+    "title": "Establishing code of conduct enforcement: reporting, moderation, appeals, transp...",
+    "content": "Establishing code of conduct enforcement: reporting, moderation, appeals, transparency reports.",
+    "tags": [
+      "open-source",
+      "project-governance"
+    ],
+    "properties": [],
+    "createdAt": "2026-10-14T08:15:54.790Z",
+    "updatedAt": "2026-10-14T08:15:54.790Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_j535xti",
+    "title": "Defining maintainer emeritus status: recognition for past contributions, reduced...",
+    "content": "Defining maintainer emeritus status: recognition for past contributions, reduced responsibilities.",
+    "tags": [
+      "open-source",
+      "project-governance"
+    ],
+    "properties": [],
+    "createdAt": "2026-10-21T23:09:07.357Z",
+    "updatedAt": "2026-10-21T23:09:07.357Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_tvopfkf",
+    "title": "Creating contributor license agreement: CLA bot, individual and corporate, autom...",
+    "content": "Creating contributor license agreement: CLA bot, individual and corporate, automated checks.",
+    "tags": [
+      "open-source",
+      "project-governance"
+    ],
+    "properties": [],
+    "createdAt": "2026-11-10T08:19:00.321Z",
+    "updatedAt": "2026-11-10T08:19:00.321Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_9urle0u",
+    "title": "Setting up security policy: vulnerability disclosure, patch release process, CVE...",
+    "content": "Setting up security policy: vulnerability disclosure, patch release process, CVE coordination.",
+    "tags": [
+      "open-source",
+      "project-governance"
+    ],
+    "properties": [],
+    "createdAt": "2026-10-13T15:00:18.386Z",
+    "updatedAt": "2026-10-13T15:00:18.386Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_sfxmxan",
+    "title": "GitHub Sponsors: tiered benefits, sponsor-only Discord, early access, swag. $5-1...",
+    "content": "GitHub Sponsors: tiered benefits, sponsor-only Discord, early access, swag. $5-100/month.",
+    "tags": [
+      "open-source",
+      "funding-&-sustainability"
+    ],
+    "properties": [
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "100 USD/mo"
+        ],
+        "unit": "USD/mo",
+        "quantity": {
+          "value": 100,
+          "unit": "USD/mo",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "mo",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-02T05:16:19.042Z",
+    "updatedAt": "2026-11-02T05:16:19.042Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_mpkm6tr",
+    "title": "Open Collective: transparent budget, expense reimbursement, fiscal host, communi...",
+    "content": "Open Collective: transparent budget, expense reimbursement, fiscal host, community funds.",
+    "tags": [
+      "open-source",
+      "funding-&-sustainability"
+    ],
+    "properties": [],
+    "createdAt": "2026-10-28T17:22:17.408Z",
+    "updatedAt": "2026-10-28T17:22:17.408Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_dm2rmao",
+    "title": "Corporate sponsorship: logo on README, priority support, feature requests, dedic...",
+    "content": "Corporate sponsorship: logo on README, priority support, feature requests, dedicated Slack.",
+    "tags": [
+      "open-source",
+      "funding-&-sustainability"
+    ],
+    "properties": [
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "go"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-10T09:44:50.300Z",
+    "updatedAt": "2026-11-10T09:44:50.300Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_lpo5fz1",
+    "title": "Grant applications: NLnet, Sovereign Tech Fund, Mozilla Open Source Support. Dea...",
+    "content": "Grant applications: NLnet, Sovereign Tech Fund, Mozilla Open Source Support. Deadlines, requirements.",
+    "tags": [
+      "open-source",
+      "funding-&-sustainability"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-17T02:24:23.707Z",
+    "updatedAt": "2026-10-17T02:24:23.707Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_rtef3yk",
+    "title": "SaaS business model: hosted version, enterprise features, support contracts, man...",
+    "content": "SaaS business model: hosted version, enterprise features, support contracts, managed hosting.",
+    "tags": [
+      "open-source",
+      "funding-&-sustainability"
+    ],
+    "properties": [],
+    "createdAt": "2026-10-31T05:23:24.568Z",
+    "updatedAt": "2026-10-31T05:23:24.568Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_q1ipb6p",
+    "title": "Looking for contributors: issue triage, bug fixes, docs. React + TS project, 50k...",
+    "content": "Looking for contributors: issue triage, bug fixes, docs. React + TS project, 50k weekly downloads.",
+    "tags": [
+      "open-source",
+      "project-maintenance"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "react"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-04T15:02:41.105Z",
+    "updatedAt": "2026-11-04T15:02:41.105Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_cg8sad4",
+    "title": "Maintainer seeking co-maintainers for CLI tool. Go, Cobra, 10k stars. Releases, ...",
+    "content": "Maintainer seeking co-maintainers for CLI tool. Go, Cobra, 10k stars. Releases, reviews, community.",
+    "tags": [
+      "open-source",
+      "project-maintenance"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "cli",
+          "go",
+          "cobra"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-06T06:52:25.661Z",
+    "updatedAt": "2026-11-06T06:52:25.661Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_cent2ux",
+    "title": "Design system contributors needed: Figma, Storybook, React, a11y expertise welco...",
+    "content": "Design system contributors needed: Figma, Storybook, React, a11y expertise welcome.",
+    "tags": [
+      "open-source",
+      "project-maintenance"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "figma",
+          "storybook",
+          "react"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-22T19:50:50.352Z",
+    "updatedAt": "2026-10-22T19:50:50.352Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_7jsnrjw",
+    "title": "Security library needs auditors and contributors. Rust, crypto, formal verificat...",
+    "content": "Security library needs auditors and contributors. Rust, crypto, formal verification a plus.",
+    "tags": [
+      "open-source",
+      "project-maintenance"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "rust"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-05T06:53:58.034Z",
+    "updatedAt": "2026-11-05T06:53:58.034Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_pi2ztyf",
+    "title": "Documentation sprint: guides, API docs, tutorials for GraphQL framework. Technic...",
+    "content": "Documentation sprint: guides, API docs, tutorials for GraphQL framework. Technical writers welcome.",
+    "tags": [
+      "open-source",
+      "project-maintenance"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "graphql"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-25T19:09:48.990Z",
+    "updatedAt": "2026-10-25T19:09:48.990Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_gqjesr6",
+    "title": "Want to contribute to TypeScript compiler. Need good-first-issues and mentorship...",
+    "content": "Want to contribute to TypeScript compiler. Need good-first-issues and mentorship.",
+    "tags": [
+      "open-source",
+      "contribution-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "typescript",
+          "go"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-04T23:36:51.058Z",
+    "updatedAt": "2026-11-04T23:36:51.058Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_3x9gk61",
+    "title": "Interested in contributing to React core. Guidance on codebase, testing, PR proc...",
+    "content": "Interested in contributing to React core. Guidance on codebase, testing, PR process.",
+    "tags": [
+      "open-source",
+      "contribution-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "react"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-08T11:33:07.757Z",
+    "updatedAt": "2026-11-08T11:33:07.757Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_80xczxq",
+    "title": "Looking to contribute to VS Code extensions. TS, Electron, extension API experie...",
+    "content": "Looking to contribute to VS Code extensions. TS, Electron, extension API experience.",
+    "tags": [
+      "open-source",
+      "contribution-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "vs code",
+          "electron"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-28T20:14:09.342Z",
+    "updatedAt": "2026-10-28T20:14:09.342Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlm_szf6mw7",
+    "title": "Good first issue: Add TS types for undocumented config options. Friendly maintai...",
+    "content": "Good first issue: Add TS types for undocumented config options. Friendly maintainers, quick review.",
+    "tags": [
+      "open-source",
+      "good-first-issues"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "go"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-31T07:10:38.563Z",
+    "updatedAt": "2026-10-31T07:10:38.563Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnlm_t2wupn8",
+    "title": "Help wanted: Improve error messages for invalid CLI args. Go project, well-scope...",
+    "content": "Help wanted: Improve error messages for invalid CLI args. Go project, well-scoped, beginner friendly.",
+    "tags": [
+      "open-source",
+      "good-first-issues"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "cli",
+          "go"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-05T20:01:32.854Z",
+    "updatedAt": "2026-11-05T20:01:32.854Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-open-source",
+      "timestamp": 1794368702074
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  }
+]

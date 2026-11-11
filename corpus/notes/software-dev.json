@@ -1,0 +1,1798 @@
+[
+  {
+    "id": "note_mwbksnln_sx3h0w1",
+    "title": "I need a React developer for a 3-month project, budget $15,000, remote work pref...",
+    "content": "I need a React developer for a 3-month project, budget $15,000, remote work preferred. Must have TypeScript, Next.js, and GraphQL experience.",
+    "tags": [
+      "software-dev",
+      "project-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "budget",
+        "operator": "is",
+        "values": [
+          "15000 USD"
+        ],
+        "unit": "USD",
+        "quantity": {
+          "value": 15000,
+          "unit": "USD",
+          "unitType": "simple",
+          "numerator": "USD",
+          "semanticType": "price"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "react",
+          "typescript",
+          "next.js",
+          "graphql"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      },
+      {
+        "key": "location",
+        "operator": "is",
+        "values": [
+          "remote"
+        ],
+        "role": "constraint",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-30T23:10:37.537Z",
+    "updatedAt": "2026-10-30T23:10:37.537Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_1szdcnk",
+    "title": "Looking for a freelance frontend engineer to build a dashboard with React, Tailw...",
+    "content": "Looking for a freelance frontend engineer to build a dashboard with React, Tailwind CSS, and Recharts. Rate: $80-120/hr. Start ASAP.",
+    "tags": [
+      "software-dev",
+      "project-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "120 USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": 120,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "react",
+          "tailwind"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-26T21:56:03.466Z",
+    "updatedAt": "2026-10-26T21:56:03.466Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_xuw8n3p",
+    "title": "Need a full-stack developer for an e-commerce platform. Node.js backend, React f...",
+    "content": "Need a full-stack developer for an e-commerce platform. Node.js backend, React frontend, PostgreSQL database. 6-month contract, $10,000/month.",
+    "tags": [
+      "software-dev",
+      "project-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/mo"
+        ],
+        "unit": "USD/mo",
+        "quantity": {
+          "value": null,
+          "unit": "USD/mo",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "mo",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "node.js",
+          "react",
+          "postgresql"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-06T17:24:15.966Z",
+    "updatedAt": "2026-11-06T17:24:15.966Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_jf5m0jo",
+    "title": "Hiring a DevOps engineer for Kubernetes migration. AWS, Docker, Terraform requir...",
+    "content": "Hiring a DevOps engineer for Kubernetes migration. AWS, Docker, Terraform required. $150/hr, 3 months.",
+    "tags": [
+      "software-dev",
+      "project-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "kubernetes",
+          "aws",
+          "docker",
+          "terraform"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-14T13:07:58.015Z",
+    "updatedAt": "2026-10-14T13:07:58.015Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_yuk7h4b",
+    "title": "Seeking a mobile developer for React Native app. iOS and Android, push notificat...",
+    "content": "Seeking a mobile developer for React Native app. iOS and Android, push notifications, offline sync. $5,000 fixed price.",
+    "tags": [
+      "software-dev",
+      "project-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "react"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-25T08:22:51.432Z",
+    "updatedAt": "2026-10-25T08:22:51.432Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_e2345bw",
+    "title": "Senior React Developer offering services: TypeScript, Next.js, Redux, Testing Li...",
+    "content": "Senior React Developer offering services: TypeScript, Next.js, Redux, Testing Library. Rate: $110/hr. Available full-time remote.",
+    "tags": [
+      "software-dev",
+      "job-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "react",
+          "typescript",
+          "next.js"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      },
+      {
+        "key": "location",
+        "operator": "is",
+        "values": [
+          "remote"
+        ],
+        "role": "constraint",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "senior"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-16T20:59:50.934Z",
+    "updatedAt": "2026-10-16T20:59:50.934Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnln_iv71vh7",
+    "title": "Full-stack engineer available: Node.js, Python, React, AWS, Docker. 8 years expe...",
+    "content": "Full-stack engineer available: Node.js, Python, React, AWS, Docker. 8 years experience. $100/hr.",
+    "tags": [
+      "software-dev",
+      "job-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "node.js",
+          "python",
+          "react",
+          "aws",
+          "docker"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-01T10:51:24.537Z",
+    "updatedAt": "2026-11-01T10:51:24.537Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnln_e0wqftq",
+    "title": "Frontend specialist: Vue.js, Nuxt, Pinia, Vitest, Tailwind. $90/hr. Part-time av...",
+    "content": "Frontend specialist: Vue.js, Nuxt, Pinia, Vitest, Tailwind. $90/hr. Part-time available.",
+    "tags": [
+      "software-dev",
+      "job-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "vue.js",
+          "vitest",
+          "tailwind"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-18T08:58:35.112Z",
+    "updatedAt": "2026-10-18T08:58:35.112Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnln_wczj8ex",
+    "title": "Backend developer: Go, PostgreSQL, gRPC, Kubernetes. $120/hr. Contract or full-t...",
+    "content": "Backend developer: Go, PostgreSQL, gRPC, Kubernetes. $120/hr. Contract or full-time.",
+    "tags": [
+      "software-dev",
+      "job-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "go",
+          "postgresql",
+          "grpc",
+          "kubernetes"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-18T20:45:49.850Z",
+    "updatedAt": "2026-10-18T20:45:49.850Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnln_bx9z0l6",
+    "title": "Mobile developer: React Native, Expo, TypeScript, Fastlane. $95/hr. Immediate av...",
+    "content": "Mobile developer: React Native, Expo, TypeScript, Fastlane. $95/hr. Immediate availability.",
+    "tags": [
+      "software-dev",
+      "job-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "react",
+          "expo",
+          "typescript",
+          "fastlane"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-10T06:39:09.871Z",
+    "updatedAt": "2026-11-10T06:39:09.871Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnln_vr1uxgu",
+    "title": "Building a real-time collaboration tool with WebRTC, WebSocket, and CRDTs. Team ...",
+    "content": "Building a real-time collaboration tool with WebRTC, WebSocket, and CRDTs. Team of 4, 6-month timeline.",
+    "tags": [
+      "software-dev",
+      "project-descriptions"
+    ],
+    "properties": [
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "webrtc",
+          "crdt"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-14T18:48:53.986Z",
+    "updatedAt": "2026-10-14T18:48:53.986Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_oydl4df",
+    "title": "Developing an AI-powered code review assistant. LLM integration, GitHub Actions,...",
+    "content": "Developing an AI-powered code review assistant. LLM integration, GitHub Actions, VS Code extension.",
+    "tags": [
+      "software-dev",
+      "project-descriptions"
+    ],
+    "properties": [
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "vs code"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-10T00:13:51.439Z",
+    "updatedAt": "2026-11-10T00:13:51.439Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_dw4yji5",
+    "title": "Creating a design system with Storybook, Chromatic, and Figma integration. 20+ c...",
+    "content": "Creating a design system with Storybook, Chromatic, and Figma integration. 20+ components, documentation.",
+    "tags": [
+      "software-dev",
+      "project-descriptions"
+    ],
+    "properties": [
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "storybook",
+          "figma"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-03T13:44:47.704Z",
+    "updatedAt": "2026-11-03T13:44:47.704Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_8yzwiee",
+    "title": "Migrating legacy PHP application to Node.js microservices. Domain-driven design,...",
+    "content": "Migrating legacy PHP application to Node.js microservices. Domain-driven design, event sourcing.",
+    "tags": [
+      "software-dev",
+      "project-descriptions"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "node.js"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-31T06:11:29.360Z",
+    "updatedAt": "2026-10-31T06:11:29.360Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnln_tlsfp4s",
+    "title": "Building a marketplace platform with Stripe Connect, multi-vendor, commission sy...",
+    "content": "Building a marketplace platform with Stripe Connect, multi-vendor, commission system.",
+    "tags": [
+      "software-dev",
+      "project-descriptions"
+    ],
+    "properties": [],
+    "createdAt": "2026-10-31T21:01:15.605Z",
+    "updatedAt": "2026-10-31T21:01:15.605Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_3quwb3p",
+    "title": "The TypeScript strict mode catches so many bugs at compile time. Essential for l...",
+    "content": "The TypeScript strict mode catches so many bugs at compile time. Essential for large codebases.",
+    "tags": [
+      "software-dev",
+      "technical-discussions"
+    ],
+    "properties": [
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "typescript"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-29T21:33:12.742Z",
+    "updatedAt": "2026-10-29T21:33:12.742Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_yptt77t",
+    "title": "GraphQL federation allows us to compose multiple services into a single schema. ...",
+    "content": "GraphQL federation allows us to compose multiple services into a single schema. Game changer for microservices.",
+    "tags": [
+      "software-dev",
+      "technical-discussions"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "graphql"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-29T05:09:13.254Z",
+    "updatedAt": "2026-10-29T05:09:13.254Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnln_m4ny8iz",
+    "title": "React Server Components reduce bundle size significantly. Next.js 13 app router ...",
+    "content": "React Server Components reduce bundle size significantly. Next.js 13 app router makes it seamless.",
+    "tags": [
+      "software-dev",
+      "technical-discussions"
+    ],
+    "properties": [
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "react",
+          "next.js"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-25T14:29:39.757Z",
+    "updatedAt": "2026-10-25T14:29:39.757Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_wkx61o2",
+    "title": "Tailwind CSS with JIT compilation is incredibly fast. No more purging needed in ...",
+    "content": "Tailwind CSS with JIT compilation is incredibly fast. No more purging needed in production.",
+    "tags": [
+      "software-dev",
+      "technical-discussions"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "tailwind"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-08T23:30:08.369Z",
+    "updatedAt": "2026-11-08T23:30:08.369Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_cwzrti7",
+    "title": "Zod for runtime validation pairs perfectly with TypeScript. End-to-end type safe...",
+    "content": "Zod for runtime validation pairs perfectly with TypeScript. End-to-end type safety.",
+    "tags": [
+      "software-dev",
+      "technical-discussions"
+    ],
+    "properties": [
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "zod",
+          "typescript"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-09T06:58:26.005Z",
+    "updatedAt": "2026-11-09T06:58:26.005Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_zk4vvxz",
+    "title": "Want to transition from frontend to full-stack. Learning Node.js, databases, and...",
+    "content": "Want to transition from frontend to full-stack. Learning Node.js, databases, and system design.",
+    "tags": [
+      "software-dev",
+      "career-&-learning"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "node.js"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-25T12:16:41.758Z",
+    "updatedAt": "2026-10-25T12:16:41.758Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_hgp3bk8",
+    "title": "Studying for AWS Solutions Architect Associate. Need hands-on labs and practice ...",
+    "content": "Studying for AWS Solutions Architect Associate. Need hands-on labs and practice exams.",
+    "tags": [
+      "software-dev",
+      "career-&-learning"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "aws"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-09T05:55:53.593Z",
+    "updatedAt": "2026-11-09T05:55:53.593Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnln_r5qdne8",
+    "title": "Building a portfolio with 3 substantial projects. E-commerce, SaaS dashboard, an...",
+    "content": "Building a portfolio with 3 substantial projects. E-commerce, SaaS dashboard, and social app.",
+    "tags": [
+      "software-dev",
+      "career-&-learning"
+    ],
+    "properties": [],
+    "createdAt": "2026-10-20T08:29:44.255Z",
+    "updatedAt": "2026-10-20T08:29:44.255Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702075
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlo_fsi9l9h",
+    "title": "Mentoring junior developers on React patterns, testing, and TypeScript best prac...",
+    "content": "Mentoring junior developers on React patterns, testing, and TypeScript best practices.",
+    "tags": [
+      "software-dev",
+      "career-&-learning"
+    ],
+    "properties": [
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "react",
+          "typescript"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "junior"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-13T15:19:46.738Z",
+    "updatedAt": "2026-10-13T15:19:46.738Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702076
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlo_f2j60z7",
+    "title": "Contributing to open source: fixed 5 bugs in popular libraries this month.",
+    "content": "Contributing to open source: fixed 5 bugs in popular libraries this month.",
+    "tags": [
+      "software-dev",
+      "career-&-learning"
+    ],
+    "properties": [],
+    "createdAt": "2026-10-31T11:12:28.391Z",
+    "updatedAt": "2026-10-31T11:12:28.391Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702076
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlo_a49xwwm",
+    "title": "Need React developer for 3-month project, budget $15k, remote. TS, Next.js, Grap...",
+    "content": "Need React developer for 3-month project, budget $15k, remote. TS, Next.js, GraphQL required.",
+    "tags": [
+      "software-dev",
+      "project-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "budget",
+        "operator": "is",
+        "values": [
+          "15 USD"
+        ],
+        "unit": "USD",
+        "quantity": {
+          "value": 15,
+          "unit": "USD",
+          "unitType": "simple",
+          "numerator": "USD",
+          "semanticType": "price"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "react",
+          "next.js",
+          "graphql"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      },
+      {
+        "key": "location",
+        "operator": "is",
+        "values": [
+          "remote"
+        ],
+        "role": "constraint",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-20T08:46:44.700Z",
+    "updatedAt": "2026-10-20T08:46:44.700Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702076
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlo_3fsg31o",
+    "title": "Freelance frontend engineer for dashboard: React, Tailwind, Recharts. Rate $80-1...",
+    "content": "Freelance frontend engineer for dashboard: React, Tailwind, Recharts. Rate $80-120/hr. Start ASAP.",
+    "tags": [
+      "software-dev",
+      "project-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "120 USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": 120,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "rate",
+        "operator": "between",
+        "values": [
+          "80 USD/h",
+          "120 USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": 100,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "react",
+          "tailwind"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-18T23:02:57.646Z",
+    "updatedAt": "2026-10-18T23:02:57.646Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702076
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlo_2pwcz1y",
+    "title": "Full-stack dev for e-commerce: Node.js, React, PostgreSQL. 6-month contract, $10...",
+    "content": "Full-stack dev for e-commerce: Node.js, React, PostgreSQL. 6-month contract, $10k/month.",
+    "tags": [
+      "software-dev",
+      "project-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "node.js",
+          "react",
+          "postgresql"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-18T12:25:20.636Z",
+    "updatedAt": "2026-10-18T12:25:20.636Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702076
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlo_xlvcyrx",
+    "title": "DevOps engineer for K8s migration: AWS, Docker, Terraform. $150/hr, 3 months.",
+    "content": "DevOps engineer for K8s migration: AWS, Docker, Terraform. $150/hr, 3 months.",
+    "tags": [
+      "software-dev",
+      "project-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "aws",
+          "docker",
+          "terraform"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-30T11:19:48.021Z",
+    "updatedAt": "2026-10-30T11:19:48.021Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702076
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlo_91s7or2",
+    "title": "Mobile dev for React Native app: iOS/Android, push notifications, offline sync. ...",
+    "content": "Mobile dev for React Native app: iOS/Android, push notifications, offline sync. $5k fixed.",
+    "tags": [
+      "software-dev",
+      "project-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "react"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-18T09:18:49.310Z",
+    "updatedAt": "2026-10-18T09:18:49.310Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702076
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbksnlo_iwmslte",
+    "title": "Senior React Developer offering: TS, Next.js, Redux, Testing Library. $110/hr. F...",
+    "content": "Senior React Developer offering: TS, Next.js, Redux, Testing Library. $110/hr. Full-time remote.",
+    "tags": [
+      "software-dev",
+      "job-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "react",
+          "next.js"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      },
+      {
+        "key": "location",
+        "operator": "is",
+        "values": [
+          "remote"
+        ],
+        "role": "constraint",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "senior"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-01T11:53:44.280Z",
+    "updatedAt": "2026-11-01T11:53:44.280Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702076
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnlo_f9tr0ch",
+    "title": "Full-stack engineer available: Node.js, Python, React, AWS, Docker. 8yr exp. $10...",
+    "content": "Full-stack engineer available: Node.js, Python, React, AWS, Docker. 8yr exp. $100/hr.",
+    "tags": [
+      "software-dev",
+      "job-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "node.js",
+          "python",
+          "react",
+          "aws",
+          "docker"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-22T11:20:12.569Z",
+    "updatedAt": "2026-10-22T11:20:12.569Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702076
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnlo_bhe3vsh",
+    "title": "Frontend specialist: Vue.js, Nuxt, Pinia, Vitest, Tailwind. $90/hr. Part-time av...",
+    "content": "Frontend specialist: Vue.js, Nuxt, Pinia, Vitest, Tailwind. $90/hr. Part-time available.",
+    "tags": [
+      "software-dev",
+      "job-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "vue.js",
+          "vitest",
+          "tailwind"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-14T21:19:27.574Z",
+    "updatedAt": "2026-10-14T21:19:27.574Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702076
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnlo_btahqq0",
+    "title": "Backend dev: Go, PostgreSQL, gRPC, Kubernetes. $120/hr. Contract or full-time.",
+    "content": "Backend dev: Go, PostgreSQL, gRPC, Kubernetes. $120/hr. Contract or full-time.",
+    "tags": [
+      "software-dev",
+      "job-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "go",
+          "postgresql",
+          "grpc",
+          "kubernetes"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-22T05:45:01.329Z",
+    "updatedAt": "2026-10-22T05:45:01.329Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702076
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbksnlo_oxzcmht",
+    "title": "Mobile dev: React Native, Expo, TypeScript, Fastlane. $95/hr. Immediate availabi...",
+    "content": "Mobile dev: React Native, Expo, TypeScript, Fastlane. $95/hr. Immediate availability.",
+    "tags": [
+      "software-dev",
+      "job-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "react",
+          "expo",
+          "typescript",
+          "fastlane"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-27T01:50:42.830Z",
+    "updatedAt": "2026-10-27T01:50:42.830Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-software-dev",
+      "timestamp": 1794368702076
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  }
+]
