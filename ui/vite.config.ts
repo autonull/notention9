@@ -342,8 +342,6 @@ export default defineConfig(({mode}) => {
             cssCodeSplit: true,
             sourcemap: true,
             minify: false,
-            // Prevent chunk splitting to avoid React export mangling
-            experimentalMinChunkSize: 5000000, // 5MB - keep main chunk together
             terserOptions: {
                 compress: {
                     // Disable __name helper used for function name preservation
@@ -358,6 +356,20 @@ export default defineConfig(({mode}) => {
             rollupOptions: {
                 input: {
                     main: path.resolve(__dirname, 'index.html'),
+                },
+                output: {
+                    manualChunks: {
+                        'vendor-react': ['react', 'react-dom', 'react/jsx-runtime'],
+                        'vendor-router': ['react-router-dom'],
+                        'vendor-tiptap': ['@tiptap/core', '@tiptap/react', '@tiptap/starter-kit', '@tiptap/extension-bubble-menu', '@tiptap/extension-mention'],
+                        'vendor-utils': ['date-fns'],
+                        'vendor-ajv': ['ajv', 'ajv-formats'],
+                        'vendor-nostr': ['nostr-tools', '@noble/hashes'],
+                        'vendor-mlc': ['@mlc-ai/web-llm'],
+                        'vendor-core': ['@notention/core'],
+                        'vendor-mesh': ['@meshtastic/core', '@meshtastic/transport-web-serial'],
+                        'vendor-other': ['dompurify', 'iconv-lite', 'localforage', 'leaflet', 'react-big-calendar', 'tippy.js', '@google/genai', 'xmlchars'],
+                    },
                 },
                 external: (id) => {
                     // Explicitly do NOT externalize these Node.js built-ins (they'll be polyfilled)
