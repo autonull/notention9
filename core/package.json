@@ -57,6 +57,12 @@
       "node": "./dist/extraction/deterministic.js",
       "browser": "./dist/browser/extraction/deterministic.js"
     },
+    "./telemetry/journal": {
+      "import": "./dist/telemetry/journal.js",
+      "node": "./dist/telemetry/journal.js",
+      "browser": "./dist/browser/telemetry/journal.js",
+      "types": "./dist/telemetry/journal.d.ts"
+    },
     "./prompts": {
       "import": "./dist/prompts/index.js",
       "node": "./dist/prompts/index.js",
@@ -171,11 +177,6 @@
       "import": "./dist/telemetry/revisionStore.js",
       "node": "./dist/telemetry/revisionStore.js",
       "browser": "./dist/telemetry/revisionStore.browser.js"
-    },
-    "./telemetry/journal": {
-      "import": "./dist/telemetry/journal.js",
-      "node": "./dist/telemetry/journal.js",
-      "browser": "./dist/telemetry/journal.browser.js"
     },
     "./telemetry/constants": {
       "import": "./dist/telemetry/constants.js",

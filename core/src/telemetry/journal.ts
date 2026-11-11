@@ -32,7 +32,40 @@ import {
 } from './frictionUtils.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const DATA_DIR = join(__dirname, '..', '..', '..', '.notention', 'journal');
+
+/**
+ * Find the project root by searching for pnpm-workspace.yaml (workspace root marker)
+ * Works for both source (core/src/telemetry) and built (core/dist) locations
+ */
+function findProjectRoot(startDir: string): string {
+    let current = startDir;
+    while (current !== '/') {
+        // Primary marker: pnpm-workspace.yaml at workspace root
+        if (existsSync(join(current, 'pnpm-workspace.yaml'))) {
+            return current;
+        }
+        // Secondary marker: package.json with workspaces field (workspace root)
+        const pkgPath = join(current, 'package.json');
+        if (existsSync(pkgPath)) {
+            try {
+                const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
+                if (pkg.workspaces || pkg.private === true) {
+                    return current;
+                }
+            } catch {
+                // Ignore parse errors
+            }
+        }
+        const parent = dirname(current);
+        if (parent === current) break;
+        current = parent;
+    }
+    // Fallback: assume standard monorepo structure (2 levels up from core/dist or 3 from core/src/telemetry)
+    return join(__dirname, '..', '..');
+}
+
+const PROJECT_ROOT = findProjectRoot(__dirname);
+const DATA_DIR = join(PROJECT_ROOT, '.notention', 'journal');
 const JOURNAL_FILE = join(DATA_DIR, 'friction.jsonl');
 const CONFIG_FILE = join(DATA_DIR, 'config.json');
 
