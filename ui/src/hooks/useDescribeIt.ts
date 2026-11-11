@@ -19,7 +19,7 @@ export interface DescribedProperty extends PropertyProposal {
  * never loads a model or calls a provider.
  */
 export function useDescribeIt(ontology: OntologyNode[]) {
-    const {provider, providerKind} = useGardener();
+    const {provider, providerKind, whenAIReady} = useGardener();
     const {settings, setSettings} = useSettings();
 
     const [proposals, setProposals] = useState<DescribedProperty[]>([]);
@@ -31,6 +31,8 @@ export function useDescribeIt(ontology: OntologyNode[]) {
         setStatus('loading');
         setError(null);
         try {
+            // Providers register asynchronously; without them the proposal is empty.
+            await whenAIReady();
             const result = await proposeProperties(activeProvider, text, ontology);
             setProposals(result.map(proposal => ({...proposal, status: 'pending' as const})));
         } catch (e) {
@@ -39,7 +41,7 @@ export function useDescribeIt(ontology: OntologyNode[]) {
         } finally {
             setStatus('idle');
         }
-    }, [provider, ontology]);
+    }, [provider, ontology, whenAIReady]);
 
     const suggest = useCallback(async (text: string) => {
         if (!text.trim()) return;

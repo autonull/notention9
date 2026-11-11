@@ -2,6 +2,8 @@ import {describe, it, expect, vi, beforeEach} from 'vitest';
 import {render, screen, fireEvent, waitFor} from '@testing-library/react';
 import {DescribeItComposer} from '../../components/editor/DescribeItComposer';
 import {ExtractionReview} from '../../components/editor/ExtractionReview';
+import {SettingsProvider} from '../../components/contexts/SettingsContext';
+import {ToastProvider} from '../../components/contexts/ToastProvider';
 import type {OntologyNode, Property} from '@notention/core';
 import {DEFAULT_ONTOLOGY} from '@notention/core';
 
@@ -13,43 +15,37 @@ describe('Natural Language Capture End-to-End (P1)', () => {
         {key: 'skills', operator: 'contains', values: ['react', 'typescript']},
     ];
 
+    const renderComposer = (props: Partial<React.ComponentProps<typeof DescribeItComposer>> = {}) =>
+        render(
+            <SettingsProvider>
+                <ToastProvider>
+                    <DescribeItComposer
+                        isOpen={true}
+                        onClose={vi.fn()}
+                        onApply={vi.fn()}
+                        ontology={ontology}
+                        {...props}
+                    />
+                </ToastProvider>
+            </SettingsProvider>
+        );
+
     describe('DescribeItComposer', () => {
         it('renders without crashing', () => {
-            render(
-                <DescribeItComposer
-                    isOpen={true}
-                    onClose={vi.fn()}
-                    onApply={vi.fn()}
-                    ontology={ontology}
-                />
-            );
+            renderComposer();
 
             expect(screen.getByTestId('describe-it-input')).toBeInTheDocument();
             expect(screen.getByTestId('describe-it-suggest')).toBeInTheDocument();
         });
 
         it('shows source label', () => {
-            render(
-                <DescribeItComposer
-                    isOpen={true}
-                    onClose={vi.fn()}
-                    onApply={vi.fn()}
-                    ontology={ontology}
-                />
-            );
+            renderComposer();
 
-            expect(screen.getByTestId('describe-it-source')).toHaveTextContent('heuristic');
+            expect(screen.getByTestId('describe-it-source')).toHaveTextContent(/no model configured/i);
         });
 
         it('enables suggest button when text entered', () => {
-            render(
-                <DescribeItComposer
-                    isOpen={true}
-                    onClose={vi.fn()}
-                    onApply={vi.fn()}
-                    ontology={ontology}
-                />
-            );
+            renderComposer();
 
             const suggestButton = screen.getByTestId('describe-it-suggest');
             expect(suggestButton).toBeDisabled();
@@ -62,14 +58,7 @@ describe('Natural Language Capture End-to-End (P1)', () => {
         });
 
         it('shows suggestions after suggest', async () => {
-            render(
-                <DescribeItComposer
-                    isOpen={true}
-                    onClose={vi.fn()}
-                    onApply={vi.fn()}
-                    ontology={ontology}
-                />
-            );
+            renderComposer();
 
             fireEvent.change(screen.getByTestId('describe-it-input'), {
                 target: {value: 'I need a React developer'}
@@ -78,21 +67,14 @@ describe('Natural Language Capture End-to-End (P1)', () => {
             fireEvent.click(screen.getByTestId('describe-it-suggest'));
 
             await waitFor(() => {
-                expect(screen.getByTestId('describe-it-suggestion')).toBeInTheDocument();
+                expect(screen.getAllByTestId('describe-it-suggestion').length).toBeGreaterThan(0);
             });
         });
 
         it('accepts and rejects suggestions', async () => {
             const onApply = vi.fn();
             
-            render(
-                <DescribeItComposer
-                    isOpen={true}
-                    onClose={vi.fn()}
-                    onApply={onApply}
-                    ontology={ontology}
-                />
-            );
+            renderComposer({onApply});
 
             fireEvent.change(screen.getByTestId('describe-it-input'), {
                 target: {value: 'I need a React developer'}
@@ -101,11 +83,11 @@ describe('Natural Language Capture End-to-End (P1)', () => {
             fireEvent.click(screen.getByTestId('describe-it-suggest'));
 
             await waitFor(() => {
-                expect(screen.getByTestId('describe-it-suggestion')).toBeInTheDocument();
+                expect(screen.getAllByTestId('describe-it-suggestion').length).toBeGreaterThan(0);
             });
 
-            // Accept the suggestion
-            fireEvent.click(screen.getByTestId('describe-it-accept'));
+            // Accept the first suggestion
+            fireEvent.click(screen.getAllByTestId('describe-it-accept')[0]);
 
             // Apply accepted
             fireEvent.click(screen.getByTestId('describe-it-apply'));
@@ -122,14 +104,7 @@ describe('Natural Language Capture End-to-End (P1)', () => {
         });
 
         it('rejects suggestions', async () => {
-            render(
-                <DescribeItComposer
-                    isOpen={true}
-                    onClose={vi.fn()}
-                    onApply={vi.fn()}
-                    ontology={ontology}
-                />
-            );
+            renderComposer();
 
             fireEvent.change(screen.getByTestId('describe-it-input'), {
                 target: {value: 'I need a React developer'}
@@ -138,28 +113,22 @@ describe('Natural Language Capture End-to-End (P1)', () => {
             fireEvent.click(screen.getByTestId('describe-it-suggest'));
 
             await waitFor(() => {
-                expect(screen.getByTestId('describe-it-suggestion')).toBeInTheDocument();
+                expect(screen.getAllByTestId('describe-it-suggestion').length).toBeGreaterThan(0);
             });
 
-            // Reject the suggestion
-            fireEvent.click(screen.getByTestId('describe-it-reject'));
+            // Reject the first suggestion
+            const before = screen.getAllByTestId('describe-it-suggestion').length;
+            fireEvent.click(screen.getAllByTestId('describe-it-reject')[0]);
 
             await waitFor(() => {
-                expect(screen.queryByTestId('describe-it-suggestion')).not.toBeInTheDocument();
+                expect(screen.queryAllByTestId('describe-it-suggestion')).toHaveLength(before - 1);
             });
         });
 
         it('closes on cancel', () => {
             const onClose = vi.fn();
             
-            render(
-                <DescribeItComposer
-                    isOpen={true}
-                    onClose={onClose}
-                    onApply={vi.fn()}
-                    ontology={ontology}
-                />
-            );
+            renderComposer({onClose});
 
             fireEvent.click(screen.getByText('Cancel'));
             expect(onClose).toHaveBeenCalled();

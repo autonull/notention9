@@ -89,6 +89,8 @@ vi.mock('@notention/core/ui/strategy', () => {
         getStrategyRegistry: () => mockStrategyRegistry,
         resetStrategyRegistry: vi.fn(),
         createComponentStrategy: vi.fn(),
+        getStrategiesForSeam: (seamId: string) => Array.from(mockStrategyRegistry.values()).filter(s => s.seam.id === seamId),
+        getStrategy: (seamId: string, strategyId: string) => mockStrategyRegistry.get(`${seamId}:${strategyId}`),
     };
 });
 

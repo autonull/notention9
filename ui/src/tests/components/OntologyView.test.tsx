@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { OntologyView } from '../../components/views/OntologyView';
 import { useOntologyView } from '../../hooks/useOntologyView';
 import { useView } from '../../hooks/useViewContext';
@@ -123,10 +123,8 @@ describe('OntologyView', () => {
         // Confirm modal
         expect(screen.getByText('Delete Concept')).toBeTruthy();
 
-        // Find the destructive button in the modal dialog (variant="danger")
         const modalDialog = screen.getByRole('dialog');
-        const deleteConfirmBtn = modalDialog.querySelector('button.btn-danger') as HTMLButtonElement;
-        fireEvent.click(deleteConfirmBtn);
+        fireEvent.click(within(modalDialog).getByRole('button', {name: 'Delete'}));
 
         expect(mockHandleDeleteNode).toHaveBeenCalledWith('root1');
     });

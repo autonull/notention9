@@ -8,7 +8,7 @@ export function createTestNote(overrides: Partial<Note> = {}): Note {
     timestamp: Date.now(),
   };
   const defaultPrivacy: PrivacyLevel = 'private';
-  const defaultPriority = 0;
+  const defaultPriority = 1;
 
   return {
     id: 'test-note-1',

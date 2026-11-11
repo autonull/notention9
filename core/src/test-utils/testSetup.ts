@@ -3,29 +3,34 @@ import { vi, afterEach, beforeAll, afterAll } from 'vitest';
 export const MEMORY_THRESHOLD_MB = 500;
 export const MEMORY_THRESHOLD_BYTES = MEMORY_THRESHOLD_MB * 1024 * 1024;
 
+/**
+ * In-memory Storage that actually stores.
+ * A stub that always returns null makes every write-then-read test fail.
+ */
+function createMemoryStorage(): Storage {
+    const store = new Map<string, string>();
+    return {
+        get length() {
+            return store.size;
+        },
+        clear: () => store.clear(),
+        getItem: key => (store.has(key) ? store.get(key)! : null),
+        key: index => Array.from(store.keys())[index] ?? null,
+        removeItem: key => {
+            store.delete(key);
+        },
+        setItem: (key, value) => {
+            store.set(key, String(value));
+        },
+    };
+}
+
 export function setupTestEnvironment(): void {
     if (typeof window !== 'undefined' && window.HTMLElement?.prototype) {
         window.HTMLElement.prototype.scrollIntoView = vi.fn();
 
-        const localStorageMock = {
-            getItem: vi.fn(() => null),
-            setItem: vi.fn(),
-            removeItem: vi.fn(),
-            clear: vi.fn(),
-            get length() { return 0; },
-            key: vi.fn(() => null),
-        };
-        Object.defineProperty(window, 'localStorage', { value: localStorageMock, writable: true });
-
-        const sessionStorageMock = {
-            getItem: vi.fn(() => null),
-            setItem: vi.fn(),
-            removeItem: vi.fn(),
-            clear: vi.fn(),
-            get length() { return 0; },
-            key: vi.fn(() => null),
-        };
-        Object.defineProperty(window, 'sessionStorage', { value: sessionStorageMock, writable: true });
+        Object.defineProperty(window, 'localStorage', {value: createMemoryStorage(), writable: true});
+        Object.defineProperty(window, 'sessionStorage', {value: createMemoryStorage(), writable: true});
 
         Object.defineProperty(window, 'matchMedia', {
             writable: true,

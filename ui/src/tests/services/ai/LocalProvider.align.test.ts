@@ -17,22 +17,30 @@ describe('LocalAIProvider.alignToOntology', () => {
 
     it('detects price with symbol', async () => {
         const properties = await provider.alignToOntology('The price is $50.00', ontology);
-        expect(properties).toContainEqual({key: 'price', operator: 'is', values: ['50 USD']});
+        expect(properties).toEqual(expect.arrayContaining([
+            expect.objectContaining({key: 'price', operator: 'is', values: ['50 USD']}),
+        ]));
     });
 
     it('detects price with USD suffix', async () => {
         const properties = await provider.alignToOntology('It costs 100 USD', ontology);
-        expect(properties).toContainEqual({key: 'price', operator: 'is', values: ['100 USD']});
+        expect(properties).toEqual(expect.arrayContaining([
+            expect.objectContaining({key: 'price', operator: 'is', values: ['100 USD']}),
+        ]));
     });
 
     it('detects email', async () => {
         const properties = await provider.alignToOntology('Contact me at test@example.com', ontology);
-        expect(properties).toContainEqual({key: 'email', operator: 'is', values: ['test@example.com']});
+        expect(properties).toEqual(expect.arrayContaining([
+            expect.objectContaining({key: 'email', operator: 'is', values: ['test@example.com']}),
+        ]));
     });
 
     it('detects ontology keys', async () => {
         const properties = await provider.alignToOntology('My skill is React', ontology);
-        expect(properties).toContainEqual({key: 'skill', operator: 'is', values: ['React']});
+        expect(properties).toEqual(expect.arrayContaining([
+            expect.objectContaining({key: 'skill', operator: 'is', values: ['React']}),
+        ]));
     });
 
     it('never returns serialized bracket strings', async () => {

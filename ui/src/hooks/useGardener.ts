@@ -1,4 +1,4 @@
-import {useCallback, useMemo, useEffect, useState} from 'react';
+import {useCallback, useMemo, useEffect, useState, useRef} from 'react';
 import {capabilities} from '../config/Capabilities';
 import {useSettings} from './useSettingsContext';
 import {useToast} from './useToast';
@@ -50,6 +50,7 @@ export function useGardener() {
     const {settings, setSettings} = useSettings();
     const {addToast} = useToast();
     const [initialized, setInitialized] = useState(false);
+    const aiReady = useRef<Promise<void>>(Promise.resolve());
 
     const provider = useMemo(() => {
         return routerAdapter;
@@ -57,18 +58,19 @@ export function useGardener() {
 
     // Initialize AI providers when settings change
     useEffect(() => {
-        const init = async () => {
-            await initializeAI({
-                remoteApiKey: settings.googleGeminiApiKey,
-                webllmModelId: settings.aiModel,
-                enableRemote: settings.aiEnabled && settings.aiProvider !== 'webllm' && capabilities.llm !== 'none',
-                enableWebLLM: settings.aiEnabled && settings.aiProvider === 'webllm' && capabilities.llm === 'browser',
-                enableHeuristic: true,
-            });
-            setInitialized(true);
-        };
-        init();
+        const init = initializeAI({
+            remoteApiKey: settings.googleGeminiApiKey,
+            webllmModelId: settings.aiModel,
+            enableRemote: settings.aiEnabled && settings.aiProvider !== 'webllm' && capabilities.llm !== 'none',
+            enableWebLLM: settings.aiEnabled && settings.aiProvider === 'webllm' && capabilities.llm === 'browser',
+            enableHeuristic: true,
+        });
+        aiReady.current = init;
+        init.then(() => setInitialized(true));
     }, [settings.aiEnabled, settings.aiProvider, settings.aiModel, settings.googleGeminiApiKey]);
+
+    /** Resolves once the AI providers are registered. */
+    const whenAIReady = useCallback(() => aiReady.current, []);
 
     const gardener = useMemo(() => new Gardener(provider), [provider]);
 
@@ -165,5 +167,5 @@ export function useGardener() {
         return result;
     }, [gardener, settings.ontology, addToast]);
 
-    return {evolveOntology, learnFromProperties, alignToOntology, optimizeOntology, provider, providerKind: provider.kind, initialized, router: getInferenceRouter()};
+    return {evolveOntology, learnFromProperties, alignToOntology, optimizeOntology, provider, providerKind: provider.kind, initialized, whenAIReady, router: getInferenceRouter()};
 };

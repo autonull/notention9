@@ -3,13 +3,15 @@
 import {execSync} from 'node:child_process';
 import {globSync} from 'glob';
 import path from 'path';
+import {fileURLToPath} from 'url';
 
-const TEST_DIR = path.join('/home/me/notention9', 'ui', 'src', 'tests');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const TEST_DIR = path.join(ROOT, 'ui', 'src', 'tests');
 
-// Auto-discover all test files
+// Auto-discover all test files (paths relative to the ui package, where vitest runs)
 function discoverTestFiles(): string[] {
     const files = globSync('**/*.test.{ts,tsx}', {cwd: TEST_DIR, absolute: false});
-    return files.sort();
+    return files.sort().map(file => path.join('src', 'tests', file));
 }
 
 // Group test files by directory for better batching (tests in same dir likely share setup)
@@ -44,17 +46,11 @@ function groupByDirectory(files: string[]): string[][] {
     return batches;
 }
 
-// Known failing tests (pre-existing, not regressions)
-const knownFailures = new Set([
-    'src/tests/components/OntologyView.test.tsx',
-    'src/tests/plugins/MetaphorPlugin.test.tsx',
-]);
-
 function run(cmd: string): { passed: boolean; output: string } {
     console.log(`\n🔄 ${cmd}`);
     try {
         const output = execSync(cmd, {
-            cwd: '/home/me/notention9',
+            cwd: ROOT,
             stdio: 'pipe',
             encoding: 'utf-8',
             env: {...process.env, NODE_OPTIONS: '--max-old-space-size=4096'}
@@ -68,13 +64,6 @@ function run(cmd: string): { passed: boolean; output: string } {
     }
 }
 
-function hasOnlyKnownFailures(output: string): boolean {
-    const failureLines = output.match(/FAIL\s+(.+?)\s+\[/g) || [];
-    const failedFiles = failureLines.map(line => line.replace('FAIL', '').replace('[', '').trim());
-    
-    return failedFiles.every(file => knownFailures.has(file));
-}
-
 async function main(): Promise<void> {
     console.log('🚀 Running UI tests in batches to avoid OOM');
     console.log('==========================================');
@@ -86,24 +75,18 @@ async function main(): Promise<void> {
     console.log(`📦 Created ${batches.length} batches`);
     
     let allPassed = true;
-    let hasKnownFailures = false;
     
     for (let i = 0; i < batches.length; i++) {
         const batch = batches[i];
         console.log(`\n📦 Batch ${i + 1}/${batches.length} (${batch.length} files)`);
         
         const files = batch.join(' ');
-        const result = run(`pnpm --filter @notention/ui vitest run ${files}`);
+        const result = run(`pnpm --filter @notention/ui exec vitest run ${files}`);
         
         if (!result.passed) {
-            if (hasOnlyKnownFailures(result.output)) {
-                console.log(`⚠️  Batch ${i + 1} has only known pre-existing failures`);
-                hasKnownFailures = true;
-            } else {
-                allPassed = false;
-                console.error(`\n❌ Batch ${i + 1} failed with new failures`);
-                console.error(result.output);
-            }
+            allPassed = false;
+            console.error(`\n❌ Batch ${i + 1} failed`);
+            console.error(result.output);
         }
         
         // Small delay between batches to let memory settle
@@ -111,13 +94,9 @@ async function main(): Promise<void> {
     }
     
     if (allPassed) {
-        if (hasKnownFailures) {
-            console.log('\n✨ All UI test batches passed (with known pre-existing failures)');
-        } else {
-            console.log('\n✨ All UI test batches passed!');
-        }
+        console.log('\n✨ All UI test batches passed!');
     } else {
-        console.error('\n❌ Some UI test batches failed with new failures');
+        console.error('\n❌ Some UI test batches failed');
         process.exit(1);
     }
 }

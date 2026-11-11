@@ -359,10 +359,6 @@ export async function initializeProfiles(): Promise<void> {
 
 let initPromise: Promise<void> | null = null;
 
-// Start strategy system initialization early (at module load time) to avoid
-// React 19 hydration error #525 from lazy initialization during render
-const _initPromise = initializeStrategySystem();
-
 export function initializeStrategySystem(): Promise<void> {
     initPromise ??= (async () => {
         await initializeProfiles();

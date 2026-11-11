@@ -2,6 +2,7 @@ import {describe, expect, it, vi} from 'vitest';
 import {METAPHOR_PLUGIN_MANIFEST, MetaphorPlugin} from '../../plugins/metaphor/MetaphorPlugin';
 import {PluginAPI} from '../../plugins/PluginSystem';
 import {MetaphorRenderer} from '../../components/metaphor/MetaphorRenderer';
+import {Logger} from '@notention/core';
 
 describe('MetaphorPlugin', () => {
     it('should have correct manifest', () => {
@@ -32,11 +33,11 @@ describe('MetaphorPlugin', () => {
 
     it('should log on deactivation', () => {
         const plugin = new MetaphorPlugin();
-        const consoleSpy = vi.spyOn(console, 'log');
+        const infoSpy = vi.spyOn(Logger.getInstance(), 'info');
 
         plugin.deactivate();
 
-        expect(consoleSpy).toHaveBeenCalledWith('Metaphor Plugin Deactivated');
-        consoleSpy.mockRestore();
+        expect(infoSpy).toHaveBeenCalledWith('Metaphor Plugin Deactivated');
+        infoSpy.mockRestore();
     });
 });
