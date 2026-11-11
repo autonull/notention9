@@ -625,3 +625,16 @@ Facilitated, in priority order.
 | | | - React error #525 blocks E2E browser benchmark; Node.js workaround validated |
 
 ---
+
+## 🐛 Known Issues to Fix (Next Session)
+
+| # | Issue | Location | Priority | Notes |
+|---|-------|----------|----------|-------|
+| **I1** | E2E journey tests fail: "Vitest failed to access its internal state" | `ui/test/journeys/*.spec.ts`, preview server | High | Browser console error from Vitest leaking into production preview. Root cause: Vite dev server config or test polyfill bleed. Fix before P2 comprehension probe. |
+| **I2** | Pre-existing UI unit test failures (41 test files) | `ui/src/tests/**/*.test.tsx` | Medium | Currently marked "known pre-existing failures" in batched test runner. Need triage: fix or delete. |
+| **I3** | CSS minify warnings: fractional `var(--space-0.5)` tokens | Tailwind config / CSS variables | Low | `esbuild` CSS parser warnings. Not breaking but noise. Fix via `postcss-custom-properties` or token normalization. |
+| **I4** | `pnpm --filter @notention/ui typecheck` errors (if any remain) | UI package | High | Gate for `pnpm verify`. Should be 0. |
+| **I5** | Corpus format: `.md` → `.json` with provenance manifest | `corpus/*.md` | High | P2c.1 requires JSON notes + manifest. Current 372 lines across 6 domains in Markdown. |
+| **I6** | Benchmark: React error #525 blocks E2E browser run | `scripts/bench-match-quality.ts` | Medium | Node.js workaround validated. Browser run needed for full verification. |
+| **I7** | `VITE_DEV_HOOKS` leakage: preview shows `VITE_DEV_HOOKS: true isDev: false` | `ui/vite.config.ts`, build env | Medium | Dev flag should not appear in production preview. |
+| **I8** | Chunk size warnings: main chunk > 500kB, vendor > 6MB | `ui/vite.config.ts` rollupOptions | Low | Consider manualChunks for code-splitting. Not blocking. |
