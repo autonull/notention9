@@ -161,7 +161,8 @@ The dependency direction is deliberate: the core knows nothing about React or th
 | Note-defined skills, autonomous tasks, pattern predictions | 🧪 Emerging |
 | Canonical CBOR, content-addressed note identity, sealed envelopes, transition/payment/trust notes, libp2p/HTTP bindings, CRDT sync | 🧭 Specified, not yet complete |
 | Corpus for match quality evaluation | ✅ 864 notes, 14 domains, CC0 licensed |
-| Golden path E2E tests | ⚠️ Blocked by React 19 production build issue (#525); core matching verified by `check-demo-match.ts` |
+| Golden path E2E tests | ✅ `pnpm verify` L3 runs the golden path against the production build |
+| Comprehension, match relevance, and friction evidence from real use | 🧪 Instrumented (`pnpm probe`), no sessions recorded yet |
 
 Not every idea in the protocol specification is implemented. The workspace is usable now; the deeper coordination protocol is a direction, not a claim. `README2.md` records both the normative design and the current gaps.
 
