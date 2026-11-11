@@ -1,6 +1,6 @@
 [
   {
-    "id": "note_mwbksnll_endbhda",
+    "id": "note_mwbqjkyq_cq1soka",
     "title": "Need employment contract reviewed: non-compete clause, IP assignment, arbitratio...",
     "content": "Need employment contract reviewed: non-compete clause, IP assignment, arbitration, severance. Remote work, California-based.",
     "tags": [
@@ -29,20 +29,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-30T05:12:31.346Z",
-    "updatedAt": "2026-10-30T05:12:31.346Z",
+    "createdAt": "2026-10-31T04:28:58.495Z",
+    "updatedAt": "2026-10-31T04:28:58.495Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
-    "priority": 2,
+    "priority": 3,
     "status": "open"
   },
   {
-    "id": "note_mwbksnll_eurv80i",
+    "id": "note_mwbqjkyq_8lg7cnv",
     "title": "Freelance contract for software development: scope, milestones, payment terms, I...",
     "content": "Freelance contract for software development: scope, milestones, payment terms, IP ownership, liability cap, termination.",
     "tags": [
@@ -61,20 +61,20 @@
         "provenance": "inferred"
       }
     ],
-    "createdAt": "2026-11-05T13:14:15.663Z",
-    "updatedAt": "2026-11-05T13:14:15.663Z",
+    "createdAt": "2026-10-23T04:14:01.222Z",
+    "updatedAt": "2026-10-23T04:14:01.222Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
-    "priority": 5,
+    "priority": 3,
     "status": "open"
   },
   {
-    "id": "note_mwbksnll_xx7edz9",
+    "id": "note_mwbqjkyq_kxnzjac",
     "title": "SaaS terms of service review: data privacy, GDPR/CCPA compliance, SLA, limitatio...",
     "content": "SaaS terms of service review: data privacy, GDPR/CCPA compliance, SLA, limitation of liability, indemnification.",
     "tags": [
@@ -93,20 +93,20 @@
         "provenance": "inferred"
       }
     ],
-    "createdAt": "2026-11-02T02:07:58.230Z",
-    "updatedAt": "2026-11-02T02:07:58.230Z",
+    "createdAt": "2026-10-28T04:29:13.804Z",
+    "updatedAt": "2026-10-28T04:29:13.804Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
-    "priority": 3,
+    "priority": 4,
     "status": "open"
   },
   {
-    "id": "note_mwbksnll_1uobm9j",
+    "id": "note_mwbqjkyq_iv3v32s",
     "title": "Partnership agreement for consulting firm: profit sharing, decision making, capi...",
     "content": "Partnership agreement for consulting firm: profit sharing, decision making, capital contributions, exit strategy, dispute resolution.",
     "tags": [
@@ -125,20 +125,20 @@
         "provenance": "inferred"
       }
     ],
-    "createdAt": "2026-10-23T13:45:04.148Z",
-    "updatedAt": "2026-10-23T13:45:04.148Z",
+    "createdAt": "2026-11-08T07:19:21.538Z",
+    "updatedAt": "2026-11-08T07:19:21.538Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
-    "priority": 2,
+    "priority": 1,
     "status": "open"
   },
   {
-    "id": "note_mwbksnll_zvx9mr4",
+    "id": "note_mwbqjkyq_k0029og",
     "title": "NDA for potential acquisition discussions: mutual, 3-year term, residual knowled...",
     "content": "NDA for potential acquisition discussions: mutual, 3-year term, residual knowledge clause, permitted disclosures.",
     "tags": [
@@ -157,20 +157,20 @@
         "provenance": "inferred"
       }
     ],
-    "createdAt": "2026-11-01T01:45:35.547Z",
-    "updatedAt": "2026-11-01T01:45:35.547Z",
+    "createdAt": "2026-11-03T03:58:28.211Z",
+    "updatedAt": "2026-11-03T03:58:28.211Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
-    "priority": 2,
+    "priority": 5,
     "status": "open"
   },
   {
-    "id": "note_mwbksnll_ytiaml2",
+    "id": "note_mwbqjkyq_61yq99h",
     "title": "Corporate attorney offering: entity formation, governance, contracts, fundraisin...",
     "content": "Corporate attorney offering: entity formation, governance, contracts, fundraising, M&A. Startup-focused, fixed-fee packages.",
     "tags": [
@@ -199,20 +199,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-22T08:02:08.612Z",
-    "updatedAt": "2026-10-22T08:02:08.612Z",
+    "createdAt": "2026-10-16T01:01:20.910Z",
+    "updatedAt": "2026-10-16T01:01:20.910Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
-    "priority": 1,
+    "priority": 4,
     "status": "available"
   },
   {
-    "id": "note_mwbksnll_vuru8yo",
+    "id": "note_mwbqjkyq_9kv8hph",
     "title": "IP lawyer available: patents, trademarks, copyrights, trade secrets, licensing, ...",
     "content": "IP lawyer available: patents, trademarks, copyrights, trade secrets, licensing, infringement defense. Software/biotech experience.",
     "tags": [
@@ -231,20 +231,20 @@
         "provenance": "inferred"
       }
     ],
-    "createdAt": "2026-10-24T02:50:43.249Z",
-    "updatedAt": "2026-10-24T02:50:43.249Z",
+    "createdAt": "2026-11-08T11:36:10.434Z",
+    "updatedAt": "2026-11-08T11:36:10.434Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
-    "priority": 4,
+    "priority": 1,
     "status": "available"
   },
   {
-    "id": "note_mwbksnll_y4s8wv9",
+    "id": "note_mwbqjkyq_szhtwwk",
     "title": "Employment lawyer for executives: offer letters, equity packages, separation agr...",
     "content": "Employment lawyer for executives: offer letters, equity packages, separation agreements, litigation. Big law background.",
     "tags": [
@@ -263,20 +263,20 @@
         "provenance": "inferred"
       }
     ],
-    "createdAt": "2026-10-26T00:21:14.056Z",
-    "updatedAt": "2026-10-26T00:21:14.056Z",
+    "createdAt": "2026-10-15T02:50:03.337Z",
+    "updatedAt": "2026-10-15T02:50:03.337Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
-    "priority": 1,
+    "priority": 2,
     "status": "available"
   },
   {
-    "id": "note_mwbksnll_fka8wpa",
+    "id": "note_mwbqjkyq_gem4cf1",
     "title": "Data privacy consultant: GDPR, CCPA, HIPAA, SOC2, DPIAs, vendor assessments, bre...",
     "content": "Data privacy consultant: GDPR, CCPA, HIPAA, SOC2, DPIAs, vendor assessments, breach response. CIPP certified.",
     "tags": [
@@ -295,20 +295,20 @@
         "provenance": "inferred"
       }
     ],
-    "createdAt": "2026-10-15T06:44:43.677Z",
-    "updatedAt": "2026-10-15T06:44:43.677Z",
+    "createdAt": "2026-10-13T23:25:09.098Z",
+    "updatedAt": "2026-10-13T23:25:09.098Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
     "priority": 5,
     "status": "available"
   },
   {
-    "id": "note_mwbksnll_hc2sz0b",
+    "id": "note_mwbqjkyq_i6ueaqh",
     "title": "Contract attorney: commercial agreements, SaaS, procurement, vendor management, ...",
     "content": "Contract attorney: commercial agreements, SaaS, procurement, vendor management, negotiation. 10 years in-house.",
     "tags": [
@@ -355,20 +355,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-23T10:55:24.121Z",
-    "updatedAt": "2026-10-23T10:55:24.121Z",
+    "createdAt": "2026-10-14T11:33:50.079Z",
+    "updatedAt": "2026-10-14T11:33:50.079Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
-    "priority": 2,
+    "priority": 1,
     "status": "available"
   },
   {
-    "id": "note_mwbksnll_94k6fkg",
+    "id": "note_mwbqjkyq_kot8q8v",
     "title": "SOC2 Type II preparation: policy drafting, evidence collection, auditor coordina...",
     "content": "SOC2 Type II preparation: policy drafting, evidence collection, auditor coordination, gap analysis. 6-month timeline.",
     "tags": [
@@ -376,20 +376,20 @@
       "compliance-&-regulatory"
     ],
     "properties": [],
-    "createdAt": "2026-10-22T19:53:56.365Z",
-    "updatedAt": "2026-10-22T19:53:56.365Z",
+    "createdAt": "2026-10-18T07:34:54.537Z",
+    "updatedAt": "2026-10-18T07:34:54.537Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
     "priority": 4,
     "status": "open"
   },
   {
-    "id": "note_mwbksnll_i91mpku",
+    "id": "note_mwbqjkyq_0okcxh0",
     "title": "HIPAA compliance for health tech: BAA management, risk assessment, training, bre...",
     "content": "HIPAA compliance for health tech: BAA management, risk assessment, training, breach notification, encryption.",
     "tags": [
@@ -397,20 +397,20 @@
       "compliance-&-regulatory"
     ],
     "properties": [],
-    "createdAt": "2026-10-17T02:57:46.922Z",
-    "updatedAt": "2026-10-17T02:57:46.922Z",
+    "createdAt": "2026-10-19T14:54:16.154Z",
+    "updatedAt": "2026-10-19T14:54:16.154Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
-    "priority": 3,
+    "priority": 5,
     "status": "open"
   },
   {
-    "id": "note_mwbksnll_yrvh8ak",
+    "id": "note_mwbqjkyq_2fv7obd",
     "title": "GDPR compliance program: DPIA, DPO, data mapping, consent management, DSAR proce...",
     "content": "GDPR compliance program: DPIA, DPO, data mapping, consent management, DSAR process, international transfers.",
     "tags": [
@@ -418,20 +418,20 @@
       "compliance-&-regulatory"
     ],
     "properties": [],
-    "createdAt": "2026-10-16T02:32:06.093Z",
-    "updatedAt": "2026-10-16T02:32:06.093Z",
+    "createdAt": "2026-10-17T14:37:30.070Z",
+    "updatedAt": "2026-10-17T14:37:30.070Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
-    "priority": 3,
+    "priority": 2,
     "status": "open"
   },
   {
-    "id": "note_mwbksnll_mdwy3kr",
+    "id": "note_mwbqjkyq_mn74w29",
     "title": "SEC compliance for token offering: Reg D, Reg A+, Reg CF, accredited investor ve...",
     "content": "SEC compliance for token offering: Reg D, Reg A+, Reg CF, accredited investor verification, ongoing reporting.",
     "tags": [
@@ -460,20 +460,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-11-05T10:59:15.794Z",
-    "updatedAt": "2026-11-05T10:59:15.794Z",
+    "createdAt": "2026-11-08T15:05:03.281Z",
+    "updatedAt": "2026-11-08T15:05:03.281Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
     "priority": 3,
     "status": "available"
   },
   {
-    "id": "note_mwbksnll_b4x2ypw",
+    "id": "note_mwbqjkyq_xbbujvi",
     "title": "Export control compliance: ITAR, EAR, classification, licensing, restricted part...",
     "content": "Export control compliance: ITAR, EAR, classification, licensing, restricted party screening, deemed exports.",
     "tags": [
@@ -492,20 +492,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-25T19:58:34.002Z",
-    "updatedAt": "2026-10-25T19:58:34.002Z",
+    "createdAt": "2026-11-06T11:34:14.356Z",
+    "updatedAt": "2026-11-06T11:34:14.356Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
-    "priority": 5,
+    "priority": 3,
     "status": "open"
   },
   {
-    "id": "note_mwbksnll_lewpfw5",
+    "id": "note_mwbqjkyq_uryzsu7",
     "title": "Mediation for co-founder dispute: equity split, decision authority, vesting, int...",
     "content": "Mediation for co-founder dispute: equity split, decision authority, vesting, intellectual property, dissolution terms.",
     "tags": [
@@ -513,20 +513,20 @@
       "dispute-resolution"
     ],
     "properties": [],
-    "createdAt": "2026-10-27T22:08:04.706Z",
-    "updatedAt": "2026-10-27T22:08:04.706Z",
+    "createdAt": "2026-10-25T21:10:39.001Z",
+    "updatedAt": "2026-10-25T21:10:39.001Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
-    "priority": 2,
+    "priority": 5,
     "status": "open"
   },
   {
-    "id": "note_mwbksnll_xodo2me",
+    "id": "note_mwbqjkyq_x3b2je3",
     "title": "Arbitration for software license dispute: scope creep, acceptance criteria, warr...",
     "content": "Arbitration for software license dispute: scope creep, acceptance criteria, warranty, damages, jurisdiction.",
     "tags": [
@@ -534,20 +534,20 @@
       "dispute-resolution"
     ],
     "properties": [],
-    "createdAt": "2026-10-19T20:39:55.848Z",
-    "updatedAt": "2026-10-19T20:39:55.848Z",
+    "createdAt": "2026-10-20T06:21:11.389Z",
+    "updatedAt": "2026-10-20T06:21:11.389Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
-    "priority": 1,
+    "priority": 4,
     "status": "open"
   },
   {
-    "id": "note_mwbksnll_r7h61ld",
+    "id": "note_mwbqjkyq_0t6fpkq",
     "title": "Small claims for unpaid invoices: $15k, net-30 terms, late fees, attorney fees c...",
     "content": "Small claims for unpaid invoices: $15k, net-30 terms, late fees, attorney fees clause, jurisdiction clause.",
     "tags": [
@@ -555,20 +555,20 @@
       "dispute-resolution"
     ],
     "properties": [],
-    "createdAt": "2026-10-28T04:23:08.679Z",
-    "updatedAt": "2026-10-28T04:23:08.679Z",
+    "createdAt": "2026-11-10T07:50:27.736Z",
+    "updatedAt": "2026-11-10T07:50:27.736Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
-    "priority": 4,
+    "priority": 2,
     "status": "open"
   },
   {
-    "id": "note_mwbksnll_vfd0z3e",
+    "id": "note_mwbqjkyq_qqikgvr",
     "title": "Cease and desist for trademark infringement: likelihood of confusion, dilution, ...",
     "content": "Cease and desist for trademark infringement: likelihood of confusion, dilution, damages, injunctive relief.",
     "tags": [
@@ -576,20 +576,20 @@
       "dispute-resolution"
     ],
     "properties": [],
-    "createdAt": "2026-10-26T01:28:50.426Z",
-    "updatedAt": "2026-10-26T01:28:50.426Z",
+    "createdAt": "2026-10-22T12:08:21.981Z",
+    "updatedAt": "2026-10-22T12:08:21.981Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
-    "priority": 5,
+    "priority": 1,
     "status": "open"
   },
   {
-    "id": "note_mwbksnll_zd37wqs",
+    "id": "note_mwbqjkyq_4mcierp",
     "title": "Settlement negotiation for data breach: notification costs, regulatory fines, cl...",
     "content": "Settlement negotiation for data breach: notification costs, regulatory fines, class action, reputational harm.",
     "tags": [
@@ -608,20 +608,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-16T14:39:13.457Z",
-    "updatedAt": "2026-10-16T14:39:13.457Z",
+    "createdAt": "2026-10-25T19:10:48.144Z",
+    "updatedAt": "2026-10-25T19:10:48.144Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
-    "priority": 5,
+    "priority": 2,
     "status": "open"
   },
   {
-    "id": "note_mwbksnll_vgaapv3",
+    "id": "note_mwbqjkyq_62wb0kc",
     "title": "Drafting employee handbook: at-will, harassment, discrimination, leave policies,...",
     "content": "Drafting employee handbook: at-will, harassment, discrimination, leave policies, remote work, equipment.",
     "tags": [
@@ -640,20 +640,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-11-10T03:34:15.454Z",
-    "updatedAt": "2026-11-10T03:34:15.454Z",
+    "createdAt": "2026-11-03T02:06:18.436Z",
+    "updatedAt": "2026-11-03T02:06:18.436Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
-    "priority": 3,
+    "priority": 1,
     "status": "open"
   },
   {
-    "id": "note_mwbksnll_1nfa8jt",
+    "id": "note_mwbqjkyq_v0jvq6j",
     "title": "Board governance policies: conflict of interest, executive compensation, success...",
     "content": "Board governance policies: conflict of interest, executive compensation, succession planning, committee charters.",
     "tags": [
@@ -672,20 +672,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-23T02:45:57.341Z",
-    "updatedAt": "2026-10-23T02:45:57.341Z",
+    "createdAt": "2026-10-30T10:29:23.303Z",
+    "updatedAt": "2026-10-30T10:29:23.303Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
     "priority": 2,
     "status": "open"
   },
   {
-    "id": "note_mwbksnll_t4j05qd",
+    "id": "note_mwbqjkyq_alllp28",
     "title": "Vendor risk management: due diligence, contractual protections, ongoing monitori...",
     "content": "Vendor risk management: due diligence, contractual protections, ongoing monitoring, incident response, termination.",
     "tags": [
@@ -704,20 +704,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-23T11:37:31.013Z",
-    "updatedAt": "2026-10-23T11:37:31.013Z",
+    "createdAt": "2026-11-06T11:04:33.211Z",
+    "updatedAt": "2026-11-06T11:04:33.211Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
-    "priority": 3,
+    "priority": 5,
     "status": "open"
   },
   {
-    "id": "note_mwbksnll_3abwzuc",
+    "id": "note_mwbqjkyq_ikvx8qa",
     "title": "Insurance program design: D&O, E&O, cyber, general liability, workers comp, umbr...",
     "content": "Insurance program design: D&O, E&O, cyber, general liability, workers comp, umbrella, claims management.",
     "tags": [
@@ -725,20 +725,20 @@
       "policy-&-governance"
     ],
     "properties": [],
-    "createdAt": "2026-11-02T19:20:37.282Z",
-    "updatedAt": "2026-11-02T19:20:37.282Z",
+    "createdAt": "2026-10-22T12:32:27.914Z",
+    "updatedAt": "2026-10-22T12:32:27.914Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
-    "priority": 5,
+    "priority": 2,
     "status": "open"
   },
   {
-    "id": "note_mwbksnll_2cv4fs9",
+    "id": "note_mwbqjkyq_6da6np9",
     "title": "Whistleblower program: anonymous reporting, investigation protocol, retaliation ...",
     "content": "Whistleblower program: anonymous reporting, investigation protocol, retaliation protection, board oversight.",
     "tags": [
@@ -746,20 +746,20 @@
       "policy-&-governance"
     ],
     "properties": [],
-    "createdAt": "2026-10-17T02:59:26.979Z",
-    "updatedAt": "2026-10-17T02:59:26.979Z",
+    "createdAt": "2026-10-17T06:10:37.522Z",
+    "updatedAt": "2026-10-17T06:10:37.522Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
-    "priority": 5,
+    "priority": 3,
     "status": "open"
   },
   {
-    "id": "note_mwbksnll_2n65ytk",
+    "id": "note_mwbqjkyq_8hv770l",
     "title": "Need contract review for freelance agreement: IP ownership, payment terms, liabi...",
     "content": "Need contract review for freelance agreement: IP ownership, payment terms, liability cap, termination.",
     "tags": [
@@ -778,20 +778,20 @@
         "provenance": "inferred"
       }
     ],
-    "createdAt": "2026-10-20T15:48:01.495Z",
-    "updatedAt": "2026-10-20T15:48:01.495Z",
+    "createdAt": "2026-11-03T04:00:02.121Z",
+    "updatedAt": "2026-11-03T04:00:02.121Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
-    "priority": 5,
+    "priority": 3,
     "status": "open"
   },
   {
-    "id": "note_mwbksnll_lmcl2y7",
+    "id": "note_mwbqjkyq_sgd5yek",
     "title": "Employment lawyer offering: executive comp, equity packages, separation agreemen...",
     "content": "Employment lawyer offering: executive comp, equity packages, separation agreements, non-competes.",
     "tags": [
@@ -810,20 +810,20 @@
         "provenance": "inferred"
       }
     ],
-    "createdAt": "2026-11-02T15:26:36.449Z",
-    "updatedAt": "2026-11-02T15:26:36.449Z",
+    "createdAt": "2026-11-03T20:32:14.139Z",
+    "updatedAt": "2026-11-03T20:32:14.139Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
     "priority": 3,
     "status": "available"
   },
   {
-    "id": "note_mwbksnll_opt95jd",
+    "id": "note_mwbqjkyq_ig6atcx",
     "title": "SaaS terms review needed: data privacy, GDPR, SLA, indemnification, limitation o...",
     "content": "SaaS terms review needed: data privacy, GDPR, SLA, indemnification, limitation of liability.",
     "tags": [
@@ -842,20 +842,20 @@
         "provenance": "inferred"
       }
     ],
-    "createdAt": "2026-10-24T15:21:33.208Z",
-    "updatedAt": "2026-10-24T15:21:33.208Z",
+    "createdAt": "2026-11-06T02:33:41.833Z",
+    "updatedAt": "2026-11-06T02:33:41.833Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
-    "priority": 3,
+    "priority": 4,
     "status": "open"
   },
   {
-    "id": "note_mwbksnll_qop2s7r",
+    "id": "note_mwbqjkyq_hsj3eh5",
     "title": "Partnership agreement for consulting LLC: profit sharing, decision making, capit...",
     "content": "Partnership agreement for consulting LLC: profit sharing, decision making, capital accounts, exit.",
     "tags": [
@@ -874,20 +874,20 @@
         "provenance": "inferred"
       }
     ],
-    "createdAt": "2026-10-25T01:14:53.366Z",
-    "updatedAt": "2026-10-25T01:14:53.366Z",
+    "createdAt": "2026-10-19T12:36:39.907Z",
+    "updatedAt": "2026-10-19T12:36:39.907Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
-    "priority": 5,
+    "priority": 4,
     "status": "open"
   },
   {
-    "id": "note_mwbksnll_djhc23u",
+    "id": "note_mwbqjkyq_7mwnnpd",
     "title": "NDA for acquisition talks: mutual, 3yr term, residual knowledge, permitted discl...",
     "content": "NDA for acquisition talks: mutual, 3yr term, residual knowledge, permitted disclosures, jurisdiction.",
     "tags": [
@@ -906,20 +906,20 @@
         "provenance": "inferred"
       }
     ],
-    "createdAt": "2026-10-16T07:13:48.119Z",
-    "updatedAt": "2026-10-16T07:13:48.119Z",
+    "createdAt": "2026-10-24T05:18:25.753Z",
+    "updatedAt": "2026-10-24T05:18:25.753Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
-    "priority": 5,
+    "priority": 2,
     "status": "open"
   },
   {
-    "id": "note_mwbksnll_8pqki57",
+    "id": "note_mwbqjkyq_yl50hyl",
     "title": "Corporate attorney available: entity formation, governance, fundraising, M&A. St...",
     "content": "Corporate attorney available: entity formation, governance, fundraising, M&A. Startup focus, fixed fee.",
     "tags": [
@@ -948,20 +948,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-29T22:09:49.671Z",
-    "updatedAt": "2026-10-29T22:09:49.671Z",
+    "createdAt": "2026-10-26T01:04:51.145Z",
+    "updatedAt": "2026-10-26T01:04:51.145Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
-    "priority": 3,
+    "priority": 1,
     "status": "available"
   },
   {
-    "id": "note_mwbksnll_7exlpvn",
+    "id": "note_mwbqjkyq_0j1x2p9",
     "title": "IP lawyer offering: patents, trademarks, copyrights, trade secrets, licensing. S...",
     "content": "IP lawyer offering: patents, trademarks, copyrights, trade secrets, licensing. Software/biotech exp.",
     "tags": [
@@ -980,20 +980,20 @@
         "provenance": "inferred"
       }
     ],
-    "createdAt": "2026-10-29T01:19:03.341Z",
-    "updatedAt": "2026-10-29T01:19:03.341Z",
+    "createdAt": "2026-10-21T06:50:04.843Z",
+    "updatedAt": "2026-10-21T06:50:04.843Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
-    "priority": 1,
+    "priority": 3,
     "status": "available"
   },
   {
-    "id": "note_mwbksnll_n55fewm",
+    "id": "note_mwbqjkyq_up6zye7",
     "title": "Data privacy consultant: GDPR, CCPA, HIPAA, SOC2, DPIAs, vendor assessments. CIP...",
     "content": "Data privacy consultant: GDPR, CCPA, HIPAA, SOC2, DPIAs, vendor assessments. CIPP certified.",
     "tags": [
@@ -1012,20 +1012,20 @@
         "provenance": "inferred"
       }
     ],
-    "createdAt": "2026-10-15T12:58:19.460Z",
-    "updatedAt": "2026-10-15T12:58:19.460Z",
+    "createdAt": "2026-10-16T03:53:48.406Z",
+    "updatedAt": "2026-10-16T03:53:48.406Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
     "priority": 2,
     "status": "available"
   },
   {
-    "id": "note_mwbksnll_2v9rj6i",
+    "id": "note_mwbqjkyq_efbgzs2",
     "title": "SOC2 Type II prep: policy drafting, evidence collection, auditor coordination. 6...",
     "content": "SOC2 Type II prep: policy drafting, evidence collection, auditor coordination. 6 month timeline.",
     "tags": [
@@ -1062,20 +1062,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-28T10:54:07.013Z",
-    "updatedAt": "2026-10-28T10:54:07.013Z",
+    "createdAt": "2026-11-09T15:22:21.556Z",
+    "updatedAt": "2026-11-09T15:22:21.556Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
-    "priority": 3,
+    "priority": 2,
     "status": "open"
   },
   {
-    "id": "note_mwbksnll_vw5t90f",
+    "id": "note_mwbqjkyq_7dcqx1b",
     "title": "HIPAA compliance for health tech: BAA mgmt, risk assessment, training, breach re...",
     "content": "HIPAA compliance for health tech: BAA mgmt, risk assessment, training, breach response, encryption.",
     "tags": [
@@ -1094,13 +1094,13 @@
         "provenance": "inferred"
       }
     ],
-    "createdAt": "2026-11-07T05:00:59.926Z",
-    "updatedAt": "2026-11-07T05:00:59.926Z",
+    "createdAt": "2026-11-02T12:22:18.545Z",
+    "updatedAt": "2026-11-02T12:22:18.545Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-legal-contracts",
-      "timestamp": 1794368702073
+      "timestamp": 1794378356450
     },
     "privacy": "public",
     "priority": 2,

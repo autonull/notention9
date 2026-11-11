@@ -1,6 +1,6 @@
 [
   {
-    "id": "note_mwbksnlj_aa7r5tw",
+    "id": "note_mwbqjkyo_qsx4db7",
     "title": "Retirement planning for early 40s: 401k max, backdoor Roth, HSA investment, taxa...",
     "content": "Retirement planning for early 40s: 401k max, backdoor Roth, HSA investment, taxable brokerage, real estate. Target FIRE at 55.",
     "tags": [
@@ -8,20 +8,20 @@
       "retirement-&-financial-planning"
     ],
     "properties": [],
-    "createdAt": "2026-11-06T06:51:26.778Z",
-    "updatedAt": "2026-11-06T06:51:26.778Z",
+    "createdAt": "2026-10-15T11:15:26.401Z",
+    "updatedAt": "2026-10-15T11:15:26.401Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702071
+      "timestamp": 1794378356448
     },
     "privacy": "public",
     "priority": 3,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlj_6ptw5cj",
+    "id": "note_mwbqjkyo_j0gj9f5",
     "title": "Estate planning for blended family: revocable trust, pour-over will, beneficiari...",
     "content": "Estate planning for blended family: revocable trust, pour-over will, beneficiaries, guardianship, healthcare directive, POA.",
     "tags": [
@@ -40,20 +40,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-29T16:37:28.657Z",
-    "updatedAt": "2026-10-29T16:37:28.657Z",
+    "createdAt": "2026-10-24T12:02:29.878Z",
+    "updatedAt": "2026-10-24T12:02:29.878Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702071
+      "timestamp": 1794378356448
     },
     "privacy": "public",
     "priority": 4,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlj_8kk3fg1",
+    "id": "note_mwbqjkyo_fh7hj7u",
     "title": "College savings for newborn: 529 plan, Coverdell, UTMA, financial aid impact, gr...",
     "content": "College savings for newborn: 529 plan, Coverdell, UTMA, financial aid impact, grandparent contributions, investment strategy.",
     "tags": [
@@ -61,20 +61,20 @@
       "retirement-&-financial-planning"
     ],
     "properties": [],
-    "createdAt": "2026-11-10T05:46:26.587Z",
-    "updatedAt": "2026-11-10T05:46:26.587Z",
+    "createdAt": "2026-11-07T12:52:34.523Z",
+    "updatedAt": "2026-11-07T12:52:34.523Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702071
+      "timestamp": 1794378356448
     },
     "privacy": "public",
-    "priority": 2,
+    "priority": 1,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlj_7wkuuyz",
+    "id": "note_mwbqjkyo_psh18ak",
     "title": "Long-term care insurance: hybrid life/LTC, traditional, self-fund, partnership p...",
     "content": "Long-term care insurance: hybrid life/LTC, traditional, self-fund, partnership policies, inflation protection, elimination period.",
     "tags": [
@@ -93,20 +93,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-11-06T17:20:30.520Z",
-    "updatedAt": "2026-11-06T17:20:30.520Z",
+    "createdAt": "2026-11-02T21:23:50.253Z",
+    "updatedAt": "2026-11-02T21:23:50.253Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702071
+      "timestamp": 1794378356448
     },
     "privacy": "public",
-    "priority": 3,
+    "priority": 2,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlj_63quwwi",
+    "id": "note_mwbqjkyo_lu7dxdo",
     "title": "Intergenerational wealth transfer: GST trust, family limited partnership, annual...",
     "content": "Intergenerational wealth transfer: GST trust, family limited partnership, annual gifting, tuition/medical direct pay, valuation discounts.",
     "tags": [
@@ -125,20 +125,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-11-04T07:33:07.873Z",
-    "updatedAt": "2026-11-04T07:33:07.873Z",
+    "createdAt": "2026-10-25T20:30:54.874Z",
+    "updatedAt": "2026-10-25T20:30:54.874Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702072
+      "timestamp": 1794378356448
     },
     "privacy": "public",
-    "priority": 1,
+    "priority": 2,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlk_unzvk0n",
+    "id": "note_mwbqjkyo_v42axa9",
     "title": "Aging parent care coordination: assisted living search, Medicaid planning, veter...",
     "content": "Aging parent care coordination: assisted living search, Medicaid planning, veterans benefits, sibling coordination, caregiver burnout.",
     "tags": [
@@ -146,20 +146,20 @@
       "family-&-caregiving"
     ],
     "properties": [],
-    "createdAt": "2026-11-10T12:37:09.257Z",
-    "updatedAt": "2026-11-10T12:37:09.257Z",
+    "createdAt": "2026-10-23T20:43:49.964Z",
+    "updatedAt": "2026-10-23T20:43:49.964Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702072
+      "timestamp": 1794378356448
     },
     "privacy": "public",
-    "priority": 2,
+    "priority": 5,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlk_s000wjx",
+    "id": "note_mwbqjkyo_vhwblp0",
     "title": "Multi-generational housing: ADU construction, zoning, financing, universal desig...",
     "content": "Multi-generational housing: ADU construction, zoning, financing, universal design, shared expenses, privacy boundaries.",
     "tags": [
@@ -167,20 +167,20 @@
       "family-&-caregiving"
     ],
     "properties": [],
-    "createdAt": "2026-10-22T14:41:03.150Z",
-    "updatedAt": "2026-10-22T14:41:03.150Z",
+    "createdAt": "2026-10-26T09:01:25.014Z",
+    "updatedAt": "2026-10-26T09:01:25.014Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702072
+      "timestamp": 1794378356448
     },
     "privacy": "public",
-    "priority": 2,
+    "priority": 5,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlk_zr9x2lu",
+    "id": "note_mwbqjkyo_tjrw2qp",
     "title": "Grandparent childcare arrangement: compensation, schedule, boundaries, disciplin...",
     "content": "Grandparent childcare arrangement: compensation, schedule, boundaries, discipline alignment, screen time, nutrition, emergencies.",
     "tags": [
@@ -188,20 +188,20 @@
       "family-&-caregiving"
     ],
     "properties": [],
-    "createdAt": "2026-10-27T21:02:07.104Z",
-    "updatedAt": "2026-10-27T21:02:07.104Z",
+    "createdAt": "2026-11-09T11:20:21.690Z",
+    "updatedAt": "2026-11-09T11:20:21.690Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702072
+      "timestamp": 1794378356448
     },
     "privacy": "public",
-    "priority": 5,
+    "priority": 3,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlk_k9bjeay",
+    "id": "note_mwbqjkyo_k3qljk0",
     "title": "Family business succession: next generation readiness, valuation, buy-sell agree...",
     "content": "Family business succession: next generation readiness, valuation, buy-sell agreement, key person insurance, non-family management.",
     "tags": [
@@ -209,20 +209,20 @@
       "family-&-caregiving"
     ],
     "properties": [],
-    "createdAt": "2026-10-17T15:21:04.790Z",
-    "updatedAt": "2026-10-17T15:21:04.790Z",
+    "createdAt": "2026-11-03T11:14:00.018Z",
+    "updatedAt": "2026-11-03T11:14:00.018Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702072
+      "timestamp": 1794378356448
     },
     "privacy": "public",
-    "priority": 1,
+    "priority": 3,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlk_qcetnto",
+    "id": "note_mwbqjkyo_nmzmf6p",
     "title": "Special needs planning: ABLE account, special needs trust, government benefits p...",
     "content": "Special needs planning: ABLE account, special needs trust, government benefits preservation, letter of intent, trustee selection.",
     "tags": [
@@ -252,20 +252,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-22T17:18:44.170Z",
-    "updatedAt": "2026-10-22T17:18:44.170Z",
+    "createdAt": "2026-10-23T22:13:05.928Z",
+    "updatedAt": "2026-10-23T22:13:05.928Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702072
+      "timestamp": 1794378356448
     },
     "privacy": "public",
-    "priority": 2,
+    "priority": 3,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlk_v4qgbld",
+    "id": "note_mwbqjkyo_fuii6rf",
     "title": "Charitable giving strategy: donor-advised fund, private foundation, charitable r...",
     "content": "Charitable giving strategy: donor-advised fund, private foundation, charitable remainder trust, impact investing, family philanthropy.",
     "tags": [
@@ -284,20 +284,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-22T11:59:25.888Z",
-    "updatedAt": "2026-10-22T11:59:25.888Z",
+    "createdAt": "2026-10-24T14:37:22.081Z",
+    "updatedAt": "2026-10-24T14:37:22.081Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702072
+      "timestamp": 1794378356448
     },
     "privacy": "public",
-    "priority": 3,
+    "priority": 4,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlk_csbawrk",
+    "id": "note_mwbqjkyo_783czh2",
     "title": "Family mission statement: values clarification, governance structure, next gener...",
     "content": "Family mission statement: values clarification, governance structure, next generation engagement, family meetings, education.",
     "tags": [
@@ -316,20 +316,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-11-09T14:02:36.528Z",
-    "updatedAt": "2026-11-09T14:02:36.528Z",
+    "createdAt": "2026-10-16T18:26:22.480Z",
+    "updatedAt": "2026-10-16T18:26:22.480Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702072
+      "timestamp": 1794378356448
     },
     "privacy": "public",
-    "priority": 3,
+    "priority": 1,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlk_oxfbak7",
+    "id": "note_mwbqjkyo_vvxiup8",
     "title": "Oral history project: interview grandparents, digitize photos, preserve recipes,...",
     "content": "Oral history project: interview grandparents, digitize photos, preserve recipes, document traditions, create family archive.",
     "tags": [
@@ -337,20 +337,20 @@
       "legacy-&-impact"
     ],
     "properties": [],
-    "createdAt": "2026-10-19T16:13:34.700Z",
-    "updatedAt": "2026-10-19T16:13:34.700Z",
+    "createdAt": "2026-10-27T19:51:46.800Z",
+    "updatedAt": "2026-10-27T19:51:46.800Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702072
+      "timestamp": 1794378356448
     },
     "privacy": "public",
     "priority": 1,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlk_kc2blj3",
+    "id": "note_mwbqjkyo_fhnn232",
     "title": "Mentoring next generation: financial literacy, entrepreneurship, philanthropy, g...",
     "content": "Mentoring next generation: financial literacy, entrepreneurship, philanthropy, governance, family history, values transmission.",
     "tags": [
@@ -369,20 +369,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-29T16:12:47.949Z",
-    "updatedAt": "2026-10-29T16:12:47.949Z",
+    "createdAt": "2026-11-09T07:32:59.974Z",
+    "updatedAt": "2026-11-09T07:32:59.974Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702072
+      "timestamp": 1794378356448
     },
     "privacy": "public",
     "priority": 1,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlk_bmf6847",
+    "id": "note_mwbqjkyo_3odnlg5",
     "title": "Community foundation involvement: board service, grant making, donor advised fun...",
     "content": "Community foundation involvement: board service, grant making, donor advised funds, scholarship programs, place-based impact.",
     "tags": [
@@ -390,20 +390,20 @@
       "legacy-&-impact"
     ],
     "properties": [],
-    "createdAt": "2026-10-27T09:58:49.509Z",
-    "updatedAt": "2026-10-27T09:58:49.509Z",
+    "createdAt": "2026-10-21T08:05:13.970Z",
+    "updatedAt": "2026-10-21T08:05:13.970Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702072
+      "timestamp": 1794378356448
     },
     "privacy": "public",
-    "priority": 1,
+    "priority": 4,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlk_ynji1hj",
+    "id": "note_mwbqjkyo_lv9a42i",
     "title": "Writing memoir/family history: interviewing relatives, research, structure, edit...",
     "content": "Writing memoir/family history: interviewing relatives, research, structure, editing, self-publishing, distribution to family.",
     "tags": [
@@ -411,20 +411,20 @@
       "long-term-projects"
     ],
     "properties": [],
-    "createdAt": "2026-10-18T15:45:29.043Z",
-    "updatedAt": "2026-10-18T15:45:29.043Z",
+    "createdAt": "2026-10-23T05:48:38.778Z",
+    "updatedAt": "2026-10-23T05:48:38.778Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702072
+      "timestamp": 1794378356448
     },
     "privacy": "public",
-    "priority": 4,
+    "priority": 5,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlk_2vok1a8",
+    "id": "note_mwbqjkyo_hcdwxmx",
     "title": "Building family compound: land acquisition, master planning, phased construction...",
     "content": "Building family compound: land acquisition, master planning, phased construction, shared amenities, governance, maintenance fund.",
     "tags": [
@@ -443,20 +443,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-31T17:42:15.926Z",
-    "updatedAt": "2026-10-31T17:42:15.926Z",
+    "createdAt": "2026-10-24T23:45:41.843Z",
+    "updatedAt": "2026-10-24T23:45:41.843Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702072
+      "timestamp": 1794378356448
     },
     "privacy": "public",
-    "priority": 3,
+    "priority": 1,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlk_j94kos3",
+    "id": "note_mwbqjkyo_i32ato9",
     "title": "Creating family office: investment management, tax coordination, philanthropy, e...",
     "content": "Creating family office: investment management, tax coordination, philanthropy, education, concierge services, staff hiring.",
     "tags": [
@@ -475,20 +475,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-25T05:37:56.308Z",
-    "updatedAt": "2026-10-25T05:37:56.308Z",
+    "createdAt": "2026-11-02T11:00:58.916Z",
+    "updatedAt": "2026-11-02T11:00:58.916Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702072
+      "timestamp": 1794378356448
     },
     "privacy": "public",
-    "priority": 4,
+    "priority": 5,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlk_dvd5c7u",
+    "id": "note_mwbqjkyo_vqcsti9",
     "title": "Establishing family scholarship: endowment sizing, criteria, selection committee...",
     "content": "Establishing family scholarship: endowment sizing, criteria, selection committee, administration, donor reporting, legacy naming.",
     "tags": [
@@ -496,20 +496,20 @@
       "long-term-projects"
     ],
     "properties": [],
-    "createdAt": "2026-11-07T05:39:31.666Z",
-    "updatedAt": "2026-11-07T05:39:31.666Z",
+    "createdAt": "2026-10-18T03:52:10.302Z",
+    "updatedAt": "2026-10-18T03:52:10.302Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702072
+      "timestamp": 1794378356448
     },
     "privacy": "public",
-    "priority": 4,
+    "priority": 2,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlk_3hw4ix0",
+    "id": "note_mwbqjkyo_gbxqhft",
     "title": "Digital legacy planning: social media, crypto, domains, photos, emails, password...",
     "content": "Digital legacy planning: social media, crypto, domains, photos, emails, password manager, digital executor, platform policies.",
     "tags": [
@@ -517,20 +517,20 @@
       "long-term-projects"
     ],
     "properties": [],
-    "createdAt": "2026-11-04T23:41:22.050Z",
-    "updatedAt": "2026-11-04T23:41:22.050Z",
+    "createdAt": "2026-10-31T10:16:15.108Z",
+    "updatedAt": "2026-10-31T10:16:15.108Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702072
+      "timestamp": 1794378356448
     },
     "privacy": "public",
-    "priority": 1,
+    "priority": 5,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlk_d4q8gjt",
+    "id": "note_mwbqjkyo_u8b26uf",
     "title": "Family business 100-year plan: governance constitution, family council, board in...",
     "content": "Family business 100-year plan: governance constitution, family council, board independence, next-gen development, liquidity events.",
     "tags": [
@@ -549,20 +549,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-14T18:15:42.622Z",
-    "updatedAt": "2026-10-14T18:15:42.622Z",
+    "createdAt": "2026-10-24T06:19:42.469Z",
+    "updatedAt": "2026-10-24T06:19:42.469Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702072
+      "timestamp": 1794378356448
     },
     "privacy": "public",
-    "priority": 4,
+    "priority": 1,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlk_365ew46",
+    "id": "note_mwbqjkyo_vxuf46h",
     "title": "Dynastic wealth strategy: dynasty trust, jurisdiction shopping, investment polic...",
     "content": "Dynastic wealth strategy: dynasty trust, jurisdiction shopping, investment policy, distribution standards, trustee succession.",
     "tags": [
@@ -581,20 +581,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-16T01:37:48.610Z",
-    "updatedAt": "2026-10-16T01:37:48.610Z",
+    "createdAt": "2026-11-05T22:49:05.335Z",
+    "updatedAt": "2026-11-05T22:49:05.335Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702072
+      "timestamp": 1794378356448
     },
     "privacy": "public",
-    "priority": 5,
+    "priority": 3,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlk_l6xa0hw",
+    "id": "note_mwbqjkyo_eexl68c",
     "title": "Family investment committee: asset allocation, manager selection, ESG integratio...",
     "content": "Family investment committee: asset allocation, manager selection, ESG integration, co-investment, direct deals, education program.",
     "tags": [
@@ -602,20 +602,20 @@
       "generational-business"
     ],
     "properties": [],
-    "createdAt": "2026-10-31T03:54:52.048Z",
-    "updatedAt": "2026-10-31T03:54:52.048Z",
+    "createdAt": "2026-10-21T09:50:14.624Z",
+    "updatedAt": "2026-10-21T09:50:14.624Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702072
+      "timestamp": 1794378356448
     },
     "privacy": "public",
     "priority": 2,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlk_id0fhm1",
+    "id": "note_mwbqjkyo_3hishoh",
     "title": "Succession planning for family CEO: assessment, development plan, transition tim...",
     "content": "Succession planning for family CEO: assessment, development plan, transition timeline, board role, ownership transfer, tax efficiency.",
     "tags": [
@@ -623,20 +623,20 @@
       "generational-business"
     ],
     "properties": [],
-    "createdAt": "2026-10-15T20:50:21.422Z",
-    "updatedAt": "2026-10-15T20:50:21.422Z",
+    "createdAt": "2026-10-28T21:19:26.408Z",
+    "updatedAt": "2026-10-28T21:19:26.408Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702072
+      "timestamp": 1794378356448
     },
     "privacy": "public",
-    "priority": 2,
+    "priority": 1,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlk_n9bakdg",
+    "id": "note_mwbqjkyo_terxd90",
     "title": "Family bank concept: internal lending, financial education, accountability, inve...",
     "content": "Family bank concept: internal lending, financial education, accountability, investment committee, default consequences, governance.",
     "tags": [
@@ -655,20 +655,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-11-09T12:35:46.994Z",
-    "updatedAt": "2026-11-09T12:35:46.994Z",
+    "createdAt": "2026-11-03T10:38:30.951Z",
+    "updatedAt": "2026-11-03T10:38:30.951Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702072
+      "timestamp": 1794378356448
     },
     "privacy": "public",
-    "priority": 5,
+    "priority": 2,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlk_947bckd",
+    "id": "note_mwbqjkyo_lgdzshp",
     "title": "Need financial advisor for retirement planning, 401k rollover, Roth conversion. ...",
     "content": "Need financial advisor for retirement planning, 401k rollover, Roth conversion. Fee-only, fiduciary.",
     "tags": [
@@ -687,20 +687,20 @@
         "provenance": "inferred"
       }
     ],
-    "createdAt": "2026-11-09T21:52:49.716Z",
-    "updatedAt": "2026-11-09T21:52:49.716Z",
+    "createdAt": "2026-10-17T21:00:19.455Z",
+    "updatedAt": "2026-10-17T21:00:19.455Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702072
+      "timestamp": 1794378356448
     },
     "privacy": "public",
-    "priority": 1,
+    "priority": 3,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlk_thcyn2p",
+    "id": "note_mwbqjkyo_ozaabpf",
     "title": "Offering estate planning services: wills, trusts, POA, healthcare directives. Fl...",
     "content": "Offering estate planning services: wills, trusts, POA, healthcare directives. Flat fee packages.",
     "tags": [
@@ -729,20 +729,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-17T04:56:03.257Z",
-    "updatedAt": "2026-10-17T04:56:03.257Z",
+    "createdAt": "2026-11-07T19:43:42.842Z",
+    "updatedAt": "2026-11-07T19:43:42.842Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702072
+      "timestamp": 1794378356448
     },
     "privacy": "public",
-    "priority": 4,
+    "priority": 1,
     "status": "available"
   },
   {
-    "id": "note_mwbksnlk_nady4tz",
+    "id": "note_mwbqjkyo_toibac6",
     "title": "Looking for 529 plan advice for grandchild. Tax implications, investment options...",
     "content": "Looking for 529 plan advice for grandchild. Tax implications, investment options, state benefits.",
     "tags": [
@@ -761,20 +761,20 @@
         "provenance": "inferred"
       }
     ],
-    "createdAt": "2026-10-24T02:02:24.348Z",
-    "updatedAt": "2026-10-24T02:02:24.348Z",
+    "createdAt": "2026-10-17T04:27:25.683Z",
+    "updatedAt": "2026-10-17T04:27:25.683Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702072
+      "timestamp": 1794378356448
     },
     "privacy": "public",
-    "priority": 1,
+    "priority": 3,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlk_gwj3ppg",
+    "id": "note_mwbqjkyo_2v1s613",
     "title": "Long-term care insurance specialist available. Hybrid policies, traditional, par...",
     "content": "Long-term care insurance specialist available. Hybrid policies, traditional, partnership qualified.",
     "tags": [
@@ -803,20 +803,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-23T11:05:07.767Z",
-    "updatedAt": "2026-10-23T11:05:07.767Z",
+    "createdAt": "2026-10-19T12:35:07.431Z",
+    "updatedAt": "2026-10-19T12:35:07.431Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702072
+      "timestamp": 1794378356448
     },
     "privacy": "public",
-    "priority": 1,
+    "priority": 5,
     "status": "available"
   },
   {
-    "id": "note_mwbksnlk_svpf6ws",
+    "id": "note_mwbqjkyo_marighd",
     "title": "Family office setup for multi-gen wealth. Investment policy, governance, philant...",
     "content": "Family office setup for multi-gen wealth. Investment policy, governance, philanthropy coordination.",
     "tags": [
@@ -845,20 +845,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-11-10T23:49:53.450Z",
-    "updatedAt": "2026-11-10T23:49:53.450Z",
+    "createdAt": "2026-10-30T11:16:51.819Z",
+    "updatedAt": "2026-10-30T11:16:51.819Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702072
+      "timestamp": 1794378356448
     },
     "privacy": "public",
-    "priority": 4,
+    "priority": 2,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlk_88s2qg0",
+    "id": "note_mwbqjkyo_u1v2680",
     "title": "Offering family governance consulting: family council, constitution, next-gen ed...",
     "content": "Offering family governance consulting: family council, constitution, next-gen education programs.",
     "tags": [
@@ -887,20 +887,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-27T17:30:07.724Z",
-    "updatedAt": "2026-10-27T17:30:07.724Z",
+    "createdAt": "2026-11-06T05:45:22.159Z",
+    "updatedAt": "2026-11-06T05:45:22.159Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702072
+      "timestamp": 1794378356448
     },
     "privacy": "public",
-    "priority": 2,
+    "priority": 1,
     "status": "available"
   },
   {
-    "id": "note_mwbksnlk_boov15w",
+    "id": "note_mwbqjkyo_ns5ljpk",
     "title": "Need help with special needs trust for adult child. ABLE account, SSI preservati...",
     "content": "Need help with special needs trust for adult child. ABLE account, SSI preservation, trustee selection.",
     "tags": [
@@ -929,20 +929,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-11-07T03:48:23.237Z",
-    "updatedAt": "2026-11-07T03:48:23.237Z",
+    "createdAt": "2026-11-04T22:06:29.815Z",
+    "updatedAt": "2026-11-04T22:06:29.815Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702072
+      "timestamp": 1794378356448
     },
     "privacy": "public",
-    "priority": 3,
+    "priority": 2,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlk_elhyk3r",
+    "id": "note_mwbqjkyo_hproq1t",
     "title": "Caregiver support services: respite care coordination, burnout prevention, sibli...",
     "content": "Caregiver support services: respite care coordination, burnout prevention, sibling mediation.",
     "tags": [
@@ -961,20 +961,20 @@
         "provenance": "inferred"
       }
     ],
-    "createdAt": "2026-10-12T17:51:18.517Z",
-    "updatedAt": "2026-10-12T17:51:18.517Z",
+    "createdAt": "2026-11-08T05:55:58.031Z",
+    "updatedAt": "2026-11-08T05:55:58.031Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702072
+      "timestamp": 1794378356448
     },
     "privacy": "public",
-    "priority": 5,
+    "priority": 3,
     "status": "available"
   },
   {
-    "id": "note_mwbksnlk_1wpm458",
+    "id": "note_mwbqjkyo_67agq13",
     "title": "Charitable giving strategy: DAF vs private foundation, impact investing, family ...",
     "content": "Charitable giving strategy: DAF vs private foundation, impact investing, family involvement.",
     "tags": [
@@ -993,20 +993,20 @@
         "provenance": "inferred"
       }
     ],
-    "createdAt": "2026-10-25T02:19:03.074Z",
-    "updatedAt": "2026-10-25T02:19:03.074Z",
+    "createdAt": "2026-10-18T12:37:00.151Z",
+    "updatedAt": "2026-10-18T12:37:00.151Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702072
+      "timestamp": 1794378356448
     },
     "privacy": "public",
-    "priority": 3,
+    "priority": 1,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlk_mnrnz5a",
+    "id": "note_mwbqjkyo_ytv7in5",
     "title": "Family history project: oral interviews, photo digitization, recipe book, digita...",
     "content": "Family history project: oral interviews, photo digitization, recipe book, digital archive creation.",
     "tags": [
@@ -1025,16 +1025,16 @@
         "provenance": "inferred"
       }
     ],
-    "createdAt": "2026-11-02T04:30:56.276Z",
-    "updatedAt": "2026-11-02T04:30:56.276Z",
+    "createdAt": "2026-10-27T18:32:55.249Z",
+    "updatedAt": "2026-10-27T18:32:55.249Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-generational",
-      "timestamp": 1794368702072
+      "timestamp": 1794378356448
     },
     "privacy": "public",
-    "priority": 4,
+    "priority": 5,
     "status": "open"
   }
 ]

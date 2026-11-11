@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "createdAt": "2026-11-11T03:45:02.070Z",
+  "createdAt": "2026-11-11T06:25:56.446Z",
   "domains": {
     "generational": {
       "file": "generational.json",
@@ -69,9 +69,115 @@
         "Technical Discussions",
         "Career & Learning"
       ]
+    },
+    "food-water": {
+      "file": "food-water.json",
+      "noteCount": 59,
+      "sections": [
+        "Food Requests",
+        "Food Offers",
+        "Water Requests",
+        "Water Offers",
+        "Agriculture Requests",
+        "Agriculture Offers"
+      ]
+    },
+    "shelter-energy": {
+      "file": "shelter-energy.json",
+      "noteCount": 90,
+      "sections": [
+        "Housing Requests",
+        "Housing Offers",
+        "Energy Requests",
+        "Energy Offers",
+        "Shelter Requests",
+        "Shelter Offers",
+        "Construction & Materials Requests",
+        "Construction & Materials Offers"
+      ]
+    },
+    "healthcare-medicine": {
+      "file": "healthcare-medicine.json",
+      "noteCount": 90,
+      "sections": [
+        "Healthcare Requests",
+        "Healthcare Offers",
+        "Medicine Requests",
+        "Medicine Offers",
+        "Wellness Requests",
+        "Wellness Offers",
+        "Care Requests",
+        "Care Offers"
+      ]
+    },
+    "transport-logistics": {
+      "file": "transport-logistics.json",
+      "noteCount": 70,
+      "sections": [
+        "Transport Requests",
+        "Transport Offers",
+        "Logistics Requests",
+        "Logistics Offers",
+        "Mobility Requests",
+        "Mobility Offers"
+      ]
+    },
+    "education-skills": {
+      "file": "education-skills.json",
+      "noteCount": 70,
+      "sections": [
+        "Education Requests",
+        "Education Offers",
+        "Skills Requests",
+        "Skills Offers",
+        "Knowledge Requests",
+        "Knowledge Offers"
+      ]
+    },
+    "care-community": {
+      "file": "care-community.json",
+      "noteCount": 90,
+      "sections": [
+        "Childcare Requests",
+        "Childcare Offers",
+        "Eldercare Requests",
+        "Eldercare Offers",
+        "Community Requests",
+        "Community Offers",
+        "Relationship Requests",
+        "Relationship Offers"
+      ]
+    },
+    "tools-materials": {
+      "file": "tools-materials.json",
+      "noteCount": 90,
+      "sections": [
+        "Tools Requests",
+        "Tools Offers",
+        "Equipment Requests",
+        "Equipment Offers",
+        "Materials Requests",
+        "Materials Offers",
+        "Repair Requests",
+        "Repair Offers"
+      ]
+    },
+    "arts-culture": {
+      "file": "arts-culture.json",
+      "noteCount": 90,
+      "sections": [
+        "Arts Requests",
+        "Arts Offers",
+        "Culture Requests",
+        "Culture Offers",
+        "Ritual Requests",
+        "Ritual Offers",
+        "Play Requests",
+        "Play Offers"
+      ]
     }
   },
-  "totalNotes": 215,
+  "totalNotes": 864,
   "provenance": {
     "source": "self-authored corpus",
     "license": "CC0-1.0",
@@ -82,7 +188,15 @@
       "crisis-emergency",
       "open-source",
       "mentorship-career",
-      "software-dev"
+      "software-dev",
+      "food-water",
+      "shelter-energy",
+      "healthcare-medicine",
+      "transport-logistics",
+      "education-skills",
+      "care-community",
+      "tools-materials",
+      "arts-culture"
     ]
   }
 }

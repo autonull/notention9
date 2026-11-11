@@ -1,6 +1,6 @@
 [
   {
-    "id": "note_mwbksnln_sx3h0w1",
+    "id": "note_mwbqjkyt_hk410gk",
     "title": "I need a React developer for a 3-month project, budget $15,000, remote work pref...",
     "content": "I need a React developer for a 3-month project, budget $15,000, remote work preferred. Must have TypeScript, Next.js, and GraphQL experience.",
     "tags": [
@@ -60,20 +60,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-30T23:10:37.537Z",
-    "updatedAt": "2026-10-30T23:10:37.537Z",
+    "createdAt": "2026-11-10T11:47:38.985Z",
+    "updatedAt": "2026-11-10T11:47:38.985Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
-    "priority": 4,
+    "priority": 2,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_1szdcnk",
+    "id": "note_mwbqjkyt_ek6lg4h",
     "title": "Looking for a freelance frontend engineer to build a dashboard with React, Tailw...",
     "content": "Looking for a freelance frontend engineer to build a dashboard with React, Tailwind CSS, and Recharts. Rate: $80-120/hr. Start ASAP.",
     "tags": [
@@ -122,20 +122,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-26T21:56:03.466Z",
-    "updatedAt": "2026-10-26T21:56:03.466Z",
+    "createdAt": "2026-10-23T11:19:26.363Z",
+    "updatedAt": "2026-10-23T11:19:26.363Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
-    "priority": 5,
+    "priority": 2,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_xuw8n3p",
+    "id": "note_mwbqjkyt_60o5mkr",
     "title": "Need a full-stack developer for an e-commerce platform. Node.js backend, React f...",
     "content": "Need a full-stack developer for an e-commerce platform. Node.js backend, React frontend, PostgreSQL database. 6-month contract, $10,000/month.",
     "tags": [
@@ -185,20 +185,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-11-06T17:24:15.966Z",
-    "updatedAt": "2026-11-06T17:24:15.966Z",
+    "createdAt": "2026-10-13T08:48:32.618Z",
+    "updatedAt": "2026-10-13T08:48:32.618Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
-    "priority": 3,
+    "priority": 2,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_jf5m0jo",
+    "id": "note_mwbqjkyt_2k1vaqp",
     "title": "Hiring a DevOps engineer for Kubernetes migration. AWS, Docker, Terraform requir...",
     "content": "Hiring a DevOps engineer for Kubernetes migration. AWS, Docker, Terraform required. $150/hr, 3 months.",
     "tags": [
@@ -249,20 +249,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-14T13:07:58.015Z",
-    "updatedAt": "2026-10-14T13:07:58.015Z",
+    "createdAt": "2026-11-01T04:26:27.525Z",
+    "updatedAt": "2026-11-01T04:26:27.525Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
-    "priority": 2,
+    "priority": 4,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_yuk7h4b",
+    "id": "note_mwbqjkyt_jlb0dwc",
     "title": "Seeking a mobile developer for React Native app. iOS and Android, push notificat...",
     "content": "Seeking a mobile developer for React Native app. iOS and Android, push notifications, offline sync. $5,000 fixed price.",
     "tags": [
@@ -291,20 +291,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-25T08:22:51.432Z",
-    "updatedAt": "2026-10-25T08:22:51.432Z",
+    "createdAt": "2026-10-29T17:00:39.150Z",
+    "updatedAt": "2026-10-29T17:00:39.150Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
-    "priority": 2,
+    "priority": 5,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_e2345bw",
+    "id": "note_mwbqjkyt_xp4wj5r",
     "title": "Senior React Developer offering services: TypeScript, Next.js, Redux, Testing Li...",
     "content": "Senior React Developer offering services: TypeScript, Next.js, Redux, Testing Library. Rate: $110/hr. Available full-time remote.",
     "tags": [
@@ -374,20 +374,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-16T20:59:50.934Z",
-    "updatedAt": "2026-10-16T20:59:50.934Z",
+    "createdAt": "2026-10-20T14:17:19.024Z",
+    "updatedAt": "2026-10-20T14:17:19.024Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
-    "priority": 4,
+    "priority": 2,
     "status": "available"
   },
   {
-    "id": "note_mwbksnln_iv71vh7",
+    "id": "note_mwbqjkyu_99n1yk8",
     "title": "Full-stack engineer available: Node.js, Python, React, AWS, Docker. 8 years expe...",
     "content": "Full-stack engineer available: Node.js, Python, React, AWS, Docker. 8 years experience. $100/hr.",
     "tags": [
@@ -439,20 +439,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-11-01T10:51:24.537Z",
-    "updatedAt": "2026-11-01T10:51:24.537Z",
+    "createdAt": "2026-11-06T16:09:16.031Z",
+    "updatedAt": "2026-11-06T16:09:16.031Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356454
     },
     "privacy": "public",
-    "priority": 3,
+    "priority": 1,
     "status": "available"
   },
   {
-    "id": "note_mwbksnln_e0wqftq",
+    "id": "note_mwbqjkyu_8dhcwpx",
     "title": "Frontend specialist: Vue.js, Nuxt, Pinia, Vitest, Tailwind. $90/hr. Part-time av...",
     "content": "Frontend specialist: Vue.js, Nuxt, Pinia, Vitest, Tailwind. $90/hr. Part-time available.",
     "tags": [
@@ -502,20 +502,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-18T08:58:35.112Z",
-    "updatedAt": "2026-10-18T08:58:35.112Z",
+    "createdAt": "2026-10-27T07:35:09.088Z",
+    "updatedAt": "2026-10-27T07:35:09.088Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356454
     },
     "privacy": "public",
     "priority": 4,
     "status": "available"
   },
   {
-    "id": "note_mwbksnln_wczj8ex",
+    "id": "note_mwbqjkyu_eubtse1",
     "title": "Backend developer: Go, PostgreSQL, gRPC, Kubernetes. $120/hr. Contract or full-t...",
     "content": "Backend developer: Go, PostgreSQL, gRPC, Kubernetes. $120/hr. Contract or full-time.",
     "tags": [
@@ -566,20 +566,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-18T20:45:49.850Z",
-    "updatedAt": "2026-10-18T20:45:49.850Z",
+    "createdAt": "2026-10-16T13:25:57.254Z",
+    "updatedAt": "2026-10-16T13:25:57.254Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356454
     },
     "privacy": "public",
-    "priority": 2,
+    "priority": 3,
     "status": "available"
   },
   {
-    "id": "note_mwbksnln_bx9z0l6",
+    "id": "note_mwbqjkyu_vo6gum1",
     "title": "Mobile developer: React Native, Expo, TypeScript, Fastlane. $95/hr. Immediate av...",
     "content": "Mobile developer: React Native, Expo, TypeScript, Fastlane. $95/hr. Immediate availability.",
     "tags": [
@@ -630,20 +630,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-11-10T06:39:09.871Z",
-    "updatedAt": "2026-11-10T06:39:09.871Z",
+    "createdAt": "2026-10-26T05:57:25.487Z",
+    "updatedAt": "2026-10-26T05:57:25.487Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356454
     },
     "privacy": "public",
-    "priority": 3,
+    "priority": 1,
     "status": "available"
   },
   {
-    "id": "note_mwbksnln_vr1uxgu",
+    "id": "note_mwbqjkyu_w4m6cnt",
     "title": "Building a real-time collaboration tool with WebRTC, WebSocket, and CRDTs. Team ...",
     "content": "Building a real-time collaboration tool with WebRTC, WebSocket, and CRDTs. Team of 4, 6-month timeline.",
     "tags": [
@@ -663,20 +663,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-14T18:48:53.986Z",
-    "updatedAt": "2026-10-14T18:48:53.986Z",
+    "createdAt": "2026-11-06T07:04:06.679Z",
+    "updatedAt": "2026-11-06T07:04:06.679Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356454
     },
     "privacy": "public",
-    "priority": 1,
+    "priority": 3,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_oydl4df",
+    "id": "note_mwbqjkyu_yp6h0sy",
     "title": "Developing an AI-powered code review assistant. LLM integration, GitHub Actions,...",
     "content": "Developing an AI-powered code review assistant. LLM integration, GitHub Actions, VS Code extension.",
     "tags": [
@@ -695,20 +695,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-11-10T00:13:51.439Z",
-    "updatedAt": "2026-11-10T00:13:51.439Z",
+    "createdAt": "2026-10-25T10:29:13.927Z",
+    "updatedAt": "2026-10-25T10:29:13.927Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356454
     },
     "privacy": "public",
-    "priority": 1,
+    "priority": 4,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_dw4yji5",
+    "id": "note_mwbqjkyu_58ngum3",
     "title": "Creating a design system with Storybook, Chromatic, and Figma integration. 20+ c...",
     "content": "Creating a design system with Storybook, Chromatic, and Figma integration. 20+ components, documentation.",
     "tags": [
@@ -728,20 +728,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-11-03T13:44:47.704Z",
-    "updatedAt": "2026-11-03T13:44:47.704Z",
+    "createdAt": "2026-11-02T03:25:33.629Z",
+    "updatedAt": "2026-11-02T03:25:33.629Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356454
     },
     "privacy": "public",
-    "priority": 5,
+    "priority": 4,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_8yzwiee",
+    "id": "note_mwbqjkyu_n9zmrx3",
     "title": "Migrating legacy PHP application to Node.js microservices. Domain-driven design,...",
     "content": "Migrating legacy PHP application to Node.js microservices. Domain-driven design, event sourcing.",
     "tags": [
@@ -770,20 +770,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-31T06:11:29.360Z",
-    "updatedAt": "2026-10-31T06:11:29.360Z",
+    "createdAt": "2026-10-22T22:21:58.510Z",
+    "updatedAt": "2026-10-22T22:21:58.510Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356454
     },
     "privacy": "public",
-    "priority": 3,
+    "priority": 5,
     "status": "available"
   },
   {
-    "id": "note_mwbksnln_tlsfp4s",
+    "id": "note_mwbqjkyu_rp8975r",
     "title": "Building a marketplace platform with Stripe Connect, multi-vendor, commission sy...",
     "content": "Building a marketplace platform with Stripe Connect, multi-vendor, commission system.",
     "tags": [
@@ -791,20 +791,20 @@
       "project-descriptions"
     ],
     "properties": [],
-    "createdAt": "2026-10-31T21:01:15.605Z",
-    "updatedAt": "2026-10-31T21:01:15.605Z",
+    "createdAt": "2026-10-20T06:22:33.234Z",
+    "updatedAt": "2026-10-20T06:22:33.234Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356454
     },
     "privacy": "public",
     "priority": 2,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_3quwb3p",
+    "id": "note_mwbqjkyu_itnvz5i",
     "title": "The TypeScript strict mode catches so many bugs at compile time. Essential for l...",
     "content": "The TypeScript strict mode catches so many bugs at compile time. Essential for large codebases.",
     "tags": [
@@ -823,20 +823,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-29T21:33:12.742Z",
-    "updatedAt": "2026-10-29T21:33:12.742Z",
+    "createdAt": "2026-10-21T00:37:09.561Z",
+    "updatedAt": "2026-10-21T00:37:09.561Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356454
     },
     "privacy": "public",
-    "priority": 5,
+    "priority": 2,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_yptt77t",
+    "id": "note_mwbqjkyu_f48s1jz",
     "title": "GraphQL federation allows us to compose multiple services into a single schema. ...",
     "content": "GraphQL federation allows us to compose multiple services into a single schema. Game changer for microservices.",
     "tags": [
@@ -865,20 +865,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-29T05:09:13.254Z",
-    "updatedAt": "2026-10-29T05:09:13.254Z",
+    "createdAt": "2026-11-04T04:55:59.230Z",
+    "updatedAt": "2026-11-04T04:55:59.230Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356454
     },
     "privacy": "public",
-    "priority": 2,
+    "priority": 5,
     "status": "available"
   },
   {
-    "id": "note_mwbksnln_m4ny8iz",
+    "id": "note_mwbqjkyu_45qt7zp",
     "title": "React Server Components reduce bundle size significantly. Next.js 13 app router ...",
     "content": "React Server Components reduce bundle size significantly. Next.js 13 app router makes it seamless.",
     "tags": [
@@ -898,20 +898,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-25T14:29:39.757Z",
-    "updatedAt": "2026-10-25T14:29:39.757Z",
+    "createdAt": "2026-11-04T00:50:49.044Z",
+    "updatedAt": "2026-11-04T00:50:49.044Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356454
     },
     "privacy": "public",
-    "priority": 3,
+    "priority": 1,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_wkx61o2",
+    "id": "note_mwbqjkyu_20daaip",
     "title": "Tailwind CSS with JIT compilation is incredibly fast. No more purging needed in ...",
     "content": "Tailwind CSS with JIT compilation is incredibly fast. No more purging needed in production.",
     "tags": [
@@ -940,20 +940,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-11-08T23:30:08.369Z",
-    "updatedAt": "2026-11-08T23:30:08.369Z",
+    "createdAt": "2026-10-23T12:09:39.207Z",
+    "updatedAt": "2026-10-23T12:09:39.207Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356454
     },
     "privacy": "public",
     "priority": 2,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_cwzrti7",
+    "id": "note_mwbqjkyu_c6i3m6q",
     "title": "Zod for runtime validation pairs perfectly with TypeScript. End-to-end type safe...",
     "content": "Zod for runtime validation pairs perfectly with TypeScript. End-to-end type safety.",
     "tags": [
@@ -973,20 +973,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-11-09T06:58:26.005Z",
-    "updatedAt": "2026-11-09T06:58:26.005Z",
+    "createdAt": "2026-10-13T18:54:38.466Z",
+    "updatedAt": "2026-10-13T18:54:38.466Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356454
     },
     "privacy": "public",
-    "priority": 1,
+    "priority": 3,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_zk4vvxz",
+    "id": "note_mwbqjkyu_ami1664",
     "title": "Want to transition from frontend to full-stack. Learning Node.js, databases, and...",
     "content": "Want to transition from frontend to full-stack. Learning Node.js, databases, and system design.",
     "tags": [
@@ -1015,20 +1015,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-25T12:16:41.758Z",
-    "updatedAt": "2026-10-25T12:16:41.758Z",
+    "createdAt": "2026-11-10T01:58:50.100Z",
+    "updatedAt": "2026-11-10T01:58:50.100Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356454
     },
     "privacy": "public",
-    "priority": 2,
+    "priority": 4,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_hgp3bk8",
+    "id": "note_mwbqjkyu_yivmzai",
     "title": "Studying for AWS Solutions Architect Associate. Need hands-on labs and practice ...",
     "content": "Studying for AWS Solutions Architect Associate. Need hands-on labs and practice exams.",
     "tags": [
@@ -1057,20 +1057,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-11-09T05:55:53.593Z",
-    "updatedAt": "2026-11-09T05:55:53.593Z",
+    "createdAt": "2026-10-13T06:17:52.947Z",
+    "updatedAt": "2026-10-13T06:17:52.947Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356454
     },
     "privacy": "public",
     "priority": 2,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_r5qdne8",
+    "id": "note_mwbqjkyu_bo5y2t8",
     "title": "Building a portfolio with 3 substantial projects. E-commerce, SaaS dashboard, an...",
     "content": "Building a portfolio with 3 substantial projects. E-commerce, SaaS dashboard, and social app.",
     "tags": [
@@ -1078,20 +1078,20 @@
       "career-&-learning"
     ],
     "properties": [],
-    "createdAt": "2026-10-20T08:29:44.255Z",
-    "updatedAt": "2026-10-20T08:29:44.255Z",
+    "createdAt": "2026-10-17T06:02:17.647Z",
+    "updatedAt": "2026-10-17T06:02:17.647Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356454
     },
     "privacy": "public",
-    "priority": 3,
+    "priority": 1,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlo_fsi9l9h",
+    "id": "note_mwbqjkyu_qrc6x8f",
     "title": "Mentoring junior developers on React patterns, testing, and TypeScript best prac...",
     "content": "Mentoring junior developers on React patterns, testing, and TypeScript best practices.",
     "tags": [
@@ -1121,20 +1121,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-13T15:19:46.738Z",
-    "updatedAt": "2026-10-13T15:19:46.738Z",
+    "createdAt": "2026-11-05T17:49:20.182Z",
+    "updatedAt": "2026-11-05T17:49:20.182Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702076
+      "timestamp": 1794378356454
     },
     "privacy": "public",
-    "priority": 2,
+    "priority": 4,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlo_f2j60z7",
+    "id": "note_mwbqjkyu_gix1u09",
     "title": "Contributing to open source: fixed 5 bugs in popular libraries this month.",
     "content": "Contributing to open source: fixed 5 bugs in popular libraries this month.",
     "tags": [
@@ -1142,20 +1142,20 @@
       "career-&-learning"
     ],
     "properties": [],
-    "createdAt": "2026-10-31T11:12:28.391Z",
-    "updatedAt": "2026-10-31T11:12:28.391Z",
+    "createdAt": "2026-11-03T22:14:24.396Z",
+    "updatedAt": "2026-11-03T22:14:24.396Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702076
+      "timestamp": 1794378356454
     },
     "privacy": "public",
-    "priority": 4,
+    "priority": 3,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlo_a49xwwm",
+    "id": "note_mwbqjkyu_i5q3h2t",
     "title": "Need React developer for 3-month project, budget $15k, remote. TS, Next.js, Grap...",
     "content": "Need React developer for 3-month project, budget $15k, remote. TS, Next.js, GraphQL required.",
     "tags": [
@@ -1214,20 +1214,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-20T08:46:44.700Z",
-    "updatedAt": "2026-10-20T08:46:44.700Z",
+    "createdAt": "2026-10-27T14:32:23.212Z",
+    "updatedAt": "2026-10-27T14:32:23.212Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702076
+      "timestamp": 1794378356454
     },
     "privacy": "public",
     "priority": 3,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlo_3fsg31o",
+    "id": "note_mwbqjkyu_nr9ux6c",
     "title": "Freelance frontend engineer for dashboard: React, Tailwind, Recharts. Rate $80-1...",
     "content": "Freelance frontend engineer for dashboard: React, Tailwind, Recharts. Rate $80-120/hr. Start ASAP.",
     "tags": [
@@ -1296,20 +1296,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-18T23:02:57.646Z",
-    "updatedAt": "2026-10-18T23:02:57.646Z",
+    "createdAt": "2026-10-15T08:40:42.751Z",
+    "updatedAt": "2026-10-15T08:40:42.751Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702076
+      "timestamp": 1794378356454
     },
     "privacy": "public",
-    "priority": 3,
+    "priority": 4,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlo_2pwcz1y",
+    "id": "note_mwbqjkyu_1gl2orf",
     "title": "Full-stack dev for e-commerce: Node.js, React, PostgreSQL. 6-month contract, $10...",
     "content": "Full-stack dev for e-commerce: Node.js, React, PostgreSQL. 6-month contract, $10k/month.",
     "tags": [
@@ -1340,20 +1340,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-18T12:25:20.636Z",
-    "updatedAt": "2026-10-18T12:25:20.636Z",
+    "createdAt": "2026-10-15T07:29:13.658Z",
+    "updatedAt": "2026-10-15T07:29:13.658Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702076
+      "timestamp": 1794378356454
     },
     "privacy": "public",
-    "priority": 5,
+    "priority": 2,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlo_xlvcyrx",
+    "id": "note_mwbqjkyu_6784162",
     "title": "DevOps engineer for K8s migration: AWS, Docker, Terraform. $150/hr, 3 months.",
     "content": "DevOps engineer for K8s migration: AWS, Docker, Terraform. $150/hr, 3 months.",
     "tags": [
@@ -1403,20 +1403,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-30T11:19:48.021Z",
-    "updatedAt": "2026-10-30T11:19:48.021Z",
+    "createdAt": "2026-11-03T14:39:33.224Z",
+    "updatedAt": "2026-11-03T14:39:33.224Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702076
+      "timestamp": 1794378356454
     },
     "privacy": "public",
     "priority": 1,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlo_91s7or2",
+    "id": "note_mwbqjkyu_htzjixt",
     "title": "Mobile dev for React Native app: iOS/Android, push notifications, offline sync. ...",
     "content": "Mobile dev for React Native app: iOS/Android, push notifications, offline sync. $5k fixed.",
     "tags": [
@@ -1445,20 +1445,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-18T09:18:49.310Z",
-    "updatedAt": "2026-10-18T09:18:49.310Z",
+    "createdAt": "2026-11-02T23:31:32.513Z",
+    "updatedAt": "2026-11-02T23:31:32.513Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702076
+      "timestamp": 1794378356454
     },
     "privacy": "public",
-    "priority": 3,
+    "priority": 2,
     "status": "open"
   },
   {
-    "id": "note_mwbksnlo_iwmslte",
+    "id": "note_mwbqjkyu_xf8a13r",
     "title": "Senior React Developer offering: TS, Next.js, Redux, Testing Library. $110/hr. F...",
     "content": "Senior React Developer offering: TS, Next.js, Redux, Testing Library. $110/hr. Full-time remote.",
     "tags": [
@@ -1527,20 +1527,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-11-01T11:53:44.280Z",
-    "updatedAt": "2026-11-01T11:53:44.280Z",
+    "createdAt": "2026-10-29T14:38:43.978Z",
+    "updatedAt": "2026-10-29T14:38:43.978Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702076
+      "timestamp": 1794378356454
     },
     "privacy": "public",
-    "priority": 4,
+    "priority": 3,
     "status": "available"
   },
   {
-    "id": "note_mwbksnlo_f9tr0ch",
+    "id": "note_mwbqjkyu_r2wd8v6",
     "title": "Full-stack engineer available: Node.js, Python, React, AWS, Docker. 8yr exp. $10...",
     "content": "Full-stack engineer available: Node.js, Python, React, AWS, Docker. 8yr exp. $100/hr.",
     "tags": [
@@ -1592,20 +1592,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-22T11:20:12.569Z",
-    "updatedAt": "2026-10-22T11:20:12.569Z",
+    "createdAt": "2026-10-21T06:32:01.909Z",
+    "updatedAt": "2026-10-21T06:32:01.909Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702076
+      "timestamp": 1794378356454
     },
     "privacy": "public",
-    "priority": 4,
+    "priority": 5,
     "status": "available"
   },
   {
-    "id": "note_mwbksnlo_bhe3vsh",
+    "id": "note_mwbqjkyu_vbdg4xc",
     "title": "Frontend specialist: Vue.js, Nuxt, Pinia, Vitest, Tailwind. $90/hr. Part-time av...",
     "content": "Frontend specialist: Vue.js, Nuxt, Pinia, Vitest, Tailwind. $90/hr. Part-time available.",
     "tags": [
@@ -1655,20 +1655,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-14T21:19:27.574Z",
-    "updatedAt": "2026-10-14T21:19:27.574Z",
+    "createdAt": "2026-10-24T02:34:04.869Z",
+    "updatedAt": "2026-10-24T02:34:04.869Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702076
+      "timestamp": 1794378356454
     },
     "privacy": "public",
-    "priority": 5,
+    "priority": 3,
     "status": "available"
   },
   {
-    "id": "note_mwbksnlo_btahqq0",
+    "id": "note_mwbqjkyu_fzqbr5t",
     "title": "Backend dev: Go, PostgreSQL, gRPC, Kubernetes. $120/hr. Contract or full-time.",
     "content": "Backend dev: Go, PostgreSQL, gRPC, Kubernetes. $120/hr. Contract or full-time.",
     "tags": [
@@ -1719,20 +1719,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-22T05:45:01.329Z",
-    "updatedAt": "2026-10-22T05:45:01.329Z",
+    "createdAt": "2026-11-06T15:27:46.513Z",
+    "updatedAt": "2026-11-06T15:27:46.513Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702076
+      "timestamp": 1794378356454
     },
     "privacy": "public",
-    "priority": 4,
+    "priority": 3,
     "status": "available"
   },
   {
-    "id": "note_mwbksnlo_oxzcmht",
+    "id": "note_mwbqjkyu_si7hywc",
     "title": "Mobile dev: React Native, Expo, TypeScript, Fastlane. $95/hr. Immediate availabi...",
     "content": "Mobile dev: React Native, Expo, TypeScript, Fastlane. $95/hr. Immediate availability.",
     "tags": [
@@ -1783,16 +1783,16 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-27T01:50:42.830Z",
-    "updatedAt": "2026-10-27T01:50:42.830Z",
+    "createdAt": "2026-10-22T21:07:48.989Z",
+    "updatedAt": "2026-10-22T21:07:48.989Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-software-dev",
-      "timestamp": 1794368702076
+      "timestamp": 1794378356454
     },
     "privacy": "public",
-    "priority": 2,
+    "priority": 5,
     "status": "available"
   }
 ]

@@ -1,6 +1,6 @@
 [
   {
-    "id": "note_mwbksnln_6ageym0",
+    "id": "note_mwbqjkyt_mkjg2n5",
     "title": "Looking for a senior software architect to mentor me on system design and scalab...",
     "content": "Looking for a senior software architect to mentor me on system design and scalability. Monthly 1-hour sessions, willing to pay $200/session.",
     "tags": [
@@ -29,20 +29,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-23T07:40:03.700Z",
-    "updatedAt": "2026-10-23T07:40:03.700Z",
+    "createdAt": "2026-11-03T15:49:40.512Z",
+    "updatedAt": "2026-11-03T15:49:40.512Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
-    "priority": 3,
+    "priority": 1,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_9xqc8kq",
+    "id": "note_mwbqjkyt_m75rsl0",
     "title": "Seeking a career mentor who has transitioned from IC to engineering manager. Nee...",
     "content": "Seeking a career mentor who has transitioned from IC to engineering manager. Need guidance on leadership, delegation, and strategy.",
     "tags": [
@@ -71,20 +71,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-27T04:11:07.733Z",
-    "updatedAt": "2026-10-27T04:11:07.733Z",
+    "createdAt": "2026-10-25T03:45:44.798Z",
+    "updatedAt": "2026-10-25T03:45:44.798Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
-    "priority": 1,
+    "priority": 5,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_2trzgce",
+    "id": "note_mwbqjkyt_9sdy84d",
     "title": "Want a mentor experienced in startup CTO role. Technical strategy, fundraising, ...",
     "content": "Want a mentor experienced in startup CTO role. Technical strategy, fundraising, hiring, culture building. Equity or cash compensation.",
     "tags": [
@@ -113,20 +113,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-19T07:47:25.118Z",
-    "updatedAt": "2026-10-19T07:47:25.118Z",
+    "createdAt": "2026-10-13T11:31:38.239Z",
+    "updatedAt": "2026-10-13T11:31:38.239Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
     "priority": 1,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_bunbsxz",
+    "id": "note_mwbqjkyt_zjk02ly",
     "title": "Looking for a Rust expert to mentor me on systems programming, async, and perfor...",
     "content": "Looking for a Rust expert to mentor me on systems programming, async, and performance optimization. Weekly pair programming sessions.",
     "tags": [
@@ -155,20 +155,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-20T13:00:59.963Z",
-    "updatedAt": "2026-10-20T13:00:59.963Z",
+    "createdAt": "2026-10-30T17:20:16.410Z",
+    "updatedAt": "2026-10-30T17:20:16.410Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
-    "priority": 2,
+    "priority": 3,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_r1mc234",
+    "id": "note_mwbqjkyt_mctwz5z",
     "title": "Need guidance on technical writing and developer advocacy. Building a personal b...",
     "content": "Need guidance on technical writing and developer advocacy. Building a personal brand, speaking at conferences, content creation.",
     "tags": [
@@ -187,20 +187,20 @@
         "provenance": "inferred"
       }
     ],
-    "createdAt": "2026-11-02T04:41:29.823Z",
-    "updatedAt": "2026-11-02T04:41:29.823Z",
+    "createdAt": "2026-11-09T01:01:31.607Z",
+    "updatedAt": "2026-11-09T01:01:31.607Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
     "priority": 2,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_hvud7ct",
+    "id": "note_mwbqjkyt_b11kv8s",
     "title": "Senior engineering manager offering mentorship: career growth, leadership skills...",
     "content": "Senior engineering manager offering mentorship: career growth, leadership skills, org design, performance reviews. 10 years experience. Free for underrepresented groups.",
     "tags": [
@@ -247,20 +247,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-22T04:47:16.901Z",
-    "updatedAt": "2026-10-22T04:47:16.901Z",
+    "createdAt": "2026-11-07T08:18:04.300Z",
+    "updatedAt": "2026-11-07T08:18:04.300Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
     "priority": 3,
     "status": "available"
   },
   {
-    "id": "note_mwbksnln_rwkjb6b",
+    "id": "note_mwbqjkyt_hmdu6wr",
     "title": "Staff engineer available for mentoring: system architecture, code review, techni...",
     "content": "Staff engineer available for mentoring: system architecture, code review, technical decision making, staff+ promotion packets. $150/hr.",
     "tags": [
@@ -308,20 +308,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-18T18:57:34.311Z",
-    "updatedAt": "2026-10-18T18:57:34.311Z",
+    "createdAt": "2026-10-28T03:35:10.468Z",
+    "updatedAt": "2026-10-28T03:35:10.468Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
-    "priority": 2,
+    "priority": 1,
     "status": "available"
   },
   {
-    "id": "note_mwbksnln_w2cgvvo",
+    "id": "note_mwbqjkyt_zp2cbct",
     "title": "Engineering director offering executive coaching: strategy, stakeholder manageme...",
     "content": "Engineering director offering executive coaching: strategy, stakeholder management, hiring at scale, culture transformation. $300/hr.",
     "tags": [
@@ -369,20 +369,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-11-10T20:34:13.665Z",
-    "updatedAt": "2026-11-10T20:34:13.665Z",
+    "createdAt": "2026-10-24T01:41:08.295Z",
+    "updatedAt": "2026-10-24T01:41:08.295Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
-    "priority": 1,
+    "priority": 3,
     "status": "available"
   },
   {
-    "id": "note_mwbksnln_aqkbrix",
+    "id": "note_mwbqjkyt_o57ctw4",
     "title": "Open source maintainer mentoring contributors: first PR, code review process, pr...",
     "content": "Open source maintainer mentoring contributors: first PR, code review process, project governance, community building. Free.",
     "tags": [
@@ -411,20 +411,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-11-10T00:55:48.498Z",
-    "updatedAt": "2026-11-10T00:55:48.498Z",
+    "createdAt": "2026-10-25T23:53:02.408Z",
+    "updatedAt": "2026-10-25T23:53:02.408Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
     "priority": 4,
     "status": "available"
   },
   {
-    "id": "note_mwbksnln_ne1cixc",
+    "id": "note_mwbqjkyt_gh8njo1",
     "title": "Principal engineer mentoring on distributed systems, consensus algorithms, datab...",
     "content": "Principal engineer mentoring on distributed systems, consensus algorithms, database internals. Academic background, 15 years industry. $250/hr.",
     "tags": [
@@ -482,20 +482,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-20T02:36:02.694Z",
-    "updatedAt": "2026-10-20T02:36:02.694Z",
+    "createdAt": "2026-11-07T20:00:21.760Z",
+    "updatedAt": "2026-11-07T20:00:21.760Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
     "priority": 5,
     "status": "available"
   },
   {
-    "id": "note_mwbksnln_tfen7wc",
+    "id": "note_mwbqjkyt_s0rh9n0",
     "title": "Weekly Rust study group: reading \"Programming Rust\", doing exercises together. I...",
     "content": "Weekly Rust study group: reading \"Programming Rust\", doing exercises together. Intermediate level, Saturdays 10am PST.",
     "tags": [
@@ -524,20 +524,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-14T11:02:30.121Z",
-    "updatedAt": "2026-10-14T11:02:30.121Z",
+    "createdAt": "2026-10-19T14:51:19.475Z",
+    "updatedAt": "2026-10-19T14:51:19.475Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
-    "priority": 5,
+    "priority": 3,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_cnp0ldt",
+    "id": "note_mwbqjkyt_dfagjsl",
     "title": "Distributed systems reading group: papers on consensus, replication, consistency...",
     "content": "Distributed systems reading group: papers on consensus, replication, consistency. Monthly meetings, paper presentations.",
     "tags": [
@@ -545,20 +545,20 @@
       "learning-communities"
     ],
     "properties": [],
-    "createdAt": "2026-10-14T02:15:36.526Z",
-    "updatedAt": "2026-10-14T02:15:36.526Z",
+    "createdAt": "2026-10-31T21:45:32.431Z",
+    "updatedAt": "2026-10-31T21:45:32.431Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
     "priority": 4,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_0vdu5gu",
+    "id": "note_mwbqjkyt_amzd8vj",
     "title": "Frontend architecture book club: \"Micro Frontends\", \"Module Federation\", \"Design...",
     "content": "Frontend architecture book club: \"Micro Frontends\", \"Module Federation\", \"Design Systems\". Bi-weekly discussions.",
     "tags": [
@@ -566,20 +566,20 @@
       "learning-communities"
     ],
     "properties": [],
-    "createdAt": "2026-11-02T23:00:44.926Z",
-    "updatedAt": "2026-11-02T23:00:44.926Z",
+    "createdAt": "2026-11-09T21:23:22.617Z",
+    "updatedAt": "2026-11-09T21:23:22.617Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
     "priority": 3,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_5p7lq12",
+    "id": "note_mwbqjkyt_klqzbxc",
     "title": "Kubernetes learning cohort: CKAD preparation, hands-on labs, mock exams. 8-week ...",
     "content": "Kubernetes learning cohort: CKAD preparation, hands-on labs, mock exams. 8-week program, Slack community.",
     "tags": [
@@ -598,20 +598,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-26T09:02:20.606Z",
-    "updatedAt": "2026-10-26T09:02:20.606Z",
+    "createdAt": "2026-10-18T18:49:58.680Z",
+    "updatedAt": "2026-10-18T18:49:58.680Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
-    "priority": 5,
+    "priority": 3,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_6wy65nc",
+    "id": "note_mwbqjkyt_qu6nnrk",
     "title": "Machine learning engineering study group: MLOps, feature stores, model serving, ...",
     "content": "Machine learning engineering study group: MLOps, feature stores, model serving, monitoring. Practitioners welcome.",
     "tags": [
@@ -619,20 +619,20 @@
       "learning-communities"
     ],
     "properties": [],
-    "createdAt": "2026-10-29T01:34:14.874Z",
-    "updatedAt": "2026-10-29T01:34:14.874Z",
+    "createdAt": "2026-10-13T22:41:33.687Z",
+    "updatedAt": "2026-10-13T22:41:33.687Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
-    "priority": 4,
+    "priority": 2,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_6e2v8ru",
+    "id": "note_mwbqjkyt_8pxznxj",
     "title": "IC to EM transition: what skills transfer, what's new, common pitfalls, recommen...",
     "content": "IC to EM transition: what skills transfer, what's new, common pitfalls, recommended resources.",
     "tags": [
@@ -640,20 +640,20 @@
       "career-transitions"
     ],
     "properties": [],
-    "createdAt": "2026-10-26T05:14:26.221Z",
-    "updatedAt": "2026-10-26T05:14:26.221Z",
+    "createdAt": "2026-11-07T08:57:32.984Z",
+    "updatedAt": "2026-11-07T08:57:32.984Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
-    "priority": 5,
+    "priority": 2,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_lqecf0c",
+    "id": "note_mwbqjkyt_a7ocru1",
     "title": "Backend to full-stack: frontend fundamentals, React ecosystem, state management,...",
     "content": "Backend to full-stack: frontend fundamentals, React ecosystem, state management, testing strategies.",
     "tags": [
@@ -672,20 +672,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-11-04T13:09:28.190Z",
-    "updatedAt": "2026-11-04T13:09:28.190Z",
+    "createdAt": "2026-10-12T15:53:55.365Z",
+    "updatedAt": "2026-10-12T15:53:55.365Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
-    "priority": 2,
+    "priority": 4,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_z2jcpde",
+    "id": "note_mwbqjkyt_qalms92",
     "title": "Startup to big tech: interview prep, system design scale, promotion processes, c...",
     "content": "Startup to big tech: interview prep, system design scale, promotion processes, compensation negotiation.",
     "tags": [
@@ -704,20 +704,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-11-08T09:44:59.375Z",
-    "updatedAt": "2026-11-08T09:44:59.375Z",
+    "createdAt": "2026-10-12T18:28:42.459Z",
+    "updatedAt": "2026-10-12T18:28:42.459Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
-    "priority": 2,
+    "priority": 5,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_s9uuuk7",
+    "id": "note_mwbqjkyt_vymnfxu",
     "title": "Academia to industry: research to production, software engineering practices, in...",
     "content": "Academia to industry: research to production, software engineering practices, industry tooling, culture shock.",
     "tags": [
@@ -725,20 +725,20 @@
       "career-transitions"
     ],
     "properties": [],
-    "createdAt": "2026-10-13T13:28:18.749Z",
-    "updatedAt": "2026-10-13T13:28:18.749Z",
+    "createdAt": "2026-11-08T12:14:20.857Z",
+    "updatedAt": "2026-11-08T12:14:20.857Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
-    "priority": 3,
+    "priority": 1,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_fo2ikvn",
+    "id": "note_mwbqjkyt_o9pbp2a",
     "title": "Freelance to full-time: portfolio building, interview prep, benefits evaluation,...",
     "content": "Freelance to full-time: portfolio building, interview prep, benefits evaluation, stability vs freedom.",
     "tags": [
@@ -757,20 +757,20 @@
         "provenance": "inferred"
       }
     ],
-    "createdAt": "2026-11-05T20:19:44.197Z",
-    "updatedAt": "2026-11-05T20:19:44.197Z",
+    "createdAt": "2026-10-23T03:21:07.898Z",
+    "updatedAt": "2026-10-23T03:21:07.898Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
     "priority": 5,
     "status": "available"
   },
   {
-    "id": "note_mwbksnln_62mucta",
+    "id": "note_mwbqjkyt_ue3s5g0",
     "title": "Company apprenticeship program: 6 months, paid, rotation through teams, mentor a...",
     "content": "Company apprenticeship program: 6 months, paid, rotation through teams, mentor assigned, conversion possible.",
     "tags": [
@@ -797,20 +797,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-14T09:21:22.235Z",
-    "updatedAt": "2026-10-14T09:21:22.235Z",
+    "createdAt": "2026-10-29T17:36:02.994Z",
+    "updatedAt": "2026-10-29T17:36:02.994Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
-    "priority": 3,
+    "priority": 2,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_5iocfn3",
+    "id": "note_mwbqjkyt_zcu1ha2",
     "title": "Bootcamp graduate seeking apprenticeship: React, Node.js, PostgreSQL, Git, CI/CD...",
     "content": "Bootcamp graduate seeking apprenticeship: React, Node.js, PostgreSQL, Git, CI/CD. Eager to learn, strong portfolio.",
     "tags": [
@@ -841,20 +841,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-11-02T02:44:49.190Z",
-    "updatedAt": "2026-11-02T02:44:49.190Z",
+    "createdAt": "2026-11-09T07:00:25.204Z",
+    "updatedAt": "2026-11-09T07:00:25.204Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
-    "priority": 4,
+    "priority": 1,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_smp9fmm",
+    "id": "note_mwbqjkyt_hyz86sk",
     "title": "Junior developer looking for first role: TypeScript, React, testing, accessibili...",
     "content": "Junior developer looking for first role: TypeScript, React, testing, accessibility. Completed 3-month intensive program.",
     "tags": [
@@ -894,20 +894,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-11-04T14:08:59.543Z",
-    "updatedAt": "2026-11-04T14:08:59.543Z",
+    "createdAt": "2026-11-10T18:53:38.259Z",
+    "updatedAt": "2026-11-10T18:53:38.259Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
-    "priority": 2,
+    "priority": 1,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_5avwzci",
+    "id": "note_mwbqjkyt_bgppst8",
     "title": "Self-taught programmer seeking mentorship: Python, Django, REST APIs, Docker. 1 ...",
     "content": "Self-taught programmer seeking mentorship: Python, Django, REST APIs, Docker. 1 year self-study, built 5 projects.",
     "tags": [
@@ -956,20 +956,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-19T11:56:46.610Z",
-    "updatedAt": "2026-10-19T11:56:46.610Z",
+    "createdAt": "2026-11-09T01:04:16.669Z",
+    "updatedAt": "2026-11-09T01:04:16.669Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
-    "priority": 3,
+    "priority": 5,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_gz44jqe",
+    "id": "note_mwbqjkyt_f1ti6a4",
     "title": "Career changer from finance to tech: analytical skills, Excel/VBA, learning Java...",
     "content": "Career changer from finance to tech: analytical skills, Excel/VBA, learning JavaScript, React, SQL.",
     "tags": [
@@ -988,20 +988,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-25T00:56:25.951Z",
-    "updatedAt": "2026-10-25T00:56:25.951Z",
+    "createdAt": "2026-10-28T11:33:06.015Z",
+    "updatedAt": "2026-10-28T11:33:06.015Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
-    "priority": 3,
+    "priority": 4,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_rr6ewjq",
+    "id": "note_mwbqjkyt_1hv1srt",
     "title": "Looking for senior software architect mentor: system design, scalability. Monthl...",
     "content": "Looking for senior software architect mentor: system design, scalability. Monthly 1hr, $200/session.",
     "tags": [
@@ -1030,20 +1030,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-30T20:24:14.434Z",
-    "updatedAt": "2026-10-30T20:24:14.434Z",
+    "createdAt": "2026-11-10T22:45:55.665Z",
+    "updatedAt": "2026-11-10T22:45:55.665Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
-    "priority": 4,
+    "priority": 5,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_fm4ekk8",
+    "id": "note_mwbqjkyt_j5q0emm",
     "title": "Seeking career mentor: IC to EM transition. Leadership, delegation, strategy gui...",
     "content": "Seeking career mentor: IC to EM transition. Leadership, delegation, strategy guidance.",
     "tags": [
@@ -1072,20 +1072,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-20T11:57:08.072Z",
-    "updatedAt": "2026-10-20T11:57:08.072Z",
+    "createdAt": "2026-10-27T13:48:47.259Z",
+    "updatedAt": "2026-10-27T13:48:47.259Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
     "priority": 4,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_ldv45vi",
+    "id": "note_mwbqjkyt_we8nr4p",
     "title": "Want mentor experienced in startup CTO role: tech strategy, fundraising, hiring,...",
     "content": "Want mentor experienced in startup CTO role: tech strategy, fundraising, hiring, culture. Equity/cash.",
     "tags": [
@@ -1114,20 +1114,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-26T17:50:53.114Z",
-    "updatedAt": "2026-10-26T17:50:53.114Z",
+    "createdAt": "2026-11-04T04:04:20.732Z",
+    "updatedAt": "2026-11-04T04:04:20.732Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
-    "priority": 5,
+    "priority": 4,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_0dnyvxs",
+    "id": "note_mwbqjkyt_8psc3we",
     "title": "Looking for Rust expert mentor: systems programming, async, performance. Weekly ...",
     "content": "Looking for Rust expert mentor: systems programming, async, performance. Weekly pair programming.",
     "tags": [
@@ -1156,20 +1156,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-25T09:19:48.866Z",
-    "updatedAt": "2026-10-25T09:19:48.866Z",
+    "createdAt": "2026-11-05T00:00:17.626Z",
+    "updatedAt": "2026-11-05T00:00:17.626Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
-    "priority": 4,
+    "priority": 5,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_auxmava",
+    "id": "note_mwbqjkyt_bmgd5j5",
     "title": "Need guidance on technical writing and dev advocacy: personal brand, speaking, c...",
     "content": "Need guidance on technical writing and dev advocacy: personal brand, speaking, content creation.",
     "tags": [
@@ -1188,20 +1188,20 @@
         "provenance": "inferred"
       }
     ],
-    "createdAt": "2026-10-16T14:23:27.024Z",
-    "updatedAt": "2026-10-16T14:23:27.024Z",
+    "createdAt": "2026-10-19T00:34:33.123Z",
+    "updatedAt": "2026-10-19T00:34:33.123Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
     "priority": 1,
     "status": "open"
   },
   {
-    "id": "note_mwbksnln_rw7r8vc",
+    "id": "note_mwbqjkyt_x96myjk",
     "title": "Senior EM offering mentorship: career growth, leadership, org design, perf revie...",
     "content": "Senior EM offering mentorship: career growth, leadership, org design, perf reviews. 10yr exp. Free for URG.",
     "tags": [
@@ -1230,20 +1230,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-23T01:31:57.059Z",
-    "updatedAt": "2026-10-23T01:31:57.059Z",
+    "createdAt": "2026-11-11T03:24:41.920Z",
+    "updatedAt": "2026-11-11T03:24:41.920Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
-    "priority": 5,
+    "priority": 3,
     "status": "available"
   },
   {
-    "id": "note_mwbksnln_axda11w",
+    "id": "note_mwbqjkyt_7fjn71o",
     "title": "Staff engineer available: system architecture, code review, tech decisions, staf...",
     "content": "Staff engineer available: system architecture, code review, tech decisions, staff+ promo packets. $150/hr.",
     "tags": [
@@ -1291,20 +1291,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-29T11:01:45.279Z",
-    "updatedAt": "2026-10-29T11:01:45.279Z",
+    "createdAt": "2026-10-23T22:28:41.963Z",
+    "updatedAt": "2026-10-23T22:28:41.963Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
-    "priority": 4,
+    "priority": 1,
     "status": "available"
   },
   {
-    "id": "note_mwbksnln_hefgot5",
+    "id": "note_mwbqjkyt_r6v6yy0",
     "title": "Eng director offering executive coaching: strategy, stakeholder mgmt, hiring at ...",
     "content": "Eng director offering executive coaching: strategy, stakeholder mgmt, hiring at scale, culture. $300/hr.",
     "tags": [
@@ -1352,20 +1352,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-13T11:09:53.941Z",
-    "updatedAt": "2026-10-13T11:09:53.941Z",
+    "createdAt": "2026-10-25T11:27:27.305Z",
+    "updatedAt": "2026-10-25T11:27:27.305Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
-    "priority": 1,
+    "priority": 3,
     "status": "available"
   },
   {
-    "id": "note_mwbksnln_qvp7p54",
+    "id": "note_mwbqjkyt_esiy6kb",
     "title": "OS maintainer mentoring contributors: first PR, code review, governance, communi...",
     "content": "OS maintainer mentoring contributors: first PR, code review, governance, community building. Free.",
     "tags": [
@@ -1394,20 +1394,20 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-18T19:35:49.286Z",
-    "updatedAt": "2026-10-18T19:35:49.286Z",
+    "createdAt": "2026-10-14T00:37:27.471Z",
+    "updatedAt": "2026-10-14T00:37:27.471Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
-    "priority": 1,
+    "priority": 2,
     "status": "available"
   },
   {
-    "id": "note_mwbksnln_gb6ubuu",
+    "id": "note_mwbqjkyt_wgrfv13",
     "title": "Principal engineer mentoring: distributed systems, consensus, DB internals. Acad...",
     "content": "Principal engineer mentoring: distributed systems, consensus, DB internals. Academic, 15yr industry. $250/hr.",
     "tags": [
@@ -1455,16 +1455,16 @@
         "provenance": "pattern"
       }
     ],
-    "createdAt": "2026-10-18T19:30:10.824Z",
-    "updatedAt": "2026-10-18T19:30:10.824Z",
+    "createdAt": "2026-10-27T00:35:43.733Z",
+    "updatedAt": "2026-10-27T00:35:43.733Z",
     "pinned": false,
     "source": {
       "type": "import",
       "identifier": "corpus-mentorship-career",
-      "timestamp": 1794368702075
+      "timestamp": 1794378356453
     },
     "privacy": "public",
-    "priority": 4,
+    "priority": 2,
     "status": "available"
   }
 ]

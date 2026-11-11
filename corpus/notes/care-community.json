@@ -1,0 +1,3341 @@
+[
+  {
+    "id": "note_mwbqjkz8_zrsxqbe",
+    "title": "Need infant care: 3 months old, M-F 7:30-5:30, cloth diapers, breastmilk handlin...",
+    "content": "Need infant care: 3 months old, M-F 7:30-5:30, cloth diapers, breastmilk handling. Licensed home preferred.",
+    "tags": [
+      "care-community",
+      "childcare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "duration",
+        "operator": "is",
+        "values": [
+          "3 mo"
+        ],
+        "unit": "mo",
+        "quantity": {
+          "value": 3,
+          "unit": "mo",
+          "unitType": "simple",
+          "numerator": "mo",
+          "semanticType": "duration"
+        },
+        "role": "fact",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-20T14:52:48.028Z",
+    "updatedAt": "2026-10-20T14:52:48.028Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356468
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz8_vqndkni",
+    "title": "Seeking nanny: 2 kids (2 & 5), 30hrs/week, school pickup, meal prep, light house...",
+    "content": "Seeking nanny: 2 kids (2 & 5), 30hrs/week, school pickup, meal prep, light housekeeping. $22/hr gross.",
+    "tags": [
+      "care-community",
+      "childcare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-30T08:11:08.037Z",
+    "updatedAt": "2026-10-30T08:11:08.037Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356468
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz8_ckpgv5y",
+    "title": "Looking for nanny share: our 18mo + another family, alternating homes, split cos...",
+    "content": "Looking for nanny share: our 18mo + another family, alternating homes, split cost. Long-term.",
+    "tags": [
+      "care-community",
+      "childcare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-22T11:16:49.726Z",
+    "updatedAt": "2026-10-22T11:16:49.726Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356468
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz8_qnpumkz",
+    "title": "Need backup care: sick days, school closures, date nights. On-call, trusted, bac...",
+    "content": "Need backup care: sick days, school closures, date nights. On-call, trusted, background checked.",
+    "tags": [
+      "care-community",
+      "childcare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "rust"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-24T18:35:20.416Z",
+    "updatedAt": "2026-10-24T18:35:20.416Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356468
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz8_d6az58q",
+    "title": "Seeking preschool: play-based, nature-focused, 3hrs/day, sliding scale. Parent c...",
+    "content": "Seeking preschool: play-based, nature-focused, 3hrs/day, sliding scale. Parent co-op ok.",
+    "tags": [
+      "care-community",
+      "childcare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-26T18:58:12.386Z",
+    "updatedAt": "2026-10-26T18:58:12.386Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356468
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz8_g6mxajh",
+    "title": "Want au pair: cultural exchange, 45hrs/week, own room, language exposure. Agency...",
+    "content": "Want au pair: cultural exchange, 45hrs/week, own room, language exposure. Agency or direct.",
+    "tags": [
+      "care-community",
+      "childcare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "expo"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-08T13:16:08.693Z",
+    "updatedAt": "2026-11-08T13:16:08.693Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356468
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz8_wz8kmyi",
+    "title": "Need special needs care: autism, AAC device, sensory diet, BCBA collaboration. E...",
+    "content": "Need special needs care: autism, AAC device, sensory diet, BCBA collaboration. Experienced only.",
+    "tags": [
+      "care-community",
+      "childcare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "experienced"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-13T17:20:34.408Z",
+    "updatedAt": "2026-10-13T17:20:34.408Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356468
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz8_cta532m",
+    "title": "Looking for date night sitter: monthly, 2 kids (4 & 7), fun activities, referenc...",
+    "content": "Looking for date night sitter: monthly, 2 kids (4 & 7), fun activities, references. $20/hr.",
+    "tags": [
+      "care-community",
+      "childcare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-20T05:45:15.206Z",
+    "updatedAt": "2026-10-20T05:45:15.206Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356468
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz8_442i3as",
+    "title": "Seeking summer camp: 6yo, STEM/art/outdoor mix, 9-3, extended care. Scholarship ...",
+    "content": "Seeking summer camp: 6yo, STEM/art/outdoor mix, 9-3, extended care. Scholarship available.",
+    "tags": [
+      "care-community",
+      "childcare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-15T08:49:37.746Z",
+    "updatedAt": "2026-10-15T08:49:37.746Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356468
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz8_3mtxh3f",
+    "title": "Want parent's night out: group childcare, 4hrs, pizza/movie/crafts. Community ce...",
+    "content": "Want parent's night out: group childcare, 4hrs, pizza/movie/crafts. Community center, monthly.",
+    "tags": [
+      "care-community",
+      "childcare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-07T01:11:44.936Z",
+    "updatedAt": "2026-11-07T01:11:44.936Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356468
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz8_ystgd0i",
+    "title": "Licensed home daycare: 6 kids max, 0-5 yrs, Reggio-inspired, organic meals, outd...",
+    "content": "Licensed home daycare: 6 kids max, 0-5 yrs, Reggio-inspired, organic meals, outdoor classroom. $1400/mo.",
+    "tags": [
+      "care-community",
+      "childcare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-17T15:55:44.140Z",
+    "updatedAt": "2026-10-17T15:55:44.140Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356468
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz8_tut1sx7",
+    "title": "Nanny: 10 yrs, NCS, CPR, early ed degree, travel ok. Seeking 1-family, long-term...",
+    "content": "Nanny: 10 yrs, NCS, CPR, early ed degree, travel ok. Seeking 1-family, long-term. $25/hr.",
+    "tags": [
+      "care-community",
+      "childcare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-19T03:29:23.132Z",
+    "updatedAt": "2026-10-19T03:29:23.132Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356468
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz8_2xcmopu",
+    "title": "Nanny share host: our 2yo + your 1-3yo, our home, experienced nanny. $18/hr each...",
+    "content": "Nanny share host: our 2yo + your 1-3yo, our home, experienced nanny. $18/hr each family.",
+    "tags": [
+      "care-community",
+      "childcare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "experienced"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-09T20:45:59.123Z",
+    "updatedAt": "2026-11-09T20:45:59.123Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356468
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz9_0cyzbmi",
+    "title": "Backup care provider: 2hr notice, 8am-8pm, CPR, references, activities planned. ...",
+    "content": "Backup care provider: 2hr notice, 8am-8pm, CPR, references, activities planned. $30/hr.",
+    "tags": [
+      "care-community",
+      "childcare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-13T22:02:51.264Z",
+    "updatedAt": "2026-10-13T22:02:51.264Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356469
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz9_7rpuq0t",
+    "title": "Preschool teacher: opening in Waldorf-inspired micro-school, 8 kids, 9-1, mixed-...",
+    "content": "Preschool teacher: opening in Waldorf-inspired micro-school, 8 kids, 9-1, mixed-age. $800/mo.",
+    "tags": [
+      "care-community",
+      "childcare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-23T11:36:01.901Z",
+    "updatedAt": "2026-10-23T11:36:01.901Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356469
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz9_lqwz2py",
+    "title": "Au pair host family: 2 kids (3 & 6), private bath, car, language classes, weeken...",
+    "content": "Au pair host family: 2 kids (3 & 6), private bath, car, language classes, weekend off. $1100/mo stipend.",
+    "tags": [
+      "care-community",
+      "childcare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-13T23:31:47.361Z",
+    "updatedAt": "2026-10-13T23:31:47.361Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356469
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz9_1boanhx",
+    "title": "Special needs caregiver: RBT certified, 5 yrs autism, AAC, behavior plans, data ...",
+    "content": "Special needs caregiver: RBT certified, 5 yrs autism, AAC, behavior plans, data collection. $28/hr.",
+    "tags": [
+      "care-community",
+      "childcare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-19T16:55:37.385Z",
+    "updatedAt": "2026-10-19T16:55:37.385Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356469
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz9_608npgw",
+    "title": "Date night collective: 4 families rotate hosting, 1 pro + 1 parent, monthly, 4hr...",
+    "content": "Date night collective: 4 families rotate hosting, 1 pro + 1 parent, monthly, 4hrs. $10/family.",
+    "tags": [
+      "care-community",
+      "childcare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-10T11:59:02.604Z",
+    "updatedAt": "2026-11-10T11:59:02.604Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356469
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz9_zeen0sb",
+    "title": "Summer camp director: nature+art+STEM, 5-10yrs, 9-3, $300/wk, CIT program, schol...",
+    "content": "Summer camp director: nature+art+STEM, 5-10yrs, 9-3, $300/wk, CIT program, scholarships.",
+    "tags": [
+      "care-community",
+      "childcare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "director"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-04T21:25:58.043Z",
+    "updatedAt": "2026-11-04T21:25:58.043Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356469
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz9_iz8s7im",
+    "title": "Parent co-op organizer: starting new co-op, 6 families, shared space, rotating d...",
+    "content": "Parent co-op organizer: starting new co-op, 6 families, shared space, rotating duties. $200/mo.",
+    "tags": [
+      "care-community",
+      "childcare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-14T02:30:10.418Z",
+    "updatedAt": "2026-10-14T02:30:10.418Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356469
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz9_qy8l6y5",
+    "title": "Need companion for mother (82): conversation, walks, meals, med reminders, 4hrs/...",
+    "content": "Need companion for mother (82): conversation, walks, meals, med reminders, 4hrs/day. Dementia experience.",
+    "tags": [
+      "care-community",
+      "eldercare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-27T22:55:28.353Z",
+    "updatedAt": "2026-10-27T22:55:28.353Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356469
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz9_rb0aqrd",
+    "title": "Seeking live-in caregiver: father (78), Parkinson's, Hoyer lift, 2-person assist...",
+    "content": "Seeking live-in caregiver: father (78), Parkinson's, Hoyer lift, 2-person assist. Private room, 5 days on/2 off.",
+    "tags": [
+      "care-community",
+      "eldercare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "duration",
+        "operator": "is",
+        "values": [
+          "5 d"
+        ],
+        "unit": "d",
+        "quantity": {
+          "value": 5,
+          "unit": "d",
+          "unitType": "simple",
+          "numerator": "d",
+          "semanticType": "duration"
+        },
+        "role": "fact",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-07T05:18:34.813Z",
+    "updatedAt": "2026-11-07T05:18:34.813Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356469
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz9_ultm5y9",
+    "title": "Looking for memory care: mother (85), Alzheimer's, secure, activities, family vi...",
+    "content": "Looking for memory care: mother (85), Alzheimer's, secure, activities, family visits. Medicaid pending.",
+    "tags": [
+      "care-community",
+      "eldercare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-15T18:17:49.110Z",
+    "updatedAt": "2026-10-15T18:17:49.110Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356469
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz9_dew77qu",
+    "title": "Need respite: 1 week/month, father (80), COPD, O2, nebulizer. Skilled nursing pr...",
+    "content": "Need respite: 1 week/month, father (80), COPD, O2, nebulizer. Skilled nursing preferred.",
+    "tags": [
+      "care-community",
+      "eldercare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "duration",
+        "operator": "is",
+        "values": [
+          "1 wk"
+        ],
+        "unit": "wk",
+        "quantity": {
+          "value": 1,
+          "unit": "wk",
+          "unitType": "simple",
+          "numerator": "wk",
+          "semanticType": "duration"
+        },
+        "role": "fact",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-13T09:56:07.434Z",
+    "updatedAt": "2026-10-13T09:56:07.434Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356469
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz9_44htz2z",
+    "title": "Seeking adult day program: mother (79), stroke, aphasia, PT/OT/SLP on site. Tran...",
+    "content": "Seeking adult day program: mother (79), stroke, aphasia, PT/OT/SLP on site. Transport included.",
+    "tags": [
+      "care-community",
+      "eldercare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-25T01:31:13.396Z",
+    "updatedAt": "2026-10-25T01:31:13.396Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356469
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz9_ge7hke4",
+    "title": "Want hospice at home: father (88), cancer, pain management, spiritual care, 24/7...",
+    "content": "Want hospice at home: father (88), cancer, pain management, spiritual care, 24/7 on-call. Medicare.",
+    "tags": [
+      "care-community",
+      "eldercare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-06T14:19:16.573Z",
+    "updatedAt": "2026-11-06T14:19:16.573Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356469
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz9_igm8gzo",
+    "title": "Need medication management: weekly pill box, refills, doctor coordination, alert...",
+    "content": "Need medication management: weekly pill box, refills, doctor coordination, alerts. Remote monitoring ok.",
+    "tags": [
+      "care-community",
+      "eldercare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "location",
+        "operator": "is",
+        "values": [
+          "Remote"
+        ],
+        "role": "constraint",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-16T21:53:55.615Z",
+    "updatedAt": "2026-10-16T21:53:55.615Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356469
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz9_ojg956g",
+    "title": "Looking for geriatric care manager: assessment, care plan, crisis management, fa...",
+    "content": "Looking for geriatric care manager: assessment, care plan, crisis management, family mediation. Monthly.",
+    "tags": [
+      "care-community",
+      "eldercare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-15T20:13:00.847Z",
+    "updatedAt": "2026-10-15T20:13:00.847Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356469
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz9_045tdit",
+    "title": "Seeking home modification: stairlift, walk-in tub, grab bars, widening doors. Ag...",
+    "content": "Seeking home modification: stairlift, walk-in tub, grab bars, widening doors. Aging in place cert.",
+    "tags": [
+      "care-community",
+      "eldercare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-09T01:47:29.167Z",
+    "updatedAt": "2026-11-09T01:47:29.167Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356469
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkza_enhvqz6",
+    "title": "Want companion visits: weekly, 2hrs, reading, games, tea, tech help. Lonely, iso...",
+    "content": "Want companion visits: weekly, 2hrs, reading, games, tea, tech help. Lonely, isolated, fixed income.",
+    "tags": [
+      "care-community",
+      "eldercare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-09T12:57:49.551Z",
+    "updatedAt": "2026-11-09T12:57:49.551Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkza_cmiee84",
+    "title": "Companion caregiver: CNA, 15 yrs, dementia certified, validation therapy, music/...",
+    "content": "Companion caregiver: CNA, 15 yrs, dementia certified, validation therapy, music/memory. $28/hr.",
+    "tags": [
+      "care-community",
+      "eldercare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-23T13:12:45.001Z",
+    "updatedAt": "2026-10-23T13:12:45.001Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_hiidsto",
+    "title": "Live-in caregiver: LPN, Hoyer, wound care, PEG tube, bilingual. $350/day, 5on/2o...",
+    "content": "Live-in caregiver: LPN, Hoyer, wound care, PEG tube, bilingual. $350/day, 5on/2off, references.",
+    "tags": [
+      "care-community",
+      "eldercare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/d"
+        ],
+        "unit": "USD/d",
+        "quantity": {
+          "value": null,
+          "unit": "USD/d",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "d",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-14T03:14:28.205Z",
+    "updatedAt": "2026-10-14T03:14:28.205Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_e9kkc6b",
+    "title": "Memory care community: secured, Montessori-based, 1:5 ratio, family support grou...",
+    "content": "Memory care community: secured, Montessori-based, 1:5 ratio, family support group. $6500/mo.",
+    "tags": [
+      "care-community",
+      "eldercare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-15T10:36:30.982Z",
+    "updatedAt": "2026-10-15T10:36:30.982Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_ghicrq0",
+    "title": "Respite provider: RN, vent/trach/PEG, 24hr shifts, agency or direct. $450/shift.",
+    "content": "Respite provider: RN, vent/trach/PEG, 24hr shifts, agency or direct. $450/shift.",
+    "tags": [
+      "care-community",
+      "eldercare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-30T13:03:12.689Z",
+    "updatedAt": "2026-10-30T13:03:12.689Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_iyvky9v",
+    "title": "Adult day center: medical model, RN/PT/OT/SLP, meals, transport, Medicaid waiver...",
+    "content": "Adult day center: medical model, RN/PT/OT/SLP, meals, transport, Medicaid waiver. $100/day.",
+    "tags": [
+      "care-community",
+      "eldercare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/d"
+        ],
+        "unit": "USD/d",
+        "quantity": {
+          "value": null,
+          "unit": "USD/d",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "d",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-30T13:00:45.042Z",
+    "updatedAt": "2026-10-30T13:00:45.042Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_vsjzxkk",
+    "title": "Hospice agency: interdisciplinary, 24/7, bereavement 13mo, pediatric concurrent ...",
+    "content": "Hospice agency: interdisciplinary, 24/7, bereavement 13mo, pediatric concurrent care. Medicare.",
+    "tags": [
+      "care-community",
+      "eldercare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-29T22:54:17.061Z",
+    "updatedAt": "2026-10-29T22:54:17.061Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_zmhfisk",
+    "title": "Medication service: PillPack, Hero, Phil, auto-refill, sync, delivery, caregiver...",
+    "content": "Medication service: PillPack, Hero, Phil, auto-refill, sync, delivery, caregiver portal. $0 copay.",
+    "tags": [
+      "care-community",
+      "eldercare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-19T02:27:45.936Z",
+    "updatedAt": "2026-10-19T02:27:45.936Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_o1x2hag",
+    "title": "Geriatric care manager: ALCA, SW, 20 yrs, crisis, placement, family meetings, fi...",
+    "content": "Geriatric care manager: ALCA, SW, 20 yrs, crisis, placement, family meetings, fiduciary. $150/hr.",
+    "tags": [
+      "care-community",
+      "eldercare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-10T14:04:30.169Z",
+    "updatedAt": "2026-11-10T14:04:30.169Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_99ij28c",
+    "title": "CAPS contractor: grab bars, ramps, lifts, lighting, smart home, VA grants, Medic...",
+    "content": "CAPS contractor: grab bars, ramps, lifts, lighting, smart home, VA grants, Medicare. Free estimate.",
+    "tags": [
+      "care-community",
+      "eldercare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-27T05:50:55.742Z",
+    "updatedAt": "2026-10-27T05:50:55.742Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_hhf7hbs",
+    "title": "Friendly visitor volunteer: screened, trained, matched, weekly 2hr visits, activ...",
+    "content": "Friendly visitor volunteer: screened, trained, matched, weekly 2hr visits, activities. Free, nonprofit.",
+    "tags": [
+      "care-community",
+      "eldercare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-04T10:44:34.725Z",
+    "updatedAt": "2026-11-04T10:44:34.725Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_lp4o70y",
+    "title": "Need neighbors: new to area, want connections, potlucks, tool sharing, childcare...",
+    "content": "Need neighbors: new to area, want connections, potlucks, tool sharing, childcare swap. Walkable neighborhood.",
+    "tags": [
+      "care-community",
+      "community-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-05T18:09:43.889Z",
+    "updatedAt": "2026-11-05T18:09:43.889Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkza_e8j6s0m",
+    "title": "Seeking mutual aid: food, rent, utilities, transport, childcare. No questions, r...",
+    "content": "Seeking mutual aid: food, rent, utilities, transport, childcare. No questions, reciprocal when able.",
+    "tags": [
+      "care-community",
+      "community-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-18T13:54:58.661Z",
+    "updatedAt": "2026-10-18T13:54:58.661Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkza_ccpltdw",
+    "title": "Looking for skill share: teach/learn cooking, repair, gardening, language, craft...",
+    "content": "Looking for skill share: teach/learn cooking, repair, gardening, language, crafts. Weekly, free.",
+    "tags": [
+      "care-community",
+      "community-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-07T17:57:01.344Z",
+    "updatedAt": "2026-11-07T17:57:01.344Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkza_qgyog47",
+    "title": "Want community garden plot: 10x20, water, tools, compost, shared harvest. Low in...",
+    "content": "Want community garden plot: 10x20, water, tools, compost, shared harvest. Low income priority.",
+    "tags": [
+      "care-community",
+      "community-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-01T11:27:37.112Z",
+    "updatedAt": "2026-11-01T11:27:37.112Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkza_6kmgcpp",
+    "title": "Seeking time bank: hour-for-hour exchange, childcare, eldercare, rides, repairs,...",
+    "content": "Seeking time bank: hour-for-hour exchange, childcare, eldercare, rides, repairs, teaching. Join existing.",
+    "tags": [
+      "care-community",
+      "community-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-22T12:02:28.647Z",
+    "updatedAt": "2026-10-22T12:02:28.647Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkza_qeawtj9",
+    "title": "Need housing collective: 4-6 adults, shared values, consensus, common space, aff...",
+    "content": "Need housing collective: 4-6 adults, shared values, consensus, common space, affordable. Urban/suburban.",
+    "tags": [
+      "care-community",
+      "community-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-01T18:37:41.253Z",
+    "updatedAt": "2026-11-01T18:37:41.253Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkza_cstj03i",
+    "title": "Looking for carpool: daily commute, 20mi, split gas/tolls, flexible schedule. 3-...",
+    "content": "Looking for carpool: daily commute, 20mi, split gas/tolls, flexible schedule. 3-4 people.",
+    "tags": [
+      "care-community",
+      "community-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-02T17:55:38.177Z",
+    "updatedAt": "2026-11-02T17:55:38.177Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkza_296yk8s",
+    "title": "Want tool library: borrow tools, appliances, party supplies, workspace. Membersh...",
+    "content": "Want tool library: borrow tools, appliances, party supplies, workspace. Membership fee.",
+    "tags": [
+      "care-community",
+      "community-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-05T23:28:13.117Z",
+    "updatedAt": "2026-11-05T23:28:13.117Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkza_dp2isyq",
+    "title": "Seeking food buying club: bulk, organic, local, split cases, volunteer hours. Co...",
+    "content": "Seeking food buying club: bulk, organic, local, split cases, volunteer hours. Co-op model.",
+    "tags": [
+      "care-community",
+      "community-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-05T03:44:16.812Z",
+    "updatedAt": "2026-11-05T03:44:16.812Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkza_7tp9vnz",
+    "title": "Need emergency preparedness group: neighborhood, CERT, ham radio, supplies, plan...",
+    "content": "Need emergency preparedness group: neighborhood, CERT, ham radio, supplies, plans. Monthly meetings.",
+    "tags": [
+      "care-community",
+      "community-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-16T11:57:01.465Z",
+    "updatedAt": "2026-10-16T11:57:01.465Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkza_aupsakw",
+    "title": "Neighborhood host: monthly potluck, tool library, seed swap, kid swap, block par...",
+    "content": "Neighborhood host: monthly potluck, tool library, seed swap, kid swap, block party. All welcome.",
+    "tags": [
+      "care-community",
+      "community-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-18T05:01:15.292Z",
+    "updatedAt": "2026-10-18T05:01:15.292Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_zn7lv2u",
+    "title": "Mutual aid organizer: neighborhood pod, Slack, venmo pool, resource map, no bure...",
+    "content": "Mutual aid organizer: neighborhood pod, Slack, venmo pool, resource map, no bureaucracy. Join us.",
+    "tags": [
+      "care-community",
+      "community-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-13T09:58:11.122Z",
+    "updatedAt": "2026-10-13T09:58:11.122Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_4s880tf",
+    "title": "Skill share facilitator: community center, weekly, rotating teachers, materials ...",
+    "content": "Skill share facilitator: community center, weekly, rotating teachers, materials fund. Free/donation.",
+    "tags": [
+      "care-community",
+      "community-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-04T07:28:01.149Z",
+    "updatedAt": "2026-11-04T07:28:01.149Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_9jfynlq",
+    "title": "Community garden coordinator: 50 plots, shed, greenhouse, compost, workdays, har...",
+    "content": "Community garden coordinator: 50 plots, shed, greenhouse, compost, workdays, harvest festival. $25/yr.",
+    "tags": [
+      "care-community",
+      "community-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-04T02:16:15.070Z",
+    "updatedAt": "2026-11-04T02:16:15.070Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_jj0p8u9",
+    "title": "Time bank coordinator: 200 members, 5000+ hrs exchanged, software, orientations,...",
+    "content": "Time bank coordinator: 200 members, 5000+ hrs exchanged, software, orientations, events. Free.",
+    "tags": [
+      "care-community",
+      "community-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-05T08:24:48.977Z",
+    "updatedAt": "2026-11-05T08:24:48.977Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_n0au9rb",
+    "title": "Intentional community: 8 adults, 3 kids, 5 acres, consensus, income-sharing, per...",
+    "content": "Intentional community: 8 adults, 3 kids, 5 acres, consensus, income-sharing, permaculture. Seeking 2.",
+    "tags": [
+      "care-community",
+      "community-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-19T06:14:08.401Z",
+    "updatedAt": "2026-10-19T06:14:08.401Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_s19id7c",
+    "title": "Carpool coordinator: app-based, matched routes, HOV, emergency ride home, incent...",
+    "content": "Carpool coordinator: app-based, matched routes, HOV, emergency ride home, incentives. Free.",
+    "tags": [
+      "care-community",
+      "community-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-17T19:40:09.778Z",
+    "updatedAt": "2026-10-17T19:40:09.778Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_rz8guso",
+    "title": "Tool library manager: 2000+ items, workshop, classes, mobile van, sliding member...",
+    "content": "Tool library manager: 2000+ items, workshop, classes, mobile van, sliding membership. $50/yr.",
+    "tags": [
+      "care-community",
+      "community-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-07T12:41:05.577Z",
+    "updatedAt": "2026-11-07T12:41:05.577Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_w8ttjvw",
+    "title": "Food club organizer: Azure Standard, UNFI, local farms, 10% markup, 2hr voluntee...",
+    "content": "Food club organizer: Azure Standard, UNFI, local farms, 10% markup, 2hr volunteer/mo. $35/yr.",
+    "tags": [
+      "care-community",
+      "community-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-05T20:49:35.989Z",
+    "updatedAt": "2026-11-05T20:49:35.989Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_4zkzt7e",
+    "title": "Preparedness leader: CERT trainer, neighborhood map, skills inventory, quarterly...",
+    "content": "Preparedness leader: CERT trainer, neighborhood map, skills inventory, quarterly drills. Volunteer.",
+    "tags": [
+      "care-community",
+      "community-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "lead"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-18T02:37:07.997Z",
+    "updatedAt": "2026-10-18T02:37:07.997Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_vn7s6qy",
+    "title": "Seeking friendship: 30s, queer, neurodivergent, board games, hiking, deep talks....",
+    "content": "Seeking friendship: 30s, queer, neurodivergent, board games, hiking, deep talks. Low pressure.",
+    "tags": [
+      "care-community",
+      "relationship-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-08T10:10:55.237Z",
+    "updatedAt": "2026-11-08T10:10:55.237Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkza_y4c2l2g",
+    "title": "Looking for activity partner: climbing, biking, skiing, weeknights/weekends. Int...",
+    "content": "Looking for activity partner: climbing, biking, skiing, weeknights/weekends. Intermediate, safe.",
+    "tags": [
+      "care-community",
+      "relationship-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "cli"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-27T12:48:46.121Z",
+    "updatedAt": "2026-10-27T12:48:46.121Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkza_u859hte",
+    "title": "Want language exchange: EN/ES, weekly, coffee/walk, correction welcome. Patient,...",
+    "content": "Want language exchange: EN/ES, weekly, coffee/walk, correction welcome. Patient, consistent.",
+    "tags": [
+      "care-community",
+      "relationship-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-02T04:48:59.926Z",
+    "updatedAt": "2026-11-02T04:48:59.926Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkza_152wbci",
+    "title": "Seeking mentorship: career pivot, tech to climate, 5yrs exp, guidance not answer...",
+    "content": "Seeking mentorship: career pivot, tech to climate, 5yrs exp, guidance not answers. Monthly.",
+    "tags": [
+      "care-community",
+      "relationship-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "cli"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-14T11:32:13.776Z",
+    "updatedAt": "2026-10-14T11:32:13.776Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkza_5xlwuql",
+    "title": "Need accountability buddy: writing, exercise, meditation, business, daily check-...",
+    "content": "Need accountability buddy: writing, exercise, meditation, business, daily check-in. Structured.",
+    "tags": [
+      "care-community",
+      "relationship-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-25T21:58:54.331Z",
+    "updatedAt": "2026-10-25T21:58:54.331Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkza_glsfsqd",
+    "title": "Looking for co-founder: climate tech, technical + business, equity split, values...",
+    "content": "Looking for co-founder: climate tech, technical + business, equity split, values-aligned. Full-time.",
+    "tags": [
+      "care-community",
+      "relationship-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "cli"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-02T06:50:23.438Z",
+    "updatedAt": "2026-11-02T06:50:23.438Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkza_1feflm8",
+    "title": "Want therapy group: men's, women's, queer, grief, ADHD, sliding scale. Facilitat...",
+    "content": "Want therapy group: men's, women's, queer, grief, ADHD, sliding scale. Facilitated, closed.",
+    "tags": [
+      "care-community",
+      "relationship-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-15T01:17:45.309Z",
+    "updatedAt": "2026-10-15T01:17:45.309Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkza_bhw02xj",
+    "title": "Seeking chosen family: holidays, crises, celebrations, daily life, intergenerati...",
+    "content": "Seeking chosen family: holidays, crises, celebrations, daily life, intergenerational. Commitment.",
+    "tags": [
+      "care-community",
+      "relationship-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-18T03:48:52.526Z",
+    "updatedAt": "2026-10-18T03:48:52.526Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkza_z9ni61t",
+    "title": "Need roommate: clean, quiet, respectful, shared values, 1yr+ lease. $900 + utils...",
+    "content": "Need roommate: clean, quiet, respectful, shared values, 1yr+ lease. $900 + utils.",
+    "tags": [
+      "care-community",
+      "relationship-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-23T11:41:43.454Z",
+    "updatedAt": "2026-10-23T11:41:43.454Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkza_axpohgg",
+    "title": "Looking for travel buddy: slow travel, 1-3 months, work remotely, split costs. F...",
+    "content": "Looking for travel buddy: slow travel, 1-3 months, work remotely, split costs. Flexible dates.",
+    "tags": [
+      "care-community",
+      "relationship-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "location",
+        "operator": "is",
+        "values": [
+          "remote"
+        ],
+        "role": "constraint",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      },
+      {
+        "key": "duration",
+        "operator": "is",
+        "values": [
+          "3 mo"
+        ],
+        "unit": "mo",
+        "quantity": {
+          "value": 3,
+          "unit": "mo",
+          "unitType": "simple",
+          "numerator": "mo",
+          "semanticType": "duration"
+        },
+        "role": "fact",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-21T16:50:56.112Z",
+    "updatedAt": "2026-10-21T16:50:56.112Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkza_13te943",
+    "title": "Friend seeker: 35, ENTP, hiker, cook, reader, listener. Coffee, trails, deep div...",
+    "content": "Friend seeker: 35, ENTP, hiker, cook, reader, listener. Coffee, trails, deep dives. Open.",
+    "tags": [
+      "care-community",
+      "relationship-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-07T13:50:00.848Z",
+    "updatedAt": "2026-11-07T13:50:00.848Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_2cgiipp",
+    "title": "Climbing partner: 5.11 trad/sport, gym 3x/wk, weekends out, safety first. All ge...",
+    "content": "Climbing partner: 5.11 trad/sport, gym 3x/wk, weekends out, safety first. All genders welcome.",
+    "tags": [
+      "care-community",
+      "relationship-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "cli"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-15T04:17:41.961Z",
+    "updatedAt": "2026-10-15T04:17:41.961Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_9pd18vr",
+    "title": "Language partner: native ES, learning EN, teacher, patient, weekly 1hr video. Co...",
+    "content": "Language partner: native ES, learning EN, teacher, patient, weekly 1hr video. Consistent.",
+    "tags": [
+      "care-community",
+      "relationship-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-01T18:12:01.217Z",
+    "updatedAt": "2026-11-01T18:12:01.217Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_pc4sh5s",
+    "title": "Mentor: 15 yrs climate tech, PM/engineering, career pivot, network, quarterly ca...",
+    "content": "Mentor: 15 yrs climate tech, PM/engineering, career pivot, network, quarterly calls. Free.",
+    "tags": [
+      "care-community",
+      "relationship-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "cli"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-20T20:19:44.778Z",
+    "updatedAt": "2026-10-20T20:19:44.778Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_dp05dge",
+    "title": "Accountability partner: writer, 6am check-in, sprints, weekly review, quarterly ...",
+    "content": "Accountability partner: writer, 6am check-in, sprints, weekly review, quarterly retreat. Mutual.",
+    "tags": [
+      "care-community",
+      "relationship-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-16T00:16:07.857Z",
+    "updatedAt": "2026-10-16T00:16:07.857Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_qt8hwd6",
+    "title": "Co-founder seeker: climate adaptation, biz dev/fundraising, seeking technical, 5...",
+    "content": "Co-founder seeker: climate adaptation, biz dev/fundraising, seeking technical, 50/50 equity. Funded.",
+    "tags": [
+      "care-community",
+      "relationship-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "cli"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-06T06:27:48.252Z",
+    "updatedAt": "2026-11-06T06:27:48.252Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_omnvw4k",
+    "title": "Therapy group facilitator: LCSW, 10 yrs, IFS/EMDR, men's/queer/grief, $40 slidin...",
+    "content": "Therapy group facilitator: LCSW, 10 yrs, IFS/EMDR, men's/queer/grief, $40 sliding. 8-week cycles.",
+    "tags": [
+      "care-community",
+      "relationship-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-03T03:44:09.587Z",
+    "updatedAt": "2026-11-03T03:44:09.587Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_uf9fqy7",
+    "title": "Community builder: 20 yrs, cohousing, gift circles, conflict mediation, ritual d...",
+    "content": "Community builder: 20 yrs, cohousing, gift circles, conflict mediation, ritual design. Consulting.",
+    "tags": [
+      "care-community",
+      "relationship-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-27T19:33:37.753Z",
+    "updatedAt": "2026-10-27T19:33:37.753Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_fbdk5ok",
+    "title": "Roommate: 30, tidy, quiet, WFH, cook, garden, cat-friendly. 2BR, $1000, 1yr leas...",
+    "content": "Roommate: 30, tidy, quiet, WFH, cook, garden, cat-friendly. 2BR, $1000, 1yr lease.",
+    "tags": [
+      "care-community",
+      "relationship-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-06T20:02:52.636Z",
+    "updatedAt": "2026-11-06T20:02:52.636Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_r12hip3",
+    "title": "Travel partner: 28, remote dev, SE Asia/LatAm, 2-3mo, budget $2k/mo, flexible. E...",
+    "content": "Travel partner: 28, remote dev, SE Asia/LatAm, 2-3mo, budget $2k/mo, flexible. Easygoing.",
+    "tags": [
+      "care-community",
+      "relationship-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "budget",
+        "operator": "is",
+        "values": [
+          "2 USD"
+        ],
+        "unit": "USD",
+        "quantity": {
+          "value": 2,
+          "unit": "USD",
+          "unitType": "simple",
+          "numerator": "USD",
+          "semanticType": "price"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "go"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      },
+      {
+        "key": "location",
+        "operator": "is",
+        "values": [
+          "remote"
+        ],
+        "role": "constraint",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-04T05:23:55.418Z",
+    "updatedAt": "2026-11-04T05:23:55.418Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_u5vvu9q",
+    "title": "Need infant care: 3mo, M-F 7:30-5:30, cloth diapers, breastmilk. Licensed home p...",
+    "content": "Need infant care: 3mo, M-F 7:30-5:30, cloth diapers, breastmilk. Licensed home preferred.",
+    "tags": [
+      "care-community",
+      "childcare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-24T04:23:10.774Z",
+    "updatedAt": "2026-10-24T04:23:10.774Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkza_me1tz6l",
+    "title": "Licensed home daycare: 6 kids max, 0-5yrs, Reggio-inspired, organic meals, outdo...",
+    "content": "Licensed home daycare: 6 kids max, 0-5yrs, Reggio-inspired, organic meals, outdoor classroom. $1400/mo.",
+    "tags": [
+      "care-community",
+      "childcare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-17T08:16:35.744Z",
+    "updatedAt": "2026-10-17T08:16:35.744Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_onlmzn5",
+    "title": "Seeking companion for mother (82): conversation, walks, meals, med reminders. De...",
+    "content": "Seeking companion for mother (82): conversation, walks, meals, med reminders. Dementia exp.",
+    "tags": [
+      "care-community",
+      "eldercare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-15T08:16:22.998Z",
+    "updatedAt": "2026-10-15T08:16:22.998Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkza_cnq63fi",
+    "title": "Companion caregiver: CNA, 15yrs, dementia certified, validation therapy, music/m...",
+    "content": "Companion caregiver: CNA, 15yrs, dementia certified, validation therapy, music/memory. $28/hr.",
+    "tags": [
+      "care-community",
+      "eldercare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-07T18:20:54.330Z",
+    "updatedAt": "2026-11-07T18:20:54.330Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_4kvwnij",
+    "title": "New to area, seeking neighbors: potlucks, tool sharing, childcare swap. Walkable...",
+    "content": "New to area, seeking neighbors: potlucks, tool sharing, childcare swap. Walkable neighborhood.",
+    "tags": [
+      "care-community",
+      "community-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-22T10:36:44.911Z",
+    "updatedAt": "2026-10-22T10:36:44.911Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkza_ulyt00i",
+    "title": "Neighborhood host: monthly potluck, tool library, seed swap, kid swap, block par...",
+    "content": "Neighborhood host: monthly potluck, tool library, seed swap, kid swap, block party. All welcome.",
+    "tags": [
+      "care-community",
+      "community-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-11T01:38:33.228Z",
+    "updatedAt": "2026-11-11T01:38:33.228Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_2fxgce2",
+    "title": "Seeking friendship: 30s, queer, neurodivergent, board games, hiking, deep talks....",
+    "content": "Seeking friendship: 30s, queer, neurodivergent, board games, hiking, deep talks. Low pressure.",
+    "tags": [
+      "care-community",
+      "relationship-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-30T15:56:06.496Z",
+    "updatedAt": "2026-10-30T15:56:06.496Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkza_mba01u4",
+    "title": "Friend seeker: 35, ENTP, hiker, cook, reader, listener. Coffee, trails, deep div...",
+    "content": "Friend seeker: 35, ENTP, hiker, cook, reader, listener. Coffee, trails, deep dives. Open.",
+    "tags": [
+      "care-community",
+      "relationship-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-21T21:48:48.724Z",
+    "updatedAt": "2026-10-21T21:48:48.724Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkza_w7s65cn",
+    "title": "Need accountability buddy: writing, exercise, meditation, business, daily check-...",
+    "content": "Need accountability buddy: writing, exercise, meditation, business, daily check-in. Structured.",
+    "tags": [
+      "care-community",
+      "relationship-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-29T02:39:53.692Z",
+    "updatedAt": "2026-10-29T02:39:53.692Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkza_8mkhqm0",
+    "title": "Accountability partner: writer, 6am check-in, sprints, weekly review, quarterly ...",
+    "content": "Accountability partner: writer, 6am check-in, sprints, weekly review, quarterly retreat. Mutual.",
+    "tags": [
+      "care-community",
+      "relationship-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-20T23:29:23.857Z",
+    "updatedAt": "2026-10-20T23:29:23.857Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-care-community",
+      "timestamp": 1794378356470
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  }
+]

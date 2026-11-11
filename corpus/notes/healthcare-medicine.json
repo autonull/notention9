@@ -1,0 +1,3110 @@
+[
+  {
+    "id": "note_mwbqjkyx_f28738v",
+    "title": "Need primary care physician: accepting new patients, takes Medicaid, near transi...",
+    "content": "Need primary care physician: accepting new patients, takes Medicaid, near transit. Adult and pediatric.",
+    "tags": [
+      "healthcare-medicine",
+      "healthcare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-13T07:18:04.845Z",
+    "updatedAt": "2026-10-13T07:18:04.845Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356457
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyx_rg040cm",
+    "title": "Seeking therapist: trauma-informed, EMDR, somatic, sliding scale. Evening/weeken...",
+    "content": "Seeking therapist: trauma-informed, EMDR, somatic, sliding scale. Evening/weekend availability.",
+    "tags": [
+      "healthcare-medicine",
+      "healthcare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-03T06:34:15.577Z",
+    "updatedAt": "2026-11-03T06:34:15.577Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356457
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyx_unin8fw",
+    "title": "Looking for dentist: holistic, mercury-free, ozone therapy, takes Delta Dental. ...",
+    "content": "Looking for dentist: holistic, mercury-free, ozone therapy, takes Delta Dental. Emergency availability.",
+    "tags": [
+      "healthcare-medicine",
+      "healthcare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-24T04:32:52.884Z",
+    "updatedAt": "2026-10-24T04:32:52.884Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356457
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyx_rt1dyup",
+    "title": "Need psychiatrist: medication management, ADHD, anxiety, depression. Telehealth ...",
+    "content": "Need psychiatrist: medication management, ADHD, anxiety, depression. Telehealth ok, insurance accepted.",
+    "tags": [
+      "healthcare-medicine",
+      "healthcare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-12T13:32:35.318Z",
+    "updatedAt": "2026-10-12T13:32:35.318Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356457
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyx_hmfg7os",
+    "title": "Seeking physical therapist: pelvic floor, postpartum, orthopedic. In-network, ho...",
+    "content": "Seeking physical therapist: pelvic floor, postpartum, orthopedic. In-network, home visits ok.",
+    "tags": [
+      "healthcare-medicine",
+      "healthcare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-04T10:17:15.350Z",
+    "updatedAt": "2026-11-04T10:17:15.350Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356457
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyx_giher1t",
+    "title": "Want functional medicine doctor: root cause, nutrition, hormones, gut health. Lo...",
+    "content": "Want functional medicine doctor: root cause, nutrition, hormones, gut health. Longer visits, lab review.",
+    "tags": [
+      "healthcare-medicine",
+      "healthcare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-06T08:04:21.682Z",
+    "updatedAt": "2026-11-06T08:04:21.682Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356457
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyx_g5aw0k8",
+    "title": "Need acupuncturist: community-style, sliding scale, pain/stress/fertility. Clean...",
+    "content": "Need acupuncturist: community-style, sliding scale, pain/stress/fertility. Clean needle technique.",
+    "tags": [
+      "healthcare-medicine",
+      "healthcare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-24T01:53:28.149Z",
+    "updatedAt": "2026-10-24T01:53:28.149Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356457
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyx_9k0g7i9",
+    "title": "Looking for midwife: home birth, water birth, prenatal/postpartum care. CPM/CNM,...",
+    "content": "Looking for midwife: home birth, water birth, prenatal/postpartum care. CPM/CNM, backup OB.",
+    "tags": [
+      "healthcare-medicine",
+      "healthcare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-04T22:41:12.194Z",
+    "updatedAt": "2026-11-04T22:41:12.194Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356457
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyx_7bo8wnt",
+    "title": "Seeking chiropractor: gentle, activator, Webster technique, family care. Pediatr...",
+    "content": "Seeking chiropractor: gentle, activator, Webster technique, family care. Pediatric experience.",
+    "tags": [
+      "healthcare-medicine",
+      "healthcare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-15T09:24:02.866Z",
+    "updatedAt": "2026-10-15T09:24:02.866Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356457
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyx_sns5wrf",
+    "title": "Need occupational therapist: sensory integration, autism, ADHD, hand therapy. Sc...",
+    "content": "Need occupational therapist: sensory integration, autism, ADHD, hand therapy. School/home visits.",
+    "tags": [
+      "healthcare-medicine",
+      "healthcare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-25T08:57:04.836Z",
+    "updatedAt": "2026-10-25T08:57:04.836Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356457
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyx_4e0lisj",
+    "title": "Family physician accepting patients: DPC model, $75/month, unlimited visits, who...",
+    "content": "Family physician accepting patients: DPC model, $75/month, unlimited visits, wholesale labs/meds.",
+    "tags": [
+      "healthcare-medicine",
+      "healthcare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/mo"
+        ],
+        "unit": "USD/mo",
+        "quantity": {
+          "value": null,
+          "unit": "USD/mo",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "mo",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-19T11:28:17.631Z",
+    "updatedAt": "2026-10-19T11:28:17.631Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356457
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyx_hliqhsz",
+    "title": "Therapist offering: CBT, DBT, ACT, EMDR. $120/session, sliding scale, superbill ...",
+    "content": "Therapist offering: CBT, DBT, ACT, EMDR. $120/session, sliding scale, superbill for insurance.",
+    "tags": [
+      "healthcare-medicine",
+      "healthcare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-14T23:08:54.294Z",
+    "updatedAt": "2026-10-14T23:08:54.294Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356457
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyx_c6dxu5z",
+    "title": "Holistic dentist: SMART removal, biocompatible materials, nutrition counseling. ...",
+    "content": "Holistic dentist: SMART removal, biocompatible materials, nutrition counseling. PPO accepted.",
+    "tags": [
+      "healthcare-medicine",
+      "healthcare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-18T23:07:57.912Z",
+    "updatedAt": "2026-10-18T23:07:57.912Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356457
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyx_5yt313c",
+    "title": "Psychiatrist: medication management, genetic testing, ketamine-assisted. Telehea...",
+    "content": "Psychiatrist: medication management, genetic testing, ketamine-assisted. Telehealth, insurance.",
+    "tags": [
+      "healthcare-medicine",
+      "healthcare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-04T15:33:27.291Z",
+    "updatedAt": "2026-11-04T15:33:27.291Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356457
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyx_mcpkkvv",
+    "title": "Physical therapist: pelvic health, ortho, neuro. Manual therapy, exercise, teleh...",
+    "content": "Physical therapist: pelvic health, ortho, neuro. Manual therapy, exercise, telehealth. In-network.",
+    "tags": [
+      "healthcare-medicine",
+      "healthcare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-21T21:29:35.586Z",
+    "updatedAt": "2026-10-21T21:29:35.586Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356457
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyx_x6usqc5",
+    "title": "Functional medicine practitioner: 90-min intake, advanced testing, personalized ...",
+    "content": "Functional medicine practitioner: 90-min intake, advanced testing, personalized protocol. Membership.",
+    "tags": [
+      "healthcare-medicine",
+      "healthcare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-22T19:43:59.870Z",
+    "updatedAt": "2026-10-22T19:43:59.870Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356457
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyx_zaww24d",
+    "title": "Community acupuncture: $25-45 sliding scale, group setting, evenings/weekends. L...",
+    "content": "Community acupuncture: $25-45 sliding scale, group setting, evenings/weekends. Licensed.",
+    "tags": [
+      "healthcare-medicine",
+      "healthcare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-26T21:20:05.140Z",
+    "updatedAt": "2026-10-26T21:20:05.140Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356457
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyx_08fk1kn",
+    "title": "Midwife: home birth, water birth, full prenatal/postpartum. Insurance billing, p...",
+    "content": "Midwife: home birth, water birth, full prenatal/postpartum. Insurance billing, payment plans.",
+    "tags": [
+      "healthcare-medicine",
+      "healthcare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-04T23:41:02.398Z",
+    "updatedAt": "2026-11-04T23:41:02.398Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356457
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyx_k1fg2qq",
+    "title": "Chiropractor: diversified, activator, Thompson, pediatric. Family plans, wellnes...",
+    "content": "Chiropractor: diversified, activator, Thompson, pediatric. Family plans, wellness care.",
+    "tags": [
+      "healthcare-medicine",
+      "healthcare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-05T09:01:24.944Z",
+    "updatedAt": "2026-11-05T09:01:24.944Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356457
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyx_hgbj9oj",
+    "title": "Occupational therapist: sensory, feeding, fine motor, regulation. Clinic/school/...",
+    "content": "Occupational therapist: sensory, feeding, fine motor, regulation. Clinic/school/home, insurance.",
+    "tags": [
+      "healthcare-medicine",
+      "healthcare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "cli"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-25T10:18:45.975Z",
+    "updatedAt": "2026-10-25T10:18:45.975Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356457
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyx_o3j0ff4",
+    "title": "Need prescription refill: generic atorvastatin, lisinopril, metformin. 90-day, m...",
+    "content": "Need prescription refill: generic atorvastatin, lisinopril, metformin. 90-day, mail order ok.",
+    "tags": [
+      "healthcare-medicine",
+      "medicine-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-18T19:16:06.451Z",
+    "updatedAt": "2026-10-18T19:16:06.451Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356457
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyx_ypo9a53",
+    "title": "Seeking herbal protocol: Long COVID, fatigue, brain fog. Qualified herbalist, qu...",
+    "content": "Seeking herbal protocol: Long COVID, fatigue, brain fog. Qualified herbalist, quality sourcing.",
+    "tags": [
+      "healthcare-medicine",
+      "medicine-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-03T15:41:42.789Z",
+    "updatedAt": "2026-11-03T15:41:42.789Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356457
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyx_og69w6a",
+    "title": "Looking for compounding pharmacy: bioidentical hormones, LDN, sterile compounds....",
+    "content": "Looking for compounding pharmacy: bioidentical hormones, LDN, sterile compounds. PCAB accredited.",
+    "tags": [
+      "healthcare-medicine",
+      "medicine-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-08T06:33:33.703Z",
+    "updatedAt": "2026-11-08T06:33:33.703Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356457
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyx_vdyd6rg",
+    "title": "Need medical cannabis: high CBD, low THC, tincture/topical. Medical card, dispen...",
+    "content": "Need medical cannabis: high CBD, low THC, tincture/topical. Medical card, dispensary recs.",
+    "tags": [
+      "healthcare-medicine",
+      "medicine-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-14T15:06:47.870Z",
+    "updatedAt": "2026-10-14T15:06:47.870Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356457
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyx_fpqkllp",
+    "title": "Seeking peptide therapy: BPC-157, TB-500, CJC-1295. Prescribing physician, reput...",
+    "content": "Seeking peptide therapy: BPC-157, TB-500, CJC-1295. Prescribing physician, reputable source.",
+    "tags": [
+      "healthcare-medicine",
+      "medicine-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-30T08:51:57.009Z",
+    "updatedAt": "2026-10-30T08:51:57.009Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356457
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyx_g58t3j0",
+    "title": "Need IV therapy: Myers cocktail, NAD+, glutathione, high-dose C. Mobile or clini...",
+    "content": "Need IV therapy: Myers cocktail, NAD+, glutathione, high-dose C. Mobile or clinic.",
+    "tags": [
+      "healthcare-medicine",
+      "medicine-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "cli"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-28T22:29:25.175Z",
+    "updatedAt": "2026-10-28T22:29:25.175Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356457
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyx_npx6sro",
+    "title": "Looking for hormone replacement: bioidentical, pellet/cream/injection. Monitorin...",
+    "content": "Looking for hormone replacement: bioidentical, pellet/cream/injection. Monitoring included.",
+    "tags": [
+      "healthcare-medicine",
+      "medicine-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-11T02:36:32.749Z",
+    "updatedAt": "2026-11-11T02:36:32.749Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356457
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyy_bteku1z",
+    "title": "Need supplements: pharmaceutical grade, third-party tested. D3/K2, magnesium, om...",
+    "content": "Need supplements: pharmaceutical grade, third-party tested. D3/K2, magnesium, omega-3, probiotic.",
+    "tags": [
+      "healthcare-medicine",
+      "medicine-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-19T03:43:50.425Z",
+    "updatedAt": "2026-10-19T03:43:50.425Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyy_17epwit",
+    "title": "Seeking homeopathic remedies: constitutional, acute, cell salts. Classical homeo...",
+    "content": "Seeking homeopathic remedies: constitutional, acute, cell salts. Classical homeopath.",
+    "tags": [
+      "healthcare-medicine",
+      "medicine-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-26T09:55:28.004Z",
+    "updatedAt": "2026-10-26T09:55:28.004Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyy_usngpqk",
+    "title": "Need wound care supplies: silicone foam, hydrocolloid, alginate, silver. Insuran...",
+    "content": "Need wound care supplies: silicone foam, hydrocolloid, alginate, silver. Insurance billing.",
+    "tags": [
+      "healthcare-medicine",
+      "medicine-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-30T02:33:08.554Z",
+    "updatedAt": "2026-10-30T02:33:08.554Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyy_6gc31f7",
+    "title": "Pharmacist offering: medication review, deprescribing, compounding, sync. Free c...",
+    "content": "Pharmacist offering: medication review, deprescribing, compounding, sync. Free consult.",
+    "tags": [
+      "healthcare-medicine",
+      "medicine-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-27T03:04:06.840Z",
+    "updatedAt": "2026-10-27T03:04:06.840Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyy_f2ilupd",
+    "title": "Herbalist: custom formulations, Western/Chinese/Ayurvedic. Organic/wildcrafted, ...",
+    "content": "Herbalist: custom formulations, Western/Chinese/Ayurvedic. Organic/wildcrafted, GMP facility.",
+    "tags": [
+      "healthcare-medicine",
+      "medicine-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-02T02:56:43.006Z",
+    "updatedAt": "2026-11-02T02:56:43.006Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyy_1a3dh5i",
+    "title": "Compounding pharmacy: sterile/non-sterile, hormone, peptide, veterinary. Ship na...",
+    "content": "Compounding pharmacy: sterile/non-sterile, hormone, peptide, veterinary. Ship nationwide.",
+    "tags": [
+      "healthcare-medicine",
+      "medicine-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-23T21:07:41.842Z",
+    "updatedAt": "2026-10-23T21:07:41.842Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyy_aqwvim1",
+    "title": "Cannabis consultant: strain selection, dosing, ratio, terpenes. Medical card ass...",
+    "content": "Cannabis consultant: strain selection, dosing, ratio, terpenes. Medical card assistance.",
+    "tags": [
+      "healthcare-medicine",
+      "medicine-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-18T09:40:43.368Z",
+    "updatedAt": "2026-10-18T09:40:43.368Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyy_fav4p2u",
+    "title": "Peptide clinic: physician-prescribed, USP grade, protocols for healing/performan...",
+    "content": "Peptide clinic: physician-prescribed, USP grade, protocols for healing/performance/anti-aging.",
+    "tags": [
+      "healthcare-medicine",
+      "medicine-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "cli"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-17T00:13:29.448Z",
+    "updatedAt": "2026-10-17T00:13:29.448Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyy_4nfh97s",
+    "title": "IV therapy lounge: RN-administered, customized protocols, membership pricing. Mo...",
+    "content": "IV therapy lounge: RN-administered, customized protocols, membership pricing. Mobile available.",
+    "tags": [
+      "healthcare-medicine",
+      "medicine-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-26T10:29:38.493Z",
+    "updatedAt": "2026-10-26T10:29:38.493Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyy_vex9vwl",
+    "title": "Hormone clinic: bioidentical, comprehensive testing, pellet/cream/inject. Insura...",
+    "content": "Hormone clinic: bioidentical, comprehensive testing, pellet/cream/inject. Insurance navigation.",
+    "tags": [
+      "healthcare-medicine",
+      "medicine-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "cli"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-06T08:39:51.264Z",
+    "updatedAt": "2026-11-06T08:39:51.264Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyy_sgszfb5",
+    "title": "Supplement dispensary: Fullscript, Thorne, Designs for Health, Pure. Practitione...",
+    "content": "Supplement dispensary: Fullscript, Thorne, Designs for Health, Pure. Practitioner discount.",
+    "tags": [
+      "healthcare-medicine",
+      "medicine-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-31T21:22:04.939Z",
+    "updatedAt": "2026-10-31T21:22:04.939Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyy_0adbvt6",
+    "title": "Homeopath: classical, 2-hour intake, follow-ups, remedy kit. Acute and chronic c...",
+    "content": "Homeopath: classical, 2-hour intake, follow-ups, remedy kit. Acute and chronic care.",
+    "tags": [
+      "healthcare-medicine",
+      "medicine-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-26T13:23:45.928Z",
+    "updatedAt": "2026-10-26T13:23:45.928Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyy_82ov7kn",
+    "title": "Wound care nurse: mobile, certified, insurance billing, supplier coordination. W...",
+    "content": "Wound care nurse: mobile, certified, insurance billing, supplier coordination. Weekend availability.",
+    "tags": [
+      "healthcare-medicine",
+      "medicine-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-01T01:21:50.980Z",
+    "updatedAt": "2026-11-01T01:21:50.980Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyy_f194ee9",
+    "title": "Need personal trainer: strength, mobility, injury rehab. Home gym or outdoor, 2x...",
+    "content": "Need personal trainer: strength, mobility, injury rehab. Home gym or outdoor, 2x/week.",
+    "tags": [
+      "healthcare-medicine",
+      "wellness-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-13T19:54:55.883Z",
+    "updatedAt": "2026-10-13T19:54:55.883Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyy_qewyq9f",
+    "title": "Seeking yoga teacher: private, therapeutic, prenatal, restorative. Trauma-sensit...",
+    "content": "Seeking yoga teacher: private, therapeutic, prenatal, restorative. Trauma-sensitive, sliding scale.",
+    "tags": [
+      "healthcare-medicine",
+      "wellness-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-01T17:09:10.094Z",
+    "updatedAt": "2026-11-01T17:09:10.094Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyy_ed9dhys",
+    "title": "Looking for nutritionist: intuitive eating, HAES, sports nutrition, gut health. ...",
+    "content": "Looking for nutritionist: intuitive eating, HAES, sports nutrition, gut health. Virtual ok.",
+    "tags": [
+      "healthcare-medicine",
+      "wellness-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-16T08:30:10.552Z",
+    "updatedAt": "2026-10-16T08:30:10.552Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyy_6udsch6",
+    "title": "Want massage therapist: deep tissue, myofascial, lymphatic, craniosacral. Medica...",
+    "content": "Want massage therapist: deep tissue, myofascial, lymphatic, craniosacral. Medical massage cert.",
+    "tags": [
+      "healthcare-medicine",
+      "wellness-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-22T11:33:48.486Z",
+    "updatedAt": "2026-10-22T11:33:48.486Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyy_l8j65ee",
+    "title": "Need meditation teacher: MBSR, transcendental, insight, secular. Group or 1-on-1...",
+    "content": "Need meditation teacher: MBSR, transcendental, insight, secular. Group or 1-on-1.",
+    "tags": [
+      "healthcare-medicine",
+      "wellness-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-17T23:20:56.923Z",
+    "updatedAt": "2026-10-17T23:20:56.923Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyy_0zc8vxn",
+    "title": "Seeking health coach: behavior change, habit formation, accountability. NBC-HWC ...",
+    "content": "Seeking health coach: behavior change, habit formation, accountability. NBC-HWC certified.",
+    "tags": [
+      "healthcare-medicine",
+      "wellness-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-14T20:11:17.734Z",
+    "updatedAt": "2026-10-14T20:11:17.734Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyy_80mm9eg",
+    "title": "Looking for sauna/cold plunge: community access, contrast therapy, affordable me...",
+    "content": "Looking for sauna/cold plunge: community access, contrast therapy, affordable membership.",
+    "tags": [
+      "healthcare-medicine",
+      "wellness-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-31T19:21:54.626Z",
+    "updatedAt": "2026-10-31T19:21:54.626Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyy_acmg0xb",
+    "title": "Want sleep specialist: CBT-I, sleep study, apnea, insomnia. Telehealth, insuranc...",
+    "content": "Want sleep specialist: CBT-I, sleep study, apnea, insomnia. Telehealth, insurance.",
+    "tags": [
+      "healthcare-medicine",
+      "wellness-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-14T15:10:40.884Z",
+    "updatedAt": "2026-10-14T15:10:40.884Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyy_5pgvra0",
+    "title": "Seeking breathwork facilitator: holotropic, Wim Hof, pranayama, somatic. Group s...",
+    "content": "Seeking breathwork facilitator: holotropic, Wim Hof, pranayama, somatic. Group sessions.",
+    "tags": [
+      "healthcare-medicine",
+      "wellness-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-18T05:49:24.642Z",
+    "updatedAt": "2026-10-18T05:49:24.642Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyy_afu4p31",
+    "title": "Need mobility coach: FRC, Kinstretch, CARs, joint health. Online programming, vi...",
+    "content": "Need mobility coach: FRC, Kinstretch, CARs, joint health. Online programming, video feedback.",
+    "tags": [
+      "healthcare-medicine",
+      "wellness-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-12T17:37:27.256Z",
+    "updatedAt": "2026-10-12T17:37:27.256Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyy_dpx8xo4",
+    "title": "Personal trainer: CSCS, FMS, StrongFirst. Home/park/gym, periodized programming....",
+    "content": "Personal trainer: CSCS, FMS, StrongFirst. Home/park/gym, periodized programming. $80/session.",
+    "tags": [
+      "healthcare-medicine",
+      "wellness-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-28T19:28:34.683Z",
+    "updatedAt": "2026-10-28T19:28:34.683Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyy_yfhluew",
+    "title": "Yoga therapist: C-IAYT, 1000+ hrs. Therapeutic, prenatal, chronic pain, anxiety....",
+    "content": "Yoga therapist: C-IAYT, 1000+ hrs. Therapeutic, prenatal, chronic pain, anxiety. $100/session.",
+    "tags": [
+      "healthcare-medicine",
+      "wellness-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-08T07:08:10.552Z",
+    "updatedAt": "2026-11-08T07:08:10.552Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyy_v4f4lg6",
+    "title": "Nutritionist: RD, CSSD, LEAP therapist. Food sensitivity, sports, eating disorde...",
+    "content": "Nutritionist: RD, CSSD, LEAP therapist. Food sensitivity, sports, eating disorders. Insurance.",
+    "tags": [
+      "healthcare-medicine",
+      "wellness-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-29T07:47:54.991Z",
+    "updatedAt": "2026-10-29T07:47:54.991Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyy_1rqp74n",
+    "title": "Massage therapist: LMT, 15 yrs, medical, oncology, prenatal. Clinic/house calls....",
+    "content": "Massage therapist: LMT, 15 yrs, medical, oncology, prenatal. Clinic/house calls. $120/hr.",
+    "tags": [
+      "healthcare-medicine",
+      "wellness-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "cli"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-03T09:34:12.870Z",
+    "updatedAt": "2026-11-03T09:34:12.870Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyy_9u7cruo",
+    "title": "Meditation teacher: MBSR certified, 10-day retreat experience. 8-week course, $4...",
+    "content": "Meditation teacher: MBSR certified, 10-day retreat experience. 8-week course, $400.",
+    "tags": [
+      "healthcare-medicine",
+      "wellness-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-22T10:11:53.398Z",
+    "updatedAt": "2026-10-22T10:11:53.398Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyy_1key300",
+    "title": "Health coach: NBC-HWC, FMCHC. 12-week program, weekly calls, app support. $1500.",
+    "content": "Health coach: NBC-HWC, FMCHC. 12-week program, weekly calls, app support. $1500.",
+    "tags": [
+      "healthcare-medicine",
+      "wellness-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-31T03:57:28.580Z",
+    "updatedAt": "2026-10-31T03:57:28.580Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyy_ear0vj0",
+    "title": "Contrast therapy studio: sauna, cold plunge, float, compression. Membership $150...",
+    "content": "Contrast therapy studio: sauna, cold plunge, float, compression. Membership $150/mo.",
+    "tags": [
+      "healthcare-medicine",
+      "wellness-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-02T11:19:09.242Z",
+    "updatedAt": "2026-11-02T11:19:09.242Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyy_qbputcd",
+    "title": "Sleep coach: CBT-I trained, 8-week program, wearable data, follow-up. $800.",
+    "content": "Sleep coach: CBT-I trained, 8-week program, wearable data, follow-up. $800.",
+    "tags": [
+      "healthcare-medicine",
+      "wellness-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-01T05:59:29.021Z",
+    "updatedAt": "2026-11-01T05:59:29.021Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyy_0bqy9gb",
+    "title": "Breathwork facilitator: certified, trauma-informed. Weekly groups, private, retr...",
+    "content": "Breathwork facilitator: certified, trauma-informed. Weekly groups, private, retreats. $40/group.",
+    "tags": [
+      "healthcare-medicine",
+      "wellness-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-28T11:54:18.945Z",
+    "updatedAt": "2026-10-28T11:54:18.945Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyy_h43b70p",
+    "title": "Mobility coach: FRCms, Kinstretch. Daily CARs, monthly programming, video review...",
+    "content": "Mobility coach: FRCms, Kinstretch. Daily CARs, monthly programming, video reviews. $50/mo.",
+    "tags": [
+      "healthcare-medicine",
+      "wellness-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-22T14:04:13.713Z",
+    "updatedAt": "2026-10-22T14:04:13.713Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyy_2glkofy",
+    "title": "Need childcare: infant/toddler, M-F 8-6, Montessori/R Reggio, near downtown. Sub...",
+    "content": "Need childcare: infant/toddler, M-F 8-6, Montessori/R Reggio, near downtown. Subsidy accepted.",
+    "tags": [
+      "healthcare-medicine",
+      "care-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-17T15:54:47.209Z",
+    "updatedAt": "2026-10-17T15:54:47.209Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyy_uweadwi",
+    "title": "Seeking eldercare: companion, ADL assistance, medication reminders, dementia exp...",
+    "content": "Seeking eldercare: companion, ADL assistance, medication reminders, dementia experience. Live-in or daily.",
+    "tags": [
+      "healthcare-medicine",
+      "care-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-02T03:45:47.715Z",
+    "updatedAt": "2026-11-02T03:45:47.715Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyy_jqhpnb0",
+    "title": "Looking for postpartum doula: overnight, breastfeeding, newborn care, sibling su...",
+    "content": "Looking for postpartum doula: overnight, breastfeeding, newborn care, sibling support. 4-12 weeks.",
+    "tags": [
+      "healthcare-medicine",
+      "care-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "duration",
+        "operator": "is",
+        "values": [
+          "12 wk"
+        ],
+        "unit": "wk",
+        "quantity": {
+          "value": 12,
+          "unit": "wk",
+          "unitType": "simple",
+          "numerator": "wk",
+          "semanticType": "duration"
+        },
+        "role": "fact",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-15T21:27:31.202Z",
+    "updatedAt": "2026-10-15T21:27:31.202Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyy_wr3datf",
+    "title": "Need respite care: 4hrs/week, special needs child, trained provider. Weekend ava...",
+    "content": "Need respite care: 4hrs/week, special needs child, trained provider. Weekend availability.",
+    "tags": [
+      "healthcare-medicine",
+      "care-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-14T14:09:32.211Z",
+    "updatedAt": "2026-10-14T14:09:32.211Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyy_mg6svlf",
+    "title": "Seeking nanny share: 2 families, 1 nanny, split cost. Flexible hours, long-term.",
+    "content": "Seeking nanny share: 2 families, 1 nanny, split cost. Flexible hours, long-term.",
+    "tags": [
+      "healthcare-medicine",
+      "care-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-13T19:34:29.546Z",
+    "updatedAt": "2026-10-13T19:34:29.546Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyy_hruludg",
+    "title": "Want adult day program: social, meals, activities, transport. Memory care friend...",
+    "content": "Want adult day program: social, meals, activities, transport. Memory care friendly, Medicaid.",
+    "tags": [
+      "healthcare-medicine",
+      "care-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-27T13:19:57.777Z",
+    "updatedAt": "2026-10-27T13:19:57.777Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyy_rxupppj",
+    "title": "Need hospice/palliative: home-based, pain management, spiritual support, 24/7 on...",
+    "content": "Need hospice/palliative: home-based, pain management, spiritual support, 24/7 on-call.",
+    "tags": [
+      "healthcare-medicine",
+      "care-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-07T19:42:32.690Z",
+    "updatedAt": "2026-11-07T19:42:32.690Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyy_x66haw2",
+    "title": "Looking for pet care: dog walking, cat sitting, overnight, meds admin. Bonded, i...",
+    "content": "Looking for pet care: dog walking, cat sitting, overnight, meds admin. Bonded, insured.",
+    "tags": [
+      "healthcare-medicine",
+      "care-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-10T05:22:06.467Z",
+    "updatedAt": "2026-11-10T05:22:06.467Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyy_4qo6mgx",
+    "title": "Seeking doula: birth, postpartum, bereavement, abortion support. Sliding scale, ...",
+    "content": "Seeking doula: birth, postpartum, bereavement, abortion support. Sliding scale, virtual ok.",
+    "tags": [
+      "healthcare-medicine",
+      "care-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-28T06:48:24.147Z",
+    "updatedAt": "2026-10-28T06:48:24.147Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyy_gg2qlcc",
+    "title": "Need housekeeper: deep clean, laundry, organization, eco-friendly products. Biwe...",
+    "content": "Need housekeeper: deep clean, laundry, organization, eco-friendly products. Biweekly, 4hrs.",
+    "tags": [
+      "healthcare-medicine",
+      "care-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-12T17:38:56.984Z",
+    "updatedAt": "2026-10-12T17:38:56.984Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyy_qr9041f",
+    "title": "Childcare provider: licensed home daycare, 6 children max, play-based, organic m...",
+    "content": "Childcare provider: licensed home daycare, 6 children max, play-based, organic meals. $1200/mo.",
+    "tags": [
+      "healthcare-medicine",
+      "care-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-04T10:51:19.834Z",
+    "updatedAt": "2026-11-04T10:51:19.834Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyy_rhv76go",
+    "title": "Eldercare companion: CNA, dementia cert, 10 yrs exp. Hourly/live-in, references....",
+    "content": "Eldercare companion: CNA, dementia cert, 10 yrs exp. Hourly/live-in, references. $25/hr.",
+    "tags": [
+      "healthcare-medicine",
+      "care-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-15T19:01:33.209Z",
+    "updatedAt": "2026-10-15T19:01:33.209Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyy_6cil7jg",
+    "title": "Postpartum doula: DONA, lactation counselor, newborn care specialist. Night/day,...",
+    "content": "Postpartum doula: DONA, lactation counselor, newborn care specialist. Night/day, packages.",
+    "tags": [
+      "healthcare-medicine",
+      "care-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-23T14:55:59.252Z",
+    "updatedAt": "2026-10-23T14:55:59.252Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyy_lvy08go",
+    "title": "Respite provider: special needs training, behavioral support, nursing delegation...",
+    "content": "Respite provider: special needs training, behavioral support, nursing delegation. Flexible schedule.",
+    "tags": [
+      "healthcare-medicine",
+      "care-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-07T17:59:48.644Z",
+    "updatedAt": "2026-11-07T17:59:48.644Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyy_hdg17q1",
+    "title": "Nanny: 8 yrs exp, CPR, early childhood degree. Seeking long-term family. $22/hr ...",
+    "content": "Nanny: 8 yrs exp, CPR, early childhood degree. Seeking long-term family. $22/hr gross.",
+    "tags": [
+      "healthcare-medicine",
+      "care-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-22T11:53:35.526Z",
+    "updatedAt": "2026-10-22T11:53:35.526Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyy_2d6nzeo",
+    "title": "Adult day center: RN on staff, PT/OT, meals, transport, activities. Medicaid wai...",
+    "content": "Adult day center: RN on staff, PT/OT, meals, transport, activities. Medicaid waiver accepted.",
+    "tags": [
+      "healthcare-medicine",
+      "care-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "staff"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-15T16:57:13.143Z",
+    "updatedAt": "2026-10-15T16:57:13.143Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyy_mp5330w",
+    "title": "Hospice agency: Medicare-certified, interdisciplinary team, bereavement 13 month...",
+    "content": "Hospice agency: Medicare-certified, interdisciplinary team, bereavement 13 months. 24/7.",
+    "tags": [
+      "healthcare-medicine",
+      "care-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "duration",
+        "operator": "is",
+        "values": [
+          "13 mo"
+        ],
+        "unit": "mo",
+        "quantity": {
+          "value": 13,
+          "unit": "mo",
+          "unitType": "simple",
+          "numerator": "mo",
+          "semanticType": "duration"
+        },
+        "role": "fact",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-08T20:22:44.905Z",
+    "updatedAt": "2026-11-08T20:22:44.905Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyy_aelu296",
+    "title": "Pet sitter: Fear Free certified, vet tech background, overnight, meds, updates. ...",
+    "content": "Pet sitter: Fear Free certified, vet tech background, overnight, meds, updates. $30/visit.",
+    "tags": [
+      "healthcare-medicine",
+      "care-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-26T19:27:13.165Z",
+    "updatedAt": "2026-10-26T19:27:13.165Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyy_hujijlt",
+    "title": "Doula collective: birth, postpartum, loss, fertility. BIPOC-led, sliding scale, ...",
+    "content": "Doula collective: birth, postpartum, loss, fertility. BIPOC-led, sliding scale, virtual.",
+    "tags": [
+      "healthcare-medicine",
+      "care-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-13T06:13:45.340Z",
+    "updatedAt": "2026-10-13T06:13:45.340Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyy_navdyft",
+    "title": "Housekeeper: 15 yrs, green cleaning, organization, laundry, references. $35/hr, ...",
+    "content": "Housekeeper: 15 yrs, green cleaning, organization, laundry, references. $35/hr, own supplies.",
+    "tags": [
+      "healthcare-medicine",
+      "care-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-19T18:36:01.179Z",
+    "updatedAt": "2026-10-19T18:36:01.179Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyy_53a68py",
+    "title": "Need primary care: accepting Medicaid, near transit, adult & pediatric. Teleheal...",
+    "content": "Need primary care: accepting Medicaid, near transit, adult & pediatric. Telehealth ok.",
+    "tags": [
+      "healthcare-medicine",
+      "healthcare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-20T04:30:41.155Z",
+    "updatedAt": "2026-10-20T04:30:41.155Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyy_x6po42t",
+    "title": "Family physician: DPC model, $75/mo, unlimited visits, wholesale labs/meds. Acce...",
+    "content": "Family physician: DPC model, $75/mo, unlimited visits, wholesale labs/meds. Accepting patients.",
+    "tags": [
+      "healthcare-medicine",
+      "healthcare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-28T05:45:07.618Z",
+    "updatedAt": "2026-10-28T05:45:07.618Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyy_tewe3vo",
+    "title": "Seeking therapist: trauma, EMDR, somatic, sliding scale. Evening/weekend availab...",
+    "content": "Seeking therapist: trauma, EMDR, somatic, sliding scale. Evening/weekend availability.",
+    "tags": [
+      "healthcare-medicine",
+      "healthcare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-16T04:16:47.518Z",
+    "updatedAt": "2026-10-16T04:16:47.518Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyy_b3ewqh9",
+    "title": "Therapist: CBT, DBT, ACT, EMDR. $120/session, sliding scale, superbill. Teleheal...",
+    "content": "Therapist: CBT, DBT, ACT, EMDR. $120/session, sliding scale, superbill. Telehealth.",
+    "tags": [
+      "healthcare-medicine",
+      "healthcare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-01T16:54:48.612Z",
+    "updatedAt": "2026-11-01T16:54:48.612Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyy_97g1jnp",
+    "title": "Need functional medicine: root cause, nutrition, hormones, gut. Longer visits, l...",
+    "content": "Need functional medicine: root cause, nutrition, hormones, gut. Longer visits, lab review.",
+    "tags": [
+      "healthcare-medicine",
+      "healthcare-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-20T03:36:49.061Z",
+    "updatedAt": "2026-10-20T03:36:49.061Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyy_lh0inxf",
+    "title": "Functional medicine: 90-min intake, advanced testing, personalized protocol. Mem...",
+    "content": "Functional medicine: 90-min intake, advanced testing, personalized protocol. Membership.",
+    "tags": [
+      "healthcare-medicine",
+      "healthcare-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-05T00:11:28.614Z",
+    "updatedAt": "2026-11-05T00:11:28.614Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyy_y7iup3y",
+    "title": "Need postpartum doula: overnight, breastfeeding, newborn care, sibling support. ...",
+    "content": "Need postpartum doula: overnight, breastfeeding, newborn care, sibling support. 4-12 weeks.",
+    "tags": [
+      "healthcare-medicine",
+      "care-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "duration",
+        "operator": "is",
+        "values": [
+          "12 wk"
+        ],
+        "unit": "wk",
+        "quantity": {
+          "value": 12,
+          "unit": "wk",
+          "unitType": "simple",
+          "numerator": "wk",
+          "semanticType": "duration"
+        },
+        "role": "fact",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-02T18:37:32.827Z",
+    "updatedAt": "2026-11-02T18:37:32.827Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356458
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyz_95dj08n",
+    "title": "Postpartum doula: DONA, lactation counselor, newborn care specialist. Night/day ...",
+    "content": "Postpartum doula: DONA, lactation counselor, newborn care specialist. Night/day packages.",
+    "tags": [
+      "healthcare-medicine",
+      "care-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-18T11:40:54.750Z",
+    "updatedAt": "2026-10-18T11:40:54.750Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356459
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyz_4tomwdj",
+    "title": "Looking for eldercare companion: dementia experience, med reminders, walks, meal...",
+    "content": "Looking for eldercare companion: dementia experience, med reminders, walks, meals. 4hrs/day.",
+    "tags": [
+      "healthcare-medicine",
+      "care-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-19T22:02:58.398Z",
+    "updatedAt": "2026-10-19T22:02:58.398Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356459
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyz_bpwz41e",
+    "title": "Eldercare companion: CNA, dementia certified, validation therapy, music/memory. ...",
+    "content": "Eldercare companion: CNA, dementia certified, validation therapy, music/memory. $28/hr.",
+    "tags": [
+      "healthcare-medicine",
+      "care-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-08T01:17:13.813Z",
+    "updatedAt": "2026-11-08T01:17:13.813Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-healthcare-medicine",
+      "timestamp": 1794378356459
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  }
+]
