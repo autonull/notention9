@@ -53,6 +53,8 @@ interface Session {
     timeToFirstExplanationSeconds: number | null;
     timeToFirstActionSeconds: number | null;
     completedAct: boolean;
+    wouldActOnMatch: boolean | null;
+    relevanceReason: string;
 }
 
 interface ProbeOptions {
@@ -244,6 +246,8 @@ function writeReport(sessions: Session[]): void {
     const explanationTimes = sessions.map(s => s.timeToFirstExplanationSeconds).filter((v): v is number => v !== null);
     const actionTimes = sessions.map(s => s.timeToFirstActionSeconds).filter((v): v is number => v !== null);
     const acted = sessions.filter(s => s.completedAct).length;
+    const judged = sessions.filter(s => s.wouldActOnMatch !== null);
+    const wouldAct = judged.filter(s => s.wouldActOnMatch === true).length;
 
     const rows = sessions.map(s => [
         s.participant,
@@ -252,6 +256,12 @@ function writeReport(sessions: Session[]): void {
         formatSeconds(s.timeToFirstExplanationSeconds),
         s.completedAct ? 'yes' : 'no',
         formatSeconds(s.timeToFirstActionSeconds),
+    ].join(' | ')).join('\n');
+
+    const relevanceRows = sessions.map(s => [
+        s.participant,
+        s.wouldActOnMatch === null ? '—' : s.wouldActOnMatch ? 'yes' : 'no',
+        s.relevanceReason || '—',
     ].join(' | ')).join('\n');
 
     const answers = sessions.map(s => [
@@ -263,6 +273,7 @@ function writeReport(sessions: Session[]): void {
         `- Named a next action: ${s.namedNextAction ? 'yes' : 'no'}`,
         `- Opened the match explanation after ${formatSeconds(s.timeToFirstExplanationSeconds)}`,
         `- Completed the act step: ${s.completedAct ? 'yes' : 'no'}`,
+        `- Would act on the match: ${s.wouldActOnMatch === null ? '—' : s.wouldActOnMatch ? 'yes' : 'no'}`,
         '',
     ].join('\n')).join('\n');
 
@@ -284,6 +295,14 @@ ${rows}
 - **Time to first explanation:** median ${formatSeconds(median(explanationTimes))}${explanationTimes.length ? ` (n=${explanationTimes.length})` : ''}
 - **Time to first action:** median ${formatSeconds(median(actionTimes))}${actionTimes.length ? ` (n=${actionTimes.length})` : ''}
 
+## Match relevance (P2c.3)
+
+| Participant | Would act on the match | Why |
+|---|---|---|
+${relevanceRows}
+
+- **Relevance rate:** ${judged.length ? Math.round((wouldAct / judged.length) * 100) : 0}% (${wouldAct}/${judged.length})
+
 ## Verbatim answers
 
 ${answers || '_No sessions recorded yet._'}
@@ -294,6 +313,8 @@ ${answers || '_No sessions recorded yet._'}
 - The participant sees the sample workspace only; the facilitator does not demonstrate.
 - Answers are recorded verbatim. The facilitator classifies each answer after the
   session: *understood the purpose* and *named a next action the app supports*.
+- The match the product shows is judged in the same session: *would you act on
+  this?* and *why not?* (P2c.3).
 - The clock starts when the app reports ready and stops when the participant opens
   the match explanation or completes the act step.
 - Sessions are stored locally in \`doc/evidence/comprehension-probe-raw.json\`;
@@ -366,6 +387,11 @@ async function runSession(options: ProbeOptions, browser: Browser): Promise<Sess
     const understoodPurpose = (await ask('Did the participant state the purpose correctly? [y/N] ')).toLowerCase().startsWith('y');
     const namedNextAction = (await ask('Did they name a next action the app supports? [y/N] ')).toLowerCase().startsWith('y');
 
+    console.log('\nMatch relevance (P2c.3) — the match the product showed:');
+    const relevanceAnswer = (await ask('Would you act on this match? [y/N] ')).trim().toLowerCase();
+    const wouldActOnMatch = relevanceAnswer.startsWith('y') ? true : relevanceAnswer.startsWith('n') ? false : null;
+    const relevanceReason = await ask('Why? (verbatim) ');
+
     await context.close();
 
     return {
@@ -378,6 +404,8 @@ async function runSession(options: ProbeOptions, browser: Browser): Promise<Sess
         timeToFirstExplanationSeconds: timeToFirstExplanation,
         timeToFirstActionSeconds: timeToFirstAction,
         completedAct,
+        wouldActOnMatch,
+        relevanceReason,
     };
 }
 

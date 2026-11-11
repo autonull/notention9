@@ -16,6 +16,14 @@
 - **Time to first explanation:** median —
 - **Time to first action:** median —
 
+## Match relevance (P2c.3)
+
+| Participant | Would act on the match | Why |
+|---|---|---|
+
+
+- **Relevance rate:** 0% (0/0)
+
 ## Verbatim answers
 
 _No sessions recorded yet._
@@ -26,6 +34,8 @@ _No sessions recorded yet._
 - The participant sees the sample workspace only; the facilitator does not demonstrate.
 - Answers are recorded verbatim. The facilitator classifies each answer after the
   session: *understood the purpose* and *named a next action the app supports*.
+- The match the product shows is judged in the same session: *would you act on
+  this?* and *why not?* (P2c.3).
 - The clock starts when the app reports ready and stops when the participant opens
   the match explanation or completes the act step.
 - Sessions are stored locally in `doc/evidence/comprehension-probe-raw.json`;

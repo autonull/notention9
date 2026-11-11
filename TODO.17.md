@@ -23,7 +23,7 @@
 | **P2b / R9** | 🔄 **PARTIAL** | Golden-path friction events added: `match_explained`, `match_dismissed`, `response_created`, `response_viewed`; evidence classification shared by the node and browser journals. Remaining: sessions from real use |
 | **P2a / R8** | ⏳ **INSTRUMENTED** | `pnpm probe` — facilitator instrument: seeds the sample workspace, records both answers verbatim, times the first explanation and the act step, writes `doc/evidence/2026-11-comprehension-probe.md`. **No human sessions recorded yet** |
 | **R10** | ✅ **COMPLETE** | `README.md` § Status and `README2.md` § Implementation Status now state the real state of the golden path |
-| **Tests** | ✅ | Core 523 (7 new for the friction kinds), UI batch, optimize, simulator, agent, CLI — all green |
+| **Tests** | ✅ | Core 523 (7 new for the friction kinds), UI 183 (all 41 files, now really executed), optimize, simulator, agent, CLI — all green |
 
 ---
 
@@ -609,7 +609,7 @@ The center works and the golden path is proven in the production build. What is 
 | # | Step | How | Artifact | Blocker |
 |---|------|-----|----------|---------|
 | **1** | **Run 5 comprehension sessions** | `pnpm probe` (opens the app with the sample workspace; read the two questions aloud; press Enter when the session ends) | `doc/evidence/2026-11-comprehension-probe.md` | Needs 5 people. The instrument is ready; the sessions are not. |
-| **2** | **Judge the matches** | During the same sessions: for every match the product shows, "would you act on this?" and "why not?" | `doc/evidence/2026-11-match-relevance.md` | Follows step 1 — the same session produces the judgments |
+| **2** | **Judge the matches** | In the same session: for every match the product shows, "would you act on this?" and "why not?" — the probe already asks both | `doc/evidence/2026-11-comprehension-probe.md` (Match relevance section) | Follows step 1 — the same session produces the judgments |
 | **3** | **Let the journal fill, then prioritize** | Dogfood the app; the journal records capture/match/response friction; then `pnpm loop prioritize --source friction` ranks the work | `doc/evidence/2026-11-friction-taxonomy.md` | Needs real sessions; the events and the reader both exist |
 
 **What is already true and needs no further work:** the corpus (864 notes, 14 domains),
@@ -683,6 +683,8 @@ Facilitated, in priority order.
 | **R8** | Run the comprehension probe (P2a) | The cheapest, most disconfirming question about the product | 🔄 **INSTRUMENTED** — `pnpm probe` records verbatim answers, time-to-first-explanation and the act step into `doc/evidence/2026-11-comprehension-probe.md`. **Remaining: run 5 sessions with people** (the instrument needs a human; it cannot fabricate them) |
 | **R9** | Turn human failures into machine-readable friction (P2b) | Gives the optimizer a real target instead of a synthetic driver | 🔄 **PARTIAL** — the golden-path events now exist (`match_explained`, `match_dismissed`, `response_created`, `response_viewed`) and `pnpm loop prioritize --source friction` reads them. **Remaining: sessions from real use** (R8) to fill the journal |
 | **R10** | Update `README.md` § Status and `README2.md` gaps against what is actually true | The status table currently claims working areas that the code contradicts | ✅ **COMPLETE** — both now state the golden path is green in the production build and that the human evidence is instrumented but empty |
+| **I2** | Make the UI test lane honest | A green lane that ran nothing is worse than a red one | ✅ **COMPLETE** — the lane invoked a non-existent script and swallowed the error; it now runs all 41 files (183 tests) and fails on any failure |
+| **R11** | Extend the probe to collect match relevance (P2c.3) in the same session | Relevance judgments follow the probe; a separate session would halve the participants | ✅ **COMPLETE** — the probe now asks *would you act on this match?* and *why?*, and the artifact carries a relevance rate with the reasons (P2c.3). No sessions recorded yet |
 
 | **P1c** | ✅ **COMPLETE** | - **P1c.1** Extended `compose-match.spec.ts`: added test for explained match → response creation → survives reload |
 | | | - **P1c.2** Created `golden-demo.spec.ts`: seeds sample workspace, asserts explained match with units |
@@ -708,7 +710,7 @@ Facilitated, in priority order.
 | # | Issue | Location | Priority | Notes |
 |---|-------|----------|----------|-------|
 | **I1** | E2E journey tests fail: React error #525 | `ui/test/journeys/*.spec.ts`, preview server | High | ✅ **FIXED** — root cause was a bundled React 18 copy inside `@notention/core` (legacy elements vs. the React 19 renderer). Both journey specs pass against the production preview |
-| **I2** | Pre-existing UI unit test failures (41 test files) | `ui/src/tests/**/*.test.tsx` | Medium | ✅ **NO LONGER BLOCKING** — the batched UI lane (`pnpm test:ui`) is green inside `pnpm verify`; triage of individual assertions is no longer on the critical path |
+| **I2** | Pre-existing UI unit test failures (41 test files) | `ui/src/tests/**/*.test.tsx` | Medium | ✅ **FIXED** — the batched UI lane ran a non-existent script and swallowed the error, so it had never executed a test. It now runs the 41 files for real, with no tolerance for failures: **183 tests, all green**. Six files had been failing behind that (stale priority default, stale registry mocks, missing providers, and a localStorage stub that always returned null) |
 | **I3** | CSS minify warnings: fractional `var(--space-0.5)` tokens | Tailwind config / CSS variables | Low | `esbuild` CSS parser warnings. Not breaking but noise. Fix via `postcss-custom-properties` or token normalization. |
 | **I4** | `pnpm --filter @notention/ui typecheck` errors (if any remain) | UI package | High | Gate for `pnpm verify`. **Currently 0** ✅. |
 | **I5** | Corpus format: `.md` → `.json` with provenance manifest | `corpus/*.md` | High | ✅ **FIXED** — 864 notes in `corpus/notes/*.json` + `manifest.json` (CC0). Original `.md` preserved. |
