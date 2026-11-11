@@ -1,0 +1,1941 @@
+{
+  "timestamp": "2026-11-11T02:22:02.494Z",
+  "totalCases": 22,
+  "thresholds": [
+    {
+      "minScore": 0.2,
+      "avgPrecision": 0.9545454545454546,
+      "avgRecall": 0.6515151515151514,
+      "avgF1": 0.7606060606060606
+    },
+    {
+      "minScore": 0.3,
+      "avgPrecision": 0.9545454545454546,
+      "avgRecall": 0.75,
+      "avgF1": 0.8242424242424243
+    },
+    {
+      "minScore": 0.4,
+      "avgPrecision": 0.8636363636363636,
+      "avgRecall": 0.8636363636363636,
+      "avgF1": 0.8636363636363636
+    }
+  ],
+  "caseResults": [
+    {
+      "caseId": "quality-match-001",
+      "input": "I need a wheelchair ramp installed",
+      "expected": [
+        {
+          "noteId": "note-ramp-001",
+          "minScore": 0.3
+        },
+        {
+          "noteId": "note-ramp-002",
+          "minScore": 0.2
+        }
+      ],
+      "actual": [],
+      "tp": 0,
+      "fp": 0,
+      "fn": 2,
+      "precision": 0,
+      "recall": 0,
+      "f1": 0,
+      "minScoreThreshold": 0.2
+    },
+    {
+      "caseId": "quality-match-002",
+      "input": "I need a dog walker for weekday mornings",
+      "expected": [
+        {
+          "noteId": "note-dog-001",
+          "minScore": 0.35
+        },
+        {
+          "noteId": "note-dog-002",
+          "minScore": 0.25
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-dog-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 1,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1,
+      "recall": 0.5,
+      "f1": 0.6666666666666666,
+      "minScoreThreshold": 0.2
+    },
+    {
+      "caseId": "quality-match-003",
+      "input": "Looking for piano lessons for my child on weekends",
+      "expected": [
+        {
+          "noteId": "note-piano-001",
+          "minScore": 0.4
+        },
+        {
+          "noteId": "note-piano-002",
+          "minScore": 0.3
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-piano-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 1,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1,
+      "recall": 0.5,
+      "f1": 0.6666666666666666,
+      "minScoreThreshold": 0.2
+    },
+    {
+      "caseId": "quality-match-004",
+      "input": "Need a ride to the airport early tomorrow morning",
+      "expected": [
+        {
+          "noteId": "note-ride-001",
+          "minScore": 0.45
+        },
+        {
+          "noteId": "note-ride-002",
+          "minScore": 0.2
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-ride-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 1,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1,
+      "recall": 0.5,
+      "f1": 0.6666666666666666,
+      "minScoreThreshold": 0.2
+    },
+    {
+      "caseId": "quality-match-005",
+      "input": "Need help moving this Saturday, have truck",
+      "expected": [
+        {
+          "noteId": "note-move-001",
+          "minScore": 0.4
+        },
+        {
+          "noteId": "note-move-002",
+          "minScore": 0.3
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-move-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 1,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1,
+      "recall": 0.5,
+      "f1": 0.6666666666666666,
+      "minScoreThreshold": 0.2
+    },
+    {
+      "caseId": "quality-match-006",
+      "input": "Looking for meal delivery for elderly parent with dietary restrictions",
+      "expected": [
+        {
+          "noteId": "note-meal-001",
+          "minScore": 0.4
+        },
+        {
+          "noteId": "note-meal-002",
+          "minScore": 0.25
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-meal-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 1,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1,
+      "recall": 0.5,
+      "f1": 0.6666666666666666,
+      "minScoreThreshold": 0.2
+    },
+    {
+      "caseId": "quality-match-007",
+      "input": "Want to donate winter coats to homeless shelter",
+      "expected": [
+        {
+          "noteId": "note-donate-001",
+          "minScore": 0.5
+        },
+        {
+          "noteId": "note-donate-002",
+          "minScore": 0.3
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-donate-001",
+          "score": 0.6400000000000001
+        },
+        {
+          "noteId": "note-donate-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 2,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1,
+      "recall": 0.6666666666666666,
+      "f1": 0.8,
+      "minScoreThreshold": 0.2
+    },
+    {
+      "caseId": "quality-match-008",
+      "input": "Looking for Spanish conversation practice twice a week",
+      "expected": [
+        {
+          "noteId": "note-spanish-001",
+          "minScore": 0.4
+        },
+        {
+          "noteId": "note-spanish-002",
+          "minScore": 0.25
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-spanish-001",
+          "score": 0.6400000000000001
+        },
+        {
+          "noteId": "note-spanish-002",
+          "score": 0.21333333333333335
+        }
+      ],
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.2
+    },
+    {
+      "caseId": "quality-match-009",
+      "input": "Need babysitter Friday night, CPR certified",
+      "expected": [
+        {
+          "noteId": "note-sitter-001",
+          "minScore": 0.45
+        },
+        {
+          "noteId": "note-sitter-002",
+          "minScore": 0.3
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-sitter-001",
+          "score": 0.6400000000000001
+        },
+        {
+          "noteId": "note-sitter-002",
+          "score": 0.21333333333333335
+        }
+      ],
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.2
+    },
+    {
+      "caseId": "quality-match-010",
+      "input": "Want to volunteer coding mentorship weekends",
+      "expected": [
+        {
+          "noteId": "note-mentor-001",
+          "minScore": 0.5
+        },
+        {
+          "noteId": "note-mentor-002",
+          "minScore": 0.35
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-mentor-001",
+          "score": 0.4266666666666667
+        },
+        {
+          "noteId": "note-mentor-001",
+          "score": 0.4266666666666667
+        }
+      ],
+      "tp": 2,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1,
+      "recall": 0.6666666666666666,
+      "f1": 0.8,
+      "minScoreThreshold": 0.2
+    },
+    {
+      "caseId": "quality-match-011",
+      "input": "Need photographer for family portraits Sunday outdoor",
+      "expected": [
+        {
+          "noteId": "note-photo-001",
+          "minScore": 0.4
+        },
+        {
+          "noteId": "note-photo-002",
+          "minScore": 0.25
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-photo-001",
+          "score": 0.6400000000000001
+        },
+        {
+          "noteId": "note-photo-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 2,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1,
+      "recall": 0.6666666666666666,
+      "f1": 0.8,
+      "minScoreThreshold": 0.2
+    },
+    {
+      "caseId": "quality-match-012",
+      "input": "Looking for driving instructor for teenager, automatic car",
+      "expected": [
+        {
+          "noteId": "note-drive-001",
+          "minScore": 0.45
+        },
+        {
+          "noteId": "note-drive-002",
+          "minScore": 0.3
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-drive-001",
+          "score": 0.6400000000000001
+        },
+        {
+          "noteId": "note-drive-002",
+          "score": 0.21333333333333335
+        },
+        {
+          "noteId": "note-drive-001",
+          "score": 0.6400000000000001
+        },
+        {
+          "noteId": "note-drive-002",
+          "score": 0.21333333333333335
+        }
+      ],
+      "tp": 4,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.2
+    },
+    {
+      "caseId": "quality-match-013",
+      "input": "Need smart home setup for lights, thermostat, locks",
+      "expected": [
+        {
+          "noteId": "note-tech-001",
+          "minScore": 0.4
+        },
+        {
+          "noteId": "note-tech-002",
+          "minScore": 0.25
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-tech-001",
+          "score": 0.6400000000000001
+        },
+        {
+          "noteId": "note-tech-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 2,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1,
+      "recall": 0.6666666666666666,
+      "f1": 0.8,
+      "minScoreThreshold": 0.2
+    },
+    {
+      "caseId": "quality-match-014",
+      "input": "Looking for free coding mentorship weekends",
+      "expected": [
+        {
+          "noteId": "note-mentor-001",
+          "minScore": 0.5
+        },
+        {
+          "noteId": "note-mentor-002",
+          "minScore": 0.35
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-mentor-001",
+          "score": 0.4266666666666667
+        },
+        {
+          "noteId": "note-mentor-001",
+          "score": 0.4266666666666667
+        }
+      ],
+      "tp": 2,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1,
+      "recall": 0.6666666666666666,
+      "f1": 0.8,
+      "minScoreThreshold": 0.2
+    },
+    {
+      "caseId": "quality-match-015",
+      "input": "Need photographer for family portraits Sunday",
+      "expected": [
+        {
+          "noteId": "note-photo-001",
+          "minScore": 0.4
+        },
+        {
+          "noteId": "note-photo-002",
+          "minScore": 0.25
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-photo-001",
+          "score": 0.6400000000000001
+        },
+        {
+          "noteId": "note-photo-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 2,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1,
+      "recall": 0.6666666666666666,
+      "f1": 0.8,
+      "minScoreThreshold": 0.2
+    },
+    {
+      "caseId": "quality-match-016",
+      "input": "Looking for driving instructor for teenager, automatic",
+      "expected": [
+        {
+          "noteId": "note-drive-001",
+          "minScore": 0.45
+        },
+        {
+          "noteId": "note-drive-002",
+          "minScore": 0.3
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-drive-001",
+          "score": 0.6400000000000001
+        },
+        {
+          "noteId": "note-drive-002",
+          "score": 0.21333333333333335
+        },
+        {
+          "noteId": "note-drive-001",
+          "score": 0.6400000000000001
+        },
+        {
+          "noteId": "note-drive-002",
+          "score": 0.21333333333333335
+        }
+      ],
+      "tp": 4,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.2
+    },
+    {
+      "caseId": "quality-match-017",
+      "input": "Need smart home setup for lights thermostat locks",
+      "expected": [
+        {
+          "noteId": "note-tech-001",
+          "minScore": 0.4
+        },
+        {
+          "noteId": "note-tech-002",
+          "minScore": 0.25
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-tech-001",
+          "score": 0.6400000000000001
+        },
+        {
+          "noteId": "note-tech-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 2,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1,
+      "recall": 0.6666666666666666,
+      "f1": 0.8,
+      "minScoreThreshold": 0.2
+    },
+    {
+      "caseId": "quality-match-018",
+      "input": "Want to donate winter coats to homeless shelter",
+      "expected": [
+        {
+          "noteId": "note-donate-001",
+          "minScore": 0.5
+        },
+        {
+          "noteId": "note-donate-002",
+          "minScore": 0.3
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-donate-001",
+          "score": 0.6400000000000001
+        },
+        {
+          "noteId": "note-donate-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 2,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1,
+      "recall": 0.6666666666666666,
+      "f1": 0.8,
+      "minScoreThreshold": 0.2
+    },
+    {
+      "caseId": "quality-match-019",
+      "input": "Looking for house cleaner biweekly 3 bed 2 bath",
+      "expected": [
+        {
+          "noteId": "note-clean-001",
+          "minScore": 0.45
+        },
+        {
+          "noteId": "note-clean-002",
+          "minScore": 0.3
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-clean-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 1,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1,
+      "recall": 0.5,
+      "f1": 0.6666666666666666,
+      "minScoreThreshold": 0.2
+    },
+    {
+      "caseId": "quality-match-020",
+      "input": "Need free resume review for recent graduate",
+      "expected": [
+        {
+          "noteId": "note-resume-001",
+          "minScore": 0.5
+        },
+        {
+          "noteId": "note-resume-002",
+          "minScore": 0.35
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-resume-001",
+          "score": 0.4266666666666667
+        }
+      ],
+      "tp": 1,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1,
+      "recall": 0.5,
+      "f1": 0.6666666666666666,
+      "minScoreThreshold": 0.2
+    },
+    {
+      "caseId": "quality-match-021",
+      "input": "Looking for grocery delivery for elderly neighbor",
+      "expected": [
+        {
+          "noteId": "note-grocery-001",
+          "minScore": 0.4
+        },
+        {
+          "noteId": "note-grocery-002",
+          "minScore": 0.25
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-grocery-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 1,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1,
+      "recall": 0.5,
+      "f1": 0.6666666666666666,
+      "minScoreThreshold": 0.2
+    },
+    {
+      "caseId": "quality-match-022",
+      "input": "Need legal help for tenants rights free clinic",
+      "expected": [
+        {
+          "noteId": "note-legal-001",
+          "minScore": 0.5
+        },
+        {
+          "noteId": "note-legal-002",
+          "minScore": 0.35
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-legal-001",
+          "score": 0.32000000000000006
+        },
+        {
+          "noteId": "note-legal-002",
+          "score": 0.32000000000000006
+        }
+      ],
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.2
+    },
+    {
+      "caseId": "quality-match-001",
+      "input": "I need a wheelchair ramp installed",
+      "expected": [
+        {
+          "noteId": "note-ramp-001",
+          "minScore": 0.3
+        },
+        {
+          "noteId": "note-ramp-002",
+          "minScore": 0.2
+        }
+      ],
+      "actual": [],
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "precision": 0,
+      "recall": 0,
+      "f1": 0,
+      "minScoreThreshold": 0.3
+    },
+    {
+      "caseId": "quality-match-002",
+      "input": "I need a dog walker for weekday mornings",
+      "expected": [
+        {
+          "noteId": "note-dog-001",
+          "minScore": 0.35
+        },
+        {
+          "noteId": "note-dog-002",
+          "minScore": 0.25
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-dog-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.3
+    },
+    {
+      "caseId": "quality-match-003",
+      "input": "Looking for piano lessons for my child on weekends",
+      "expected": [
+        {
+          "noteId": "note-piano-001",
+          "minScore": 0.4
+        },
+        {
+          "noteId": "note-piano-002",
+          "minScore": 0.3
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-piano-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 1,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1,
+      "recall": 0.5,
+      "f1": 0.6666666666666666,
+      "minScoreThreshold": 0.3
+    },
+    {
+      "caseId": "quality-match-004",
+      "input": "Need a ride to the airport early tomorrow morning",
+      "expected": [
+        {
+          "noteId": "note-ride-001",
+          "minScore": 0.45
+        },
+        {
+          "noteId": "note-ride-002",
+          "minScore": 0.2
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-ride-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.3
+    },
+    {
+      "caseId": "quality-match-005",
+      "input": "Need help moving this Saturday, have truck",
+      "expected": [
+        {
+          "noteId": "note-move-001",
+          "minScore": 0.4
+        },
+        {
+          "noteId": "note-move-002",
+          "minScore": 0.3
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-move-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 1,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1,
+      "recall": 0.5,
+      "f1": 0.6666666666666666,
+      "minScoreThreshold": 0.3
+    },
+    {
+      "caseId": "quality-match-006",
+      "input": "Looking for meal delivery for elderly parent with dietary restrictions",
+      "expected": [
+        {
+          "noteId": "note-meal-001",
+          "minScore": 0.4
+        },
+        {
+          "noteId": "note-meal-002",
+          "minScore": 0.25
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-meal-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.3
+    },
+    {
+      "caseId": "quality-match-007",
+      "input": "Want to donate winter coats to homeless shelter",
+      "expected": [
+        {
+          "noteId": "note-donate-001",
+          "minScore": 0.5
+        },
+        {
+          "noteId": "note-donate-002",
+          "minScore": 0.3
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-donate-001",
+          "score": 0.6400000000000001
+        },
+        {
+          "noteId": "note-donate-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 2,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1,
+      "recall": 0.6666666666666666,
+      "f1": 0.8,
+      "minScoreThreshold": 0.3
+    },
+    {
+      "caseId": "quality-match-008",
+      "input": "Looking for Spanish conversation practice twice a week",
+      "expected": [
+        {
+          "noteId": "note-spanish-001",
+          "minScore": 0.4
+        },
+        {
+          "noteId": "note-spanish-002",
+          "minScore": 0.25
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-spanish-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.3
+    },
+    {
+      "caseId": "quality-match-009",
+      "input": "Need babysitter Friday night, CPR certified",
+      "expected": [
+        {
+          "noteId": "note-sitter-001",
+          "minScore": 0.45
+        },
+        {
+          "noteId": "note-sitter-002",
+          "minScore": 0.3
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-sitter-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 1,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1,
+      "recall": 0.5,
+      "f1": 0.6666666666666666,
+      "minScoreThreshold": 0.3
+    },
+    {
+      "caseId": "quality-match-010",
+      "input": "Want to volunteer coding mentorship weekends",
+      "expected": [
+        {
+          "noteId": "note-mentor-001",
+          "minScore": 0.5
+        },
+        {
+          "noteId": "note-mentor-002",
+          "minScore": 0.35
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-mentor-001",
+          "score": 0.4266666666666667
+        },
+        {
+          "noteId": "note-mentor-001",
+          "score": 0.4266666666666667
+        }
+      ],
+      "tp": 2,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1,
+      "recall": 0.6666666666666666,
+      "f1": 0.8,
+      "minScoreThreshold": 0.3
+    },
+    {
+      "caseId": "quality-match-011",
+      "input": "Need photographer for family portraits Sunday outdoor",
+      "expected": [
+        {
+          "noteId": "note-photo-001",
+          "minScore": 0.4
+        },
+        {
+          "noteId": "note-photo-002",
+          "minScore": 0.25
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-photo-001",
+          "score": 0.6400000000000001
+        },
+        {
+          "noteId": "note-photo-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.3
+    },
+    {
+      "caseId": "quality-match-012",
+      "input": "Looking for driving instructor for teenager, automatic car",
+      "expected": [
+        {
+          "noteId": "note-drive-001",
+          "minScore": 0.45
+        },
+        {
+          "noteId": "note-drive-002",
+          "minScore": 0.3
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-drive-001",
+          "score": 0.6400000000000001
+        },
+        {
+          "noteId": "note-drive-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 2,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1,
+      "recall": 0.6666666666666666,
+      "f1": 0.8,
+      "minScoreThreshold": 0.3
+    },
+    {
+      "caseId": "quality-match-013",
+      "input": "Need smart home setup for lights, thermostat, locks",
+      "expected": [
+        {
+          "noteId": "note-tech-001",
+          "minScore": 0.4
+        },
+        {
+          "noteId": "note-tech-002",
+          "minScore": 0.25
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-tech-001",
+          "score": 0.6400000000000001
+        },
+        {
+          "noteId": "note-tech-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.3
+    },
+    {
+      "caseId": "quality-match-014",
+      "input": "Looking for free coding mentorship weekends",
+      "expected": [
+        {
+          "noteId": "note-mentor-001",
+          "minScore": 0.5
+        },
+        {
+          "noteId": "note-mentor-002",
+          "minScore": 0.35
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-mentor-001",
+          "score": 0.4266666666666667
+        },
+        {
+          "noteId": "note-mentor-001",
+          "score": 0.4266666666666667
+        }
+      ],
+      "tp": 2,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1,
+      "recall": 0.6666666666666666,
+      "f1": 0.8,
+      "minScoreThreshold": 0.3
+    },
+    {
+      "caseId": "quality-match-015",
+      "input": "Need photographer for family portraits Sunday",
+      "expected": [
+        {
+          "noteId": "note-photo-001",
+          "minScore": 0.4
+        },
+        {
+          "noteId": "note-photo-002",
+          "minScore": 0.25
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-photo-001",
+          "score": 0.6400000000000001
+        },
+        {
+          "noteId": "note-photo-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.3
+    },
+    {
+      "caseId": "quality-match-016",
+      "input": "Looking for driving instructor for teenager, automatic",
+      "expected": [
+        {
+          "noteId": "note-drive-001",
+          "minScore": 0.45
+        },
+        {
+          "noteId": "note-drive-002",
+          "minScore": 0.3
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-drive-001",
+          "score": 0.6400000000000001
+        },
+        {
+          "noteId": "note-drive-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 2,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1,
+      "recall": 0.6666666666666666,
+      "f1": 0.8,
+      "minScoreThreshold": 0.3
+    },
+    {
+      "caseId": "quality-match-017",
+      "input": "Need smart home setup for lights thermostat locks",
+      "expected": [
+        {
+          "noteId": "note-tech-001",
+          "minScore": 0.4
+        },
+        {
+          "noteId": "note-tech-002",
+          "minScore": 0.25
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-tech-001",
+          "score": 0.6400000000000001
+        },
+        {
+          "noteId": "note-tech-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.3
+    },
+    {
+      "caseId": "quality-match-018",
+      "input": "Want to donate winter coats to homeless shelter",
+      "expected": [
+        {
+          "noteId": "note-donate-001",
+          "minScore": 0.5
+        },
+        {
+          "noteId": "note-donate-002",
+          "minScore": 0.3
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-donate-001",
+          "score": 0.6400000000000001
+        },
+        {
+          "noteId": "note-donate-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 2,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1,
+      "recall": 0.6666666666666666,
+      "f1": 0.8,
+      "minScoreThreshold": 0.3
+    },
+    {
+      "caseId": "quality-match-019",
+      "input": "Looking for house cleaner biweekly 3 bed 2 bath",
+      "expected": [
+        {
+          "noteId": "note-clean-001",
+          "minScore": 0.45
+        },
+        {
+          "noteId": "note-clean-002",
+          "minScore": 0.3
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-clean-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 1,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1,
+      "recall": 0.5,
+      "f1": 0.6666666666666666,
+      "minScoreThreshold": 0.3
+    },
+    {
+      "caseId": "quality-match-020",
+      "input": "Need free resume review for recent graduate",
+      "expected": [
+        {
+          "noteId": "note-resume-001",
+          "minScore": 0.5
+        },
+        {
+          "noteId": "note-resume-002",
+          "minScore": 0.35
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-resume-001",
+          "score": 0.4266666666666667
+        }
+      ],
+      "tp": 1,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1,
+      "recall": 0.5,
+      "f1": 0.6666666666666666,
+      "minScoreThreshold": 0.3
+    },
+    {
+      "caseId": "quality-match-021",
+      "input": "Looking for grocery delivery for elderly neighbor",
+      "expected": [
+        {
+          "noteId": "note-grocery-001",
+          "minScore": 0.4
+        },
+        {
+          "noteId": "note-grocery-002",
+          "minScore": 0.25
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-grocery-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.3
+    },
+    {
+      "caseId": "quality-match-022",
+      "input": "Need legal help for tenants rights free clinic",
+      "expected": [
+        {
+          "noteId": "note-legal-001",
+          "minScore": 0.5
+        },
+        {
+          "noteId": "note-legal-002",
+          "minScore": 0.35
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-legal-001",
+          "score": 0.32000000000000006
+        },
+        {
+          "noteId": "note-legal-002",
+          "score": 0.32000000000000006
+        }
+      ],
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.3
+    },
+    {
+      "caseId": "quality-match-001",
+      "input": "I need a wheelchair ramp installed",
+      "expected": [
+        {
+          "noteId": "note-ramp-001",
+          "minScore": 0.3
+        },
+        {
+          "noteId": "note-ramp-002",
+          "minScore": 0.2
+        }
+      ],
+      "actual": [],
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "precision": 0,
+      "recall": 0,
+      "f1": 0,
+      "minScoreThreshold": 0.4
+    },
+    {
+      "caseId": "quality-match-002",
+      "input": "I need a dog walker for weekday mornings",
+      "expected": [
+        {
+          "noteId": "note-dog-001",
+          "minScore": 0.35
+        },
+        {
+          "noteId": "note-dog-002",
+          "minScore": 0.25
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-dog-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 0,
+      "fp": 1,
+      "fn": 0,
+      "precision": 0,
+      "recall": 0,
+      "f1": 0,
+      "minScoreThreshold": 0.4
+    },
+    {
+      "caseId": "quality-match-003",
+      "input": "Looking for piano lessons for my child on weekends",
+      "expected": [
+        {
+          "noteId": "note-piano-001",
+          "minScore": 0.4
+        },
+        {
+          "noteId": "note-piano-002",
+          "minScore": 0.3
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-piano-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.4
+    },
+    {
+      "caseId": "quality-match-004",
+      "input": "Need a ride to the airport early tomorrow morning",
+      "expected": [
+        {
+          "noteId": "note-ride-001",
+          "minScore": 0.45
+        },
+        {
+          "noteId": "note-ride-002",
+          "minScore": 0.2
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-ride-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.4
+    },
+    {
+      "caseId": "quality-match-005",
+      "input": "Need help moving this Saturday, have truck",
+      "expected": [
+        {
+          "noteId": "note-move-001",
+          "minScore": 0.4
+        },
+        {
+          "noteId": "note-move-002",
+          "minScore": 0.3
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-move-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.4
+    },
+    {
+      "caseId": "quality-match-006",
+      "input": "Looking for meal delivery for elderly parent with dietary restrictions",
+      "expected": [
+        {
+          "noteId": "note-meal-001",
+          "minScore": 0.4
+        },
+        {
+          "noteId": "note-meal-002",
+          "minScore": 0.25
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-meal-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.4
+    },
+    {
+      "caseId": "quality-match-007",
+      "input": "Want to donate winter coats to homeless shelter",
+      "expected": [
+        {
+          "noteId": "note-donate-001",
+          "minScore": 0.5
+        },
+        {
+          "noteId": "note-donate-002",
+          "minScore": 0.3
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-donate-001",
+          "score": 0.6400000000000001
+        },
+        {
+          "noteId": "note-donate-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.4
+    },
+    {
+      "caseId": "quality-match-008",
+      "input": "Looking for Spanish conversation practice twice a week",
+      "expected": [
+        {
+          "noteId": "note-spanish-001",
+          "minScore": 0.4
+        },
+        {
+          "noteId": "note-spanish-002",
+          "minScore": 0.25
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-spanish-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.4
+    },
+    {
+      "caseId": "quality-match-009",
+      "input": "Need babysitter Friday night, CPR certified",
+      "expected": [
+        {
+          "noteId": "note-sitter-001",
+          "minScore": 0.45
+        },
+        {
+          "noteId": "note-sitter-002",
+          "minScore": 0.3
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-sitter-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.4
+    },
+    {
+      "caseId": "quality-match-010",
+      "input": "Want to volunteer coding mentorship weekends",
+      "expected": [
+        {
+          "noteId": "note-mentor-001",
+          "minScore": 0.5
+        },
+        {
+          "noteId": "note-mentor-002",
+          "minScore": 0.35
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-mentor-001",
+          "score": 0.4266666666666667
+        },
+        {
+          "noteId": "note-mentor-001",
+          "score": 0.4266666666666667
+        }
+      ],
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.4
+    },
+    {
+      "caseId": "quality-match-011",
+      "input": "Need photographer for family portraits Sunday outdoor",
+      "expected": [
+        {
+          "noteId": "note-photo-001",
+          "minScore": 0.4
+        },
+        {
+          "noteId": "note-photo-002",
+          "minScore": 0.25
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-photo-001",
+          "score": 0.6400000000000001
+        },
+        {
+          "noteId": "note-photo-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.4
+    },
+    {
+      "caseId": "quality-match-012",
+      "input": "Looking for driving instructor for teenager, automatic car",
+      "expected": [
+        {
+          "noteId": "note-drive-001",
+          "minScore": 0.45
+        },
+        {
+          "noteId": "note-drive-002",
+          "minScore": 0.3
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-drive-001",
+          "score": 0.6400000000000001
+        },
+        {
+          "noteId": "note-drive-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.4
+    },
+    {
+      "caseId": "quality-match-013",
+      "input": "Need smart home setup for lights, thermostat, locks",
+      "expected": [
+        {
+          "noteId": "note-tech-001",
+          "minScore": 0.4
+        },
+        {
+          "noteId": "note-tech-002",
+          "minScore": 0.25
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-tech-001",
+          "score": 0.6400000000000001
+        },
+        {
+          "noteId": "note-tech-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.4
+    },
+    {
+      "caseId": "quality-match-014",
+      "input": "Looking for free coding mentorship weekends",
+      "expected": [
+        {
+          "noteId": "note-mentor-001",
+          "minScore": 0.5
+        },
+        {
+          "noteId": "note-mentor-002",
+          "minScore": 0.35
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-mentor-001",
+          "score": 0.4266666666666667
+        },
+        {
+          "noteId": "note-mentor-001",
+          "score": 0.4266666666666667
+        }
+      ],
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.4
+    },
+    {
+      "caseId": "quality-match-015",
+      "input": "Need photographer for family portraits Sunday",
+      "expected": [
+        {
+          "noteId": "note-photo-001",
+          "minScore": 0.4
+        },
+        {
+          "noteId": "note-photo-002",
+          "minScore": 0.25
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-photo-001",
+          "score": 0.6400000000000001
+        },
+        {
+          "noteId": "note-photo-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.4
+    },
+    {
+      "caseId": "quality-match-016",
+      "input": "Looking for driving instructor for teenager, automatic",
+      "expected": [
+        {
+          "noteId": "note-drive-001",
+          "minScore": 0.45
+        },
+        {
+          "noteId": "note-drive-002",
+          "minScore": 0.3
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-drive-001",
+          "score": 0.6400000000000001
+        },
+        {
+          "noteId": "note-drive-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.4
+    },
+    {
+      "caseId": "quality-match-017",
+      "input": "Need smart home setup for lights thermostat locks",
+      "expected": [
+        {
+          "noteId": "note-tech-001",
+          "minScore": 0.4
+        },
+        {
+          "noteId": "note-tech-002",
+          "minScore": 0.25
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-tech-001",
+          "score": 0.6400000000000001
+        },
+        {
+          "noteId": "note-tech-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.4
+    },
+    {
+      "caseId": "quality-match-018",
+      "input": "Want to donate winter coats to homeless shelter",
+      "expected": [
+        {
+          "noteId": "note-donate-001",
+          "minScore": 0.5
+        },
+        {
+          "noteId": "note-donate-002",
+          "minScore": 0.3
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-donate-001",
+          "score": 0.6400000000000001
+        },
+        {
+          "noteId": "note-donate-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.4
+    },
+    {
+      "caseId": "quality-match-019",
+      "input": "Looking for house cleaner biweekly 3 bed 2 bath",
+      "expected": [
+        {
+          "noteId": "note-clean-001",
+          "minScore": 0.45
+        },
+        {
+          "noteId": "note-clean-002",
+          "minScore": 0.3
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-clean-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.4
+    },
+    {
+      "caseId": "quality-match-020",
+      "input": "Need free resume review for recent graduate",
+      "expected": [
+        {
+          "noteId": "note-resume-001",
+          "minScore": 0.5
+        },
+        {
+          "noteId": "note-resume-002",
+          "minScore": 0.35
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-resume-001",
+          "score": 0.4266666666666667
+        }
+      ],
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.4
+    },
+    {
+      "caseId": "quality-match-021",
+      "input": "Looking for grocery delivery for elderly neighbor",
+      "expected": [
+        {
+          "noteId": "note-grocery-001",
+          "minScore": 0.4
+        },
+        {
+          "noteId": "note-grocery-002",
+          "minScore": 0.25
+        }
+      ],
+      "actual": [
+        {
+          "noteId": "note-grocery-001",
+          "score": 0.6400000000000001
+        }
+      ],
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1,
+      "recall": 1,
+      "f1": 1,
+      "minScoreThreshold": 0.4
+    },
+    {
+      "caseId": "quality-match-022",
+      "input": "Need legal help for tenants rights free clinic",
+      "expected": [
+        {
+          "noteId": "note-legal-001",
+          "minScore": 0.5
+        },
+        {
+          "noteId": "note-legal-002",
+          "minScore": 0.35
+        }
+      ],
+      "actual": [],
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "precision": 0,
+      "recall": 0,
+      "f1": 0,
+      "minScoreThreshold": 0.4
+    }
+  ],
+  "failures": []
+}
