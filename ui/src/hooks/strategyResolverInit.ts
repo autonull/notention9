@@ -161,6 +161,7 @@ export async function registerUIStrategies(): Promise<void> {
     const { TagInput } = await import('../components/editor/TagInput');
     const { PropertyForm } = await import('../components/editor/PropertyForm');
     const { TemplateSelector } = await import('../components/editor/TemplateSelector');
+    const { QuickCapture } = await import('../components/dashboard/QuickCapture');
 
     // Map of strategy ID to custom strategy component (not Strategy wrapper)
     const strategyImplMap: Record<string, React.ComponentType<any>> = {
@@ -168,6 +169,7 @@ export async function registerUIStrategies(): Promise<void> {
         'tag-input': TagInput,
         'property-form': PropertyForm,
         'template-selector': TemplateSelector,
+        'quick-capture': QuickCapture,
     };
 
     // Register all strategies from generated configs

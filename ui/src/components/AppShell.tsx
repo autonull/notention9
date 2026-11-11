@@ -24,7 +24,7 @@ import {PendingConfirmationsProvider} from '../hooks/usePendingConfirmations';
 import {PendingConfirmationsModal} from './ui/PendingConfirmationsModal';
 
 // Dynamic import for DevBridge - only loaded when VITE_DEV_HOOKS=true
-const DevBridge = import.meta.env.VITE_DEV_HOOKS
+const DevBridge = import.meta.env.VITE_DEV_HOOKS === 'true'
     ? React.lazy(() => import('../dev/DevBridge').then(m => ({ default: m.DevBridge })))
     : () => null;
 
@@ -246,7 +246,7 @@ export function AppShell() {
                         isOpen={isShortcutsHelpOpen}
                         onClose={() => setIsShortcutsHelpOpen(false)}
                     />
-                    {import.meta.env.VITE_DEV_HOOKS && (
+                    {import.meta.env.VITE_DEV_HOOKS === 'true' && (
                         <Suspense fallback={null}>
                             <DevBridge/>
                         </Suspense>

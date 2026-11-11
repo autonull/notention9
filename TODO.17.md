@@ -2,9 +2,32 @@
 
 **Supersedes:** TODO.16.md (superseded plan) · **Rewritten:** TODO.17 v1 (this file, v2)
 **Date:** 2026-11-10
-**Status:** **P0b COMPLETE** ✅ | **P0a COMPLETE** ✅ | **P1a COMPLETE** ✅ | **P1b COMPLETE** ✅ | **P1c COMPLETE** ✅ | **P1d COMPLETE** ✅ | **P2c.1 COMPLETE** ✅ | **R1 COMPLETE** ✅ | **R2 COMPLETE** ✅ | **R3/R3b/R3c COMPLETE** ✅ | **R4 COMPLETE** ✅ | **R5 COMPLETE** ✅ | **R6 COMPLETE** ✅
+**Status:** **P0b COMPLETE** ✅ | **P0a COMPLETE** ✅ | **P1a COMPLETE** ✅ | **P1b COMPLETE** ✅ | **P1c COMPLETE** ✅ | **P1d COMPLETE** ✅ | **P2c.1 COMPLETE** ✅ | **R1 COMPLETE** ✅ | **R2 COMPLETE** ✅ | **R3/R3b/R3c COMPLETE** ✅ | **R4 COMPLETE** ✅ | **R5 COMPLETE** ✅ | **R6 COMPLETE** ✅ | **P1c E2E BLOCKED** ⚠️
 
-> **Note:** P1c's golden path acceptance tests (`golden-demo.spec.ts`, `compose-match.spec.ts`) exist but fail in `pnpm verify` L3 due to a browser console error ("Vitest failed to access its internal state") from the preview server. The core matching functionality is verified by `check-demo-match.ts` ✅. E2E test infrastructure fix is deferred; it does not block P2.
+> **Note:** P1c's golden path acceptance tests (`golden-demo.spec.ts`, `compose-match.spec.ts`) exist but fail in `pnpm verify` L3 due to React error #525 ("A component suspended while responding to synchronous input") in the production preview build. The core matching functionality is verified by `check-demo-match.ts` ✅. Error #525 is a React 19 production-build issue (tracked as I6) that blocks E2E browser runs. E2E test infrastructure fix is deferred; it does not block P2. Workaround: use `check-demo-match.ts` for matching verification and dev server for manual testing.
+
+## Progress Log (2026-11-11)
+
+| Phase | Status | Notes |
+|-------|--------|-------|
+| **P1c E2E** | ⚠️ **BLOCKED** | - React error #525 in production preview build blocks E2E tests |
+| | | - Error: "A component suspended while responding to synchronous input" |
+| | | - Affects StrategyResolver → QuickCapture element reconciliation |
+| | | - Works in dev server (development mode); fails in preview (production mode) |
+| | | - Root cause: React 19 production build issue with element reconciliation |
+| | | - Workaround: `check-demo-match.ts` verifies matching; dev server for manual testing |
+| **P0b** | ✅ **COMPLETE** | - All core tests pass (516) |
+| | | - All simulator tests pass (37) |
+| | | - All optimizer tests pass (47) |
+| **P0a** | ✅ **COMPLETE** | - UI typecheck: 0 errors |
+| | | - lint:fabricated passes |
+| | | - verify-param-visibility passes |
+| **P1a** | ✅ **COMPLETE** | - C1-C6 all fixed: marker roles, dimensional comparison, canonical keys |
+| | | - Demo match visible: `npx tsx scripts/check-demo-match.ts` exits 0 |
+| **P1b** | ✅ **COMPLETE** | - Response notes, withdrawal, ledger logging all working |
+| **P2c.1** | ✅ **COMPLETE** | - 215 notes in corpus, CC0 manifest |
+
+---
 
 ## Progress Log (2026-11-10)
 

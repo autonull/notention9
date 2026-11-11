@@ -63,9 +63,20 @@ export function StrategyResolver({ seamRole, props, fallback, resolutionKey = 0 
         return <>{fallback}</>;
     }
     
-    const Component = strategy.render as (props: Record<string, unknown>) => React.ReactElement;
     const strategyProps = (strategy.getDefaultProps?.() ?? {}) as Record<string, unknown>;
-    return <Component {...strategyProps} {...props} />;
+    // Filter out strategy params that are not component props
+    // Known strategy params that should not be passed to components
+    const strategyOnlyParams = new Set(['initialOp', 'isAdding']);
+    const filteredStrategyProps: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(strategyProps)) {
+        if (!strategyOnlyParams.has(key)) {
+            filteredStrategyProps[key] = value;
+        }
+    }
+    const mergedProps = {...filteredStrategyProps, ...props};
+    console.log('[StrategyResolver] mergedProps:', mergedProps);
+    const element = strategy.render(mergedProps);
+    return element;
 }
 
 /**

@@ -222,6 +222,9 @@ export function createComponentStrategy<P extends object>(
             components: [],
             propsShape: {}
         };
+    const renderFn = (props: P) => {
+        return React.createElement(component, props);
+    };
     return {
         id,
         seam: fullSeam,
@@ -229,7 +232,7 @@ export function createComponentStrategy<P extends object>(
         params: paramSpec,
         name: id,
         description: '',
-        render: (props: P) => React.createElement(component, props),
+        render: renderFn,
         getDefaultProps: () => defaultProps,
         getName: () => id,
         getDefaultConfig: () => ({ params: paramSpec, version, defaultProps }),

@@ -334,6 +334,8 @@ export default defineConfig(({mode}) => {
         ],
         build: {
             cssCodeSplit: true,
+            sourcemap: true,
+            minify: false,
             // Prevent chunk splitting to avoid React export mangling
             experimentalMinChunkSize: 5000000, // 5MB - keep main chunk together
             terserOptions: {
@@ -348,44 +350,8 @@ export default defineConfig(({mode}) => {
                 },
             },
             rollupOptions: {
-                // Preserve modules to prevent chunk splitting that breaks React exports
-                preserveModules: true,
-                preserveModulesRoot: 'src',
                 input: {
                     main: path.resolve(__dirname, 'index.html'),
-                },
-                output: {
-                    manualChunks(id) {
-                        // Keep ALL React ecosystem + Tiptap + UI code in main chunk to preserve exports
-                        // Only split truly independent vendor libraries
-                        if (id.includes('node_modules/@tiptap/') ||
-                            id.includes('node_modules/react') ||
-                            id.includes('node_modules/react-dom') ||
-                            id.includes('node_modules/scheduler') ||
-                            id.includes('node_modules/jsx-runtime') ||
-                            id.includes('node_modules/@tiptap/') ||
-                            id.includes('node_modules/tippy.js') ||
-                            id.includes('node_modules/leaflet') ||
-                            id.includes('node_modules/react-force-graph') ||
-                            id.includes('node_modules/react-big-calendar') ||
-                            id.includes('node_modules/date-fns') ||
-                            id.includes('node_modules/dompurify') ||
-                            id.includes('node_modules/nostr-tools') ||
-                            id.includes('node_modules/@noble/') ||
-                            id.includes('node_modules/@meshtastic/') ||
-                            id.includes('node_modules/cbor-x') ||
-                            id.includes('node_modules/uuid') ||
-                            id.includes('node_modules/ai') ||
-                            id.includes('node_modules/zod') ||
-                            id.includes('node_modules/express') ||
-                            id.includes('node_modules/playwright')) {
-                            return; // Keep in main bundle
-                        }
-                        // Other vendor libs (polyfills, utilities)
-                        if (id.includes('node_modules')) {
-                            return 'vendor';
-                        }
-                    },
                 },
                 external: (id) => {
                     // Explicitly do NOT externalize these Node.js built-ins (they'll be polyfilled)

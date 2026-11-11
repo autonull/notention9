@@ -27,8 +27,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({
     touchTarget = false,
     ...props
 }, ref) => {
-    const generatedId = React.useId();
-    const inputId = id || `input-${generatedId}`;
+    const generatedId = `input-${Math.random().toString(36).slice(2)}`;
+    const inputId = id || generatedId;
     const errorId = error ? `${inputId}-error` : undefined;
     const hintId = hint ? `${inputId}-hint` : undefined;
     const tokens = componentTokens.input;

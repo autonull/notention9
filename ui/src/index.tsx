@@ -27,11 +27,9 @@ if (!rootElement) {
 
 const root = ReactDOM.createRoot(rootElement);
 root.render(
-    <React.StrictMode>
-        <UIProvider>
-            <App/>
-        </UIProvider>
-    </React.StrictMode>
+    <UIProvider>
+        <App/>
+    </UIProvider>
 );
 
 // Enhanced focus management for keyboard navigation
