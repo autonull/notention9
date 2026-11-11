@@ -1,10 +1,10 @@
-export interface ValidationResult {
+export interface NoteValidationResult {
   isValid: boolean;
   errors: string[];
   warnings?: string[];
 }
 
-export interface AttributeValidationResult {
+export interface PropertyValidationResult {
   isValid: boolean;
   message: string;
 }

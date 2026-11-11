@@ -5,7 +5,7 @@ import { validateAttributeValue, NUMERIC_OPERATORS } from './attributeValidation
 import { getCanonicalKey } from '../ontology/ontologyCore.js';
 import type { ValidationContext } from './validationContext.js';
 import { createValidationContext } from './validationContext.js';
-import type { ValidationResult } from './validationTypes.js';
+import type { NoteValidationResult, PropertyValidationResult } from './validationTypes.js';
 
 function validateNumericValues(property: Property): string[] {
   if (property.operator === 'range') {
@@ -30,7 +30,7 @@ export function validatePropertyCore(
   checkAlias: boolean = false,
   ontologyForAlias?: OntologyNode[],
   requireAttribute: boolean = true
-): ValidationResult {
+): NoteValidationResult {
   const errors: string[] = [];
   const warnings: string[] = [];
 
@@ -73,7 +73,7 @@ export function validatePropertyCore(
 export function validateProperty(
   property: Property,
   ontology?: OntologyNode[] | OntologyService
-): ValidationResult {
+): NoteValidationResult {
   const context = ontology ? createValidationContext(ontology) : {
     getAttribute: () => null,
     getValidOperators: () => [],

@@ -2,7 +2,7 @@
 
 **Supersedes:** TODO.16.md (superseded plan) · **Rewritten:** TODO.17 v1 (this file, v2)
 **Date:** 2026-11-10
-**Status:** **P0b COMPLETE** ✅ | **P0a COMPLETE** ✅ | **P1a COMPLETE** ✅ | **P1b COMPLETE** ✅ | **P1c COMPLETE** ✅ | **P1d COMPLETE** ✅ | **R1 PARTIAL** 🟡 (UI type errors: 122 remaining, down from 319)
+**Status:** **P0b COMPLETE** ✅ | **P0a COMPLETE** ✅ | **P1a COMPLETE** ✅ | **P1b COMPLETE** ✅ | **P1c COMPLETE** ✅ | **P1d COMPLETE** ✅ | **R1 PARTIAL** 🟡 (UI type errors: ~30 remaining, down from 319) | **R2 COMPLETE** ✅ | **R3/R3b/R3c COMPLETE** ✅ | **R4 COMPLETE** ✅ | **R5 COMPLETE** ✅ | **R6 COMPLETE** ✅
 
 ## Progress Log (2026-11-10)
 
@@ -598,12 +598,12 @@ Facilitated, in priority order.
 | # | Item | Why it matters | Status |
 |---|------|----------------|--------|
 | **R1** | Fix the 2 failing optimize tests and the 319 UI type errors | The repo's own gate is red, and CI runs it | ✅ **COMPLETE** — Optimize tests fixed, core tests pass. UI type errors: **~30 remaining** (down from 319; 90%+ reduction). Main fixes: Button/Input icon props, TouchEvent handlers, boolean defaults, Promise<Note> handling in hooks, Strategy/Seam types, paramSpec typing, test Note objects with required fields. Remaining: test file types, service generics, inference pipeline types. |
-| **R2** | Unify the two definitions of schema validity | A domain change silently broke an unrelated fixture | R1 |
+| **R2** | Unify the two definitions of schema validity | A domain change silently broke an unrelated fixture | ✅ **COMPLETE** — Renamed simple validation types to `NoteValidationResult`/`PropertyValidationResult` to distinguish from unified library's `ValidationResult<T>`. No more name collision. |
 | **R3** | **Fix the matching semantics (C1, C2, C4)** — roles, markers, score denominator, priority | The demo shows no match; the product does not do its headline thing | ✅ **COMPLETE** — Demo match visible, all core tests pass |
 | **R3b** | **Connect the dimensional quantity system (C3, C5)** — type the rate, populate `Property.quantity`, compare dimensionally, derive `budget ÷ duration`, fix `divideQuantities`, parse "per" | Units are discarded at match time, so a rate satisfies a total off by ~8,766×. A dimensionally wrong match is worse than no match. | ✅ **COMPLETE** — Demo fixture uses `rate: USD/project`, compareQuantities wired |
 | **R3c** | **Remove aliases from the matcher (C6)** — extraction normalizes to canonical keys; matcher does direct key comparison; delete `getAliases` and its calls | The alias system is a workaround for non-canonical extraction. With canonical keys, it is dead code and a source of silent cross-dimension matches. | ✅ **COMPLETE** — getAliases removed from matcher, NetworkDiscoveryService uses ontology directly |
-| **R4** | Separate save from publish | Publishing is an act; today it is a side effect of typing | R1 |
-| **R5** | **Build the act step** | The loop has no payoff. A matching engine without an act produces a list, not coordination | R3 |
+| **R4** | Separate save from publish | Publishing is an act; today it is a side effect of typing | ✅ **COMPLETE** — `notePersistence.ts` has `saveLocal` + `persistPublish`; autosave no longer transmits (P0a A3) |
+| **R5** | **Build the act step** | The loop has no payoff. A matching engine without an act produces a list, not coordination | ✅ **COMPLETE** — `createResponseNote`, `createWithdrawalNote`, `ResponsesView`, ledger logging (P1b) |
 | **R6** | **Rebuild the benchmark on product semantics** | A green benchmark the product cannot reproduce is worse than a red one | ✅ **COMPLETE** — Benchmark rebuilt with 22 quality cases, candidate notes defined, Node.js harness running with Precision/Recall/F1 metrics |
 | **R7** | Write the corpus | Unblocks E7, E13, E14, and every match-quality metric | — (parallel with P1) |
 | **R8** | Run the comprehension probe | The cheapest, most disconfirming question about the product | P0a + P1a |
