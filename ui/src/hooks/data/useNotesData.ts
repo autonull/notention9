@@ -8,10 +8,14 @@ import {
     NoteMetadata,
     NotePipeline
 } from '@notention/core';
+import {recordFriction} from '@notention/core/telemetry/journal';
 import {useSettings} from '../useSettingsContext';
 import {useAgentSync} from './useAgentSync';
 import {STORAGE_KEYS} from '../../config/storageKeys';
 import {createNotePersistence} from './notePersistence';
+
+const expressesNeed = (note: Note): boolean =>
+    note.properties.some(p => p.key === 'intent' && p.values.includes('request'));
 
 export interface UseNotesDataResult {
     notes: Note[];
@@ -38,6 +42,25 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
         driver
     );
     const cacheRef = useRef<Record<string, NoteMetadata>>({});
+    const expressedNeeds = useRef<Set<string>>(new Set());
+
+    /**
+     * The moment a need enters the app is the start of the time-to-first-match
+     * clock (P2c.4). It is recorded once per note, the first time the note
+     * carries `intent: request`.
+     */
+    const reportExpressedNeed = useCallback((note: Note) => {
+        if (!expressesNeed(note)) return;
+        if (expressedNeeds.current.has(note.id)) return;
+        expressedNeeds.current.add(note.id);
+        recordFriction({
+            workflow: 'capture',
+            seam: 'capture',
+            kind: 'need_expressed',
+            count: 1,
+            noteId: note.id,
+        });
+    }, []);
 
     const noteFilter = useMemo(() => new NoteFilter(settings.ontology || []), [settings.ontology]);
 
@@ -82,9 +105,10 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
 
         setNotes((prev) => [newNote, ...prev]);
         persistence.persistAdd(newNote);
+        reportExpressedNeed(newNote);
 
         return newNote;
-    }, [setNotes, settings.ontology, persistence]);
+    }, [setNotes, settings.ontology, persistence, reportExpressedNeed]);
 
 
     const updateNote = useCallback((updatedNote: Note) => {
@@ -96,7 +120,8 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
             prev.map((n) => (n.id === noteWithTimestamp.id ? noteWithTimestamp : n))
         );
         persistence.persistUpdate(noteWithTimestamp);
-    }, [setNotes, settings.ontology, persistence]);
+        reportExpressedNeed(noteWithTimestamp);
+    }, [setNotes, settings.ontology, persistence, reportExpressedNeed]);
 
     const deleteNote = useCallback((id: string) => {
         setNotes((prev) => {

@@ -68,7 +68,17 @@ export function DataTab() {
             const request = store.get('friction-journal');
 
             const events = await new Promise<any[]>((resolve, reject) => {
-                tx.oncomplete = () => resolve((request.result ?? []) as never);
+                tx.oncomplete = () => {
+                    // The journal stores through JsonStore, so the stored value
+                    // is a JSON string, not an array.
+                    const raw = request.result;
+                    if (raw === null || raw === undefined) return resolve([]);
+                    try {
+                        resolve(typeof raw === 'string' ? JSON.parse(raw) : raw);
+                    } catch {
+                        resolve([]);
+                    }
+                };
                 tx.onerror = () => reject(request.error);
             });
 

@@ -34,6 +34,10 @@ describe('inferEvidenceClass', () => {
     it('treats a dismissed match as measured once repeated', () => {
         expect(inferEvidenceClass('match_dismissed', 4, 2)).toBe('measured');
     });
+
+    it('treats an expressed need as observed', () => {
+        expect(inferEvidenceClass('need_expressed', 1, 0)).toBe('observed');
+    });
 });
 
 describe('aggregateEvents', () => {
@@ -47,6 +51,15 @@ describe('aggregateEvents', () => {
         const byKind = new Map(aggregates.map(a => [a.kind, a.count]));
         expect(byKind.get('response_created')).toBe(2);
         expect(byKind.get('match_explained')).toBe(1);
+    });
+
+    it('keeps counting the need that starts the time-to-first-match clock', () => {
+        const aggregates = aggregateEvents([
+            event('need_expressed'),
+            event('need_expressed'),
+        ]);
+
+        expect(aggregates.find(a => a.kind === 'need_expressed')?.count).toBe(2);
     });
 });
 

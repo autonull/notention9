@@ -6,14 +6,15 @@
 
 ## Results
 
-| Participant | Understood purpose | Named next action | Time to first explanation | Acted | Time to first action |
-|---|---|---|---|---|---|
+| Participant | Understood purpose | Named next action | Time to first explanation | Time to first match | Acted | Time to first action |
+|---|---|---|---|---|---|---|
 
 
 - **Comprehension rate:** 0% (0/0) stated the purpose correctly
 - **Next-action rate:** 0% (0/0) named an action the app supports
 - **Act completion:** 0/0
 - **Time to first explanation:** median —
+- **Time to first match (P2c.4):** median — — threshold: median < 2 min
 - **Time to first action:** median —
 
 ## Match relevance (P2c.3)
@@ -38,5 +39,8 @@ _No sessions recorded yet._
   this?* and *why not?* (P2c.3).
 - The clock starts when the app reports ready and stops when the participant opens
   the match explanation or completes the act step.
+- Time to first match (P2c.4) is measured by the app's own journal, not by the
+  facilitator: from the first need the participant expressed to the first match
+  explanation they opened after it (ADR 016).
 - Sessions are stored locally in `doc/evidence/comprehension-probe-raw.json`;
   this report is anonymized (participants are `P1`, `P2`, …).

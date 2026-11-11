@@ -22,6 +22,7 @@ import {dirname, join, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {chromium, type Browser, type Page} from 'playwright';
 import {seed} from '../ui/test/support/seed';
+import {readFrictionJournal} from '../ui/test/support/journal';
 import {demoNotes, defaultSettings} from '../ui/test/fixtures/workspace';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -52,6 +53,8 @@ interface Session {
     namedNextAction: boolean;
     timeToFirstExplanationSeconds: number | null;
     timeToFirstActionSeconds: number | null;
+    timeToFirstMatchSeconds: number | null;
+    matchWasAboutTheNeed: boolean | null;
     completedAct: boolean;
     wouldActOnMatch: boolean | null;
     relevanceReason: string;
@@ -236,15 +239,51 @@ function median(values: number[]): number | null {
     return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
 }
 
-function formatSeconds(seconds: number | null): string {
-    return seconds === null ? '—' : `${seconds.toFixed(1)}s`;
+function formatSeconds(seconds: number | null | undefined): string {
+    return seconds === null || seconds === undefined ? '—' : `${seconds.toFixed(1)}s`;
+}
+
+/**
+ * Time-to-first-match (P2c.4): the journal's own timestamps, not the
+ * facilitator's clock. t0 is the first need the participant expressed,
+ * t1 is the first match explanation they opened after it.
+ */
+async function measureTimeToFirstMatch(page: Page): Promise<{seconds: number | null; sameNote: boolean | null}> {
+    const deadline = Date.now() + 3_000;
+    let events: Awaited<ReturnType<typeof readFrictionJournal>> = [];
+
+    while (Date.now() < deadline) {
+        events = await readFrictionJournal(page);
+        if (events.some(e => e.kind === 'need_expressed' && e.timestamp)) break;
+        await new Promise(resolve => setTimeout(resolve, 250));
+    }
+
+    const needs = events
+        .filter(e => e.kind === 'need_expressed' && e.timestamp)
+        .sort((a, b) => new Date(a.timestamp!).getTime() - new Date(b.timestamp!).getTime());
+    if (needs.length === 0) return {seconds: null, sameNote: null};
+
+    const need = needs[0];
+    const needAt = new Date(need.timestamp!).getTime();
+    const explanation = events
+        .filter(e => e.kind === 'match_explained' && e.timestamp)
+        .sort((a, b) => new Date(a.timestamp!).getTime() - new Date(b.timestamp!).getTime())
+        .find(e => new Date(e.timestamp!).getTime() >= needAt);
+
+    if (!explanation) return {seconds: null, sameNote: null};
+
+    return {
+        seconds: (new Date(explanation.timestamp!).getTime() - needAt) / 1000,
+        sameNote: !!need.noteId && need.noteId === explanation.noteId,
+    };
 }
 
 function writeReport(sessions: Session[]): void {
     const understood = sessions.filter(s => s.understoodPurpose).length;
     const named = sessions.filter(s => s.namedNextAction).length;
-    const explanationTimes = sessions.map(s => s.timeToFirstExplanationSeconds).filter((v): v is number => v !== null);
-    const actionTimes = sessions.map(s => s.timeToFirstActionSeconds).filter((v): v is number => v !== null);
+    const explanationTimes = sessions.map(s => s.timeToFirstExplanationSeconds).filter((v): v is number => v !== null && v !== undefined);
+    const actionTimes = sessions.map(s => s.timeToFirstActionSeconds).filter((v): v is number => v !== null && v !== undefined);
+    const matchTimes = sessions.map(s => s.timeToFirstMatchSeconds).filter((v): v is number => v !== null && v !== undefined);
     const acted = sessions.filter(s => s.completedAct).length;
     const judged = sessions.filter(s => s.wouldActOnMatch !== null);
     const wouldAct = judged.filter(s => s.wouldActOnMatch === true).length;
@@ -254,6 +293,7 @@ function writeReport(sessions: Session[]): void {
         s.understoodPurpose ? 'yes' : 'no',
         s.namedNextAction ? 'yes' : 'no',
         formatSeconds(s.timeToFirstExplanationSeconds),
+        formatSeconds(s.timeToFirstMatchSeconds),
         s.completedAct ? 'yes' : 'no',
         formatSeconds(s.timeToFirstActionSeconds),
     ].join(' | ')).join('\n');
@@ -272,6 +312,7 @@ function writeReport(sessions: Session[]): void {
         `- Understood the purpose: ${s.understoodPurpose ? 'yes' : 'no'}`,
         `- Named a next action: ${s.namedNextAction ? 'yes' : 'no'}`,
         `- Opened the match explanation after ${formatSeconds(s.timeToFirstExplanationSeconds)}`,
+        `- Time to first match: ${formatSeconds(s.timeToFirstMatchSeconds)}${s.matchWasAboutTheNeed === null || s.matchWasAboutTheNeed === undefined ? '' : s.matchWasAboutTheNeed ? ' (the match was about that need)' : ' (the match was about another request)'}`,
         `- Completed the act step: ${s.completedAct ? 'yes' : 'no'}`,
         `- Would act on the match: ${s.wouldActOnMatch === null ? '—' : s.wouldActOnMatch ? 'yes' : 'no'}`,
         '',
@@ -285,14 +326,15 @@ function writeReport(sessions: Session[]): void {
 
 ## Results
 
-| Participant | Understood purpose | Named next action | Time to first explanation | Acted | Time to first action |
-|---|---|---|---|---|---|
+| Participant | Understood purpose | Named next action | Time to first explanation | Time to first match | Acted | Time to first action |
+|---|---|---|---|---|---|---|
 ${rows}
 
 - **Comprehension rate:** ${sessions.length ? Math.round((understood / sessions.length) * 100) : 0}% (${understood}/${sessions.length}) stated the purpose correctly
 - **Next-action rate:** ${sessions.length ? Math.round((named / sessions.length) * 100) : 0}% (${named}/${sessions.length}) named an action the app supports
 - **Act completion:** ${acted}/${sessions.length}
 - **Time to first explanation:** median ${formatSeconds(median(explanationTimes))}${explanationTimes.length ? ` (n=${explanationTimes.length})` : ''}
+- **Time to first match (P2c.4):** median ${formatSeconds(median(matchTimes))}${matchTimes.length ? ` (n=${matchTimes.length})` : ''} — threshold: median < 2 min
 - **Time to first action:** median ${formatSeconds(median(actionTimes))}${actionTimes.length ? ` (n=${actionTimes.length})` : ''}
 
 ## Match relevance (P2c.3)
@@ -317,6 +359,9 @@ ${answers || '_No sessions recorded yet._'}
   this?* and *why not?* (P2c.3).
 - The clock starts when the app reports ready and stops when the participant opens
   the match explanation or completes the act step.
+- Time to first match (P2c.4) is measured by the app's own journal, not by the
+  facilitator: from the first need the participant expressed to the first match
+  explanation they opened after it (ADR 016).
 - Sessions are stored locally in \`doc/evidence/comprehension-probe-raw.json\`;
   this report is anonymized (participants are \`P1\`, \`P2\`, …).
 `;
@@ -336,6 +381,7 @@ function printInstrument(): void {
     console.log('\nRecorded per session:');
     console.log('  - both answers, verbatim');
     console.log('  - time from app-ready to the first opened match explanation');
+    console.log('  - time from the first expressed need to the first opened match explanation');
     console.log('  - whether the participant created a response (the act step)');
     console.log('\nArtifacts:');
     console.log(`  ${RAW_PATH}`);
@@ -387,6 +433,11 @@ async function runSession(options: ProbeOptions, browser: Browser): Promise<Sess
     const understoodPurpose = (await ask('Did the participant state the purpose correctly? [y/N] ')).toLowerCase().startsWith('y');
     const namedNextAction = (await ask('Did they name a next action the app supports? [y/N] ')).toLowerCase().startsWith('y');
 
+    const timeToFirstMatch = await measureTimeToFirstMatch(page);
+    if (timeToFirstMatch.seconds !== null) {
+        console.log(`  → time to first match: ${timeToFirstMatch.seconds.toFixed(1)}s`);
+    }
+
     console.log('\nMatch relevance (P2c.3) — the match the product showed:');
     const relevanceAnswer = (await ask('Would you act on this match? [y/N] ')).trim().toLowerCase();
     const wouldActOnMatch = relevanceAnswer.startsWith('y') ? true : relevanceAnswer.startsWith('n') ? false : null;
@@ -403,6 +454,8 @@ async function runSession(options: ProbeOptions, browser: Browser): Promise<Sess
         namedNextAction,
         timeToFirstExplanationSeconds: timeToFirstExplanation,
         timeToFirstActionSeconds: timeToFirstAction,
+        timeToFirstMatchSeconds: timeToFirstMatch.seconds,
+        matchWasAboutTheNeed: timeToFirstMatch.sameNote,
         completedAct,
         wouldActOnMatch,
         relevanceReason,

@@ -15,10 +15,13 @@ import {
     DIGEST_LOOKBACK_DAYS,
     MS_PER_DAY,
 } from './constants.js';
-import { inferEvidenceClass } from './frictionUtils.js';
+import { inferEvidenceClass, createSessionId } from './frictionUtils.js';
 
 const JOURNAL_KEY = 'friction-journal';
 const CONFIG_KEY = 'friction-journal-config';
+
+/** One page load is one session. */
+const SESSION_ID = createSessionId();
 
 // --- Browser Journal class ---
 
@@ -80,11 +83,20 @@ export class Journal {
     }
 
     private bufferEvent(event: Omit<FrictionEvent, 'bucket'>): void {
-        const bucket = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-        this.buffer.push({ ...event, bucket });
+        const now = new Date();
+        const bucket = now.toISOString().split('T')[0]; // YYYY-MM-DD
+        this.buffer.push({
+            ...event,
+            bucket,
+            timestamp: event.timestamp ?? now.toISOString(),
+            sessionId: event.sessionId ?? SESSION_ID,
+        });
 
-        // Flush immediately for high-signal events
-        if (event.kind === 'capture_abandoned' || event.kind === 'match_rejected') {
+        // Flush immediately for high-signal events, and for the two events the
+        // time-to-first-match metric pairs (they are the only proof that a need
+        // was expressed and that a match was understood).
+        if (event.kind === 'capture_abandoned' || event.kind === 'match_rejected'
+            || event.kind === 'need_expressed' || event.kind === 'match_explained') {
             this.flush();
         }
     }
@@ -141,6 +153,19 @@ export class Journal {
         return Array.from(aggregateMap.values()).sort((a, b) =>
             b.lastSeen.localeCompare(a.lastSeen)
         );
+    }
+
+    /**
+     * Raw events, in the order they were recorded.
+     * Day buckets are enough to count friction; only the exact timestamps can
+     * measure how long something took (P2c.4, time-to-first-match).
+     */
+    async getEvents(since?: string): Promise<FrictionEvent[]> {
+        await this.init();
+        const events = (await this.eventStore.load()) ?? [];
+        if (!since) return events;
+        const sinceTime = new Date(since).getTime();
+        return events.filter(e => new Date(e.bucket).getTime() >= sinceTime);
     }
 
     /**
@@ -289,6 +314,13 @@ export async function getFrictionSignals(since?: string): Promise<FrictionSignal
 
 export async function generateFrictionDigest(): Promise<string> {
     return getJournal().generateWeeklyDigest();
+}
+
+/**
+ * Raw friction events (exact timestamps, not day buckets).
+ */
+export async function getFrictionEvents(since?: string): Promise<FrictionEvent[]> {
+    return getJournal().getEvents(since);
 }
 
 /**

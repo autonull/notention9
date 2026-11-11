@@ -22,6 +22,7 @@ import { runEvaluate } from './subcommands/evaluate.js';
 import { runAdopt } from './subcommands/adopt.js';
 import { runRequest } from './subcommands/request.js';
 import { runCorpus } from './subcommands/corpus.js';
+import { runLatency } from './subcommands/latency.js';
 import { runFullLoop } from './subcommands/run.js';
 
 interface LoopParsedFlags {
@@ -31,6 +32,7 @@ interface LoopParsedFlags {
     positionals: string[];
     source?: string;
     since?: string;
+    evidence?: string;
 }
 
 function parseLoopFlags(args: string[]): LoopParsedFlags {
@@ -64,19 +66,30 @@ function parseLoopFlags(args: string[]): LoopParsedFlags {
         if (sinceFlag) since = sinceFlag.split('=')[1];
     }
 
-    const flagSet = new Set(['--json', '--dry', '--output', '--source', '--since']);
+    let evidence: string | undefined;
+    const evidenceIndex = args.findIndex(r => r === '--evidence');
+    if (evidenceIndex !== -1 && evidenceIndex + 1 < args.length) {
+        evidence = args[evidenceIndex + 1];
+    } else {
+        const evidenceFlag = args.find(r => r.startsWith('--evidence='));
+        if (evidenceFlag) evidence = evidenceFlag.split('=')[1];
+    }
+
+    const flagSet = new Set(['--json', '--dry', '--output', '--source', '--since', '--evidence']);
     const positionals = args.filter((r, i) => {
         if (flagSet.has(r)) return false;
         if (r.startsWith('--output=')) return false;
         if (r.startsWith('--source=')) return false;
         if (r.startsWith('--since=')) return false;
+        if (r.startsWith('--evidence=')) return false;
         if (i === outputIndex + 1 && args[outputIndex] === '--output') return false;
         if (i === sourceIndex + 1 && args[sourceIndex] === '--source') return false;
         if (i === sinceIndex + 1 && args[sinceIndex] === '--since') return false;
+        if (i === evidenceIndex + 1 && args[evidenceIndex] === '--evidence') return false;
         return true;
     });
 
-    return { json, dry, output, positionals, source, since };
+    return { json, dry, output, positionals, source, since, evidence };
 }
 
 function printLoopHelp(): void {
@@ -91,6 +104,7 @@ Commands:
   adopt [--dry] [--output <dir>]        Adopt winning candidate with evidence gate
   request [--dry] [--output <dir>]      Emit T4 request for human implementation
   corpus [--dry] [--output <dir>]       Ingest corpus files, extract vocabulary, generate test cases
+  latency [--since <date>] [--evidence <file>]  Time-to-first-match distribution (P2c.4)
   run [--dry] [--output <dir>]          Run full discover→prioritize→synthesize→evaluate→adopt cycle
   help                                  Show this help
 
@@ -100,6 +114,7 @@ Options:
   --output <dir>           Output directory for artifacts (default: loop/runs)
   --source <type>          Source for prioritize: discovery (default) or friction
   --since <date>           Only consider signals since date (ISO format, e.g. 2026-01-01)
+  --evidence <file>        Report file for latency (default: none)
 `);
 }
 
@@ -111,7 +126,7 @@ export async function main(): Promise<number> {
         return 0;
     }
 
-    const { json, dry, output, positionals, source, since } = parseLoopFlags(rawArgs);
+    const { json, dry, output, positionals, source, since, evidence } = parseLoopFlags(rawArgs);
 
     if (positionals.length === 0) {
         printLoopHelp();
@@ -147,6 +162,9 @@ export async function main(): Promise<number> {
             case 'corpus': {
                 return runCorpus(config, output, dry, json);
             }
+            case 'latency': {
+                return runLatency(config, output, dry, json, since, evidence);
+            }
             case 'run': {
                 return runFullLoop(config, output, dry, json);
             }
@@ -155,7 +173,7 @@ export async function main(): Promise<number> {
                 return 0;
             }
             default:
-                throw new Error(`Unknown subcommand: ${subcommand}. Use: discover, prioritize, synthesize, evaluate, adopt, request, corpus, compare, run, help`);
+                throw new Error(`Unknown subcommand: ${subcommand}. Use: discover, prioritize, synthesize, evaluate, adopt, request, corpus, latency, compare, run, help`);
         }
     } catch (e) {
         console.error(`Error: ${e instanceof Error ? e.message : String(e)}`);

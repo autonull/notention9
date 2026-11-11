@@ -22,6 +22,7 @@ export interface FrictionToSeamMapping {
  * Kinds that are positive or neutral signals. They are recorded (they prove the
  * instrument works) but they never become prioritized problems:
  *   capture_started   — the user began, which is the opposite of friction
+ *   need_expressed    — the user stated a need, which is the opposite of friction
  *   match_accepted    — the user acted on the match
  *   match_explained   — the user engaged with the explanation
  *   response_created  — the act step succeeded
@@ -33,6 +34,7 @@ export const NON_PROBLEM_FRICTION_KINDS: ReadonlySet<FrictionKind> = new Set<Fri
     'match_explained',
     'response_created',
     'response_viewed',
+    'need_expressed',
 ]);
 
 /**
@@ -92,6 +94,11 @@ export const FRICTION_TO_SEAM_MAP: Record<FrictionKind, FrictionToSeamMapping> =
         paramHypotheses: ['debounceMs', 'minChars'],
         problemType: 'abandoned-task',
     },
+    need_expressed: {
+        seamRole: 'capture',
+        paramHypotheses: ['debounceMs', 'minChars', 'maxSuggestions'],
+        problemType: 'abandoned-task',
+    },
     response_created: {
         seamRole: 'match',
         paramHypotheses: ['showScore', 'compactMode'],
@@ -113,6 +120,7 @@ export type VariationThresholdKey = 'failedMatch' | 'repeatedCorrection' | 'aban
 const THRESHOLD_KEY_BY_KIND: Record<FrictionKind, VariationThresholdKey> = {
     capture_started: 'abandonedTask',
     capture_abandoned: 'abandonedTask',
+    need_expressed: 'abandonedTask',
     correction: 'repeatedCorrection',
     match_viewed: 'failedMatch',
     match_rejected: 'failedMatch',

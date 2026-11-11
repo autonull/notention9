@@ -29,6 +29,7 @@ import {
     filterEventsByTime,
     rankAggregates,
     groupSignalsByWorkflow,
+    createSessionId,
 } from './frictionUtils.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -68,6 +69,9 @@ const PROJECT_ROOT = findProjectRoot(__dirname);
 const DATA_DIR = join(PROJECT_ROOT, '.notention', 'journal');
 const JOURNAL_FILE = join(DATA_DIR, 'friction.jsonl');
 const CONFIG_FILE = join(DATA_DIR, 'config.json');
+
+/** One node process is one session. */
+const SESSION_ID = createSessionId();
 
 // Ensure directory exists
 if (!existsSync(DATA_DIR)) {
@@ -144,8 +148,14 @@ export class Journal {
     record(event: Omit<FrictionEvent, 'bucket'>): void {
         if (!this.config.enabled) return;
 
-        const bucket = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-        this.buffer.push({ ...event, bucket });
+        const now = new Date();
+        const bucket = now.toISOString().split('T')[0]; // YYYY-MM-DD
+        this.buffer.push({
+            ...event,
+            bucket,
+            timestamp: event.timestamp ?? now.toISOString(),
+            sessionId: event.sessionId ?? SESSION_ID,
+        });
 
         // Flush immediately for high-signal events
         if (event.kind === 'capture_abandoned' || event.kind === 'match_rejected') {
@@ -202,7 +212,12 @@ export class Journal {
         return rankAggregates(aggregates, DEFAULT_DIGEST_CONFIG);
     }
 
-    private getEvents(since?: string): FrictionEvent[] {
+    /**
+     * Raw events, in the order they were recorded.
+     * Day buckets are enough to count friction; only the exact timestamps can
+     * measure how long something took (P2c.4, time-to-first-match).
+     */
+    getEvents(since?: string): FrictionEvent[] {
         if (!existsSync(JOURNAL_FILE)) return [];
 
         const content = readFileSync(JOURNAL_FILE, 'utf-8');
@@ -355,6 +370,15 @@ export function getFrictionSignals(since?: string): FrictionSignal[] {
 
 export function generateFrictionDigest(): string {
     return getJournal().generateWeeklyDigest();
+}
+
+/**
+ * Raw friction events (exact timestamps, not day buckets).
+ * The browser journal exports the same shape, so a browser session and a node
+ * session can be measured by the same code.
+ */
+export function getFrictionEvents(since?: string): FrictionEvent[] {
+    return getJournal().getEvents(since);
 }
 
 /**

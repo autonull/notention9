@@ -26,7 +26,7 @@ export function useFrictionRecorder(workflow: string, seam: string) {
     /**
      * Record a friction event with optional duration tracking
      */
-    const record = useCallback((kind: FrictionKind, options?: { durationBucket?: DurationBucket; count?: number }) => {
+    const record = useCallback((kind: FrictionKind, options?: { durationBucket?: DurationBucket; count?: number; noteId?: string }) => {
         const startTime = startTimes.current.get(kind);
         const durationBucket = options?.durationBucket ?? (startTime ? getDurationBucket(startTime) : undefined);
         
@@ -36,6 +36,7 @@ export function useFrictionRecorder(workflow: string, seam: string) {
             kind,
             count: options?.count ?? 1,
             durationBucket,
+            noteId: options?.noteId,
         });
         
         // Clear start time after recording (for non-continuous events)
@@ -76,58 +77,58 @@ export function useFrictionRecorder(workflow: string, seam: string) {
     /**
      * Record match_viewed event
      */
-    const recordMatchViewed = useCallback(() => {
+    const recordMatchViewed = useCallback((noteId?: string) => {
         markStart('match_viewed');
-        record('match_viewed');
+        record('match_viewed', {noteId});
     }, [markStart, record]);
 
     /**
      * Record match_rejected event
      */
-    const recordMatchRejected = useCallback(() => {
-        record('match_rejected');
+    const recordMatchRejected = useCallback((noteId?: string) => {
+        record('match_rejected', {noteId});
     }, [record]);
 
     /**
      * Record match_accepted event
      */
-    const recordMatchAccepted = useCallback(() => {
-        record('match_accepted');
+    const recordMatchAccepted = useCallback((noteId?: string) => {
+        record('match_accepted', {noteId});
     }, [record]);
 
     /**
      * Record clarification_requested event
      */
-    const recordClarificationRequested = useCallback(() => {
-        record('clarification_requested');
+    const recordClarificationRequested = useCallback((noteId?: string) => {
+        record('clarification_requested', {noteId});
     }, [record]);
 
     /**
      * Record match_explained event (user opened the explanation)
      */
-    const recordMatchExplained = useCallback(() => {
-        record('match_explained');
+    const recordMatchExplained = useCallback((noteId?: string) => {
+        record('match_explained', {noteId});
     }, [record]);
 
     /**
      * Record match_dismissed event (explanation closed without acting)
      */
-    const recordMatchDismissed = useCallback(() => {
-        record('match_dismissed');
+    const recordMatchDismissed = useCallback((noteId?: string) => {
+        record('match_dismissed', {noteId});
     }, [record]);
 
     /**
      * Record response_created event (a response note was created)
      */
-    const recordResponseCreated = useCallback(() => {
-        record('response_created');
+    const recordResponseCreated = useCallback((noteId?: string) => {
+        record('response_created', {noteId});
     }, [record]);
 
     /**
      * Record response_viewed event (a response was opened)
      */
-    const recordResponseViewed = useCallback(() => {
-        record('response_viewed');
+    const recordResponseViewed = useCallback((noteId?: string) => {
+        record('response_viewed', {noteId});
     }, [record]);
 
     return {
@@ -197,33 +198,40 @@ export function useMatchTracking(workflow: string = 'match', seam: string = 'mat
         useFrictionRecorder(workflow, seam);
     const hasViewed = useRef(false);
 
-    const markViewed = useCallback(() => {
+    const markViewed = useCallback((noteId?: string) => {
         if (!hasViewed.current) {
             hasViewed.current = true;
-            recordMatchViewed();
+            recordMatchViewed(noteId);
         }
     }, [recordMatchViewed]);
 
-    const handleAccept = useCallback((type: 'request' | 'match' = 'match') => {
-        recordMatchAccepted();
-        recordResponseCreated();
-    }, [recordMatchAccepted, recordResponseCreated]);
+    const handleAccept = useCallback((noteId?: string) => {
+        recordMatchAccepted(noteId);
+    }, [recordMatchAccepted]);
 
-    const handleReject = useCallback(() => {
-        recordMatchRejected();
+    const handleReject = useCallback((noteId?: string) => {
+        recordMatchRejected(noteId);
     }, [recordMatchRejected]);
 
-    const handleClarification = useCallback(() => {
-        recordClarificationRequested();
+    const handleClarification = useCallback((noteId?: string) => {
+        recordClarificationRequested(noteId);
     }, [recordClarificationRequested]);
 
-    const handleExplained = useCallback(() => {
-        recordMatchExplained();
+    const handleExplained = useCallback((noteId?: string) => {
+        recordMatchExplained(noteId);
     }, [recordMatchExplained]);
 
-    const handleDismissed = useCallback(() => {
-        recordMatchDismissed();
+    const handleDismissed = useCallback((noteId?: string) => {
+        recordMatchDismissed(noteId);
     }, [recordMatchDismissed]);
 
-    return { markViewed, handleAccept, handleReject, handleClarification, handleExplained, handleDismissed };
+    return {
+        markViewed,
+        handleAccept,
+        handleReject,
+        handleClarification,
+        handleExplained,
+        handleDismissed,
+        recordResponseCreated,
+    };
 }

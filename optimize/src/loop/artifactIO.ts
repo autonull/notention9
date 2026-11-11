@@ -47,6 +47,7 @@ export interface ArtifactPaths {
     evaluationReport: string;
     adoption: string;
     prioritized: string;
+    latency: string;
 }
 
 export function getArtifactPaths(outputDir: string): ArtifactPaths {
@@ -61,6 +62,7 @@ export function getArtifactPaths(outputDir: string): ArtifactPaths {
         evaluationReport: join(outputDir, 'evaluation-report.json'),
         adoption: join(outputDir, 'adoption.json'),
         prioritized: join(outputDir, 'prioritized.json'),
+        latency: join(outputDir, 'time-to-match.json'),
     };
 }
 

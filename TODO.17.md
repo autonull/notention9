@@ -2,7 +2,23 @@
 
 **Supersedes:** TODO.16.md (superseded plan) · **Rewritten:** TODO.17 v1 (this file, v2)
 **Date:** 2026-11-10
-**Status:** **P0b COMPLETE** ✅ | **P0a COMPLETE** ✅ | **P1a COMPLETE** ✅ | **P1b COMPLETE** ✅ | **P1c COMPLETE** ✅ | **P1d COMPLETE** ✅ | **P2c.1 COMPLETE** ✅ | **P2c.2 COMPLETE** ✅ | **R1–R8, R10, R11 COMPLETE** ✅ | **R9 COMPLETE** ✅ | **I1/I2/I3/I5/I6/I7/I8/I10 FIXED** ✅ | **E2E GREEN IN PRODUCTION BUILD** ✅ | **P2a INSTRUMENTED, NO SESSIONS YET** ⏳ | **FALSE-GREEN GATES FIXED** ✅ | **TELEMETRY HANDOFF FIXED** ✅ | **FRICTION EXPORT ADDED** ✅
+**Status:** **P0b COMPLETE** ✅ | **P0a COMPLETE** ✅ | **P1a COMPLETE** ✅ | **P1b COMPLETE** ✅ | **P1c COMPLETE** ✅ | **P1d COMPLETE** ✅ | **P2c.1 COMPLETE** ✅ | **P2c.2 COMPLETE** ✅ | **R1–R8, R10, R11 COMPLETE** ✅ | **R9 COMPLETE** ✅ | **I1/I2/I3/I5/I6/I7/I8/I10/I11/I12 FIXED** ✅ | **E2E GREEN IN PRODUCTION BUILD** ✅ | **P2a INSTRUMENTED, NO SESSIONS YET** ⏳ | **P2c.4 INSTRUMENTED, NO SESSIONS YET** ⏳ | **FALSE-GREEN GATES FIXED** ✅ | **TELEMETRY HANDOFF FIXED** ✅ | **FRICTION EXPORT FIXED** ✅ | **FRICTION EXPORT ADDED** ✅
+
+> **Note (2026-11-11, session 5 — the metric with no instrument).** The plan's Numbers table
+> carries a threshold — *time-to-first-match, median < 2 min* — and nothing could produce that
+> number. The friction journal stored **one bucket per event** (`YYYY-MM-DD`) and no correlation
+> id, so two facts were impossible: *when* an event happened, and *which need* it was about.
+> The journal counted kinds; it could not order them.
+>
+> While wiring the metric, two more defects surfaced:
+>
+> 1. **The browser→file export was dead.** Settings → Data read the IndexedDB value as an array;
+>    `JsonStore` stores a JSON **string**, so `events.map` threw and no file was ever produced.
+>    The bridge between the browser journal and `pnpm loop` did not work (I11).
+> 2. **The act step was counted for acts that never happened.** `match_accepted` and
+>    `response_created` were recorded when the user merely *opened* a note (I12).
+>
+> Fixes and the metric's definition: `doc/decisions/016-time-to-first-match.md`.
 
 > **Note (2026-11-11, session 3 — the instruments were not measuring).** The remaining work in this
 > plan is *human evidence*, and the plan assumed the instruments around it were sound. Four of them
@@ -26,6 +42,21 @@
 > **Also fixed while the E2E lane was unblocked:** the dev server crashed on boot (browser twins lacked `getLedger`/`getFrictionCounts`); `index.node.ts` re-exported the type-only `RevisionDriver` as a value; "Add detail" silently dropped the property when the note body was empty; the editor was destroyed and rebuilt on every note update; `useNoteProperties` closed over a stale note and discarded title/tag edits; `TiptapEditor` read `editor.getHTML()` before the editor had a schema; match explanations hid the unit, so dimensional facts were invisible; AI providers re-initialized once per mounted consumer.
 >
 > **Fixed (2026-11-11):** I7 (VITE_DEV_HOOKS leakage) — moved `VITE_DEV_HOOKS=true` from `.env` to `.env.development`; production preview now shows `VITE_DEV_HOOKS: undefined isDev: false`.
+
+## Progress Log (2026-11-11, session 5)
+
+| Phase | Status | Notes |
+|-------|--------|-------|
+| **P2c.4 instrument** | ✅ **INSTRUMENTED** | The journal now stamps every event with an exact `timestamp`, a `sessionId`, and a `noteId`. `need_expressed` (a note first carries `intent: request`) and `match_explained` (the explanation was opened) are the two anchors. **Remaining: sessions from real use** — the instrument is live, the journal is empty |
+| **Metric definition** | ✅ **ADR 016** | One browser session = one user's turn. t0 = first `need_expressed`, t1 = first `match_explained` after it. Reported as a **distribution** (n, p50, p90, min, max), never a mean. Exclusions (no anchor, negative delta, no session) are counted, not averaged away |
+| **`pnpm loop latency`** | ✅ **NEW** | Reads the journal, prints the distribution, writes `doc/evidence/2026-11-time-to-first-match.md` (`--evidence <file>`). The browser and the node journal are measured by one implementation |
+| **Probe** | ✅ **EXTENDED** | `pnpm probe` now records the same metric per participant from the app's own journal (not the facilitator's clock) and reports the median against the 2-minute threshold |
+| **I11 — friction export threw** | ✅ **FIXED** | The IndexedDB value is a JSON string; the export now parses it. The browser→file bridge works again |
+| **I12 — false act-step events** | ✅ **FIXED** | `match_accepted` fires when the user responds, `response_created` when the response note is created; opening a note records neither |
+| **Journey proof** | ✅ **GREEN** | `compose-match.spec.ts` now opens the explanation (ADR 014 step 3) and asserts the journal recorded both anchors with the same note id and session id — the metric is observable in the acceptance test |
+| **Tests** | ✅ | Core 531, optimize 65 (+4 skipped), UI 183, simulator, agent, CLI — all green |
+
+---
 
 ## Progress Log (2026-11-11, session 3)
 
@@ -497,7 +528,7 @@ The instrument already exists and is already wired: seven friction kinds (`captu
 | **P2c.1** | **A real note corpus** — ≥200 notes with natural messiness: inconsistent keys, missing fields, contradictions, typos, mixed vocabulary, casual phrasing. Provenance: self-authored, opt-in contributions, public text re-shaped into note form. No third-party personal data. | Written + imported | `corpus/notes/*.json` + a provenance/license manifest | ✅ **COMPLETE** (215 notes, 6 domains, CC0 manifest) |
 | **P2c.2** | **Broad domain coverage, not one domain.** Civilization-scale generality means the corpus must span **ANYTHING anyone might need or have** — not just services/needs/offers. Products, goods, materials, resources, land, tools, equipment, seeds, livestock, food, water, energy, shelter, clothing, medicine, knowledge, skills, labor, transport, storage, processing, repair, recycling, waste, bandwidth, compute, currency, credit, trust, reputation, attention, time, space, access rights, governance rights, ritual, play, companionship, care, mourning, celebration, learning, dispute resolution, sanitation, childcare, eldercare, healthcare, legal aid, translation, tech help, art, music. The matcher doesn't distinguish "service" from "product" from "resource" from "good" — it matches **constraints against properties**. No single domain is the "default". | — | Corpus manifest documents domain breadth | ✅ **COMPLETE** — 864 notes across 14 domains (food, shelter, healthcare, transport, education, care, tools, arts, etc.) |
 | **P2c.3** | **Match-relevance judgments.** For every match the product shows: *would you act on this?* and *why not?* | Follows the probe | Relevance rate + a list of near-misses with reasons | ⏳ Pending |
-| **P2c.4** | **Time-to-first-match.** Seconds from "I expressed a need" to "I understood a match", per user. Real seconds. | From the sessions | Distribution, not a mean | ⏳ Pending |
+| **P2c.4** | **Time-to-first-match.** Seconds from "I expressed a need" to "I understood a match", per user. Real seconds. | From the sessions | Distribution, not a mean | 🟡 **INSTRUMENTED** — ADR 016 defines the metric (one session = one user; t0 = first `need_expressed`, t1 = first `match_explained` after it). The journal stamps every event with a timestamp, a session id, and the note id; `pnpm loop latency` prints the distribution and writes `doc/evidence/2026-11-time-to-first-match.md`; `pnpm probe` records it per participant. **Remaining: sessions from real use** — the evidence document currently reports 0 samples, honestly |
 | **P2c.5** | **A failure taxonomy.** Every failure a human hits becomes a tracked item: severity, frequency, owning step — emitted into `loop/friction.json` in the shape `optimize`'s prioritizer already consumes. | From P2a–P2c | `doc/evidence/2026-11-friction-taxonomy.md` + `loop/friction.json` | 🟡 **PARTIAL** — Journal feeds prioritizer via `pnpm loop prioritize --source friction`. `loop/friction.json` artifact not needed; prioritizer reads journal directly. The golden-path events now exist (`match_explained`, `match_dismissed`, `response_created`, `response_viewed`). Remaining: sessions from real use to fill the journal. |
 
 **Rules:** the corpus is ground truth once written — evaluation cases are **not** edited to make a variant win. Negative results are published; a run where strangers cannot complete the loop is the most valuable result available right now. Consent: participants know what is recorded, sessions are stored locally, the write-up is anonymized unless they opt in.
@@ -552,7 +583,7 @@ Things already built that this plan can spend instead of building.
 | **Gate** | `pnpm verify` exit 0; `pnpm --filter @notention/ui typecheck` exit 0 | CI |
 | **Comprehension** | ≥ 4 of 5 strangers state, unprompted, what the app is for **and** what they would do next | P2a |
 | **Golden-path completion** | ≥ 4 of 5 strangers complete capture → match → respond, unaided | P2a/P2c |
-| **Time-to-first-match** | median < 2 min across real sessions | P2c.4 |
+| **Time-to-first-match** | median < 2 min across real sessions | P2c.4 — instrument live (`pnpm loop latency`, ADR 016); **no sessions yet** |
 | **Match relevance** | ≥ 60% of presented matches judged "would act on this" | P2c.3 |
 | **No-op controls** | 0 | P0a manual pass log |
 | **Transmission on save** | 0 events | P0a |
@@ -669,16 +700,26 @@ The center works and the golden path is proven in the production build. What is 
 | **1** | **Run 5 comprehension sessions** | `pnpm probe` (opens the app with the sample workspace; read the two questions aloud; press Enter when the session ends) | `doc/evidence/2026-11-comprehension-probe.md` | Needs 5 people. The instrument is ready; the sessions are not. |
 | **2** | **Judge the matches** | In the same session: for every match the product shows, "would you act on this?" and "why not?" — the probe already asks both | `doc/evidence/2026-11-comprehension-probe.md` (Match relevance section) | Follows step 1 — the same session produces the judgments |
 | **3** | **Let the journal fill, then prioritize** | Dogfood the app; the journal records capture/match/response friction; then `pnpm loop prioritize --source friction` ranks the work | `doc/evidence/2026-11-friction-taxonomy.md` | Needs real sessions. The reader works, the journal records by default, **and the browser→file export is live in Settings → Data tab**. A facilitator session's friction can now be exported and fed to `pnpm loop`. |
+| **4** | **Read the time-to-first-match** | After any real session: `pnpm loop latency --evidence doc/evidence/2026-11-time-to-first-match.md` | `doc/evidence/2026-11-time-to-first-match.md` | Follows steps 1–3. The instrument is live (ADR 016); the report currently says **0 samples**, because no human session has happened yet |
 
 **Before step 1, the browser→file gap is closed:** the browser journal and the Node journal are
 two stores, but the **Export Friction Journal (JSONL)** button in Settings → Data tab bridges them.
 A facilitator session produces friction that can be exported to `.notention/journal/friction.jsonl`
 and read by `pnpm loop prioritize --source friction`. Step 3 is now fully wired.
+*(The export itself was broken until session 5: the stored value is a JSON string, not an
+array — I11, fixed.)*
+
+**Every instrument the plan leans on is now live, and every one of them has an empty result:**
+the comprehension probe (P2a), the match-relevance judgments (P2c.3), the friction journal
+(P2b/P2c.5), and the time-to-first-match metric (P2c.4). The remaining uncertainty is about
+*people*, not about code — and the artifacts say so in their own words, rather than claiming a
+number nobody has measured.
 
 **What is already true and needs no further work:** the corpus (864 notes, 14 domains),
 the benchmark (22 quality cases, F1 86.4% at the product threshold), the golden path
-(`pnpm verify` L3, green against the production build), the friction instrument (11 event
-kinds, recording by default), the comprehension instrument, **and the friction export path**.
+(`pnpm verify` L3, green against the production build), the friction instrument (12 event
+kinds, recording by default, timestamped and correlated), the comprehension instrument,
+**and the friction export path**.
 
 **What the next session should not do:** add more corpus, add more strategies, or start
 another parameter search. The remaining uncertainty is about *people*, not about code.
@@ -743,11 +784,12 @@ Facilitated, in priority order.
 | **R5** | **Build the act step** | The loop has no payoff. A matching engine without an act produces a list, not coordination | ✅ **COMPLETE** — `createResponseNote`, `createWithdrawalNote`, `ResponsesView`, ledger logging (P1b) |
 | **R6** | **Rebuild the benchmark on product semantics** | A green benchmark the product cannot reproduce is worse than a red one | ✅ **COMPLETE** — Benchmark rebuilt with 22 quality cases, candidate notes defined, Node.js harness running with Precision/Recall/F1 metrics |
 | **R7** | Write the corpus (P2c.2 — civilization-scale breadth) | Unblocks E7, E13, E14, and every match-quality metric | ✅ **COMPLETE** — 864 notes across 14 domains, CC0 manifest (`corpus/notes/manifest.json`) |
-| **R8** | Run the comprehension probe (P2a) | The cheapest, most disconfirming question about the product | 🔄 **INSTRUMENTED** — `pnpm probe` records verbatim answers, time-to-first-explanation and the act step into `doc/evidence/2026-11-comprehension-probe.md`. **Remaining: run 5 sessions with people** (the instrument needs a human; it cannot fabricate them) |
-| **R9** | Turn human failures into machine-readable friction (P2b) | Gives the optimizer a real target instead of a synthetic driver | 🔄 **PARTIAL** — the golden-path events now exist (`match_explained`, `match_dismissed`, `response_created`, `response_viewed`) and `pnpm loop prioritize --source friction` reads them. **Remaining: sessions from real use** (R8) to fill the journal |
+| **R8** | Run the comprehension probe (P2a) | The cheapest, most disconfirming question about the product | 🔄 **INSTRUMENTED** — `pnpm probe` records verbatim answers, time-to-first-explanation, time-to-first-match and the act step into `doc/evidence/2026-11-comprehension-probe.md`. **Remaining: run 5 sessions with people** (the instrument needs a human; it cannot fabricate them) |
+| **R9** | Turn human failures into machine-readable friction (P2b) | Gives the optimizer a real target instead of a synthetic driver | 🔄 **PARTIAL** — the golden-path events now exist (`need_expressed`, `match_explained`, `match_dismissed`, `response_created`, `response_viewed`), every event carries a timestamp, a session id and the note id it belongs to, and `pnpm loop prioritize --source friction` reads them. **Remaining: sessions from real use** (R8) to fill the journal |
 | **R10** | Update `README.md` § Status and `README2.md` gaps against what is actually true | The status table currently claims working areas that the code contradicts | ✅ **COMPLETE** — both now state the golden path is green in the production build and that the human evidence is instrumented but empty |
 | **I2** | Make the UI test lane honest | A green lane that ran nothing is worse than a red one | ✅ **COMPLETE** — the lane invoked a non-existent script and swallowed the error; it now runs all 41 files (183 tests) and fails on any failure |
 | **R11** | Extend the probe to collect match relevance (P2c.3) in the same session | Relevance judgments follow the probe; a separate session would halve the participants | ✅ **COMPLETE** — the probe now asks *would you act on this match?* and *why?*, and the artifact carries a relevance rate with the reasons (P2c.3). No sessions recorded yet |
+| **R12** | Instrument time-to-first-match (P2c.4) | The plan has a threshold — median < 2 min — and no way to produce the number | ✅ **COMPLETE (instrument)** — ADR 016 defines the metric; the journal stamps timestamps, session ids and note ids; `pnpm loop latency` and `pnpm probe` both report the distribution; the golden-path journey asserts the anchors are recorded. **Remaining: sessions from real use** — the evidence document reports 0 samples |
 
 | **P1c** | ✅ **COMPLETE** | - **P1c.1** Extended `compose-match.spec.ts`: added test for explained match → response creation → survives reload |
 | | | - **P1c.2** Created `golden-demo.spec.ts`: seeds sample workspace, asserts explained match with units |
@@ -782,3 +824,6 @@ Facilitated, in priority order.
 | **I8** | Chunk size warnings: main chunk > 500kB, vendor > 6MB | `ui/vite.config.ts` rollupOptions | Low | ✅ **FIXED** — added manualChunks for react, router, tiptap, utils, ajv, nostr, mlc, core, mesh, other; main chunk 1.6MB (down from 12.3MB), vendor chunks split |
 | **I9** | Two React copies can return (stale root `node_modules/react` is 18.3.1) | workspace root `node_modules` | Low | The stale npm-era install at the workspace root still carries React 18. A fresh `pnpm install` (or removing the stale root `node_modules`) removes the trap; the build is safe because core no longer bundles React |
 | **I10** | **Adding a property via "Add detail" drops an existing property** | `ui/src/components/editor/PropertyMark.ts`, `optimize/src/discovery/synthesizer/journeySynthesizer.ts` | High | ✅ **FIXED** — replaced the mark-based property chip with an inline atom **Node** (`PropertyNode`) so empty canonical spans round-trip; added `mergeProperties` in core to preserve existing note properties that the content doesn't re-state; `capture-and-edit` journey now preserves `skill` when adding `framework`. Friction journal export added to Settings → Data tab so `pnpm loop prioritize --source friction` can read real browser sessions. |
+| **I11** | **Friction export throws — no file is produced** | `ui/src/components/settings/DataTab.tsx` | High | ✅ **FIXED** — the export read the IndexedDB value as an array, but `JsonStore` stores a JSON **string**, so `events.map` threw and the browser→file bridge never worked. The value is parsed now |
+| **I12** | **The act step is counted for acts that never happened** | `ui/src/components/dashboard/DashboardView.tsx`, `ui/src/hooks/useFrictionRecorder.ts` | High | ✅ **FIXED** — opening a note recorded `match_accepted` *and* `response_created`. `match_accepted` now fires when the user responds, `response_created` when the response note is created, and neither fires on a plain note click |
+| **I13** | **The journal cannot order events** — day buckets only, no correlation | `core/src/telemetry/journal.ts`, `journal.browser.ts` | High | ✅ **FIXED** — every event now carries an exact `timestamp`, a `sessionId`, and the `noteId` it belongs to. This is what makes P2c.4 measurable (ADR 016) |

@@ -14,6 +14,7 @@ export type { EvidenceClass } from '../schemas/evidence.js';
 export type FrictionKind =
     | 'capture_started'
     | 'capture_abandoned'
+    | 'need_expressed'
     | 'correction'
     | 'match_viewed'
     | 'match_rejected'
@@ -28,11 +29,23 @@ export type DurationBucket = '<5s' | '5-15s' | '15-60s' | '>60s';
 
 export interface FrictionEvent {
     bucket: string;                 // ISO date, day granularity (YYYY-MM-DD)
+    timestamp?: string;             // exact ISO instant the event was recorded
+    sessionId?: string;             // one browser session = one user's turn
     workflow: string;               // 'capture' | 'match' | 'elicit' | ...
     seam: string;                   // seam role/id
     kind: FrictionKind;
     count: number;
     durationBucket?: DurationBucket;
+    noteId?: string;                // the note the event is about (correlation id)
+}
+
+/**
+ * Identify one user session. A page load is a session: the events of one
+ * session can be ordered, which is what "time from X to Y" needs.
+ */
+export function createSessionId(): string {
+    const uuid = globalThis.crypto?.randomUUID?.();
+    return uuid ?? `s-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
 export interface FrictionAggregate {
@@ -108,7 +121,8 @@ export function inferEvidenceClass(
     }
     // Indirect signals = observed
     if (kind === 'match_accepted' || kind === 'clarification_requested'
-        || kind === 'match_explained' || kind === 'response_viewed') {
+        || kind === 'match_explained' || kind === 'response_viewed'
+        || kind === 'need_expressed') {
         return 'observed';
     }
     // Start events without completion = hypothesized

@@ -46,7 +46,7 @@ export function DashboardView() {
 
     // Friction tracking
     const { startTracking: startCaptureTracking, stopTracking: stopCaptureTracking, markSubmitted: markCaptureSubmitted } = useCaptureTracking('capture', 'capture');
-    const { markViewed: markMatchViewed, handleAccept: handleMatchAccept, handleReject: handleMatchReject, handleClarification: handleMatchClarification, handleExplained: handleMatchExplained, handleDismissed: handleMatchDismissed } = useMatchTracking('match', 'match');
+    const { markViewed: markMatchViewed, handleAccept: handleMatchAccept, handleReject: handleMatchReject, handleClarification: handleMatchClarification, handleExplained: handleMatchExplained, handleDismissed: handleMatchDismissed, recordResponseCreated } = useMatchTracking('match', 'match');
     const {rejectMatch} = useRejectedMatches();
 
     const extractor = useMemo(() => new PropertyExtractor(settings.ontology), [settings.ontology]);
@@ -177,11 +177,12 @@ export function DashboardView() {
             .sort((a, b) => b.result.score - a.result.score)[0] ?? null;
     }, [notes, settings.ontology]);
 
+    const handleMatchViewed = useCallback(() => markMatchViewed(localMatch?.request.id), [markMatchViewed, localMatch?.request.id]);
+
     const handleSelectNote = useCallback((id: string) => {
-        handleMatchAccept();
         setSelectedNoteId(id);
         setActiveView('notes');
-    }, [setSelectedNoteId, setActiveView, handleMatchAccept]);
+    }, [setSelectedNoteId, setActiveView]);
 
     const handleAcceptMatch = useCallback((requestId: string, noteId: string, score: number) => {
         const request = notes.find(n => n.id === requestId);
@@ -197,22 +198,23 @@ export function DashboardView() {
         // Log to ledger
         logMatchAccepted(requestId, noteId, responseNote.id, score);
         
-        // Record friction event
-        handleMatchAccept();
+        // Record friction events: the match was acted on, and a response exists
+        handleMatchAccept(requestId);
+        recordResponseCreated(requestId);
         
         // Navigate to the response note
         setSelectedNoteId(responseNote.id);
         setActiveView('notes');
-    }, [notes, addNote, setSelectedNoteId, setActiveView, handleMatchAccept]);
+    }, [notes, addNote, setSelectedNoteId, setActiveView, handleMatchAccept, recordResponseCreated]);
 
     const handleRejectMatch = useCallback((requestId: string, noteId: string) => {
-        handleMatchReject();
+        handleMatchReject(requestId);
         logMatchRejected(requestId, noteId);
         rejectMatch(noteId);
     }, [handleMatchReject, rejectMatch]);
 
     const handleReviseRequest = useCallback((requestId: string) => {
-        handleMatchClarification();
+        handleMatchClarification(requestId);
         setSelectedNoteId(requestId);
         setActiveView('notes');
     }, [setSelectedNoteId, setActiveView, handleMatchClarification]);
@@ -302,8 +304,10 @@ export function DashboardView() {
                         onAcceptMatch={handleAcceptMatch}
                         onRejectMatch={handleRejectMatch}
                         onReviseRequest={handleReviseRequest}
-                        onView={markMatchViewed}
-                        onExplanation={(event) => (event === 'explained' ? handleMatchExplained() : handleMatchDismissed())}
+                        onView={handleMatchViewed}
+                        onExplanation={(event) => (event === 'explained'
+                            ? handleMatchExplained(localMatch.request.id)
+                            : handleMatchDismissed(localMatch.request.id))}
                     />
                 )}
 

@@ -1,6 +1,7 @@
 import {test, expect} from '@playwright/test';
 import type {Page} from '@playwright/test';
 import {seed} from '../support/seed';
+import {readFrictionJournal, waitForFrictionEvent} from '../support/journal';
 import {isolateNetwork} from '../fixtures/routes';
 import {defaultSettings} from '../fixtures/workspace';
 
@@ -74,5 +75,44 @@ test('a request and an offer composed through the popup match each other', async
     await expect(match).toBeVisible({timeout: 20_000});
     await expect(match).toContainText('4 satisfied · 1 conflicting');
 
+    // Step 3 of the golden path: the explanation is the honesty surface.
+    await match.getByTestId('match-explanations').locator('summary').click();
+    await expect(match.getByText('Why it fits')).toBeVisible();
+
     expect(aiRequests).toEqual([]);
+});
+
+test('the journey records the time-to-first-match anchors', async ({page}) => {
+    await seed(page, {notes: [], settings: defaultSettings()});
+
+    await createNote(page, 'Looking for a React developer');
+    await addDetail(page, 'intent', 'request');
+    await addDetail(page, 'skill', 'React');
+    await addDetail(page, 'stack', 'TypeScript');
+
+    await createNote(page, 'React developer available');
+    await addDetail(page, 'skill', 'React');
+    await addDetail(page, 'stack', 'TypeScript');
+
+    await page.evaluate(() => {
+        window.location.hash = '#dashboard';
+        window.dispatchEvent(new PopStateEvent('popstate'));
+    });
+
+    const match = page.getByTestId('local-match');
+    await expect(match).toBeVisible({timeout: 20_000});
+    await match.getByTestId('match-explanations').locator('summary').click();
+
+    const expressed = await waitForFrictionEvent(page, 'need_expressed');
+    const explained = await waitForFrictionEvent(page, 'match_explained');
+
+    expect(expressed.noteId).toBeTruthy();
+    expect(explained.noteId).toBe(expressed.noteId);
+    expect(expressed.sessionId).toBeTruthy();
+    expect(explained.sessionId).toBe(expressed.sessionId);
+    expect(new Date(explained.timestamp!).getTime())
+        .toBeGreaterThanOrEqual(new Date(expressed.timestamp!).getTime());
+
+    const journal = await readFrictionJournal(page);
+    expect(journal.some(event => event.kind === 'need_expressed')).toBe(true);
 });
