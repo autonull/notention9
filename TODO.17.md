@@ -2,7 +2,7 @@
 
 **Supersedes:** TODO.16.md (superseded plan) · **Rewritten:** TODO.17 v1 (this file, v2)
 **Date:** 2026-11-10
-**Status:** **P0b COMPLETE** ✅ | **P0a COMPLETE** ✅ | **P1a COMPLETE** ✅ | **P1b COMPLETE** ✅ | **P1c COMPLETE** ✅ | **P1d COMPLETE** ✅ | **P2c.1 COMPLETE** ✅ | **P2c.2 COMPLETE** ✅ | **R1–R8, R10, R11 COMPLETE** ✅ | **R9 PARTIAL** ✅ | **I1/I2/I5/I6/I7 FIXED** ✅ | **E2E GREEN IN PRODUCTION BUILD** ✅ | **P2a INSTRUMENTED, NO SESSIONS YET** ⏳ | **FALSE-GREEN GATES FIXED** ✅ | **TELEMETRY HANDOFF FIXED** ✅
+**Status:** **P0b COMPLETE** ✅ | **P0a COMPLETE** ✅ | **P1a COMPLETE** ✅ | **P1b COMPLETE** ✅ | **P1c COMPLETE** ✅ | **P1d COMPLETE** ✅ | **P2c.1 COMPLETE** ✅ | **P2c.2 COMPLETE** ✅ | **R1–R8, R10, R11 COMPLETE** ✅ | **R9 COMPLETE** ✅ | **I1/I2/I5/I6/I7/I10 FIXED** ✅ | **E2E GREEN IN PRODUCTION BUILD** ✅ | **P2a INSTRUMENTED, NO SESSIONS YET** ⏳ | **FALSE-GREEN GATES FIXED** ✅ | **TELEMETRY HANDOFF FIXED** ✅ | **FRICTION EXPORT ADDED** ✅
 
 > **Note (2026-11-11, session 3 — the instruments were not measuring).** The remaining work in this
 > plan is *human evidence*, and the plan assumed the instruments around it were sound. Four of them
@@ -53,6 +53,20 @@ The optimize journey now runs and exposes a **real product bug** that no test co
 
 Tracked as **I10** below. Not fixed here: the journey lane was dead for the whole life of this
 plan, so the fix needs its own focused session with the editor's mark handling under test.
+
+---
+
+## Progress Log (2026-11-11, session 4)
+
+| Phase | Status | Notes |
+|-------|--------|-------|
+| **I10 — property round-trip** | ✅ **FIXED** | Replaced the mark-based `PropertyMark` with an inline atom **Node** (`PropertyNode`) so empty canonical `<span data-type="property">` spans survive the editor round-trip. The node parses both legacy `data-type="property"` and new `data-property-id` attributes. |
+| **Core property merge** | ✅ **FIXED** | Added `mergeProperties(existing, explicit, implicit)` in `core/src/notes/properties.ts` — content wins for keys it names; the note keeps everything else. `NotePipeline.updateContent` now uses this instead of discarding pre-existing properties. |
+| **Serialization helpers** | ✅ **FIXED** | Rewrote `replacePropertyInContent` / `removePropertyFromContent` in `core/src/notes/parsing/formatting.ts` to target the canonical empty span or the legacy bracket tag in-place. |
+| **Editor click/insert** | ✅ **FIXED** | `usePropertyInsertion` now inserts the property node at the document end (not the cursor) for new properties; `useEditorClick` finds the node by its `data-property-id` DOM attribute. |
+| **Journey regression** | ✅ **FIXED** | `create-match.spec.ts` both tests pass; `compose-match.spec.ts` passes; `capture-and-edit` optimize journey passes and preserves `skill` when adding `framework`. |
+| **Friction export (browser → file)** | ✅ **DONE** | Added "Export Friction Journal (JSONL)" button in Settings → Data tab. Reads the IndexedDB `notention-journal`/`friction`/`friction-journal` store and writes a `.jsonl` file compatible with the Node journal reader used by `pnpm loop prioritize --source friction`. |
+| **Tests** | ✅ | Core 529, UI 183, optimize 47, simulator 37, agent, CLI — all green. `pnpm verify` exits 0. |
 
 ---
 
@@ -654,26 +668,20 @@ The center works and the golden path is proven in the production build. What is 
 |---|------|-----|----------|---------|
 | **1** | **Run 5 comprehension sessions** | `pnpm probe` (opens the app with the sample workspace; read the two questions aloud; press Enter when the session ends) | `doc/evidence/2026-11-comprehension-probe.md` | Needs 5 people. The instrument is ready; the sessions are not. |
 | **2** | **Judge the matches** | In the same session: for every match the product shows, "would you act on this?" and "why not?" — the probe already asks both | `doc/evidence/2026-11-comprehension-probe.md` (Match relevance section) | Follows step 1 — the same session produces the judgments |
-| **3** | **Let the journal fill, then prioritize** | Dogfood the app; the journal records capture/match/response friction; then `pnpm loop prioritize --source friction` ranks the work | `doc/evidence/2026-11-friction-taxonomy.md` | Needs real sessions. The reader now works (it used to hang) and the journal now records by default — but the events live in the **browser** (IndexedDB), while the reader reads the **Node** journal file. **A browser session's friction does not yet reach `pnpm loop`** — see the open item below |
+| **3** | **Let the journal fill, then prioritize** | Dogfood the app; the journal records capture/match/response friction; then `pnpm loop prioritize --source friction` ranks the work | `doc/evidence/2026-11-friction-taxonomy.md` | Needs real sessions. The reader works, the journal records by default, **and the browser→file export is live in Settings → Data tab**. A facilitator session's friction can now be exported and fed to `pnpm loop`. |
 
-**Before step 1, one gap remains, and it is small:** the browser journal and the Node journal are
-two stores. The app records into IndexedDB; `pnpm loop prioritize --source friction` reads
-`.notention/journal/friction.jsonl`. So a facilitator session produces friction that the optimizer
-cannot see. The fix is one export/import path (browser → file), not a redesign — but until it
-exists, step 3 is only half-wired. **Do the export first; it is what makes step 3 meaningful.**
+**Before step 1, the browser→file gap is closed:** the browser journal and the Node journal are
+two stores, but the **Export Friction Journal (JSONL)** button in Settings → Data tab bridges them.
+A facilitator session produces friction that can be exported to `.notention/journal/friction.jsonl`
+and read by `pnpm loop prioritize --source friction`. Step 3 is now fully wired.
 
 **What is already true and needs no further work:** the corpus (864 notes, 14 domains),
 the benchmark (22 quality cases, F1 86.4% at the product threshold), the golden path
 (`pnpm verify` L3, green against the production build), the friction instrument (11 event
-kinds, recording by default), and the comprehension instrument.
+kinds, recording by default), the comprehension instrument, **and the friction export path**.
 
 **What the next session should not do:** add more corpus, add more strategies, or start
 another parameter search. The remaining uncertainty is about *people*, not about code.
-
-**One code defect is worth taking before the sessions** (I10): adding a property through
-"Add detail" drops an existing one. It is a data-loss bug in the capture seam — the exact seam
-the comprehension probe asks about. Fixing it before 5 strangers meet the product is worth more
-than any of the three steps above.
 
 ---
 
@@ -773,4 +781,4 @@ Facilitated, in priority order.
 | **I7** | `VITE_DEV_HOOKS` leakage: preview shows `VITE_DEV_HOOKS: true isDev: false` | `ui/vite.config.ts`, build env | Medium | ✅ **FIXED** — moved `VITE_DEV_HOOKS=true` from `.env` to `.env.development`; production preview now shows `VITE_DEV_HOOKS: undefined isDev: false` |
 | **I8** | Chunk size warnings: main chunk > 500kB, vendor > 6MB | `ui/vite.config.ts` rollupOptions | Low | Consider manualChunks for code-splitting. Not blocking. |
 | **I9** | Two React copies can return (stale root `node_modules/react` is 18.3.1) | workspace root `node_modules` | Low | The stale npm-era install at the workspace root still carries React 18. A fresh `pnpm install` (or removing the stale root `node_modules`) removes the trap; the build is safe because core no longer bundles React |
-| **I10** | **Adding a property via "Add detail" drops an existing property** | `ui/src/components/editor/PropertyMark.ts`, `optimize/src/discovery/synthesizer/journeySynthesizer.ts` | High | Surfaced by fixing the optimize gate (session 3): the journey ran for the first time and failed on `note.propertyIndex.skill` — `skill` vanished after adding `framework`. The core pipeline is correct (`NotePipeline.updateContent` keeps both); the loss is in the **editor round-trip**: the seeded property is an empty `<span data-type="property">` (the canonical serialization, also produced by `noteDocumentAdapter.ts:550`), and the editor drops empty property marks. Needs its own session with the editor's mark handling under test |
+| **I10** | **Adding a property via "Add detail" drops an existing property** | `ui/src/components/editor/PropertyMark.ts`, `optimize/src/discovery/synthesizer/journeySynthesizer.ts` | High | ✅ **FIXED** — replaced the mark-based property chip with an inline atom **Node** (`PropertyNode`) so empty canonical spans round-trip; added `mergeProperties` in core to preserve existing note properties that the content doesn't re-state; `capture-and-edit` journey now preserves `skill` when adding `framework`. Friction journal export added to Settings → Data tab so `pnpm loop prioritize --source friction` can read real browser sessions. |

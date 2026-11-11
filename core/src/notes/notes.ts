@@ -1,6 +1,6 @@
 import type { Note, Property, OntologyNode, NoteDocument } from '../types/index.js';
-import { arePropertyArraysEqual, isIndefiniteProperty, arePropertiesEqual } from './properties.js';
-import { formatPropertyTag, parseProperties, replacePropertyInString, appendPropertyToText } from './parsing/index.js';
+import { arePropertyArraysEqual, isIndefiniteProperty, arePropertiesEqual, mergeProperties } from './properties.js';
+import { formatPropertyTag, parseProperties, replacePropertyInContent, removePropertyFromContent, appendPropertyToText } from './parsing/index.js';
 import { NOTE_STATUS } from '../utils/constants.js';
 import { PropertyExtractor } from './propertyExtractor/index.js';
 import { getTextFromHtml } from '../utils/html.js';
@@ -59,11 +59,8 @@ export const NotePipeline = {
     const extractor = getExtractor(ontology);
     const implicitProperties = await extractor.extractFromText(plainText);
 
-    const explicitKeys = new Set(explicitProperties.map(p => p.key));
-    const properties = [
-        ...explicitProperties,
-        ...implicitProperties.filter(p => !explicitKeys.has(p.key))
-    ];
+    // Content states what it states; the note keeps the properties it already had.
+    const properties = mergeProperties(note.properties, explicitProperties, implicitProperties);
 
     const newNote = {
       ...note,
@@ -95,7 +92,7 @@ export const NotePipeline = {
       values: [value]
     };
 
-    const newContent = replacePropertyInString(note.content, existingProp || null, newProp);
+    const newContent = replacePropertyInContent(note.content, existingProp || null, newProp);
     const result = await NotePipeline.updateContent(note, newContent, ontology);
 
     emitActionTrace({
@@ -112,8 +109,13 @@ export const NotePipeline = {
     const existingProp = note.properties.find(p => p.key === key);
     if (!existingProp) return note;
 
-    const newContent = replacePropertyInString(note.content, existingProp, null);
-    const result = await NotePipeline.updateContent(note, newContent, ontology);
+    const newContent = removePropertyFromContent(note.content, key);
+    const newNote = {
+      ...note,
+      content: newContent,
+      properties: note.properties.filter(p => p.key !== key),
+      updatedAt: new Date().toISOString()
+    };
 
     emitActionTrace({
       source: 'ui',
@@ -122,7 +124,7 @@ export const NotePipeline = {
       outcome: 'ok',
     });
 
-    return result;
+    return newNote;
   },
 
   toggleStatus: async (note: Note, status: string, ontology?: OntologyNode[]): Promise<Note> => {
@@ -137,7 +139,7 @@ export const NotePipeline = {
         return NotePipeline.removeProperty(note, NOTE_STATUS.KEY, ontology);
       } else {
         const newProp = { ...existingProp, values: newValues };
-        const newContent = replacePropertyInString(note.content, existingProp, newProp);
+        const newContent = replacePropertyInContent(note.content, existingProp, newProp);
         const result = await NotePipeline.updateContent(note, newContent, ontology);
 
         emitActionTrace({

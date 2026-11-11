@@ -1,13 +1,11 @@
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import {
     Note,
     Property,
-    PropertyExtractor,
     NotePipeline,
     OntologyNode,
-    replacePropertyInString
+    replacePropertyInContent
 } from '@notention/core';
-import { createUpdateHandler } from '../../utils/ui';
 import { useFrictionRecorder } from '../../hooks/useFrictionRecorder';
 
 export function useNoteProperties(
@@ -15,9 +13,6 @@ export function useNoteProperties(
     setDirtyNote: React.Dispatch<React.SetStateAction<Note>>,
     ontology?: OntologyNode[]
 ) {
-    const propertyExtractor = useMemo(() => new PropertyExtractor(ontology), [ontology]);
-    const update = useMemo(() => createUpdateHandler(setDirtyNote), [setDirtyNote]);
-
     // The note changes on every keystroke; callbacks must read the latest one.
     const noteRef = useRef(dirtyNote);
     noteRef.current = dirtyNote;
@@ -34,12 +29,22 @@ export function useNoteProperties(
     }, [setDirtyNote, ontology]);
 
     const handleUpdateTextFromInspector = useCallback(async (oldProp: Property | null, newProp: Property | null) => {
-        const newContent = replacePropertyInString(noteRef.current.content, oldProp, newProp);
-        if (newContent !== noteRef.current.content) {
+        const note = noteRef.current;
+
+        if (!newProp) {
+            if (!oldProp) return;
+            recordCorrection();
+            const updated = await NotePipeline.removeProperty(note, oldProp.key, ontology);
+            setDirtyNote({...updated, priority: 1.0});
+            return;
+        }
+
+        const newContent = replacePropertyInContent(note.content, oldProp, newProp);
+        if (newContent !== note.content) {
             recordCorrection();
             await handleContentSave(newContent);
         }
-    }, [handleContentSave, recordCorrection]);
+    }, [handleContentSave, recordCorrection, setDirtyNote, ontology]);
 
     const handleUpdateProperty = useCallback(async (key: string, value: string) => {
         recordCorrection();

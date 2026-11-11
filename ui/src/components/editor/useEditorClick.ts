@@ -1,5 +1,6 @@
 import React, {useCallback} from 'react';
 import {Editor} from '@tiptap/react';
+import {findPropertyNode} from './PropertyNode';
 
 interface InitialModalData {
     key: string;
@@ -36,34 +37,26 @@ export const useEditorClick = ({
     const handleEditorClick = useCallback((e: React.MouseEvent) => {
         const target = e.target as HTMLElement;
 
-        // Check if clicked inside a property mark
-        const propertyNode = target.closest('.node-property');
-        if (propertyNode && editor) {
+        // Check if clicked inside a property chip
+        const chip = target.closest('.node-property');
+        if (chip && editor) {
             e.preventDefault();
             e.stopPropagation();
 
-            // Try finding the mark by searching from the click pos.
-            const coords = {left: e.clientX, top: e.clientY};
-            const posInfo = editor.view.posAtCoords(coords);
-            if (posInfo) {
-                const {pos} = posInfo;
-
-                // Check marks at pos
-                const marks = editor.state.doc.resolve(pos).marks();
-                const propertyMark = marks.find(m => m.type.name === 'propertyMark');
-                if (propertyMark) {
-                    const attrs = propertyMark.attrs as Record<string, unknown>;
-                    setEditingPropertyId(attrs.propertyId as string);
-                    setInitialModalData({
-                        key: attrs.name as string,
-                        operator: attrs.operator as string,
-                        value: attrs.value as string,
-                        icon: attrs.icon as string | undefined,
-                        propertyId: attrs.propertyId as string,
-                    });
-                    setIsPropertyModalOpen(true);
-                    return;
-                }
+            const propertyId = chip.getAttribute('data-property-id');
+            const property = propertyId ? findPropertyNode(editor, propertyId) : null;
+            if (property) {
+                const attrs = property.attrs;
+                setEditingPropertyId(attrs.propertyId);
+                setInitialModalData({
+                    key: attrs.name,
+                    operator: attrs.operator,
+                    value: attrs.value,
+                    icon: attrs.icon,
+                    propertyId: attrs.propertyId,
+                });
+                setIsPropertyModalOpen(true);
+                return;
             }
         }
 

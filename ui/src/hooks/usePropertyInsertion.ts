@@ -1,10 +1,7 @@
 import {useCallback, useState} from 'react';
 import type {Editor} from '@tiptap/react';
 import type {OntologyAttribute, OntologyNode, Property} from '@notention/core';
-
-function generatePropertyId(): string {
-    return `prop_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
-}
+import {PROPERTY_NODE_NAME, findPropertyNode, generatePropertyId} from '../components/editor/PropertyNode';
 
 export function usePropertyInsertion() {
     const [isPropertyModalOpen, setIsPropertyModalOpen] = useState(false);
@@ -26,28 +23,29 @@ export function usePropertyInsertion() {
     const handleInsertProperty = (editor: Editor | null, key: string, operator: string, value: string, icon?: string) => {
         if (!editor) return;
 
-        const propertyId = editingPropertyId || generatePropertyId();
+        const attrs = {propertyId: editingPropertyId ?? generatePropertyId(), name: key, operator, value, icon};
 
         if (editingPropertyId) {
-            // Remove existing mark with this propertyId
-            editor.chain().focus().unsetMark('propertyMark').run();
-        }
-
-        const attrs = {propertyId, name: key, operator, value, icon};
-
-        if (editor.state.selection.from === editor.state.selection.to) {
-            // No text selected: a mark would be lost, so materialize the property.
-            editor
-                .chain()
-                .focus()
-                .insertContent([{type: 'text', text: value || key, marks: [{type: 'propertyMark', attrs}]}])
-                .run();
+            const target = findPropertyNode(editor, editingPropertyId);
+            if (target) {
+                editor
+                    .chain()
+                    .focus()
+                    .insertContentAt({from: target.pos, to: target.pos + target.nodeSize}, {type: PROPERTY_NODE_NAME, attrs})
+                    .run();
+            } else {
+                editor
+                    .chain()
+                    .focus()
+                    .insertContentAt(editor.state.doc.content.size, {type: PROPERTY_NODE_NAME, attrs})
+                    .run();
+            }
         } else {
-            // Add new mark at current selection
+            // New property: insert at the end of the document (after existing content)
             editor
                 .chain()
                 .focus()
-                .setMark('propertyMark', attrs)
+                .insertContentAt(editor.state.doc.content.size, {type: PROPERTY_NODE_NAME, attrs})
                 .run();
         }
 
@@ -70,7 +68,7 @@ export function usePropertyInsertion() {
             editor
                 .chain()
                 .focus()
-                .insertContent([{type: 'text', text: attrs.value, marks: [{type: 'propertyMark', attrs}]}])
+                .insertContent({type: PROPERTY_NODE_NAME, attrs})
                 .run();
         }
     };
@@ -100,13 +98,6 @@ export function usePropertyInsertion() {
         setIsPropertyModalOpen(true);
     };
 
-    // Helper to remove a property mark by propertyId
-    const removePropertyMark = useCallback((editor: Editor | null, _propertyId: string) => {
-        if (editor) {
-            editor.chain().focus().unsetMark('propertyMark').run();
-        }
-    }, []);
-
     return {
         isPropertyModalOpen,
         setIsPropertyModalOpen,
@@ -120,6 +111,5 @@ export function usePropertyInsertion() {
         findAttributeDef,
         handleClosePropertyModal,
         handlePrepareNewProperty,
-        removePropertyMark,
     };
 }

@@ -1,6 +1,6 @@
 import {useCallback} from 'react';
 import type {OntologyNode} from '@notention/core';
-import {parseNaturalDate, parseProperties, replacePropertyInString, DATE_PROPERTY_KEYS} from '@notention/core';
+import {parseNaturalDate, parseProperties, replacePropertyInContent, DATE_PROPERTY_KEYS} from '@notention/core';
 import {useGardener} from './useGardener';
 import {useAutoTagging} from './useAutoTagging';
 import {useToast} from './useToast';
@@ -44,7 +44,7 @@ export function useEditorMagic({noteId, content, tags, onTagsChange, onContentSa
                 const parsed = parseNaturalDate(val);
                 if (parsed && parsed !== val) {
                     const newProp = {...prop, values: [parsed]};
-                    newContent = replacePropertyInString(newContent, prop, newProp);
+                    newContent = replacePropertyInContent(newContent, prop, newProp);
                     convertedCount++;
                 }
             }

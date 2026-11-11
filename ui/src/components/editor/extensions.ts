@@ -1,7 +1,7 @@
 import StarterKit from '@tiptap/starter-kit';
 import BubbleMenu from '@tiptap/extension-bubble-menu';
 import Mention, {MentionNodeAttrs} from '@tiptap/extension-mention';
-import {PropertyMark} from './PropertyMark';
+import {PropertyNode} from './PropertyNode';
 import {GhostTextExtension} from './GhostTextExtension';
 import {configureSuggestions} from './configureSuggestions';
 import type {Note, Template} from '@notention/core';
@@ -51,7 +51,7 @@ export const getExtensions = ({
     };
 
     return [
-        StarterKit, BubbleMenu, PropertyMark, GhostTextExtension,
+        StarterKit, BubbleMenu, PropertyNode, GhostTextExtension,
         createMentionConfig('propertySuggestion', 'suggestion-item', '[', resolveProperties, ({ editor, range, props }: any) => {
             editor.chain().focus().deleteRange(range).run();
             onOpenPropertyModal?.(props.label || '');

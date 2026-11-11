@@ -1,9 +1,5 @@
-import type { Note, Property, OntologyNode } from '../types/index.js';
-import { arePropertyArraysEqual, isIndefiniteProperty } from './properties.js';
-import { formatPropertyTag, parseProperties, replacePropertyInString, appendPropertyToText } from './parsing/index.js';
-import { NOTE_STATUS } from '../utils/constants.js';
-import { PropertyExtractor } from './propertyExtractor/index.js';
-import { getTextFromHtml } from '../utils/html.js';
+import type { Note } from '../types/index.js';
+import { isIndefiniteProperty } from './properties.js';
 
 export type NoteIntent = 'Real' | 'Imaginary' | 'Ambiguous';
 

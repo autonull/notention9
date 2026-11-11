@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react';
-import {MarkViewProps, NodeViewWrapper as NodeViewWrapperComponent} from '@tiptap/react';
+import {NodeViewWrapper as NodeViewWrapperComponent} from '@tiptap/react';
 import {ExclamationTriangleIcon, TagIcon} from '../ui/icons';
 import {ICON_MAP} from '../layout/iconMap';
 import {useSettings} from '../../hooks/useSettingsContext';
@@ -8,34 +8,26 @@ import {validateAttributeValue, getCanonicalKey} from '@notention/core';
 
 const NodeViewWrapper = NodeViewWrapperComponent as any;
 
-// Support both NodeViewProps (legacy) and MarkViewProps (new)
 interface PropertyAttrs {
     name: string;
     operator: string;
     value: string;
     icon?: string;
-    propertyId?: string;
+    propertyId?: string | null;
 }
 
 interface PropertyViewProps {
-    node?: {attrs: PropertyAttrs};
-    mark?: {attrs: PropertyAttrs};
-    updateAttributes?: (attrs: Record<string, unknown>) => void;
-    deleteNode?: () => void;
-    getPos?: () => number | undefined;
-    editor?: {view: {domAtPos: (pos: number) => {node: Node}}; state: {doc: {nodeAt: (pos: number) => {type: {name: string}; attrs: Record<string, unknown>}}}};
+    node: {attrs: PropertyAttrs};
 }
 
-export function PropertyChip(props: PropertyViewProps) {
-    // Support both node (legacy) and mark (new) views
-    const attrs: PropertyAttrs = (props.node?.attrs ?? props.mark?.attrs ?? {}) as PropertyAttrs;
-    const {name, operator, value, icon, propertyId} = attrs;
+export function PropertyChip({node}: PropertyViewProps) {
+    const {name, operator, value, icon, propertyId} = node.attrs;
 
     const {settings} = useSettings();
     const {propertyTypes} = useOntologyIndex(settings.ontology ?? []);
 
     const canonicalKey = useMemo(() => {
-        return getCanonicalKey(name as string, settings.ontology ?? []);
+        return getCanonicalKey(name, settings.ontology ?? []);
     }, [name, settings.ontology]);
 
     // Enhanced Validation Logic - Use canonical key to look up definition
@@ -48,7 +40,7 @@ export function PropertyChip(props: PropertyViewProps) {
     const isAlias = canonicalKey !== name;
 
     const validation = useMemo(() => {
-        return validateAttributeValue(name as string, operator as string, value as string, definition);
+        return validateAttributeValue(name, operator, value, definition);
     }, [name, operator, value, definition]);
 
     // Styling
@@ -60,6 +52,7 @@ export function PropertyChip(props: PropertyViewProps) {
         <NodeViewWrapper
             as="span"
             className={`${baseClasses} ${validation.isValid ? validClasses : invalidClasses}`}
+            data-property-id={propertyId ?? undefined}
             title={
                 !validation.isValid ? validation.message :
                 isAlias ? `Using alias for '${canonicalKey}'` : "Click to edit"

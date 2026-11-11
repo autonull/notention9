@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {DocumentDuplicateIcon, TrashIcon, ExclamationTriangleIcon} from '../ui/icons';
+import {DocumentDuplicateIcon, TrashIcon, ExclamationTriangleIcon, DownloadIcon} from '../ui/icons';
 import {useNotes} from '../../hooks/useNotes';
 import {useSettings} from '../../hooks/useSettingsContext';
 import {useView} from '../../hooks/useViewContext';
@@ -11,12 +11,14 @@ import {useDemoWorkspace} from '../../hooks/useDemoWorkspace';
 import {SparklesIcon} from '../ui/icons';
 import {useMetrics, Metrics} from '../../hooks/useMetrics';
 import {storageRecovery} from '@notention/core';
+import {useToast} from '../../hooks/useToast';
 
 export function DataTab() {
     const {notes} = useNotes();
     const {settings} = useSettings();
     const {setActiveView} = useView();
     const demo = useDemoWorkspace();
+    const {addToast} = useToast();
     const [showClearConfirm, setShowClearConfirm] = useState(false);
     const [quotaInfo, setQuotaInfo] = useState<{used: number; available: number; percentUsed: number} | null>(null);
     const {track} = useMetrics();
@@ -53,6 +55,40 @@ export function DataTab() {
         window.location.reload();
     };
 
+    const handleExportFriction = async () => {
+        try {
+            const db = await new Promise<IDBDatabase>((resolve, reject) => {
+                const request = indexedDB.open('notention-journal');
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+
+            const tx = db.transaction('friction', 'readonly');
+            const store = tx.objectStore('friction');
+            const request = store.get('friction-journal');
+
+            const events = await new Promise<any[]>((resolve, reject) => {
+                tx.oncomplete = () => resolve((request.result ?? []) as never);
+                tx.onerror = () => reject(request.error);
+            });
+
+            const lines = events.map(e => JSON.stringify(e)).join('\n');
+            if (lines) lines + '\n';
+
+            const blob = new Blob([lines], {type: 'application/jsonl'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `friction-journal-${new Date().toISOString().slice(0, 10)}.jsonl`;
+            a.click();
+            URL.revokeObjectURL(url);
+            addToast(`Exported ${events.length} friction events`, 'success');
+            track(Metrics.EXPORT_WORKSPACE, {noteCount: notes.length, friction: true});
+        } catch (err) {
+            addToast('Friction export failed: ' + (err instanceof Error ? err.message : String(err)), 'error');
+        }
+    };
+
     return (
         <div className="bg-gray-900/70 p-6 rounded-lg animate-fade-in space-y-8">
 
@@ -65,6 +101,22 @@ export function DataTab() {
                 onImportSuccess={handleImportSuccess}
                 onImportFailed={handleImportFailed}
             />
+
+            <div className="border-t border-gray-700 pt-4 mt-4">
+                <h3 className="text-sm font-medium text-gray-300 mb-2">Friction Journal</h3>
+                <p className="text-xs text-gray-500 mb-3">
+                    Export the local friction journal for <code className="px-1.5 py-0.5 bg-gray-800 rounded text-green-300 font-mono text-xs">pnpm loop prioritize --source friction</code>.
+                    The journal records capture, match, and response friction from this browser session.
+                </p>
+                <div className="flex gap-2">
+                    <Button variant="secondary" icon={DownloadIcon} onClick={handleExportFriction}>
+                        Export Friction Journal (JSONL)
+                    </Button>
+                    <span className="text-xs text-gray-500 self-center px-2">
+                        → <code className="font-mono">.notention/journal/friction.jsonl</code>
+                    </span>
+                </div>
+            </div>
 
             <div className="border-t border-gray-700 pt-6">
                 <h2 className="text-xl font-semibold text-gray-100 mb-4 flex items-center gap-3">

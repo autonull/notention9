@@ -37,6 +37,31 @@ export const isTemporalKey = (key: string): boolean =>
 export const isSpatialKey = (key: string): boolean =>
   isKeyInSet(key, SPATIAL_KEYS, SPATIAL_SUFFIXES, SPATIAL_SNAKE_SUFFIXES);
 
+/**
+ * Merges the properties a note carries with the ones its content states.
+ * Content wins for the keys it names; the note keeps everything else.
+ */
+export const mergeProperties = (existing: Property[], explicit: Property[], implicit: Property[]): Property[] => {
+  const merged: Property[] = [];
+  const positions = new Map<string, number>();
+
+  const put = (property: Property, overwrite: boolean) => {
+    const at = positions.get(property.key);
+    if (at === undefined) {
+      positions.set(property.key, merged.length);
+      merged.push(property);
+      return;
+    }
+    if (overwrite) merged[at] = { ...merged[at], operator: property.operator, values: property.values };
+  };
+
+  existing.forEach(property => put(property, false));
+  explicit.forEach(property => put(property, true));
+  implicit.forEach(property => put(property, false));
+
+  return merged;
+};
+
 export const arePropertiesEqual = (p1: Property | null, p2: Property | null): boolean => {
   if (p1 === p2) return true;
   if (!p1 || !p2) return false;

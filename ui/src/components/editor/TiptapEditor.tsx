@@ -74,7 +74,6 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
         findAttributeDef,
         handleClosePropertyModal,
         handlePrepareNewProperty,
-        removePropertyMark
     } = usePropertyInsertion();
 
     const {suggestions: ontologySuggestions} = useOntologySuggestions();

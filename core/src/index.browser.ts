@@ -144,7 +144,7 @@ export {
     normalizeNoteProperties,
     NoteFilter,
     inferNoteIntent,
-    replacePropertyInString,
+    replacePropertyInContent,
     isNoteActive,
     createResponseNote,
     createWithdrawalNote,
