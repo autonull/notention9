@@ -4,7 +4,7 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {EditorManager} from '../../components/editor/EditorManager';
 import {SettingsContext} from '../../components/contexts/SettingsContext';
 import { renderWithProviders } from '../utils/testProviders';
-import type {Note} from '@notention/core';
+import {createTestNote} from '../utils/testNote';
 
 // Mock @notention/core metaphorMapper
 vi.mock('@notention/core', async (importOriginal) => {
@@ -206,15 +206,11 @@ vi.mock('../../hooks/useSmartNoteAssistant', () => ({
 // Mock useDebouncedSave
 vi.mock('../../hooks/useDebouncedSave', () => ({
     useDebouncedSave: () => ({
-        dirtyNote: {
+        dirtyNote: createTestNote({
             id: '123',
             title: 'Original Title',
             content: '<p>Content</p>',
-            tags: [],
-            properties: [],
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-        },
+        }),
         setDirtyNote: vi.fn(),
         saveStatus: 'saved' as const,
     }),
@@ -230,15 +226,11 @@ vi.mock('../../hooks/useToast', () => ({
 
 describe.skip('EditorManager', () => {
     const mockOnSave = vi.fn();
-    const initialNote: Note = {
+    const initialNote = createTestNote({
         id: '123',
         title: 'Original Title',
         content: '<p>Content</p>',
-        tags: [],
-        properties: [],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-    };
+    });
 
     beforeEach(() => {
         vi.useFakeTimers();

@@ -9,7 +9,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
     leftIcon?: React.ReactNode;
     rightIcon?: React.ReactNode;
     /** Icon component to render on the left (alternative to leftIcon) */
-    icon?: React.ComponentType<{ className?: string }>;
+    icon?: React.ComponentType<{ className?: string }> | React.ReactNode;
     fullWidth?: boolean;
     touchTarget?: boolean;
     /** Use focus-visible ring instead of default outline */
@@ -62,7 +62,16 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         delete (domProps as any).icon;
 
         // Resolve leftIcon: explicit leftIcon takes precedence, then icon component
-        const resolvedLeftIcon = leftIcon ?? (icon ? <icon className={iconSizes[size]} /> : null);
+        let resolvedLeftIcon = leftIcon;
+        if (!resolvedLeftIcon && icon) {
+            if (typeof icon === 'function') {
+                // icon is a component - use React.createElement
+                resolvedLeftIcon = React.createElement(icon, { className: iconSizes[size] });
+            } else {
+                // icon is a ReactNode
+                resolvedLeftIcon = icon;
+            }
+        }
 
         return (
             <button

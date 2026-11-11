@@ -9,7 +9,7 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
     leftIcon?: React.ReactNode;
     rightIcon?: React.ReactNode;
     /** Icon component to render on the left (alternative to leftIcon) */
-    icon?: React.ComponentType<{ className?: string }>;
+    icon?: React.ComponentType<{ className?: string }> | React.ReactNode;
     fullWidth?: boolean;
     touchTarget?: boolean;
 }
@@ -34,7 +34,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({
     const tokens = componentTokens.input;
 
     // Resolve leftIcon: explicit leftIcon takes precedence, then icon component
-    const resolvedLeftIcon = leftIcon ?? (icon ? <icon className="w-5 h-5" /> : null);
+    let resolvedLeftIcon = leftIcon;
+    if (!resolvedLeftIcon && icon) {
+        if (typeof icon === 'function') {
+            resolvedLeftIcon = React.createElement(icon, { className: "w-5 h-5" });
+        } else {
+            resolvedLeftIcon = icon;
+        }
+    }
 
     // Filter out non-DOM props
     const domProps = { ...props };

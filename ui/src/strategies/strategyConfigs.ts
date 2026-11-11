@@ -26,6 +26,7 @@ export const STRATEGY_CONFIGS_UI: StrategyConfig[] = STRATEGY_CONFIGS.map(({seam
         seam: {id: seamId, name: seamName, role: seamRole as Seam['role']},
         componentPath: componentInfo.path,
         componentName: componentInfo.name,
+        paramSpec: generated.paramSpec as ParamSpec,
     };
 });
 

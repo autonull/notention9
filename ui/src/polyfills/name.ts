@@ -14,10 +14,10 @@ export var __name = function __name(fn: Function, name: string): Function {
 
 // Also set on globalThis for non-module access
 if (typeof globalThis !== 'undefined') {
-    globalThis.__name = __name;
+    (globalThis as any).__name = __name;
 }
 if (typeof window !== 'undefined') {
-    window.__name = __name;
+    (window as any).__name = __name;
 }
 
 // Export a no-op for tree-shaking if needed

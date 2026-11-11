@@ -30,6 +30,7 @@ describe('MetaphorViewPlugin', () => {
     });
 
     it('getMetaphorViewForNote returns correct view for conditional-automation note', () => {
+        const now = new Date().toISOString();
         const note = {
             id: '1',
             title: 'Test Automation',
@@ -40,8 +41,8 @@ describe('MetaphorViewPlugin', () => {
                 {key: 'then', operator: 'is', values: ['action']},
             ],
             tags: ['automation'],
-            createdAt: Date.now(),
-            updatedAt: Date.now(),
+            createdAt: now,
+            updatedAt: now,
         };
 
         const view = getMetaphorViewForNote(note);
@@ -49,14 +50,15 @@ describe('MetaphorViewPlugin', () => {
     });
 
     it('getMetaphorViewForNote returns undefined for note without metaphor', () => {
+        const now = new Date().toISOString();
         const note = {
             id: '1',
             title: 'Regular Note',
             content: '',
             properties: [{key: 'status', operator: 'is', values: ['todo']}],
             tags: [],
-            createdAt: Date.now(),
-            updatedAt: Date.now(),
+            createdAt: now,
+            updatedAt: now,
         };
 
         const view = getMetaphorViewForNote(note);
@@ -64,6 +66,7 @@ describe('MetaphorViewPlugin', () => {
     });
 
     it('ConditionalAutomationView renders IF/THEN structure', () => {
+        const now = new Date().toISOString();
         const note = {
             id: '1',
             title: 'Test Rule',
@@ -79,8 +82,8 @@ describe('MetaphorViewPlugin', () => {
                 {key: 'frequency', operator: 'is', values: ['continuous']},
             ],
             tags: ['automation', 'climate'],
-            createdAt: Date.now(),
-            updatedAt: Date.now(),
+            createdAt: now,
+            updatedAt: now,
         };
 
         render(<ConditionalAutomationView note={note} />);
@@ -103,6 +106,7 @@ describe('MetaphorViewPlugin', () => {
     });
 
     it('ConditionalAutomationView shows empty state for note without rules', () => {
+        const now = new Date().toISOString();
         const note = {
             id: '1',
             title: 'Empty Rule',
@@ -111,8 +115,8 @@ describe('MetaphorViewPlugin', () => {
                 {key: 'metaphor', operator: 'is', values: ['conditional-automation']},
             ],
             tags: [],
-            createdAt: Date.now(),
-            updatedAt: Date.now(),
+            createdAt: now,
+            updatedAt: now,
         };
 
         render(<ConditionalAutomationView note={note} />);

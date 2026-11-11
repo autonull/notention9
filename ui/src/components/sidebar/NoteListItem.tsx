@@ -93,9 +93,9 @@ export const NoteListItem = React.memo(({
 
     // Cast ref and handlers to correct types
     const divRef = swipeRef as React.LegacyRef<HTMLDivElement>;
-    const onTouchStart = handleTouchStart as React.TouchEventHandler<HTMLDivElement>;
-    const onTouchMove = handleTouchMove as React.TouchEventHandler<HTMLDivElement>;
-    const onTouchEnd = handleTouchEnd as React.TouchEventHandler<HTMLDivElement>;
+    const onTouchStart = (e: React.TouchEvent<HTMLDivElement>) => handleTouchStart(e as unknown as TouchEvent);
+    const onTouchMove = (e: React.TouchEvent<HTMLDivElement>) => handleTouchMove(e as unknown as TouchEvent);
+    const onTouchEnd = () => handleTouchEnd();
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Delete' || e.key === 'Backspace') {

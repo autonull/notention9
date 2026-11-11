@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { nostrService } from './NostrService';
-import { publishNoteToNostr, getAliases, getCanonicalKey, Note } from '@notention/core';
+import { publishNoteToNostr, getAliases, getCanonicalKey } from '@notention/core';
+import {createTestNote} from '../tests/utils/testNote';
 
 // Mock dependencies
 vi.mock('@notention/core', async (importOriginal) => {
@@ -36,20 +37,17 @@ describe('NostrService', () => {
 
     it('should add alias tags when saving a note', async () => {
         // Setup
-        const mockNote: Note = {
+        const mockNote = createTestNote({
             id: 'note1',
             content: 'test content',
             properties: [{ key: 'coder', values: ['true'], operator: 'is' }],
             tags: [],
             privacy: 'public',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
             author: 'pubkey1',
-            source: { type: 'user', identifier: 'user', timestamp: Date.now() },
             priority: 1
-        };
+        });
 
-        const mockOntology = [{ id: 'root' }]; // Dummy ontology
+        const mockOntology = [{ id: 'root', label: 'root' }]; // Dummy ontology
 
         // Mock getAliases to return aliases
         // canonical: software_engineer, alias: coder, programmer

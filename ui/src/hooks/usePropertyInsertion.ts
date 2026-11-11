@@ -30,7 +30,7 @@ export function usePropertyInsertion() {
 
         if (editingPropertyId) {
             // Remove existing mark with this propertyId
-            editor.chain().focus().unsetMark('propertyMark', {propertyId: editingPropertyId}).run();
+            editor.chain().focus().unsetMark('propertyMark').run();
         }
 
         // Add new mark at current selection
@@ -92,9 +92,9 @@ export function usePropertyInsertion() {
     };
 
     // Helper to remove a property mark by propertyId
-    const removePropertyMark = useCallback((editor: Editor | null, propertyId: string) => {
+    const removePropertyMark = useCallback((editor: Editor | null, _propertyId: string) => {
         if (editor) {
-            editor.chain().focus().unsetMark('propertyMark', {propertyId}).run();
+            editor.chain().focus().unsetMark('propertyMark').run();
         }
     }, []);
 

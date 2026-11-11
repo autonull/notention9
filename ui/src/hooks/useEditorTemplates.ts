@@ -22,7 +22,7 @@ export function useEditorTemplates({dirtyNote}: UseEditorTemplatesProps) {
 
             setSettings((prev) => ({
                 ...prev,
-                customTemplates: [...prev.customTemplates, template],
+                customTemplates: [...(prev.customTemplates || []), template],
             }));
 
             addToast(`Saved as template: ${name}`, 'success');

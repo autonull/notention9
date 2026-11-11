@@ -234,11 +234,19 @@ export function withBaseStrategy<P extends BaseStrategyProps>(
  */
 export function createBaseStrategy<P extends BaseStrategyProps>(
     id: string,
-    seam: Seam,
+    seam: Pick<Seam, 'id' | 'name' | 'role'>,
     component: React.ComponentType<P>,
     version: string = '1.0.0',
     defaultProps: Partial<P> = {}
 ): Strategy<P> {
+    const fullSeam: Seam = {
+        id: seam.id,
+        name: seam.name,
+        description: '',
+        role: seam.role,
+        components: [],
+        propsShape: {}
+    };
     const WrappedComponent = withBaseStrategy(component, defaultProps);
-    return createComponentStrategy(id, seam, WrappedComponent, version, defaultProps);
+    return createComponentStrategy(id, fullSeam, WrappedComponent, version, defaultProps);
 }

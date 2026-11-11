@@ -5,7 +5,7 @@ import {useNotes} from './useNotes';
 
 export function useOntologySuggestions(contextKeys?: string[]) {
     const {settings} = useSettings();
-    const ontology = settings.ontology;
+    const ontology = settings.ontology || [];
     const {notes} = useNotes();
     const [suggestions, setSuggestions] = useState<SuggestedAttribute[]>([]);
 

@@ -9,7 +9,7 @@ describe('AITab', () => {
         aiEnabled: false,
         developerMode: false,
         theme: 'dark',
-        nostr: {privkey: null},
+        nostr: {privkey: null, relays: []},
         ontology: [],
         customTemplates: [],
         aiProvider: 'remote'

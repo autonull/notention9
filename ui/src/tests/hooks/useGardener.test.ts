@@ -3,7 +3,7 @@ import {useGardener} from '../../hooks/useGardener';
 import {useSettings} from '../../hooks/useSettingsContext';
 import {useView} from '../../hooks/useViewContext';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
-import type {Note} from '@notention/core';
+import {createTestNote} from '../utils/testNote';
 
 // Mock useSettings
 vi.mock('../../hooks/useSettingsContext', () => ({
@@ -61,15 +61,7 @@ describe('useGardener', () => {
     it('should call evolveOntology and update settings', async () => {
         const {result} = renderHook(() => useGardener());
 
-        const mockNotes: Note[] = [{
-            id: '1',
-            title: 'test',
-            content: 'test',
-            createdAt: '',
-            updatedAt: '',
-            tags: [],
-            properties: []
-        }];
+        const mockNotes = [createTestNote({id: '1', title: 'test', content: 'test'})];
         const mockNewAttributes = [
             {key: 'newAttr', type: 'string', description: 'desc', usageCount: 1, sampleValues: []}
         ];

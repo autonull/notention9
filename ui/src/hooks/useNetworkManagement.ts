@@ -11,6 +11,18 @@ import { useNotes } from './useNotes';
 import { agentService } from '../services/AgentService';
 import { useEventSubscription } from './useEventSubscription';
 
+interface NostrConfig {
+    privkey?: string | null;
+    relays?: string[];
+    enabled?: boolean;
+}
+
+interface MeshtasticConfig {
+    enabled?: boolean;
+    connectionType?: 'webserial' | 'http' | 'server-proxy';
+    saveReceivedNotes?: boolean;
+}
+
 interface ProviderConfig {
     id: string;
     create: (settings: any) => NetworkProvider;
@@ -27,7 +39,7 @@ const PROVIDER_CONFIGS: Record<string, ProviderConfig> = {
             enabled: settings.privacyMode !== 'local-only'
         }),
         update: (provider, settings) => {
-            provider.setConfig({
+            (provider as NostrNetworkProvider).setConfig({
                 privkey: settings.nostr?.privkey,
                 relays: settings.nostr?.relays,
                 enabled: settings.privacyMode !== 'local-only'
@@ -49,11 +61,11 @@ const PROVIDER_CONFIGS: Record<string, ProviderConfig> = {
             agentService
         }),
         update: (provider, settings) => {
-            provider.setConfig({
+            (provider as MeshtasticNetworkProvider).setConfig({
                 enabled: settings.privacyMode !== 'local-only' && settings.meshtastic?.enabled,
                 connectionType: settings.meshtastic?.connectionType,
                 saveReceivedNotes: settings.meshtastic?.saveReceivedNotes
-            });
+            } as Partial<MeshtasticConfig>);
         },
         subscribe: (provider, getUpsertNote, settings) => {
             provider.on('note', (note: Note) => {
@@ -135,7 +147,7 @@ export function useNetworkManagement() {
         }
     }, [setSettings]);
 
-    const updateProviderSettings = useCallback((id: string, updates: any) => {
+    const updateProviderSettings = useCallback((id: 'nostr' | 'meshtastic', updates: any) => {
         setSettings((prev) => ({
             ...prev,
             [id]: { ...(prev[id] || {}), ...updates }

@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {cn} from '../../utils/ui';
+import {cn} from '@/utils/ui';
 
 export const MOTION_TOKENS = {
     duration: {
@@ -26,6 +26,7 @@ export const MOTION_TOKENS = {
 
 export type MotionDuration = keyof typeof MOTION_TOKENS.duration;
 export type MotionEasing = keyof typeof MOTION_TOKENS.easing;
+export type MotionStagger = keyof typeof MOTION_TOKENS.stagger;
 
 export interface MotionProps {
     duration?: MotionDuration | number;
@@ -116,7 +117,7 @@ export function useTransition<T>(
     useEffect(() => {
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
-        const dur = typeof duration === 'number' ? duration : MOTION_TOKENS.duration[duration];
+        const dur = typeof duration === 'number' ? duration : MOTION_TOKENS.duration[duration as MotionDuration];
 
         if (reducedMotion || dur === 0) {
             setAnimatedValue(value);
@@ -133,13 +134,13 @@ export function useTransition<T>(
 
 export function useStaggeredAnimation(
     items: unknown[],
-    {duration = 'normal', stagger = 'normal', easing = 'easeOut'}: MotionProps & {stagger?: MotionDuration | number} = {}
+    {duration = 'normal', stagger = 'normal', easing = 'easeOut'}: MotionProps & {stagger?: MotionStagger | number} = {}
 ) {
     const [visibleItems, setVisibleItems] = useState<Set<number>>(new Set());
     const reducedMotion = useReducedMotion();
 
-    const dur = typeof duration === 'number' ? duration : MOTION_TOKENS.duration[duration];
-    const staggerMs = typeof stagger === 'number' ? stagger : MOTION_TOKENS.stagger[stagger];
+    const dur = typeof duration === 'number' ? duration : MOTION_TOKENS.duration[duration as MotionDuration];
+    const staggerMs = typeof stagger === 'number' ? stagger : MOTION_TOKENS.stagger[stagger as MotionStagger];
 
     useEffect(() => {
         if (reducedMotion || dur === 0) {
@@ -206,7 +207,7 @@ export function useAnimatePresence(
     const [isMounted, setIsMounted] = useState(isOpen);
     const [isVisible, setIsVisible] = useState(isOpen);
     const reducedMotion = useReducedMotion();
-    const dur = typeof duration === 'number' ? duration : MOTION_TOKENS.duration[duration];
+    const dur = typeof duration === 'number' ? duration : MOTION_TOKENS.duration[duration as MotionDuration];
 
     useEffect(() => {
         if (isOpen) {
@@ -254,8 +255,8 @@ export function createTransitionClass(
     duration: MotionDuration | number = 'normal',
     easing: MotionEasing | string = 'easeOut'
 ): string {
-    const dur = typeof duration === 'number' ? `${duration}ms` : MOTION_TOKENS.duration[duration];
-    const ease = MOTION_TOKENS.easing[easing as MotionEasing] || easing;
+    const dur = typeof duration === 'number' ? `${duration}ms` : MOTION_TOKENS.duration[duration as MotionDuration];
+    const ease = MOTION_TOKENS.easing[(easing as MotionEasing)] || easing;
     return `transition-${property} duration-[${dur}] ease-[${ease}]`;
 }
 

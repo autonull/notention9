@@ -78,7 +78,7 @@ export function useGardener() {
         if (newAttributes.length === 0) return [];
 
         setSettings(prev => {
-            const currentOntology = [...prev.ontology];
+            const currentOntology = [...(prev.ontology || [])];
             const newAttrsMap: Record<string, OntologyAttribute> = {};
 
             for (const attr of newAttributes) {
@@ -111,7 +111,7 @@ export function useGardener() {
         if (!properties || properties.length === 0) return;
 
         setSettings(prev => {
-            const currentOntology = [...prev.ontology];
+            const currentOntology = [...(prev.ontology || [])];
             const newAttrsMap: Record<string, OntologyAttribute> = {};
             let hasChanges = false;
 
@@ -155,7 +155,7 @@ export function useGardener() {
     }, [gardener]);
 
     const optimizeOntology = useCallback(async () => {
-        const result = await gardener.optimizeOntology(settings.ontology);
+        const result = await gardener.optimizeOntology(settings.ontology || []);
 
         if (result.merged.length > 0 || result.pruned.length > 0) {
             addToast(`Optimization Report: ${result.merged.length} potential merges`, 'info');

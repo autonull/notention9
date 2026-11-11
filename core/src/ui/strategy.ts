@@ -206,15 +206,25 @@ export abstract class ComponentStrategy<P extends object> extends Plugin<Compone
  */
 export function createComponentStrategy<P extends object>(
     id: string,
-    seam: Seam,
+    seam: Pick<Seam, 'id' | 'name' | 'role'> | Seam,
     component: React.ComponentType<P>,
     version: string = '1.0.0',
     defaultProps: Partial<P> = {},
     paramSpec: ParamSpec = {}
 ): StrategyRegistrable<P> {
+    const fullSeam: Seam = 'components' in seam
+        ? seam
+        : {
+            id: seam.id,
+            name: seam.name,
+            description: '',
+            role: seam.role,
+            components: [],
+            propsShape: {}
+        };
     return {
         id,
-        seam,
+        seam: fullSeam,
         version,
         params: paramSpec,
         name: id,

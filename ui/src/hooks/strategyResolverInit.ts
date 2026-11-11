@@ -4,7 +4,7 @@
  * Uses generated seam-definitions.ts as single source of truth.
  */
 
-import type { Seam, Strategy } from '@notention/core/ui/strategy';
+import type { Seam, Strategy, ParamSpec } from '@notention/core/ui/strategy';
 import { strategyRegistry, createComponentStrategy, getStrategiesForSeam, getStrategy } from '@notention/core/ui/strategy';
 import { resolveSeamId, SEAM_ROLES, type SeamRole } from '@notention/core/constants/seams';
 import { profileRegistry } from '@notention/core/ui/ProfileRegistry';
@@ -156,18 +156,18 @@ export async function registerUIStrategies(): Promise<void> {
         }
     }
 
-    // Import custom strategy implementations (these have custom logic beyond simple component rendering)
-    const { DescribeItComposerStrategy } = await import('../strategies/DescribeItComposerStrategy');
-    const { TagInputStrategy } = await import('../strategies/TagInputStrategy');
-    const { PropertyFormStrategy } = await import('../strategies/PropertyFormStrategy');
-    const { TemplateSelectorStrategy } = await import('../strategies/TemplateSelectorStrategy');
+    // Import custom strategy components (the underlying components, not the Strategy wrappers)
+    const { DescribeItComposer } = await import('../components/editor/DescribeItComposer');
+    const { TagInput } = await import('../components/editor/TagInput');
+    const { PropertyForm } = await import('../components/editor/PropertyForm');
+    const { TemplateSelector } = await import('../components/editor/TemplateSelector');
 
-    // Map of strategy ID to custom strategy implementation
+    // Map of strategy ID to custom strategy component (not Strategy wrapper)
     const strategyImplMap: Record<string, React.ComponentType<any>> = {
-        'describe-it-composer': DescribeItComposerStrategy,
-        'tag-input': TagInputStrategy,
-        'property-form': PropertyFormStrategy,
-        'template-selector': TemplateSelectorStrategy,
+        'describe-it-composer': DescribeItComposer,
+        'tag-input': TagInput,
+        'property-form': PropertyForm,
+        'template-selector': TemplateSelector,
     };
 
     // Register all strategies from generated configs
@@ -195,7 +195,7 @@ export async function registerUIStrategies(): Promise<void> {
             strategyImpl,
             config.version,
             config.defaultProps,
-            config.paramSpec
+            config.paramSpec as ParamSpec
         );
 
         if (!strategyRegistry.has(strategy.name)) {
@@ -386,11 +386,12 @@ export async function initializeProfiles(): Promise<void> {
     }
 
     // Register experiment for match-display comparison
-    const matchSeamId = resolveSeamId(SEAM_ROLES.MATCH, strategyRegistry);
+    // Use the SeamRole directly (not the resolved seam ID)
+    const matchSeamRole = SEAM_ROLES.MATCH;
     profileRegistry.registerExperiment({
         ...DEFAULT_MATCH_DISPLAY_EXPERIMENT,
-        seamId: matchSeamId,
-        variants: DEFAULT_MATCH_DISPLAY_EXPERIMENT.variants.map(v => ({ ...v, seamId: matchSeamId })),
+        seamId: matchSeamRole,
+        variants: DEFAULT_MATCH_DISPLAY_EXPERIMENT.variants.map(v => ({ ...v, seamId: matchSeamRole })),
     });
 }
 

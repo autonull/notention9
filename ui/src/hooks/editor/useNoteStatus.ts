@@ -9,14 +9,12 @@ export function useNoteStatus(
 ) {
     const isActive = isNoteActive(dirtyNote);
 
-    const handleToggleActive = useCallback(() => {
-        setDirtyNote((prev) => {
-            const updated = NotePipeline.toggleStatus(prev, NOTE_STATUS.QUEUED, ontology);
-            // Note: Use setTimeout to defer side-effect outside render phase
-            setTimeout(() => onSave(updated), 0);
-            return updated;
-        });
-    }, [setDirtyNote, onSave, ontology]);
+    const handleToggleActive = useCallback(async () => {
+        const updated = await NotePipeline.toggleStatus(dirtyNote, NOTE_STATUS.QUEUED, ontology);
+        setDirtyNote(updated);
+        // Note: Use setTimeout to defer side-effect outside render phase
+        setTimeout(() => onSave(updated), 0);
+    }, [dirtyNote, setDirtyNote, onSave, ontology]);
 
     return {
         isActive,

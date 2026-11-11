@@ -9,7 +9,7 @@ interface AgentMessage<T = any> {
 }
 
 // Detect if running in development or test mode
-const isDevOrTest = typeof import.meta !== 'undefined' && (import.meta.env?.MODE === 'development' || import.meta.vitest);
+const isDevOrTest = typeof import.meta !== 'undefined' && import.meta.env?.MODE === 'development';
 
 class AgentService extends RobustWebSocket {
     private _enabled: boolean;
@@ -76,7 +76,7 @@ class AgentService extends RobustWebSocket {
         if (enabled) {
             this.connect();
         } else {
-            this.disconnect();
+            this.close();
         }
     }
 
@@ -86,7 +86,7 @@ class AgentService extends RobustWebSocket {
             localStorage.setItem('agent_url', url);
         }
         if (this._enabled) {
-            this.disconnect();
+            this.close();
             this.connect();
         }
     }
@@ -101,17 +101,17 @@ class AgentService extends RobustWebSocket {
 
     async saveNote(note: Note): Promise<void> {
         if (!this._enabled) return;
-        this.send({type: 'save_note', payload: note});
+        this.send(JSON.stringify({type: 'save_note', payload: note}));
     }
 
     async deleteNote(id: string): Promise<void> {
         if (!this._enabled) return;
-        this.send({type: 'delete_note', payload: {id}});
+        this.send(JSON.stringify({type: 'delete_note', payload: {id}}));
     }
 
     async meshSendNote(note: Note): Promise<void> {
         if (!this._enabled) return;
-        this.send({type: 'mesh_send_note', payload: note});
+        this.send(JSON.stringify({type: 'mesh_send_note', payload: note}));
     }
 
     async meshUpdateConfig(config: any): Promise<void> {
@@ -211,7 +211,7 @@ class AgentService extends RobustWebSocket {
             };
 
             this.on('message', handler);
-            this.send({type, id, payload});
+            this.send(JSON.stringify({type, id, payload}));
         });
     }
 }

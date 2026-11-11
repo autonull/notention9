@@ -31,7 +31,7 @@ interface UseSmartNoteAssistantReturn {
     isOpen: boolean;
     setIsOpen: (open: boolean) => void;
     activeTab: AssistantTab;
-    setActiveTab: (tab: string) => void;
+    setActiveTab: React.Dispatch<React.SetStateAction<AssistantTab>>;
     activeSuggestion: number;
     setActiveSuggestion: (index: number) => void;
 
@@ -95,8 +95,8 @@ export function useSmartNoteAssistant({
     const { suggestions, removeSuggestion } = useNoteAnalysis(note);
 
     const localMatches = useMatches(note);
-    const { matches: networkMatches, isSearching, discover: discoverMatches, clear: clearNetworkMatches } = useNetworkDiscovery(note, settings.ontology);
-    const propertyReview = usePropertyReview(note.content, properties, settings.ontology);
+    const { matches: networkMatches, isSearching, discover: discoverMatches, clear: clearNetworkMatches } = useNetworkDiscovery(note, settings.ontology || []);
+    const propertyReview = usePropertyReview(note.content, properties, settings.ontology || []);
 
     const [attributeModalOpen, setAttributeModalOpen] = useState(false);
     const [aliasModalOpen, setAliasModalOpen] = useState(false);
@@ -179,7 +179,7 @@ export function useSmartNoteAssistant({
     }, [activeTab, isOpen, setActiveTab, setIsOpen, discoverMatches]);
 
     const handleApplySuggestion = useCallback((suggestion: Suggestion) => {
-        const taskContent = applyTaskSuggestion(note.content, suggestion.text);
+        const taskContent = applyTaskSuggestion(note.content, suggestion.text || '');
         if (taskContent) {
             onNoteUpdate(taskContent);
             addToast('Suggestion applied', 'success');
@@ -195,11 +195,11 @@ export function useSmartNoteAssistant({
     }, [note.content, onNoteUpdate, addToast, removeSuggestion]);
 
     const handleConfirmAddAttribute = useCallback((key: string, attribute: OntologyAttribute) => {
-        const targetNodeId = settings.ontology[0]?.id;
+        const targetNodeId = (settings.ontology || [])[0]?.id;
         if (targetNodeId) {
             setSettings(prev => ({
                 ...prev,
-                ontology: addAttribute(prev.ontology, targetNodeId, key, attribute)
+                ontology: addAttribute(prev.ontology || [], targetNodeId, key, attribute)
             }));
             addToast(`Added '${key}' to ontology`, 'success');
         } else {
@@ -210,7 +210,7 @@ export function useSmartNoteAssistant({
     const handleConfirmAddAlias = useCallback((nodeId: string, attributeKey: string) => {
         setSettings(prev => ({
             ...prev,
-            ontology: addAliasToAttribute(prev.ontology, nodeId, attributeKey, targetKey)
+            ontology: addAliasToAttribute(prev.ontology || [], nodeId, attributeKey, targetKey)
         }));
         addToast(`Linked alias '${targetKey}' to '${attributeKey}'`, 'success');
     }, [setSettings, targetKey, addToast]);

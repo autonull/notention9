@@ -9,7 +9,7 @@ export type OntologyTab = 'graph' | 'simulator' | 'conflicts' | 'suggestions';
 
 export function useOntologyView() {
     const {settings, setSettings} = useSettings();
-    const ontology = settings.ontology;
+    const ontology = settings.ontology || [];
     const {notes} = useNotes();
     const {evolveOntology, optimizeOntology} = useGardener();
     const [activeTab, setActiveTab] = useState<OntologyTab>('graph');
@@ -62,7 +62,7 @@ export function useOntologyView() {
             };
             return {
                 ...prev,
-                ontology: addNode(prev.ontology, parentId, newNode)
+                ontology: addNode(prev.ontology || [], parentId, newNode)
             };
         });
     }, [setSettings]);
@@ -70,21 +70,21 @@ export function useOntologyView() {
     const handleDeleteNode = useCallback((nodeId: string) => {
         setSettings(prev => ({
             ...prev,
-            ontology: deleteNode(prev.ontology, nodeId)
+            ontology: deleteNode(prev.ontology || [], nodeId)
         }));
     }, [setSettings]);
 
     const handleAddAttribute = useCallback((nodeId: string, key: string, attribute: OntologyAttribute) => {
         setSettings(prev => ({
             ...prev,
-            ontology: addAttribute(prev.ontology, nodeId, key, attribute)
+            ontology: addAttribute(prev.ontology || [], nodeId, key, attribute)
         }));
     }, [setSettings]);
 
     const handleAddAlias = useCallback((nodeId: string, attributeKey: string, alias: string) => {
         setSettings(prev => ({
             ...prev,
-            ontology: addAliasToAttribute(prev.ontology, nodeId, attributeKey, alias)
+            ontology: addAliasToAttribute(prev.ontology || [], nodeId, attributeKey, alias)
         }));
     }, [setSettings]);
 

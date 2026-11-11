@@ -25,17 +25,7 @@ vi.mock('../hooks/useStrategyResolver', () => ({
 describe('ProfileSettings', () => {
     beforeEach(() => {
         // Reset registry
-        profileRegistry.profiles.clear();
-        profileRegistry.policies.clear();
-        profileRegistry.userConfigs.clear();
-        profileRegistry.experiments.clear();
-        profileRegistry.assignments.clear();
-
-        for (const profile of DEFAULT_PROFILES) {
-            profileRegistry.profiles.set(profile.id, profile);
-        }
-        profileRegistry.policies.set(DEFAULT_POLICY.id, DEFAULT_POLICY);
-        profileRegistry.experiments.set(DEFAULT_MATCH_DISPLAY_EXPERIMENT.id, DEFAULT_MATCH_DISPLAY_EXPERIMENT);
+        profileRegistry.reset();
     });
 
     it('renders profile settings panel', () => {

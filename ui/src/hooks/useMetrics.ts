@@ -89,13 +89,16 @@ function setConsent(value: boolean): void {
 
 export function useMetrics() {
     const [consent, setConsentState] = useState(false);
-    const sessionIdRef = useRef(() => {
+    const sessionIdRef = useRef<string>('');
+
+    // Initialize sessionIdRef.current if not set
+    if (!sessionIdRef.current) {
         try {
-            return window.crypto?.randomUUID?.() || Math.random().toString(36).slice(2);
+            sessionIdRef.current = window.crypto?.randomUUID?.() || Math.random().toString(36).slice(2);
         } catch {
-            return Math.random().toString(36).slice(2);
+            sessionIdRef.current = Math.random().toString(36).slice(2);
         }
-    });
+    }
 
     useEffect(() => {
         const initialConsent = hasConsent();

@@ -88,15 +88,13 @@ export function StrategyProvider({ children, userId = 'default-user' }: Strategy
     }, [userId, persistConfig]);
 
     const setOverride = useMemo(() => (seamRole: SeamRole, strategyId: string) => {
-        const seamId = resolveSeamId(seamRole, strategyRegistry);
-        profileRegistry.setOverride(userId, seamId, strategyId);
+        profileRegistry.setOverride(userId, seamRole, strategyId);
         setUserConfigState(profileRegistry.getUserConfig(userId));
         persistConfig();
     }, [userId, persistConfig]);
 
     const removeOverride = useMemo(() => (seamRole: SeamRole) => {
-        const seamId = resolveSeamId(seamRole, strategyRegistry);
-        profileRegistry.removeOverride(userId, seamId);
+        profileRegistry.removeOverride(userId, seamRole);
         setUserConfigState(profileRegistry.getUserConfig(userId));
         persistConfig();
     }, [userId, persistConfig]);
@@ -140,13 +138,13 @@ export function StrategyProvider({ children, userId = 'default-user' }: Strategy
 }
 
 // Hook for components to use a specific seam's strategy (backward compatible)
-export function useSeamStrategy<P = Record<string, unknown>>(seamRole: SeamRole): Strategy<P> | undefined {
+export function useSeamStrategy<P extends object = Record<string, unknown>>(seamRole: SeamRole): Strategy<P> | undefined {
     const { resolveStrategyOnly } = useStrategy();
     return resolveStrategyOnly(seamRole) as Strategy<P> | undefined;
 }
 
 // Hook for components that need full provenance metadata
-export function useResolvedStrategy<P = Record<string, unknown>>(seamRole: SeamRole): ResolvedStrategy<P> | undefined {
+export function useResolvedStrategy<P extends object = Record<string, unknown>>(seamRole: SeamRole): ResolvedStrategy<P> | undefined {
     const { resolveStrategy } = useStrategy();
     return resolveStrategy(seamRole) as ResolvedStrategy<P> | undefined;
 }

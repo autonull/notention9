@@ -79,7 +79,7 @@ describe('MetricsTab', () => {
         const mockEvents = [
             {name: 'test_event', properties: {foo: 'bar'}, timestamp: Date.now()},
             {name: 'test_event', properties: {foo: 'baz'}, timestamp: Date.now()},
-            {name: 'another_event', properties: {}, timestamp: Date.now()},
+            {name: 'another_event', properties: {} as Record<string, string | number | boolean>, timestamp: Date.now()},
         ];
         
         vi.mocked(useMetrics).mockReturnValue({

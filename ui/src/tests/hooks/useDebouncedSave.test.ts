@@ -1,18 +1,14 @@
 import {act, renderHook} from '@testing-library/react';
 import {useDebouncedSave} from '../../hooks/useDebouncedSave';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
-import type {Note} from '@notention/core';
+import {createTestNote} from '../utils/testNote';
 
 describe('useDebouncedSave', () => {
-    const mockNote: Note = {
+    const mockNote = createTestNote({
         id: '1',
         title: 'Title',
         content: 'Content',
-        tags: [],
-        properties: [],
-        createdAt: '',
-        updatedAt: ''
-    };
+    });
     const onSave = vi.fn();
 
     beforeEach(() => {

@@ -10,7 +10,7 @@ export function useNetworkActions() {
     const {addToast} = useToast();
     const {setSelectedNoteId, setActiveView} = useView();
 
-    const applyMatchToNote = useCallback((targetNote: Note, event: NostrEvent) => {
+    const applyMatchToNote = useCallback(async (targetNote: Note, event: NostrEvent) => {
         const props = extractPropertiesFromTags(event.tags);
         if (props.length === 0) {
             addToast("No semantic properties found in this note.", 'warning');
@@ -18,7 +18,8 @@ export function useNetworkActions() {
         }
 
         const tagsToAdd = props.map(p => formatPropertyTag(p)).join('\n');
-        updateNote(NotePipeline.addProperty(targetNote, tagsToAdd));
+        const updatedNote = await NotePipeline.addProperty(targetNote, tagsToAdd);
+        updateNote(updatedNote);
 
         addToast(`Applied ${props.length} properties from match!`, 'success');
     }, [updateNote, addToast]);

@@ -271,6 +271,22 @@ export class ProfileRegistry {
         }
     }
 
+    // Reset registry for testing
+    reset(): void {
+        this.profiles.clear();
+        this.policies.clear();
+        this.userConfigs.clear();
+        this.experiments.clear();
+        this.assignments.clear();
+
+        // Re-register defaults
+        for (const profile of DEFAULT_PROFILES) {
+            this.profiles.set(profile.id, profile);
+        }
+        this.policies.set(DEFAULT_POLICY.id, DEFAULT_POLICY);
+        this.experiments.set(DEFAULT_MATCH_DISPLAY_EXPERIMENT.id, DEFAULT_MATCH_DISPLAY_EXPERIMENT);
+    }
+
     // Serialization for persistence
     toJSON(): {
         profiles: StrategyProfile[];

@@ -3,6 +3,7 @@ import {Badge} from '../ui/Badge';
 import { Tabs } from '../ui';
 import { ScoredMatch } from '@notention/core';
 import { Suggestion } from '@notention/core';
+import type { AssistantTab } from '../../hooks/useSmartNoteAssistant';
 
 interface AssistantHeaderProps {
     suggestions: Suggestion[];
@@ -11,8 +12,8 @@ interface AssistantHeaderProps {
     propertiesCount: number;
     isOpen: boolean;
     onToggleOpen: (e?: React.MouseEvent) => void;
-    activeTab: string;
-    onChangeTab: (id: string) => void;
+    activeTab: AssistantTab;
+    onChangeTab: React.Dispatch<React.SetStateAction<AssistantTab>>;
 }
 
 export function AssistantHeader({
@@ -54,7 +55,7 @@ export function AssistantHeader({
                 <div className="p-2 border-b border-gray-800 bg-gray-900/50">
                     <Tabs
                         activeTab={activeTab}
-                        onChange={(id) => onChangeTab(id)}
+                        onChange={(id) => onChangeTab(id as AssistantTab)}
                         tabs={[
                             { id: 'properties', label: 'Props', count: propertiesCount },
                             { id: 'suggestions', label: 'AI', count: suggestions.length },

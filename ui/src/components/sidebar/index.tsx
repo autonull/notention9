@@ -30,7 +30,7 @@ interface SidebarProps {
     isCollapsed?: boolean;
 }
 
-function SidebarContent({ onToggleSidebar, isSidebarOpen, sidebarWidth, isCollapsed }: SidebarProps) {
+function SidebarContent({ onToggleSidebar, isSidebarOpen, sidebarWidth, isCollapsed = false }: SidebarProps) {
     const searchInputRef = useRef<HTMLInputElement>(null);
     const virtualListRef = useRef<VirtualizedListRef | null>(null);
     const touchElementRef = useRef<HTMLDivElement>(null!);

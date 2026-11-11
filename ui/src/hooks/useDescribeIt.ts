@@ -4,7 +4,7 @@ import {useGardener} from './useGardener';
 import {useSettings} from './useSettingsContext';
 import {LocalAIProvider} from '../services/ai/LocalProvider';
 import {proposeProperties} from '../services/ai/proposals';
-import type {PropertyProposal} from '../services/ai/types';
+import type {AIProvider, PropertyProposal} from '../services/ai/types';
 
 export type DescribeItStatus = 'idle' | 'loading' | 'error';
 
@@ -27,7 +27,7 @@ export function useDescribeIt(ontology: OntologyNode[]) {
     const [error, setError] = useState<string | null>(null);
     const [pendingRemoteText, setPendingRemoteText] = useState<string | null>(null);
 
-    const propose = useCallback(async (text: string, activeProvider = provider) => {
+    const propose = useCallback(async (text: string, activeProvider: AIProvider = provider) => {
         setStatus('loading');
         setError(null);
         try {

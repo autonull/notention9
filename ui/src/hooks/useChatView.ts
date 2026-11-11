@@ -10,7 +10,7 @@ export function useChatView() {
     const {settings} = useSettings();
     const {selectedChatPubkey, setSelectedChatPubkey} = useView();
 
-    const privkey = settings.nostr.privkey;
+    const privkey = settings.nostr.privkey ?? null;
     const pubkey = useMemo(
         () => (privkey ? getPublicKey(hexToBytes(privkey)) : null),
         [privkey]

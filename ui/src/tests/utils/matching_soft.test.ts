@@ -1,6 +1,7 @@
 import {describe, expect, it} from 'vitest';
 import {MatchEngine} from '@notention/core';
 import type {Note, Property} from '@notention/core';
+import {createTestNote} from '../utils/testNote';
 
 const engine = new MatchEngine([]);
 
@@ -14,18 +15,15 @@ const checkConstraint = (constraint: Property, note: Note): boolean => {
 };
 
 describe('checkConstraint - Soft Matching', () => {
-    const targetNote: Note = {
+    const targetNote = createTestNote({
         id: '1',
         title: 'Target',
         content: '',
-        tags: [],
-        createdAt: '',
-        updatedAt: '',
         properties: [
             {key: 'skill', operator: 'is', values: ['React.js']},
             {key: 'role', operator: 'is', values: ['Senior Developer']}
         ]
-    };
+    });
 
     it('matches exact strings', () => {
         expect(checkConstraint({key: 'skill', operator: 'is', values: ['React.js']}, targetNote)).toBe(true);

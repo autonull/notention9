@@ -21,29 +21,31 @@ export function useNoteProperties(
     // Friction tracking for corrections
     const { recordCorrection } = useFrictionRecorder('capture', 'editor');
 
-    const handleContentSave = useCallback((content: string) => {
-        update(prev => ({
-            ...NotePipeline.updateContent(prev, content, ontology),
+    const handleContentSave = useCallback(async (content: string) => {
+        const updated = await NotePipeline.updateContent(dirtyNote, content, ontology);
+        setDirtyNote({
+            ...updated,
             priority: 1.0 // User edit promotes priority
-        }));
-    }, [update, ontology]);
+        });
+    }, [setDirtyNote, ontology]);
 
-    const handleUpdateTextFromInspector = useCallback((oldProp: Property | null, newProp: Property | null) => {
+    const handleUpdateTextFromInspector = useCallback(async (oldProp: Property | null, newProp: Property | null) => {
         const newContent = replacePropertyInString(dirtyNote.content, oldProp, newProp);
         if (newContent !== dirtyNote.content) {
             recordCorrection();
-            handleContentSave(newContent);
+            await handleContentSave(newContent);
         }
     }, [dirtyNote.content, handleContentSave, recordCorrection]);
 
-    const handleUpdateProperty = useCallback((key: string, value: string) => {
+    const handleUpdateProperty = useCallback(async (key: string, value: string) => {
         recordCorrection();
-        update(prev => NotePipeline.upsertProperty(prev, key, value, ontology));
-    }, [update, ontology, recordCorrection]);
+        const updated = await NotePipeline.upsertProperty(dirtyNote, key, value, ontology);
+        setDirtyNote(updated);
+    }, [setDirtyNote, ontology, recordCorrection]);
 
-    const handleUpdateLocation = useCallback((latlng: string) => {
+    const handleUpdateLocation = useCallback(async (latlng: string) => {
         recordCorrection();
-        handleUpdateProperty('location', latlng);
+        await handleUpdateProperty('location', latlng);
     }, [handleUpdateProperty, recordCorrection]);
 
     return {
