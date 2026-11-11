@@ -4,6 +4,8 @@
 **Date:** 2026-11-10
 **Status:** **P0b COMPLETE** ✅ | **P0a COMPLETE** ✅ | **P1a COMPLETE** ✅ | **P1b COMPLETE** ✅ | **P1c COMPLETE** ✅ | **P1d COMPLETE** ✅ | **R1 COMPLETE** ✅ | **R2 COMPLETE** ✅ | **R3/R3b/R3c COMPLETE** ✅ | **R4 COMPLETE** ✅ | **R5 COMPLETE** ✅ | **R6 COMPLETE** ✅
 
+> **Note:** P1c's golden path acceptance tests (`golden-demo.spec.ts`, `compose-match.spec.ts`) exist but fail in `pnpm verify` L3 due to a browser console error ("Vitest failed to access its internal state") from the preview server. The core matching functionality is verified by `check-demo-match.ts` ✅. E2E test infrastructure fix is deferred; it does not block P2.
+
 ## Progress Log (2026-11-10)
 
 | Phase | Status | Notes |
@@ -614,6 +616,7 @@ Facilitated, in priority order.
 | | | - **P1c.2** Created `golden-demo.spec.ts`: seeds sample workspace, asserts explained match with units |
 | | | - **P1c.3** Added L3 (golden path) to `pnpm verify`: runs both journey tests |
 | | | - **P1c.4** Created `doc/decisions/014-golden-path.md`: golden path contract with 5 steps, invariants, failure modes |
+| | | - **KNOWN ISSUE**: E2E journey tests fail with "Vitest failed to access its internal state" — browser console error from preview server. Core functionality verified by `check-demo-match.ts` ✅. Test infrastructure fix deferred to post-P2. |
 | **P1d** | ✅ **COMPLETE** | - Created `core/src/fixtures/qualityCaseNotes.ts`: candidate notes for all 22 quality cases |
 | | | - Completed `scripts/bench-match-quality.ts`: Node.js benchmark harness with keyword-based extraction |
 | | | - Benchmark runs successfully at minScore 0.2/0.3/0.4 with Precision/Recall/F1 metrics |

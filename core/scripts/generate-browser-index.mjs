@@ -64,7 +64,6 @@ export * from './validation/index.js';
 
 // Extensibility modules
 export * from './suggestions/SuggestionStore.js';
-export * from './test-utils/index.js';
 export * from './events/index.js';
 
 // UI

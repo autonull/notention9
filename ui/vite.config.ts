@@ -7,15 +7,20 @@ import nodePolyfills from 'rollup-plugin-node-polyfills';
 // import {VitePWA} from 'vite-plugin-pwa'; // Temporarily disabled due to Node.js module resolution issues
 
 // Plugin to exclude test files from production build
-const excludeTestsPlugin = {
+const createExcludeTestsPlugin = (isDev: boolean) => ({
     name: 'exclude-tests',
     enforce: 'pre',
     resolveId(id) {
-        if (!id.includes('node_modules') && (id.includes('.test.') || id.includes('.spec.') || id.includes('/tests/') || id.includes('/test/'))) {
-            return { id, external: true };
+        const isTestFile = id.includes('.test.') || id.includes('.spec.') || id.includes('/tests/') || id.includes('/test/');
+        const isWorkspacePackage = id.includes('@notention/');
+        const isNodeModules = id.includes('node_modules');
+        // Exclude test files from workspace packages (which are symlinked in node_modules)
+        // and from the main src directory
+        if (isTestFile && (isWorkspacePackage || !isNodeModules)) {
+            return isDev ? { id, external: true } : false;
         }
     },
-};
+});
 
 // Plugin to inject __name polyfill into production JS chunks via generateBundle
 const namePolyfillPlugin = {
@@ -183,7 +188,6 @@ export default defineConfig(({mode}) => {
                 { find: '@notention/core/telemetry/revisionStore', replacement: path.resolve(__dirname, isDev ? '../core/src/telemetry/revisionStore.browser.ts' : '../core/dist/browser/telemetry/revisionStore.js') },
                 { find: '@notention/core/validation', replacement: path.resolve(__dirname, isDev ? '../core/src/validation/index.ts' : '../core/dist/browser/validation/index.js') },
                 { find: '@notention/core/storage', replacement: path.resolve(__dirname, isDev ? '../core/src/storage/index.ts' : '../core/dist/browser/storage/index.js') },
-                { find: '@notention/core/test-utils', replacement: path.resolve(__dirname, isDev ? '../core/src/test-utils/index.ts' : '../core/dist/browser/test-utils/index.js') },
                 // Additional subpaths for direct imports from @notention/core
                 { find: '@notention/core/extraction', replacement: path.resolve(__dirname, isDev ? '../core/src/extraction/index.ts' : '../core/dist/browser/extraction/index.js') },
                 { find: '@notention/core/notes', replacement: path.resolve(__dirname, isDev ? '../core/src/notes/index.ts' : '../core/dist/browser/notes/index.js') },
@@ -276,7 +280,7 @@ export default defineConfig(({mode}) => {
         plugins: [
             react(),
             coreBrowserVariantPlugin,
-            excludeTestsPlugin,
+            createExcludeTestsPlugin(isDev),
             namePolyfillPlugin,
             preserveReactExportsPlugin,
             isDev && namePolyfillDevPlugin,
@@ -397,8 +401,7 @@ export default defineConfig(({mode}) => {
                     if (id.startsWith('child_process') || 
                         id.startsWith('cluster') || id.startsWith('dns') || id.startsWith('net') || 
                         id.startsWith('tls') || id.startsWith('http') || id.startsWith('https') || 
-                        id.startsWith('http2') || id.startsWith('dgram') ||
-                        id === '@notention/optimize' || id.startsWith('@notention/optimize/')) {
+                        id.startsWith('http2') || id.startsWith('dgram')) {
                         return true;
                     }
                     return false;

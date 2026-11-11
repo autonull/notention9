@@ -54,7 +54,6 @@ const browserEntries = {
   'feedback/index': 'src/feedback/index.ts',
   // Extensibility
   'suggestions/SuggestionStore': 'src/suggestions/SuggestionStore.browser.ts',
-  'test-utils/index': 'src/test-utils/index.ts',
   'validation/index': 'src/validation/index.ts',
   'events/index': 'src/events/index.ts',
   // UI
