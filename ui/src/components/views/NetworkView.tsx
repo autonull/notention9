@@ -40,7 +40,8 @@ export function NetworkView({matchAgainst}: NetworkViewProps) {
     const filteredEvents = useMemo(() => {
         if (activeFilterId === 'all') return sortedEvents;
 
-        const selectedNode = findNode(settings.ontology, activeFilterId);
+        const ontology = settings.ontology ?? [];
+        const selectedNode = findNode(ontology, activeFilterId);
         if (!selectedNode) return sortedEvents;
 
         const keysInBranch = getSubtreeKeys(selectedNode);

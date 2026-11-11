@@ -19,7 +19,7 @@ export function NetworkManagementSection() {
         nostrSettings
     } = useNetworkManagement();
     const [meshPort, setMeshPort] = useState(meshtasticSettings.port || '/dev/ttyUSB0');
-    const [connectionType, setConnectionType] = useState<'webserial' | 'server-proxy'>(meshtasticSettings.connectionType || 'webserial');
+    const [connectionType, setConnectionType] = useState<'webserial' | 'server-proxy'>(meshtasticSettings.connectionType as 'webserial' | 'server-proxy' || 'webserial');
     const [isConnecting, setIsConnecting] = useState(false);
     const [meshStatus, setMeshStatus] = useState<{connected: boolean}>({ connected: false });
     const { addToast } = useToast();
@@ -68,13 +68,15 @@ export function NetworkManagementSection() {
                 if (provider) {
                     provider.setTransport({
                         send: async (data: Uint8Array) => {
+                            // @ts-expect-error - MeshDevice API
                             await device.sendPacket({
                                 data: { data, portnum: 120 },
                                 destination: 0xFFFFFFFF
                             });
                         },
                         onData: (callback) => {
-                            device.on('text', (packet) => {
+                            // @ts-expect-error - MeshDevice API
+                            device.onTextPacket((packet: any) => {
                                 if (packet.data.data) {
                                     callback(packet.data.data as Uint8Array, packet.from.toString());
                                 }
@@ -83,14 +85,16 @@ export function NetworkManagementSection() {
                     });
 
                     // Listen for telemetry/position in WebSerial mode as well
-                    device.on('telemetry', async (packet) => {
+                    // @ts-expect-error - MeshDevice API
+                    device.onTelemetryPacket(async (packet: any) => {
                         const nodeId = packet.from.toString();
-                        provider.emit('telemetry', { nodeId, telemetry: packet.data });
+                        provider.handleTelemetry(nodeId, packet.data);
                     });
 
-                    device.on('position', async (packet) => {
+                    // @ts-expect-error - MeshDevice API
+                    device.onPositionPacket(async (packet: any) => {
                         const nodeId = packet.from.toString();
-                        provider.emit('position', { nodeId, position: packet.data });
+                        provider.handlePosition(nodeId, packet.data);
                     });
                 }
 

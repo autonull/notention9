@@ -63,7 +63,7 @@ function VirtualizedListInner<T>(
     } = props;
 
     const [scrollTop, setScrollTop] = useState(0);
-    const listRef = useRef<HTMLDivElement>(null);
+    const listRef = useRef<HTMLDivElement>(null!);
     const itemHeightsRef = useRef<Map<number, number>>(new Map());
     const totalHeightRef = useRef(0);
     const [focusedIndex, setFocusedIndex] = useState(-1);
@@ -172,7 +172,9 @@ function VirtualizedListInner<T>(
     }, [getHeight, containerHeight]);
 
     const setListRef = useCallback((element: HTMLDivElement | null) => {
-        listRef.current = element;
+        if (element) {
+            listRef.current = element;
+        }
     }, []);
 
     const focusItem = useCallback((index: number) => {

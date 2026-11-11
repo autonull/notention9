@@ -11,6 +11,8 @@ import type { Seam, SeamRole } from '../ui/strategy.js';
 import type { SeamDefinition } from '../schemas/seamDefinition.js';
 import { getSeams } from '../ui/strategy.js';
 
+export type { SeamRole };
+
 /**
  * Semantic seam roles - stable identifiers used across the system
  * Dynamic seam IDs (e.g., 'capture-0') are resolved at runtime from discovered seams

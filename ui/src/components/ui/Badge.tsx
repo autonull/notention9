@@ -4,7 +4,7 @@ import { componentTokens } from '../../styles/tokens';
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
     variant?: 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info' | 'purple' | 'default' | 'outline';
-    size?: 'sm' | 'md';
+    size?: 'xs' | 'sm' | 'md';
     pill?: boolean;
     icon?: React.ReactNode;
     dot?: boolean;

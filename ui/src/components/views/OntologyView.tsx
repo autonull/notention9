@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import type {TabProps} from '../ui/Navigation';
 
-import {useOntologyView} from '../../hooks/useOntologyView';
+import {useOntologyView, type OntologyTab} from '../../hooks/useOntologyView';
 import {OntologyNodeItem} from '../ontology/OntologyNodeItem';
 import {OntologyConflicts} from '../ontology/OntologyConflicts';
 import {useView} from '../../hooks/useViewContext';
@@ -20,7 +20,7 @@ import {Skeleton} from '../ui';
 export function OntologyView() {
     const {addToast} = useToast();
     const {
-        ontology,
+        ontology: ontologyData,
         activeTab,
         setActiveTab,
         isEvolving,
@@ -33,6 +33,8 @@ export function OntologyView() {
         conflicts,
         suggestions
     } = useOntologyView();
+
+    const ontology = ontologyData ?? [];
 
     const {setSelectedNoteId, setActiveView} = useView();
     const [isEditing, setIsEditing] = useState(false);
@@ -119,7 +121,7 @@ export function OntologyView() {
                             <Tabs
                                 tabs={tabs}
                                 activeTab={safeActiveTab}
-                                onChange={setActiveTab}
+                                onChange={(id: string) => setActiveTab(id as OntologyTab)}
                                 className="bg-gray-800 p-1 rounded-lg"
                             />
                         </div>
@@ -130,7 +132,7 @@ export function OntologyView() {
                     <Button
                         onClick={handleOptimize}
                         disabled={isEvolving}
-                        isLoading={isEvolving}
+                        loading={isEvolving}
                         variant="primary"
                         size="xs"
                         className="bg-blue-700/80 hover:bg-blue-600 flex-shrink-0"
@@ -141,7 +143,7 @@ export function OntologyView() {
                     <Button
                         onClick={handleEvolve}
                         disabled={isEvolving}
-                        isLoading={isEvolving}
+                        loading={isEvolving}
                         variant="success"
                         size="xs"
                         className="bg-green-700/80 hover:bg-green-600 flex-shrink-0"

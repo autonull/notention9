@@ -33,7 +33,7 @@ const SidebarListInner = forwardRef<VirtualizedListRef, SidebarListProps>(({ vir
         setSearchTerm
     } = useSidebar();
 
-    useImperativeHandle(ref, () => virtualListRef.current, [virtualListRef]);
+    useImperativeHandle(ref, () => virtualListRef.current!, [virtualListRef]);
 
     if (isLoading) return null;
 

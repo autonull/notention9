@@ -13,7 +13,7 @@ export interface ErrorMessage {
     };
 }
 
-interface ErrorHandlerContextType {
+export interface ErrorHandlerContextType {
     errors: ErrorMessage[];
     addError: (error: Omit<ErrorMessage, 'id' | 'timestamp'>) => string;
     removeError: (id: string) => void;

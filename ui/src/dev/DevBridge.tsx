@@ -4,7 +4,8 @@ import { useView } from '../hooks/useViewContext';
 import { usePendingConfirmations } from '../hooks/usePendingConfirmations';
 import { installBridge, updateState, addActionTrace, addPromptTrace } from './bridge';
 import { setTraceSink } from '@notention/core';
-import type { SemanticState, Property, ActionTrace, PromptTrace } from '@notention/optimize';
+import type { SemanticState, ActionTrace, PromptTrace } from '@notention/optimize';
+import type { Property } from '@notention/core';
 import { collectOntologyKeys } from '@notention/core';
 
 export function DevBridge() {
@@ -59,7 +60,7 @@ export function DevBridge() {
                 properties: selectedNote.properties,
                 propertyIndex: buildPropertyIndex(selectedNote.properties),
                 tags: selectedNote.tags,
-                privacy: selectedNote.privacy,
+                privacy: selectedNote.privacy === 'protected' ? 'private' : selectedNote.privacy,
                 saveStatus: 'idle',
                 publishReadiness: { ready: selectedNote.privacy === 'public', blocking: [] },
             },

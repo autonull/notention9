@@ -3,6 +3,7 @@ import {useSettings} from '../../hooks/useSettingsContext';
 
 export function OntologyTab() {
     const {settings, setSettings} = useSettings();
+    const ontology = settings.ontology ?? [];
 
     const handleAddNode = () => {
         const newNode = {
@@ -14,7 +15,7 @@ export function OntologyTab() {
 
         setSettings(prev => ({
             ...prev,
-            ontology: [...prev.ontology, newNode]
+            ontology: [...(prev.ontology ?? []), newNode]
         }));
     };
 
@@ -39,10 +40,10 @@ export function OntologyTab() {
                         <h4 className="font-medium text-white mb-2">Current Ontology</h4>
                         <div className="bg-gray-800 p-4 rounded">
                             <p className="text-gray-400 text-sm">
-                                {settings.ontology.length} nodes in your ontology
+                                {ontology.length} nodes in your ontology
                             </p>
                             <div className="mt-2 max-h-60 overflow-y-auto">
-                                {settings.ontology.map((node, index) => (
+                                {ontology.map((node, index) => (
                                     <div key={node.id} className="py-2 border-b border-gray-700 last:border-0">
                                         <div className="font-medium text-blue-300">{node.label}</div>
                                         <div className="text-xs text-gray-500">{node.description}</div>

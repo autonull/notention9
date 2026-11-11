@@ -127,7 +127,12 @@ describe('DataTab', () => {
         const originalReload = window.location.reload;
         window.location.reload = vi.fn();
         const originalIndexedDB = window.indexedDB;
-        window.indexedDB = {deleteDatabase: vi.fn()};
+        window.indexedDB = {
+            deleteDatabase: vi.fn(),
+            open: vi.fn(),
+            cmp: vi.fn(),
+            databases: vi.fn(),
+        } as unknown as IDBFactory;
 
         render(<DataTab/>);
         fireEvent.click(screen.getByText('Clear All Local Data'));

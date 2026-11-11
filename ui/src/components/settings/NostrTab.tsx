@@ -212,7 +212,7 @@ export function NostrTab({
                         <Button
                             onClick={handleSaveProfile}
                             disabled={isPublishing}
-                            isLoading={isPublishing}
+                            loading={isPublishing}
                             variant="primary"
                         >
                             {isPublishing ? 'Publishing...' : 'Publish Profile'}

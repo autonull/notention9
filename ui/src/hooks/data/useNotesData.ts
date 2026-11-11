@@ -51,7 +51,7 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
     useAgentSync(setNotes);
 
     const upsertNote = useCallback((note: Note, skipAgent: boolean = false) => {
-        const normalizedNote = normalizeNoteProperties(note, settings.ontology);
+        const normalizedNote = normalizeNoteProperties(note, settings.ontology ?? []);
 
         setNotes((prev) => {
             const existingIdx = prev.findIndex((n) => n.id === normalizedNote.id);
@@ -78,7 +78,7 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
     const addNote = useCallback((overrides?: Partial<Note>) => {
         let newNote = {...createNote(), ...overrides};
         // Normalize properties to canonical keys on creation
-        newNote = normalizeNoteProperties(newNote, settings.ontology);
+        newNote = normalizeNoteProperties(newNote, settings.ontology ?? []);
 
         setNotes((prev) => [newNote, ...prev]);
         persistence.persistAdd(newNote);
@@ -90,7 +90,7 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
     const updateNote = useCallback((updatedNote: Note) => {
         let noteWithTimestamp = {...updatedNote, updatedAt: new Date().toISOString()};
         // Normalize properties to canonical keys on update
-        noteWithTimestamp = normalizeNoteProperties(noteWithTimestamp, settings.ontology);
+        noteWithTimestamp = normalizeNoteProperties(noteWithTimestamp, settings.ontology ?? []);
 
         setNotes((prev) =>
             prev.map((n) => (n.id === noteWithTimestamp.id ? noteWithTimestamp : n))
@@ -101,7 +101,7 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
     const deleteNote = useCallback((id: string) => {
         setNotes((prev) => {
             const newNotes = prev.map((n) =>
-                n.id === id ? NotePipeline.delete(n) : n
+                n.id === id ? { ...n, deletedAt: new Date().toISOString(), updatedAt: new Date().toISOString() } : n
             );
             const deleted = newNotes.find((n) => n.id === id);
             if (deleted) persistence.persistDelete(deleted);
@@ -112,7 +112,7 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
     const restoreNote = useCallback((id: string) => {
         setNotes((prev) => {
             const newNotes = prev.map((n) =>
-                n.id === id ? NotePipeline.restore(n) : n
+                n.id === id ? { ...n, deletedAt: undefined, updatedAt: new Date().toISOString() } : n
             );
             const restored = newNotes.find((n) => n.id === id);
             if (restored) persistence.persistRestore(restored);

@@ -4,7 +4,7 @@ import {SearchIcon, SparklesIcon, ArrowRightIcon, HelpIcon} from './icons';
 import {modShortcut} from '../../utils/platform';
 import {Button} from './Button';
 
-interface EmptyStateProps {
+export interface EmptyStateProps {
     icon?: React.ComponentType<{ className?: string }>;
     title: string;
     description?: React.ReactNode;
@@ -221,7 +221,7 @@ export function TrashEmptyIllustration() {
     );
 }
 
-interface EmptyStatePresetProps {
+export interface EmptyStatePresetProps {
     type: 'firstNote' | 'noMatches' | 'emptyTrash' | 'noNetwork' | 'noResults';
     searchTerm?: string;
     query?: string;
@@ -231,7 +231,9 @@ interface EmptyStatePresetProps {
     onConfigureRelays?: () => void;
 }
 
-function createFirstNotePreset({onCreateNote, onLoadSample}: EmptyStatePresetProps) {
+type PresetProps = Omit<EmptyStatePresetProps, 'type'>;
+
+function createFirstNotePreset({onCreateNote, onLoadSample}: PresetProps) {
     return (
         <EmptyState
             variant="actionable"
@@ -264,7 +266,7 @@ function createFirstNotePreset({onCreateNote, onLoadSample}: EmptyStatePresetPro
     );
 }
 
-function createNoMatchesPreset({searchTerm, onClearSearch}: EmptyStatePresetProps) {
+function createNoMatchesPreset({searchTerm, onClearSearch}: PresetProps) {
     return (
         <EmptyState
             variant="illustrated"
@@ -287,7 +289,7 @@ function createNoMatchesPreset({searchTerm, onClearSearch}: EmptyStatePresetProp
     );
 }
 
-function createEmptyTrashPreset(_props: EmptyStatePresetProps) {
+function createEmptyTrashPreset(_props: PresetProps) {
     return (
         <EmptyState
             variant="actionable"
@@ -298,7 +300,7 @@ function createEmptyTrashPreset(_props: EmptyStatePresetProps) {
     );
 }
 
-function createNoNetworkPreset({onConfigureRelays}: EmptyStatePresetProps) {
+function createNoNetworkPreset({onConfigureRelays}: PresetProps) {
     return (
         <EmptyState
             variant="illustrated"
@@ -320,7 +322,7 @@ function createNoNetworkPreset({onConfigureRelays}: EmptyStatePresetProps) {
     );
 }
 
-function createNoResultsPreset({query, onClearSearch}: EmptyStatePresetProps) {
+function createNoResultsPreset({query, onClearSearch}: PresetProps) {
     return (
         <EmptyState
             variant="illustrated"

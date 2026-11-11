@@ -37,6 +37,7 @@ if (!existsSync(DATA_DIR)) {
 
 // Re-export types from shared location
 export type { Revision, StrategyArtifact, RevisionStatus, RevisionStoreConfig, RevisionSearchQuery } from './types.js';
+export type { VerdictSummary, ResolutionReason } from '../schemas/sharedTypes.js';
 
 // --- RevisionStore class ---
 

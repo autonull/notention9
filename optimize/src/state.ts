@@ -7,7 +7,7 @@ export interface SemanticState {
         properties: Property[];
         propertyIndex: Record<string, string[]>;
         tags: string[];
-        privacy: 'private' | 'public';
+        privacy: 'private' | 'protected' | 'public';
         saveStatus: 'idle' | 'saving' | 'saved' | 'error';
         publishReadiness: { ready: boolean; blocking: string[] };
     };

@@ -84,10 +84,10 @@ export function TrashView() {
                                         Deleted {note.deletedAt ? new Date(note.deletedAt).toLocaleString() : 'recently'}
                                     </div>
                                 </div>
-                                <Button variant="secondary" size="sm" leftIcon={DocumentDuplicateIcon} onClick={() => handleRestore(note)}>
+                                <Button variant="secondary" size="sm" leftIcon={<DocumentDuplicateIcon className="w-4 h-4" />} onClick={() => handleRestore(note)}>
                                     Restore
                                 </Button>
-                                <Button variant="danger" size="sm" leftIcon={TrashIcon} onClick={() => setNoteToDelete(note)}>
+                                <Button variant="danger" size="sm" leftIcon={<TrashIcon className="w-4 h-4" />} onClick={() => setNoteToDelete(note)}>
                                     Delete forever
                                 </Button>
                             </div>

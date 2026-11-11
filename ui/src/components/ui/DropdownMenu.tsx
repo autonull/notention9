@@ -8,7 +8,7 @@ export interface DropdownMenuItem {
     variant?: 'default' | 'danger';
 }
 
-interface DropdownMenuProps {
+export interface DropdownMenuProps {
     trigger: React.ReactNode;
     items: DropdownMenuItem[];
     align?: 'left' | 'right';

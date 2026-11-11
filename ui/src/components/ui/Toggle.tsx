@@ -51,7 +51,7 @@ export function Toggle({
             {label && (
                 <span
                     className={`text-sm font-medium ${disabled ? 'text-gray-500' : 'text-gray-300'} cursor-pointer`}
-                    onClick={!disabled ? onChange : undefined}
+                    onClick={!disabled ? () => onChange(!checked) : undefined}
                 >
             {label}
         </span>

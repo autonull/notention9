@@ -36,6 +36,17 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({
     // Resolve leftIcon: explicit leftIcon takes precedence, then icon component
     const resolvedLeftIcon = leftIcon ?? (icon ? <icon className="w-5 h-5" /> : null);
 
+    // Filter out non-DOM props
+    const domProps = { ...props };
+    delete (domProps as any).icon;
+    delete (domProps as any).leftIcon;
+    delete (domProps as any).rightIcon;
+    delete (domProps as any).label;
+    delete (domProps as any).error;
+    delete (domProps as any).hint;
+    delete (domProps as any).fullWidth;
+    delete (domProps as any).touchTarget;
+
     return (
         <div className={cn('w-full', fullWidth && 'w-full')}>
             {label && (
@@ -58,15 +69,15 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({
                     className={cn(
                         tokens.base,
                         tokens.padding,
-                        leftIcon && 'pl-10',
-                        rightIcon && 'pr-10',
-                        error && tokens.error,
-                        touchTarget && 'py-3 text-base',
+                        leftIcon ? 'pl-10' : undefined,
+                        rightIcon ? 'pr-10' : undefined,
+                        error ? tokens.error : undefined,
+                        touchTarget ? 'py-3 text-base' : undefined,
                         className
                     )}
                     aria-invalid={error ? 'true' : 'false'}
                     aria-describedby={cn(errorId, hintId)}
-                    {...props}
+                    {...domProps}
                 />
                 {rightIcon && (
                     <div className={cn(tokens.iconWrapper, 'right-0 pr-3')}>

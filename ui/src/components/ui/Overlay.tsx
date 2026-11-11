@@ -1,5 +1,6 @@
 import React, {useEffect, useRef} from 'react';
 import {cn} from '../../utils/ui';
+import {Modal} from './Modal';
 
 /**
  * Reusable focus trap hook for modals, drawers, and other overlay components.
@@ -656,7 +657,7 @@ export function ConfirmationDialog({
     };
 
     return (
-        <ModalPrimitive
+        <Modal
             isOpen={isOpen}
             onClose={onClose}
             title={title}
@@ -689,6 +690,6 @@ export function ConfirmationDialog({
                     </button>
                 </div>
             </div>
-        </ModalPrimitive>
+        </Modal>
     );
 }

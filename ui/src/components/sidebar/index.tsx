@@ -8,7 +8,7 @@ import {NoteListItem} from './NoteListItem';
 import {NoteGridItem} from './NoteGridItem';
 import {IconButton} from '../ui/Button';
 import {cn} from '../../utils/ui';
-import {VirtualizedList} from '../ui/VirtualizedList';
+import {VirtualizedList, type VirtualizedListRef} from '../ui/VirtualizedList';
 import {useTouchGestures} from '../../hooks/useTouchGestures';
 import {useIsMobile} from '../../hooks/useMediaQuery';
 import {SidebarSkeleton} from '../ui/Skeleton';
@@ -32,10 +32,11 @@ interface SidebarProps {
 
 function SidebarContent({ onToggleSidebar, isSidebarOpen, sidebarWidth, isCollapsed }: SidebarProps) {
     const searchInputRef = useRef<HTMLInputElement>(null);
-    const virtualListRef = useRef<{scrollToIndex: (index: number, align?: 'start' | 'center' | 'end') => void; scrollToTop: () => void; scrollToBottom: () => void; focusIndex: (index: number) => void}>(null);
-    const touchElementRef = useRef<HTMLDivElement>(null);
+    const virtualListRef = useRef<VirtualizedListRef | null>(null);
+    const touchElementRef = useRef<HTMLDivElement>(null!);
     const isMobile = useIsMobile();
     const sidebar = useSidebar();
+    const showFullContent = sidebar.showFullContent ?? false;
 
     const { isPulling, pullDistance, pullProgress } = useTouchGestures({
         onPullToRefresh: async () => {
@@ -50,7 +51,7 @@ function SidebarContent({ onToggleSidebar, isSidebarOpen, sidebarWidth, isCollap
     });
 
     const touchRef = useCallback((el: HTMLDivElement | null) => {
-        touchElementRef.current = el;
+        if (el) touchElementRef.current = el;
     }, []);
 
     const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
@@ -70,10 +71,9 @@ function SidebarContent({ onToggleSidebar, isSidebarOpen, sidebarWidth, isCollap
                 focusSearch={focusSearch}
                 onToggleSidebar={onToggleSidebar}
                 isCollapsed={isCollapsed}
-                showFullContent={sidebar.showFullContent}
+                showFullContent={showFullContent}
             />
             <SidebarList
-                ref={touchRef}
                 virtualListRef={virtualListRef}
             />
             <SidebarPullToRefresh
@@ -81,6 +81,7 @@ function SidebarContent({ onToggleSidebar, isSidebarOpen, sidebarWidth, isCollap
                 isPulling={isPulling}
                 pullDistance={pullDistance}
                 pullProgress={pullProgress}
+                refreshUserLocation={sidebar.refreshUserLocation}
             />
             <DeleteConfirmationModal />
         </div>

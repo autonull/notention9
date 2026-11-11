@@ -244,6 +244,7 @@ export const componentTokens = {
   badge: {
     base: 'inline-flex items-center justify-center border font-medium',
     sizes: {
+      xs: 'text-[9px] px-1 py-0',
       sm: 'text-[10px] px-1.5 py-0.5',
       md: 'text-xs px-2.5 py-0.5',
     },

@@ -14,6 +14,10 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
     touchTarget?: boolean;
     /** Use focus-visible ring instead of default outline */
     focusRing?: boolean;
+    /** Tooltip text to show on hover */
+    tooltip?: string;
+    /** Tooltip position */
+    tooltipPosition?: 'top' | 'bottom' | 'left' | 'right';
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -55,6 +59,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         delete (domProps as any).isActive;
         delete (domProps as any).label;
         delete (domProps as any).containerClassName;
+        delete (domProps as any).icon;
 
         // Resolve leftIcon: explicit leftIcon takes precedence, then icon component
         const resolvedLeftIcon = leftIcon ?? (icon ? <icon className={iconSizes[size]} /> : null);

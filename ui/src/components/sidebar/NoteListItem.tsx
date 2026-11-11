@@ -3,7 +3,7 @@ import type {Note} from '@notention/core';
 import {DocumentDuplicateIcon, PinIcon, TrashIcon} from '../ui/icons';
 import {IconButton} from '../ui/Button';
 import {cn} from '../../utils/ui';
-import {useSwipeActions, SwipeActionItem} from '../../hooks/useTouchGestures';
+import {useSwipeActions, type SwipeActionItem} from '../../hooks/useTouchGestures';
 import {useNoteDisplay, useHighlightedText, useHighlightedPreview, getNoteItemClasses, getPropertyBadgeClasses, getRelativeTimeClasses} from './useNoteDisplay';
 
 interface NoteListItemProps {
@@ -58,7 +58,7 @@ export const NoteListItem = React.memo(({
             onClick: () => onPin!(),
             variant: isPinned ? 'default' : 'primary',
             backgroundColor: isPinned ? '#3b82f6' : '#22c55e',
-        }] : []),
+        } as const] : []),
         ...(isTrash && onRestore ? [{
             id: 'restore',
             label: 'Restore',
@@ -66,7 +66,7 @@ export const NoteListItem = React.memo(({
             onClick: () => onRestore!(),
             variant: 'primary',
             backgroundColor: '#16a34a',
-        }] : []),
+        } as const] : []),
         {
             id: 'delete',
             label: isTrash ? 'Delete' : 'Trash',
@@ -74,14 +74,28 @@ export const NoteListItem = React.memo(({
             onClick: () => onDelete(),
             variant: 'destructive',
             backgroundColor: '#dc2626',
-        },
+        } as const,
     ] : [];
 
-    const {ref: swipeRef, style: swipeStyle, offset, activeSide, handleTouchStart, handleTouchMove, handleTouchEnd} = useSwipeActions({
+    const {
+        ref: swipeRef,
+        style: swipeStyle,
+        offset,
+        activeSide,
+        handleTouchStart,
+        handleTouchMove,
+        handleTouchEnd
+    } = useSwipeActions({
         leftActions: [],
         rightActions: swipeActions,
         threshold: 80,
     });
+
+    // Cast ref and handlers to correct types
+    const divRef = swipeRef as React.LegacyRef<HTMLDivElement>;
+    const onTouchStart = handleTouchStart as React.TouchEventHandler<HTMLDivElement>;
+    const onTouchMove = handleTouchMove as React.TouchEventHandler<HTMLDivElement>;
+    const onTouchEnd = handleTouchEnd as React.TouchEventHandler<HTMLDivElement>;
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Delete' || e.key === 'Backspace') {
@@ -94,11 +108,6 @@ export const NoteListItem = React.memo(({
             onPin();
         }
     };
-
-    const combinedRef = useCallback((el: HTMLDivElement | null) => {
-        itemRef.current = el;
-        swipeRef.current = el;
-    }, [swipeRef]);
 
     const itemClasses = getNoteItemClasses(isSelected, {
         contentPreview: '',
@@ -115,11 +124,11 @@ export const NoteListItem = React.memo(({
 
     return (
         <div
-            ref={combinedRef}
+            ref={divRef}
             style={swipeStyle as React.CSSProperties}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
             role="button"
             tabIndex={0}
             onClick={onSelect}

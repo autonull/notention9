@@ -24,6 +24,14 @@ export interface AppSettings {
   nostr: {
     privkey?: string | null;
     relays: string[];
+    publishEnabled?: boolean;
+  };
+  meshtastic?: {
+    enabled?: boolean;
+    connectionType?: 'webserial' | 'http' | 'server-proxy';
+    port?: string;
+    saveReceivedNotes?: boolean;
+    publishEnabled?: boolean;
   };
   ontology?: any[];
   customTemplates?: Template[];

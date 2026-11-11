@@ -12,4 +12,3 @@ export type {TabProps, TabsProps, TabPanelProps, BreadcrumbProps, PaginationProp
 export type {DrawerProps, PopoverProps, TooltipProps as TooltipProps2, DropdownProps, CommandPaletteProps, CommandPaletteItem, ConfirmationDialogProps} from './Overlay';
 export type {VirtualizedListProps, VirtualizedListRef} from './VirtualizedList';
 export type {EnhancedCommandPaletteProps} from './EnhancedCommandPalette';
-export type {SmartSearchProps, SearchFilter, SearchResult, UseSmartSearchOptions} from './SmartSearch';

@@ -302,7 +302,7 @@ export function useTouchGestures({
     };
 }
 
-interface SwipeActionItem {
+export interface SwipeActionItem {
     id: string;
     label: string;
     icon: React.ReactNode;
