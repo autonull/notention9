@@ -1,4 +1,4 @@
-import type {Property, MatchResult, OntologyNode} from '@notention/core';
+import type {Property, MatchResult, OntologyNode, OntologyAttribute} from '@notention/core';
 import {collectOntologyKeys} from '@notention/core';
 
 export interface ClarificationQuestion {
@@ -104,10 +104,11 @@ export function generateClarificationQuestions(context: ClarificationContext): C
         .sort((a, b) => b.informationGain - a.informationGain);
 }
 
-function findAttributeInOntology(ontology: OntologyNode[], key: string): OntologyNode['attributes'][string] | undefined {
+function findAttributeInOntology(ontology: OntologyNode[], key: string): OntologyAttribute | undefined {
     for (const node of ontology) {
-        if (node.attributes?.[key]) {
-            return node.attributes[key];
+        const attrs = node.attributes as Record<string, OntologyAttribute> | undefined;
+        if (attrs?.[key]) {
+            return attrs[key];
         }
         if (node.children) {
             const found = findAttributeInOntology(node.children, key);
@@ -129,7 +130,7 @@ function isRequiredInOntology(ontology: OntologyNode[], key: string): boolean {
     return false;
 }
 
-function generateQuestion(prop: Property, attr?: OntologyNode['attributes'][string]): string {
+function generateQuestion(prop: Property, attr?: OntologyAttribute | null): string {
     const keyLabel = prop.key.replace(/([A-Z])/g, ' $1').toLowerCase();
     
     if (attr?.type === 'enum' && attr.options && attr.options.length > 0) {
@@ -156,7 +157,7 @@ function generateQuestion(prop: Property, attr?: OntologyNode['attributes'][stri
     }
 }
 
-function generateSuggestedValues(prop: Property, attr?: OntologyNode['attributes'][string], userText?: string): string[] {
+function generateSuggestedValues(prop: Property, attr?: OntologyAttribute | null, userText?: string): string[] {
     if (attr?.type === 'enum' && attr.options && attr.options.length > 0) {
         return attr.options;
     }

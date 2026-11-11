@@ -93,13 +93,13 @@ vi.mock('@notention/core/ui/strategy', () => {
 });
 
 vi.mock('../../hooks/strategyResolverInit', async (importOriginal) => {
-    const actual = await importOriginal();
+    const actual = await importOriginal<any>();
     const mockStrategyComponentFactories = new Map([
         ['property-form', () => null],
         ['local-match-preview', () => null],
     ]);
     return {
-        ...actual,
+        ...(actual as any),
         strategyComponentFactories: mockStrategyComponentFactories,
     };
 });

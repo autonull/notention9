@@ -148,9 +148,10 @@ class NostrService {
 
         try {
             // Use subscribeMany with a filter array for nostr-tools v2 SimplePool
+            const filters = [{ kinds: [1, SEMANTIC_NOTE_KIND], authors: [this.pubkey], limit: 100 }];
             this._sub = this.pool.subscribeMany(
                 this.relays,
-                [{ kinds: [1, SEMANTIC_NOTE_KIND], authors: [this.pubkey], limit: 100 }],
+                filters as any,
                 {
                     onevent: (event) => {
                         if (this._upsertCallback) {

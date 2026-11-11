@@ -8,6 +8,7 @@ import {
     createInferredAttributesPipeline,
     createOntologyOptimizationPipeline,
     type PipelineResult,
+    type ValidationPipeline as ValidationPipelineType,
 } from '@notention/core/validation';
 import {
     DEFAULT_INFERENCE_OPTIONS,
@@ -111,7 +112,7 @@ export class InferenceRouter {
         ]);
     }
 
-    private getPipeline(method: keyof AIProvider): ValidationPipeline<unknown> {
+    private getPipeline(method: keyof AIProvider): ValidationPipelineType<any> {
         switch (method) {
             case 'alignToOntology':
                 return createPropertyPipeline({ 
@@ -124,7 +125,7 @@ export class InferenceRouter {
                         }))
                     },
                     maxRepairAttempts: 3,
-                });
+                }) as ValidationPipelineType<any>;
             case 'suggestTags':
                 return createTagPipeline({ 
                     schema: { 
@@ -132,7 +133,7 @@ export class InferenceRouter {
                         schema: z.array(z.string().min(1)).max(20)
                     },
                     maxRepairAttempts: 3,
-                });
+                }) as ValidationPipelineType<any>;
             case 'analyzeOntology':
                 return createInferredAttributesPipeline({ 
                     schema: { 
@@ -146,7 +147,7 @@ export class InferenceRouter {
                         }))
                     },
                     maxRepairAttempts: 3,
-                });
+                }) as ValidationPipelineType<any>;
             case 'optimizeOntology':
                 return createOntologyOptimizationPipeline({ 
                     schema: { 
@@ -160,7 +161,7 @@ export class InferenceRouter {
                         })
                     },
                     maxRepairAttempts: 3,
-                });
+                }) as ValidationPipelineType<any>;
             default:
                 throw new Error(`Unknown method: ${method}`);
         }
@@ -176,11 +177,12 @@ export class InferenceRouter {
         let lastError: Error | null = null;
         const autoRepair = options.autoRepair ?? true;
         const pipeline = autoRepair ? this.getPipeline(method) : null;
+        const timeout = options.timeout ?? 30000;
 
         for (let attempt = 0; attempt <= (options.maxRetries ?? 2); attempt++) {
             try {
                 const methodFn = provider[method] as (...args: unknown[]) => Promise<T>;
-                const rawData = await this.withTimeout(methodFn.apply(provider, args), options.timeout);
+                const rawData = await this.withTimeout(methodFn.apply(provider, args), timeout);
 
                 let data: T = rawData;
                 let validation: PipelineResult<T> | undefined;
@@ -189,7 +191,7 @@ export class InferenceRouter {
                     const validated = await pipeline.validate(rawData);
                     if (validated.success) {
                         data = validated.data as T;
-                        validation = validated;
+                        validation = validated as PipelineResult<T>;
                     } else {
                         throw new Error(`Validation failed: ${validated.issues.map(i => i.message).join(', ')}`);
                     }

@@ -6,21 +6,24 @@ import {strategyRegistry} from '@notention/core/ui/strategy';
 import {StrategyProvider} from '../../../hooks/useStrategyResolver';
 
 // Mock the strategy resolver hook
-vi.mock('../hooks/useStrategyResolver', () => ({
-    ...vi.requireActual('../hooks/useStrategyResolver'),
-    useStrategy: () => ({
-        getActiveProfile: () => profileRegistry.getProfile('default'),
-        setActiveProfile: vi.fn(),
-        setOverride: vi.fn(),
-        removeOverride: vi.fn(),
-        setManualMode: vi.fn(),
-        userId: 'test-user',
-        isManualMode: false,
-        activeProfileId: 'default',
-        overrides: {},
-        resolveStrategy: vi.fn(),
-    }),
-}));
+vi.mock('../hooks/useStrategyResolver', async (importOriginal) => {
+    const actual = await importOriginal<any>();
+    return {
+        ...(actual as any),
+        useStrategy: () => ({
+            getActiveProfile: () => profileRegistry.getProfile('default'),
+            setActiveProfile: vi.fn(),
+            setOverride: vi.fn(),
+            removeOverride: vi.fn(),
+            setManualMode: vi.fn(),
+            userId: 'test-user',
+            isManualMode: false,
+            activeProfileId: 'default',
+            overrides: {},
+            resolveStrategy: vi.fn(),
+        }),
+    };
+});
 
 describe('ProfileSettings', () => {
     beforeEach(() => {

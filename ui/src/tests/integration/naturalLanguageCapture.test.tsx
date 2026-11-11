@@ -1,7 +1,7 @@
 import {describe, it, expect, vi, beforeEach} from 'vitest';
 import {render, screen, fireEvent, waitFor} from '@testing-library/react';
-import {DescribeItComposer} from '../components/editor/DescribeItComposer';
-import {ExtractionReview} from '../components/editor/ExtractionReview';
+import {DescribeItComposer} from '../../components/editor/DescribeItComposer';
+import {ExtractionReview} from '../../components/editor/ExtractionReview';
 import type {OntologyNode, Property} from '@notention/core';
 import {DEFAULT_ONTOLOGY} from '@notention/core';
 

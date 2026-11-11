@@ -1,7 +1,7 @@
 import React from 'react';
 import {describe, expect, it} from 'vitest';
 import {render, screen} from '@testing-library/react';
-import {metaphorMapper, createNote} from '@notention/core';
+import {metaphorMapper, createNote, type Note} from '@notention/core';
 import {MetaphorRenderer} from '../../components/metaphor/MetaphorRenderer';
 
 describe('Metaphor System Integration', () => {
@@ -46,20 +46,18 @@ describe('Metaphor System Integration', () => {
         // I recall "conditional-automation" was explicitly in the code.
         // Let's rely on the conditional automation one being robust for this test.
 
-        const note: Note = {
+        const note = createNote({
             id: 'test-note-2',
             title: 'Meeting',
             content: 'Meeting at 5pm',
-            type: 'note',
             properties: [
                 {key: 'when', operator: 'is', values: ['5pm']},
                 {key: 'where', operator: 'is', values: ['Room A']}
             ],
-            created_at: Date.now(),
-            modified_at: Date.now(),
             tags: [],
-            stats: {viewCount: 0, readTime: 0}
-        };
+            privacy: 'private',
+            priority: 0
+        });
 
         // Note: I am not 100% sure "Event" is in DEFAULT_METAPHORS without reading that file.
         // I'll stick to testing the mechanism generic-ness with the conditional one, or just the one I know.

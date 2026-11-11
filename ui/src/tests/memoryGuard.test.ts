@@ -1,6 +1,6 @@
 // Memory guard test - ensures no single test worker exceeds memory threshold
 import {describe, it, expect, vi} from 'vitest';
-import {MEMORY_THRESHOLD_BYTES} from './setup.js';
+import {MEMORY_THRESHOLD_BYTES} from '@notention/core/test-utils';
 
 describe('Memory Guard', () => {
     it('should not exceed memory threshold per worker', () => {

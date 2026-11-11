@@ -49,11 +49,11 @@ export function createContextHook<T>(
  * Reduces duplication in optimized editing hooks.
  */
 export function createUpdateHandler<T>(
-    setter: React.Dispatch<React.SetStateAction<T | null>> | React.Dispatch<React.SetStateAction<T>>,
+    setter: React.Dispatch<React.SetStateAction<T>>,
     changeNotifier?: (hasChanges: boolean) => void
 ) {
     return (updater: (prev: T) => T) => {
-        setter(prev => {
+        setter((prev: T) => {
             if (!prev) return prev;
             if (changeNotifier) changeNotifier(true);
             return updater(prev);

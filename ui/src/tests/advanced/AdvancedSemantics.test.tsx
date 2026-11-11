@@ -3,9 +3,9 @@ import {createNote, patternRecognitionService} from '@notention/core';
 
 // Mock the core service
 vi.mock('@notention/core', async (importOriginal) => {
-    const actual = await importOriginal();
+    const actual = await importOriginal<any>();
     return {
-        ...actual,
+        ...(actual as any),
         patternRecognitionService: {
             predictUserNeeds: vi.fn(),
         },

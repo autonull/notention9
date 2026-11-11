@@ -15,7 +15,7 @@ vi.mock('../../components/developer/OntologyGraph', () => ({
     OntologyGraph: () => <div data-testid="ontology-graph">Graph</div>
 }));
 vi.mock('../../components/ontology/OntologyNodeItem', () => ({
-    OntologyNodeItem: ({ node, onAddChild, onDeleteNode }) => (
+    OntologyNodeItem: ({ node, onAddChild, onDeleteNode }: { node: { id: string; label: string }; onAddChild: (id: string) => void; onDeleteNode: (id: string) => void }) => (
         <div data-testid={`node-${node.id}`}>
             {node.label}
             <button onClick={() => onAddChild(node.id)}>Add Child</button>

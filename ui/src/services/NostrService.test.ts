@@ -6,9 +6,9 @@ import {createTestNote} from '../tests/utils/testNote';
 
 // Mock dependencies
 vi.mock('@notention/core', async (importOriginal) => {
-    const actual = await importOriginal();
+    const actual = await importOriginal<any>();
     return {
-        ...actual,
+        ...(actual as any),
         publishNoteToNostr: vi.fn(),
         getAliases: vi.fn(),
         getCanonicalKey: vi.fn(),

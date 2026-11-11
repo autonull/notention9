@@ -5,7 +5,7 @@ import {
     recordClarificationOutcome,
     getClarificationStats,
     getClarificationValueRate,
-} from '../services/ai/clarification';
+} from '@/services/ai/clarification';
 
 describe('Clarification Questions (L16)', () => {
     const ontology = DEFAULT_ONTOLOGY;
@@ -16,8 +16,8 @@ describe('Clarification Questions (L16)', () => {
             {key: 'channel', operator: 'is', values: ['email']},
             {key: 'deadline', operator: 'is', values: ['2024-12-31']},
             {key: 'location', operator: 'is near', values: ['Berlin']},
-        ] as const,
-        matchedProperties: [] as const,
+        ],
+        matchedProperties: [],
         ontology,
         userText: 'I need a developer for a project with budget 5000',
     };
@@ -26,8 +26,8 @@ describe('Clarification Questions (L16)', () => {
         const questions = generateClarificationQuestions(mockContext);
         
         expect(questions.length).toBe(4);
-        expect(questions.every(q => q.question)).toBe(true);
-        expect(questions.every(q => q.key)).toBe(true);
+        expect(questions.every((q: {question: string}) => q.question)).toBe(true);
+        expect(questions.every((q: {key: string}) => q.key)).toBe(true);
     });
 
     it('ranks questions by information gain', () => {
@@ -46,7 +46,7 @@ describe('Clarification Questions (L16)', () => {
     it('generates appropriate questions for enum types', () => {
         const channelProp = mockContext.missingProperties.find(p => p.key === 'channel')!;
         const questions = generateClarificationQuestions(mockContext);
-        const channelQuestion = questions.find(q => q.key === 'channel');
+        const channelQuestion = questions.find((q: {key: string}) => q.key === 'channel');
         
         expect(channelQuestion).toBeDefined();
         expect(channelQuestion!.question).toContain('channel');
@@ -56,7 +56,7 @@ describe('Clarification Questions (L16)', () => {
 
     it('generates appropriate questions for date types', () => {
         const questions = generateClarificationQuestions(mockContext);
-        const deadlineQuestion = questions.find(q => q.key === 'deadline');
+        const deadlineQuestion = questions.find((q: {key: string}) => q.key === 'deadline');
         
         expect(deadlineQuestion).toBeDefined();
         expect(deadlineQuestion!.question).toContain('deadline');
@@ -69,13 +69,13 @@ describe('Clarification Questions (L16)', () => {
             missingProperties: [
                 {key: 'budget', operator: 'is', values: ['5000']},
                 {key: 'random', operator: 'is', values: ['unknown']},
-            ] as const,
+            ],
             userText: 'budget is 5000 for the project',
         };
         
         const questions = generateClarificationQuestions(contextWithMention);
-        const budgetQuestion = questions.find(q => q.key === 'budget');
-        const randomQuestion = questions.find(q => q.key === 'random');
+        const budgetQuestion = questions.find((q: {key: string}) => q.key === 'budget');
+        const randomQuestion = questions.find((q: {key: string}) => q.key === 'random');
         
         expect(budgetQuestion!.informationGain).toBeGreaterThan(randomQuestion!.informationGain);
     });
