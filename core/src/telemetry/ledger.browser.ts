@@ -101,3 +101,31 @@ export function exportRun(): never {
 export async function pruneLedger(): Promise<never> {
     throw new Error('pruneLedger is only available in Node.js');
 }
+
+// Match act step - browser-safe no-ops (ledger is Node.js only)
+export function logMatchAccepted(
+    _requestNoteId: string,
+    _offerNoteId: string,
+    _responseNoteId: string,
+    _score: number,
+    _userId?: string
+): void {
+    console.debug('[ledger] match:accepted', { requestNoteId: _requestNoteId, offerNoteId: _offerNoteId, responseNoteId: _responseNoteId, score: _score, userId: _userId });
+}
+
+export function logMatchWithdrawn(
+    _responseNoteId: string,
+    _requestNoteId: string,
+    _offerNoteId: string,
+    _userId?: string
+): void {
+    console.debug('[ledger] match:withdrawn', { responseNoteId: _responseNoteId, requestNoteId: _requestNoteId, offerNoteId: _offerNoteId, userId: _userId });
+}
+
+export function logMatchRejected(
+    _requestNoteId: string,
+    _offerNoteId: string,
+    _userId?: string
+): void {
+    console.debug('[ledger] match:rejected', { requestNoteId: _requestNoteId, offerNoteId: _offerNoteId, userId: _userId });
+}

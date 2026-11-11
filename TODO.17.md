@@ -2,7 +2,7 @@
 
 **Supersedes:** TODO.16.md (superseded plan) · **Rewritten:** TODO.17 v1 (this file, v2)
 **Date:** 2026-11-10
-**Status:** Plan in progress. **P0b PARTIAL** (simulator tests fixed, core tests pass). **P0a IN PROGRESS** (UI type errors: 319 remaining). **P1a PARTIAL** (matching semantics: C1-C6 mostly fixed, demo match visible).
+**Status:** **P0b COMPLETE** ✅ | **P0a COMPLETE** ✅ | **P1a COMPLETE** ✅ | **P1b COMPLETE** ✅ | **P1c IN PROGRESS** 🟡 | **P1d STARTED** 🟡
 
 ## Progress Log (2026-11-10)
 
@@ -609,3 +609,14 @@ Facilitated, in priority order.
 | **R8** | Run the comprehension probe | The cheapest, most disconfirming question about the product | P0a + P1a |
 | **R9** | Turn human failures into machine-readable friction | Gives the optimizer a real target instead of a synthetic driver | R8 |
 | **R10** | Update `README.md` § Status and `README2.md` gaps against what is actually true | The status table currently claims working areas that the code contradicts | P0, P2 |
+
+| **P1c** | 🟡 **IN PROGRESS** | - **P1c.1** Extended `compose-match.spec.ts`: added test for explained match → response creation → survives reload |
+| | | - **P1c.2** Created `golden-demo.spec.ts`: seeds sample workspace, asserts explained match with units |
+| | | - **P1c.3** Added L3 (golden path) to `pnpm verify`: runs both journey tests |
+| | | - **P1c.4** Created `doc/decisions/014-golden-path.md`: golden path contract with 5 steps, invariants, failure modes |
+| **P1d** | 🟡 **STARTED** | - Created `doc/evidence/2026-11-match-benchmark-rebuild.md`: benchmark rebuild plan & gaps |
+| | | - Created `scripts/bench-match-quality.ts`: Node.js benchmark harness (needs case notes for 21/22 cases) |
+| | | - Identified gap: only 1 of 22 quality cases has candidate notes defined |
+| | | - React error #525 blocks E2E browser benchmark; Node.js workaround documented |
+
+---

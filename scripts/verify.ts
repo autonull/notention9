@@ -35,7 +35,7 @@ function runOptional(cmd: string, description: string): boolean {
 async function main(): Promise<void> {
     console.log('🚀 Starting full verification (pnpm verify)');
     console.log('==========================================');
-    console.log('Lanes: L0 (pure) + L1 (fast quality) + L2 (browser smoke)');
+    console.log('Lanes: L0 (pure) + L1 (fast quality) + L2 (browser smoke) + L3 (golden path)');
 
     // L0: Fabricated path guard (must pass)
     run('pnpm lint:fabricated', 'L0: Fabricated path grep guard');
@@ -51,6 +51,9 @@ async function main(): Promise<void> {
 
     // L2: Browser smoke test (pre-existing issue in optimize journey; will be fixed in Phase 1.3)
     runOptional('pnpm optimize optimize capture-and-edit', 'L2: Optimize E2E smoke test (capture-and-edit)');
+
+    // L3: Golden path acceptance test
+    run('pnpm exec playwright test ui/test/journeys/compose-match.spec.ts ui/test/journeys/golden-demo.spec.ts', 'L3: Golden path acceptance test');
 
     console.log('\n✨ All verification steps passed!');
     console.log('==========================================');

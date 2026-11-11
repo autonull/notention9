@@ -146,6 +146,8 @@ export {
     inferNoteIntent,
     replacePropertyInString,
     isNoteActive,
+    createResponseNote,
+    createWithdrawalNote,
 } from './notes/index.js';
 
 // Status constants - from utils/constants.js

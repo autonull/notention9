@@ -328,6 +328,7 @@ export class CommitmentLifecycle {
             done: 0,
             lapsed: 0,
             cancelled: 0,
+            withdrawn: 0,
         };
 
         let commitTimes: number[] = [];
