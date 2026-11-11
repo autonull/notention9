@@ -2,7 +2,7 @@
 
 **Supersedes:** TODO.16.md (superseded plan) · **Rewritten:** TODO.17 v1 (this file, v2)
 **Date:** 2026-11-10
-**Status:** **P0b COMPLETE** ✅ | **P0a COMPLETE** ✅ | **P1a COMPLETE** ✅ | **P1b COMPLETE** ✅ | **P1c COMPLETE** ✅ | **P1d COMPLETE** ✅ | **P2c.1 COMPLETE** ✅ | **P2c.2 COMPLETE** ✅ | **R1 COMPLETE** ✅ | **R2 COMPLETE** ✅ | **R3/R3b/R3c COMPLETE** ✅ | **R4 COMPLETE** ✅ | **R5 COMPLETE** ✅ | **R6 COMPLETE** ✅ | **R9 PARTIAL** ✅ | **I7 FIXED** ✅ | **P1c E2E BLOCKED** ⚠️
+**Status:** **P0b COMPLETE** ✅ | **P0a COMPLETE** ✅ | **P1a COMPLETE** ✅ | **P1b COMPLETE** ✅ | **P1c COMPLETE** ✅ | **P1d COMPLETE** ✅ | **P2c.1 COMPLETE** ✅ | **R1 COMPLETE** ✅ | **R2 COMPLETE** ✅ | **R3/R3b/R3c COMPLETE** ✅ | **R4 COMPLETE** ✅ | **R5 COMPLETE** ✅ | **R6 COMPLETE** ✅ | **R9 PARTIAL** ✅ | **I7 FIXED** ✅ | **I5 FIXED** ✅ | **P1c E2E BLOCKED by I6** ⚠️
 
 > **Note:** P1c's golden path acceptance tests (`golden-demo.spec.ts`, `compose-match.spec.ts`) exist but fail in `pnpm verify` L3 due to React error #525 ("A component suspended while responding to synchronous input") in the production preview build. The core matching functionality is verified by `check-demo-match.ts` ✅. Error #525 is a React 19 production-build issue (tracked as I6) that blocks E2E browser runs. E2E test infrastructure fix is deferred; it does not block P2. Workaround: use `check-demo-match.ts` for matching verification and dev server for manual testing.
 >
@@ -27,9 +27,13 @@
 | **P1a** | ✅ **COMPLETE** | - C1-C6 all fixed: marker roles, dimensional comparison, canonical keys |
 | | | - Demo match visible: `npx tsx scripts/check-demo-match.ts` exits 0 |
 | **P1b** | ✅ **COMPLETE** | - Response notes, withdrawal, ledger logging all working |
+| **P1c** | ✅ **COMPLETE** | - Golden path tests created, `doc/decisions/014-golden-path.md` written |
+| | | - E2E tests blocked by React error #525 (I6); core verified by `check-demo-match.ts` |
+| **P1d** | ✅ **COMPLETE** | - Benchmark rebuilt with 22 quality cases, Node.js harness running |
+| | | - Results: 0.2→F1 76.1%, 0.3→F1 82.4%, 0.4→F1 86.4% |
 | **P2c.1** | ✅ **COMPLETE** | - 215 notes in corpus, CC0 manifest |
-| **P2c.2** | ✅ **COMPLETE** | - 864 notes across 14 domains (food, shelter, healthcare, transport, education, care, tools, arts, etc.) |
-| **R9 (partial)** | ✅ **COMPLETE** | - Fixed core package export for `telemetry/journal`; fixed journal path resolution (`findProjectRoot`); `pnpm loop prioritize --source friction` now derives problems from real journal data (2 problems: repeated-correction ×5, failed-match ×3) |
+| **P2c.2** | 🔄 **IN PROGRESS** | - Need civilization-scale breadth beyond initial 6 domains |
+| **R9 (partial)** | ✅ **COMPLETE** | - Fixed core package export for `telemetry/journal`; fixed journal path resolution; `pnpm loop prioritize --source friction` derives problems from real journal data |
 
 ---
 
@@ -634,16 +638,16 @@ Facilitated, in priority order.
 | **R4** | Separate save from publish | Publishing is an act; today it is a side effect of typing | ✅ **COMPLETE** — `notePersistence.ts` has `saveLocal` + `persistPublish`; autosave no longer transmits (P0a A3) |
 | **R5** | **Build the act step** | The loop has no payoff. A matching engine without an act produces a list, not coordination | ✅ **COMPLETE** — `createResponseNote`, `createWithdrawalNote`, `ResponsesView`, ledger logging (P1b) |
 | **R6** | **Rebuild the benchmark on product semantics** | A green benchmark the product cannot reproduce is worse than a red one | ✅ **COMPLETE** — Benchmark rebuilt with 22 quality cases, candidate notes defined, Node.js harness running with Precision/Recall/F1 metrics |
-| **R7** | Write the corpus | Unblocks E7, E13, E14, and every match-quality metric | — (parallel with P1) |
-| **R8** | Run the comprehension probe | The cheapest, most disconfirming question about the product | P0a + P1a |
-| **R9** | Turn human failures into machine-readable friction | Gives the optimizer a real target instead of a synthetic driver | ✅ **PARTIAL COMPLETE** — Friction journal feeds optimizer prioritizer via `pnpm loop prioritize --source friction`. Journal path resolution fixed; core package exports `telemetry/journal`. Remaining: run comprehension probe (R8) to generate real friction data, add golden-path friction events (response created/viewed, match explained/dismissed). |
+| **R7** | Write the corpus (P2c.2 — civilization-scale breadth) | Unblocks E7, E13, E14, and every match-quality metric | 🔄 **IN PROGRESS** — P2c.1 done (215 notes, 6 domains). P2c.2 needs systematic breadth across ALL need/have categories. |
+| **R8** | Run the comprehension probe (P2a) | The cheapest, most disconfirming question about the product | **NEXT** — Uses showcase scenes (`pnpm run showcase`), not blocked by E2E. |
+| **R9** | Turn human failures into machine-readable friction (P2b) | Gives the optimizer a real target instead of a synthetic driver | ✅ **PARTIAL COMPLETE** — Friction journal feeds optimizer prioritizer via `pnpm loop prioritize --source friction`. Journal path resolution fixed; core package exports `telemetry/journal`. Remaining: run comprehension probe (R8) to generate real friction data, add golden-path friction events. |
 | **R10** | Update `README.md` § Status and `README2.md` gaps against what is actually true | The status table currently claims working areas that the code contradicts | P0, P2 |
 
 | **P1c** | ✅ **COMPLETE** | - **P1c.1** Extended `compose-match.spec.ts`: added test for explained match → response creation → survives reload |
 | | | - **P1c.2** Created `golden-demo.spec.ts`: seeds sample workspace, asserts explained match with units |
 | | | - **P1c.3** Added L3 (golden path) to `pnpm verify`: runs both journey tests |
 | | | - **P1c.4** Created `doc/decisions/014-golden-path.md`: golden path contract with 5 steps, invariants, failure modes |
-| | | - **KNOWN ISSUE**: E2E journey tests fail with "Vitest failed to access its internal state" — browser console error from preview server. Core functionality verified by `check-demo-match.ts` ✅. Test infrastructure fix deferred to post-P2. |
+| | | - **KNOWN ISSUE**: E2E journey tests blocked by React hydration error #525 (I6) in production build. Core functionality verified by `check-demo-match.ts` ✅. Test infrastructure fix deferred to post-P2. |
 | **P1d** | ✅ **COMPLETE** | - Created `core/src/fixtures/qualityCaseNotes.ts`: candidate notes for all 22 quality cases |
 | | | - Completed `scripts/bench-match-quality.ts`: Node.js benchmark harness with keyword-based extraction |
 | | | - Benchmark runs successfully at minScore 0.2/0.3/0.4 with Precision/Recall/F1 metrics |
@@ -662,11 +666,11 @@ Facilitated, in priority order.
 
 | # | Issue | Location | Priority | Notes |
 |---|-------|----------|----------|-------|
-| **I1** | E2E journey tests fail: "Vitest failed to access its internal state" | `ui/test/journeys/*.spec.ts`, preview server | High | Browser console error from Vitest leaking into production preview. Root cause: Vite dev server config or test polyfill bleed. Fix before P2 comprehension probe. |
+| **I1** | E2E journey tests fail: React hydration error #525 | `ui/test/journeys/*.spec.ts`, preview server | High | Root cause: React error #525 (hydration mismatch) in production build. **Same as I6**. Node.js workaround (`check-demo-match.ts`) validates core functionality. Fix before P2 comprehension probe. |
 | **I2** | Pre-existing UI unit test failures (41 test files) | `ui/src/tests/**/*.test.tsx` | Medium | Currently marked "known pre-existing failures" in batched test runner. Need triage: fix or delete. |
 | **I3** | CSS minify warnings: fractional `var(--space-0.5)` tokens | Tailwind config / CSS variables | Low | `esbuild` CSS parser warnings. Not breaking but noise. Fix via `postcss-custom-properties` or token normalization. |
-| **I4** | `pnpm --filter @notention/ui typecheck` errors (if any remain) | UI package | High | Gate for `pnpm verify`. Should be 0. |
+| **I4** | `pnpm --filter @notention/ui typecheck` errors (if any remain) | UI package | High | Gate for `pnpm verify`. **Currently 0** ✅. |
 | **I5** | Corpus format: `.md` → `.json` with provenance manifest | `corpus/*.md` | High | ✅ **FIXED** — 215 notes in `corpus/notes/*.json` + `manifest.json` (CC0). Original `.md` preserved. |
-| **I6** | Benchmark: React error #525 blocks E2E browser run | `scripts/bench-match-quality.ts` | Medium | Node.js workaround validated. Browser run needed for full verification. |
+| **I6** | React error #525 blocks E2E browser run | Production build / preview server | Medium | Hydration mismatch in production build. Node.js workaround validated. **Blocks I1**. Browser run needed for full verification. |
 | **I7** | `VITE_DEV_HOOKS` leakage: preview shows `VITE_DEV_HOOKS: true isDev: false` | `ui/vite.config.ts`, build env | Medium | ✅ **FIXED** — moved `VITE_DEV_HOOKS=true` from `.env` to `.env.development`; production preview now shows `VITE_DEV_HOOKS: undefined isDev: false` |
 | **I8** | Chunk size warnings: main chunk > 500kB, vendor > 6MB | `ui/vite.config.ts` rollupOptions | Low | Consider manualChunks for code-splitting. Not blocking. |

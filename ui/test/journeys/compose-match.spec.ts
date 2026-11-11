@@ -15,7 +15,8 @@ const trackAiRequests = (page: Page): string[] => {
 };
 
 const createNote = async (page: Page, title: string) => {
-    await page.getByTitle('New Note').click();
+    // The New Note button has title "New Note (Ctrl+N)" or "New Note (Cmd+N)"
+    await page.getByTitle(/New Note/).click();
     const titleInput = page.getByPlaceholder('Untitled Note');
     await expect(titleInput).toBeVisible();
     await titleInput.fill(title);
