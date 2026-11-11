@@ -159,6 +159,11 @@ export default defineConfig([
       '@notention/optimize',
       'ws',
       'events',
+      // React must never be bundled: a second copy (or an older major) creates
+      // legacy elements that the host renderer rejects with React error #525.
+      'react',
+      'react-dom',
+      'react/jsx-runtime',
     ],
     noExternal: [
       '@notention/core/**',
@@ -196,6 +201,11 @@ export default defineConfig([
       '@notention/optimize',
       'better-sqlite3',
       'ajv',
+      // React must never be bundled: a second copy (or an older major) creates
+      // legacy elements that the host renderer rejects with React error #525.
+      'react',
+      'react-dom',
+      'react/jsx-runtime',
     ],
     noExternal: ['@notention/core/**'],
     esbuildPlugins: [

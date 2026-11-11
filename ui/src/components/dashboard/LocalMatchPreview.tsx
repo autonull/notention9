@@ -14,6 +14,7 @@ interface LocalMatchPreviewProps {
     onRejectMatch?: (requestId: string, noteId: string) => void;
     onReviseRequest?: (requestId: string) => void;
     onView?: () => void;
+    onExplanation?: (event: 'explained' | 'dismissed') => void;
 }
 
 function getMatchTypeColor(details?: MatchDetails) {
@@ -44,7 +45,7 @@ function getMatchTypeLabel(details?: MatchDetails) {
     }
 }
 
-export function LocalMatchPreview({match, onSelectNote, onAcceptMatch, onRejectMatch, onReviseRequest, onView}: LocalMatchPreviewProps) {
+export function LocalMatchPreview({match, onSelectNote, onAcceptMatch, onRejectMatch, onReviseRequest, onView, onExplanation}: LocalMatchPreviewProps) {
     const {result} = match;
     const totalMatches = result.matches.length;
     const totalConflicts = result.conflicts.length;
@@ -55,11 +56,19 @@ export function LocalMatchPreview({match, onSelectNote, onAcceptMatch, onRejectM
                            totalMissing > 0;
     
     const [showRecovery, setShowRecovery] = useState(false);
+    const [explanationsOpen, setExplanationsOpen] = useState(false);
 
     // Track match_viewed on mount
     useEffect(() => {
         onView?.();
     }, [onView]);
+
+    // The explanation is the honesty surface: opening it is a signal, and
+    // closing it again without acting is a different one.
+    const handleExplanationToggle = (open: boolean) => {
+        setExplanationsOpen(open);
+        onExplanation?.(open ? 'explained' : 'dismissed');
+    };
 
     return (
         <section className="rounded-3xl border border-green-500/20 bg-green-500/5 p-6 animate-slide-in-up stagger-2" data-testid="local-match">
@@ -79,7 +88,11 @@ export function LocalMatchPreview({match, onSelectNote, onAcceptMatch, onRejectM
                     </div>
                     
                     {hasExplanations && (
-                        <details className="mt-4 text-left md:text-left" data-testid="match-explanations">
+                        <details
+                            className="mt-4 text-left md:text-left"
+                            data-testid="match-explanations"
+                            onToggle={(e) => handleExplanationToggle(e.currentTarget.open)}
+                        >
                             <summary className="flex items-center gap-2 text-sm text-gray-400 cursor-pointer hover:text-gray-200">
                                 <InformationCircleIcon className="w-4 h-4 flex-shrink-0"/>
                                 Show details
@@ -97,6 +110,9 @@ export function LocalMatchPreview({match, onSelectNote, onAcceptMatch, onRejectM
                                                             <span className="font-medium">{m.requestProp.key}</span>
                                                             <span className="text-gray-500"> {m.requestProp.operator} </span>
                                                             <span className="text-gray-300">{m.requestProp.values.join(', ')}</span>
+                                                            {m.requestProp.unit && (
+                                                                <span className="text-gray-400 font-mono text-[11px]"> {m.requestProp.unit}</span>
+                                                            )}
                                                         </div>
                                                         <div className="flex items-center gap-2 mt-1">
                                                             <span className={`text-[10px] font-mono ${getMatchTypeColor(m.details)}`}>
@@ -131,6 +147,9 @@ export function LocalMatchPreview({match, onSelectNote, onAcceptMatch, onRejectM
                                                             <span className="font-medium">{c.requestProp.key}</span>
                                                             <span className="text-gray-500"> {c.requestProp.operator} </span>
                                                             <span className="text-gray-300">{c.requestProp.values.join(', ')}</span>
+                                                            {c.requestProp.unit && (
+                                                                <span className="text-gray-400 font-mono text-[11px]"> {c.requestProp.unit}</span>
+                                                            )}
                                                         </div>
                                                         <div className="text-red-300 text-[10px] mt-1">{c.reason}</div>
                                                     </div>

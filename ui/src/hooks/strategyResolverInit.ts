@@ -9,7 +9,6 @@ import { strategyRegistry, createComponentStrategy, getStrategiesForSeam, getStr
 import { resolveSeamId, SEAM_ROLES, type SeamRole } from '@notention/core/constants/seams';
 import { profileRegistry } from '@notention/core/ui/ProfileRegistry';
 import { STRATEGY_CONFIGS_UI } from '../strategies/strategyConfigs';
-import { componentMap } from '../strategies/componentMap';
 
 // Eagerly import all strategy components to avoid React 19 hydration error #525
 // from lazy-loaded chunks in production build
@@ -84,6 +83,9 @@ type PropertyPanelComponent = React.ComponentType<{
     onPickTime?: (key: string) => void;
     ontology?: any[];
 }>;
+
+// Strategy component factories for re-registration with revised params
+const strategyComponentFactories = new Map<string, React.ComponentType<any>>();
 
 // Check if running in clean-profile mode (for stranger testing)
 const isCleanProfile =

@@ -33,18 +33,23 @@ export function usePropertyInsertion() {
             editor.chain().focus().unsetMark('propertyMark').run();
         }
 
-        // Add new mark at current selection
-        editor
-            .chain()
-            .focus()
-            .setMark('propertyMark', {
-                propertyId,
-                name: key,
-                operator,
-                value,
-                icon,
-            })
-            .run();
+        const attrs = {propertyId, name: key, operator, value, icon};
+
+        if (editor.state.selection.from === editor.state.selection.to) {
+            // No text selected: a mark would be lost, so materialize the property.
+            editor
+                .chain()
+                .focus()
+                .insertContent([{type: 'text', text: value || key, marks: [{type: 'propertyMark', attrs}]}])
+                .run();
+        } else {
+            // Add new mark at current selection
+            editor
+                .chain()
+                .focus()
+                .setMark('propertyMark', attrs)
+                .run();
+        }
 
         setIsPropertyModalOpen(false);
         setEditingPropertyId(null);
@@ -54,16 +59,20 @@ export function usePropertyInsertion() {
     const insertProperties = (editor: Editor | null, properties: Property[]) => {
         if (!editor || properties.length === 0) return;
 
-        properties.forEach(property => {
-            const propertyId = generatePropertyId();
-            editor.chain().focus().setMark('propertyMark', {
-                propertyId,
+        for (const property of properties) {
+            const attrs = {
+                propertyId: generatePropertyId(),
                 name: property.key,
                 operator: property.operator,
                 value: property.values.join(', '),
                 icon: undefined,
-            }).run();
-        });
+            };
+            editor
+                .chain()
+                .focus()
+                .insertContent([{type: 'text', text: attrs.value, marks: [{type: 'propertyMark', attrs}]}])
+                .run();
+        }
     };
 
     const findAttributeDef = (key: string, nodes: OntologyNode[]): OntologyAttribute | undefined => {

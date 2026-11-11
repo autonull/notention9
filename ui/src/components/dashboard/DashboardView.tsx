@@ -46,7 +46,7 @@ export function DashboardView() {
 
     // Friction tracking
     const { startTracking: startCaptureTracking, stopTracking: stopCaptureTracking, markSubmitted: markCaptureSubmitted } = useCaptureTracking('capture', 'capture');
-    const { markViewed: markMatchViewed, handleAccept: handleMatchAccept, handleReject: handleMatchReject, handleClarification: handleMatchClarification } = useMatchTracking('match', 'match');
+    const { markViewed: markMatchViewed, handleAccept: handleMatchAccept, handleReject: handleMatchReject, handleClarification: handleMatchClarification, handleExplained: handleMatchExplained, handleDismissed: handleMatchDismissed } = useMatchTracking('match', 'match');
     const {rejectMatch} = useRejectedMatches();
 
     const extractor = useMemo(() => new PropertyExtractor(settings.ontology), [settings.ontology]);
@@ -303,6 +303,7 @@ export function DashboardView() {
                         onRejectMatch={handleRejectMatch}
                         onReviseRequest={handleReviseRequest}
                         onView={markMatchViewed}
+                        onExplanation={(event) => (event === 'explained' ? handleMatchExplained() : handleMatchDismissed())}
                     />
                 )}
 

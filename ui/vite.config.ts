@@ -170,6 +170,9 @@ export default defineConfig(({mode}) => {
         },
         resolve: {
             conditions: ['browser'],
+            // Single React instance: a second copy (or an older major) makes the
+            // renderer reject elements with React error #525.
+            dedupe: ['react', 'react-dom'],
             alias: [
                 { find: '@', replacement: path.resolve(__dirname, './src') },
                 // @notention/ui internal modules

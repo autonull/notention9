@@ -7,10 +7,10 @@ import {configureSuggestions} from './configureSuggestions';
 import type {Note, Template} from '@notention/core';
 
 interface GetExtensionsProps {
-    allProperties: { id: string; label: string; description?: string }[];
-    allTags: { id: string; label: string; description?: string }[];
+    getProperties: () => { id: string; label: string; description?: string }[];
+    getTags: () => { id: string; label: string; description?: string }[];
     getNotes: () => Note[];
-    templates: Template[];
+    getTemplates: () => Template[];
     onOpenPropertyModal?: (key: string) => void;
     onMagic?: () => void;
 }
@@ -26,16 +26,16 @@ const createMentionConfig = (name: string, className: string, trigger: string, r
     }).extend({ name });
 
 export const getExtensions = ({
-                                  allProperties,
-                                  allTags,
+                                  getProperties,
+                                  getTags,
                                   getNotes,
-                                  templates,
+                                  getTemplates,
                                   onOpenPropertyModal,
                                   onMagic
                               }: GetExtensionsProps) => {
     const resolveProperties = (query: string) => {
         const lower = query.toLowerCase();
-        return [...allProperties]
+        return [...getProperties()]
             .sort((a, b) => (a.label.toLowerCase().startsWith(lower) ? -1 : 1))
             .filter(p => p.label.toLowerCase().includes(lower))
             .slice(0, 10)
@@ -58,7 +58,7 @@ export const getExtensions = ({
         }),
         createMentionConfig('tagSuggestion', 'suggestion-tag', '#', (query) => {
             const lower = query.toLowerCase();
-            return allTags.filter(t => t.label.toLowerCase().includes(lower)).slice(0, 5)
+            return getTags().filter(t => t.label.toLowerCase().includes(lower)).slice(0, 5)
                 .map(t => ({ id: t.id, label: t.label, description: t.description }));
         }),
         createMentionConfig('noteSuggestion', 'suggestion-note', '@', resolveNotes),
@@ -70,11 +70,11 @@ export const getExtensions = ({
         }),
         createMentionConfig('slashCommand', 'suggestion-slash', '/', (query) => {
             const lower = query.toLowerCase();
-            const templateItems = templates.filter(t => t.label.toLowerCase().includes(lower))
+            const templateItems = getTemplates().filter(t => t.label.toLowerCase().includes(lower))
                 .sort((a, b) => (a.label.toLowerCase().startsWith(lower) ? -1 : 1))
                 .map(t => ({ id: t.content, label: t.label, description: 'Template', type: 'template' }));
 
-            const propertyItems = allProperties.filter(p => p.label.toLowerCase().includes(lower))
+            const propertyItems = getProperties().filter(p => p.label.toLowerCase().includes(lower))
                 .map(p => ({ id: p.label, label: p.label, description: 'Detail', type: 'property' }));
 
             const commandItems = [];

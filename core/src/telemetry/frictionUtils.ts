@@ -18,7 +18,11 @@ export type FrictionKind =
     | 'match_viewed'
     | 'match_rejected'
     | 'match_accepted'
-    | 'clarification_requested';
+    | 'clarification_requested'
+    | 'match_explained'
+    | 'match_dismissed'
+    | 'response_created'
+    | 'response_viewed';
 
 export type DurationBucket = '<5s' | '5-15s' | '15-60s' | '>60s';
 
@@ -96,13 +100,15 @@ export function inferEvidenceClass(
     config: DigestPipelineConfig = DEFAULT_DIGEST_CONFIG
 ): EvidenceClass {
     // Direct user actions = measured
-    if (kind === 'correction' || kind === 'match_rejected' || kind === 'capture_abandoned') {
+    if (kind === 'correction' || kind === 'match_rejected' || kind === 'capture_abandoned'
+        || kind === 'match_dismissed' || kind === 'response_created') {
         return count >= config.minCountForMeasured && ageDays <= config.minAgeForHypothesized
             ? 'measured'
             : 'observed';
     }
     // Indirect signals = observed
-    if (kind === 'match_accepted' || kind === 'clarification_requested') {
+    if (kind === 'match_accepted' || kind === 'clarification_requested'
+        || kind === 'match_explained' || kind === 'response_viewed') {
         return 'observed';
     }
     // Start events without completion = hypothesized

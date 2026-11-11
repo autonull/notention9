@@ -102,6 +102,34 @@ export function useFrictionRecorder(workflow: string, seam: string) {
         record('clarification_requested');
     }, [record]);
 
+    /**
+     * Record match_explained event (user opened the explanation)
+     */
+    const recordMatchExplained = useCallback(() => {
+        record('match_explained');
+    }, [record]);
+
+    /**
+     * Record match_dismissed event (explanation closed without acting)
+     */
+    const recordMatchDismissed = useCallback(() => {
+        record('match_dismissed');
+    }, [record]);
+
+    /**
+     * Record response_created event (a response note was created)
+     */
+    const recordResponseCreated = useCallback(() => {
+        record('response_created');
+    }, [record]);
+
+    /**
+     * Record response_viewed event (a response was opened)
+     */
+    const recordResponseViewed = useCallback(() => {
+        record('response_viewed');
+    }, [record]);
+
     return {
         record,
         recordCaptureStarted,
@@ -111,6 +139,10 @@ export function useFrictionRecorder(workflow: string, seam: string) {
         recordMatchRejected,
         recordMatchAccepted,
         recordClarificationRequested,
+        recordMatchExplained,
+        recordMatchDismissed,
+        recordResponseCreated,
+        recordResponseViewed,
     };
 }
 
@@ -160,7 +192,8 @@ export function useCaptureTracking(workflow: string = 'capture', seam: string = 
  * Hook for tracking match view lifecycle
  */
 export function useMatchTracking(workflow: string = 'match', seam: string = 'match') {
-    const { recordMatchViewed, recordMatchAccepted, recordMatchRejected, recordClarificationRequested } = 
+    const { recordMatchViewed, recordMatchAccepted, recordMatchRejected, recordClarificationRequested,
+        recordMatchExplained, recordMatchDismissed, recordResponseCreated } =
         useFrictionRecorder(workflow, seam);
     const hasViewed = useRef(false);
 
@@ -173,7 +206,8 @@ export function useMatchTracking(workflow: string = 'match', seam: string = 'mat
 
     const handleAccept = useCallback((type: 'request' | 'match' = 'match') => {
         recordMatchAccepted();
-    }, [recordMatchAccepted]);
+        recordResponseCreated();
+    }, [recordMatchAccepted, recordResponseCreated]);
 
     const handleReject = useCallback(() => {
         recordMatchRejected();
@@ -183,5 +217,13 @@ export function useMatchTracking(workflow: string = 'match', seam: string = 'mat
         recordClarificationRequested();
     }, [recordClarificationRequested]);
 
-    return { markViewed, handleAccept, handleReject, handleClarification };
+    const handleExplained = useCallback(() => {
+        recordMatchExplained();
+    }, [recordMatchExplained]);
+
+    const handleDismissed = useCallback(() => {
+        recordMatchDismissed();
+    }, [recordMatchDismissed]);
+
+    return { markViewed, handleAccept, handleReject, handleClarification, handleExplained, handleDismissed };
 }

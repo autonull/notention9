@@ -15,6 +15,7 @@ import {
     DIGEST_LOOKBACK_DAYS,
     MS_PER_DAY,
 } from './constants.js';
+import { inferEvidenceClass } from './frictionUtils.js';
 
 const JOURNAL_KEY = 'friction-journal';
 const CONFIG_KEY = 'friction-journal-config';
@@ -167,13 +168,7 @@ export class Journal {
     }
 
     private inferEvidenceClass(kind: FrictionKind, count: number, ageDays: number): EvidenceClass {
-        if (kind === 'correction' || kind === 'match_rejected' || kind === 'capture_abandoned') {
-            return count >= 3 && ageDays <= 14 ? 'measured' : 'observed';
-        }
-        if (kind === 'match_accepted' || kind === 'clarification_requested') {
-            return 'observed';
-        }
-        return 'hypothesized';
+        return inferEvidenceClass(kind, count, ageDays);
     }
 
     private computeWeight(count: number, ageDays: number, evidenceClass: EvidenceClass): number {
@@ -297,4 +292,26 @@ export async function getFrictionSignals(since?: string): Promise<FrictionSignal
 
 export async function generateFrictionDigest(): Promise<string> {
     return getJournal().generateWeeklyDigest();
+}
+
+/**
+ * Aggregate friction counts per kind.
+ * The browser journal is IndexedDB-backed, so this resolves asynchronously.
+ */
+export async function getFrictionCounts(
+    since?: string
+): Promise<Array<{ kind: FrictionKind; count: number; halfLifeWeightedCount: number }>> {
+    const signals = await getJournal().getSignals(since);
+
+    const byKind = new Map<FrictionKind, { count: number; halfLifeWeightedCount: number }>();
+    for (const signal of signals) {
+        const existing = byKind.get(signal.kind) ?? { count: 0, halfLifeWeightedCount: 0 };
+        existing.count += signal.count;
+        existing.halfLifeWeightedCount += signal.weight;
+        byKind.set(signal.kind, existing);
+    }
+
+    return Array.from(byKind.entries())
+        .map(([kind, data]) => ({ kind, ...data }))
+        .sort((a, b) => b.halfLifeWeightedCount - a.halfLifeWeightedCount);
 }

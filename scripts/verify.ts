@@ -53,7 +53,7 @@ async function main(): Promise<void> {
     runOptional('pnpm optimize optimize capture-and-edit', 'L2: Optimize E2E smoke test (capture-and-edit)');
 
     // L3: Golden path acceptance test
-    run('pnpm exec playwright test ui/test/journeys/compose-match.spec.ts ui/test/journeys/golden-demo.spec.ts', 'L3: Golden path acceptance test');
+    run('pnpm exec playwright test --config ui/test/playwright.config.ts ui/test/journeys/compose-match.spec.ts ui/test/journeys/golden-demo.spec.ts', 'L3: Golden path acceptance test');
 
     console.log('\n✨ All verification steps passed!');
     console.log('==========================================');

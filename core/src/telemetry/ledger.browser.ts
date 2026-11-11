@@ -102,6 +102,16 @@ export async function pruneLedger(): Promise<never> {
     throw new Error('pruneLedger is only available in Node.js');
 }
 
+const browserLedgerInstance = new Ledger();
+
+export function getLedger(): Ledger {
+    return browserLedgerInstance;
+}
+
+export function resetLedger(): void {
+    // No-op in browser: the ledger holds no state outside Node.js.
+}
+
 // Match act step - browser-safe no-ops (ledger is Node.js only)
 export function logMatchAccepted(
     _requestNoteId: string,

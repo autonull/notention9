@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import {
     Note,
     Property,
@@ -18,11 +18,15 @@ export function useNoteProperties(
     const propertyExtractor = useMemo(() => new PropertyExtractor(ontology), [ontology]);
     const update = useMemo(() => createUpdateHandler(setDirtyNote), [setDirtyNote]);
 
+    // The note changes on every keystroke; callbacks must read the latest one.
+    const noteRef = useRef(dirtyNote);
+    noteRef.current = dirtyNote;
+
     // Friction tracking for corrections
     const { recordCorrection } = useFrictionRecorder('capture', 'editor');
 
     const handleContentSave = useCallback(async (content: string) => {
-        const updated = await NotePipeline.updateContent(dirtyNote, content, ontology);
+        const updated = await NotePipeline.updateContent(noteRef.current, content, ontology);
         setDirtyNote({
             ...updated,
             priority: 1.0 // User edit promotes priority
@@ -30,16 +34,16 @@ export function useNoteProperties(
     }, [setDirtyNote, ontology]);
 
     const handleUpdateTextFromInspector = useCallback(async (oldProp: Property | null, newProp: Property | null) => {
-        const newContent = replacePropertyInString(dirtyNote.content, oldProp, newProp);
-        if (newContent !== dirtyNote.content) {
+        const newContent = replacePropertyInString(noteRef.current.content, oldProp, newProp);
+        if (newContent !== noteRef.current.content) {
             recordCorrection();
             await handleContentSave(newContent);
         }
-    }, [dirtyNote.content, handleContentSave, recordCorrection]);
+    }, [handleContentSave, recordCorrection]);
 
     const handleUpdateProperty = useCallback(async (key: string, value: string) => {
         recordCorrection();
-        const updated = await NotePipeline.upsertProperty(dirtyNote, key, value, ontology);
+        const updated = await NotePipeline.upsertProperty(noteRef.current, key, value, ontology);
         setDirtyNote(updated);
     }, [setDirtyNote, ontology, recordCorrection]);
 

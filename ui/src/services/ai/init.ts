@@ -35,7 +35,39 @@ export interface AIInitOptions {
     enableHeuristic?: boolean;
 }
 
-export async function initializeAI(options: AIInitOptions = {}): Promise<void> {
+/** Signature of the provider set a configuration asks for. */
+function configSignature(options: AIInitOptions): string {
+    return JSON.stringify([
+        options.remoteApiKey ?? '',
+        options.webllmModelId ?? AVAILABLE_MODELS[0].id,
+        options.enableRemote ?? true,
+        options.enableWebLLM ?? true,
+        options.enableHeuristic ?? true,
+    ]);
+}
+
+let appliedSignature: string | null = null;
+let pendingInit: Promise<void> = Promise.resolve();
+
+/**
+ * Register the AI providers for a configuration.
+ * Idempotent: repeated calls with an equivalent configuration are no-ops, so
+ * components that each initialize AI do not re-probe capabilities or re-log.
+ */
+export function initializeAI(options: AIInitOptions = {}): Promise<void> {
+    const signature = configSignature(options);
+    if (signature === appliedSignature) return pendingInit;
+
+    pendingInit = pendingInit.then(async () => {
+        if (signature === appliedSignature) return;
+        await applyProviders(options);
+        appliedSignature = signature;
+    });
+
+    return pendingInit;
+}
+
+async function applyProviders(options: AIInitOptions): Promise<void> {
     const {
         remoteApiKey,
         webllmModelId = AVAILABLE_MODELS[0].id,
@@ -43,6 +75,8 @@ export async function initializeAI(options: AIInitOptions = {}): Promise<void> {
         enableWebLLM = true,
         enableHeuristic = true,
     } = options;
+
+    const enabled = new Set<string>();
 
     // 1. Heuristic (deterministic rules) - always available, lowest priority (fallback)
     if (enableHeuristic) {
@@ -53,6 +87,7 @@ export async function initializeAI(options: AIInitOptions = {}): Promise<void> {
             capabilities: HEURISTIC_CAPABILITIES,
             priority: 3, // Lowest priority = last resort
         });
+        enabled.add('heuristic');
     }
 
     // 2. WebLLM (in-browser local model) - medium priority
@@ -67,6 +102,7 @@ export async function initializeAI(options: AIInitOptions = {}): Promise<void> {
                     capabilities: LOCAL_MODEL_CAPABILITIES,
                     priority: 1, // High priority - preferred for privacy
                 });
+                enabled.add('webllm');
             } else {
                 console.warn('WebGPU not available, skipping WebLLM provider');
             }
@@ -84,8 +120,14 @@ export async function initializeAI(options: AIInitOptions = {}): Promise<void> {
             capabilities: REMOTE_CAPABILITIES,
             priority: 0, // Highest priority - best quality
         });
+        enabled.add('gemini');
     } else if (enableRemote) {
         console.warn('Gemini API key not available, skipping remote provider');
+    }
+
+    // Drop providers that the current configuration no longer enables
+    for (const name of ['heuristic', 'webllm', 'gemini']) {
+        if (!enabled.has(name)) inferenceRouter.unregisterProvider(name);
     }
 
     // Probe capabilities for all registered providers

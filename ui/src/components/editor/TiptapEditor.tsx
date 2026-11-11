@@ -56,6 +56,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
                                                                             }, ref) => {
     const [viewMode, setViewMode] = useState<'rich' | 'code'>('rich');
     const [isDescribeOpen, setIsDescribeOpen] = useState(false);
+    const [editorReady, setEditorReady] = useState(false);
 
     const {setSearchTerm, setActiveView, setSelectedNoteId} = useView();
     const {addToast} = useToast();
@@ -106,12 +107,26 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
         notes,
         onOpenPropertyModal: handleOpenPropertyModal,
         onMagic,
-        suggestions: allSuggestions
     });
+
+    // The editor instance exists before its schema does; reading content before
+    // then throws. Wait for the view to be created.
+    useEffect(() => {
+        if (!editor || editor.isDestroyed) return;
+        if (editor.view) {
+            setEditorReady(true);
+            return;
+        }
+        const markReady = () => setEditorReady(true);
+        editor.on('create', markReady);
+        return () => {
+            editor.off('create', markReady);
+        };
+    }, [editor]);
 
     useEffect(() => {
         const handleSaveEvent = () => {
-            if (editor) {
+            if (editor && !editor.isDestroyed) {
                 onSave(editor.getHTML());
                 addToast('Note saved', 'success');
             }
@@ -122,13 +137,13 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
 
     // Sync content from parent
     useEffect(() => {
-        if (editor && !editor.isFocused && editor.getHTML() !== note.content) {
+        if (editor && !editor.isDestroyed && editorReady && !editor.isFocused && editor.getHTML() !== note.content) {
             editor.commands.setContent(sanitizeHTML(note.content), {emitUpdate: false});
         }
-    }, [note.content, editor]);
+    }, [note.content, editor, editorReady]);
 
     const toggleViewMode = () => {
-        if (viewMode === 'code' && editor && editor.getHTML() !== note.content) {
+        if (viewMode === 'code' && editor && !editor.isDestroyed && editorReady && editor.getHTML() !== note.content) {
             editor.commands.setContent(sanitizeHTML(note.content), {emitUpdate: false});
         }
         setViewMode((prev) => (prev === 'rich' ? 'code' : 'rich'));

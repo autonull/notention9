@@ -25,13 +25,13 @@ export {
     resetRevisionStore 
 } from './telemetry/revisionStore.js';
 export { 
-    RevisionDriver, 
     JSONLRevisionDriver, 
     InMemoryRevisionDriver, 
     SQLiteRevisionDriver, 
     revisionDriverRegistry,
     getRevisionDriverRegistry,
     resetRevisionDriverRegistry,
+    type RevisionDriver,
     type RevisionDriverConfig,
     type RevisionSearchQuery
 } from './telemetry/revisionDriver.js';

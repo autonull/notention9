@@ -6,10 +6,12 @@ import {Card} from '../ui/Card';
 import {Note} from '@notention/core';
 import {CheckCircleIcon, XCircleIcon, ArrowPathIcon, PencilIcon} from '../ui/icons';
 import {logMatchWithdrawn, createWithdrawalNote} from '@notention/core';
+import {useFrictionRecorder} from '../../hooks/useFrictionRecorder';
 
 export function ResponsesView() {
     const {notes, addNote} = useNotes();
     const {setSelectedNoteId, setActiveView} = useView();
+    const { recordResponseViewed } = useFrictionRecorder('match', 'responses');
 
     // Filter for response notes (intent: response)
     const responses = notes.filter(n => 
@@ -53,6 +55,7 @@ export function ResponsesView() {
     };
 
     const handleNoteClick = (id: string) => {
+        recordResponseViewed();
         setSelectedNoteId(id);
         setActiveView('notes');
     };
