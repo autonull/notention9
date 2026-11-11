@@ -1,4 +1,4 @@
-import { DiscoveryEngine } from '../index.js';
+import { DiscoveryEngine } from '../engine.js';
 import type { JourneySpec } from '../../journey.js';
 import type { StatePathRegistry } from '../analyzer/statePathRegistry.js';
 

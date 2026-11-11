@@ -2,7 +2,22 @@
 
 **Supersedes:** TODO.16.md (superseded plan) · **Rewritten:** TODO.17 v1 (this file, v2)
 **Date:** 2026-11-10
-**Status:** **P0b COMPLETE** ✅ | **P0a COMPLETE** ✅ | **P1a COMPLETE** ✅ | **P1b COMPLETE** ✅ | **P1c COMPLETE** ✅ | **P1d COMPLETE** ✅ | **P2c.1 COMPLETE** ✅ | **P2c.2 COMPLETE** ✅ | **R1–R8, R10, R11 COMPLETE** ✅ | **R9 PARTIAL** ✅ | **I1/I2/I5/I6/I7 FIXED** ✅ | **E2E GREEN IN PRODUCTION BUILD** ✅ | **P2a INSTRUMENTED, NO SESSIONS YET** ⏳
+**Status:** **P0b COMPLETE** ✅ | **P0a COMPLETE** ✅ | **P1a COMPLETE** ✅ | **P1b COMPLETE** ✅ | **P1c COMPLETE** ✅ | **P1d COMPLETE** ✅ | **P2c.1 COMPLETE** ✅ | **P2c.2 COMPLETE** ✅ | **R1–R8, R10, R11 COMPLETE** ✅ | **R9 PARTIAL** ✅ | **I1/I2/I5/I6/I7 FIXED** ✅ | **E2E GREEN IN PRODUCTION BUILD** ✅ | **P2a INSTRUMENTED, NO SESSIONS YET** ⏳ | **FALSE-GREEN GATES FIXED** ✅ | **TELEMETRY HANDOFF FIXED** ✅
+
+> **Note (2026-11-11, session 3 — the instruments were not measuring).** The remaining work in this
+> plan is *human evidence*, and the plan assumed the instruments around it were sound. Four of them
+> were not. Each was found by running it, not by reading it:
+>
+> 1. **`@notention/optimize` could not be imported at all.** `discovery/index.ts` re-exported
+>    `goalParser`, which imported `DiscoveryEngine` back from that same barrel — a cycle that
+>    resolved to a temporal dead zone. Every optimize journey test silently ran **zero** tests.
+> 2. **The optimize CLI discarded its exit code**, so a failed journey reported success.
+> 3. **`pnpm loop` never terminated** — the journal's flush timer held the event loop open.
+> 4. **The friction journal was off by default** in both the browser and Node, so real use recorded
+>    nothing; and `core`'s root barrel re-exported `test-utils`, dragging **vitest** into the
+>    shipped bundle and breaking the Playwright loader.
+>
+> Fixes and reasoning: `doc/decisions/015-telemetry-handoff.md`.
 
 > **Note (2026-11-11, updated):** The golden path acceptance tests (`golden-demo.spec.ts`, `compose-match.spec.ts`) now **pass against the production build** and run in `pnpm verify` L3.
 >
@@ -11,6 +26,35 @@
 > **Also fixed while the E2E lane was unblocked:** the dev server crashed on boot (browser twins lacked `getLedger`/`getFrictionCounts`); `index.node.ts` re-exported the type-only `RevisionDriver` as a value; "Add detail" silently dropped the property when the note body was empty; the editor was destroyed and rebuilt on every note update; `useNoteProperties` closed over a stale note and discarded title/tag edits; `TiptapEditor` read `editor.getHTML()` before the editor had a schema; match explanations hid the unit, so dimensional facts were invisible; AI providers re-initialized once per mounted consumer.
 >
 > **Fixed (2026-11-11):** I7 (VITE_DEV_HOOKS leakage) — moved `VITE_DEV_HOOKS=true` from `.env` to `.env.development`; production preview now shows `VITE_DEV_HOOKS: undefined isDev: false`.
+
+## Progress Log (2026-11-11, session 3)
+
+| Phase | Status | Notes |
+|-------|--------|-------|
+| **F4 — optimize import cycle** | ✅ **FIXED** | `DiscoveryEngine` moved to `optimize/src/discovery/engine.ts`; the barrel re-exports it. `import('@notention/optimize')` now succeeds and the optimize Playwright project discovers **9 tests in 6 files** (was 0) |
+| **Optimize build (pre-existing break)** | ✅ **FIXED** | `optimize` did not compile at HEAD: the previous session added 4 friction kinds to core but never updated `optimize/src/loop/prioritize.ts`. Mappings now live in one typed module, `optimize/src/loop/frictionMap.ts` — a new kind cannot be added to the journal without deciding what it means |
+| **Optimize CLI exit code** | ✅ **FIXED** | `main()`'s return value was discarded, so a failed journey exited 0. `process.exitCode` now carries it |
+| **F3 — `pnpm loop` hang** | ✅ **FIXED** | The journal's flush timer is now `unref()`ed. `pnpm loop prioritize --source friction` terminates instead of hanging until killed |
+| **F1/F2 — journal off by default** | ✅ **FIXED** | Both the browser and Node journals default to `enabled: true`; the browser records through its own config rather than an in-memory guess. The instrument now records real sessions |
+| **F5 — vitest in the shipped bundle** | ✅ **FIXED** | `core`'s root barrel no longer re-exports `test-utils`, and `vitest` is external in the tsup build. This is what made the Playwright loader report *"Vitest failed to access its internal state"* |
+| **VITE_DEV_HOOKS type mismatch** | ✅ **FIXED** | The Vite `define` substituted a **boolean**, but the code compares to the **string** `'true'` — so `true === 'true'` was false and the DevBridge never mounted. The define now substitutes the raw string, as Vite does for `import.meta.env` |
+| **L2 lane honesty** | 🔄 **NOW REAL** | `pnpm verify` L2 previously reported success while running zero tests. It now runs 2 optimize journeys and reports the **real** failure (see below). It remains non-blocking |
+| **Tests** | ✅ | Core 523, optimize 47 (+4 skipped), CLI 6, UI 183, agent, simulator — all green. `pnpm verify` exit 0 |
+
+### New known defect, surfaced by fixing the gates
+
+The optimize journey now runs and exposes a **real product bug** that no test could see before:
+
+> Adding a property through **Add detail** silently drops an *existing* property.
+> `capture-and-edit` seeds a note with `skill`, adds `framework`, and then finds `skill` gone.
+> The core pipeline is correct (`NotePipeline.updateContent` keeps both); the loss happens in the
+> **editor round-trip**, because the seeded property is an **empty** `<span data-type="property">`
+> — the canonical serialization — and the editor drops empty property marks.
+
+Tracked as **I10** below. Not fixed here: the journey lane was dead for the whole life of this
+plan, so the fix needs its own focused session with the editor's mark handling under test.
+
+---
 
 ## Progress Log (2026-11-11, session 2)
 
@@ -610,15 +654,26 @@ The center works and the golden path is proven in the production build. What is 
 |---|------|-----|----------|---------|
 | **1** | **Run 5 comprehension sessions** | `pnpm probe` (opens the app with the sample workspace; read the two questions aloud; press Enter when the session ends) | `doc/evidence/2026-11-comprehension-probe.md` | Needs 5 people. The instrument is ready; the sessions are not. |
 | **2** | **Judge the matches** | In the same session: for every match the product shows, "would you act on this?" and "why not?" — the probe already asks both | `doc/evidence/2026-11-comprehension-probe.md` (Match relevance section) | Follows step 1 — the same session produces the judgments |
-| **3** | **Let the journal fill, then prioritize** | Dogfood the app; the journal records capture/match/response friction; then `pnpm loop prioritize --source friction` ranks the work | `doc/evidence/2026-11-friction-taxonomy.md` | Needs real sessions; the events and the reader both exist |
+| **3** | **Let the journal fill, then prioritize** | Dogfood the app; the journal records capture/match/response friction; then `pnpm loop prioritize --source friction` ranks the work | `doc/evidence/2026-11-friction-taxonomy.md` | Needs real sessions. The reader now works (it used to hang) and the journal now records by default — but the events live in the **browser** (IndexedDB), while the reader reads the **Node** journal file. **A browser session's friction does not yet reach `pnpm loop`** — see the open item below |
+
+**Before step 1, one gap remains, and it is small:** the browser journal and the Node journal are
+two stores. The app records into IndexedDB; `pnpm loop prioritize --source friction` reads
+`.notention/journal/friction.jsonl`. So a facilitator session produces friction that the optimizer
+cannot see. The fix is one export/import path (browser → file), not a redesign — but until it
+exists, step 3 is only half-wired. **Do the export first; it is what makes step 3 meaningful.**
 
 **What is already true and needs no further work:** the corpus (864 notes, 14 domains),
 the benchmark (22 quality cases, F1 86.4% at the product threshold), the golden path
 (`pnpm verify` L3, green against the production build), the friction instrument (11 event
-kinds), and the comprehension instrument.
+kinds, recording by default), and the comprehension instrument.
 
 **What the next session should not do:** add more corpus, add more strategies, or start
 another parameter search. The remaining uncertainty is about *people*, not about code.
+
+**One code defect is worth taking before the sessions** (I10): adding a property through
+"Add detail" drops an existing one. It is a data-loss bug in the capture seam — the exact seam
+the comprehension probe asks about. Fixing it before 5 strangers meet the product is worth more
+than any of the three steps above.
 
 ---
 
@@ -718,3 +773,4 @@ Facilitated, in priority order.
 | **I7** | `VITE_DEV_HOOKS` leakage: preview shows `VITE_DEV_HOOKS: true isDev: false` | `ui/vite.config.ts`, build env | Medium | ✅ **FIXED** — moved `VITE_DEV_HOOKS=true` from `.env` to `.env.development`; production preview now shows `VITE_DEV_HOOKS: undefined isDev: false` |
 | **I8** | Chunk size warnings: main chunk > 500kB, vendor > 6MB | `ui/vite.config.ts` rollupOptions | Low | Consider manualChunks for code-splitting. Not blocking. |
 | **I9** | Two React copies can return (stale root `node_modules/react` is 18.3.1) | workspace root `node_modules` | Low | The stale npm-era install at the workspace root still carries React 18. A fresh `pnpm install` (or removing the stale root `node_modules`) removes the trap; the build is safe because core no longer bundles React |
+| **I10** | **Adding a property via "Add detail" drops an existing property** | `ui/src/components/editor/PropertyMark.ts`, `optimize/src/discovery/synthesizer/journeySynthesizer.ts` | High | Surfaced by fixing the optimize gate (session 3): the journey ran for the first time and failed on `note.propertyIndex.skill` — `skill` vanished after adding `framework`. The core pipeline is correct (`NotePipeline.updateContent` keeps both); the loss is in the **editor round-trip**: the seeded property is an empty `<span data-type="property">` (the canonical serialization, also produced by `noteDocumentAdapter.ts:550`), and the editor drops empty property marks. Needs its own session with the editor's mark handling under test |

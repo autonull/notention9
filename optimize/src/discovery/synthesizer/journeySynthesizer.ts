@@ -1,4 +1,4 @@
-import { DiscoveryEngine } from '../index.js';
+import { DiscoveryEngine } from '../engine.js';
 import { GoalParser, type ParsedGoal, type InferredAction } from './goalParser.js';
 import { SelectorInference, type InferredSelector } from '../analyzer/selectorInference.js';
 import type { JourneySpec, Step, Target } from '../../journey.js';

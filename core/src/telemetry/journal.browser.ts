@@ -25,7 +25,7 @@ const CONFIG_KEY = 'friction-journal-config';
 export class Journal {
     private configStore: JsonStore<JournalConfig>;
     private eventStore: JsonStore<FrictionEvent[]>;
-    private config: JournalConfig = { enabled: false, retentionDays: DEFAULT_JOURNAL_RETENTION_DAYS };
+    private config: JournalConfig = { enabled: true, retentionDays: DEFAULT_JOURNAL_RETENTION_DAYS };
     private buffer: FrictionEvent[] = [];
     private flushInterval: ReturnType<typeof setInterval> | null = null;
     private initPromise: Promise<void> | null = null;
@@ -42,7 +42,7 @@ export class Journal {
     }
 
     private async loadConfig(): Promise<void> {
-        this.config = (await this.configStore.load()) ?? { enabled: false, retentionDays: DEFAULT_JOURNAL_RETENTION_DAYS };
+        this.config = (await this.configStore.load()) ?? { enabled: true, retentionDays: DEFAULT_JOURNAL_RETENTION_DAYS };
         await this.configStore.save(this.config);
         this.startAutoFlush();
     }
@@ -72,14 +72,11 @@ export class Journal {
      * Record a friction event (fire-and-forget, buffered)
      */
     record(event: Omit<FrictionEvent, 'bucket'>): void {
-        if (!this.config.enabled) {
-            // Config may not be hydrated yet: hold the event until the store resolves.
-            void this.init().then(() => {
-                if (this.config.enabled) this.bufferEvent(event);
-            });
-            return;
-        }
-        this.bufferEvent(event);
+        // Resolve the stored config first: it may opt the journal out, and the
+        // in-memory default must not decide whether an event is kept.
+        void this.init().then(() => {
+            if (this.config.enabled) this.bufferEvent(event);
+        });
     }
 
     private bufferEvent(event: Omit<FrictionEvent, 'bucket'>): void {

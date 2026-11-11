@@ -164,6 +164,9 @@ export default defineConfig([
       'react',
       'react-dom',
       'react/jsx-runtime',
+      // vitest must never be bundled: the test-utils entry would carry its own
+      // copy, and `vi.fn()` mocks from that copy are invisible to the runner.
+      'vitest',
     ],
     noExternal: [
       '@notention/core/**',

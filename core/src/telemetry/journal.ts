@@ -80,7 +80,7 @@ if (!existsSync(DATA_DIR)) {
 export type { FrictionKind, DurationBucket, EvidenceClass, FrictionEvent, FrictionAggregate, FrictionSignal, JournalConfig } from './frictionUtils.js';
 
 const DEFAULT_JOURNAL_CONFIG: JournalConfig = {
-    enabled: false,
+    enabled: true,
     retentionDays: DEFAULT_JOURNAL_RETENTION_DAYS,
 };
 
@@ -117,6 +117,9 @@ export class Journal {
 
     private startAutoFlush(): void {
         this.flushInterval = setInterval(() => this.flush(), JOURNAL_AUTO_FLUSH_INTERVAL_MS);
+        // The flush timer must not own the process: a CLI that reads the journal
+        // (`pnpm loop prioritize --source friction`) would otherwise never exit.
+        this.flushInterval.unref?.();
     }
 
     /**

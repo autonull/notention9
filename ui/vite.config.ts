@@ -127,7 +127,10 @@ export default defineConfig(({mode}) => {
             global: 'globalThis',
             'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
             'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-            'import.meta.env.VITE_DEV_HOOKS': JSON.stringify(env.VITE_DEV_HOOKS === 'true'),
+            // Substitute the raw string, as Vite does for import.meta.env: code
+            // compares `import.meta.env.VITE_DEV_HOOKS === 'true'`, and a boolean
+            // substitution (JSON.stringify(true)) makes that comparison false.
+            'import.meta.env.VITE_DEV_HOOKS': JSON.stringify(env.VITE_DEV_HOOKS ?? ''),
         },
         optimizeDeps: {
             exclude: ['@notention/optimize', 'playwright-core', 'playwright', 'chromium-bidi', 'http', 'fs', 'child_process', 'cluster', 'dns', 'net', 'tls', 'http2', 'dgram', '@playwright/test'],

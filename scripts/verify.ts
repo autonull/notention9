@@ -19,6 +19,12 @@ function run(cmd: string, description: string): void {
     }
 }
 
+/**
+ * Run a lane that is not yet a hard gate, but report it honestly.
+ *
+ * A lane that ran and failed is NOT the same as a lane that was skipped: the
+ * difference is the difference between a known defect and a broken measurement.
+ */
 function runOptional(cmd: string, description: string): boolean {
     console.log(`\n🔄 ${description}...`);
     console.log(`   $ ${cmd}`);
@@ -27,7 +33,7 @@ function runOptional(cmd: string, description: string): boolean {
         console.log(`✅ ${description} passed`);
         return true;
     } catch (err) {
-        console.warn(`⚠️  ${description} skipped (pre-existing issue)`);
+        console.warn(`⚠️  ${description} FAILED (known defect, not yet a hard gate)`);
         return false;
     }
 }

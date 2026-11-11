@@ -94,7 +94,9 @@ export type {
 // New extensibility modules
 export * from './ontology/index.js';
 export * from './suggestions/index.js';
-export * from './test-utils/index.js';
+// test-utils is deliberately NOT re-exported here: it imports vitest, and this
+// barrel is the entry point of the shipped bundle. Test helpers stay behind the
+// dedicated '@notention/core/test-utils' subpath export.
 export * from './validation/index.js';
 export * from './config.js';
 export * from './events/index.js';

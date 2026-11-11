@@ -4,7 +4,7 @@
 >
 > This document **replaces** the need to reference `README2.prompt.md`. It contains the full normative specification plus implementation reality, gaps, and actionable build steps. A new team could build the complete system from this document alone.
 >
-> **Implementation Status (2026-11-11):** Core matching semantics complete (P1a); act step complete with response/withdrawal notes (P1b); benchmark rebuilt on product semantics (P1d); corpus expanded to 864 notes across 14 domains (P2c.1–2); golden path E2E tests green against the production build (`pnpm verify` L3). Comprehension, match-relevance, and friction evidence are instrumented (`pnpm probe`, `pnpm loop prioritize --source friction`) but no sessions are recorded yet. See `TODO.17.md` for detailed progress.
+> **Implementation Status (2026-11-11):** Core matching semantics complete (P1a); act step complete with response/withdrawal notes (P1b); benchmark rebuilt on product semantics (P1d); corpus expanded to 864 notes across 14 domains (P2c.1–2); golden path E2E tests green against the production build (`pnpm verify` L3). Comprehension, match-relevance, and friction evidence are instrumented (`pnpm probe`, `pnpm loop prioritize --source friction`) but no sessions are recorded yet. The optimize journey suite now runs (it previously discovered zero tests) and exposes one open defect: adding a property drops an existing one (TODO.17 I10). See `TODO.17.md` for detailed progress.
 
 ---
 

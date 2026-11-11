@@ -179,7 +179,13 @@ async function main(): Promise<number> {
     }
 }
 
-main().catch((e) => {
-    console.error(`Fatal: ${e instanceof Error ? e.message : String(e)}`);
-    process.exit(1);
-});
+main()
+    .then(code => {
+        // Propagate the real exit code: `main()` returns 1 for a failed journey,
+        // and a CLI that swallows it reports success for a failed run.
+        process.exitCode = code;
+    })
+    .catch((e) => {
+        console.error(`Fatal: ${e instanceof Error ? e.message : String(e)}`);
+        process.exitCode = 1;
+    });
