@@ -1,24 +1,20 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import {
     MATCH_KINDS,
-    STATE_TRANSITIONS,
-    STATE_TTL_MS,
-    canTransition,
-    getValidTransitions,
-    getStateTTL,
-    isTerminalState,
-    actionToState,
     actionToKind,
     kindToAction,
     createReceipt,
     extractReceiptFromEvent,
     verifyReceiptEvent,
     buildReceiptChain,
+    deriveChainState,
+    deriveNoteMatchStates,
     isMatchExpired,
     getMatchExpiration,
     createMatchId,
     exportReceiptChain,
     importReceiptChain,
+    DEFAULT_ACTION_TTL_MS,
     type MatchState,
     type MatchAction,
     type SignedReceiptEvent,
@@ -27,113 +23,7 @@ import {
 import { generatePrivateKey, getPublicKey } from '../network/nostr/protocol.js';
 import { hexToBytes } from '../utils/encoding.js';
 
-describe('MatchProtocol - State Machine', () => {
-    describe('STATE_TRANSITIONS', () => {
-        it('should define valid transitions from draft', () => {
-            expect(STATE_TRANSITIONS.draft).toEqual(['published']);
-        });
-
-        it('should define valid transitions from published', () => {
-            expect(STATE_TRANSITIONS.published).toEqual(['matched', 'cancelled']);
-        });
-
-        it('should define valid transitions from matched', () => {
-            expect(STATE_TRANSITIONS.matched).toEqual(['responded', 'withdrawn', 'cancelled']);
-        });
-
-        it('should define valid transitions from responded', () => {
-            expect(STATE_TRANSITIONS.responded).toEqual(['accepted', 'withdrawn', 'cancelled']);
-        });
-
-        it('should define valid transitions from accepted', () => {
-            expect(STATE_TRANSITIONS.accepted).toEqual(['completed', 'cancelled']);
-        });
-
-        it('should have no transitions from terminal states', () => {
-            expect(STATE_TRANSITIONS.withdrawn).toEqual([]);
-            expect(STATE_TRANSITIONS.completed).toEqual([]);
-            expect(STATE_TRANSITIONS.cancelled).toEqual([]);
-        });
-    });
-
-    describe('canTransition', () => {
-        it('should allow valid transitions', () => {
-            expect(canTransition('draft', 'published')).toBe(true);
-            expect(canTransition('published', 'matched')).toBe(true);
-            expect(canTransition('published', 'cancelled')).toBe(true);
-            expect(canTransition('matched', 'responded')).toBe(true);
-            expect(canTransition('matched', 'withdrawn')).toBe(true);
-            expect(canTransition('responded', 'accepted')).toBe(true);
-            expect(canTransition('accepted', 'completed')).toBe(true);
-        });
-
-        it('should reject invalid transitions', () => {
-            expect(canTransition('draft', 'matched')).toBe(false);
-            expect(canTransition('published', 'responded')).toBe(false);
-            expect(canTransition('matched', 'accepted')).toBe(false);
-            expect(canTransition('accepted', 'withdrawn')).toBe(false);
-            expect(canTransition('completed', 'cancelled')).toBe(false);
-        });
-
-        it('should reject transitions from terminal states', () => {
-            expect(canTransition('withdrawn', 'accepted')).toBe(false);
-            expect(canTransition('completed', 'cancelled')).toBe(false);
-            expect(canTransition('cancelled', 'published')).toBe(false);
-        });
-    });
-
-    describe('getValidTransitions', () => {
-        it('should return valid transitions for each state', () => {
-            expect(getValidTransitions('draft')).toEqual(['published']);
-            expect(getValidTransitions('published')).toEqual(['matched', 'cancelled']);
-            expect(getValidTransitions('matched')).toEqual(['responded', 'withdrawn', 'cancelled']);
-            expect(getValidTransitions('withdrawn')).toEqual([]);
-        });
-    });
-
-    describe('getStateTTL', () => {
-        it('should return correct TTL for each state', () => {
-            expect(getStateTTL('draft')).toBe(0);
-            expect(getStateTTL('published')).toBe(7 * 24 * 60 * 60 * 1000);
-            expect(getStateTTL('matched')).toBe(72 * 60 * 60 * 1000);
-            expect(getStateTTL('responded')).toBe(72 * 60 * 60 * 1000);
-            expect(getStateTTL('accepted')).toBe(30 * 24 * 60 * 60 * 1000);
-            expect(getStateTTL('withdrawn')).toBe(0);
-            expect(getStateTTL('completed')).toBe(0);
-            expect(getStateTTL('cancelled')).toBe(0);
-        });
-    });
-
-    describe('isTerminalState', () => {
-        it('should identify terminal states', () => {
-            expect(isTerminalState('withdrawn')).toBe(true);
-            expect(isTerminalState('completed')).toBe(true);
-            expect(isTerminalState('cancelled')).toBe(true);
-        });
-
-        it('should identify non-terminal states', () => {
-            expect(isTerminalState('draft')).toBe(false);
-            expect(isTerminalState('published')).toBe(false);
-            expect(isTerminalState('matched')).toBe(false);
-            expect(isTerminalState('responded')).toBe(false);
-            expect(isTerminalState('accepted')).toBe(false);
-        });
-    });
-});
-
 describe('MatchProtocol - Action/Kind Mapping', () => {
-    describe('actionToState', () => {
-        it('should map actions to correct states', () => {
-            expect(actionToState('publish')).toBe('published');
-            expect(actionToState('match')).toBe('matched');
-            expect(actionToState('respond')).toBe('responded');
-            expect(actionToState('accept')).toBe('accepted');
-            expect(actionToState('withdraw')).toBe('withdrawn');
-            expect(actionToState('complete')).toBe('completed');
-            expect(actionToState('cancel')).toBe('cancelled');
-        });
-    });
-
     describe('actionToKind / kindToAction', () => {
         it('should map actions to kinds and back', () => {
             const actions: MatchAction[] = ['publish', 'match', 'respond', 'accept', 'withdraw', 'complete', 'cancel'];
@@ -175,7 +65,6 @@ describe('MatchProtocol - Receipt Creation', () => {
 
     it('should create publish receipt', () => {
         const receipt = createReceipt(
-            'published',
             'publish',
             'note-123',
             'match-456',
@@ -189,7 +78,6 @@ describe('MatchProtocol - Receipt Creation', () => {
         expect(receipt.pubkey).toBe(actorPubkey);
         expect(receipt.tags.some(t => t[0] === 'match' && t[1] === 'match-456')).toBe(true);
         expect(receipt.tags.some(t => t[0] === 'note' && t[1] === 'note-123')).toBe(true);
-        expect(receipt.tags.some(t => t[0] === 'state' && t[1] === 'published')).toBe(true);
         expect(receipt.tags.some(t => t[0] === 'action' && t[1] === 'publish')).toBe(true);
         expect(receipt.tags.some(t => t[0] === 'actor' && t[1] === actorPubkey)).toBe(true);
         expect(receipt.tags.some(t => t[0] === 'metadata')).toBe(true);
@@ -197,7 +85,6 @@ describe('MatchProtocol - Receipt Creation', () => {
 
     it('should create match receipt with target', () => {
         const receipt = createReceipt(
-            'matched',
             'match',
             'note-123',
             'match-456',
@@ -213,7 +100,6 @@ describe('MatchProtocol - Receipt Creation', () => {
 
     it('should create accept receipt', () => {
         const receipt = createReceipt(
-            'accepted',
             'accept',
             'note-123',
             'match-456',
@@ -227,7 +113,6 @@ describe('MatchProtocol - Receipt Creation', () => {
 
     it('should create withdraw receipt', () => {
         const receipt = createReceipt(
-            'withdrawn',
             'withdraw',
             'note-123',
             'match-456',
@@ -239,7 +124,6 @@ describe('MatchProtocol - Receipt Creation', () => {
 
     it('should create complete receipt', () => {
         const receipt = createReceipt(
-            'completed',
             'complete',
             'note-123',
             'match-456',
@@ -251,7 +135,6 @@ describe('MatchProtocol - Receipt Creation', () => {
 
     it('should create cancel receipt', () => {
         const receipt = createReceipt(
-            'cancelled',
             'cancel',
             'note-123',
             'match-456',
@@ -261,9 +144,8 @@ describe('MatchProtocol - Receipt Creation', () => {
         expect(receipt.kind).toBe(MATCH_KINDS.CANCEL);
     });
 
-    it('should include TTL in receipt content', () => {
+    it('should include action in receipt content (not state/ttl)', () => {
         const receipt = createReceipt(
-            'published',
             'publish',
             'note-123',
             'match-456',
@@ -271,12 +153,12 @@ describe('MatchProtocol - Receipt Creation', () => {
         );
 
         const content = JSON.parse(receipt.content);
-        expect(content.ttl).toBe(STATE_TTL_MS.published);
-        expect(content.state).toBe('published');
         expect(content.action).toBe('publish');
         expect(content.matchId).toBe('match-456');
         expect(content.noteId).toBe('note-123');
         expect(content.actorPubkey).toBe(actorPubkey);
+        expect(content.state).toBeUndefined();
+        expect(content.ttl).toBeUndefined();
     });
 });
 
@@ -291,9 +173,8 @@ describe('MatchProtocol - Receipt Extraction', () => {
         targetPubkey = getPublicKey(hexToBytes(generatePrivateKey()));
     });
 
-    it('should extract receipt content regardless of signature validity', () => {
+    it('should extract valid receipt from event', () => {
         const receipt = createReceipt(
-            'published',
             'publish',
             'note-123',
             'match-456',
@@ -304,7 +185,6 @@ describe('MatchProtocol - Receipt Extraction', () => {
         const extracted = extractReceiptFromEvent(receipt);
         
         expect(extracted).not.toBeNull();
-        expect(extracted!.state).toBe('published');
         expect(extracted!.action).toBe('publish');
         expect(extracted!.matchId).toBe('match-456');
         expect(extracted!.noteId).toBe('note-123');
@@ -314,7 +194,6 @@ describe('MatchProtocol - Receipt Extraction', () => {
 
     it('should reject event with missing required fields', () => {
         const receipt = createReceipt(
-            'published',
             'publish',
             'note-123',
             'match-456',
@@ -332,7 +211,6 @@ describe('MatchProtocol - Receipt Extraction', () => {
 
     it('should reject event with mismatched d-tag', () => {
         const receipt = createReceipt(
-            'published',
             'publish',
             'note-123',
             'match-456',
@@ -350,7 +228,6 @@ describe('MatchProtocol - Receipt Extraction', () => {
 
     it('should reject event with mismatched matchId', () => {
         const receipt = createReceipt(
-            'published',
             'publish',
             'note-123',
             'match-456',
@@ -376,21 +253,17 @@ describe('MatchProtocol - Receipt Verification', () => {
 
     it('should verify valid receipt event', () => {
         const receipt = createReceipt(
-            'published',
             'publish',
             'note-123',
             'match-456',
             actorPrivkey
         );
 
-        // Note: verifyEvent from nostr-tools has issues in test environment
-        // This test documents expected behavior
         expect(verifyReceiptEvent(receipt)).toBe(true);
     });
 
     it('should reject event with unknown kind', () => {
         const receipt = createReceipt(
-            'published',
             'publish',
             'note-123',
             'match-456',
@@ -420,10 +293,10 @@ describe('MatchProtocol - Receipt Chain', () => {
         const matchId = 'match-test-123';
         const noteId = 'note-456';
 
-        const publishReceipt = createReceipt('published', 'publish', noteId, matchId, requesterPrivkey);
-        const matchReceipt = createReceipt('matched', 'match', noteId, matchId, offererPrivkey, requesterPubkey, publishReceipt.id);
-        const respondReceipt = createReceipt('responded', 'respond', noteId, matchId, requesterPrivkey, offererPubkey, matchReceipt.id);
-        const acceptReceipt = createReceipt('accepted', 'accept', noteId, matchId, offererPubkey, requesterPubkey, respondReceipt.id);
+        const publishReceipt = createReceipt('publish', noteId, matchId, requesterPrivkey);
+        const matchReceipt = createReceipt('match', noteId, matchId, offererPrivkey, requesterPubkey, publishReceipt.id);
+        const respondReceipt = createReceipt('respond', noteId, matchId, requesterPrivkey, offererPubkey, matchReceipt.id);
+        const acceptReceipt = createReceipt('accept', noteId, matchId, offererPrivkey, requesterPubkey, respondReceipt.id);
 
         const chain = buildReceiptChain([publishReceipt, matchReceipt, respondReceipt, acceptReceipt]);
 
@@ -438,9 +311,9 @@ describe('MatchProtocol - Receipt Chain', () => {
         const matchId = 'match-test-123';
         const noteId = 'note-456';
 
-        const publishReceipt = createReceipt('published', 'publish', noteId, matchId, requesterPrivkey);
-        const matchReceipt = createReceipt('matched', 'match', noteId, matchId, offererPrivkey, requesterPubkey, publishReceipt.id);
-        const withdrawReceipt = createReceipt('withdrawn', 'withdraw', noteId, matchId, offererPubkey, requesterPubkey, matchReceipt.id);
+        const publishReceipt = createReceipt('publish', noteId, matchId, requesterPrivkey);
+        const matchReceipt = createReceipt('match', noteId, matchId, offererPrivkey, requesterPubkey, publishReceipt.id);
+        const withdrawReceipt = createReceipt('withdraw', noteId, matchId, offererPrivkey, requesterPubkey, matchReceipt.id);
 
         const chain = buildReceiptChain([publishReceipt, matchReceipt, withdrawReceipt]);
 
@@ -453,8 +326,8 @@ describe('MatchProtocol - Receipt Chain', () => {
         const matchId = 'match-test-123';
         const noteId = 'note-456';
 
-        const publishReceipt = createReceipt('published', 'publish', noteId, matchId, requesterPrivkey);
-        const cancelReceipt = createReceipt('cancelled', 'cancel', noteId, matchId, requesterPrivkey, undefined, publishReceipt.id);
+        const publishReceipt = createReceipt('publish', noteId, matchId, requesterPrivkey);
+        const cancelReceipt = createReceipt('cancel', noteId, matchId, requesterPrivkey, undefined, publishReceipt.id);
 
         const chain = buildReceiptChain([publishReceipt, cancelReceipt]);
 
@@ -463,28 +336,12 @@ describe('MatchProtocol - Receipt Chain', () => {
         expect(chain.isValid).toBe(true);
     });
 
-    it('should reject invalid state transition', () => {
-        const matchId = 'match-test-123';
-        const noteId = 'note-456';
-
-        const publishReceipt = createReceipt('published', 'publish', noteId, matchId, requesterPrivkey);
-        // Skip 'matched' state, go directly to 'accepted' - invalid
-        const acceptReceipt = createReceipt('accepted', 'accept', noteId, matchId, offererPrivkey, requesterPubkey, publishReceipt.id);
-
-        const chain = buildReceiptChain([publishReceipt, acceptReceipt]);
-
-        expect(chain.receipts).toHaveLength(1); // Only publish accepted
-        expect(chain.currentState).toBe('published');
-        expect(chain.isValid).toBe(false);
-        expect(chain.errors.some(e => e.includes('Invalid state transition'))).toBe(true);
-    });
-
     it('should reject missing chain reference', () => {
         const matchId = 'match-test-123';
         const noteId = 'note-456';
 
-        const publishReceipt = createReceipt('published', 'publish', noteId, matchId, requesterPrivkey);
-        const matchReceipt = createReceipt('matched', 'match', noteId, matchId, offererPrivkey, requesterPubkey); // Missing previous event reference
+        const publishReceipt = createReceipt('publish', noteId, matchId, requesterPrivkey);
+        const matchReceipt = createReceipt('match', noteId, matchId, offererPrivkey, requesterPubkey); // Missing previous event reference
 
         const chain = buildReceiptChain([publishReceipt, matchReceipt]);
 
@@ -496,8 +353,8 @@ describe('MatchProtocol - Receipt Chain', () => {
     it('should reject mismatched matchId', () => {
         const noteId = 'note-456';
 
-        const publishReceipt = createReceipt('published', 'publish', noteId, 'match-1', requesterPrivkey);
-        const matchReceipt = createReceipt('matched', 'match', noteId, 'match-2', offererPrivkey, requesterPubkey, publishReceipt.id);
+        const publishReceipt = createReceipt('publish', noteId, 'match-1', requesterPrivkey);
+        const matchReceipt = createReceipt('match', noteId, 'match-2', offererPrivkey, requesterPubkey, publishReceipt.id);
 
         const chain = buildReceiptChain([publishReceipt, matchReceipt]);
 
@@ -510,13 +367,13 @@ describe('MatchProtocol - Receipt Chain', () => {
         const noteId = 'note-456';
 
         // Create in correct order with delays to ensure different created_at (seconds)
-        const publishReceipt = createReceipt('published', 'publish', noteId, matchId, requesterPrivkey);
+        const publishReceipt = createReceipt('publish', noteId, matchId, requesterPrivkey);
         await new Promise(r => setTimeout(r, 1100));
-        const matchReceipt = createReceipt('matched', 'match', noteId, matchId, offererPrivkey, requesterPubkey, publishReceipt.id);
+        const matchReceipt = createReceipt('match', noteId, matchId, offererPrivkey, requesterPubkey, publishReceipt.id);
         await new Promise(r => setTimeout(r, 1100));
-        const respondReceipt = createReceipt('responded', 'respond', noteId, matchId, requesterPrivkey, offererPubkey, matchReceipt.id);
+        const respondReceipt = createReceipt('respond', noteId, matchId, requesterPrivkey, offererPubkey, matchReceipt.id);
         await new Promise(r => setTimeout(r, 1100));
-        const acceptReceipt = createReceipt('accepted', 'accept', noteId, matchId, offererPrivkey, requesterPubkey, respondReceipt.id);
+        const acceptReceipt = createReceipt('accept', noteId, matchId, offererPrivkey, requesterPubkey, respondReceipt.id);
 
         // Pass in reverse order to test sorting
         const chain = buildReceiptChain([acceptReceipt, respondReceipt, matchReceipt, publishReceipt]);
@@ -540,6 +397,75 @@ describe('MatchProtocol - Receipt Chain', () => {
     });
 });
 
+describe('MatchProtocol - Derived State', () => {
+    let requesterPrivkey: string;
+    let requesterPubkey: string;
+    let offererPrivkey: string;
+    let offererPubkey: string;
+
+    beforeEach(() => {
+        requesterPrivkey = generatePrivateKey();
+        requesterPubkey = getPublicKey(hexToBytes(requesterPrivkey));
+        offererPrivkey = generatePrivateKey();
+        offererPubkey = getPublicKey(hexToBytes(offererPrivkey));
+    });
+
+    it('should derive state from chain receipts', () => {
+        const matchId = 'match-test-123';
+        const noteId = 'note-456';
+
+        const publishReceipt = createReceipt('publish', noteId, matchId, requesterPrivkey);
+        const chain1 = buildReceiptChain([publishReceipt]);
+        expect(deriveChainState(chain1)).toBe('published');
+
+        const matchReceipt = createReceipt('match', noteId, matchId, offererPrivkey, requesterPubkey, publishReceipt.id);
+        const chain2 = buildReceiptChain([publishReceipt, matchReceipt]);
+        expect(deriveChainState(chain2)).toBe('matched');
+
+        const respondReceipt = createReceipt('respond', noteId, matchId, requesterPrivkey, offererPubkey, matchReceipt.id);
+        const chain3 = buildReceiptChain([publishReceipt, matchReceipt, respondReceipt]);
+        expect(deriveChainState(chain3)).toBe('responded');
+
+        const acceptReceipt = createReceipt('accept', noteId, matchId, offererPrivkey, requesterPubkey, respondReceipt.id);
+        const chain4 = buildReceiptChain([publishReceipt, matchReceipt, respondReceipt, acceptReceipt]);
+        expect(deriveChainState(chain4)).toBe('accepted');
+
+        const completeReceipt = createReceipt('complete', noteId, matchId, requesterPrivkey, offererPubkey, acceptReceipt.id);
+        const chain5 = buildReceiptChain([publishReceipt, matchReceipt, respondReceipt, acceptReceipt, completeReceipt]);
+        expect(deriveChainState(chain5)).toBe('completed');
+
+        const withdrawReceipt = createReceipt('withdraw', noteId, matchId, offererPrivkey, requesterPubkey, matchReceipt.id);
+        const chain6 = buildReceiptChain([publishReceipt, matchReceipt, withdrawReceipt]);
+        expect(deriveChainState(chain6)).toBe('withdrawn');
+
+        const cancelReceipt = createReceipt('cancel', noteId, matchId, requesterPrivkey, undefined, publishReceipt.id);
+        const chain7 = buildReceiptChain([publishReceipt, cancelReceipt]);
+        expect(deriveChainState(chain7)).toBe('cancelled');
+    });
+
+    it('should derive highest priority state per matchId', () => {
+        const matchId1 = 'match-1';
+        const matchId2 = 'match-2';
+        const noteId = 'note-456';
+
+        const publishReceipt1 = createReceipt('publish', noteId, matchId1, requesterPrivkey);
+        const matchReceipt1 = createReceipt('match', noteId, matchId1, offererPrivkey, requesterPubkey, publishReceipt1.id);
+        const acceptReceipt1 = createReceipt('accept', noteId, matchId1, offererPrivkey, requesterPubkey, matchReceipt1.id);
+
+        const publishReceipt2 = createReceipt('publish', noteId, matchId2, requesterPrivkey);
+        const matchReceipt2 = createReceipt('match', noteId, matchId2, offererPrivkey, requesterPubkey, publishReceipt2.id);
+        const respondReceipt2 = createReceipt('respond', noteId, matchId2, requesterPrivkey, offererPubkey, matchReceipt2.id);
+
+        const chain1 = buildReceiptChain([publishReceipt1, matchReceipt1, acceptReceipt1]);
+        const chain2 = buildReceiptChain([publishReceipt2, matchReceipt2, respondReceipt2]);
+
+        const states = deriveNoteMatchStates([chain1, chain2]);
+
+        expect(states.get(matchId1)).toBe('accepted');
+        expect(states.get(matchId2)).toBe('responded');
+    });
+});
+
 describe('MatchProtocol - Expiration', () => {
     let requesterPrivkey: string;
     let requesterPubkey: string;
@@ -557,13 +483,27 @@ describe('MatchProtocol - Expiration', () => {
         const matchId = 'match-test-123';
         const noteId = 'note-456';
 
-        const publishReceipt = createReceipt('published', 'publish', noteId, matchId, requesterPrivkey);
-        const matchReceipt = createReceipt('matched', 'match', noteId, matchId, offererPrivkey, requesterPubkey, publishReceipt.id);
-        const respondReceipt = createReceipt('responded', 'respond', noteId, matchId, requesterPrivkey, offererPubkey, matchReceipt.id);
-        const acceptReceipt = createReceipt('accepted', 'accept', noteId, matchId, offererPrivkey, requesterPubkey, respondReceipt.id);
-        const completeReceipt = createReceipt('completed', 'complete', noteId, matchId, requesterPrivkey, offererPubkey, acceptReceipt.id);
+        const publishReceipt = createReceipt('publish', noteId, matchId, requesterPrivkey);
+        const matchReceipt = createReceipt('match', noteId, matchId, offererPrivkey, requesterPubkey, publishReceipt.id);
+        const respondReceipt = createReceipt('respond', noteId, matchId, requesterPrivkey, offererPubkey, matchReceipt.id);
+        const acceptReceipt = createReceipt('accept', noteId, matchId, offererPrivkey, requesterPubkey, respondReceipt.id);
+        const completeReceipt = createReceipt('complete', noteId, matchId, requesterPrivkey, offererPubkey, acceptReceipt.id);
 
         const chain = buildReceiptChain([publishReceipt, matchReceipt, respondReceipt, acceptReceipt, completeReceipt]);
+        
+        expect(isMatchExpired(chain)).toBe(false);
+        expect(getMatchExpiration(chain)).toBeNull();
+    });
+
+    it('should not expire withdrawn or cancelled states', () => {
+        const matchId = 'match-test-123';
+        const noteId = 'note-456';
+
+        const publishReceipt = createReceipt('publish', noteId, matchId, requesterPrivkey);
+        const matchReceipt = createReceipt('match', noteId, matchId, offererPrivkey, requesterPubkey, publishReceipt.id);
+        const withdrawReceipt = createReceipt('withdraw', noteId, matchId, offererPrivkey, requesterPubkey, matchReceipt.id);
+
+        const chain = buildReceiptChain([publishReceipt, matchReceipt, withdrawReceipt]);
         
         expect(isMatchExpired(chain)).toBe(false);
         expect(getMatchExpiration(chain)).toBeNull();
@@ -573,11 +513,12 @@ describe('MatchProtocol - Expiration', () => {
         const matchId = 'match-test-123';
         const noteId = 'note-456';
 
-        const publishReceipt = createReceipt('published', 'publish', noteId, matchId, requesterPrivkey);
-        // Manually set old timestamp
-        publishReceipt.created_at = Math.floor((Date.now() - 8 * 24 * 60 * 60 * 1000) / 1000); // 8 days ago
+        const publishReceipt = createReceipt('publish', noteId, matchId, requesterPrivkey);
+        const matchReceipt = createReceipt('match', noteId, matchId, offererPrivkey, requesterPubkey, publishReceipt.id);
+        // Manually set old timestamp on match receipt
+        matchReceipt.created_at = Math.floor((Date.now() - 80 * 60 * 60 * 1000) / 1000); // 80 hours ago (TTL is 72h)
 
-        const chain = buildReceiptChain([publishReceipt]);
+        const chain = buildReceiptChain([publishReceipt, matchReceipt]);
         
         expect(isMatchExpired(chain)).toBe(true);
     });
@@ -586,15 +527,37 @@ describe('MatchProtocol - Expiration', () => {
         const matchId = 'match-test-123';
         const noteId = 'note-456';
 
-        const publishReceipt = createReceipt('published', 'publish', noteId, matchId, requesterPrivkey);
+        const publishReceipt = createReceipt('publish', noteId, matchId, requesterPrivkey);
+        const matchReceipt = createReceipt('match', noteId, matchId, offererPrivkey, requesterPubkey, publishReceipt.id);
 
-        const chain = buildReceiptChain([publishReceipt]);
+        const chain = buildReceiptChain([publishReceipt, matchReceipt]);
         
         expect(isMatchExpired(chain)).toBe(false);
         const expiration = getMatchExpiration(chain);
         expect(expiration).not.toBeNull();
-        expect(expiration! - Date.now()).toBeLessThan(STATE_TTL_MS.published + 1000);
-        expect(expiration! - Date.now()).toBeGreaterThan(STATE_TTL_MS.published - 1000);
+        // match TTL is 72h
+        expect(expiration! - Date.now()).toBeLessThan(DEFAULT_ACTION_TTL_MS.match + 1000);
+        expect(expiration! - Date.now()).toBeGreaterThan(DEFAULT_ACTION_TTL_MS.match - 1000);
+    });
+
+    it('should respect custom TTL in metadata', () => {
+        const matchId = 'match-test-123';
+        const noteId = 'note-456';
+
+        const publishReceipt = createReceipt('publish', noteId, matchId, requesterPrivkey);
+        const matchReceipt = createReceipt('match', noteId, matchId, offererPrivkey, requesterPubkey, publishReceipt.id, { ttl: 1000 }); // 1 second TTL
+
+        const chain = buildReceiptChain([publishReceipt, matchReceipt]);
+        
+        expect(isMatchExpired(chain)).toBe(false); // Just created, not expired yet
+        
+        // Fast-forward time
+        const expiredChain = buildReceiptChain([
+            { ...publishReceipt, created_at: Math.floor((Date.now() - 2000) / 1000) },
+            { ...matchReceipt, created_at: Math.floor((Date.now() - 2000) / 1000) }
+        ]);
+        
+        expect(isMatchExpired(expiredChain)).toBe(true);
     });
 });
 
@@ -628,8 +591,8 @@ describe('MatchProtocol - Export/Import', () => {
         const matchId = 'match-test-123';
         const noteId = 'note-456';
 
-        const publishReceipt = createReceipt('published', 'publish', noteId, matchId, requesterPrivkey);
-        const matchReceipt = createReceipt('matched', 'match', noteId, matchId, offererPrivkey, undefined, publishReceipt.id);
+        const publishReceipt = createReceipt('publish', noteId, matchId, requesterPrivkey);
+        const matchReceipt = createReceipt('match', noteId, matchId, offererPrivkey, undefined, publishReceipt.id);
 
         const originalChain = buildReceiptChain([publishReceipt, matchReceipt]);
         

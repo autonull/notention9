@@ -27,7 +27,6 @@ export type MatchAction =
     | 'cancel';
 
 export interface MatchReceipt {
-    state: MatchState;
     action: MatchAction;
     noteId: string;
     matchId: string;
@@ -35,7 +34,6 @@ export interface MatchReceipt {
     targetPubkey?: string;
     previousEventId?: string;
     timestamp: number;
-    ttl?: number;
     metadata?: Record<string, unknown>;
 }
 
@@ -58,58 +56,6 @@ export const MATCH_KINDS = {
     COMPLETE: 35105,
     CANCEL: 35106,
 } as const;
-
-export const STATE_TRANSITIONS: Record<MatchState, MatchState[]> = {
-    draft: ['published'],
-    published: ['matched', 'cancelled'],
-    matched: ['responded', 'withdrawn', 'cancelled'],
-    responded: ['accepted', 'withdrawn', 'cancelled'],
-    accepted: ['completed', 'cancelled'],
-    withdrawn: [],
-    completed: [],
-    cancelled: [],
-};
-
-export const STATE_TTL_MS: Record<MatchState, number> = {
-    draft: 0,
-    published: 7 * 24 * 60 * 60 * 1000,
-    matched: 72 * 60 * 60 * 1000,
-    responded: 72 * 60 * 60 * 1000,
-    accepted: 30 * 24 * 60 * 60 * 1000,
-    withdrawn: 0,
-    completed: 0,
-    cancelled: 0,
-};
-
-export function canTransition(from: MatchState, to: MatchState): boolean {
-    const allowed = STATE_TRANSITIONS[from];
-    return allowed?.includes(to) ?? false;
-}
-
-export function getValidTransitions(state: MatchState): MatchState[] {
-    return STATE_TRANSITIONS[state] ?? [];
-}
-
-export function getStateTTL(state: MatchState): number {
-    return STATE_TTL_MS[state] ?? 0;
-}
-
-export function isTerminalState(state: MatchState): boolean {
-    return STATE_TRANSITIONS[state]?.length === 0;
-}
-
-export function actionToState(action: MatchAction): MatchState {
-    const map: Record<MatchAction, MatchState> = {
-        publish: 'published',
-        match: 'matched',
-        respond: 'responded',
-        accept: 'accepted',
-        withdraw: 'withdrawn',
-        complete: 'completed',
-        cancel: 'cancelled',
-    };
-    return map[action];
-}
 
 export function actionToKind(action: MatchAction): number {
     const map: Record<MatchAction, number> = {
@@ -137,8 +83,44 @@ export function kindToAction(kind: number): MatchAction | null {
     return map[kind] ?? null;
 }
 
+export function deriveChainState(chain: ReceiptChain): MatchState {
+    const kinds = new Set(chain.receipts.map(r => r.kind));
+    if (kinds.has(MATCH_KINDS.COMPLETE)) return 'completed';
+    if (kinds.has(MATCH_KINDS.CANCEL)) return 'cancelled';
+    if (kinds.has(MATCH_KINDS.ACCEPT)) return 'accepted';
+    if (kinds.has(MATCH_KINDS.WITHDRAW)) return 'withdrawn';
+    if (kinds.has(MATCH_KINDS.RESPOND)) return 'responded';
+    if (kinds.has(MATCH_KINDS.MATCH)) return 'matched';
+    if (kinds.has(MATCH_KINDS.PUBLISH)) return 'published';
+    return 'draft';
+}
+
+export function deriveNoteMatchStates(chains: ReceiptChain[]): Map<string, MatchState> {
+    const states = new Map<string, MatchState>();
+    for (const chain of chains) {
+        const state = deriveChainState(chain);
+        if (!states.has(chain.matchId) || statePriority(state) > statePriority(states.get(chain.matchId)!)) {
+            states.set(chain.matchId, state);
+        }
+    }
+    return states;
+}
+
+function statePriority(state: MatchState): number {
+    const priorities: Record<MatchState, number> = {
+        draft: 0,
+        published: 1,
+        matched: 2,
+        responded: 3,
+        accepted: 4,
+        withdrawn: 5,
+        completed: 6,
+        cancelled: 7,
+    };
+    return priorities[state] ?? 0;
+}
+
 export function createReceipt(
-    state: MatchState,
     action: MatchAction,
     noteId: string,
     matchId: string,
@@ -150,7 +132,6 @@ export function createReceipt(
     const actorPubkey = getPublicKey(hexToBytes(actorPrivkey));
     
     const receipt: MatchReceipt = {
-        state,
         action,
         noteId,
         matchId,
@@ -158,7 +139,6 @@ export function createReceipt(
         targetPubkey,
         previousEventId,
         timestamp: Date.now(),
-        ttl: getStateTTL(state),
         metadata,
     };
 
@@ -166,7 +146,6 @@ export function createReceipt(
         ['d', `match_${action}_${matchId}_${receipt.timestamp}`],
         ['match', matchId],
         ['note', noteId],
-        ['state', state],
         ['action', action],
         ['actor', actorPubkey],
         ['t', 'match-receipt'],
@@ -197,7 +176,7 @@ export function createReceipt(
     event.id = getEventHash(event);
     const signed = finalizeEvent(event, hexToBytes(actorPrivkey));
     
-    logger.debug(`Created ${action} receipt`, { matchId, state, eventId: event.id });
+    logger.debug(`Created ${action} receipt`, { matchId, eventId: event.id });
     return signed;
 }
 
@@ -205,7 +184,7 @@ export function extractReceiptFromEvent(event: SignedReceiptEvent): MatchReceipt
     try {
         const receipt = JSON.parse(event.content) as MatchReceipt;
         
-        if (!receipt.state || !receipt.action || !receipt.noteId || !receipt.matchId || !receipt.actorPubkey) {
+        if (!receipt.action || !receipt.noteId || !receipt.matchId || !receipt.actorPubkey) {
             logger.warn('Receipt missing required fields');
             return null;
         }
@@ -225,12 +204,6 @@ export function extractReceiptFromEvent(event: SignedReceiptEvent): MatchReceipt
         const noteTag = event.tags.find(t => t[0] === 'note');
         if (!noteTag || noteTag[1] !== receipt.noteId) {
             logger.warn('Receipt noteId mismatch');
-            return null;
-        }
-
-        const stateTag = event.tags.find(t => t[0] === 'state');
-        if (!stateTag || stateTag[1] !== receipt.state) {
-            logger.warn('Receipt state mismatch');
             return null;
         }
 
@@ -283,7 +256,6 @@ export interface ReceiptChain {
 export function buildReceiptChain(events: SignedReceiptEvent[]): ReceiptChain {
     const errors: string[] = [];
     const validReceipts: SignedReceiptEvent[] = [];
-    let currentState: MatchState = 'draft';
 
     const matchEvents = events.filter(e => {
         const action = kindToAction(e.kind);
@@ -334,23 +306,37 @@ export function buildReceiptChain(events: SignedReceiptEvent[]): ReceiptChain {
             }
         }
 
-        if (!canTransition(currentState, receipt.state)) {
-            errors.push(`Invalid state transition: ${currentState} → ${receipt.state}`);
-            continue;
-        }
-
         validReceipts.push(event);
-        currentState = receipt.state;
         previousEventId = event.id;
     }
 
-    return {
+    const chain: ReceiptChain = {
         matchId,
         receipts: validReceipts,
-        currentState,
+        currentState: deriveChainState({ matchId, receipts: validReceipts, currentState: 'draft', isValid: true, errors: [] }),
         isValid: errors.length === 0,
         errors,
     };
+
+    return chain;
+}
+
+// TTL support: optional per-action TTL in metadata
+export const DEFAULT_ACTION_TTL_MS: Record<MatchAction, number> = {
+    publish: 0,
+    match: 72 * 60 * 60 * 1000,
+    respond: 72 * 60 * 60 * 1000,
+    accept: 30 * 24 * 60 * 60 * 1000,
+    withdraw: 0,
+    complete: 0,
+    cancel: 0,
+};
+
+function getActionTTL(action: MatchAction, metadata?: Record<string, unknown>): number {
+    if (metadata?.ttl && typeof metadata.ttl === 'number') {
+        return metadata.ttl;
+    }
+    return DEFAULT_ACTION_TTL_MS[action] ?? 0;
 }
 
 export function isMatchExpired(chain: ReceiptChain, now: number = Date.now()): boolean {
@@ -358,10 +344,13 @@ export function isMatchExpired(chain: ReceiptChain, now: number = Date.now()): b
     
     const lastReceipt = chain.receipts[chain.receipts.length - 1];
     const receiptData = extractReceiptFromEvent(lastReceipt);
-    if (!receiptData?.ttl || receiptData.ttl === 0) return false;
+    if (!receiptData) return false;
+
+    const ttl = getActionTTL(receiptData.action, receiptData.metadata);
+    if (ttl === 0) return false;
 
     const createdAt = lastReceipt.created_at * 1000;
-    return now - createdAt > receiptData.ttl;
+    return now - createdAt > ttl;
 }
 
 export function getMatchExpiration(chain: ReceiptChain): number | null {
@@ -370,13 +359,11 @@ export function getMatchExpiration(chain: ReceiptChain): number | null {
     const lastReceipt = chain.receipts[chain.receipts.length - 1];
     const receiptData = extractReceiptFromEvent(lastReceipt);
     if (!receiptData) return null;
-    
-    // Terminal states never expire
-    if (isTerminalState(receiptData.state)) return null;
-    
-    if (!receiptData.ttl || receiptData.ttl === 0) return null;
 
-    return lastReceipt.created_at * 1000 + receiptData.ttl;
+    const ttl = getActionTTL(receiptData.action, receiptData.metadata);
+    if (ttl === 0) return null;
+
+    return lastReceipt.created_at * 1000 + ttl;
 }
 
 export interface MatchContext {
