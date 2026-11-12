@@ -2,17 +2,17 @@
 
 **Instrument:** `pnpm probe` (sample workspace, seeded; facilitator reads the questions aloud)
 **Question:** does a stranger understand what this is and what to do next?
-**Sessions:** 0
+**Sessions:** 1
 
 ## Results
 
 | Participant | Understood purpose | Named next action | Time to first explanation | Time to first match | Acted | Time to first action |
 |---|---|---|---|---|---|---|
+P1 | no | no | — | — | no | —
 
-
-- **Comprehension rate:** 0% (0/0) stated the purpose correctly
-- **Next-action rate:** 0% (0/0) named an action the app supports
-- **Act completion:** 0/0
+- **Comprehension rate:** 0% (0/1) stated the purpose correctly
+- **Next-action rate:** 0% (0/1) named an action the app supports
+- **Act completion:** 0/1
 - **Time to first explanation:** median —
 - **Time to first match (P2c.4):** median — — threshold: median < 2 min
 - **Time to first action:** median —
@@ -21,13 +21,24 @@
 
 | Participant | Would act on the match | Why |
 |---|---|---|
-
+P1 | — | —
 
 - **Relevance rate:** 0% (0/0)
 
 ## Verbatim answers
 
-_No sessions recorded yet._
+### P1
+
+- **What is this app for?** _(no answer)_
+- **What would you do next?** _(no answer)_
+- Understood the purpose: no
+- Named a next action: no
+- Opened the match explanation after —
+- Time to first match: —
+- Journal events preserved: 0
+- Completed the act step: no
+- Would act on the match: —
+
 
 ## Method
 

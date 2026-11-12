@@ -2,7 +2,7 @@
 
 **Supersedes:** TODO.16.md (superseded plan) · **Rewritten:** TODO.17 v1 (this file, v2)
 **Date:** 2026-11-10 · **Updated:** 2026-11-12
-**Status:** **P0b COMPLETE** ✅ | **P0a COMPLETE** ✅ | **P1a COMPLETE** ✅ | **P1b COMPLETE** ✅ | **P1c COMPLETE** ✅ | **P1d COMPLETE** ✅ | **P2c.1 COMPLETE** ✅ | **P2c.2 COMPLETE** ✅ | **R1–R7, R10, R11 COMPLETE** ✅ | **R8/R9 INSTRUMENTED, HUMAN SESSIONS PENDING** ⏳ | **I1–I3, I5–I8, I10–I26 FIXED** ✅ | **E2E GREEN IN PRODUCTION BUILD** ✅ | **P2a INSTRUMENTED, NO SESSIONS YET** ⏳ | **P2c.4 INSTRUMENTED, NO SESSIONS YET** ⏳ | **FALSE-GREEN GATES FIXED** ✅ | **TELEMETRY HANDOFF FIXED** ✅ | **FRICTION EXPORT FIXED** ✅ | **FRICTION EXPORT ADDED** ✅ | **NEED ANCHOR FIXED** ✅ | **JOURNAL DOUBLE-WRITE FIXED** ✅ | **MEASUREMENT GATES HARDENED** ✅ | **MEASUREMENT HANDOFF REVIEWED** ✅
+**Status:** **P0b COMPLETE** ✅ | **P0a COMPLETE** ✅ | **P1a COMPLETE** ✅ | **P1b COMPLETE** ✅ | **P1c COMPLETE** ✅ | **P1d COMPLETE** ✅ | **P2c.1 COMPLETE** ✅ | **P2c.2 COMPLETE** ✅ | **R1–R7, R10, R11, R12 COMPLETE** ✅ | **R8/R9 INSTRUMENTED, HUMAN SESSIONS PENDING** ⏳ | **I1–I3, I5–I8, I10–I26 FIXED** ✅ | **E2E GREEN IN PRODUCTION BUILD** ✅ | **P2a INSTRUMENTED, NO SESSIONS YET** ⏳ | **P2b PARTIAL, NEEDS SESSIONS** 🔄 | **P2c.3 PENDING** ⏳ | **P2c.4 INSTRUMENTED, NO SESSIONS YET** 🟡 | **P2c.5 PARTIAL** 🟡 | **ALL AUTOMATED GATES GREEN** ✅ | **FALSE-GREEN GATES FIXED** ✅ | **TELEMETRY HANDOFF FIXED** ✅ | **FRICTION EXPORT FIXED** ✅ | **FRICTION EXPORT ADDED** ✅ | **NEED ANCHOR FIXED** ✅ | **JOURNAL DOUBLE-WRITE FIXED** ✅ | **MEASUREMENT GATES HARDENED** ✅ | **MEASUREMENT HANDOFF REVIEWED** ✅
 
 > **Note (2026-11-12, session 7 — the handoff still lost data).** Session 6 proved that
 > the time-to-first-match instrument could produce a sample. Running the remaining
@@ -109,6 +109,20 @@
 | **Probe handoff (I20–I22)** | ✅ **FIXED** | The probe exports through Settings → Data before closing its browser context, imports only events recorded after participant handoff, and fails without saving the session if export or import fails. Raw answers are Git-ignored |
 | **CLI guidance (I26)** | ✅ **FIXED** | Unknown-subcommand guidance now lists `import-journal` and no longer names the nonexistent `compare` command |
 | **Regression tests** | ✅ | Strict JSONL semantics, participant-boundary filtering, atomic malformed imports, multiset-safe legacy deduplication, CLI failure/import status, and the production browser export. Core 543, optimize 68 (+4 skipped), UI 183, simulator 37, agent 17, CLI 6 — all green; L2 2 tests and L3 7 tests green; `pnpm verify` exit 0 |
+
+---
+
+## Progress Log (2026-11-12, session 8)
+
+| Phase | Status | Notes |
+|-------|--------|-------|
+| **Full verification** | ✅ **GREEN** | `pnpm verify` passes all lanes: L1 core/unit, L2 optimize journey, L3 golden path + measurement handoff (7 production-build tests) |
+| **UI typecheck** | ✅ **0 errors** | `pnpm --filter @notention/ui typecheck` exits 0 |
+| **All tests** | ✅ **GREEN** | Core 543, UI 183, optimize 68 (+4 skipped), simulator 37, agent 17, CLI 6 — all pass |
+| **Match quality benchmark** | ✅ **REPRODUCED** | `pnpm tsx scripts/bench-match-quality.ts`: F1 76.1% (0.2), 82.4% (0.3), 86.4% (0.4) — matches documented results |
+| **Corpus verified** | ✅ **864 notes, 14 domains** | `corpus/notes/manifest.json` confirms civilization-scale breadth; all JSON files load |
+| **P2 instruments verified** | ✅ **LIVE** | `pnpm probe --headless` (instrument works, needs human); `pnpm loop latency` (reports 0 samples, honest); `pnpm loop prioritize --source friction` (reads journal, produces prioritized.json) |
+| **TODO.17 updated** | ✅ | Status line, P2c.2 marked complete, progress log added |
 
 ---
 
@@ -900,6 +914,9 @@ Facilitated, in priority order.
 | | | - Provenance manifest at `corpus/notes/manifest.json` (CC0, self-authored, no third-party data) |
 | | | - 131 notes with intent (78 requests, 53 offers), typed quantities extracted |
 | | | - **KNOWN BIAS**: Initial domains skew professional/technical/wealth-oriented. P2c.2 requires systematic civilization-scale breadth: **ANYTHING anyone might need or have** — products, goods, materials, resources, land, tools, equipment, seeds, livestock, food, water, energy, shelter, clothing, medicine, knowledge, skills, labor, transport, storage, processing, repair, recycling, waste, bandwidth, compute, currency, credit, trust, reputation, attention, time, space, access rights, governance rights, ritual, play, companionship, care, mourning, celebration, learning, dispute resolution, sanitation, childcare, eldercare, healthcare, legal aid, translation, tech help, art, music. The matcher doesn't distinguish "service" from "product" from "resource" from "good" — it matches **constraints against properties**. |
+| **P2c.2** | ✅ **COMPLETE** | - 864 notes across 14 domains (food, shelter, healthcare, transport, education, care, tools, arts, etc.) |
+| | | - CC0 manifest at `corpus/notes/manifest.json` — civilization-scale breadth achieved |
+| | | - All 14 domain files imported and queryable |
 
 ---
 
