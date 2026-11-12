@@ -68,4 +68,15 @@ All gates pass:
 **No remaining P0/P1 work.** Plan complete.
 
 ---
+
+## 10. Next Phase: TODO.21 — Nostr Transport + Private Network Usability
+Local loop works. **Next: make it work between devices.** See `TODO.21.md` for the no-shortcuts plan:
+- Nostr transport (publish/subscribe, relays, NIP-65)
+- Identity (nsec/npub, encrypted at rest)
+- Match protocol (state machine, signed receipts)
+- Private networks (invite = relay list + optional NIP-42 auth)
+- Offline-first (SQLite queue, background sync)
+- Dogfood: 2 users, 1 week, real coordination
+
+---
 *End of TODO.20.md. Canonical plan. README2.md deprecated.*
