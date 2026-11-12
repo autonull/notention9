@@ -5,6 +5,7 @@ export * from './notes/index.js';
 export * from './matching/index.js';
 export * from './ontology/index.js';
 export * from './network/index.js';
+export * from './routing/index.js';
 export * from './skills/index.js';
 export * from './extraction/index.js';
 export * from './constants/index.js';

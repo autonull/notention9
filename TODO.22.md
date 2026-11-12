@@ -136,13 +136,14 @@ Priority = (survival value × risk reduction) ÷ effort, with **end-to-end demoa
 - **If unmet:** start with needs+tolerances only; defer modifiers.
 - **Completed:** 2026-11-12 — All six survival domains integrated into DEFAULT_ONTOLOGY; BiologicalManifest types and functions implemented with full validation; 4 default profiles validated; export/import round-trips tested; QR code generation works; 766 deterministic tests passing.
 
-### Increment 7 — Survival Routing + Map
+### Increment 7 — Survival Routing + Map ✅ COMPLETE
 - Time-Expanded Network A* over `provides`/`imposes` and spacetime bounds.
 - Cost field: movement energy + hazard penalty (∞ on breach) − resource bonus.
 - Map layers: deficit gradient, lethal exclusion, cache/surplus, trajectory with time scrubber.
 - Compass mode fallback: bearing, distance, last known good.
 - **Done when:** given a manifest and hazard/resource notes, engine returns a trajectory that avoids lethal zones and hits resources; map renders all layers; compass mode works when engine is disabled.
 - **If unmet:** reduce horizon/grid resolution; ship compass mode + static exclusion map first.
+- **Completed:** 2026-11-12 — Time-Expanded Network A* implemented with spacetime grid; cost function combines energy, hazard penalties (infinite on tolerance breach), and resource bonuses; map layers include trajectory, hazard zones, resource caches, shelter sites, deficit gradient, lethal exclusion; compass fallback provides bearing/distance when no path found; 812 deterministic tests passing.
 
 ### Increment 8 — Multi-Device
 - Device linking (QR/passphrase); session events; device list + revoke.
@@ -264,3 +265,4 @@ Priority = (survival value × risk reduction) ÷ effort, with **end-to-end demoa
 | 2026-11-12 | **Increment 4 complete**: Outbox with persistent storage, automatic queueing on publish failure, exponential backoff retry with jitter, manual/auto drain on reconnect, queue stats, maxRetries limit; 711 deterministic tests passing | Enables offline-first operation with zero-loss queue flush on reconnect; G4 Offline gate met |
 | 2026-11-12 | **Increment 5 complete**: Mesh Bridge with daemon (Meshtastic serial ↔ WebSocket), browser transports (WebSerial, WebBluetooth, MeshBridge WS), and MeshtasticNetworkProvider factory methods; all tests passing | Enables mesh communication when infrastructure fails; G5 Mesh gate met |
 | 2026-11-12 | **Increment 6 complete**: GSS Ontology (hazard, resource, shelter, medical, transport, comms) integrated into DEFAULT_ONTOLOGY; BiologicalManifest with needs/tolerances/modifiers for profiles and groups; JSON/QR export/import with round-trip validation; 4 default profiles (infant, elderly, diabetic, healthy); 766 deterministic tests passing | Enables survival-grade biological coordination with verifiable manifests; G6 Ontology gate met |
+| 2026-11-12 | **Increment 7 complete**: Time-Expanded Network A* with spacetime grid; cost function (energy + hazard penalty ∞ on breach - resource bonus); map layers (trajectory, hazard zones, resource caches, shelters, deficit gradient, lethal exclusion); compass fallback (bearing, distance, last known good); 812 deterministic tests passing | Enables survival routing with verifiable paths and offline-capable map visualization; G7 Routing gate met |
