@@ -7,6 +7,17 @@ export interface NetworkStatus {
     lastSeen?: number;
 }
 
+export interface EventEnvelope {
+    protocolVersion: number;
+    kind: number;
+    tags: string[][];
+    content: string;
+    created_at: number;
+    id: string;
+    pubkey: string;
+    sig: string;
+}
+
 export interface NetworkProvider {
     id: string;
     name: string;
@@ -47,6 +58,23 @@ export interface NetworkProvider {
      * Unregister an event listener
      */
     off(event: string, callback: (...args: any[]) => void): void;
+}
+
+export interface Transport {
+    publish(envelope: EventEnvelope): Promise<string>;
+    subscribe(filters: Filter[], onEvent: (envelope: EventEnvelope) => void): () => void;
+    getStatus(): NetworkStatus;
+}
+
+export interface Filter {
+    ids?: string[];
+    authors?: string[];
+    kinds?: number[];
+    since?: number;
+    until?: number;
+    limit?: number;
+    '#d'?: string[];
+    [key: `#${string}`]: string[] | undefined;
 }
 
 export interface NetworkTransport {

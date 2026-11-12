@@ -39,6 +39,7 @@ export * as tracing from './tracing/index.js';
 export * as prompts from './prompts/index.js';
 export * as policy from './policy/index.js';
 export * as exportModule from './export/index.js';
+export * as identity from './identity/index.js';
 
 // Named re-exports for direct imports from '@notention/core'
 // Utils - from utils/logging.js

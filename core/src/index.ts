@@ -11,6 +11,7 @@ export * from './constants/index.js';
 export * from './tracing/index.js';
 export * from './prompts/index.js';
 export * from './policy/index.js';
+export * from './identity/index.js';
 export { DEFAULT_ONTOLOGY } from './ontology/ontology.default.js';
 export { OntologyService } from './ontology/ontologyService.js';
 
