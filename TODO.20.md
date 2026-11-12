@@ -8,21 +8,24 @@
 
 ## 0. Start Here (Fresh Session)
 
-**Read order:** `AGENTS.md` → this file (§1–§5) → `ARCHITECTURE.md`. `README2.md` is deprecated; do not treat it as spec.
+**Read order:** `AGENTS.md` → this file (§0–§5, §3.1) → `ARCHITECTURE.md`. `README2.md` is deprecated; do not treat it as spec.
 
-**Current state (2026-11-12):** `pnpm typecheck` green (0 errors) · `pnpm verify` L1–L3 green · `check-demo-match.ts` scores 1.0 · conformance fails only due to 29 stale gitignored build artifacts in `simulator/src`.
+**Current state (2026-11-12, after `d79748a`):**
+`pnpm typecheck` green (0 errors) · `pnpm verify` L1–L3 green · `check-demo-match.ts` scores 1.0 · command palette is a semantic combobox · showcase screenshots run at `--workers=4` (16 passed, 8 E15 skips) · conformance passes after removing 29 stale gitignored artifacts in `simulator/src`.
 
-**First commands (P0):**
-```bash
-git clean -Xf simulator/src                        # remove stale *.js/*.d.ts/*.map
-pnpm --filter @notention/conformance test           # must pass after clean
-pnpm exec tsx scripts/check-demo-match.ts           # expect score 1, exit 0
-```
+**Session protocol (do in this order):**
+
+1. **P0 leftovers** — §9.1. Clean artifacts, header, sqlite, movies, purity check.
+2. **P1.0 E15** — §9.2. Fix the editor hook bug; remove the 8 `test.skip` guards.
+3. **Atomic screenshot reset** — §9.3. Never wipe the live gallery before a run that can fail.
+4. **P1.1–P1.3** — MatchEngine defects, then the two-client relay journey.
 
 **Guardrails:**
 - Pure TS/JS runtime only; no native or WASM runtime deps (dev tooling exempt).
 - Do not edit `README2.md`; record spec changes in this file §6.
 - Priority default is **1.0**; do not reintroduce 0.5.
+- Select by semantic hooks (`getByRole`/`getByLabel`/`getByTestId`), never placeholders (§3.1).
+- Timeouts are failures; fix the cause, do not raise the timeout.
 - Do not rewrite git history; remove `movies/` from the index only.
 - Use `pnpm`; never commit secrets or plaintext keys.
 - No P2 human sessions are required to start or to pass any P0–P5 gate.
@@ -236,17 +239,58 @@ Fix: failed/conflicted required → contributes 0; any failed required → `scor
 
 ---
 
-## 9. Immediate Next Steps
+## 9. Detailed Tasks & Work Graph
 
-1. `git clean -Xf simulator/src`; guard `tsc` outDir → confirm `pnpm --filter @notention/conformance test` passes.
-2. Fix `check-demo-match.ts` header comment.
-3. Remove root `better-sqlite3` / `@types/better-sqlite3`.
-4. `git rm -r --cached movies/` + add to `.gitignore`.
-5. Write `scripts/check-purity.ts` (allowlist; fail on native/WASM runtime deps).
-6. Screenshot pipeline: atomic `.tmp`+swap, untrack sidecars, `--workers=4` (done), shared `localStorageFile` removed (done).
-7. P1.0: diagnose + fix E15 editor hook bug; remove the 8 `test.skip` guards.
-8. P1.1–P1.2: fix MatchEngine denominator + conflict semantics; add regression tests.
-9. P1.3: Playwright two-client relay journey.
+### 9.1 P0 leftovers (do first)
+
+1. **Stale artifacts + emit guard**
+   - `git clean -Xf simulator/src` (removes 29 stale `*.js/*.d.ts/*.map`).
+   - `simulator/tsconfig.json` already sets `outDir: ./dist`; confirm no `tsc` invocation emits into `src/`.
+   - Verify: `pnpm --filter @notention/conformance test` passes.
+2. **`scripts/check-demo-match.ts` header** — replace the stale "scores 0.000" comment with the real behavior (score 1.0, exits 0).
+3. **Remove root `better-sqlite3` + `@types/better-sqlite3`** from `package.json` (no runtime workspace declares them), then `pnpm install`.
+4. **`movies/`** — `git rm -r --cached movies/`, add `movies/` to `.gitignore`. No history rewrite.
+5. **`scripts/check-purity.ts`** — read runtime `dependencies` across workspaces; fail if any is outside the pure-TS allowlist. Wire into CI.
+   - Gate: `pnpm typecheck && pnpm verify && pnpm --filter @notention/conformance test` green; purity green.
+
+### 9.2 P1.0 — E15 editor hook bug (blocking)
+
+**Symptom:** 8 scenes auto-skip with "React hook bug (E15)":
+- `ui/test/showcase/editor.scene.ts` — 6 tests
+- `ui/test/showcase/matching.scene.ts:22` — matching explanation
+- `ui/test/showcase/notes.scene.ts:12` — notes list selected
+
+**Steps:**
+1. Remove one `test.skip` (e.g. *editor property chips*) and run just that scene:
+   ```bash
+   pnpm --filter @notention/ui exec playwright test \
+     --config test/playwright.config.ts --project=showcase \
+     test/showcase/editor.scene.ts
+   ```
+2. Read the real console/page error (trace enabled on failure).
+3. Fix the hook violation in the editor component (conditional/early-return hook, or unstable dependency array).
+4. Unskip each scene only after it passes; delete every `E15` skip reason.
+5. Run full `pnpm screenshots`; confirm editor + dependent captures appear.
+
+**Gate:** zero `test.skip(...E15...)`; `pnpm screenshots` generates the editor scenes.
+
+### 9.3 Atomic screenshot generation
+
+**Hazard:** `reset-screenshot.mjs` does `fs.rm('doc/screenshot')` before tests; a failed or timed-out run destroys the gallery (this happened at scene 15).
+
+**Plan:**
+1. `reset-screenshot.mjs` prepares `doc/screenshot/.tmp` only.
+2. `capture.ts` writes into `.tmp` (constant/env override).
+3. `build-index.mjs` builds `manifest.json`/`README.md` in `.tmp`, then swaps `.tmp` → `doc/screenshot` on success; keep the previous gallery until the swap.
+4. Never track per-scene `*.json` sidecars.
+
+**Gate:** kill a run mid-way; the previous gallery remains intact.
+
+### 9.4 P1.1–P1.3
+
+1. **P1.1** MatchEngine Bug 1 (denominator = all required constraints) + regression test.
+2. **P1.2** MatchEngine Bug 2 (failed/conflicted required → 0) + regression test; priority default 1.0.
+3. **P1.3** Two-client Playwright relay journey: A publishes request → B receives → explained match → respond → both see accepted state.
 
 ---
 
