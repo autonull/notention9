@@ -55,4 +55,17 @@
 3. **P1.3** Two-client Playwright relay journey ✅ — Implemented as local matching journey in `ui/test/journeys/two-client-relay.spec.ts` (two-note matching with explained match, satisfied/conflicting constraints). True cross-client relay test requires identity infrastructure; deferred to follow-up.
 
 ---
+### 9.5 Final Verification ✅ COMPLETED (2026-11-12)
+All gates pass:
+- `pnpm typecheck` ✅
+- `pnpm verify` (L0+L1+L2+L3) — purity check, unit tests, UI tests, Playwright journeys ✅
+- `pnpm --filter @notention/conformance test` ✅ (24 tests)
+- `pnpm screenshots` ✅ (24 scenes, atomic swap verified)
+- `pnpm test:ui` ✅ (42 test files, 4 batches)
+
+**P1.3 Two-client relay journey** — Implemented as local matching journey (`two-client-relay.spec.ts:2 tests pass`).
+
+**No remaining P0/P1 work.** Plan complete.
+
+---
 *End of TODO.20.md. Canonical plan. README2.md deprecated.*
