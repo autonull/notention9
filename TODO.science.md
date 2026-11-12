@@ -342,7 +342,7 @@ These are not marketing pillars; they are audit criteria for every design review
 
 ### 9.4 The civilizational frame, honestly bounded
 
-Grand claims (\"survival GPS\", GSS.md's VitalSpime) are directionally coherent: as climate, politics, and infrastructure grow volatile, coordination without gatekeepers becomes *survival-relevant* infrastructure. But honesty demands sequence:
+Grand claims (\"survival GPS\", GSS.md's architecture) are directionally coherent: as climate, politics, and infrastructure grow volatile, coordination without gatekeepers becomes *survival-relevant* infrastructure. But honesty demands sequence:
 
 1. **Now**: a trustworthy instrument for local, opt-in cooperation in 1–3 communities that already practice mutual aid — we build *with* them, not for them; they own their ontology, their relay, their norms; we bring measurement and rollback discipline; they bring legitimacy.
 2. **Next**: mesh-first operation validated in real (tabletop then drill) conditions — because in the scenarios that matter (grid down, networks partitioned), the internet-scale stack is a liability, not a feature.

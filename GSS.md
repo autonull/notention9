@@ -1,6 +1,6 @@
-https://github.com/autonull/gss + https://github.com/autonull/spimedb
+https://github.com/autonull/gss
 
-Features: loosely but comprehensively achieving GSS/SpimeDB
+Features: loosely but comprehensively achieving GSS
 - Consider how to make a service potentially as ubiquitous as GPS - but providing survival conditions.
 - Support any imaginable risks / benefits for which data sources might exist and can be interpreted.
 - The quality and length of lives are at stake, so this isn't a toy.
@@ -12,7 +12,7 @@ Architecture: App, using GeoLibre https://github.com/opengeos/GeoLibre as a depe
 ----
 
 ### Project Vision: The 4D "Survival GPS"
-To create a service as ubiquitous as GPS but focused on survival, we must shift the paradigm from **Positioning** to **Preservation**. Standard GPS answers *"Where am I?"*. This system, which we will call **VitalSpime**, answers *"Where must I be, and when, to survive?"*
+To create a service as ubiquitous as GPS but focused on survival, we must shift the paradigm from **Positioning** to **Preservation**. Standard GPS answers *"Where am I?"*. This system answers *"Where must I be, and when, to survive?"*
 
 By combining the **Global Survival System (GSS)** manifest logic with the **SpimeDB** 4D spatio-temporal graph model, and running it entirely on the edge via **GeoLibre**, we create a decentralized, fault-tolerant "Survival Engine" that operates when the cloud fails.
 
@@ -152,7 +152,7 @@ In a survival scenario, misinformation is lethal. The `A` (Author/Provenance) fi
 
 
 ### Executive Summary
-The proposed architecture for **VitalSpime** is conceptually brilliant but **operationally perilous** in its current form. 
+The proposed architecture is conceptually brilliant but **operationally perilous** in its current form. 
 
 While the integration of GeoLibre and DuckDB-WASM provides a solid foundation for spatial data, the combination of **4D SpimeDB pathfinding**, **Local WebGPU LLMs**, and **Browser-based Mesh Networking** pushes current hardware to its absolute limits. In a survival scenario, where battery life and thermal throttling are fatal constraints, the current design would likely fail the people who need it most.
 
@@ -313,16 +313,15 @@ interface SurvivalDelta {
 }
 
 export function evaluateViability(
-  spimePayload: Spime['payload'],
+  notePayload: Note['payload'],
   manifest: BiologicalManifest
 ): SurvivalDelta {
   const deficits: Record<string, number> = {};
   const breaches: Record<string, 'too_low' | 'too_high'> = {};
   const surplus: Record<string, number> = {};
   let score = 1.0;
-
-  const provides = spimePayload?.provides ?? {};
-  const imposes = spimePayload?.imposes ?? {};
+  const provides = notePayload?.provides ?? {};
+  const imposes = notePayload?.imposes ?? {};
 
   // 1. Evaluate Needs (Resource Deficits)
   for (const [resource, required] of Object.entries(manifest.needs)) {
