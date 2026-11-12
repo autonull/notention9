@@ -462,10 +462,10 @@ importers:
         specifier: ^3.4.17
         version: 3.4.17
       i18next:
-        specifier: ^27.1.1
-        version: 27.1.1(typescript@7.0.2)
+        specifier: ^25.0.0
+        version: 25.10.10(typescript@7.0.2)
       i18next-browser-languagedetector:
-        specifier: ^8.3.0
+        specifier: ^8.0.0
         version: 8.3.0
       iconv-lite:
         specifier: ^0.7.2
@@ -489,8 +489,8 @@ importers:
         specifier: ^19.0.0
         version: 19.3.1(react@19.3.1)
       react-i18next:
-        specifier: ^18.0.1
-        version: 18.0.1(@types/react@19.3.0)(i18next@27.1.1(typescript@7.0.2))(react@19.3.1)(typescript@7.0.2)
+        specifier: ^15.0.0
+        version: 15.7.4(i18next@25.10.10(typescript@7.0.2))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@7.0.2)
       tippy.js:
         specifier: ^6.3.7
         version: 6.3.7
@@ -5126,8 +5126,8 @@ packages:
   html-escaper@2.0.2:
     resolution: {integrity: sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg==}
 
-  html-parse-stringify@4.0.1:
-    resolution: {integrity: sha512-0zHsZJrK7S3K2aucXWL6ycoYJ/iNtIcFHC/nYQgFklPtrv5LpJctIiSCroWZWeuoXvuyFdzp6KzjJQ+OT5MfFw==}
+  html-parse-stringify@3.1.0:
+    resolution: {integrity: sha512-E0oAXcELOtsXe+BmpJ2EZyedbldPpriV5vICzEuo6xjC/D1lDukOI7KrpfQGF2Qc4wWEy0nk3bFORS2K5ZAhFQ==}
 
   http-errors@2.0.1:
     resolution: {integrity: sha512-4FbRdAX+bSdmo4AUFuS0WNiPz8NgFt+r8ThgNWmlrjQjt1Q7ZR9+zTlce2859x4KSXrwIsaeTqDoKQmtP8pLmQ==}
@@ -5150,11 +5150,10 @@ packages:
   i18next-browser-languagedetector@8.3.0:
     resolution: {integrity: sha512-t7FtF+VyQ+XSy+GI1O9TXWsMzP4U2u0m27yxJcCbG4LaAbTQa3CXFXgG3LvRivS+ZoYah8yPv5NhMl+Wg6I8Fg==}
 
-  i18next@27.1.1:
-    resolution: {integrity: sha512-Qq3aJizS3RXQ30crhx9BKQLrHoa6GKpgrOJjVZ9vgj3EBxAddrmVfDNUrAMxSUimw5Jc+ld4SSZUAzf1q4nGyQ==}
-    engines: {node: '>=22'}
+  i18next@25.10.10:
+    resolution: {integrity: sha512-cqUW2Z3EkRx7NqSyywjkgCLK7KLCL6IFVFcONG7nVYIJ3ekZ1/N5jUsihHV6Bq37NfhgtczxJcxduELtjTwkuQ==}
     peerDependencies:
-      typescript: ^5 || ^6 || ^7
+      typescript: ^5 || ^6
     peerDependenciesMeta:
       typescript:
         optional: true
@@ -6401,16 +6400,18 @@ packages:
     peerDependencies:
       react: ^19.3.1
 
-  react-i18next@18.0.1:
-    resolution: {integrity: sha512-kPWXI0E/lrPj3+/umcKNzYZVnWmEedLiamMzDIHfbs+5ANf6yzvlZsjKou8f7kaGkfMMDLIZBejV+4aSN1CyBw==}
-    engines: {node: '>=22'}
+  react-i18next@15.7.4:
+    resolution: {integrity: sha512-nyU8iKNrI5uDJch0z9+Y5XEr34b0wkyYj3Rp+tfbahxtlswxSCjcUL9H0nqXo9IR3/t5Y5PKIA3fx3MfUyR9Xw==}
     peerDependencies:
-      '@types/react': '*'
-      i18next: '>= 27.0.1'
-      react: '>= 18.0.0'
-      typescript: ^5 || ^6 || ^7
+      i18next: '>= 23.4.0'
+      react: '>= 16.8.0'
+      react-dom: '*'
+      react-native: '*'
+      typescript: ^5
     peerDependenciesMeta:
-      '@types/react':
+      react-dom:
+        optional: true
+      react-native:
         optional: true
       typescript:
         optional: true
@@ -7462,6 +7463,10 @@ packages:
 
   vm-browserify@1.1.2:
     resolution: {integrity: sha512-2ham8XPWTONajOR0ohOKOHXkm3+gaBmGut3SRuu75xLd/RRaY6vqgh8NBYYk7+RW3u5AtzPQZG8F10LHkl0lAQ==}
+
+  void-elements@3.1.0:
+    resolution: {integrity: sha512-Dhxzh5HZuiHQhbvTW9AMetFfBHDMYpo23Uo9btPXgdYP+3T5S+p+jgNy7spra+veYhBP2dCSgxR/i2Y02h5/6w==}
+    engines: {node: '>=0.10.0'}
 
   w3c-keyname@2.2.8:
     resolution: {integrity: sha512-dpojBhNsCNN7T82Tm7k26A6G9ML3NkhDsnw9n/eoxSRlVBB4CEtIQ/KTCLI2Fwf3ataSXRhYFkQi3SlnFwPvPQ==}
@@ -12070,7 +12075,9 @@ snapshots:
 
   html-escaper@2.0.2: {}
 
-  html-parse-stringify@4.0.1: {}
+  html-parse-stringify@3.1.0:
+    dependencies:
+      void-elements: 3.1.0
 
   http-errors@2.0.1:
     dependencies:
@@ -12104,7 +12111,9 @@ snapshots:
     dependencies:
       '@babel/runtime': 7.29.13
 
-  i18next@27.1.1(typescript@7.0.2):
+  i18next@25.10.10(typescript@7.0.2):
+    dependencies:
+      '@babel/runtime': 7.29.13
     optionalDependencies:
       typescript: 7.0.2
 
@@ -13421,13 +13430,14 @@ snapshots:
       react: 19.3.1
       scheduler: 0.28.0
 
-  react-i18next@18.0.1(@types/react@19.3.0)(i18next@27.1.1(typescript@7.0.2))(react@19.3.1)(typescript@7.0.2):
+  react-i18next@15.7.4(i18next@25.10.10(typescript@7.0.2))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@7.0.2):
     dependencies:
-      html-parse-stringify: 4.0.1
-      i18next: 27.1.1(typescript@7.0.2)
+      '@babel/runtime': 7.29.13
+      html-parse-stringify: 3.1.0
+      i18next: 25.10.10(typescript@7.0.2)
       react: 19.3.1
     optionalDependencies:
-      '@types/react': 19.3.0
+      react-dom: 19.3.1(react@19.3.1)
       typescript: 7.0.2
 
   react-is@16.13.1: {}
@@ -14688,6 +14698,8 @@ snapshots:
       - msw
 
   vm-browserify@1.1.2: {}
+
+  void-elements@3.1.0: {}
 
   w3c-keyname@2.2.8: {}
 

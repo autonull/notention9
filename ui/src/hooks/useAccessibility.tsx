@@ -35,23 +35,21 @@ const AccessibilityContext = createContext<AccessibilityContextValue | null>(nul
 export function AccessibilityProvider({ children }: { children: ReactNode }) {
     const [settings, setSettings] = useState<AccessibilitySettings>(DEFAULT_SETTINGS);
     const [loaded, setLoaded] = useState(false);
-    const { getItem, setItem } = useLocalForage<AccessibilitySettings>(STORAGE_KEY, DEFAULT_SETTINGS);
+    const [storedSettings, setStoredSettings] = useLocalForage<AccessibilitySettings>(STORAGE_KEY, DEFAULT_SETTINGS);
 
     useEffect(() => {
-        getItem().then((stored) => {
-            if (stored) {
-                setSettings(stored);
-            }
-            setLoaded(true);
-        });
-    }, [getItem]);
+        if (storedSettings) {
+            setSettings(storedSettings);
+        }
+        setLoaded(true);
+    }, [storedSettings]);
 
     useEffect(() => {
         if (loaded) {
-            setItem(settings);
+            setStoredSettings(settings);
             applySettings(settings);
         }
-    }, [settings, loaded, setItem]);
+    }, [settings, loaded, setStoredSettings]);
 
     const applySettings = (newSettings: AccessibilitySettings) => {
         const root = document.documentElement;

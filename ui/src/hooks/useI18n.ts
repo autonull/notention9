@@ -49,5 +49,6 @@ export function useIsRTL(): boolean {
     return useDirection() === 'rtl';
 }
 
-export { SupportedLanguage, SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE, setLanguage, getCurrentLanguage, getDirection };
+export type { SupportedLanguage } from '../i18n';
+export { SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE, setLanguage, getCurrentLanguage, getDirection };
 export default i18n;
