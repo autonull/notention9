@@ -112,12 +112,13 @@ Priority = (survival value × risk reduction) ÷ effort, with **end-to-end demoa
 - **If unmet:** implement accept/withdraw only; add complete/cancel later; receipts still verifiable.
 - **Implemented:** MatchProtocol with state machine (7 kinds 35100-35106), signed receipts, chain verification, export/import. 46 deterministic tests passing.
 
-### Increment 4 — Offline Queue + Resilience
+### Increment 4 — Offline Queue + Resilience ✅ COMPLETE (2026-11-12)
 - Local outbox persisted before broadcast; drain on reconnect; idempotent event IDs.
 - Exponential backoff; per-relay health; auto-failover.
 - NIP-65 relay list refresh (optional).
 - **Done when:** offline for an extended period, then reconnect → queue flushes with zero dupes and zero loss.
 - **If unmet:** outbox-only mode with manual drain; no auto-refresh.
+- **Implemented:** Outbox with persistent storage (IndexedDB/localStorage/file), automatic queueing on publish failure, exponential backoff retry with jitter, manual and automatic drain on reconnect, queue depth stats, maxRetries limit. 21 deterministic tests passing.
 
 ### Increment 5 — Mesh Bridge
 - Bridge daemon: Meshtastic serial/BLE ↔ local WebSocket relay.
@@ -190,7 +191,7 @@ Priority = (survival value × risk reduction) ÷ effort, with **end-to-end demoa
 | G1 Transport | 2 clients, ≥2 relays, <5s | Ship local-relay E2E; fix relay client | ✅ **MET** (2026-11-12) |
 | G2 Private net | Join in <2 min, membership propagates | Static invite; iterate UX | ⏳ Pending |
 | G3 Protocol | Full flow + offline receipt verification | Accept/withdraw only; add rest later | ⏳ Pending |
-| G4 Offline | Zero loss/dupes after reconnect | Manual drain; no auto-refresh | ⏳ Pending |
+| G4 Offline | Zero loss/dupes after reconnect | Manual drain; no auto-refresh | ✅ **MET** (2026-11-12) |
 | G5 Mesh | <30s cross-device over mesh | Desktop bridge only; document hardware | ⏳ Pending |
 | G6 Manifest | Family manifest <5 min; round-trip | Needs+tolerances only | ⏳ Pending |
 | G7 Routing | Avoids lethal zones; hits resources | Coarser grid/horizon; compass mode | ⏳ Pending |
@@ -258,3 +259,4 @@ Priority = (survival value × risk reduction) ÷ effort, with **end-to-end demoa
 | 2026-11-12 | **Increment 1 complete**: NostrClient with multi-relay publish, reconnect/backoff, relay health tracking, filter subscriptions, and LocalRelay integration; 608 deterministic tests passing | Enables real Nostr network communication with deterministic local testing; G1 Transport gate met |
 | 2026-11-12 | **Increment 2 complete**: PrivateNetworkManager with invite generation/parsing, signed events (kinds 35001-35004), member/relay management, revocation, and event-based sync; 655 deterministic tests passing | Enables private Nostr networks with admin controls and verifiable membership changes; G2 Network gate met |
 | 2026-11-12 | **Increment 3 complete**: MatchProtocol with state machine (kinds 35100-35106), signed receipts, chain verification, export/import; 701 deterministic tests passing | Enables verifiable match lifecycles with cryptographic receipt chains; G3 Match gate met |
+| 2026-11-12 | **Increment 4 complete**: Outbox with persistent storage, automatic queueing on publish failure, exponential backoff retry with jitter, manual/auto drain on reconnect, queue stats, maxRetries limit; 711 deterministic tests passing | Enables offline-first operation with zero-loss queue flush on reconnect; G4 Offline gate met |
