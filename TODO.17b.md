@@ -16,13 +16,21 @@
 
 TODO.17 built the instruments. P2 requires **human sessions** to produce evidence. No code changes needed.
 
-| Item | Instrument | Needs | Artifact | Depends On |
-|------|------------|-------|----------|------------|
-| **P2a** Comprehension probe | `pnpm probe` | 5 stranger sessions | `doc/evidence/2026-11-comprehension-probe.md` | — |
-| **P2c.3** Match relevance | Same session as P2a | 5 sessions | Added to comprehension probe report | P2a |
-| **P2b** Dogfood friction | `pnpm loop prioritize --source friction` | Real use sessions | `doc/evidence/2026-11-friction-taxonomy.md` | P2a seeds journal |
-| **P2c.4** Time-to-first-match | `pnpm loop latency` | Real sessions | `doc/evidence/2026-11-time-to-first-match.md` | P2a |
-| **P2c.5** Failure taxonomy | Journal → `loop/friction.json` | Real sessions | `doc/evidence/2026-11-friction-taxonomy.md` | P2b |
+| Item | Instrument | Needs | Artifact | Depends On | Progress |
+|------|------------|-------|----------|------------|----------|
+| **P2a** Comprehension probe | `pnpm probe` | 5 stranger sessions | `doc/evidence/2026-11-comprehension-probe.md` | — | ☐ 0/5 |
+| **P2c.3** Match relevance | Same session as P2a | 5 sessions | Added to comprehension probe report | P2a | ☐ 0/5 |
+| **P2b** Dogfood friction | `pnpm loop prioritize --source friction` | Real use sessions | `doc/evidence/2026-11-friction-taxonomy.md` | P2a seeds journal | ☐ 0 |
+| **P2c.4** Time-to-first-match | `pnpm loop latency` | Real sessions | `doc/evidence/2026-11-time-to-first-match.md` | P2a | ☐ 0 |
+| **P2c.5** Failure taxonomy | Journal → `loop/friction.json` | Real sessions | `doc/evidence/2026-11-friction-taxonomy.md` | P2b | ☐ 0 |
+
+**Tools verified:**
+- `pnpm probe --headless` ✅ runs, generates report structure
+- `pnpm loop latency --dry` ✅ runs, waits for paired events
+- `pnpm loop prioritize --source friction --dry` ✅ runs, reads friction journal
+- `pnpm stranger-test` ✅ builds & starts preview server
+- `pnpm screenshots` ✅ 23/24 pass (command palette test timeout)
+- `pnpm verify` ✅ all automated gates green (L1-L3)
 
 **Facilitator protocol:** `doc/evidence/HUMAN-SESSIONS.md` — exact steps, consent script, classification rubric, thresholds.
 
