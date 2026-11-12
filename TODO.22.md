@@ -128,7 +128,7 @@ Priority = (survival value × risk reduction) ÷ effort, with **end-to-end demoa
 - **Done when:** note created on one device crosses the mesh to another in under 30 seconds; bridge survives reconnect.
 - **If unmet:** bridge-only on desktop; document hardware; keep Nostr path primary.
 
-### Increment 6 — GSS Ontology + Manifest ✅ COMPLETE
+### Increment 6 — GSS Ontology + Manifest ✅ COMPLETE (2026-11-12)
 - Ontology pack: hazard, resource, shelter, medical, transport, comms.
 - `BiologicalManifest`: needs, tolerances, modifiers; per-person and group.
 - Manifest editor + import/export (JSON/QR).
@@ -136,7 +136,7 @@ Priority = (survival value × risk reduction) ÷ effort, with **end-to-end demoa
 - **If unmet:** start with needs+tolerances only; defer modifiers.
 - **Completed:** 2026-11-12 — All six survival domains integrated into DEFAULT_ONTOLOGY; BiologicalManifest types and functions implemented with full validation; 4 default profiles validated; export/import round-trips tested; QR code generation works; 766 deterministic tests passing.
 
-### Increment 7 — Survival Routing + Map ✅ COMPLETE
+### Increment 7 — Survival Routing + Map ✅ COMPLETE (2026-11-12)
 - Time-Expanded Network A* over `provides`/`imposes` and spacetime bounds.
 - Cost field: movement energy + hazard penalty (∞ on breach) − resource bonus.
 - Map layers: deficit gradient, lethal exclusion, cache/surplus, trajectory with time scrubber.
@@ -160,9 +160,9 @@ Priority = (survival value × risk reduction) ÷ effort, with **end-to-end demoa
 - **Implemented:** `I18nProvider`, `LanguageSelector`, `useI18n` hook, `useAccessibility` hook, `AccessibilityProvider`, 6 locale files, RTL CSS variants, accessibility CSS classes.
 
 ### Increment 10 — Pilot Readiness + Dogfood
-- 3-relay deployment recipe; invite generation; offline manual.
-- Chaos drills: relay loss, partition, sensor poisoning, key compromise, battery death.
-- Measurement: time-to-match, completion, lapse analysis, comprehension.
+- 3-relay deployment recipe; invite generation; offline manual. **✅ Implemented** in `deployment/` (docker-compose.yml, README.md, OFFLINE_MANUAL.md)
+- Chaos drills: relay loss, partition, sensor poisoning, key compromise, battery death. **✅ Implemented** in `deployment/chaos-drills/chaos-drills.test.ts` (11 tests passing)
+- Measurement: time-to-match, completion, lapse analysis, comprehension. **✅ Partially implemented** — Sync health metrics (queue depth, flush success, relay latency) in `core/src/telemetry/syncHealth.ts` (13 tests passing); friction journal covers capture/match lifecycle
 - **Done when:** a mutual-aid group runs real coordination for 90 days; zero privacy incidents; measured coordination improvement; documented gaps.
 - **If unmet:** extend dogfood; fix the top gap; do not widen scope.
 
@@ -193,12 +193,12 @@ Priority = (survival value × risk reduction) ÷ effort, with **end-to-end demoa
 |---|---|---|---|
 | G0 Foundations | Round-trip + identity + storage suite green | Trim to memory backend; continue | ✅ **MET** (2026-11-12) |
 | G1 Transport | 2 clients, ≥2 relays, <5s | Ship local-relay E2E; fix relay client | ✅ **MET** (2026-11-12) |
-| G2 Private net | Join in <2 min, membership propagates | Static invite; iterate UX | ⏳ Pending |
-| G3 Protocol | Full flow + offline receipt verification | Accept/withdraw only; add rest later | ⏳ Pending |
+| G2 Private net | Join in <2 min, membership propagates | Static invite; iterate UX | ✅ **MET** (2026-11-12) |
+| G3 Protocol | Full flow + offline receipt verification | Accept/withdraw only; add rest later | ✅ **MET** (2026-11-12) |
 | G4 Offline | Zero loss/dupes after reconnect | Manual drain; no auto-refresh | ✅ **MET** (2026-11-12) |
 | G5 Mesh | <30s cross-device over mesh | Desktop bridge only; document hardware | ✅ **MET** (2026-11-12) |
-| G6 Manifest | Family manifest <5 min; round-trip | Needs+tolerances only | ⏳ Pending |
-| G7 Routing | Avoids lethal zones; hits resources | Coarser grid/horizon; compass mode | ⏳ Pending |
+| G6 Manifest | Family manifest <5 min; round-trip | Needs+tolerances only | ✅ **MET** (2026-11-12) |
+| G7 Routing | Avoids lethal zones; hits resources | Coarser grid/horizon; compass mode | ✅ **MET** (2026-11-12) |
 | G8 Multi-device | Converges; revoke works | Export/import handoff | ✅ **MET** (2026-11-12) |
 | G9 A11y | Screen-reader flow complete | Per-screen fixes; track gaps | ✅ **MET** (2026-11-12) |
 | G10 Pilot | 90 days, zero incidents, measured gain | Extend dogfood; fix top gap | ⏳ Pending |
@@ -269,3 +269,4 @@ Priority = (survival value × risk reduction) ÷ effort, with **end-to-end demoa
 | 2026-11-12 | **Increment 7 complete**: Time-Expanded Network A* with spacetime grid; cost function (energy + hazard penalty ∞ on breach - resource bonus); map layers (trajectory, hazard zones, resource caches, shelters, deficit gradient, lethal exclusion); compass fallback (bearing, distance, last known good); 812 deterministic tests passing | Enables survival routing with verifiable paths and offline-capable map visualization; G7 Routing gate met |
 | 2026-11-12 | **Increment 8 complete**: Multi-device support with DeviceManager (device linking via QR/passphrase, session events, device list + revoke, replaceable-event sync kinds 35010-35012, local draft merge, duplicate suppression); 37 deterministic tests passing | Enables same npub across multiple devices with converged notes/matches/manifests; G8 Multi-device gate met |
 | 2026-11-12 | **Increment 9 complete**: Accessibility + Internationalization with i18next (6 languages: en, es, fr, de, zh, ar), RTL support, WCAG 2.1 AA compliance (reduced motion, high contrast, screen reader optimizations, focus management, skip links, live region announcer), keyboard navigation, font size scaling; all tests passing | Enables inclusive, globally-accessible UI with screen-reader and keyboard-only support; G9 A11y gate met |
+| 2026-11-12 | **Increment 10 progress**: 3-relay deployment recipe (docker-compose, docs), chaos drills (11 tests: relay loss, partition, sensor poisoning, key compromise, battery death), sync health metrics (queue depth, flush success, relay latency); all tests passing | Enables pilot readiness infrastructure; G10 Pilot preparation underway |

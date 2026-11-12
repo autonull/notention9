@@ -60,6 +60,16 @@ export {
     generateFrictionDigest,
     getFrictionCounts
 } from './telemetry/journal.js';
+export { 
+    SyncHealthMonitor, 
+    getSyncHealthMonitor, 
+    resetSyncHealthMonitor,
+    type SyncHealthConfig,
+    type QueueDepthSample,
+    type FlushResultSample,
+    type RelayLatencySample,
+    type SyncHealthSnapshot
+} from './telemetry/syncHealth.js';
 export * from './fixtures/index.js';
 export * from './feedback/index.js';
 
