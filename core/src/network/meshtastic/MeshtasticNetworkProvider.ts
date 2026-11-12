@@ -3,6 +3,7 @@ import { Note, PrivacyLevel, OntologyNode, Property } from '../../types/index.js
 import { ScoredMatch } from '../../matching/bidirectional.js';
 import { encode, decode } from 'cbor-x';
 import { BaseNetworkProvider, type NetworkProviderConfig, type DiscoveryOptions } from '../BaseNetworkProvider.js';
+import { WebSerialTransport, WebBluetoothTransport, MeshBridgeTransport } from '../transports/index.js';
 
 export interface MeshtasticConfig extends NetworkProviderConfig {
     connectionType?: 'webserial' | 'http' | 'server-proxy';
@@ -26,6 +27,42 @@ export class MeshtasticNetworkProvider extends BaseNetworkProvider implements Ne
         if (config.transport) {
             this.setTransport(config.transport);
         }
+    }
+
+    static async createTransport(type: 'webserial' | 'bluetooth' | 'bridge', config: any = {}): Promise<NetworkTransport> {
+        switch (type) {
+            case 'webserial': {
+                const transport = new WebSerialTransport(config);
+                if (!WebSerialTransport.isSupported()) {
+                    throw new Error('Web Serial API not supported');
+                }
+                await transport.connect();
+                return transport;
+            }
+            case 'bluetooth': {
+                const transport = new WebBluetoothTransport(config);
+                if (!WebBluetoothTransport.isSupported()) {
+                    throw new Error('Web Bluetooth API not supported');
+                }
+                await transport.connect();
+                return transport;
+            }
+            case 'bridge': {
+                const transport = new MeshBridgeTransport(config);
+                if (!MeshBridgeTransport.isSupported()) {
+                    throw new Error('WebSocket not supported');
+                }
+                await transport.connect();
+                return transport;
+            }
+            default:
+                throw new Error(`Unknown transport type: ${type}`);
+        }
+    }
+
+    async connectTransport(type: 'webserial' | 'bluetooth' | 'bridge', config: any = {}): Promise<void> {
+        const transport = await MeshtasticNetworkProvider.createTransport(type, config);
+        this.setTransport(transport);
     }
 
     setTransport(transport: NetworkTransport | null) {

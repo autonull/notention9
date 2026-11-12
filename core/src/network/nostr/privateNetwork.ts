@@ -3,6 +3,7 @@ import { nsecEncode, npubEncode, decode } from 'nostr-tools/nip19';
 import { hexToBytes, bytesToHex } from '../../utils/encoding.js';
 import { Logger } from '../../utils/logging.js';
 import type { NostrEvent } from '../../types/index.js';
+import { LocalRelay } from './LocalRelay.js';
 
 const logger = Logger.create('PrivateNetwork');
 
@@ -35,7 +36,7 @@ export interface NetworkState {
 }
 
 export interface SignedInviteEvent {
-    kind: 35001;
+    kind: number;
     tags: string[][];
     content: string;
     created_at: number;
@@ -45,7 +46,7 @@ export interface SignedInviteEvent {
 }
 
 export interface SignedMemberEvent {
-    kind: 35002;
+    kind: number;
     tags: string[][];
     content: string;
     created_at: number;
@@ -55,7 +56,7 @@ export interface SignedMemberEvent {
 }
 
 export interface SignedRelayEvent {
-    kind: 35003;
+    kind: number;
     tags: string[][];
     content: string;
     created_at: number;
@@ -65,7 +66,7 @@ export interface SignedRelayEvent {
 }
 
 export interface SignedRevokeEvent {
-    kind: 35004;
+    kind: number;
     tags: string[][];
     content: string;
     created_at: number;
