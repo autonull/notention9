@@ -11,7 +11,8 @@ test.beforeEach(async ({page}) => {
 test('command palette', async ({page}) => {
     await seed(page, {notes: demoNotes(), settings: defaultSettings()});
     await page.keyboard.press('Control+k');
-    const input = page.locator('input[placeholder="Type a command or search notes..."]');
+    const palette = page.getByRole('dialog', {name: 'Command Palette'});
+    const input = palette.getByRole('combobox', {name: 'Search commands and notes'});
     await input.waitFor();
     await input.fill('react');
     await page.waitForTimeout(200);
@@ -25,11 +26,12 @@ test('command palette', async ({page}) => {
 test('help', async ({page}) => {
     await seed(page, {notes: demoNotes(), settings: defaultSettings()});
     await page.keyboard.press('Control+k');
-    const input = page.locator('input[placeholder="Type a command or search notes..."]');
+    const palette = page.getByRole('dialog', {name: 'Command Palette'});
+    const input = palette.getByRole('combobox', {name: 'Search commands and notes'});
     await input.waitFor();
     await input.fill('help');
-    await page.getByText('Open Help & Shortcuts').click();
-    await page.waitForSelector('text=Help & Shortcuts');
+    await palette.getByRole('option', {name: /Open Help & Shortcuts/}).click();
+    await page.getByRole('dialog', {name: 'Help & Shortcuts'}).waitFor();
     await snap(page, {
         area: 'modals',
         state: 'help',

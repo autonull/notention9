@@ -397,6 +397,9 @@ export function EnhancedCommandPalette({
                             onKeyDown={handleKeyDown}
                             autoComplete="off"
                             spellCheck={false}
+                            role="combobox"
+                            aria-label="Search commands and notes"
+                            aria-expanded
                             aria-autocomplete="list"
                             aria-controls="command-palette-list"
                             aria-activedescendant={filteredItems[selectedIndex]?.id}

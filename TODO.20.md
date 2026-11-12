@@ -58,6 +58,9 @@ pnpm exec tsx scripts/check-demo-match.ts           # expect score 1, exit 0
 - Root `better-sqlite3` (native) in `package.json`; no runtime workspace declares it.
 - 818 Playwright frame PNGs tracked under `movies/`.
 - Manual, plaintext identity (keys only via Settings → Nostr; `privkey` stored in settings).
+- **E15 editor hook bug** — auto-skips 6 editor scenes plus 2 editor-dependent scenes (`editor.scene.ts`, `matching.scene.ts:22`, `notes.scene.ts:12`). Editor screenshots cannot be generated.
+- **Screenshot pipeline is destructive and serial** — `reset-screenshot.mjs` wipes the gallery before a run that can fail; per-scene `.json` sidecars were wrongly tracked; `workers: 1`.
+- **Test timeouts treated as knobs** — a stale placeholder selector in `modals.scene.ts` timed out at 45s and silently killed the rest of the run.
 
 ---
 
@@ -86,6 +89,18 @@ Fix: failed/conflicted required → contributes 0; any failed required → `scor
 | Conflicts are branches | No CRDT on critical path; Yjs optional for drafts only. |
 | Trust is local | Follow-allowlist for v1; WoT/invites/rotation/recovery post-v1. |
 | AI optional | Deterministic extraction is the conforming path; LM experimental, default off. |
+
+### 3.1 Testing & Tooling Standards (Normative)
+
+- **Selectors:** select by semantic, unambiguous hooks — `getByRole`, `getByLabel`, `getByTestId`. Never exact-match a `placeholder` or a raw CSS/text target when a role or label can express intent. If a widget lacks the right semantics (e.g. the command-palette input), **add** the ARIA role/label to the component — this fixes accessibility and test stability at once.
+- **Screenshots are output, not baselines:** `doc/screenshot/manifest.json` + `README.md` are canonical. Per-scene `*.json` sidecars are transient and MUST NOT be tracked.
+- **Atomic generation:** generate into `doc/screenshot/.tmp` and swap on success. Never delete the live gallery before a run that can fail.
+- **Timeouts are failures:** a timeout means a selector or state is wrong. Fix the cause; do not raise the timeout.
+- **Moderate parallelism:**
+  - Showcase screenshots: `--workers=4`, keep `fullyParallel: false` (file-level parallelism; scenes are independent).
+  - Journeys/optimize: `--workers=2` max (shared relay + exact-count assertions).
+  - Shared `launchOptions.localStorageFile` must be made per-worker (or removed) before raising worker counts.
+  - Vitest: keep per-workspace; optional `pnpm -r --workspace-concurrency=4 test`.
 
 ---
 
@@ -151,9 +166,12 @@ Fix: failed/conflicted required → contributes 0; any failed required → `scor
 - `git rm -r --cached movies/` + gitignore (no history rewrite).
 - Add `scripts/check-purity.ts` with explicit pure-TS allowlist; wire into CI.
 - Assert PWA service worker caches the app shell.
-- **Gate:** `pnpm typecheck && pnpm verify && pnpm --filter @notention/conformance test` green; purity green.
+- **Screenshot pipeline:** atomic `.tmp` + swap; stop tracking `*.json` sidecars; commit `manifest.json`/`README.md`; `--workers=4`; shared `localStorageFile` removed (tests seed IndexedDB).
+- **Selector standard (§3.1):** command-palette input is now a semantic `combobox`; no placeholder selectors remain.
+- **Gate:** `pnpm typecheck && pnpm verify && pnpm --filter @notention/conformance test` green; purity green; full `pnpm screenshots` completes (16 passed, only E15 skips).
 
 ### P1 — Networked loop (2–3 wk)
+- **P1.0 (blocking) — E15 editor unblock:** diagnose the React hook bug behind the 8 auto-skipped scenes (`editor.scene.ts`, `matching.scene.ts:22`, `notes.scene.ts:12`); fix and remove `test.skip(...E15...)` only after the scene passes. Gate: **0 E15 skips**, editor screenshots generated.
 - Wire publish → relay → subscribe → matcher → response across **two clients**.
 - Follow-allowlist filter (D6 MVP).
 - Visible relay status + outbox on failure (no silent drops).
@@ -225,8 +243,10 @@ Fix: failed/conflicted required → contributes 0; any failed required → `scor
 3. Remove root `better-sqlite3` / `@types/better-sqlite3`.
 4. `git rm -r --cached movies/` + add to `.gitignore`.
 5. Write `scripts/check-purity.ts` (allowlist; fail on native/WASM runtime deps).
-6. P1.1–P1.2: fix MatchEngine denominator + conflict semantics; add regression tests.
-7. P1.3: Playwright two-client relay journey.
+6. Screenshot pipeline: atomic `.tmp`+swap, untrack sidecars, `--workers=4` (done), shared `localStorageFile` removed (done).
+7. P1.0: diagnose + fix E15 editor hook bug; remove the 8 `test.skip` guards.
+8. P1.1–P1.2: fix MatchEngine denominator + conflict semantics; add regression tests.
+9. P1.3: Playwright two-client relay journey.
 
 ---
 
