@@ -5,7 +5,8 @@ import {fileURLToPath} from 'url';
 import {settle, disableMotion} from './settle';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
-const OUTPUT = path.join(ROOT, 'doc/screenshot');
+const DEFAULT_OUTPUT = path.join(ROOT, 'doc/screenshot');
+const OUTPUT = path.join(DEFAULT_OUTPUT, '.tmp'); // Always write to .tmp; build-index.mjs handles the swap
 
 export interface SnapOptions {
     area: string;

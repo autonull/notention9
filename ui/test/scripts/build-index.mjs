@@ -4,6 +4,7 @@ import {fileURLToPath} from 'url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const OUTPUT = path.join(ROOT, 'doc/screenshot');
+const TMP_OUTPUT = path.join(OUTPUT, '.tmp');
 
 const walk = async (directory) => {
     const entries = await fs.readdir(directory, {withFileTypes: true});
@@ -17,8 +18,9 @@ const walk = async (directory) => {
 const main = async () => {
     let scopes = [];
     try {
-        scopes = await walk(OUTPUT);
+        scopes = await walk(TMP_OUTPUT);
     } catch {
+        console.log('No screenshots captured; nothing to index');
         return;
     }
 
@@ -49,9 +51,18 @@ const main = async () => {
         gallery,
     ].join('\n');
 
-    await fs.writeFile(path.join(OUTPUT, 'README.md'), readme);
-    await fs.writeFile(path.join(OUTPUT, 'manifest.json'), JSON.stringify(manifests, null, 2));
+    // Write index files to .tmp first
+    await fs.writeFile(path.join(TMP_OUTPUT, 'README.md'), readme);
+    await fs.writeFile(path.join(TMP_OUTPUT, 'manifest.json'), JSON.stringify(manifests, null, 2));
     console.log(`Wrote index for ${manifests.length} screenshots`);
+
+    // Atomic swap: rename .tmp to a temp name outside OUTPUT, remove old OUTPUT, then move into place
+    const SWAP_OUTPUT = path.join(ROOT, 'doc/screenshot.swap');
+    await fs.rm(SWAP_OUTPUT, {recursive: true, force: true});
+    await fs.rename(TMP_OUTPUT, SWAP_OUTPUT);
+    await fs.rm(OUTPUT, {recursive: true, force: true});
+    await fs.rename(SWAP_OUTPUT, OUTPUT);
+    console.log('Gallery swapped successfully');
 };
 
 main();

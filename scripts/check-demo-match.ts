@@ -9,11 +9,10 @@
  * Run from the repo root:
  *   npx tsx scripts/check-demo-match.ts
  *
- * Expected (as of 2697f8c): score 0.000, matches [skill, location],
- * conflicts [intent, status], missing [budget] -> the dashboard's
- * `score > 0.4` filter hides the match entirely.
+ * Expected: score 1.0, matches [job, budget, remote], no conflicts, no missing -> 
+ * the dashboard's `score > 0.4` filter shows the match.
  *
- * See TODO.17.md §"The Finding That Reorders Everything" (causes C1-C5).
+ * See TODO.20.md P1.1-P1.2 (MatchEngine bugs fixed).
  */
 
 import { buildDemoWorkspace } from '../core/src/fixtures/demoWorkspace.js';

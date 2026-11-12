@@ -27,6 +27,9 @@ async function main(): Promise<void> {
     // L0: Fabricated path guard (must pass)
     run('pnpm lint:fabricated', 'L0: Fabricated path grep guard');
 
+    // L0: Purity check - no unexpected native deps
+    run('pnpm exec tsx scripts/check-purity.ts', 'L0: Native dependency purity check');
+
     // L0 + L1: Unit tests (pure + fast quality)
     run('pnpm test', 'L0+L1: Unit tests (core, agent, cli, optimize)');
 

@@ -9,7 +9,6 @@ test.beforeEach(async ({page}) => {
 });
 
 test('notes list selected', async ({page}) => {
-    test.skip(true, 'Requires editor which has React hook bug (E15)');
     await seed(page, {notes: demoNotes(), settings: defaultSettings(), hash: '#notes/demo-request-react'});
     await snap(page, {
         area: 'notes',

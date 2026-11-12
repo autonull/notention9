@@ -9,7 +9,6 @@ test.beforeEach(async ({page}) => {
 });
 
 test('editor property chips', async ({page}) => {
-    test.skip(true, 'Editor has React hook bug (E15)');
     await seed(page, {notes: [noteWithDetails()], settings: defaultSettings(), hash: '#notes/scene-editor-note'});
     await snap(page, {
         area: 'editor',
@@ -19,7 +18,6 @@ test('editor property chips', async ({page}) => {
 });
 
 test('editor add detail', async ({page}) => {
-    test.skip(true, 'Editor has React hook bug (E15)');
     await seed(page, {notes: [noteWithDetails()], settings: defaultSettings(), hash: '#notes/scene-editor-note'});
     await page.getByTestId('add-detail').click();
     await page.waitForSelector('text=Add detail');
@@ -31,7 +29,6 @@ test('editor add detail', async ({page}) => {
 });
 
 test('editor property inspector', async ({page}) => {
-    test.skip(true, 'Editor has React hook bug (E15)');
     await seed(page, {notes: [noteWithDetails()], settings: defaultSettings(), hash: '#notes/scene-editor-note'});
     await page.getByRole('button', {name: 'Toggle Assistant'}).click();
     await page.getByRole('tab', {name: /Props/}).click();
@@ -44,7 +41,6 @@ test('editor property inspector', async ({page}) => {
 });
 
 test('editor template selector', async ({page}) => {
-    test.skip(true, 'Editor has React hook bug (E15)');
     await seed(page, {notes: [noteWithDetails()], settings: defaultSettings(), hash: '#notes/scene-editor-note'});
     await page.getByRole('button', {name: 'Insert Template'}).click();
     await page.waitForSelector('text=Post Job');
@@ -56,7 +52,6 @@ test('editor template selector', async ({page}) => {
 });
 
 test('editor publish panel', async ({page}) => {
-    test.skip(true, 'Editor has React hook bug (E15)');
     await seed(page, {notes: [noteWithDetails()], settings: defaultSettings(), hash: '#notes/scene-editor-note'});
     await page.getByRole('button', {name: 'Publish', exact: true}).click();
     await page.waitForSelector('text=Review before publishing');
@@ -68,7 +63,6 @@ test('editor publish panel', async ({page}) => {
 });
 
 test('editor extraction review', async ({page}) => {
-    test.skip(true, 'Editor has React hook bug (E15)');
     await seed(page, {notes: [extractionNote()], settings: defaultSettings(), hash: '#notes/scene-extraction-note'});
     await page.getByRole('button', {name: 'Toggle Assistant'}).click();
     await page.getByRole('tab', {name: /Props/}).click();

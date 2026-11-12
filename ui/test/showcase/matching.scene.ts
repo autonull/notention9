@@ -19,7 +19,6 @@ test('matching results', async ({page}) => {
 });
 
 test('matching explanation', async ({page}) => {
-    test.skip(true, 'Requires editor which has React hook bug (E15)');
     await seed(page, {notes: demoNotes(), settings: defaultSettings(), hash: '#notes/demo-request-react'});
     await page.getByRole('button', {name: 'Toggle Assistant'}).click();
     await page.getByRole('tab', {name: /Local/}).click();

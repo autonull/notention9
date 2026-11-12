@@ -37,6 +37,7 @@ ui/src/**/*.map
 *.map
 .idea
 **/bin/
+movies/
 
 # Test artifacts
 test-results/

@@ -28,11 +28,60 @@
     "description": "Stats, an offline match preview, recent activity, and tools."
   },
   {
+    "area": "editor",
+    "state": "add-detail",
+    "file": "editor/add-detail.png",
+    "viewport": "desktop",
+    "description": "Type-aware popup for adding a structured detail."
+  },
+  {
+    "area": "editor",
+    "state": "extraction-review",
+    "file": "editor/extraction-review.png",
+    "viewport": "desktop",
+    "description": "Deterministic suggestions with confidence and accept/reject, no model configured."
+  },
+  {
+    "area": "editor",
+    "state": "property-chips",
+    "file": "editor/property-chips.png",
+    "viewport": "desktop",
+    "description": "Prose with structured detail chips and no visible bracket syntax."
+  },
+  {
+    "area": "editor",
+    "state": "property-inspector",
+    "file": "editor/property-inspector.png",
+    "viewport": "desktop",
+    "description": "Inspector with typed widgets, ontology hints, and validation."
+  },
+  {
+    "area": "editor",
+    "state": "publish-panel",
+    "file": "editor/publish-panel.png",
+    "viewport": "desktop",
+    "description": "Publish disclosure with a human summary and a collapsed raw event."
+  },
+  {
+    "area": "editor",
+    "state": "template-selector",
+    "file": "editor/template-selector.png",
+    "viewport": "desktop",
+    "description": "Ontology-derived templates for requests, offers, and events."
+  },
+  {
     "area": "map",
     "state": "pins",
     "file": "map/pins.png",
     "viewport": "desktop",
     "description": "Geographic notes on the map with a selected note popup."
+  },
+  {
+    "area": "matching",
+    "state": "explanation",
+    "file": "matching/explanation.png",
+    "viewport": "desktop",
+    "description": "Satisfied and conflicting constraints for a local offer, computed offline."
   },
   {
     "area": "matching",
@@ -82,6 +131,13 @@
     "file": "notes/grid.png",
     "viewport": "desktop",
     "description": "Grid mode with pinned and private notes visible at a glance."
+  },
+  {
+    "area": "notes",
+    "state": "list-selected",
+    "file": "notes/list-selected.png",
+    "viewport": "desktop",
+    "description": "List mode with a note open in the editor."
   },
   {
     "area": "notes",
