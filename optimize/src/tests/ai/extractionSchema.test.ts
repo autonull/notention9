@@ -5,6 +5,7 @@ import {
     buildExtractionPrompt,
     repairExtraction,
     validateAgainstSchema,
+    type ExtractionSchema,
 } from '@notention/core/ontology/schema';
 
 describe('Extraction Schema (L15)', () => {
@@ -82,9 +83,24 @@ describe('Extraction Schema (L15)', () => {
     });
 });
 
+// Minimal schema for repair loop tests - avoids full ontology required fields
+const minimalRepairSchema: ExtractionSchema = {
+    type: 'object',
+    properties: {
+        to: { type: 'string', description: 'Recipient' },
+        channel: { type: 'string', enum: ['email', 'whatsapp', 'telegram', 'sms', 'signal', 'slack', 'teams', 'discord', 'call'], description: 'Communication channel' },
+        name: { type: 'string' },
+        role: { type: 'string' },
+        rate: { type: 'number' },
+        deadline: { type: 'string' },
+        need: { type: 'string' },
+    },
+    required: ['to', 'channel'],
+    additionalProperties: false,
+};
+
 describe('Repair Loop (L15)', () => {
-    const ontology = DEFAULT_ONTOLOGY;
-    const schema = generateExtractionSchema(ontology);
+    const schema = minimalRepairSchema;
 
     const baseValidOutput = {
         name: 'Test',
@@ -92,6 +108,7 @@ describe('Repair Loop (L15)', () => {
         rate: 100,
         deadline: '2024-12-31',
         need: 'testing',
+        to: 'john@example.com',
     };
 
     it('repairs malformed JSON', async () => {

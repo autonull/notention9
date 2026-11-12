@@ -232,9 +232,11 @@ export class LLMBasedRepairStrategy<T> implements RepairStrategy<T> {
     ) {}
 
     canRepair(context: RepairContext<T>): boolean {
-        // Only attempt LLM repair if we have attempts remaining and previous attempts failed
-        return context.previousAttempts.length > 0 && 
-               context.previousAttempts.length < context.maxAttempts &&
+        // Only attempt LLM repair if we have repair attempts remaining and previous attempts failed
+        // previousAttempts includes initial validation + repair attempts, so repair attempts so far = length - 1
+        const repairAttemptsSoFar = context.previousAttempts.length - 1;
+        return repairAttemptsSoFar >= 0 && 
+               repairAttemptsSoFar < context.maxAttempts &&
                !context.previousAttempts[context.previousAttempts.length - 1].success;
     }
 
