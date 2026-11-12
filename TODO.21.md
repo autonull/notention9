@@ -203,16 +203,17 @@
 
 ---
 
-## 8. Next Steps After TODO.21
+## 8. Next Steps After TODO.21 → See TODO.22.md
 
-| Track | Trigger |
-|-------|---------|
-| **Meshtastic transport** | Private networks need offline mesh |
-| **Key rotation + social recovery** | User loses device / key compromised |
-| **Multi-device sync** | Same identity on phone + laptop |
-| **Semantic CRDT** | Collaborative note editing |
-| **Sybil resistance** | Open network (strangers) |
-| **TLA+ verification** | Protocol ossifies; need interop guarantee |
+| Phase | Focus | Trigger |
+|-------|-------|---------|
+| **TODO.22** | Trust + Attestation + Mesh Hardening | Private networks work; need key rotation, receipts, WoT, 24h mesh |
+| **TODO.23** | GSS Ontology + Manifest + Survival Routing | Trust works; need survival specialization |
+| **TODO.24** | Multi-Device + Offline-First Hardening | Survival routing works; need phone+laptop, 72h offline, a11y |
+| **TODO.25** | Pilot Deployment + Chaos Hardening | All above work; need real community, 90 days, measurable improvement |
+
+**Total path: ~38-50 weeks (2-person team).** Solo: 18-24 months.
+**Architecture locked.** Kill criteria are law. No scope creep.
 
 ---
 
