@@ -81,6 +81,8 @@ export function getPublicKeyFromSecret(secretKeyHex: string): string {
     return getPublicKey(hexToBytes(secretKeyHex));
 }
 
+export { getPublicKey } from 'nostr-tools/pure';
+
 export function generatePrivateKey(): string {
     return bytesToHex(generateSecretKey());
 }

@@ -6,4 +6,5 @@ export * from './nostr/NostrNetworkProvider.js';
 export * from './nostr/NostrClient.js';
 export * from './nostr/LocalRelay.js';
 export * from './nostr/LocalTransport.js';
+export * from './nostr/privateNetwork.js';
 export * from './meshtastic/MeshtasticNetworkProvider.js';

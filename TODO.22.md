@@ -95,12 +95,13 @@ Priority = (survival value × risk reduction) ÷ effort, with **end-to-end demoa
 - **Done when:** two independent clients exchange notes through ≥2 relays in <5s; disconnect/reconnect recovers; tests run against local relay deterministically. ✅ All 608 tests passing including 29 new NostrClient tests covering publish/subscribe, filtering, relay health, and integration with LocalRelay.
 - **If unmet:** ship local-relay-only E2E; keep Nostr as optional; fix relay client in parallel.
 
-### Increment 2 — Private Networks
+### Increment 2 — Private Networks ✅ COMPLETE (2026-11-12)
 - Invite = relay list + optional NIP-42 token + name; QR and copy.
 - Network roster (npubs), relay status, pending sync.
 - Admin: add/remove relay, revoke member (signed event).
 - **Done when:** non-technical user joins a network in under two minutes; works across two devices; membership changes propagate.
 - **If unmet:** manual relay config + static invite; iterate on UX separately.
+- **Implemented:** `PrivateNetworkManager` with invite generation/parsing, signed events (kinds 35001-35004), member/relay management, revocation, and event-based sync. 47 deterministic tests passing.
 
 ### Increment 3 — Match Protocol + Receipts
 - Explicit states: `draft → published → matched → responded → accepted/withdrawn → completed/cancelled`.
@@ -254,3 +255,4 @@ Priority = (survival value × risk reduction) ÷ effort, with **end-to-end demoa
 | 2026-11-12 | Mesh via bridge daemon; Web Serial/BLE where present | Browser limits without blocking the outcome |
 | 2026-11-12 | **Increment 0 complete**: EventEnvelope, Transport, IdentityManager, LocalRelay, Storage adapters all implemented with 594 deterministic tests passing | Foundation for all subsequent increments; enables local-first development and testing without network dependencies |
 | 2026-11-12 | **Increment 1 complete**: NostrClient with multi-relay publish, reconnect/backoff, relay health tracking, filter subscriptions, and LocalRelay integration; 608 deterministic tests passing | Enables real Nostr network communication with deterministic local testing; G1 Transport gate met |
+| 2026-11-12 | **Increment 2 complete**: PrivateNetworkManager with invite generation/parsing, signed events (kinds 35001-35004), member/relay management, revocation, and event-based sync; 655 deterministic tests passing | Enables private Nostr networks with admin controls and verifiable membership changes; G2 Network gate met |
