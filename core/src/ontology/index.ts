@@ -6,3 +6,5 @@ export * from './schema.js';
 export * from './statistics.js';
 export { DEFAULT_ONTOLOGY } from './ontology.default.js';
 export { OntologyService } from './ontologyService.js';
+export * from './biologicalManifest.js';
+export { survivalDomains, hazardDomain, resourceDomain, shelterDomain, medicalDomain, transportDomain, commsDomain } from './survivalDomains.js';

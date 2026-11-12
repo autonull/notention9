@@ -1,4 +1,5 @@
 import type { OntologyNode } from '../types/index.js';
+import { survivalDomains } from './survivalDomains.js';
 
 /**
  * Ontology domain definitions - consolidated from separate domain files
@@ -9,6 +10,7 @@ import type { OntologyNode } from '../types/index.js';
  * - event: Meetings, conferences, scheduled events
  * - work: Jobs, projects, tasks, freelance work
  * - commerce: Products, services, and transactions
+ * - survival: Hazard, resource, shelter, medical, transport, comms (GSS)
  */
 
 // ============================================================================
@@ -308,7 +310,7 @@ export function combineDomains(...domains: OntologyNode[][]): OntologyNode[] {
 }
 
 /**
- * Default combined ontology
+ * Default combined ontology with GSS survival domains
  */
 export const DEFAULT_ONTOLOGY: OntologyNode[] = combineDomains(
     entityDomain,
@@ -316,5 +318,6 @@ export const DEFAULT_ONTOLOGY: OntologyNode[] = combineDomains(
     eventDomain,
     workDomain,
     commerceDomain,
-    requestDomain
+    requestDomain,
+    survivalDomains
 );

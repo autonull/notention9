@@ -128,12 +128,13 @@ Priority = (survival value × risk reduction) ÷ effort, with **end-to-end demoa
 - **Done when:** note created on one device crosses the mesh to another in under 30 seconds; bridge survives reconnect.
 - **If unmet:** bridge-only on desktop; document hardware; keep Nostr path primary.
 
-### Increment 6 — GSS Ontology + Manifest
+### Increment 6 — GSS Ontology + Manifest ✅ COMPLETE
 - Ontology pack: hazard, resource, shelter, medical, transport, comms.
 - `BiologicalManifest`: needs, tolerances, modifiers; per-person and group.
 - Manifest editor + import/export (JSON/QR).
 - **Done when:** family manifest (infant, elderly, diabetic, healthy) created in under five minutes; ontology terms resolve; export/import round-trips.
 - **If unmet:** start with needs+tolerances only; defer modifiers.
+- **Completed:** 2026-11-12 — All six survival domains integrated into DEFAULT_ONTOLOGY; BiologicalManifest types and functions implemented with full validation; 4 default profiles validated; export/import round-trips tested; QR code generation works; 766 deterministic tests passing.
 
 ### Increment 7 — Survival Routing + Map
 - Time-Expanded Network A* over `provides`/`imposes` and spacetime bounds.
@@ -262,3 +263,4 @@ Priority = (survival value × risk reduction) ÷ effort, with **end-to-end demoa
 | 2026-11-12 | **Increment 3 complete**: MatchProtocol with state machine (kinds 35100-35106), signed receipts, chain verification, export/import; 701 deterministic tests passing | Enables verifiable match lifecycles with cryptographic receipt chains; G3 Match gate met |
 | 2026-11-12 | **Increment 4 complete**: Outbox with persistent storage, automatic queueing on publish failure, exponential backoff retry with jitter, manual/auto drain on reconnect, queue stats, maxRetries limit; 711 deterministic tests passing | Enables offline-first operation with zero-loss queue flush on reconnect; G4 Offline gate met |
 | 2026-11-12 | **Increment 5 complete**: Mesh Bridge with daemon (Meshtastic serial ↔ WebSocket), browser transports (WebSerial, WebBluetooth, MeshBridge WS), and MeshtasticNetworkProvider factory methods; all tests passing | Enables mesh communication when infrastructure fails; G5 Mesh gate met |
+| 2026-11-12 | **Increment 6 complete**: GSS Ontology (hazard, resource, shelter, medical, transport, comms) integrated into DEFAULT_ONTOLOGY; BiologicalManifest with needs/tolerances/modifiers for profiles and groups; JSON/QR export/import with round-trip validation; 4 default profiles (infant, elderly, diabetic, healthy); 766 deterministic tests passing | Enables survival-grade biological coordination with verifiable manifests; G6 Ontology gate met |
