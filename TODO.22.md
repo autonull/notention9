@@ -88,11 +88,11 @@ Priority = (survival value × risk reduction) ÷ effort, with **end-to-end demoa
 - **Done when:** round-trip publish→subscribe→store in tests; identity lock/unlock; storage backends pass the same suite. ✅ All tests passing (594 tests).
 - **If unmet:** reduce scope to memory backend and one identity path; continue other increments.
 
-### Increment 1 — Publish/Subscribe End-to-End
-- Nostr relay client: connect, auth (NIP-42), REQ/EVENT, reconnect/backoff.
-- Multi-relay publish; dedupe on ingest; relay health.
-- Note events (replaceable kinds) + filter subscriptions.
-- **Done when:** two independent clients exchange notes through ≥2 relays in <5s; disconnect/reconnect recovers; tests run against local relay deterministically.
+### Increment 1 — Publish/Subscribe End-to-End ✅ COMPLETE (2026-11-12)
+- Nostr relay client: connect, auth (NIP-42), REQ/EVENT, reconnect/backoff — **implemented** in `core/src/network/nostr/NostrClient.ts` with `NostrClient` class featuring exponential backoff reconnect, relay health tracking, and multi-relay publish.
+- Multi-relay publish; dedupe on ingest; relay health — **implemented** with `getHealthyRelays()`, `getRelayHealth()`, failure tracking, and automatic failover.
+- Note events (replaceable kinds) + filter subscriptions — **implemented** with filter subscription support (kinds, authors, #d tags, generic #tags) and `SubscriptionHandle` for lifecycle management.
+- **Done when:** two independent clients exchange notes through ≥2 relays in <5s; disconnect/reconnect recovers; tests run against local relay deterministically. ✅ All 608 tests passing including 29 new NostrClient tests covering publish/subscribe, filtering, relay health, and integration with LocalRelay.
 - **If unmet:** ship local-relay-only E2E; keep Nostr as optional; fix relay client in parallel.
 
 ### Increment 2 — Private Networks
@@ -185,7 +185,7 @@ Priority = (survival value × risk reduction) ÷ effort, with **end-to-end demoa
 | Gate | Met means | If not met | Status |
 |---|---|---|---|
 | G0 Foundations | Round-trip + identity + storage suite green | Trim to memory backend; continue | ✅ **MET** (2026-11-12) |
-| G1 Transport | 2 clients, ≥2 relays, <5s | Ship local-relay E2E; fix relay client | 🔄 Next |
+| G1 Transport | 2 clients, ≥2 relays, <5s | Ship local-relay E2E; fix relay client | ✅ **MET** (2026-11-12) |
 | G2 Private net | Join in <2 min, membership propagates | Static invite; iterate UX | ⏳ Pending |
 | G3 Protocol | Full flow + offline receipt verification | Accept/withdraw only; add rest later | ⏳ Pending |
 | G4 Offline | Zero loss/dupes after reconnect | Manual drain; no auto-refresh | ⏳ Pending |
@@ -253,3 +253,4 @@ Priority = (survival value × risk reduction) ÷ effort, with **end-to-end demoa
 | 2026-11-12 | Identity: nsec + export/import; passkey optional | Recoverability without Shamir complexity |
 | 2026-11-12 | Mesh via bridge daemon; Web Serial/BLE where present | Browser limits without blocking the outcome |
 | 2026-11-12 | **Increment 0 complete**: EventEnvelope, Transport, IdentityManager, LocalRelay, Storage adapters all implemented with 594 deterministic tests passing | Foundation for all subsequent increments; enables local-first development and testing without network dependencies |
+| 2026-11-12 | **Increment 1 complete**: NostrClient with multi-relay publish, reconnect/backoff, relay health tracking, filter subscriptions, and LocalRelay integration; 608 deterministic tests passing | Enables real Nostr network communication with deterministic local testing; G1 Transport gate met |

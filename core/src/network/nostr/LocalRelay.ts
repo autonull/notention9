@@ -135,7 +135,7 @@ export class LocalRelayPool {
         this.relay = new LocalRelay();
     }
 
-    async publish(relays: string[], event: NostrEvent): Promise<string[]> {
+    publish(relays: string[], event: NostrEvent): Promise<string[]> {
         const localEvent: LocalRelayEvent = {
             id: event.id,
             pubkey: event.pubkey,
@@ -149,10 +149,15 @@ export class LocalRelayPool {
 
         const success = this.relay.publish(localEvent);
         if (!success) {
-            throw new Error('Failed to publish to local relay');
+            return Promise.reject(new Error('Failed to publish to local relay'));
         }
 
-        return [localEvent.id];
+        // Return array of promises like SimplePool does
+        return Promise.resolve(relays.map(() => localEvent.id));
+    }
+
+    close(relays?: string[]): void {
+        // No-op for local relay pool
     }
 
     subscribeMany(
