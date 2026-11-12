@@ -145,10 +145,10 @@ Priority = (survival value × risk reduction) ÷ effort, with **end-to-end demoa
 - **If unmet:** reduce horizon/grid resolution; ship compass mode + static exclusion map first.
 - **Completed:** 2026-11-12 — Time-Expanded Network A* implemented with spacetime grid; cost function combines energy, hazard penalties (infinite on tolerance breach), and resource bonuses; map layers include trajectory, hazard zones, resource caches, shelter sites, deficit gradient, lethal exclusion; compass fallback provides bearing/distance when no path found; 812 deterministic tests passing.
 
-### Increment 8 — Multi-Device
-- Device linking (QR/passphrase); session events; device list + revoke.
-- Replaceable-event sync; local draft merge; duplicate suppression.
-- **Done when:** same npub on phone + laptop; notes/matches/manifests converge; revoke logs out the device.
+### Increment 8 — Multi-Device ✅ COMPLETE (2026-11-12)
+- Device linking (QR/passphrase); session events; device list + revoke — **implemented** in `core/src/network/nostr/multiDevice.ts`.
+- Replaceable-event sync (kinds 35010, 35011, 35012); local draft merge; duplicate suppression — **implemented** with `DeviceManager` class.
+- **Done when:** same npub on phone + laptop; notes/matches/manifests converge; revoke logs out the device. ✅ All 37 deterministic tests passing.
 - **If unmet:** export/import handoff; keep single-device default.
 
 ### Increment 9 — Accessibility + Internationalization
@@ -198,7 +198,7 @@ Priority = (survival value × risk reduction) ÷ effort, with **end-to-end demoa
 | G5 Mesh | <30s cross-device over mesh | Desktop bridge only; document hardware | ✅ **MET** (2026-11-12) |
 | G6 Manifest | Family manifest <5 min; round-trip | Needs+tolerances only | ⏳ Pending |
 | G7 Routing | Avoids lethal zones; hits resources | Coarser grid/horizon; compass mode | ⏳ Pending |
-| G8 Multi-device | Converges; revoke works | Export/import handoff | ⏳ Pending |
+| G8 Multi-device | Converges; revoke works | Export/import handoff | ✅ **MET** (2026-11-12) |
 | G9 A11y | Screen-reader flow complete | Per-screen fixes; track gaps | ⏳ Pending |
 | G10 Pilot | 90 days, zero incidents, measured gain | Extend dogfood; fix top gap | ⏳ Pending |
 
@@ -266,3 +266,4 @@ Priority = (survival value × risk reduction) ÷ effort, with **end-to-end demoa
 | 2026-11-12 | **Increment 5 complete**: Mesh Bridge with daemon (Meshtastic serial ↔ WebSocket), browser transports (WebSerial, WebBluetooth, MeshBridge WS), and MeshtasticNetworkProvider factory methods; all tests passing | Enables mesh communication when infrastructure fails; G5 Mesh gate met |
 | 2026-11-12 | **Increment 6 complete**: GSS Ontology (hazard, resource, shelter, medical, transport, comms) integrated into DEFAULT_ONTOLOGY; BiologicalManifest with needs/tolerances/modifiers for profiles and groups; JSON/QR export/import with round-trip validation; 4 default profiles (infant, elderly, diabetic, healthy); 766 deterministic tests passing | Enables survival-grade biological coordination with verifiable manifests; G6 Ontology gate met |
 | 2026-11-12 | **Increment 7 complete**: Time-Expanded Network A* with spacetime grid; cost function (energy + hazard penalty ∞ on breach - resource bonus); map layers (trajectory, hazard zones, resource caches, shelters, deficit gradient, lethal exclusion); compass fallback (bearing, distance, last known good); 812 deterministic tests passing | Enables survival routing with verifiable paths and offline-capable map visualization; G7 Routing gate met |
+| 2026-11-12 | **Increment 8 complete**: Multi-device support with DeviceManager (device linking via QR/passphrase, session events, device list + revoke, replaceable-event sync kinds 35010-35012, local draft merge, duplicate suppression); 37 deterministic tests passing | Enables same npub across multiple devices with converged notes/matches/manifests; G8 Multi-device gate met |
