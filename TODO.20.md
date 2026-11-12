@@ -69,14 +69,13 @@ All gates pass:
 
 ---
 
-## 10. Next Phase: TODO.21 — Nostr Transport + Private Network Usability
-Local loop works. **Next: make it work between devices.** See `TODO.21.md` for the no-shortcuts plan:
-- Nostr transport (publish/subscribe, relays, NIP-65)
-- Identity (nsec/npub, encrypted at rest)
-- Match protocol (state machine, signed receipts)
-- Private networks (invite = relay list + optional NIP-42 auth)
-- Offline-first (SQLite queue, background sync)
-- Dogfood: 2 users, 1 week, real coordination
+## 10. Next Phase: TODO.21 / TODO.22 — Networked Coordination
+Local loop works. **Next: make it work between devices.**
+- `TODO.22.md` — canonical master plan (principles, technology decisions, increments, iteration gates)
+- `TODO.21.md` — detailed Phase 1: Nostr transport + private networks
+- Subsequent increments: mesh bridge, GSS ontology/manifest, survival routing, multi-device, a11y, pilot
+
+No gate stops progress. Relax implementation, never the outcome.
 
 ---
 *End of TODO.20.md. Canonical plan. README2.md deprecated.*
