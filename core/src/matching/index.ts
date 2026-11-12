@@ -5,3 +5,4 @@ export * from './MatchingService.js';
 export * from './PropertyIndex.js';
 export * from './matchers.js';
 export * from './bidirectional.js';
+export * from './matchProtocol.js';

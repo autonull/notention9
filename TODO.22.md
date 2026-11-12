@@ -103,13 +103,14 @@ Priority = (survival value × risk reduction) ÷ effort, with **end-to-end demoa
 - **If unmet:** manual relay config + static invite; iterate on UX separately.
 - **Implemented:** `PrivateNetworkManager` with invite generation/parsing, signed events (kinds 35001-35004), member/relay management, revocation, and event-based sync. 47 deterministic tests passing.
 
-### Increment 3 — Match Protocol + Receipts
+### Increment 3 — Match Protocol + Receipts ✅ COMPLETE (2026-11-12)
 - Explicit states: `draft → published → matched → responded → accepted/withdrawn → completed/cancelled`.
 - Guarded transitions; TTL per state (configurable).
 - Signed receipts: accept, withdraw, complete, cancel; chain via previous event ID.
 - Verification API; receipt viewer; export as JSON/QR.
 - **Done when:** full request→match→respond→accept flow across two clients; receipt chain verifies offline; invalid transitions rejected.
 - **If unmet:** implement accept/withdraw only; add complete/cancel later; receipts still verifiable.
+- **Implemented:** MatchProtocol with state machine (7 kinds 35100-35106), signed receipts, chain verification, export/import. 46 deterministic tests passing.
 
 ### Increment 4 — Offline Queue + Resilience
 - Local outbox persisted before broadcast; drain on reconnect; idempotent event IDs.
@@ -256,3 +257,4 @@ Priority = (survival value × risk reduction) ÷ effort, with **end-to-end demoa
 | 2026-11-12 | **Increment 0 complete**: EventEnvelope, Transport, IdentityManager, LocalRelay, Storage adapters all implemented with 594 deterministic tests passing | Foundation for all subsequent increments; enables local-first development and testing without network dependencies |
 | 2026-11-12 | **Increment 1 complete**: NostrClient with multi-relay publish, reconnect/backoff, relay health tracking, filter subscriptions, and LocalRelay integration; 608 deterministic tests passing | Enables real Nostr network communication with deterministic local testing; G1 Transport gate met |
 | 2026-11-12 | **Increment 2 complete**: PrivateNetworkManager with invite generation/parsing, signed events (kinds 35001-35004), member/relay management, revocation, and event-based sync; 655 deterministic tests passing | Enables private Nostr networks with admin controls and verifiable membership changes; G2 Network gate met |
+| 2026-11-12 | **Increment 3 complete**: MatchProtocol with state machine (kinds 35100-35106), signed receipts, chain verification, export/import; 701 deterministic tests passing | Enables verifiable match lifecycles with cryptographic receipt chains; G3 Match gate met |
