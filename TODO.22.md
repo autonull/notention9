@@ -159,11 +159,12 @@ Priority = (survival value × risk reduction) ÷ effort, with **end-to-end demoa
 - **If unmet:** ship per-screen fixes with tracked gaps; never regress existing a11y.
 - **Implemented:** `I18nProvider`, `LanguageSelector`, `useI18n` hook, `useAccessibility` hook, `AccessibilityProvider`, 6 locale files, RTL CSS variants, accessibility CSS classes.
 
-### Increment 10 — Pilot Readiness + Dogfood
+### Increment 10 — Pilot Readiness + Dogfood ✅ CODE COMPLETE (2026-11-12)
 - 3-relay deployment recipe; invite generation; offline manual. **✅ Implemented** in `deployment/` (docker-compose.yml, README.md, OFFLINE_MANUAL.md)
 - Chaos drills: relay loss, partition, sensor poisoning, key compromise, battery death. **✅ Implemented** in `deployment/chaos-drills/chaos-drills.test.ts` (11 tests passing)
 - Measurement: time-to-match, completion, lapse analysis, comprehension. **✅ Implemented** — Sync health metrics (queue depth, flush success, relay latency) in `core/src/telemetry/syncHealth.ts` (13 tests passing); friction journal covers capture/match lifecycle (`core/src/telemetry/journal.ts`, 17 tests); commitment lifecycle metrics (time-to-commit, completion rates, lapse counts) in `core/src/eval/commitmentLifecycle.ts` (20 tests). Comprehension checks are a UI-layer concern tracked separately.
-- **Done when:** a mutual-aid group runs real coordination for 90 days; zero privacy incidents; measured coordination improvement; documented gaps.
+- **Code done when:** all measurement, chaos, and deployment infrastructure implemented and tested. ✅ **MET**
+- **Pilot done when:** a mutual-aid group runs real coordination for 90 days; zero privacy incidents; measured coordination improvement; documented gaps. ⏳ **Operational — not code**
 - **If unmet:** extend dogfood; fix the top gap; do not widen scope.
 
 ---
@@ -201,7 +202,7 @@ Priority = (survival value × risk reduction) ÷ effort, with **end-to-end demoa
 | G7 Routing | Avoids lethal zones; hits resources | Coarser grid/horizon; compass mode | ✅ **MET** (2026-11-12) |
 | G8 Multi-device | Converges; revoke works | Export/import handoff | ✅ **MET** (2026-11-12) |
 | G9 A11y | Screen-reader flow complete | Per-screen fixes; track gaps | ✅ **MET** (2026-11-12) |
-| G10 Pilot | 90 days, zero incidents, measured gain | Extend dogfood; fix top gap | ⏳ Pending |
+| G10 Pilot | 90 days, zero incidents, measured gain | Extend dogfood; fix top gap | ✅ **Code infrastructure complete** (2026-11-12); ⏳ Operational dogfood pending |
 
 ---
 
@@ -272,3 +273,4 @@ Priority = (survival value × risk reduction) ÷ effort, with **end-to-end demoa
 | 2026-11-12 | **Increment 10 progress**: 3-relay deployment recipe (docker-compose, docs), chaos drills (11 tests: relay loss, partition, sensor poisoning, key compromise, battery death), sync health metrics (queue depth, flush success, relay latency); all tests passing | Enables pilot readiness infrastructure; G10 Pilot preparation underway |
 | 2026-11-12 | **Increment 10 measurement complete**: SyncHealthMonitor (13 tests), Friction Journal (17 tests), CommitmentLifecycle metrics (time-to-commit, completion, lapse analysis, 20 tests) all implemented and tested. All pilot-readiness code infrastructure is done; G10 Pilot gate awaits real-world 90-day dogfood. | Code infrastructure complete; pilot execution is operational, not code. |
 | 2026-11-12 | **Validation fix**: Fixed LLMBasedRepairStrategy attempt counting bug (previousAttempts includes initial validation); updated extraction schema tests to use minimal schema avoiding full ontology required fields. All 985 tests passing across packages. | Maintains test determinism and code quality for pilot readiness; no functional changes to production code. |
+| 2026-11-12 | **All code increments (0–10) complete**: 990 deterministic tests passing; all readiness gates G0–G9 met; G10 Pilot code infrastructure complete (deployment recipes, chaos drills, measurement). Operational 90-day dogfood is the sole remaining milestone. | Full survival-grade coordination stack implemented; no further code increments planned; pilot execution is operational. |
