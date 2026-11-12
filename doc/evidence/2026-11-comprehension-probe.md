@@ -42,5 +42,9 @@ _No sessions recorded yet._
 - Time to first match (P2c.4) is measured by the app's own journal, not by the
   facilitator: from the first need the participant expressed to the first match
   explanation they opened after it (ADR 016).
+- The browser journal is exported through Settings → Data. Only events recorded
+  after participant handoff are merged into the local Node journal; seeded
+  workspace hydration events are excluded. The same participant-session events
+  therefore feed `pnpm loop latency` and `pnpm loop prioritize --source friction`.
 - Sessions are stored locally in `doc/evidence/comprehension-probe-raw.json`;
   this report is anonymized (participants are `P1`, `P2`, …).

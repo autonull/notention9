@@ -17,6 +17,8 @@ import {
 } from './constants.js';
 import { inferEvidenceClass, createSessionId } from './frictionUtils.js';
 
+export {serializeFrictionEvents} from './frictionUtils.js';
+
 const JOURNAL_KEY = 'friction-journal';
 const CONFIG_KEY = 'friction-journal-config';
 

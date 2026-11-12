@@ -11,6 +11,7 @@ import {useDemoWorkspace} from '../../hooks/useDemoWorkspace';
 import {SparklesIcon} from '../ui/icons';
 import {useMetrics, Metrics} from '../../hooks/useMetrics';
 import {storageRecovery} from '@notention/core';
+import {getJournal, serializeFrictionEvents} from '@notention/core/telemetry/journal';
 import {useToast} from '../../hooks/useToast';
 
 export function DataTab() {
@@ -57,33 +58,10 @@ export function DataTab() {
 
     const handleExportFriction = async () => {
         try {
-            const db = await new Promise<IDBDatabase>((resolve, reject) => {
-                const request = indexedDB.open('notention-journal');
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => reject(request.error);
-            });
-
-            const tx = db.transaction('friction', 'readonly');
-            const store = tx.objectStore('friction');
-            const request = store.get('friction-journal');
-
-            const events = await new Promise<any[]>((resolve, reject) => {
-                tx.oncomplete = () => {
-                    // The journal stores through JsonStore, so the stored value
-                    // is a JSON string, not an array.
-                    const raw = request.result;
-                    if (raw === null || raw === undefined) return resolve([]);
-                    try {
-                        resolve(typeof raw === 'string' ? JSON.parse(raw) : raw);
-                    } catch {
-                        resolve([]);
-                    }
-                };
-                tx.onerror = () => reject(request.error);
-            });
-
-            const lines = events.map(e => JSON.stringify(e)).join('\n');
-            if (lines) lines + '\n';
+            const journal = getJournal();
+            await journal.flush();
+            const events = await journal.getEvents();
+            const lines = serializeFrictionEvents(events);
 
             const blob = new Blob([lines], {type: 'application/jsonl'});
             const url = URL.createObjectURL(blob);
@@ -115,15 +93,18 @@ export function DataTab() {
             <div className="border-t border-gray-700 pt-4 mt-4">
                 <h3 className="text-sm font-medium text-gray-300 mb-2">Friction Journal</h3>
                 <p className="text-xs text-gray-500 mb-3">
-                    Export the local friction journal for <code className="px-1.5 py-0.5 bg-gray-800 rounded text-green-300 font-mono text-xs">pnpm loop prioritize --source friction</code>.
-                    The journal records capture, match, and response friction from this browser session.
+                    Export the local friction journal as JSONL. Then run{' '}
+                    <code className="px-1.5 py-0.5 bg-gray-800 rounded text-green-300 font-mono text-xs">
+                        pnpm loop import-journal {'<downloaded-file>'}
+                    </code>{' '}
+                    to merge it into the local journal used by the optimization loop.
                 </p>
                 <div className="flex gap-2">
                     <Button variant="secondary" icon={DownloadIcon} onClick={handleExportFriction}>
                         Export Friction Journal (JSONL)
                     </Button>
                     <span className="text-xs text-gray-500 self-center px-2">
-                        → <code className="font-mono">.notention/journal/friction.jsonl</code>
+                        → <code className="font-mono">pnpm loop prioritize --source friction</code>
                     </span>
                 </div>
             </div>

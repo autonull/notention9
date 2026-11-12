@@ -53,6 +53,28 @@ test('export, clear, and restore a backup', async ({page}) => {
     await expect(page.getByTestId('local-match')).toBeVisible({timeout: 15_000});
 });
 
+test('exports the friction journal as complete JSONL', async ({page}) => {
+    await seed(page, {notes: demoNotes(), settings: defaultSettings(), hash: '#settings'});
+    await openDataTab(page);
+
+    const downloadPromise = page.waitForEvent('download');
+    await page.getByRole('button', {name: 'Export Friction Journal (JSONL)'}).click();
+    const download = await downloadPromise;
+    const file = await download.path();
+    expect(file).toBeTruthy();
+
+    const fs = await import('fs/promises');
+    const raw = await fs.readFile(file!, 'utf8');
+    expect(raw.endsWith('\n')).toBe(true);
+
+    const events = raw.trimEnd().split('\n').map(line => JSON.parse(line));
+    expect(events.length).toBeGreaterThan(0);
+    const needs = events.filter(event => event.kind === 'need_expressed');
+    expect(needs.length).toBeGreaterThan(0);
+    expect(new Set(needs.map(event => event.noteId)).size).toBe(needs.length);
+    expect(events.every(event => event.sessionId && event.timestamp)).toBe(true);
+});
+
 test('malformed import is rejected without overwriting', async ({page}) => {
     await seed(page, {notes: demoNotes(), settings: defaultSettings(), hash: '#settings'});
     await openDataTab(page);

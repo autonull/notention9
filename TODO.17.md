@@ -1,8 +1,41 @@
 # TODO.17 — Value First: Make the Center Work, Then Prove It
 
 **Supersedes:** TODO.16.md (superseded plan) · **Rewritten:** TODO.17 v1 (this file, v2)
-**Date:** 2026-11-10
-**Status:** **P0b COMPLETE** ✅ | **P0a COMPLETE** ✅ | **P1a COMPLETE** ✅ | **P1b COMPLETE** ✅ | **P1c COMPLETE** ✅ | **P1d COMPLETE** ✅ | **P2c.1 COMPLETE** ✅ | **P2c.2 COMPLETE** ✅ | **R1–R8, R10, R11 COMPLETE** ✅ | **R9 COMPLETE** ✅ | **I1/I2/I3/I5/I6/I7/I8/I10/I11/I12 FIXED** ✅ | **E2E GREEN IN PRODUCTION BUILD** ✅ | **P2a INSTRUMENTED, NO SESSIONS YET** ⏳ | **P2c.4 INSTRUMENTED, NO SESSIONS YET** ⏳ | **FALSE-GREEN GATES FIXED** ✅ | **TELEMETRY HANDOFF FIXED** ✅ | **FRICTION EXPORT FIXED** ✅ | **FRICTION EXPORT ADDED** ✅ | **NEED ANCHOR FIXED** ✅ | **JOURNAL DOUBLE-WRITE FIXED** ✅
+**Date:** 2026-11-10 · **Updated:** 2026-11-12
+**Status:** **P0b COMPLETE** ✅ | **P0a COMPLETE** ✅ | **P1a COMPLETE** ✅ | **P1b COMPLETE** ✅ | **P1c COMPLETE** ✅ | **P1d COMPLETE** ✅ | **P2c.1 COMPLETE** ✅ | **P2c.2 COMPLETE** ✅ | **R1–R7, R10, R11 COMPLETE** ✅ | **R8/R9 INSTRUMENTED, HUMAN SESSIONS PENDING** ⏳ | **I1–I3, I5–I8, I10–I26 FIXED** ✅ | **E2E GREEN IN PRODUCTION BUILD** ✅ | **P2a INSTRUMENTED, NO SESSIONS YET** ⏳ | **P2c.4 INSTRUMENTED, NO SESSIONS YET** ⏳ | **FALSE-GREEN GATES FIXED** ✅ | **TELEMETRY HANDOFF FIXED** ✅ | **FRICTION EXPORT FIXED** ✅ | **FRICTION EXPORT ADDED** ✅ | **NEED ANCHOR FIXED** ✅ | **JOURNAL DOUBLE-WRITE FIXED** ✅ | **MEASUREMENT GATES HARDENED** ✅ | **MEASUREMENT HANDOFF REVIEWED** ✅
+
+> **Note (2026-11-12, session 7 — the handoff still lost data).** Session 6 proved that
+> the time-to-first-match instrument could produce a sample. Running the remaining
+> workflow end to end exposed five ways for that result to disappear or lie:
+>
+> 1. **`pnpm loop` discarded its exit code.** A failed subcommand printed an error and
+>    still exited **0**, so any shell gate around the loop was false-green.
+> 2. **The verify L2 lane was still optional.** The optimize journey was fixed, but a
+>    future failure there could not fail `pnpm verify`.
+> 3. **The fabricated-path guard ignored search errors.** A broken `rg` invocation was
+>    reported as a warning and the lane passed.
+> 4. **The browser export could omit recent events and emitted invalid JSONL.** It read
+>    IndexedDB without flushing the journal buffer, and `if (lines) lines + '\n'`
+>    assigned a string without changing it. Two exports concatenated into one malformed
+>    line.
+> 5. **The probe discarded the browser journal when it closed its isolated context.**
+>    The per-participant report survived, but the same real-session events never reached
+>    `pnpm loop latency` or the friction prioritizer.
+>
+> The loop now preserves failure exit codes, L2 is a hard gate, search errors fail the
+> guard, browser and Node journals share one validated JSONL format, `pnpm loop
+> import-journal` merges exports idempotently, and the probe exports through Settings →
+> Data before it closes the session. The evidence artifacts still report **0 human
+> sessions**; this session hardened the instrument, it did not fabricate its result.
+>
+> **Note (2026-11-12, session 7 review — six edge cases closed before commit).** A focused
+> code review found that the first handoff implementation still had six failure modes: seeded
+> hydration events could masquerade as participant needs; a failed handoff could still save a
+> seemingly valid session; the JSONL parser accepted invalid counts and dates; legacy
+> deduplication could discard genuine repeated observations; a malformed file could partially
+> import before returning failure; and unknown-command guidance named a nonexistent command.
+> All six are fixed with regression coverage (I21–I26). The evidence artifacts still report
+> **0 human sessions**.
 
 > **Note (2026-11-12, session 6 — the instrument was live and blind).** Session 5 shipped the
 > time-to-first-match instrument and left one thing unproven: that it fires in a real session.
@@ -63,6 +96,21 @@
 > **Also fixed while the E2E lane was unblocked:** the dev server crashed on boot (browser twins lacked `getLedger`/`getFrictionCounts`); `index.node.ts` re-exported the type-only `RevisionDriver` as a value; "Add detail" silently dropped the property when the note body was empty; the editor was destroyed and rebuilt on every note update; `useNoteProperties` closed over a stale note and discarded title/tag edits; `TiptapEditor` read `editor.getHTML()` before the editor had a schema; match explanations hid the unit, so dimensional facts were invisible; AI providers re-initialized once per mounted consumer.
 >
 > **Fixed (2026-11-11):** I7 (VITE_DEV_HOOKS leakage) — moved `VITE_DEV_HOOKS=true` from `.env` to `.env.development`; production preview now shows `VITE_DEV_HOOKS: undefined isDev: false`.
+
+## Progress Log (2026-11-12, session 7)
+
+| Phase | Status | Notes |
+|-------|--------|-------|
+| **Loop exit code (I16)** | ✅ **FIXED** | `pnpm loop` now sets `process.exitCode` from the subcommand result. An unknown command exits **1**, not 0 |
+| **Verify L2 (I17)** | ✅ **HARD GATE** | The optimize browser journey is green and is now part of the single `pnpm verify` gate; it can no longer fail without failing verification |
+| **Fabricated-path guard (I18)** | ✅ **FIXED** | The guard uses `spawnSync` without a shell, distinguishes “no matches” from a failed search, and fails the lane when `rg` cannot complete |
+| **Friction export (I19)** | ✅ **FIXED** | The export flushes the browser journal before reading it and uses the shared JSONL serializer. Every line is complete and the file ends with a newline |
+| **Browser → Node handoff** | ✅ **HARDENED** | `pnpm loop import-journal <file>` validates event semantics, imports into `.notention/journal/friction.jsonl`, skips repeated exports without dropping repeated legacy observations, and rejects a malformed file before writing any event |
+| **Probe handoff (I20–I22)** | ✅ **FIXED** | The probe exports through Settings → Data before closing its browser context, imports only events recorded after participant handoff, and fails without saving the session if export or import fails. Raw answers are Git-ignored |
+| **CLI guidance (I26)** | ✅ **FIXED** | Unknown-subcommand guidance now lists `import-journal` and no longer names the nonexistent `compare` command |
+| **Regression tests** | ✅ | Strict JSONL semantics, participant-boundary filtering, atomic malformed imports, multiset-safe legacy deduplication, CLI failure/import status, and the production browser export. Core 543, optimize 68 (+4 skipped), UI 183, simulator 37, agent 17, CLI 6 — all green; L2 2 tests and L3 7 tests green; `pnpm verify` exit 0 |
+
+---
 
 ## Progress Log (2026-11-12, session 6)
 
@@ -726,21 +774,27 @@ P3   OPTIMIZE
 ## 🧭 What Remains (facilitated)
 
 The center works and the golden path is proven in the production build. What is left is
-**human evidence**, and it cannot be written by a machine. Four steps, in order:
+**human evidence**, and it cannot be written by a machine. The exact facilitator steps,
+consent text, thresholds, and troubleshooting live in
+[`doc/evidence/HUMAN-SESSIONS.md`](doc/evidence/HUMAN-SESSIONS.md). Four steps, in order:
 
 | # | Step | How | Artifact | Blocker |
 |---|------|-----|----------|---------|
-| **1** | **Run 5 comprehension sessions** | `pnpm probe` (opens the app with the sample workspace; read the two questions aloud; press Enter when the session ends) | `doc/evidence/2026-11-comprehension-probe.md` | Needs 5 people. The instrument is ready **and exercised**: session 6 ran the probe's own path (seeded workspace → explanation → journal → export → `pnpm loop latency`) and it produced a real sample. The sessions are not. |
+| **1** | **Run 5 comprehension sessions** | Follow `doc/evidence/HUMAN-SESSIONS.md`; `pnpm probe` seeds the app, records the answers, and preserves only participant-session friction events | `doc/evidence/2026-11-comprehension-probe.md` | Needs 5 people. The instrument is ready **and exercised**: session 6 ran the probe's own path (seeded workspace → explanation → journal → export → `pnpm loop latency`) and it produced a machine sample. Seeded hydration events are now excluded from participant measurements. The human sessions are not. |
 | **2** | **Judge the matches** | In the same session: for every match the product shows, "would you act on this?" and "why not?" — the probe already asks both | `doc/evidence/2026-11-comprehension-probe.md` (Match relevance section) | Follows step 1 — the same session produces the judgments |
-| **3** | **Let the journal fill, then prioritize** | Dogfood the app; the journal records capture/match/response friction; then `pnpm loop prioritize --source friction` ranks the work | `doc/evidence/2026-11-friction-taxonomy.md` | Needs real sessions. The reader works, the journal records by default, **and the browser→file export is live in Settings → Data tab**. A facilitator session's friction can now be exported and fed to `pnpm loop`. |
+| **3** | **Let the journal fill, then prioritize** | Probe sessions merge into `.notention/journal/friction.jsonl` automatically. For ordinary dogfood, export Settings → Data and run `pnpm loop import-journal <file>`; then run `pnpm loop prioritize --source friction` | `doc/evidence/2026-11-friction-taxonomy.md` | Needs real sessions. The reader works, the journal records by default, and the browser→file export is live, strictly validated, and idempotent. A malformed import fails before writing any event |
 | **4** | **Read the time-to-first-match** | After any real session: `pnpm loop latency --evidence doc/evidence/2026-11-time-to-first-match.md` | `doc/evidence/2026-11-time-to-first-match.md` | Follows steps 1–3. The instrument is live (ADR 016) and **proven end to end**: a seeded workspace → an opened explanation → the browser journal → the JSONL export → the node reader reports a sample with the same note and session. The report still says **0 samples**, because no human session has happened yet |
 
-**Before step 1, the browser→file gap is closed:** the browser journal and the Node journal are
-two stores, but the **Export Friction Journal (JSONL)** button in Settings → Data tab bridges them.
-A facilitator session produces friction that can be exported to `.notention/journal/friction.jsonl`
-and read by `pnpm loop prioritize --source friction`. Step 3 is now fully wired.
-*(The export itself was broken until session 5: the stored value is a JSON string, not an
-array — I11, fixed.)*
+**Before step 1, the browser→Node handoff is closed:** the browser journal and the Node
+journal are two stores, but the **Export Friction Journal (JSONL)** button in Settings → Data
+flushes and exports the browser buffer. `pnpm loop import-journal <file>` merges that export
+into `.notention/journal/friction.jsonl`; repeated exports are deduplicated without
+discarding repeated legacy observations, and malformed lines fail before any event is
+written. The probe now uses this exact product path, excludes seeded hydration events,
+and merges each participant session automatically. Step 3 is fully wired.
+
+*(The export was broken until session 5: the stored value is a JSON string, not an array —
+I11. Session 7 found the remaining buffer and newline defects — I19.)*
 
 *(Until session 6, the journal stored every event **twice** — I15, fixed — so the counts the
 prioritizer ranks work by were inflated. And the need anchor fired only on write paths — I14,
@@ -757,7 +811,8 @@ number nobody has measured.
 the benchmark (22 quality cases, F1 86.4% at the product threshold), the golden path
 (`pnpm verify` L3, green against the production build), the friction instrument (12 event
 kinds, recording by default, timestamped and correlated, **stored once**), the comprehension
-instrument, **and the friction export path**.
+instrument, **and the friction export path** (strictly validated, participant-scoped, and atomic
+on malformed input).
 
 **What the next session should not do:** add more corpus, add more strategies, or start
 another parameter search. The remaining uncertainty is about *people*, not about code.
@@ -822,8 +877,8 @@ Facilitated, in priority order.
 | **R5** | **Build the act step** | The loop has no payoff. A matching engine without an act produces a list, not coordination | ✅ **COMPLETE** — `createResponseNote`, `createWithdrawalNote`, `ResponsesView`, ledger logging (P1b) |
 | **R6** | **Rebuild the benchmark on product semantics** | A green benchmark the product cannot reproduce is worse than a red one | ✅ **COMPLETE** — Benchmark rebuilt with 22 quality cases, candidate notes defined, Node.js harness running with Precision/Recall/F1 metrics |
 | **R7** | Write the corpus (P2c.2 — civilization-scale breadth) | Unblocks E7, E13, E14, and every match-quality metric | ✅ **COMPLETE** — 864 notes across 14 domains, CC0 manifest (`corpus/notes/manifest.json`) |
-| **R8** | Run the comprehension probe (P2a) | The cheapest, most disconfirming question about the product | 🔄 **INSTRUMENTED** — `pnpm probe` records verbatim answers, time-to-first-explanation, time-to-first-match and the act step into `doc/evidence/2026-11-comprehension-probe.md`. **Remaining: run 5 sessions with people** (the instrument needs a human; it cannot fabricate them) |
-| **R9** | Turn human failures into machine-readable friction (P2b) | Gives the optimizer a real target instead of a synthetic driver | 🔄 **PARTIAL** — the golden-path events now exist (`need_expressed`, `match_explained`, `match_dismissed`, `response_created`, `response_viewed`), every event carries a timestamp, a session id and the note id it belongs to, the journal stores each event **once** (I15), and `pnpm loop prioritize --source friction` reads them. **Remaining: sessions from real use** (R8) to fill the journal |
+| **R8** | Run the comprehension probe (P2a) | The cheapest, most disconfirming question about the product | 🔄 **INSTRUMENTED** — `pnpm probe` records verbatim answers, time-to-first-explanation, participant-only time-to-first-match and the act step into `doc/evidence/2026-11-comprehension-probe.md`. The exact consent and facilitation steps are in `doc/evidence/HUMAN-SESSIONS.md`. A failed telemetry handoff aborts instead of recording a false session. **Remaining: run 5 sessions with people** (the instrument needs a human; it cannot fabricate them) |
+| **R9** | Turn human failures into machine-readable friction (P2b) | Gives the optimizer a real target instead of a synthetic driver | 🔄 **PARTIAL** — the golden-path events now exist (`need_expressed`, `match_explained`, `match_dismissed`, `response_created`, `response_viewed`), every event carries a timestamp, a session id and the note id it belongs to, the journal stores each event **once** (I15), and `pnpm loop prioritize --source friction` reads them. Probe sessions merge only participant-session events into the Node journal automatically; ordinary exports use `pnpm loop import-journal`, with strict validation, idempotence, and atomic failure on malformed input. **Remaining: sessions from real use** (R8) to fill the journal |
 | **R10** | Update `README.md` § Status and `README2.md` gaps against what is actually true | The status table currently claims working areas that the code contradicts | ✅ **COMPLETE** — both now state the golden path is green in the production build and that the human evidence is instrumented but empty |
 | **I2** | Make the UI test lane honest | A green lane that ran nothing is worse than a red one | ✅ **COMPLETE** — the lane invoked a non-existent script and swallowed the error; it now runs all 41 files (183 tests) and fails on any failure |
 | **R11** | Extend the probe to collect match relevance (P2c.3) in the same session | Relevance judgments follow the probe; a separate session would halve the participants | ✅ **COMPLETE** — the probe now asks *would you act on this match?* and *why?*, and the artifact carries a relevance rate with the reasons (P2c.3). No sessions recorded yet |
@@ -831,15 +886,15 @@ Facilitated, in priority order.
 
 | **P1c** | ✅ **COMPLETE** | - **P1c.1** Extended `compose-match.spec.ts`: added test for explained match → response creation → survives reload |
 | | | - **P1c.2** Created `golden-demo.spec.ts`: seeds sample workspace, asserts explained match with units |
-| | | - **P1c.3** Added L3 (golden path) to `pnpm verify`: runs both journey tests |
+| | | - **P1c.3** Added L3 to `pnpm verify`: the golden path plus the measurement handoff now run as 4 journey files / 7 production-build tests |
 | | | - **P1c.4** Created `doc/decisions/014-golden-path.md`: golden path contract with 5 steps, invariants, failure modes |
-| | | - **KNOWN ISSUE**: E2E journey tests blocked by React hydration error #525 (I6) in production build. Core functionality verified by `check-demo-match.ts` ✅. Test infrastructure fix deferred to post-P2. |
+| | | - **FIXED**: React hydration error #525 (I6) no longer blocks the production-build journeys; all L3 tests are green |
 | **P1d** | ✅ **COMPLETE** | - Created `core/src/fixtures/qualityCaseNotes.ts`: candidate notes for all 22 quality cases |
 | | | - Completed `scripts/bench-match-quality.ts`: Node.js benchmark harness with keyword-based extraction |
 | | | - Benchmark runs successfully at minScore 0.2/0.3/0.4 with Precision/Recall/F1 metrics |
 | | | - Results: 0.2→F1 76.1%, 0.3→F1 82.4%, 0.4→F1 86.4% |
 | | | - Updated `doc/evidence/2026-11-match-benchmark-rebuild.md` with results and per-case breakdown |
-| | | - React error #525 blocks E2E browser benchmark; Node.js workaround validated |
+| | | - Product E2E is green against the production build; the quality benchmark remains the scoped Node.js harness |
 | **P2c.1** | ✅ **COMPLETE** | - Converted 6 Markdown domains → JSON (`corpus/notes/*.json`) |
 | | | - 215 notes across 6 domains (generational, legal-contracts, crisis-emergency, open-source, mentorship-career, software-dev) |
 | | | - Provenance manifest at `corpus/notes/manifest.json` (CC0, self-authored, no third-party data) |
@@ -867,3 +922,14 @@ Facilitated, in priority order.
 | **I13** | **The journal cannot order events** — day buckets only, no correlation | `core/src/telemetry/journal.ts`, `journal.browser.ts` | High | ✅ **FIXED** — every event now carries an exact `timestamp`, a `sessionId`, and the `noteId` it belongs to. This is what makes P2c.4 measurable (ADR 016) |
 | **I14** | **The need anchor never fires on the paths a real session uses** | `ui/src/hooks/data/useNotesData.ts` | High | ✅ **FIXED** — `need_expressed` was recorded only by `addNote`/`updateNote`, so a request note that entered the app by **hydration** (the seeded workspace the probe uses), `upsertNote` or **agent sync** was never anchored: every probe session had a `match_explained` and no `need_expressed`, and the metric read `null` for every participant. The anchor now fires from the live notes state — the one place that knows a need exists — once per note, and a trashed note no longer anchors the clock. Regression: `ui/test/journeys/seeded-workspace.spec.ts` |
 | **I15** | **The journal stores every event twice** | `core/src/telemetry/journal.browser.ts` | High | ✅ **FIXED** — `flush()` read the store, merged the buffer and wrote the result, so two concurrent flushes (one per anchor kind, plus the timer) each merged the same buffer: every event was stored twice and the counts the prioritizer ranks work by were inflated. Writes are serialized now, and a failed write returns its events to the buffer. Regression: `core/src/tests/telemetry/journal.browser.test.ts` |
+| **I16** | **The loop CLI discards its exit code** | `optimize/src/loop/cli.ts` | High | ✅ **FIXED** — `main()` returned the failure code but the process ignored it. The CLI now assigns `process.exitCode`; an unknown command exits 1. Regression: `optimize/src/tests/loop/cli.test.ts` |
+| **I17** | **The verify L2 browser journey is non-blocking** | `scripts/verify.ts` | High | ✅ **FIXED** — the optimize journey is green, so L2 is now a hard lane. A failed browser journey fails `pnpm verify` |
+| **I18** | **The fabricated-path guard ignores search errors** | `scripts/grep-fabricated-paths.ts` | High | ✅ **FIXED** — the guard now distinguishes ripgrep's “no matches” status from an execution error and fails the lane on any incomplete search |
+| **I19** | **The friction export omits buffered events and emits invalid JSONL** | `ui/src/components/settings/DataTab.tsx` | High | ✅ **FIXED** — the export flushes the journal first and uses the shared serializer. Every event is one complete line and the file ends with a newline. Regression: `ui/test/journeys/export-import.spec.ts` |
+| **I20** | **The probe discards the browser journal when its context closes** | `scripts/comprehension-probe.ts` | High | ✅ **FIXED** — the probe exports through Settings → Data, validates the JSONL, and merges the real-session events into the local Node journal. Raw answers are Git-ignored |
+| **I21** | **Seeded hydration events masquerade as participant needs** | `scripts/comprehension-probe.ts` | High | ✅ **FIXED** — the probe records a participant-handoff boundary and imports only later events. The seeded sample workspace can no longer anchor the participant latency distribution |
+| **I22** | **A failed probe handoff still records a successful session** | `scripts/comprehension-probe.ts` | Medium | ✅ **FIXED** — export and import failures now abort the probe before raw answers or the report are written. The process exits non-zero |
+| **I23** | **The shared parser accepts semantically invalid events** | `core/src/telemetry/frictionUtils.ts` | Medium | ✅ **FIXED** — counts must be positive safe integers; buckets must be real calendar dates; timestamps must be valid ISO instants; workflow, seam, and optional identifiers must be non-empty |
+| **I24** | **Legacy deduplication discards genuine repeated observations** | `core/src/telemetry/journal.ts` | Medium | ✅ **FIXED** — timestamp-less events use occurrence-aware multiset deduplication. Two identical legacy actions remain two observations, while re-importing the same export adds none |
+| **I25** | **A malformed import mutates the journal before failing** | `core/src/telemetry/journal.ts`, `optimize/src/loop/subcommands/importJournal.ts` | Low | ✅ **FIXED** — file import validates the complete JSONL first and writes nothing when any line is malformed. The command reports the failure and exits non-zero |
+| **I26** | **Unknown-command guidance omits `import-journal` and names `compare`** | `optimize/src/loop/cli.ts` | Low | ✅ **FIXED** — guidance now matches the implemented command set |

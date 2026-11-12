@@ -23,6 +23,7 @@ import { runAdopt } from './subcommands/adopt.js';
 import { runRequest } from './subcommands/request.js';
 import { runCorpus } from './subcommands/corpus.js';
 import { runLatency } from './subcommands/latency.js';
+import { runImportJournal } from './subcommands/importJournal.js';
 import { runFullLoop } from './subcommands/run.js';
 
 interface LoopParsedFlags {
@@ -105,6 +106,7 @@ Commands:
   request [--dry] [--output <dir>]      Emit T4 request for human implementation
   corpus [--dry] [--output <dir>]       Ingest corpus files, extract vocabulary, generate test cases
   latency [--since <date>] [--evidence <file>]  Time-to-first-match distribution (P2c.4)
+  import-journal <file>                Import an exported browser friction journal (JSONL)
   run [--dry] [--output <dir>]          Run full discover→prioritize→synthesize→evaluate→adopt cycle
   help                                  Show this help
 
@@ -165,6 +167,9 @@ export async function main(): Promise<number> {
             case 'latency': {
                 return runLatency(config, output, dry, json, since, evidence);
             }
+            case 'import-journal': {
+                return runImportJournal(dry, json, rest[0]);
+            }
             case 'run': {
                 return runFullLoop(config, output, dry, json);
             }
@@ -173,7 +178,7 @@ export async function main(): Promise<number> {
                 return 0;
             }
             default:
-                throw new Error(`Unknown subcommand: ${subcommand}. Use: discover, prioritize, synthesize, evaluate, adopt, request, corpus, latency, compare, run, help`);
+                throw new Error(`Unknown subcommand: ${subcommand}. Use: discover, prioritize, synthesize, evaluate, adopt, request, corpus, latency, import-journal, run, help`);
         }
     } catch (e) {
         console.error(`Error: ${e instanceof Error ? e.message : String(e)}`);
@@ -184,8 +189,12 @@ export async function main(): Promise<number> {
 const isMainModule = import.meta.url === `file://${process.argv[1]}`;
 
 if (isMainModule) {
-    main().catch(e => {
-        console.error(`Fatal: ${e instanceof Error ? e.message : String(e)}`);
-        process.exit(1);
-    });
+    main()
+        .then(exitCode => {
+            process.exitCode = exitCode;
+        })
+        .catch(e => {
+            console.error(`Fatal: ${e instanceof Error ? e.message : String(e)}`);
+            process.exitCode = 1;
+        });
 }

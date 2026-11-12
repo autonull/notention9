@@ -70,6 +70,7 @@ simulator/src/**/*.map
 !simulator/src/**/*.test.ts
 !simulator/src/**/*.test.tsx
 .notention/
+doc/evidence/comprehension-probe-raw.json
 eval/runs/
 test-*.ts
 /optimize/optimize/

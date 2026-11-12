@@ -24,6 +24,8 @@ import {chromium, type Browser, type Page} from 'playwright';
 import {seed} from '../ui/test/support/seed';
 import {readFrictionJournal} from '../ui/test/support/journal';
 import {demoNotes, defaultSettings} from '../ui/test/fixtures/workspace';
+import {importFrictionEvents, type FrictionEvent} from '../core/src/telemetry/journal';
+import {filterFrictionEventsSince, parseFrictionJsonl} from '../core/src/telemetry/frictionUtils';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
@@ -58,6 +60,7 @@ interface Session {
     completedAct: boolean;
     wouldActOnMatch: boolean | null;
     relevanceReason: string;
+    journalEventCount: number;
 }
 
 interface ProbeOptions {
@@ -248,12 +251,15 @@ function formatSeconds(seconds: number | null | undefined): string {
  * facilitator's clock. t0 is the first need the participant expressed,
  * t1 is the first match explanation they opened after it.
  */
-async function measureTimeToFirstMatch(page: Page): Promise<{seconds: number | null; sameNote: boolean | null}> {
+async function measureTimeToFirstMatch(
+    page: Page,
+    participantStartedAt: string
+): Promise<{seconds: number | null; sameNote: boolean | null}> {
     const deadline = Date.now() + 3_000;
     let events: Awaited<ReturnType<typeof readFrictionJournal>> = [];
 
     while (Date.now() < deadline) {
-        events = await readFrictionJournal(page);
+        events = filterFrictionEventsSince(await readFrictionJournal(page), participantStartedAt);
         if (events.some(e => e.kind === 'need_expressed' && e.timestamp)) break;
         await new Promise(resolve => setTimeout(resolve, 250));
     }
@@ -276,6 +282,31 @@ async function measureTimeToFirstMatch(page: Page): Promise<{seconds: number | n
         seconds: (new Date(explanation.timestamp!).getTime() - needAt) / 1000,
         sameNote: !!need.noteId && need.noteId === explanation.noteId,
     };
+}
+
+/**
+ * Export through the product's own Settings → Data action. This flushes the
+ * browser buffer before reading it, so no event is lost when the probe closes
+ * its isolated browser context.
+ */
+async function exportBrowserJournal(page: Page): Promise<FrictionEvent[]> {
+    await page.evaluate(() => {
+        window.location.hash = '#settings';
+        window.dispatchEvent(new PopStateEvent('popstate'));
+    });
+    await page.getByRole('tab', {name: /Data Management/}).click();
+
+    const downloadPromise = page.waitForEvent('download');
+    await page.getByRole('button', {name: 'Export Friction Journal (JSONL)'}).click();
+    const download = await downloadPromise;
+    const path = await download.path();
+    if (!path) throw new Error('The browser did not produce a friction journal download.');
+
+    const parsed = parseFrictionJsonl(readFileSync(path, 'utf-8'));
+    if (parsed.malformed > 0) {
+        throw new Error(`The friction export contained ${parsed.malformed} malformed line(s).`);
+    }
+    return parsed.events;
 }
 
 function writeReport(sessions: Session[]): void {
@@ -313,6 +344,7 @@ function writeReport(sessions: Session[]): void {
         `- Named a next action: ${s.namedNextAction ? 'yes' : 'no'}`,
         `- Opened the match explanation after ${formatSeconds(s.timeToFirstExplanationSeconds)}`,
         `- Time to first match: ${formatSeconds(s.timeToFirstMatchSeconds)}${s.matchWasAboutTheNeed === null || s.matchWasAboutTheNeed === undefined ? '' : s.matchWasAboutTheNeed ? ' (the match was about that need)' : ' (the match was about another request)'}`,
+        `- Journal events preserved: ${s.journalEventCount ?? 0}`,
         `- Completed the act step: ${s.completedAct ? 'yes' : 'no'}`,
         `- Would act on the match: ${s.wouldActOnMatch === null ? '—' : s.wouldActOnMatch ? 'yes' : 'no'}`,
         '',
@@ -362,6 +394,10 @@ ${answers || '_No sessions recorded yet._'}
 - Time to first match (P2c.4) is measured by the app's own journal, not by the
   facilitator: from the first need the participant expressed to the first match
   explanation they opened after it (ADR 016).
+- The browser journal is exported through Settings → Data. Only events recorded
+  after participant handoff are merged into the local Node journal; seeded
+  workspace hydration events are excluded. The same participant-session events
+  therefore feed \`pnpm loop latency\` and \`pnpm loop prioritize --source friction\`.
 - Sessions are stored locally in \`doc/evidence/comprehension-probe-raw.json\`;
   this report is anonymized (participants are \`P1\`, \`P2\`, …).
 `;
@@ -383,6 +419,7 @@ function printInstrument(): void {
     console.log('  - time from app-ready to the first opened match explanation');
     console.log('  - time from the first expressed need to the first opened match explanation');
     console.log('  - whether the participant created a response (the act step)');
+    console.log('  - participant-session browser friction events, merged into the local Node journal');
     console.log('\nArtifacts:');
     console.log(`  ${RAW_PATH}`);
     console.log(`  ${REPORT_PATH}`);
@@ -395,6 +432,7 @@ async function runSession(options: ProbeOptions, browser: Browser): Promise<Sess
 
     console.log('\nSeeding the sample workspace…');
     await seed(page, {notes: demoNotes(), settings: defaultSettings()});
+    const participantStartedAt = new Date().toISOString();
 
     const participant = (await ask('Participant id (e.g. P1): ')) || `P${loadRaw().length + 1}`;
     const startedAt = new Date().toISOString();
@@ -433,7 +471,7 @@ async function runSession(options: ProbeOptions, browser: Browser): Promise<Sess
     const understoodPurpose = (await ask('Did the participant state the purpose correctly? [y/N] ')).toLowerCase().startsWith('y');
     const namedNextAction = (await ask('Did they name a next action the app supports? [y/N] ')).toLowerCase().startsWith('y');
 
-    const timeToFirstMatch = await measureTimeToFirstMatch(page);
+    const timeToFirstMatch = await measureTimeToFirstMatch(page, participantStartedAt);
     if (timeToFirstMatch.seconds !== null) {
         console.log(`  → time to first match: ${timeToFirstMatch.seconds.toFixed(1)}s`);
     }
@@ -442,6 +480,12 @@ async function runSession(options: ProbeOptions, browser: Browser): Promise<Sess
     const relevanceAnswer = (await ask('Would you act on this match? [y/N] ')).trim().toLowerCase();
     const wouldActOnMatch = relevanceAnswer.startsWith('y') ? true : relevanceAnswer.startsWith('n') ? false : null;
     const relevanceReason = await ask('Why? (verbatim) ');
+
+    const journalEvents = await exportBrowserJournal(page);
+    const participantEvents = filterFrictionEventsSince(journalEvents, participantStartedAt);
+    const imported = await importFrictionEvents(participantEvents);
+    const journalEventCount = participantEvents.length;
+    console.log(`  → ${journalEventCount} participant friction event(s) preserved (${imported.imported} new)`);
 
     await context.close();
 
@@ -459,6 +503,7 @@ async function runSession(options: ProbeOptions, browser: Browser): Promise<Sess
         completedAct,
         wouldActOnMatch,
         relevanceReason,
+        journalEventCount,
     };
 }
 

@@ -11,19 +11,22 @@ export type { EvidenceClass } from '../schemas/evidence.js';
 
 // --- Types ---
 
-export type FrictionKind =
-    | 'capture_started'
-    | 'capture_abandoned'
-    | 'need_expressed'
-    | 'correction'
-    | 'match_viewed'
-    | 'match_rejected'
-    | 'match_accepted'
-    | 'clarification_requested'
-    | 'match_explained'
-    | 'match_dismissed'
-    | 'response_created'
-    | 'response_viewed';
+export const FRICTION_KINDS = [
+    'capture_started',
+    'capture_abandoned',
+    'need_expressed',
+    'correction',
+    'match_viewed',
+    'match_rejected',
+    'match_accepted',
+    'clarification_requested',
+    'match_explained',
+    'match_dismissed',
+    'response_created',
+    'response_viewed',
+] as const;
+
+export type FrictionKind = typeof FRICTION_KINDS[number];
 
 export type DurationBucket = '<5s' | '5-15s' | '15-60s' | '>60s';
 
@@ -37,6 +40,101 @@ export interface FrictionEvent {
     count: number;
     durationBucket?: DurationBucket;
     noteId?: string;                // the note the event is about (correlation id)
+}
+
+export interface FrictionJsonlParseResult {
+    events: FrictionEvent[];
+    malformed: number;
+}
+
+const DURATION_BUCKETS: readonly DurationBucket[] = ['<5s', '5-15s', '15-60s', '>60s'];
+const DATE_BUCKET_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
+const ISO_TIMESTAMP_PATTERN = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.(\d{1,3}))?(Z|[+-](\d{2}):(\d{2}))$/;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+    return typeof value === 'object' && value !== null;
+}
+
+function isNonEmptyString(value: unknown): value is string {
+    return typeof value === 'string' && value.trim().length > 0;
+}
+
+function isCalendarDate(year: number, month: number, day: number): boolean {
+    if (month < 1 || month > 12 || day < 1) return false;
+    const leapYear = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+    const days = [31, leapYear ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    return day <= days[month - 1];
+}
+
+function isValidBucket(value: unknown): value is string {
+    if (typeof value !== 'string') return false;
+    const match = DATE_BUCKET_PATTERN.exec(value);
+    return !!match && isCalendarDate(Number(match[1]), Number(match[2]), Number(match[3]));
+}
+
+function isValidTimestamp(value: unknown): value is string {
+    if (typeof value !== 'string') return false;
+    const match = ISO_TIMESTAMP_PATTERN.exec(value);
+    if (!match) return false;
+
+    const [, year, month, day, hour, minute, second, , zone, offsetHour, offsetMinute] = match;
+    if (!isCalendarDate(Number(year), Number(month), Number(day))) return false;
+    if (Number(hour) > 23 || Number(minute) > 59 || Number(second) > 59) return false;
+    if (zone !== 'Z' && (Number(offsetHour) > 23 || Number(offsetMinute) > 59)) return false;
+    return Number.isFinite(Date.parse(value));
+}
+
+function isFrictionEvent(value: unknown): value is FrictionEvent {
+    return isRecord(value)
+        && isValidBucket(value.bucket)
+        && isNonEmptyString(value.workflow)
+        && isNonEmptyString(value.seam)
+        && FRICTION_KINDS.includes(value.kind as FrictionKind)
+        && typeof value.count === 'number'
+        && Number.isSafeInteger(value.count)
+        && value.count > 0
+        && (value.timestamp === undefined || isValidTimestamp(value.timestamp))
+        && (value.sessionId === undefined || isNonEmptyString(value.sessionId))
+        && (value.noteId === undefined || isNonEmptyString(value.noteId))
+        && (value.durationBucket === undefined || DURATION_BUCKETS.includes(value.durationBucket as DurationBucket));
+}
+
+/** Serialize events in the JSONL format shared by browser and Node journals. */
+export function serializeFrictionEvents(events: readonly FrictionEvent[]): string {
+    return events.length === 0 ? '' : `${events.map(event => JSON.stringify(event)).join('\n')}\n`;
+}
+
+/** Parse JSONL without accepting malformed events into measurements. */
+export function parseFrictionJsonl(content: string): FrictionJsonlParseResult {
+    const events: FrictionEvent[] = [];
+    let malformed = 0;
+
+    for (const line of content.split(/\r?\n/)) {
+        const trimmed = line.trim();
+        if (!trimmed) continue;
+
+        try {
+            const event: unknown = JSON.parse(trimmed);
+            if (isFrictionEvent(event)) events.push(event);
+            else malformed++;
+        } catch {
+            malformed++;
+        }
+    }
+
+    return {events, malformed};
+}
+
+/** Select timestamped events at or after a participant-session boundary. */
+export function filterFrictionEventsSince<T extends {timestamp?: string}>(events: readonly T[], since: string): T[] {
+    const boundary = Date.parse(since);
+    if (!Number.isFinite(boundary)) return [];
+
+    return events.filter(event => {
+        if (!event.timestamp) return false;
+        const timestamp = Date.parse(event.timestamp);
+        return Number.isFinite(timestamp) && timestamp >= boundary;
+    });
 }
 
 /**

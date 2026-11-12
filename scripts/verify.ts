@@ -19,25 +19,6 @@ function run(cmd: string, description: string): void {
     }
 }
 
-/**
- * Run a lane that is not yet a hard gate, but report it honestly.
- *
- * A lane that ran and failed is NOT the same as a lane that was skipped: the
- * difference is the difference between a known defect and a broken measurement.
- */
-function runOptional(cmd: string, description: string): boolean {
-    console.log(`\n🔄 ${description}...`);
-    console.log(`   $ ${cmd}`);
-    try {
-        execSync(cmd, {cwd: rootDir, stdio: 'inherit', encoding: 'utf-8'});
-        console.log(`✅ ${description} passed`);
-        return true;
-    } catch (err) {
-        console.warn(`⚠️  ${description} FAILED (known defect, not yet a hard gate)`);
-        return false;
-    }
-}
-
 async function main(): Promise<void> {
     console.log('🚀 Starting full verification (pnpm verify)');
     console.log('==========================================');
@@ -55,11 +36,11 @@ async function main(): Promise<void> {
     // L1: Param visibility check
     run('pnpm exec tsx scripts/verify-param-visibility.ts', 'L1: Strategy param visibility check');
 
-    // L2: Browser smoke test (pre-existing issue in optimize journey; will be fixed in Phase 1.3)
-    runOptional('pnpm optimize optimize capture-and-edit', 'L2: Optimize E2E smoke test (capture-and-edit)');
+    // L2: Optimize browser journey. The defect that made this lane non-blocking is fixed.
+    run('pnpm optimize optimize capture-and-edit', 'L2: Optimize E2E smoke test (capture-and-edit)');
 
     // L3: Golden path acceptance test
-    run('pnpm exec playwright test --config ui/test/playwright.config.ts ui/test/journeys/compose-match.spec.ts ui/test/journeys/golden-demo.spec.ts ui/test/journeys/seeded-workspace.spec.ts', 'L3: Golden path acceptance test');
+    run('pnpm exec playwright test --config ui/test/playwright.config.ts ui/test/journeys/compose-match.spec.ts ui/test/journeys/golden-demo.spec.ts ui/test/journeys/seeded-workspace.spec.ts ui/test/journeys/export-import.spec.ts', 'L3: Golden path and measurement handoff acceptance test');
 
     console.log('\n✨ All verification steps passed!');
     console.log('==========================================');

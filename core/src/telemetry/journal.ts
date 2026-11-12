@@ -30,6 +30,8 @@ import {
     rankAggregates,
     groupSignalsByWorkflow,
     createSessionId,
+    parseFrictionJsonl,
+    serializeFrictionEvents,
 } from './frictionUtils.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -82,11 +84,25 @@ if (!existsSync(DATA_DIR)) {
 
 // Re-export types from frictionUtils
 export type { FrictionKind, DurationBucket, EvidenceClass, FrictionEvent, FrictionAggregate, FrictionSignal, JournalConfig } from './frictionUtils.js';
+export {serializeFrictionEvents};
 
 const DEFAULT_JOURNAL_CONFIG: JournalConfig = {
     enabled: true,
     retentionDays: DEFAULT_JOURNAL_RETENTION_DAYS,
 };
+
+export interface FrictionJournalImportOptions {
+    dryRun?: boolean;
+    destinationPath?: string;
+}
+
+export interface FrictionJournalImportResult {
+    imported: number;
+    pending: number;
+    duplicates: number;
+    malformed: number;
+    destination: string;
+}
 
 // --- Config management ---
 
@@ -356,6 +372,91 @@ export function resetJournal(): void {
         journalInstance.shutdown();
         journalInstance = null;
     }
+}
+
+function frictionEventFingerprint(event: FrictionEvent): string {
+    const sorted = Object.fromEntries(
+        Object.entries(event).sort(([left], [right]) => left.localeCompare(right))
+    );
+    return JSON.stringify(sorted);
+}
+
+function isLegacyFrictionEvent(event: FrictionEvent): boolean {
+    return event.timestamp === undefined;
+}
+
+/** Merge browser-session events into the Node journal without double-counting. */
+export async function importFrictionEvents(
+    events: readonly FrictionEvent[],
+    options: FrictionJournalImportOptions = {}
+): Promise<FrictionJournalImportResult> {
+    const destination = options.destinationPath ?? JOURNAL_FILE;
+
+    if (!options.dryRun) await getJournal().flush();
+
+    const existingContent = existsSync(destination) ? readFileSync(destination, 'utf-8') : '';
+    const existing = parseFrictionJsonl(existingContent);
+    const seen = new Set<string>();
+    const legacyCounts = new Map<string, number>();
+
+    for (const event of existing.events) {
+        const fingerprint = frictionEventFingerprint(event);
+        seen.add(fingerprint);
+        if (isLegacyFrictionEvent(event)) {
+            legacyCounts.set(fingerprint, (legacyCounts.get(fingerprint) ?? 0) + 1);
+        }
+    }
+
+    const pending: FrictionEvent[] = [];
+    const incomingLegacyCounts = new Map<string, number>();
+    let duplicates = 0;
+
+    for (const event of events) {
+        const fingerprint = frictionEventFingerprint(event);
+        if (isLegacyFrictionEvent(event)) {
+            const occurrence = (incomingLegacyCounts.get(fingerprint) ?? 0) + 1;
+            incomingLegacyCounts.set(fingerprint, occurrence);
+            if ((legacyCounts.get(fingerprint) ?? 0) >= occurrence) {
+                duplicates++;
+                continue;
+            }
+        } else if (seen.has(fingerprint)) {
+            duplicates++;
+            continue;
+        }
+        seen.add(fingerprint);
+        pending.push(event);
+    }
+
+    if (!options.dryRun && pending.length > 0) {
+        mkdirSync(dirname(destination), {recursive: true});
+        const separator = existingContent && !existingContent.endsWith('\n') ? '\n' : '';
+        appendFileSync(destination, separator + serializeFrictionEvents(pending), 'utf-8');
+    }
+
+    return {
+        imported: options.dryRun ? 0 : pending.length,
+        pending: pending.length,
+        duplicates,
+        malformed: 0,
+        destination,
+    };
+}
+
+/** Import an exported browser journal file into the Node journal. */
+export async function importFrictionJournalFile(
+    sourcePath: string,
+    options: FrictionJournalImportOptions = {}
+): Promise<FrictionJournalImportResult> {
+    const parsed = parseFrictionJsonl(readFileSync(sourcePath, 'utf-8'));
+    const destination = options.destinationPath ?? JOURNAL_FILE;
+
+    if (parsed.malformed > 0) {
+        return {imported: 0, pending: 0, duplicates: 0, malformed: parsed.malformed, destination};
+    }
+
+    const result = await importFrictionEvents(parsed.events, options);
+    return {...result, malformed: parsed.malformed};
 }
 
 // --- Convenience functions ---
