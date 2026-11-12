@@ -134,7 +134,7 @@ describe('MultiDevice - Device List Event', () => {
     it('should reject event with wrong kind', () => {
         const devices: LinkedDevice[] = [];
         const event = createDeviceListEvent(devices, TEST_PRIVKEY);
-        event.kind = 9999;
+        (event as { kind: number }).kind = 9999;
         expect(verifyDeviceListEvent(event)).toBe(false);
     });
 
@@ -169,7 +169,7 @@ describe('MultiDevice - Device List Event', () => {
 
     it('should return null for invalid event', () => {
         const event = createDeviceListEvent([], TEST_PRIVKEY);
-        event.kind = 9999;
+        (event as { kind: number }).kind = 9999;
         const extracted = extractDevicesFromEvent(event);
         expect(extracted).toBeNull();
     });
@@ -243,7 +243,7 @@ describe('MultiDevice - Device Session Event', () => {
         const sessionPubkey = getPublicKey(hexToBytes(sessionPrivkey));
 
         const event = createDeviceSessionEvent(device, sessionPubkey, TEST_PRIVKEY);
-        event.kind = 9999;
+        (event as { kind: number }).kind = 9999;
         expect(verifyDeviceSessionEvent(event)).toBe(false);
     });
 

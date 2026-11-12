@@ -165,7 +165,7 @@ export function createDeviceListEvent(
 
     event.id = getEventHash(event);
     const signed = finalizeEvent(event, hexToBytes(privkey));
-    return signed;
+    return signed as DeviceListEvent;
 }
 
 export function createDeviceSessionEvent(
@@ -202,7 +202,7 @@ export function createDeviceSessionEvent(
 
     event.id = getEventHash(event);
     const signed = finalizeEvent(event, hexToBytes(privkey));
-    return signed;
+    return signed as DeviceSessionEvent;
 }
 
 export function verifyDeviceListEvent(event: NostrEvent): boolean {
