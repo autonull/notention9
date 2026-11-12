@@ -25,7 +25,7 @@ class BrowserStorageAdapter implements StorageAdapter {
     }
 }
 
-class MemoryStorageAdapter implements StorageAdapter {
+export class MemoryStorageAdapter implements StorageAdapter {
     private store = new Map<string, string>();
 
     async getItem(key: string): Promise<string | null> {

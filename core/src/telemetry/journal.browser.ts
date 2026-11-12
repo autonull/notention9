@@ -3,7 +3,7 @@
  * Local opt-in event aggregation for friction discovery
  */
 
-import { JsonStore } from '../storage/Storage.browser.js';
+import { JsonStore, type StorageAdapter } from '../storage/Storage.browser.js';
 import { getIndexedDBAdapter } from '../storage/indexedDB.js';
 import type { FrictionEvent, FrictionAggregate, FrictionSignal, JournalConfig, FrictionKind, DurationBucket, EvidenceClass } from './journal.js';
 import {
@@ -30,11 +30,11 @@ export class Journal {
     private eventStore: JsonStore<FrictionEvent[]>;
     private config: JournalConfig = { enabled: true, retentionDays: DEFAULT_JOURNAL_RETENTION_DAYS };
     private buffer: FrictionEvent[] = [];
+    private flushQueue: Promise<void> = Promise.resolve();
     private flushInterval: ReturnType<typeof setInterval> | null = null;
     private initPromise: Promise<void> | null = null;
 
-    constructor() {
-        const adapter = getIndexedDBAdapter('notention-journal', 'friction');
+    constructor(adapter: StorageAdapter = getIndexedDBAdapter('notention-journal', 'friction')) {
         this.configStore = new JsonStore<JournalConfig>(CONFIG_KEY, adapter);
         this.eventStore = new JsonStore<FrictionEvent[]>(JOURNAL_KEY, adapter);
     }
@@ -102,16 +102,34 @@ export class Journal {
     }
 
     /**
-     * Flush buffer to IndexedDB
+     * Flush buffer to IndexedDB.
+     *
+     * Writes are serialized. Two concurrent flushes each read the store and
+     * merge the same buffered events, so every event would be written twice —
+     * and the counts the evidence is built on would be wrong.
      */
-    async flush(): Promise<void> {
-        if (this.buffer.length === 0) return;
-        await this.init();
+    flush(): Promise<void> {
+        this.flushQueue = this.flushQueue.then(() => this.persist());
+        return this.flushQueue;
+    }
 
-        const existing = (await this.eventStore.load()) ?? [];
-        const merged = [...existing, ...this.buffer];
-        await this.eventStore.save(merged);
-        this.buffer = [];
+    private async persist(): Promise<void> {
+        let pending: FrictionEvent[] = [];
+        try {
+            // The config loads first, so every event recorded before this
+            // flush is already buffered when the buffer is drained.
+            await this.init();
+            if (this.buffer.length === 0) return;
+
+            pending = this.buffer;
+            this.buffer = [];
+
+            const existing = (await this.eventStore.load()) ?? [];
+            await this.eventStore.save([...existing, ...pending]);
+        } catch (error) {
+            this.buffer = [...pending, ...this.buffer];
+            console.warn('[journal] failed to persist friction events:', error);
+        }
     }
 
     /**

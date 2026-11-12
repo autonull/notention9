@@ -61,6 +61,15 @@ slow half; the median does not.
 | Report | `pnpm loop latency [--evidence <file>]` | prints the distribution, writes the evidence document |
 | Probe | `scripts/comprehension-probe.ts` | the same metric, per participant, from the same journal |
 
+**The anchoring rule.** The need anchor fires when a request note enters the **live app state**,
+once per note per session — whichever path brought it there: capture, edit, load (hydration),
+upsert, or agent sync. A note in the trash is not a live need and does not anchor.
+
+*(The anchor used to live on the write paths alone — `addNote` and `updateNote` — so a request
+note that entered the app any other way was never anchored. The probe's own path (a seeded
+workspace) produced a `match_explained` and no `need_expressed`, and the metric read `null` for
+every participant. Found and fixed in session 6 — I14 in `TODO.17.md`.)*
+
 ### What is excluded, and why
 
 | Case | Treatment | Reason |
@@ -81,8 +90,8 @@ recorded when the user merely opens a note.
 
 - The plan's threshold (median < 2 min) is now measurable, but only by real
   sessions. The instrument is live; the journal is still empty.
-- The journal grows: one event per request note, one per explanation opened,
-  each with a timestamp and a session id. The retention policy (90 days) still
+- The journal grows: one event per request note present in a session, one per explanation
+  opened, each with a timestamp and a session id. The retention policy (90 days) still
   applies.
 - Old journal files stay readable. Events written before this ADR have no
   timestamp and no session id, so they are counted as unattributed instead of
@@ -96,6 +105,10 @@ recorded when the user merely opens a note.
 - `optimize/src/tests/loop/timeToMatch.test.ts` — pairing, exclusions, distribution.
 - `ui/test/journeys/compose-match.spec.ts` — the journey records both anchors,
   with the same note id and the same session id.
+- `ui/test/journeys/seeded-workspace.spec.ts` — a workspace that enters the app by
+  hydration anchors the need too, and the journal stores the anchor once.
+- `core/src/tests/telemetry/journal.browser.test.ts` — the journal stores every event
+  exactly once, including when flushes overlap.
 - `pnpm loop latency` — prints the distribution from the real journal.
 
 ---

@@ -15,6 +15,7 @@ import {STORAGE_KEYS} from '../../config/storageKeys';
 import {createNotePersistence} from './notePersistence';
 
 const expressesNeed = (note: Note): boolean =>
+    !note.deletedAt &&
     note.properties.some(p => p.key === 'intent' && p.values.includes('request'));
 
 export interface UseNotesDataResult {
@@ -62,6 +63,16 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
         });
     }, []);
 
+    /**
+     * The live state is the one place that knows a need exists, so it is the
+     * one place that anchors the clock. Every path in — capture, edit, load,
+     * upsert, agent sync — arrives here, which is why the anchor cannot live
+     * on the write paths alone.
+     */
+    useEffect(() => {
+        notes.forEach(reportExpressedNeed);
+    }, [notes, reportExpressedNeed]);
+
     const noteFilter = useMemo(() => new NoteFilter(settings.ontology || []), [settings.ontology]);
 
     // Consolidated persistence logic
@@ -105,10 +116,9 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
 
         setNotes((prev) => [newNote, ...prev]);
         persistence.persistAdd(newNote);
-        reportExpressedNeed(newNote);
 
         return newNote;
-    }, [setNotes, settings.ontology, persistence, reportExpressedNeed]);
+    }, [setNotes, settings.ontology, persistence]);
 
 
     const updateNote = useCallback((updatedNote: Note) => {
@@ -120,8 +130,7 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
             prev.map((n) => (n.id === noteWithTimestamp.id ? noteWithTimestamp : n))
         );
         persistence.persistUpdate(noteWithTimestamp);
-        reportExpressedNeed(noteWithTimestamp);
-    }, [setNotes, settings.ontology, persistence, reportExpressedNeed]);
+    }, [setNotes, settings.ontology, persistence]);
 
     const deleteNote = useCallback((id: string) => {
         setNotes((prev) => {
