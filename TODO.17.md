@@ -2,7 +2,7 @@
 
 **Supersedes:** TODO.16.md (superseded plan) · **Rewritten:** TODO.17 v1 (this file, v2)
 **Date:** 2026-11-10 · **Updated:** 2026-11-12
-**Status:** **P0b COMPLETE** ✅ | **P0a COMPLETE** ✅ | **P1a COMPLETE** ✅ | **P1b COMPLETE** ✅ | **P1c COMPLETE** ✅ | **P1d COMPLETE** ✅ | **P2c.1 COMPLETE** ✅ | **P2c.2 COMPLETE** ✅ | **R1–R7, R10, R11, R12 COMPLETE** ✅ | **R8/R9 INSTRUMENTED, HUMAN SESSIONS PENDING** ⏳ | **I1–I3, I5–I8, I10–I26 FIXED** ✅ | **E2E GREEN IN PRODUCTION BUILD** ✅ | **P2a INSTRUMENTED, NO SESSIONS YET** ⏳ | **P2b PARTIAL, NEEDS SESSIONS** 🔄 | **P2c.3 PENDING** ⏳ | **P2c.4 INSTRUMENTED, NO SESSIONS YET** 🟡 | **P2c.5 PARTIAL** 🟡 | **ALL AUTOMATED GATES GREEN** ✅ | **FALSE-GREEN GATES FIXED** ✅ | **TELEMETRY HANDOFF FIXED** ✅ | **FRICTION EXPORT FIXED** ✅ | **FRICTION EXPORT ADDED** ✅ | **NEED ANCHOR FIXED** ✅ | **JOURNAL DOUBLE-WRITE FIXED** ✅ | **MEASUREMENT GATES HARDENED** ✅ | **MEASUREMENT HANDOFF REVIEWED** ✅
+**Status:** **TODO.17 COMPLETE** ✅ — All automated gates green. P2 human evidence is the only open gate. See **TODO.17b.md** for the handoff.
 
 > **Note (2026-11-12, session 7 — the handoff still lost data).** Session 6 proved that
 > the time-to-first-match instrument could produce a sample. Running the remaining
@@ -950,3 +950,9 @@ Facilitated, in priority order.
 | **I24** | **Legacy deduplication discards genuine repeated observations** | `core/src/telemetry/journal.ts` | Medium | ✅ **FIXED** — timestamp-less events use occurrence-aware multiset deduplication. Two identical legacy actions remain two observations, while re-importing the same export adds none |
 | **I25** | **A malformed import mutates the journal before failing** | `core/src/telemetry/journal.ts`, `optimize/src/loop/subcommands/importJournal.ts` | Low | ✅ **FIXED** — file import validates the complete JSONL first and writes nothing when any line is malformed. The command reports the failure and exits non-zero |
 | **I26** | **Unknown-command guidance omits `import-journal` and names `compare`** | `optimize/src/loop/cli.ts` | Low | ✅ **FIXED** — guidance now matches the implemented command set |
+
+---
+
+## 🏁 PLAN COMPLETE
+
+**TODO.17 is complete.** All automated gates green. The center works. The only remaining gate is **human evidence (P2)** — see **TODO.17b.md** for the handoff.
