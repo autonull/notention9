@@ -61,24 +61,6 @@ describe('Enhanced Ontology Tests', () => {
       });
     });
 
-    test('should retrieve widget metadata for aliases', () => {
-      const firstNameMetadata = ontologyService.getWidgetMetadata('firstName');
-      expect(firstNameMetadata).toEqual({
-        type: 'text-input',
-        icon: 'user',
-        options: undefined,
-        operators: ['is', 'contains', 'is not']
-      });
-
-      const lastNameMetadata = ontologyService.getWidgetMetadata('lastName');
-      expect(lastNameMetadata).toEqual({
-        type: 'text-input',
-        icon: 'user',
-        options: undefined,
-        operators: ['is', 'contains', 'is not']
-      });
-    });
-
     test('should retrieve widget metadata for enum attributes', () => {
       const statusMetadata = ontologyService.getWidgetMetadata('status');
       expect(statusMetadata?.type).toBe('dropdown');
@@ -93,8 +75,6 @@ describe('Enhanced Ontology Tests', () => {
       expect(stringAttrs.size).toBeGreaterThan(0);
       expect(stringAttrs.has('name')).toBe(true);
       expect(stringAttrs.has('email')).toBe(true);
-      expect(stringAttrs.has('firstName')).toBe(true);
-      expect(stringAttrs.has('lastName')).toBe(true);
     });
 
     test('should get all number attributes', () => {
@@ -119,8 +99,6 @@ describe('Enhanced Ontology Tests', () => {
       
       // Verify that some expected attributes have the 'contains' operator
       const containsNames = attrs.map(a => a.key);
-      expect(containsNames).toContain('firstName');
-      expect(containsNames).toContain('lastName');
       expect(containsNames).toContain('email');
       expect(containsNames).toContain('role');
     });
@@ -206,9 +184,8 @@ describe('Enhanced Ontology Tests', () => {
       // Check for some expected attributes
       expect(personNode?.attributes?.['name']).toBeDefined();
       expect(personNode?.attributes?.['email']).toBeDefined();
-      // firstName and lastName are now aliases of name
-      expect(personNode?.attributes?.['name']?.aliases).toContain('firstName');
-      expect(personNode?.attributes?.['name']?.aliases).toContain('lastName');
+      // firstName and lastName are now consolidated into name (no aliases)
+      expect(personNode?.attributes?.['name']).toBeDefined();
     });
 
     test('should retrieve product node with attributes', () => {
@@ -220,7 +197,6 @@ describe('Enhanced Ontology Tests', () => {
       
       // Check for some expected attributes
       expect(productNode?.attributes?.['title']).toBeDefined();
-      expect(productNode?.attributes?.['title']?.aliases).toContain('name');
       expect(productNode?.attributes?.['price']).toBeDefined();
       expect(productNode?.attributes?.['condition']).toBeDefined();
       expect(productNode?.attributes?.['category']).toBeDefined();
@@ -236,7 +212,6 @@ describe('Enhanced Ontology Tests', () => {
     test('should confirm attribute exists', () => {
       expect(ontologyService.hasAttribute('name')).toBe(true);
       expect(ontologyService.hasAttribute('email')).toBe(true);
-      expect(ontologyService.hasAttribute('firstName')).toBe(true);
       expect(ontologyService.hasAttribute('price')).toBe(true);
     });
 

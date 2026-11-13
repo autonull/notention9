@@ -16,8 +16,7 @@ export class UsageRecorder {
             const { key, values } = prop;
             const canonical = getCanonicalKey(key, this.ontology);
             const isKnown = this.ontology.some(node =>
-                node.attributes && (node.attributes[key] ||
-                    Object.values(node.attributes).some(attr => attr.aliases?.includes(key)))
+                node.attributes && node.attributes[key]
             );
 
             if (isKnown) {

@@ -12,22 +12,20 @@ describe('Property Parsing Normalization', () => {
                     type: 'geo',
                     description: '',
                     icon: '',
-                    operators: { real: ['is'], imaginary: ['near'] },
-                    aliases: ['loc', 'geo', 'place']
+                    operators: { real: ['is'], imaginary: ['near'] }
                 },
                 price: {
                     type: 'number',
                     description: '',
                     icon: '',
-                    operators: { real: ['is'], imaginary: ['<', '>'] },
-                    aliases: ['cost', 'budget', '$']
+                    operators: { real: ['is'], imaginary: ['<', '>'] }
                 }
             }
         }
     ];
 
-    it('should normalize aliases to canonical keys when ontology is provided', () => {
-        const text = '[loc:NYC] [cost:100]';
+    it('should use canonical keys when ontology is provided', () => {
+        const text = '[location:NYC] [price:100]';
         const properties = parseProperties(text, mockOntology);
 
         expect(properties).toHaveLength(2);

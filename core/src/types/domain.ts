@@ -108,7 +108,6 @@ export interface OntologyAttribute {
   };
   options?: string[];
   referenceType?: string;
-  aliases?: string[];
   numericOptions?: {unit?: string; precision?: number; min?: number; max?: number};
   affinityOptions?: {bipolar?: boolean; targetType?: 'tag' | 'ontology_class' | 'peer'};
   arity?: {min: number; max: number};

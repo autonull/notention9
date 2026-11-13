@@ -6,7 +6,6 @@ import { Filter } from 'nostr-tools';
 import { hashValue } from './privacy.js';
 import { Logger } from '../../utils/logging.js';
 import { ScoredMatch, matchRemote } from '../../matching/bidirectional.js';
-import { getAliases } from '../../ontology/ontologyCore.js';
 
 export class NetworkDiscoveryService {
     private logger = Logger.getInstance();
@@ -50,10 +49,8 @@ export class NetworkDiscoveryService {
         if (localNote.properties.length === 0) return null;
 
         // Query for notes that have relevant properties (indexed via 't' tag with 'prop:' prefix)
-        // Expand property keys to include aliases
         const propertyKeys = localNote.properties.flatMap(p => {
-             const aliases = getAliases(p.key, this.ontology);
-             return aliases.map(key => `prop:${key}`);
+             return [`prop:${p.key}`];
         });
 
         // Deduplicate keys

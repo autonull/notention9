@@ -43,11 +43,11 @@ export const findNode = (tree: OntologyNode[], nodeId: string): OntologyNode | n
 export const findNodeWithAttribute = (nodes: OntologyNode[], key: string): OntologyNode | null =>
   traverseTree(nodes, n => {
     if (!n.attributes) return false;
-    return !!(n.attributes[key] || Object.values(n.attributes).some(attr => attr.aliases?.includes(key)));
+    return !!n.attributes[key];
   });
 
 /**
- * Builds attribute index from ontology nodes (includes aliases)
+ * Builds attribute index from ontology nodes (no aliases - canonical only)
  * Pure static function for testability and reusability
  */
 export function buildAttributeIndex(
@@ -57,11 +57,6 @@ export function buildAttributeIndex(
     nodes.forEach(node => {
         Object.entries(node.attributes ?? {}).forEach(([key, val]) => {
             if (!index.has(key)) index.set(key, val);
-            if (val.aliases) {
-                for (const alias of val.aliases) {
-                    if (!index.has(alias)) index.set(alias, val);
-                }
-            }
         });
         node.children && buildAttributeIndex(node.children, index);
     });
@@ -71,10 +66,7 @@ export function buildAttributeIndex(
 export const findAttributeDef = (key: string, nodes: OntologyNode[]): OntologyAttribute | undefined => {
   const node = findNodeWithAttribute(nodes, key);
   if (!node?.attributes) return undefined;
-  const attr = node.attributes[key];
-  if (attr) return attr;
-  const attrs = Object.values(node.attributes) as OntologyAttribute[];
-  return attrs.find(a => a.aliases?.includes(key));
+  return node.attributes[key];
 };
 
 export const getCanonicalKey = (key: string, nodes: OntologyNode[]): string => {
@@ -83,14 +75,7 @@ export const getCanonicalKey = (key: string, nodes: OntologyNode[]): string => {
     return resolveSimpleAlias(key);
   }
   if (node.attributes[key]) return key;
-  const found = Object.entries(node.attributes).find(([, attr]) => attr.aliases?.includes(key));
-  return found?.[0] ?? key;
-};
-
-export const getAliases = (key: string, nodes: OntologyNode[]): string[] => {
-  const canonical = getCanonicalKey(key, nodes);
-  const attr = findAttributeDef(canonical, nodes);
-  return Array.from(new Set([key, canonical, ...(attr?.aliases ?? [])]));
+  return key;
 };
 
 export const addNode = (tree: OntologyNode[], parentId: string | null, newNode: OntologyNode): OntologyNode[] => {
@@ -140,17 +125,6 @@ export const renameAttribute = (tree: OntologyNode[], nodeId: string, oldKey: st
     if (node.attributes[newKey]) throw new Error(`Attribute '${newKey}' already exists.`);
     node.attributes[newKey] = node.attributes[oldKey];
     delete node.attributes[oldKey];
-  }
-  return newTree;
-};
-
-export const addAliasToAttribute = (tree: OntologyNode[], nodeId: string, attributeKey: string, alias: string): OntologyNode[] => {
-  const newTree = deepClone(tree);
-  const node = findNode(newTree, nodeId);
-  if (node?.attributes?.[attributeKey]) {
-    const aliases = new Set(node.attributes[attributeKey].aliases ?? []);
-    aliases.add(alias);
-    node.attributes[attributeKey].aliases = Array.from(aliases);
   }
   return newTree;
 };
