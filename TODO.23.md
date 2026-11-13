@@ -646,6 +646,7 @@ These are **checkpoints** where all fronts are in a coherent, demonstrable state
 | 2026-11-13 | Mandatory post-demo fix loop (D6) + re-record (D7) | Demonstration must change the system, not just display it |
 | 2026-11-13 | Operator drift patches from Week 3 quality cases applied (skills, agenda, resourceType, quantity, deadline) | Eliminate "Extra in observed" drift; align ontology with real extraction patterns; 990+ tests still pass |
 | 2026-11-13 | Removed ontology alias system (canonical unified naming) | Aliases added complexity without benefit; canonical keys simplify extraction/matching/UI; 990+ tests pass |
+| 2026-11-13 | Type-inherited operator vocabulary (RDFS-style): types own operator sets; attributes inherit; overrides only narrow | Eliminates ~200 redundant per-attribute operator declarations; single source of truth per type; matches RDF/OWL datatype facet pattern |
 
 ---
 
@@ -736,8 +737,14 @@ pnpm probe --headless                ✅ Ran (0% comprehension without human par
    - Removed getAliases, addAliasToAttribute from ontology core
    - Updated NostrNetworkProvider, UI hooks, components
    - All tests pass, optimize journey passes
-3. **Front C**: Run taxonomy coverage sweep for remaining Fiske/Ostrom cells; add scenarios for mentorship, open-source-contrib, commons-governance ⏳
-4. **Front A**: Run full test suite + verify to confirm no regressions from Week 3/4 changes ✅ (990+ tests pass)
-5. **Front B**: Prepare automated comprehension probe improvements (add semantic markers for probe tool) ⏳
-6. **Front D**: Document Simulator Dashboard v2 video recording procedure (deterministic headless capture via Playwright/Chrome DevTools Protocol) ⏳
-7. **All Fronts**: Schedule human comprehension probe session + video recording session for Week 4 execution ⏳
+3. **Front C**: **Type-inherited operator vocabulary (RDFS-style) ✅**
+   - Created `core/src/ontology/operators.ts` with `DEFAULT_OPERATORS_BY_TYPE` and `getEffectiveOperators`
+   - `OntologyAttribute.operators` now optional - inherits from `type` defaults (string/number/date/geo/enum/boolean/quantity)
+   - Removed ~200 redundant per-attribute `operators` declarations (they repeated type defaults)
+   - All consumers routed through `getEffectiveOperators` / `getAllOperators`
+   - Zero alias code remains; zero redundant operator declarations
+4. **Front C**: Run taxonomy coverage sweep for remaining Fiske/Ostrom cells; add scenarios for mentorship, open-source-contrib, commons-governance ⏳
+5. **Front A**: Run full test suite + verify to confirm no regressions ✅ (990+ tests pass)
+6. **Front B**: Prepare automated comprehension probe improvements (add semantic markers for probe tool) ⏳
+7. **Front D**: Document Simulator Dashboard v2 video recording procedure (deterministic headless capture via Playwright/Chrome DevTools Protocol) ⏳
+8. **All Fronts**: Schedule human comprehension probe session + video recording session for Week 4 execution ⏳
