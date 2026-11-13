@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {useSettings} from '../../hooks/useSettingsContext';
 import {agentService} from '../../services/AgentService';
 import {Toggle} from '../ui/Primitives';
-import {SparklesIcon, CpuChipIcon, InfoIcon, ArrowRightIcon} from '../ui/icons';
+import {SparklesIcon, CpuChipIcon, InformationCircleIcon, ArrowRightIcon} from '../ui/icons';
 import {Button} from '../ui/Button';
 import {cn} from '../../utils/ui';
 
@@ -89,7 +89,7 @@ export function AutomationTab() {
                         <div className="space-y-4 pt-4 border-t border-gray-700 animate-fade-in">
                             <div className="p-3 bg-gray-800 rounded-lg border border-gray-700">
                                 <h4 className="font-medium text-white mb-2 flex items-center gap-2">
-                                    <InfoIcon className="w-4 h-4 text-blue-400"/>
+                                    <InformationCircleIcon className="w-4 h-4 text-blue-400"/>
                                     Agent Connection
                                 </h4>
                                 <p className="text-sm text-gray-400 mb-3">
