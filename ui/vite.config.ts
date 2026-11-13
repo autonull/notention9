@@ -86,7 +86,8 @@ const namePolyfillDevPlugin = {
     transform(code, id) {
         // Only inject in development mode
         // Apply to ALL modules (including node_modules) that might use __name
-        if (!id.endsWith('.css') && !code.includes('var __name = function __name')) {
+        // Skip CSS and JSON files - they should not be transformed
+        if (!id.endsWith('.css') && !id.endsWith('.json') && !code.includes('var __name = function __name')) {
             // Check if this module calls __name (indicating it needs the polyfill)
             const callsName = code.includes('__name(');
             const hasDefineProperty = code.includes('Object.defineProperty(fn, \'name\')');

@@ -17,7 +17,8 @@ function I18nInitializer() {
 }
 
 export function I18nProvider({ children }: I18nProviderProps) {
-    return createElement(I18nextProvider as React.ComponentType<{ i18n: typeof i18n; children: React.ReactNode }>, { i18n, children },
-        createElement(I18nInitializer)
+    return createElement(I18nextProvider as React.ComponentType<{ i18n: typeof i18n; children: React.ReactNode }>, { i18n },
+        createElement(I18nInitializer),
+        children
     );
 }
