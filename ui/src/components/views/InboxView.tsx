@@ -121,9 +121,9 @@ export function InboxView({sortedNotes}: InboxViewProps) {
                 </header>
 
                 {/* Notes List */}
-                <section className="animate-fade-in" aria-label="Notes">
+                <section className="animate-fade-in" aria-label="Notes" data-testid="notes-list">
                     {filteredNotes.length > 0 ? (
-                        <div className="space-y-2" role="list">
+                        <div className="space-y-2" role="list" data-testid="notes-list-items">
                             {filteredNotes.map((note) => (
                                 <NoteListItem
                                     key={note.id}

@@ -1,6 +1,6 @@
 # TODO.23 — The Coordination Paradigm: Development, Usability, Ontology Evolution & Demonstration
 
-**Status:** Active — Week 3 automated items complete; Week 4 operator drift fixes complete; alias system removed. Human-dependent items (comprehension probe, video recording) blocked pending participants/recording setup. Taxonomy coverage sweep next.
+**Status:** Active — Week 4 automated items complete: taxonomy coverage sweep done (9 cells covered), commons-governance scenario added, semantic markers for comprehension probe added, Simulator Dashboard v2 video recording procedure documented. Human-dependent items (comprehension probe, video recording) blocked pending participants.
 **Premise:** The implementation baseline exists. We are **not done** — and "done" is the wrong frame. This phase establishes a *perpetual improvement cycle* across four interlocking fronts.
 
 **North Star:** Make **"notes as coordination primitives"** as intuitive and universal as email — so any person, group, or community can coordinate needs, offers, and commitments with verifiable trust, offline, without servers, without gatekeepers.
@@ -742,7 +742,7 @@ pnpm probe --headless                ✅ Ran (0% comprehension without human par
 5. **Front D**: Record semantic-capture and bidirectional-match videos using Simulator Dashboard v2 ⏳ **BLOCKED — requires video recording setup**
 6. **Front A**: Run patch generalization test (E14) on ontology changes; verify no regression on 22 match cases + holdout + 200-run simulator distribution ✅
 
-**Next Probe Cycle (Week 4) — IN PROGRESS (2026-11-13):**
+**Next Probe Cycle (Week 4) — COMPLETED 2026-11-13:**
 1. **Front C**: Address new operator drift from Week 3 quality cases → ontology patches ✅
    - Added `contains` to real operators for skills, agenda, resourceType
    - Added `between` to real operators for quantity
@@ -759,8 +759,21 @@ pnpm probe --headless                ✅ Ran (0% comprehension without human par
    - Removed ~200 redundant per-attribute `operators` declarations (they repeated type defaults)
    - All consumers routed through `getEffectiveOperators` / `getAllOperators`
    - Zero alias code remains; zero redundant operator declarations
-4. **Front C**: Run taxonomy coverage sweep for remaining Fiske/Ostrom cells; add scenarios for mentorship, open-source-contrib, commons-governance ⏳
+4. **Front C**: Run taxonomy coverage sweep for remaining Fiske/Ostrom cells; add scenarios for mentorship, open-source-contrib, commons-governance ✅
+   - Mentorship: already existed as `mentorship-network` scenario with baseline
+   - Open-source-contrib: already existed as `open-source-contrib` scenario with baseline
+   - Commons-governance: added new `commons-governance` scenario in domainScenarios.ts with Ostrom principles (boundaries, monitoring, graduated-sanctions, conflict-resolution, nested-enterprises)
+   - Added baseline for commons-governance in measurement suite
+   - Updated taxonomy.json: cellsCovered 1 → 9, documented 9 covered cells and expected gaps
 5. **Front A**: Run full test suite + verify to confirm no regressions ✅ (990+ tests pass)
-6. **Front B**: Prepare automated comprehension probe improvements (add semantic markers for probe tool) ⏳
-7. **Front D**: Document Simulator Dashboard v2 video recording procedure (deterministic headless capture via Playwright/Chrome DevTools Protocol) ⏳
-8. **All Fronts**: Schedule human comprehension probe session + video recording session for Week 4 execution ⏳
+6. **Front B**: Prepare automated comprehension probe improvements (add semantic markers for probe tool) ✅
+   - Added `data-testid="notes-list"` and `data-testid="notes-list-items"` to InboxView notes section
+   - Added `data-testid="editor-content"` to EditorContent
+   - Added `data-testid="match-item"` and `data-testid="match-respond-button"` to MatchItem
+   - Added `data-testid="match-replies"` to MatchReplies
+   - Added `onMatchRespond` handler to create response notes with intent: response
+   - Probe can now detect: primary CTA, notes list, editor, match items, respond action
+7. **Front D**: Document Simulator Dashboard v2 video recording procedure (deterministic headless capture via Playwright/Chrome DevTools Protocol) ✅
+   - Created `doc/simulator-dashboard-video-recording.md` with full procedure
+   - Covers: Playwright config, CDP screencast, deterministic seeding, video specs, post-processing, CI integration
+8. **All Fronts**: Schedule human comprehension probe session + video recording session for Week 4 execution ⏳ **BLOCKED — requires human participants**

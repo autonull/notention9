@@ -1,6 +1,6 @@
 {
   "$schema": "./schema.json#/definitions/taxonomy",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Notention interaction taxonomy — structure vs skin axes for scenario classification and coverage sampling",
   "axes": {
     "socialForm": {
@@ -147,22 +147,26 @@
     "tribute"
   ],
   "coverage": {
-    "cellsCovered": 1,
+    "cellsCovered": 9,
     "totalPossibleCells": 120960,
-    "note": "All current scenarios occupy one cell: N:M topology · market exchange · economic stakes · one-shot temporality · shared heterogeneity"
+    "note": "Covered cells: market/N:M/goods/economic/one-shot/shared (freelance, hiring, gig); equality/N:M/labour/economic/recurring/shared (project-collab); equality/1:N/knowledge/economic/recurring/shared (mentorship); communal/N:M/knowledge/economic/open-ended/shared (learning-community); authority/1:N/capital/economic/deadline/shared (cofounder, investor); market/N:M/goods/legal/codified/one-shot/shared (legal-contract); communal/mesh/care/safety/ephemeral/shared (crisis-response); communal/coalition/care/existential/generational/shared (generational-stewardship, kinship-care); communal/coalition/goods/economic/recurring/shared (commons-governance, resource-distribution)"
   },
   "audit": {
-    "date": "2026-10-29",
+    "date": "2026-11-13",
     "currentCell": {
-      "socialForm": "market",
-      "topology": "N:M",
+      "socialForm": "communal",
+      "topology": "coalition",
       "exchange": "goods",
       "stakes": "economic",
-      "temporality": "one-shot",
+      "temporality": "recurring",
       "heterogeneity": "shared"
     },
     "expectedGaps": [
-      "care/kinship/obligation tasks will expose priced-dyadic-exchange assumptions"
+      "authority/hierarchy topologies with legal stakes (government services, regulated professions)",
+      "equality/chain topologies with commitment exchange (supply chains, referral networks)",
+      "market/mesh topologies with identity exchange (decentralized identity, reputation markets)",
+      "cross-domain/multilingual heterogeneity cells (refugee coordination, international aid)",
+      "contested heterogeneity cells (labor disputes, contested resources)"
     ]
   }
 }

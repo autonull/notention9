@@ -6,13 +6,14 @@ import {SparklesIcon} from '../ui/icons';
 interface MatchRepliesProps {
     matches: ScoredMatch[];
     onMatchClick?: (match: ScoredMatch) => void;
+    onMatchRespond?: (match: ScoredMatch) => void;
 }
 
-export function MatchReplies({matches, onMatchClick}: MatchRepliesProps) {
+export function MatchReplies({matches, onMatchClick, onMatchRespond}: MatchRepliesProps) {
     if (!matches || matches.length === 0) return null;
 
     return (
-        <div className="mt-8 border-t border-gray-800 pt-6">
+        <div className="mt-8 border-t border-gray-800 pt-6" data-testid="match-replies">
             <div className="flex items-center gap-2 mb-4 text-gray-400">
                 <SparklesIcon className="w-4 h-4 text-blue-400"/>
                 <h3 className="text-sm font-semibold uppercase tracking-wider">Semantic Matches</h3>
@@ -29,8 +30,9 @@ export function MatchReplies({matches, onMatchClick}: MatchRepliesProps) {
 
                         <MatchItem
                             match={match}
-                            isLocal={true} // For now, treating as local view
+                            isLocal={true}
                             onClick={() => onMatchClick && onMatchClick(match)}
+                            onRespond={() => onMatchRespond && onMatchRespond(match)}
                         />
                     </div>
                 ))}

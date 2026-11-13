@@ -178,6 +178,14 @@ const SCENARIO_BASELINES: Record<string, ScenarioBaseline> = {
         maxUnmatchedRate: 0.0,
         minMatchesPerMinute: 108.0,
     },
+    'commons-governance': {
+        meanMatches: 8.0,
+        stdDevMatches: 2.0,
+        meanTimeToFirstMatchMs: 4000,
+        stdDevTimeToFirstMatchMs: 800,
+        maxUnmatchedRate: 0.25,
+        minMatchesPerMinute: 1.5,
+    },
 };
 
 interface MeasurementRun {

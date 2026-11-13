@@ -12,6 +12,7 @@ import type {Note, OntologyNode, Template, ScoredMatch} from '@notention/core';
 import type {TiptapEditorRef} from './TiptapEditor';
 import {metaphorMapper} from '@notention/core';
 import {useMatches} from '../../hooks/useMatches';
+import {useNotes} from '../../hooks/useNotes';
 
 interface EditorContentProps {
     editorRef: React.RefObject<TiptapEditorRef>;
@@ -54,9 +55,24 @@ export function EditorContent({
 }: EditorContentProps) {
     const activeMetaphor = metaphorMapper.mapToMetaphor(dirtyNote);
     const matches = useMatches(dirtyNote);
+    const {addNote} = useNotes();
+
+    const handleMatchRespond = (match: ScoredMatch) => {
+        // Create a response note
+        const responseNote = addNote({
+            title: `Re: ${match.note.title}`,
+            content: '',
+            properties: [
+                {key: 'intent', operator: 'is', values: ['response']},
+                {key: 'inResponseTo', operator: 'is', values: [match.note.id]},
+            ],
+            tags: ['response'],
+        });
+        onMatchClick(responseNote);
+    };
 
     return (
-        <div className="flex-1 flex flex-col relative transition-all duration-300">
+        <div className="flex-1 flex flex-col relative transition-all duration-300" data-testid="editor-content">
             <HybridEditor
                 ref={editorRef}
                 key={dirtyNote.id}
@@ -94,7 +110,7 @@ export function EditorContent({
             )}
 
             <div className="px-8 pb-8 max-w-4xl mx-auto w-full">
-                <MatchReplies matches={matches} onMatchClick={onMatchClick} />
+                <MatchReplies matches={matches} onMatchClick={onMatchClick} onMatchRespond={handleMatchRespond} />
             </div>
         </div>
     );

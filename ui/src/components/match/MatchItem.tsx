@@ -10,7 +10,8 @@ import {
     CheckCircleIcon,
     ExclamationTriangleIcon,
     XMarkIcon,
-    QuestionMarkCircleIcon
+    QuestionMarkCircleIcon,
+    ArrowRightIcon
 } from '../ui/icons';
 import {Button} from '../ui/Button';
 
@@ -21,6 +22,7 @@ interface MatchItemProps {
     onClick?: () => void;
     onConnect?: () => void;
     onChat?: () => void;
+    onRespond?: () => void;
 }
 
 export function MatchItem({
@@ -29,7 +31,8 @@ export function MatchItem({
     isContact = false,
     onClick,
     onConnect,
-    onChat
+    onChat,
+    onRespond
 }: MatchItemProps) {
     const { note, result, direction } = match;
     const score = Math.round(result.score * 100);
@@ -48,6 +51,7 @@ export function MatchItem({
                 hover:border-gray-700 hover:bg-gray-800/50 transition-all duration-200
                 ${isLocal ? 'cursor-pointer' : ''}
             `}
+            data-testid="match-item"
         >
             {/* Header: Score, Direction, Author */}
             <div className="flex justify-between items-start">
@@ -117,32 +121,41 @@ export function MatchItem({
                 ))}
             </div>
 
-            {/* Actions (Network Only) */}
-            {!isLocal && note.author && (
-                <div className="mt-2 pt-2 border-t border-gray-800 flex gap-2">
-                    {isContact ? (
-                        <Button
-                            size="xs"
-                            variant="secondary"
-                            onClick={(e) => { e.stopPropagation(); onChat?.(); }}
-                            icon={ChatIcon}
-                            className="flex-1"
-                        >
-                            Chat
-                        </Button>
-                    ) : (
-                        <Button
-                            size="xs"
-                            variant="primary"
-                            onClick={(e) => { e.stopPropagation(); onConnect?.(); }}
-                            icon={UserPlusIcon}
-                            className="flex-1"
-                        >
-                            Connect
-                        </Button>
-                    )}
-                </div>
-            )}
+            {/* Actions */}
+            <div className="mt-2 pt-2 border-t border-gray-800 flex gap-2">
+                {isLocal ? (
+                    <Button
+                        size="xs"
+                        variant="success"
+                        onClick={(e) => { e.stopPropagation(); onRespond?.(); }}
+                        icon={ArrowRightIcon}
+                        className="flex-1"
+                        data-testid="match-respond-button"
+                    >
+                        Respond
+                    </Button>
+                ) : isContact ? (
+                    <Button
+                        size="xs"
+                        variant="secondary"
+                        onClick={(e) => { e.stopPropagation(); onChat?.(); }}
+                        icon={ChatIcon}
+                        className="flex-1"
+                    >
+                        Chat
+                    </Button>
+                ) : (
+                    <Button
+                        size="xs"
+                        variant="primary"
+                        onClick={(e) => { e.stopPropagation(); onConnect?.(); }}
+                        icon={UserPlusIcon}
+                        className="flex-1"
+                    >
+                        Connect
+                    </Button>
+                )}
+            </div>
         </div>
     );
 }

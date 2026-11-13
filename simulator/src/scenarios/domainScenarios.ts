@@ -790,6 +790,75 @@ export const DOMAIN_SCENARIOS: Record<string, Scenario> = {
         requires: ['relay', 'ui'],
         difficulty: 'hard'
     },
+
+    // Taxonomy gap: Commons governance — Ostrom principles, communal sharing, collective choice
+    'commons-governance': {
+        name: 'Commons Governance',
+        description: 'Community governs shared resource (water, pasture, fishery) using Ostrom principles. Tests matching on boundaries, monitoring, graduated sanctions, conflict resolution, nested enterprises.',
+        agents: [
+            {
+                role: 'CommonsSteward',
+                count: 3,
+                properties: [
+                    prop('role', 'is', 'steward'),
+                    prop('resource', 'contains', 'water', 'pasture', 'fishery', 'forest'),
+                    prop('boundaries', 'is', 'defined'),
+                    prop('monitoring', 'is', 'active'),
+                    prop('governance', 'contains', 'collective-choice', 'graduated-sanctions', 'conflict-resolution', 'nested-enterprises'),
+                ],
+                interests: [
+                    prop('user', 'contains', 'harvester', 'resident'),
+                    prop('compliance', 'is', 'monitored'),
+                    prop('sustainability', 'is', 'tracked'),
+                ],
+                traits: ['responsible', 'transparent', 'template-user'],
+            },
+            {
+                role: 'ResourceUser',
+                count: 8,
+                properties: [
+                    prop('role', 'is', 'resource-user'),
+                    prop('useType', 'contains', 'irrigation', 'grazing', 'fishing', 'foraging'),
+                    prop('quantity', 'is', 'moderate'),
+                    prop('compliance', 'is', 'willing'),
+                    prop('contribution', 'contains', 'labor', 'monitoring', 'maintenance'),
+                ],
+                interests: [
+                    prop('resource', 'is', 'available'),
+                    prop('access', 'is', 'fair'),
+                    prop('rules', 'is', 'participatory'),
+                    prop('dispute', 'is', 'resolvable'),
+                ],
+                traits: ['cooperative', 'vested', 'template-user'],
+            },
+            {
+                role: 'ExternalAuthority',
+                count: 1,
+                properties: [
+                    prop('role', 'is', 'external-authority'),
+                    prop('recognition', 'is', 'granted'),
+                    prop('support', 'contains', 'legal-backing', 'technical-assistance', 'funding'),
+                ],
+                interests: [
+                    prop('commons', 'is', 'self-governed'),
+                    prop('nested-enterprise', 'is', 'linked'),
+                ],
+                traits: ['supportive', 'hands-off', 'template-user'],
+            },
+        ],
+        events: [
+            { at: 2, action: 'publish_manifest', actorRole: 'CommonsSteward', cameraFocus: 'CommonsSteward 1' },
+            { at: 4, action: 'publish_offer', actorRole: 'ResourceUser', cameraFocus: 'ResourceUser 1' },
+            { at: 5, action: 'publish_offer', actorRole: 'ResourceUser', cameraFocus: 'ResourceUser 2' },
+            { at: 6, action: 'publish_offer', actorRole: 'ResourceUser', cameraFocus: 'ResourceUser 3' },
+            { at: 7, action: 'publish_offer', actorRole: 'ExternalAuthority', cameraFocus: 'ExternalAuthority 1' },
+            { at: 9, action: 'camera', actorRole: 'system', cameraFocus: 'grid' },
+        ],
+        duration: 15,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'hard'
+    },
 };
 
 export function getScenarioNames(): string[] {
