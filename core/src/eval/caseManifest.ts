@@ -21,7 +21,22 @@ import type {
 } from '../schemas/caseTypes.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const PROJECT_ROOT = join(__dirname, '..', '..', '..');
+
+// Robust workspace root detection: walk up from __dirname to find pnpm-workspace.yaml
+function findWorkspaceRoot(startDir: string): string {
+    let current = startDir;
+    while (current !== '/') {
+        try {
+            statSync(join(current, 'pnpm-workspace.yaml'));
+            return current;
+        } catch {
+            current = join(current, '..');
+        }
+    }
+    // Fallback: assume core package structure
+    return join(__dirname, '..', '..', '..');
+}
+const PROJECT_ROOT = findWorkspaceRoot(__dirname);
 const CASES_DIR = join(PROJECT_ROOT, 'eval', 'cases');
 
 // Re-export types for backward compatibility

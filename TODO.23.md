@@ -684,6 +684,12 @@ pnpm probe --headless                ✅ Ran (0% comprehension without human par
 # 2. Fixed namePolyfillDevPlugin to skip .json files (ui/vite.config.ts)
 # 3. Rebuilt UI production build
 # Result: All E2E tests pass, verify passes
+
+# Week 3 Additional Fixes (2026-11-13):
+# 4. Renamed Dashboard → Inbox, added InboxView with notes-first paradigm and progressive disclosure (ui/src/components/views/InboxView.tsx, ui/src/utils/navigation.ts, ui/src/components/ui/icons.tsx, ui/src/components/MainView.tsx, ui/src/components/contexts/ViewNavigationContext.tsx, ui/src/hooks/useUrlRouting.ts)
+# 5. Added baselines for 4 new taxonomy scenarios in measurement suite (simulator/src/scenarios/measurementSuite.test.ts)
+# 6. Fixed workspace root detection for eval cases (core/src/eval/caseManifest.ts)
+# 7. Ran E14 patch generalization test — all patches non-regressive (3/3 accepted)
 ```
 
 **Next Probe Cycle (Week 2) — COMPLETED 2026-11-13:**
@@ -705,10 +711,10 @@ pnpm probe --headless                ✅ Ran (0% comprehension without human par
 5. **Front A**: Implement ontology patches from audit, re-run tests ✅
    - All tests pass (990+), verify passes
 
-**Next Probe Cycle (Week 3):**
-1. **Front B**: Conduct manual comprehension probe with 3-5 human participants on Home screen; verify Inbox paradigm with one primary CTA
-2. **Front B**: Simplify Home screen to Inbox (notes-first) with progressive disclosure; hide advanced panels
-3. **Front C**: Run new taxonomy scenarios through measurement suite; establish baselines for legal-contract, crisis-response, generational-stewardship, kinship-care
-4. **Front C**: Address orphan keys (130 keys in ontology never used in quality cases) — either add test coverage or document as intentional
-5. **Front D**: Record semantic-capture and bidirectional-match videos using Simulator Dashboard v2
-6. **Front A**: Run patch generalization test (E14) on ontology changes; verify no regression on 22 match cases + holdout + 200-run simulator distribution
+**Next Probe Cycle (Week 3) — IN PROGRESS (2026-11-13):**
+1. **Front B**: Conduct manual comprehension probe with 3-5 human participants on Home screen; verify Inbox paradigm with one primary CTA ⏳
+2. **Front B**: Simplify Home screen to Inbox (notes-first) with progressive disclosure; hide advanced panels ✅
+3. **Front C**: Run new taxonomy scenarios through measurement suite; establish baselines for legal-contract, crisis-response, generational-stewardship, kinship-care ✅
+4. **Front C**: Address orphan keys (130 keys in ontology never used in quality cases) — either add test coverage or document as intentional ⏳
+5. **Front D**: Record semantic-capture and bidirectional-match videos using Simulator Dashboard v2 ⏳
+6. **Front A**: Run patch generalization test (E14) on ontology changes; verify no regression on 22 match cases + holdout + 200-run simulator distribution ✅

@@ -19,6 +19,7 @@ import {SettingsView} from './views/SettingsView';
 import {ResponsesView} from './views/ResponsesView';
 import {DashboardView} from './dashboard/DashboardView';
 import {ActionsView} from './views/ActionsView';
+import {InboxView} from './views/InboxView';
 
 interface MainViewProps {
     sortedNotes?: Note[];
@@ -44,6 +45,8 @@ export function MainView({sortedNotes}: MainViewProps) {
 
     const renderView = () => {
         switch (activeView) {
+            case 'inbox':
+                return <InboxView sortedNotes={sortedNotes}/>;
             case 'dashboard':
                 return <DashboardView/>;
             case 'notes':
@@ -70,7 +73,7 @@ export function MainView({sortedNotes}: MainViewProps) {
             case 'settings':
                 return <SettingsView/>;
             default:
-                return <NotesView sortedNotes={sortedNotes}/>;
+                return <InboxView sortedNotes={sortedNotes}/>;
         }
     };
 

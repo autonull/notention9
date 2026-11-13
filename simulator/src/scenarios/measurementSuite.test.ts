@@ -146,6 +146,38 @@ const SCENARIO_BASELINES: Record<string, ScenarioBaseline> = {
         maxUnmatchedRate: 0.35,
         minMatchesPerMinute: 0.7,
     },
+    'legal-contract': {
+        meanMatches: 18.0,
+        stdDevMatches: 12.1,
+        meanTimeToFirstMatchMs: 217,
+        stdDevTimeToFirstMatchMs: 17,
+        maxUnmatchedRate: 0.0,
+        minMatchesPerMinute: 72.0,
+    },
+    'crisis-response': {
+        meanMatches: 4.5,
+        stdDevMatches: 3.0,
+        meanTimeToFirstMatchMs: 85,
+        stdDevTimeToFirstMatchMs: 18,
+        maxUnmatchedRate: 0.82,
+        minMatchesPerMinute: 27.0,
+    },
+    'generational-stewardship': {
+        meanMatches: 0.0,
+        stdDevMatches: 0.0,
+        meanTimeToFirstMatchMs: 0,
+        stdDevTimeToFirstMatchMs: 0,
+        maxUnmatchedRate: 1.0,
+        minMatchesPerMinute: 0.0,
+    },
+    'kinship-care': {
+        meanMatches: 27.0,
+        stdDevMatches: 18.2,
+        meanTimeToFirstMatchMs: 237,
+        stdDevTimeToFirstMatchMs: 84,
+        maxUnmatchedRate: 0.0,
+        minMatchesPerMinute: 108.0,
+    },
 };
 
 interface MeasurementRun {

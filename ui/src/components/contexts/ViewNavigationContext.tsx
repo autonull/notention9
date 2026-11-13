@@ -23,7 +23,7 @@ export function ViewNavigationProvider({ children }: { children: ReactNode }) {
     const [sidebarViewMode, setSidebarViewMode] = useLocalForage<SidebarViewMode>(STORAGE_KEYS.sidebarViewMode, 'list');
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-    const [activeView, setActiveView] = useState<View>('notes');
+    const [activeView, setActiveView] = useState<View>('inbox');
     const [searchTerm, setSearchTerm] = useState('');
 
     return (

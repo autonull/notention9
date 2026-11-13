@@ -26,7 +26,7 @@ export function useUrlRouting({
             if (!hash) {
                 isUpdatingFromUrl.current = false;
                 // Ensure we are in default state
-                setActiveView('notes');
+                setActiveView('inbox');
                 setSelectedNoteId(null);
                 return;
             }
@@ -36,6 +36,7 @@ export function useUrlRouting({
 
             // Validate view
             const validViews: View[] = [
+                'inbox',
                 'notes',
                 'map',
                 'timeline',

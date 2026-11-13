@@ -3,6 +3,7 @@ import type {ViewConfig} from '../types/ui';
 import {
     ChatIcon,
     ClockIcon,
+    InboxIcon,
     LightBulbIcon,
     MapIcon,
     NetworkIcon,
@@ -11,11 +12,10 @@ import {
     ResponseIcon,
     SettingsIcon,
     TrashIcon,
-    HomeIcon,
 } from '../components/ui/icons';
 
 export const NAV_ITEMS: ViewConfig[] = [
-    {id: 'dashboard', label: 'Dashboard', icon: HomeIcon, shortcut: '1', showInMobile: true},
+    {id: 'inbox', label: 'Inbox', icon: InboxIcon, shortcut: '1', showInMobile: true},
     {id: 'notes', label: 'Notes', icon: NoteIcon, shortcut: '2', showInMobile: true},
     {id: 'map', label: 'Map', icon: MapIcon, shortcut: '3', showInMobile: true},
     {id: 'timeline', label: 'Timeline', icon: ClockIcon, shortcut: '4', showInMobile: true},
