@@ -98,6 +98,22 @@ We advance all four fronts **in parallel**. Each feeds the others. No front wait
 
 ---
 
+## 1.x Architectural Principles (Non-Negotiable — Enforced by Review)
+
+These principles were proven by the type-inherited operator refactor and alias removal. They must persist.
+
+| Principle | What It Means | Enforcement |
+|-----------|---------------|-------------|
+| **Type-inherited vocabulary (RDFS/OWL)** | Operators, widgets, validation rules belong to *types* (string, number, date, geo, enum, boolean, quantity). Attributes *inherit*; they only override to *narrow*. | No per-attribute `operators` unless genuinely restricting type default. `OntologyAttribute.operators` is optional. |
+| **Zero aliases** | One canonical key per concept. No `getCanonicalKey`, `resolveSimpleAlias`, `SIMPLE_ALIASES`, alias match types, alias UI. | Grep for "alias" returns zero hits in core/src, agent/src, ui/src (except vitest config). |
+| **DRY at type level** | Redundancy in ontology = bug. If 50 string attributes all declare `contains`, that's a type default violation. | Audit script checks: `grep -c "operators.*contains" core/src/ontology/*.ts` should be near zero. |
+| **Single source of truth** | `DEFAULT_OPERATORS_BY_TYPE` in `core/src/ontology/operators.ts` is the only place operators are defined. | All consumers call `getEffectiveOperators(attr)` / `getAllOperators(attr)`. |
+| **Four-front interlock** | No front advances alone. Demo reveals usability; simulation reveals ontology gaps; usability fixes drive ontology; ontology changes need demo re-record. | Weekly probe cycle touches all four. Decision Log records cross-front impacts. |
+| **Measurement over assertion** | "It works" = statistical baseline from seeded simulator runs + deterministic test suite. | `measurementSuite.ts` baselines; `pnpm test` ≥ 990; `pnpm verify` all lanes. |
+| **Human-dependent items explicit** | Comprehension probes, video recording require humans. They are tracked as ⏳ BLOCKED, not ✅. | TODO status shows ⏳ with reason (participants, recording setup). |
+
+---
+
 ## 2. FRONT A — Functionality Development
 
 **Goal:** Close functional gaps revealed by demos and simulations. Not "add features" — *complete* and *harden* what the 11 capabilities promise.
