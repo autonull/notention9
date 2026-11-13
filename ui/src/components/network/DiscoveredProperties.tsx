@@ -1,19 +1,17 @@
 import React, { useMemo } from 'react';
 import { ScoredMatch, OntologyNode, getCanonicalKey, findAttributeDef } from '@notention/core';
-import { LightBulbIcon, PlusIcon, LinkIcon } from '../ui/icons';
+import { LightBulbIcon, PlusIcon } from '../ui/icons';
 
 interface DiscoveredPropertiesProps {
     networkMatches: ScoredMatch[];
     ontology: OntologyNode[];
     onAdd: (key: string, inferredType: string) => void;
-    onLink: (key: string, inferredType: string) => void;
 }
 
 export function DiscoveredProperties({
     networkMatches,
     ontology,
-    onAdd,
-    onLink
+    onAdd
 }: DiscoveredPropertiesProps) {
     const unknownProperties = useMemo(() => {
         if (networkMatches.length === 0) return [];
@@ -94,13 +92,6 @@ export function DiscoveredProperties({
                                 title={`Define as new ${inferredType} attribute`}
                             >
                                 <PlusIcon className="w-4 h-4" />
-                            </button>
-                            <button
-                                onClick={() => onLink(key, inferredType)}
-                                className="p-1.5 text-purple-400 hover:bg-purple-900/30 rounded transition-colors"
-                                title="Link as alias to existing"
-                            >
-                                <LinkIcon className="w-4 h-4" />
                             </button>
                         </div>
                     </div>

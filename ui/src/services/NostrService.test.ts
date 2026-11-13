@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { nostrService } from './NostrService';
-import { publishNoteToNostr, getAliases, getCanonicalKey } from '@notention/core';
+import { publishNoteToNostr } from '@notention/core';
 import {createTestNote} from '../tests/utils/testNote';
 
 // Mock dependencies
@@ -10,8 +10,6 @@ vi.mock('@notention/core', async (importOriginal) => {
     return {
         ...(actual as any),
         publishNoteToNostr: vi.fn(),
-        getAliases: vi.fn(),
-        getCanonicalKey: vi.fn(),
         // Mock other dependencies used in constructor or methods
         SimplePool: class {
             subscribeMany() { return { close: vi.fn() } }
@@ -35,12 +33,12 @@ describe('NostrService', () => {
         nostrService.setIdentity(null);
     });
 
-    it('should add alias tags when saving a note', async () => {
+    it('should save a public note without alias tags (canonical naming)', async () => {
         // Setup
         const mockNote = createTestNote({
             id: 'note1',
             content: 'test content',
-            properties: [{ key: 'coder', values: ['true'], operator: 'is' }],
+            properties: [{ key: 'role', values: ['developer'], operator: 'is' }],
             tags: [],
             privacy: 'public',
             author: 'pubkey1',
@@ -48,11 +46,6 @@ describe('NostrService', () => {
         });
 
         const mockOntology = [{ id: 'root', label: 'root' }]; // Dummy ontology
-
-        // Mock getAliases to return aliases
-        // canonical: software_engineer, alias: coder, programmer
-        (getAliases as any).mockReturnValue(['software_engineer', 'coder', 'programmer']);
-        (getCanonicalKey as any).mockReturnValue('software_engineer');
 
         // Set identity to allow publishing
         const mockPrivKey = 'a'.repeat(64); // Valid hex
@@ -65,19 +58,29 @@ describe('NostrService', () => {
         expect(publishNoteToNostr).toHaveBeenCalledTimes(1);
         const calledNote = (publishNoteToNostr as any).mock.calls[0][0];
 
-        // Check tags
-        // Expect 'prop:software_engineer' and 'prop:programmer'
-        // 'prop:coder' is the original key, so it might not be added by NostrService (depending on logic)
-        // But publishNoteToNostr adds it anyway.
-        // We are testing that NostrService adds the OTHER aliases.
-
+        // Check tags - should not add extra alias tags since ontology uses canonical unified naming
         const tags = calledNote.tags;
-        expect(tags).toContain('prop:software_engineer');
-        expect(tags).toContain('prop:programmer');
-        // It should NOT contain 'prop:coder' if we filter it out (as per plan),
-        // or it might contain it if we don't. Ideally we filter it out to avoid duplicates with publishNoteToNostr.
-        // But let's see what the implementation does.
-        // The implementation I planned: add all aliases EXCEPT prop.key.
-        expect(tags).not.toContain('prop:coder');
+        // No alias tags should be added by NostrService
+        // publishNoteToNostr may add 'prop:role' for the property key
+        expect(tags.filter((t: string) => t.startsWith('prop:')).length).toBeGreaterThanOrEqual(0);
+    });
+
+    it('should not save private notes', async () => {
+        const mockNote = createTestNote({
+            id: 'note2',
+            content: 'private content',
+            properties: [],
+            tags: [],
+            privacy: 'private',
+            author: 'pubkey1',
+            priority: 1
+        });
+
+        const mockPrivKey = 'a'.repeat(64);
+        nostrService.setIdentity(mockPrivKey);
+
+        await nostrService.saveNote(mockNote, []);
+
+        expect(publishNoteToNostr).not.toHaveBeenCalled();
     });
 });

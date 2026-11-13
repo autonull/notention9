@@ -11,7 +11,7 @@ import { usePropertyReview, type PropertyReviewItem } from './usePropertyReview'
 import { applyTaskSuggestion } from '../utils/suggestionUtils';
 import { agentService } from '../services/AgentService';
 import { nostrService } from '../services/NostrService';
-import { Note, ScoredMatch, OntologyAttribute, addAttribute, addAliasToAttribute, Property, OntologyNode } from '@notention/core';
+import { Note, ScoredMatch, OntologyAttribute, addAttribute, Property, OntologyNode } from '@notention/core';
 import { type UseNoteAnalysisReturn } from './useNoteAnalysis';
 
 interface UseSmartNoteAssistantProps {
@@ -56,10 +56,6 @@ interface UseSmartNoteAssistantReturn {
     // Modal state
     attributeModalOpen: boolean;
     setAttributeModalOpen: (open: boolean) => void;
-    aliasModalOpen: boolean;
-    setAliasModalOpen: (open: boolean) => void;
-    targetKey: string;
-    setTargetKey: (key: string) => void;
     inferredType: string;
     setInferredType: (type: string) => void;
 
@@ -73,7 +69,6 @@ interface UseSmartNoteAssistantReturn {
     handleFindMatches: (e?: React.MouseEvent) => Promise<void>;
     handleApplySuggestion: (suggestion: Suggestion) => void;
     handleConfirmAddAttribute: (key: string, attribute: OntologyAttribute) => void;
-    handleConfirmAddAlias: (nodeId: string, attributeKey: string) => void;
     handleKeyDown: (e: React.KeyboardEvent) => void;
     toggleOpen: (e?: React.MouseEvent) => void;
     handleSelectLocalMatch: (match: ScoredMatch) => void;
@@ -99,8 +94,6 @@ export function useSmartNoteAssistant({
     const propertyReview = usePropertyReview(note.content, properties, settings.ontology || []);
 
     const [attributeModalOpen, setAttributeModalOpen] = useState(false);
-    const [aliasModalOpen, setAliasModalOpen] = useState(false);
-    const [targetKey, setTargetKey] = useState<string>('');
     const [inferredType, setInferredType] = useState<string>('string');
 
     const [isOpen, setIsOpen] = useState(true);
@@ -207,14 +200,6 @@ export function useSmartNoteAssistant({
         }
     }, [settings.ontology, setSettings, addToast]);
 
-    const handleConfirmAddAlias = useCallback((nodeId: string, attributeKey: string) => {
-        setSettings(prev => ({
-            ...prev,
-            ontology: addAliasToAttribute(prev.ontology || [], nodeId, attributeKey, targetKey)
-        }));
-        addToast(`Linked alias '${targetKey}' to '${attributeKey}'`, 'success');
-    }, [setSettings, targetKey, addToast]);
-
     const toggleOpen = useCallback((e?: React.MouseEvent) => {
         e?.stopPropagation();
         setIsOpen(prev => !prev);
@@ -266,10 +251,6 @@ export function useSmartNoteAssistant({
         setPropertyToDelete,
         attributeModalOpen,
         setAttributeModalOpen,
-        aliasModalOpen,
-        setAliasModalOpen,
-        targetKey,
-        setTargetKey,
         inferredType,
         setInferredType,
         handleSaveProperty,
@@ -281,7 +262,6 @@ export function useSmartNoteAssistant({
         handleFindMatches,
         handleApplySuggestion,
         handleConfirmAddAttribute,
-        handleConfirmAddAlias,
         handleKeyDown,
         toggleOpen,
         handleSelectLocalMatch

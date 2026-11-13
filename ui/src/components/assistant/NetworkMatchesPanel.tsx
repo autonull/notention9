@@ -14,7 +14,6 @@ interface NetworkMatchesPanelProps {
     onConnect: (match: ScoredMatch) => Promise<void>;
     onChat: (author: string) => void;
     onAddDiscovered: (key: string, type: string) => void;
-    onLinkDiscovered: (key: string, type: string) => void;
 }
 
 export function NetworkMatchesPanel({
@@ -26,8 +25,7 @@ export function NetworkMatchesPanel({
     onFindMatches,
     onConnect,
     onChat,
-    onAddDiscovered,
-    onLinkDiscovered
+    onAddDiscovered
 }: NetworkMatchesPanelProps) {
     if (networkMatches.length === 0) {
         return (
@@ -63,7 +61,6 @@ export function NetworkMatchesPanel({
                 networkMatches={networkMatches}
                 ontology={settingsOntology}
                 onAdd={onAddDiscovered}
-                onLink={onLinkDiscovered}
             />
 
             <div className="flex justify-end px-1">

@@ -12,8 +12,7 @@ import {
     NetworkDiscoveryService,
     ScoredMatch,
     OntologyNode,
-    queryEvents,
-    getAliases
+    queryEvents
 } from '@notention/core';
 
 class NostrService {
@@ -54,21 +53,14 @@ class NostrService {
         if (!this.privkey || !this.relays.length || note.privacy !== 'public') return;
 
         try {
-            // Enhance note with alias tags for discoverability
-            // We publish ALL known aliases for a property to maximize reach across peers with different ontology versions
+            // Enhance note with property tags for discoverability
+            // Since ontology aliases were removed (canonical unified naming), we use property keys directly
             const enhancedNote = { ...note, tags: [...note.tags] };
             if (ontology) {
                 const propertyTags = new Set<string>();
                 for (const prop of note.properties) {
-                    const aliases = getAliases(prop.key, ontology);
-
-                    aliases.forEach(alias => {
-                        // publishNoteToNostr already adds the current key as 'prop:KEY'
-                        // We add others
-                        if (alias !== prop.key) {
-                            propertyTags.add(`prop:${alias}`);
-                        }
-                    });
+                    // publishNoteToNostr already adds the current key as 'prop:KEY'
+                    // No aliases to add since ontology uses canonical unified naming
                 }
 
                 propertyTags.forEach(tag => {

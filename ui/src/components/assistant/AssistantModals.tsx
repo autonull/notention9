@@ -1,17 +1,13 @@
 import { AttributeEditorModal } from '../ontology/AttributeEditorModal';
-import { OntologyAliasLinkModal } from '../ontology/OntologyAliasLinkModal';
 import { ConfirmationModal } from '../ui/Primitives';
 import { OntologyAttribute, OntologyNode, Property } from '@notention/core';
 
 interface AssistantModalsProps {
     attributeModalOpen: boolean;
     setAttributeModalOpen: (open: boolean) => void;
-    aliasModalOpen: boolean;
-    setAliasModalOpen: (open: boolean) => void;
     targetKey: string;
     inferredType: string;
     onConfirmAddAttribute: (key: string, attribute: OntologyAttribute) => void;
-    onConfirmAddAlias: (nodeId: string, attributeKey: string) => void;
     ontology: OntologyNode[];
     propertyToDelete: Property | null;
     setPropertyToDelete: (prop: Property | null) => void;
@@ -21,12 +17,9 @@ interface AssistantModalsProps {
 export function AssistantModals({
     attributeModalOpen,
     setAttributeModalOpen,
-    aliasModalOpen,
-    setAliasModalOpen,
     targetKey,
     inferredType,
     onConfirmAddAttribute,
-    onConfirmAddAlias,
     ontology,
     propertyToDelete,
     setPropertyToDelete,
@@ -40,14 +33,6 @@ export function AssistantModals({
                 onConfirm={onConfirmAddAttribute}
                 initialValues={{ key: targetKey, type: inferredType }}
                 title={`Define '${targetKey}'`}
-            />
-
-            <OntologyAliasLinkModal
-                isOpen={aliasModalOpen}
-                onClose={() => setAliasModalOpen(false)}
-                onConfirm={onConfirmAddAlias}
-                aliasCandidate={targetKey}
-                ontology={ontology}
             />
 
             <ConfirmationModal

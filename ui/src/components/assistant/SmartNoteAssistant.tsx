@@ -49,8 +49,6 @@ export function SmartNoteAssistant({
         setPropertyToDelete,
         attributeModalOpen,
         setAttributeModalOpen,
-        aliasModalOpen,
-        setAliasModalOpen,
         targetKey,
         setTargetKey,
         inferredType,
@@ -64,7 +62,6 @@ export function SmartNoteAssistant({
         handleFindMatches,
         handleApplySuggestion,
         handleConfirmAddAttribute,
-        handleConfirmAddAlias,
         handleKeyDown,
         toggleOpen,
         handleSelectLocalMatch
@@ -144,12 +141,9 @@ export function SmartNoteAssistant({
             <AssistantModals
                 attributeModalOpen={attributeModalOpen}
                 setAttributeModalOpen={setAttributeModalOpen}
-                aliasModalOpen={aliasModalOpen}
-                setAliasModalOpen={setAliasModalOpen}
                 targetKey={targetKey}
                 inferredType={inferredType}
                 onConfirmAddAttribute={handleConfirmAddAttribute}
-                onConfirmAddAlias={handleConfirmAddAlias}
                 ontology={ontology}
                 propertyToDelete={propertyToDelete}
                 setPropertyToDelete={setPropertyToDelete}

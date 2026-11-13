@@ -41,7 +41,6 @@ interface AssistantContentProps {
     onApplySuggestion: (suggestion: Suggestion) => void;
     onMouseEnterSuggestion: (index: number) => void;
     onAddDiscovered: (key: string, type: string) => void;
-    onLinkDiscovered: (key: string, type: string) => void;
     noteId: string;
     onSelectLocalMatch: (match: ScoredMatch) => void;
 }
@@ -76,7 +75,6 @@ export function AssistantContent({
     onApplySuggestion,
     onMouseEnterSuggestion,
     onAddDiscovered,
-    onLinkDiscovered,
     noteId,
     onSelectLocalMatch
 }: AssistantContentProps) {
@@ -131,7 +129,6 @@ export function AssistantContent({
                     onConnect={onConnect}
                     onChat={onChat}
                     onAddDiscovered={onAddDiscovered}
-                    onLinkDiscovered={onLinkDiscovered}
                 />
             )}
         </div>
