@@ -2,7 +2,7 @@
 
 **Instrument:** `pnpm probe` (sample workspace, seeded; facilitator reads the questions aloud)
 **Question:** does a stranger understand what this is and what to do next?
-**Sessions:** 3
+**Sessions:** 4
 
 ## Results
 
@@ -11,10 +11,11 @@
 P1 | no | no | — | — | no | —
 P2 | no | no | — | — | no | —
 P3 | no | no | — | — | no | —
+P4 | no | no | — | — | no | —
 
-- **Comprehension rate:** 0% (0/3) stated the purpose correctly
-- **Next-action rate:** 0% (0/3) named an action the app supports
-- **Act completion:** 0/3
+- **Comprehension rate:** 0% (0/4) stated the purpose correctly
+- **Next-action rate:** 0% (0/4) named an action the app supports
+- **Act completion:** 0/4
 - **Time to first explanation:** median —
 - **Time to first match (P2c.4):** median — — threshold: median < 2 min
 - **Time to first action:** median —
@@ -26,6 +27,7 @@ P3 | no | no | — | — | no | —
 P1 | — | —
 P2 | — | —
 P3 | — | —
+P4 | — | —
 
 - **Relevance rate:** 0% (0/0)
 
@@ -56,6 +58,18 @@ P3 | — | —
 - Would act on the match: —
 
 ### P3
+
+- **What is this app for?** _(no answer)_
+- **What would you do next?** _(no answer)_
+- Understood the purpose: no
+- Named a next action: no
+- Opened the match explanation after —
+- Time to first match: —
+- Journal events preserved: 0
+- Completed the act step: no
+- Would act on the match: —
+
+### P4
 
 - **What is this app for?** _(no answer)_
 - **What would you do next?** _(no answer)_

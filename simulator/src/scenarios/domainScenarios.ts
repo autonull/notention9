@@ -543,6 +543,253 @@ export const DOMAIN_SCENARIOS: Record<string, Scenario> = {
         requires: ['relay', 'ui'],
         difficulty: 'hard'
     },
+
+    // Taxonomy gap: Legal/contract scenarios — legal stakes, codified formality
+    'legal-contract': {
+        name: 'Legal Contract Negotiation',
+        description: 'Parties negotiate terms for a binding agreement. Tests matching on legal terms, compliance, jurisdiction.',
+        agents: [
+            {
+                role: 'LegalCounsel',
+                count: 2,
+                properties: [
+                    prop('role', 'is', 'legal-counsel'),
+                    prop('jurisdiction', 'is', 'US-CA'),
+                    prop('practiceArea', 'contains', 'contract', 'commercial'),
+                    prop('barNumber', 'is', 'active'),
+                ],
+                interests: [
+                    prop('counterparty', 'is', 'represented'),
+                    prop('terms', 'contains', 'indemnification', 'force-majeure'),
+                    prop('governingLaw', 'is', 'California'),
+                ],
+                traits: ['detail-oriented', 'risk-averse', 'template-user'],
+            },
+            {
+                role: 'BusinessPrincipal',
+                count: 2,
+                properties: [
+                    prop('role', 'is', 'principal'),
+                    prop('entityType', 'is', 'LLC'),
+                    prop('industry', 'contains', 'technology', 'services'),
+                    prop('dealValue', 'is', '100000'),
+                ],
+                interests: [
+                    prop('counsel', 'is', 'experienced'),
+                    prop('terms', 'contains', 'favorable', 'clear'),
+                    prop('timeline', 'is', '30-days'),
+                ],
+                traits: ['pragmatic', 'deadline-driven', 'template-user'],
+            },
+        ],
+        events: [
+            { at: 2, action: 'publish_job', actorRole: 'BusinessPrincipal', cameraFocus: 'BusinessPrincipal 1' },
+            { at: 4, action: 'publish_offer', actorRole: 'LegalCounsel', cameraFocus: 'LegalCounsel 1' },
+            { at: 6, action: 'publish_offer', actorRole: 'LegalCounsel', cameraFocus: 'LegalCounsel 2' },
+            { at: 8, action: 'camera', actorRole: 'system', cameraFocus: 'grid' },
+        ],
+        duration: 15,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'hard'
+    },
+
+    // Taxonomy gap: Crisis/emergency scenarios — safety stakes, ephemeral temporality
+    'crisis-response': {
+        name: 'Crisis Response Coordination',
+        description: 'Emergency responders coordinate during a crisis. Tests matching on capability, location, urgency, ephemeral needs.',
+        agents: [
+            {
+                role: 'IncidentCommander',
+                count: 1,
+                properties: [
+                    prop('role', 'is', 'incident-commander'),
+                    prop('incidentType', 'is', 'wildfire'),
+                    prop('severity', 'is', 'level-3'),
+                    prop('jurisdiction', 'is', 'county-wide'),
+                ],
+                interests: [
+                    prop('resource', 'contains', 'engine', 'crew', 'aircraft', 'water-tender'),
+                    prop('availability', 'is', 'immediate'),
+                    prop('qualification', 'contains', 'firefighter', 'emt'),
+                ],
+                traits: ['decisive', 'authoritative', 'template-user'],
+            },
+            {
+                role: 'ResourceProvider',
+                count: 6,
+                properties: [
+                    prop('resourceType', 'contains', 'engine', 'hand-crew', 'helicopter', 'dozer', 'water-tender', 'emt-unit'),
+                    prop('capacity', 'is', 'available'),
+                    prop('location', 'contains', 'station', 'staging-area'),
+                    prop('responseTime', 'is', '15-min'),
+                ],
+                interests: [
+                    prop('incident', 'is', 'wildfire'),
+                    prop('assignment', 'contains', 'initial-attack', 'structure-protection'),
+                    prop('duration', 'is', '12-hour'),
+                ],
+                traits: ['ready', 'equipped', 'trained'],
+            },
+            {
+                role: 'Dispatch',
+                count: 2,
+                properties: [
+                    prop('role', 'is', 'dispatch'),
+                    prop('center', 'is', 'regional'),
+                    prop('systems', 'contains', 'CAD', 'radio', 'AVL'),
+                ],
+                interests: [
+                    prop('resource', 'contains', 'available'),
+                    prop('status', 'contains', 'committed', 'available'),
+                ],
+                traits: ['calm', 'coordinated', 'template-user'],
+            },
+        ],
+        events: [
+            { at: 2, action: 'publish_job', actorRole: 'IncidentCommander', cameraFocus: 'IncidentCommander 1' },
+            { at: 3, action: 'publish_offer', actorRole: 'ResourceProvider', cameraFocus: 'ResourceProvider 1' },
+            { at: 4, action: 'publish_offer', actorRole: 'ResourceProvider', cameraFocus: 'ResourceProvider 2' },
+            { at: 5, action: 'publish_offer', actorRole: 'ResourceProvider', cameraFocus: 'ResourceProvider 3' },
+            { at: 6, action: 'publish_offer', actorRole: 'ResourceProvider', cameraFocus: 'ResourceProvider 4' },
+            { at: 7, action: 'camera', actorRole: 'system', cameraFocus: 'grid' },
+        ],
+        duration: 10,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'hard'
+    },
+
+    // Taxonomy gap: Long-term/generational scenarios — generational temporality, existential stakes
+    'generational-stewardship': {
+        name: 'Generational Land Stewardship',
+        description: 'Multi-generation families coordinate land stewardship. Tests matching on values, succession, conservation, generational commitments.',
+        agents: [
+            {
+                role: 'ElderSteward',
+                count: 2,
+                properties: [
+                    prop('role', 'is', 'elder-steward'),
+                    prop('landType', 'contains', 'forest', 'farm', 'watershed'),
+                    prop('tenure', 'is', '50-years'),
+                    prop('values', 'contains', 'conservation', 'sustainability', 'family-legacy'),
+                ],
+                interests: [
+                    prop('successor', 'is', 'committed'),
+                    prop('skills', 'contains', 'land-management', 'ecology', 'business'),
+                    prop('vision', 'contains', 'long-term', 'regenerative'),
+                ],
+                traits: ['wise', 'patient', 'tradition-keeper'],
+            },
+            {
+                role: 'NextGenSteward',
+                count: 4,
+                properties: [
+                    prop('role', 'is', 'nextgen-steward'),
+                    prop('education', 'contains', 'environmental-science', 'agriculture', 'business'),
+                    prop('commitment', 'is', 'lifetime'),
+                    prop('innovation', 'contains', 'agroforestry', 'carbon-sequestration', 'ecotourism'),
+                ],
+                interests: [
+                    prop('mentor', 'is', 'elder-steward'),
+                    prop('land', 'contains', 'productive', 'conserved'),
+                    prop('autonomy', 'is', 'gradual'),
+                ],
+                traits: ['motivated', 'innovative', 'respectful'],
+            },
+            {
+                role: 'ConservationPartner',
+                count: 2,
+                properties: [
+                    prop('role', 'is', 'conservation-partner'),
+                    prop('orgType', 'contains', 'land-trust', 'agency', 'foundation'),
+                    prop('tools', 'contains', 'easement', 'funding', 'technical-assistance'),
+                ],
+                interests: [
+                    prop('project', 'contains', 'perpetual', 'landscape-scale'),
+                    prop('alignment', 'is', 'values-match'),
+                ],
+                traits: ['supportive', 'resourceful', 'template-user'],
+            },
+        ],
+        events: [
+            { at: 2, action: 'publish_manifest', actorRole: 'ElderSteward', cameraFocus: 'ElderSteward 1' },
+            { at: 4, action: 'publish_offer', actorRole: 'NextGenSteward', cameraFocus: 'NextGenSteward 1' },
+            { at: 5, action: 'publish_offer', actorRole: 'NextGenSteward', cameraFocus: 'NextGenSteward 2' },
+            { at: 6, action: 'publish_offer', actorRole: 'ConservationPartner', cameraFocus: 'ConservationPartner 1' },
+            { at: 8, action: 'camera', actorRole: 'system', cameraFocus: 'grid' },
+        ],
+        duration: 15,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'hard'
+    },
+
+    // Taxonomy gap: Care/kinship scenarios — communal, care exchange, generational
+    'kinship-care': {
+        name: 'Kinship Care Network',
+        description: 'Extended family coordinates care for elders/children. Tests matching on relationship, availability, skills, trust, communal sharing.',
+        agents: [
+            {
+                role: 'PrimaryCaregiver',
+                count: 1,
+                properties: [
+                    prop('role', 'is', 'primary-caregiver'),
+                    prop('careRecipient', 'contains', 'elderly-parent', 'disabled-child'),
+                    prop('careLevel', 'is', 'high'),
+                    prop('availability', 'is', '24/7'),
+                ],
+                interests: [
+                    prop('support', 'contains', 'respite', 'medical', 'emotional', 'financial'),
+                    prop('relationship', 'contains', 'sibling', 'adult-child', 'niece-nephew'),
+                    prop('trust', 'is', 'implicit'),
+                ],
+                traits: ['dedicated', 'exhausted', 'loving'],
+            },
+            {
+                role: 'FamilySupporter',
+                count: 6,
+                properties: [
+                    prop('role', 'is', 'family-supporter'),
+                    prop('relationship', 'contains', 'sibling', 'cousin', 'grandchild', 'in-law'),
+                    prop('availability', 'contains', 'weekends', 'evenings', 'holidays', 'on-call'),
+                    prop('skills', 'contains', 'cooking', 'driving', 'medication-management', 'companionship', 'financial'),
+                ],
+                interests: [
+                    prop('careNeed', 'contains', 'respite', 'transport', 'meals', 'visits'),
+                    prop('coordination', 'is', 'shared-calendar'),
+                    prop('appreciation', 'is', 'acknowledged'),
+                ],
+                traits: ['willing', 'available', 'family-oriented'],
+            },
+            {
+                role: 'CommunityResource',
+                count: 2,
+                properties: [
+                    prop('role', 'is', 'community-resource'),
+                    prop('serviceType', 'contains', 'adult-day', 'home-health', 'meal-delivery', 'support-group'),
+                    prop('funding', 'contains', 'medicaid', 'grants', 'donations', 'sliding-scale'),
+                ],
+                interests: [
+                    prop('family', 'contains', 'caregiver', 'elder'),
+                    prop('eligibility', 'is', 'assessed'),
+                ],
+                traits: ['professional', 'compassionate', 'template-user'],
+            },
+        ],
+        events: [
+            { at: 2, action: 'publish_manifest', actorRole: 'PrimaryCaregiver', cameraFocus: 'PrimaryCaregiver 1' },
+            { at: 4, action: 'publish_offer', actorRole: 'FamilySupporter', cameraFocus: 'FamilySupporter 1' },
+            { at: 5, action: 'publish_offer', actorRole: 'FamilySupporter', cameraFocus: 'FamilySupporter 2' },
+            { at: 6, action: 'publish_offer', actorRole: 'FamilySupporter', cameraFocus: 'FamilySupporter 3' },
+            { at: 7, action: 'publish_offer', actorRole: 'CommunityResource', cameraFocus: 'CommunityResource 1' },
+            { at: 9, action: 'camera', actorRole: 'system', cameraFocus: 'grid' },
+        ],
+        duration: 15,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'hard'
+    },
 };
 
 export function getScenarioNames(): string[] {

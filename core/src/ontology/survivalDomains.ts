@@ -314,7 +314,7 @@ export const resourceDomain: OntologyNode[] = [
                         type: 'datetime',
                         description: 'When the need must be met.',
                         icon: 'clock',
-                        operators: { real: ['is', 'before', 'after'], imaginary: [] },
+                        operators: { real: ['is', 'contains', 'before', 'after'], imaginary: [] },
                         role: 'constraint'
                     },
                     notes: {
@@ -908,7 +908,7 @@ export const commsDomain: OntologyNode[] = [
                         type: 'geo',
                         description: 'Device location.',
                         icon: 'map-pin',
-                        operators: { real: ['is', 'near'], imaginary: [] },
+                        operators: { real: ['is', 'contains', 'near'], imaginary: [] },
                         role: 'fact'
                     },
                     owner: {
