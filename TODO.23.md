@@ -1,6 +1,6 @@
 # TODO.23 — The Coordination Paradigm: Development, Usability, Ontology Evolution & Demonstration
 
-**Status:** Active — continuous phase after all code increments (0–10) reach baseline (990 tests, gates G0–G9)
+**Status:** Active — Week 3 automated items complete; Week 4 planned. Human-dependent items (comprehension probe, video recording) blocked pending participants/recording setup.
 **Premise:** The implementation baseline exists. We are **not done** — and "done" is the wrong frame. This phase establishes a *perpetual improvement cycle* across four interlocking fronts.
 
 **North Star:** Make **"notes as coordination primitives"** as intuitive and universal as email — so any person, group, or community can coordinate needs, offers, and commitments with verifiable trust, offline, without servers, without gatekeepers.
@@ -711,8 +711,8 @@ pnpm probe --headless                ✅ Ran (0% comprehension without human par
 5. **Front A**: Implement ontology patches from audit, re-run tests ✅
    - All tests pass (990+), verify passes
 
-**Next Probe Cycle (Week 3) — IN PROGRESS (2026-11-13):**
-1. **Front B**: Conduct manual comprehension probe with 3-5 human participants on Home screen; verify Inbox paradigm with one primary CTA ⏳
+**Next Probe Cycle (Week 3) — COMPLETED 2026-11-13:**
+1. **Front B**: Conduct manual comprehension probe with 3-5 human participants on Home screen; verify Inbox paradigm with one primary CTA ⏳ **BLOCKED — requires human participants**
 2. **Front B**: Simplify Home screen to Inbox (notes-first) with progressive disclosure; hide advanced panels ✅
 3. **Front C**: Run new taxonomy scenarios through measurement suite; establish baselines for legal-contract, crisis-response, generational-stewardship, kinship-care ✅
 4. **Front C**: Address orphan keys (130 keys in ontology never used in quality cases) — either add test coverage or document as intentional ✅
@@ -720,5 +720,13 @@ pnpm probe --headless                ✅ Ran (0% comprehension without human par
    - Orphan keys reduced: 137 → 104 (24% improvement)
    - Documented categorization in `demo-findings/orphan-keys-analysis.md`
    - Remaining 104 orphan keys categorized as: intentional/extended (Category 2) or redundant (Category 3)
-5. **Front D**: Record semantic-capture and bidirectional-match videos using Simulator Dashboard v2 ⏳
+5. **Front D**: Record semantic-capture and bidirectional-match videos using Simulator Dashboard v2 ⏳ **BLOCKED — requires video recording setup**
 6. **Front A**: Run patch generalization test (E14) on ontology changes; verify no regression on 22 match cases + holdout + 200-run simulator distribution ✅
+
+**Next Probe Cycle (Week 4) — PLANNED (2026-11-13):**
+1. **Front C**: Address new operator drift from Week 3 quality cases (8 keys: skills, agenda, capacity, emergencyContact, resourceType, quantity, body, dueDate) → ontology patches
+2. **Front C**: Run taxonomy coverage sweep for remaining Fiske/Ostrom cells; add scenarios for mentorship, open-source-contrib, commons-governance
+3. **Front A**: Run full test suite + verify to confirm no regressions from Week 3 changes
+4. **Front B**: Prepare automated comprehension probe improvements (add semantic markers for probe tool)
+5. **Front D**: Document Simulator Dashboard v2 video recording procedure (deterministic headless capture via Playwright/Chrome DevTools Protocol)
+6. **All Fronts**: Schedule human comprehension probe session + video recording session for Week 4 execution
