@@ -6,8 +6,8 @@ import {AITab} from '../settings/AITab';
 import {DataTab} from '../settings/DataTab';
 import {MetricsTab} from '../settings/MetricsTab';
 import {NostrTab} from '../settings/NostrTab';
-import {OntologyTab} from '../settings/OntologyTab';
-import {AgentTab} from '../settings/AgentTab';
+import {LabelsTab} from '../settings/LabelsTab';
+import {AutomationTab} from '../settings/AutomationTab';
 import {NetworkManagementSection} from '../settings/NetworkManagementSection';
 import {ProfileSettings} from '../settings/ProfileSettings';
 import {RevisionsTab} from '../settings/RevisionsTab';
@@ -22,12 +22,12 @@ export function SettingsView() {
 
     const tabs = [
         {id: 'ai', label: '🤖 AI Assistant'},
-        {id: 'agent', label: '⚡ Agent Status'},
+        {id: 'automation', label: '⚡ Automation'},
+        {id: 'labels', label: '🏷️ Labels'},
         {id: 'network', label: '🌐 Networks'},
         {id: 'nostr', label: '🔑 Nostr Keys'},
         {id: 'data', label: '📦 Data Management'},
         {id: 'metrics', label: '📊 Metrics'},
-        {id: 'ontology', label: '🧬 Ontology Graph'},
         {id: 'profile', label: '👤 Profile & Strategies'},
         {id: 'revisions', label: '📋 Revisions'},
     ];
@@ -55,14 +55,14 @@ export function SettingsView() {
                 {activeTab === 'ai' && (
                     <AITab settings={settings} setSettings={setSettings}/>
                 )}
-                {activeTab === 'agent' && <AgentTab/>}
+                {activeTab === 'automation' && <AutomationTab/>}
+                {activeTab === 'labels' && <LabelsTab/>}
                 {activeTab === 'network' && <NetworkManagementSection />}
                 {activeTab === 'nostr' && (
                     <NostrTab settings={settings} setSettings={setSettings}/>
                 )}
                 {activeTab === 'data' && <DataTab/>}
                 {activeTab === 'metrics' && <MetricsTab/>}
-                {activeTab === 'ontology' && <OntologyTab/>}
                 {activeTab === 'profile' && <ProfileSettings/>}
                 {activeTab === 'revisions' && <RevisionsTab userId="default-user"/>}
             </div>

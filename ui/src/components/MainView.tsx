@@ -14,12 +14,13 @@ import {TimelineView} from './views/TimelineView';
 import {NetworkView} from './views/NetworkView';
 import {NotesView} from './views/NotesView';
 import {TrashView} from './views/TrashView';
-import {OntologyView} from './views/OntologyView';
 import {SettingsView} from './views/SettingsView';
 import {ResponsesView} from './views/ResponsesView';
 import {DashboardView} from './dashboard/DashboardView';
 import {ActionsView} from './views/ActionsView';
 import {InboxView} from './views/InboxView';
+import {LabelsView} from './views/LabelsView';
+import {OntologyView} from './views/OntologyView';
 
 interface MainViewProps {
     sortedNotes?: Note[];
@@ -57,6 +58,8 @@ export function MainView({sortedNotes}: MainViewProps) {
                 return <ActionsView/>;
             case 'responses':
                 return <ResponsesView/>;
+            case 'labels':
+                return <LabelsView/>;
             case 'ontology':
                 return <OntologyView/>;
             case 'map':

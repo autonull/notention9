@@ -777,3 +777,34 @@ pnpm probe --headless                ✅ Ran (0% comprehension without human par
    - Created `doc/simulator-dashboard-video-recording.md` with full procedure
    - Covers: Playwright config, CDP screencast, deterministic seeding, video specs, post-processing, CI integration
 8. **All Fronts**: Schedule human comprehension probe session + video recording session for Week 4 execution ⏳ **BLOCKED — requires human participants**
+
+---
+
+# Next Probe Cycle (Week 5) — 2026-11-13 (Automated Items):
+
+1. **Front B**: Implement Labels tag manager (replaces Ontology tab in main navigation) ✅
+   - Created `LabelsTab` component with tag listing, rename, delete, create
+   - Created `LabelsView` as main navigation destination
+   - Updated `NAV_ITEMS`: replaced `ontology` with `labels` (TagIcon)
+   - Kept `ontology` as valid view for "Open Ontology Editor" progressive disclosure from LabelsTab
+   - Updated `SettingsView`: replaced `OntologyTab` with `LabelsTab`, `AgentTab` with `AutomationTab`
+   - All tests pass (core, ui, agent, cli, optimize)
+
+2. **Front B**: Implement Automation toggle (replaces Agent tab in Settings) ✅
+   - Created `AutomationTab` with simple on/off toggle + progressive disclosure for advanced settings
+   - Links to Actions view for rule management and legacy Agent settings
+
+3. **Front A**: Verify chaos drills pass ✅
+   - All 11 chaos drill tests pass (relay loss, network partition, sensor poisoning, key compromise, battery death)
+
+4. **Front C**: Add taxonomy scenarios for remaining cells (legal, cross-cultural, long-term) 🔄
+
+5. **Front D**: Document video recording procedures for T2 scenarios 🔄
+
+---
+
+**Next Actions:**
+- Front C: Run corpus→patch cycle for new taxonomy cells
+- Front C: Add legal-contract, cross-cultural, long-term commitment scenarios
+- Front A: Verify offline queue zero-loss, receipt chains verify offline
+- Front D: Record T1 videos when human participants available (blocked)

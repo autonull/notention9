@@ -8,9 +8,9 @@ import {
     MapIcon,
     NetworkIcon,
     NoteIcon,
-    OntologyIcon,
     ResponseIcon,
     SettingsIcon,
+    TagIcon,
     TrashIcon,
 } from '../components/ui/icons';
 
@@ -23,7 +23,7 @@ export const NAV_ITEMS: ViewConfig[] = [
     {id: 'chat', label: 'Chat', icon: ChatIcon, shortcut: '6', showInMobile: true, badgeCountKey: 'chatNotificationCount'},
     {id: 'actions', label: 'Actions', icon: LightBulbIcon, shortcut: '7', showInMobile: true},
     {id: 'responses', label: 'Responses', icon: ResponseIcon, shortcut: '8', showInMobile: true},
-    {id: 'ontology', label: 'Ontology', icon: OntologyIcon, shortcut: '9', showInMobile: true},
+    {id: 'labels', label: 'Labels', icon: TagIcon, shortcut: '9', showInMobile: true},
     {id: 'trash', label: 'Trash', icon: TrashIcon, shortcut: '0', showInMobile: true},
 ];
 

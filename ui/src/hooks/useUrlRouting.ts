@@ -48,6 +48,7 @@ export function useUrlRouting({
                 'actions',
                 'dashboard',
                 'responses',
+                'labels',
             ];
 
             const newView = validViews.includes(view as View) ? (view as View) : 'notes';
