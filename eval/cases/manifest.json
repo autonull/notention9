@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-13T14:20:13.439Z",
+  "generatedAt": "2026-11-13T16:19:13.267Z",
   "counts": {
     "intent": {
       "search": 21,
@@ -1167,7 +1167,7 @@
       "family": "quality",
       "qualityFamily": "extraction",
       "path": "quality/extraction/quality-extract-045.json",
-      "hash": "6f566d273cd9eb60",
+      "hash": "71563e2010f2b6ce",
       "tags": [
         "legal",
         "legal-contract",
@@ -1233,7 +1233,7 @@
       "family": "quality",
       "qualityFamily": "extraction",
       "path": "quality/extraction/quality-extract-050.json",
-      "hash": "3ace7671510c202d",
+      "hash": "2264834ecd7deab4",
       "tags": [
         "event",
         "conference",
@@ -1521,5 +1521,5 @@
       ]
     }
   ],
-  "hash": "241b6dfd5c83ecbe"
+  "hash": "9fd5e569156a54ad"
 }

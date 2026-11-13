@@ -49,7 +49,7 @@ describe('Enhanced Ontology Tests', () => {
         type: 'text-input',
         icon: 'user',
         options: undefined,
-        operators: ['is', 'is not']
+        operators: ['is', 'contains', 'is not']
       });
 
       const emailMetadata = ontologyService.getWidgetMetadata('email');
@@ -61,13 +61,13 @@ describe('Enhanced Ontology Tests', () => {
       });
     });
 
-    test('should retrieve widget metadata for enhanced attributes', () => {
+    test('should retrieve widget metadata for aliases', () => {
       const firstNameMetadata = ontologyService.getWidgetMetadata('firstName');
       expect(firstNameMetadata).toEqual({
         type: 'text-input',
         icon: 'user',
         options: undefined,
-        operators: ['is', 'is not', 'contains']
+        operators: ['is', 'contains', 'is not']
       });
 
       const lastNameMetadata = ontologyService.getWidgetMetadata('lastName');
@@ -75,7 +75,7 @@ describe('Enhanced Ontology Tests', () => {
         type: 'text-input',
         icon: 'user',
         options: undefined,
-        operators: ['is', 'is not', 'contains']
+        operators: ['is', 'contains', 'is not']
       });
     });
 
@@ -206,8 +206,9 @@ describe('Enhanced Ontology Tests', () => {
       // Check for some expected attributes
       expect(personNode?.attributes?.['name']).toBeDefined();
       expect(personNode?.attributes?.['email']).toBeDefined();
-      expect(personNode?.attributes?.['firstName']).toBeDefined();
-      expect(personNode?.attributes?.['lastName']).toBeDefined();
+      // firstName and lastName are now aliases of name
+      expect(personNode?.attributes?.['name']?.aliases).toContain('firstName');
+      expect(personNode?.attributes?.['name']?.aliases).toContain('lastName');
     });
 
     test('should retrieve product node with attributes', () => {
@@ -218,7 +219,8 @@ describe('Enhanced Ontology Tests', () => {
       expect(Object.keys(productNode?.attributes || {}).length).toBeGreaterThan(0);
       
       // Check for some expected attributes
-      expect(productNode?.attributes?.['name']).toBeDefined();
+      expect(productNode?.attributes?.['title']).toBeDefined();
+      expect(productNode?.attributes?.['title']?.aliases).toContain('name');
       expect(productNode?.attributes?.['price']).toBeDefined();
       expect(productNode?.attributes?.['condition']).toBeDefined();
       expect(productNode?.attributes?.['category']).toBeDefined();
@@ -247,7 +249,7 @@ describe('Enhanced Ontology Tests', () => {
   describe('operator validation', () => {
     test('should get valid operators for an attribute', () => {
       const operators = ontologyService.getValidOperators('name');
-      expect(operators).toEqual(['is', 'is not']);
+      expect(operators).toEqual(['is', 'contains', 'is not']);
       
       const emailOperators = ontologyService.getValidOperators('email');
       expect(emailOperators).toEqual(['is', 'is not', 'contains']);

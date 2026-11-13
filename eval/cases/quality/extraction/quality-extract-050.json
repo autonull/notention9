@@ -5,9 +5,9 @@
   "input": "Conference: TechConf 2026 at San Francisco Moscone Center. Start: 2026-11-15 09:00, End: 2026-11-17 18:00. Organizer: TechEvents Inc. Keynote: Dr. Ada Lovelace. Type: hybrid. Registration: techconf2026.example.com",
   "expected": [
     { "key": "title", "operator": "is", "values": ["TechConf 2026"] },
-    { "key": "venue", "operator": "is", "values": ["San Francisco Moscone Center"] },
-    { "key": "startDateTime", "operator": "is", "values": ["2026-11-15 09:00"] },
-    { "key": "endDateTime", "operator": "is", "values": ["2026-11-17 18:00"] },
+    { "key": "location", "operator": "is", "values": ["San Francisco Moscone Center"] },
+    { "key": "start", "operator": "is", "values": ["2026-11-15 09:00"] },
+    { "key": "end", "operator": "is", "values": ["2026-11-17 18:00"] },
     { "key": "organizer", "operator": "is", "values": ["TechEvents Inc."] },
     { "key": "meetingType", "operator": "is", "values": ["conference"] },
     { "key": "conferenceType", "operator": "is", "values": ["hybrid"] }
