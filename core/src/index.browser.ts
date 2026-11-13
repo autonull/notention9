@@ -92,7 +92,6 @@ export {
 export {
     collectOntologyKeys,
     findAttributeDef,
-    getCanonicalKey,
     buildAttributeIndex,
     findNode,
     findNodeWithAttribute,

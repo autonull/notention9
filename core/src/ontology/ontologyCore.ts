@@ -1,32 +1,6 @@
 import { OntologyNode, OntologyAttribute } from '../types/index.js';
 import { deepClone } from '../utils/common.js';
 
-/**
- * Simple string alias map for common shorthand keys.
- * Used as fallback when ontology is not available.
- */
-export const SIMPLE_ALIASES: Record<string, string> = {
-    'loc': 'location',
-    '$': 'price',
-    '💰': 'price',
-    'desc': 'description',
-    'req': 'requirement',
-    'lat': 'latitude',
-    'lon': 'longitude',
-    'lng': 'longitude',
-    'exp': 'experience',
-    'yr': 'years',
-    'yrs': 'years'
-};
-
-/**
- * Resolve a key using the simple alias map (case-insensitive).
- * Returns the canonical key or the original key if no alias exists.
- */
-export function resolveSimpleAlias(key: string): string {
-    return SIMPLE_ALIASES[key.toLowerCase()] ?? key;
-}
-
 export const traverseTree = (nodes: OntologyNode[], predicate: (node: OntologyNode) => boolean): OntologyNode | null => {
   const stack = [...nodes];
   while (stack.length > 0) {
@@ -67,15 +41,6 @@ export const findAttributeDef = (key: string, nodes: OntologyNode[]): OntologyAt
   const node = findNodeWithAttribute(nodes, key);
   if (!node?.attributes) return undefined;
   return node.attributes[key];
-};
-
-export const getCanonicalKey = (key: string, nodes: OntologyNode[]): string => {
-  const node = findNodeWithAttribute(nodes, key);
-  if (!node?.attributes) {
-    return resolveSimpleAlias(key);
-  }
-  if (node.attributes[key]) return key;
-  return key;
 };
 
 export const addNode = (tree: OntologyNode[], parentId: string | null, newNode: OntologyNode): OntologyNode[] => {

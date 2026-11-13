@@ -1,5 +1,5 @@
 import type { Note, OntologyNode } from '../types/index.js';
-import { getCanonicalKey, traverseTree } from '../ontology/ontologyCore.js';
+import { traverseTree } from '../ontology/ontologyCore.js';
 import { validatePropertyCore } from './propertyValidation.js';
 import { createValidationContext } from './validationContext.js';
 import type { NoteValidationResult, PropertyValidationResult } from './validationTypes.js';
@@ -10,7 +10,7 @@ export function validateNote(note: Note, ontology: OntologyNode[]): NoteValidati
 
   const context = createValidationContext(ontology);
   const propertyResults = note.properties.map(p =>
-    validatePropertyCore(p, context, true, ontology, false)
+    validatePropertyCore(p, context, false)
   );
   errors.push(
     ...propertyResults.flatMap((r, i) =>
@@ -19,7 +19,7 @@ export function validateNote(note: Note, ontology: OntologyNode[]): NoteValidati
   );
   warnings.push(...propertyResults.flatMap(r => r.warnings ?? []));
 
-  const noteCanonicalKeys = new Set(note.properties.map(p => getCanonicalKey(p.key, ontology)));
+  const noteCanonicalKeys = new Set(note.properties.map(p => p.key));
 
   traverseTree(ontology, node => {
     if (node.requiredAttributes?.length) {

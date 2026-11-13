@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import type {OntologyNode, Property} from '@notention/core';
-import {getCanonicalKey, collectOntologyKeys, resolvePresentation, isHighRiskProperty} from '@notention/core';
+import {collectOntologyKeys, resolvePresentation, isHighRiskProperty} from '@notention/core';
 import {useGardener} from './useGardener';
 import {getTextFromHtml} from '../utils/html';
 
@@ -34,7 +34,6 @@ export function usePropertyReview(content: string, existing: Property[], ontolog
             const existingIds = new Set(existingKey.split('|'));
             const seen = new Set<string>();
             const next = found
-                .map(property => ({...property, key: getCanonicalKey(property.key, ontology)}))
                 .filter(property => {
                     const id = propertyId(property);
                     if (existingIds.has(id) || seen.has(id)) return false;

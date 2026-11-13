@@ -1,5 +1,5 @@
 import type { OntologyNode, OntologyAttribute, PropertyType } from '../types/index.js';
-import { findNode, getCanonicalKey, buildAttributeIndex } from './ontologyCore.js';
+import { findNode, buildAttributeIndex } from './ontologyCore.js';
 import {
     buildWidgetMetadata,
     getAttributesByOperator,

@@ -1,5 +1,6 @@
 import { OntologyNode, Template, OntologyAttribute } from '../types/index.js';
 import { propertyToHtml } from '../notes/serialization.js';
+import { getEffectiveOperators } from '../ontology/operators.js';
 
 export function generateTemplatesFromOntology(ontology: OntologyNode[]): Template[] {
     const templates: Template[] = [];
@@ -69,7 +70,7 @@ function getNodeIcon(node: OntologyNode): string {
 }
 
 function getDefaultOperator(attr: OntologyAttribute): string {
-    return attr.operators.real[0] || 'is';
+    return getEffectiveOperators(attr).real[0] ?? 'is';
 }
 
 function getDefaultValue(attr: OntologyAttribute): string {

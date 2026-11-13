@@ -1,4 +1,4 @@
-import { Note, generateId, PropertyPattern, getCanonicalKey, OntologyNode } from '@notention/core';
+import { Note, generateId, PropertyPattern, OntologyNode } from '@notention/core';
 import { Skill, ActionSequence } from '@notention/core';
 import { CONFIG_KEYS } from '../constants.js';
 
@@ -39,8 +39,7 @@ export class ConfigSkill implements Skill {
         }
 
         const hasConfigProp = note.properties.some(p => {
-            const canonicalKey = getCanonicalKey(p.key, this.ontology);
-            return CONFIG_KEYS.META.has(canonicalKey) || CONFIG_KEYS.DIRECT.has(canonicalKey);
+            return CONFIG_KEYS.META.has(p.key) || CONFIG_KEYS.DIRECT.has(p.key);
         });
 
         return hasConfigProp ? 1.0 : 0;
@@ -50,7 +49,7 @@ export class ConfigSkill implements Skill {
         let applied = 0;
 
         note.properties.forEach(p => {
-            const canonicalKey = getCanonicalKey(p.key, this.ontology);
+            const canonicalKey = p.key;
 
             // Direct config keys: [llm_model:is:gpt-4]
             if (CONFIG_KEYS.DIRECT.has(canonicalKey) && p.values.length > 0) {

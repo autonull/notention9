@@ -4,7 +4,7 @@ import {ExclamationTriangleIcon, TagIcon} from '../ui/icons';
 import {ICON_MAP} from '../layout/iconMap';
 import {useSettings} from '../../hooks/useSettingsContext';
 import {useOntologyIndex} from '../../hooks/useOntologyIndex';
-import {validateAttributeValue, getCanonicalKey} from '@notention/core';
+import {validateAttributeValue} from '@notention/core';
 
 const NodeViewWrapper = NodeViewWrapperComponent as any;
 
@@ -26,18 +26,14 @@ export function PropertyChip({node}: PropertyViewProps) {
     const {settings} = useSettings();
     const {propertyTypes} = useOntologyIndex(settings.ontology ?? []);
 
-    const canonicalKey = useMemo(() => {
-        return getCanonicalKey(name, settings.ontology ?? []);
-    }, [name, settings.ontology]);
+    // Keys are already canonical - no alias resolution needed
+    const definition = propertyTypes.get(name);
 
-    // Enhanced Validation Logic - Use canonical key to look up definition
-    const definition = propertyTypes.get(canonicalKey);
-
-    // Use icon from definition if available (for aliases or typed properties), fallback to node attr or default
+    // Use icon from definition if available, fallback to node attr or default
     const effectiveIcon = definition?.icon || icon;
     const IconComponent = effectiveIcon && effectiveIcon in ICON_MAP ? ICON_MAP[effectiveIcon] : TagIcon;
 
-    const isAlias = canonicalKey !== name;
+    const isAlias = false;
 
     const validation = useMemo(() => {
         return validateAttributeValue(name, operator, value, definition);
@@ -54,14 +50,12 @@ export function PropertyChip({node}: PropertyViewProps) {
             className={`${baseClasses} ${validation.isValid ? validClasses : invalidClasses}`}
             data-property-id={propertyId ?? undefined}
             title={
-                !validation.isValid ? validation.message :
-                isAlias ? `Using alias for '${canonicalKey}'` : "Click to edit"
+                !validation.isValid ? validation.message : "Click to edit"
             }
         >
             <IconComponent className={`w-3.5 h-3.5 ${validation.isValid ? 'text-blue-400' : 'text-red-400'}`}/>
             <span className={`font-semibold ${validation.isValid ? 'text-blue-300' : 'text-red-300'} flex items-center gap-1`}>
                 {name}
-                {isAlias && <span className="text-[10px] opacity-70 ml-0.5 italic text-blue-400">({canonicalKey})</span>}
             </span>
             <span
                 className={`${validation.isValid ? 'text-blue-500' : 'text-red-500'} text-xs uppercase font-bold`}>{operator}</span>

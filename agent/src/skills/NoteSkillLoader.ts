@@ -1,4 +1,4 @@
-import { Note, getCanonicalKey } from '@notention/core';
+import { Note } from '@notention/core';
 import { OntologyService } from '@notention/core';
 import { AgentSkillRegistry } from './AgentSkillRegistry.js';
 import { DynamicSkill } from './DynamicSkill.js';
@@ -48,8 +48,8 @@ export class NoteSkillLoader {
                 if (p.key.startsWith('trigger:prop:')) {
                     const parts = p.key.split(':');
                     if (parts.length >= 3) {
-                        // Normalize trigger key to match normalized notes
-                        const key = getCanonicalKey(parts[2], ontology);
+                        // Trigger key is already canonical
+                        const key = parts[2];
                         const value = p.values.length > 0 ? p.values[0] : undefined;
                         triggers.properties.push({ key, value });
                     }

@@ -1,5 +1,4 @@
 import type { OntologyNode, OntologyAttribute } from '../types/index.js';
-import { getCanonicalKey } from './ontologyCore.js';
 import { inferPropertyType } from '../utils/inference.js';
 import type { SuggestedAttribute } from './statistics.js';
 import { CoOccurrenceRecorder } from './CoOccurrenceRecorder.js';
@@ -25,13 +24,13 @@ export class CoOccurrenceAnalyzer {
 
     getContextualSuggestions(existingKeys: string[], limit = 5): SuggestedAttribute[] {
         const scoreMap = new Map<string, number>();
-        const canonicalKeys = existingKeys.map(k => getCanonicalKey(k, this.ontology));
+        const keys = existingKeys;
 
-        for (const key of canonicalKeys) {
+        for (const key of keys) {
             const coMap = this.recorder.getCoOccurrence(key);
             if (coMap) {
                 for (const [neighbor, count] of coMap.entries()) {
-                    if (!canonicalKeys.includes(neighbor)) {
+                    if (!keys.includes(neighbor)) {
                         scoreMap.set(neighbor, (scoreMap.get(neighbor) || 0) + count);
                     }
                 }

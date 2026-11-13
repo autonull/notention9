@@ -12,7 +12,7 @@
 import type { OntologyNode, Property, PropertyType, Quantity } from '../types/index.js';
 import { OntologyService } from '../ontology/ontologyService.js';
 import { parseQuantity } from '../notes/quantities/index.js';
-import { collectOntologyKeys, getCanonicalKey } from '../ontology/index.js';
+import { collectOntologyKeys } from '../ontology/index.js';
 import { REGEX } from '../notes/parsing/constants.js';
 import {
     PATTERNS as CORE_PATTERNS,
@@ -178,7 +178,7 @@ export class OntologyKeyStage implements ExtractionStage {
                 else if (['over', 'above', 'more than', 'greater than'].some(part => operatorStr.includes(part))) operator = 'greater than';
 
                 const quantity = parseQuantity(value);
-                const canonicalKey = getCanonicalKey(key, ontology);
+                const canonicalKey = key;
                 addProperty(properties, canonicalKey, operator, quantity?.unit ? `${quantity.value} ${quantity.unit}` : value, DEFAULT_PATTERN_CONFIDENCE, 'ontology-key');
             });
         }

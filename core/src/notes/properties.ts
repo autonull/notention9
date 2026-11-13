@@ -1,5 +1,4 @@
 import type { Property, Note, OntologyNode } from '../types/index.js';
-import { getCanonicalKey } from '../ontology/ontologyCore.js';
 
 const TEMPORAL_KEYS = new Set([
   'date', 'time', 'deadline', 'start', 'end', 'due',
@@ -76,6 +75,6 @@ export const arePropertyArraysEqual = (a: Property[], b: Property[]): boolean =>
 
 export const normalizeNoteProperties = (note: Note, ontology: OntologyNode[]): Note => {
   if (!ontology?.length) return note;
-  const properties = note.properties.map(p => ({ ...p, key: getCanonicalKey(p.key, ontology) }));
-  return { ...note, properties };
+  // Properties are already canonical; no alias resolution needed
+  return note;
 };

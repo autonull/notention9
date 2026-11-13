@@ -1,5 +1,3 @@
-import { getCanonicalKey } from './ontologyCore.js';
-
 /**
  * Tracks co-occurrence of property keys
  */
@@ -7,15 +5,15 @@ export class CoOccurrenceRecorder {
     private coOccurrence = new Map<string, Map<string, number>>();
 
     record(properties: Array<{ key: string; values?: unknown[] }>): void {
-        const canonicals = Array.from(
-            new Set(properties.map(p => getCanonicalKey(p.key, [])))
+        const keys = Array.from(
+            new Set(properties.map(p => p.key))
         );
 
-        canonicals.forEach(src => {
+        keys.forEach(src => {
             const coMap = this.coOccurrence.get(src) ?? new Map<string, number>();
             if (!this.coOccurrence.has(src)) this.coOccurrence.set(src, coMap);
 
-            canonicals
+            keys
                 .filter(target => src !== target)
                 .forEach(target => {
                     coMap.set(target, (coMap.get(target) ?? 0) + 1);

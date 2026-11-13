@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { ScoredMatch, OntologyNode, getCanonicalKey, findAttributeDef } from '@notention/core';
+import { ScoredMatch, OntologyNode, findAttributeDef } from '@notention/core';
 import { LightBulbIcon, PlusIcon } from '../ui/icons';
 
 interface DiscoveredPropertiesProps {
@@ -21,8 +21,7 @@ export function DiscoveredProperties({
 
         for (const m of networkMatches) {
             for (const p of m.note.properties) {
-                const canonical = getCanonicalKey(p.key, ontology);
-                const def = findAttributeDef(canonical, ontology);
+                const def = findAttributeDef(p.key, ontology);
 
                 if (!def) {
                     uniqueKeys.add(p.key);

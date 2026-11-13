@@ -2,7 +2,6 @@ import type { Property, OntologyNode } from '../types/index.js';
 import type { OntologyService } from '../ontology/ontologyService.js';
 import { parseQuantity } from '../notes/quantities/index.js';
 import { validateAttributeValue, NUMERIC_OPERATORS } from './attributeValidation.js';
-import { getCanonicalKey } from '../ontology/ontologyCore.js';
 import type { ValidationContext } from './validationContext.js';
 import { createValidationContext } from './validationContext.js';
 import type { NoteValidationResult, PropertyValidationResult } from './validationTypes.js';
@@ -27,8 +26,6 @@ function validateNumericValues(property: Property): string[] {
 export function validatePropertyCore(
   property: Property,
   context: ValidationContext,
-  checkAlias: boolean = false,
-  ontologyForAlias?: OntologyNode[],
   requireAttribute: boolean = true
 ): NoteValidationResult {
   const errors: string[] = [];
@@ -36,13 +33,6 @@ export function validatePropertyCore(
 
   if (!property.key?.trim()) errors.push('Property key is required.');
   if (!property.values?.length) errors.push('Property must have at least one value.');
-
-  if (checkAlias && ontologyForAlias) {
-    const canonical = getCanonicalKey(property.key, ontologyForAlias);
-    if (canonical !== property.key) {
-      warnings.push(`Property key '${property.key}' is an alias for '${canonical}'. Consider using the canonical key.`);
-    }
-  }
 
   const attr = context.getAttribute(property.key);
   if (!attr) {
@@ -79,5 +69,5 @@ export function validateProperty(
     getValidOperators: () => [],
     getEnumOptions: () => null,
   };
-  return validatePropertyCore(property, context, !!ontology, Array.isArray(ontology) ? ontology : undefined, !!ontology);
+  return validatePropertyCore(property, context, !!ontology);
 }

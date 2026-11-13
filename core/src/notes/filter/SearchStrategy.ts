@@ -2,7 +2,6 @@ import type { Note, OntologyNode } from '../../types/index.js';
 import type { NoteMetadata } from './NoteFilter.js';
 import { MatchEngine } from '../../matching/MatchEngine.js';
 import { parseProperties } from '../parsing/index.js';
-import { getCanonicalKey } from '../../ontology/ontologyCore.js';
 
 export interface SearchStrategy {
   search(notes: (Note & NoteMetadata)[], searchTerm: string, ontology: OntologyNode[]): (Note & NoteMetadata)[];
@@ -84,9 +83,9 @@ export class PropertySearchStrategy implements SearchStrategy {
 
     return notes.filter(note =>
       queries.every(q => {
-        const canonicalQueryKey = getCanonicalKey(q.key, ontology);
+        const queryKey = q.key;
         return note.properties.some(p =>
-          getCanonicalKey(p.key, ontology) === canonicalQueryKey &&
+          p.key === queryKey &&
           p.values.some(v => v.toLowerCase().includes(q.value))
         );
       })

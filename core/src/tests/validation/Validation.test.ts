@@ -16,8 +16,8 @@ describe('Validation Logic', () => {
             label: 'Job',
             requiredAttributes: ['role', 'salary'],
             attributes: {
-                role: { type: 'string', description: '', icon: '', operators: { real: ['is'], imaginary: [] }, aliases: ['position'] },
-                salary: { type: 'number', description: '', icon: '', operators: { real: ['is'], imaginary: [] }, aliases: ['rate'] },
+                role: { type: 'string', description: '', icon: '', operators: { real: ['is'], imaginary: [] } },
+                salary: { type: 'number', description: '', icon: '', operators: { real: ['is'], imaginary: [] } },
                 location: { type: 'string', description: '', icon: '', operators: { real: ['is'], imaginary: [] } }
             }
         }
@@ -31,15 +31,6 @@ describe('Validation Logic', () => {
         const result = validateNote(note, mockOntology);
         expect(result.isValid).toBe(true);
         expect(result.errors).toHaveLength(0);
-    });
-
-    it('should validate valid note with alias keys', () => {
-        const note = createNote([
-            { key: 'position', value: 'Dev' }, // alias for role
-            { key: 'rate', value: '100k' }     // alias for salary
-        ]);
-        const result = validateNote(note, mockOntology);
-        expect(result.isValid).toBe(true);
     });
 
     it('should fail note missing required property', () => {

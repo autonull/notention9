@@ -1,5 +1,5 @@
 import type { OntologyNode, OntologyAttribute } from '../types/index.js';
-import { getCanonicalKey } from './ontologyCore.js';
+import { findAttributeDef } from './ontologyCore.js';
 
 /**
  * Records property usage for tracking frequency
@@ -14,13 +14,10 @@ export class UsageRecorder {
     record(properties: Array<{ key: string; values?: unknown[] }>): void {
         properties.forEach(prop => {
             const { key, values } = prop;
-            const canonical = getCanonicalKey(key, this.ontology);
-            const isKnown = this.ontology.some(node =>
-                node.attributes && node.attributes[key]
-            );
+            const isKnown = findAttributeDef(key, this.ontology);
 
             if (isKnown) {
-                this.known.set(canonical, (this.known.get(canonical) ?? 0) + 1);
+                this.known.set(key, (this.known.get(key) ?? 0) + 1);
             } else {
                 this.unknown.set(key, (this.unknown.get(key) ?? 0) + 1);
 

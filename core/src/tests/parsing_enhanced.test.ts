@@ -1,24 +1,19 @@
 import { parseProperties } from '../notes/parsing/index.js';
-import { resolveSimpleAlias } from '../ontology/ontologyCore.js';
 import { describe, it, expect } from 'vitest';
 
 describe('Enhanced Property Parsing', () => {
 
-    describe('Aliases', () => {
-        it('should resolve "loc" to "location"', () => {
-            const key = resolveSimpleAlias('loc');
-            expect(key).toBe('location');
-        });
-
-        it('should parse [loc:is:NYC] as location', () => {
-            const props = parseProperties('[loc:is:NYC]');
+    describe('Canonical Keys (no aliases)', () => {
+        it('should parse [location:is:NYC] as location', () => {
+            const props = parseProperties('[location:is:NYC]');
             expect(props[0].key).toBe('location');
             expect(props[0].values).toEqual(['NYC']);
         });
 
-        it('should parse [$:is:100] as price', () => {
-            const props = parseProperties('[$:is:100]');
+        it('should parse [price:is:100] as price', () => {
+            const props = parseProperties('[price:is:100]');
             expect(props[0].key).toBe('price');
+            expect(props[0].values).toEqual(['100']);
         });
     });
 
@@ -43,8 +38,8 @@ describe('Enhanced Property Parsing', () => {
             expect(props[0].values).toEqual(['react', 'vue', 'node']);
         });
 
-        it('should handle multi-value with aliases', () => {
-            const props = parseProperties('[loc:is:NYC, London]');
+        it('should handle multi-value with canonical keys', () => {
+            const props = parseProperties('[location:is:NYC, London]');
             expect(props[0].key).toBe('location');
             expect(props[0].values).toEqual(['NYC', 'London']);
         });

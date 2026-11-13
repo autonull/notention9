@@ -85,7 +85,7 @@ export interface ExtractedProperty {
 }
 
 export type PrivacyLevel = 'private' | 'protected' | 'public';
-export type PropertyType = 'quantity' | 'number' | 'date' | 'datetime' | 'geo' | 'string';
+export type PropertyType = 'quantity' | 'number' | 'date' | 'datetime' | 'geo' | 'string' | 'enum' | 'boolean';
 
 export interface OntologyNode {
   id: string;
@@ -102,9 +102,10 @@ export interface OntologyAttribute {
   type: string;
   description?: string;
   icon?: string;
-  operators: {
-    real: string[];
-    imaginary: string[];
+  /** Optional override. If omitted, uses type defaults from DEFAULT_OPERATORS_BY_TYPE. */
+  operators?: {
+    real?: string[];
+    imaginary?: string[];
   };
   options?: string[];
   referenceType?: string;

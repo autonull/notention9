@@ -1,5 +1,7 @@
 export * from './OntologyAdapter.js';
-export { collectOntologyKeys, getCanonicalKey, buildAttributeIndex, findNode, findNodeWithAttribute, findNodeIdForAttribute, getSubtreeKeys, findAttributeDef, addAttribute, addNode, deleteNode, deleteAttribute, mergeAttributes, renameAttribute, renameNode } from './ontologyCore.js';
+export { collectOntologyKeys, buildAttributeIndex, findNode, findNodeWithAttribute, findNodeIdForAttribute, getSubtreeKeys, findAttributeDef, addAttribute, addNode, deleteNode, deleteAttribute, mergeAttributes, renameAttribute, renameNode } from './ontologyCore.js';
+export { DEFAULT_OPERATORS_BY_TYPE, getEffectiveOperators, getAllOperators } from './operators.js';
+export type { OperatorPair } from './operators.js';
 export { buildWidgetMetadata, WidgetType } from './widgets.js';
 export * from './lifecycle.js';
 export * from './schema.js';

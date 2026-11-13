@@ -33,12 +33,11 @@ describe('Property Parsing Normalization', () => {
         expect(properties[1].key).toBe('price');
     });
 
-    it('should fall back to resolveAlias if ontology is missing', () => {
-        // Assuming resolveAlias handles basic cases like loc->location but maybe not custom ones
-        const text = '[loc:NYC]';
+    it('should keep key as-is when ontology is missing', () => {
+        const text = '[location:NYC]';
         const properties = parseProperties(text); // No ontology
 
-        // If resolveAlias handles loc->location:
+        // No alias resolution - key stays as provided
         expect(properties[0].key).toBe('location');
     });
 

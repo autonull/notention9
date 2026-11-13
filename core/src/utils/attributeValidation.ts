@@ -1,11 +1,12 @@
 import type { OntologyAttribute } from '../types/index.js';
 import { ISODATE_REGEX, GEO_REGEX, RANGE_REGEX } from './constants.js';
 import type { PropertyValidationResult } from './validationTypes.js';
+import { getAllOperators } from '../ontology/operators.js';
 
 export const NUMERIC_OPERATORS = new Set(['less than', 'greater than', 'less than or equal', 'greater than or equal', 'range', 'between']);
 
 export function validateOperator(name: string, operator: string, definition: OntologyAttribute): PropertyValidationResult {
-  const validOperators = [...(definition.operators.real ?? []), ...(definition.operators.imaginary ?? [])];
+  const validOperators = getAllOperators(definition);
   if (validOperators.length > 0 && !validOperators.includes(operator)) {
     return { isValid: false, message: `Operator '${operator}' not supported for ${name}. Try: ${validOperators.join(', ')}` };
   }

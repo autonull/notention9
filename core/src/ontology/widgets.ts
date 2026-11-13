@@ -1,4 +1,5 @@
 import type { OntologyNode, OntologyAttribute, PropertyType } from '../types/index.js';
+import { getEffectiveOperators, getAllOperators } from './operators.js';
 
 /**
  * Widget type mapping for UI generation
@@ -47,7 +48,7 @@ export function buildWidgetMetadata(
         type: widgetType,
         icon: attribute.icon,
         options: attribute.type === 'enum' ? attribute.options : undefined,
-        operators: [...(attribute.operators?.real ?? []), ...(attribute.operators?.imaginary ?? [])]
+        operators: getAllOperators(attribute)
     };
 }
 
@@ -59,9 +60,7 @@ export function getAttributesByOperator(
     operator: string
 ): Array<{ key: string; attribute: OntologyAttribute }> {
     return Array.from(attributeIndex)
-        .filter(([_, attr]) =>
-            attr.operators.real.includes(operator) || attr.operators.imaginary.includes(operator)
-        )
+        .filter(([_, attr]) => getAllOperators(attr).includes(operator))
         .map(([key, attribute]) => ({ key, attribute }));
 }
 
@@ -100,9 +99,10 @@ export function getValidOperators(
     const attr = attributeIndex.get(attributeKey);
     if (!attr) return [];
 
+    const operators = getEffectiveOperators(attr);
     switch (type) {
-        case 'real': return attr.operators.real;
-        case 'imaginary': return attr.operators.imaginary;
-        default: return [...attr.operators.real, ...attr.operators.imaginary];
+        case 'real': return operators.real;
+        case 'imaginary': return operators.imaginary;
+        default: return [...operators.real, ...operators.imaginary];
     }
 }

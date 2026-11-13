@@ -1,6 +1,7 @@
 import type { OntologyNode, OntologyAttribute } from '../types/index.js';
 import { OntologyService } from '../ontology/ontologyService.js';
 import { findAttributeDef, buildAttributeIndex } from '../ontology/ontologyCore.js';
+import { getAllOperators } from '../ontology/operators.js';
 
 export interface ValidationContext {
   getAttribute(key: string): OntologyAttribute | null;
@@ -22,7 +23,7 @@ export function createValidationContext(ontology: OntologyNode[] | OntologyServi
     getValidOperators: (key) => {
       const attr = attrIndex.get(key);
       if (!attr) return [];
-      return [...(attr.operators.real ?? []), ...(attr.operators.imaginary ?? [])];
+      return getAllOperators(attr);
     },
     getEnumOptions: (key) => {
       const attr = attrIndex.get(key);
