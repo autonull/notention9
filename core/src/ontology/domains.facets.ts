@@ -34,7 +34,7 @@ export const noteDomain: OntologyNode[] = [
                 type: 'date', 
                 description: 'Deadline for committed items', 
                 icon: 'calendar', 
-                operators: { real: ['is'], imaginary: ['before', 'after'] } 
+                operators: { real: ['is', 'contains', 'before', 'after', 'less than'], imaginary: [] } 
             },
             commitment: { 
                 type: 'string', 

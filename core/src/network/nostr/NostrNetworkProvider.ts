@@ -13,7 +13,7 @@ import { NetworkDiscoveryService } from './discovery.js';
 import { ScoredMatch } from '../../matching/bidirectional.js';
 import { hexToBytes } from '../../utils/encoding.js';
 import { MatchEngine } from '../../matching/MatchEngine.js';
-import { getAliases } from '../../ontology/ontologyCore.js';
+
 import { BaseNetworkProvider, type NetworkProviderConfig } from '../BaseNetworkProvider.js';
 
 export interface NostrConfig extends NetworkProviderConfig {
@@ -83,7 +83,7 @@ export class NostrNetworkProvider extends BaseNetworkProvider implements Network
         const enhancedNote = { ...note, tags: [...note.tags] };
         if (ontology) {
             const propertyTags = new Set(
-                note.properties.flatMap(p => getAliases(p.key, ontology))
+                note.properties.flatMap(p => [p.key])
                     .filter(alias => !note.properties.some(p => p.key === alias))
                     .map(alias => `prop:${alias}`)
             );

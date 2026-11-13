@@ -179,7 +179,7 @@ export const resourceDomain: OntologyNode[] = [
                         options: ['water', 'food', 'medical', 'fuel', 'ammunition', 'tools', 'shelter-material', 'clothing', 'communication', 'power', 'sanitation', 'other'],
                         description: 'Category of resource.',
                         icon: 'package',
-                        operators: { real: ['is'], imaginary: ['is not'] },
+                        operators: { real: ['is', 'contains'], imaginary: ['is not'] },
                         role: 'constraint'
                     },
                     name: {
@@ -262,7 +262,7 @@ export const resourceDomain: OntologyNode[] = [
                         options: ['water', 'food', 'medical', 'fuel', 'ammunition', 'tools', 'shelter-material', 'clothing', 'communication', 'power', 'sanitation', 'other'],
                         description: 'Category of resource needed.',
                         icon: 'package',
-                        operators: { real: ['is'], imaginary: ['is not'] },
+                        operators: { real: ['is', 'contains'], imaginary: ['is not'] },
                         role: 'constraint'
                     },
                     name: {
@@ -276,7 +276,7 @@ export const resourceDomain: OntologyNode[] = [
                         type: 'number',
                         description: 'Amount needed.',
                         icon: 'hash',
-                        operators: { real: ['is', 'greater than', 'less than'], imaginary: [] },
+                        operators: { real: ['is', 'greater than', 'less than', 'between'], imaginary: [] },
                         numericOptions: { unit: 'units', precision: 0 },
                         role: 'constraint'
                     },
@@ -314,7 +314,7 @@ export const resourceDomain: OntologyNode[] = [
                         type: 'datetime',
                         description: 'When the need must be met.',
                         icon: 'clock',
-                        operators: { real: ['is', 'contains', 'before', 'after'], imaginary: [] },
+                        operators: { real: ['is', 'contains', 'before', 'after', 'less than'], imaginary: [] },
                         role: 'constraint'
                     },
                     notes: {

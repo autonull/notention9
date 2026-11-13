@@ -1,6 +1,6 @@
 # TODO.23 — The Coordination Paradigm: Development, Usability, Ontology Evolution & Demonstration
 
-**Status:** Active — Week 3 automated items complete; Week 4 planned. Human-dependent items (comprehension probe, video recording) blocked pending participants/recording setup.
+**Status:** Active — Week 3 automated items complete; Week 4 operator drift fixes complete. Human-dependent items (comprehension probe, video recording) blocked pending participants/recording setup. Taxonomy coverage sweep next.
 **Premise:** The implementation baseline exists. We are **not done** — and "done" is the wrong frame. This phase establishes a *perpetual improvement cycle* across four interlocking fronts.
 
 **North Star:** Make **"notes as coordination primitives"** as intuitive and universal as email — so any person, group, or community can coordinate needs, offers, and commitments with verifiable trust, offline, without servers, without gatekeepers.
@@ -644,6 +644,7 @@ These are **checkpoints** where all fronts are in a coherent, demonstrable state
 | 2026-11-13 | 13 scenarios ↔ 13 videos ↔ 11 capabilities; videos are living regression artifacts | Every video is also a test; staleness is a bug |
 | 2026-11-13 | Recording target = Simulator Dashboard v2 (deterministic), not live app | Avoid headless WebGL/navigation flakiness; exact camera control |
 | 2026-11-13 | Mandatory post-demo fix loop (D6) + re-record (D7) | Demonstration must change the system, not just display it |
+| 2026-11-13 | Operator drift patches from Week 3 quality cases applied (skills, agenda, resourceType, quantity, deadline) | Eliminate "Extra in observed" drift; align ontology with real extraction patterns; 990+ tests still pass |
 
 ---
 
@@ -723,10 +724,15 @@ pnpm probe --headless                ✅ Ran (0% comprehension without human par
 5. **Front D**: Record semantic-capture and bidirectional-match videos using Simulator Dashboard v2 ⏳ **BLOCKED — requires video recording setup**
 6. **Front A**: Run patch generalization test (E14) on ontology changes; verify no regression on 22 match cases + holdout + 200-run simulator distribution ✅
 
-**Next Probe Cycle (Week 4) — PLANNED (2026-11-13):**
-1. **Front C**: Address new operator drift from Week 3 quality cases (8 keys: skills, agenda, capacity, emergencyContact, resourceType, quantity, body, dueDate) → ontology patches
-2. **Front C**: Run taxonomy coverage sweep for remaining Fiske/Ostrom cells; add scenarios for mentorship, open-source-contrib, commons-governance
-3. **Front A**: Run full test suite + verify to confirm no regressions from Week 3 changes
-4. **Front B**: Prepare automated comprehension probe improvements (add semantic markers for probe tool)
-5. **Front D**: Document Simulator Dashboard v2 video recording procedure (deterministic headless capture via Playwright/Chrome DevTools Protocol)
-6. **All Fronts**: Schedule human comprehension probe session + video recording session for Week 4 execution
+**Next Probe Cycle (Week 4) — IN PROGRESS (2026-11-13):**
+1. **Front C**: Address new operator drift from Week 3 quality cases → ontology patches ✅
+   - Added `contains` to real operators for skills, agenda, resourceType
+   - Added `between` to real operators for quantity
+   - Added `less than` to real operators for deadline (3 locations: project, survival need, commitment facet)
+   - Verified: capacity, emergencyContact, dueDate already had correct operators
+   - Result: All "Extra in observed" operator drift resolved; only "Missing from observed: is" remains (expected - quality cases prefer other operators)
+2. **Front C**: Run taxonomy coverage sweep for remaining Fiske/Ostrom cells; add scenarios for mentorship, open-source-contrib, commons-governance ⏳
+3. **Front A**: Run full test suite + verify to confirm no regressions from Week 3 changes ✅ (990+ tests pass, verify passes)
+4. **Front B**: Prepare automated comprehension probe improvements (add semantic markers for probe tool) ⏳
+5. **Front D**: Document Simulator Dashboard v2 video recording procedure (deterministic headless capture via Playwright/Chrome DevTools Protocol) ⏳
+6. **All Fronts**: Schedule human comprehension probe session + video recording session for Week 4 execution ⏳
