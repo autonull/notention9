@@ -1,0 +1,20 @@
+{
+  "id": "quality-extract-041",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Job posting: Senior React Developer at TechCorp, full-time, remote OK, $150k/year budget. Required skills: React, TypeScript, GraphQL. 5+ years experience.",
+  "expected": [
+    { "key": "title", "operator": "is", "values": ["Senior React Developer"] },
+    { "key": "company", "operator": "is", "values": ["TechCorp"] },
+    { "key": "employmentType", "operator": "is", "values": ["full-time"] },
+    { "key": "remote", "operator": "is", "values": ["true"] },
+    { "key": "budget", "operator": "less than", "values": ["150000 USD"] },
+    { "key": "skills", "operator": "contains", "values": ["React", "TypeScript", "GraphQL"] },
+    { "key": "experienceLevel", "operator": "is", "values": ["senior"] }
+  ],
+  "forbidden": [
+    { "key": "employmentType", "operator": "is", "values": ["part-time", "contract"] }
+  ],
+  "labels": { "annotators": 2, "agreement": 0.93 },
+  "tags": ["work", "job-request", "tech", "remote"]
+}

@@ -1,0 +1,16 @@
+{
+  "id": "quality-extract-048",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Email thread: From: coordinator@mutualaid.org To: volunteers@mutualaid.org Bcc: admin@mutualaid.org Subject: Urgent: Water distribution tomorrow 8am. Body: Meet at community center. Bring containers. Reply to confirm.",
+  "expected": [
+    { "key": "from", "operator": "is", "values": ["coordinator@mutualaid.org"] },
+    { "key": "to", "operator": "is", "values": ["volunteers@mutualaid.org"] },
+    { "key": "bcc", "operator": "is", "values": ["admin@mutualaid.org"] },
+    { "key": "subject", "operator": "contains", "values": ["Water distribution tomorrow 8am"] },
+    { "key": "body", "operator": "contains", "values": ["community center", "containers", "confirm"] }
+  ],
+  "forbidden": [],
+  "labels": { "annotators": 2, "agreement": 0.95 },
+  "tags": ["communication", "email", "crisis-response", "mutual-aid"]
+}

@@ -1,0 +1,19 @@
+{
+  "id": "quality-extract-043",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Family evacuation: Need shelter for 4 (infant, elderly, diabetic). Requires insulin storage, power for medical devices, wheelchair accessible. Budget $200/night. Contact: 555-0199.",
+  "expected": [
+    { "key": "careRequirements", "operator": "contains", "values": ["insulin storage", "power for medical devices", "wheelchair accessible"] },
+    { "key": "hasMedical", "operator": "is", "values": ["true"] },
+    { "key": "hasPower", "operator": "is", "values": ["true"] },
+    { "key": "capacity", "operator": "greater than", "values": ["4"] },
+    { "key": "budget", "operator": "less than", "values": ["200 USD/night"] },
+    { "key": "emergencyContact", "operator": "is", "values": ["555-0199"] }
+  ],
+  "forbidden": [
+    { "key": "hasMedical", "operator": "is", "values": ["false"] }
+  ],
+  "labels": { "annotators": 2, "agreement": 0.96 },
+  "tags": ["survival", "family-evacuation", "medical", "crisis-response"]
+}

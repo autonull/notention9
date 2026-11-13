@@ -1,14 +1,14 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-02T23:09:46.166Z",
+  "generatedAt": "2026-11-13T14:20:13.439Z",
   "counts": {
     "intent": {
       "search": 21,
-      "validation": 10,
+      "validation": 12,
       "holdout": 9
     },
     "quality": {
-      "extraction": 38,
+      "extraction": 50,
       "match": 22
     }
   },
@@ -276,10 +276,38 @@
       ]
     },
     {
+      "id": "intent-capture-020",
+      "family": "intent",
+      "split": "validation",
+      "path": "intent/validation/intent-capture-020.json",
+      "hash": "b8b3deb230bcfa0c",
+      "tags": [
+        "education",
+        "youth",
+        "schedule",
+        "free",
+        "volunteering"
+      ]
+    },
+    {
       "id": "intent-capture-021",
       "family": "intent",
       "split": "holdout",
       "path": "intent/holdout/intent-capture-021.json",
+      "hash": "42b559d481e36e74",
+      "tags": [
+        "health",
+        "care",
+        "newborn",
+        "insurance",
+        "budget"
+      ]
+    },
+    {
+      "id": "intent-capture-021",
+      "family": "intent",
+      "split": "validation",
+      "path": "intent/validation/intent-capture-021.json",
       "hash": "42b559d481e36e74",
       "tags": [
         "health",
@@ -1058,6 +1086,162 @@
       ]
     },
     {
+      "id": "quality-extract-039",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-039.json",
+      "hash": "2b5047f0f387899a",
+      "tags": [
+        "communication",
+        "email",
+        "schedule"
+      ]
+    },
+    {
+      "id": "quality-extract-040",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-040.json",
+      "hash": "c37a5c8891ca9a04",
+      "tags": [
+        "event",
+        "meeting",
+        "schedule",
+        "work"
+      ]
+    },
+    {
+      "id": "quality-extract-041",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-041.json",
+      "hash": "3dd5960ecb7132a8",
+      "tags": [
+        "work",
+        "job-request",
+        "tech",
+        "remote"
+      ]
+    },
+    {
+      "id": "quality-extract-042",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-042.json",
+      "hash": "6621908331cf6efb",
+      "tags": [
+        "work",
+        "freelance-offer",
+        "design",
+        "remote"
+      ]
+    },
+    {
+      "id": "quality-extract-043",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-043.json",
+      "hash": "4bb272a346c457ea",
+      "tags": [
+        "survival",
+        "family-evacuation",
+        "medical",
+        "crisis-response"
+      ]
+    },
+    {
+      "id": "quality-extract-044",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-044.json",
+      "hash": "6ca3d2bada095c2d",
+      "tags": [
+        "survival",
+        "resource-distribution",
+        "commons",
+        "crisis-response"
+      ]
+    },
+    {
+      "id": "quality-extract-045",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-045.json",
+      "hash": "6f566d273cd9eb60",
+      "tags": [
+        "legal",
+        "legal-contract",
+        "formal",
+        "codified"
+      ]
+    },
+    {
+      "id": "quality-extract-046",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-046.json",
+      "hash": "2cf735671f691322",
+      "tags": [
+        "generational",
+        "generational-stewardship",
+        "communal",
+        "land"
+      ]
+    },
+    {
+      "id": "quality-extract-047",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-047.json",
+      "hash": "333bd8d83af7064f",
+      "tags": [
+        "kinship",
+        "kinship-care",
+        "care",
+        "generational",
+        "family"
+      ]
+    },
+    {
+      "id": "quality-extract-048",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-048.json",
+      "hash": "c65a75e2c0c0ac97",
+      "tags": [
+        "communication",
+        "email",
+        "crisis-response",
+        "mutual-aid"
+      ]
+    },
+    {
+      "id": "quality-extract-049",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-049.json",
+      "hash": "f03f28c4dbacf0fb",
+      "tags": [
+        "work",
+        "task",
+        "project",
+        "bug"
+      ]
+    },
+    {
+      "id": "quality-extract-050",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-050.json",
+      "hash": "3ace7671510c202d",
+      "tags": [
+        "event",
+        "conference",
+        "schedule",
+        "tech"
+      ]
+    },
+    {
       "id": "quality-match-001",
       "family": "quality",
       "qualityFamily": "match",
@@ -1337,5 +1521,5 @@
       ]
     }
   ],
-  "hash": "88e94e709654c623"
+  "hash": "241b6dfd5c83ecbe"
 }

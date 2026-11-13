@@ -1,0 +1,13 @@
+{
+  "id": "quality-extract-040",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Meeting with Sarah tomorrow 2pm about Q4 budget. Agenda: revenue projections, hiring plan, risk review. Action items assigned to team leads.",
+  "expected": [
+    { "key": "agenda", "operator": "contains", "values": ["revenue projections", "hiring plan", "risk review"] },
+    { "key": "actionItems", "operator": "is", "values": ["assigned to team leads"] }
+  ],
+  "forbidden": [],
+  "labels": { "annotators": 2, "agreement": 0.9 },
+  "tags": ["event", "meeting", "schedule", "work"]
+}

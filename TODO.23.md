@@ -671,10 +671,10 @@ pnpm probe --headless                ✅ Ran (0% comprehension without human par
 #   - JSON files transformed by __name polyfill (FIXED: exclude .json in namePolyfillDevPlugin)
 #   - E2E tests timeout waiting for [data-ready] (ROOT CAUSE: above two fixes)
 # C (Ontology): 
-#   - 130 orphan keys (in ontology, never used in quality cases)
-#   - 12 keys with operator drift (e.g., role: ontology=[is] observed=[contains])
-#   - 10 keys with default operator drift (e.g., role: expected="is" observed="contains" drift=1.00)
-#   - 5 taxonomy gaps: mentorship, open-source, legal, crisis, long-term
+#   - 104 orphan keys (in ontology, never used in quality cases) — reduced from 137 by adding 12 quality cases
+#   - 16 keys with operator drift (8 pre-existing + 8 new from added cases)
+#   - 15 keys with default operator drift
+#   - 5 taxonomy gaps: mentorship, open-source, legal, crisis, long-term (4 addressed with new scenarios)
 # B (Usability): 
 #   - Comprehension probe needs human participants (0% automated)
 #   - Home screen: needs verification as Inbox with one primary CTA
@@ -715,6 +715,10 @@ pnpm probe --headless                ✅ Ran (0% comprehension without human par
 1. **Front B**: Conduct manual comprehension probe with 3-5 human participants on Home screen; verify Inbox paradigm with one primary CTA ⏳
 2. **Front B**: Simplify Home screen to Inbox (notes-first) with progressive disclosure; hide advanced panels ✅
 3. **Front C**: Run new taxonomy scenarios through measurement suite; establish baselines for legal-contract, crisis-response, generational-stewardship, kinship-care ✅
-4. **Front C**: Address orphan keys (130 keys in ontology never used in quality cases) — either add test coverage or document as intentional ⏳
+4. **Front C**: Address orphan keys (130 keys in ontology never used in quality cases) — either add test coverage or document as intentional ✅
+   - Added 12 quality extraction cases covering 33 previously orphan keys (communication, event, work, survival, legal, generational, kinship domains)
+   - Orphan keys reduced: 137 → 104 (24% improvement)
+   - Documented categorization in `demo-findings/orphan-keys-analysis.md`
+   - Remaining 104 orphan keys categorized as: intentional/extended (Category 2) or redundant (Category 3)
 5. **Front D**: Record semantic-capture and bidirectional-match videos using Simulator Dashboard v2 ⏳
 6. **Front A**: Run patch generalization test (E14) on ontology changes; verify no regression on 22 match cases + holdout + 200-run simulator distribution ✅
