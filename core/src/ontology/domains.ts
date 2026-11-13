@@ -114,8 +114,8 @@ export const eventDomain: OntologyNode[] = [
         attributes: {
             title: { type: 'string', description: 'Title or name of the event', icon: 'title', operators: { real: ['is'], imaginary: ['is not', 'contains'] } },
             description: { type: 'string', description: 'Detailed description of the event', icon: 'info', operators: { real: ['is'], imaginary: ['contains'] } },
-            start: { type: 'datetime', description: 'Start date and time', icon: 'clock', operators: { real: ['is'], imaginary: ['is after', 'is before'] } },
-            end: { type: 'datetime', description: 'End date and time', icon: 'clock', operators: { real: ['is'], imaginary: ['is after', 'is before'] } },
+            startTime: { type: 'datetime', description: 'Start date and time', icon: 'clock', operators: { real: ['is'], imaginary: ['is after', 'is before'] } },
+            endTime: { type: 'datetime', description: 'End date and time', icon: 'clock', operators: { real: ['is'], imaginary: ['is after', 'is before'] } },
             duration: { type: 'number', description: 'Duration in minutes', icon: 'timer', operators: { real: ['is'], imaginary: ['greater than', 'less than'] } },
             location: { type: 'string', description: 'Where the event takes place (name, address, or coordinates)', icon: 'map-pin', operators: { real: ['is', 'contains', 'near'], imaginary: ['is not'] }, role: 'constraint' },
             eventType: { type: 'enum', options: ['meeting', 'conference', 'workshop', 'seminar', 'training', 'social', 'celebration', 'performance', 'sports', 'other'], description: 'Type of event', icon: 'calendar', operators: { real: ['is'], imaginary: ['is not'] } },

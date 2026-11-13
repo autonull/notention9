@@ -6,8 +6,8 @@
   "expected": [
     { "key": "title", "operator": "is", "values": ["TechConf 2026"] },
     { "key": "location", "operator": "is", "values": ["San Francisco Moscone Center"] },
-    { "key": "start", "operator": "is", "values": ["2026-11-15 09:00"] },
-    { "key": "end", "operator": "is", "values": ["2026-11-17 18:00"] },
+    { "key": "startTime", "operator": "is", "values": ["2026-11-15 09:00"] },
+    { "key": "endTime", "operator": "is", "values": ["2026-11-17 18:00"] },
     { "key": "organizer", "operator": "is", "values": ["TechEvents Inc."] },
     { "key": "meetingType", "operator": "is", "values": ["conference"] },
     { "key": "conferenceType", "operator": "is", "values": ["hybrid"] }

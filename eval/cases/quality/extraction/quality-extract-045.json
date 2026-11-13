@@ -10,8 +10,8 @@
     { "key": "governingLaw", "operator": "is", "values": ["Delaware"] },
     { "key": "budget", "operator": "is", "values": ["50000 USD"] },
     { "key": "deadline", "operator": "before", "values": ["2026-12-31"] },
-    { "key": "start", "operator": "is", "values": ["2026-11-01"] },
-    { "key": "end", "operator": "is", "values": ["2027-05-01"] }
+    { "key": "startTime", "operator": "is", "values": ["2026-11-01"] },
+    { "key": "endTime", "operator": "is", "values": ["2027-05-01"] }
   ],
   "forbidden": [],
   "labels": { "annotators": 2, "agreement": 0.94 },
