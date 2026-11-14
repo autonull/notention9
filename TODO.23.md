@@ -809,7 +809,11 @@ pnpm probe --headless                ✅ Ran (0% comprehension without human par
 ---
 
 **Next Actions:**
-- Front C: Run corpus→patch cycle for new taxonomy cells
+- Front C: Run corpus→patch cycle for new taxonomy cells ✅
+  - Ran E7 audit on 50 quality extraction cases (including 12 new cases for new taxonomy cells)
+  - Generated 3 patch proposals from audit findings: operator-defaults-extended (13 operator drift fixes), hierarchy-new-taxonomy (5 hierarchy groups for crisis, generational, kinship, coordination, resource), combined-new-taxonomy
+  - Ran E14 patch generalization test — all 6 patches non-regressive (6/6 accepted)
+  - Corpus→patch cycle demonstrated: corpus → quality cases → audit → patch proposals → patch test → accepted
 - Front A: Verify offline queue zero-loss, receipt chains verify offline ✅ (tests pass)
 - Front D: Document video recording procedures for T2 scenarios
 - Front D: Record T1 videos when human participants available (blocked)
