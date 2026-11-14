@@ -1,6 +1,6 @@
 # TODO.23 — The Coordination Paradigm: Development, Usability, Ontology Evolution & Demonstration
 
-**Status:** Active — Week 7 automated items complete: Ontology redesign done, all core/UI/agent/cli/optimize tests pass. **All simulator taxonomy cell baseline mismatches FIXED** (learning-community, events-&-networking, commons-governance, cross-cultural-aid-coordination, long-term-commitment-network, generational-land-stewardship) + **RunEvent timeout tests FIXED**. Human-dependent items (comprehension probe, video recording) blocked pending participants.
+**Status:** Active — Week 7 automated items complete: Ontology redesign done, all core/UI/agent/cli/optimize tests pass. **All simulator taxonomy cell baseline mismatches FIXED** (learning-community, events-&-networking, commons-governance, cross-cultural-aid-coordination, long-term-commitment-network, generational-land-stewardship) + **RunEvent timeout tests FIXED**. **Ontology configuration system documented.** Human-dependent items (comprehension probe, video recording) blocked pending participants.
 **Premise:** The implementation baseline exists. We are **not done** — and "done" is the wrong frame. This phase establishes a *perpetual improvement cycle* across four interlocking fronts.
 
 **North Star:** Make **"notes as coordination primitives"** as intuitive and universal as email — so any person, group, or community can coordinate needs, offers, and commitments with verifiable trust, offline, without servers, without gatekeepers.
@@ -876,8 +876,11 @@ pnpm probe --headless                ✅ Ran (0% comprehension without human par
    - simulator: 77/77 pass ✅ (all 6 taxonomy cells + 5 RunEvent timeout tests fixed)
    - **Overall: 1098/1098 tests pass (100%)**
 
-4. **Front D**: Document new ontology configuration system
-   - How to add custom ontology modules
-   - How to extend/override types and nodes
-   - Feature flag documentation
-   - Migration guide from legacy TS definitions
+4. **Front D**: Document new ontology configuration system ✅
+   - Created `doc/ontology-configuration.md` with:
+     - How to add custom ontology modules
+     - How to extend/override types and nodes
+     - Feature flag documentation
+     - Migration guide from legacy TS definitions
+     - Schema reference, best practices, troubleshooting
+     - Complete custom domain example
