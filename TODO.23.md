@@ -839,3 +839,38 @@ pnpm probe --headless                ✅ Ran (0% comprehension without human par
    - cross-cultural-aid-coordination: no matches found (multilingual not extractable)
    - long-term-commitment-network: no matches found (multi-year commitments not extractable)
    - These map to the taxonomy cells: commons-governance, cross-cultural, long-term
+
+---
+
+**Next Probe Cycle (Week 7) — 2026-11-14 (Ontology Redesign Complete):**
+1. **Front C**: Complete pluggable, data-driven ontology system ✅
+   - Migrated all ontology definitions from TypeScript to JSON data files (19 files in `/ontology/`)
+   - Core domains: types, entity, communication, event, work, commerce (6 modules)
+   - Survival domains: types, hazard, resource, shelter, medical, transport, comms (7 modules)
+   - Config-driven module selection via `ontology/config.default.json` with priority ordering
+   - Feature flags enable/disable entire domains (survival, commerce, work, communication, customExtensions)
+   - Eliminated 100+ redundant `operators` declarations - types now own vocabularies (RDFS/OWL-style)
+   - New loader (`core/src/ontology/loader.ts`) with type inheritance, node inheritance, module merge
+   - MatchEngine updated to use new loader API
+   - OntologyService wraps new loader for backward compatibility
+   - System config can now select specific ontologies defining network capabilities
+
+2. **Front C**: Update test expectations for new ontology structure
+   - PropertyExtractor validation tests: 18 failing (expect legacy operator validation messages)
+   - ontologyHelpers tests: 6 failing (use legacy mutation API - addNode, deleteNode, etc.)
+   - Simulator measurement suite: 6 taxonomy cells still need matching fixes
+   - These are expected breakages from the redesign - update tests to match new API
+
+3. **Front A**: Verify full test suite passes with new ontology
+   - core: 834/852 pass (18 validation test failures)
+   - ui: 66/72 pass (6 ontologyHelpers failures)
+   - simulator: 41/77 pass (16 measurement suite failures)
+   - agent: 17/17 pass
+   - cli: 6/6 pass
+   - optimize: 72/72 pass
+
+4. **Front D**: Document new ontology configuration system
+   - How to add custom ontology modules
+   - How to extend/override types and nodes
+   - Feature flag documentation
+   - Migration guide from legacy TS definitions
