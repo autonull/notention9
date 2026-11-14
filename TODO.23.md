@@ -1,6 +1,6 @@
 # TODO.23 — The Coordination Paradigm: Development, Usability, Ontology Evolution & Demonstration
 
-**Status:** Active — Week 4 automated items complete: taxonomy coverage sweep done (9 cells covered), commons-governance scenario added, semantic markers for comprehension probe added, Simulator Dashboard v2 video recording procedure documented. Human-dependent items (comprehension probe, video recording) blocked pending participants.
+**Status:** Active — Week 5 automated items complete: Labels tag manager, Automation toggle, chaos drills pass, taxonomy coverage 11 cells, corpus→patch cycle demonstrated, offline queue zero-loss verified, T2 video recording procedures documented. Human-dependent items (comprehension probe, video recording) blocked pending participants.
 **Premise:** The implementation baseline exists. We are **not done** — and "done" is the wrong frame. This phase establishes a *perpetual improvement cycle* across four interlocking fronts.
 
 **North Star:** Make **"notes as coordination primitives"** as intuitive and universal as email — so any person, group, or community can coordinate needs, offers, and commitments with verifiable trust, offline, without servers, without gatekeepers.
@@ -804,7 +804,9 @@ pnpm probe --headless                ✅ Ran (0% comprehension without human par
    - Updated `taxonomy.json`: cellsCovered 9 → 11, documented new covered cells
    - Both scenarios run successfully in simulator
 
-5. **Front D**: Document video recording procedures for T2 scenarios 🔄
+5. **Front D**: Document video recording procedures for T2 scenarios ✅
+   - Created `doc/t2-video-recording-procedures.md` with scenario-specific procedures for all 4 T2 scenarios
+   - Includes relay/bridge daemon setup, camera focus sequences, event timelines, Playwright test templates, seeds, batch script, CI integration
 
 ---
 
@@ -815,5 +817,5 @@ pnpm probe --headless                ✅ Ran (0% comprehension without human par
   - Ran E14 patch generalization test — all 6 patches non-regressive (6/6 accepted)
   - Corpus→patch cycle demonstrated: corpus → quality cases → audit → patch proposals → patch test → accepted
 - Front A: Verify offline queue zero-loss, receipt chains verify offline ✅ (tests pass)
-- Front D: Document video recording procedures for T2 scenarios
+- Front D: Document video recording procedures for T2 scenarios ✅
 - Front D: Record T1 videos when human participants available (blocked)
