@@ -92,6 +92,8 @@ export class ScenarioRunner {
         console.log(chalk.gray(scenario.description));
 
         await this.#spawnAgents(scenario.agents);
+        // Wait for all agents to connect to relay
+        await Promise.all(this.agents.map(a => a.ready));
     }
 
     async execute(scenario: Scenario) {

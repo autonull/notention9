@@ -100,8 +100,9 @@ export class MetricsCollector {
         const matchesPerMinute = durationMinutes > 0 ? totalMatches / durationMinutes : 0;
 
         // Unmatched rate (approximation: actions without subsequent matches)
+        // Clamp at 0 since one action can generate multiple matches
         const totalActions = this.actionEvents.length;
-        const unmatchedRate = totalActions > 0 ? 1 - (totalMatches / totalActions) : 0;
+        const unmatchedRate = totalActions > 0 ? Math.max(0, 1 - (totalMatches / totalActions)) : 0;
 
         // Match score distribution
         const matchScoreDistribution = this.matchEvents.map(e => e.score).sort((a, b) => a - b);

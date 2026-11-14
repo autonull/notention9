@@ -38,6 +38,16 @@ export async function stopRelay(port: number): Promise<void> {
 }
 
 /**
+ * Clear all events from a test relay (for test isolation between runs)
+ */
+export function clearRelayEvents(port: number): void {
+    const relay = relayInstances.get(port);
+    if (relay) {
+        relay.clearEvents();
+    }
+}
+
+/**
  * Stop all test relays
  */
 export async function stopAllRelays(): Promise<void> {

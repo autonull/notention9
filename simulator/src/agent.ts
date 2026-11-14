@@ -51,9 +51,15 @@ export class Agent {
     #seenEvents = new Set<string>();
     #relay: WebSocket;
     #runEventSink?: RunEventSink;
+    #readyPromise: Promise<void>;
+    #readyResolve!: () => void;
 
     public get secretKey(): string {
         return this.#privkey;
+    }
+
+    public get ready(): Promise<void> {
+        return this.#readyPromise;
     }
 
     constructor(
@@ -69,6 +75,8 @@ export class Agent {
         this.id = this.pubkey.slice(0, 8);
         this.#engine = new MatchEngine(ontology);
         this.#runEventSink = runEventSink;
+
+        this.#readyPromise = new Promise(resolve => { this.#readyResolve = resolve; });
 
         this.#relay = new WebSocket(relayUrl);
         this.#relay.on('error', (err) => {
@@ -90,6 +98,7 @@ export class Agent {
         this.#relay.on('open', () => {
             this.#log('Connected to relay');
             this.#subscribe();
+            this.#readyResolve();
         });
 
         this.#relay.on('message', (data) => {

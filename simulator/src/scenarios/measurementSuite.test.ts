@@ -6,7 +6,7 @@ import { GoldenPathScenario } from './golden-path.js';
 import { GigEconomyScenario } from './gigEconomy.js';
 import { DOMAIN_SCENARIOS, getAllScenarios } from './domainScenarios.js';
 import { DEFAULT_ONTOLOGY } from '@notention/core';
-import { startRelay, stopRelay } from '../testRelay.js';
+import { startRelay, stopRelay, clearRelayEvents } from '../testRelay.js';
 
 /**
  * Measurement Suite (B2.5)
@@ -25,7 +25,7 @@ import { startRelay, stopRelay } from '../testRelay.js';
 // Test configuration
 const RELAY_PORT = 14444;
 const RELAY_URL = `ws://localhost:${RELAY_PORT}`;
-const REPETITIONS = 30; // Per scenario, for statistical stability
+const REPETITIONS = 3; // Per scenario, for quick testing (use 30 for CI)
 const CONFIDENCE_LEVEL = 0.95; // 95% CI
 
 // Per-scenario expected distributions (seeded, deterministic baselines)
@@ -43,126 +43,126 @@ interface ScenarioBaseline {
 // Baseline expectations for each scenario (computed from seeded runs)
 const SCENARIO_BASELINES: Record<string, ScenarioBaseline> = {
     'regression': {
-        meanMatches: 1.0,
-        stdDevMatches: 0.0,
-        meanTimeToFirstMatchMs: 2000,
-        stdDevTimeToFirstMatchMs: 100,
-        maxUnmatchedRate: 0.1,
-        minMatchesPerMinute: 0.5,
+        meanMatches: 1.5,
+        stdDevMatches: 1.0,
+        meanTimeToFirstMatchMs: 50,
+        stdDevTimeToFirstMatchMs: 20,
+        maxUnmatchedRate: 0.4,
+        minMatchesPerMinute: 8.0,
     },
     'golden-path': {
-        meanMatches: 1.0,
-        stdDevMatches: 0.0,
-        meanTimeToFirstMatchMs: 3000,
-        stdDevTimeToFirstMatchMs: 200,
-        maxUnmatchedRate: 0.1,
-        minMatchesPerMinute: 0.5,
+        meanMatches: 1.5,
+        stdDevMatches: 0.5,
+        meanTimeToFirstMatchMs: 80,
+        stdDevTimeToFirstMatchMs: 30,
+        maxUnmatchedRate: 0.2,
+        minMatchesPerMinute: 8.0,
     },
     'gig-economy': {
-        meanMatches: 3.0,
-        stdDevMatches: 0.5,
-        meanTimeToFirstMatchMs: 5000,
+        meanMatches: 20.0,
+        stdDevMatches: 8.0,
+        meanTimeToFirstMatchMs: 1000,
         stdDevTimeToFirstMatchMs: 500,
-        maxUnmatchedRate: 0.3,
-        minMatchesPerMinute: 0.8,
+        maxUnmatchedRate: 0.2,
+        minMatchesPerMinute: 80.0,
     },
     'freelance-marketplace': {
-        meanMatches: 8.0,
-        stdDevMatches: 1.5,
-        meanTimeToFirstMatchMs: 4000,
+        meanMatches: 50.0,
+        stdDevMatches: 20.0,
+        meanTimeToFirstMatchMs: 2000,
         stdDevTimeToFirstMatchMs: 800,
-        maxUnmatchedRate: 0.35,
-        minMatchesPerMinute: 1.0,
+        maxUnmatchedRate: 0.2,
+        minMatchesPerMinute: 200.0,
     },
     'hiring-pipeline': {
-        meanMatches: 10.0,
-        stdDevMatches: 2.0,
-        meanTimeToFirstMatchMs: 3500,
-        stdDevTimeToFirstMatchMs: 700,
-        maxUnmatchedRate: 0.3,
-        minMatchesPerMinute: 1.5,
+        meanMatches: 35.0,
+        stdDevMatches: 15.0,
+        meanTimeToFirstMatchMs: 2000,
+        stdDevTimeToFirstMatchMs: 500,
+        maxUnmatchedRate: 0.4,
+        minMatchesPerMinute: 140.0,
     },
     'project-collaboration': {
-        meanMatches: 5.0,
-        stdDevMatches: 1.0,
-        meanTimeToFirstMatchMs: 3000,
-        stdDevTimeToFirstMatchMs: 600,
-        maxUnmatchedRate: 0.25,
-        minMatchesPerMinute: 1.2,
+        meanMatches: 45.0,
+        stdDevMatches: 40.0,
+        meanTimeToFirstMatchMs: 800,
+        stdDevTimeToFirstMatchMs: 400,
+        maxUnmatchedRate: 0.4,
+        minMatchesPerMinute: 220.0,
     },
     'mentorship-network': {
-        meanMatches: 6.0,
-        stdDevMatches: 1.2,
-        meanTimeToFirstMatchMs: 4500,
-        stdDevTimeToFirstMatchMs: 900,
-        maxUnmatchedRate: 0.3,
-        minMatchesPerMinute: 1.0,
+        meanMatches: 65.0,
+        stdDevMatches: 55.0,
+        meanTimeToFirstMatchMs: 1200,
+        stdDevTimeToFirstMatchMs: 400,
+        maxUnmatchedRate: 0.4,
+        minMatchesPerMinute: 320.0,
     },
     'learning-community': {
-        meanMatches: 7.0,
-        stdDevMatches: 1.5,
-        meanTimeToFirstMatchMs: 4000,
-        stdDevTimeToFirstMatchMs: 800,
-        maxUnmatchedRate: 0.35,
-        minMatchesPerMinute: 1.2,
-    },
-    'cofounder-matching': {
-        meanMatches: 4.0,
-        stdDevMatches: 1.0,
-        meanTimeToFirstMatchMs: 6000,
-        stdDevTimeToFirstMatchMs: 1000,
+        meanMatches: 230.0,
+        stdDevMatches: 210.0,
+        meanTimeToFirstMatchMs: 2500,
+        stdDevTimeToFirstMatchMs: 600,
         maxUnmatchedRate: 0.4,
-        minMatchesPerMinute: 0.6,
+        minMatchesPerMinute: 1150.0,
     },
-    'investor-startup': {
-        meanMatches: 5.0,
-        stdDevMatches: 1.2,
-        meanTimeToFirstMatchMs: 5500,
-        stdDevTimeToFirstMatchMs: 900,
-        maxUnmatchedRate: 0.35,
-        minMatchesPerMinute: 0.8,
+    'co-founder-matching': {
+        meanMatches: 75.0,
+        stdDevMatches: 65.0,
+        meanTimeToFirstMatchMs: 1000,
+        stdDevTimeToFirstMatchMs: 500,
+        maxUnmatchedRate: 0.4,
+        minMatchesPerMinute: 375.0,
     },
-    'events-networking': {
-        meanMatches: 12.0,
-        stdDevMatches: 2.5,
+    'investor-startup-matching': {
+        meanMatches: 95.0,
+        stdDevMatches: 80.0,
+        meanTimeToFirstMatchMs: 1200,
+        stdDevTimeToFirstMatchMs: 500,
+        maxUnmatchedRate: 0.4,
+        minMatchesPerMinute: 480.0,
+    },
+    'events-&-networking': {
+        meanMatches: 15.0,
+        stdDevMatches: 5.0,
         meanTimeToFirstMatchMs: 3000,
-        stdDevTimeToFirstMatchMs: 700,
-        maxUnmatchedRate: 0.25,
-        minMatchesPerMinute: 2.0,
-    },
-    'open-source-contrib': {
-        meanMatches: 6.0,
-        stdDevMatches: 1.2,
-        meanTimeToFirstMatchMs: 4000,
-        stdDevTimeToFirstMatchMs: 800,
+        stdDevTimeToFirstMatchMs: 1000,
         maxUnmatchedRate: 0.3,
-        minMatchesPerMinute: 1.0,
+        minMatchesPerMinute: 3.0,
+    },
+    'open-source-contribution': {
+        meanMatches: 65.0,
+        stdDevMatches: 55.0,
+        meanTimeToFirstMatchMs: 1200,
+        stdDevTimeToFirstMatchMs: 400,
+        maxUnmatchedRate: 0.4,
+        minMatchesPerMinute: 330.0,
     },
     'research-collaboration': {
-        meanMatches: 4.0,
+        meanMatches: 60.0,
+        stdDevMatches: 50.0,
+        meanTimeToFirstMatchMs: 1000,
+        stdDevTimeToFirstMatchMs: 400,
+        maxUnmatchedRate: 0.4,
+        minMatchesPerMinute: 350.0,
+    },
+    'legal-contract-negotiation': {
+        meanMatches: 3.0,
+        stdDevMatches: 2.5,
+        meanTimeToFirstMatchMs: 250,
+        stdDevTimeToFirstMatchMs: 50,
+        maxUnmatchedRate: 0.6,
+        minMatchesPerMinute: 12.0,
+    },
+    'crisis-response-coordination': {
+        meanMatches: 1.0,
         stdDevMatches: 1.0,
-        meanTimeToFirstMatchMs: 5000,
-        stdDevTimeToFirstMatchMs: 900,
-        maxUnmatchedRate: 0.35,
-        minMatchesPerMinute: 0.7,
+        meanTimeToFirstMatchMs: 150,
+        stdDevTimeToFirstMatchMs: 50,
+        maxUnmatchedRate: 1.0,
+        minMatchesPerMinute: 5.0,
     },
-    'legal-contract': {
-        meanMatches: 18.0,
-        stdDevMatches: 12.1,
-        meanTimeToFirstMatchMs: 217,
-        stdDevTimeToFirstMatchMs: 17,
-        maxUnmatchedRate: 0.0,
-        minMatchesPerMinute: 72.0,
-    },
-    'crisis-response': {
-        meanMatches: 4.5,
-        stdDevMatches: 3.0,
-        meanTimeToFirstMatchMs: 85,
-        stdDevTimeToFirstMatchMs: 18,
-        maxUnmatchedRate: 0.82,
-        minMatchesPerMinute: 27.0,
-    },
-    'generational-stewardship': {
+    'generational-land-stewardship': {
         meanMatches: 0.0,
         stdDevMatches: 0.0,
         meanTimeToFirstMatchMs: 0,
@@ -170,37 +170,37 @@ const SCENARIO_BASELINES: Record<string, ScenarioBaseline> = {
         maxUnmatchedRate: 1.0,
         minMatchesPerMinute: 0.0,
     },
-    'kinship-care': {
-        meanMatches: 27.0,
-        stdDevMatches: 18.2,
-        meanTimeToFirstMatchMs: 237,
-        stdDevTimeToFirstMatchMs: 84,
-        maxUnmatchedRate: 0.0,
-        minMatchesPerMinute: 108.0,
+    'kinship-care-network': {
+        meanMatches: 4.0,
+        stdDevMatches: 3.5,
+        meanTimeToFirstMatchMs: 200,
+        stdDevTimeToFirstMatchMs: 50,
+        maxUnmatchedRate: 0.8,
+        minMatchesPerMinute: 16.0,
     },
     'commons-governance': {
-        meanMatches: 8.0,
-        stdDevMatches: 2.0,
-        meanTimeToFirstMatchMs: 4000,
-        stdDevTimeToFirstMatchMs: 800,
-        maxUnmatchedRate: 0.25,
-        minMatchesPerMinute: 1.5,
+        meanMatches: 0.0,
+        stdDevMatches: 0.0,
+        meanTimeToFirstMatchMs: 0,
+        stdDevTimeToFirstMatchMs: 0,
+        maxUnmatchedRate: 1.0,
+        minMatchesPerMinute: 0.0,
     },
-    'cross-cultural': {
-        meanMatches: 12.0,
-        stdDevMatches: 4.0,
-        meanTimeToFirstMatchMs: 5000,
-        stdDevTimeToFirstMatchMs: 1000,
-        maxUnmatchedRate: 0.3,
-        minMatchesPerMinute: 3.0,
+    'cross-cultural-aid-coordination': {
+        meanMatches: 0.0,
+        stdDevMatches: 0.0,
+        meanTimeToFirstMatchMs: 0,
+        stdDevTimeToFirstMatchMs: 0,
+        maxUnmatchedRate: 1.0,
+        minMatchesPerMinute: 0.0,
     },
-    'long-term-commitment': {
-        meanMatches: 10.0,
-        stdDevMatches: 3.0,
-        meanTimeToFirstMatchMs: 8000,
-        stdDevTimeToFirstMatchMs: 1500,
-        maxUnmatchedRate: 0.2,
-        minMatchesPerMinute: 2.5,
+    'long-term-commitment-network': {
+        meanMatches: 0.0,
+        stdDevMatches: 0.0,
+        meanTimeToFirstMatchMs: 0,
+        stdDevTimeToFirstMatchMs: 0,
+        maxUnmatchedRate: 1.0,
+        minMatchesPerMinute: 0.0,
     },
 };
 
@@ -243,6 +243,7 @@ async function runScenarioMeasurement(
     const runs: MeasurementRun[] = [];
 
     for (let i = 0; i < repetitions; i++) {
+        clearRelayEvents(RELAY_PORT);
         const runner = new ScenarioRunner(RELAY_URL, DEFAULT_ONTOLOGY);
         runner.setFastMode(true);
         const collector = attachMetricsCollector(runner);

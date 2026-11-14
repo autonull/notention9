@@ -68,6 +68,11 @@ export class NostrRelay {
         this.close();
     }
 
+    /** Clear all stored events (for test isolation) */
+    clearEvents(): void {
+        this.events.clear();
+    }
+
     private handleConnection(ws: WebSocket) {
         this.subscriptions.set(ws, new Map());
 
