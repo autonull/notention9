@@ -48,6 +48,20 @@ export function clearRelayEvents(port: number): void {
 }
 
 /**
+ * Fully reset a test relay by closing all connections and clearing events
+ * Use this between scenarios to prevent agent cross-contamination
+ */
+export async function resetRelay(port: number): Promise<void> {
+    const relay = relayInstances.get(port);
+    if (relay) {
+        await relay.close();
+        relayInstances.delete(port);
+    }
+    // Start fresh relay on same port
+    await startRelay(port);
+}
+
+/**
  * Stop all test relays
  */
 export async function stopAllRelays(): Promise<void> {

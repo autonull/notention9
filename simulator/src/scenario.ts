@@ -10,6 +10,7 @@ type ActionHandler = (agent: Agent, inputMethod: string, targetId?: string) => P
 const ACTION_HANDLERS: Record<string, ActionHandler> = {
     publish_job: (agent, inputMethod) => agent.publishJob(inputMethod),
     publish_offer: (agent, inputMethod) => agent.publishOffer(inputMethod),
+    publish_manifest: (agent, inputMethod) => agent.publishOffer(inputMethod),
     send_message: (agent, _inputMethod, targetId) => targetId ? agent.sendMessage(targetId, 'Hello!') : Promise.resolve(),
 };
 
@@ -114,6 +115,12 @@ export class ScenarioRunner {
     async run(scenario: Scenario) {
         await this.prepare(scenario);
         await this.execute(scenario);
+    }
+
+    /** Clean up all agents and connections */
+    async cleanup(): Promise<void> {
+        await Promise.all(this.agents.map(a => a.close()));
+        this.agents.length = 0;
     }
 
     async #spawnAgents(configs: AgentConfig[]) {

@@ -34,6 +34,17 @@ export function containsMatch(haystack: string, needle: string, caseSensitive = 
 }
 
 /**
+ * Check if a comma-separated list contains an exact value (for tags)
+ */
+export function hasMatch(haystack: string, needle: string, caseSensitive = false): boolean {
+    const normalizedHaystack = caseSensitive ? haystack : haystack.toLowerCase();
+    const normalizedNeedle = caseSensitive ? needle : needle.toLowerCase();
+    // Split by comma and check exact membership
+    const tags = normalizedHaystack.split(',').map(t => t.trim());
+    return tags.includes(normalizedNeedle);
+}
+
+/**
  * Calculate fuzzy match score between two strings using Levenshtein distance
  * Returns score 0-1 where 1 = exact match
  */
@@ -104,6 +115,24 @@ export function matchStrings(
         return { matched: true, score: 1, type: 'exact', reason: `No match - satisfies 'is not'` };
     }
     
+    // Handle "has" operator (exact tag membership in comma-separated list)
+    if (operator === 'has') {
+        const has = hasMatch(normalizedOffer, normalizedRequest, caseSensitive);
+        if (has) {
+            return { matched: true, score: 1, type: 'exact', reason: `Has tag '${requestValue}'` };
+        }
+        return { matched: false, score: -1, type: 'exact', reason: `Does not have tag '${requestValue}'` };
+    }
+    
+    // Handle "not has" operator
+    if (operator === 'not has') {
+        const has = hasMatch(normalizedOffer, normalizedRequest, caseSensitive);
+        if (has) {
+            return { matched: false, score: -1, type: 'exact', reason: `Has tag '${requestValue}' violates 'not has'` };
+        }
+        return { matched: true, score: 1, type: 'exact', reason: `Does not have tag '${requestValue}' - satisfies 'not has'` };
+    }
+
     // Handle "contains" operator
     if (operator === 'contains') {
         const contains = containsMatch(normalizedOffer, normalizedRequest, caseSensitive);

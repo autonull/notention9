@@ -246,4 +246,11 @@ export class Agent {
         this.#relay.send(JSON.stringify(['EVENT', event]));
         this.#log(`Published: "${content.slice(0, 50)}..."`);
     }
+
+    /** Close the agent's relay connection */
+    close(): void {
+        if (this.#relay.readyState === WebSocket.OPEN) {
+            this.#relay.close(1000, 'agent shutdown');
+        }
+    }
 }

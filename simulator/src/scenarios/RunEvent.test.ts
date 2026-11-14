@@ -1,10 +1,11 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
 import { ScenarioRunner } from '../scenario.js';
 import { DEFAULT_ONTOLOGY } from '@notention/core';
+import { startRelay, stopRelay } from '../testRelay.js';
 import type { RunEvent, RunEventSink, Scenario } from '../types.js';
 
-// Use a mock relay URL that won't connect
-const mockRelayUrl = 'ws://localhost:9999';
+const RELAY_PORT = 14447;
+const RELAY_URL = `ws://localhost:${RELAY_PORT}`;
 
 function createTestScenario(): Scenario {
     return {
@@ -42,14 +43,23 @@ describe('RunEvent sink (Q2)', () => {
         events.push(event);
     };
 
+    beforeAll(async () => {
+        await startRelay(RELAY_PORT);
+    }, 10000);
+
+    afterAll(async () => {
+        await stopRelay(RELAY_PORT);
+    }, 10000);
+
     beforeEach(() => {
         events = [];
-        runner = new ScenarioRunner(mockRelayUrl, DEFAULT_ONTOLOGY);
+        runner = new ScenarioRunner(RELAY_URL, DEFAULT_ONTOLOGY);
         runner.runEventSink = sink;
     });
 
-    afterEach(() => {
+    afterEach(async () => {
         runner.runEventSink = undefined;
+        await runner.cleanup();
     });
 
     it('should emit scenario:start event on prepare', async () => {
@@ -171,7 +181,7 @@ describe('RunEvent sink (Q2)', () => {
     });
 
     it('should not emit events when sink is not set', async () => {
-        const runnerWithoutSink = new ScenarioRunner(mockRelayUrl, DEFAULT_ONTOLOGY);
+        const runnerWithoutSink = new ScenarioRunner(RELAY_URL, DEFAULT_ONTOLOGY);
         // Don't set a sink
         
         const scenario = createTestScenario();
@@ -179,6 +189,7 @@ describe('RunEvent sink (Q2)', () => {
         
         // No events should be captured since we have no sink
         expect(events).toHaveLength(0);
+        await runnerWithoutSink.cleanup();
     });
 });
 
