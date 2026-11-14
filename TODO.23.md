@@ -936,8 +936,10 @@ pnpm probe --headless                ✅ Ran (0% comprehension without human par
 
 **Next Actions:**
 - ~~Run corpus→patch cycle for new taxonomy cells~~ ✅
-  - E7 audit on 50 quality cases: 14 operator drifts, 5 hierarchy candidates, 13 default operator drifts
+  - E7 audit on 60 quality cases (added 10 for new taxonomy cells): 17 operator drifts, 8 hierarchy candidates, 17 default operator drifts
+  - Orphan keys reduced: 100 → 97 (3 new keys covered: jurisdiction, priority, need)
   - E14 patch test: 6 patches tested, all non-regressive (0.000 F1 baseline maintained)
+  - Manifest updated and verified (124 total cases)
 - Front B: Conduct manual comprehension probe with 3-5 human participants on Home screen
 - Front B: Record T1 videos (semantic-capture, bidirectional-match, family-evacuation) when human participants available
 - Front D: Record T2 videos for 4 scenarios when human participants available

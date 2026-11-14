@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-13T16:52:32.852Z",
+  "generatedAt": "2026-11-14T23:06:37.250Z",
   "counts": {
     "intent": {
       "search": 21,
@@ -8,7 +8,7 @@
       "holdout": 9
     },
     "quality": {
-      "extraction": 50,
+      "extraction": 60,
       "match": 22
     }
   },
@@ -1242,6 +1242,142 @@
       ]
     },
     {
+      "id": "quality-extract-051",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-051.json",
+      "hash": "72e4a414200341ff",
+      "tags": [
+        "government",
+        "legal",
+        "hierarchy",
+        "permit"
+      ]
+    },
+    {
+      "id": "quality-extract-052",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-052.json",
+      "hash": "1e71cf2901646ac9",
+      "tags": [
+        "labor",
+        "contested",
+        "collective-bargaining",
+        "dispute"
+      ]
+    },
+    {
+      "id": "quality-extract-053",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-053.json",
+      "hash": "108f10ee2e6eac72",
+      "tags": [
+        "identity",
+        "decentralized",
+        "verifiable-credential",
+        "reputation"
+      ]
+    },
+    {
+      "id": "quality-extract-054",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-054.json",
+      "hash": "e851190a3f3c549d",
+      "tags": [
+        "contested",
+        "resource",
+        "water",
+        "prior-appropriation",
+        "rivalry"
+      ]
+    },
+    {
+      "id": "quality-extract-055",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-055.json",
+      "hash": "b1096e115bc79101",
+      "tags": [
+        "referral",
+        "chain",
+        "trust",
+        "specialist",
+        "healthcare"
+      ]
+    },
+    {
+      "id": "quality-extract-056",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-056.json",
+      "hash": "fbcab89d7751e52f",
+      "tags": [
+        "kinship",
+        "care",
+        "communal",
+        "family",
+        "respite"
+      ]
+    },
+    {
+      "id": "quality-extract-057",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-057.json",
+      "hash": "2a3bf623758e55b0",
+      "tags": [
+        "identity",
+        "verifier",
+        "trust",
+        "selective-disclosure",
+        "employment"
+      ]
+    },
+    {
+      "id": "quality-extract-058",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-058.json",
+      "hash": "7f88e2a471c74ec6",
+      "tags": [
+        "government",
+        "case-worker",
+        "bureaucracy",
+        "delegated-authority"
+      ]
+    },
+    {
+      "id": "quality-extract-059",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-059.json",
+      "hash": "d522a6ace18b3192",
+      "tags": [
+        "contested",
+        "spectrum",
+        "allocation",
+        "regulatory",
+        "limited-discretion"
+      ]
+    },
+    {
+      "id": "quality-extract-060",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-060.json",
+      "hash": "45108939ef2fe786",
+      "tags": [
+        "referral",
+        "specialist",
+        "cardiology",
+        "oncology",
+        "reciprocity"
+      ]
+    },
+    {
       "id": "quality-match-001",
       "family": "quality",
       "qualityFamily": "match",
@@ -1521,5 +1657,5 @@
       ]
     }
   ],
-  "hash": "5d4ff5d44cb9b419"
+  "hash": "e9d01245b059ad82"
 }

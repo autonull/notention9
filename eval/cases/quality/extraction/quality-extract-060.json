@@ -1,0 +1,20 @@
+{
+  "id": "quality-extract-060",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Specialist accepts referrals for cardiology and oncology. Reciprocity: expected. Availability: urgent and virtual. Referral quality: high. Feedback loop: closed.",
+  "expected": [
+    { "key": "role", "operator": "is", "values": ["specialist"] },
+    { "key": "specialty", "operator": "contains", "values": ["cardiology", "oncology"] },
+    { "key": "acceptsReferrals", "operator": "is", "values": ["yes"] },
+    { "key": "reciprocity", "operator": "is", "values": ["expected"] },
+    { "key": "availability", "operator": "contains", "values": ["urgent", "virtual"] },
+    { "key": "referralQuality", "operator": "is", "values": ["high"] },
+    { "key": "feedbackLoop", "operator": "is", "values": ["closed"] }
+  ],
+  "forbidden": [
+    { "key": "acceptsReferrals", "operator": "is", "values": ["no"] }
+  ],
+  "labels": { "annotators": 2, "agreement": 0.9 },
+  "tags": ["referral", "specialist", "cardiology", "oncology", "reciprocity"]
+}
