@@ -1,5 +1,5 @@
 import type {OntologyNode} from '@notention/core';
-import {findAttributeDef} from '@notention/core';
+import {findAttributeDefInTree} from '@notention/core';
 import type {AIProvider, PropertyProposal} from './types';
 
 const ONTOLOGY_CONFIDENCE = 0.85;
@@ -10,7 +10,7 @@ const UNKNOWN_KEY_CONFIDENCE = 0.6;
  * knows is a safer proposal than a key invented from the text.
  */
 export const confidenceFor = (key: string, ontology: OntologyNode[]): number =>
-    findAttributeDef(key, ontology) ? ONTOLOGY_CONFIDENCE : UNKNOWN_KEY_CONFIDENCE;
+    findAttributeDefInTree(key, ontology) ? ONTOLOGY_CONFIDENCE : UNKNOWN_KEY_CONFIDENCE;
 
 /**
  * Turn free text into structured property proposals.

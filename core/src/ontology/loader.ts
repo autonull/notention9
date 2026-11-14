@@ -362,7 +362,7 @@ export function getSubtreeNodes(
   return result;
 }
 
-export function collectOntologyKeys(nodes: Map<string, OntologyNode> | OntologyNode[]): string[] {
+export function collectOntologyKeys(nodes: Map<string, OntologyNode> | OntologyNode[]): Set<string> {
   const keys = new Set<string>();
   const nodeArray = nodes instanceof Map ? Array.from(nodes.values()) : nodes;
   for (const node of nodeArray) {
@@ -372,7 +372,7 @@ export function collectOntologyKeys(nodes: Map<string, OntologyNode> | OntologyN
       keys.add(`${node.id}.${attrKey}`);
     }
   }
-  return Array.from(keys).sort();
+  return keys;
 }
 
 let cachedOntology: CompiledOntology | null = null;

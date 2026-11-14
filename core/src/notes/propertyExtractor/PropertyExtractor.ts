@@ -1,6 +1,5 @@
 import { Property, Quantity, PropertyType } from '../../types/index.js';
 import { OntologyService } from '../../ontology/ontologyService.js';
-import { DEFAULT_ONTOLOGY } from '../../ontology/ontology.default.js';
 import { PropertyValidationError } from '../../utils/errors/index.js';
 import { parseQuantity } from '../quantities/index.js';
 import { normalizeNoteProperties } from '../properties.js';
@@ -14,11 +13,13 @@ export class PropertyExtractor {
   private readonly logger = Logger.getInstance();
   private readonly pipeline: ExtractionPipeline;
 
-  constructor(ontology = DEFAULT_ONTOLOGY, defaultOptions?: ExtractionOptions) {
-    this.ontologyService = new OntologyService(ontology);
+  constructor(ontology?: any, defaultOptions?: ExtractionOptions) {
+    // Use new data-driven ontology by default, or legacy ontology if provided
+    this.ontologyService = ontology 
+      ? new OntologyService(ontology)
+      : OntologyService.createStandard();
     this.pipeline = new ExtractionPipeline(defaultStages);
     if (defaultOptions) {
-      // Store default options for use in extractFromText
       (this.pipeline as any).defaultOptions = defaultOptions;
     }
   }

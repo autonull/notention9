@@ -5,7 +5,7 @@ export {
   resetOntologyCache,
   getEffectiveOperators,
   getAllOperators,
-  findNode,
+  findNode as findNodeInMap,
   findAttributeDef,
   findNodesWithAttribute,
   getSubtreeNodes,
@@ -17,16 +17,29 @@ export {
   type AttributeDefinition
 } from './loader.js';
 
-// Legacy exports for backward compatibility (DEPRECATED - will be removed)
-export * from './OntologyAdapter.js';
-export { collectOntologyKeys as legacyCollectOntologyKeys, buildAttributeIndex, findNode as legacyFindNode, findNodeWithAttribute, findNodeIdForAttribute, getSubtreeKeys, findAttributeDef as legacyFindAttributeDef, addAttribute, addNode, deleteNode, deleteAttribute, mergeAttributes, renameAttribute, renameNode } from './ontologyCore.js';
-export { DEFAULT_OPERATORS_BY_TYPE, getEffectiveOperators as legacyGetEffectiveOperators, getAllOperators as legacyGetAllOperators } from './operators.js';
-export type { OperatorPair } from './operators.js';
+// Ontology mutation API (operates on OntologyNode[] arrays)
+export { 
+  buildAttributeIndex, 
+  findNode,
+  findNodeWithAttribute, 
+  findNodeIdForAttribute, 
+  getSubtreeKeys, 
+  addAttribute, 
+  addNode, 
+  deleteNode, 
+  deleteAttribute, 
+  mergeAttributes, 
+  renameAttribute, 
+  renameNode,
+  findAttributeDef as findAttributeDefInTree,
+  collectOntologyKeys as collectOntologyKeysInTree,
+  getSubtreeKeys as getSubtreeKeysInTree,
+} from './ontologyCore.js';
+
 export { buildWidgetMetadata, WidgetType } from './widgets.js';
 export * from './lifecycle.js';
 export * from './schema.js';
 export * from './statistics.js';
-export { DEFAULT_ONTOLOGY } from './ontology.default.js';
 export { OntologyService } from './ontologyService.js';
 export * from './biologicalManifest.js';
 export { survivalDomains, hazardDomain, resourceDomain, shelterDomain, medicalDomain, transportDomain, commsDomain } from './survivalDomains.js';

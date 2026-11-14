@@ -105,6 +105,10 @@ export {
     renameAttribute,
     renameNode,
     buildWidgetMetadata,
+    // Ontology mutation API (operates on OntologyNode[] arrays)
+    findAttributeDefInTree,
+    collectOntologyKeysInTree,
+    getSubtreeKeysInTree,
 } from './ontology/index.js';
 
 // Notes - from notes/index.js
