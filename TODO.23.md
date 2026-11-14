@@ -935,7 +935,9 @@ pnpm probe --headless                ✅ Ran (0% comprehension without human par
    - **Overall: 1098/1098 tests pass (100%)**
 
 **Next Actions:**
-- Run corpus→patch cycle for new taxonomy cells
+- ~~Run corpus→patch cycle for new taxonomy cells~~ ✅
+  - E7 audit on 50 quality cases: 14 operator drifts, 5 hierarchy candidates, 13 default operator drifts
+  - E14 patch test: 6 patches tested, all non-regressive (0.000 F1 baseline maintained)
 - Front B: Conduct manual comprehension probe with 3-5 human participants on Home screen
 - Front B: Record T1 videos (semantic-capture, bidirectional-match, family-evacuation) when human participants available
 - Front D: Record T2 videos for 4 scenarios when human participants available
