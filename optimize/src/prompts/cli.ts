@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { evaluateGoldenSet, type GoldenCase, type Provider, DeterministicProvider, CannedProvider } from './evaluate.js';
 import { getAllPrompts } from '@notention/core/prompts/registry';
-import { DEFAULT_ONTOLOGY } from '@notention/core/ontology';
+import { DEFAULT_ONTOLOGY } from '@notention/core';
 import { PROMPT_VARIANTS, renderPrompt } from './variants.js';
 
 const __filename = fileURLToPath(import.meta.url);

@@ -3,7 +3,7 @@
  * Generates 6 variants of property-extraction prompt
  */
 
-import { DEFAULT_ONTOLOGY } from '@notention/core/ontology';
+import { DEFAULT_ONTOLOGY } from '@notention/core';
 import type { OntologyNode } from '@notention/core/types';
 
 function collectAllKeys(ontology: OntologyNode[]): string[] {

@@ -1,7 +1,7 @@
 import { ExtractionPipeline, createExtractionPipeline } from '@notention/core/extraction';
 import { MatchEngine } from '@notention/core/matching';
 import { type OntologyNode, type Note, type Property } from '@notention/core/types';
-import { DEFAULT_ONTOLOGY } from '@notention/core/ontology';
+import { DEFAULT_ONTOLOGY } from '@notention/core';
 import { MILLISECONDS_PER_DAY, MILLISECONDS_PER_TWO_DAYS } from '../constants.js';
 
 /**

@@ -17,6 +17,8 @@ export {
   type AttributeDefinition
 } from './loader.js';
 
+export { DEFAULT_ONTOLOGY } from './ontology.default.js';
+
 // Ontology mutation API (operates on OntologyNode[] arrays)
 export { 
   buildAttributeIndex, 

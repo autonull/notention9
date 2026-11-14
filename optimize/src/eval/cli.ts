@@ -15,7 +15,7 @@ import { OntologyService } from '@notention/core/ontology/ontologyService';
 import { type OntologyNode, type Note, type Property } from '@notention/core/types';
 import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { DEFAULT_ONTOLOGY } from '@notention/core/ontology';
+import { DEFAULT_ONTOLOGY } from '@notention/core';
 import {
     DEFAULT_MDE_COMPLETION,
     DEFAULT_MDE_STEPS,

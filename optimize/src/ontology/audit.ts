@@ -5,7 +5,7 @@
  * from quality cases and diffs against the ontology.
  */
 
-import { DEFAULT_ONTOLOGY } from '@notention/core/ontology';
+import { DEFAULT_ONTOLOGY } from '@notention/core';
 import type { OntologyNode, OntologyAttribute } from '@notention/core/types';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';

@@ -11,7 +11,7 @@
  * - Simulator distribution (200 runs)
  */
 
-import { DEFAULT_ONTOLOGY } from '@notention/core/ontology';
+import { DEFAULT_ONTOLOGY } from '@notention/core';
 import type { OntologyNode, OntologyAttribute, Note } from '@notention/core/types';
 import { MatchEngine } from '@notention/core/matching';
 import { ExtractionPipeline, createExtractionPipeline } from '@notention/core/extraction';

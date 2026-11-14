@@ -74,6 +74,8 @@ const browserEntries = {
   'network/nostr/protocol': 'src/network/nostr/protocol.ts',
   // Schemas
   'schemas/generated/seam-definitions': 'src/schemas/generated/seam-definitions.ts',
+  // Types
+  'types/index': 'src/types/index.ts',
 };
 
 const nodeEntries = [
@@ -141,6 +143,8 @@ const nodeEntries = [
   // Schemas
   'src/schemas/generated/seam-definitions.ts',
   'src/schemas/index.ts',
+  // Types
+  'src/types/index.ts',
 ];
 
 export default defineConfig([

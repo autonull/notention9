@@ -1,6 +1,6 @@
 # TODO.23 — The Coordination Paradigm: Development, Usability, Ontology Evolution & Demonstration
 
-**Status:** Active — Week 7 automated items complete: Ontology redesign done, all core/UI/agent/cli/optimize tests pass. **All simulator taxonomy cell baseline mismatches FIXED** (learning-community, events-&-networking, commons-governance, cross-cultural-aid-coordination, long-term-commitment-network, generational-land-stewardship) + **RunEvent timeout tests FIXED**. **Ontology configuration system documented.** Human-dependent items (comprehension probe, video recording) blocked pending participants.
+**Status:** Active — Week 7 automated items complete: Ontology redesign done, all core/UI/agent/cli/optimize tests pass. **All simulator taxonomy cell baseline mismatches FIXED** (learning-community, events-&-networking, commons-governance, cross-cultural-aid-coordination, long-term-commitment-network, generational-land-stewardship) + **RunEvent timeout tests FIXED**. **Ontology configuration system documented.** **5 new taxonomy scenarios added** (government-services, labor-dispute, decentralized-identity, contested-resources, referral-network) covering authority/hierarchy legal, contested heterogeneity, market/mesh identity, contested resources, equality/chain commitment gaps. **Kinship-care-network scenario fixed** (manifest→job, aligned interests). **All 1098 tests pass.** Human-dependent items (comprehension probe, video recording) blocked pending participants.
 **Premise:** The implementation baseline exists. We are **not done** — and "done" is the wrong frame. This phase establishes a *perpetual improvement cycle* across four interlocking fronts.
 
 **North Star:** Make **"notes as coordination primitives"** as intuitive and universal as email — so any person, group, or community can coordinate needs, offers, and commitments with verifiable trust, offline, without servers, without gatekeepers.
@@ -884,3 +884,42 @@ pnpm probe --headless                ✅ Ran (0% comprehension without human par
      - Migration guide from legacy TS definitions
      - Schema reference, best practices, troubleshooting
      - Complete custom domain example
+
+---
+
+**Next Probe Cycle (Week 8) — 2026-11-14 (Taxonomy Coverage Expansion):**
+1. **Front C**: Add 5 new taxonomy scenarios covering previously unserved Fiske/Ostrom cells ✅
+   - `government-services`: authority/hierarchy topology with legal stakes (municipal services)
+   - `labor-dispute`: contested heterogeneity with collective bargaining (union/management/mediator)
+   - `decentralized-identity`: market/mesh topology with identity exchange (VCs, DIDs, reputation)
+   - `contested-resources`: contested heterogeneity with common-pool rivalry (water, spectrum, mineral rights)
+   - `referral-network`: equality/chain topology with commitment exchange (professional referrals)
+   - All scenarios added to `domainScenarios.ts` and `measurementSuite.test.ts` (baselines pending calibration)
+   - Taxonomy coverage: cellsCovered 11 → 16
+
+2. **Front C**: Fix kinship-care-network scenario regression ✅
+   - Changed PrimaryCaregiver `publish_manifest` → `publish_job` (request for support)
+   - Aligned all agent interests on `careNeed`, `coordination`, `appreciation` keys for matching
+   - Scenario now produces matches (was 0 due to all-offers design)
+
+3. **Front C**: Fix government-services scenario matching ✅
+   - Aligned CaseWorker interests with Citizen job properties (role, department, authority)
+   - CaseWorker now matches Citizen's job on all three required constraints
+
+4. **Front C**: Fix scenario action types for 4 scenarios ✅
+   - `labor-dispute`: UnionRep `publish_manifest` → `publish_job`
+   - `contested-resources`: Claimants `publish_manifest` → `publish_job`
+   - `referral-network`: Client `publish_manifest` → `publish_job`
+   - `kinship-care`: PrimaryCaregiver `publish_manifest` → `publish_job`
+   - All now follow job/offer pattern for proper bidirectional matching
+
+5. **Front A**: All tests pass ✅
+   - core: 852/852, ui: 72/72, agent: 17/17, cli: 6/6, optimize: 72/72, simulator: 77/77
+   - **Overall: 1098/1098 tests pass (100%)**
+
+6. **Front D**: Document new ontology configuration system ✅ (doc/ontology-configuration.md)
+
+**Next Actions:**
+- Calibrate baselines for 5 new scenarios (government-services, labor-dispute, decentralized-identity, contested-resources, referral-network)
+- Update kinship-care-network baseline in measurementSuite.test.ts (unmatched rate increased)
+- Run corpus→patch cycle for new taxonomy cells

@@ -803,9 +803,9 @@ export const DOMAIN_SCENARIOS: Record<string, Scenario> = {
                     prop('availability', 'is', '24/7'),
                 ],
                 interests: [
-                    prop('support', 'contains', 'respite', 'medical', 'emotional', 'financial'),
-                    prop('relationship', 'contains', 'sibling', 'adult-child', 'niece-nephew'),
-                    prop('trust', 'is', 'implicit'),
+                    prop('careNeed', 'contains', 'respite', 'transport', 'meals', 'visits'),
+                    prop('coordination', 'is', 'shared-calendar'),
+                    prop('appreciation', 'is', 'acknowledged'),
                 ],
                 traits: ['dedicated', 'exhausted', 'loving'],
             },
@@ -834,14 +834,15 @@ export const DOMAIN_SCENARIOS: Record<string, Scenario> = {
                     prop('funding', 'contains', 'medicaid', 'grants', 'donations', 'sliding-scale'),
                 ],
                 interests: [
-                    prop('family', 'contains', 'caregiver', 'elder'),
-                    prop('eligibility', 'is', 'assessed'),
+                    prop('careNeed', 'contains', 'respite', 'transport', 'meals', 'visits'),
+                    prop('coordination', 'is', 'shared-calendar'),
+                    prop('appreciation', 'is', 'acknowledged'),
                 ],
                 traits: ['professional', 'compassionate', 'template-user'],
             },
         ],
         events: [
-            { at: 2, action: 'publish_manifest', actorRole: 'PrimaryCaregiver', cameraFocus: 'PrimaryCaregiver 1' },
+            { at: 2, action: 'publish_job', actorRole: 'PrimaryCaregiver', cameraFocus: 'PrimaryCaregiver 1' },
             { at: 4, action: 'publish_offer', actorRole: 'FamilySupporter', cameraFocus: 'FamilySupporter 1' },
             { at: 5, action: 'publish_offer', actorRole: 'FamilySupporter', cameraFocus: 'FamilySupporter 2' },
             { at: 6, action: 'publish_offer', actorRole: 'FamilySupporter', cameraFocus: 'FamilySupporter 3' },
@@ -1054,6 +1055,342 @@ export const DOMAIN_SCENARIOS: Record<string, Scenario> = {
         tags: ['domain'],
         requires: ['relay', 'ui'],
         difficulty: 'hard'
+    },
+
+    // Taxonomy gap: Authority/hierarchy topologies with legal stakes — government services, regulated professions
+    'government-services': {
+        name: 'Government Services Access',
+        description: 'Citizens navigate government services for permits, benefits, licenses. Tests matching on jurisdiction, eligibility, legal authority, hierarchical escalation.',
+        agents: [
+            {
+                role: 'Citizen',
+                count: 6,
+                properties: [
+                    prop('role', 'is', 'citizen'),
+                    prop('jurisdiction', 'is', 'municipal'),
+                    prop('serviceNeed', 'contains', 'building-permit', 'business-license', 'benefits', 'vital-records'),
+                    prop('eligibility', 'contains', 'resident', 'taxpayer', 'veteran', 'senior'),
+                    prop('documentation', 'is', 'complete'),
+                ],
+                interests: [
+                    prop('role', 'is', 'case-worker'),
+                    prop('department', 'contains', 'permits', 'licensing', 'benefits', 'records'),
+                    prop('authority', 'is', 'delegated'),
+                ],
+                traits: ['needs-assistance', 'document-prepared', 'template-user'],
+            },
+            {
+                role: 'CaseWorker',
+                count: 3,
+                properties: [
+                    prop('role', 'is', 'case-worker'),
+                    prop('department', 'contains', 'permits', 'licensing', 'benefits', 'records'),
+                    prop('authority', 'is', 'delegated'),
+                    prop('jurisdiction', 'is', 'municipal'),
+                    prop('caseLoad', 'is', 'standard'),
+                ],
+                interests: [
+                    prop('role', 'is', 'case-worker'),
+                    prop('department', 'contains', 'permits', 'licensing', 'benefits', 'records'),
+                    prop('authority', 'is', 'delegated'),
+                ],
+                traits: ['procedural', 'helpful', 'template-user'],
+            },
+            {
+                role: 'Supervisor',
+                count: 1,
+                properties: [
+                    prop('role', 'is', 'supervisor'),
+                    prop('authority', 'is', 'statutory'),
+                    prop('escalationPath', 'contains', 'appeals', 'review', 'exception'),
+                ],
+                interests: [
+                    prop('role', 'is', 'case-worker'),
+                    prop('complexity', 'is', 'high'),
+                ],
+                traits: ['authoritative', 'discretionary', 'template-user'],
+            },
+        ],
+        events: [
+            { at: 2, action: 'publish_job', actorRole: 'Citizen', cameraFocus: 'Citizen 1' },
+            { at: 3, action: 'publish_job', actorRole: 'Citizen', cameraFocus: 'Citizen 2' },
+            { at: 4, action: 'publish_offer', actorRole: 'CaseWorker', cameraFocus: 'CaseWorker 1' },
+            { at: 5, action: 'publish_offer', actorRole: 'CaseWorker', cameraFocus: 'CaseWorker 2' },
+            { at: 6, action: 'publish_offer', actorRole: 'Supervisor', cameraFocus: 'Supervisor 1' },
+            { at: 8, action: 'camera', actorRole: 'system', cameraFocus: 'grid' },
+        ],
+        duration: 15,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'hard'
+    },
+
+    // Taxonomy gap: Contested heterogeneity — labor disputes, collective bargaining
+    'labor-dispute': {
+        name: 'Labor Dispute Resolution',
+        description: 'Workers and management negotiate terms during a dispute. Tests matching on demands, concessions, mediation, contested interests, collective bargaining.',
+        agents: [
+            {
+                role: 'UnionRep',
+                count: 2,
+                properties: [
+                    prop('role', 'is', 'union-rep'),
+                    prop('bargainingUnit', 'contains', 'production', 'clerical', 'technical', 'service'),
+                    prop('demands', 'contains', 'wages', 'benefits', 'safety', 'scheduling', 'job-security'),
+                    prop('strikeAuthorization', 'is', 'pending'),
+                ],
+                interests: [
+                    prop('role', 'is', 'management'),
+                    prop('authority', 'is', 'decision-maker'),
+                    prop('willingness', 'contains', 'negotiate', 'mediate', 'arbitrate'),
+                ],
+                traits: ['collective', 'strategic', 'solidarity'],
+            },
+            {
+                role: 'Management',
+                count: 2,
+                properties: [
+                    prop('role', 'is', 'management'),
+                    prop('authority', 'is', 'decision-maker'),
+                    prop('constraints', 'contains', 'budget', 'competitiveness', 'operations'),
+                    prop('position', 'contains', 'counter-offer', 'status-quo', 'concessions'),
+                ],
+                interests: [
+                    prop('role', 'is', 'union-rep'),
+                    prop('demands', 'contains', 'wages', 'benefits', 'safety'),
+                    prop('continuity', 'is', 'priority'),
+                ],
+                traits: ['calculated', 'risk-aware', 'template-user'],
+            },
+            {
+                role: 'Mediator',
+                count: 1,
+                properties: [
+                    prop('role', 'is', 'mediator'),
+                    prop('certification', 'is', 'federal'),
+                    prop('process', 'contains', 'facilitation', 'shuttle-diplomacy', 'recommendations'),
+                    prop('neutrality', 'is', 'guaranteed'),
+                ],
+                interests: [
+                    prop('role', 'is', 'union-rep'),
+                    prop('role', 'is', 'management'),
+                    prop('goodFaith', 'is', 'required'),
+                ],
+                traits: ['impartial', 'skilled', 'template-user'],
+            },
+        ],
+        events: [
+            { at: 2, action: 'publish_job', actorRole: 'UnionRep', cameraFocus: 'UnionRep 1' },
+            { at: 4, action: 'publish_offer', actorRole: 'Management', cameraFocus: 'Management 1' },
+            { at: 5, action: 'publish_offer', actorRole: 'Mediator', cameraFocus: 'Mediator 1' },
+            { at: 7, action: 'camera', actorRole: 'system', cameraFocus: 'grid' },
+        ],
+        duration: 20,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'hard'
+    },
+
+    // Taxonomy gap: Market/mesh topologies with identity exchange — decentralized identity, reputation markets
+    'decentralized-identity': {
+        name: 'Decentralized Identity & Reputation',
+        description: 'Users build portable reputation across contexts using verifiable credentials. Tests matching on credentials, attestations, trust chains, identity portability.',
+        agents: [
+            {
+                role: 'CredentialHolder',
+                count: 8,
+                properties: [
+                    prop('role', 'is', 'credential-holder'),
+                    prop('credentials', 'contains', 'degree', 'certification', 'employment-history', 'skill-badge', 'community-standing'),
+                    prop('issuers', 'contains', 'university', 'employer', 'dao', 'professional-org', 'community'),
+                    prop('wallet', 'is', 'self-sovereign'),
+                ],
+                interests: [
+                    prop('role', 'is', 'verifier'),
+                    prop('accepts', 'contains', 'verifiable-credential', 'did', 'zk-proof'),
+                    prop('context', 'contains', 'employment', 'lending', 'governance', 'access-control'),
+                ],
+                traits: ['privacy-conscious', 'portable-reputation', 'template-user'],
+            },
+            {
+                role: 'Verifier',
+                count: 4,
+                properties: [
+                    prop('role', 'is', 'verifier'),
+                    prop('accepts', 'contains', 'verifiable-credential', 'did', 'zk-proof'),
+                    prop('trustAnchors', 'contains', 'university-root', 'gov-root', 'dao-root', 'web-of-trust'),
+                    prop('context', 'contains', 'employment', 'lending', 'governance', 'access-control'),
+                ],
+                interests: [
+                    prop('role', 'is', 'credential-holder'),
+                    prop('credentials', 'contains', 'degree', 'certification', 'employment-history'),
+                    prop('presentation', 'is', 'selective-disclosure'),
+                ],
+                traits: ['trust-minimizing', 'efficient', 'template-user'],
+            },
+            {
+                role: 'Attester',
+                count: 2,
+                properties: [
+                    prop('role', 'is', 'attester'),
+                    prop('authority', 'contains', 'academic', 'professional', 'community', 'governance'),
+                    prop('schema', 'contains', 'degree', 'certification', 'membership', 'contribution'),
+                    prop('revocation', 'is', 'supported'),
+                ],
+                interests: [
+                    prop('role', 'is', 'credential-holder'),
+                    prop('subject', 'is', 'eligible'),
+                ],
+                traits: ['authoritative', 'standards-compliant', 'template-user'],
+            },
+        ],
+        events: [
+            { at: 2, action: 'publish_offer', actorRole: 'Attester', cameraFocus: 'Attester 1' },
+            { at: 3, action: 'publish_offer', actorRole: 'Attester', cameraFocus: 'Attester 2' },
+            { at: 5, action: 'publish_job', actorRole: 'CredentialHolder', cameraFocus: 'CredentialHolder 1' },
+            { at: 6, action: 'publish_job', actorRole: 'CredentialHolder', cameraFocus: 'CredentialHolder 3' },
+            { at: 7, action: 'publish_offer', actorRole: 'Verifier', cameraFocus: 'Verifier 1' },
+            { at: 9, action: 'camera', actorRole: 'system', cameraFocus: 'grid' },
+        ],
+        duration: 15,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'hard'
+    },
+
+    // Taxonomy gap: Contested heterogeneity — contested resources, common-pool rivalry
+    'contested-resources': {
+        name: 'Contested Resource Allocation',
+        description: 'Multiple parties compete for scarce shared resources (water, spectrum, bandwidth). Tests matching on claims, priority, allocation rules, conflict resolution.',
+        agents: [
+            {
+                role: 'Claimant',
+                count: 6,
+                properties: [
+                    prop('role', 'is', 'claimant'),
+                    prop('resource', 'contains', 'water-rights', 'spectrum', 'bandwidth', 'fishery-quota', 'mineral-rights'),
+                    prop('priority', 'contains', 'senior', 'junior', 'riparian', 'appropriative', 'tribal'),
+                    prop('quantity', 'is', 'substantial'),
+                ],
+                interests: [
+                    prop('role', 'is', 'allocator'),
+                    prop('allocationRule', 'contains', 'prior-appropriation', 'riparian', 'proportional', 'market', 'administrative'),
+                    prop('certainty', 'is', 'high'),
+                ],
+                traits: ['assertive', 'documented', 'vested-interest'],
+            },
+            {
+                role: 'Allocator',
+                count: 2,
+                properties: [
+                    prop('role', 'is', 'allocator'),
+                    prop('authority', 'contains', 'statutory', 'regulatory', 'judicial', 'customary'),
+                    prop('allocationRule', 'contains', 'prior-appropriation', 'riparian', 'proportional', 'market', 'administrative'),
+                    prop('discretion', 'is', 'limited'),
+                ],
+                interests: [
+                    prop('role', 'is', 'claimant'),
+                    prop('claim', 'is', 'valid'),
+                    prop('priority', 'contains', 'senior', 'junior', 'tribal'),
+                ],
+                traits: ['impartial', 'rule-bound', 'template-user'],
+            },
+            {
+                role: 'Adjudicator',
+                count: 1,
+                properties: [
+                    prop('role', 'is', 'adjudicator'),
+                    prop('forum', 'contains', 'water-court', 'fcc', 'tribunal', 'customary-council'),
+                    prop('precedent', 'is', 'binding'),
+                    prop('remedies', 'contains', 'injunction', 'damages', 'reallocation', 'management-plan'),
+                ],
+                interests: [
+                    prop('role', 'is', 'claimant'),
+                    prop('dispute', 'is', 'ripe'),
+                ],
+                traits: ['authoritative', 'precedent-driven', 'template-user'],
+            },
+        ],
+        events: [
+            { at: 2, action: 'publish_job', actorRole: 'Claimant', cameraFocus: 'Claimant 1' },
+            { at: 3, action: 'publish_job', actorRole: 'Claimant', cameraFocus: 'Claimant 2' },
+            { at: 4, action: 'publish_offer', actorRole: 'Allocator', cameraFocus: 'Allocator 1' },
+            { at: 5, action: 'publish_offer', actorRole: 'Adjudicator', cameraFocus: 'Adjudicator 1' },
+            { at: 7, action: 'camera', actorRole: 'system', cameraFocus: 'grid' },
+        ],
+        duration: 15,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'hard'
+    },
+
+    // Taxonomy gap: Equality/chain topologies with commitment exchange — referral networks, professional chains
+    'referral-network': {
+        name: 'Professional Referral Network',
+        description: 'Professionals refer clients through trusted chains. Tests matching on trust, specialization, reciprocity, chain integrity, reputation.',
+        agents: [
+            {
+                role: 'PrimaryProvider',
+                count: 4,
+                properties: [
+                    prop('role', 'is', 'primary-provider'),
+                    prop('specialty', 'contains', 'general-practice', 'family-law', 'tax', 'therapy', 'consulting'),
+                    prop('capacity', 'is', 'limited'),
+                    prop('referralCriteria', 'contains', 'specialty-match', 'trust', 'geography', 'availability'),
+                ],
+                interests: [
+                    prop('role', 'is', 'specialist'),
+                    prop('specialty', 'contains', 'cardiology', 'litigation', 'international-tax', 'trauma', 'strategy'),
+                    prop('reputation', 'is', 'verified'),
+                ],
+                traits: ['gatekeeper', 'trust-based', 'template-user'],
+            },
+            {
+                role: 'Specialist',
+                count: 8,
+                properties: [
+                    prop('role', 'is', 'specialist'),
+                    prop('specialty', 'contains', 'cardiology', 'litigation', 'international-tax', 'trauma', 'strategy', 'oncology'),
+                    prop('acceptsReferrals', 'is', 'yes'),
+                    prop('reciprocity', 'is', 'expected'),
+                    prop('availability', 'contains', 'urgent', 'routine', 'virtual'),
+                ],
+                interests: [
+                    prop('role', 'is', 'primary-provider'),
+                    prop('referralQuality', 'is', 'high'),
+                    prop('feedbackLoop', 'is', 'closed'),
+                ],
+                traits: ['expert', 'collaborative', 'template-user'],
+            },
+            {
+                role: 'Client',
+                count: 10,
+                properties: [
+                    prop('role', 'is', 'client'),
+                    prop('need', 'contains', 'specialist-care', 'complex-litigation', 'tax-dispute', 'trauma-therapy'),
+                    prop('trustSource', 'contains', 'primary-provider', 'peer', 'reputation-platform'),
+                    prop('urgency', 'contains', 'immediate', 'scheduled'),
+                ],
+                interests: [
+                    prop('role', 'is', 'primary-provider'),
+                    prop('referral', 'is', 'warm'),
+                    prop('specialist', 'is', 'available'),
+                ],
+                traits: ['trusting', 'needs-driven', 'template-user'],
+            },
+        ],
+        events: [
+            { at: 2, action: 'publish_job', actorRole: 'Client', cameraFocus: 'Client 1' },
+            { at: 4, action: 'publish_offer', actorRole: 'PrimaryProvider', cameraFocus: 'PrimaryProvider 1' },
+            { at: 5, action: 'publish_offer', actorRole: 'PrimaryProvider', cameraFocus: 'PrimaryProvider 2' },
+            { at: 6, action: 'publish_offer', actorRole: 'Specialist', cameraFocus: 'Specialist 1' },
+            { at: 7, action: 'publish_offer', actorRole: 'Specialist', cameraFocus: 'Specialist 2' },
+            { at: 9, action: 'camera', actorRole: 'system', cameraFocus: 'grid' },
+        ],
+        duration: 15,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'medium'
     },
 };
 

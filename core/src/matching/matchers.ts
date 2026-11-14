@@ -161,19 +161,45 @@ export const evaluateNumberRange = (request: Property, offer: Property, offerVal
  */
 export const evaluateString = (request: Property, offer: Property): PropertyMatch => {
     if (!request.values[0]) return createMatch(request, offer, 0, 'Missing constraint value');
+    if (!offer.values[0]) return createMatch(request, offer, 0, 'Missing offer value');
 
-    const result: StringMatchResult = matchStrings(
-        request.values[0],
-        offer.values[0],
-        request.operator,
-        { canonicalMap: CANONICAL }
-    );
-
-    if (result.matched) {
-        return createMatch(request, offer, result.score, result.reason, { type: result.type });
+    // For multi-value properties, join offer values with commas for "has" operator compatibility
+    // For "contains", check if any request value matches any offer value
+    const offerValue = offer.values.join(',');
+    
+    let bestMatch: StringMatchResult = { matched: false, score: 0, type: 'none', reason: 'No match' };
+    let worstConflict: StringMatchResult | null = null;
+    
+    for (const reqValue of request.values) {
+        const result: StringMatchResult = matchStrings(
+            reqValue,
+            offerValue,
+            request.operator,
+            { canonicalMap: CANONICAL }
+        );
+        
+        if (result.matched && result.score > bestMatch.score) {
+            bestMatch = result;
+        }
+        
+        // Track conflicts (negative matches) for operators like "excludes", "is not"
+        if (!result.matched && result.score < 0) {
+            if (!worstConflict || result.score < worstConflict.score) {
+                worstConflict = result;
+            }
+        }
     }
 
-    return createMatch(request, offer, result.score, result.reason, { type: result.type });
+    // If there's a conflict, return it (negative compatibility)
+    if (worstConflict) {
+        return createMatch(request, offer, worstConflict.score, worstConflict.reason, { type: worstConflict.type });
+    }
+
+    if (bestMatch.matched) {
+        return createMatch(request, offer, bestMatch.score, bestMatch.reason, { type: bestMatch.type });
+    }
+
+    return createMatch(request, offer, bestMatch.score, bestMatch.reason, { type: bestMatch.type });
 };
 
 /**
