@@ -1,0 +1,92 @@
+{
+  "$schema": "https://notention.org/ontology-schema.json",
+  "$id": "https://notention.org/ontology/survival/medical.json",
+  "title": "Medical Domain",
+  "description": "Medical needs, facilities, patients, and health services",
+  "version": "1.0.0",
+  "extends": ["survival/types", "core/entity", "core/event"],
+  "nodes": {
+    "medicalFacility": {
+      "label": "Medical Facility",
+      "description": "Healthcare facility.",
+      "extends": "facility",
+      "attributes": {
+        "facilityType": { "type": "enum", "options": ["hospital", "clinic", "field-hospital", "mobile-clinic", "pharmacy", "blood-bank", "lab", "morgue", "other"], "description": "Facility type", "icon": "hospital" },
+        "level": { "type": "enum", "options": ["primary", "secondary", "tertiary", "specialized"], "description": "Care level", "icon": "layers" },
+        "capacity": { "type": "capacity", "description": "Bed capacity", "icon": "bed" },
+        "currentPatients": { "type": "integer", "description": "Current patients", "icon": "user-check" },
+        "specialties": { "type": "tags", "description": "Medical specialties", "icon": "stethoscope" },
+        "services": { "type": "tags", "description": "Services offered", "icon": "heart" },
+        "staffCount": { "type": "integer", "description": "Staff count", "icon": "users" },
+        "hasSurgery": { "type": "boolean", "description": "Surgical capability", "icon": "scalpel" },
+        "hasICU": { "type": "boolean", "description": "ICU capability", "icon": "heart" },
+        "hasMaternity": { "type": "boolean", "description": "Maternity services", "icon": "baby" },
+        "hasLab": { "type": "boolean", "description": "Laboratory", "icon": "flask" },
+        "hasPharmacy": { "type": "boolean", "description": "Pharmacy", "icon": "pill" }
+      }
+    },
+    "patient": {
+      "label": "Patient",
+      "description": "Person receiving medical care.",
+      "extends": "person",
+      "attributes": {
+        "patientId": { "type": "string", "description": "Patient ID", "icon": "id-card" },
+        "triageCategory": { "type": "enum", "options": ["immediate", "delayed", "minimal", "expectant", "deceased"], "description": "Triage category", "icon": "alert-triangle", "role": "marker" },
+        "medicalNeeds": { "type": "relationship", "description": "Medical needs", "icon": "heart", "referenceType": "medicalNeed" },
+        "diagnoses": { "type": "tags", "description": "Diagnoses", "icon": "file-text" },
+        "medications": { "type": "relationship", "description": "Current medications", "icon": "pill", "referenceType": "resource" },
+        "allergies": { "type": "tags", "description": "Allergies", "icon": "alert-triangle" },
+        "bloodType": { "type": "enum", "options": ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"], "description": "Blood type", "icon": "droplet" },
+        "facility": { "type": "entityRef", "description": "Current facility", "icon": "hospital", "referenceType": "medicalFacility" },
+        "admittedAt": { "type": "datetime", "description": "Admission time", "icon": "calendar" },
+        "attendingPhysician": { "type": "entityRef", "description": "Attending doctor", "icon": "user", "referenceType": "person" }
+      }
+    },
+    "medicalNeed": {
+      "label": "Medical Need",
+      "description": "A specific medical requirement.",
+      "extends": "entity",
+      "attributes": {
+        "needType": { "type": "medicalNeed", "description": "Need category", "icon": "heart", "required": true },
+        "description": { "type": "string", "description": "Detailed need", "icon": "info" },
+        "urgency": { "type": "urgency", "description": "Urgency", "icon": "alert-triangle" },
+        "quantity": { "type": "quantity", "description": "Quantity needed", "icon": "package" },
+        "patient": { "type": "entityRef", "description": "For patient", "icon": "user", "referenceType": "patient" },
+        "facility": { "type": "entityRef", "description": "At facility", "icon": "hospital", "referenceType": "medicalFacility" },
+        "status": { "type": "enum", "options": ["requested", "sourced", "in-transit", "delivered", "administered", "cancelled"], "description": "Status", "icon": "status", "role": "marker" },
+        "fulfilledBy": { "type": "entityRef", "description": "Fulfilled by resource", "icon": "check-circle", "referenceType": "resource" }
+      }
+    },
+    "casualty": {
+      "label": "Casualty",
+      "description": "Injured or deceased person.",
+      "extends": "person",
+      "attributes": {
+        "casualtyType": { "type": "enum", "options": ["injured", "deceased", "missing"], "description": "Casualty type", "icon": "skull", "role": "marker" },
+        "injuryType": { "type": "tags", "description": "Injury types", "icon": "alert-triangle" },
+        "triageCategory": { "type": "enum", "options": ["immediate", "delayed", "minimal", "expectant", "deceased"], "description": "Triage", "icon": "alert-triangle" },
+        "incident": { "type": "entityRef", "description": "Related incident", "icon": "alert-triangle", "referenceType": "incident" },
+        "foundAt": { "type": "entityRef", "description": "Location found", "icon": "map-pin", "referenceType": "place" },
+        "foundAtTime": { "type": "datetime", "description": "Time found", "icon": "clock" },
+        "transportedTo": { "type": "entityRef", "description": "Transported to", "icon": "hospital", "referenceType": "medicalFacility" },
+        "identified": { "type": "boolean", "description": "Identity confirmed", "icon": "check-circle" }
+      }
+    },
+    "healthSurveillance": {
+      "label": "Health Surveillance",
+      "description": "Disease surveillance and outbreak tracking.",
+      "extends": "entity",
+      "attributes": {
+        "disease": { "type": "string", "description": "Disease name", "icon": "bug" },
+        "cases": { "type": "integer", "description": "Confirmed cases", "icon": "users" },
+        "suspected": { "type": "integer", "description": "Suspected cases", "icon": "help-circle" },
+        "deaths": { "type": "integer", "description": "Deaths", "icon": "skull" },
+        "recovered": { "type": "integer", "description": "Recovered", "icon": "heart" },
+        "location": { "type": "entityRef", "description": "Outbreak location", "icon": "map-pin", "referenceType": "place" },
+        "onsetDate": { "type": "date", "description": "First case date", "icon": "calendar" },
+        "status": { "type": "enum", "options": ["investigating", "confirmed", "outbreak", "controlled", "resolved"], "description": "Status", "icon": "status" },
+        "measures": { "type": "tags", "description": "Control measures", "icon": "shield" }
+      }
+    }
+  }
+}

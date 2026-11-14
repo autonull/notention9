@@ -1,0 +1,111 @@
+{
+  "$schema": "https://notention.org/ontology-schema.json",
+  "$id": "https://notention.org/ontology/survival/resource.json",
+  "title": "Resource Domain",
+  "description": "Resources, supplies, inventory, and logistics for emergency response",
+  "version": "1.0.0",
+  "extends": ["survival/types", "core/entity", "core/commerce"],
+  "nodes": {
+    "resource": {
+      "label": "Resource",
+      "description": "A tangible or intangible asset available for use.",
+      "extends": "entity",
+      "attributes": {
+        "resourceType": { "type": "resourceType", "description": "Resource category", "icon": "package", "required": true },
+        "name": { "type": "string", "description": "Resource name", "icon": "title", "required": true },
+        "description": { "type": "string", "description": "Description", "icon": "info" },
+        "quantity": { "type": "quantity", "description": "Available quantity", "icon": "package" },
+        "unit": { "type": "string", "description": "Unit of measure", "icon": "scale" },
+        "status": { "type": "enum", "options": ["available", "allocated", "in-transit", "deployed", "exhausted", "damaged"], "description": "Current status", "icon": "status", "role": "marker" },
+        "location": { "type": "entityRef", "description": "Current location", "icon": "map-pin", "referenceType": "place" },
+        "owner": { "type": "entityRef", "description": "Owner organization", "icon": "building", "referenceType": "organization" },
+        "custodian": { "type": "entityRef", "description": "Current custodian", "icon": "user", "referenceType": "person" },
+        "condition": { "type": "enum", "options": ["new", "good", "fair", "poor", "damaged"], "description": "Condition", "icon": "shield" },
+        "expiryDate": { "type": "date", "description": "Expiration date", "icon": "calendar" },
+        "batchNumber": { "type": "string", "description": "Batch/lot number", "icon": "hash" },
+        "tags": { "type": "tags", "description": "Tags", "icon": "tag" }
+      }
+    },
+    "supply": {
+      "label": "Supply Item",
+      "description": "Consumable supply item.",
+      "extends": "resource",
+      "attributes": {
+        "supplyType": { "type": "enum", "options": ["consumable", "durable", "pharmaceutical", "food", "water", "fuel", "equipment", "other"], "description": "Supply type", "icon": "package" },
+        "perishable": { "type": "boolean", "description": "Perishable item", "icon": "clock" },
+        "storageRequirements": { "type": "tags", "description": "Storage needs", "icon": "archive" },
+        "minimumStock": { "type": "integer", "description": "Min stock level", "icon": "alert-triangle" }
+      }
+    },
+    "equipment": {
+      "label": "Equipment",
+      "description": "Durable equipment and tools.",
+      "extends": "resource",
+      "attributes": {
+        "equipmentType": { "type": "enum", "options": ["vehicle", "generator", "pump", "radio", "medical", "construction", "communication", "lighting", "heating", "cooling", "other"], "description": "Equipment type", "icon": "tool" },
+        "serialNumber": { "type": "string", "description": "Serial number", "icon": "hash" },
+        "model": { "type": "string", "description": "Model", "icon": "cpu" },
+        "manufacturer": { "type": "string", "description": "Manufacturer", "icon": "building" },
+        "fuelType": { "type": "string", "description": "Fuel required", "icon": "fuel" },
+        "maintenanceDue": { "type": "date", "description": "Next maintenance", "icon": "calendar" },
+        "operatorRequired": { "type": "boolean", "description": "Trained operator needed", "icon": "user" }
+      }
+    },
+    "personnel": {
+      "label": "Personnel",
+      "description": "Human resources with skills.",
+      "extends": "resource",
+      "attributes": {
+        "role": { "type": "string", "description": "Role/position", "icon": "briefcase" },
+        "skills": { "type": "tags", "description": "Skills/certifications", "icon": "tool" },
+        "availability": { "type": "enum", "options": ["available", "deployed", "resting", "unavailable"], "description": "Availability", "icon": "status" },
+        "team": { "type": "entityRef", "description": "Team assignment", "icon": "users", "referenceType": "organization" },
+        "shift": { "type": "enum", "options": ["day", "night", "rotating", "on-call"], "description": "Shift", "icon": "sun" },
+        "certifications": { "type": "tags", "description": "Certifications", "icon": "award" }
+      }
+    },
+    "facility": {
+      "label": "Facility",
+      "description": "Physical facility or site.",
+      "extends": "place",
+      "attributes": {
+        "facilityType": { "type": "enum", "options": ["shelter", "hospital", "clinic", "warehouse", "command-post", "distribution-point", "staging-area", "helipad", "landing-zone", "water-point", "fuel-point", "other"], "description": "Facility type", "icon": "building" },
+        "capacity": { "type": "capacity", "description": "Capacity", "icon": "users" },
+        "currentOccupancy": { "type": "integer", "description": "Current occupancy", "icon": "user-check" },
+        "services": { "type": "tags", "description": "Services provided", "icon": "heart" },
+        "powerStatus": { "type": "enum", "options": ["grid", "generator", "solar", "battery", "none"], "description": "Power source", "icon": "zap" },
+        "waterStatus": { "type": "enum", "options": ["municipal", "well", "trucked", "bottled", "none"], "description": "Water source", "icon": "droplet" },
+        "communications": { "type": "tags", "description": "Comms capabilities", "icon": "radio" }
+      }
+    },
+    "inventory": {
+      "label": "Inventory",
+      "description": "Stock tracking at a location.",
+      "extends": "entity",
+      "attributes": {
+        "location": { "type": "entityRef", "description": "Storage location", "icon": "map-pin", "referenceType": "place", "required": true },
+        "items": { "type": "relationship", "description": "Items in inventory", "icon": "package", "referenceType": "resource" },
+        "lastCounted": { "type": "datetime", "description": "Last inventory", "icon": "calendar" },
+        "countedBy": { "type": "entityRef", "description": "Counter", "icon": "user", "referenceType": "person" },
+        "discrepancies": { "type": "integer", "description": "Discrepancy count", "icon": "alert-triangle" }
+      }
+    },
+    "request": {
+      "label": "Resource Request",
+      "description": "Request for resources.",
+      "extends": "entity",
+      "attributes": {
+        "resourceType": { "type": "resourceType", "description": "Needed resource type", "icon": "package", "required": true },
+        "quantity": { "type": "quantity", "description": "Quantity needed", "icon": "package", "required": true },
+        "urgency": { "type": "urgency", "description": "Urgency", "icon": "alert-triangle", "required": true },
+        "requester": { "type": "entityRef", "description": "Requesting entity", "icon": "user", "referenceType": "person" },
+        "requesterOrg": { "type": "entityRef", "description": "Requesting org", "icon": "building", "referenceType": "organization" },
+        "deliveryLocation": { "type": "entityRef", "description": "Delivery location", "icon": "map-pin", "referenceType": "place" },
+        "neededBy": { "type": "datetime", "description": "Needed by", "icon": "clock" },
+        "status": { "type": "enum", "options": ["open", "partial", "filled", "cancelled"], "description": "Request status", "icon": "status", "role": "marker" },
+        "fulfilledBy": { "type": "relationship", "description": "Fulfilling resources", "icon": "check-circle", "referenceType": "resource" },
+        "notes": { "type": "string", "description": "Additional details", "icon": "file-text" }
+      }
+    }
+  }
+}

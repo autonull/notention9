@@ -1,0 +1,73 @@
+{
+  "$schema": "https://notention.org/ontology-schema.json",
+  "$id": "https://notention.org/ontology/survival/comms.json",
+  "title": "Communications Domain",
+  "description": "Emergency communications, networks, and information sharing",
+  "version": "1.0.0",
+  "extends": ["survival/types", "core/entity", "core/communication"],
+  "nodes": {
+    "network": {
+      "label": "Network",
+      "description": "Communication network or channel.",
+      "extends": "entity",
+      "attributes": {
+        "networkType": { "type": "enum", "options": ["radio-hf", "radio-vhf", "radio-uhf", "satellite", "mesh", "cellular", "internet", "satellite-phone", "pager", "runner", "visual", "other"], "description": "Network type", "icon": "radio" },
+        "frequency": { "type": "string", "description": "Frequency/channel", "icon": "waves" },
+        "callsign": { "type": "string", "description": "Callsign/ID", "icon": "broadcast" },
+        "coverage": { "type": "string", "description": "Coverage area", "icon": "map" },
+        "status": { "type": "enum", "options": ["operational", "degraded", "down", "maintenance"], "description": "Status", "icon": "status", "role": "marker" },
+        "encryption": { "type": "boolean", "description": "Encrypted", "icon": "lock" },
+        "priority": { "type": "enum", "options": ["routine", "priority", "immediate", "flash"], "description": "Priority", "icon": "flag" },
+        "operators": { "type": "relationship", "description": "Radio operators", "icon": "user", "referenceType": "personnel" }
+      }
+    },
+    "message": {
+      "label": "Radio Message",
+      "description": "Structured radio message (ICS-213 style).",
+      "extends": "communication",
+      "attributes": {
+        "messageNumber": { "type": "string", "description": "Message number", "icon": "hash" },
+        "precedence": { "type": "enum", "options": ["routine", "priority", "immediate", "flash"], "description": "Precedence", "icon": "flag" },
+        "fromStation": { "type": "entityRef", "description": "From station", "icon": "radio", "referenceType": "network" },
+        "toStation": { "type": "entityRef", "description": "To station", "icon": "radio", "referenceType": "network" },
+        "subject": { "type": "string", "description": "Subject", "icon": "title" },
+        "body": { "type": "string", "description": "Message text", "icon": "message-square" },
+        "replyRequested": { "type": "boolean", "description": "Reply requested", "icon": "reply" },
+        "acknowledged": { "type": "boolean", "description": "Acknowledged", "icon": "check-circle" },
+        "relayStations": { "type": "relationship", "description": "Relay stations", "icon": "share-2", "referenceType": "network" }
+      }
+    },
+    "bulletin": {
+      "label": "Information Bulletin",
+      "description": "Official information bulletin.",
+      "extends": "communication",
+      "attributes": {
+        "bulletinType": { "type": "enum", "options": ["situation-report", "operations-summary", "resource-status", "weather", "safety", "public-info", "other"], "description": "Bulletin type", "icon": "file-text" },
+        "number": { "type": "string", "description": "Bulletin number", "icon": "hash" },
+        "issuedBy": { "type": "entityRef", "description": "Issuing authority", "icon": "building", "referenceType": "organization" },
+        "issuedAt": { "type": "datetime", "description": "Issue time", "icon": "clock" },
+        "validUntil": { "type": "datetime", "description": "Valid until", "icon": "clock" },
+        "classification": { "type": "enum", "options": ["public", "internal", "restricted", "classified"], "description": "Classification", "icon": "lock" },
+        "distribution": { "type": "tags", "description": "Distribution list", "icon": "users" },
+        "attachments": { "type": "relationship", "description": "Attachments", "icon": "paperclip", "referenceType": "media" }
+      }
+    },
+    "informationProduct": {
+      "label": "Information Product",
+      "description": "Map, report, or other info product.",
+      "extends": "entity",
+      "attributes": {
+        "productType": { "type": "enum", "options": ["map", "sitrep", "weather", "damage-assessment", "needs-assessment", "resource-map", "evacuation-map", "other"], "description": "Product type", "icon": "map" },
+        "title": { "type": "string", "description": "Title", "icon": "title" },
+        "description": { "type": "string", "description": "Description", "icon": "info" },
+        "format": { "type": "enum", "options": ["pdf", "image", "geojson", "kml", "shapefile", "csv", "html", "text"], "description": "File format", "icon": "file" },
+        "url": { "type": "url", "description": "Access URL", "icon": "link" },
+        "producedBy": { "type": "entityRef", "description": "Producer", "icon": "user", "referenceType": "organization" },
+        "producedAt": { "type": "datetime", "description": "Production time", "icon": "clock" },
+        "validFrom": { "type": "datetime", "description": "Valid from", "icon": "calendar" },
+        "validTo": { "type": "datetime", "description": "Valid to", "icon": "calendar" },
+        "classification": { "type": "enum", "options": ["public", "internal", "restricted"], "description": "Classification", "icon": "lock" }
+      }
+    }
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "$schema": "https://notention.org/ontology-schema.json",
+  "$id": "https://notention.org/ontology/core/entity.json",
+  "title": "Entity Domain",
+  "description": "People, organizations, places - core identity and relationships",
+  "version": "1.0.0",
+  "extends": ["types"],
+  "nodes": {
+    "entity": {
+      "label": "Entity",
+      "description": "The base for all things that can be identified.",
+      "abstract": true,
+      "attributes": {
+        "name": { "type": "string", "description": "Primary name or title", "icon": "user" },
+        "description": { "type": "string", "description": "Detailed description", "icon": "info" },
+        "type": { "type": "enum", "options": ["person", "organization", "place", "group"], "description": "Entity type classification", "icon": "tag", "role": "marker" },
+        "tags": { "type": "tags", "description": "Categorization tags", "icon": "tag" },
+        "relationships": { "type": "relationship", "description": "Relationships to other entities", "icon": "link", "referenceType": "entity" }
+      }
+    },
+    "person": {
+      "label": "Person",
+      "description": "An individual human being.",
+      "extends": "entity",
+      "attributes": {
+        "name": { "type": "string", "description": "Full name", "icon": "user", "required": true },
+        "givenName": { "type": "string", "description": "First/given name", "icon": "user" },
+        "familyName": { "type": "string", "description": "Last/family name", "icon": "user" },
+        "email": { "type": "email", "description": "Email address", "icon": "mail" },
+        "phone": { "type": "phone", "description": "Phone number", "icon": "phone" },
+        "role": { "type": "string", "description": "Professional role or position", "icon": "briefcase" },
+        "organization": { "type": "entityRef", "description": "Associated organization", "icon": "building", "referenceType": "organization" },
+        "location": { "type": "geo", "description": "Current location", "icon": "map-pin" },
+        "bio": { "type": "string", "description": "Biographical note", "icon": "info" },
+        "skills": { "type": "tags", "description": "Skills and expertise", "icon": "tool" },
+        "languages": { "type": "tags", "description": "Spoken languages", "icon": "languages" },
+        "avatar": { "type": "url", "description": "Profile image URL", "icon": "image" },
+        "timezone": { "type": "string", "description": "IANA timezone (e.g., Europe/Berlin)", "icon": "globe" },
+        "availability": { "type": "enum", "options": ["available", "busy", "away", "offline"], "description": "Current availability", "icon": "status", "role": "marker" }
+      }
+    },
+    "organization": {
+      "label": "Organization",
+      "description": "A group of people with a particular purpose.",
+      "extends": "entity",
+      "attributes": {
+        "name": { "type": "string", "description": "Organization name", "icon": "building", "required": true },
+        "legalName": { "type": "string", "description": "Legal registered name", "icon": "file-text" },
+        "website": { "type": "url", "description": "Official website", "icon": "globe" },
+        "email": { "type": "email", "description": "Contact email", "icon": "mail" },
+        "phone": { "type": "phone", "description": "Contact phone", "icon": "phone" },
+        "industry": { "type": "string", "description": "Industry or sector", "icon": "industry" },
+        "size": { "type": "enum", "options": ["1-10", "11-50", "51-200", "201-500", "501-1000", "1000+"], "description": "Employee count range", "icon": "users" },
+        "founded": { "type": "date", "description": "Founding date", "icon": "calendar" },
+        "headquarters": { "type": "geo", "description": "HQ location", "icon": "map-pin" },
+        "locations": { "type": "relationship", "description": "Office locations", "icon": "map", "referenceType": "place" },
+        "parentOrg": { "type": "entityRef", "description": "Parent organization", "icon": "git-branch", "referenceType": "organization" },
+        "members": { "type": "relationship", "description": "Member entities", "icon": "users", "referenceType": "person" }
+      }
+    },
+    "place": {
+      "label": "Place",
+      "description": "A physical location or venue.",
+      "extends": "entity",
+      "attributes": {
+        "name": { "type": "string", "description": "Place name", "icon": "map-pin", "required": true },
+        "address": { "type": "string", "description": "Street address", "icon": "home" },
+        "coordinates": { "type": "coordinate", "description": "GPS coordinates", "icon": "crosshair" },
+        "capacity": { "type": "integer", "description": "Maximum capacity", "icon": "users" },
+        "amenities": { "type": "tags", "description": "Available amenities", "icon": "star" },
+        "accessibility": { "type": "tags", "description": "Accessibility features", "icon": "accessibility" },
+        "contactPhone": { "type": "phone", "description": "Venue phone", "icon": "phone" },
+        "website": { "type": "url", "description": "Venue website", "icon": "globe" },
+        "placeType": { "type": "enum", "options": ["building", "room", "outdoor", "virtual", "address", "landmark"], "description": "Type of place", "icon": "layers" },
+        "timezone": { "type": "string", "description": "IANA timezone", "icon": "globe" }
+      }
+    },
+    "group": {
+      "label": "Group",
+      "description": "Informal collection of people with shared interest.",
+      "extends": "entity",
+      "attributes": {
+        "name": { "type": "string", "description": "Group name", "icon": "users", "required": true },
+        "purpose": { "type": "string", "description": "Group purpose or mission", "icon": "target" },
+        "members": { "type": "relationship", "description": "Group members", "icon": "user-plus", "referenceType": "person" },
+        "admins": { "type": "relationship", "description": "Group administrators", "icon": "shield", "referenceType": "person" },
+        "visibility": { "type": "enum", "options": ["public", "private", "hidden"], "description": "Group visibility", "icon": "eye", "role": "marker" },
+        "tags": { "type": "tags", "description": "Group topics", "icon": "tag" }
+      }
+    }
+  }
+}

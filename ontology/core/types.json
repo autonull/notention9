@@ -1,0 +1,359 @@
+{
+  "$schema": "https://notention.org/ontology-schema.json",
+  "$id": "https://notention.org/ontology/core/types.json",
+  "title": "Core Type Definitions",
+  "description": "Base type system with operator vocabularies (RDF-S/OWL-style datatype facets)",
+  "version": "1.0.0",
+  "types": {
+    "string": {
+      "label": "Text",
+      "description": "Free-form text string",
+      "operators": {
+        "real": ["is", "contains"],
+        "imaginary": ["is not"]
+      },
+      "constraints": {
+        "pattern": "^.*$",
+        "maxLength": 1000
+      },
+      "extraction": {
+        "hints": ["quoted phrases", "proper nouns"],
+        "normalization": "trim"
+      },
+      "ui": {
+        "widget": "text",
+        "icon": "type"
+      }
+    },
+    "email": {
+      "label": "Email Address",
+      "description": "Email address with domain-aware matching",
+      "baseType": "string",
+      "operators": {
+        "real": ["is", "contains"],
+        "imaginary": ["is not"]
+      },
+      "constraints": {
+        "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$",
+        "format": "email"
+      },
+      "extraction": {
+        "hints": ["@domain", "user@"],
+        "normalization": "lowercase"
+      },
+      "ui": {
+        "widget": "email",
+        "icon": "mail"
+      }
+    },
+    "phone": {
+      "label": "Phone Number",
+      "description": "Phone number with E.164 normalization",
+      "baseType": "string",
+      "operators": {
+        "real": ["is"],
+        "imaginary": ["is not"]
+      },
+      "constraints": {
+        "pattern": "^\\+?[1-9]\\d{1,14}$"
+      },
+      "extraction": {
+        "hints": ["+1", "tel:", "phone"],
+        "normalization": "e164"
+      },
+      "ui": {
+        "widget": "tel",
+        "icon": "phone"
+      }
+    },
+    "url": {
+      "label": "URL",
+      "description": "Web URL with host-aware matching",
+      "baseType": "string",
+      "operators": {
+        "real": ["is", "contains"],
+        "imaginary": ["is not"]
+      },
+      "constraints": {
+        "format": "uri"
+      },
+      "extraction": {
+        "hints": ["http://", "https://", "www."],
+        "normalization": "canonical"
+      },
+      "ui": {
+        "widget": "url",
+        "icon": "link"
+      }
+    },
+    "number": {
+      "label": "Number",
+      "description": "Numeric value (integer or decimal)",
+      "operators": {
+        "real": ["is", "greater than", "less than", "between"],
+        "imaginary": []
+      },
+      "constraints": {
+        "minimum": -1e15,
+        "maximum": 1e15
+      },
+      "extraction": {
+        "hints": ["digits", "quantities", "$", "€", "£"],
+        "normalization": "parseFloat"
+      },
+      "ui": {
+        "widget": "number",
+        "icon": "hash"
+      }
+    },
+    "integer": {
+      "label": "Integer",
+      "description": "Whole number",
+      "baseType": "number",
+      "constraints": {
+        "type": "integer"
+      },
+      "ui": {
+        "widget": "integer",
+        "icon": "hash"
+      }
+    },
+    "quantity": {
+      "label": "Quantity",
+      "description": "Numeric value with unit (e.g., '5 kg', '100 USD')",
+      "baseType": "number",
+      "operators": {
+        "real": ["is", "greater than", "less than", "between"],
+        "imaginary": []
+      },
+      "constraints": {
+        "minimum": 0
+      },
+      "extraction": {
+        "hints": ["units: kg, lb, m, ft, USD, EUR, items, pieces"],
+        "normalization": "parseQuantity"
+      },
+      "ui": {
+        "widget": "quantity",
+        "icon": "scale"
+      }
+    },
+    "currency": {
+      "label": "Currency Amount",
+      "description": "Monetary value with ISO 4217 currency code",
+      "baseType": "quantity",
+      "constraints": {
+        "currency": true
+      },
+      "extraction": {
+        "hints": ["$", "€", "£", "¥", "USD", "EUR", "GBP"],
+        "normalization": "parseCurrency"
+      },
+      "ui": {
+        "widget": "currency",
+        "icon": "dollar-sign"
+      }
+    },
+    "date": {
+      "label": "Date",
+      "description": "Calendar date (YYYY-MM-DD)",
+      "operators": {
+        "real": ["is", "before", "after"],
+        "imaginary": []
+      },
+      "constraints": {
+        "format": "date"
+      },
+      "extraction": {
+        "hints": ["tomorrow", "next week", "Jan 15", "2024-01-15"],
+        "normalization": "parseDate"
+      },
+      "ui": {
+        "widget": "date",
+        "icon": "calendar"
+      }
+    },
+    "datetime": {
+      "label": "Date & Time",
+      "description": "Date and time with timezone (ISO 8601)",
+      "operators": {
+        "real": ["is", "before", "after"],
+        "imaginary": []
+      },
+      "constraints": {
+        "format": "date-time"
+      },
+      "extraction": {
+        "hints": ["at 3pm", "tomorrow 14:00", "2024-01-15T15:00:00Z"],
+        "normalization": "parseDateTime"
+      },
+      "ui": {
+        "widget": "datetime",
+        "icon": "clock"
+      }
+    },
+    "time": {
+      "label": "Time",
+      "description": "Time of day (HH:MM:SS)",
+      "baseType": "datetime",
+      "constraints": {
+        "format": "time"
+      },
+      "ui": {
+        "widget": "time",
+        "icon": "clock"
+      }
+    },
+    "duration": {
+      "label": "Duration",
+      "description": "Time duration (ISO 8601 duration or minutes)",
+      "baseType": "number",
+      "operators": {
+        "real": ["is", "greater than", "less than", "between"],
+        "imaginary": []
+      },
+      "extraction": {
+        "hints": ["30 min", "2 hours", "3 days", "1 week"],
+        "normalization": "parseDuration"
+      },
+      "ui": {
+        "widget": "duration",
+        "icon": "timer"
+      }
+    },
+    "geo": {
+      "label": "Location",
+      "description": "Geographic coordinate (lat, lng) or named place",
+      "operators": {
+        "real": ["is", "near"],
+        "imaginary": []
+      },
+      "constraints": {
+        "format": "geo"
+      },
+      "extraction": {
+        "hints": ["Berlin", "San Francisco", "near", "at"],
+        "normalization": "parseGeo"
+      },
+      "ui": {
+        "widget": "geo",
+        "icon": "map-pin"
+      }
+    },
+    "coordinate": {
+      "label": "GPS Coordinate",
+      "description": "Precise latitude/longitude pair",
+      "baseType": "geo",
+      "constraints": {
+        "format": "coordinate"
+      },
+      "extraction": {
+        "hints": ["lat:", "lng:", "coordinates"],
+        "normalization": "parseCoordinate"
+      },
+      "ui": {
+        "widget": "coordinate",
+        "icon": "crosshair"
+      }
+    },
+    "enum": {
+      "label": "Enumeration",
+      "description": "Fixed set of allowed values (options required)",
+      "operators": {
+        "real": ["is"],
+        "imaginary": ["is not"]
+      },
+      "constraints": {
+        "enum": []
+      },
+      "extraction": {
+        "hints": ["options listed in schema"],
+        "normalization": "exact"
+      },
+      "ui": {
+        "widget": "select",
+        "icon": "list"
+      }
+    },
+    "boolean": {
+      "label": "Yes/No",
+      "description": "Boolean true/false value",
+      "operators": {
+        "real": ["is"],
+        "imaginary": ["is not"]
+      },
+      "extraction": {
+        "hints": ["yes/no", "true/false", "on/off"],
+        "normalization": "parseBoolean"
+      },
+      "ui": {
+        "widget": "boolean",
+        "icon": "toggle"
+      }
+    },
+    "relationship": {
+      "label": "Relationship",
+      "description": "Reference to another entity by type",
+      "operators": {
+        "real": ["has"],
+        "imaginary": ["not has"]
+      },
+      "constraints": {
+        "referenceType": "string"
+      },
+      "extraction": {
+        "hints": ["related to", "connected to", "linked"],
+        "normalization": "entityRef"
+      },
+      "ui": {
+        "widget": "entity-reference",
+        "icon": "link"
+      }
+    },
+    "entityRef": {
+      "label": "Entity Reference",
+      "description": "Strongly-typed reference to another ontology node",
+      "baseType": "relationship",
+      "constraints": {
+        "referenceType": "string"
+      },
+      "ui": {
+        "widget": "entity-picker",
+        "icon": "link-2"
+      }
+    },
+    "tags": {
+      "label": "Tags",
+      "description": "Multiple free-form labels",
+      "baseType": "string",
+      "operators": {
+        "real": ["has", "contains"],
+        "imaginary": ["not has", "is not"]
+      },
+      "constraints": {
+        "uniqueItems": true,
+        "maxItems": 50
+      },
+      "extraction": {
+        "hints": ["#hashtag", "#tag"],
+        "normalization": "parseTags"
+      },
+      "ui": {
+        "widget": "tags",
+        "icon": "tag"
+      }
+    },
+    "json": {
+      "label": "Structured Data",
+      "description": "Arbitrary JSON object",
+      "operators": {
+        "real": ["is"],
+        "imaginary": []
+      },
+      "ui": {
+        "widget": "json",
+        "icon": "code"
+      }
+    }
+  }
+}

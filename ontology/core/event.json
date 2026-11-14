@@ -1,0 +1,88 @@
+{
+  "$schema": "https://notention.org/ontology-schema.json",
+  "$id": "https://notention.org/ontology/core/event.json",
+  "title": "Event Domain",
+  "description": "Meetings, conferences, scheduled events and calendar items",
+  "version": "1.0.0",
+  "extends": ["types"],
+  "nodes": {
+    "event": {
+      "label": "Event",
+      "description": "Something that happens at a specific time and place.",
+      "abstract": true,
+      "attributes": {
+        "title": { "type": "string", "description": "Event title", "icon": "title", "required": true },
+        "description": { "type": "string", "description": "Event description", "icon": "info" },
+        "startTime": { "type": "datetime", "description": "Start date and time", "icon": "clock", "required": true },
+        "endTime": { "type": "datetime", "description": "End date and time", "icon": "clock" },
+        "duration": { "type": "duration", "description": "Duration in minutes", "icon": "timer" },
+        "timezone": { "type": "string", "description": "IANA timezone", "icon": "globe" },
+        "location": { "type": "entityRef", "description": "Venue or location", "icon": "map-pin", "referenceType": "place" },
+        "address": { "type": "string", "description": "Address if no venue entity", "icon": "map-pin" },
+        "onlineUrl": { "type": "url", "description": "Virtual meeting link", "icon": "video" },
+        "status": { "type": "enum", "options": ["tentative", "confirmed", "in-progress", "completed", "cancelled", "postponed"], "description": "Event status", "icon": "calendar-check", "role": "marker" },
+        "visibility": { "type": "enum", "options": ["public", "private", "internal"], "description": "Visibility", "icon": "eye" },
+        "organizer": { "type": "entityRef", "description": "Event organizer", "icon": "user", "referenceType": "person" },
+        "capacity": { "type": "integer", "description": "Max attendees", "icon": "users" },
+        "attendeeCount": { "type": "integer", "description": "Current attendees", "icon": "user-check" },
+        "tags": { "type": "tags", "description": "Event categories", "icon": "tag" }
+      }
+    },
+    "meeting": {
+      "label": "Meeting",
+      "description": "A scheduled gathering for discussion or decision-making.",
+      "extends": "event",
+      "attributes": {
+        "meetingType": { "type": "enum", "options": ["standup", "review", "planning", "retrospective", "one-on-one", "team", "client", "board", "all-hands", "interview", "other"], "description": "Meeting type", "icon": "users" },
+        "agenda": { "type": "string", "description": "Agenda items", "icon": "list" },
+        "decisions": { "type": "string", "description": "Decisions made", "icon": "check-circle" },
+        "actionItems": { "type": "integer", "description": "Action items count", "icon": "check-square" },
+        "recurring": { "type": "boolean", "description": "Is recurring", "icon": "repeat" },
+        "recurrenceRule": { "type": "string", "description": "RRULE recurrence pattern", "icon": "calendar" },
+        "meetingUrl": { "type": "url", "description": "Video conference link", "icon": "video" },
+        "recordingUrl": { "type": "url", "description": "Recording link", "icon": "film" },
+        "notes": { "type": "string", "description": "Meeting notes", "icon": "file-text" }
+      }
+    },
+    "conference": {
+      "label": "Conference",
+      "description": "A large formal meeting or series of meetings.",
+      "extends": "event",
+      "attributes": {
+        "conferenceType": { "type": "enum", "options": ["academic", "industry", "trade", "user-group", "internal", "summit", "symposium"], "description": "Conference type", "icon": "building" },
+        "tracks": { "type": "integer", "description": "Parallel tracks", "icon": "layers" },
+        "keynoteSpeakers": { "type": "relationship", "description": "Keynote speakers", "icon": "microphone", "referenceType": "person" },
+        "speakers": { "type": "relationship", "description": "All speakers", "icon": "user", "referenceType": "person" },
+        "sponsors": { "type": "relationship", "description": "Sponsors", "icon": "dollar-sign", "referenceType": "organization" },
+        "callForPapersUrl": { "type": "url", "description": "CFP link", "icon": "file-text" },
+        "registrationUrl": { "type": "url", "description": "Registration link", "icon": "ticket" },
+        "website": { "type": "url", "description": "Conference website", "icon": "globe" },
+        "hashtag": { "type": "string", "description": "Social media hashtag", "icon": "hash" }
+      }
+    },
+    "appointment": {
+      "label": "Appointment",
+      "description": "A personal or professional appointment.",
+      "extends": "event",
+      "attributes": {
+        "appointmentType": { "type": "enum", "options": ["medical", "personal", "professional", "service", "maintenance", "other"], "description": "Appointment type", "icon": "calendar" },
+        "provider": { "type": "entityRef", "description": "Service provider", "icon": "user", "referenceType": "organization" },
+        "preparation": { "type": "string", "description": "Preparation needed", "icon": "clipboard" },
+        "followUp": { "type": "boolean", "description": "Follow-up needed", "icon": "arrow-right" },
+        "reminders": { "type": "tags", "description": "Reminder times", "icon": "bell" }
+      }
+    },
+    "deadline": {
+      "label": "Deadline",
+      "description": "A time by which something must be completed.",
+      "extends": "event",
+      "attributes": {
+        "dueDate": { "type": "datetime", "description": "Due date and time", "icon": "clock", "required": true },
+        "task": { "type": "entityRef", "description": "Related task", "icon": "task", "referenceType": "task" },
+        "project": { "type": "entityRef", "description": "Related project", "icon": "folder", "referenceType": "project" },
+        "severity": { "type": "enum", "options": ["soft", "firm", "hard"], "description": "Deadline strictness", "icon": "alert-triangle" },
+        "consequences": { "type": "string", "description": "If missed", "icon": "alert-circle" }
+      }
+    }
+  }
+}

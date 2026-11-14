@@ -91,6 +91,7 @@ export interface OntologyNode {
   id: string;
   label: string;
   description?: string;
+  abstract?: boolean;
   requiredAttributes?: string[];
   attributes?: Record<string, OntologyAttribute>;
   children?: OntologyNode[];

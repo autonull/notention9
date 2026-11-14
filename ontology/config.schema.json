@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://notention.org/ontology-config.schema.json",
+  "title": "Ontology Configuration",
+  "description": "System configuration for ontology module selection and overrides",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Config version",
+      "default": "1.0.0"
+    },
+    "modules": {
+      "type": "array",
+      "description": "Ordered list of ontology modules to load (later modules extend/override earlier)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "description": "Module identifier" },
+          "path": { "type": "string", "description": "Relative path to module index.json" },
+          "enabled": { "type": "boolean", "default": true },
+          "priority": { "type": "integer", "default": 0, "description": "Load order (higher = later)" }
+        },
+        "required": ["name", "path"]
+      },
+      "default": [
+        { "name": "core-types", "path": "core/types.json", "priority": 10 },
+        { "name": "core-entity", "path": "core/entity.json", "priority": 20 },
+        { "name": "core-communication", "path": "core/communication.json", "priority": 20 },
+        { "name": "core-event", "path": "core/event.json", "priority": 20 },
+        { "name": "core-work", "path": "core/work.json", "priority": 20 },
+        { "name": "core-commerce", "path": "core/commerce.json", "priority": 20 }
+      ]
+    },
+    "overrides": {
+      "type": "object",
+      "description": "Runtime overrides for types/nodes/attributes",
+      "additionalProperties": true
+    },
+    "featureFlags": {
+      "type": "object",
+      "description": "Feature toggles for ontology capabilities",
+      "properties": {
+        "survival": { "type": "boolean", "default": false },
+        "commerce": { "type": "boolean", "default": false },
+        "work": { "type": "boolean", "default": true },
+        "communication": { "type": "boolean", "default": true },
+        "customExtensions": { "type": "boolean", "default": true }
+      }
+    }
+  },
+  "required": ["version", "modules"]
+}

@@ -1,0 +1,107 @@
+{
+  "$schema": "https://notention.org/ontology-schema.json",
+  "$id": "https://notention.org/ontology/core/commerce.json",
+  "title": "Commerce Domain",
+  "description": "Products, services, transactions, and marketplace activities",
+  "version": "1.0.0",
+  "extends": ["types"],
+  "nodes": {
+    "commerce": {
+      "label": "Commerce Item",
+      "description": "Base for buy/sell/trade items.",
+      "abstract": true,
+      "attributes": {
+        "title": { "type": "string", "description": "Item title", "icon": "title", "required": true },
+        "description": { "type": "string", "description": "Detailed description", "icon": "info" },
+        "price": { "type": "currency", "description": "Price", "icon": "dollar-sign" },
+        "currency": { "type": "string", "description": "ISO 4217 currency code", "icon": "coins", "default": "USD" },
+        "seller": { "type": "entityRef", "description": "Seller", "icon": "user", "referenceType": "person" },
+        "buyer": { "type": "entityRef", "description": "Buyer", "icon": "user", "referenceType": "person" },
+        "status": { "type": "enum", "options": ["draft", "listed", "pending", "sold", "completed", "cancelled", "disputed"], "description": "Transaction status", "icon": "status", "role": "marker" },
+        "tags": { "type": "tags", "description": "Categories", "icon": "tag" },
+        "location": { "type": "entityRef", "description": "Item location", "icon": "map-pin", "referenceType": "place" },
+        "shipping": { "type": "enum", "options": ["local", "domestic", "international", "digital", "pickup"], "description": "Shipping type", "icon": "truck" }
+      }
+    },
+    "product": {
+      "label": "Product",
+      "description": "A physical or digital good for sale.",
+      "extends": "commerce",
+      "attributes": {
+        "productType": { "type": "enum", "options": ["physical", "digital", "service", "subscription", "license", "gift-card"], "description": "Product type", "icon": "package" },
+        "sku": { "type": "string", "description": "Stock keeping unit", "icon": "barcode" },
+        "condition": { "type": "enum", "options": ["new", "like-new", "good", "fair", "poor", "refurbished"], "description": "Condition", "icon": "shield" },
+        "quantity": { "type": "integer", "description": "Available quantity", "icon": "package" },
+        "weight": { "type": "quantity", "description": "Weight for shipping", "icon": "scale" },
+        "dimensions": { "type": "string", "description": "LxWxH", "icon": "maximize" },
+        "images": { "type": "relationship", "description": "Product images", "icon": "image", "referenceType": "media" },
+        "category": { "type": "string", "description": "Product category", "icon": "tag" },
+        "brand": { "type": "string", "description": "Brand name", "icon": "trademark" },
+        "model": { "type": "string", "description": "Model number", "icon": "cpu" },
+        "warranty": { "type": "string", "description": "Warranty info", "icon": "shield" },
+        "returnPolicy": { "type": "string", "description": "Return terms", "icon": "rotate-ccw" }
+      }
+    },
+    "service": {
+      "label": "Service",
+      "description": "A service offering (also in work/offer).",
+      "extends": "commerce",
+      "attributes": {
+        "serviceType": { "type": "enum", "options": ["consulting", "development", "design", "maintenance", "cleaning", "tutoring", "healthcare", "legal", "financial", "other"], "description": "Service category", "icon": "tool" },
+        "duration": { "type": "duration", "description": "Service duration", "icon": "clock" },
+        "rateType": { "type": "enum", "options": ["fixed", "hourly", "daily", "project", "retainer"], "description": "Pricing model", "icon": "dollar-sign" },
+        "availability": { "type": "string", "description": "When available", "icon": "calendar" },
+        "requirements": { "type": "string", "description": "Client requirements", "icon": "clipboard" },
+        "deliverables": { "type": "tags", "description": "What's included", "icon": "package" }
+      }
+    },
+    "order": {
+      "label": "Order",
+      "description": "A purchase transaction.",
+      "extends": "commerce",
+      "attributes": {
+        "orderNumber": { "type": "string", "description": "Order reference", "icon": "hash" },
+        "items": { "type": "relationship", "description": "Ordered items", "icon": "shopping-cart", "referenceType": "commerce" },
+        "subtotal": { "type": "currency", "description": "Items subtotal", "icon": "calculator" },
+        "tax": { "type": "currency", "description": "Tax amount", "icon": "percent" },
+        "shippingCost": { "type": "currency", "description": "Shipping cost", "icon": "truck" },
+        "discount": { "type": "currency", "description": "Discount applied", "icon": "tag" },
+        "total": { "type": "currency", "description": "Order total", "icon": "dollar-sign" },
+        "paymentMethod": { "type": "enum", "options": ["card", "bank", "crypto", "cash", "invoice", "wallet"], "description": "Payment method", "icon": "credit-card" },
+        "paymentStatus": { "type": "enum", "options": ["pending", "authorized", "paid", "refunded", "failed"], "description": "Payment status", "icon": "check-circle" },
+        "shippingAddress": { "type": "string", "description": "Delivery address", "icon": "home" },
+        "trackingNumber": { "type": "string", "description": "Shipment tracking", "icon": "search" },
+        "notes": { "type": "string", "description": "Order notes", "icon": "file-text" }
+      }
+    },
+    "invoice": {
+      "label": "Invoice",
+      "description": "A request for payment.",
+      "extends": "commerce",
+      "attributes": {
+        "invoiceNumber": { "type": "string", "description": "Invoice number", "icon": "file-text" },
+        "order": { "type": "entityRef", "description": "Related order", "icon": "shopping-cart", "referenceType": "order" },
+        "lineItems": { "type": "json", "description": "Invoice lines", "icon": "list" },
+        "dueDate": { "type": "date", "description": "Payment due", "icon": "calendar" },
+        "issuedDate": { "type": "date", "description": "Issue date", "icon": "calendar" },
+        "paymentTerms": { "type": "string", "description": "Terms (e.g., Net 30)", "icon": "clock" },
+        "taxId": { "type": "string", "description": "Tax ID", "icon": "id-card" }
+      }
+    },
+    "subscription": {
+      "label": "Subscription",
+      "description": "Recurring payment for product/service.",
+      "extends": "commerce",
+      "attributes": {
+        "plan": { "type": "string", "description": "Plan name", "icon": "star" },
+        "interval": { "type": "enum", "options": ["daily", "weekly", "monthly", "quarterly", "yearly"], "description": "Billing interval", "icon": "calendar" },
+        "intervalCount": { "type": "integer", "description": "Interval multiplier", "icon": "hash" },
+        "trialDays": { "type": "integer", "description": "Trial period", "icon": "gift" },
+        "currentPeriodStart": { "type": "datetime", "description": "Period start", "icon": "calendar" },
+        "currentPeriodEnd": { "type": "datetime", "description": "Period end", "icon": "calendar" },
+        "cancelAtPeriodEnd": { "type": "boolean", "description": "Cancel at end", "icon": "x-circle" },
+        "paymentMethod": { "type": "string", "description": "Saved payment method", "icon": "credit-card" }
+      }
+    }
+  }
+}

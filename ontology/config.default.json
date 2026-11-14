@@ -1,0 +1,25 @@
+{
+  "version": "1.0.0",
+  "modules": [
+    { "name": "core-types", "path": "core/types.json", "priority": 10 },
+    { "name": "core-entity", "path": "core/entity.json", "priority": 20 },
+    { "name": "core-communication", "path": "core/communication.json", "priority": 20 },
+    { "name": "core-event", "path": "core/event.json", "priority": 20 },
+    { "name": "core-work", "path": "core/work.json", "priority": 20 },
+    { "name": "core-commerce", "path": "core/commerce.json", "priority": 20 },
+    { "name": "survival-types", "path": "survival/types.json", "priority": 30 },
+    { "name": "survival-hazard", "path": "survival/hazard.json", "priority": 40 },
+    { "name": "survival-resource", "path": "survival/resource.json", "priority": 40 },
+    { "name": "survival-shelter", "path": "survival/shelter.json", "priority": 40 },
+    { "name": "survival-medical", "path": "survival/medical.json", "priority": 40 },
+    { "name": "survival-transport", "path": "survival/transport.json", "priority": 40 },
+    { "name": "survival-comms", "path": "survival/comms.json", "priority": 40 }
+  ],
+  "featureFlags": {
+    "survival": true,
+    "commerce": true,
+    "work": true,
+    "communication": true,
+    "customExtensions": true
+  }
+}

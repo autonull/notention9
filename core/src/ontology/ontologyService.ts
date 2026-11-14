@@ -1,5 +1,5 @@
 import type { OntologyNode, OntologyAttribute, PropertyType } from '../types/index.js';
-import { findNode, buildAttributeIndex } from './ontologyCore.js';
+import { getOntology, findNode, resetOntologyCache, loadOntology } from './loader.js';
 import {
     buildWidgetMetadata,
     getAttributesByOperator,
@@ -10,7 +10,6 @@ import {
 } from './widgets.js';
 import { UsageTracker, type SuggestedAttribute } from './statistics.js';
 import { FuzzyMatcher } from '../utils/matching.js';
-import { DEFAULT_ONTOLOGY } from './ontology.default.js';
 
 /**
  * Widget metadata structure - used as return type for buildWidgetMetadata
@@ -28,21 +27,48 @@ export type { WidgetMetadata };
 /**
  * OntologyService - Programmatic access to ontology metadata
  *
+ * Now wraps the new data-driven loader for backward compatibility.
  * Enables UI generation, property validation, and semantic matching
  * without hardcoding domain knowledge.
  */
 export class OntologyService {
-    private ontology: OntologyNode[];
+    private compiled: ReturnType<typeof getOntology>;
     private attributeIndex: Map<string, OntologyAttribute>;
 
     // Modular utilities
     private usageTracker: UsageTracker;
     private fuzzyMatcher: FuzzyMatcher;
 
-    constructor(ontology: OntologyNode[]) {
-        this.ontology = ontology;
-        this.attributeIndex = buildAttributeIndex(this.ontology);
-        this.usageTracker = new UsageTracker(this.ontology, this.attributeIndex);
+    /**
+     * Create with optional config path or legacy ontology array
+     * @param configPathOrOntology - Config path string, or legacy OntologyNode[] array
+     */
+    constructor(configPathOrOntology?: string | OntologyNode[]) {
+        if (Array.isArray(configPathOrOntology)) {
+            // Legacy mode: use provided ontology array directly
+            this.compiled = {
+                nodes: new Map(configPathOrOntology.map(n => [n.id, n])),
+                types: new Map(),
+                attributes: new Map(),
+                typeHierarchy: new Map(),
+                nodeHierarchy: new Map()
+            };
+        } else {
+            // New mode: use data-driven loader
+            this.compiled = getOntology(configPathOrOntology);
+        }
+
+        const nodes = this.compiled.nodes;
+        this.attributeIndex = new Map();
+        for (const node of nodes.values()) {
+            for (const [key, attr] of Object.entries(node.attributes ?? {})) {
+                if (!this.attributeIndex.has(key)) {
+                    this.attributeIndex.set(key, attr);
+                }
+            }
+        }
+        const nodeArray = Array.from(nodes.values());
+        this.usageTracker = new UsageTracker(nodeArray, this.attributeIndex);
         this.fuzzyMatcher = new FuzzyMatcher();
     }
 
@@ -50,13 +76,21 @@ export class OntologyService {
      * Create a standard ontology service with default ontology
      */
     static createStandard(): OntologyService {
-        return new OntologyService(DEFAULT_ONTOLOGY);
+        return new OntologyService();
     }
 
     /**
-     * Create an ontology service with custom ontology
+     * Create an ontology service with custom config path
      */
-    static createCustom(ontology: OntologyNode[]): OntologyService {
+    static createWithConfig(configPath: string): OntologyService {
+        resetOntologyCache();
+        return new OntologyService(configPath);
+    }
+
+    /**
+     * Create an ontology service with legacy ontology array (for tests)
+     */
+    static createWithOntology(ontology: OntologyNode[]): OntologyService {
         return new OntologyService(ontology);
     }
 
@@ -129,14 +163,14 @@ export class OntologyService {
      * Get all nodes in ontology
      */
     getAllNodes(): OntologyNode[] {
-        return this.ontology;
+        return Array.from(this.compiled.nodes.values());
     }
 
     /**
      * Find node by ID
      */
     getNode(nodeId: string): OntologyNode | null {
-        return findNode(this.ontology, nodeId);
+        return findNode(this.compiled.nodes, nodeId) ?? null;
     }
 
     /**
@@ -157,7 +191,7 @@ export class OntologyService {
      * Get suggested attributes based on usage frequency
      */
     getSuggestedAttributes(minFrequency: number = 3): SuggestedAttribute[] {
-        return this.usageTracker.getSuggestions(this.ontology, this.attributeIndex, minFrequency);
+        return this.usageTracker.getSuggestions(this.getAllNodes(), this.attributeIndex, minFrequency);
     }
 
     /**
@@ -166,7 +200,7 @@ export class OntologyService {
     getContextualSuggestions(existingKeys: string[], limit: number = 5): SuggestedAttribute[] {
         return this.usageTracker.getContextualSuggestions(
             existingKeys,
-            this.ontology,
+            this.getAllNodes(),
             this.attributeIndex,
             limit
         );
@@ -177,5 +211,26 @@ export class OntologyService {
      */
     getGraphData() {
         return this.usageTracker.getGraphData();
+    }
+
+    /**
+     * Reload ontology from config
+     */
+    reload(configPath?: string): void {
+        if (Array.isArray(this.compiled.nodes)) {
+            // Legacy mode - cannot reload from config
+            return;
+        }
+        resetOntologyCache();
+        this.compiled = getOntology(configPath);
+        this.attributeIndex.clear();
+        for (const node of this.compiled.nodes.values()) {
+            for (const [key, attr] of Object.entries(node.attributes ?? {})) {
+                if (!this.attributeIndex.has(key)) {
+                    this.attributeIndex.set(key, attr);
+                }
+            }
+        }
+        this.clearCaches();
     }
 }

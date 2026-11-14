@@ -1,0 +1,117 @@
+{
+  "$schema": "https://notention.org/ontology-schema.json",
+  "$id": "https://notention.org/ontology/core/work.json",
+  "title": "Work Domain",
+  "description": "Jobs, projects, tasks, freelance work and professional activities",
+  "version": "1.0.0",
+  "extends": ["types"],
+  "nodes": {
+    "work": {
+      "label": "Work Item",
+      "description": "Base for all work-related items.",
+      "abstract": true,
+      "attributes": {
+        "title": { "type": "string", "description": "Work title", "icon": "title", "required": true },
+        "description": { "type": "string", "description": "Detailed description", "icon": "file-text" },
+        "status": { "type": "enum", "options": ["backlog", "todo", "in-progress", "review", "done", "blocked", "cancelled"], "description": "Current status", "icon": "status", "role": "marker" },
+        "priority": { "type": "enum", "options": ["low", "normal", "high", "critical"], "description": "Priority level", "icon": "flag" },
+        "assignee": { "type": "entityRef", "description": "Assigned person", "icon": "user", "referenceType": "person" },
+        "reporter": { "type": "entityRef", "description": "Who created it", "icon": "user", "referenceType": "person" },
+        "project": { "type": "entityRef", "description": "Parent project", "icon": "folder", "referenceType": "project" },
+        "tags": { "type": "tags", "description": "Labels/categories", "icon": "tag" },
+        "startDate": { "type": "date", "description": "Planned start", "icon": "calendar" },
+        "dueDate": { "type": "date", "description": "Due date", "icon": "calendar" },
+        "completedDate": { "type": "date", "description": "Completion date", "icon": "check-circle" },
+        "estimatedHours": { "type": "number", "description": "Estimated effort (hours)", "icon": "clock" },
+        "actualHours": { "type": "number", "description": "Actual time spent", "icon": "timer" }
+      }
+    },
+    "task": {
+      "label": "Task",
+      "description": "A discrete unit of work.",
+      "extends": "work",
+      "attributes": {
+        "taskType": { "type": "enum", "options": ["feature", "bug", "chore", "research", "design", "documentation", "testing", "deployment", "meeting", "admin"], "description": "Task type", "icon": "tag" },
+        "subtasks": { "type": "relationship", "description": "Sub-tasks", "icon": "list", "referenceType": "task" },
+        "dependsOn": { "type": "relationship", "description": "Blocking tasks", "icon": "link", "referenceType": "task" },
+        "blocks": { "type": "relationship", "description": "Blocked tasks", "icon": "link", "referenceType": "task" },
+        "acceptanceCriteria": { "type": "string", "description": "Done definition", "icon": "check-square" },
+        "labels": { "type": "tags", "description": "Additional labels", "icon": "label" }
+      }
+    },
+    "project": {
+      "label": "Project",
+      "description": "A collection of related work with a goal.",
+      "extends": "work",
+      "attributes": {
+        "projectType": { "type": "enum", "options": ["product", "internal", "client", "research", "personal", "community"], "description": "Project type", "icon": "folder" },
+        "key": { "type": "string", "description": "Short project key (e.g., PROJ)", "icon": "key" },
+        "client": { "type": "entityRef", "description": "Client organization", "icon": "building", "referenceType": "organization" },
+        "budget": { "type": "currency", "description": "Project budget", "icon": "dollar-sign" },
+        "spent": { "type": "currency", "description": "Amount spent", "icon": "credit-card" },
+        "team": { "type": "relationship", "description": "Team members", "icon": "users", "referenceType": "person" },
+        "stakeholders": { "type": "relationship", "description": "Stakeholders", "icon": "users", "referenceType": "person" },
+        "repository": { "type": "url", "description": "Code repository", "icon": "git-branch" },
+        "documentation": { "type": "url", "description": "Project docs", "icon": "book" },
+        "milestones": { "type": "relationship", "description": "Project milestones", "icon": "flag", "referenceType": "milestone" }
+      }
+    },
+    "milestone": {
+      "label": "Milestone",
+      "description": "A significant checkpoint in a project.",
+      "extends": "work",
+      "attributes": {
+        "milestoneType": { "type": "enum", "options": ["release", "review", "delivery", "approval", "phase-gate"], "description": "Milestone type", "icon": "flag" },
+        "project": { "type": "entityRef", "description": "Parent project", "icon": "folder", "referenceType": "project", "required": true },
+        "criteria": { "type": "string", "description": "Completion criteria", "icon": "check-square" }
+      }
+    },
+    "job": {
+      "label": "Job Posting",
+      "description": "An employment or contract opportunity.",
+      "extends": "work",
+      "attributes": {
+        "employmentType": { "type": "enum", "options": ["full-time", "part-time", "contract", "freelance", "internship", "temporary", "volunteer"], "description": "Employment type", "icon": "briefcase" },
+        "experienceLevel": { "type": "enum", "options": ["entry", "junior", "mid", "senior", "lead", "principal", "executive"], "description": "Experience required", "icon": "trending-up" },
+        "salaryMin": { "type": "currency", "description": "Minimum salary", "icon": "dollar-sign" },
+        "salaryMax": { "type": "currency", "description": "Maximum salary", "icon": "dollar-sign" },
+        "salaryPeriod": { "type": "enum", "options": ["hourly", "monthly", "yearly", "project"], "description": "Salary period", "icon": "calendar" },
+        "location": { "type": "entityRef", "description": "Job location", "icon": "map-pin", "referenceType": "place" },
+        "remotePolicy": { "type": "enum", "options": ["remote", "hybrid", "onsite", "flexible"], "description": "Remote work policy", "icon": "home" },
+        "skills": { "type": "tags", "description": "Required skills", "icon": "tool" },
+        "benefits": { "type": "tags", "description": "Benefits offered", "icon": "gift" },
+        "applicationUrl": { "type": "url", "description": "Apply link", "icon": "send" },
+        "postedDate": { "type": "date", "description": "Posted date", "icon": "calendar" },
+        "expiresDate": { "type": "date", "description": "Expires date", "icon": "calendar" }
+      }
+    },
+    "offer": {
+      "label": "Service Offer",
+      "description": "A freelance or service offering.",
+      "extends": "work",
+      "attributes": {
+        "serviceType": { "type": "enum", "options": ["development", "design", "consulting", "writing", "marketing", "translation", "video", "audio", "data", "other"], "description": "Service category", "icon": "tool" },
+        "rate": { "type": "currency", "description": "Rate", "icon": "dollar-sign" },
+        "rateType": { "type": "enum", "options": ["hourly", "daily", "weekly", "monthly", "project", "retainer"], "description": "Rate basis", "icon": "calendar" },
+        "availability": { "type": "enum", "options": ["full-time", "part-time", "evenings", "weekends", "flexible"], "description": "Availability", "icon": "clock" },
+        "skills": { "type": "tags", "description": "Offered skills", "icon": "tool" },
+        "portfolio": { "type": "url", "description": "Portfolio link", "icon": "link" },
+        "location": { "type": "entityRef", "description": "Preferred location", "icon": "map-pin", "referenceType": "place" },
+        "remoteOk": { "type": "boolean", "description": "Remote work ok", "icon": "globe" }
+      }
+    },
+    "timesheet": {
+      "label": "Timesheet Entry",
+      "description": "Recorded work time.",
+      "extends": "work",
+      "attributes": {
+        "date": { "type": "date", "description": "Work date", "icon": "calendar", "required": true },
+        "hours": { "type": "number", "description": "Hours worked", "icon": "clock", "required": true },
+        "task": { "type": "entityRef", "description": "Worked on task", "icon": "task", "referenceType": "task" },
+        "project": { "type": "entityRef", "description": "Project context", "icon": "folder", "referenceType": "project" },
+        "description": { "type": "string", "description": "What was done", "icon": "file-text" },
+        "billable": { "type": "boolean", "description": "Billable time", "icon": "dollar-sign" }
+      }
+    }
+  }
+}

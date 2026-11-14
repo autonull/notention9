@@ -1,0 +1,75 @@
+{
+  "$schema": "https://notention.org/ontology-schema.json",
+  "$id": "https://notention.org/ontology/survival/transport.json",
+  "title": "Transport Domain",
+  "description": "Transportation, logistics, and movement coordination",
+  "version": "1.0.0",
+  "extends": ["survival/types", "core/entity", "core/event"],
+  "nodes": {
+    "vehicle": {
+      "label": "Vehicle",
+      "description": "Transport vehicle.",
+      "extends": "equipment",
+      "attributes": {
+        "vehicleType": { "type": "enum", "options": ["car", "truck", "van", "bus", "motorcycle", "boat", "helicopter", "plane", "drone", "bicycle", "animal", "other"], "description": "Vehicle type", "icon": "truck" },
+        "licensePlate": { "type": "string", "description": "License plate", "icon": "id-card" },
+        "capacity": { "type": "capacity", "description": "Passenger/cargo capacity", "icon": "users" },
+        "currentLoad": { "type": "quantity", "description": "Current load", "icon": "package" },
+        "fuelType": { "type": "enum", "options": ["gasoline", "diesel", "electric", "hybrid", "solar", "other"], "description": "Fuel type", "icon": "fuel" },
+        "fuelLevel": { "type": "number", "description": "Fuel level %", "icon": "fuel" },
+        "range": { "type": "quantity", "description": "Range (km)", "icon": "navigation" },
+        "driver": { "type": "entityRef", "description": "Assigned driver", "icon": "user", "referenceType": "personnel" },
+        "status": { "type": "enum", "options": ["available", "assigned", "in-transit", "maintenance", "fuel-needed", "out-of-service"], "description": "Status", "icon": "status", "role": "marker" },
+        "gpsEnabled": { "type": "boolean", "description": "GPS tracking", "icon": "satellite" }
+      }
+    },
+    "route": {
+      "label": "Route",
+      "description": "Transport route.",
+      "extends": "entity",
+      "attributes": {
+        "origin": { "type": "entityRef", "description": "Start point", "icon": "map-pin", "referenceType": "place" },
+        "destination": { "type": "entityRef", "description": "End point", "icon": "map-pin", "referenceType": "place" },
+        "waypoints": { "type": "relationship", "description": "Intermediate points", "icon": "navigation", "referenceType": "place" },
+        "distance": { "type": "quantity", "description": "Distance (km)", "icon": "navigation" },
+        "estimatedTime": { "type": "duration", "description": "Estimated duration", "icon": "clock" },
+        "roadCondition": { "type": "enum", "options": ["open", "restricted", "damaged", "blocked", "unknown"], "description": "Road condition", "icon": "alert-triangle" },
+        "hazards": { "type": "tags", "description": "Route hazards", "icon": "alert-triangle" },
+        "checkpoints": { "type": "tags", "description": "Checkpoints", "icon": "flag" },
+        "alternativeRoutes": { "type": "relationship", "description": "Alternatives", "icon": "route", "referenceType": "route" }
+      }
+    },
+    "movement": {
+      "label": "Movement",
+      "description": "A transport movement/task.",
+      "extends": "event",
+      "attributes": {
+        "vehicle": { "type": "entityRef", "description": "Assigned vehicle", "icon": "truck", "referenceType": "vehicle" },
+        "driver": { "type": "entityRef", "description": "Driver", "icon": "user", "referenceType": "personnel" },
+        "route": { "type": "entityRef", "description": "Route", "icon": "navigation", "referenceType": "route" },
+        "cargo": { "type": "relationship", "description": "Cargo items", "icon": "package", "referenceType": "resource" },
+        "passengers": { "type": "relationship", "description": "Passengers", "icon": "users", "referenceType": "person" },
+        "departureTime": { "type": "datetime", "description": "Departure", "icon": "clock" },
+        "arrivalTime": { "type": "datetime", "description": "Arrival", "icon": "clock" },
+        "actualDeparture": { "type": "datetime", "description": "Actual departure", "icon": "clock" },
+        "actualArrival": { "type": "datetime", "description": "Actual arrival", "icon": "clock" },
+        "status": { "type": "enum", "options": ["planned", "loading", "in-transit", "unloading", "completed", "delayed", "cancelled"], "description": "Status", "icon": "status", "role": "marker" },
+        "trackingId": { "type": "string", "description": "Tracking ID", "icon": "search" }
+      }
+    },
+    "logisticsHub": {
+      "label": "Logistics Hub",
+      "description": "Logistics coordination point.",
+      "extends": "facility",
+      "attributes": {
+        "facilityType": { "type": "enum", "options": ["warehouse", "distribution-center", "staging-area", "cross-dock", "port", "airport", "rail-yard", "other"], "description": "Hub type", "icon": "warehouse" },
+        "capacity": { "type": "capacity", "description": "Storage capacity", "icon": "package" },
+        "currentVolume": { "type": "quantity", "description": "Current volume", "icon": "package" },
+        "handles": { "type": "tags", "description": "Handles resource types", "icon": "package" },
+        "vehicles": { "type": "relationship", "description": "Based vehicles", "icon": "truck", "referenceType": "vehicle" },
+        "operatingHours": { "type": "string", "description": "Operating hours", "icon": "clock" },
+        "customs": { "type": "boolean", "description": "Customs facility", "icon": "shield" }
+      }
+    }
+  }
+}

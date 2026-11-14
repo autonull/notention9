@@ -1,0 +1,59 @@
+{
+  "$schema": "https://notention.org/ontology-schema.json",
+  "$id": "https://notention.org/ontology/survival/hazard.json",
+  "title": "Hazard Domain",
+  "description": "Disaster hazards, incidents, and threat assessments",
+  "version": "1.0.0",
+  "extends": ["survival/types", "core/entity", "core/event"],
+  "nodes": {
+    "hazard": {
+      "label": "Hazard",
+      "description": "A potential source of harm or adverse effect.",
+      "extends": "event",
+      "attributes": {
+        "hazardType": { "type": "hazardType", "description": "Hazard classification", "icon": "alert-triangle", "required": true },
+        "severity": { "type": "urgency", "description": "Severity level", "icon": "alert-triangle", "required": true },
+        "name": { "type": "string", "description": "Event name (e.g., 'Camp Fire 2018')", "icon": "title" },
+        "description": { "type": "string", "description": "Hazard description", "icon": "info" },
+        "startTime": { "type": "datetime", "description": "Onset time", "icon": "clock", "required": true },
+        "endTime": { "type": "datetime", "description": "End time (if known)", "icon": "clock" },
+        "location": { "type": "entityRef", "description": "Affected area", "icon": "map-pin", "referenceType": "place", "required": true },
+        "affectedArea": { "type": "string", "description": "Geographic description", "icon": "map" },
+        "populationAtRisk": { "type": "integer", "description": "Estimated people at risk", "icon": "users" },
+        "casualties": { "type": "integer", "description": "Confirmed casualties", "icon": "skull" },
+        "evacuated": { "type": "integer", "description": "People evacuated", "icon": "user-minus" },
+        "status": { "type": "enum", "options": ["developing", "active", "contained", "controlled", "recovery", "resolved"], "description": "Hazard status", "icon": "status", "role": "marker" },
+        "source": { "type": "enum", "options": ["official", "media", "social", "sensor", "crowdsource"], "description": "Information source", "icon": "broadcast" },
+        "confirmed": { "type": "boolean", "description": "Officially confirmed", "icon": "check-circle" },
+        "tags": { "type": "tags", "description": "Tags", "icon": "tag" }
+      }
+    },
+    "incident": {
+      "label": "Incident Report",
+      "description": "A reported incident requiring response.",
+      "extends": "hazard",
+      "attributes": {
+        "incidentNumber": { "type": "string", "description": "Incident ID", "icon": "hash" },
+        "reportedBy": { "type": "entityRef", "description": "Reporter", "icon": "user", "referenceType": "person" },
+        "reportedAt": { "type": "datetime", "description": "Report time", "icon": "clock" },
+        "assignedTo": { "type": "entityRef", "description": "Assigned responder", "icon": "user", "referenceType": "person" },
+        "responseTeam": { "type": "relationship", "description": "Response team", "icon": "users", "referenceType": "organization" },
+        "resourcesDeployed": { "type": "relationship", "description": "Deployed resources", "icon": "truck", "referenceType": "resource" },
+        "updates": { "type": "relationship", "description": "Status updates", "icon": "message-square", "referenceType": "communication" }
+      }
+    },
+    "alert": {
+      "label": "Alert",
+      "description": "Official alert or warning.",
+      "extends": "hazard",
+      "attributes": {
+        "alertLevel": { "type": "enum", "options": ["advisory", "watch", "warning", "emergency"], "description": "Alert level", "icon": "bell", "required": true },
+        "issuedBy": { "type": "entityRef", "description": "Issuing authority", "icon": "building", "referenceType": "organization" },
+        "issuedAt": { "type": "datetime", "description": "Issue time", "icon": "clock" },
+        "expiresAt": { "type": "datetime", "description": "Expiration", "icon": "clock" },
+        "affectedZones": { "type": "relationship", "description": "Affected zones", "icon": "map", "referenceType": "place" },
+        "actions": { "type": "tags", "description": "Recommended actions", "icon": "check-square" }
+      }
+    }
+  }
+}

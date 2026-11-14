@@ -1,10 +1,27 @@
 import { Note, Property, OntologyNode } from '../types/index.js';
-import { findAttributeDef } from '../ontology/ontologyCore.js';
+import { findAttributeDef, getOntology, getEffectiveOperators } from '../ontology/index.js';
 import { type PropertyMatch, type MatchResult } from './types.js';
 import { evaluateProperty } from './matchers.js';
 
+/** Convert new Map-based ontology to legacy array format for backward compatibility */
+function ontologyMapToArray(nodes: Map<string, OntologyNode>): OntologyNode[] {
+  return Array.from(nodes.values());
+}
+
 export class MatchEngine {
-  constructor(private ontology: OntologyNode[]) { }
+  private ontologyNodes: OntologyNode[];
+  private ontologyTypes: Map<string, { operators?: { real: string[]; imaginary: string[] } }>;
+
+  constructor(ontology?: OntologyNode[] | Map<string, OntologyNode>) {
+    if (ontology instanceof Map) {
+      this.ontologyNodes = ontologyMapToArray(ontology);
+      const compiled = getOntology();
+      this.ontologyTypes = compiled.types;
+    } else {
+      this.ontologyNodes = ontology ?? ontologyMapToArray(getOntology().nodes);
+      this.ontologyTypes = getOntology().types;
+    }
+  }
 
   calculateMatchScore(request: Note, offer: Note): MatchResult {
     const results = this.findMatches(request, offer);
@@ -73,7 +90,10 @@ export class MatchEngine {
   }
 
   private evaluateConstraint(req: Property, off: Property): PropertyMatch {
-    const attributeDef = findAttributeDef(req.key, this.ontology);
+    // Use new loader's findAttributeDef which searches across all nodes
+    // Convert ontologyNodes array to Map for the new API
+    const nodesMap = new Map(this.ontologyNodes.map(n => [n.id, n]));
+    const attributeDef = findAttributeDef(nodesMap, '', req.key);
     return evaluateProperty(req, off, attributeDef);
   }
 }

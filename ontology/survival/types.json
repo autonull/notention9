@@ -1,0 +1,91 @@
+{
+  "$schema": "https://notention.org/ontology-schema.json",
+  "$id": "https://notention.org/ontology/survival/types.json",
+  "title": "Survival Type Extensions",
+  "description": "Additional types for survival/GSS domains",
+  "version": "1.0.0",
+  "extends": ["core/types"],
+  "types": {
+    "ration": {
+      "label": "Ration Amount",
+      "description": "Food/water ration with unit and per-person basis",
+      "baseType": "quantity",
+      "constraints": {
+        "unit": ["calories", "liters", "grams", "servings", "person-days"],
+        "perPerson": true
+      },
+      "extraction": {
+        "hints": ["per person", "per day", "ration", "daily allowance"],
+        "normalization": "parseRation"
+      },
+      "ui": {
+        "widget": "ration",
+        "icon": "utensils"
+      }
+    },
+    "capacity": {
+      "label": "Capacity",
+      "description": "Maximum capacity with unit",
+      "baseType": "quantity",
+      "constraints": {
+        "unit": ["people", "beds", "vehicles", "kW", "liters", "Mbps"]
+      },
+      "ui": {
+        "widget": "capacity",
+        "icon": "users"
+      }
+    },
+    "urgency": {
+      "label": "Urgency Level",
+      "description": "Standardized urgency classification",
+      "baseType": "enum",
+      "constraints": {
+        "enum": ["routine", "elevated", "urgent", "critical", "life-safety"]
+      },
+      "operators": {
+        "real": ["is", "greater than", "less than"],
+        "imaginary": []
+      },
+      "ui": {
+        "widget": "urgency",
+        "icon": "alert-triangle"
+      }
+    },
+    "resourceType": {
+      "label": "Resource Type",
+      "description": "Standardized resource categories (FEMA/OASIS)",
+      "baseType": "enum",
+      "constraints": {
+        "enum": ["water", "food", "medical", "shelter", "transport", "communications", "power", "fuel", "tools", "clothing", "sanitation", "personnel", "equipment", "supplies", "information", "other"]
+      },
+      "ui": {
+        "widget": "resource-type",
+        "icon": "package"
+      }
+    },
+    "hazardType": {
+      "label": "Hazard Type",
+      "description": "Standardized hazard classification",
+      "baseType": "enum",
+      "constraints": {
+        "enum": ["earthquake", "flood", "wildfire", "hurricane", "tornado", "tsunami", "volcanic", "landslide", "extreme-heat", "extreme-cold", "pandemic", "chemical", "radiological", "cyber", "infrastructure", "civil-unrest", "other"]
+      },
+      "ui": {
+        "widget": "hazard-type",
+        "icon": "alert-triangle"
+      }
+    },
+    "medicalNeed": {
+      "label": "Medical Need",
+      "description": "Standardized medical supply/need categories",
+      "baseType": "enum",
+      "constraints": {
+        "enum": ["trauma", "burn", "respiratory", "cardiac", "infection", "chronic", "maternal", "pediatric", "mental-health", "medication", "equipment", "blood", "oxygen", "dialysis", "insulin", "other"]
+      },
+      "ui": {
+        "widget": "medical-need",
+        "icon": "heart"
+      }
+    }
+  }
+}

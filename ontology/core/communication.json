@@ -1,0 +1,70 @@
+{
+  "$schema": "https://notention.org/ontology-schema.json",
+  "$id": "https://notention.org/ontology/core/communication.json",
+  "title": "Communication Domain",
+  "description": "Messages, conversations, and communication channels",
+  "version": "1.0.0",
+  "extends": ["types"],
+  "nodes": {
+    "communication": {
+      "label": "Communication",
+      "description": "Messages and conversations across channels.",
+      "abstract": true,
+      "attributes": {
+        "conversationId": { "type": "string", "description": "Thread identifier", "icon": "chat-bubble" },
+        "channel": { "type": "enum", "options": ["whatsapp", "telegram", "discord", "sms", "email", "slack", "teams", "signal", "call", "nostr", "matrix", "irc", "other"], "description": "Communication channel", "icon": "share" },
+        "direction": { "type": "enum", "options": ["inbound", "outbound"], "description": "Message direction", "icon": "arrow-left-right" },
+        "status": { "type": "enum", "options": ["sent", "delivered", "read", "failed", "pending"], "description": "Delivery status", "icon": "check-circle", "role": "marker" },
+        "priority": { "type": "enum", "options": ["low", "normal", "high", "urgent"], "description": "Priority level", "icon": "alert-triangle" }
+      }
+    },
+    "message": {
+      "label": "Message",
+      "description": "A communication sent through a channel.",
+      "extends": "communication",
+      "attributes": {
+        "subject": { "type": "string", "description": "Subject or title", "icon": "title" },
+        "body": { "type": "string", "description": "Message content", "icon": "message-square" },
+        "from": { "type": "entityRef", "description": "Sender", "icon": "user", "referenceType": "person" },
+        "to": { "type": "relationship", "description": "Recipients", "icon": "users", "referenceType": "person" },
+        "cc": { "type": "relationship", "description": "CC recipients", "icon": "copy", "referenceType": "person" },
+        "bcc": { "type": "relationship", "description": "BCC recipients", "icon": "eye-off", "referenceType": "person" },
+        "replyTo": { "type": "entityRef", "description": "Reply-to message", "icon": "reply", "referenceType": "message" },
+        "attachments": { "type": "integer", "description": "Attachment count", "icon": "paperclip" },
+        "messageType": { "type": "enum", "options": ["text", "html", "markdown", "image", "voice", "video", "file", "link", "reaction", "status", "system"], "description": "Content type", "icon": "file-type" },
+        "sentiment": { "type": "enum", "options": ["positive", "neutral", "negative", "mixed"], "description": "Detected sentiment", "icon": "heart" },
+        "language": { "type": "string", "description": "ISO 639-1 language code", "icon": "languages" },
+        "threadPosition": { "type": "integer", "description": "Position in thread", "icon": "layers" }
+      }
+    },
+    "conversation": {
+      "label": "Conversation",
+      "description": "A thread of messages between participants.",
+      "extends": "communication",
+      "attributes": {
+        "title": { "type": "string", "description": "Conversation title", "icon": "title" },
+        "participants": { "type": "relationship", "description": "All participants", "icon": "users", "referenceType": "person" },
+        "messageCount": { "type": "integer", "description": "Total messages", "icon": "message-square" },
+        "unreadCount": { "type": "integer", "description": "Unread messages", "icon": "bell" },
+        "lastMessageAt": { "type": "datetime", "description": "Last activity", "icon": "clock" },
+        "isGroup": { "type": "boolean", "description": "Group conversation", "icon": "users" },
+        "isArchived": { "type": "boolean", "description": "Archived state", "icon": "archive" },
+        "isPinned": { "type": "boolean", "description": "Pinned state", "icon": "pin" },
+        "channel": { "type": "enum", "options": ["whatsapp", "telegram", "discord", "sms", "email", "slack", "teams", "signal", "nostr", "matrix", "irc", "other"], "description": "Primary channel", "icon": "share" }
+      }
+    },
+    "channel": {
+      "label": "Channel",
+      "description": "A communication medium or platform.",
+      "extends": "entity",
+      "attributes": {
+        "name": { "type": "string", "description": "Channel name", "icon": "hash", "required": true },
+        "platform": { "type": "enum", "options": ["whatsapp", "telegram", "discord", "sms", "email", "slack", "teams", "signal", "nostr", "matrix", "irc", "other"], "description": "Platform type", "icon": "monitor" },
+        "channelId": { "type": "string", "description": "Platform-specific channel ID", "icon": "id-card" },
+        "isPrivate": { "type": "boolean", "description": "Private channel", "icon": "lock" },
+        "topic": { "type": "string", "description": "Channel topic", "icon": "align-left" },
+        "memberCount": { "type": "integer", "description": "Member count", "icon": "users" }
+      }
+    }
+  }
+}

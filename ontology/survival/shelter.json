@@ -1,0 +1,75 @@
+{
+  "$schema": "https://notention.org/ontology-schema.json",
+  "$id": "https://notention.org/ontology/survival/shelter.json",
+  "title": "Shelter Domain",
+  "description": "Shelter, housing, and displacement management",
+  "version": "1.0.0",
+  "extends": ["survival/types", "core/entity", "core/event"],
+  "nodes": {
+    "shelter": {
+      "label": "Shelter",
+      "description": "Emergency shelter or temporary housing.",
+      "extends": "facility",
+      "attributes": {
+        "facilityType": { "type": "enum", "options": ["emergency", "transitional", "permanent", "collective-center", "host-family", "tent-camp", "container", "building", "other"], "description": "Shelter type", "icon": "home" },
+        "capacity": { "type": "capacity", "description": "Total capacity", "icon": "users", "required": true },
+        "currentOccupancy": { "type": "integer", "description": "Current occupants", "icon": "user-check" },
+        "occupancyRate": { "type": "number", "description": "Occupancy %", "icon": "percent" },
+        "manager": { "type": "entityRef", "description": "Shelter manager", "icon": "user", "referenceType": "person" },
+        "managingOrg": { "type": "entityRef", "description": "Managing organization", "icon": "building", "referenceType": "organization" },
+        "services": { "type": "tags", "description": "Services available", "icon": "heart" },
+        "populationProfile": { "type": "tags", "description": "Demographics", "icon": "users" },
+        "vulnerableCount": { "type": "integer", "description": "Vulnerable persons", "icon": "heart" },
+        "registrationStatus": { "type": "enum", "options": ["open", "full", "closed"], "description": "Registration", "icon": "clipboard" },
+        "standards": { "type": "tags", "description": "Standards met (SPHERE, etc.)", "icon": "award" }
+      }
+    },
+    "household": {
+      "label": "Household",
+      "description": "A family or group sharing shelter.",
+      "extends": "entity",
+      "attributes": {
+        "headOfHousehold": { "type": "entityRef", "description": "Head of household", "icon": "user", "referenceType": "person" },
+        "members": { "type": "relationship", "description": "Household members", "icon": "users", "referenceType": "person" },
+        "size": { "type": "integer", "description": "Household size", "icon": "users" },
+        "vulnerabilities": { "type": "tags", "description": "Vulnerabilities", "icon": "heart" },
+        "shelter": { "type": "entityRef", "description": "Assigned shelter", "icon": "home", "referenceType": "shelter" },
+        "needs": { "type": "tags", "description": "Specific needs", "icon": "tag" },
+        "origin": { "type": "entityRef", "description": "Place of origin", "icon": "map-pin", "referenceType": "place" },
+        "displacedSince": { "type": "date", "description": "Displacement date", "icon": "calendar" },
+        "intent": { "type": "enum", "options": ["return", "integrate", "resettle", "unknown"], "description": "Return intent", "icon": "compass" }
+      }
+    },
+    "displacement": {
+      "label": "Displacement Event",
+      "description": "Tracking displacement movements.",
+      "extends": "event",
+      "attributes": {
+        "origin": { "type": "entityRef", "description": "Origin location", "icon": "map-pin", "referenceType": "place" },
+        "destination": { "type": "entityRef", "description": "Destination", "icon": "map-pin", "referenceType": "place" },
+        "households": { "type": "integer", "description": "Households displaced", "icon": "users" },
+        "individuals": { "type": "integer", "description": "Individuals displaced", "icon": "user" },
+        "reason": { "type": "hazardType", "description": "Cause", "icon": "alert-triangle" },
+        "transportMode": { "type": "enum", "options": ["foot", "vehicle", "boat", "air", "mixed"], "description": "Transport", "icon": "truck" },
+        "route": { "type": "string", "description": "Route taken", "icon": "navigation" },
+        "arrivalDate": { "type": "date", "description": "Arrival date", "icon": "calendar" }
+      }
+    },
+    "camp": {
+      "label": "Camp",
+      "description": "Organized displacement camp.",
+      "extends": "shelter",
+      "attributes": {
+        "campType": { "type": "enum", "options": ["planned", "spontaneous", "transit", "reception", "collective-center"], "description": "Camp type", "icon": "map-pin" },
+        "sectors": { "type": "integer", "description": "Number of sectors", "icon": "grid" },
+        "blocks": { "type": "integer", "description": "Number of blocks", "icon": "square" },
+        "coordination": { "type": "entityRef", "description": "Camp coordination", "icon": "users", "referenceType": "organization" },
+        "healthFacility": { "type": "entityRef", "description": "Health facility", "icon": "heart", "referenceType": "facility" },
+        "waterPoints": { "type": "integer", "description": "Water points", "icon": "droplet" },
+        "latrines": { "type": "integer", "description": "Latrines", "icon": "toilet" },
+        "schools": { "type": "boolean", "description": "Education available", "icon": "graduation-cap" },
+        "markets": { "type": "boolean", "description": "Market access", "icon": "store" }
+      }
+    }
+  }
+}
