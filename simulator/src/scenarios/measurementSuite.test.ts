@@ -186,6 +186,22 @@ const SCENARIO_BASELINES: Record<string, ScenarioBaseline> = {
         maxUnmatchedRate: 0.25,
         minMatchesPerMinute: 1.5,
     },
+    'cross-cultural': {
+        meanMatches: 12.0,
+        stdDevMatches: 4.0,
+        meanTimeToFirstMatchMs: 5000,
+        stdDevTimeToFirstMatchMs: 1000,
+        maxUnmatchedRate: 0.3,
+        minMatchesPerMinute: 3.0,
+    },
+    'long-term-commitment': {
+        meanMatches: 10.0,
+        stdDevMatches: 3.0,
+        meanTimeToFirstMatchMs: 8000,
+        stdDevTimeToFirstMatchMs: 1500,
+        maxUnmatchedRate: 0.2,
+        minMatchesPerMinute: 2.5,
+    },
 };
 
 interface MeasurementRun {

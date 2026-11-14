@@ -147,9 +147,9 @@
     "tribute"
   ],
   "coverage": {
-    "cellsCovered": 9,
+    "cellsCovered": 11,
     "totalPossibleCells": 120960,
-    "note": "Covered cells: market/N:M/goods/economic/one-shot/shared (freelance, hiring, gig); equality/N:M/labour/economic/recurring/shared (project-collab); equality/1:N/knowledge/economic/recurring/shared (mentorship); communal/N:M/knowledge/economic/open-ended/shared (learning-community); authority/1:N/capital/economic/deadline/shared (cofounder, investor); market/N:M/goods/legal/codified/one-shot/shared (legal-contract); communal/mesh/care/safety/ephemeral/shared (crisis-response); communal/coalition/care/existential/generational/shared (generational-stewardship, kinship-care); communal/coalition/goods/economic/recurring/shared (commons-governance, resource-distribution)"
+    "note": "Covered cells: market/N:M/goods/economic/one-shot/shared (freelance, hiring, gig); equality/N:M/labour/economic/recurring/shared (project-collab); equality/N:M/knowledge/economic/recurring/shared (mentorship); communal/N:M/knowledge/economic/open-ended/shared (learning-community); authority/1:N/capital/economic/deadline/shared (cofounder, investor); market/N:M/goods/legal/codified/one-shot/shared (legal-contract); communal/mesh/care/safety/ephemeral/shared (crisis-response); communal/coalition/care/existential/generational/shared (generational-stewardship, kinship-care); communal/coalition/goods/economic/recurring/shared (commons-governance, resource-distribution); cross-domain/multilingual/care/safety/ephemeral/shared (cross-cultural); equality/chain/commitment/economic/open-ended/shared (long-term-commitment)"
   },
   "audit": {
     "date": "2026-11-13",

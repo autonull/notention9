@@ -859,6 +859,140 @@ export const DOMAIN_SCENARIOS: Record<string, Scenario> = {
         requires: ['relay', 'ui'],
         difficulty: 'hard'
     },
+
+    // Taxonomy gap: Cross-cultural/multilingual heterogeneity — refugee coordination, international aid
+    'cross-cultural': {
+        name: 'Cross-Cultural Aid Coordination',
+        description: 'International aid organizations coordinate with local communities across language and cultural barriers. Tests matching on needs, capabilities, cultural sensitivity, multilingual communication.',
+        agents: [
+            {
+                role: 'AidCoordinator',
+                count: 2,
+                properties: [
+                    prop('role', 'is', 'aid-coordinator'),
+                    prop('organization', 'contains', 'UN', 'NGO', 'red-cross', 'government'),
+                    prop('languages', 'contains', 'english', 'french', 'spanish', 'arabic', 'swahili'),
+                    prop('mandate', 'contains', 'protection', 'shelter', 'health', 'food-security', 'wash'),
+                ],
+                interests: [
+                    prop('partner', 'contains', 'local-ngo', 'community-leader', 'government'),
+                    prop('capability', 'contains', 'distribution', 'monitoring', 'reporting', 'translation'),
+                    prop('access', 'is', 'negotiated'),
+                ],
+                traits: ['culturally-sensitive', 'adaptive', 'template-user'],
+            },
+            {
+                role: 'LocalPartner',
+                count: 6,
+                properties: [
+                    prop('role', 'is', 'local-partner'),
+                    prop('type', 'contains', 'community-org', 'faith-based', 'womens-group', 'youth-org'),
+                    prop('languages', 'contains', 'local', 'regional', 'national'),
+                    prop('coverage', 'contains', 'village', 'district', 'camp', 'urban'),
+                ],
+                interests: [
+                    prop('resource', 'contains', 'funding', 'supplies', 'training', 'capacity-building'),
+                    prop('autonomy', 'is', 'respected'),
+                    prop('cultural-protocol', 'is', 'observed'),
+                ],
+                traits: ['embedded', 'trusted', 'template-user'],
+            },
+            {
+                role: 'AffectedCommunity',
+                count: 10,
+                properties: [
+                    prop('role', 'is', 'affected-community'),
+                    prop('displacement', 'contains', 'refugee', 'idp', 'host-community', 'returnee'),
+                    prop('languages', 'contains', 'mother-tongue', 'lingua-franca'),
+                    prop('vulnerability', 'contains', 'elderly', 'disabled', 'female-headed', 'child-headed', 'unaccompanied-minor'),
+                ],
+                interests: [
+                    prop('aid', 'contains', 'food', 'shelter', 'healthcare', 'education', 'livelihood', 'protection'),
+                    prop('dignity', 'is', 'preserved'),
+                    prop('voice', 'is', 'heard'),
+                ],
+                traits: ['resilient', 'diverse', 'template-user'],
+            },
+        ],
+        events: [
+            { at: 2, action: 'publish_manifest', actorRole: 'AidCoordinator', cameraFocus: 'AidCoordinator 1' },
+            { at: 4, action: 'publish_offer', actorRole: 'LocalPartner', cameraFocus: 'LocalPartner 1' },
+            { at: 5, action: 'publish_offer', actorRole: 'LocalPartner', cameraFocus: 'LocalPartner 2' },
+            { at: 6, action: 'publish_offer', actorRole: 'LocalPartner', cameraFocus: 'LocalPartner 3' },
+            { at: 8, action: 'camera', actorRole: 'system', cameraFocus: 'grid' },
+        ],
+        duration: 20,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'hard'
+    },
+
+    // Taxonomy gap: Long-term commitment chains — supply chains, referral networks, apprenticeship
+    'long-term-commitment': {
+        name: 'Long-Term Commitment Network',
+        description: 'Supply chain partners build enduring referral and apprenticeship relationships. Tests matching on trust, reliability, succession planning, multi-year commitments.',
+        agents: [
+            {
+                role: 'AnchorFirm',
+                count: 2,
+                properties: [
+                    prop('role', 'is', 'anchor-firm'),
+                    prop('industry', 'contains', 'manufacturing', 'construction', 'specialized-services'),
+                    prop('commitmentHorizon', 'is', '5-years'),
+                    prop('successionPlan', 'is', 'active'),
+                ],
+                interests: [
+                    prop('partner', 'contains', 'reliable', 'skilled', 'local', 'values-aligned'),
+                    prop('capability', 'contains', 'quality', 'on-time', 'innovation', 'training'),
+                    prop('relationship', 'is', 'deepening'),
+                ],
+                traits: ['strategic', 'patient-capital', 'template-user'],
+            },
+            {
+                role: 'SpecialistPartner',
+                count: 8,
+                properties: [
+                    prop('role', 'is', 'specialist-partner'),
+                    prop('specialty', 'contains', 'machining', 'fabrication', 'finishing', 'assembly', 'design', 'testing'),
+                    prop('trackRecord', 'is', 'proven'),
+                    prop('capacity', 'contains', 'flexible', 'scalable', 'certified'),
+                ],
+                interests: [
+                    prop('anchor', 'contains', 'stable-orders', 'fair-terms', 'technical-support', 'joint-investment'),
+                    prop('growth', 'is', 'supported'),
+                    prop('autonomy', 'is', 'maintained'),
+                ],
+                traits: ['skilled', 'reliable', 'entrepreneurial'],
+            },
+            {
+                role: 'ApprenticeTalent',
+                count: 5,
+                properties: [
+                    prop('role', 'is', 'apprentice'),
+                    prop('trade', 'contains', 'machining', 'welding', 'electronics', 'carpentry', 'composites'),
+                    prop('stage', 'contains', 'entry', 'intermediate', 'journeyman-track'),
+                    prop('commitment', 'is', 'multi-year'),
+                ],
+                interests: [
+                    prop('mentor', 'contains', 'master', 'patient', 'invested'),
+                    prop('pathway', 'contains', 'certification', 'ownership-track', 'leadership'),
+                    prop('community', 'is', 'supportive'),
+                ],
+                traits: ['motivated', 'learning-oriented', 'template-user'],
+            },
+        ],
+        events: [
+            { at: 2, action: 'publish_manifest', actorRole: 'AnchorFirm', cameraFocus: 'AnchorFirm 1' },
+            { at: 4, action: 'publish_offer', actorRole: 'SpecialistPartner', cameraFocus: 'SpecialistPartner 1' },
+            { at: 5, action: 'publish_offer', actorRole: 'SpecialistPartner', cameraFocus: 'SpecialistPartner 2' },
+            { at: 6, action: 'publish_offer', actorRole: 'ApprenticeTalent', cameraFocus: 'ApprenticeTalent 1' },
+            { at: 8, action: 'camera', actorRole: 'system', cameraFocus: 'grid' },
+        ],
+        duration: 20,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'hard'
+    },
 };
 
 export function getScenarioNames(): string[] {

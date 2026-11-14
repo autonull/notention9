@@ -797,7 +797,12 @@ pnpm probe --headless                ✅ Ran (0% comprehension without human par
 3. **Front A**: Verify chaos drills pass ✅
    - All 11 chaos drill tests pass (relay loss, network partition, sensor poisoning, key compromise, battery death)
 
-4. **Front C**: Add taxonomy scenarios for remaining cells (legal, cross-cultural, long-term) 🔄
+4. **Front C**: Add taxonomy scenarios for remaining cells (legal, cross-cultural, long-term) ✅
+   - Added `cross-cultural` scenario (Cross-Cultural Aid Coordination) covering cross-domain/multilingual heterogeneity gap
+   - Added `long-term-commitment` scenario (Long-Term Commitment Network) covering equality/chain/commitment exchange gap
+   - Updated `domainScenarios.ts` and `measurementSuite.test.ts` with baselines
+   - Updated `taxonomy.json`: cellsCovered 9 → 11, documented new covered cells
+   - Both scenarios run successfully in simulator
 
 5. **Front D**: Document video recording procedures for T2 scenarios 🔄
 
@@ -805,6 +810,6 @@ pnpm probe --headless                ✅ Ran (0% comprehension without human par
 
 **Next Actions:**
 - Front C: Run corpus→patch cycle for new taxonomy cells
-- Front C: Add legal-contract, cross-cultural, long-term commitment scenarios
-- Front A: Verify offline queue zero-loss, receipt chains verify offline
+- Front A: Verify offline queue zero-loss, receipt chains verify offline ✅ (tests pass)
+- Front D: Document video recording procedures for T2 scenarios
 - Front D: Record T1 videos when human participants available (blocked)
