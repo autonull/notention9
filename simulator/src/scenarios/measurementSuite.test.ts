@@ -25,7 +25,7 @@ import { startRelay, stopRelay, clearRelayEvents, resetRelay } from '../testRela
 // Test configuration
 const RELAY_PORT = 14444;
 const RELAY_URL = `ws://localhost:${RELAY_PORT}`;
-const REPETITIONS = 3; // Per scenario, for quick testing (use 30 for CI)
+const REPETITIONS = 10; // Per scenario, for stable baselines (use 30 for CI)
 const CONFIDENCE_LEVEL = 0.95; // 95% CI
 
 // Per-scenario expected distributions (seeded, deterministic baselines)
@@ -171,12 +171,12 @@ const SCENARIO_BASELINES: Record<string, ScenarioBaseline> = {
         minMatchesPerMinute: 53.0,
     },
     'kinship-care-network': {
-        meanMatches: 4.0,
-        stdDevMatches: 3.5,
-        meanTimeToFirstMatchMs: 48,
-        stdDevTimeToFirstMatchMs: 3,
-        maxUnmatchedRate: 0.85,
-        minMatchesPerMinute: 16.0,
+        meanMatches: 8.1,
+        stdDevMatches: 2.8,
+        meanTimeToFirstMatchMs: 50,
+        stdDevTimeToFirstMatchMs: 6,
+        maxUnmatchedRate: 0.61,
+        minMatchesPerMinute: 32.4,
     },
     'commons-governance': {
         meanMatches: 39.0,
@@ -201,6 +201,46 @@ const SCENARIO_BASELINES: Record<string, ScenarioBaseline> = {
         stdDevTimeToFirstMatchMs: 3,
         maxUnmatchedRate: 0.35,
         minMatchesPerMinute: 144.0,
+    },
+    'government-services-access': {
+        meanMatches: 83.0,
+        stdDevMatches: 29.8,
+        meanTimeToFirstMatchMs: 50,
+        stdDevTimeToFirstMatchMs: 12,
+        maxUnmatchedRate: 0.10,
+        minMatchesPerMinute: 332.0,
+    },
+    'labor-dispute-resolution': {
+        meanMatches: 7.2,
+        stdDevMatches: 2.5,
+        meanTimeToFirstMatchMs: 19,
+        stdDevTimeToFirstMatchMs: 2,
+        maxUnmatchedRate: 0.10,
+        minMatchesPerMinute: 21.6,
+    },
+    'decentralized-identity-&-reputation': {
+        meanMatches: 86.4,
+        stdDevMatches: 30.4,
+        meanTimeToFirstMatchMs: 58,
+        stdDevTimeToFirstMatchMs: 12,
+        maxUnmatchedRate: 0.10,
+        minMatchesPerMinute: 345.6,
+    },
+    'contested-resource-allocation': {
+        meanMatches: 43.2,
+        stdDevMatches: 15.2,
+        meanTimeToFirstMatchMs: 36,
+        stdDevTimeToFirstMatchMs: 4,
+        maxUnmatchedRate: 0.10,
+        minMatchesPerMinute: 172.8,
+    },
+    'professional-referral-network': {
+        meanMatches: 255.6,
+        stdDevMatches: 89.8,
+        meanTimeToFirstMatchMs: 97,
+        stdDevTimeToFirstMatchMs: 30,
+        maxUnmatchedRate: 0.10,
+        minMatchesPerMinute: 1022.4,
     },
 };
 
@@ -348,7 +388,7 @@ describe('Measurement Suite (B2.5) — Seeded Statistical Baselines', () => {
  * This test ONLY updates baselines - it does not assert.
  * Use when MatchEngine or scenarios change significantly.
  */
-describe.skip('Measurement Suite — Baseline Calibration (run manually)', () => {
+describe('Measurement Suite — Baseline Calibration (run manually)', () => {
     beforeAll(async () => {
         await startRelay(RELAY_PORT);
     }, 30000);
