@@ -1,0 +1,168 @@
+name: LLM Evaluation Gate
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+    inputs:
+      provider:
+        description: 'LLM provider to test'
+        required: true
+        default: 'llamacpp'
+        type: choice
+        options:
+          - llamacpp
+          - webllm
+          - both
+      model:
+        description: 'Model to use for llamacpp'
+        required: false
+        default: 'Qwen_Qwen3.5-0.8B-Q4_K_M.gguf'
+        type: string
+
+env:
+  NODE_VERSION: '22'
+  PNPM_VERSION: '9'
+  VITE_LLM_SOURCE: 'none'
+  VITE_ENABLE_AGENT: 'false'
+
+jobs:
+  llamacpp-gate:
+    name: LLM Gate (llama.cpp)
+    if: github.event_name == 'workflow_dispatch' && (github.event.inputs.provider == 'llamacpp' || github.event.inputs.provider == 'both') || github.event_name != 'workflow_dispatch'
+    runs-on: [self-hosted, linux, gpu]
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build UI (for WebLLM fallback)
+        run: pnpm --filter @notention/ui build
+
+      - name: Download Qwen 0.8B model (if not cached)
+        if: env.LLAMA_MODEL_PATH == ''
+        run: |
+          mkdir -p models
+          MODEL_URL="https://huggingface.co/Qwen/Qwen3.5-0.8B-GGUF/resolve/main/qwen3.5-0.8b-q4_k_m.gguf"
+          MODEL_PATH="models/Qwen_Qwen3.5-0.8B-Q4_K_M.gguf"
+          if [ ! -f "$MODEL_PATH" ]; then
+            echo "Downloading model..."
+            curl -L -o "$MODEL_PATH" "$MODEL_URL"
+          else
+            echo "Model already cached"
+          fi
+          echo "LLAMA_MODEL_PATH=$MODEL_PATH" >> $GITHUB_ENV
+
+      - name: Run golden gate (llama.cpp)
+        env:
+          LLAMA_MODEL_PATH: ${{ env.LLAMA_MODEL_PATH || 'models/Qwen_Qwen3.5-0.8B-Q4_K_M.gguf' }}
+          LLAMA_GPU_LAYERS: 'max'
+        run: pnpm prompts:eval eval --provider llamacpp
+
+      - name: Run quality evaluation (llama.cpp)
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          LLAMA_MODEL_PATH: ${{ env.LLAMA_MODEL_PATH || 'models/Qwen_Qwen3.5-0.8B-Q4_K_M.gguf' }}
+          LLAMA_GPU_LAYERS: 'max'
+        run: pnpm prompts:eval eval --provider llamacpp --quality
+
+  webllm-gate:
+    name: LLM Gate (WebLLM)
+    if: github.event_name == 'workflow_dispatch' && (github.event.inputs.provider == 'webllm' || github.event.inputs.provider == 'both')
+    runs-on: [self-hosted, linux, gpu]
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build UI
+        run: pnpm --filter @notention/ui build
+
+      - name: Install Playwright browsers
+        run: pnpm --filter @notention/ui exec playwright install --with-deps chromium
+
+      - name: Run golden gate (WebLLM)
+        env:
+          WEBLLM_HEADED: '0'
+        run: pnpm prompts:eval eval --provider webllm
+
+      - name: Run quality evaluation (WebLLM)
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          WEBLLM_HEADED: '0'
+        run: pnpm prompts:eval eval --provider webllm --quality
+
+  llama-gate-cpu:
+    name: LLM Gate (llama.cpp CPU fallback)
+    if: github.event_name != 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build UI (for WebLLM fallback)
+        run: pnpm --filter @notention/ui build
+
+      - name: Download Qwen 0.8B model
+        run: |
+          mkdir -p models
+          MODEL_URL="https://huggingface.co/Qwen/Qwen3.5-0.8B-GGUF/resolve/main/qwen3.5-0.8b-q4_k_m.gguf"
+          MODEL_PATH="models/Qwen_Qwen3.5-0.8B-Q4_K_M.gguf"
+          if [ ! -f "$MODEL_PATH" ]; then
+            echo "Downloading model..."
+            curl -L -o "$MODEL_PATH" "$MODEL_URL"
+          else
+            echo "Model already cached"
+          fi
+          echo "LLAMA_MODEL_PATH=$MODEL_PATH" >> $GITHUB_ENV
+
+      - name: Run golden gate (llama.cpp CPU)
+        env:
+          LLAMA_MODEL_PATH: ${{ env.LLAMA_MODEL_PATH || 'models/Qwen_Qwen3.5-0.8B-Q4_K_M.gguf' }}
+          LLAMA_GPU_LAYERS: '0'
+        run: pnpm prompts:eval eval --provider llamacpp
