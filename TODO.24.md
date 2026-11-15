@@ -30,6 +30,65 @@
 - **Option A**: Use WebLLM in headless Chrome via Playwright (reuses existing UI code)
 - **Option B**: Add `node-llama-cpp` or `llama-node` to optimizer for pure Node.js evaluation
 
+---
+
+#### Implementation Plan: Wire WebLLM into Optimizer (Option A)
+
+**Architecture**:
+```
+optimize/src/prompts/cli.ts:RegistryProvider.extract()
+         │
+         ▼
+optimize/src/llm/webllmBridge.ts (NEW)
+  • Launches headless Chrome via Playwright with WebGPU
+  • Loads UI build with WebLLM provider initialized
+  • Exposes page.evaluate() API for extraction
+  • Caches browser instance across calls
+         │
+         ▼
+ui/src/services/ai/WebLLMProvider.ts (EXISTING)
+  • @mlc-ai/web-llm with Llama-3.2-3B-Instruct-q4f16_1-MLC
+  • doSuggestTags(), doAnalyzeOntology(), etc.
+```
+
+**Files to Create/Modify**:
+| File | Action |
+|------|--------|
+| `optimize/src/llm/webllmBridge.ts` | Create: Playwright bridge to WebLLM |
+| `optimize/src/llm/index.ts` | Create: exports |
+| `optimize/src/prompts/cli.ts` | Modify: RegistryProvider uses bridge |
+| `optimize/package.json` | Add: `playwright` devDependency |
+| `optimize/tests/webllmBridge.test.ts` | Create: integration test |
+
+**Setup Commands** (run once):
+```bash
+cd /home/me/notention9/optimize && pnpm add -D playwright
+pnpm exec playwright install chromium
+pnpm exec playwright install-deps chromium
+cd /home/me/notention9/ui && pnpm build
+```
+
+**Key Considerations**:
+- **WebGPU in headless**: Need `--enable-webgpu` + `--use-angle=swiftshader` for CI
+- **Model load time**: ~30-60s first load (downloads ~2GB); cache browser across evaluations
+- **Prompt format**: Reuse UI's `doSuggestTags` prompt + `collectOntologyKeys(ontology)`
+- **Fallback**: If WebGPU fails, fall back to deterministic provider with warning
+
+**Success Criteria**:
+- [ ] `pnpm prompts:eval --provider registry --quality` runs without errors
+- [ ] 60 quality cases evaluated in < 10 minutes
+- [ ] F1/precision/recall printed for each prompt variant
+- [ ] Optimizer loop can adopt best prompt automatically
+- [ ] CI can run (with GPU runner or swiftshader fallback)
+
+**Alternative: llama.cpp-embedded (Option B)**
+```bash
+# If WebLLM fails, add to optimize/package.json:
+"dependencies": { "node-llama-cpp": "^3.0.0" }
+# Create optimize/src/llm/llamaCppBridge.ts — direct Node.js binding, no browser
+# Faster cold start, larger binary, same model (GGUF format)
+```
+
 ### 2. Ontology & Taxonomy Refinement
 | Task | Status | Notes |
 |------|--------|-------|
@@ -100,4 +159,7 @@ pnpm test --filter=@notention/core --filter=@notention/optimize --filter=@notent
 
 # Simulator measurement suite (25 scenarios)
 cd simulator && pnpm test -- src/scenarios/measurementSuite.test.ts
+
+# Setup WebLLM for optimizer (run once)
+./scripts/setup-webllm-optimizer.sh
 ```
