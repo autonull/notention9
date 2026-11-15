@@ -1,6 +1,6 @@
 # TODO.24 — Remaining Work (updated 2026-11-15, session 7)
 
-**Status**: Quality extraction **F1 0.659 (0.8B) / 0.718 (4B)** with governance prompt examples added. Golden gate **10/10**. Taxonomy coverage **24/24 coarse** with CI-depth (30-rep) baselines for all 13 new scenarios. Qwen 3.5 4B exceeds 0.7 stretch target. **Llama 3.2 3B now passes golden gate (10/10, F1 0.891) with ChatML wrapper + JSON repair** but quality F1 is lower (~9/60). **CI workflow for LLM gate created** (`.github/workflows/llm-gate.yml`).
+**Status**: Quality extraction **F1 0.659 (0.8B) / 0.718 (4B)** with governance prompt examples added. Golden gate **10/10**. Taxonomy coverage **24/24 coarse** with CI-depth (30-rep) baselines for all 13 new scenarios. Qwen 3.5 4B exceeds 0.7 stretch target. **Llama 3.2 3B now passes golden gate (10/10, F1 0.891) with ChatML wrapper + JSON repair** but quality F1 is lower (~9/60).
 
 ---
 
@@ -26,16 +26,6 @@
 - Ran `REPETITIONS=30` calibration for all 13 new taxonomy scenarios.
 - Updated `SCENARIO_BASELINES` in `measurementSuite.test.ts` with CI-depth statistics.
 - All 13 new scenarios + 4 existing spot-checked pass statistical assertions.
-
-### Session 8 — 2026-11-15
-
-#### 1. CI workflow for LLM gate created
-- Created `.github/workflows/llm-gate.yml` with three jobs:
-  - `llamacpp-gate`: Runs on self-hosted GPU runners; downloads Qwen 0.8B model if not cached; runs golden gate + quality evaluation.
-  - `webllm-gate`: Runs on self-hosted GPU runners; builds UI; installs Playwright Chromium with WebGPU; runs golden gate + quality evaluation with WebLLM provider.
-  - `llama-gate-cpu`: Fallback for standard GitHub runners (CPU-only); downloads model; runs golden gate with `LLAMA_GPU_LAYERS=0`.
-- Workflow triggers on push/PR to main/develop and supports manual dispatch with provider/model selection.
-- Verified all verification commands pass: typecheck, tests (optimize 97/4), taxonomy coverage (24/24), loop dry run (6/6 steps), golden gate (10/10 on Qwen 0.8B and Llama 3.2 3B), quality F1 (0.659 Qwen 0.8B, 0.718 Qwen 4B).
 
 ### Session 6 — 2026-11-15
 
@@ -188,7 +178,7 @@ Success criteria:
 - [x] Optimizer loop dry run completes all six steps
 - [x] Quality F1 ≥ 0.5 (0.604)
 - [x] Optimizer loop adopts a best prompt automatically (real run)
-- [x] CI runs the LLM gate (GPU runner for WebLLM)
+- [ ] CI runs the LLM gate (GPU runner for WebLLM)
 
 ---
 
