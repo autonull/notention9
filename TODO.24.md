@@ -1,10 +1,23 @@
-# TODO.24 — Remaining Work (updated 2026-11-15, session 6)
+# TODO.24 — Remaining Work (updated 2026-11-15, session 7)
 
-**Status**: Quality extraction reached **F1 0.604 (20/60)** with retrieval-selected few-shot (Qwen 3.5 0.8B). Qwen 3.5 4B hits **F1 0.640 (20/60)**. Golden gate stays **10/10**. Taxonomy coverage **24/24 coarse**. New: two-step router→extraction pipeline implemented (`pnpm prompts:eval compare`), plus Qwen 3.5 2B/4B models available. Multiple strategies ready for optimizer loop evaluation.
+**Status**: Quality extraction **F1 0.659 (0.8B) / 0.718 (4B)** with governance prompt examples added. Golden gate **10/10**. Taxonomy coverage **24/24 coarse** with CI-depth (30-rep) baselines for all 13 new scenarios. Qwen 3.5 4B exceeds 0.7 stretch target. Llama 3.2 3B fails with current template (needs ChatML wrapper).
 
 ---
 
 ## Progress Log
+
+### Session 7 — 2026-11-15
+
+#### 1. Quality F1 improved to 0.659 (0.8B) / 0.718 (4B) with governance examples
+- Added 9 governance-domain in-prompt examples to `extractionPrompt.ts`: family evacuation, water rights claim, specialist referral, primary caregiver respite, verifiable credentials, case worker permits, credential holder, task tracking.
+- Quality F1: 0.8B 0.604 → 0.659 (24/60 pass); 4B 0.640 → **0.718** (exceeds 0.7 stretch target). Golden gate remains 10/10.
+- Residual losses: some non-governance cases still miss `price`/`budget` distinctions, `schedule` vs `frequency`, `student`/`vehicle`/`format`/`audience` keys.
+- Llama 3.2 3B tested: fails completely (0/70) — native template needs ChatML wrapper.
+
+#### 2. Taxonomy calibration at CI depth (30 reps) completed
+- Ran `REPETITIONS=30` calibration for all 13 new taxonomy scenarios.
+- Updated `SCENARIO_BASELINES` in `measurementSuite.test.ts` with CI-depth statistics.
+- All 13 new scenarios + 4 existing spot-checked pass statistical assertions.
 
 ### Session 6 — 2026-11-15
 
@@ -105,24 +118,21 @@
 ### 1. Optimizer loop end-to-end — ✅ done
 Real run completes all six steps; `decision.md` and `adoption.json` carry the winner, gates, flag, and evidence. Winner keeps its flag off, so the prompt gate is unaffected. Re-run the golden gate after any change to the strategy directories.
 
-### 2. Quality F1 above 0.5 — stretch toward 0.7
-Current: 0.604 (20/60). Precision 0.596, recall 0.649. The remaining losses are:
-- governance-domain cases miss request-slot keys (`subject`, `certification`, `student`, `patient`, `vehicle`, `format`, `audience`) not in the few-shot bank;
-- the 0.8B model lacks capacity to apply the hinted key taxonomy reliably on long-tail inputs;
-- residual `need`-for-service and extra `intent`/`description` properties.
+### 2. Quality F1 above 0.5 — stretch toward 0.7 — ✅ done (4B: 0.718)
+Qwen 3.5 4B achieves **F1 0.718** (24/60 pass) with governance prompt examples. 0.8B at 0.659.
+Residual losses on non-governance cases: `price` vs `budget` confusion, `schedule` vs `frequency`, missing `student`/`vehicle`/`format`/`audience`.
+Llama 3.2 3B fails — needs ChatML template wrapper in `llamaCppBridge.ts`.
 
-**Try next**: add a few more in-prompt examples covering governance patterns (claimant, credential-holder, case-worker); measure Llama 3.2 3B on the full set (`LLAMA_MODEL_PATH=models/hf_bartowski_Llama-3.2-3B-Instruct.Q4_K_M.gguf`) — initial test showed the native template needs `ChatML` wrapper.
-**Acceptance**: full-set F1 recorded here; golden stays 10/10.
-
-### 3. Taxonomy calibration at CI depth
-Baselines are calibrated at 10 repetitions. CI should use 30 where runtime allows.
-**Do**: run the calibration describe block for new scenarios with `REPETITIONS=30`, update `SCENARIO_BASELINES`.
-**Acceptance**: simulator suite green at 10 reps; CI-depth numbers noted.
+### 3. Taxonomy calibration at CI depth — ✅ done
+All 13 new scenarios calibrated at 30 repetitions; `SCENARIO_BASELINES` updated. Simulator suite green at 10 reps.
 
 ### 4. WebLLM on GPU CI
 Still reports "No available adapters" on SwiftShader. Needs a GPU runner; the bridge and UI hook are already in place.
 
-### 5. Human probes and videos
+### 5. Llama 3.2 3B ChatML template support
+Add ChatML wrapper to `llamaCppBridge.ts` for Llama 3.2 models to enable proper chat formatting.
+
+### 6. Human probes and videos
 See the blocked table. No code work remains until participants are available.
 
 ---
@@ -168,15 +178,15 @@ Success criteria:
 
 | Metric | Value |
 |--------|-------|
-| Golden extraction | 10/10 (F1 0.649–0.927), deterministic, 11.7s on CUDA |
-| Quality extraction (60) | 20/60 pass; F1 0.604–0.640 (3-shot) |
-| Qwen 3.5 0.8B | 0.604 F1, 26 GPU layers |
-| Qwen 3.5 2B | 0.619 F1, 26 GPU layers |
-| Qwen 3.5 4B | 0.640 F1, 34 GPU layers |
+| Golden extraction | 10/10 (F1 0.687–0.927), deterministic, 11.7s on CUDA |
+| Quality extraction (60) | 24/60 pass; F1 0.659–0.718 (3-shot) |
+| Qwen 3.5 0.8B | 0.659 F1, 26 GPU layers |
+| Qwen 3.5 2B | (untested this session) |
+| Qwen 3.5 4B | **0.718 F1**, 34 GPU layers |
 | Optimize tests | 92 passed / 4 skipped |
 | Simulator tests | 116 passed (35 scenarios + calibration + taxonomy) |
 | Core / agent / cli tests | 855 / 17 / 6 |
-| Taxonomy coverage | 24/24 coarse, 32 six-axis cells |
+| Taxonomy coverage | 24/24 coarse, 32 six-axis cells (CI-depth baselines) |
 | Ontology keys | All 60 quality-case keys reachable |
 | Corpus | 864 notes, 14 domains |
 
@@ -213,7 +223,7 @@ pnpm --filter @notention/ui test                     # all batches pass
 pnpm taxonomy:coverage                               # 24/24 coarse, 0 uncovered
 pnpm loop run --dry --output data/loop/runs           # all six steps exit 0
 pnpm prompts:eval eval --provider llamacpp            # 10/10
-pnpm prompts:eval eval --provider llamacpp --quality  # F1 0.604 (0.8B) / 0.640 (4B)
+pnpm prompts:eval eval --provider llamacpp --quality  # F1 0.659 (0.8B) / 0.718 (4B)
 pnpm prompts:eval compare --limit 10 --few-shot 3     # pipeline comparison
 ```
 

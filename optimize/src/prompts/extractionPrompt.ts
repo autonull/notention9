@@ -78,6 +78,46 @@ export const EXTRACTION_EXAMPLES: readonly ExtractionExample[] = [
         input: 'my SSN is 123-45-6789',
         output: '[]',
     },
+    // Governance: family evacuation / medical shelter
+    {
+        input: 'Family evacuation: Need shelter for 4 (infant, elderly, diabetic). Requires insulin storage, power for medical devices, wheelchair accessible. Budget $200/night. Contact: 555-0199.',
+        output: '[{"key":"careRequirements","operator":"contains","values":["insulin storage","power for medical devices","wheelchair accessible"]},{"key":"hasMedical","operator":"is","values":["true"]},{"key":"hasPower","operator":"is","values":["true"]},{"key":"capacity","operator":"greater than","values":["4"]},{"key":"budget","operator":"less than","values":["200 USD/night"]},{"key":"emergencyContact","operator":"is","values":["555-0199"]}]',
+    },
+    // Governance: water rights claim
+    {
+        input: 'Claimant asserts senior water rights for agricultural use. Quantity: substantial. Priority: senior appropriative. Allocation rule: prior appropriation.',
+        output: '[{"key":"role","operator":"is","values":["claimant"]},{"key":"resource","operator":"contains","values":["water-rights"]},{"key":"priority","operator":"contains","values":["senior","appropriative"]},{"key":"quantity","operator":"is","values":["substantial"]},{"key":"allocationRule","operator":"contains","values":["prior-appropriation"]}]',
+    },
+    // Governance: specialist referral
+    {
+        input: 'Client needs specialist care for trauma therapy. Trust source: primary provider. Urgency: immediate. Referral quality: high. Feedback loop: closed.',
+        output: '[{"key":"role","operator":"is","values":["client"]},{"key":"need","operator":"contains","values":["specialist-care","trauma-therapy"]},{"key":"trustSource","operator":"contains","values":["primary-provider"]},{"key":"urgency","operator":"contains","values":["immediate"]},{"key":"referralQuality","operator":"is","values":["high"]},{"key":"feedbackLoop","operator":"is","values":["closed"]}]',
+    },
+    // Governance: primary caregiver respite
+    {
+        input: 'Primary caregiver needs respite care and transport assistance. Care needs: respite, transport. Coordination: shared-calendar. Appreciation: acknowledged. Schedule: weekdays. Financial responsibility: shared.',
+        output: '[{"key":"role","operator":"is","values":["primary-caregiver"]},{"key":"careNeed","operator":"contains","values":["respite","transport"]},{"key":"coordination","operator":"is","values":["shared-calendar"]},{"key":"appreciation","operator":"is","values":["acknowledged"]},{"key":"careSchedule","operator":"contains","values":["weekdays"]},{"key":"financialResponsibility","operator":"is","values":["shared"]}]',
+    },
+    // Governance: verifiable credentials
+    {
+        input: 'Verifier accepts verifiable credentials and DIDs for employment context. Trust anchors: university-root and dao-root. Presentation: selective disclosure required.',
+        output: '[{"key":"role","operator":"is","values":["verifier"]},{"key":"accepts","operator":"contains","values":["verifiable-credential","did"]},{"key":"trustAnchors","operator":"contains","values":["university-root","dao-root"]},{"key":"context","operator":"contains","values":["employment"]},{"key":"presentation","operator":"is","values":["selective-disclosure"]}]',
+    },
+    // Governance: case worker permits
+    {
+        input: 'Case worker handles permits and licensing. Authority: delegated. Jurisdiction: municipal. Caseload: standard. Departments: permits, licensing.',
+        output: '[{"key":"role","operator":"is","values":["case-worker"]},{"key":"department","operator":"contains","values":["permits","licensing"]},{"key":"authority","operator":"is","values":["delegated"]},{"key":"jurisdiction","operator":"is","values":["municipal"]},{"key":"caseLoad","operator":"is","values":["standard"]}]',
+    },
+    // Governance: credential holder
+    {
+        input: 'Credential holder presents university degree and employment history verifiable credentials. Wallet: self-sovereign. Issuers: university and employer.',
+        output: '[{"key":"role","operator":"is","values":["credential-holder"]},{"key":"credentials","operator":"contains","values":["degree","employment-history"]},{"key":"issuers","operator":"contains","values":["university","employer"]},{"key":"wallet","operator":"is","values":["self-sovereign"]}]',
+    },
+    // Governance: task tracking
+    {
+        input: 'Task: Fix login bug on mobile. Assignee: DevTeam. Priority: high. Due: 2026-11-20. Estimated: 4 hours. Status: in-progress. Actual: 3.5 hours so far.',
+        output: '[{"key":"task","operator":"contains","values":["Fix login bug on mobile"]},{"key":"assignee","operator":"is","values":["DevTeam"]},{"key":"priority","operator":"is","values":["high"]},{"key":"dueDate","operator":"before","values":["2026-11-20"]},{"key":"estimatedHours","operator":"is","values":["4"]},{"key":"status","operator":"is","values":["in-progress"]},{"key":"actualHours","operator":"is","values":["3.5"]}]',
+    },
 ];
 
 export function buildSystemPrompt(ontology: OntologyNode[]): string {
