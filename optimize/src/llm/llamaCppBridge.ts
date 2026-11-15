@@ -18,6 +18,9 @@ import {
     LlamaGrammar,
     ChatMLChatWrapper,
     QwenChatWrapper,
+    Llama3ChatWrapper,
+    Llama3_1ChatWrapper,
+    Llama3_2LightweightChatWrapper,
 } from 'node-llama-cpp';
 
 export { getLlama };
@@ -101,20 +104,51 @@ async function disposeSession(): Promise<void> {
 
 /** Ontology keys live on descendant nodes; `leafOntologyKeys` flattens them. */
 
-/** Qwen 3+ need the Qwen wrapper; Qwen 2.5 and earlier use ChatML. */
+/** Qwen 3+ need the Qwen wrapper; Llama 3.x use Llama3 wrappers; others use ChatML. */
 export function resolveChatWrapperKind(
     modelPath: string
-): { type: 'qwen'; variation: '3' | '3.5' } | { type: 'chatml' } {
-    const version = /qwen[^0-9]*(\d+(?:\.\d+)?)/i.exec(modelPath)?.[1];
-    if (version === undefined || Number(version) < 3) return { type: 'chatml' };
-    return { type: 'qwen', variation: Number(version) >= 3.5 ? '3.5' : '3' };
+): { type: 'qwen'; variation: '3' | '3.5'; supportsGrammar: true }
+    | { type: 'llama3'; variation: '3' | '3.1' | '3.2'; supportsGrammar: false }
+    | { type: 'chatml'; supportsGrammar: false } {
+    const lowerPath = modelPath.toLowerCase();
+
+    // Detect Llama 3.x models - smaller models struggle with JSON schema grammars
+    // Matches: llama-3.2, llama-3.1, llama-3, llama3-8b, etc.
+    const llamaMatch = /llama[^0-9]*3(?:\.(\d+))?/i.exec(lowerPath);
+    if (llamaMatch) {
+        const minor = llamaMatch[1] ? Number(llamaMatch[1]) : 0;
+        if (minor >= 2) return { type: 'llama3', variation: '3.2', supportsGrammar: false };
+        if (minor === 1) return { type: 'llama3', variation: '3.1', supportsGrammar: false };
+        return { type: 'llama3', variation: '3', supportsGrammar: false };
+    }
+
+    // Detect Qwen models - trained to handle JSON schema grammars well
+    const qwenMatch = /qwen[^0-9]*(\d+(?:\.\d+)?)/i.exec(lowerPath);
+    if (qwenMatch) {
+        const version = Number(qwenMatch[1]);
+        if (version >= 3) return { type: 'qwen', variation: version >= 3.5 ? '3.5' : '3', supportsGrammar: true };
+    }
+
+    return { type: 'chatml', supportsGrammar: false };
 }
 
 export function createChatWrapper(modelPath: string) {
     const kind = resolveChatWrapperKind(modelPath);
-    return kind.type === 'qwen'
-        ? new QwenChatWrapper({ variation: kind.variation, thoughts: 'discourage' })
-        : new ChatMLChatWrapper();
+    switch (kind.type) {
+        case 'qwen':
+            return new QwenChatWrapper({ variation: kind.variation, thoughts: 'discourage' });
+        case 'llama3':
+            // Use Llama3ChatWrapper for all Llama 3.x variants
+            return new Llama3ChatWrapper();
+        case 'chatml':
+        default:
+            return new ChatMLChatWrapper();
+    }
+}
+
+/** Returns true if the model handles JSON schema grammars reliably. */
+export function modelSupportsGrammar(modelPath: string): boolean {
+    return resolveChatWrapperKind(modelPath).supportsGrammar;
 }
 
 export async function getOrCreateGrammar(llama: Llama, ontology: OntologyNode[]): Promise<LlamaGrammar> {
@@ -186,10 +220,28 @@ export async function getOrCreateLlamaSession(options: LlamaCppBridgeOptions): P
 /** Remove thinking blocks and markdown fences before parsing. */
 function unwrapResponse(response: string): string {
     return response
-        .replace(/<think>[\s\S]*?<\/think>/gi, '')
+        .replace(/reasoning[\s\S]*?<\/think>/gi, '')
         .replace(/```(?:json)?/gi, '')
         .replace(/```/g, '')
         .trim();
+}
+
+/** Fix common malformed JSON patterns from models without grammar support. */
+function repairJsonArray(candidate: string): string {
+    // Fix missing braces around objects: "key":"value" -> {"key":"value"}
+    let repaired = candidate
+        .replace(/\[(\s*)"key"/g, '[{$1"key"')
+        .replace(/"values"(\s*:\s*\[[^\]]*\]\s*)(,?\s*)(?="key"|\])/g, '"values"$1$2}')
+        .replace(/"values"(\s*:\s*\[[^\]]*\]\s*)(?=\]|$)/g, '"values"$1}');
+
+    // Fix trailing commas before ] or }
+    repaired = repaired.replace(/,(\s*[\}\]])/g, '$1');
+
+    // Ensure outer array brackets
+    if (!repaired.trim().startsWith('[')) repaired = '[' + repaired;
+    if (!repaired.trim().endsWith(']')) repaired = repaired + ']';
+
+    return repaired;
 }
 
 /** Best-effort JSON extraction: a truncated array is cut at its last complete object. */
@@ -202,23 +254,30 @@ function extractJsonArray(cleaned: string): unknown[] | null {
             const parsed: unknown = JSON.parse(candidate);
             return Array.isArray(parsed) ? parsed : null;
         } catch {
-            return null; // candidate slices are speculative
+            return null;
         }
     };
 
     const end = cleaned.lastIndexOf(']');
     if (end > start) {
-        const complete = tryParse(cleaned.slice(start, end + 1));
+        const slice = cleaned.slice(start, end + 1);
+        const complete = tryParse(slice);
         if (complete) return complete;
+        // Try repairing common malformed patterns
+        const repaired = tryParse(repairJsonArray(slice));
+        if (repaired) return repaired;
     }
 
+    // Fallback: try progressively shorter slices from the last }
     for (let brace = cleaned.lastIndexOf('}'); brace > start; brace = cleaned.lastIndexOf('}', brace - 1)) {
-        const repaired = tryParse(`${cleaned.slice(start, brace + 1)}]`);
+        const slice = cleaned.slice(start, brace + 1) + ']';
+        const parsed = tryParse(slice);
+        if (parsed) return parsed;
+        const repaired = tryParse(repairJsonArray(slice));
         if (repaired) return repaired;
     }
     return null;
 }
-
 export function parseResponse(response: string, ontology: OntologyNode[]): Property[] {
     const properties = extractJsonArray(unwrapResponse(response));
     if (!properties) return [];
@@ -245,11 +304,14 @@ export async function extractWithLlamaCpp(
     ontology: OntologyNode[] = DEFAULT_ONTOLOGY,
     options: LlamaCppBridgeOptions
 ): Promise<Property[]> {
+    const modelPath = options.modelPath ?? getModelPath();
+    const useGrammar = modelSupportsGrammar(modelPath);
+
     const systemPrompt = options.systemPrompt ?? buildSystemPrompt(ontology);
     const session = await getOrCreateLlamaSession({ ...options, systemPrompt });
-    const grammar = await getOrCreateGrammar(cachedLlama!, ontology);
+    const grammar = useGrammar ? await getOrCreateGrammar(cachedLlama!, ontology) : undefined;
 
-    console.log('[LlamaCpp] Running inference...');
+    console.log('[LlamaCpp] Running inference...', useGrammar ? '(with grammar)' : '(no grammar)');
 
     // Each extraction is independent; do not let prior cases bias the model.
     // Clearing only the chat history keeps the old KV cache, which degrades

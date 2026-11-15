@@ -53,22 +53,12 @@ function formatExamples(examples: typeof FEW_SHOT_EXAMPLES): string {
 export const PROMPT_V1_BASELINE = {
     id: 'property-extraction',
     version: '1',
-    template: `You are a 'Gardener' AI for a semantic note-taking app.
-Your goal is to extract structured properties from the user's raw text note.
-
-The ontology keys usually include:
-- intent (task, reminder, purchase, etc.)
-- status (pending, done)
-- priority (high, medium, low)
-- topic (tech, philosophy, etc.)
-- people (mentions of names)
-- location
-- date/time
+    template: `You are a precise semantic property extraction system. Output ONLY a JSON array. Do not explain.
 
 Extract semantic properties from the following text:
 "{{text}}"
 
-Return the result as a list of properties.`,
+Return the result as a JSON array of properties, each with: key, operator, values.`,
 };
 
 // Variant 2: Ontology-embedded, no shots
@@ -92,8 +82,7 @@ Only use keys and operators from the ontology above.`,
 export const PROMPT_V3_ONTOLOGY_FEWSHOT = {
     id: 'property-extraction',
     version: '3-ontology-fewshot',
-    template: `You are a 'Gardener' AI for a semantic note-taking app.
-Your goal is to extract structured properties from the user's raw text note.
+    template: `You are a precise semantic property extraction system. Output ONLY a JSON array. Do not explain.
 
 The ontology defines the following keys and their allowed operators:
 {{ontology}}
@@ -112,7 +101,7 @@ Only use keys and operators from the ontology above.`,
 export const PROMPT_V4_TWO_STEP = {
     id: 'property-extraction',
     version: '4-two-step',
-    template: `You are a 'Gardener' AI for a semantic note-taking app.
+    template: `You are a precise semantic property extraction system. Output ONLY a JSON array. Do not explain.
 
 STEP 1 - Extract: Identify all semantic entities and relations in the text.
 STEP 2 - Normalize: Map each entity to the closest ontology key with the appropriate operator.
@@ -131,8 +120,7 @@ Only use keys and operators from the ontology above.`,
 export const PROMPT_V5_SCHEMA_CONSTRAINED = {
     id: 'property-extraction',
     version: '5-schema-constrained',
-    template: `You are a 'Gardener' AI for a semantic note-taking app.
-Your goal is to extract structured properties from the user's raw text note.
+    template: `You are a precise semantic property extraction system. Output ONLY a JSON array. Do not explain.
 
 The ontology defines the following keys and their allowed operators:
 {{ontology}}
@@ -154,8 +142,7 @@ Return ONLY a JSON array of properties. No markdown, no explanation.`,
 export const PROMPT_V6_BEST = {
     id: 'property-extraction',
     version: '6-best-combined',
-    template: `You are a 'Gardener' AI for a semantic note-taking app.
-Your goal is to extract structured properties from the user's raw text note.
+    template: `You are a precise semantic property extraction system. Output ONLY a JSON array. Do not explain.
 
 The ontology defines the following keys and their allowed operators:
 {{ontology}}

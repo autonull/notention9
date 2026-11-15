@@ -1,6 +1,6 @@
 # TODO.24 — Remaining Work (updated 2026-11-15, session 7)
 
-**Status**: Quality extraction **F1 0.659 (0.8B) / 0.718 (4B)** with governance prompt examples added. Golden gate **10/10**. Taxonomy coverage **24/24 coarse** with CI-depth (30-rep) baselines for all 13 new scenarios. Qwen 3.5 4B exceeds 0.7 stretch target. Llama 3.2 3B fails with current template (needs ChatML wrapper).
+**Status**: Quality extraction **F1 0.659 (0.8B) / 0.718 (4B)** with governance prompt examples added. Golden gate **10/10**. Taxonomy coverage **24/24 coarse** with CI-depth (30-rep) baselines for all 13 new scenarios. Qwen 3.5 4B exceeds 0.7 stretch target. **Llama 3.2 3B now passes golden gate (10/10, F1 0.891) with ChatML wrapper + JSON repair** but quality F1 is lower (~9/60).
 
 ---
 
@@ -12,9 +12,17 @@
 - Added 9 governance-domain in-prompt examples to `extractionPrompt.ts`: family evacuation, water rights claim, specialist referral, primary caregiver respite, verifiable credentials, case worker permits, credential holder, task tracking.
 - Quality F1: 0.8B 0.604 → 0.659 (24/60 pass); 4B 0.640 → **0.718** (exceeds 0.7 stretch target). Golden gate remains 10/10.
 - Residual losses: some non-governance cases still miss `price`/`budget` distinctions, `schedule` vs `frequency`, `student`/`vehicle`/`format`/`audience` keys.
-- Llama 3.2 3B tested: fails completely (0/70) — native template needs ChatML wrapper.
 
-#### 2. Taxonomy calibration at CI depth (30 reps) completed
+#### 2. Llama 3.2 3B ChatML support + JSON repair implemented
+- Added `Llama3ChatWrapper` support in `llamaCppBridge.ts` with automatic model detection (Llama 3/3.1/3.2 → Llama3ChatWrapper; Qwen 3+ → QwenChatWrapper; others → ChatMLChatWrapper).
+- Added `modelSupportsGrammar()` — Qwen 3+ gets JSON-schema grammar; Llama 3.x runs without grammar (smaller models hallucinate with constrained grammar).
+- Added `repairJsonArray()` to fix malformed output from non-grammar models (missing braces, trailing commas).
+- **Result**: Llama 3.2 3B passes golden gate **10/10 (F1 0.891)**. Quality: 9/60 pass (limited by 3B capacity without grammar).
+
+#### 3. "Gardener" persona removed from all prompts
+- Replaced "You are a 'Gardener' AI for a semantic note-taking app" with "You are a precise semantic property extraction system" in `variants.ts` (6 variants) and `core/src/prompts/propertyExtraction.ts`.
+
+#### 4. Taxonomy calibration at CI depth (30 reps) completed
 - Ran `REPETITIONS=30` calibration for all 13 new taxonomy scenarios.
 - Updated `SCENARIO_BASELINES` in `measurementSuite.test.ts` with CI-depth statistics.
 - All 13 new scenarios + 4 existing spot-checked pass statistical assertions.
@@ -129,8 +137,8 @@ All 13 new scenarios calibrated at 30 repetitions; `SCENARIO_BASELINES` updated.
 ### 4. WebLLM on GPU CI
 Still reports "No available adapters" on SwiftShader. Needs a GPU runner; the bridge and UI hook are already in place.
 
-### 5. Llama 3.2 3B ChatML template support
-Add ChatML wrapper to `llamaCppBridge.ts` for Llama 3.2 models to enable proper chat formatting.
+### 5. Llama 3.2 3B ChatML template support — ✅ done
+Added `Llama3ChatWrapper` with auto-detection, grammar gating (`modelSupportsGrammar`), and JSON repair for non-grammar models. Golden gate 10/10 (F1 0.891).
 
 ### 6. Human probes and videos
 See the blocked table. No code work remains until participants are available.
@@ -183,7 +191,8 @@ Success criteria:
 | Qwen 3.5 0.8B | 0.659 F1, 26 GPU layers |
 | Qwen 3.5 2B | (untested this session) |
 | Qwen 3.5 4B | **0.718 F1**, 34 GPU layers |
-| Optimize tests | 92 passed / 4 skipped |
+| Llama 3.2 3B | Golden 10/10 (F1 0.891), Quality ~9/60 (no grammar) |
+| Optimize tests | 97 passed / 4 skipped |
 | Simulator tests | 116 passed (35 scenarios + calibration + taxonomy) |
 | Core / agent / cli tests | 855 / 17 / 6 |
 | Taxonomy coverage | 24/24 coarse, 32 six-axis cells (CI-depth baselines) |
@@ -217,12 +226,13 @@ pnpm eval:verify-manifest                    # ✅ OK
 git log --oneline -3
 pnpm --filter @notention/core exec tsc --noEmit      # clean
 pnpm --filter @notention/optimize exec tsc --noEmit  # clean
-pnpm --filter @notention/optimize test               # 92 passed / 4 skipped
+pnpm --filter @notention/optimize test               # 97 passed / 4 skipped
 pnpm --filter @notention/simulator test              # 35 scenarios (~12 min)
 pnpm --filter @notention/ui test                     # all batches pass
 pnpm taxonomy:coverage                               # 24/24 coarse, 0 uncovered
 pnpm loop run --dry --output data/loop/runs           # all six steps exit 0
-pnpm prompts:eval eval --provider llamacpp            # 10/10
+pnpm prompts:eval eval --provider llamacpp            # 10/10 (Qwen 0.8B)
+LLAMA_MODEL_PATH=/home/me/notention9/models/hf_bartowski_Llama-3.2-3B-Instruct.Q4_K_M.gguf pnpm prompts:eval eval --provider llamacpp  # 10/10 (Llama 3.2 3B)
 pnpm prompts:eval eval --provider llamacpp --quality  # F1 0.659 (0.8B) / 0.718 (4B)
 pnpm prompts:eval compare --limit 10 --few-shot 3     # pipeline comparison
 ```
