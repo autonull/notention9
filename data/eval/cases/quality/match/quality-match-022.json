@@ -1,0 +1,15 @@
+{
+  "id": "quality-match-022",
+  "family": "quality",
+  "qualityFamily": "match",
+  "input": "Need legal help for tenants rights free clinic",
+  "expected": [
+    { "noteId": "note-legal-001", "minScore": 0.5 },
+    { "noteId": "note-legal-002", "minScore": 0.35 }
+  ],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.90
+  },
+  "tags": ["legal", "housing", "free", "volunteering"]
+}

@@ -1,0 +1,18 @@
+{
+  "id": "quality-extract-032",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Need a lactation consultant for newborn, virtual sessions preferred, insurance accepted or budget 75/session",
+  "expected": [
+    { "key": "role", "operator": "contains", "values": ["lactation consultant"] },
+    { "key": "patient", "operator": "contains", "values": ["newborn", "infant"] },
+    { "key": "format", "operator": "contains", "values": ["virtual", "remote"] },
+    { "key": "budget", "operator": "less than", "values": ["75 USD"] }
+  ],
+  "forbidden": [],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.89
+  },
+  "tags": ["health", "care", "non-market", "newborn", "insurance", "budget"]
+}

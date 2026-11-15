@@ -1,0 +1,19 @@
+{
+  "id": "quality-extract-012",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Offering free coding mentorship for beginners, weekends 10am-2pm, virtual or library",
+  "expected": [
+    { "key": "role", "operator": "contains", "values": ["mentor", "mentorship", "coding"] },
+    { "key": "schedule", "operator": "contains", "values": ["weekend", "10am", "2pm"] },
+    { "key": "price", "operator": "equals", "values": ["0", "free"] }
+  ],
+  "forbidden": [
+    { "key": "price", "operator": "greater than", "values": ["0"] }
+  ],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.91
+  },
+  "tags": ["education", "non-market", "volunteering", "schedule", "free"]
+}

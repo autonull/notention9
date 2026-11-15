@@ -83,5 +83,5 @@ test-*.ts
 
 # Benchmarks
 tmp-bench/
-data
+data/notes.json
 models/

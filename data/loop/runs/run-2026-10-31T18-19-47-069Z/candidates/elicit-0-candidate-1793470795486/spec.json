@@ -1,0 +1,75 @@
+{
+  "seam": "elicit-0",
+  "intent": "Elicit additional details from user with auto-complete and tag suggestions",
+  "must": [
+    "Keyboard navigable",
+    "ARIA labels on all inputs",
+    "Works offline",
+    "Shows suggestions from ontology"
+  ],
+  "may": [
+    "react",
+    "@notention/ui/*",
+    "@notention/core/*",
+    "zod"
+  ],
+  "mustNot": [
+    "fs",
+    "fs/promises",
+    "node:*",
+    "eval",
+    "fetch",
+    "localStorage",
+    "sessionStorage",
+    "indexedDB"
+  ],
+  "accepts": {
+    "type": "object",
+    "properties": {
+      "tags": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "onChange": {
+        "type": "function"
+      },
+      "onAutoTag": {
+        "type": "function"
+      },
+      "isAutoTagging": {
+        "type": "boolean"
+      },
+      "autoFocus": {
+        "type": "boolean"
+      },
+      "className": {
+        "type": "string"
+      }
+    }
+  },
+  "emits": {
+    "type": "object",
+    "properties": {
+      "tagsChanged": {
+        "type": "object",
+        "properties": {
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "tags"
+        ]
+      }
+    }
+  },
+  "examples": [
+    "User adds \"urgent\" tag → emits tagsChanged with [\"urgent\"]",
+    "Auto-tag suggests \"follow-up\" based on content"
+  ]
+}

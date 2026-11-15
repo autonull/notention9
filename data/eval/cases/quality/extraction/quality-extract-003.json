@@ -1,0 +1,19 @@
+{
+  "id": "quality-extract-003",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Need someone to walk my dog every weekday at 7am, paying 20 per walk",
+  "expected": [
+    { "key": "role", "operator": "contains", "values": ["dog walker"] },
+    { "key": "schedule", "operator": "contains", "values": ["weekday", "7am"] },
+    { "key": "budget", "operator": "less than", "values": ["20 USD"] }
+  ],
+  "forbidden": [
+    { "key": "budget", "operator": "greater than", "values": ["30 USD"] }
+  ],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.89
+  },
+  "tags": ["care", "non-market", "pet", "schedule", "budget"]
+}

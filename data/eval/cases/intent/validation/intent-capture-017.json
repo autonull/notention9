@@ -1,0 +1,22 @@
+{
+  "id": "intent-capture-017",
+  "family": "intent",
+  "intent": "capture_need",
+  "prompt": "Looking for photographer for family portraits next Sunday outdoor, budget 200",
+  "seed": {
+    "notes": [],
+    "settings": {},
+    "revisions": ["incumbent"]
+  },
+  "expected": {
+    "minProperties": 2,
+    "requiredKeys": ["need", "schedule", "budget"],
+    "outcome": "captured"
+  },
+  "metrics": ["completion", "steps", "corrections"],
+  "tags": ["creative", "family", "schedule", "budget"],
+  "provenance": {
+    "author": "human",
+    "source": "interview-70"
+  }
+}

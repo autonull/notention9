@@ -1,0 +1,22 @@
+{
+  "id": "intent-capture-019",
+  "family": "intent",
+  "intent": "capture_need",
+  "prompt": "Need smart home setup for lights thermostat locks, budget 150",
+  "seed": {
+    "notes": [],
+    "settings": {},
+    "revisions": ["incumbent"]
+  },
+  "expected": {
+    "minProperties": 2,
+    "requiredKeys": ["need", "budget"],
+    "outcome": "captured"
+  },
+  "metrics": ["completion", "steps", "corrections"],
+  "tags": ["tech", "home", "budget"],
+  "provenance": {
+    "author": "human",
+    "source": "interview-76"
+  }
+}

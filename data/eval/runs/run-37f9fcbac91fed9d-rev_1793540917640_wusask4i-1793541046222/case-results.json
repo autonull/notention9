@@ -1,0 +1,2246 @@
+[
+  {
+    "caseId": "quality-extract-001",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0.5,
+      "f1": 0.6666666666666666
+    },
+    "details": [
+      "✓ role contains wheelchair ramp",
+      "✗ MISSING budget less than 900 USD",
+      "✓ NOT budget greater than 1000 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-002",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING price is 200 USD",
+      "✗ MISSING budget is 200"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-003",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains dog walker",
+      "✗ MISSING schedule contains weekday, 7am",
+      "✗ MISSING budget less than 20 USD",
+      "✓ NOT budget greater than 30 USD",
+      "⚠ UNEXPECTED intent: task"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-004",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0.3333333333333333,
+      "f1": 0.5
+    },
+    "details": [
+      "✓ role contains piano teacher",
+      "✗ MISSING schedule contains weekend",
+      "✗ MISSING budget less than 60 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-005",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0.3333333333333333,
+      "recall": 0.3333333333333333,
+      "f1": 0.3333333333333333
+    },
+    "details": [
+      "✓ role contains driver, ride",
+      "✗ MISSING deadline contains tomorrow, 5am",
+      "✗ MISSING budget less than 40 USD",
+      "✓ NOT budget greater than 50 USD",
+      "⚠ UNEXPECTED intent: task",
+      "⚠ UNEXPECTED date: 2026-11-02"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-006",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains mover, moving help",
+      "✗ MISSING schedule contains Saturday",
+      "✗ MISSING budget less than 100 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-007",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains meal delivery",
+      "✗ MISSING dietary contains low sodium, vegetarian",
+      "✗ MISSING budget less than 15 USD",
+      "✓ NOT budget greater than 20 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-008",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0.5,
+      "recall": 0.3333333333333333,
+      "f1": 0.4
+    },
+    "details": [
+      "✓ role contains Spanish tutor",
+      "✗ MISSING schedule contains 2x per week, twice weekly",
+      "✗ MISSING budget less than 30 USD",
+      "⚠ UNEXPECTED conversationId: practice"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-009",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0.5,
+      "recall": 0.25,
+      "f1": 0.3333333333333333
+    },
+    "details": [
+      "✓ role contains babysitter",
+      "✗ MISSING schedule contains Friday, 6pm, 10pm",
+      "✗ MISSING certification contains CPR",
+      "✗ MISSING budget less than 18 USD",
+      "✓ NOT budget greater than 25 USD",
+      "⚠ UNEXPECTED price: 6, 10"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-010",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains donation, donate",
+      "✗ MISSING item contains winter coats, blankets",
+      "✗ MISSING deadline less than December 1",
+      "⚠ UNEXPECTED intent: task"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-011",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains delivery, courier, pickup",
+      "✗ MISSING location contains CVS, Main St",
+      "✗ MISSING deadline contains today, 3pm",
+      "⚠ UNEXPECTED intent: task",
+      "⚠ UNEXPECTED date: 2026-11-01",
+      "⚠ UNEXPECTED from: CVS"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-012",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains mentor, mentorship, coding",
+      "✗ MISSING schedule contains weekend, 10am, 2pm",
+      "✗ MISSING price equals 0, free",
+      "✓ NOT price greater than 0",
+      "⚠ UNEXPECTED company: free"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-013",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0.3333333333333333,
+      "recall": 0.25,
+      "f1": 0.28571428571428575
+    },
+    "details": [
+      "✓ role contains photographer",
+      "✗ MISSING event contains family portraits",
+      "✗ MISSING schedule contains Sunday",
+      "✗ MISSING budget less than 200 USD",
+      "⚠ UNEXPECTED intent: task",
+      "⚠ UNEXPECTED lastName: portraits"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-014",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains driving instructor",
+      "✗ MISSING student contains teenager, teen",
+      "✗ MISSING vehicle contains automatic",
+      "✗ MISSING budget less than 50 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-015",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains smart home, tech setup",
+      "✗ MISSING item contains lights, thermostat, locks",
+      "✗ MISSING budget less than 150 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-016",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains math tutor, tutor",
+      "✗ MISSING subject contains math, mathematics",
+      "✗ MISSING schedule contains Tuesday, Thursday, 4pm, 6pm",
+      "✗ MISSING price equals 0, free",
+      "⚠ UNEXPECTED company: free"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-017",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0.25,
+      "f1": 0.4
+    },
+    "details": [
+      "✓ role contains lactation consultant",
+      "✗ MISSING patient contains newborn, infant",
+      "✗ MISSING format contains virtual, remote",
+      "✗ MISSING budget less than 75 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-018",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0.25,
+      "f1": 0.4
+    },
+    "details": [
+      "✓ role contains house cleaner, cleaning",
+      "✗ MISSING frequency contains biweekly",
+      "✗ MISSING property contains 3 bed, 2 bath",
+      "✗ MISSING budget less than 120 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-019",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains resume review, interview prep, career coach",
+      "✗ MISSING audience contains recent grad, graduate",
+      "✗ MISSING format contains virtual, remote",
+      "✗ MISSING schedule contains weekday evening",
+      "✗ MISSING price equals 0, free",
+      "⚠ UNEXPECTED company: free"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-020",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains grocery shopper, shopping, delivery",
+      "✗ MISSING recipient contains homebound, neighbor, elderly",
+      "✗ MISSING deadline contains 2pm",
+      "✗ MISSING budget less than 30 USD",
+      "⚠ UNEXPECTED intent: task, shopping"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-021",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains yoga instructor, prenatal yoga",
+      "✗ MISSING focus contains prenatal, pregnancy",
+      "✗ MISSING format contains private, one-on-one",
+      "✗ MISSING budget less than 80 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-022",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains tech help, tech support, teacher",
+      "✗ MISSING audience contains parents, seniors, elderly",
+      "✗ MISSING task contains video calling, email, photo sharing",
+      "✗ MISSING budget less than 50 USD",
+      "⚠ UNEXPECTED intent: communication, task",
+      "⚠ UNEXPECTED from: photo"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-023",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains legal clinic, lawyer, attorney",
+      "✗ MISSING topic contains tenants rights, tenant rights",
+      "✗ MISSING schedule contains first Saturday, monthly, 10am, 2pm",
+      "✗ MISSING location contains library",
+      "✗ MISSING price equals 0, free",
+      "⚠ UNEXPECTED company: free",
+      "⚠ UNEXPECTED firstName: Saturday"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-024",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0.25,
+      "f1": 0.4
+    },
+    "details": [
+      "✓ role contains personal chef, meal prep",
+      "✗ MISSING dietary contains vegetarian, gluten-free",
+      "✗ MISSING frequency contains weekly",
+      "✗ MISSING budget less than 200 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-025",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains tennis coach, tennis instructor",
+      "✗ MISSING level contains intermediate",
+      "✗ MISSING schedule contains weekend, morning",
+      "✗ MISSING budget less than 60 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-026",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains wellness check, caregiver, check-in",
+      "✗ MISSING recipient contains elderly neighbor, senior",
+      "✗ MISSING frequency contains daily",
+      "✗ MISSING task contains medication, meds",
+      "✗ MISSING budget less than 20 USD",
+      "⚠ UNEXPECTED intent: task"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-027",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains mentor, mentorship, coding",
+      "✗ MISSING schedule contains weekend, 10am, 2pm",
+      "✗ MISSING price equals 0, free",
+      "✓ NOT price greater than 0",
+      "⚠ UNEXPECTED company: free"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-028",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0.3333333333333333,
+      "recall": 0.25,
+      "f1": 0.28571428571428575
+    },
+    "details": [
+      "✓ role contains photographer",
+      "✗ MISSING event contains family portraits",
+      "✗ MISSING schedule contains Sunday",
+      "✗ MISSING budget less than 200 USD",
+      "⚠ UNEXPECTED intent: task",
+      "⚠ UNEXPECTED lastName: portraits"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-029",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains driving instructor",
+      "✗ MISSING student contains teenager, teen",
+      "✗ MISSING vehicle contains automatic",
+      "✗ MISSING budget less than 50 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-030",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains smart home, tech setup",
+      "✗ MISSING item contains lights, thermostat, locks",
+      "✗ MISSING budget less than 150 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-031",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains math tutor, tutor",
+      "✗ MISSING subject contains math, mathematics",
+      "✗ MISSING schedule contains Tuesday, Thursday, 4pm, 6pm",
+      "✗ MISSING price equals 0, free",
+      "⚠ UNEXPECTED company: free"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-032",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0.25,
+      "f1": 0.4
+    },
+    "details": [
+      "✓ role contains lactation consultant",
+      "✗ MISSING patient contains newborn, infant",
+      "✗ MISSING format contains virtual, remote",
+      "✗ MISSING budget less than 75 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-033",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains house cleaner, cleaning",
+      "✗ MISSING frequency contains biweekly",
+      "✗ MISSING property contains 3 bed, 2 bath",
+      "✗ MISSING budget less than 120 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-034",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains resume review, interview prep, career coach",
+      "✗ MISSING audience contains recent grad, graduate",
+      "✗ MISSING format contains virtual, remote",
+      "✗ MISSING schedule contains weekday evening",
+      "✗ MISSING price equals 0, free",
+      "⚠ UNEXPECTED company: free"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-035",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains grocery shopper, shopping, delivery",
+      "✗ MISSING recipient contains homebound, neighbor, elderly",
+      "✗ MISSING deadline contains 2pm",
+      "✗ MISSING budget less than 30 USD",
+      "⚠ UNEXPECTED intent: task, shopping"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-036",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains personal chef, meal prep",
+      "✗ MISSING dietary contains vegetarian, gluten-free",
+      "✗ MISSING frequency contains weekly",
+      "✗ MISSING budget less than 200 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-037",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains tennis coach, tennis instructor",
+      "✗ MISSING level contains intermediate",
+      "✗ MISSING schedule contains weekend, morning",
+      "✗ MISSING budget less than 60 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-038",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains wellness check, caregiver, check-in",
+      "✗ MISSING recipient contains elderly neighbor, senior",
+      "✗ MISSING frequency contains daily",
+      "✗ MISSING task contains medication, meds",
+      "✗ MISSING budget less than 20 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-match-001",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0.6666666666666666,
+      "recall": 1,
+      "f1": 0.8
+    },
+    "details": [
+      "✓ note-ramp-001 score 1.00 >= 0.3",
+      "✓ note-ramp-002 score 1.00 >= 0.2",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-match-002",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-dog-001",
+      "✗ MISSING note-dog-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-match-003",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-piano-001",
+      "✗ MISSING note-piano-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-match-004",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-ride-001",
+      "✗ MISSING note-ride-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-match-005",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-move-001",
+      "✗ MISSING note-move-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-match-006",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-meal-001",
+      "✗ MISSING note-meal-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-match-007",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-donate-001",
+      "✗ MISSING note-donate-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-match-008",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-spanish-001",
+      "✗ MISSING note-spanish-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-match-009",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-sitter-001",
+      "✗ MISSING note-sitter-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-match-010",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-mentor-001",
+      "✗ MISSING note-mentor-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-match-011",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-photo-001",
+      "✗ MISSING note-photo-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-match-012",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-drive-001",
+      "✗ MISSING note-drive-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-match-013",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-tech-001",
+      "✗ MISSING note-tech-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-match-014",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-mentor-001",
+      "✗ MISSING note-mentor-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-match-015",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-photo-001",
+      "✗ MISSING note-photo-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-match-016",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-drive-001",
+      "✗ MISSING note-drive-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-match-017",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-tech-001",
+      "✗ MISSING note-tech-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-match-018",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-donate-001",
+      "✗ MISSING note-donate-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-match-019",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-clean-001",
+      "✗ MISSING note-clean-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-match-020",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-resume-001",
+      "✗ MISSING note-resume-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-match-021",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-grocery-001",
+      "✗ MISSING note-grocery-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-match-022",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-legal-001",
+      "✗ MISSING note-legal-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793541035603_2scmir37"
+  },
+  {
+    "caseId": "quality-extract-001",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0.5,
+      "f1": 0.6666666666666666
+    },
+    "details": [
+      "✓ role contains wheelchair ramp",
+      "✗ MISSING budget less than 900 USD",
+      "✓ NOT budget greater than 1000 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-002",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING price is 200 USD",
+      "✗ MISSING budget is 200"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-003",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains dog walker",
+      "✗ MISSING schedule contains weekday, 7am",
+      "✗ MISSING budget less than 20 USD",
+      "✓ NOT budget greater than 30 USD",
+      "⚠ UNEXPECTED intent: task"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-004",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0.3333333333333333,
+      "f1": 0.5
+    },
+    "details": [
+      "✓ role contains piano teacher",
+      "✗ MISSING schedule contains weekend",
+      "✗ MISSING budget less than 60 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-005",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0.3333333333333333,
+      "recall": 0.3333333333333333,
+      "f1": 0.3333333333333333
+    },
+    "details": [
+      "✓ role contains driver, ride",
+      "✗ MISSING deadline contains tomorrow, 5am",
+      "✗ MISSING budget less than 40 USD",
+      "✓ NOT budget greater than 50 USD",
+      "⚠ UNEXPECTED intent: task",
+      "⚠ UNEXPECTED date: 2026-11-02"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-006",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains mover, moving help",
+      "✗ MISSING schedule contains Saturday",
+      "✗ MISSING budget less than 100 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-007",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains meal delivery",
+      "✗ MISSING dietary contains low sodium, vegetarian",
+      "✗ MISSING budget less than 15 USD",
+      "✓ NOT budget greater than 20 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-008",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0.5,
+      "recall": 0.3333333333333333,
+      "f1": 0.4
+    },
+    "details": [
+      "✓ role contains Spanish tutor",
+      "✗ MISSING schedule contains 2x per week, twice weekly",
+      "✗ MISSING budget less than 30 USD",
+      "⚠ UNEXPECTED conversationId: practice"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-009",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0.5,
+      "recall": 0.25,
+      "f1": 0.3333333333333333
+    },
+    "details": [
+      "✓ role contains babysitter",
+      "✗ MISSING schedule contains Friday, 6pm, 10pm",
+      "✗ MISSING certification contains CPR",
+      "✗ MISSING budget less than 18 USD",
+      "✓ NOT budget greater than 25 USD",
+      "⚠ UNEXPECTED price: 6, 10"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-010",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains donation, donate",
+      "✗ MISSING item contains winter coats, blankets",
+      "✗ MISSING deadline less than December 1",
+      "⚠ UNEXPECTED intent: task"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-011",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains delivery, courier, pickup",
+      "✗ MISSING location contains CVS, Main St",
+      "✗ MISSING deadline contains today, 3pm",
+      "⚠ UNEXPECTED intent: task",
+      "⚠ UNEXPECTED date: 2026-11-01",
+      "⚠ UNEXPECTED from: CVS"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-012",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains mentor, mentorship, coding",
+      "✗ MISSING schedule contains weekend, 10am, 2pm",
+      "✗ MISSING price equals 0, free",
+      "✓ NOT price greater than 0",
+      "⚠ UNEXPECTED company: free"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-013",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0.3333333333333333,
+      "recall": 0.25,
+      "f1": 0.28571428571428575
+    },
+    "details": [
+      "✓ role contains photographer",
+      "✗ MISSING event contains family portraits",
+      "✗ MISSING schedule contains Sunday",
+      "✗ MISSING budget less than 200 USD",
+      "⚠ UNEXPECTED intent: task",
+      "⚠ UNEXPECTED lastName: portraits"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-014",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains driving instructor",
+      "✗ MISSING student contains teenager, teen",
+      "✗ MISSING vehicle contains automatic",
+      "✗ MISSING budget less than 50 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-015",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains smart home, tech setup",
+      "✗ MISSING item contains lights, thermostat, locks",
+      "✗ MISSING budget less than 150 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-016",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains math tutor, tutor",
+      "✗ MISSING subject contains math, mathematics",
+      "✗ MISSING schedule contains Tuesday, Thursday, 4pm, 6pm",
+      "✗ MISSING price equals 0, free",
+      "⚠ UNEXPECTED company: free"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-017",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0.25,
+      "f1": 0.4
+    },
+    "details": [
+      "✓ role contains lactation consultant",
+      "✗ MISSING patient contains newborn, infant",
+      "✗ MISSING format contains virtual, remote",
+      "✗ MISSING budget less than 75 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-018",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0.25,
+      "f1": 0.4
+    },
+    "details": [
+      "✓ role contains house cleaner, cleaning",
+      "✗ MISSING frequency contains biweekly",
+      "✗ MISSING property contains 3 bed, 2 bath",
+      "✗ MISSING budget less than 120 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-019",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains resume review, interview prep, career coach",
+      "✗ MISSING audience contains recent grad, graduate",
+      "✗ MISSING format contains virtual, remote",
+      "✗ MISSING schedule contains weekday evening",
+      "✗ MISSING price equals 0, free",
+      "⚠ UNEXPECTED company: free"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-020",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains grocery shopper, shopping, delivery",
+      "✗ MISSING recipient contains homebound, neighbor, elderly",
+      "✗ MISSING deadline contains 2pm",
+      "✗ MISSING budget less than 30 USD",
+      "⚠ UNEXPECTED intent: task, shopping"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-021",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains yoga instructor, prenatal yoga",
+      "✗ MISSING focus contains prenatal, pregnancy",
+      "✗ MISSING format contains private, one-on-one",
+      "✗ MISSING budget less than 80 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-022",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains tech help, tech support, teacher",
+      "✗ MISSING audience contains parents, seniors, elderly",
+      "✗ MISSING task contains video calling, email, photo sharing",
+      "✗ MISSING budget less than 50 USD",
+      "⚠ UNEXPECTED intent: communication, task",
+      "⚠ UNEXPECTED from: photo"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-023",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains legal clinic, lawyer, attorney",
+      "✗ MISSING topic contains tenants rights, tenant rights",
+      "✗ MISSING schedule contains first Saturday, monthly, 10am, 2pm",
+      "✗ MISSING location contains library",
+      "✗ MISSING price equals 0, free",
+      "⚠ UNEXPECTED company: free",
+      "⚠ UNEXPECTED firstName: Saturday"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-024",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0.25,
+      "f1": 0.4
+    },
+    "details": [
+      "✓ role contains personal chef, meal prep",
+      "✗ MISSING dietary contains vegetarian, gluten-free",
+      "✗ MISSING frequency contains weekly",
+      "✗ MISSING budget less than 200 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-025",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains tennis coach, tennis instructor",
+      "✗ MISSING level contains intermediate",
+      "✗ MISSING schedule contains weekend, morning",
+      "✗ MISSING budget less than 60 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-026",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains wellness check, caregiver, check-in",
+      "✗ MISSING recipient contains elderly neighbor, senior",
+      "✗ MISSING frequency contains daily",
+      "✗ MISSING task contains medication, meds",
+      "✗ MISSING budget less than 20 USD",
+      "⚠ UNEXPECTED intent: task"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-027",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains mentor, mentorship, coding",
+      "✗ MISSING schedule contains weekend, 10am, 2pm",
+      "✗ MISSING price equals 0, free",
+      "✓ NOT price greater than 0",
+      "⚠ UNEXPECTED company: free"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-028",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0.3333333333333333,
+      "recall": 0.25,
+      "f1": 0.28571428571428575
+    },
+    "details": [
+      "✓ role contains photographer",
+      "✗ MISSING event contains family portraits",
+      "✗ MISSING schedule contains Sunday",
+      "✗ MISSING budget less than 200 USD",
+      "⚠ UNEXPECTED intent: task",
+      "⚠ UNEXPECTED lastName: portraits"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-029",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains driving instructor",
+      "✗ MISSING student contains teenager, teen",
+      "✗ MISSING vehicle contains automatic",
+      "✗ MISSING budget less than 50 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-030",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains smart home, tech setup",
+      "✗ MISSING item contains lights, thermostat, locks",
+      "✗ MISSING budget less than 150 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-031",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains math tutor, tutor",
+      "✗ MISSING subject contains math, mathematics",
+      "✗ MISSING schedule contains Tuesday, Thursday, 4pm, 6pm",
+      "✗ MISSING price equals 0, free",
+      "⚠ UNEXPECTED company: free"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-032",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0.25,
+      "f1": 0.4
+    },
+    "details": [
+      "✓ role contains lactation consultant",
+      "✗ MISSING patient contains newborn, infant",
+      "✗ MISSING format contains virtual, remote",
+      "✗ MISSING budget less than 75 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-033",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains house cleaner, cleaning",
+      "✗ MISSING frequency contains biweekly",
+      "✗ MISSING property contains 3 bed, 2 bath",
+      "✗ MISSING budget less than 120 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-034",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains resume review, interview prep, career coach",
+      "✗ MISSING audience contains recent grad, graduate",
+      "✗ MISSING format contains virtual, remote",
+      "✗ MISSING schedule contains weekday evening",
+      "✗ MISSING price equals 0, free",
+      "⚠ UNEXPECTED company: free"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-035",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains grocery shopper, shopping, delivery",
+      "✗ MISSING recipient contains homebound, neighbor, elderly",
+      "✗ MISSING deadline contains 2pm",
+      "✗ MISSING budget less than 30 USD",
+      "⚠ UNEXPECTED intent: task, shopping"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-036",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains personal chef, meal prep",
+      "✗ MISSING dietary contains vegetarian, gluten-free",
+      "✗ MISSING frequency contains weekly",
+      "✗ MISSING budget less than 200 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-037",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains tennis coach, tennis instructor",
+      "✗ MISSING level contains intermediate",
+      "✗ MISSING schedule contains weekend, morning",
+      "✗ MISSING budget less than 60 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-extract-038",
+    "qualityFamily": "extraction",
+    "repetition": 0,
+    "metrics": {
+      "precision": 1,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING role contains wellness check, caregiver, check-in",
+      "✗ MISSING recipient contains elderly neighbor, senior",
+      "✗ MISSING frequency contains daily",
+      "✗ MISSING task contains medication, meds",
+      "✗ MISSING budget less than 20 USD"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-match-001",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0.6666666666666666,
+      "recall": 1,
+      "f1": 0.8
+    },
+    "details": [
+      "✓ note-ramp-001 score 1.00 >= 0.3",
+      "✓ note-ramp-002 score 1.00 >= 0.2",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-match-002",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-dog-001",
+      "✗ MISSING note-dog-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-match-003",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-piano-001",
+      "✗ MISSING note-piano-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-match-004",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-ride-001",
+      "✗ MISSING note-ride-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-match-005",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-move-001",
+      "✗ MISSING note-move-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-match-006",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-meal-001",
+      "✗ MISSING note-meal-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-match-007",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-donate-001",
+      "✗ MISSING note-donate-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-match-008",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-spanish-001",
+      "✗ MISSING note-spanish-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-match-009",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-sitter-001",
+      "✗ MISSING note-sitter-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-match-010",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-mentor-001",
+      "✗ MISSING note-mentor-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-match-011",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-photo-001",
+      "✗ MISSING note-photo-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-match-012",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-drive-001",
+      "✗ MISSING note-drive-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-match-013",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-tech-001",
+      "✗ MISSING note-tech-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-match-014",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-mentor-001",
+      "✗ MISSING note-mentor-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-match-015",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-photo-001",
+      "✗ MISSING note-photo-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-match-016",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-drive-001",
+      "✗ MISSING note-drive-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-match-017",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-tech-001",
+      "✗ MISSING note-tech-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-match-018",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-donate-001",
+      "✗ MISSING note-donate-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-match-019",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-clean-001",
+      "✗ MISSING note-clean-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-match-020",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-resume-001",
+      "✗ MISSING note-resume-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-match-021",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-grocery-001",
+      "✗ MISSING note-grocery-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  },
+  {
+    "caseId": "quality-match-022",
+    "qualityFamily": "match",
+    "repetition": 0,
+    "metrics": {
+      "precision": 0,
+      "recall": 0,
+      "f1": 0
+    },
+    "details": [
+      "✗ MISSING note-legal-001",
+      "✗ MISSING note-legal-002",
+      "⚠ EXTRA note-ramp-001 score 0.00",
+      "⚠ EXTRA note-ramp-002 score 0.00",
+      "⚠ EXTRA note-other-001 score 0.00"
+    ],
+    "success": true,
+    "revisionId": "rev_1793540917640_wusask4i"
+  }
+]

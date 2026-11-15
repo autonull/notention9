@@ -1,0 +1,15 @@
+{
+  "id": "quality-match-004",
+  "family": "quality",
+  "qualityFamily": "match",
+  "input": "Need a ride to the airport early tomorrow morning",
+  "expected": [
+    { "noteId": "note-ride-001", "minScore": 0.45 },
+    { "noteId": "note-ride-002", "minScore": 0.2 }
+  ],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.90
+  },
+  "tags": ["transport", "deadline"]
+}

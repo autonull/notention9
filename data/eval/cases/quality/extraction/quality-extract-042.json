@@ -1,0 +1,15 @@
+{
+  "id": "quality-extract-042",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Freelance offer: UI/UX Designer available for contract work, rate $100/hour, remote. Portfolio: figma.com/designer. Skills: Figma, user research, design systems.",
+  "expected": [
+    { "key": "role", "operator": "contains", "values": ["UI/UX Designer"] },
+    { "key": "rate", "operator": "is", "values": ["100 USD/hour"] },
+    { "key": "remote", "operator": "is", "values": ["true"] },
+    { "key": "skills", "operator": "contains", "values": ["Figma", "user research", "design systems"] }
+  ],
+  "forbidden": [],
+  "labels": { "annotators": 2, "agreement": 0.92 },
+  "tags": ["work", "freelance-offer", "design", "remote"]
+}

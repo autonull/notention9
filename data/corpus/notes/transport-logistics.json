@@ -1,0 +1,2466 @@
+[
+  {
+    "id": "note_mwbqjkz0_qommzks",
+    "title": "Need daily commute: 30 miles each way, carpool or vanpool preferred. 7am/5pm sch...",
+    "content": "Need daily commute: 30 miles each way, carpool or vanpool preferred. 7am/5pm schedule.",
+    "tags": [
+      "transport-logistics",
+      "transport-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-22T18:57:33.197Z",
+    "updatedAt": "2026-10-22T18:57:33.197Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz0_fomrt19",
+    "title": "Seeking ride to medical appointments: wheelchair accessible, door-to-door, Medic...",
+    "content": "Seeking ride to medical appointments: wheelchair accessible, door-to-door, Medicaid transport.",
+    "tags": [
+      "transport-logistics",
+      "transport-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-25T08:42:23.830Z",
+    "updatedAt": "2026-10-25T08:42:23.830Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz0_37sio6r",
+    "title": "Looking for bike commuting buddy: 15 miles, bike lanes, showers at work. Safety ...",
+    "content": "Looking for bike commuting buddy: 15 miles, bike lanes, showers at work. Safety in numbers.",
+    "tags": [
+      "transport-logistics",
+      "transport-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-23T23:53:11.145Z",
+    "updatedAt": "2026-10-23T23:53:11.145Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz0_csj1rd6",
+    "title": "Need airport shuttle: monthly trips, 2 adults + luggage, 4am pickup. Reliable, a...",
+    "content": "Need airport shuttle: monthly trips, 2 adults + luggage, 4am pickup. Reliable, affordable.",
+    "tags": [
+      "transport-logistics",
+      "transport-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-21T12:20:16.589Z",
+    "updatedAt": "2026-10-21T12:20:16.589Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz0_xqzk3r7",
+    "title": "Seeking freight shipping: pallet of machinery, 500 lbs, NYC to LA. LTL, liftgate...",
+    "content": "Seeking freight shipping: pallet of machinery, 500 lbs, NYC to LA. LTL, liftgate, inside delivery.",
+    "tags": [
+      "transport-logistics",
+      "transport-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-24T00:04:21.012Z",
+    "updatedAt": "2026-10-24T00:04:21.012Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz0_otlw19b",
+    "title": "Want to buy used car: reliable, 30+ MPG, under $10k, mechanic inspected. Prius, ...",
+    "content": "Want to buy used car: reliable, 30+ MPG, under $10k, mechanic inspected. Prius, Civic, Corolla.",
+    "tags": [
+      "transport-logistics",
+      "transport-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-20T07:09:39.363Z",
+    "updatedAt": "2026-10-20T07:09:39.363Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz0_qx1iggf",
+    "title": "Need motorcycle transport: cross-country, enclosed trailer, door-to-door. Insure...",
+    "content": "Need motorcycle transport: cross-country, enclosed trailer, door-to-door. Insured, tracked.",
+    "tags": [
+      "transport-logistics",
+      "transport-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-08T21:17:44.751Z",
+    "updatedAt": "2026-11-08T21:17:44.751Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz0_54i3ui8",
+    "title": "Looking for boat transport: 25ft sailboat, Great Lakes to Florida. Mast up or st...",
+    "content": "Looking for boat transport: 25ft sailboat, Great Lakes to Florida. Mast up or stepped, insured.",
+    "tags": [
+      "transport-logistics",
+      "transport-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-23T18:49:23.144Z",
+    "updatedAt": "2026-10-23T18:49:23.144Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz0_bxdik3t",
+    "title": "Seeking RV transport: 35ft Class A, FL to WA, snowbird route. Professional drive...",
+    "content": "Seeking RV transport: 35ft Class A, FL to WA, snowbird route. Professional driver, insured.",
+    "tags": [
+      "transport-logistics",
+      "transport-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-21T00:06:55.499Z",
+    "updatedAt": "2026-10-21T00:06:55.499Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz0_xi90owc",
+    "title": "Want car share access: hourly, near apartment, EV preferred. Zipcar, Turo, Getar...",
+    "content": "Want car share access: hourly, near apartment, EV preferred. Zipcar, Turo, Getaround.",
+    "tags": [
+      "transport-logistics",
+      "transport-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-19T01:53:35.069Z",
+    "updatedAt": "2026-10-19T01:53:35.069Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz0_eram29x",
+    "title": "Carpool driver: 3 seats, 30mi commute, HOV lane, $150/month. 7am sharp, 5:15pm r...",
+    "content": "Carpool driver: 3 seats, 30mi commute, HOV lane, $150/month. 7am sharp, 5:15pm return.",
+    "tags": [
+      "transport-logistics",
+      "transport-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/mo"
+        ],
+        "unit": "USD/mo",
+        "quantity": {
+          "value": null,
+          "unit": "USD/mo",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "mo",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-08T09:22:42.334Z",
+    "updatedAt": "2026-11-08T09:22:42.334Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz0_04o0cin",
+    "title": "Medical transport: wheelchair van, stretcher, NEMT certified. Medicaid, private ...",
+    "content": "Medical transport: wheelchair van, stretcher, NEMT certified. Medicaid, private pay, 24/7.",
+    "tags": [
+      "transport-logistics",
+      "transport-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-17T05:18:03.774Z",
+    "updatedAt": "2026-10-17T05:18:03.774Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz0_uw5f1ug",
+    "title": "Bike commuter group: 10 riders, 15mi route, pace 15mph, lights/fenders required....",
+    "content": "Bike commuter group: 10 riders, 15mi route, pace 15mph, lights/fenders required. Mon/Wed/Fri.",
+    "tags": [
+      "transport-logistics",
+      "transport-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-28T07:36:46.591Z",
+    "updatedAt": "2026-10-28T07:36:46.591Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz0_2qkfzu2",
+    "title": "Airport shuttle: 8-passenger van, 24/7, $40/trip, door-to-door. Advance booking,...",
+    "content": "Airport shuttle: 8-passenger van, 24/7, $40/trip, door-to-door. Advance booking, flight tracking.",
+    "tags": [
+      "transport-logistics",
+      "transport-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-09T01:07:56.042Z",
+    "updatedAt": "2026-11-09T01:07:56.042Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz0_u7zziec",
+    "title": "Freight broker: LTL, FTL, hotshot, expedited. 98% on-time, cargo insured, tracki...",
+    "content": "Freight broker: LTL, FTL, hotshot, expedited. 98% on-time, cargo insured, tracking.",
+    "tags": [
+      "transport-logistics",
+      "transport-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "go"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-13T09:22:18.889Z",
+    "updatedAt": "2026-10-13T09:22:18.889Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz0_bgjv0u6",
+    "title": "Car seller: 2018 Prius, 65k miles, one owner, records, $12k. Clean title, inspec...",
+    "content": "Car seller: 2018 Prius, 65k miles, one owner, records, $12k. Clean title, inspected.",
+    "tags": [
+      "transport-logistics",
+      "transport-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-07T03:40:12.697Z",
+    "updatedAt": "2026-11-07T03:40:12.697Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz0_uyx0ibx",
+    "title": "Motorcycle shipper: enclosed, climate-controlled, $0.50/mi, door-to-door. Insura...",
+    "content": "Motorcycle shipper: enclosed, climate-controlled, $0.50/mi, door-to-door. Insurance included.",
+    "tags": [
+      "transport-logistics",
+      "transport-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "cli"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-05T08:56:40.740Z",
+    "updatedAt": "2026-11-05T08:56:40.740Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz0_p719542",
+    "title": "Boat transporter: hydraulic trailer, 40ft max, Great Lakes to Gulf. Captain avai...",
+    "content": "Boat transporter: hydraulic trailer, 40ft max, Great Lakes to Gulf. Captain available.",
+    "tags": [
+      "transport-logistics",
+      "transport-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-08T19:11:33.707Z",
+    "updatedAt": "2026-11-08T19:11:33.707Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz0_c0wno1v",
+    "title": "RV transport: CDL driver, 40ft max, snowbird specialist. $2.50/mi, full insuranc...",
+    "content": "RV transport: CDL driver, 40ft max, snowbird specialist. $2.50/mi, full insurance.",
+    "tags": [
+      "transport-logistics",
+      "transport-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-10T14:23:43.416Z",
+    "updatedAt": "2026-11-10T14:23:43.416Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz0_5uu6ked",
+    "title": "Car share host: 2019 Model 3, downtown, $15/hr, $100/day. Keyless, supercharger ...",
+    "content": "Car share host: 2019 Model 3, downtown, $15/hr, $100/day. Keyless, supercharger access.",
+    "tags": [
+      "transport-logistics",
+      "transport-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-02T04:24:16.930Z",
+    "updatedAt": "2026-11-02T04:24:16.930Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz0_0jmiegp",
+    "title": "Need last-mile delivery: 50 packages/day, 2-hour windows, proof of delivery. E-c...",
+    "content": "Need last-mile delivery: 50 packages/day, 2-hour windows, proof of delivery. E-commerce fulfillment.",
+    "tags": [
+      "transport-logistics",
+      "logistics-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-10T06:41:01.148Z",
+    "updatedAt": "2026-11-10T06:41:01.148Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz0_nocyw1s",
+    "title": "Seeking warehousing: 5000 sq ft, dock-high, climate-controlled, racking. Near hi...",
+    "content": "Seeking warehousing: 5000 sq ft, dock-high, climate-controlled, racking. Near highway, flexible term.",
+    "tags": [
+      "transport-logistics",
+      "logistics-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "cli"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-17T18:40:54.098Z",
+    "updatedAt": "2026-10-17T18:40:54.098Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz0_uy5sko1",
+    "title": "Looking for cold storage: -20F to 35F, pallet-in/pallet-out, inventory mgmt. Foo...",
+    "content": "Looking for cold storage: -20F to 35F, pallet-in/pallet-out, inventory mgmt. Food/pharma certified.",
+    "tags": [
+      "transport-logistics",
+      "logistics-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-19T07:40:23.681Z",
+    "updatedAt": "2026-10-19T07:40:23.681Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz0_fvtnuk2",
+    "title": "Need inventory management: WMS, barcode, lot tracking, expiration dates. Cloud-b...",
+    "content": "Need inventory management: WMS, barcode, lot tracking, expiration dates. Cloud-based, API.",
+    "tags": [
+      "transport-logistics",
+      "logistics-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-17T07:02:58.867Z",
+    "updatedAt": "2026-10-17T07:02:58.867Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz0_hyhuwz8",
+    "title": "Seeking fulfillment partner: pick/pack/ship, returns, kitting, subscription boxe...",
+    "content": "Seeking fulfillment partner: pick/pack/ship, returns, kitting, subscription boxes. Shopify integration.",
+    "tags": [
+      "transport-logistics",
+      "logistics-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-30T17:45:24.839Z",
+    "updatedAt": "2026-10-30T17:45:24.839Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz0_l2gyf96",
+    "title": "Want freight forwarding: China to US, ocean/air, customs, drayage. Door-to-door,...",
+    "content": "Want freight forwarding: China to US, ocean/air, customs, drayage. Door-to-door, tracking.",
+    "tags": [
+      "transport-logistics",
+      "logistics-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-19T19:48:37.513Z",
+    "updatedAt": "2026-10-19T19:48:37.513Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz0_3j5gwvk",
+    "title": "Need courier service: same-day, legal/medical, chain of custody, rush. Metro are...",
+    "content": "Need courier service: same-day, legal/medical, chain of custody, rush. Metro area, 24/7.",
+    "tags": [
+      "transport-logistics",
+      "logistics-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-09T03:49:17.089Z",
+    "updatedAt": "2026-11-09T03:49:17.089Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz0_3wtowc9",
+    "title": "Looking for moving company: local, long-distance, packing, storage. Licensed, in...",
+    "content": "Looking for moving company: local, long-distance, packing, storage. Licensed, insured, reviews.",
+    "tags": [
+      "transport-logistics",
+      "logistics-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-21T11:35:24.139Z",
+    "updatedAt": "2026-10-21T11:35:24.139Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz0_0vyced4",
+    "title": "Seeking supply chain consultant: demand planning, S&OP, network design, risk mit...",
+    "content": "Seeking supply chain consultant: demand planning, S&OP, network design, risk mitigation. 15+ yrs exp.",
+    "tags": [
+      "transport-logistics",
+      "logistics-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-17T23:55:24.662Z",
+    "updatedAt": "2026-10-17T23:55:24.662Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz0_aooo3wy",
+    "title": "Want packaging supplies: boxes, mailers, void fill, tape, labels. Bulk, branded,...",
+    "content": "Want packaging supplies: boxes, mailers, void fill, tape, labels. Bulk, branded, sustainable.",
+    "tags": [
+      "transport-logistics",
+      "logistics-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-17T14:16:49.622Z",
+    "updatedAt": "2026-10-17T14:16:49.622Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz0_yc8onl2",
+    "title": "Last-mile carrier: 50 vans, route optimization, real-time tracking, POD photos. ...",
+    "content": "Last-mile carrier: 50 vans, route optimization, real-time tracking, POD photos. $3.50/package.",
+    "tags": [
+      "transport-logistics",
+      "logistics-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-22T22:17:06.727Z",
+    "updatedAt": "2026-10-22T22:17:06.727Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz0_396x4lp",
+    "title": "Warehouse operator: 100k sq ft, 3PL, WMS, EDI, kitting, returns. $0.35/sq ft + a...",
+    "content": "Warehouse operator: 100k sq ft, 3PL, WMS, EDI, kitting, returns. $0.35/sq ft + activity.",
+    "tags": [
+      "transport-logistics",
+      "logistics-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-23T19:01:59.401Z",
+    "updatedAt": "2026-10-23T19:01:59.401Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz0_qmabd96",
+    "title": "Cold storage facility: USDA, FDA, HACCP, blast freeze, tempering. $0.12/cubic ft...",
+    "content": "Cold storage facility: USDA, FDA, HACCP, blast freeze, tempering. $0.12/cubic ft/month.",
+    "tags": [
+      "transport-logistics",
+      "logistics-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-18T03:13:35.893Z",
+    "updatedAt": "2026-10-18T03:13:35.893Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz0_2fox151",
+    "title": "Inventory software: SaaS WMS, mobile scanning, multi-location, forecasting. $299...",
+    "content": "Inventory software: SaaS WMS, mobile scanning, multi-location, forecasting. $299/mo + users.",
+    "tags": [
+      "transport-logistics",
+      "logistics-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-12T11:10:32.338Z",
+    "updatedAt": "2026-10-12T11:10:32.338Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz0_25pq2vf",
+    "title": "Fulfillment center: 2-day shipping, 99.9% accuracy, branded packaging, returns p...",
+    "content": "Fulfillment center: 2-day shipping, 99.9% accuracy, branded packaging, returns portal. $2.50/order.",
+    "tags": [
+      "transport-logistics",
+      "logistics-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-15T05:50:41.509Z",
+    "updatedAt": "2026-10-15T05:50:41.509Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz0_rhpj7r0",
+    "title": "Freight forwarder: NVOCC, FMC licensed, global network, cargo insurance. Transpa...",
+    "content": "Freight forwarder: NVOCC, FMC licensed, global network, cargo insurance. Transparent pricing.",
+    "tags": [
+      "transport-logistics",
+      "logistics-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "go"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-23T19:58:44.029Z",
+    "updatedAt": "2026-10-23T19:58:44.029Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz0_o2571aa",
+    "title": "Courier company: HIPAA, legal, medical, 60-min rush, GPS tracking, ETA alerts. $...",
+    "content": "Courier company: HIPAA, legal, medical, 60-min rush, GPS tracking, ETA alerts. $25/base + mi.",
+    "tags": [
+      "transport-logistics",
+      "logistics-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-24T10:45:45.153Z",
+    "updatedAt": "2026-10-24T10:45:45.153Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz0_xkc8so1",
+    "title": "Moving company: 20 years, AMSA ProMover, full-service, storage, specialty items....",
+    "content": "Moving company: 20 years, AMSA ProMover, full-service, storage, specialty items. Binding estimates.",
+    "tags": [
+      "transport-logistics",
+      "logistics-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "duration",
+        "operator": "is",
+        "values": [
+          "20 yr"
+        ],
+        "unit": "yr",
+        "quantity": {
+          "value": 20,
+          "unit": "yr",
+          "unitType": "simple",
+          "numerator": "yr",
+          "semanticType": "duration"
+        },
+        "role": "fact",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-30T00:46:51.191Z",
+    "updatedAt": "2026-10-30T00:46:51.191Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz0_l6pc0nt",
+    "title": "Supply chain consultant: CSCP, CLTD, digital twin, resilience, sustainability. $...",
+    "content": "Supply chain consultant: CSCP, CLTD, digital twin, resilience, sustainability. $250/hr.",
+    "tags": [
+      "transport-logistics",
+      "logistics-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-11T05:19:33.949Z",
+    "updatedAt": "2026-11-11T05:19:33.949Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz0_hzmbnsk",
+    "title": "Packaging distributor: Uline, EcoEnclose, custom print, sustainable, JIT deliver...",
+    "content": "Packaging distributor: Uline, EcoEnclose, custom print, sustainable, JIT delivery. Net 30 terms.",
+    "tags": [
+      "transport-logistics",
+      "logistics-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-28T12:34:08.875Z",
+    "updatedAt": "2026-10-28T12:34:08.875Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356460
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz1_wncwmr5",
+    "title": "Need wheelchair accessible van: side entry, ramp, tie-downs, 1 passenger + drive...",
+    "content": "Need wheelchair accessible van: side entry, ramp, tie-downs, 1 passenger + driver. Purchase or lease.",
+    "tags": [
+      "transport-logistics",
+      "mobility-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-17T16:05:24.126Z",
+    "updatedAt": "2026-10-17T16:05:24.126Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356461
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz1_9rn1187",
+    "title": "Seeking adaptive driving equipment: hand controls, left-foot accelerator, spinne...",
+    "content": "Seeking adaptive driving equipment: hand controls, left-foot accelerator, spinner knob. Installation.",
+    "tags": [
+      "transport-logistics",
+      "mobility-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-08T13:27:12.970Z",
+    "updatedAt": "2026-11-08T13:27:12.970Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356461
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz1_q1kh89l",
+    "title": "Looking for paratransit alternative: on-demand, door-to-door, same-day booking. ...",
+    "content": "Looking for paratransit alternative: on-demand, door-to-door, same-day booking. App-based.",
+    "tags": [
+      "transport-logistics",
+      "mobility-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-07T05:53:08.122Z",
+    "updatedAt": "2026-11-07T05:53:08.122Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356461
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz1_peoq32a",
+    "title": "Need electric bike: cargo, longtail, 50+ mile range, child seat compatible. Test...",
+    "content": "Need electric bike: cargo, longtail, 50+ mile range, child seat compatible. Test ride first.",
+    "tags": [
+      "transport-logistics",
+      "mobility-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "go"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-08T04:23:47.993Z",
+    "updatedAt": "2026-11-08T04:23:47.993Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356461
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz1_x5stu0f",
+    "title": "Seeking scooter share: seated, 3-wheel, stability, grocery basket. Senior-friend...",
+    "content": "Seeking scooter share: seated, 3-wheel, stability, grocery basket. Senior-friendly, low step-through.",
+    "tags": [
+      "transport-logistics",
+      "mobility-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "senior"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-03T05:32:08.551Z",
+    "updatedAt": "2026-11-03T05:32:08.551Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356461
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz1_vyprp2l",
+    "title": "Want ride-sharing for seniors: trained drivers, assistance, fixed routes, subscr...",
+    "content": "Want ride-sharing for seniors: trained drivers, assistance, fixed routes, subscription. Community-based.",
+    "tags": [
+      "transport-logistics",
+      "mobility-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "senior"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-18T04:05:08.936Z",
+    "updatedAt": "2026-10-18T04:05:08.936Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356461
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz1_23n7daj",
+    "title": "Need vehicle modification: transfer seat, wheelchair lift, reduced effort steeri...",
+    "content": "Need vehicle modification: transfer seat, wheelchair lift, reduced effort steering. Certified installer.",
+    "tags": [
+      "transport-logistics",
+      "mobility-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-31T15:36:21.368Z",
+    "updatedAt": "2026-10-31T15:36:21.368Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356461
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz1_oh8r1by",
+    "title": "Looking for travel training: transit navigation, trip planning, safety skills. O...",
+    "content": "Looking for travel training: transit navigation, trip planning, safety skills. One-on-one, free.",
+    "tags": [
+      "transport-logistics",
+      "mobility-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-08T03:39:52.765Z",
+    "updatedAt": "2026-11-08T03:39:52.765Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356461
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz1_zvyaymq",
+    "title": "Seeking mobility equipment rental: scooter, power chair, lift, ramp. Weekly/mont...",
+    "content": "Seeking mobility equipment rental: scooter, power chair, lift, ramp. Weekly/monthly, delivery.",
+    "tags": [
+      "transport-logistics",
+      "mobility-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-06T18:30:44.251Z",
+    "updatedAt": "2026-11-06T18:30:44.251Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356461
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz1_umfqg7f",
+    "title": "Want autonomous shuttle: campus, business park, fixed route, 12-passenger. Pilot...",
+    "content": "Want autonomous shuttle: campus, business park, fixed route, 12-passenger. Pilot program.",
+    "tags": [
+      "transport-logistics",
+      "mobility-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-19T10:35:49.239Z",
+    "updatedAt": "2026-10-19T10:35:49.239Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356461
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz1_40vapx0",
+    "title": "Accessible van dealer: BraunAbility, VMI, Toyota Sienna, Chrysler Pacifica. Demo...",
+    "content": "Accessible van dealer: BraunAbility, VMI, Toyota Sienna, Chrysler Pacifica. Demo, financing, service.",
+    "tags": [
+      "transport-logistics",
+      "mobility-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-17T01:35:34.992Z",
+    "updatedAt": "2026-10-17T01:35:34.992Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356461
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz1_ha1cw3h",
+    "title": "Adaptive driving specialist: NMEDA certified, eval, install, training. Insurance...",
+    "content": "Adaptive driving specialist: NMEDA certified, eval, install, training. Insurance billing.",
+    "tags": [
+      "transport-logistics",
+      "mobility-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-07T10:22:26.999Z",
+    "updatedAt": "2026-11-07T10:22:26.999Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356461
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz1_vf207nw",
+    "title": "On-demand paratransit: app-based, wheelchair accessible, 15-min response. $5/rid...",
+    "content": "On-demand paratransit: app-based, wheelchair accessible, 15-min response. $5/ride subsidized.",
+    "tags": [
+      "transport-logistics",
+      "mobility-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-02T19:36:59.839Z",
+    "updatedAt": "2026-11-02T19:36:59.839Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356461
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz1_8nd8275",
+    "title": "E-bike shop: Tern, Yuba, Rad, Urban Arrow. Test rides, financing, service, cargo...",
+    "content": "E-bike shop: Tern, Yuba, Rad, Urban Arrow. Test rides, financing, service, cargo accessories.",
+    "tags": [
+      "transport-logistics",
+      "mobility-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "go"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-17T08:16:09.810Z",
+    "updatedAt": "2026-10-17T08:16:09.810Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356461
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz1_54m8a5e",
+    "title": "Adaptive scooter dealer: Afikim, Pride, Golden. 3-wheel, full suspension, 30mi r...",
+    "content": "Adaptive scooter dealer: Afikim, Pride, Golden. 3-wheel, full suspension, 30mi range. Medicare billing.",
+    "tags": [
+      "transport-logistics",
+      "mobility-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "go"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-17T21:16:58.467Z",
+    "updatedAt": "2026-10-17T21:16:58.467Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356461
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz1_mfvf55y",
+    "title": "Senior ride program: volunteer drivers, door-through-door, escort, grocery/medic...",
+    "content": "Senior ride program: volunteer drivers, door-through-door, escort, grocery/medical. Free/donation.",
+    "tags": [
+      "transport-logistics",
+      "mobility-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "senior"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-31T07:55:54.807Z",
+    "updatedAt": "2026-10-31T07:55:54.807Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356461
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz1_sfg6grm",
+    "title": "Vehicle modifier: Q'Straint, Bruno, Adapt Solutions. Certified, crash-tested, wa...",
+    "content": "Vehicle modifier: Q'Straint, Bruno, Adapt Solutions. Certified, crash-tested, warranty.",
+    "tags": [
+      "transport-logistics",
+      "mobility-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-30T18:13:48.440Z",
+    "updatedAt": "2026-10-30T18:13:48.440Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356461
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz1_bo6dkbv",
+    "title": "Travel trainer: Easterseals, transit agency partner. Free, individualized, group...",
+    "content": "Travel trainer: Easterseals, transit agency partner. Free, individualized, group workshops.",
+    "tags": [
+      "transport-logistics",
+      "mobility-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-20T16:40:23.253Z",
+    "updatedAt": "2026-10-20T16:40:23.253Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356461
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz1_vyo4dnf",
+    "title": "Mobility rental: Scootaround, local partners. Airport, cruise, hotel delivery. $...",
+    "content": "Mobility rental: Scootaround, local partners. Airport, cruise, hotel delivery. $30/day scooter.",
+    "tags": [
+      "transport-logistics",
+      "mobility-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/d"
+        ],
+        "unit": "USD/d",
+        "quantity": {
+          "value": null,
+          "unit": "USD/d",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "d",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-21T14:44:01.890Z",
+    "updatedAt": "2026-10-21T14:44:01.890Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356461
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz1_3nchtjw",
+    "title": "Autonomous shuttle operator: Navya, EasyMile, Local Motors. Pilot design, safety...",
+    "content": "Autonomous shuttle operator: Navya, EasyMile, Local Motors. Pilot design, safety case, permitting.",
+    "tags": [
+      "transport-logistics",
+      "mobility-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-24T12:04:01.256Z",
+    "updatedAt": "2026-10-24T12:04:01.256Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356461
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz1_ad817at",
+    "title": "Need daily carpool: 30mi commute, 7am/5pm, HOV lane, split gas. 3 seats availabl...",
+    "content": "Need daily carpool: 30mi commute, 7am/5pm, HOV lane, split gas. 3 seats available.",
+    "tags": [
+      "transport-logistics",
+      "transport-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-09T15:56:47.961Z",
+    "updatedAt": "2026-11-09T15:56:47.961Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356461
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz1_yxrb524",
+    "title": "Carpool driver: 3 seats, 30mi, HOV, $150/mo. 7am sharp, 5:15pm return. Reliable.",
+    "content": "Carpool driver: 3 seats, 30mi, HOV, $150/mo. 7am sharp, 5:15pm return. Reliable.",
+    "tags": [
+      "transport-logistics",
+      "transport-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-14T03:08:50.666Z",
+    "updatedAt": "2026-10-14T03:08:50.666Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356461
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz1_mrcouf6",
+    "title": "Need freight shipping: pallet machinery 500lbs, NYC to LA, LTL, liftgate, inside...",
+    "content": "Need freight shipping: pallet machinery 500lbs, NYC to LA, LTL, liftgate, inside delivery.",
+    "tags": [
+      "transport-logistics",
+      "transport-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-01T19:14:47.047Z",
+    "updatedAt": "2026-11-01T19:14:47.047Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356461
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz1_5lf0yqf",
+    "title": "Freight broker: LTL/FTL/hotshot, 98% on-time, cargo insured, tracking. Transpare...",
+    "content": "Freight broker: LTL/FTL/hotshot, 98% on-time, cargo insured, tracking. Transparent pricing.",
+    "tags": [
+      "transport-logistics",
+      "transport-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "go"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-22T09:45:19.145Z",
+    "updatedAt": "2026-10-22T09:45:19.145Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356461
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz1_xi4hqnq",
+    "title": "Seeking last-mile delivery: 50 packages/day, 2hr windows, POD photos. E-commerce...",
+    "content": "Seeking last-mile delivery: 50 packages/day, 2hr windows, POD photos. E-commerce fulfillment.",
+    "tags": [
+      "transport-logistics",
+      "logistics-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-06T16:45:55.065Z",
+    "updatedAt": "2026-11-06T16:45:55.065Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356461
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz1_kf07mzh",
+    "title": "Last-mile carrier: 50 vans, route optimization, real-time tracking, POD. $3.50/p...",
+    "content": "Last-mile carrier: 50 vans, route optimization, real-time tracking, POD. $3.50/package.",
+    "tags": [
+      "transport-logistics",
+      "logistics-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-08T02:57:01.684Z",
+    "updatedAt": "2026-11-08T02:57:01.684Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356461
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz1_2e4bra6",
+    "title": "Need accessible van: side entry, ramp, tie-downs, 1 passenger + driver. Purchase...",
+    "content": "Need accessible van: side entry, ramp, tie-downs, 1 passenger + driver. Purchase or lease.",
+    "tags": [
+      "transport-logistics",
+      "mobility-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-03T03:37:16.605Z",
+    "updatedAt": "2026-11-03T03:37:16.605Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356461
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz1_3dphp1d",
+    "title": "Accessible van dealer: BraunAbility, VMI, Sienna, Pacifica. Demo, financing, ser...",
+    "content": "Accessible van dealer: BraunAbility, VMI, Sienna, Pacifica. Demo, financing, service.",
+    "tags": [
+      "transport-logistics",
+      "mobility-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-29T10:14:32.712Z",
+    "updatedAt": "2026-10-29T10:14:32.712Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356461
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz1_pqu9o37",
+    "title": "Looking for e-bike: cargo, longtail, 50+ mile range, child seat. Test ride first...",
+    "content": "Looking for e-bike: cargo, longtail, 50+ mile range, child seat. Test ride first.",
+    "tags": [
+      "transport-logistics",
+      "mobility-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "go"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-20T03:30:14.737Z",
+    "updatedAt": "2026-10-20T03:30:14.737Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356461
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz1_3pm0ri8",
+    "title": "E-bike shop: Tern, Yuba, Rad, Urban Arrow. Test rides, financing, service, cargo...",
+    "content": "E-bike shop: Tern, Yuba, Rad, Urban Arrow. Test rides, financing, service, cargo accessories.",
+    "tags": [
+      "transport-logistics",
+      "mobility-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "go"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-04T19:05:32.355Z",
+    "updatedAt": "2026-11-04T19:05:32.355Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-transport-logistics",
+      "timestamp": 1794378356461
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  }
+]

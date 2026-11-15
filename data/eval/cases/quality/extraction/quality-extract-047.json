@@ -1,0 +1,17 @@
+{
+  "id": "quality-extract-047",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Kinship care arrangement: Guardian is Maria for ward Elena (age 8). Care schedule: weekdays after school, weekends full days. Medical authority: Maria. Financial responsibility: shared with paternal grandparents. Visitation: father Sundays 10am-4pm.",
+  "expected": [
+    { "key": "guardian", "operator": "is", "values": ["Maria"] },
+    { "key": "ward", "operator": "is", "values": ["Elena"] },
+    { "key": "careSchedule", "operator": "contains", "values": ["weekdays after school", "weekends full days"] },
+    { "key": "medicalAuthority", "operator": "is", "values": ["Maria"] },
+    { "key": "financialResponsibility", "operator": "contains", "values": ["shared", "paternal grandparents"] },
+    { "key": "visitationRights", "operator": "contains", "values": ["father Sundays 10am-4pm"] }
+  ],
+  "forbidden": [],
+  "labels": { "annotators": 2, "agreement": 0.93 },
+  "tags": ["kinship", "kinship-care", "care", "generational", "family"]
+}

@@ -1,0 +1,12 @@
+[
+  {
+    "taskId": "task-1-capture-capture-1",
+    "successRate": 1,
+    "medianDuration": 17,
+    "p90Duration": 17,
+    "medianSteps": 1,
+    "p90Steps": 1,
+    "errors": [],
+    "isCorpusTest": false
+  }
+]

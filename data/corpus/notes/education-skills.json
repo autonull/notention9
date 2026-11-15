@@ -1,0 +1,2971 @@
+[
+  {
+    "id": "note_mwbqjkz5_5gb64rt",
+    "title": "Need tutor: high school math (algebra, geometry, calculus), 2x/week, in-person o...",
+    "content": "Need tutor: high school math (algebra, geometry, calculus), 2x/week, in-person or virtual. $50/hr.",
+    "tags": [
+      "education-skills",
+      "education-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-21T12:29:36.712Z",
+    "updatedAt": "2026-10-21T12:29:36.712Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356465
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz5_h1qe60l",
+    "title": "Seeking coding bootcamp: full-stack, JavaScript/React/Node, job placement, part-...",
+    "content": "Seeking coding bootcamp: full-stack, JavaScript/React/Node, job placement, part-time. Income share or loan.",
+    "tags": [
+      "education-skills",
+      "education-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "react"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-10T17:23:23.786Z",
+    "updatedAt": "2026-11-10T17:23:23.786Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356465
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz5_m1m96lp",
+    "title": "Looking for language tutor: Spanish, conversational, business context. Native sp...",
+    "content": "Looking for language tutor: Spanish, conversational, business context. Native speaker, 1x/week.",
+    "tags": [
+      "education-skills",
+      "education-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-01T21:23:31.069Z",
+    "updatedAt": "2026-11-01T21:23:31.069Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356465
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz5_c033puk",
+    "title": "Want to learn welding: MIG, TIG, stick, blueprint reading. Certification, weeken...",
+    "content": "Want to learn welding: MIG, TIG, stick, blueprint reading. Certification, weekend classes.",
+    "tags": [
+      "education-skills",
+      "education-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-19T17:37:35.398Z",
+    "updatedAt": "2026-10-19T17:37:35.398Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356465
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz5_3u029sa",
+    "title": "Seeking financial literacy course: budgeting, investing, taxes, retirement. Free...",
+    "content": "Seeking financial literacy course: budgeting, investing, taxes, retirement. Free or low-cost, community.",
+    "tags": [
+      "education-skills",
+      "education-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-28T08:24:17.384Z",
+    "updatedAt": "2026-10-28T08:24:17.384Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356465
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz5_bvufz56",
+    "title": "Need college application help: essays, FAFSA, scholarships, strategy. First-gen ...",
+    "content": "Need college application help: essays, FAFSA, scholarships, strategy. First-gen student, virtual.",
+    "tags": [
+      "education-skills",
+      "education-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-18T05:41:15.556Z",
+    "updatedAt": "2026-10-18T05:41:15.556Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356465
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz5_5it13bw",
+    "title": "Looking for trade apprenticeship: electrician, plumber, HVAC, carpentry. Union o...",
+    "content": "Looking for trade apprenticeship: electrician, plumber, HVAC, carpentry. Union or non-union, earn while learn.",
+    "tags": [
+      "education-skills",
+      "education-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-08T08:29:49.160Z",
+    "updatedAt": "2026-11-08T08:29:49.160Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356465
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz5_cikhdn0",
+    "title": "Want GED prep: math, reading, science, social studies. Flexible schedule, practi...",
+    "content": "Want GED prep: math, reading, science, social studies. Flexible schedule, practice tests.",
+    "tags": [
+      "education-skills",
+      "education-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-09T01:19:49.749Z",
+    "updatedAt": "2026-11-09T01:19:49.749Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356465
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz5_xycsth6",
+    "title": "Seeking homeschool curriculum: secular, project-based, K-12, accredited. Support...",
+    "content": "Seeking homeschool curriculum: secular, project-based, K-12, accredited. Support community.",
+    "tags": [
+      "education-skills",
+      "education-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-08T15:17:32.552Z",
+    "updatedAt": "2026-11-08T15:17:32.552Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356465
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz5_h95x17b",
+    "title": "Need ESL classes: beginner to advanced, workplace English, citizenship prep. Eve...",
+    "content": "Need ESL classes: beginner to advanced, workplace English, citizenship prep. Evening, childcare provided.",
+    "tags": [
+      "education-skills",
+      "education-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-17T20:15:00.973Z",
+    "updatedAt": "2026-10-17T20:15:00.973Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356465
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz5_oa38uvv",
+    "title": "Math tutor: PhD, 15 yrs experience, AP/IB/SAT/ACT, contest prep. $75/hr, sliding...",
+    "content": "Math tutor: PhD, 15 yrs experience, AP/IB/SAT/ACT, contest prep. $75/hr, sliding scale.",
+    "tags": [
+      "education-skills",
+      "education-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-05T06:47:45.329Z",
+    "updatedAt": "2026-11-05T06:47:45.329Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356465
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz5_ytz2jzk",
+    "title": "Coding mentor: senior engineer, FAANG, system design, interviews, career coachin...",
+    "content": "Coding mentor: senior engineer, FAANG, system design, interviews, career coaching. $100/hr.",
+    "tags": [
+      "education-skills",
+      "education-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "senior"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-18T09:35:06.086Z",
+    "updatedAt": "2026-10-18T09:35:06.086Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356465
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz5_age8osx",
+    "title": "Language teacher: DELE examiner, 10 yrs, Spanish/French/Italian. Conversation, g...",
+    "content": "Language teacher: DELE examiner, 10 yrs, Spanish/French/Italian. Conversation, grammar, culture. $45/hr.",
+    "tags": [
+      "education-skills",
+      "education-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-03T01:55:04.456Z",
+    "updatedAt": "2026-11-03T01:55:04.456Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356465
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz5_zk7xke0",
+    "title": "Welding instructor: CWI, AWS certified, shop access, job placement. 80hr course,...",
+    "content": "Welding instructor: CWI, AWS certified, shop access, job placement. 80hr course, $3000.",
+    "tags": [
+      "education-skills",
+      "education-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "aws"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-16T17:29:18.448Z",
+    "updatedAt": "2026-10-16T17:29:18.448Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356465
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz5_6bo7sn9",
+    "title": "Financial coach: CFP, AFC, non-profit, workshops + 1-on-1. Free, grant-funded.",
+    "content": "Financial coach: CFP, AFC, non-profit, workshops + 1-on-1. Free, grant-funded.",
+    "tags": [
+      "education-skills",
+      "education-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-28T13:40:18.679Z",
+    "updatedAt": "2026-10-28T13:40:18.679Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356465
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz5_qu2231o",
+    "title": "College counselor: former admissions officer, 95% acceptance rate, essay special...",
+    "content": "College counselor: former admissions officer, 95% acceptance rate, essay specialist. $200/hr.",
+    "tags": [
+      "education-skills",
+      "education-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-29T02:08:30.046Z",
+    "updatedAt": "2026-10-29T02:08:30.046Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356465
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz5_x6wuw8b",
+    "title": "Trade union rep: IBEW, UA, SMART, Local info, application help, aptitude test pr...",
+    "content": "Trade union rep: IBEW, UA, SMART, Local info, application help, aptitude test prep. Free.",
+    "tags": [
+      "education-skills",
+      "education-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-25T10:47:58.655Z",
+    "updatedAt": "2026-10-25T10:47:58.655Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356465
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz6_u79w9vy",
+    "title": "GED instructor: state-certified, 90% pass rate, computer-based testing center. $...",
+    "content": "GED instructor: state-certified, 90% pass rate, computer-based testing center. $200/course.",
+    "tags": [
+      "education-skills",
+      "education-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-27T10:59:19.954Z",
+    "updatedAt": "2026-10-27T10:59:19.954Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz6_dy8y3wb",
+    "title": "Homeschool consultant: 20 yrs, portfolio review, transcripts, college prep, co-o...",
+    "content": "Homeschool consultant: 20 yrs, portfolio review, transcripts, college prep, co-op leader. $75/hr.",
+    "tags": [
+      "education-skills",
+      "education-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "lead"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-24T18:24:40.639Z",
+    "updatedAt": "2026-10-24T18:24:40.639Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz6_eemqkje",
+    "title": "ESL program: community college, 6 levels, TOEFL/IELTS, citizenship, workforce. $...",
+    "content": "ESL program: community college, 6 levels, TOEFL/IELTS, citizenship, workforce. $50/semester.",
+    "tags": [
+      "education-skills",
+      "education-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-31T09:52:14.490Z",
+    "updatedAt": "2026-10-31T09:52:14.490Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz6_ef1dzsn",
+    "title": "Need to learn: Python for data analysis, pandas, visualization, Jupyter. Project...",
+    "content": "Need to learn: Python for data analysis, pandas, visualization, Jupyter. Project-based, 8 weeks.",
+    "tags": [
+      "education-skills",
+      "skills-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "python"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      },
+      {
+        "key": "duration",
+        "operator": "is",
+        "values": [
+          "8 wk"
+        ],
+        "unit": "wk",
+        "quantity": {
+          "value": 8,
+          "unit": "wk",
+          "unitType": "simple",
+          "numerator": "wk",
+          "semanticType": "duration"
+        },
+        "role": "fact",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-14T17:59:14.858Z",
+    "updatedAt": "2026-10-14T17:59:14.858Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz6_zj7f2o0",
+    "title": "Seeking: project management, PMP prep, Agile/Scrum, Jira, stakeholder management...",
+    "content": "Seeking: project management, PMP prep, Agile/Scrum, Jira, stakeholder management. Certification.",
+    "tags": [
+      "education-skills",
+      "skills-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-17T17:43:51.058Z",
+    "updatedAt": "2026-10-17T17:43:51.058Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz6_evoqy6c",
+    "title": "Looking for: graphic design, Figma, Illustrator, branding, portfolio. Mentor + f...",
+    "content": "Looking for: graphic design, Figma, Illustrator, branding, portfolio. Mentor + feedback.",
+    "tags": [
+      "education-skills",
+      "skills-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "figma"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-13T20:47:54.884Z",
+    "updatedAt": "2026-10-13T20:47:54.884Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz6_wh63oc0",
+    "title": "Want: copywriting, SEO, email marketing, funnels, conversion. Real projects, por...",
+    "content": "Want: copywriting, SEO, email marketing, funnels, conversion. Real projects, portfolio pieces.",
+    "tags": [
+      "education-skills",
+      "skills-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-08T17:02:27.326Z",
+    "updatedAt": "2026-11-08T17:02:27.326Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz6_to53sna",
+    "title": "Need: video editing, Premiere, DaVinci, After Effects, motion graphics. YouTube/...",
+    "content": "Need: video editing, Premiere, DaVinci, After Effects, motion graphics. YouTube/social focus.",
+    "tags": [
+      "education-skills",
+      "skills-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-19T11:46:59.067Z",
+    "updatedAt": "2026-10-19T11:46:59.067Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz6_qx8vp0l",
+    "title": "Seeking: public speaking, Toastmasters, TED-style, executive presence. Coaching ...",
+    "content": "Seeking: public speaking, Toastmasters, TED-style, executive presence. Coaching + practice.",
+    "tags": [
+      "education-skills",
+      "skills-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-20T05:50:17.305Z",
+    "updatedAt": "2026-10-20T05:50:17.305Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz6_vaz0f8e",
+    "title": "Looking for: negotiation, salary, contracts, sales, conflict resolution. Role-pl...",
+    "content": "Looking for: negotiation, salary, contracts, sales, conflict resolution. Role-play, frameworks.",
+    "tags": [
+      "education-skills",
+      "skills-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "go"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-18T14:47:41.498Z",
+    "updatedAt": "2026-10-18T14:47:41.498Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz6_agx4wnu",
+    "title": "Want: cybersecurity, CompTIA Security+, CEH, bug bounty, home lab. Hands-on, cer...",
+    "content": "Want: cybersecurity, CompTIA Security+, CEH, bug bounty, home lab. Hands-on, cert prep.",
+    "tags": [
+      "education-skills",
+      "skills-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-16T09:13:22.043Z",
+    "updatedAt": "2026-10-16T09:13:22.043Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz6_5qcxgrr",
+    "title": "Need: 3D printing, Fusion 360, Prusa, functional parts, design for AM. Printer a...",
+    "content": "Need: 3D printing, Fusion 360, Prusa, functional parts, design for AM. Printer access.",
+    "tags": [
+      "education-skills",
+      "skills-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-24T10:23:32.648Z",
+    "updatedAt": "2026-10-24T10:23:32.648Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz6_c3elp5x",
+    "title": "Seeking: gardening, permaculture, seed saving, composting, market farming. Land ...",
+    "content": "Seeking: gardening, permaculture, seed saving, composting, market farming. Land access.",
+    "tags": [
+      "education-skills",
+      "skills-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-29T20:36:05.303Z",
+    "updatedAt": "2026-10-29T20:36:05.303Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz6_va9ilyd",
+    "title": "Data science mentor: Kaggle Grandmaster, Python/R/SQL, ML/DL, portfolio review. ...",
+    "content": "Data science mentor: Kaggle Grandmaster, Python/R/SQL, ML/DL, portfolio review. $80/hr.",
+    "tags": [
+      "education-skills",
+      "skills-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "python"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-05T08:33:52.402Z",
+    "updatedAt": "2026-11-05T08:33:52.402Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz6_q9776ez",
+    "title": "PM coach: PMP, PMI-ACP, SAFe, 20 yrs tech, mock exams, application review. $100/...",
+    "content": "PM coach: PMP, PMI-ACP, SAFe, 20 yrs tech, mock exams, application review. $100/hr.",
+    "tags": [
+      "education-skills",
+      "skills-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-25T05:13:05.289Z",
+    "updatedAt": "2026-10-25T05:13:05.289Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz6_0knsxpp",
+    "title": "Design mentor: Figma, design systems, case studies, career pivot, hiring insight...",
+    "content": "Design mentor: Figma, design systems, case studies, career pivot, hiring insights. $75/hr.",
+    "tags": [
+      "education-skills",
+      "skills-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "figma"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-03T09:56:50.160Z",
+    "updatedAt": "2026-11-03T09:56:50.160Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz6_e3dyykr",
+    "title": "Copywriting coach: 7-figure funnels, direct response, email, VSL, mentorship pro...",
+    "content": "Copywriting coach: 7-figure funnels, direct response, email, VSL, mentorship program. $2000/8wk.",
+    "tags": [
+      "education-skills",
+      "skills-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-04T03:56:12.434Z",
+    "updatedAt": "2026-11-04T03:56:12.434Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz6_qmp4tdz",
+    "title": "Video editor: 1M+ subs clients, Premiere/After Effects, retention editing, thumb...",
+    "content": "Video editor: 1M+ subs clients, Premiere/After Effects, retention editing, thumbnail design. $100/hr.",
+    "tags": [
+      "education-skills",
+      "skills-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "cli"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-15T05:58:12.322Z",
+    "updatedAt": "2026-10-15T05:58:12.322Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz6_y61iv76",
+    "title": "Speaking coach: TEDx speaker, 100+ keynotes, voice, story, slides, rehearsal pro...",
+    "content": "Speaking coach: TEDx speaker, 100+ keynotes, voice, story, slides, rehearsal process. $500/session.",
+    "tags": [
+      "education-skills",
+      "skills-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-19T19:45:32.657Z",
+    "updatedAt": "2026-10-19T19:45:32.657Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz6_tmqq28p",
+    "title": "Negotiation trainer: FBI hostage negotiator methods, Harvard PON, role-play, rea...",
+    "content": "Negotiation trainer: FBI hostage negotiator methods, Harvard PON, role-play, real deals. $300/hr.",
+    "tags": [
+      "education-skills",
+      "skills-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "go"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-12T21:48:43.261Z",
+    "updatedAt": "2026-10-12T21:48:43.261Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz6_c3jso5u",
+    "title": "Security mentor: OSCP, bug bounty $100k+, home lab setup, career path, resume re...",
+    "content": "Security mentor: OSCP, bug bounty $100k+, home lab setup, career path, resume review. $90/hr.",
+    "tags": [
+      "education-skills",
+      "skills-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-28T15:36:54.171Z",
+    "updatedAt": "2026-10-28T15:36:54.171Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz6_i4oi71i",
+    "title": "3D printing expert: mechanical engineer, FDM/SLA/SLS, functional design, farm ma...",
+    "content": "3D printing expert: mechanical engineer, FDM/SLA/SLS, functional design, farm management. $60/hr.",
+    "tags": [
+      "education-skills",
+      "skills-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-29T05:24:03.231Z",
+    "updatedAt": "2026-10-29T05:24:03.231Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz6_difazpz",
+    "title": "Master gardener: permaculture design cert, 5-acre demo site, CSA, workshops, con...",
+    "content": "Master gardener: permaculture design cert, 5-acre demo site, CSA, workshops, consulting. $50/hr.",
+    "tags": [
+      "education-skills",
+      "skills-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-06T03:56:33.843Z",
+    "updatedAt": "2026-11-06T03:56:33.843Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz6_1jcq21y",
+    "title": "Need research help: systematic review, meta-analysis, literature search, Zotero....",
+    "content": "Need research help: systematic review, meta-analysis, literature search, Zotero. Academic/industry.",
+    "tags": [
+      "education-skills",
+      "knowledge-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-10T02:36:44.291Z",
+    "updatedAt": "2026-11-10T02:36:44.291Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz6_uihbz8b",
+    "title": "Seeking: genealogy, DNA analysis, records, brick walls, family history. Professi...",
+    "content": "Seeking: genealogy, DNA analysis, records, brick walls, family history. Professional genealogist.",
+    "tags": [
+      "education-skills",
+      "knowledge-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-23T12:03:28.463Z",
+    "updatedAt": "2026-10-23T12:03:28.463Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz6_0gsmu5x",
+    "title": "Looking for: legal research, case law, statutes, regulatory, memo writing. Paral...",
+    "content": "Looking for: legal research, case law, statutes, regulatory, memo writing. Paralegal/lawyer.",
+    "tags": [
+      "education-skills",
+      "knowledge-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-06T12:10:38.754Z",
+    "updatedAt": "2026-11-06T12:10:38.754Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz6_mv7b9id",
+    "title": "Want: market research, surveys, focus groups, competitor analysis, TAM/SAM/SOM. ...",
+    "content": "Want: market research, surveys, focus groups, competitor analysis, TAM/SAM/SOM. Data-driven.",
+    "tags": [
+      "education-skills",
+      "knowledge-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-31T03:54:42.124Z",
+    "updatedAt": "2026-10-31T03:54:42.124Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz6_j01dtfo",
+    "title": "Need: technical writing, API docs, white papers, SOPs, grant proposals. Portfoli...",
+    "content": "Need: technical writing, API docs, white papers, SOPs, grant proposals. Portfolio samples.",
+    "tags": [
+      "education-skills",
+      "knowledge-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-20T07:32:33.028Z",
+    "updatedAt": "2026-10-20T07:32:33.028Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz6_exe2y1o",
+    "title": "Seeking: fact-checking, source verification, OSINT, digital forensics. Investiga...",
+    "content": "Seeking: fact-checking, source verification, OSINT, digital forensics. Investigative journalist.",
+    "tags": [
+      "education-skills",
+      "knowledge-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-20T04:31:19.835Z",
+    "updatedAt": "2026-10-20T04:31:19.835Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz6_rgpl8pn",
+    "title": "Looking for: translation, EN↔ES/FR/DE/JA/ZH, certified, legal/medical/technical....",
+    "content": "Looking for: translation, EN↔ES/FR/DE/JA/ZH, certified, legal/medical/technical. Native, CAT tools.",
+    "tags": [
+      "education-skills",
+      "knowledge-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-01T01:09:57.059Z",
+    "updatedAt": "2026-11-01T01:09:57.059Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz6_mok1u6h",
+    "title": "Want: editing, developmental, line, copy, academic, fiction, non-fiction. Track ...",
+    "content": "Want: editing, developmental, line, copy, academic, fiction, non-fiction. Track changes, style guides.",
+    "tags": [
+      "education-skills",
+      "knowledge-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-29T10:52:29.300Z",
+    "updatedAt": "2026-10-29T10:52:29.300Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz6_5een8io",
+    "title": "Need: indexing, back-of-book, embedded, taxonomic, digital. ASI member, software...",
+    "content": "Need: indexing, back-of-book, embedded, taxonomic, digital. ASI member, software proficient.",
+    "tags": [
+      "education-skills",
+      "knowledge-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-07T21:34:20.142Z",
+    "updatedAt": "2026-11-07T21:34:20.142Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz6_olbs2ze",
+    "title": "Seeking: archival research, primary sources, FOIA, oral history, digital humanit...",
+    "content": "Seeking: archival research, primary sources, FOIA, oral history, digital humanities. Historian.",
+    "tags": [
+      "education-skills",
+      "knowledge-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-10T01:39:41.876Z",
+    "updatedAt": "2026-11-10T01:39:41.876Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz6_97ukdj5",
+    "title": "Research analyst: PhD, PubMed/Scopus/Web of Science, systematic reviews, R/Pytho...",
+    "content": "Research analyst: PhD, PubMed/Scopus/Web of Science, systematic reviews, R/Python. $100/hr.",
+    "tags": [
+      "education-skills",
+      "knowledge-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "python"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-17T04:26:21.156Z",
+    "updatedAt": "2026-10-17T04:26:21.156Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz6_ksonycx",
+    "title": "Genealogist: BCG, APG, 20 yrs, DNA, international, forensic, lineage society. $7...",
+    "content": "Genealogist: BCG, APG, 20 yrs, DNA, international, forensic, lineage society. $75/hr + expenses.",
+    "tags": [
+      "education-skills",
+      "knowledge-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-01T12:00:56.792Z",
+    "updatedAt": "2026-11-01T12:00:56.792Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz6_fzel66z",
+    "title": "Legal researcher: JD, Westlaw/Lexis, federal/state, admin law, legislative histo...",
+    "content": "Legal researcher: JD, Westlaw/Lexis, federal/state, admin law, legislative history. $85/hr.",
+    "tags": [
+      "education-skills",
+      "knowledge-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-10T16:11:51.154Z",
+    "updatedAt": "2026-11-10T16:11:51.154Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz6_fu9ayql",
+    "title": "Market researcher: Qualtrics, SurveyMonkey, NVivo, Tableau, B2B/B2C, global pane...",
+    "content": "Market researcher: Qualtrics, SurveyMonkey, NVivo, Tableau, B2B/B2C, global panels. $120/hr.",
+    "tags": [
+      "education-skills",
+      "knowledge-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-24T05:26:10.296Z",
+    "updatedAt": "2026-10-24T05:26:10.296Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz6_1lpo0c5",
+    "title": "Technical writer: 15 yrs, developer docs, DITA, Git, CI/CD, OpenAPI, tutorials. ...",
+    "content": "Technical writer: 15 yrs, developer docs, DITA, Git, CI/CD, OpenAPI, tutorials. $90/hr.",
+    "tags": [
+      "education-skills",
+      "knowledge-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-26T16:45:51.034Z",
+    "updatedAt": "2026-10-26T16:45:51.034Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz6_6bwemuj",
+    "title": "Fact-checker: Snopes, WaPo, NYT experience, OSINT, geolocation, chronolocation. ...",
+    "content": "Fact-checker: Snopes, WaPo, NYT experience, OSINT, geolocation, chronolocation. $60/hr.",
+    "tags": [
+      "education-skills",
+      "knowledge-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-23T06:36:05.059Z",
+    "updatedAt": "2026-10-23T06:36:05.059Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz6_v0m7m4g",
+    "title": "Translator: ATA certified, legal/medical/patent, Trados, memoQ, 10K words/day. $...",
+    "content": "Translator: ATA certified, legal/medical/patent, Trados, memoQ, 10K words/day. $0.15/word.",
+    "tags": [
+      "education-skills",
+      "knowledge-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-01T13:29:51.748Z",
+    "updatedAt": "2026-11-01T13:29:51.748Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz6_vpoeqh9",
+    "title": "Editor: 20 yrs, Chicago/AP/AMA, academic press, trade, self-pub, developmental. ...",
+    "content": "Editor: 20 yrs, Chicago/AP/AMA, academic press, trade, self-pub, developmental. $0.06/word.",
+    "tags": [
+      "education-skills",
+      "knowledge-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "go"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-23T03:18:38.408Z",
+    "updatedAt": "2026-10-23T03:18:38.408Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz6_6u1cimh",
+    "title": "Indexer: ASI, Cindex/SKY, scholarly, trade, ebook, embedded, multilingual. $4.50...",
+    "content": "Indexer: ASI, Cindex/SKY, scholarly, trade, ebook, embedded, multilingual. $4.50/page.",
+    "tags": [
+      "education-skills",
+      "knowledge-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-02T05:00:32.270Z",
+    "updatedAt": "2026-11-02T05:00:32.270Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356466
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz7_gm36rr9",
+    "title": "Historian: PhD, archives, oral history, digital methods, public history, exhibit...",
+    "content": "Historian: PhD, archives, oral history, digital methods, public history, exhibit curation. $100/hr.",
+    "tags": [
+      "education-skills",
+      "knowledge-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-03T13:46:10.757Z",
+    "updatedAt": "2026-11-03T13:46:10.757Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356467
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz7_goqmmaa",
+    "title": "Need tutor: HS math (algebra, geometry, calculus), 2x/week, virtual ok. $50/hr.",
+    "content": "Need tutor: HS math (algebra, geometry, calculus), 2x/week, virtual ok. $50/hr.",
+    "tags": [
+      "education-skills",
+      "education-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-02T02:02:37.499Z",
+    "updatedAt": "2026-11-02T02:02:37.499Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356467
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz7_52opuyh",
+    "title": "Math tutor: PhD, 15yrs, AP/IB/SAT/ACT, contest prep. $75/hr, sliding scale.",
+    "content": "Math tutor: PhD, 15yrs, AP/IB/SAT/ACT, contest prep. $75/hr, sliding scale.",
+    "tags": [
+      "education-skills",
+      "education-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-05T08:59:53.848Z",
+    "updatedAt": "2026-11-05T08:59:53.848Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356467
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz7_jjwa2ta",
+    "title": "Seeking coding bootcamp: full-stack JS/React/Node, job placement, part-time. ISA...",
+    "content": "Seeking coding bootcamp: full-stack JS/React/Node, job placement, part-time. ISA or loan.",
+    "tags": [
+      "education-skills",
+      "education-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "react"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-27T13:59:46.960Z",
+    "updatedAt": "2026-10-27T13:59:46.960Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356467
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz7_3tci61t",
+    "title": "Coding mentor: senior engineer, FAANG, system design, interviews, career coachin...",
+    "content": "Coding mentor: senior engineer, FAANG, system design, interviews, career coaching. $100/hr.",
+    "tags": [
+      "education-skills",
+      "education-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "senior"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-14T09:28:25.779Z",
+    "updatedAt": "2026-10-14T09:28:25.779Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356467
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz7_banjjpw",
+    "title": "Need to learn: Python data analysis, pandas, viz, Jupyter. Project-based, 8 week...",
+    "content": "Need to learn: Python data analysis, pandas, viz, Jupyter. Project-based, 8 weeks.",
+    "tags": [
+      "education-skills",
+      "skills-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "python"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      },
+      {
+        "key": "duration",
+        "operator": "is",
+        "values": [
+          "8 wk"
+        ],
+        "unit": "wk",
+        "quantity": {
+          "value": 8,
+          "unit": "wk",
+          "unitType": "simple",
+          "numerator": "wk",
+          "semanticType": "duration"
+        },
+        "role": "fact",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-21T10:06:31.185Z",
+    "updatedAt": "2026-10-21T10:06:31.185Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356467
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz7_ubwx94e",
+    "title": "Data science mentor: Kaggle Grandmaster, Python/R/SQL, ML/DL, portfolio review. ...",
+    "content": "Data science mentor: Kaggle Grandmaster, Python/R/SQL, ML/DL, portfolio review. $80/hr.",
+    "tags": [
+      "education-skills",
+      "skills-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "python"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-25T14:26:46.336Z",
+    "updatedAt": "2026-10-25T14:26:46.336Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356467
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz7_41j8o9j",
+    "title": "Seeking PM coach: PMP, Agile/Scrum, Jira, stakeholder mgmt. Certification prep.",
+    "content": "Seeking PM coach: PMP, Agile/Scrum, Jira, stakeholder mgmt. Certification prep.",
+    "tags": [
+      "education-skills",
+      "skills-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-31T01:18:22.015Z",
+    "updatedAt": "2026-10-31T01:18:22.015Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356467
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz7_78u878i",
+    "title": "PM coach: PMP, PMI-ACP, SAFe, 20yrs tech, mock exams, application review. $100/h...",
+    "content": "PM coach: PMP, PMI-ACP, SAFe, 20yrs tech, mock exams, application review. $100/hr.",
+    "tags": [
+      "education-skills",
+      "skills-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-08T10:52:08.836Z",
+    "updatedAt": "2026-11-08T10:52:08.836Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356467
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkz7_jxa9qbx",
+    "title": "Need research help: systematic review, meta-analysis, literature search, Zotero....",
+    "content": "Need research help: systematic review, meta-analysis, literature search, Zotero. Academic.",
+    "tags": [
+      "education-skills",
+      "knowledge-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-06T05:49:01.256Z",
+    "updatedAt": "2026-11-06T05:49:01.256Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356467
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkz7_zye9xll",
+    "title": "Research analyst: PhD, PubMed/Scopus/WoS, systematic reviews, R/Python. $100/hr.",
+    "content": "Research analyst: PhD, PubMed/Scopus/WoS, systematic reviews, R/Python. $100/hr.",
+    "tags": [
+      "education-skills",
+      "knowledge-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "python"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-31T16:44:48.513Z",
+    "updatedAt": "2026-10-31T16:44:48.513Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-education-skills",
+      "timestamp": 1794378356467
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  }
+]

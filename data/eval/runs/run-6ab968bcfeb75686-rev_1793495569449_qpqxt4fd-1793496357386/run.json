@@ -1,0 +1,25 @@
+{
+  "runId": "run-6ab968bcfeb75686-rev_1793495569449_qpqxt4fd-1793496357386",
+  "manifestHash": "6ab968bcfeb75686",
+  "revisionId": "rev_1793495569449_qpqxt4fd",
+  "baselineRevisionId": "rev_1793496344704_1h0imudb",
+  "caseVerdicts": [],
+  "overallVerdict": "inconclusive",
+  "summary": {
+    "improved": 0,
+    "degraded": 0,
+    "inconclusive": 0,
+    "invalid": 0,
+    "excluded": 0
+  },
+  "primaryMetricAggregate": {
+    "metric": "completion",
+    "meanDelta": 0,
+    "meanDeltaPercent": 0,
+    "pValue": 1,
+    "ci": [
+      null,
+      null
+    ]
+  }
+}

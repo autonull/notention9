@@ -1,0 +1,134 @@
+[
+  {
+    "candidateId": "capture-0-candidate-1793472788827",
+    "gates": {
+      "typescript": {
+        "pass": true,
+        "errors": [],
+        "warnings": []
+      },
+      "eslint": {
+        "pass": true,
+        "errors": [],
+        "warnings": [
+          "ESLint check failed: This method cannot be used with flat config. Add your entries directly into the config array."
+        ]
+      },
+      "seamConformance": {
+        "pass": true,
+        "errors": [],
+        "warnings": [
+          "Seam prop 'input' not in accepts schema",
+          "Seam prop 'onInputChange' not in accepts schema",
+          "Seam prop 'onSubmit' not in accepts schema",
+          "Seam prop 'extractedProps' not in accepts schema",
+          "Seam prop 'onTemplateClick' not in accepts schema"
+        ]
+      },
+      "importAllowlist": {
+        "pass": true,
+        "errors": [],
+        "warnings": []
+      },
+      "noAmbientCaps": {
+        "pass": true,
+        "errors": [],
+        "warnings": []
+      },
+      "specValidation": {
+        "pass": true,
+        "errors": [],
+        "warnings": []
+      },
+      "a11y": {
+        "pass": true,
+        "errors": [],
+        "warnings": []
+      },
+      "keyboard": {
+        "pass": true,
+        "errors": [],
+        "warnings": [
+          "No keyboard event handlers found - ensure keyboard navigability",
+          "No explicit focus management found"
+        ]
+      },
+      "mustWin": {
+        "pass": true,
+        "errors": [],
+        "warnings": [
+          "Must-win requires baseline comparison"
+        ]
+      }
+    },
+    "overallPass": true
+  },
+  {
+    "candidateId": "elicit-0-candidate-1793472788828",
+    "gates": {
+      "typescript": {
+        "pass": true,
+        "errors": [],
+        "warnings": []
+      },
+      "eslint": {
+        "pass": true,
+        "errors": [],
+        "warnings": [
+          "ESLint check failed: This method cannot be used with flat config. Add your entries directly into the config array."
+        ]
+      },
+      "seamConformance": {
+        "pass": true,
+        "errors": [],
+        "warnings": [
+          "Seam prop 'isOpen' not in accepts schema",
+          "Seam prop 'onClose' not in accepts schema",
+          "Seam prop 'onInsert' not in accepts schema",
+          "Seam prop 'initialKey' not in accepts schema",
+          "Seam prop 'initialOperator' not in accepts schema",
+          "Seam prop 'initialValue' not in accepts schema",
+          "Seam prop 'attributeDef' not in accepts schema",
+          "Seam prop 'isEditing' not in accepts schema",
+          "Seam prop 'onPickLocation' not in accepts schema",
+          "Seam prop 'suggestions' not in accepts schema"
+        ]
+      },
+      "importAllowlist": {
+        "pass": true,
+        "errors": [],
+        "warnings": []
+      },
+      "noAmbientCaps": {
+        "pass": true,
+        "errors": [],
+        "warnings": []
+      },
+      "specValidation": {
+        "pass": true,
+        "errors": [],
+        "warnings": []
+      },
+      "a11y": {
+        "pass": true,
+        "errors": [],
+        "warnings": []
+      },
+      "keyboard": {
+        "pass": true,
+        "errors": [],
+        "warnings": [
+          "No keyboard event handlers found - ensure keyboard navigability"
+        ]
+      },
+      "mustWin": {
+        "pass": true,
+        "errors": [],
+        "warnings": [
+          "Must-win requires baseline comparison"
+        ]
+      }
+    },
+    "overallPass": true
+  }
+]

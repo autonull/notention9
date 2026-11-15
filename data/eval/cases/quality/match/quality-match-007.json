@@ -1,0 +1,15 @@
+{
+  "id": "quality-match-007",
+  "family": "quality",
+  "qualityFamily": "match",
+  "input": "Want to donate winter coats to homeless shelter",
+  "expected": [
+    { "noteId": "note-donate-001", "minScore": 0.5 },
+    { "noteId": "note-donate-002", "minScore": 0.3 }
+  ],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.91
+  },
+  "tags": ["community", "non-market", "donation", "homeless"]
+}

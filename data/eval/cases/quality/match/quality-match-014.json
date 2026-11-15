@@ -1,0 +1,15 @@
+{
+  "id": "quality-match-014",
+  "family": "quality",
+  "qualityFamily": "match",
+  "input": "Looking for free coding mentorship weekends",
+  "expected": [
+    { "noteId": "note-mentor-001", "minScore": 0.5 },
+    { "noteId": "note-mentor-002", "minScore": 0.35 }
+  ],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.88
+  },
+  "tags": ["education", "non-market", "volunteering", "schedule", "free"]
+}

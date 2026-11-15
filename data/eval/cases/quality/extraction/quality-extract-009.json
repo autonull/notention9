@@ -1,0 +1,20 @@
+{
+  "id": "quality-extract-009",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Need a babysitter for Friday night 6-10pm, CPR certified preferred, paying 18/hr",
+  "expected": [
+    { "key": "role", "operator": "contains", "values": ["babysitter"] },
+    { "key": "schedule", "operator": "contains", "values": ["Friday", "6pm", "10pm"] },
+    { "key": "certification", "operator": "contains", "values": ["CPR"] },
+    { "key": "budget", "operator": "less than", "values": ["18 USD"] }
+  ],
+  "forbidden": [
+    { "key": "budget", "operator": "greater than", "values": ["25 USD"] }
+  ],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.92
+  },
+  "tags": ["care", "non-market", "child", "schedule", "certification", "budget"]
+}

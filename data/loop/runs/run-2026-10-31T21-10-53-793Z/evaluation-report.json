@@ -1,0 +1,69 @@
+{
+  "baseline": [
+    {
+      "taskId": "task-1-capture-capture-1",
+      "successRate": 1,
+      "medianDuration": 17,
+      "p90Duration": 17,
+      "medianSteps": 1,
+      "p90Steps": 1,
+      "errors": [],
+      "isCorpusTest": false
+    }
+  ],
+  "candidates": [
+    {
+      "candidateId": "capture-0-candidate-1793481062263",
+      "taskResults": {
+        "task-1-capture-capture-1": {
+          "taskId": "task-1-capture-capture-1",
+          "successRate": 1,
+          "medianDuration": 17,
+          "p90Duration": 17,
+          "medianSteps": 1,
+          "p90Steps": 1,
+          "errors": [],
+          "isCorpusTest": false
+        }
+      },
+      "overallSuccessRate": 1,
+      "overallMedianDuration": 17,
+      "passed": true,
+      "resourceMetrics": {
+        "totalLatencyMs": 0,
+        "avgInferenceLatencyMs": 0,
+        "peakMemoryMB": 0,
+        "modelSizeMB": 0,
+        "inferenceCount": 0,
+        "tokensUsed": 0
+      }
+    },
+    {
+      "candidateId": "elicit-0-candidate-1793481062265",
+      "taskResults": {
+        "task-1-capture-capture-1": {
+          "taskId": "task-1-capture-capture-1",
+          "successRate": 1,
+          "medianDuration": 17,
+          "p90Duration": 17,
+          "medianSteps": 1,
+          "p90Steps": 1,
+          "errors": [],
+          "isCorpusTest": false
+        }
+      },
+      "overallSuccessRate": 1,
+      "overallMedianDuration": 17,
+      "passed": true,
+      "resourceMetrics": {
+        "totalLatencyMs": 0,
+        "avgInferenceLatencyMs": 0,
+        "peakMemoryMB": 0,
+        "modelSizeMB": 0,
+        "inferenceCount": 0,
+        "tokensUsed": 0
+      }
+    }
+  ],
+  "timestamp": "2026-10-31T21:11:07.308Z"
+}

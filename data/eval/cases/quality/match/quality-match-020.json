@@ -1,0 +1,15 @@
+{
+  "id": "quality-match-020",
+  "family": "quality",
+  "qualityFamily": "match",
+  "input": "Need free resume review for recent graduate",
+  "expected": [
+    { "noteId": "note-resume-001", "minScore": 0.5 },
+    { "noteId": "note-resume-002", "minScore": 0.35 }
+  ],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.89
+  },
+  "tags": ["career", "education", "free", "volunteering"]
+}

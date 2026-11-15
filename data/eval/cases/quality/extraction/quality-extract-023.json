@@ -1,0 +1,19 @@
+{
+  "id": "quality-extract-023",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Offering free legal clinic for tenants' rights, first Saturday of each month, 10am-2pm at library",
+  "expected": [
+    { "key": "role", "operator": "contains", "values": ["legal clinic", "lawyer", "attorney"] },
+    { "key": "topic", "operator": "contains", "values": ["tenants rights", "tenant rights"] },
+    { "key": "schedule", "operator": "contains", "values": ["first Saturday", "monthly", "10am", "2pm"] },
+    { "key": "location", "operator": "contains", "values": ["library"] },
+    { "key": "price", "operator": "equals", "values": ["0", "free"] }
+  ],
+  "forbidden": [],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.92
+  },
+  "tags": ["legal", "non-market", "volunteering", "schedule", "free", "housing"]
+}

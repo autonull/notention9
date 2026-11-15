@@ -1,0 +1,17 @@
+{
+  "id": "quality-extract-053",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Credential holder presents university degree and employment history verifiable credentials. Wallet: self-sovereign. Issuers: university and employer.",
+  "expected": [
+    { "key": "role", "operator": "is", "values": ["credential-holder"] },
+    { "key": "credentials", "operator": "contains", "values": ["degree", "employment-history"] },
+    { "key": "issuers", "operator": "contains", "values": ["university", "employer"] },
+    { "key": "wallet", "operator": "is", "values": ["self-sovereign"] }
+  ],
+  "forbidden": [
+    { "key": "wallet", "operator": "is", "values": ["custodial"] }
+  ],
+  "labels": { "annotators": 2, "agreement": 0.91 },
+  "tags": ["identity", "decentralized", "verifiable-credential", "reputation"]
+}

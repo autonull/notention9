@@ -1,0 +1,15 @@
+{
+  "id": "quality-match-002",
+  "family": "quality",
+  "qualityFamily": "match",
+  "input": "I need a dog walker for weekday mornings",
+  "expected": [
+    { "noteId": "note-dog-001", "minScore": 0.35 },
+    { "noteId": "note-dog-002", "minScore": 0.25 }
+  ],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.87
+  },
+  "tags": ["care", "non-market", "pet", "schedule"]
+}

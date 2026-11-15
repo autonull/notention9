@@ -1,0 +1,22 @@
+{
+  "id": "intent-elicit-001",
+  "family": "intent",
+  "intent": "elicit_property",
+  "prompt": "Add a budget field to the ramp project",
+  "seed": {
+    "notes": [{ "id": "note-1", "type": "need", "properties": { "need": "wheelchair ramp" } }],
+    "settings": {},
+    "revisions": ["incumbent"]
+  },
+  "expected": {
+    "minProperties": 1,
+    "requiredKeys": ["budget"],
+    "outcome": "elicited"
+  },
+  "metrics": ["completion", "steps", "corrections"],
+  "tags": ["care", "non-market", "property"],
+  "provenance": {
+    "author": "human",
+    "source": "interview-03"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "id": "quality-extract-002",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Need grab bars installed by end of month, budget 200 USD",
+  "expected": [
+    { "key": "price", "operator": "is", "values": ["200 USD"] },
+    { "key": "budget", "operator": "is", "values": ["200"] }
+  ],
+  "forbidden": [],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.88
+  },
+  "tags": ["care", "non-market", "accessibility", "budget"]
+}

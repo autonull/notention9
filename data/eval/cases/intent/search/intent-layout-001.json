@@ -1,0 +1,22 @@
+{
+  "id": "intent-layout-001",
+  "family": "intent",
+  "intent": "layout_property",
+  "prompt": "Show me the budget field for the ramp project",
+  "seed": {
+    "notes": [{ "id": "note-1", "type": "need", "properties": { "need": "wheelchair ramp", "budget": "900 USD", "deadline": "Friday" } }],
+    "settings": {},
+    "revisions": ["incumbent"]
+  },
+  "expected": {
+    "minProperties": 1,
+    "requiredKeys": ["budget"],
+    "outcome": "rendered"
+  },
+  "metrics": ["completion", "steps"],
+  "tags": ["accessibility", "property", "budget"],
+  "provenance": {
+    "author": "human",
+    "source": "interview-64"
+  }
+}

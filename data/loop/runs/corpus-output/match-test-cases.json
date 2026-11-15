@@ -1,0 +1,34 @@
+[
+  {
+    "id": "corpus-match-1",
+    "name": "Corpus match: commerce - budget vs price",
+    "requestText": "Price budget",
+    "offerText": "Offering price for commerce work",
+    "expectedMinScore": 0.2,
+    "expectedMaxScore": 0.8
+  },
+  {
+    "id": "corpus-match-2",
+    "name": "Corpus match: work - experience vs project",
+    "requestText": "Need experience years experience",
+    "offerText": "Offering project for work work",
+    "expectedMinScore": 0.2,
+    "expectedMaxScore": 0.8
+  },
+  {
+    "id": "corpus-match-3",
+    "name": "Corpus match: work - experience vs rate",
+    "requestText": "Need experience years experience",
+    "offerText": "Offering rate for work work",
+    "expectedMinScore": 0.2,
+    "expectedMaxScore": 0.8
+  },
+  {
+    "id": "corpus-match-4",
+    "name": "Corpus match: work - project vs rate",
+    "requestText": "Project: project",
+    "offerText": "Offering rate for work work",
+    "expectedMinScore": 0.2,
+    "expectedMaxScore": 0.8
+  }
+]

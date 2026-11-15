@@ -1,0 +1,22 @@
+{
+  "id": "intent-capture-012",
+  "family": "intent",
+  "intent": "capture_need",
+  "prompt": "Offering free resume review and interview prep for recent graduates, virtual weekday evenings",
+  "seed": {
+    "notes": [],
+    "settings": {},
+    "revisions": ["incumbent"]
+  },
+  "expected": {
+    "minProperties": 2,
+    "requiredKeys": ["need", "audience", "price"],
+    "outcome": "captured"
+  },
+  "metrics": ["completion", "steps", "corrections"],
+  "tags": ["career", "education", "volunteering", "free", "virtual"],
+  "provenance": {
+    "author": "human",
+    "source": "interview-43"
+  }
+}

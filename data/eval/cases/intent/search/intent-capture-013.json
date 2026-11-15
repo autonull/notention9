@@ -1,0 +1,22 @@
+{
+  "id": "intent-capture-013",
+  "family": "intent",
+  "intent": "capture_need",
+  "prompt": "Need grocery shopping and delivery for homebound neighbor by 2pm, budget 30 plus groceries",
+  "seed": {
+    "notes": [],
+    "settings": {},
+    "revisions": ["incumbent"]
+  },
+  "expected": {
+    "minProperties": 3,
+    "requiredKeys": ["need", "deadline", "budget"],
+    "outcome": "captured"
+  },
+  "metrics": ["completion", "steps", "corrections"],
+  "tags": ["care", "elderly", "groceries", "deadline", "budget"],
+  "provenance": {
+    "author": "human",
+    "source": "interview-46"
+  }
+}

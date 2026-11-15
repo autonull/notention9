@@ -1,0 +1,3206 @@
+{
+  "runId": "run-37f9fcbac91fed9d-rev_1793540917640_wusask4i-1793541835260",
+  "manifestHash": "37f9fcbac91fed9d",
+  "revisionId": "rev_1793540917640_wusask4i",
+  "baselineRevisionId": "rev_1793541035603_2scmir37",
+  "caseVerdicts": [
+    {
+      "caseId": "quality-extract-001-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0.6666666666666666,
+        "candidateMean": 0.6666666666666666,
+        "delta": 0,
+        "deltaPercent": 0,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 1,
+          "candidateMean": 1,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0.5,
+          "candidateMean": 0.5,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-002-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 1,
+          "candidateMean": 1,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-003-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-004-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0.5,
+        "candidateMean": 0.5,
+        "delta": 0,
+        "deltaPercent": 0,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 1,
+          "candidateMean": 1,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0.3333333333333333,
+          "candidateMean": 0.3333333333333333,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-005-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0.3333333333333333,
+        "candidateMean": 0.3333333333333333,
+        "delta": 0,
+        "deltaPercent": 0,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0.3333333333333333,
+          "candidateMean": 0.3333333333333333,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0.3333333333333333,
+          "candidateMean": 0.3333333333333333,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-006-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 1,
+          "candidateMean": 1,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-007-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 1,
+          "candidateMean": 1,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-008-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0.4,
+        "candidateMean": 0.4,
+        "delta": 0,
+        "deltaPercent": 0,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0.5,
+          "candidateMean": 0.5,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0.3333333333333333,
+          "candidateMean": 0.3333333333333333,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-009-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0.3333333333333333,
+        "candidateMean": 0.3333333333333333,
+        "delta": 0,
+        "deltaPercent": 0,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0.5,
+          "candidateMean": 0.5,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0.25,
+          "candidateMean": 0.25,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-010-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-011-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-012-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-013-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0.28571428571428575,
+        "candidateMean": 0.28571428571428575,
+        "delta": 0,
+        "deltaPercent": 0,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0.3333333333333333,
+          "candidateMean": 0.3333333333333333,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0.25,
+          "candidateMean": 0.25,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-014-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 1,
+          "candidateMean": 1,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-015-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 1,
+          "candidateMean": 1,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-016-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-017-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0.4,
+        "candidateMean": 0.4,
+        "delta": 0,
+        "deltaPercent": 0,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 1,
+          "candidateMean": 1,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0.25,
+          "candidateMean": 0.25,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-018-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0.4,
+        "candidateMean": 0.4,
+        "delta": 0,
+        "deltaPercent": 0,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 1,
+          "candidateMean": 1,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0.25,
+          "candidateMean": 0.25,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-019-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-020-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-021-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 1,
+          "candidateMean": 1,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-022-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-023-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-024-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0.4,
+        "candidateMean": 0.4,
+        "delta": 0,
+        "deltaPercent": 0,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 1,
+          "candidateMean": 1,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0.25,
+          "candidateMean": 0.25,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-025-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 1,
+          "candidateMean": 1,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-026-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-027-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-028-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0.28571428571428575,
+        "candidateMean": 0.28571428571428575,
+        "delta": 0,
+        "deltaPercent": 0,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0.3333333333333333,
+          "candidateMean": 0.3333333333333333,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0.25,
+          "candidateMean": 0.25,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-029-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 1,
+          "candidateMean": 1,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-030-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 1,
+          "candidateMean": 1,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-031-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-032-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0.4,
+        "candidateMean": 0.4,
+        "delta": 0,
+        "deltaPercent": 0,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 1,
+          "candidateMean": 1,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0.25,
+          "candidateMean": 0.25,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-033-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 1,
+          "candidateMean": 1,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-034-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-035-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-036-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 1,
+          "candidateMean": 1,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-037-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 1,
+          "candidateMean": 1,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-extract-038-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 1,
+          "candidateMean": 1,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-match-001-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0.8,
+        "candidateMean": 0.8,
+        "delta": 0,
+        "deltaPercent": 0,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0.6666666666666666,
+          "candidateMean": 0.6666666666666666,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 1,
+          "candidateMean": 1,
+          "delta": 0,
+          "deltaPercent": 0,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-match-002-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-match-003-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-match-004-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-match-005-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-match-006-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-match-007-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-match-008-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-match-009-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-match-010-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-match-011-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-match-012-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-match-013-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-match-014-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-match-015-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-match-016-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-match-017-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-match-018-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-match-019-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-match-020-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-match-021-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    },
+    {
+      "caseId": "quality-match-022-rep-0",
+      "verdict": "inconclusive",
+      "primaryMetric": {
+        "metric": "f1",
+        "baselineMean": 0,
+        "candidateMean": 0,
+        "delta": 0,
+        "deltaPercent": -100,
+        "pValue": 1,
+        "ci": [
+          -0.05,
+          0.05
+        ],
+        "mde": 0.05,
+        "passes": false,
+        "direction": "no-change"
+      },
+      "otherMetrics": [
+        {
+          "metric": "precision",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        },
+        {
+          "metric": "recall",
+          "baselineMean": 0,
+          "candidateMean": 0,
+          "delta": 0,
+          "deltaPercent": -100,
+          "pValue": 1,
+          "ci": [
+            -0.05,
+            0.05
+          ],
+          "mde": 0.05,
+          "passes": false,
+          "direction": "no-change"
+        }
+      ],
+      "floors": [],
+      "excluded": false
+    }
+  ],
+  "overallVerdict": "inconclusive",
+  "summary": {
+    "improved": 0,
+    "degraded": 0,
+    "inconclusive": 60,
+    "invalid": 0,
+    "excluded": 0
+  },
+  "primaryMetricAggregate": {
+    "metric": "completion",
+    "meanDelta": 0,
+    "meanDeltaPercent": -80,
+    "pValue": 1,
+    "ci": [
+      0,
+      0
+    ]
+  }
+}

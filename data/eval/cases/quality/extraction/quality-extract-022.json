@@ -1,0 +1,18 @@
+{
+  "id": "quality-extract-022",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Need tech help for parents: set up video calling, email, photo sharing. Patient teacher, budget 50/hr",
+  "expected": [
+    { "key": "role", "operator": "contains", "values": ["tech help", "tech support", "teacher"] },
+    { "key": "audience", "operator": "contains", "values": ["parents", "seniors", "elderly"] },
+    { "key": "task", "operator": "contains", "values": ["video calling", "email", "photo sharing"] },
+    { "key": "budget", "operator": "less than", "values": ["50 USD"] }
+  ],
+  "forbidden": [],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.88
+  },
+  "tags": ["tech", "education", "non-market", "elderly", "budget"]
+}

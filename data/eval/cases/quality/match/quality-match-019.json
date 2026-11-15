@@ -1,0 +1,15 @@
+{
+  "id": "quality-match-019",
+  "family": "quality",
+  "qualityFamily": "match",
+  "input": "Looking for house cleaner biweekly 3 bed 2 bath",
+  "expected": [
+    { "noteId": "note-clean-001", "minScore": 0.45 },
+    { "noteId": "note-clean-002", "minScore": 0.3 }
+  ],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.87
+  },
+  "tags": ["home", "schedule"]
+}

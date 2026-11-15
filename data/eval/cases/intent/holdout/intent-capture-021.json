@@ -1,0 +1,22 @@
+{
+  "id": "intent-capture-021",
+  "family": "intent",
+  "intent": "capture_need",
+  "prompt": "Need lactation consultant for newborn, virtual sessions preferred, insurance or budget 75/session",
+  "seed": {
+    "notes": [],
+    "settings": {},
+    "revisions": ["incumbent"]
+  },
+  "expected": {
+    "minProperties": 2,
+    "requiredKeys": ["need", "budget"],
+    "outcome": "captured"
+  },
+  "metrics": ["completion", "steps", "corrections"],
+  "tags": ["health", "care", "newborn", "insurance", "budget"],
+  "provenance": {
+    "author": "human",
+    "source": "interview-85"
+  }
+}
