@@ -337,7 +337,7 @@ program
         console.log('🧪 Notention Prompt Ablation Study (E13)');
         console.log('==========================================\n');
 
-        const qualityPath = join(__dirname, '..', '..', '..', 'eval', 'cases', 'manifest.json');
+        const qualityPath = join(__dirname, '..', '..', '..', 'data', 'eval', 'cases', 'manifest.json');
         const content = readFileSync(qualityPath, 'utf-8');
         const manifest = JSON.parse(content);
         
@@ -345,7 +345,7 @@ program
         const qualityCases: any[] = [];
         
         for (const c of extractionCases) {
-            const casePath = join(__dirname, '..', '..', '..', 'eval', 'cases', c.path);
+            const casePath = join(__dirname, '..', '..', '..', 'data', 'eval', 'cases', c.path);
             const caseContent = readFileSync(casePath, 'utf-8');
             const caseData = JSON.parse(caseContent);
             qualityCases.push({

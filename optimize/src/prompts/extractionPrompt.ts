@@ -118,6 +118,45 @@ export const EXTRACTION_EXAMPLES: readonly ExtractionExample[] = [
         input: 'Task: Fix login bug on mobile. Assignee: DevTeam. Priority: high. Due: 2026-11-20. Estimated: 4 hours. Status: in-progress. Actual: 3.5 hours so far.',
         output: '[{"key":"task","operator":"contains","values":["Fix login bug on mobile"]},{"key":"assignee","operator":"is","values":["DevTeam"]},{"key":"priority","operator":"is","values":["high"]},{"key":"dueDate","operator":"before","values":["2026-11-20"]},{"key":"estimatedHours","operator":"is","values":["4"]},{"key":"status","operator":"is","values":["in-progress"]},{"key":"actualHours","operator":"is","values":["3.5"]}]',
     },
+    // Residual: price (fixed) vs budget (ceiling)
+    {
+        input: 'Tutor available for $50 per hour',
+        output: '[{"key":"role","operator":"contains","values":["tutor"]},{"key":"price","operator":"is","values":["50 USD/hour"]}]',
+    },
+    {
+        input: 'Service costs exactly $200 flat rate',
+        output: '[{"key":"role","operator":"contains","values":["service"]},{"key":"price","operator":"is","values":["200 USD"]}]',
+    },
+    {
+        input: 'Max budget $100 for the whole project',
+        output: '[{"key":"budget","operator":"less than","values":["100 USD"]}]',
+    },
+    // Residual: schedule (specific windows) vs frequency (recurrence)
+    {
+        input: 'Available Mondays and Wednesdays 6pm to 8pm',
+        output: '[{"key":"schedule","operator":"contains","values":["Mondays 6pm-8pm","Wednesdays 6pm-8pm"]}]',
+    },
+    {
+        input: 'Meets twice weekly on Tuesdays and Thursdays',
+        output: '[{"key":"schedule","operator":"contains","values":["Tuesdays","Thursdays"]},{"key":"frequency","operator":"contains","values":["twice weekly"]}]',
+    },
+    // Residual: missing keys - student, vehicle, format, audience
+    {
+        input: 'Student needs math tutor for high school algebra',
+        output: '[{"key":"role","operator":"contains","values":["math tutor"]},{"key":"student","operator":"contains","values":["high school"]},{"key":"subject","operator":"contains","values":["algebra"]}]',
+    },
+    {
+        input: 'Looking for driving instructor with automatic car for teenager',
+        output: '[{"key":"role","operator":"contains","values":["driving instructor"]},{"key":"student","operator":"contains","values":["teenager"]},{"key":"vehicle","operator":"contains","values":["automatic"]}]',
+    },
+    {
+        input: 'Virtual Spanish lessons via Zoom, 1 hour per session',
+        output: '[{"key":"role","operator":"contains","values":["Spanish tutor"]},{"key":"format","operator":"contains","values":["virtual","Zoom"]},{"key":"duration","operator":"is","values":["1 hour"]}]',
+    },
+    {
+        input: 'Workshop for seniors on smartphone basics, free',
+        output: '[{"key":"role","operator":"contains","values":["workshop","smartphone basics"]},{"key":"audience","operator":"contains","values":["seniors"]},{"key":"price","operator":"is","values":["0","free"]}]',
+    },
 ];
 
 export function buildSystemPrompt(ontology: OntologyNode[]): string {

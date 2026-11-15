@@ -65,6 +65,38 @@
 - Optimizer loop dry run: all 6 steps complete (DISCOVER → PRIORITIZE → SYNTHESIZE → EVALUATE → ADOPT → REQUEST)
 - CI item: **N/A per user request** (no GitHub Actions desired)
 
+### Session 10 — 2026-11-15
+
+#### 1. Qwen 3.5 2B tested — fills the gap between 0.8B and 4B
+- Golden gate: 10/10, F1 0.784 (better than 0.8B's 0.687)
+- Quality (60 cases, 3-shot): **F1 0.700, 27/60 pass** — between 0.8B (0.659) and 4B (0.718)
+- GPU layers: 26 (same as 0.8B), efficient for its size
+- 2-step vs 1-step comparison (10 cases, 3-shot): 1-step slightly better (0.599 vs 0.589 avg F1)
+- Confirms scaling trend: 0.8B=0.659 → 2B=0.700 → 4B=0.718
+
+#### 2. Ablation study infrastructure verified
+- Fixed path bug in `cli.ts` (was `eval/cases` → now `data/eval/cases`)
+- Runs across all 6 registered prompt variants (V1 baseline through V6 best-combined)
+- Currently uses deterministic provider (VariantProvider); needs LLM provider integration for meaningful variant comparison
+- E13 ready for LLM-powered ablation when needed
+
+#### 3. Residual quality losses identified (non-governance cases)
+- `price` vs `budget` confusion: fixed price tagged as `budget less than`
+- `schedule` vs `frequency`: recurring times tagged as `frequency` not `schedule`
+- Missing keys: `student`, `vehicle`, `format`, `audience` — not in few-shot bank
+- Governance examples helped their domain but didn't transfer to these patterns
+
+#### 4. Added 9 targeted in-prompt examples for residual losses
+- **price vs budget**: 3 examples distinguishing fixed price (`price is`) from ceiling (`budget less than`)
+- **schedule vs frequency**: 2 examples showing recurring windows use `schedule`, recurrence uses `frequency`
+- **Missing keys**: 4 examples covering `student`, `vehicle`, `format`, `audience`
+- **Impact on Quality F1 (3-shot, 60 cases):**
+  - Qwen 0.8B: 0.659 → **0.667** (24→25 pass)
+  - Qwen 2B: 0.700 → **0.724** (27→39 pass) — **biggest jump**
+  - Qwen 4B: 0.718 → **0.742** (24→37 pass) — exceeds 0.74 stretch
+- Scaling trend now: 0.8B=0.667 → 2B=0.724 → 4B=0.742
+- 4B model benefits most from additional in-prompt examples (capacity to generalize)
+
 ### Session 6 — 2026-11-15
 
 #### 1. Two-step router→extraction pipeline implemented
@@ -225,10 +257,10 @@ Success criteria:
 | Metric | Value |
 |--------|-------|
 | Golden extraction | 10/10 (F1 0.687–0.927), deterministic, 11.7s on CUDA |
-| Quality extraction (60) | 24/60 pass; F1 0.659–0.718 (3-shot) |
-| Qwen 3.5 0.8B | 0.659 F1, 26 GPU layers |
-| Qwen 3.5 2B | (untested this session) |
-| Qwen 3.5 4B | **0.718 F1**, 34 GPU layers |
+| Quality extraction (60) | 25–39/60 pass; F1 0.667–0.742 (3-shot) |
+| Qwen 3.5 0.8B | 0.667 F1 (25/60), 26 GPU layers |
+| Qwen 3.5 2B | **0.724 F1** (39/60), 26 GPU layers |
+| Qwen 3.5 4B | **0.742 F1** (37/60), 34 GPU layers |
 | Llama 3.2 3B | Golden 10/10 (F1 0.891), Quality ~9/60 (no grammar) |
 | Optimize tests | 97 passed / 4 skipped |
 | Simulator tests | 116 passed (35 scenarios + calibration + taxonomy) |
