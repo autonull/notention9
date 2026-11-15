@@ -8,9 +8,9 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { evaluateGoldenSet, type GoldenCase, type Provider, DeterministicProvider, CannedProvider } from './evaluate.js';
-import { getAllPrompts } from '@notention/core/prompts/registry';
-import { DEFAULT_ONTOLOGY } from '@notention/core';
+import { getAllPrompts, DEFAULT_ONTOLOGY } from '@notention/core';
 import { PROMPT_VARIANTS, renderPrompt } from './variants.js';
+import { WebLLMBridgeProvider, LlamaCppBridgeProvider, closeBridge, closeLlamaCpp } from '../llm/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -42,17 +42,33 @@ class RegistryProvider implements Provider {
     name = 'registry';
     private promptId: string;
     private version?: string;
+    private bridgeProvider: WebLLMBridgeProvider;
 
     constructor(promptId: string, version?: string) {
         this.promptId = promptId;
         this.version = version;
+        this.bridgeProvider = new WebLLMBridgeProvider({
+            modelId: 'Llama-3.2-3B-Instruct-q4f16_1-MLC',
+        });
     }
 
-    async extract(text: string, _ontology: any[]): Promise<any[]> {
-        // This would use the actual LLM prompt via the agent
-        // For now, use deterministic fallback
-        const { alignToOntology } = await import('@notention/core');
-        return alignToOntology(text, DEFAULT_ONTOLOGY);
+    async extract(text: string, ontology: any[]): Promise<any[]> {
+        return this.bridgeProvider.extract(text, ontology);
+    }
+}
+
+class LlamaCppProvider implements Provider {
+    name = 'llamacpp';
+    private bridgeProvider: LlamaCppBridgeProvider;
+
+    constructor() {
+        this.bridgeProvider = new LlamaCppBridgeProvider({
+            modelPath: process.env.LLAMA_MODEL_PATH || '/home/me/notention9/models/hf_bartowski_Llama-3.2-3B-Instruct.Q4_K_M.gguf',
+        });
+    }
+
+    async extract(text: string, ontology: any[]): Promise<any[]> {
+        return this.bridgeProvider.extract(text, ontology);
     }
 }
 
@@ -96,7 +112,7 @@ program
     .description('Evaluate prompt(s) against golden set')
     .option('-p, --prompt <id@version>', 'Specific prompt to evaluate (default: all registered)')
     .option('--quality', 'Also evaluate against quality cases')
-    .option('--provider <name>', 'Provider to use: deterministic | registry', 'deterministic')
+    .option('--provider <name>', 'Provider to use: deterministic | registry | webllm | llamacpp', 'deterministic')
     .action(async (options) => {
         console.log('🔬 Notention Prompt Evaluation');
         console.log('===============================');
@@ -113,8 +129,10 @@ program
         let providers: Provider[] = [];
 
         if (options.prompt) {
-            if (options.provider === 'registry') {
+            if (options.provider === 'registry' || options.provider === 'webllm') {
                 providers.push(new RegistryProvider(options.prompt.split('@')[0], options.prompt.split('@')[1]));
+            } else if (options.provider === 'llamacpp') {
+                providers.push(new LlamaCppProvider());
             } else {
                 providers.push(new DeterministicProvider());
             }
@@ -125,8 +143,10 @@ program
                 providers.push(new DeterministicProvider());
             } else {
                 for (const prompt of prompts) {
-                    if (options.provider === 'registry') {
+                    if (options.provider === 'registry' || options.provider === 'webllm') {
                         providers.push(new RegistryProvider(prompt.id, prompt.version));
+                    } else if (options.provider === 'llamacpp') {
+                        providers.push(new LlamaCppProvider());
                     } else {
                         providers.push(new DeterministicProvider());
                     }
@@ -159,9 +179,13 @@ program
 
         if (hasFailures) {
             console.log('❌ Evaluation failed — regressions detected');
+            await closeBridge();
+            await closeLlamaCpp();
             process.exit(1);
         } else {
             console.log('✅ All evaluations passed');
+            await closeBridge();
+            await closeLlamaCpp();
             process.exit(0);
         }
     });
@@ -379,6 +403,8 @@ program
         // McNemar test placeholder - would compare winner vs baseline per-case
         console.log('\nNote: McNemar test vs baseline requires binary pass/fail per case.');
         console.log('Run with --quality and an LLM provider for statistical significance testing.');
+        await closeBridge();
+        await closeLlamaCpp();
     });
 
 program.parse();

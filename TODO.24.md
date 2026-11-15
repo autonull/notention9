@@ -21,73 +21,79 @@
 ### 1. Local LLM Integration for NL→Semantic Translation
 | Task | Status | Notes |
 |------|--------|-------|
-| Wire WebLLM into optimizer | ❌ Not started | WebLLM exists in UI (`ui/src/services/ai/WebLLMProvider.ts`), but optimizer uses only `DeterministicProvider` |
-| Implement llama.cpp-embedded for Node.js | ❌ Not started | No llama.cpp integration anywhere; needed for headless/CLI evaluation |
-| Benchmark harness: local LLM vs quality cases | ❌ Not started | Run Llama 3.2 3B/1B against 60 quality cases + golden cases; compute F1/precision/recall |
-| Prompt optimization loop | ❌ Not started | Generate prompt variants → evaluate → adopt best (optimizer loop exists but needs LLM provider) |
+| Wire WebLLM into optimizer | ✅ **Implemented** | `optimize/src/llm/webllmBridge.ts` — Playwright bridge to UI build with WebLLM. HTTP server serves UI assets. WebGPU works in headed mode; headless needs `--headless=new` + GPU runner. |
+| Implement llama.cpp-embedded for Node.js | ✅ **Implemented** | `optimize/src/llm/llamaCppBridge.ts` — `node-llama-cpp` bridge loads GGUF models directly in Node.js. Model downloaded to `/home/me/notention9/models/`. |
+| Benchmark harness: local LLM vs quality cases | ⚠️ **Partial** | Both providers integrated into `pnpm prompts:eval --provider webllm|llamacpp`. WebLLM works but needs headed Chrome or GPU runner. llama.cpp works but base Llama 3.2 3B model not fine-tuned for ontology-constrained extraction (uses wrong keys, triggers safety filters). |
+| Prompt optimization loop | ❌ Not started | Optimizer loop exists (`pnpm loop run`) but needs working LLM provider for quality evaluation. |
 
 **Recommended path**: 
-- **Option A**: Use WebLLM in headless Chrome via Playwright (reuses existing UI code)
-- **Option B**: Add `node-llama-cpp` or `llama-node` to optimizer for pure Node.js evaluation
+- **Option A (WebLLM)**: Use headed Chrome or CI GPU runner for WebGPU. Reuses UI's proven prompts (`doAlignToOntology`).
+- **Option B (llama.cpp)**: Requires fine-tuned model or better prompt engineering. Current base model unsuitable for constrained extraction.
 
 ---
 
-#### Implementation Plan: Wire WebLLM into Optimizer (Option A)
+#### Implementation Status: Wire WebLLM into Optimizer (Option A)
 
 **Architecture**:
 ```
 optimize/src/prompts/cli.ts:RegistryProvider.extract()
          │
          ▼
-optimize/src/llm/webllmBridge.ts (NEW)
-  • Launches headless Chrome via Playwright with WebGPU
-  • Loads UI build with WebLLM provider initialized
-  • Exposes page.evaluate() API for extraction
+optimize/src/llm/webllmBridge.ts
+  • Launches headed Chrome via Playwright with WebGPU
+  • Serves UI build via local HTTP server (avoids file:// CORS)
+  • Loads UI with `?optimizer=true` query param exposing `__OPTIMIZER_AI__`
+  • Exposes page.evaluate() API for extraction via UI's WebLLMProvider
   • Caches browser instance across calls
          │
          ▼
 ui/src/services/ai/WebLLMProvider.ts (EXISTING)
   • @mlc-ai/web-llm with Llama-3.2-3B-Instruct-q4f16_1-MLC
-  • doSuggestTags(), doAnalyzeOntology(), etc.
+  • doAlignToOntology() — ontology-constrained extraction
 ```
 
-**Files to Create/Modify**:
+**Files Created/Modified**:
 | File | Action |
 |------|--------|
-| `optimize/src/llm/webllmBridge.ts` | Create: Playwright bridge to WebLLM |
-| `optimize/src/llm/index.ts` | Create: exports |
-| `optimize/src/prompts/cli.ts` | Modify: RegistryProvider uses bridge |
-| `optimize/package.json` | Add: `playwright` devDependency |
-| `optimize/tests/webllmBridge.test.ts` | Create: integration test |
+| `optimize/src/llm/webllmBridge.ts` | ✅ Created: Playwright bridge with HTTP server |
+| `optimize/src/llm/llamaCppBridge.ts` | ✅ Created: node-llama-cpp bridge |
+| `optimize/src/llm/index.ts` | ✅ Created: exports for both providers |
+| `optimize/src/prompts/cli.ts` | ✅ Modified: `--provider webllm|llamacpp|registry` |
+| `ui/src/index.tsx` | ✅ Modified: exposes `__OPTIMIZER_AI__` when `?optimizer=true` |
+| `optimize/package.json` | ✅ Already has `playwright` |
 
 **Setup Commands** (run once):
 ```bash
-cd /home/me/notention9/optimize && pnpm add -D playwright
-pnpm exec playwright install chromium
-pnpm exec playwright install-deps chromium
+cd /home/me/notention9/optimize && pnpm add node-llama-cpp
+pnpm approve-builds node-llama-cpp
 cd /home/me/notention9/ui && pnpm build
+# Download GGUF model for llama.cpp:
+node optimize/download-model.mjs
 ```
 
 **Key Considerations**:
-- **WebGPU in headless**: Need `--enable-webgpu` + `--use-angle=swiftshader` for CI
-- **Model load time**: ~30-60s first load (downloads ~2GB); cache browser across evaluations
-- **Prompt format**: Reuse UI's `doSuggestTags` prompt + `collectOntologyKeys(ontology)`
-- **Fallback**: If WebGPU fails, fall back to deterministic provider with warning
+- **WebGPU in headless**: Works with `--headless=new` + `--enable-webgpu` + `--use-angle=swiftshader` but needs GPU runner in CI. Headed mode works locally.
+- **Model load time**: ~30-60s first load (downloads ~2GB); browser cached across evaluations.
+- **Prompt format**: Reuses UI's `doAlignToOntology` prompt + `collectOntologyKeys(ontology)`.
+- **Fallback**: Both providers fall back to deterministic provider on failure.
 
 **Success Criteria**:
-- [ ] `pnpm prompts:eval --provider registry --quality` runs without errors
-- [ ] 60 quality cases evaluated in < 10 minutes
-- [ ] F1/precision/recall printed for each prompt variant
+- [x] `pnpm prompts:eval --provider webllm` runs (needs headed Chrome)
+- [x] `pnpm prompts:eval --provider llamacpp` runs (model loads, but quality low)
+- [ ] 60 quality cases evaluated in < 10 minutes with good F1
 - [ ] Optimizer loop can adopt best prompt automatically
-- [ ] CI can run (with GPU runner or swiftshader fallback)
+- [ ] CI can run (with GPU runner for WebLLM)
 
-**Alternative: llama.cpp-embedded (Option B)**
-```bash
-# If WebLLM fails, add to optimize/package.json:
-"dependencies": { "node-llama-cpp": "^3.0.0" }
-# Create optimize/src/llm/llamaCppBridge.ts — direct Node.js binding, no browser
-# Faster cold start, larger binary, same model (GGUF format)
+**Alternative: llama.cpp-embedded (Option B) — Current Limitation**
 ```
+Base Llama-3.2-3B-Instruct-Q4_K_M.gguf not suitable for ontology-constrained extraction:
+- Uses keys not in ontology (event, event.title, event.cost, etc.)
+- Triggers safety filters on PII, prices, emails
+- Doesn't follow JSON-only output format consistently
+Solution: Fine-tune on extraction task or use WebLLM with UI's proven prompts.
+```
+
+---
 
 ### 2. Ontology & Taxonomy Refinement
 | Task | Status | Notes |
@@ -135,10 +141,10 @@ cd /home/me/notention9/ui && pnpm build
 **If humans available**: Run comprehension probe + record T1/T2 videos.
 
 **If no humans**: 
-1. **Wire WebLLM into optimizer** — evaluate Llama 3.2 3B against quality cases
-2. **Add llama.cpp-embedded** — for headless CI evaluation
+1. **Fix WebLLM headless WebGPU** — Use CI GPU runner or headed Chrome for evaluation
+2. **Improve llama.cpp extraction** — Fine-tune model or implement few-shot prompting with grammar constraints
 3. **Run optimizer loop** — `pnpm loop run` to discover/synthesize/evaluate new improvements
-4. **Expand taxonomy** — add scenarios for remaining 8 cells
+4. **Expand taxonomy** — Add scenarios for remaining 8 cells
 
 ---
 
@@ -151,15 +157,14 @@ pnpm loop run --output data/loop/runs
 # Ingest corpus for new test cases
 pnpm loop corpus --output data/loop/corpus-output
 
-# Evaluate prompts (currently deterministic only)
-pnpm prompts:eval --quality --provider registry
+# Evaluate prompts (now with LLM providers)
+pnpm prompts:eval --quality --provider webllm    # WebLLM via headed Chrome
+pnpm prompts:eval --quality --provider llamacpp  # llama.cpp direct Node.js
+pnpm prompts:eval --quality --provider deterministic  # baseline
 
 # Run all tests
 pnpm test --filter=@notention/core --filter=@notention/optimize --filter=@notention/simulator --filter=@notention/ui --filter=@notention/agent --filter=@notention/cli
 
 # Simulator measurement suite (25 scenarios)
 cd simulator && pnpm test -- src/scenarios/measurementSuite.test.ts
-
-# Setup WebLLM for optimizer (run once)
-./scripts/setup-webllm-optimizer.sh
 ```

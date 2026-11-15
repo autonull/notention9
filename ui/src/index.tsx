@@ -11,6 +11,7 @@ import App from './App';
 import {UIProvider} from './components/UIProvider';
 import {pluginManager} from './plugins';
 import {storageRecovery} from '@notention/core';
+import {initializeAI, getInferenceRouter} from './services/ai/init';
 
 // Initialize plugins
 pluginManager.loadPlugins();
@@ -19,6 +20,14 @@ pluginManager.loadPlugins();
 storageRecovery.startAutoSnapshot();
 
 // Service worker is registered via vite-plugin-pwa injection
+
+// Expose AI initialization for optimizer/headless use
+if (typeof window !== 'undefined') {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('optimizer') === 'true') {
+        window.__OPTIMIZER_AI__ = { initializeAI, getInferenceRouter };
+    }
+}
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {

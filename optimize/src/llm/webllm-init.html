@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebLLM Init for Optimizer</title>
+    <script type="module">
+        // Polyfill for __name helper used by minifiers
+        var __name = function __name(fn, name) {
+            try {
+                Object.defineProperty(fn, 'name', { value: name, configurable: true });
+            } catch (e) {}
+            return fn;
+        };
+        if (typeof window !== 'undefined') window.__name = __name;
+        if (typeof globalThis !== 'undefined') globalThis.__name = __name;
+        export { __name };
+    </script>
+    <script>
+        // Also define as regular script for non-module access
+        var __name = function __name(fn, name) {
+            try {
+                Object.defineProperty(fn, 'name', { value: name, configurable: true });
+            } catch (e) {}
+            return fn;
+        };
+        if (typeof window !== 'undefined') window.__name = __name;
+        if (typeof globalThis !== 'undefined') globalThis.__name = __name;
+    </script>
+    <script>
+        // Polyfill process for browser
+        window.process = window.process || {
+            browser: true,
+            title: 'browser',
+            env: {},
+            argv: [],
+            version: '',
+            versions: {},
+            platform: 'browser',
+            cwd: function() { return '/'; },
+            nextTick: function(fn, ...args) { return Promise.resolve().then(function() { return fn(...args); }); },
+            on: function() {},
+            exitCode: 0,
+            pid: 0,
+            stdin: {on: function() {}},
+        };
+    </script>
+</head>
+<body>
+    <div id="status">Initializing WebLLM...</div>
+    <script type="module">
+        import { CreateMLCEngine } from "@mlc-ai/web-llm";
+        import { DEFAULT_ONTOLOGY, collectOntologyKeys, parsePropertiesJson } from '@notention/core';
+
+        // Make DEFAULT_ONTOLOGY available globally
+        window.DEFAULT_ONTOLOGY = DEFAULT_ONTOLOGY;
+
+        // Simple logger
+        const logger = {
+            warn: function(...args) { console.warn('[WebLLM]', ...args); },
+            info: function(...args) { console.info('[WebLLM]', ...args); },
+        };
+
+        class OptimizerWebLLMProvider {
+            constructor(modelId) {
+                this.name = 'webllm-optimizer';
+                this.kind = 'local-model';
+                this.engine = null;
+                this.modelId = modelId || "Llama-3.2-3B-Instruct-q4f16_1-MLC";
+                this.initPromise = null;
+            }
+
+            async generateCompletion(prompt) {
+                const engine = await this.getEngine();
+                if (!engine) throw new Error("WebLLM engine not available");
+
+                const response = await engine.chat.completions.create({
+                    messages: [{ role: "user", content: prompt }],
+                    temperature: 0.7,
+                });
+                return response.choices[0]?.message?.content || "";
+            }
+
+            async doAlignToOntology(text, ontology) {
+                const engine = await this.getEngine();
+                if (!engine) throw new Error("WebLLM engine not available");
+
+                const keys = collectOntologyKeys(ontology);
+
+                const prompt = 'Extract semantic properties from the text as structured JSON.\n' +
+                    'Reuse these ontology keys when relevant: ' + ([...keys].join(', ') || 'none') + '.\n' +
+                    'Return ONLY a JSON array of objects shaped like:\n' +
+                    '[{"key": "skill", "operator": "is", "values": ["React"]}]\n' +
+                    'Valid operators: is, is not, contains, greater than, less than.\n\n' +
+                    'Text: "' + text + '"';
+
+                const response = await engine.chat.completions.create({
+                    messages: [{ role: "user", content: prompt }],
+                    temperature: 0.1,
+                });
+
+                const content = response.choices[0]?.message?.content || "[]";
+                try {
+                    const parsed = JSON.parse(content);
+                    return parsePropertiesJson(parsed);
+                } catch (e) {
+                    logger.warn("Failed to parse AI properties:", e);
+                    return [];
+                }
+            }
+
+            async getEngine() {
+                if (this.engine) return this.engine;
+
+                if (!this.initPromise) {
+                    this.initPromise = (async () => {
+                        try {
+                            // Check if WebGPU is available
+                            if (!navigator.gpu) {
+                                throw new Error("WebGPU not supported");
+                            }
+
+                            this.engine = await CreateMLCEngine(
+                                this.modelId,
+                                {
+                                    initProgressCallback: function(progress) {
+                                        const statusEl = document.getElementById('status');
+                                        if (statusEl) {
+                                            statusEl.textContent = 'Loading model: ' + (progress.text || '') + ' ' + Math.round(progress.progress * 100) + '%';
+                                        }
+                                    }
+                                }
+                            );
+                            logger.info("WebLLM engine loaded successfully");
+                        } catch (e) {
+                            logger.warn("Failed to load WebLLM:", e);
+                            throw e;
+                        }
+                    })();
+                }
+
+                try {
+                    await this.initPromise;
+                    return this.engine;
+                } catch {
+                    return null;
+                }
+            }
+        }
+
+        // Simple inference router for the optimizer
+        const providers = new Map();
+
+        window.initializeAI = async function(options) {
+            const modelId = options.webllmModelId || "Llama-3.2-3B-Instruct-q4f16_1-MLC";
+            const provider = new OptimizerWebLLMProvider(modelId);
+            providers.set('webllm', provider);
+            
+            // Test initialization
+            try {
+                await provider.getEngine();
+                window.__WEBLLM_READY__ = true;
+                const statusEl = document.getElementById('status');
+                if (statusEl) {
+                    statusEl.textContent = 'WebLLM ready!';
+                }
+            } catch (e) {
+                logger.warn("WebLLM initialization failed:", e);
+                throw e;
+            }
+        };
+
+        window.getInferenceRouter = function() {
+            return {
+                getAvailableProviders: function() {
+                    return Array.from(providers.entries()).map(function(entry) {
+                        return { name: entry[0], kind: entry[1].kind };
+                    });
+                },
+                providers: providers,
+            };
+        };
+    </script>
+</body>
+</html>
