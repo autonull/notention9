@@ -1,5 +1,6 @@
 import type { Property, OntologyNode } from '@notention/core';
 import { alignToOntology } from '@notention/core';
+import { scoreExtraction } from '../prompts/policy.js';
 
 export interface GoldenCase {
     name: string;
@@ -53,26 +54,22 @@ export async function evaluateGoldenSet(
     for (const testCase of cases) {
         const actual = await provider.extract(testCase.input, ontology);
         const errors: string[] = [];
+        const score = scoreExtraction(testCase.expected, actual);
 
-        // Check expected properties are present
-        for (const expected of testCase.expected) {
-            const match = actual.find(a =>
-                a.key === expected.key &&
-                a.operator === expected.operator &&
-                a.values.every(v => expected.values.includes(v))
-            );
-            if (!match) {
-                errors.push(`Missing expected property: ${expected.key} ${expected.operator} ${expected.values.join(',')}`);
-            }
+        for (const missing of score.missing) {
+            errors.push(`Missing expected property: ${missing}`);
         }
 
-        // Check forbidden properties are absent
+        // Check forbidden properties are absent. Operator must match exactly:
+        // the point is to reject the specific annotated mistake, not a synonym.
         if (testCase.forbidden) {
             for (const forbidden of testCase.forbidden) {
-                const match = actual.find(a =>
-                    a.key === forbidden.key &&
-                    a.operator === forbidden.operator &&
-                    a.values.every(v => forbidden.values.includes(v))
+                const match = actual.find(candidate =>
+                    candidate.key === forbidden.key
+                    && candidate.operator === forbidden.operator
+                    && candidate.values.some(value =>
+                        forbidden.values.some(target => value === target)
+                    )
                 );
                 if (match) {
                     errors.push(`Forbidden property found: ${forbidden.key} ${forbidden.operator} ${forbidden.values.join(',')}`);

@@ -177,9 +177,9 @@
     "tribute"
   ],
   "coverage": {
-    "cellsCovered": 11,
+    "cellsCovered": 24,
     "totalPossibleCells": 120960,
-    "note": "Coarse socialForm×stakes 11/24: communal/social, communal/economic, communal/safety, communal/existential, authority/economic, authority/legal, equality/social, equality/economic, market/social, market/economic, market/legal. Distinct six-axis cells: 19. Uncovered: communal/info, communal/legal, authority/info, authority/social, authority/safety, authority/existential, equality/info, equality/legal, equality/safety, equality/existential, market/info, market/safety, market/existential."
+    "note": "Coarse socialForm×stakes 24/24: communal/info, communal/social, communal/economic, communal/legal, communal/safety, communal/existential, authority/info, authority/social, authority/economic, authority/legal, authority/safety, authority/existential, equality/info, equality/social, equality/economic, equality/legal, equality/safety, equality/existential, market/info, market/social, market/economic, market/legal, market/safety, market/existential. Distinct six-axis cells: 32. Uncovered: ."
   },
   "audit": {
     "date": "2026-11-15",

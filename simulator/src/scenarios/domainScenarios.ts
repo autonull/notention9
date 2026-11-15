@@ -2,6 +2,17 @@ import { Scenario, AgentConfig, EventConfig, InputMethod, Property } from '../ty
 
 const prop = (key: string, operator: string, ...values: string[]): Property => ({ key, operator, values });
 
+/** Publish jobs and offers in turn, then focus the camera. */
+const alternatingEvents = (roles: readonly string[]): EventConfig[] => [
+    ...roles.map((role, index) => ({
+        at: 2 + index * 2,
+        action: index % 2 === 0 ? 'publish_job' : 'publish_offer',
+        actorRole: role,
+        cameraFocus: `${role} 1`,
+    })),
+    { at: 2 + roles.length * 2, action: 'camera', actorRole: 'system', cameraFocus: 'grid' },
+];
+
 export const DOMAIN_SCENARIOS: Record<string, Scenario> = {
     'freelance-marketplace': {
         name: 'Freelance Marketplace',
@@ -1392,6 +1403,490 @@ export const DOMAIN_SCENARIOS: Record<string, Scenario> = {
         requires: ['relay', 'ui'],
         difficulty: 'medium'
     },
+    // ------------------------------------------------------------------
+    // Taxonomy breadth: one scenario per previously uncovered coarse cell
+    // ------------------------------------------------------------------
+
+    // communal/info — residents exchange local information without money
+    'neighborhood-bulletin': {
+        name: 'Neighborhood Bulletin',
+        description: 'Residents share local information: road closures, lost pets, and community notices.',
+        agents: [
+            {
+                role: 'Resident',
+                count: 12,
+                properties: [
+                    prop('role', 'is', 'resident'),
+                    prop('location', 'is', 'Maple Street'),
+                    prop('topic', 'contains', 'road-closure', 'lost-pet', 'community-notice'),
+                ],
+                interests: [
+                    prop('topic', 'contains', 'road-closure', 'lost-pet', 'community-notice'),
+                    prop('location', 'is', 'Maple Street'),
+                ],
+                traits: ['local', 'informal', 'template-user'],
+            },
+            {
+                role: 'Moderator',
+                count: 2,
+                properties: [
+                    prop('role', 'is', 'moderator'),
+                    prop('authority', 'is', 'delegated'),
+                    prop('context', 'is', 'neighborhood-board'),
+                ],
+                interests: [prop('topic', 'contains', 'safety', 'events')],
+                traits: ['helpful', 'concise', 'template-user'],
+            },
+        ],
+        events: alternatingEvents(['Resident', 'Moderator', 'Resident']),
+        duration: 15,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'easy',
+    },
+
+    // communal/legal — customary norms adjudicated by elders
+    'customary-norms': {
+        name: 'Customary Norms',
+        description: 'A village mediates grazing and water use under customary law rather than statute.',
+        agents: [
+            {
+                role: 'Elder',
+                count: 3,
+                properties: [
+                    prop('role', 'is', 'elder'),
+                    prop('jurisdiction', 'is', 'customary'),
+                    prop('authority', 'is', 'customary'),
+                    prop('allocationRule', 'contains', 'rotation', 'shared-access'),
+                ],
+                interests: [prop('claim', 'is', 'grazing-rights'), prop('parties', 'contains', 'household')],
+                traits: ['deliberative', 'respected', 'template-user'],
+            },
+            {
+                role: 'Household',
+                count: 8,
+                properties: [
+                    prop('role', 'is', 'household'),
+                    prop('resource', 'contains', 'pasture', 'well'),
+                    prop('claim', 'contains', 'grazing-rights', 'water-access'),
+                ],
+                interests: [prop('authority', 'is', 'customary'), prop('allocationRule', 'contains', 'rotation')],
+                traits: ['aggrieved', 'cooperative', 'template-user'],
+            },
+        ],
+        events: alternatingEvents(['Household', 'Elder', 'Household']),
+        duration: 15,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'hard',
+    },
+
+    // authority/info — an agency broadcasts public guidance
+    'public-health-advisory': {
+        name: 'Public Health Advisory',
+        description: 'A health agency publishes guidance and clinics subscribe to updates.',
+        agents: [
+            {
+                role: 'Agency',
+                count: 2,
+                properties: [
+                    prop('role', 'is', 'health-agency'),
+                    prop('authority', 'is', 'statutory'),
+                    prop('jurisdiction', 'is', 'municipal'),
+                    prop('serviceNeed', 'contains', 'vaccination', 'water-safety'),
+                ],
+                interests: [prop('audience', 'contains', 'clinic', 'household')],
+                traits: ['official', 'clear', 'template-user'],
+            },
+            {
+                role: 'Clinic',
+                count: 6,
+                properties: [
+                    prop('role', 'is', 'clinic'),
+                    prop('accepts', 'contains', 'advisory', 'referral'),
+                    prop('location', 'is', 'downtown'),
+                ],
+                interests: [prop('authority', 'is', 'statutory'), prop('topic', 'contains', 'vaccination')],
+                traits: ['responsive', 'clinical', 'template-user'],
+            },
+        ],
+        events: alternatingEvents(['Agency', 'Clinic', 'Agency']),
+        duration: 15,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'easy',
+    },
+
+    // authority/social — delegated casework for social services
+    'welfare-casework': {
+        name: 'Welfare Casework',
+        description: 'Case workers match applicants to delegated social services and benefits.',
+        agents: [
+            {
+                role: 'CaseWorker',
+                count: 4,
+                properties: [
+                    prop('role', 'is', 'case-worker'),
+                    prop('authority', 'is', 'delegated'),
+                    prop('jurisdiction', 'is', 'municipal'),
+                    prop('caseLoad', 'is', 'standard'),
+                    prop('department', 'contains', 'housing', 'benefits'),
+                ],
+                interests: [prop('eligibility', 'contains', 'resident', 'low-income'), prop('documentation', 'is', 'complete')],
+                traits: ['procedural', 'empathetic', 'template-user'],
+            },
+            {
+                role: 'Applicant',
+                count: 10,
+                properties: [
+                    prop('role', 'is', 'applicant'),
+                    prop('eligibility', 'contains', 'resident', 'low-income', 'caregiver'),
+                    prop('documentation', 'contains', 'complete', 'partial'),
+                    prop('serviceNeed', 'contains', 'housing', 'benefits', 'childcare'),
+                ],
+                interests: [prop('authority', 'is', 'delegated'), prop('caseLoad', 'is', 'standard')],
+                traits: ['urgent', 'cooperative', 'template-user'],
+            },
+        ],
+        events: alternatingEvents(['Applicant', 'CaseWorker', 'Applicant']),
+        duration: 15,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'medium',
+    },
+
+    // authority/safety — statutory alerts during a hazard
+    'disaster-alert': {
+        name: 'Disaster Alert',
+        description: 'Emergency agencies issue evacuation orders that households must act on.',
+        agents: [
+            {
+                role: 'EmergencyAgency',
+                count: 2,
+                properties: [
+                    prop('role', 'is', 'emergency-agency'),
+                    prop('authority', 'is', 'statutory'),
+                    prop('hazardType', 'contains', 'flood', 'wildfire'),
+                    prop('urgency', 'is', 'immediate'),
+                ],
+                interests: [prop('location', 'contains', 'low-lying', 'river-bend'), prop('hasVehicle', 'is', 'false')],
+                traits: ['authoritative', 'urgent', 'template-user'],
+            },
+            {
+                role: 'Household',
+                count: 10,
+                properties: [
+                    prop('role', 'is', 'household'),
+                    prop('location', 'contains', 'low-lying', 'river-bend', 'uphill'),
+                    prop('hasVehicle', 'is', 'false'),
+                    prop('careRequirements', 'contains', 'mobility', 'insulin'),
+                ],
+                interests: [prop('authority', 'is', 'statutory'), prop('shelterType', 'contains', 'accessible')],
+                traits: ['vulnerable', 'cooperative', 'template-user'],
+            },
+        ],
+        events: alternatingEvents(['EmergencyAgency', 'Household', 'EmergencyAgency']),
+        duration: 15,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'hard',
+    },
+
+    // authority/existential — a status decision that changes someone's life
+    'refugee-status': {
+        name: 'Refugee Status',
+        description: 'A status officer decides residency claims under national law.',
+        agents: [
+            {
+                role: 'StatusOfficer',
+                count: 2,
+                properties: [
+                    prop('role', 'is', 'status-officer'),
+                    prop('authority', 'is', 'statutory'),
+                    prop('jurisdiction', 'is', 'national'),
+                    prop('discretion', 'is', 'limited'),
+                ],
+                interests: [prop('eligibility', 'contains', 'persecution', 'displacement'), prop('documentation', 'is', 'complete')],
+                traits: ['impartial', 'procedural', 'template-user'],
+            },
+            {
+                role: 'Applicant',
+                count: 8,
+                properties: [
+                    prop('role', 'is', 'applicant'),
+                    prop('eligibility', 'contains', 'persecution', 'displacement', 'family-reunification'),
+                    prop('documentation', 'contains', 'complete', 'partial', 'missing'),
+                    prop('urgency', 'contains', 'immediate'),
+                ],
+                interests: [prop('authority', 'is', 'statutory'), prop('jurisdiction', 'is', 'national')],
+                traits: ['vulnerable', 'hopeful', 'template-user'],
+            },
+        ],
+        events: alternatingEvents(['Applicant', 'StatusOfficer', 'Applicant']),
+        duration: 15,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'hard',
+    },
+
+    // equality/info — reciprocal peer review
+    'peer-review': {
+        name: 'Peer Review',
+        description: 'Scholars exchange manuscript reviews as equals, with no hierarchical authority.',
+        agents: [
+            {
+                role: 'Author',
+                count: 8,
+                properties: [
+                    prop('role', 'is', 'author'),
+                    prop('topic', 'contains', 'methods', 'replication', 'ethics'),
+                    prop('status', 'is', 'submitted'),
+                ],
+                interests: [prop('role', 'is', 'reviewer'), prop('focus', 'contains', 'methods', 'replication')],
+                traits: ['rigorous', 'responsive', 'template-user'],
+            },
+            {
+                role: 'Reviewer',
+                count: 8,
+                properties: [
+                    prop('role', 'is', 'reviewer'),
+                    prop('specialty', 'contains', 'methods', 'statistics', 'ethics'),
+                    prop('reciprocity', 'is', 'expected'),
+                    prop('availability', 'contains', 'scheduled'),
+                ],
+                interests: [prop('role', 'is', 'author'), prop('topic', 'contains', 'methods', 'statistics')],
+                traits: ['constructive', 'anonymous', 'template-user'],
+            },
+        ],
+        events: alternatingEvents(['Author', 'Reviewer', 'Author', 'Reviewer']),
+        duration: 15,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'medium',
+    },
+
+    // equality/legal — peers arbitrate a commercial dispute
+    'arbitration-panel': {
+        name: 'Arbitration Panel',
+        description: 'Two parties appoint peer arbitrators to settle a contract dispute.',
+        agents: [
+            {
+                role: 'Party',
+                count: 6,
+                properties: [
+                    prop('role', 'is', 'party'),
+                    prop('contractType', 'is', 'services-agreement'),
+                    prop('parties', 'contains', 'supplier', 'buyer'),
+                    prop('demands', 'contains', 'refund', 'specific-performance'),
+                ],
+                interests: [prop('role', 'is', 'arbitrator'), prop('jurisdiction', 'is', 'commercial')],
+                traits: ['adversarial', 'documented', 'template-user'],
+            },
+            {
+                role: 'Arbitrator',
+                count: 3,
+                properties: [
+                    prop('role', 'is', 'arbitrator'),
+                    prop('jurisdiction', 'is', 'commercial'),
+                    prop('discretion', 'is', 'limited'),
+                    prop('governingLaw', 'is', 'arbitration-act'),
+                ],
+                interests: [prop('parties', 'contains', 'supplier', 'buyer'), prop('demands', 'contains', 'refund')],
+                traits: ['neutral', 'precedent-driven', 'template-user'],
+            },
+        ],
+        events: alternatingEvents(['Party', 'Arbitrator', 'Party']),
+        duration: 15,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'medium',
+    },
+
+    // equality/safety — a mutual-aid collective coordinating safety
+    'mutual-aid-collective': {
+        name: 'Mutual Aid Collective',
+        description: 'Neighbours coordinate rides, supplies, and check-ins as equals during a crisis.',
+        agents: [
+            {
+                role: 'Coordinator',
+                count: 3,
+                properties: [
+                    prop('role', 'is', 'coordinator'),
+                    prop('coordination', 'is', 'shared-calendar'),
+                    prop('resourceType', 'contains', 'supplies', 'transport'),
+                    prop('urgency', 'is', 'immediate'),
+                ],
+                interests: [prop('role', 'is', 'volunteer'), prop('availability', 'contains', 'weekends')],
+                traits: ['organised', 'inclusive', 'template-user'],
+            },
+            {
+                role: 'Volunteer',
+                count: 10,
+                properties: [
+                    prop('role', 'is', 'volunteer'),
+                    prop('skills', 'contains', 'first-aid', 'driving', 'cooking'),
+                    prop('availability', 'contains', 'weekends', 'evenings'),
+                    prop('vehicle', 'contains', 'car', 'van'),
+                ],
+                interests: [prop('coordination', 'is', 'shared-calendar'), prop('resourceType', 'contains', 'supplies')],
+                traits: ['reliable', 'neighbourly', 'template-user'],
+            },
+        ],
+        events: alternatingEvents(['Volunteer', 'Coordinator', 'Volunteer']),
+        duration: 15,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'medium',
+    },
+
+    // equality/existential — a cooperative deciding membership and survival
+    'cooperative-commune': {
+        name: 'Cooperative Commune',
+        description: 'Members of a housing and food cooperative decide admissions and shares by consensus.',
+        agents: [
+            {
+                role: 'Member',
+                count: 8,
+                properties: [
+                    prop('role', 'is', 'member'),
+                    prop('resource', 'contains', 'shelter', 'food'),
+                    prop('allocationRule', 'is', 'consensus'),
+                    prop('discretion', 'is', 'collective'),
+                ],
+                interests: [prop('role', 'is', 'steward'), prop('harvestShare', 'contains', '30%')],
+                traits: ['egalitarian', 'deliberative', 'template-user'],
+            },
+            {
+                role: 'Steward',
+                count: 3,
+                properties: [
+                    prop('role', 'is', 'steward'),
+                    prop('gardenBed', 'contains', 'north', 'south'),
+                    prop('harvestShare', 'contains', '30%', '20%'),
+                    prop('lineage', 'contains', 'grandmother', 'founding-member'),
+                ],
+                interests: [prop('role', 'is', 'member'), prop('allocationRule', 'is', 'consensus')],
+                traits: ['custodial', 'transparent', 'template-user'],
+            },
+        ],
+        events: alternatingEvents(['Member', 'Steward', 'Member']),
+        duration: 15,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'hard',
+    },
+
+    // market/info — paid expertise
+    'knowledge-marketplace': {
+        name: 'Knowledge Marketplace',
+        description: 'Experts sell advice to clients; matching depends on topic, rate, and budget.',
+        agents: [
+            {
+                role: 'Expert',
+                count: 8,
+                properties: [
+                    prop('role', 'is', 'consultant'),
+                    prop('specialty', 'contains', 'strategy', 'finance', 'design'),
+                    prop('rate', 'is', '120'),
+                    prop('availability', 'contains', 'hourly', 'retainer'),
+                ],
+                interests: [prop('topic', 'contains', 'strategy', 'finance'), prop('budget', 'greater than', '100')],
+                traits: ['expert', 'concise', 'template-user'],
+            },
+            {
+                role: 'Client',
+                count: 10,
+                properties: [
+                    prop('role', 'is', 'client'),
+                    prop('topic', 'contains', 'strategy', 'finance', 'design'),
+                    prop('budget', 'is', '500'),
+                    prop('format', 'contains', 'virtual'),
+                ],
+                interests: [prop('role', 'is', 'consultant'), prop('rate', 'less than', '150')],
+                traits: ['focused', 'buyer', 'template-user'],
+            },
+        ],
+        events: alternatingEvents(['Client', 'Expert', 'Client', 'Expert']),
+        duration: 15,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'easy',
+    },
+
+    // market/safety — risk pooling
+    'insurance-market': {
+        name: 'Insurance Market',
+        description: 'Insurers price hazard coverage; households buy protection against loss.',
+        agents: [
+            {
+                role: 'Insurer',
+                count: 4,
+                properties: [
+                    prop('role', 'is', 'insurer'),
+                    prop('coverage', 'contains', 'flood', 'fire', 'medical'),
+                    prop('price', 'is', '300'),
+                    prop('contractType', 'is', 'policy'),
+                ],
+                interests: [prop('hazardType', 'contains', 'flood', 'fire'), prop('budget', 'greater than', '250')],
+                traits: ['risk-based', 'formal', 'template-user'],
+            },
+            {
+                role: 'Policyholder',
+                count: 10,
+                properties: [
+                    prop('role', 'is', 'policyholder'),
+                    prop('hazardType', 'contains', 'flood', 'fire', 'medical'),
+                    prop('budget', 'is', '400'),
+                    prop('location', 'contains', 'flood-zone', 'hillside'),
+                ],
+                interests: [prop('role', 'is', 'insurer'), prop('coverage', 'contains', 'flood', 'fire')],
+                traits: ['cautious', 'comparison-shopper', 'template-user'],
+            },
+        ],
+        events: alternatingEvents(['Policyholder', 'Insurer', 'Policyholder']),
+        duration: 15,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'medium',
+    },
+
+    // market/existential — shelter as a traded necessity
+    'housing-market': {
+        name: 'Housing Market',
+        description: 'Buyers and sellers trade homes; a failed match threatens shelter.',
+        agents: [
+            {
+                role: 'Seller',
+                count: 5,
+                properties: [
+                    prop('role', 'is', 'seller'),
+                    prop('property', 'contains', '3-bed', '2-bed', 'studio'),
+                    prop('price', 'is', '250000'),
+                    prop('location', 'contains', 'downtown', 'suburbs'),
+                ],
+                interests: [prop('role', 'is', 'buyer'), prop('budget', 'greater than', '200000')],
+                traits: ['motivated', 'formal', 'template-user'],
+            },
+            {
+                role: 'Buyer',
+                count: 10,
+                properties: [
+                    prop('role', 'is', 'buyer'),
+                    prop('property', 'contains', '3-bed', '2-bed', 'studio'),
+                    prop('budget', 'is', '300000'),
+                    prop('location', 'contains', 'downtown', 'suburbs'),
+                ],
+                interests: [prop('role', 'is', 'seller'), prop('price', 'less than', '280000')],
+                traits: ['urgent', 'pre-approved', 'template-user'],
+            },
+        ],
+        events: alternatingEvents(['Buyer', 'Seller', 'Buyer', 'Seller']),
+        duration: 15,
+        tags: ['domain'],
+        requires: ['relay', 'ui'],
+        difficulty: 'medium',
+    },
+
 };
 
 export function getScenarioNames(): string[] {

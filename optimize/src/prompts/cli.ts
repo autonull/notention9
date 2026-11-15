@@ -10,6 +10,8 @@ import { dirname, join } from 'node:path';
 import { evaluateGoldenSet, type GoldenCase, type Provider, DeterministicProvider, CannedProvider } from './evaluate.js';
 import { getAllPrompts, DEFAULT_ONTOLOGY } from '@notention/core';
 import { PROMPT_VARIANTS, renderPrompt } from './variants.js';
+import { normalizeProperty, scoreExtraction } from './policy.js';
+import type { LabelledCase } from './fewShot.js';
 import { WebLLMBridgeProvider, LlamaCppBridgeProvider, closeBridge, closeLlamaCpp } from '../llm/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -36,11 +38,20 @@ async function loadQualityCases(): Promise<GoldenCase[]> {
             return {
                 name: entry.id,
                 input: data.input,
-                expected: data.expected,
-                forbidden: data.forbidden ?? [],
+                expected: data.expected.map(normalizeProperty),
+                forbidden: (data.forbidden ?? []).map(normalizeProperty),
                 expectedOutcome: data.expectedOutcome ?? 'suggested',
             };
         });
+}
+
+/** Labelled quality cases are the few-shot retrieval bank. */
+function toFewShotBank(cases: GoldenCase[]): LabelledCase[] {
+    return cases.map(testCase => ({
+        id: testCase.name,
+        input: testCase.input,
+        expected: testCase.expected,
+    }));
 }
 
 class RegistryProvider implements Provider {
@@ -67,9 +78,11 @@ class LlamaCppProvider implements Provider {
     name = 'llamacpp';
     private bridgeProvider: LlamaCppBridgeProvider;
 
-    constructor() {
+    constructor(fewShotBank?: readonly LabelledCase[], fewShotCount = 3) {
         this.bridgeProvider = new LlamaCppBridgeProvider({
             modelPath: process.env.LLAMA_MODEL_PATH || '/home/me/notention9/models/Qwen_Qwen3.5-0.8B-Q4_K_M.gguf',
+            fewShotBank,
+            fewShotCount,
         });
     }
 
@@ -100,14 +113,17 @@ function printResults(label: string, results: Awaited<ReturnType<typeof evaluate
         }
     }
 
-    for (const result of results) {
-        const status = result.passed ? '✓' : '✗';
-        console.log(`  ${status} ${result.caseName}`);
-        if (!result.passed) {
-            console.log(`    Expected: ${JSON.stringify(result.expected)}`);
-            console.log(`    Actual:   ${JSON.stringify(result.actual)}`);
-        }
+    const failed = results.filter(result => !result.passed);
+    const shown = failed.slice(0, 10);
+    for (const result of shown) {
+        console.log(`  ✗ ${result.caseName}`);
+        console.log(`    Expected: ${JSON.stringify(result.expected)}`);
+        console.log(`    Actual:   ${JSON.stringify(result.actual)}`);
     }
+    if (failed.length > shown.length) {
+        console.log(`  … ${failed.length - shown.length} more failing cases`);
+    }
+    console.log(`  ✓ ${results.length - failed.length} passed`);
 
     return { passed, total, errors: allErrors };
 }
@@ -124,6 +140,8 @@ program
     .description('Evaluate prompt(s) against golden set')
     .option('-p, --prompt <id@version>', 'Specific prompt to evaluate (default: all registered)')
     .option('--quality', 'Also evaluate against quality cases')
+    .option('--quality-limit <n>', 'Evaluate only the first N quality cases (iteration aid)')
+    .option('--few-shot <n>', 'Retrieved examples per input (0 disables)', '3')
     .option('--provider <name>', 'Provider to use: deterministic | registry | webllm | llamacpp', 'deterministic')
     .action(async (options) => {
         console.log('🔬 Notention Prompt Evaluation');
@@ -135,9 +153,13 @@ program
         let qualityCases: GoldenCase[] = [];
         if (options.quality) {
             qualityCases = await loadQualityCases();
+            if (options.qualityLimit) {
+                qualityCases = qualityCases.slice(0, Number(options.qualityLimit));
+            }
             console.log(`Loaded ${qualityCases.length} quality cases`);
         }
 
+        const fewShotBank = qualityCases.length > 0 ? toFewShotBank(qualityCases) : undefined;
         let providers: Provider[] = [];
 
         if (options.prompt) {
@@ -178,7 +200,11 @@ program
             if (summary.errors.length > 0) hasFailures = true;
 
             if (qualityCases.length > 0) {
-                const qResults = await evaluateGoldenSet(qualityCases, provider, DEFAULT_ONTOLOGY);
+                const fewShotCount = Number(options.fewShot ?? 3);
+                const qualityProvider = fewShotBank && fewShotCount > 0 && provider instanceof LlamaCppProvider
+                    ? new LlamaCppProvider(fewShotBank, fewShotCount)
+                    : provider;
+                const qResults = await evaluateGoldenSet(qualityCases, qualityProvider, DEFAULT_ONTOLOGY);
                 const qSummary = printResults(`Quality Cases — ${provider.name}`, qResults);
                 overallPassed += qSummary.passed;
                 overallTotal += qSummary.total;
@@ -237,18 +263,7 @@ class VariantProvider implements Provider {
 }
 
 function computeF1(expected: any[], actual: any[]): { precision: number; recall: number; f1: number } {
-    const expectedSet = new Set(expected.map(e => `${e.key}:${e.operator}:${e.values.join(',')}`));
-    const actualSet = new Set(actual.map(a => `${a.key}:${a.operator}:${a.values.join(',')}`));
-
-    let tp = 0;
-    for (const a of actualSet) {
-        if (expectedSet.has(a)) tp++;
-    }
-
-    const precision = actualSet.size > 0 ? tp / actualSet.size : 0;
-    const recall = expectedSet.size > 0 ? tp / expectedSet.size : 0;
-    const f1 = precision + recall > 0 ? (2 * precision * recall) / (precision + recall) : 0;
-
+    const { precision, recall, f1 } = scoreExtraction(expected, actual);
     return { precision, recall, f1 };
 }
 

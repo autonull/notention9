@@ -46,6 +46,20 @@ export const SCENARIO_TAXONOMY: Record<string, TaxonomyCell> = {
     'decentralized-identity': { socialForm: 'market', topology: 'mesh', exchange: 'identity', stakes: 'social', temporality: 'open-ended', heterogeneity: 'shared' },
     'contested-resources': { socialForm: 'communal', topology: 'mesh', exchange: 'space', stakes: 'economic', temporality: 'recurring', heterogeneity: 'contested' },
     'referral-network': { socialForm: 'equality', topology: 'chain', exchange: 'commitment', stakes: 'economic', temporality: 'open-ended', heterogeneity: 'shared' },
+    // Taxonomy breadth: one scenario per previously uncovered coarse cell
+    'neighborhood-bulletin': { socialForm: 'communal', topology: 'mesh', exchange: 'knowledge', stakes: 'info', temporality: 'ephemeral', heterogeneity: 'shared' },
+    'customary-norms': { socialForm: 'communal', topology: 'coalition', exchange: 'commitment', stakes: 'legal', temporality: 'recurring', heterogeneity: 'contested' },
+    'public-health-advisory': { socialForm: 'authority', topology: 'hierarchy', exchange: 'knowledge', stakes: 'info', temporality: 'one-shot', heterogeneity: 'shared' },
+    'welfare-casework': { socialForm: 'authority', topology: 'hierarchy', exchange: 'care', stakes: 'social', temporality: 'recurring', heterogeneity: 'shared' },
+    'disaster-alert': { socialForm: 'authority', topology: 'hierarchy', exchange: 'access', stakes: 'safety', temporality: 'ephemeral', heterogeneity: 'shared' },
+    'refugee-status': { socialForm: 'authority', topology: 'hierarchy', exchange: 'status', stakes: 'existential', temporality: 'deadline', heterogeneity: 'multilingual' },
+    'peer-review': { socialForm: 'equality', topology: 'mesh', exchange: 'knowledge', stakes: 'info', temporality: 'open-ended', heterogeneity: 'shared' },
+    'arbitration-panel': { socialForm: 'equality', topology: 'coalition', exchange: 'commitment', stakes: 'legal', temporality: 'one-shot', heterogeneity: 'contested' },
+    'mutual-aid-collective': { socialForm: 'equality', topology: 'mesh', exchange: 'care', stakes: 'safety', temporality: 'recurring', heterogeneity: 'shared' },
+    'cooperative-commune': { socialForm: 'equality', topology: 'coalition', exchange: 'goods', stakes: 'existential', temporality: 'open-ended', heterogeneity: 'shared' },
+    'knowledge-marketplace': { socialForm: 'market', topology: 'N:M', exchange: 'knowledge', stakes: 'info', temporality: 'one-shot', heterogeneity: 'shared' },
+    'insurance-market': { socialForm: 'market', topology: 'N:M', exchange: 'capital', stakes: 'safety', temporality: 'one-shot', heterogeneity: 'shared' },
+    'housing-market': { socialForm: 'market', topology: '1:1', exchange: 'space', stakes: 'existential', temporality: 'one-shot', heterogeneity: 'shared' },
 };
 
 export interface CoverageReport {

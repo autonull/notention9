@@ -1,5 +1,6 @@
 import type { OntologyNode } from '../types/index.js';
 import { survivalDomains } from './survivalDomains.js';
+import { governanceDomains } from './governanceDomains.js';
 
 /**
  * Ontology domain definitions - consolidated from separate domain files
@@ -85,6 +86,8 @@ export const communicationDomain: OntologyNode[] = [
                 attributes: {
                     title: { type: 'string', description: 'Title or subject of the message', icon: 'title', operators: { real: ['is', 'contains'], imaginary: ['is not'] } },
                     description: { type: 'string', description: 'Content of the message', icon: 'text', operators: { real: ['is'], imaginary: ['contains'] } },
+                    body: { type: 'string', description: 'Body text of the message', icon: 'text', operators: { real: ['is', 'contains'], imaginary: ['is not'] } },
+                    subject: { type: 'string', description: 'Subject line of the message', icon: 'title', operators: { real: ['is', 'contains'], imaginary: ['is not'] } },
                     conversationId: { type: 'string', description: 'Thread or conversation identifier', icon: 'chat-bubble', operators: { real: ['is'], imaginary: ['is not'] } },
                     channel: { type: 'enum', options: ['whatsapp', 'telegram', 'discord', 'sms', 'email', 'slack', 'teams', 'signal', 'call'], description: 'Communication channel', icon: 'share', operators: { real: ['is'], imaginary: ['is not'] } },
                     from: { type: 'string', description: 'Sender identifier (phone, email, username)', icon: 'arrow-left', operators: { real: ['is'], imaginary: ['is not', 'contains'] } },
@@ -286,7 +289,23 @@ export const requestDomain: OntologyNode[] = [
                 attributes: {
                     need: { type: 'string', description: 'What is needed.', icon: 'sparkles', operators: { real: ['is', 'contains'], imaginary: ['is not', 'contains'] } },
                     schedule: { type: 'string', description: 'When the need applies.', icon: 'clock', operators: { real: ['is', 'contains'], imaginary: ['is not', 'contains'] } },
-                    frequency: { type: 'string', description: 'How often the need recurs.', icon: 'refresh', operators: { real: ['is', 'contains'], imaginary: ['is not'] } }
+                    frequency: { type: 'string', description: 'How often the need recurs.', icon: 'refresh', operators: { real: ['is', 'contains'], imaginary: ['is not'] } },
+                    item: { type: 'string', description: 'Physical goods requested.', icon: 'package', operators: { real: ['is', 'contains'], imaginary: ['is not'] } },
+                    recipient: { type: 'string', description: 'Who the request is for.', icon: 'user', operators: { real: ['is', 'contains'], imaginary: ['is not'] } },
+                    audience: { type: 'string', description: 'Intended beneficiaries.', icon: 'users', operators: { real: ['is', 'contains'], imaginary: ['is not'] } },
+                    format: { type: 'string', description: 'Delivery format (virtual, in-person, hybrid).', icon: 'monitor', operators: { real: ['is', 'contains'], imaginary: ['is not'] } },
+                    level: { type: 'string', description: 'Skill or experience level.', icon: 'trending-up', operators: { real: ['is', 'contains'], imaginary: ['is not'] } },
+                    subject: { type: 'string', description: 'Subject taught or discussed.', icon: 'book', operators: { real: ['is', 'contains'], imaginary: ['is not'] } },
+                    topic: { type: 'string', description: 'Topic of the service.', icon: 'tag', operators: { real: ['is', 'contains'], imaginary: ['is not'] } },
+                    focus: { type: 'string', description: 'Focus area of the service.', icon: 'target', operators: { real: ['is', 'contains'], imaginary: ['is not'] } },
+                    student: { type: 'string', description: 'Learner in the request.', icon: 'user', operators: { real: ['is', 'contains'], imaginary: ['is not'] } },
+                    patient: { type: 'string', description: 'Care recipient in the request.', icon: 'heart', operators: { real: ['is', 'contains'], imaginary: ['is not'] } },
+                    vehicle: { type: 'string', description: 'Vehicle requirements.', icon: 'truck', operators: { real: ['is', 'contains'], imaginary: ['is not'] } },
+                    property: { type: 'string', description: 'Property being serviced.', icon: 'home', operators: { real: ['is', 'contains'], imaginary: ['is not'] } },
+                    event: { type: 'string', description: 'Occasion of the request.', icon: 'calendar', operators: { real: ['is', 'contains'], imaginary: ['is not'] } },
+                    task: { type: 'string', description: 'Task to be performed.', icon: 'check', operators: { real: ['is', 'contains'], imaginary: ['is not'] } },
+                    certification: { type: 'string', description: 'Certifications required.', icon: 'badge', operators: { real: ['is', 'contains'], imaginary: ['is not'] } },
+                    dietary: { type: 'string', description: 'Dietary constraints.', icon: 'leaf', operators: { real: ['is', 'contains'], imaginary: ['is not'] } },
                 }
             }
         ]
@@ -314,5 +333,6 @@ export const DEFAULT_ONTOLOGY: OntologyNode[] = combineDomains(
     workDomain,
     commerceDomain,
     requestDomain,
-    survivalDomains
+    survivalDomains,
+    governanceDomains
 );

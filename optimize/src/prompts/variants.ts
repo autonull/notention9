@@ -5,26 +5,10 @@
 
 import { DEFAULT_ONTOLOGY } from '@notention/core';
 import type { OntologyNode } from '@notention/core/types';
-
-function collectAllKeys(ontology: OntologyNode[]): string[] {
-    const keys: string[] = [];
-    function traverse(nodes: OntologyNode[]) {
-        for (const node of nodes) {
-            if (node.attributes) {
-                keys.push(...Object.keys(node.attributes));
-            }
-            if (node.children) {
-                traverse(node.children);
-            }
-        }
-    }
-    traverse(ontology);
-    return [...new Set(keys)];
-}
+import { EXTRACTION_EXAMPLES, leafOntologyKeys } from './extractionPrompt.js';
 
 function formatOntologyForPrompt(ontology: OntologyNode[]): string {
-    const keys = collectAllKeys(ontology);
-    return keys.sort().join(', ');
+    return leafOntologyKeys(ontology).join(', ');
 }
 
 function formatOntologyDetailed(ontology: OntologyNode[]): string {
@@ -50,24 +34,11 @@ function formatOntologyDetailed(ontology: OntologyNode[]): string {
 const ONTOLOGY_KEYS = formatOntologyForPrompt(DEFAULT_ONTOLOGY);
 const ONTOLOGY_DETAILED = formatOntologyDetailed(DEFAULT_ONTOLOGY);
 
-// Few-shot examples
-const FEW_SHOT_EXAMPLES = [
-    {
-        input: 'Need a wheelchair ramp installed before Friday, budget 900',
-        output: [
-            { key: 'role', operator: 'contains', values: ['wheelchair ramp'] },
-            { key: 'budget', operator: 'less than', values: ['900 USD'] },
-        ],
-    },
-    {
-        input: 'Buy groceries tomorrow - milk, eggs, bread under $50',
-        output: [
-            { key: 'item', operator: 'contains', values: ['milk, eggs, bread'] },
-            { key: 'schedule', operator: 'contains', values: ['tomorrow'] },
-            { key: 'budget', operator: 'less than', values: ['50 USD'] },
-        ],
-    },
-];
+// Few-shot examples shared with the llama.cpp bridge so the policies cannot drift.
+const FEW_SHOT_EXAMPLES = EXTRACTION_EXAMPLES.slice(0, 2).map(example => ({
+    input: example.input,
+    output: JSON.parse(example.output) as unknown,
+}));
 
 function formatExamples(examples: typeof FEW_SHOT_EXAMPLES): string {
     return examples

@@ -19,23 +19,26 @@ import {
     ChatMLChatWrapper,
     QwenChatWrapper,
 } from 'node-llama-cpp';
-import { DEFAULT_ONTOLOGY, collectOntologyKeysInTree, parsePropertiesJson } from '@notention/core';
+import { DEFAULT_ONTOLOGY, parsePropertiesJson } from '@notention/core';
 import type { Property, OntologyNode } from '@notention/core';
+import { buildSystemPrompt, leafOntologyKeys } from '../prompts/extractionPrompt.js';
+import { VALID_OPERATOR_SET } from '../prompts/policy.js';
+import { renderFewShot, selectFewShot, type LabelledCase } from '../prompts/fewShot.js';
+
+export type GpuLayerSetting = number | 'auto' | 'max';
 
 export interface LlamaCppBridgeOptions {
     modelPath: string;
     contextSize?: number;
-    gpuLayers?: number;
+    gpuLayers?: GpuLayerSetting;
     temperature?: number;
     timeout?: number;
     /** Instruction block; derived from the ontology when omitted. */
     systemPrompt?: string;
+    /** Labelled cases used for retrieval-selected few-shot prompting. */
+    fewShotBank?: readonly LabelledCase[];
+    fewShotCount?: number;
 }
-
-const VALID_OPERATORS = [
-    'is', 'is not', 'contains', 'greater than', 'less than',
-    'before', 'after', 'near', 'between', 'has', 'not has',
-] as const;
 
 let cachedLlama: Llama | null = null;
 let cachedModel: LlamaModel | null = null;
@@ -43,10 +46,10 @@ let cachedContext: LlamaContext | null = null;
 let cachedSequence: LlamaContextSequence | null = null;
 let cachedSession: LlamaChatSession | null = null;
 let cachedGrammar: { signature: string; grammar: LlamaGrammar } | null = null;
-let currentOptions: Required<Omit<LlamaCppBridgeOptions, 'timeout'>> | null = null;
+let currentOptions: Required<Omit<LlamaCppBridgeOptions, 'timeout' | 'fewShotBank' | 'fewShotCount'>> | null = null;
 
 const DEFAULT_CONTEXT_SIZE = 4096;
-const DEFAULT_GPU_LAYERS = 0; // CPU only for CI compatibility
+const DEFAULT_GPU_LAYERS: GpuLayerSetting = 'max'; // Use the GPU when one is available
 const DEFAULT_TEMPERATURE = 0; // Greedy decoding: the golden gate must be reproducible
 const DEFAULT_TIMEOUT = 120000;
 
@@ -55,12 +58,21 @@ function getModelPath(): string {
     return process.env.LLAMA_MODEL_PATH || '/home/me/notention9/models/Qwen_Qwen3.5-0.8B-Q4_K_M.gguf';
 }
 
+/** LLAMA_GPU_LAYERS overrides the default ("max"): a number, "auto", or "max". */
+function resolveGpuLayers(): GpuLayerSetting {
+    const raw = process.env.LLAMA_GPU_LAYERS;
+    if (!raw) return DEFAULT_GPU_LAYERS;
+    if (raw === 'auto' || raw === 'max') return raw;
+    const layers = Number(raw);
+    return Number.isFinite(layers) ? layers : DEFAULT_GPU_LAYERS;
+}
+
 async function getOrCreateLlama(): Promise<Llama> {
     if (cachedLlama) return cachedLlama;
 
     console.log('[LlamaCpp] Initializing llama.cpp...');
     cachedLlama = await getLlama();
-    console.log('[LlamaCpp] llama.cpp initialized');
+    console.log(`[LlamaCpp] llama.cpp initialized (backend: ${cachedLlama.gpu ?? 'cpu'})`);
     return cachedLlama;
 }
 
@@ -84,43 +96,7 @@ async function disposeSession(): Promise<void> {
     cachedGrammar = null;
 }
 
-/** Ontology keys live on descendant nodes; `collectOntologyKeys` only sees top-level nodes. */
-function leafOntologyKeys(ontology: OntologyNode[]): string[] {
-    const keys = collectOntologyKeysInTree(ontology);
-    return [...new Set([...keys].map(key => key.split('.').pop() ?? key))].sort();
-}
-
-function buildSystemPrompt(ontology: OntologyNode[]): string {
-    const keysList = leafOntologyKeys(ontology).join(', ') || 'none';
-
-    return `You are a precise semantic property extraction system. Output ONLY a JSON array. Do not explain.
-
-Each item has exactly: "key" (from the ontology keys), "operator", and "values" (non-empty string array).
-
-Ontology keys: ${keysList}
-
-Modality rules:
-- A meeting or appointment => "intent" "is" "schedule". A need/request => "intent" "is" "request".
-- Actual facts and events use the real operator "is".
-- Desires, needs, requests, and hypotheticals are NOT facts. Use constraint operators: "is not", "contains", "greater than", "less than", "before", "after", "near".
-- Mark a need with key "need" and "intent" value "request".
-- A pure hypothetical with no concrete constraint returns [].
-- Never assert a desire as "is": "I want a cheap laptop" is a constraint ("price less than ..."), not a fact.
-- Always include "intent" when the note has a clear intent.
-
-Examples:
-"Meeting with John tomorrow at 10am" -> [{"key":"intent","operator":"is","values":["schedule"]},{"key":"to","operator":"is","values":["John"]}]
-"I need to buy milk and eggs" -> [{"key":"intent","operator":"is","values":["request"]},{"key":"need","operator":"contains","values":["milk","eggs"]}]
-"Need a wheelchair ramp before Friday, budget 900" -> [{"key":"intent","operator":"is","values":["request"]},{"key":"need","operator":"contains","values":["wheelchair ramp"]},{"key":"budget","operator":"less than","values":["900 USD"]}]
-"looking for a laptop under $1000" -> [{"key":"intent","operator":"is","values":["request"]},{"key":"price","operator":"less than","values":["1000 USD"]}]
-"maybe we should consider the new proposal" -> []
-"I am a software engineer looking for a job" -> [{"key":"role","operator":"is","values":["software engineer"]},{"key":"intent","operator":"is","values":["request"]}]
-"contact me at john.doe@example.com" -> [{"key":"email","operator":"is","values":["john.doe@example.com"]}]
-"price equals 100 dollars" -> [{"key":"price","operator":"is","values":["100 USD"]}]
-"meeting between 2pm and 4pm tomorrow" -> [{"key":"intent","operator":"is","values":["schedule"]},{"key":"startTime","operator":"is","values":["2pm"]},{"key":"endTime","operator":"is","values":["4pm"]}]
-"meeting at the office in San Francisco" -> [{"key":"intent","operator":"is","values":["schedule"]},{"key":"location","operator":"is","values":["San Francisco"]}]
-"my SSN is 123-45-6789" -> []`;
-}
+/** Ontology keys live on descendant nodes; `leafOntologyKeys` flattens them. */
 
 /** Qwen 3+ need the Qwen wrapper; Qwen 2.5 and earlier use ChatML. */
 export function resolveChatWrapperKind(
@@ -149,7 +125,7 @@ async function getOrCreateGrammar(llama: Llama, ontology: OntologyNode[]): Promi
             type: 'object',
             properties: {
                 key: { enum: keys },
-                operator: { enum: [...VALID_OPERATORS] },
+                operator: { enum: [...VALID_OPERATOR_SET] },
                 values: { type: 'array', items: { type: 'string' }, minItems: 1 },
             },
             required: ['key', 'operator', 'values'],
@@ -166,7 +142,7 @@ export async function getOrCreateLlamaSession(options: LlamaCppBridgeOptions): P
     const opts = {
         modelPath: options.modelPath || getModelPath(),
         contextSize: options.contextSize ?? DEFAULT_CONTEXT_SIZE,
-        gpuLayers: options.gpuLayers ?? DEFAULT_GPU_LAYERS,
+        gpuLayers: options.gpuLayers ?? resolveGpuLayers(),
         temperature: options.temperature ?? DEFAULT_TEMPERATURE,
         systemPrompt: options.systemPrompt ?? buildSystemPrompt(DEFAULT_ONTOLOGY),
     };
@@ -188,6 +164,7 @@ export async function getOrCreateLlamaSession(options: LlamaCppBridgeOptions): P
         modelPath: opts.modelPath,
         gpuLayers: opts.gpuLayers,
     });
+    console.log(`[LlamaCpp] Offloaded GPU layers: ${cachedModel.gpuLayers}`);
 
     cachedContext = await cachedModel.createContext({ contextSize: opts.contextSize });
     cachedSequence = cachedContext.getSequence();
@@ -249,9 +226,7 @@ export function parseResponse(response: string, ontology: OntologyNode[]): Prope
         .filter(property => allowedKeys.has(property.key))
         .map(property => ({
             ...property,
-            operator: VALID_OPERATORS.includes(property.operator as typeof VALID_OPERATORS[number])
-                ? property.operator
-                : 'is',
+            operator: VALID_OPERATOR_SET.has(property.operator) ? property.operator : 'is',
         }))
         .filter(property => {
             const signature = `${property.key}|${property.operator}|${property.values.join(',')}`;
@@ -275,7 +250,12 @@ export async function extractWithLlamaCpp(
     // Each extraction is independent; do not let prior cases bias the model.
     session.resetChatHistory();
 
-    const response = await session.prompt(text, {
+    const examples = options.fewShotBank
+        ? selectFewShot(text, options.fewShotBank, options.fewShotCount ?? 3)
+        : [];
+    const userPrompt = `${renderFewShot(examples)}Extract from: "${text}"`;
+
+    const response = await session.prompt(userPrompt, {
         maxTokens: 512,
         temperature: options.temperature ?? DEFAULT_TEMPERATURE,
         grammar,
