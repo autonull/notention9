@@ -4,7 +4,7 @@
  */
 
 import { Command } from 'commander';
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { evaluateGoldenSet, type GoldenCase, type Provider, DeterministicProvider, CannedProvider } from './evaluate.js';
@@ -22,20 +22,25 @@ async function loadGoldenCases(): Promise<GoldenCase[]> {
 }
 
 async function loadQualityCases(): Promise<GoldenCase[]> {
-    const qualityPath = join(__dirname, '..', '..', '..', 'eval', 'cases', 'manifest.json');
-    try {
-        const content = readFileSync(qualityPath, 'utf-8');
-        const manifest = JSON.parse(content);
-        return manifest.cases.map((c: any) => ({
-            name: c.id,
-            input: c.input,
-            expected: c.expected,
-            forbidden: c.forbidden ?? [],
-            expectedOutcome: c.expectedOutcome ?? 'suggested',
-        }));
-    } catch {
-        return [];
+    const casesDir = join(__dirname, '..', '..', '..', 'data', 'eval', 'cases');
+    const manifestPath = join(casesDir, 'manifest.json');
+    if (!existsSync(manifestPath)) {
+        throw new Error(`Quality cases not found at ${manifestPath}; regenerate the eval corpus first`);
     }
+
+    const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
+    return manifest.cases
+        .filter((entry: { qualityFamily?: string }) => entry.qualityFamily === 'extraction')
+        .map((entry: { id: string; path: string }) => {
+            const data = JSON.parse(readFileSync(join(casesDir, entry.path), 'utf-8'));
+            return {
+                name: entry.id,
+                input: data.input,
+                expected: data.expected,
+                forbidden: data.forbidden ?? [],
+                expectedOutcome: data.expectedOutcome ?? 'suggested',
+            };
+        });
 }
 
 class RegistryProvider implements Provider {
@@ -77,10 +82,16 @@ function printResults(label: string, results: Awaited<ReturnType<typeof evaluate
     const passed = results.filter(r => r.passed).length;
     const total = results.length;
     const allErrors = results.flatMap(r => r.errors);
+    const mean = (pick: (metrics: ReturnType<typeof computeF1>) => number) =>
+        total === 0 ? 0 : results.reduce((sum, r) => sum + pick(computeF1(r.expected, r.actual)), 0) / total;
+    const f1 = mean(metrics => metrics.f1);
+    const precision = mean(metrics => metrics.precision);
+    const recall = mean(metrics => metrics.recall);
 
     console.log(`\n${label}`);
     console.log('='.repeat(label.length));
     console.log(`Passed: ${passed}/${total} (${((passed / total) * 100).toFixed(1)}%)`);
+    console.log(`Mean F1: ${f1.toFixed(3)} (precision ${precision.toFixed(3)}, recall ${recall.toFixed(3)})`);
 
     if (allErrors.length > 0) {
         console.log('\nErrors:');

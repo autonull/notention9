@@ -47,16 +47,12 @@ let currentOptions: Required<Omit<LlamaCppBridgeOptions, 'timeout'>> | null = nu
 
 const DEFAULT_CONTEXT_SIZE = 4096;
 const DEFAULT_GPU_LAYERS = 0; // CPU only for CI compatibility
-const DEFAULT_TEMPERATURE = 0.1;
+const DEFAULT_TEMPERATURE = 0; // Greedy decoding: the golden gate must be reproducible
 const DEFAULT_TIMEOUT = 120000;
 
 function getModelPath(): string {
     // Default to Qwen 3.5 0.8B: small, CPU-friendly, already wired into the eval flow.
     return process.env.LLAMA_MODEL_PATH || '/home/me/notention9/models/Qwen_Qwen3.5-0.8B-Q4_K_M.gguf';
-}
-
-function isQwen(modelPath: string): boolean {
-    return /qwen/i.test(modelPath);
 }
 
 async function getOrCreateLlama(): Promise<Llama> {
@@ -104,13 +100,13 @@ Each item has exactly: "key" (from the ontology keys), "operator", and "values" 
 Ontology keys: ${keysList}
 
 Modality rules:
+- A meeting or appointment => "intent" "is" "schedule". A need/request => "intent" "is" "request".
 - Actual facts and events use the real operator "is".
 - Desires, needs, requests, and hypotheticals are NOT facts. Use constraint operators: "is not", "contains", "greater than", "less than", "before", "after", "near".
 - Mark a need with key "need" and "intent" value "request".
 - A pure hypothetical with no concrete constraint returns [].
 - Never assert a desire as "is": "I want a cheap laptop" is a constraint ("price less than ..."), not a fact.
 - Always include "intent" when the note has a clear intent.
-- A meeting or appointment => "intent" "is" "schedule". A need/request => "intent" "is" "request".
 
 Examples:
 "Meeting with John tomorrow at 10am" -> [{"key":"intent","operator":"is","values":["schedule"]},{"key":"to","operator":"is","values":["John"]}]
@@ -121,16 +117,25 @@ Examples:
 "I am a software engineer looking for a job" -> [{"key":"role","operator":"is","values":["software engineer"]},{"key":"intent","operator":"is","values":["request"]}]
 "contact me at john.doe@example.com" -> [{"key":"email","operator":"is","values":["john.doe@example.com"]}]
 "price equals 100 dollars" -> [{"key":"price","operator":"is","values":["100 USD"]}]
-"meeting between 2pm and 4pm tomorrow" -> [{"key":"startTime","operator":"is","values":["2pm"]},{"key":"endTime","operator":"is","values":["4pm"]}]
-"meeting at the office in San Francisco" -> [{"key":"location","operator":"is","values":["San Francisco"]}]
+"meeting between 2pm and 4pm tomorrow" -> [{"key":"intent","operator":"is","values":["schedule"]},{"key":"startTime","operator":"is","values":["2pm"]},{"key":"endTime","operator":"is","values":["4pm"]}]
+"meeting at the office in San Francisco" -> [{"key":"intent","operator":"is","values":["schedule"]},{"key":"location","operator":"is","values":["San Francisco"]}]
 "my SSN is 123-45-6789" -> []`;
 }
 
+/** Qwen 3+ need the Qwen wrapper; Qwen 2.5 and earlier use ChatML. */
+export function resolveChatWrapperKind(
+    modelPath: string
+): { type: 'qwen'; variation: '3' | '3.5' } | { type: 'chatml' } {
+    const version = /qwen[^0-9]*(\d+(?:\.\d+)?)/i.exec(modelPath)?.[1];
+    if (version === undefined || Number(version) < 3) return { type: 'chatml' };
+    return { type: 'qwen', variation: Number(version) >= 3.5 ? '3.5' : '3' };
+}
+
 function createChatWrapper(modelPath: string) {
-    if (isQwen(modelPath)) {
-        return new QwenChatWrapper({ variation: '3.5', thoughts: 'discourage' });
-    }
-    return new ChatMLChatWrapper();
+    const kind = resolveChatWrapperKind(modelPath);
+    return kind.type === 'qwen'
+        ? new QwenChatWrapper({ variation: kind.variation, thoughts: 'discourage' })
+        : new ChatMLChatWrapper();
 }
 
 async function getOrCreateGrammar(llama: Llama, ontology: OntologyNode[]): Promise<LlamaGrammar> {
@@ -207,35 +212,53 @@ function unwrapResponse(response: string): string {
         .trim();
 }
 
-function parseResponse(response: string, ontology: OntologyNode[]): Property[] {
-    const cleaned = unwrapResponse(response);
+/** Best-effort JSON extraction: a truncated array is cut at its last complete object. */
+function extractJsonArray(cleaned: string): unknown[] | null {
     const start = cleaned.indexOf('[');
-    if (start === -1) return [];
+    if (start === -1) return null;
 
-    // Prefer a complete array; otherwise repair a truncation at the last whole object.
+    const tryParse = (candidate: string): unknown[] | null => {
+        try {
+            const parsed: unknown = JSON.parse(candidate);
+            return Array.isArray(parsed) ? parsed : null;
+        } catch {
+            return null; // candidate slices are speculative
+        }
+    };
+
     const end = cleaned.lastIndexOf(']');
-    const json = end > start
-        ? cleaned.slice(start, end + 1)
-        : (() => {
-            const lastBrace = cleaned.lastIndexOf('}');
-            return lastBrace > start ? `${cleaned.slice(start, lastBrace + 1)}]` : null;
-        })();
-    if (!json) return [];
-
-    try {
-        const allowedKeys = new Set(leafOntologyKeys(ontology));
-        return parsePropertiesJson(JSON.parse(json))
-            .filter(property => allowedKeys.has(property.key))
-            .map(property => ({
-                ...property,
-                operator: VALID_OPERATORS.includes(property.operator as typeof VALID_OPERATORS[number])
-                    ? property.operator
-                    : 'is',
-            }));
-    } catch (error) {
-        console.warn('[LlamaCpp] Failed to parse response:', error);
-        return [];
+    if (end > start) {
+        const complete = tryParse(cleaned.slice(start, end + 1));
+        if (complete) return complete;
     }
+
+    for (let brace = cleaned.lastIndexOf('}'); brace > start; brace = cleaned.lastIndexOf('}', brace - 1)) {
+        const repaired = tryParse(`${cleaned.slice(start, brace + 1)}]`);
+        if (repaired) return repaired;
+    }
+    return null;
+}
+
+export function parseResponse(response: string, ontology: OntologyNode[]): Property[] {
+    const properties = extractJsonArray(unwrapResponse(response));
+    if (!properties) return [];
+
+    const allowedKeys = new Set(leafOntologyKeys(ontology));
+    const seen = new Set<string>();
+    return parsePropertiesJson(properties)
+        .filter(property => allowedKeys.has(property.key))
+        .map(property => ({
+            ...property,
+            operator: VALID_OPERATORS.includes(property.operator as typeof VALID_OPERATORS[number])
+                ? property.operator
+                : 'is',
+        }))
+        .filter(property => {
+            const signature = `${property.key}|${property.operator}|${property.values.join(',')}`;
+            if (seen.has(signature)) return false;
+            seen.add(signature);
+            return true;
+        });
 }
 
 export async function extractWithLlamaCpp(
