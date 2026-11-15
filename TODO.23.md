@@ -940,6 +940,33 @@ pnpm probe --headless                ✅ Ran (0% comprehension without human par
   - Orphan keys reduced: 100 → 97 (3 new keys covered: jurisdiction, priority, need)
   - E14 patch test: 6 patches tested, all non-regressive (0.000 F1 baseline maintained)
   - Manifest updated and verified (124 total cases)
-- Front B: Conduct manual comprehension probe with 3-5 human participants on Home screen
-- Front B: Record T1 videos (semantic-capture, bidirectional-match, family-evacuation) when human participants available
-- Front D: Record T2 videos for 4 scenarios when human participants available
+- Front B: Conduct manual comprehension probe with 3-5 human participants on Home screen ⏳ **BLOCKED — requires human participants**
+- Front B: Record T1 videos (semantic-capture, bidirectional-match, family-evacuation) ⏳ **BLOCKED — requires human participants + recording setup**
+- Front D: Record T2 videos for 4 scenarios ⏳ **BLOCKED — requires human participants + recording setup**
+
+---
+
+## Summary: Automated Work Complete (2026-11-14)
+
+All automated development work across all four fronts is complete:
+
+| Front | Status | Key Metrics |
+|-------|--------|-------------|
+| **Front A** (Core & Resilience) | ✅ Complete | 852 core tests pass; chaos drills pass; offline queue zero-loss verified |
+| **Front B** (Usability) | ✅ Complete (automated) | Labels tag manager, Automation toggle, probe infrastructure ready; comprehension probe & videos blocked on humans |
+| **Front C** (Ontology & Taxonomy) | ✅ Complete | 25 scenarios across 16 taxonomy cells; all baselines calibrated (10 reps); pluggable JSON-driven ontology; 1098/1098 tests pass |
+| **Front D** (Demonstration) | ✅ Complete (automated) | Video recording procedures documented (T1, T2, Dashboard v2); ontology config documented; recording blocked on humans |
+
+**Taxonomy Coverage**: 16/24 Fiske/Ostrom cells covered (67%)
+- Authority Ranking: government-services, labor-dispute
+- Equality Matching: referral-network, professional-referral-network
+- Market Pricing: decentralized-identity, gig-economy, freelance-marketplace, hiring-pipeline, investor-startup
+- Communal Sharing: kinship-care, crisis-response, contested-resources, commons-governance
+- Cross-cutting: cross-cultural, long-term-commitment, generational-stewardship, learning-community, events-&-networking, cofounder-matching, mentorship-network, open-source-contrib, research-collaboration, legal-contract, project-collaboration
+
+**Blocked on Human Participants**: 
+1. Manual comprehension probe (Home screen, Inbox paradigm, primary CTA verification)
+2. T1 video recording: semantic-capture, bidirectional-match, family-evacuation
+3. T2 video recording: 4 scenarios per `doc/t2-video-recording-procedures.md`
+
+These require scheduling 3-5 human participants and a video recording session. All infrastructure (probe automation, deterministic simulator seeds, Playwright/CDP recording procedures) is in place and documented.
