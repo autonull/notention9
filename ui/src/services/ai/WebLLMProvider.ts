@@ -2,7 +2,7 @@ import {CreateMLCEngine, MLCEngine} from "@mlc-ai/web-llm";
 import type {Note, OntologyAttribute, OntologyNode, Property} from '@notention/core';
 import type {InferredAttribute} from './types';
 import {BaseAIProvider} from './BaseProvider.js';
-import {Logger, collectOntologyKeys, parsePropertiesJson} from '@notention/core';
+import {Logger, collectOntologyKeysInTree, parsePropertiesJson} from '@notention/core';
 
 export const AVAILABLE_MODELS = [
     {id: "Llama-3.2-3B-Instruct-q4f16_1-MLC", label: "Llama 3.2 3B (Balanced)"},
@@ -43,7 +43,7 @@ export class WebLLMProvider extends BaseAIProvider {
         }
 
         // Extract ontology keys for context
-        const ontologyKeys = ontology ? collectOntologyKeys(ontology) : new Set<string>();
+        const ontologyKeys = ontology ? collectOntologyKeysInTree(ontology) : new Set<string>();
 
         let ontologyContext = "";
         if (ontologyKeys.size > 0) {
@@ -114,7 +114,7 @@ export class WebLLMProvider extends BaseAIProvider {
         const engine = await this.getEngine();
         if (!engine) throw new Error("WebLLM engine not available");
 
-        const keys = collectOntologyKeys(ontology);
+        const keys = collectOntologyKeysInTree(ontology);
 
         const prompt = `
       Extract semantic properties from the text as structured JSON.

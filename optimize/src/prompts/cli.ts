@@ -49,6 +49,7 @@ class RegistryProvider implements Provider {
         this.version = version;
         this.bridgeProvider = new WebLLMBridgeProvider({
             modelId: 'Llama-3.2-3B-Instruct-q4f16_1-MLC',
+            headed: process.env.WEBLLM_HEADED === '1',
         });
     }
 
@@ -63,7 +64,7 @@ class LlamaCppProvider implements Provider {
 
     constructor() {
         this.bridgeProvider = new LlamaCppBridgeProvider({
-            modelPath: process.env.LLAMA_MODEL_PATH || '/home/me/notention9/models/hf_bartowski_Llama-3.2-3B-Instruct.Q4_K_M.gguf',
+            modelPath: process.env.LLAMA_MODEL_PATH || '/home/me/notention9/models/Qwen_Qwen3.5-0.8B-Q4_K_M.gguf',
         });
     }
 

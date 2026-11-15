@@ -4,6 +4,35 @@
 
 ---
 
+## Session 2 Progress — 2026-11-15
+
+**Model choice corrected.** The llama.cpp bridge uses **Qwen 3.5 0.8B** (the pre-existing default) again. A 3B Llama switch was reverted: it was an unverified assumption and slower on CPU.
+
+**Modality corrected.** Extraction examples previously flattened desires/hypotheticals into asserted facts. The ontology distinguishes:
+- `real` operators (`is`, `greater than`, `less than`, `before`, `after`, `near`) → facts
+- `imaginary`/constraint operators (`is not`, `contains`, `between`, `not has`) → desires, needs, requests
+
+`isIndefiniteOperator` + `inferNoteIntent` (`request`/`need`/`want` → Imaginary) carry this. The prompt and the golden set now encode it:
+- "i need to buy milk" → `intent is request` + `need contains [milk, eggs]` (not `intent is shopping`)
+- "maybe we should consider X" → `[]` (pure hypothetical, no asserted property)
+- "looking for a laptop under $1000" → `intent is request` + `price less than 1000 USD`
+- "I am a software engineer looking for a job" → `role is software engineer` + `intent is request`
+
+**Root-cause fix: ontology keys.** `collectOntologyKeys` (loader) only reads top-level nodes and skipped child attributes (`intent`, `role`, `email`, `price`, `budget`, `need`, `deadline`). The bridge and `ui/src/services/ai/WebLLMProvider.ts` now use the recursive `collectOntologyKeysInTree`. This raised the Qwen 3.5 golden score from 2/10 to **9/10**.
+
+**llama.cpp bridge hardened** (`optimize/src/llm/llamaCppBridge.ts`):
+- Qwen 3.5 uses `QwenChatWrapper({ variation: '3.5', thoughts: 'discourage' })` — no 500-token thinking block.
+- JSON-schema grammar constrains `key` to ontology leaf keys and `operator` to valid operators; `maxItems: 8`.
+- Independent chat history per extraction (`resetChatHistory`).
+- Robust unwrap/repair: strips `<think>`/fences, repairs truncated arrays.
+- Post-filters keys/operators to the ontology.
+
+**Remaining known limitation:** the 0.8B model omits `intent is schedule` on "Meeting with John tomorrow at 10am" (9/10). It prefers `meetingType`/`startTime`. A larger or fine-tuned model should close this; the grammar guarantees valid vocabulary, not semantic choice.
+
+**WebLLM bridge:** added `headed` option + `WebGPU,Vulkan` flags. Still requires a real GPU (or X server + GPU); headless SwiftShader reports "No available adapters".
+
+---
+
 ## ⏳ BLOCKED — Requires Human Participants
 
 | Item | Front | Description | Infrastructure Ready |
@@ -22,9 +51,9 @@
 | Task | Status | Notes |
 |------|--------|-------|
 | Wire WebLLM into optimizer | ✅ **Implemented** | `optimize/src/llm/webllmBridge.ts` — Playwright bridge to UI build with WebLLM. HTTP server serves UI assets. WebGPU works in headed mode; headless needs `--headless=new` + GPU runner. |
-| Implement llama.cpp-embedded for Node.js | ✅ **Implemented** | `optimize/src/llm/llamaCppBridge.ts` — `node-llama-cpp` bridge loads GGUF models directly in Node.js. Model downloaded to `/home/me/notention9/models/`. |
-| Benchmark harness: local LLM vs quality cases | ⚠️ **Partial** | Both providers integrated into `pnpm prompts:eval --provider webllm|llamacpp`. WebLLM works but needs headed Chrome or GPU runner. llama.cpp works but base Llama 3.2 3B model not fine-tuned for ontology-constrained extraction (uses wrong keys, triggers safety filters). |
-| Prompt optimization loop | ❌ Not started | Optimizer loop exists (`pnpm loop run`) but needs working LLM provider for quality evaluation. |
+| Implement llama.cpp-embedded for Node.js | ✅ **Implemented + hardened** | `optimize/src/llm/llamaCppBridge.ts` — `node-llama-cpp` loads Qwen 3.5 0.8B GGUF. JSON-schema grammar constrains keys/operators; Qwen wrapper disables verbose thinking; independent history per case. |
+| Benchmark harness: local LLM vs quality cases | ⚠️ **Runs; 9/10 golden** | Both providers run via `pnpm prompts:eval eval --provider webllm\|llamacpp`. WebLLM needs a GPU. Qwen 3.5 0.8B scores 9/10 (misses `intent is schedule` on one meeting case); deterministic baseline 4/10. |
+| Prompt optimization loop | ❌ Not started | Optimizer loop exists (`pnpm loop run`) but needs a provider with usable quality for evaluation. |
 
 **Recommended path**: 
 - **Option A (WebLLM)**: Use headed Chrome or CI GPU runner for WebGPU. Reuses UI's proven prompts (`doAlignToOntology`).
@@ -78,19 +107,21 @@ node optimize/download-model.mjs
 - **Fallback**: Both providers fall back to deterministic provider on failure.
 
 **Success Criteria**:
-- [x] `pnpm prompts:eval --provider webllm` runs (needs headed Chrome)
-- [x] `pnpm prompts:eval --provider llamacpp` runs (model loads, but quality low)
+- [x] `pnpm prompts:eval --provider webllm` runs (needs headed Chrome + GPU)
+- [x] `pnpm prompts:eval --provider llamacpp` runs (Qwen 3.5 0.8B; valid JSON, low key accuracy)
 - [ ] 60 quality cases evaluated in < 10 minutes with good F1
 - [ ] Optimizer loop can adopt best prompt automatically
 - [ ] CI can run (with GPU runner for WebLLM)
 
 **Alternative: llama.cpp-embedded (Option B) — Current Limitation**
 ```
-Base Llama-3.2-3B-Instruct-Q4_K_M.gguf not suitable for ontology-constrained extraction:
-- Uses keys not in ontology (event, event.title, event.cost, etc.)
-- Triggers safety filters on PII, prices, emails
-- Doesn't follow JSON-only output format consistently
-Solution: Fine-tune on extraction task or use WebLLM with UI's proven prompts.
+Qwen 3.5 0.8B (default) is fast and CPU-friendly, and the JSON-schema grammar
+keeps output valid, but its key choice is weak:
+- "Meeting with John" -> attendees/event/location instead of intent/to
+- "I need milk" -> event/shopping instead of need contains
+The grammar guarantees vocabulary, not semantics.
+Solution: fine-tune on extraction, or use a larger model (Qwen 2.5 3B / Llama 3.2 3B)
+with the same grammar + modality prompt.
 ```
 
 ---
@@ -140,11 +171,12 @@ Solution: Fine-tune on extraction task or use WebLLM with UI's proven prompts.
 
 **If humans available**: Run comprehension probe + record T1/T2 videos.
 
-**If no humans**: 
-1. **Fix WebLLM headless WebGPU** — Use CI GPU runner or headed Chrome for evaluation
-2. **Improve llama.cpp extraction** — Fine-tune model or implement few-shot prompting with grammar constraints
-3. **Run optimizer loop** — `pnpm loop run` to discover/synthesize/evaluate new improvements
-4. **Expand taxonomy** — Add scenarios for remaining 8 cells
+**If no humans**:
+1. **Improve key accuracy** — Try Qwen 2.5 3B / Llama 3.2 3B with the same grammar + modality prompt (set `LLAMA_MODEL_PATH`). The 0.8B model now emits valid JSON but picks wrong keys.
+2. **Fine-tune or few-shot** — Add retrieval-selected few-shot examples per input, or fine-tune on `data/eval/cases/quality/extraction`.
+3. **Run optimizer loop** — `pnpm loop run` once a provider reaches usable F1.
+4. **Expand taxonomy** — Add scenarios for remaining 8 cells (16/24 covered; `data/loop/taxonomy.json` reports 11 `cellsCovered` — reconcile the two counts).
+5. **WebLLM on GPU CI** — Add a GPU runner; SwiftShader alone reports "No available adapters".
 
 ---
 
@@ -158,9 +190,11 @@ pnpm loop run --output data/loop/runs
 pnpm loop corpus --output data/loop/corpus-output
 
 # Evaluate prompts (now with LLM providers)
-pnpm prompts:eval --quality --provider webllm    # WebLLM via headed Chrome
-pnpm prompts:eval --quality --provider llamacpp  # llama.cpp direct Node.js
-pnpm prompts:eval --quality --provider deterministic  # baseline
+pnpm prompts:eval eval --provider webllm       # WebLLM: headed Chrome + GPU
+pnpm prompts:eval eval --provider llamacpp     # llama.cpp: Qwen 3.5 0.8B (CPU)
+LLAMA_MODEL_PATH=/home/me/notention9/models/hf_bartowski_Qwen2.5-3B-Instruct.Q4_K_M.gguf \
+  pnpm prompts:eval eval --provider llamacpp   # larger model
+pnpm prompts:eval eval --provider deterministic  # baseline
 
 # Run all tests
 pnpm test --filter=@notention/core --filter=@notention/optimize --filter=@notention/simulator --filter=@notention/ui --filter=@notention/agent --filter=@notention/cli

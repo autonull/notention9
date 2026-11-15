@@ -8,13 +8,14 @@ import { chromium, type Browser, type Page } from 'playwright';
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { join, extname } from 'node:path';
-import { DEFAULT_ONTOLOGY, collectOntologyKeys } from '@notention/core';
+import { DEFAULT_ONTOLOGY, collectOntologyKeysInTree } from '@notention/core';
 import type { Property, OntologyNode } from '@notention/core';
 
 export interface WebLLMBridgeOptions {
     uiBuildPath?: string;
     modelId?: string;
     headless?: boolean;
+    headed?: boolean;
     timeout?: number;
 }
 
@@ -101,13 +102,16 @@ async function launchBrowser(options: WebLLMBridgeOptions): Promise<{ browser: B
     const uiBuildPath = options.uiBuildPath ?? DEFAULT_UI_BUILD_PATH;
     const baseUrl = await startHttpServer(uiBuildPath);
     
+    const isHeaded = options.headed ?? false;
+    const isHeadless = isHeaded ? false : (options.headless ?? true);
+    
     const browser = await chromium.launch({
-        headless: options.headless ?? true,
-        args: [
+        headless: isHeadless,
+        args: isHeadless ? [
             '--headless=new',
             '--enable-webgpu',
             '--use-angle=swiftshader',
-            '--enable-features=WebGPU',
+            '--enable-features=WebGPU,Vulkan',
             '--enable-unsafe-swiftshader',
             '--no-sandbox',
             '--disable-setuid-sandbox',
@@ -115,6 +119,19 @@ async function launchBrowser(options: WebLLMBridgeOptions): Promise<{ browser: B
             '--disable-gpu-sandbox',
             '--enable-logging',
             '--v=1',
+            '--ignore-gpu-blocklist',
+        ] : [
+            '--enable-webgpu',
+            '--use-angle=swiftshader',
+            '--enable-features=WebGPU,Vulkan',
+            '--enable-unsafe-swiftshader',
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-gpu-sandbox',
+            '--enable-logging',
+            '--v=1',
+            '--ignore-gpu-blocklist',
         ],
     });
 
@@ -216,7 +233,7 @@ async function initializeWebLLMInPage(page: Page, modelId: string, timeout: numb
 }
 
 async function extractProperties(page: Page, text: string, ontology: OntologyNode[]): Promise<Property[]> {
-    const ontologyKeys = collectOntologyKeys(ontology);
+    const ontologyKeys = collectOntologyKeysInTree(ontology);
 
     const result = await page.evaluate(
         async (args: { text: string; ontologyKeys: string[] }) => {
@@ -265,6 +282,7 @@ export async function getOrCreateBridge(options: WebLLMBridgeOptions): Promise<P
     const opts = {
         modelId: DEFAULT_MODEL_ID,
         headless: true,
+        headed: false,
         timeout: DEFAULT_TIMEOUT,
         uiBuildPath: DEFAULT_UI_BUILD_PATH,
         ...options,
@@ -275,7 +293,8 @@ export async function getOrCreateBridge(options: WebLLMBridgeOptions): Promise<P
         const sameOptions = 
             currentOptions.uiBuildPath === opts.uiBuildPath &&
             currentOptions.modelId === opts.modelId &&
-            currentOptions.headless === opts.headless;
+            currentOptions.headless === opts.headless &&
+            currentOptions.headed === opts.headed;
 
         if (sameOptions) {
             // Verify the page is still alive
