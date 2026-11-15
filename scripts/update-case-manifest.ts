@@ -10,7 +10,7 @@ function main(): void {
         const manifest = generateManifest();
         writeManifest(manifest);
         
-        console.log(`✅ Manifest generated: eval/cases/manifest.json`);
+        console.log(`✅ Manifest generated: data/eval/cases/manifest.json`);
         console.log(`   Hash: ${manifest.hash}`);
         console.log(`   Generated: ${manifest.generatedAt}`);
         console.log(`   Intent cases: ${manifest.counts.intent.search} search, ${manifest.counts.intent.validation} validation, ${manifest.counts.intent.holdout} holdout`);

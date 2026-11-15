@@ -9,8 +9,8 @@ import {fileURLToPath} from 'url';
 
 const __dirname = resolve(fileURLToPath(import.meta.url), '..');
 const PROJECT_ROOT = resolve(__dirname, '..');
-const CASES_DIR = resolve(PROJECT_ROOT, 'eval/cases/quality/match');
-const RESULTS_DIR = resolve(PROJECT_ROOT, 'eval/results');
+const CASES_DIR = resolve(PROJECT_ROOT, 'data/eval/cases/quality/match');
+const RESULTS_DIR = resolve(PROJECT_ROOT, 'data/eval/results');
 
 // Import core matcher (Node.js build)
 import {MatchingService} from '../core/src/matching/MatchingService.js';

@@ -210,7 +210,7 @@ export class GoldenCaseMiner {
     }
 
     // Load curated golden cases from the static file
-    loadCuratedCases(file: string = 'loop/golden-cases.json'): GoldenCase[] {
+    loadCuratedCases(file: string = 'data/loop/golden-cases.json'): GoldenCase[] {
         return this.loadGoldenCases(file);
     }
 

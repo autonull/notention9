@@ -64,7 +64,7 @@ export class DiscoverSubcommand extends BaseSubcommand {
         const goldenCaseMiner = new GoldenCaseMiner('doc/evidence');
         const evidenceCases = await goldenCaseMiner.mine({ minConfidence: 0.5, maxCases: 20 });
         const testCases = goldenCaseMiner.mineFromTests(['core/src/tests', 'ui/src/tests', 'optimize/src/tests']);
-        const curatedCases = goldenCaseMiner.loadCuratedCases('loop/golden-cases.json');
+        const curatedCases = goldenCaseMiner.loadCuratedCases('data/loop/golden-cases.json');
         const goldenCases = [...evidenceCases, ...testCases, ...curatedCases]
             .filter((c, i, arr) => arr.findIndex(x => x.input === c.input) === i)
             .slice(0, 50);
@@ -72,7 +72,7 @@ export class DiscoverSubcommand extends BaseSubcommand {
 
         // 7. Derive tasks from taxonomy × ontology × friction
         this.logInfo('📋 Deriving tasks...');
-        const taxonomy = await loadTaxonomy('loop/taxonomy.json');
+        const taxonomy = await loadTaxonomy('data/loop/taxonomy.json');
         const tasks = deriveTasks(taxonomy, ontology, seams);
         this.logSuccess(`Derived ${tasks.length} tasks`);
 

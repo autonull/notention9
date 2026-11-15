@@ -23,7 +23,7 @@ async function run(experimentId = 'match-display-v1') {
     }
 
     console.log('\n✅ Complete!');
-    console.log('Next: Review loop/runs/latest/, then pnpm loop adopt if winner');
+    console.log('Next: Review data/loop/runs/latest/, then pnpm loop adopt if winner');
 }
 
 run(process.argv[2]).catch(console.error);

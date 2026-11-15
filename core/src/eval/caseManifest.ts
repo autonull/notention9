@@ -37,7 +37,7 @@ function findWorkspaceRoot(startDir: string): string {
     return join(__dirname, '..', '..', '..');
 }
 const PROJECT_ROOT = findWorkspaceRoot(__dirname);
-const CASES_DIR = join(PROJECT_ROOT, 'eval', 'cases');
+const CASES_DIR = join(PROJECT_ROOT, 'data/eval', 'cases');
 
 // Re-export types for backward compatibility
 export type {

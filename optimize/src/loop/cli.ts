@@ -40,7 +40,7 @@ function parseLoopFlags(args: string[]): LoopParsedFlags {
     const json = args.includes('--json');
     const dry = args.includes('--dry');
 
-    let output = 'loop/runs';
+    let output = 'data/loop/runs';
     const outputIndex = args.findIndex(r => r === '--output');
     if (outputIndex !== -1 && outputIndex + 1 < args.length) {
         output = args[outputIndex + 1];
@@ -138,7 +138,7 @@ export async function main(): Promise<number> {
     const [subcommand, ...rest] = positionals;
 
     // Load configuration
-    const config = await loadLoopConfig('loop/loop.config.json');
+    const config = await loadLoopConfig('data/loop/loop.config.json');
     await validateLoopConfig(config);
 
     try {

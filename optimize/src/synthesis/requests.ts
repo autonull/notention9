@@ -144,7 +144,7 @@ function generateAcceptanceCriteria(evidence: T4Evidence): string[] {
 /**
  * Save T4 request to directory
  */
-export async function saveT4Request(request: T4Request, dir: string = 'loop/requests'): Promise<void> {
+export async function saveT4Request(request: T4Request, dir: string = 'data/loop/requests'): Promise<void> {
     await mkdir(dir, { recursive: true });
     const filePath = join(dir, `${request.id}.md`);
     
@@ -196,7 +196,7 @@ ${request.proposedSeam || 'Not specified'}
 /**
  * Load all T4 requests from directory
  */
-export async function loadT4Requests(dir: string = 'loop/requests'): Promise<T4RequestDir> {
+export async function loadT4Requests(dir: string = 'data/loop/requests'): Promise<T4RequestDir> {
     const result: T4RequestDir = { root: dir, requests: new Map() };
     
     try {
@@ -287,7 +287,7 @@ function parseMarkdownRequest(content: string, filename: string): T4Request {
  */
 export async function emitT4RequestFromEvidence(
     evidence: T4Evidence,
-    outputDir: string = 'loop/requests'
+    outputDir: string = 'data/loop/requests'
 ): Promise<T4Request> {
     const request = createT4Request(evidence);
     await saveT4Request(request, outputDir);
@@ -300,7 +300,7 @@ export async function emitT4RequestFromEvidence(
  */
 export async function generateT4FromFailedCandidates(
     evaluationReport: { candidates: Array<{ candidateId: string; passed: boolean; taskResults: Map<string, any> | Record<string, any>; overallSuccessRate?: number }> },
-    outputDir: string = 'loop/requests'
+    outputDir: string = 'data/loop/requests'
 ): Promise<T4Request[]> {
     const requests: T4Request[] = [];
     

@@ -9,8 +9,8 @@ import { identifyTaxonomyGaps } from './taxonomyGapAnalyzer.js';
 import { writeOutputFiles } from './outputWriter.js';
 
 const DEFAULT_CONFIG: CorpusConfig = {
-    inputDir: 'corpus',
-    outputDir: 'loop/corpus-output',
+    inputDir: 'data/corpus',
+    outputDir: 'data/loop/corpus-output',
     fileExtensions: ['.txt', '.md', '.json'],
     minTermLength: 3,
     maxTermsPerFile: 100,

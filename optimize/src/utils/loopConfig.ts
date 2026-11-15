@@ -5,7 +5,7 @@ let cachedSchema: any = null;
 
 export async function loadSchema(): Promise<any> {
     if (cachedSchema) return cachedSchema;
-    const schemaText = await readFile('loop/schema.json', 'utf-8');
+    const schemaText = await readFile('data/loop/schema.json', 'utf-8');
     cachedSchema = JSON.parse(schemaText);
     return cachedSchema;
 }

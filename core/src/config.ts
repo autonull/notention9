@@ -229,10 +229,10 @@ export async function loadLoopConfigSchema(): Promise<LoopConfigSchema> {
         const { readFile } = await import('fs/promises');
         const { join } = await import('path');
         // Schema is at loop/schema.json relative to monorepo root
-        const schemaText = await readFile(join(getNotentionProjectRoot(), 'loop/schema.json'), 'utf-8');
+        const schemaText = await readFile(join(getNotentionProjectRoot(), 'data/loop/schema.json'), 'utf-8');
         cachedLoopSchema = JSON.parse(schemaText);
     } else {
-        const response = await fetch(`${getNotentionProjectRoot()}/loop/schema.json`);
+        const response = await fetch(`${getNotentionProjectRoot()}/data/loop/schema.json`);
         cachedLoopSchema = await response.json() as LoopConfigSchema;
     }
     return cachedLoopSchema!;

@@ -3,7 +3,7 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 import Ajv from 'ajv';
 
-const loopDir = join(__dirname, '../../../loop');
+const loopDir = join(__dirname, '../../../data/loop');
 
 const schema = JSON.parse(readFileSync(join(loopDir, 'schema.json'), 'utf-8'));
 const taxonomy = JSON.parse(readFileSync(join(loopDir, 'taxonomy.json'), 'utf-8'));

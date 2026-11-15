@@ -5,8 +5,8 @@
 
 // Corpus output directory locations
 export const CORPUS_OUTPUT_DIRS = [
-    'loop/corpus-output',
-    'loop/runs/corpus-output',
+    'data/loop/corpus-output',
+    'data/loop/runs/corpus-output',
 ] as const;
 
 // Seam roles that have built-in specifications
@@ -77,7 +77,7 @@ export const GOLDEN_CASE_DEFAULTS = {
     maxTotalCases: 50,
     evidenceDir: 'doc/evidence',
     testDirs: ['core/src/tests', 'ui/src/tests', 'optimize/src/tests'],
-    curatedFile: 'loop/golden-cases.json',
+    curatedFile: 'data/loop/golden-cases.json',
 } as const;
 
 // Evaluation defaults
@@ -111,7 +111,7 @@ export const DEFAULT_ONTOLOGY_NAME = 'DEFAULT_ONTOLOGY';
 export const RUN_DIR_PREFIX = 'run-';
 
 // Dry run output directory
-export const DEFAULT_OUTPUT_DIR = 'loop/runs';
+export const DEFAULT_OUTPUT_DIR = 'data/loop/runs';
 
 // Seam role constants - re-exported from core for consistency
 export { SEAM_ROLES } from '@notention/core/constants/seams';

@@ -65,7 +65,7 @@ program
     .description('Run quality evaluation suite')
     .option('-f, --family <family>', 'Quality family: extraction | match', 'all')
     .option('-r, --repetitions <n>', 'Number of repetitions per case', '1')
-    .option('-o, --output <dir>', 'Output directory for results', 'eval/runs')
+    .option('-o, --output <dir>', 'Output directory for results', 'data/eval/runs')
     .action(async (options) => {
         const manifest = readManifest();
         console.log(`📋 Running quality evaluation (manifest: ${manifest.hash})`);
@@ -99,7 +99,7 @@ program
     .option('-r, --revision <id>', 'Revision ID to evaluate')
     .option('-b, --baseline <id>', 'Baseline revision ID', 'incumbent')
     .option('--repetitions <n>', 'Repetitions per case', '3')
-    .option('-o, --output <dir>', 'Output directory', 'eval/runs')
+    .option('-o, --output <dir>', 'Output directory', 'data/eval/runs')
     .action(async (options) => {
         const revisionStore = getRevisionStore();
         

@@ -16,7 +16,7 @@ describe('GoldenCaseMiner', () => {
     });
 
     it('loads curated golden cases from static file', () => {
-        const cases = miner.loadCuratedCases(join(PROJECT_ROOT, 'loop/golden-cases.json'));
+        const cases = miner.loadCuratedCases(join(PROJECT_ROOT, 'data/loop/golden-cases.json'));
         expect(cases.length).toBeGreaterThanOrEqual(10);
         
         // Verify each case has required fields
@@ -31,14 +31,14 @@ describe('GoldenCaseMiner', () => {
     });
 
     it('mines golden cases with at least 10 cases', () => {
-        const cases = miner.loadCuratedCases(join(PROJECT_ROOT, 'loop/golden-cases.json'));
+        const cases = miner.loadCuratedCases(join(PROJECT_ROOT, 'data/loop/golden-cases.json'));
         expect(cases.length).toBeGreaterThanOrEqual(10);
     });
 
     it('catches injected break in golden case', () => {
         // This test verifies that if we modify a golden case's expected output,
         // the evaluation would catch it (simulated here by checking the case exists)
-        const cases = miner.loadCuratedCases(join(PROJECT_ROOT, 'loop/golden-cases.json'));
+        const cases = miner.loadCuratedCases(join(PROJECT_ROOT, 'data/loop/golden-cases.json'));
         
         // Find a specific case and verify its expected output
         const standardCase = cases.find(c => c.name === 'parsing-standard-format');
@@ -53,8 +53,8 @@ describe('GoldenCaseMiner', () => {
     });
 
     it('exports cases in evaluation format', () => {
-        const cases = miner.loadCuratedCases(join(PROJECT_ROOT, 'loop/golden-cases.json'));
-        const outputFile = join(PROJECT_ROOT, 'loop/golden-eval-test.json');
+        const cases = miner.loadCuratedCases(join(PROJECT_ROOT, 'data/loop/golden-cases.json'));
+        const outputFile = join(PROJECT_ROOT, 'data/loop/golden-eval-test.json');
         miner.exportForEvaluation(cases, outputFile);
         
         // Verify the exported file
