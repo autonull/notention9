@@ -19,6 +19,8 @@ import {
     ChatMLChatWrapper,
     QwenChatWrapper,
 } from 'node-llama-cpp';
+
+export { getLlama };
 import { DEFAULT_ONTOLOGY, parsePropertiesJson } from '@notention/core';
 import type { Property, OntologyNode } from '@notention/core';
 import { buildSystemPrompt, leafOntologyKeys } from '../prompts/extractionPrompt.js';
@@ -33,6 +35,7 @@ export interface LlamaCppBridgeOptions {
     gpuLayers?: GpuLayerSetting;
     temperature?: number;
     timeout?: number;
+    maxTokens?: number;
     /** Instruction block; derived from the ontology when omitted. */
     systemPrompt?: string;
     /** Labelled cases used for retrieval-selected few-shot prompting. */
@@ -46,7 +49,7 @@ let cachedContext: LlamaContext | null = null;
 let cachedSequence: LlamaContextSequence | null = null;
 let cachedSession: LlamaChatSession | null = null;
 let cachedGrammar: { signature: string; grammar: LlamaGrammar } | null = null;
-let currentOptions: Required<Omit<LlamaCppBridgeOptions, 'timeout' | 'fewShotBank' | 'fewShotCount'>> | null = null;
+let currentOptions: Required<Omit<LlamaCppBridgeOptions, 'timeout' | 'fewShotBank' | 'fewShotCount' | 'maxTokens'>> | null = null;
 
 const DEFAULT_CONTEXT_SIZE = 4096;
 const DEFAULT_GPU_LAYERS: GpuLayerSetting = 'max'; // Use the GPU when one is available
@@ -59,7 +62,7 @@ function getModelPath(): string {
 }
 
 /** LLAMA_GPU_LAYERS overrides the default ("max"): a number, "auto", or "max". */
-function resolveGpuLayers(): GpuLayerSetting {
+export function resolveGpuLayers(): GpuLayerSetting {
     const raw = process.env.LLAMA_GPU_LAYERS;
     if (!raw) return DEFAULT_GPU_LAYERS;
     if (raw === 'auto' || raw === 'max') return raw;
@@ -107,14 +110,14 @@ export function resolveChatWrapperKind(
     return { type: 'qwen', variation: Number(version) >= 3.5 ? '3.5' : '3' };
 }
 
-function createChatWrapper(modelPath: string) {
+export function createChatWrapper(modelPath: string) {
     const kind = resolveChatWrapperKind(modelPath);
     return kind.type === 'qwen'
         ? new QwenChatWrapper({ variation: kind.variation, thoughts: 'discourage' })
         : new ChatMLChatWrapper();
 }
 
-async function getOrCreateGrammar(llama: Llama, ontology: OntologyNode[]): Promise<LlamaGrammar> {
+export async function getOrCreateGrammar(llama: Llama, ontology: OntologyNode[]): Promise<LlamaGrammar> {
     const keys = leafOntologyKeys(ontology);
     const signature = keys.join('|');
     if (cachedGrammar?.signature === signature) return cachedGrammar.grammar;

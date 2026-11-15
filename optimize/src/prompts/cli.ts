@@ -8,7 +8,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { evaluateGoldenSet, type GoldenCase, type Provider, DeterministicProvider, CannedProvider } from './evaluate.js';
-import { getAllPrompts, DEFAULT_ONTOLOGY } from '@notention/core';
+import { getAllPrompts, DEFAULT_ONTOLOGY, type Property } from '@notention/core';
 import { PROMPT_VARIANTS, renderPrompt } from './variants.js';
 import { normalizeProperty, scoreExtraction } from './policy.js';
 import type { LabelledCase } from './fewShot.js';
@@ -430,6 +430,107 @@ program
         // McNemar test placeholder - would compare winner vs baseline per-case
         console.log('\nNote: McNemar test vs baseline requires binary pass/fail per case.');
         console.log('Run with --quality and an LLM provider for statistical significance testing.');
+        await closeBridge();
+        await closeLlamaCpp();
+    });
+
+// ============================================================================
+// COMPARE: 1-step vs 2-step pipeline
+// ============================================================================
+
+import { comparePipelines } from './twoStepPipeline.js';
+
+program
+    .command('compare')
+    .description('Compare 1-step vs 2-step extraction pipelines')
+    .option('-m, --model <path>', 'Model path (default: Qwen 3.5 0.8B)')
+    .option('--limit <n>', 'Number of quality cases to test', '20')
+    .option('--few-shot <n>', 'Retrieved examples per input (0 disables)', '3')
+    .option('--output <file>', 'Output results JSON file')
+    .action(async (options) => {
+        console.log('⚖️  Pipeline Comparison: 1-step vs 2-step');
+        console.log('============================================\n');
+
+        const modelPath = options.model || process.env.LLAMA_MODEL_PATH || '/home/me/notention9/models/Qwen_Qwen3.5-0.8B-Q4_K_M.gguf';
+        console.log(`Model: ${modelPath}`);
+
+        const qualityPath = join(__dirname, '..', '..', '..', 'data', 'eval', 'cases', 'manifest.json');
+        const content = readFileSync(qualityPath, 'utf-8');
+        const manifest = JSON.parse(content);
+        
+        const extractionCases = manifest.cases.filter((c: any) => c.qualityFamily === 'extraction');
+        const limit = parseInt(options.limit);
+        const cases = extractionCases.slice(0, limit);
+
+        // Build few-shot bank from all quality cases (not just the test subset)
+        const allQualityCases = extractionCases.map((c: any) => {
+            const casePath = join(__dirname, '..', '..', '..', 'data', 'eval', 'cases', c.path);
+            const caseData = JSON.parse(readFileSync(casePath, 'utf-8'));
+            return { id: c.id, input: caseData.input, expected: caseData.expected };
+        });
+
+        const inputs: string[] = [];
+        const expectedList: Property[][] = [];
+
+        for (const c of cases) {
+            const casePath = join(__dirname, '..', '..', '..', 'data', 'eval', 'cases', c.path);
+            const caseContent = readFileSync(casePath, 'utf-8');
+            const caseData = JSON.parse(caseContent);
+            inputs.push(caseData.input);
+            expectedList.push(caseData.expected);
+        }
+
+        const fewShotCount = parseInt(options.fewShot);
+        console.log(`Testing ${inputs.length} cases with ${fewShotCount}-shot...\n`);
+
+        const results = await comparePipelines(inputs, expectedList, modelPath, allQualityCases, fewShotCount);
+
+        // Summary
+        let oneStepWins = 0;
+        let twoStepWins = 0;
+        let ties = 0;
+        let oneStepTotalF1 = 0;
+        let twoStepTotalF1 = 0;
+
+        console.log('Results:');
+        console.log('-'.repeat(100));
+        console.log('Case                           | 1-step F1 | 2-step F1 | Router Domain    | Winner');
+        console.log('-'.repeat(100));
+
+        for (const r of results) {
+            const winner = r.oneStepF1 > r.twoStepF1 ? '1-step' : r.twoStepF1 > r.oneStepF1 ? '2-step' : 'tie';
+            if (winner === '1-step') oneStepWins++;
+            else if (winner === '2-step') twoStepWins++;
+            else ties++;
+
+            oneStepTotalF1 += r.oneStepF1;
+            twoStepTotalF1 += r.twoStepF1;
+
+            const caseName = r.input.slice(0, 30).padEnd(30);
+            console.log(`${caseName} | ${r.oneStepF1.toFixed(3)}      | ${r.twoStepF1.toFixed(3)}      | ${r.twoStep.router.domain.padEnd(16)} | ${winner}`);
+        }
+
+        console.log('-'.repeat(100));
+        console.log(`1-step avg F1: ${(oneStepTotalF1 / results.length).toFixed(3)} (wins: ${oneStepWins})`);
+        console.log(`2-step avg F1: ${(twoStepTotalF1 / results.length).toFixed(3)} (wins: ${twoStepWins})`);
+        console.log(`Ties: ${ties}`);
+
+        if (options.output) {
+            const { writeFileSync } = await import('node:fs');
+            writeFileSync(options.output, JSON.stringify({
+                timestamp: new Date().toISOString(),
+                model: modelPath,
+                cases: results.length,
+                oneStepAvgF1: oneStepTotalF1 / results.length,
+                twoStepAvgF1: twoStepTotalF1 / results.length,
+                oneStepWins,
+                twoStepWins,
+                ties,
+                details: results,
+            }, null, 2));
+            console.log(`\nResults written to ${options.output}`);
+        }
+
         await closeBridge();
         await closeLlamaCpp();
     });
