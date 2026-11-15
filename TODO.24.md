@@ -1,6 +1,6 @@
 # TODO.24 — Remaining Work After Automated Completion (2026-11-14)
 
-**Status**: All automated work complete (1098/1098 tests pass, 25 scenarios, 16 taxonomy cells, 67% coverage). Two categories of remaining work:
+**Status (2026-11-15)**: Infrastructure is complete and verified. `optimize` 68 passed / 4 skipped, UI all batches passed, simulator 87 passed, manifest OK. Remaining work is quality (one golden miss), taxonomy breadth (16/24 cells), and human-dependent probes/videos.
 
 ---
 
@@ -55,9 +55,9 @@
 | Benchmark harness: local LLM vs quality cases | ⚠️ **Runs; 9/10 golden** | Both providers run via `pnpm prompts:eval eval --provider webllm\|llamacpp`. WebLLM needs a GPU. Qwen 3.5 0.8B scores 9/10 (misses `intent is schedule` on one meeting case); deterministic baseline 4/10. |
 | Prompt optimization loop | ❌ Not started | Optimizer loop exists (`pnpm loop run`) but needs a provider with usable quality for evaluation. |
 
-**Recommended path**: 
-- **Option A (WebLLM)**: Use headed Chrome or CI GPU runner for WebGPU. Reuses UI's proven prompts (`doAlignToOntology`).
-- **Option B (llama.cpp)**: Requires fine-tuned model or better prompt engineering. Current base model unsuitable for constrained extraction.
+**Recommended path**:
+- **Option A (WebLLM)**: Needs a GPU runner. Reuses the UI's `doAlignToOntology` prompt (now with recursive ontology keys).
+- **Option B (llama.cpp)**: Working on CPU with Qwen 3.5 0.8B + grammar. 9/10 golden; the remaining miss is model capacity, not infrastructure.
 
 ---
 
@@ -69,7 +69,7 @@ optimize/src/prompts/cli.ts:RegistryProvider.extract()
          │
          ▼
 optimize/src/llm/webllmBridge.ts
-  • Launches headed Chrome via Playwright with WebGPU
+  • Launches Chromium via Playwright (headless by default; `headed: true` optional)
   • Serves UI build via local HTTP server (avoids file:// CORS)
   • Loads UI with `?optimizer=true` query param exposing `__OPTIMIZER_AI__`
   • Exposes page.evaluate() API for extraction via UI's WebLLMProvider
@@ -87,7 +87,9 @@ ui/src/services/ai/WebLLMProvider.ts (EXISTING)
 | `optimize/src/llm/webllmBridge.ts` | ✅ Created: Playwright bridge with HTTP server |
 | `optimize/src/llm/llamaCppBridge.ts` | ✅ Created: node-llama-cpp bridge |
 | `optimize/src/llm/index.ts` | ✅ Created: exports for both providers |
-| `optimize/src/prompts/cli.ts` | ✅ Modified: `--provider webllm|llamacpp|registry` |
+| `optimize/src/prompts/cli.ts` | ✅ Modified: `--provider webllm|llamacpp|registry`; `WEBLLM_HEADED=1` |
+| `optimize/src/prompts/property-extraction.golden.json` | ✅ Modified: real/imaginary modality |
+| `ui/src/services/ai/WebLLMProvider.ts` | ✅ Modified: recursive `collectOntologyKeysInTree` |
 | `ui/src/index.tsx` | ✅ Modified: exposes `__OPTIMIZER_AI__` when `?optimizer=true` |
 | `optimize/package.json` | ✅ Already has `playwright` |
 
@@ -95,31 +97,34 @@ ui/src/services/ai/WebLLMProvider.ts (EXISTING)
 ```bash
 cd /home/me/notention9/optimize && pnpm add node-llama-cpp
 pnpm approve-builds node-llama-cpp
-cd /home/me/notention9/ui && pnpm build
-# Download GGUF model for llama.cpp:
-node optimize/download-model.mjs
+cd /home/me/notention9/ui && pnpm build          # required by the WebLLM bridge
+# The default GGUF is already at /home/me/notention9/models/Qwen_Qwen3.5-0.8B-Q4_K_M.gguf
+# To refresh/download models, use one of:
+node optimize/download-model.mjs                 # Llama 3.2 3B
+node optimize/download-qwen.mjs                   # Qwen 2.5 3B
+node optimize/download-qwen-small.mjs             # Qwen 2.5 0.5B
+# Or point at any local GGUF:
+LLAMA_MODEL_PATH=/path/to/model.gguf pnpm prompts:eval eval --provider llamacpp
 ```
 
 **Key Considerations**:
-- **WebGPU in headless**: Works with `--headless=new` + `--enable-webgpu` + `--use-angle=swiftshader` but needs GPU runner in CI. Headed mode works locally.
-- **Model load time**: ~30-60s first load (downloads ~2GB); browser cached across evaluations.
-- **Prompt format**: Reuses UI's `doAlignToOntology` prompt + `collectOntologyKeys(ontology)`.
-- **Fallback**: Both providers fall back to deterministic provider on failure.
+- **WebGPU in headless**: Works with `--headless=new` + `--enable-webgpu` + `--use-angle=swiftshader` only with a GPU runner. Headed mode needs an X server (`xvfb-run`) plus a GPU.
+- **Model load time**: ~30-60s first load; the session is cached across evaluations.
+- **Prompt format**: UI `doAlignToOntology` + recursive `collectOntologyKeysInTree(ontology)`.
+- **Fallback**: Both providers fall back to deterministic extraction on failure.
 
 **Success Criteria**:
-- [x] `pnpm prompts:eval --provider webllm` runs (needs headed Chrome + GPU)
-- [x] `pnpm prompts:eval --provider llamacpp` runs (Qwen 3.5 0.8B; valid JSON, low key accuracy)
+- [x] `pnpm prompts:eval eval --provider webllm` runs (needs headed Chrome + GPU)
+- [x] `pnpm prompts:eval eval --provider llamacpp` runs (Qwen 3.5 0.8B; 9/10 golden)
 - [ ] 60 quality cases evaluated in < 10 minutes with good F1
 - [ ] Optimizer loop can adopt best prompt automatically
 - [ ] CI can run (with GPU runner for WebLLM)
 
 **Alternative: llama.cpp-embedded (Option B) — Current Limitation**
 ```
-Qwen 3.5 0.8B (default) is fast and CPU-friendly, and the JSON-schema grammar
-keeps output valid, but its key choice is weak:
-- "Meeting with John" -> attendees/event/location instead of intent/to
-- "I need milk" -> event/shopping instead of need contains
-The grammar guarantees vocabulary, not semantics.
+Qwen 3.5 0.8B (default) is fast and CPU-friendly. Grammar + modality prompt
+produce valid, in-vocabulary output (9/10 golden). The remaining miss:
+- "Meeting with John tomorrow at 10am" -> meetingType/startTime instead of intent is schedule
 Solution: fine-tune on extraction, or use a larger model (Qwen 2.5 3B / Llama 3.2 3B)
 with the same grammar + modality prompt.
 ```
@@ -129,7 +134,7 @@ with the same grammar + modality prompt.
 ### 2. Ontology & Taxonomy Refinement
 | Task | Status | Notes |
 |------|--------|-------|
-| Expand taxonomy to 24/24 cells | ⚠️ 16/24 done | 8 cells uncovered: see `ontology/taxonomy.json` |
+| Expand taxonomy to 24/24 cells | ⚠️ 16/24 done | 8 cells uncovered: see `data/loop/taxonomy.json` |
 | Corpus→patch cycle for new domains | ✅ Done (Week 9) | 60 quality cases, 124 manifest, E7/E14 pipeline verified |
 | Add custom ontology modules | ✅ Framework ready | `doc/ontology-configuration.md` documents how |
 
@@ -165,6 +170,8 @@ with the same grammar + modality prompt.
 | Corpus size | 864 notes, 14 domains |
 | Orphan keys | 97 (down from 137) |
 
+**Verified 2026-11-15:** core 855 · agent 17 · cli 6 · optimize 68 passed / 4 skipped · UI all batches passed · simulator 87 (~10 min) · manifest OK · `prompts:eval` llamacpp 9/10.
+
 ---
 
 ## 🎯 Suggested Next Session Priorities
@@ -172,7 +179,7 @@ with the same grammar + modality prompt.
 **If humans available**: Run comprehension probe + record T1/T2 videos.
 
 **If no humans**:
-1. **Improve key accuracy** — Try Qwen 2.5 3B / Llama 3.2 3B with the same grammar + modality prompt (set `LLAMA_MODEL_PATH`). The 0.8B model now emits valid JSON but picks wrong keys.
+1. **Close the last golden miss** — Try Qwen 2.5 3B / Llama 3.2 3B with the same grammar + modality prompt (`LLAMA_MODEL_PATH=...`). The 0.8B model omits `intent is schedule` on one meeting case.
 2. **Fine-tune or few-shot** — Add retrieval-selected few-shot examples per input, or fine-tune on `data/eval/cases/quality/extraction`.
 3. **Run optimizer loop** — `pnpm loop run` once a provider reaches usable F1.
 4. **Expand taxonomy** — Add scenarios for remaining 8 cells (16/24 covered; `data/loop/taxonomy.json` reports 11 `cellsCovered` — reconcile the two counts).
@@ -197,8 +204,32 @@ LLAMA_MODEL_PATH=/home/me/notention9/models/hf_bartowski_Qwen2.5-3B-Instruct.Q4_
 pnpm prompts:eval eval --provider deterministic  # baseline
 
 # Run all tests
-pnpm test --filter=@notention/core --filter=@notention/optimize --filter=@notention/simulator --filter=@notention/ui --filter=@notention/agent --filter=@notention/cli
+pnpm test                                   # core + agent + cli + optimize + simulator
+pnpm --filter @notention/ui test            # UI (batched)
+pnpm --filter @notention/simulator test     # 25 scenarios / 87 tests
 
-# Simulator measurement suite (25 scenarios)
-cd simulator && pnpm test -- src/scenarios/measurementSuite.test.ts
+# Simulator measurement suite only
+pnpm --filter @notention/simulator exec vitest run src/scenarios/measurementSuite.test.ts
 ```
+
+---
+
+## ✅ Verification — Start Here Next Session
+
+Run these before changing code. Expected results in parentheses.
+
+```bash
+git log --oneline -3                         # latest: fix(optimize): correct LLM modality and ontology keys
+pnpm --filter @notention/optimize exec tsc --noEmit   # clean
+pnpm --filter @notention/core test           # 855 passed (includes collectKeys regression)
+pnpm --filter @notention/optimize test       # 68 passed, 4 skipped
+pnpm --filter @notention/ui test             # all batches passed
+pnpm --filter @notention/simulator test      # 87 passed (~10 min)
+pnpm eval:verify-manifest                    # ✅ OK
+pnpm prompts:eval eval --provider llamacpp   # 9/10 golden; exits 1 on the last miss
+```
+
+Notes:
+- `prompts:eval` exits non-zero when any golden case fails. 9/10 is the current Qwen 3.5 result; the failure is the meeting/intent case, not infrastructure.
+- UI `tsc --noEmit` has pre-existing unrelated errors (SmartNoteAssistant, EditorContent, etc.); use `pnpm --filter @notention/ui test` as the UI gate.
+- WebLLM eval requires a GPU. On this machine it reports "No available adapters"; use llama.cpp for CPU verification.
