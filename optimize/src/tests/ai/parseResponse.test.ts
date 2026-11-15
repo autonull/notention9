@@ -37,4 +37,17 @@ describe('parseResponse', () => {
 
         expect(parseResponse(response, DEFAULT_ONTOLOGY)).toEqual([]);
     });
+
+    it('drops only the malformed item instead of the whole array', () => {
+        const response = JSON.stringify([
+            { key: 'startTime', operator: 'is', values: ['2pm'] },
+            { key: 'to', operator: 'is', values: [''] },
+            { key: 'endTime', operator: 'is', values: ['4pm'] },
+        ]);
+
+        expect(parseResponse(response, DEFAULT_ONTOLOGY)).toEqual([
+            { key: 'startTime', operator: 'is', values: ['2pm'] },
+            { key: 'endTime', operator: 'is', values: ['4pm'] },
+        ]);
+    });
 });

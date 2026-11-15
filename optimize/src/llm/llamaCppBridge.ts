@@ -22,7 +22,7 @@ import {
 import { DEFAULT_ONTOLOGY, parsePropertiesJson } from '@notention/core';
 import type { Property, OntologyNode } from '@notention/core';
 import { buildSystemPrompt, leafOntologyKeys } from '../prompts/extractionPrompt.js';
-import { VALID_OPERATOR_SET } from '../prompts/policy.js';
+import { VALID_OPERATOR_SET, pruneUngrounded } from '../prompts/policy.js';
 import { renderFewShot, selectFewShot, type LabelledCase } from '../prompts/fewShot.js';
 
 export type GpuLayerSetting = number | 'auto' | 'max';
@@ -222,7 +222,8 @@ export function parseResponse(response: string, ontology: OntologyNode[]): Prope
 
     const allowedKeys = new Set(leafOntologyKeys(ontology));
     const seen = new Set<string>();
-    return parsePropertiesJson(properties)
+    return properties
+        .flatMap(property => parsePropertiesJson([property]))
         .filter(property => allowedKeys.has(property.key))
         .map(property => ({
             ...property,
@@ -248,7 +249,10 @@ export async function extractWithLlamaCpp(
     console.log('[LlamaCpp] Running inference...');
 
     // Each extraction is independent; do not let prior cases bias the model.
+    // Clearing only the chat history keeps the old KV cache, which degrades
+    // later extractions in the same context.
     session.resetChatHistory();
+    await cachedSequence?.clearHistory();
 
     const examples = options.fewShotBank
         ? selectFewShot(text, options.fewShotBank, options.fewShotCount ?? 3)
@@ -265,7 +269,7 @@ export async function extractWithLlamaCpp(
         console.log('[LlamaCpp] Raw response:', JSON.stringify(response));
     }
 
-    return parseResponse(response, ontology);
+    return pruneUngrounded(parseResponse(response, ontology), text);
 }
 
 export async function closeLlamaCpp(): Promise<void> {

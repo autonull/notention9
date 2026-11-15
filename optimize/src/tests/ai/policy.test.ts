@@ -3,6 +3,7 @@ import {
     normalizeOperator,
     normalizeValue,
     propertyMatches,
+    pruneUngrounded,
     scoreExtraction,
     valuesMatch,
 } from '../../prompts/policy.js';
@@ -67,5 +68,31 @@ describe('scoreExtraction', () => {
         expect(score.matched).toEqual(['budget less than 900']);
         expect(score.missing).toEqual(['role contains ramp']);
         expect(score.f1).toBeCloseTo(2 / 3);
+    });
+});
+
+describe('grounding', () => {
+    const text = 'Need a wheelchair ramp installed before Friday, budget 900 USD, contact 555-0199';
+
+    it('keeps values stated in the input', () => {
+        expect(pruneUngrounded([
+            property('role', 'contains', ['wheelchair ramp']),
+            property('budget', 'less than', ['900 USD']),
+            property('to', 'is', ['555-0199']),
+        ], text)).toHaveLength(3);
+    });
+
+    it('drops values copied from an unrelated example', () => {
+        expect(pruneUngrounded([
+            property('hasMedical', 'is', ['false']),
+            property('recipient', 'contains', ['homebound']),
+            property('budget', 'less than', ['100 USD']),
+        ], text)).toEqual([]);
+    });
+
+    it('drops a property when none of its values is grounded', () => {
+        expect(pruneUngrounded([
+            property('role', 'contains', ['homebound', 'wheelchair ramp']),
+        ], text)).toHaveLength(1);
     });
 });

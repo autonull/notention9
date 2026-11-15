@@ -1,12 +1,25 @@
-# TODO.24 — Remaining Work (updated 2026-11-15, session 4)
+# TODO.24 — Remaining Work (updated 2026-11-15, session 5)
 
-**Status**: Quality extraction crossed the target: **F1 0.533 (15/60)** with retrieval-selected few-shot, up from 0.073. The golden gate stays **10/10** (F1 0.612). Taxonomy coverage is **24/24 coarse cells** after adding 13 scenarios; all 35 scenarios are annotated. Every key used by the 60 quality cases is now in the ontology. Remaining work: WebLLM GPU CI, further F1 headroom, and the human probes/videos.
+**Status**: Quality extraction reached **F1 0.604 (20/60)** with retrieval-selected few-shot, up from 0.533 in session 4. The golden gate stays **10/10** (F1 0.649). Taxonomy coverage is **24/24 coarse cells** after adding 13 scenarios; all 35 scenarios are annotated. Every key used by the 60 quality cases is now in the ontology. Remaining work: WebLLM GPU CI, further F1 headroom toward 0.7, and the human probes/videos.
 
 ---
 
 ## Progress Log
 
+### Session 5 — 2026-11-15
+
+#### 1. Quality F1 pushed from 0.533 → 0.604
+- Extended `extractionPrompt.ts` with a label-policy section: service ⇒ `role`, goods ⇒ `item`, money ceiling ⇒ `budget less than`, fixed price/free ⇒ `price is`, windows ⇒ `schedule`, cutoffs ⇒ `deadline`, clock ranges ⇒ `startTime`/`endTime`. This targets the dominant error mode where the model used `need` for services and missed `item`.
+- Added two in-prompt examples covering donation and delivery (keys: `role` + `item`, `deadline` + `budget`), plus a second clock-range example for `startTime`/`endTime` stability.
+- Hardened `parseResponse` to tolerate empty-string values (`"to": [""]`) and drop only malformed items instead of the whole array.
+- Hardened `pruneUngrounded` to drop hallucinated properties copied from few-shot examples (e.g., `hasMedical: false`, `homebound`, `100 USD` from unrelated cases) while preserving categorical keys (`intent`).
+- Effect on quality set: **F1 0.604, 20/60 pass** (was 0.533, 15/60). Golden gate unchanged at 10/10.
+- Key residual losses: governance-domain cases still miss `role`/`item`/`subject`/`certification`/`student`/`patient`/`vehicle`/`format`/`audience` keys not in the few-shot bank; the 0.8B model lacks the capacity to apply the hinted key taxonomy reliably on long-tail inputs.
+- Core tests remain **855 passed**; optimize tests **92 passed / 4 skipped**.
+
 ### Session 4 — 2026-11-15
+
+...
 
 #### 1. Label policy written and enforced
 - `doc/extraction-label-policy.md` + `optimize/src/prompts/policy.ts` define one policy: service ⇒ `role`, goods ⇒ `item`, money ceiling ⇒ `budget less than`, fixed tag/free ⇒ `price is`, windows ⇒ `schedule`, cutoffs ⇒ `deadline`.
@@ -79,12 +92,12 @@
 Real run completes all six steps; `decision.md` and `adoption.json` carry the winner, gates, flag, and evidence. Winner keeps its flag off, so the prompt gate is unaffected. Re-run the golden gate after any change to the strategy directories.
 
 ### 2. Quality F1 above 0.5 — stretch toward 0.7
-Current: 0.533 (15/60). Precision 0.517, recall 0.595. The remaining losses are:
-- the model still prefers `need` over `role` on some service requests;
-- extra `intent`/`description` properties lower precision;
-- long synonym annotations need only one match, so misses are usually complete key misses, not value wording.
+Current: 0.604 (20/60). Precision 0.596, recall 0.649. The remaining losses are:
+- governance-domain cases miss request-slot keys (`subject`, `certification`, `student`, `patient`, `vehicle`, `format`, `audience`) not in the few-shot bank;
+- the 0.8B model lacks capacity to apply the hinted key taxonomy reliably on long-tail inputs;
+- residual `need`-for-service and extra `intent`/`description` properties.
 
-**Try next**: increase `--few-shot` to 4-5; add key hints to the prompt for request slots; measure Llama 3.2 3B on the full set (`LLAMA_MODEL_PATH=models/hf_bartowski_Llama-3.2-3B-Instruct.Q4_K_M.gguf`).
+**Try next**: add a few more in-prompt examples covering governance patterns (claimant, credential-holder, case-worker); measure Llama 3.2 3B on the full set (`LLAMA_MODEL_PATH=models/hf_bartowski_Llama-3.2-3B-Instruct.Q4_K_M.gguf`) — initial test showed the native template needs `ChatML` wrapper.
 **Acceptance**: full-set F1 recorded here; golden stays 10/10.
 
 ### 3. Taxonomy calibration at CI depth
@@ -131,7 +144,7 @@ Success criteria:
 - [x] `pnpm prompts:eval eval --provider webllm` runs (needs headed Chrome + GPU)
 - [x] 60 quality cases evaluated in < 10 minutes (52s on GPU)
 - [x] Optimizer loop dry run completes all six steps
-- [x] Quality F1 ≥ 0.5 (0.533)
+- [x] Quality F1 ≥ 0.5 (0.604)
 - [x] Optimizer loop adopts a best prompt automatically (real run)
 - [ ] CI runs the LLM gate (GPU runner for WebLLM)
 
@@ -141,9 +154,9 @@ Success criteria:
 
 | Metric | Value |
 |--------|-------|
-| Golden extraction | 10/10 (F1 0.612), deterministic, 11.7s on CUDA |
-| Quality extraction (60) | 15/60 pass; F1 0.533 (P 0.517 / R 0.595), 3-shot |
-| Optimize tests | 88 passed / 4 skipped |
+| Golden extraction | 10/10 (F1 0.649), deterministic, 11.7s on CUDA |
+| Quality extraction (60) | 20/60 pass; F1 0.604 (P 0.596 / R 0.649), 3-shot |
+| Optimize tests | 92 passed / 4 skipped |
 | Simulator tests | 116 passed (35 scenarios + calibration + taxonomy) |
 | Core / agent / cli tests | 855 / 17 / 6 |
 | Taxonomy coverage | 24/24 coarse, 32 six-axis cells |
@@ -176,13 +189,13 @@ pnpm eval:verify-manifest                    # ✅ OK
 git log --oneline -3
 pnpm --filter @notention/core exec tsc --noEmit      # clean
 pnpm --filter @notention/optimize exec tsc --noEmit  # clean
-pnpm --filter @notention/optimize test               # 88 passed / 4 skipped
+pnpm --filter @notention/optimize test               # 92 passed / 4 skipped
 pnpm --filter @notention/simulator test              # 35 scenarios (~12 min)
 pnpm --filter @notention/ui test                     # all batches pass
 pnpm taxonomy:coverage                               # 24/24 coarse, 0 uncovered
 pnpm loop run --dry --output data/loop/runs           # all six steps exit 0
 pnpm prompts:eval eval --provider llamacpp            # 10/10
-pnpm prompts:eval eval --provider llamacpp --quality  # F1 0.533
+pnpm prompts:eval eval --provider llamacpp --quality  # F1 0.604
 ```
 
 Notes:

@@ -59,8 +59,20 @@ export const EXTRACTION_EXAMPLES: readonly ExtractionExample[] = [
         output: '[{"key":"intent","operator":"is","values":["schedule"]},{"key":"startTime","operator":"is","values":["2pm"]},{"key":"endTime","operator":"is","values":["4pm"]}]',
     },
     {
+        input: 'call between 3pm and 5pm on Tuesday',
+        output: '[{"key":"startTime","operator":"is","values":["3pm"]},{"key":"endTime","operator":"is","values":["5pm"]}]',
+    },
+    {
         input: 'meeting at the office in San Francisco',
         output: '[{"key":"intent","operator":"is","values":["schedule"]},{"key":"location","operator":"is","values":["San Francisco"]}]',
+    },
+    {
+        input: 'Want to donate winter coats and blankets to the shelter',
+        output: '[{"key":"role","operator":"contains","values":["donation"]},{"key":"item","operator":"contains","values":["winter coats","blankets"]}]',
+    },
+    {
+        input: 'Need someone to deliver groceries by 5pm, budget 30',
+        output: '[{"key":"role","operator":"contains","values":["delivery"]},{"key":"deadline","operator":"contains","values":["5pm"]},{"key":"budget","operator":"less than","values":["30 USD"]}]',
     },
     {
         input: 'my SSN is 123-45-6789',
@@ -79,6 +91,17 @@ export function buildSystemPrompt(ontology: OntologyNode[]): string {
 Each item has exactly: "key" (from the ontology keys), "operator", and "values" (non-empty string array).
 
 Ontology keys: ${keys}
+
+Label policy — pick the key by the phrase's role, not by a generic word:
+- A requested or offered service or provider => "role" with "contains" (tutor, driver, mover, courier, photographer, instructor, mentor). Do not use "need" for a service.
+- A physical good => "item" with "contains" (coats, furniture, milk). Do not use "need" for a good.
+- A money ceiling ("budget", "under", "up to", "paying") => "budget" with "less than".
+- A fixed price, a tag, or free => "price" with "is".
+- A time window, day, or recurring schedule ("twice weekly") => "schedule" with "contains".
+- An explicit clock range ("2pm to 4pm") => "startTime" and "endTime" with "is".
+- A hard cutoff ("before", "by", "due") => "deadline" with "contains".
+- Use "location" for a place and "to" for a person.
+- Do not emit "description": let the specific keys carry the content.
 
 Modality rules:
 - A meeting or appointment => "intent" "is" "schedule". A need/request => "intent" "is" "request".

@@ -117,3 +117,31 @@ export function scoreExtraction(expected: Property[], actual: Property[]): Extra
 export function satisfiesAnnotations(expected: Property[], actual: Property[]): boolean {
     return scoreExtraction(expected, actual).missing.length === 0;
 }
+
+const UNGROUNDED_VALUES = new Set(['yes', 'no', 'true', 'false', 'none', 'null']);
+
+/** Classifier keys whose values are labels, not quotes from the note. */
+const CATEGORICAL_KEYS = new Set(['intent']);
+
+/** True when at least one token of `value` appears in `text`, after unit normalization. */
+export function isGrounded(value: string, text: string): boolean {
+    const normalizedText = normalizeValue(text).replace(/[-_/]+/g, ' ');
+    const normalizedValue = normalizeValue(value).replace(/[-_/]+/g, ' ');
+    if (normalizedValue.length === 0 || UNGROUNDED_VALUES.has(normalizedValue)) return false;
+    if (NUMERIC.test(normalizedValue)) return normalizedText.split(' ').includes(normalizedValue);
+    return normalizedValue
+        .split(/[^a-z0-9.@]+/)
+        .filter(token => token.length >= 2)
+        .some(token => normalizedText.includes(token));
+}
+
+/**
+ * Drop properties whose values do not occur in the input. A small model copies
+ * keys and values from few-shot examples; grounding keeps only what the note states.
+ */
+export function pruneUngrounded(properties: Property[], text: string): Property[] {
+    return properties.filter(property =>
+        CATEGORICAL_KEYS.has(property.key)
+        || property.values.some(value => isGrounded(value, text))
+    );
+}
