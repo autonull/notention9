@@ -1,6 +1,6 @@
-# TODO.24 — Remaining Work (updated 2026-11-15, session 7)
+# TODO.24 — Remaining Work (updated 2026-11-15, session 8)
 
-**Status**: Quality extraction **F1 0.659 (0.8B) / 0.718 (4B)** with governance prompt examples added. Golden gate **10/10**. Taxonomy coverage **24/24 coarse** with CI-depth (30-rep) baselines for all 13 new scenarios. Qwen 3.5 4B exceeds 0.7 stretch target. **Llama 3.2 3B now passes golden gate (10/10, F1 0.891) with ChatML wrapper + JSON repair** but quality F1 is lower (~9/60).
+**Status**: Quality extraction **F1 0.659 (0.8B) / 0.718 (4B)** with governance prompt examples added. Golden gate **10/10**. Taxonomy coverage **24/24 coarse** with CI-depth (30-rep) baselines for all 13 new scenarios. Qwen 3.5 4B exceeds 0.7 stretch target. **Llama 3.2 3B now passes golden gate (10/10, F1 0.891) with ChatML wrapper + JSON repair** but quality F1 is lower (~9/60). **E2 capture-flow A/B test infrastructure complete**; **E13 llama.cpp provider (embedded + server) implemented** for prompt ablation.
 
 ---
 
@@ -26,6 +26,25 @@
 - Ran `REPETITIONS=30` calibration for all 13 new taxonomy scenarios.
 - Updated `SCENARIO_BASELINES` in `measurementSuite.test.ts` with CI-depth statistics.
 - All 13 new scenarios + 4 existing spot-checked pass statistical assertions.
+
+### Session 8 — 2026-11-15
+
+#### 1. E2 capture-flow parameter A/B test infrastructure complete
+- `optimize/src/optimizer/e2CaptureTest.ts`: paired A/B test framework for capture parameters (autoFocus+placeholder vs initialOp=enum-hint)
+- `optimize/src/optimizer/cli.ts`: added `optimizer e2-capture` command with `--repetitions`, `--headless`, `--baseURL` options
+- Uses `chromium.launchPersistentContext` with persistent user data dir for PNA bypass in headless mode
+- McNemar (completion), Wilcoxon (timeToCapture), corrections guardrail
+- MDE gate: refuses to run if underpowered (n < minimum sample size)
+- Verified: golden gate 10/10 on Qwen 0.8B and Llama 3.2 3B
+
+#### 2. E13 llama.cpp provider for prompt ablation implemented
+- `optimize/src/prompts/providers/llamaCppProvider.ts`: new `LlamaCppProvider` implementing `Provider` interface
+- Dual-mode: embedded (node-llama-cpp bindings) + server (OpenAI-compatible `/v1/chat/completions`)
+- CLI: `pnpm prompts:eval eval --provider llama-cpp-embedded --model-path <path>` and `--provider llama-cpp-server --server-url <url>`
+- Automatic model detection: Qwen 3+ uses JSON-schema grammar; Llama 3.x uses ChatML wrapper + JSON repair
+- Golden gate (no few-shot): Qwen 0.8B 10/10 (F1 0.687), Llama 3.2 3B 10/10 (F1 0.891)
+- Quality (3-shot): Qwen 0.8B F1 0.659 (24/60), Llama 3.2 3B ~9/60
+- Ready for E13 prompt variant ablation across 6 registered variants
 
 ### Session 6 — 2026-11-15
 

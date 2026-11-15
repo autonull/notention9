@@ -13,6 +13,7 @@ import { PROMPT_VARIANTS, renderPrompt } from './variants.js';
 import { normalizeProperty, scoreExtraction } from './policy.js';
 import type { LabelledCase } from './fewShot.js';
 import { WebLLMBridgeProvider, LlamaCppBridgeProvider, closeBridge, closeLlamaCpp } from '../llm/index.js';
+import { LlamaCppProvider as NewLlamaCppProvider, type LlamaCppProviderOptions } from './providers/llamaCppProvider.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -142,7 +143,10 @@ program
     .option('--quality', 'Also evaluate against quality cases')
     .option('--quality-limit <n>', 'Evaluate only the first N quality cases (iteration aid)')
     .option('--few-shot <n>', 'Retrieved examples per input (0 disables)', '3')
-    .option('--provider <name>', 'Provider to use: deterministic | registry | webllm | llamacpp', 'deterministic')
+    .option('--provider <name>', 'Provider to use: deterministic | registry | webllm | llamacpp | llama-cpp-embedded | llama-cpp-server', 'deterministic')
+.option('--model-path <path>', 'GGUF model path for embedded llama.cpp')
+.option('--server-url <url>', 'OpenAI-compatible server URL for llama.cpp server mode')
+.option('--model-name <name>', 'Model name for server mode')
     .action(async (options) => {
         console.log('🔬 Notention Prompt Evaluation');
         console.log('===============================');
@@ -162,14 +166,33 @@ program
         const fewShotBank = qualityCases.length > 0 ? toFewShotBank(qualityCases) : undefined;
         let providers: Provider[] = [];
 
-        if (options.prompt) {
-            if (options.provider === 'registry' || options.provider === 'webllm') {
-                providers.push(new RegistryProvider(options.prompt.split('@')[0], options.prompt.split('@')[1]));
-            } else if (options.provider === 'llamacpp') {
-                providers.push(new LlamaCppProvider());
-            } else {
-                providers.push(new DeterministicProvider());
+        const llamaCppOptions: LlamaCppProviderOptions = {
+            modelPath: options.modelPath,
+            serverUrl: options.serverUrl,
+            modelName: options.modelName,
+            fewShotBank,
+            fewShotCount: Number(options.fewShot ?? 3),
+        };
+
+        function createProvider(): Provider {
+            switch (options.provider) {
+                case 'registry':
+                case 'webllm':
+                    return new RegistryProvider(options.prompt?.split('@')[0] ?? '', options.prompt?.split('@')[1]);
+                case 'llamacpp':
+                    return new LlamaCppProvider(fewShotBank, Number(options.fewShot ?? 3));
+                case 'llama-cpp-embedded':
+                    return new NewLlamaCppProvider({ ...llamaCppOptions, serverUrl: undefined });
+                case 'llama-cpp-server':
+                    return new NewLlamaCppProvider({ ...llamaCppOptions, modelPath: undefined });
+                case 'deterministic':
+                default:
+                    return new DeterministicProvider();
             }
+        }
+
+        if (options.prompt) {
+            providers.push(createProvider());
         } else {
             const prompts = getAllPrompts();
             if (prompts.length === 0) {
@@ -179,10 +202,8 @@ program
                 for (const prompt of prompts) {
                     if (options.provider === 'registry' || options.provider === 'webllm') {
                         providers.push(new RegistryProvider(prompt.id, prompt.version));
-                    } else if (options.provider === 'llamacpp') {
-                        providers.push(new LlamaCppProvider());
                     } else {
-                        providers.push(new DeterministicProvider());
+                        providers.push(createProvider());
                     }
                 }
             }
@@ -193,7 +214,11 @@ program
         let hasFailures = false;
 
         for (const provider of providers) {
-            const results = await evaluateGoldenSet(goldenCases, provider, DEFAULT_ONTOLOGY);
+            // Golden gate runs WITHOUT few-shot (deterministic)
+            const goldenProvider = provider instanceof LlamaCppProvider || provider instanceof NewLlamaCppProvider
+                ? new NewLlamaCppProvider({ ...llamaCppOptions, fewShotBank: undefined })
+                : provider;
+            const results = await evaluateGoldenSet(goldenCases, goldenProvider, DEFAULT_ONTOLOGY);
             const summary = printResults(`Golden Set — ${provider.name}`, results);
             overallPassed += summary.passed;
             overallTotal += summary.total;
@@ -201,8 +226,8 @@ program
 
             if (qualityCases.length > 0) {
                 const fewShotCount = Number(options.fewShot ?? 3);
-                const qualityProvider = fewShotBank && fewShotCount > 0 && provider instanceof LlamaCppProvider
-                    ? new LlamaCppProvider(fewShotBank, fewShotCount)
+                const qualityProvider = fewShotBank && fewShotCount > 0 && (provider instanceof LlamaCppProvider || provider instanceof NewLlamaCppProvider)
+                    ? new NewLlamaCppProvider({ ...llamaCppOptions, fewShotBank, fewShotCount })
                     : provider;
                 const qResults = await evaluateGoldenSet(qualityCases, qualityProvider, DEFAULT_ONTOLOGY);
                 const qSummary = printResults(`Quality Cases — ${provider.name}`, qResults);

@@ -27,7 +27,7 @@ import { dirname, join } from 'node:path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const PROJECT_ROOT = join(__dirname, '..', '..', '..');
-const CASES_DIR = join(PROJECT_ROOT, 'eval', 'cases');
+const CASES_DIR = join(PROJECT_ROOT, 'data', 'eval', 'cases');
 
 interface IntentCase {
     id: string;
@@ -182,7 +182,7 @@ async function runArm(
     definition: ArmDefinition,
     cases: IntentCase[],
     repetitions: number,
-    headless: boolean = false,
+    headless: boolean = true,
     baseURL?: string,
     userDataDir?: string
 ): Promise<ArmResult> {
@@ -191,10 +191,11 @@ async function runArm(
     const resolvedBaseURL = baseURL ?? process.env.PREVIEW_URL ?? 'http://localhost:4199';
     const patch = definition.patch;
 
-    // Use regular browser context with PNA bypass flags (no persistent profile)
-    // The persistent profile was causing React app to not mount
-    const browser = await chromium.launch({
+    // Use persistent context to store PNA permissions and bypass headless restrictions
+    const persistentUserDataDir = userDataDir ?? '/tmp/notention-e2-chrome-profile';
+    const context = await chromium.launchPersistentContext(persistentUserDataDir, {
         headless: headless,
+        viewport: INTENT_DEFAULT_VIEWPORT,
         args: [
             '--disable-dev-shm-usage',
             '--disable-gpu',
@@ -207,10 +208,6 @@ async function runArm(
     const caseResults: CaseArmResult[] = [];
 
     try {
-        const context = await browser.newContext({
-            viewport: INTENT_DEFAULT_VIEWPORT,
-        });
-
         // Add init script to apply the parameter patch
         await installNamePolyfill(context);
         await context.addInitScript((patchData: Record<string, unknown>) => {
@@ -221,6 +218,15 @@ async function runArm(
         await context.addInitScript(`window.__OPTIMIZE_RUN_ID__ = 'e2-capture-run';`);
 
         const page = await context.newPage();
+
+        // Add init script to apply the parameter patch
+        await installNamePolyfill(context);
+        await context.addInitScript((patchData: Record<string, unknown>) => {
+            localStorage.setItem('pendingRevision', 'e2-test-revision');
+            localStorage.setItem('pendingRevisionData', JSON.stringify(patchData));
+        }, patch);
+        // The dev bridge only installs when a run id is present
+        await context.addInitScript(`window.__OPTIMIZE_RUN_ID__ = 'e2-capture-run';`);
 
         const runConfig: RunIntentCaseConfig = {
             baseURL: resolvedBaseURL,
@@ -280,7 +286,7 @@ async function runArm(
             }
         }
     } finally {
-        await browser.close();
+        await context.close();
     }
 
     return { armName, patch, caseResults };
@@ -580,16 +586,16 @@ export async function runE2CaptureTest(config: CaptureTestConfig = {}): Promise<
     let shouldStopServer = false;
     
     if (!config.useExternalServer && !baseURL) {
-        console.log('\n🚀 Starting dev server...');
-        baseURL = await ensurePreviewServer({ useProductionPreview: false });
+        console.log('\n🚀 Starting production preview server...');
+        baseURL = await ensurePreviewServer({ useProductionPreview: true });
         shouldStopServer = true;
     } else if (config.useExternalServer && baseURL) {
         console.log(`\n🔗 Using external preview server at ${baseURL}`);
     } else if (baseURL) {
         console.log(`\n🔗 Using provided baseURL: ${baseURL}`);
     } else {
-        console.log('\n🚀 Starting dev server...');
-        baseURL = await ensurePreviewServer({ useProductionPreview: false });
+        console.log('\n🚀 Starting production preview server...');
+        baseURL = await ensurePreviewServer({ useProductionPreview: true });
         shouldStopServer = true;
     }
     
