@@ -85,3 +85,5 @@ test-*.ts
 tmp-bench/
 data/notes.json
 models/
+data/
+optimize/test-*.mjs

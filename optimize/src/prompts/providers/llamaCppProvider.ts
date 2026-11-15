@@ -7,6 +7,7 @@ import type { Property, OntologyNode } from '@notention/core';
 import type { Provider } from '../evaluate.js';
 import { LlamaCppBridgeProvider, type LlamaCppBridgeOptions, closeLlamaCpp } from '../../llm/llamaCppBridge.js';
 import type { LabelledCase } from '../fewShot.js';
+import { collectOntologyKeysInTree } from '@notention/core';
 
 export interface LlamaCppProviderOptions {
     /** Embedded mode: path to GGUF model file */
@@ -126,12 +127,8 @@ Example:
     }
 
     private collectOntologyKeys(ontology: OntologyNode[]): string[] {
-        const keys: string[] = [];
-        for (const node of ontology) {
-            if (node.key) keys.push(node.key);
-            if (node.children) keys.push(...this.collectOntologyKeys(node.children));
-        }
-        return keys;
+        const keys = collectOntologyKeysInTree(ontology) as unknown as Iterable<string>;
+        return [...new Set([...keys].map(key => key.split('.').pop() ?? key))].sort();
     }
 
     private parseResponse(response: string, ontology: OntologyNode[]): Property[] {

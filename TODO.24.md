@@ -46,6 +46,25 @@
 - Quality (3-shot): Qwen 0.8B F1 0.659 (24/60), Llama 3.2 3B ~9/60
 - Ready for E13 prompt variant ablation across 6 registered variants
 
+### Session 9 — 2026-11-15
+
+#### 1. TypeScript fix for LlamaCppProvider
+- Fixed `collectOntologyKeys` in `optimize/src/prompts/providers/llamaCppProvider.ts` to use `collectOntologyKeysInTree` from `@notention/core` instead of assuming `node.key` exists on `OntologyNode`
+- `OntologyNode` has `id`, not `key` — the correct function extracts leaf keys from the ontology tree
+- Both `pnpm --filter @notention/core tsc --noEmit` and `pnpm --filter @notention/optimize tsc --noEmit` now pass cleanly
+
+#### 2. Full verification run (local, no CI)
+- Core tests: 855 passed
+- Agent tests: 17 passed
+- CLI tests: 6 passed
+- Optimize tests: 97 passed / 4 skipped
+- Taxonomy coverage: 24/24 coarse (100%), 32 six-axis cells
+- Golden gate (llama.cpp, Qwen 0.8B): 10/10, F1 0.687
+- Golden gate (llama.cpp, Llama 3.2 3B): 10/10, F1 0.891
+- Quality evaluation (60 cases, 3-shot): Qwen 0.8B F1 0.659, Qwen 4B F1 0.718
+- Optimizer loop dry run: all 6 steps complete (DISCOVER → PRIORITIZE → SYNTHESIZE → EVALUATE → ADOPT → REQUEST)
+- CI item: **N/A per user request** (no GitHub Actions desired)
+
 ### Session 6 — 2026-11-15
 
 #### 1. Two-step router→extraction pipeline implemented
@@ -197,7 +216,7 @@ Success criteria:
 - [x] Optimizer loop dry run completes all six steps
 - [x] Quality F1 ≥ 0.5 (0.604)
 - [x] Optimizer loop adopts a best prompt automatically (real run)
-- [ ] CI runs the LLM gate (GPU runner for WebLLM)
+- [ ] CI runs the LLM gate (GPU runner for WebLLM) — **N/A: user declined CI setup**
 
 ---
 
