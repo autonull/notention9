@@ -29,7 +29,7 @@ export { getLlama };
 import { DEFAULT_ONTOLOGY, parsePropertiesJson } from '@notention/core';
 import type { Property, OntologyNode } from '@notention/core';
 import { buildSystemPrompt, leafOntologyKeys } from '../prompts/extractionPrompt.js';
-import { VALID_OPERATOR_SET, pruneUngrounded } from '../prompts/policy.js';
+import { VALID_OPERATOR_SET, pruneUngrounded, pruneUngroundedWithSpans } from '../prompts/policy.js';
 import { renderFewShot, selectFewShot, type LabelledCase } from '../prompts/fewShot.js';
 
 export type GpuLayerSetting = number | 'auto' | 'max';
@@ -435,7 +435,7 @@ export async function extractWithLlamaCpp(
                 console.log('[LlamaCpp] Raw response (grammar):', JSON.stringify(response));
             }
 
-            properties = pruneUngrounded(parseResponse(response, ontology), text);
+            properties = pruneUngroundedWithSpans(parseResponse(response, ontology), text);
             
             // If we got valid properties, record success
             if (properties.length > 0) {
@@ -466,7 +466,7 @@ export async function extractWithLlamaCpp(
         console.log('[LlamaCpp] Raw response (fallback):', JSON.stringify(response));
     }
 
-    properties = pruneUngrounded(parseResponse(response, ontology), text);
+    properties = pruneUngroundedWithSpans(parseResponse(response, ontology), text);
     
     return properties;
 }

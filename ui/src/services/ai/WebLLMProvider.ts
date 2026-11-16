@@ -2,7 +2,7 @@ import {CreateMLCEngine, MLCEngine} from "@mlc-ai/web-llm";
 import type {Note, OntologyAttribute, OntologyNode, Property} from '@notention/core';
 import type {InferredAttribute} from './types';
 import {BaseAIProvider} from './BaseProvider.js';
-import {Logger, collectOntologyKeysInTree, parsePropertiesJson} from '@notention/core';
+import {Logger, collectOntologyKeysInTree, parsePropertiesJson, pruneUngroundedWithSpans} from '@notention/core';
 
 export const AVAILABLE_MODELS = [
     {id: "Llama-3.2-3B-Instruct-q4f16_1-MLC", label: "Llama 3.2 3B (Balanced)"},
@@ -133,7 +133,8 @@ export class WebLLMProvider extends BaseAIProvider {
 
         const content = response.choices[0]?.message?.content || "[]";
         try {
-            return parsePropertiesJson(this.parseJsonObject(content, []));
+            const properties = parsePropertiesJson(this.parseJsonObject(content, []));
+            return pruneUngroundedWithSpans(properties, text);
         } catch {
             this.logger.warn("Failed to parse AI properties:", new Error(content));
             return [];

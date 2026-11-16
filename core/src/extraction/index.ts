@@ -29,3 +29,9 @@ export {
     getStagePriority,
     getStageConfidence,
 } from './extractionConstants.js';
+
+export {
+    isGrounded,
+    pruneUngrounded,
+    pruneUngroundedWithSpans,
+} from './propertyGrounding.js';

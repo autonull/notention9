@@ -15,6 +15,7 @@ import {DescribeItComposer} from './DescribeItComposer';
 import {usePropertyInsertion} from '../../hooks/usePropertyInsertion';
 import {useOntologySuggestions} from '../../hooks/useOntologySuggestions';
 import {usePatternSuggestions} from '../../hooks/usePatternSuggestions';
+import {TextSelection} from 'prosemirror-state';
 
 const EditorContent = EditorContentComponent as any;
 
@@ -37,6 +38,7 @@ interface TiptapEditorProps {
 export interface TiptapEditorRef {
     openPropertyModal: (key?: string) => void;
     editor: Editor | null;
+    scrollToPosition: (pos: number) => void;
 }
 
 export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
@@ -94,7 +96,18 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
 
     useImperativeHandle(ref, () => ({
         openPropertyModal: handleOpenPropertyModal,
-        editor
+        editor,
+        scrollToPosition: (pos: number) => {
+            if (editor && !editor.isDestroyed && editor.view) {
+                editor.view.dispatch(editor.view.state.tr.setSelection(
+                    new TextSelection(editor.view.state.doc, pos)
+                ));
+                editor.view.focus();
+                // Scroll into view
+                const coords = editor.view.coordsAtPos(pos);
+                editor.view.dom.scrollTop = coords.top - editor.view.dom.clientHeight / 2;
+            }
+        }
     }));
 
     const editor = useTiptapConfig({
@@ -133,6 +146,23 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
         window.addEventListener('save-note', handleSaveEvent);
         return () => window.removeEventListener('save-note', handleSaveEvent);
     }, [editor, onSave, addToast]);
+
+    // Listen for focus-property-source event from PropertyBlock
+    useEffect(() => {
+        const handleFocusSource = (event: CustomEvent<{ start: number; end: number }>) => {
+            if (editor && !editor.isDestroyed && editor.view) {
+                const { start } = event.detail;
+                editor.view.dispatch(editor.view.state.tr.setSelection(
+                    new TextSelection(editor.view.state.doc, start)
+                ));
+                editor.view.focus();
+                const coords = editor.view.coordsAtPos(start);
+                editor.view.dom.scrollTop = coords.top - editor.view.dom.clientHeight / 2;
+            }
+        };
+        window.addEventListener('focus-property-source', handleFocusSource as EventListener);
+        return () => window.removeEventListener('focus-property-source', handleFocusSource as EventListener);
+    }, [editor]);
 
     // Sync content from parent
     useEffect(() => {

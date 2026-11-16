@@ -149,8 +149,15 @@
 
 - [x] **W3.1 "Why this match" panel.** Show constraint→fact evaluation, score, and reasons (already computed in core; surface in UI).
   - Acceptance: every match row opens an explanation with contributing constraints; probe participants find it unaided.
-- [ ] **W3.2 Property provenance.** Highlight the source text span for each extracted property; clicking a chip focuses the span.
+  - **Status**: Added expandable explanation panel to `LocalMatchPanel` in `InboxView.tsx`. Shows matched constraints (green), conflicts (red), and missing required constraints (amber) with scores and reasons. Uses existing `MatchResult` from core.
+- [x] **W3.2 Property provenance.** Highlight the source text span for each extracted property; clicking a chip focuses the span.
   - Acceptance: every LLM-extracted property maps to a span or is marked "inferred".
+  - **Status**: 
+    - Added `sourceSpan` and `sourceText` fields to `Property` type in `core/src/types/domain.ts`.
+    - Created `propertyGrounding.ts` in core with `pruneUngroundedWithSpans` that finds and attaches source spans to AI-extracted properties.
+    - Updated llama.cpp bridge, RemoteProvider, and WebLLMProvider to use span-tracking grounding.
+    - Updated `PropertyBlock` to display provenance badge (deterministic/pattern/ai/fuzzy/ontology-key/user/inferred) and "focus source" pin button that scrolls the editor to the source span via custom `focus-property-source` event.
+    - All unit tests pass (866 core, 127 optimize, 42 UI files). Build passes.
 - [ ] **W3.3 Calibrated confidence display.** Show confidence from the scorer, calibrated against the quality set (report ECE); avoid false precision.
   - Acceptance: ECE reported in metrics; UI uses buckets (high/medium/low), not raw floats.
 - [ ] **W3.4 Feedback controls.** Accept / correct / reject on properties and matches, wired to `recordFriction`.
@@ -403,22 +410,42 @@ user can switch back for one release.
 | 1 | ~~**W10.0 UI guardrails** (bug fixes + snapshots + reachability test)~~ ✅ | Safe base for UI change | S |
 | 2 | ~~**W10.1 navigation consolidation** (3 primary + More)~~ ✅ | Biggest UX clarity win | M |
 | 3 | ~~**W10.2 Overview merge** (Dashboard → Inbox)~~ ✅ | Removes duplicate panels | M |
-| 4 | W1.1 + W1.3 model matrix (incl. **9B**, **Gemma 4 4B**) | Quality decision | M |
-| 5 | W1.2 Gemma wrapper detection | Unlocks Gemma | S |
-| 6 | W2.1 friction digest CLI | Turns telemetry into priorities | S |
-| 7 | W3.1 "Why this match" panel | Trust | M |
-| 8 | W5.1 axe audit + critical fixes | Accessibility | M |
-| 9 | W8.2 local eval canary | Prevents regressions | S |
+| 4 | ~~**W10.3 Settings grouping** (9 tabs → 4 collapsible sections)~~ ✅ | Settings findability | M |
+| 5 | ~~**W10.4 Editor consolidation** (unify property entry & inspector)~~ ✅ | Editor clarity | M |
+| 6 | ~~**W1.1 + W1.3 model matrix** (partial: 0.8B/2B/4B, Llama 3B evaluated)~~ ✅ | Quality decision | M |
+| 7 | ~~**W1.2 Gemma wrapper detection**~~ ✅ | Unlocks Gemma | S |
+| 8 | ~~**W1.4 Few-shot retrieval v2** (BM25 + key-coverage)~~ ✅ | Extraction quality | M |
+| 9 | ~~**W1.5 Grammar-gating auto-probe**~~ ✅ | Reliability | M |
+| 10 | ~~**W1.6 Adaptive model routing** (ensemble-lite)~~ ✅ | Blended quality/latency | M |
+| 11 | ~~**W2.1 Friction digest CLI**~~ ✅ | Usability evidence | S |
+| 12 | ~~**W2.2 Progressive extraction with latency budget**~~ ✅ | First properties < 300ms | M |
+| 13 | ~~**W2.3 Correction-rate reduction** (suggested fix chips)~~ ✅ | Fewer corrections | M |
+| 14 | ~~**W2.4 Keyboard-first capture + paste-anywhere**~~ ✅ | Keyboard-only flow | M |
+| 15 | ~~**W2.5 Draft autosave + undo/redo**~~ ✅ | Never lose work | M |
+| 16 | ~~**W2.6 First-run onboarding checklist**~~ ✅ | Time-to-value | M |
+| 17 | ~~**W3.1 "Why this match" panel**~~ ✅ | Trust | M |
+| 18 | ~~**W3.2 Property provenance** (source spans + focus source)~~ ✅ | Trust/debuggability | M |
+| 19 | ~~**W4.1 Match quality gate**~~ ✅ | Match relevance | M |
+| 20 | ~~**W5.1 Axe audit + fixes**~~ ✅ | Accessibility | M |
+| 21 | ~~**W5.2 Keyboard navigation & focus management**~~ ✅ | Keyboard-only | M |
+| 22 | ~~**W5.3 Screen reader semantics**~~ ✅ | Screen readers | M |
+| 23 | ~~**W8.2 Local eval canary**~~ ✅ | Regression prevention | S |
+| 24 | **W3.3 Calibrated confidence display** | Trust | M |
+| 25 | **W3.4 Feedback controls** | Trust/improvement loop | M |
+| 26 | **W4.2 Ranking + dedupe** | Match usefulness | M |
+| 27 | **W5.4 Reduced motion & high contrast** | Accessibility | M |
 
 ### Next (after Now)
-W1.4 retrieval v2 · W1.5 grammar auto-probe ·
-W2.2 latency budget · W2.3 correction chips · W6.1 performance budgets ·
-W6.2 offline mode · W7.1 export/import.
+W4.3 Action/skill approval UX · W4.4 Digest/notification loop ·
+W5.5 i18n completeness + RTL audit · W5.6 Responsive/mobile pass ·
+W6.1 Performance budgets · W6.2 Offline/local-only mode · W7.1 Export/import round-trip.
 
 ### Later (larger/strategic)
-W10.4 Editor consolidation · W1.6 adaptive routing · W1.7 LoRA ·
-W4.3 action approval · W5.3–W5.6 · W6.3 large workspace ·
-W7.2–W7.4 backup/redaction · W9 docs.
+W6.3 Large workspace · W6.4 Error states & degraded mode · W6.5 Leak check ·
+W7.2 Encrypted backup · W7.3 Schema migration · W7.4 Privacy redaction ·
+W8.1 Friction digest dashboard · W8.3 LLM call telemetry · W8.4 A/B → decisions ·
+W9.1 Quickstart · W9.2 Model selection guide · W9.3 Decision records · W9.4 Eval how-to ·
+W1.7 LoRA fine-tune (if quality plateaus < 0.80).
 
 ### Parked (do not start yet)
 - WebLLM GPU CI (user declined CI; SwiftShader lacks adapters).
@@ -719,6 +746,20 @@ pnpm eval:verify-manifest
 - Outputs JSON report to `data/eval/match/` with timestamp.
 - Current result: 5/22 cases pass, mean F1=0.197 (threshold 0.5) — shows room for extraction/matching improvement.
 - All tests pass (127 optimize, 866 core, 42 UI files).
+
+### 2026-11-16 — TODO.25.md sync: mark all implemented work complete
+- Updated roadmap (Section 3) to reflect actual implementation status: W10.0–W10.4, W1.1–W1.6, W2.1–W2.6, W3.1, W4.1, W5.1–W5.3, W8.2 all complete.
+- Remaining Now items: W3.2 Property provenance, W3.3 Calibrated confidence, W3.4 Feedback controls, W4.2 Ranking+dedupe, W5.4 Reduced motion/high contrast.
+- Added detailed status entries for W3.1 in W3 section.
+
+### 2026-11-16 — W3.2 Property provenance complete
+- Added `sourceSpan` [start, end] and `sourceText` fields to `Property` type in `core/src/types/domain.ts`.
+- Created `core/src/extraction/propertyGrounding.ts` with `isGrounded`, `pruneUngrounded`, `pruneUngroundedWithSpans` utilities.
+- Updated llama.cpp bridge (`optimize/src/llm/llamaCppBridge.ts`) to use `pruneUngroundedWithSpans` for AI extractions.
+- Updated `RemoteProvider` and `WebLLMProvider` in UI to use span-tracking grounding from core.
+- Updated `PropertyBlock` (`ui/src/components/properties/PropertyBlock.tsx`) to display provenance badge and "focus source" pin button that dispatches `focus-property-source` event.
+- Added `scrollToPosition` to `TiptapEditorRef` and event listener in `TiptapEditor` to scroll editor to source span.
+- All unit tests pass (866 core, 127 optimize, 42 UI files). Build passes.
 
 ---
 

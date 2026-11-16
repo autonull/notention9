@@ -1,7 +1,7 @@
 import type {Note, OntologyNode, Property} from '@notention/core';
 import type {InferredAttribute} from './types';
 import {BaseAIProvider} from './BaseProvider.js';
-import {buildAttributeIndex, collectOntologyKeys, Logger, parsePropertiesJson} from '@notention/core';
+import {buildAttributeIndex, collectOntologyKeys, Logger, parsePropertiesJson, pruneUngroundedWithSpans} from '@notention/core';
 import {GoogleGenAI} from '@google/genai';
 
 export const isGeminiApiKeyAvailable = (userKey?: string): boolean => {
@@ -124,7 +124,8 @@ ${text}`;
 
         try {
             const result = await this.generateCompletion(prompt);
-            return parsePropertiesJson(this.parseJsonObject(result, []));
+            const properties = parsePropertiesJson(this.parseJsonObject(result, []));
+            return pruneUngroundedWithSpans(properties, text);
         } catch (e) {
             this.logger.error('Alignment Error:', e as Error);
             return [];

@@ -75,6 +75,10 @@ export interface Property {
   confidence?: number;
   /** Provenance: which stage/source produced this property */
   provenance?: 'deterministic' | 'pattern' | 'ai' | 'fuzzy' | 'ontology-key' | 'user' | 'inferred';
+  /** Source text span for LLM-extracted properties: [startIndex, endIndex] in the original text */
+  sourceSpan?: [number, number];
+  /** The original text snippet that this property was extracted from */
+  sourceText?: string;
 }
 
 export interface ExtractedProperty {

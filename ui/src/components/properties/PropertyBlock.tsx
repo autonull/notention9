@@ -14,7 +14,9 @@ import {
     ChartBarIcon,
     HomeIcon,
     XMarkIcon,
-    LightBulbIcon
+    LightBulbIcon,
+    PinIcon,
+    InfoIcon
 } from '../ui/icons';
 
 interface PropertyBlockProps {
@@ -103,6 +105,29 @@ export function PropertyBlock({
 
     const IconComponent = getPropertyIcon(property.key);
 
+    // Provenance display
+    const provenance = property.provenance || 'user';
+    const provenanceColors: Record<string, string> = {
+        'deterministic': 'text-green-400 bg-green-900/30 border-green-700/50',
+        'pattern': 'text-cyan-400 bg-cyan-900/30 border-cyan-700/50',
+        'ai': 'text-purple-400 bg-purple-900/30 border-purple-700/50',
+        'fuzzy': 'text-orange-400 bg-orange-900/30 border-orange-700/50',
+        'ontology-key': 'text-blue-400 bg-blue-900/30 border-blue-700/50',
+        'user': 'text-gray-400 bg-gray-900/30 border-gray-700/50',
+        'inferred': 'text-yellow-400 bg-yellow-900/30 border-yellow-700/50',
+    };
+    const provenanceColor = provenanceColors[provenance] || provenanceColors['user'];
+    const hasSourceSpan = property.sourceSpan && property.sourceSpan[0] !== undefined && property.sourceSpan[1] !== undefined;
+
+    const handleFocusSource = useCallback((e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (hasSourceSpan && property.sourceSpan) {
+            window.dispatchEvent(new CustomEvent('focus-property-source', {
+                detail: { start: property.sourceSpan[0], end: property.sourceSpan[1] }
+            }));
+        }
+    }, [hasSourceSpan, property.sourceSpan]);
+
     return (
         <div
             ref={blockRef}
@@ -140,8 +165,22 @@ export function PropertyBlock({
                         </span>
                     </div>
 
-                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                         {isValid(property) && <div className="w-1.5 h-1.5 rounded-full bg-green-500/50 shadow-[0_0_4px_rgba(34,197,94,0.5)]"></div>}
+                    <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                        {/* Provenance badge */}
+                        <span className={`px-1.5 py-0.5 text-[10px] font-medium rounded border ${provenanceColor}`}>
+                            {provenance}
+                        </span>
+                        {/* Focus source button */}
+                        {hasSourceSpan && (
+                            <button
+                                className="p-1 text-gray-500 hover:text-blue-400 hover:bg-blue-900/20 rounded transition-colors"
+                                onClick={handleFocusSource}
+                                title="Focus source text"
+                            >
+                                <PinIcon className="w-3.5 h-3.5" />
+                            </button>
+                        )}
+                        {isValid(property) && <div className="w-1.5 h-1.5 rounded-full bg-green-500/50 shadow-[0_0_4px_rgba(34,197,94,0.5)]"></div>}
                         <button
                             className="p-1 text-gray-500 hover:text-red-400 hover:bg-red-900/20 rounded transition-colors"
                             onClick={(e) => {
@@ -160,6 +199,20 @@ export function PropertyBlock({
                         <div className="flex items-center gap-2">
                             <IconComponent className="w-4 h-4 text-blue-400" />
                             <span className="font-bold text-sm text-gray-200 tracking-wide">{property.key}</span>
+                            {/* Provenance badge in editing mode */}
+                            <span className={`px-1.5 py-0.5 text-[10px] font-medium rounded border ${provenanceColor}`}>
+                                {provenance}
+                            </span>
+                            {/* Focus source button in editing mode */}
+                            {hasSourceSpan && (
+                                <button
+                                    className="p-1 text-gray-500 hover:text-blue-400 hover:bg-blue-900/20 rounded transition-colors"
+                                    onClick={handleFocusSource}
+                                    title="Focus source text"
+                                >
+                                    <PinIcon className="w-3.5 h-3.5" />
+                                </button>
+                            )}
                         </div>
                         <button
                             onClick={(e) => {
