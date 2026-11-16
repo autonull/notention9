@@ -35,4 +35,12 @@ export interface AppSettings {
   };
   ontology?: any[];
   customTemplates?: Template[];
+  onboarding?: {
+    completed: boolean;
+    step: number;
+    captureCompleted: boolean;
+    matchCompleted: boolean;
+    actionCompleted: boolean;
+    dismissed: boolean;
+  };
 }

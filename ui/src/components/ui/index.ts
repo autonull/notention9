@@ -6,6 +6,7 @@ export * from './EnhancedCommandPalette';
 export * from './ContextualHint';
 export * from './Skeleton';
 export * from './CollapsibleSection';
+export * from './OnboardingChecklist';
 
 // Re-export commonly used types
 export type {ButtonProps, IconButtonProps, CardProps, InputProps, BadgeProps, AvatarProps, ModalProps, ToastProps, ToastContainerProps} from './Primitives';

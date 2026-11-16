@@ -133,8 +133,16 @@
     - Added global keyboard listeners in `AppShell` dispatching `editor-undo`/`editor-redo` events.
     - Updated shortcuts config with Undo/Redo entries.
     - All UI tests (42 files), core tests (866), optimize tests (127) pass. Build passes.
-- [ ] **W2.6 First-run onboarding checklist.** Three steps: capture → see match → take action. Dismissible; detected from real state, not flags alone.
+- [x] **W2.6 First-run onboarding checklist.** Three steps: capture → see match → take action. Dismissible; detected from real state, not flags alone.
+  - Added onboarding state to `AppSettings` in `core/src/types/ui.ts` with fields: `completed`, `step`, `captureCompleted`, `matchCompleted`, `actionCompleted`, `dismissed`.
+  - Created `OnboardingChecklist` component (`ui/src/components/ui/OnboardingChecklist.tsx`) with three-step progressive UI, step indicators, dismissible, auto-advances based on real state.
+  - Integrated into `InboxView` with tracking effects:
+    - Step 1 (capture): triggers when `notes.length > 0`
+    - Step 2 (match): triggers when request+offer notes exist
+    - Step 3 (action): triggers when response note created
+  - Default onboarding state initialized in `SettingsContext`.
   - Acceptance: fresh profile shows checklist; disappears when steps complete.
+  - All UI tests (42 files), core tests (866), optimize tests (127) pass. Build passes.
 
 ### W3 — Trust & Explainability
 **Goal**: Users understand *why* a property or match appeared, and can correct it.
@@ -403,7 +411,7 @@ W6.2 offline mode · W7.1 export/import.
 
 ### Later (larger/strategic)
 W10.4 Editor consolidation · W1.6 adaptive routing · W1.7 LoRA ·
-W2.6 onboarding · W4.3 action approval · W5.3–W5.6 · W6.3 large workspace ·
+W4.3 action approval · W5.3–W5.6 · W6.3 large workspace ·
 W7.2–W7.4 backup/redaction · W9 docs.
 
 ### Parked (do not start yet)
@@ -676,6 +684,17 @@ pnpm eval:verify-manifest
 - Updated shortcuts config with Undo/Redo entries.
 - All UI tests (42 files), core tests (866), optimize tests (127) pass. Build passes.
 - Acceptance: reload restores draft; undo/redo restores previous text and property states.
+
+### 2026-11-16 — W2.6 First-run onboarding checklist complete
+- Added onboarding state to `AppSettings` in `core/src/types/ui.ts` with fields: `completed`, `step`, `captureCompleted`, `matchCompleted`, `actionCompleted`, `dismissed`.
+- Created `OnboardingChecklist` component (`ui/src/components/ui/OnboardingChecklist.tsx`) with three-step progressive UI, step indicators, dismissible, auto-advances based on real state.
+- Integrated into `InboxView` with tracking effects:
+  - Step 1 (capture): triggers when `notes.length > 0`
+  - Step 2 (match): triggers when request+offer notes exist
+  - Step 3 (action): triggers when response note created
+- Default onboarding state initialized in `SettingsContext`.
+- Acceptance: fresh profile shows checklist; disappears when steps complete.
+- All UI tests (42 files), core tests (866), optimize tests (127) pass. Build passes.
 
 ---
 

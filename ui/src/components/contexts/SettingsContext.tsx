@@ -31,6 +31,14 @@ export function SettingsProvider({
             },
             ontology: [],
             customTemplates: [],
+            onboarding: {
+                completed: false,
+                step: 1,
+                captureCompleted: false,
+                matchCompleted: false,
+                actionCompleted: false,
+                dismissed: false,
+            },
         }
     );
 

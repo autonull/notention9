@@ -12,6 +12,7 @@ import {DashboardStatSkeleton, ActivityFeedSkeleton, QuickActionsSkeleton} from 
 import {cn} from '../../utils/ui';
 import {Skeleton} from '../ui/Skeleton';
 import {InboxIcon} from '../ui/icons';
+import {OnboardingChecklist} from '../ui/OnboardingChecklist';
 import {agentService} from '../../services/AgentService';
 import {useDemoWorkspace} from '../../hooks/useDemoWorkspace';
 import {useCaptureTracking, useMatchTracking} from '../../hooks/useFrictionRecorder';
@@ -42,7 +43,7 @@ const deriveQuickTags = (input: string): string[] =>
 export function InboxView({sortedNotes}: InboxViewProps) {
     const {notes, addNote, loading: notesLoading} = useNotes();
     const {activeView, setActiveView, selectedNoteId, setSelectedNoteId, searchTerm, sortOrder, userLocation} = useView();
-    const {settings} = useSettings();
+    const {settings, setSettings} = useSettings();
     const {handleNewNote} = useCommands({});
     const {load: loadSampleWorkspace} = useDemoWorkspace();
     const [quickCaptureInput, setQuickCaptureInput] = useState('');
@@ -105,6 +106,64 @@ export function InboxView({sortedNotes}: InboxViewProps) {
         window.addEventListener('paste-to-capture', handlePasteToCapture as EventListener);
         return () => window.removeEventListener('paste-to-capture', handlePasteToCapture as EventListener);
     }, [activeView, setActiveView]);
+
+    // Onboarding tracking: Step 1 - Capture a note
+    useEffect(() => {
+        const onboarding = settings.onboarding;
+        if (!onboarding || onboarding.completed || onboarding.dismissed || onboarding.captureCompleted) {
+            return;
+        }
+        if (notes.length > 0) {
+            setSettings(s => ({
+                ...s,
+                onboarding: {
+                    ...onboarding,
+                    captureCompleted: true,
+                    step: Math.max(onboarding.step, 2),
+                },
+            }));
+        }
+    }, [notes.length, settings.onboarding, setSettings]);
+
+    // Onboarding tracking: Step 2 - See a match
+    useEffect(() => {
+        const onboarding = settings.onboarding;
+        if (!onboarding || onboarding.completed || onboarding.dismissed || onboarding.matchCompleted) {
+            return;
+        }
+        const hasRequest = notes.some(n => n.properties.some(p => p.key === 'intent' && p.values.includes('request')));
+        const hasOffer = notes.some(n => n.properties.some(p => p.key === 'intent' && p.values.includes('offer')));
+        if (hasRequest && hasOffer) {
+            setSettings(s => ({
+                ...s,
+                onboarding: {
+                    ...onboarding,
+                    matchCompleted: true,
+                    step: Math.max(onboarding.step, 3),
+                },
+            }));
+        }
+    }, [notes, settings.onboarding, setSettings]);
+
+    // Onboarding tracking: Step 3 - Take action (respond to match)
+    useEffect(() => {
+        const onboarding = settings.onboarding;
+        if (!onboarding || onboarding.completed || onboarding.dismissed || onboarding.actionCompleted) {
+            return;
+        }
+        // Check if there's a response note (created by accepting a match)
+        const hasResponse = notes.some(n => n.source?.type === 'match-response' || n.properties.some(p => p.key === 'type' && p.values.includes('response')));
+        if (hasResponse) {
+            setSettings(s => ({
+                ...s,
+                onboarding: {
+                    ...onboarding,
+                    actionCompleted: true,
+                    step: 4,
+                },
+            }));
+        }
+    }, [notes, settings.onboarding, setSettings]);
 
     const handleCreateNote = useCallback(() => {
         const newNote = addNote({title: ''});
@@ -377,6 +436,8 @@ export function InboxView({sortedNotes}: InboxViewProps) {
                     startCaptureTracking={startCaptureTracking}
                     stopCaptureTracking={stopCaptureTracking}
                 />
+
+                <OnboardingChecklist/>
 
                 {/* Notes List */}
                 <section className="animate-fade-in" aria-label="Notes" data-testid="notes-list">
