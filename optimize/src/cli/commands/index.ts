@@ -7,3 +7,4 @@ export { FindingsCommand } from './findings.js';
 export { UXEvaluateCommand } from './uxEvaluate.js';
 export { FrictionDigestCommand } from './frictionDigest.js';
 export { EvalCanaryCommand } from './evalCanary.js';
+export { EvalMatchCommand } from './evalMatch.js';

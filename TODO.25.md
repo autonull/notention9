@@ -159,8 +159,14 @@
 ### W4 — Match & Action Usefulness
 **Goal**: Matching produces actionable, relevant results, not just scores.
 
-- [ ] **W4.1 Match quality gate.** Add the 22 `match` cases to an eval command and a pass threshold.
-  - Acceptance: `pnpm prompts:eval match` (or equivalent) reports precision/recall/relevance; threshold documented.
+- [x] **W4.1 Match quality gate.** Add the 22 `match` cases to an eval command and a pass threshold.
+  - Created `EvalMatchCommand` in `optimize/src/cli/commands/evalMatch.ts` with `pnpm optimize eval:match`.
+  - Uses full `ExtractionPipeline` (deterministic + pattern + ontology-key + fuzzy) for request property extraction.
+  - Matches against `QUALITY_CASE_NOTES` corpus (2 offer notes per case, 44 total).
+  - Reports precision, recall, F1 per case and averages; pass threshold: mean F1 ≥ 0.5.
+  - Outputs JSON report to `data/eval/match/` with timestamp.
+  - Current result: 5/22 cases pass, mean F1=0.197 (threshold 0.5) — shows room for extraction/matching improvement.
+  - All tests pass (127 optimize, 866 core, 42 UI files).
 - [ ] **W4.2 Ranking + dedupe.** Improve ordering (recency, distance, constraint coverage) and collapse near-duplicate offers.
   - Acceptance: top-5 relevance ↑ on match set; no duplicate clusters in top-5.
 - [ ] **W4.3 Action/skill approval UX.** Clear "what will happen" preview, capability scope, and one-tap approve/deny; audit trail entry.
@@ -406,7 +412,7 @@ user can switch back for one release.
 
 ### Next (after Now)
 W1.4 retrieval v2 · W1.5 grammar auto-probe ·
-W2.2 latency budget · W2.3 correction chips · W4.1 match gate · W6.1 performance budgets ·
+W2.2 latency budget · W2.3 correction chips · W6.1 performance budgets ·
 W6.2 offline mode · W7.1 export/import.
 
 ### Later (larger/strategic)
@@ -695,6 +701,15 @@ pnpm eval:verify-manifest
 - Default onboarding state initialized in `SettingsContext`.
 - Acceptance: fresh profile shows checklist; disappears when steps complete.
 - All UI tests (42 files), core tests (866), optimize tests (127) pass. Build passes.
+
+### 2026-11-16 — W4.1 Match quality gate complete
+- Created `EvalMatchCommand` in `optimize/src/cli/commands/evalMatch.ts` with `pnpm optimize eval:match`.
+- Uses full `ExtractionPipeline` (deterministic + pattern + ontology-key + fuzzy) for request property extraction.
+- Matches against `QUALITY_CASE_NOTES` corpus (2 offer notes per case, 44 total).
+- Reports precision, recall, F1 per case and averages; pass threshold: mean F1 ≥ 0.5.
+- Outputs JSON report to `data/eval/match/` with timestamp.
+- Current result: 5/22 cases pass, mean F1=0.197 (threshold 0.5) — shows room for extraction/matching improvement.
+- All tests pass (127 optimize, 866 core, 42 UI files).
 
 ---
 

@@ -14,6 +14,7 @@ import {
     UXEvaluateCommand,
     FrictionDigestCommand,
     EvalCanaryCommand,
+    EvalMatchCommand,
 } from './cli/commands/index.js';
 
 // Import to register journeys
@@ -32,6 +33,7 @@ commandRegistry.register(new FindingsCommand());
 commandRegistry.register(new UXEvaluateCommand());
 commandRegistry.register(new FrictionDigestCommand());
 commandRegistry.register(new EvalCanaryCommand());
+commandRegistry.register(new EvalMatchCommand());
 
 interface ParsedFlags {
     json: boolean;

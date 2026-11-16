@@ -264,6 +264,16 @@
       "import": "./dist/schemas/generated/seam-definitions.js",
       "node": "./dist/schemas/generated/seam-definitions.js",
       "browser": "./dist/browser/schemas/generated/seam-definitions.js"
+    },
+    "./fixtures/qualityCaseNotes": {
+      "import": "./dist/fixtures/qualityCaseNotes.js",
+      "node": "./dist/fixtures/qualityCaseNotes.js",
+      "browser": "./dist/browser/fixtures/qualityCaseNotes.js"
+    },
+    "./fixtures": {
+      "import": "./dist/fixtures/index.js",
+      "node": "./dist/fixtures/index.js",
+      "browser": "./dist/browser/fixtures/index.js"
     }
   },
   "scripts": {
