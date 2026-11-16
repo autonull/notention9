@@ -43,6 +43,8 @@ export const SHORTCUT_GROUPS: ShortcutGroup[] = [
         shortcuts: [
             {label: 'New Note', keys: [MOD, 'N'], description: 'Create a new note', global: true},
             {label: 'Save Note', keys: [MOD, 'S'], description: 'Save the current note', global: true},
+            {label: 'Save Note', keys: [MOD, 'Enter'], description: 'Save the current note', global: true},
+            {label: 'Paste to Capture', keys: [MOD, 'V'], description: 'Open quick capture with clipboard content', global: true},
             {label: 'Add Detail', keys: [MOD, 'Shift', 'P'], description: 'Open the property palette', global: true},
             {label: 'Previous Note', keys: ['Alt', '↑'], description: 'Navigate to the previous note'},
             {label: 'Next Note', keys: ['Alt', '↓'], description: 'Navigate to the next note'},
@@ -81,6 +83,8 @@ export const COMMAND_PALETTE_SHORTCUTS: ShortcutGroup[] = [
         shortcuts: [
             {label: 'New Note', keys: [MOD, 'N']},
             {label: 'Save Note', keys: [MOD, 'S']},
+            {label: 'Save Note', keys: [MOD, 'Enter']},
+            {label: 'Paste to Capture', keys: [MOD, 'V']},
             {label: 'Property Palette', keys: [MOD, 'Shift', 'P']},
             {label: 'Previous Note', keys: ['Alt', '↑']},
             {label: 'Next Note', keys: ['Alt', '↓']},

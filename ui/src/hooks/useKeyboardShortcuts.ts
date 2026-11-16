@@ -8,6 +8,7 @@ interface UseKeyboardShortcutsProps {
 	onCommandPalette: () => void;
 	onPropertyPalette?: () => void;
 	onSave?: () => void;
+	onPasteToCapture?: (clipboardText: string) => void;
 	onPreviousNote?: () => void;
 	onNextNote?: () => void;
 	onBackToList?: () => void;
@@ -23,6 +24,7 @@ export function useKeyboardShortcuts({
 	onCommandPalette,
 	onPropertyPalette,
 	onSave,
+	onPasteToCapture,
 	onPreviousNote,
 	onNextNote,
 	onBackToList,
@@ -103,10 +105,21 @@ export function useKeyboardShortcuts({
 				onNewNote();
 			}
 
-			// Save Note: Ctrl+S or Cmd+S
-			if (isMeta && e.key.toLowerCase() === 's') {
+			// Save Note: Ctrl+S or Cmd+S (also Ctrl+Enter / Cmd+Enter)
+			if (isMeta && (e.key.toLowerCase() === 's' || e.key === 'Enter')) {
 				e.preventDefault();
 				onSave?.();
+			}
+
+			// Paste to Capture: Ctrl+V or Cmd+V (when not in input)
+			if (isMeta && e.key.toLowerCase() === 'v') {
+				const target = e.target as HTMLElement;
+				if (!(target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.contentEditable === 'true')) {
+					e.preventDefault();
+					navigator.clipboard.readText().then(text => {
+						if (text.trim()) onPasteToCapture?.(text.trim());
+					}).catch(() => {});
+				}
 			}
 
 			// Search Sidebar: Ctrl+/ or Cmd+/

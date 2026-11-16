@@ -114,6 +114,9 @@ export function AppShell() {
             window.dispatchEvent(new CustomEvent('open-property-palette'));
         },
         onSave: () => window.dispatchEvent(new CustomEvent('save-note')),
+        onPasteToCapture: (clipboardText: string) => {
+            window.dispatchEvent(new CustomEvent('paste-to-capture', {detail: {text: clipboardText}}));
+        },
         onPreviousNote: () => {
             if (sortedNotes.length > 0 && selectedNoteId) {
                 const currentIndex = sortedNotes.findIndex(note => note.id === selectedNoteId);

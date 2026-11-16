@@ -8,7 +8,8 @@
  * Returns incremental results via callbacks.
  */
 
-import type { OntologyNode, Property, ExtractionOptions } from '../types/index.js';
+import type { OntologyNode, Property } from '../types/index.js';
+import type { ExtractionOptions } from './ExtractionPipeline.js';
 import { ExtractionPipeline, defaultStages, createExtractionPipeline, AIExtractionProvider } from './ExtractionPipeline.js';
 import { OntologyService } from '../ontology/ontologyService.js';
 

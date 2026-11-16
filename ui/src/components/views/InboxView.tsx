@@ -88,6 +88,24 @@ export function InboxView({sortedNotes}: InboxViewProps) {
         return () => agentService.off('status_change', handleStatusChange);
     }, []);
 
+    useEffect(() => {
+        const handlePasteToCapture = (event: CustomEvent<{text: string}>) => {
+            setQuickCaptureInput(event.detail.text);
+            // Focus the input if we're on the inbox view
+            if (activeView === 'inbox') {
+                requestAnimationFrame(() => {
+                    const input = document.querySelector('[data-testid="quick-capture-input"]') as HTMLInputElement;
+                    input?.focus();
+                });
+            } else {
+                // Navigate to inbox and focus
+                setActiveView('inbox');
+            }
+        };
+        window.addEventListener('paste-to-capture', handlePasteToCapture as EventListener);
+        return () => window.removeEventListener('paste-to-capture', handlePasteToCapture as EventListener);
+    }, [activeView, setActiveView]);
+
     const handleCreateNote = useCallback(() => {
         const newNote = addNote({title: ''});
         setSelectedNoteId(newNote.id);

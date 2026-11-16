@@ -14,7 +14,7 @@ import {
     ChartBarIcon,
     HomeIcon,
     XMarkIcon,
-    LightbulbIcon
+    LightBulbIcon
 } from '../ui/icons';
 
 interface PropertyBlockProps {
@@ -189,7 +189,7 @@ export function PropertyBlock({
                     {correctionSuggestions.length > 0 && (
                         <div className="space-y-2 pt-2 border-t border-gray-700/50">
                             <div className="flex items-center gap-2 text-xs text-yellow-400">
-                                <LightbulbIcon className="w-3.5 h-3.5 flex-shrink-0" />
+                                <LightBulbIcon className="w-3.5 h-3.5 flex-shrink-0" />
                                 <span className="font-medium">Suggested fixes:</span>
                             </div>
                             <div className="flex flex-wrap gap-1.5">

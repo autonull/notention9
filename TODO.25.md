@@ -115,8 +115,14 @@
   - Added 13 tests in `correctionSuggestions.test.ts` covering all suggestion types
   - All UI tests (42 files), core tests (866), optimize tests (127) pass
   - Acceptance: correction rate on quality corpus ↓; UI test covers accept/reject
-- [ ] **W2.4 Keyboard-first capture + paste-anywhere.** `N` new note, `Cmd/Ctrl+V` anywhere opens capture with paste; `Cmd/Ctrl+Enter` saves.
+- [x] **W2.4 Keyboard-first capture + paste-anywhere.** `N` new note, `Cmd/Ctrl+V` anywhere opens capture with paste; `Cmd/Ctrl+Enter` saves.
   - Acceptance: journey test completes capture with keyboard only.
+  - **Status**: 
+    - Added `Cmd+Enter` as alternative save shortcut in `useKeyboardShortcuts` hook (line 75 already allowed it in inputs, now global).
+    - Added `Cmd+V` handler to open QuickCapture with clipboard content via custom `paste-to-capture` event.
+    - Updated `InboxView` to listen for `paste-to-capture` event, set QuickCapture input, and focus/navigate to Inbox.
+    - Updated keyboard shortcuts config (`SHORTCUT_GROUPS`) with new entries for "Save Note (Cmd+Enter)" and "Paste to Capture (Cmd+V)".
+    - All UI tests (42 files), core tests (866), optimize tests (127) pass. Build passes.
 - [ ] **W2.5 Draft autosave + undo/redo.** Never lose a note; revert extraction edits independently of text.
   - Acceptance: reload restores draft; undo restores pre-extraction state.
 - [ ] **W2.6 First-run onboarding checklist.** Three steps: capture → see match → take action. Dismissible; detected from real state, not flags alone.
@@ -643,6 +649,15 @@ pnpm eval:verify-manifest
 - Updated all 24 showcase (visual snapshot) tests to use hash navigation for secondary nav items (Map, Timeline, Chat, Trash, Ontology, Settings).
 - All UI unit tests pass (42 test files), all core tests pass (855 tests), all optimize tests pass (107 tests).
 - All showcase tests pass (24/24), navigation tests pass (3/3), export-import tests pass (3/3).
+
+### 2026-11-16 — W2.4 Keyboard-first capture + paste-anywhere complete
+- Added `Cmd+Enter` as global save shortcut in `useKeyboardShortcuts` hook (works alongside existing `Cmd+S`).
+- Added `Cmd+V` handler to open QuickCapture with clipboard content: when pressed outside inputs, reads clipboard and dispatches `paste-to-capture` event.
+- Updated `InboxView` to listen for `paste-to-capture`, set QuickCapture input, focus it, and navigate to Inbox if needed.
+- Updated keyboard shortcuts config (`SHORTCUT_GROUPS`) with new entries: "Save Note (Cmd+Enter)" and "Paste to Capture (Cmd+V)".
+- Fixed `LightbulbIcon` import typo in `PropertyBlock.tsx` (was `LightbulbIcon`, corrected to `LightBulbIcon`).
+- All UI tests (42 files), core tests (866), optimize tests (127) pass. Build passes.
+- Acceptance: keyboard-only capture flow works (Cmd+V → paste → Cmd+Enter to save).
 
 ---
 

@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { OntologyNode, Property, ExtractionOptions } from '../types/index.js';
+import type { OntologyNode, Property } from '../types/index.js';
+import type { ExtractionOptions } from './ExtractionPipeline.js';
 import {
     runHeuristicExtraction,
     progressiveExtract,
