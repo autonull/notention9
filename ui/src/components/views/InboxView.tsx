@@ -1,5 +1,5 @@
 import React, {useMemo, useCallback} from 'react';
-import type {Note} from '@notention/core';
+import {MatchEngine, type Note} from '@notention/core';
 
 import {useNotes} from '../../hooks/useNotes';
 import {useView} from '../../hooks/useViewContext';
@@ -157,7 +157,13 @@ export function InboxView({sortedNotes}: InboxViewProps) {
                 </section>
 
                 {/* Progressive Disclosure: Advanced Panels */}
-                <AdvancedPanels notes={notes} settings={settings} activeView={activeView} setActiveView={setActiveView} />
+                <AdvancedPanels
+                    notes={notes}
+                    settings={settings}
+                    activeView={activeView}
+                    setActiveView={setActiveView}
+                    onSelectNote={handleSelectNote}
+                />
             </div>
         </div>
     );
@@ -167,12 +173,14 @@ function AdvancedPanels({
     notes,
     settings,
     activeView,
-    setActiveView
+    setActiveView,
+    onSelectNote
 }: {
     notes: Note[];
     settings: any;
     activeView: string;
     setActiveView: (view: string) => void;
+    onSelectNote: (id: string) => void;
 }) {
     const [showAdvanced, setShowAdvanced] = React.useState(false);
 
@@ -192,7 +200,7 @@ function AdvancedPanels({
 
             <div className="mt-6 space-y-8" role="region" aria-label="Advanced panels">
                 {/* Local Match Preview */}
-                <LocalMatchPanel notes={notes} settings={settings} onNavigate={(id) => {}} />
+                <LocalMatchPanel notes={notes} settings={settings} onNavigate={onSelectNote} />
 
                 {/* Automations */}
                 <AutomationsPanel settings={settings} />
@@ -201,7 +209,7 @@ function AdvancedPanels({
                 <StatsPanel notes={notes} settings={settings} />
 
                 {/* Recent Activity */}
-                <RecentActivityPanel notes={notes} onSelectNote={(id) => {}} />
+                <RecentActivityPanel notes={notes} onSelectNote={onSelectNote} />
             </div>
         </details>
     );
@@ -224,7 +232,6 @@ function LocalMatchPanel({notes, settings, onNavigate}: {notes: Note[]; settings
             setLocalMatch(null);
             return;
         }
-        const {MatchEngine} = require('@notention/core');
         const engine = new MatchEngine(settings.ontology || []);
         const match = notes
             .filter(note => note.properties.some(p => p.key === 'intent' && p.values.includes('request')))
@@ -254,16 +261,24 @@ function LocalMatchPanel({notes, settings, onNavigate}: {notes: Note[]; settings
                 </span>
             </header>
             <div className="grid gap-3 md:grid-cols-2">
-                <div className="bg-gray-800/50 rounded-xl p-4">
+                <button
+                    type="button"
+                    onClick={() => onNavigate(localMatch.request.id)}
+                    className="text-left bg-gray-800/50 hover:bg-gray-700/50 rounded-xl p-4 transition-colors"
+                >
                     <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Request</p>
                     <p className="font-medium">{localMatch.request.title || 'Untitled'}</p>
                     <p className="text-sm text-gray-400 mt-1 line-clamp-2">{localMatch.request.content.replace(/<[^>]*>/g, '')}</p>
-                </div>
-                <div className="bg-gray-800/50 rounded-xl p-4">
+                </button>
+                <button
+                    type="button"
+                    onClick={() => onNavigate(localMatch.note.id)}
+                    className="text-left bg-gray-800/50 hover:bg-gray-700/50 rounded-xl p-4 transition-colors"
+                >
                     <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Offer</p>
                     <p className="font-medium">{localMatch.note.title || 'Untitled'}</p>
                     <p className="text-sm text-gray-400 mt-1 line-clamp-2">{localMatch.note.content.replace(/<[^>]*>/g, '')}</p>
-                </div>
+                </button>
             </div>
             <div className="mt-4 flex gap-2">
                 <button className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg text-sm font-medium transition-colors">

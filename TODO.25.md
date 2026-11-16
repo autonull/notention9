@@ -163,6 +163,77 @@
 - [ ] **W9.3 Decision records.** One ADR per major choice (dual prompt, grammar gating, local-first telemetry).
 - [ ] **W9.4 Eval how-to.** Golden vs quality vs match sets; how to add a case; how to read F1/ECE.
 
+### W10 — UI/UX Simplification (progressive disclosure)
+**Goal**: A calmer, more intuitive interface with **no loss of functionality**, reached in small,
+independently revertible steps. Every view stays reachable by route, shortcut, and command palette.
+
+#### Verified audit findings (current code)
+| # | Finding | Evidence | Impact |
+|---|---------|----------|--------|
+| 1 | **11 top-level destinations** (Inbox, Notes, Map, Timeline, Network, Chat, Actions, Responses, Labels, Trash, Settings) | `ui/src/utils/navigation.ts` | Choice overload; cramped header/mobile nav |
+| 2 | Navigation is rendered **three times** (desktop header, sidebar, mobile bottom nav) from one config | `layout/Header.tsx`, `sidebar/index.tsx`, `layout/MobileBottomNav.tsx` | Visual noise; three surfaces to keep consistent |
+| 3 | **Dashboard and Inbox "Advanced" duplicate** local match, stats, recent activity, automations | `dashboard/DashboardView.tsx` vs `views/InboxView.tsx` (`AdvancedPanels`) | Redundant widgets, two mental models |
+| 4 | **Settings has 9 flat tabs**, with unused/duplicate `OntologyTab`/`AgentTab` present in source | `views/SettingsView.tsx`, `settings/` | Hard to find a setting |
+| 5 | **Latent runtime bug**: `require('@notention/core')` inside a React effect | `views/InboxView.tsx:227` | Advanced → Local Match breaks in browser (ESM has no `require`) |
+| 6 | Advanced-panel navigation is a **no-op** (`onNavigate={(id) => {}}`) | `views/InboxView.tsx` | Dead click affordance |
+| 7 | Editor property UI is spread across `ContextPanel`, `EditorSidebar`, `PropertyForm`, `EnhancedPropertyForm`, `InsertPropertyModal`, `ExtractionReview` | `ui/src/components/editor/` | Overlapping entry points; harder to learn |
+| 8 | Inbox Local Match "Accept"/"Dismiss" buttons have **no handlers**; cards were not clickable | `views/InboxView.tsx` | Dead controls; trust erosion |
+
+#### Principles
+1. **Progressive disclosure, not removal** — hide behind "More"/"Advanced", never delete a capability.
+2. **One primary action per screen**; secondary actions collapse.
+3. **Single source of truth** — navigation and settings grouping derive from config, not duplicated JSX.
+4. **Reversible** — each phase is a small commit with a flag or a clean revert; no big-bang rewrite.
+5. **Evidence-gated** — each phase must keep e2e journeys, visual snapshots, axe, and `stranger-test` green.
+
+#### Consolidation proposals
+| Area | Now | Proposed |
+|------|-----|----------|
+| Top nav | 11 peers | **3 primary** (Inbox, Notes, Actions) + **More** overflow (Map, Timeline, Network, Chat, Responses, Labels, Trash) + Settings as an icon |
+| Mobile nav | 11 scrolling tabs | 4 tabs (Inbox, Notes, Actions, More-sheet) + central capture button |
+| Overview | Dashboard + Inbox Advanced | **One Overview** surface; Dashboard becomes an optional tab/section inside Inbox; delete duplicate panels |
+| Settings | 9 flat tabs | **4 groups** (General, AI & Automation, Network & Identity, Data & Metrics) with collapsible sections; drop unused tabs |
+| Editor properties | 6 overlapping components | **One progressive form**: inline simple fields → "More details" expands advanced fields/modal |
+| Empty states | Mixed variants | One consistent `EmptyState` pattern (title, one CTA, one hint) |
+
+#### Phased rollout (each phase = one PR-sized commit)
+
+- [ ] **W10.0 Guardrails (no visual change).**
+  - Fix the `require()` bug and dead `onNavigate` handlers.
+  - Add `ui/src/tests/visual/*` snapshots for Inbox, Notes, Settings, mobile nav.
+  - Add a reachability test: every `View` id is reachable via palette + shortcut.
+  - Add axe baseline (may fail; record and triage).
+  - Acceptance: no visible change; all 12 journeys green; snapshots committed.
+
+- [ ] **W10.1 Navigation consolidation.**
+  - Introduce `PRIMARY_NAV` + `SECONDARY_NAV` in `utils/navigation.ts`; render primary in header, rest in a `More` menu.
+  - Mobile: 4 tabs + More sheet; keep all shortcuts (`Alt+1..0`) working.
+  - Acceptance: every view reachable in ≤2 clicks; e2e navigation + shortcuts green; mobile nav no horizontal scroll at 360px.
+
+- [ ] **W10.2 Overview merge.**
+  - Move Dashboard content into Inbox as an "Overview" section (or tab); delete duplicate `LocalMatchPanel`/`StatsPanel`/`RecentActivityPanel`/`AutomationsPanel`.
+  - Keep Dashboard route as an alias for one release (redirect) to avoid broken links.
+  - Acceptance: no duplicated widgets; journeys updated; no broken routes.
+
+- [ ] **W10.3 Settings grouping.**
+  - Group 9 tabs into 4; nested collapsible sections; remove unused tabs.
+  - Acceptance: every existing setting reachable; keyboardable; axe clean for Settings.
+
+- [ ] **W10.4 Editor consolidation (higher risk).**
+  - Unify property entry into one progressive form; keep power-user modal as "More details".
+  - Acceptance: create/edit/remove property journeys green; no data loss on round-trip.
+
+#### Reachability invariant (automated)
+A UI test asserts that for every entry in `[...NAV_ITEMS, SETTINGS_VIEW]`:
+- the view renders when `activeView` is set, and
+- the view is reachable from the palette and its shortcut.
+This is the guard that "no functionality is sacrificed".
+
+#### Rollback
+Each phase ships independently. Revert the single commit to restore the previous layout; no
+data migrations are involved. W10.1 may also sit behind `settings.uiSimplified` (default on) so a
+user can switch back for one release.
+
 ---
 
 ## 3. Prioritized Roadmap
@@ -170,20 +241,24 @@
 ### Now (highest impact, low/medium effort)
 | # | Task | Impact | Effort |
 |---|------|--------|--------|
-| 1 | W1.1 + W1.3 model matrix (incl. **9B**, **Gemma 4 4B**) | Quality decision | M |
-| 2 | W1.2 Gemma wrapper detection | Unlocks Gemma | S |
-| 3 | W2.1 friction digest CLI | Turns telemetry into priorities | S |
-| 4 | W3.1 "Why this match" panel | Trust | M |
-| 5 | W5.1 axe audit + critical fixes | Accessibility | M |
-| 6 | W8.2 local eval canary | Prevents regressions | S |
+| 1 | **W10.0 UI guardrails** (bug fixes + snapshots + reachability test) | Safe base for UI change | S |
+| 2 | **W10.1 navigation consolidation** (3 primary + More) | Biggest UX clarity win | M |
+| 3 | W1.1 + W1.3 model matrix (incl. **9B**, **Gemma 4 4B**) | Quality decision | M |
+| 4 | W1.2 Gemma wrapper detection | Unlocks Gemma | S |
+| 5 | W2.1 friction digest CLI | Turns telemetry into priorities | S |
+| 6 | W3.1 "Why this match" panel | Trust | M |
+| 7 | W5.1 axe audit + critical fixes | Accessibility | M |
+| 8 | W8.2 local eval canary | Prevents regressions | S |
 
 ### Next (after Now)
-W1.4 retrieval v2 · W1.5 grammar auto-probe · W2.2 latency budget · W2.3 correction chips ·
-W4.1 match gate · W6.1 performance budgets · W6.2 offline mode · W7.1 export/import.
+W10.2 Overview merge (Dashboard → Inbox) · W1.4 retrieval v2 · W1.5 grammar auto-probe ·
+W2.2 latency budget · W2.3 correction chips · W4.1 match gate · W6.1 performance budgets ·
+W6.2 offline mode · W7.1 export/import.
 
 ### Later (larger/strategic)
-W1.6 adaptive routing · W1.7 LoRA · W2.6 onboarding · W4.3 action approval · W5.3–W5.6 ·
-W6.3 large workspace · W7.2–W7.4 backup/redaction · W9 docs.
+W10.3 Settings grouping · W10.4 Editor consolidation · W1.6 adaptive routing · W1.7 LoRA ·
+W2.6 onboarding · W4.3 action approval · W5.3–W5.6 · W6.3 large workspace ·
+W7.2–W7.4 backup/redaction · W9 docs.
 
 ### Parked (do not start yet)
 - WebLLM GPU CI (user declined CI; SwiftShader lacks adapters).
@@ -257,6 +332,19 @@ pnpm eval:verify-manifest
 - Verified `node-llama-cpp` exposes `Gemma4ChatWrapper`/`GemmaChatWrapper`.
 - Reframed plan around four measured loops: model matrix, friction digest, eval canary, accessibility audit.
 - Added workstreams W1–W9, Now/Next/Later roadmap, per-task acceptance criteria, DoD.
+
+### 2026-11-15 — UI/UX simplification added (W10)
+- Audited current UI: 11 top-level destinations, triplicated navigation, Dashboard/Inbox duplicate panels, 9 flat settings tabs.
+- Found latent bugs: `require('@notention/core')` in `InboxView` effect; no-op `onNavigate` handlers.
+- Added W10 with 5 phased, revertible steps and a reachability invariant to guarantee no functionality loss.
+- W10.0 (guardrails, no visual change) and W10.1 (navigation consolidation) promoted to Now.
+
+### 2026-11-15 — W10.0 partial (safe bug fixes shipped)
+- Fixed `require('@notention/core')` in `InboxView` (ESM runtime error) → static `MatchEngine` import.
+- Wired Advanced-panel navigation: Local Match request/offer cards and Recent Activity are now clickable and open the note.
+- Added audit finding #8: Inbox Local Match "Accept"/"Dismiss" were dead controls (resolved by W10.2 Overview merge).
+- UI production build passes (`pnpm --filter @notention/ui build`, 16 s).
+- Remaining W10.0: visual snapshots, reachability test, axe baseline.
 
 ---
 
