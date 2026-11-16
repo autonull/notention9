@@ -7,3 +7,5 @@ packages:
   - 'optimize'
   - 'ui/eval'
   - 'packages/conformance'
+allowBuilds:
+  node-llama-cpp: true

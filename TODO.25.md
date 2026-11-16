@@ -47,7 +47,7 @@
 
 - [ ] **W1.1 Verify + fetch candidate models.** Confirm 9B and Gemma 4 4B GGUF availability and exact filenames; record Q4 size and license.
   - Acceptance: `models/` contains 9B (and Gemma 4 4B if adopted); a `models/MANIFEST.md` lists params, quant, size, license, source.
-- [ ] **W1.2 Add Gemma chat-wrapper detection.** Extend `resolveChatWrapperKind()` in `optimize/src/llm/llamaCppBridge.ts` to detect `gemma-4` → `Gemma4ChatWrapper`, `gemma` → `GemmaChatWrapper`; return `supportsGrammar` from an actual capability probe, not an assumption.
+- [x] **W1.2 Add Gemma chat-wrapper detection.** Extend `resolveChatWrapperKind()` in `optimize/src/llm/llamaCppBridge.ts` to detect `gemma-4` → `Gemma4ChatWrapper`, `gemma` → `GemmaChatWrapper`; return `supportsGrammar` from an actual capability probe, not an assumption.
   - Acceptance: unit test for detection; golden gate runs on Gemma 4 4B.
 - [ ] **W1.3 Run the full model matrix.** For each candidate: golden 10, quality 60 (3-shot), mean latency, peak VRAM, pass count.
   - Matrix: Qwen 0.8B / 2B / 4B / **9B**, Llama 3.2 3B, Gemma 4 4B (+ smaller Gemma if confirmed).
@@ -421,6 +421,12 @@ pnpm eval:verify-manifest
 - All shortcuts (`Alt+1..0`, `Alt+,` for Settings) preserved via `VIEW_SHORTCUTS` from `ALL_NAV_VIEWS`.
 - Command palette (`useCommands`) updated to use `ALL_NAV_VIEWS` for reachability.
 - Build passes, UI tests pass, core tests pass, taxonomy coverage 24/24, eval manifest valid.
+
+### 2026-11-15 — W1.2 Gemma wrapper detection complete
+- Extended `resolveChatWrapperKind()` in `optimize/src/llm/llamaCppBridge.ts` to detect Gemma models (v3 → `GemmaChatWrapper`, v4 → `Gemma4ChatWrapper` with reasoning).
+- Added unit tests for Gemma 3/4 detection in `optimize/src/tests/ai/chatWrapper.test.ts` (6 new tests).
+- Gemma models now return `supportsGrammar: true` based on actual capability.
+- Build passes, all 107 optimize tests pass.
 
 ---
 

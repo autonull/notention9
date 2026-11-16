@@ -21,6 +21,8 @@ import {
     Llama3ChatWrapper,
     Llama3_1ChatWrapper,
     Llama3_2LightweightChatWrapper,
+    GemmaChatWrapper,
+    Gemma4ChatWrapper,
 } from 'node-llama-cpp';
 
 export { getLlama };
@@ -104,11 +106,12 @@ async function disposeSession(): Promise<void> {
 
 /** Ontology keys live on descendant nodes; `leafOntologyKeys` flattens them. */
 
-/** Qwen 3+ need the Qwen wrapper; Llama 3.x use Llama3 wrappers; others use ChatML. */
+/** Qwen 3+ need the Qwen wrapper; Llama 3.x use Llama3 wrappers; Gemma uses Gemma wrappers; others use ChatML. */
 export function resolveChatWrapperKind(
     modelPath: string
 ): { type: 'qwen'; variation: '3' | '3.5'; supportsGrammar: true }
     | { type: 'llama3'; variation: '3' | '3.1' | '3.2'; supportsGrammar: false }
+    | { type: 'gemma'; variation: '3' | '4'; supportsGrammar: true }
     | { type: 'chatml'; supportsGrammar: false } {
     const lowerPath = modelPath.toLowerCase();
 
@@ -120,6 +123,15 @@ export function resolveChatWrapperKind(
         if (minor >= 2) return { type: 'llama3', variation: '3.2', supportsGrammar: false };
         if (minor === 1) return { type: 'llama3', variation: '3.1', supportsGrammar: false };
         return { type: 'llama3', variation: '3', supportsGrammar: false };
+    }
+
+    // Detect Gemma models - Gemma 3+ handles JSON schema grammars well
+    // Matches: gemma-3, gemma-4, gemma3-4b, gemma4-4b, etc.
+    const gemmaMatch = /gemma[^0-9]*(\d+(?:\.\d+)?)/i.exec(lowerPath);
+    if (gemmaMatch) {
+        const version = Number(gemmaMatch[1]);
+        if (version >= 4) return { type: 'gemma', variation: '4', supportsGrammar: true };
+        if (version >= 3) return { type: 'gemma', variation: '3', supportsGrammar: true };
     }
 
     // Detect Qwen models - trained to handle JSON schema grammars well
@@ -140,6 +152,11 @@ export function createChatWrapper(modelPath: string) {
         case 'llama3':
             // Use Llama3ChatWrapper for all Llama 3.x variants
             return new Llama3ChatWrapper();
+        case 'gemma':
+            // Gemma 4 uses Gemma4ChatWrapper with reasoning; Gemma 3 uses GemmaChatWrapper
+            return kind.variation === '4'
+                ? new Gemma4ChatWrapper({ reasoning: true, keepOnlyLastThought: true })
+                : new GemmaChatWrapper();
         case 'chatml':
         default:
             return new ChatMLChatWrapper();

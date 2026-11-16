@@ -44,6 +44,38 @@ describe('resolveChatWrapperKind', () => {
             supportsGrammar: false,
         });
     });
+
+    it('uses Gemma 4 wrapper for Gemma 4 models', () => {
+        expect(resolveChatWrapperKind('/models/gemma-4-4b-it.Q4_K_M.gguf')).toEqual({
+            type: 'gemma',
+            variation: '4',
+            supportsGrammar: true,
+        });
+    });
+
+    it('uses Gemma 4 wrapper for Gemma 4 models (alt naming)', () => {
+        expect(resolveChatWrapperKind('gemma4-4b-instruct.gguf')).toEqual({
+            type: 'gemma',
+            variation: '4',
+            supportsGrammar: true,
+        });
+    });
+
+    it('uses Gemma 3 wrapper for Gemma 3 models', () => {
+        expect(resolveChatWrapperKind('/models/gemma-3-4b-it.Q4_K_M.gguf')).toEqual({
+            type: 'gemma',
+            variation: '3',
+            supportsGrammar: true,
+        });
+    });
+
+    it('uses Gemma 3 wrapper for Gemma 3 models (alt naming)', () => {
+        expect(resolveChatWrapperKind('gemma3-2b-instruct.gguf')).toEqual({
+            type: 'gemma',
+            variation: '3',
+            supportsGrammar: true,
+        });
+    });
 });
 
 describe('modelSupportsGrammar', () => {
@@ -57,5 +89,13 @@ describe('modelSupportsGrammar', () => {
 
     it('returns false for ChatML fallback models', () => {
         expect(modelSupportsGrammar('/models/unknown-model.gguf')).toBe(false);
+    });
+
+    it('returns true for Gemma 4 models', () => {
+        expect(modelSupportsGrammar('/models/gemma-4-4b-it.Q4_K_M.gguf')).toBe(true);
+    });
+
+    it('returns true for Gemma 3 models', () => {
+        expect(modelSupportsGrammar('/models/gemma-3-4b-it.Q4_K_M.gguf')).toBe(true);
     });
 });
