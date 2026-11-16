@@ -2,10 +2,14 @@ import { readFileSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import type { OntologyNode, OntologyAttribute } from '../types/index.js';
+import { DEFAULT_ONTOLOGY } from './ontology.default.js';
 
 // Hardcoded project root since the relative resolution is unreliable in test environments
 const PROJECT_ROOT = '/home/me/notention9';
 const ONTOLOGY_ROOT = resolve(PROJECT_ROOT, 'ontology');
+
+// Detect if running in browser (no Node.js process/fs)
+const isBrowser = typeof process === 'undefined' || !process.versions?.node;
 
 export interface OntologyConfig {
   version: string;
@@ -225,73 +229,6 @@ function compileNodes(
   return compiled;
 }
 
-export function loadOntology(configPath: string = DEFAULT_CONFIG_PATH): CompiledOntology {
-  const config = JSON.parse(readFileSync(configPath, 'utf-8')) as OntologyConfig;
-
-  const sortedModules = [...config.modules]
-    .filter(m => m.enabled !== false)
-    .sort((a, b) => (a.priority ?? 0) - (b.priority ?? 0));
-
-  const allTypes = new Map<string, TypeDefinition>();
-  const allNodes = new Map<string, NodeDefinition>();
-
-  for (const mod of sortedModules) {
-    try {
-      const module = loadModule(mod.path);
-
-      if (module.types) {
-        for (const [name, def] of Object.entries(module.types)) {
-          const existing = allTypes.get(name) ?? EMPTY_TYPE_DEF;
-          allTypes.set(name, deepMerge({ ...existing }, def) as unknown as TypeDefinition);
-        }
-      }
-
-      if (module.nodes) {
-        for (const [name, def] of Object.entries(module.nodes)) {
-          const existing = allNodes.get(name) ?? EMPTY_NODE_DEF;
-          allNodes.set(name, deepMerge({ ...existing }, def) as unknown as NodeDefinition);
-        }
-      }
-    } catch (err) {
-      console.error(`[Ontology] Failed to load module ${mod.name} from ${mod.path}:`, err);
-      throw err;
-    }
-  }
-
-  if (config.overrides) {
-    if (config.overrides.types) {
-      for (const [name, def] of Object.entries(config.overrides.types as Record<string, TypeDefinition>)) {
-        const existing = allTypes.get(name) ?? EMPTY_TYPE_DEF;
-        allTypes.set(name, deepMerge({ ...existing }, def) as unknown as TypeDefinition);
-      }
-    }
-    if (config.overrides.nodes) {
-      for (const [name, def] of Object.entries(config.overrides.nodes as Record<string, NodeDefinition>)) {
-        const existing = allNodes.get(name) ?? EMPTY_NODE_DEF;
-        allNodes.set(name, deepMerge({ ...existing }, def) as unknown as NodeDefinition);
-      }
-    }
-  }
-
-  const resolvedTypes = resolveTypeInheritance(allTypes);
-  const compiledNodes = compileNodes(allNodes, resolvedTypes);
-
-  const allAttributes = new Map<string, OntologyAttribute>();
-  for (const node of compiledNodes.values()) {
-    for (const [key, attr] of Object.entries(node.attributes ?? {})) {
-      allAttributes.set(`${node.id}.${key}`, attr);
-    }
-  }
-
-  return {
-    types: resolvedTypes,
-    nodes: compiledNodes,
-    attributes: allAttributes,
-    typeHierarchy: new Map(),
-    nodeHierarchy: new Map()
-  };
-}
-
 export function getEffectiveOperators(
   attribute: OntologyAttribute,
   types: Map<string, TypeDefinition>
@@ -376,14 +313,138 @@ export function collectOntologyKeys(nodes: Map<string, OntologyNode> | OntologyN
 }
 
 let cachedOntology: CompiledOntology | null = null;
+let cachedBrowserOntology: CompiledOntology | null = null;
+
+function compileDefaultOntology(): CompiledOntology {
+  if (cachedBrowserOntology) return cachedBrowserOntology;
+  
+  const nodes = new Map<string, OntologyNode>();
+  const types = new Map<string, TypeDefinition>();
+  const attributes = new Map<string, OntologyAttribute>();
+  
+  function processNode(node: OntologyNode, parentPath = '') {
+    const fullPath = parentPath ? `${parentPath}.${node.id}` : node.id;
+    nodes.set(fullPath, node);
+    
+    for (const [attrKey, attr] of Object.entries(node.attributes ?? {})) {
+      attributes.set(`${fullPath}.${attrKey}`, {
+        key: attrKey,
+        type: attr.type,
+        description: attr.description,
+        icon: attr.icon,
+        role: attr.role,
+        referenceType: attr.referenceType,
+        operators: attr.operators ?? { real: ['is'], imaginary: [] },
+        options: attr.options,
+      } as OntologyAttribute);
+    }
+    
+    for (const child of node.children ?? []) {
+      processNode(child, fullPath);
+    }
+  }
+  
+  for (const node of DEFAULT_ONTOLOGY) {
+    processNode(node);
+  }
+  
+  cachedBrowserOntology = {
+    types,
+    nodes,
+    attributes,
+    typeHierarchy: new Map(),
+    nodeHierarchy: new Map()
+  };
+  
+  return cachedBrowserOntology;
+}
 
 export function getOntology(configPath?: string): CompiledOntology {
+  // In browser, use DEFAULT_ONTOLOGY directly (no filesystem access)
+  if (isBrowser) {
+    return compileDefaultOntology();
+  }
+  
   if (!cachedOntology) {
     cachedOntology = loadOntology(configPath);
   }
   return cachedOntology;
 }
 
+export function loadOntology(configPath: string = DEFAULT_CONFIG_PATH): CompiledOntology {
+  // In browser, return compiled DEFAULT_ONTOLOGY
+  if (isBrowser) {
+    return compileDefaultOntology();
+  }
+  
+  // ... existing loadOntology implementation
+  const config = JSON.parse(readFileSync(configPath, 'utf-8')) as OntologyConfig;
+
+  const sortedModules = [...config.modules]
+    .filter(m => m.enabled !== false)
+    .sort((a, b) => (a.priority ?? 0) - (b.priority ?? 0));
+
+  const allTypes = new Map<string, TypeDefinition>();
+  const allNodes = new Map<string, NodeDefinition>();
+
+  for (const mod of sortedModules) {
+    try {
+      const module = loadModule(mod.path);
+
+      if (module.types) {
+        for (const [name, def] of Object.entries(module.types)) {
+          const existing = allTypes.get(name) ?? EMPTY_TYPE_DEF;
+          allTypes.set(name, deepMerge({ ...existing }, def) as unknown as TypeDefinition);
+        }
+      }
+
+      if (module.nodes) {
+        for (const [name, def] of Object.entries(module.nodes)) {
+          const existing = allNodes.get(name) ?? EMPTY_NODE_DEF;
+          allNodes.set(name, deepMerge({ ...existing }, def) as unknown as NodeDefinition);
+        }
+      }
+    } catch (err) {
+      console.error(`[Ontology] Failed to load module ${mod.name} from ${mod.path}:`, err);
+      throw err;
+    }
+  }
+
+  if (config.overrides) {
+    if (config.overrides.types) {
+      for (const [name, def] of Object.entries(config.overrides.types as Record<string, TypeDefinition>)) {
+        const existing = allTypes.get(name) ?? EMPTY_TYPE_DEF;
+        allTypes.set(name, deepMerge({ ...existing }, def) as unknown as TypeDefinition);
+      }
+    }
+    if (config.overrides.nodes) {
+      for (const [name, def] of Object.entries(config.overrides.nodes as Record<string, NodeDefinition>)) {
+        const existing = allNodes.get(name) ?? EMPTY_NODE_DEF;
+        allNodes.set(name, deepMerge({ ...existing }, def) as unknown as NodeDefinition);
+      }
+    }
+  }
+
+  const resolvedTypes = resolveTypeInheritance(allTypes);
+  const compiledNodes = compileNodes(allNodes, resolvedTypes);
+
+  const allAttributes = new Map<string, OntologyAttribute>();
+  for (const node of compiledNodes.values()) {
+    for (const [key, attr] of Object.entries(node.attributes ?? {})) {
+      allAttributes.set(`${node.id}.${key}`, attr);
+    }
+  }
+
+  return {
+    types: resolvedTypes,
+    nodes: compiledNodes,
+    attributes: allAttributes,
+    typeHierarchy: new Map(),
+    nodeHierarchy: new Map()
+  };
+}
+
 export function resetOntologyCache(): void {
   cachedOntology = null;
+  cachedBrowserOntology = null;
 }

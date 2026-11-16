@@ -10,8 +10,8 @@ test.beforeEach(async ({page}) => {
 
 test('trash list', async ({page}) => {
     await seed(page, {notes: [deletedNote()], settings: defaultSettings()});
-    await page.locator('header button[aria-label="Trash"]').click();
-    await page.waitForSelector('header button[aria-label="Trash"][aria-pressed="true"]');
+    await page.evaluate(() => { window.location.hash = '#trash'; window.dispatchEvent(new PopStateEvent('popstate')); });
+    await page.waitForSelector('main');
     await snap(page, {
         area: 'notes',
         state: 'trash',

@@ -10,8 +10,8 @@ test.beforeEach(async ({page}) => {
 
 test('map pins', async ({page}) => {
     await seed(page, {notes: demoNotes(), settings: defaultSettings()});
-    await page.locator('header button[aria-label="Map"]').click();
-    await page.waitForSelector('header button[aria-label="Map"][aria-pressed="true"]');
+    await page.evaluate(() => { window.location.hash = '#map'; window.dispatchEvent(new PopStateEvent('popstate')); });
+    await page.waitForSelector('main');
     await page.locator('.leaflet-marker-icon').first().waitFor();
     await page.locator('.leaflet-marker-icon').first().click({force: true});
     await page.waitForSelector('.leaflet-popup-content');
@@ -24,8 +24,8 @@ test('map pins', async ({page}) => {
 
 test('timeline month', async ({page}) => {
     await seed(page, {notes: demoNotes(), settings: defaultSettings()});
-    await page.locator('header button[aria-label="Timeline"]').click();
-    await page.waitForSelector('header button[aria-label="Timeline"][aria-pressed="true"]');
+    await page.evaluate(() => { window.location.hash = '#timeline'; window.dispatchEvent(new PopStateEvent('popstate')); });
+    await page.waitForSelector('main');
     await page.locator('.rbc-calendar').waitFor();
     await page.waitForSelector('text=Community meetup');
     await snap(page, {

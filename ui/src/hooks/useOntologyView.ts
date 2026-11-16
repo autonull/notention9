@@ -116,7 +116,6 @@ export function useOntologyView() {
         handleAddNode,
         handleDeleteNode,
         handleAddAttribute,
-        handleAddAlias,
         usageStats,
         conflicts,
         getGraphData,

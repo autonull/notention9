@@ -40,8 +40,8 @@ test('chat thread', async ({page}) => {
         notes: demoNotes(),
         settings: defaultSettings({nostr: {privkey: Buffer.from(viewer.secret).toString('hex'), relays: [RELAY_URL]}}),
     });
-    await page.locator('header button[aria-label="Chat"]').click();
-    await page.waitForSelector('header button[aria-label="Chat"][aria-pressed="true"]');
+    await page.evaluate(() => { window.location.hash = '#chat'; window.dispatchEvent(new PopStateEvent('popstate')); });
+    await page.waitForSelector('main');
     await page.getByText('John', {exact: true}).click();
     await page.waitForSelector('text=I can bring the long ladder');
     await snap(page, {

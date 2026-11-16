@@ -8,17 +8,19 @@ test.beforeEach(async ({page}) => {
 });
 
 const routes: Array<[string, string]> = [
-    ['#dashboard', 'Quick Capture'],
+    ['#inbox', 'Inbox'],
     ['#notes', 'Quick Capture'],
+    ['#actions', 'Actions'],
     ['#map', 'OpenStreetMap'],
     ['#timeline', 'Spacetime Filter'],
     ['#network', 'Network'],
-    ['#actions', 'Actions'],
     ['#chat', 'Chat Requires Nostr Account'],
-    ['#ontology', 'Ontology'],
+    ['#responses', 'My Responses'],
+    ['#labels', 'Labels'],
     ['#trash', 'Recently deleted'],
     ['#settings', 'Settings'],
-    ['#simulator', 'Quick Capture'],
+    ['#dashboard', 'Quick Capture'],
+    ['#ontology', 'Ontology'],
 ];
 
 test('every navigation route renders content', async ({page}) => {
@@ -40,6 +42,8 @@ test('trash restores and permanently deletes', async ({page}) => {
 
 test('persistence survives reload', async ({page}) => {
     await seed(page, {notes: demoNotes(), settings: defaultSettings()});
+    // Navigate to dashboard to see local-match panel
+    await page.evaluate(() => { window.location.hash = '#dashboard'; window.dispatchEvent(new PopStateEvent('popstate')); });
     await expect(page.getByTestId('local-match')).toBeVisible();
     await page.reload();
     await expect(page.getByTestId('local-match')).toBeVisible();

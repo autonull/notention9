@@ -9,7 +9,8 @@ test.beforeEach(async ({page}) => {
 });
 
 test('matching results', async ({page}) => {
-    await seed(page, {notes: demoNotes(), settings: defaultSettings()});
+    await seed(page, {notes: demoNotes(), settings: defaultSettings(), hash: '#dashboard'});
+    await page.waitForSelector('main');
     await page.getByTestId('local-match').waitFor();
     await snap(page, {
         area: 'matching',
