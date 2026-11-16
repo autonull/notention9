@@ -293,9 +293,11 @@ Metrics · Profile · Revisions     Network & Identity (Networks, Nostr)
   - Keep Dashboard route as an alias for one release (redirect) to avoid broken links.
   - Acceptance: no duplicated widgets; journeys updated; no broken routes.
 
-- [ ] **W10.3 Settings grouping.**
-  - Group 9 tabs into 4; nested collapsible sections; remove unused tabs.
-  - Acceptance: every existing setting reachable; keyboardable; axe clean for Settings.
+- [x] **W10.3 Settings grouping.**
+  - Grouped 9 tabs into 4 collapsible sections: General (Profile, Labels), AI & Automation (AI, Automation), Network & Identity (Networks, Nostr), Data & Metrics (Data, Metrics, Revisions).
+  - Added `CollapsibleSection` component with animated expand/collapse.
+  - Removed unused `OntologyTab`/`AgentTab` references (folded into Labels/AI).
+  - Acceptance: every existing setting reachable; keyboardable; build passes; all UI unit tests pass (42 files), core tests (855), optimize tests (107).
 
 - [ ] **W10.4 Editor consolidation (higher risk).**
   - Unify property entry into one progressive form; keep power-user modal as "More details".
@@ -351,12 +353,12 @@ user can switch back for one release.
 | 9 | W8.2 local eval canary | Prevents regressions | S |
 
 ### Next (after Now)
-W10.3 Settings grouping · W1.4 retrieval v2 · W1.5 grammar auto-probe ·
+W1.4 retrieval v2 · W1.5 grammar auto-probe ·
 W2.2 latency budget · W2.3 correction chips · W4.1 match gate · W6.1 performance budgets ·
 W6.2 offline mode · W7.1 export/import.
 
 ### Later (larger/strategic)
-W10.3 Settings grouping · W10.4 Editor consolidation · W1.6 adaptive routing · W1.7 LoRA ·
+W10.4 Editor consolidation · W1.6 adaptive routing · W1.7 LoRA ·
 W2.6 onboarding · W4.3 action approval · W5.3–W5.6 · W6.3 large workspace ·
 W7.2–W7.4 backup/redaction · W9 docs.
 
@@ -546,6 +548,13 @@ pnpm eval:verify-manifest
 - All UI unit tests pass (42 files), core tests (855), optimize tests (107), taxonomy coverage 24/24, eval manifest valid.
 - Build passes, 32/32 e2e tests pass (navigation, export-import, golden-demo, seeded-workspace, all 24 showcase).
 - Known issue: compose-match and two-client-relay tests timeout on empty-notes seed (perf investigation needed).
+
+### 2026-11-16 — W10.3 Settings grouping complete
+- Grouped 9 flat settings tabs into 4 collapsible sections: General (Profile & Strategies, Labels), AI & Automation (AI Assistant, Automation), Network & Identity (Networks, Nostr Keys), Data & Metrics (Data Management, Metrics, Revisions).
+- Created reusable `CollapsibleSection` component with animated expand/collapse, keyboard accessible, ARIA support.
+- Removed unused `OntologyTab`/`AgentTab` references (functionality folded into Labels and AI tabs).
+- All settings remain reachable via sidebar navigation, command palette, and shortcuts.
+- Build passes; all UI unit tests (42 files), core tests (855), optimize tests (107) pass.
 
 ### 2026-11-15 — W10.0 Guardrails complete
 - Fixed `fs` polyfill issue: made ontology loader browser-compatible by detecting browser environment and using `DEFAULT_ONTOLOGY` instead of filesystem access (`core/src/ontology/loader.ts`).
