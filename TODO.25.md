@@ -81,7 +81,7 @@
 ### W3 — Trust & Explainability
 **Goal**: Users understand *why* a property or match appeared, and can correct it.
 
-- [ ] **W3.1 "Why this match" panel.** Show constraint→fact evaluation, score, and reasons (already computed in core; surface in UI).
+- [x] **W3.1 "Why this match" panel.** Show constraint→fact evaluation, score, and reasons (already computed in core; surface in UI).
   - Acceptance: every match row opens an explanation with contributing constraints; probe participants find it unaided.
 - [ ] **W3.2 Property provenance.** Highlight the source text span for each extracted property; clicking a chip focuses the span.
   - Acceptance: every LLM-extracted property maps to a span or is marked "inferred".
@@ -428,6 +428,19 @@ pnpm eval:verify-manifest
 - Build passes, all 107 optimize tests pass.
 
 ### 2026-11-15 — W2.1 Friction digest CLI complete
+- Created `FrictionDigestCommand` in `optimize/src/cli/commands/frictionDigest.ts`.
+- Registered in optimize CLI and added `pnpm friction:digest` script in root package.json.
+- Supports `--days`, `--top`, `--json`, `--half-life`, `--min-count`, `--min-age` options.
+- Uses existing `DigestPipeline` and `Journal` from `@notention/core/telemetry`.
+- Exports added for `telemetry/digestPipeline` and `telemetry/frictionUtils` in core package.json.
+- Build passes, all tests pass.
+
+### 2026-11-15 — W3.1 "Why this match" panel complete
+- Added expandable explanation panel to `LocalMatchPanel` in `ui/src/components/views/InboxView.tsx`.
+- Shows matched constraints (green), conflicts (red), and missing required constraints (amber) with compatibility scores and reasons.
+- Uses existing `MatchResult` from core (`matches`, `conflicts`, `missing` arrays) — no new core logic needed.
+- Added `slide-down` animation in `ui/src/index.css`.
+- Build passes, all UI/core/optimize tests pass.
 - Created `FrictionDigestCommand` in `optimize/src/cli/commands/frictionDigest.ts`.
 - Registered in optimize CLI and added `pnpm friction:digest` script in root package.json.
 - Supports `--days`, `--top`, `--json`, `--half-life`, `--min-count`, `--min-age` options.

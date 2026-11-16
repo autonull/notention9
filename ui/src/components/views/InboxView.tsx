@@ -226,6 +226,7 @@ function advancedPanelCount(notes: Note[], settings: any): number {
 
 function LocalMatchPanel({notes, settings, onNavigate}: {notes: Note[]; settings: any; onNavigate: (id: string) => void}) {
     const [localMatch, setLocalMatch] = React.useState<any>(null);
+    const [showExplanation, setShowExplanation] = React.useState(false);
 
     React.useEffect(() => {
         if (notes.length < 2 || !settings.ontology?.length) {
@@ -247,6 +248,70 @@ function LocalMatchPanel({notes, settings, onNavigate}: {notes: Note[]; settings
 
     if (!localMatch) return null;
 
+    const {result} = localMatch;
+    const {matches, conflicts, missing} = result;
+
+    const renderMatchRow = (match: any) => (
+        <div key={`${match.requestProp.key}-${match.requestProp.operator}-${match.requestProp.values.join(',')}`} className="flex items-start gap-3 p-3 bg-gray-800/50 rounded-lg">
+            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                <svg className="h-4 w-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
+                </svg>
+            </div>
+            <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-white">{match.requestProp.key}</p>
+                <p className="text-xs text-gray-400 mt-0.5">{match.reason}</p>
+                <div className="flex items-center gap-2 mt-1">
+                    <span className="px-2 py-0.5 text-xs bg-blue-500/20 text-blue-300 rounded">
+                        {match.requestProp.operator} {match.requestProp.values.join(', ')}
+                    </span>
+                    <span className="px-2 py-0.5 text-xs bg-emerald-500/20 text-emerald-300 rounded">
+                        {Math.round(match.compatibility * 100)}%
+                    </span>
+                </div>
+            </div>
+        </div>
+    );
+
+    const renderConflictRow = (conflict: any) => (
+        <div key={`${conflict.requestProp.key}-${conflict.requestProp.operator}-${conflict.requestProp.values.join(',')}`} className="flex items-start gap-3 p-3 bg-gray-800/50 rounded-lg">
+            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center">
+                <svg className="h-4 w-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </div>
+            <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-white">{conflict.requestProp.key}</p>
+                <p className="text-xs text-gray-400 mt-0.5">{conflict.reason}</p>
+                <div className="flex items-center gap-2 mt-1">
+                    <span className="px-2 py-0.5 text-xs bg-blue-500/20 text-blue-300 rounded">
+                        {conflict.requestProp.operator} {conflict.requestProp.values.join(', ')}
+                    </span>
+                    <span className="px-2 py-0.5 text-xs bg-red-500/20 text-red-300 rounded">
+                        {Math.round(conflict.compatibility * 100)}%
+                    </span>
+                </div>
+            </div>
+        </div>
+    );
+
+    const renderMissingRow = (prop: any) => (
+        <div key={prop.key} className="flex items-start gap-3 p-3 bg-gray-800/50 rounded-lg">
+            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center">
+                <svg className="h-4 w-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+            </div>
+            <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-white">{prop.key}</p>
+                <p className="text-xs text-gray-400 mt-0.5">Required constraint not satisfied</p>
+                <span className="px-2 py-0.5 text-xs bg-blue-500/20 text-blue-300 rounded mt-1 inline-block">
+                    {prop.operator} {prop.values.join(', ')}
+                </span>
+            </div>
+        </div>
+    );
+
     return (
         <section className="bg-gray-900/50 rounded-2xl border border-gray-700/30 p-6 backdrop-blur-sm">
             <header className="flex items-center justify-between mb-4">
@@ -256,9 +321,22 @@ function LocalMatchPanel({notes, settings, onNavigate}: {notes: Note[]; settings
                     </svg>
                     Local Match Found
                 </h2>
-                <span className="px-2 py-1 text-xs bg-blue-500/20 text-blue-300 rounded-full">
-                    {Math.round(localMatch.result.score * 100)}% match
-                </span>
+                <div className="flex items-center gap-2">
+                    <span className="px-2 py-1 text-xs bg-blue-500/20 text-blue-300 rounded-full">
+                        {Math.round(result.score * 100)}% match
+                    </span>
+                    <button
+                        type="button"
+                        onClick={() => setShowExplanation(!showExplanation)}
+                        className="px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors flex items-center gap-1"
+                        aria-expanded={showExplanation}
+                    >
+                        <svg className={`h-4 w-4 transition-transform ${showExplanation ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/>
+                        </svg>
+                        {showExplanation ? 'Hide details' : 'Why this match?'}
+                    </button>
+                </div>
             </header>
             <div className="grid gap-3 md:grid-cols-2">
                 <button
@@ -280,6 +358,54 @@ function LocalMatchPanel({notes, settings, onNavigate}: {notes: Note[]; settings
                     <p className="text-sm text-gray-400 mt-1 line-clamp-2">{localMatch.note.content.replace(/<[^>]*>/g, '')}</p>
                 </button>
             </div>
+
+            {showExplanation && (
+                <div className="mt-4 space-y-4 animate-slide-down" role="region" aria-label="Match explanation">
+                    {matches.length > 0 && (
+                        <div>
+                            <h3 className="text-sm font-semibold text-emerald-400 mb-2 flex items-center gap-2">
+                                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
+                                </svg>
+                                Matched constraints ({matches.length})
+                            </h3>
+                            <div className="space-y-2 max-h-64 overflow-y-auto">
+                                {matches.map(renderMatchRow)}
+                            </div>
+                        </div>
+                    )}
+                    {conflicts.length > 0 && (
+                        <div>
+                            <h3 className="text-sm font-semibold text-red-400 mb-2 flex items-center gap-2">
+                                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                                Conflicts ({conflicts.length})
+                            </h3>
+                            <div className="space-y-2 max-h-64 overflow-y-auto">
+                                {conflicts.map(renderConflictRow)}
+                            </div>
+                        </div>
+                    )}
+                    {missing.length > 0 && (
+                        <div>
+                            <h3 className="text-sm font-semibold text-amber-400 mb-2 flex items-center gap-2">
+                                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                </svg>
+                                Missing required ({missing.length})
+                            </h3>
+                            <div className="space-y-2 max-h-64 overflow-y-auto">
+                                {missing.map(renderMissingRow)}
+                            </div>
+                        </div>
+                    )}
+                    {(matches.length === 0 && conflicts.length === 0 && missing.length === 0) && (
+                        <p className="text-gray-500 text-center py-4">No detailed match information available.</p>
+                    )}
+                </div>
+            )}
+
             <div className="mt-4 flex gap-2">
                 <button className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg text-sm font-medium transition-colors">
                     Accept Match
