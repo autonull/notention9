@@ -186,6 +186,14 @@ independently revertible steps. Every view stays reachable by route, shortcut, a
 4. **Reversible** — each phase is a small commit with a flag or a clean revert; no big-bang rewrite.
 5. **Evidence-gated** — each phase must keep e2e journeys, visual snapshots, axe, and `stranger-test` green.
 
+#### Execution protocol (important)
+- **This plan is currently documentation-only.** No further UI code changes are made until a
+  phase is explicitly approved.
+- One phase per change set; one commit; one reviewer-visible diff. Do **not** bundle phases.
+- Before a phase: write the rollback line and the verification commands into its PR description.
+- After a phase: attach evidence (screenshot diff, journey result, axe report) and tick the box.
+- If a phase would drop a capability, stop and extend the "More"/"Advanced" surface instead.
+
 #### Consolidation proposals
 | Area | Now | Proposed |
 |------|-----|----------|
@@ -196,14 +204,51 @@ independently revertible steps. Every view stays reachable by route, shortcut, a
 | Editor properties | 6 overlapping components | **One progressive form**: inline simple fields → "More details" expands advanced fields/modal |
 | Empty states | Mixed variants | One consistent `EmptyState` pattern (title, one CTA, one hint) |
 
+#### Information architecture (before → after)
+
+```
+BEFORE (11 peers, triplicated)                 AFTER (3 primary + More)
+┌───────────────────────────────┐              ┌───────────────────────────────┐
+│ Inbox Notes Map Timeline      │              │ [+ New]  Search  Inbox Notes  │
+│ Network Chat Actions Responses│              │          Actions   ⋯ More  ⚙  │
+│ Labels Trash            ⚙     │              └───────────────────────────────┘
+└───────────────────────────────┘                 ⋯ More: Map · Timeline ·
+Sidebar list + header nav + mobile nav            Network · Chat · Responses ·
+(each re-renders the same set)                     Labels · Trash
+```
+
+```
+SETTINGS BEFORE (9 flat)          SETTINGS AFTER (4 groups, collapsible)
+AI · Automation · Labels ·        General (Profile, Labels)
+Network · Nostr · Data ·          AI & Automation (AI, Automation)
+Metrics · Profile · Revisions     Network & Identity (Networks, Nostr)
+                                  Data & Metrics (Data, Metrics, Revisions)
+```
+
+#### Widget consolidation ledger (source → destination)
+| Widget / component | Today | Destination |
+|--------------------|-------|-------------|
+| `DashboardView` (stats, activity, quick actions) | `dashboard` route | **Overview** section/tab inside Inbox |
+| `LocalMatchPanel` (Inbox duplicate) | `InboxView` Advanced | **Delete**; use `DashboardLocalMatch` |
+| `StatsPanel` (Inbox duplicate) | `InboxView` Advanced | **Delete**; use `StatsGrid` |
+| `RecentActivityPanel` (Inbox duplicate) | `InboxView` Advanced | **Delete**; use `RecentActivity` |
+| `AutomationsPanel` (Inbox duplicate) | `InboxView` Advanced | **Delete**; use `AutomationsView` |
+| `Header` nav cluster | `layout/Header.tsx` | Primary nav only + `MoreMenu` |
+| `MobileBottomNav` (11 tabs) | `layout/MobileBottomNav.tsx` | 4 tabs + `MoreSheet` |
+| `OntologyTab`, `AgentTab` | `settings/` | Remove or fold into `AITab`/`LabelsTab` |
+| `PropertyForm`, `EnhancedPropertyForm`, `InsertPropertyModal` | `editor/` | One `PropertyEditor` with `advanced` disclosure |
+| `ContextPanel`, `EditorSidebar` | `editor/` | One inspector panel; sidebar optional |
+
 #### Phased rollout (each phase = one PR-sized commit)
 
-- [ ] **W10.0 Guardrails (no visual change).**
-  - Fix the `require()` bug and dead `onNavigate` handlers.
-  - Add `ui/src/tests/visual/*` snapshots for Inbox, Notes, Settings, mobile nav.
-  - Add a reachability test: every `View` id is reachable via palette + shortcut.
-  - Add axe baseline (may fail; record and triage).
+- [~] **W10.0 Guardrails (no visual change).**
+  - [x] Fix the `require()` bug in `InboxView` → static `MatchEngine` import. *(shipped)*
+  - [x] Wire dead `onNavigate` handlers; Local Match cards and Recent Activity now open the note. *(shipped)*
+  - [ ] Add `ui/src/tests/visual/*` snapshots for Inbox, Notes, Settings, mobile nav.
+  - [ ] Add a reachability test: every `View` id is reachable via palette + shortcut.
+  - [ ] Add axe baseline (may fail; record and triage).
   - Acceptance: no visible change; all 12 journeys green; snapshots committed.
+  - Note: the two shipped fixes are the only code changes so far; the rest are pending approval.
 
 - [ ] **W10.1 Navigation consolidation.**
   - Introduce `PRIMARY_NAV` + `SECONDARY_NAV` in `utils/navigation.ts`; render primary in header, rest in a `More` menu.
@@ -228,6 +273,27 @@ A UI test asserts that for every entry in `[...NAV_ITEMS, SETTINGS_VIEW]`:
 - the view renders when `activeView` is set, and
 - the view is reachable from the palette and its shortcut.
 This is the guard that "no functionality is sacrificed".
+
+#### Per-phase verification checklist
+Run before ticking any W10 box:
+1. `pnpm --filter @notention/ui build` — bundles clean.
+2. `pnpm test:ui` — batched unit tests pass.
+3. `pnpm exec playwright test` journeys — navigation, capture, match, settings, export/import.
+4. Visual snapshots — only intended diffs.
+5. Reachability test — every `View` id renders and is reachable.
+6. Axe — no new serious/critical issues.
+7. `pnpm stranger-test` — golden path still < 2 min unaided.
+8. Screenshot pair (before/after) attached to the change.
+
+#### Risk register
+| Risk | Likelihood | Mitigation |
+|------|-----------|------------|
+| A view becomes unreachable | Medium | Reachability test + keep palette + shortcuts |
+| Mobile nav cramped/broken | Medium | 360px viewport check; More sheet |
+| Duplicate widgets deleted prematurely | Medium | W10.2 only after W10.1 stable; keep alias route |
+| Editor regression / data loss | High | W10.4 last; round-trip tests; no schema change |
+| User preference for old layout | Low | `settings.uiSimplified` toggle for one release |
+| Scope creep into redesign | Medium | Phases are additive-only; no restyling in W10.1 |
 
 #### Rollback
 Each phase ships independently. Revert the single commit to restore the previous layout; no
@@ -339,12 +405,14 @@ pnpm eval:verify-manifest
 - Added W10 with 5 phased, revertible steps and a reachability invariant to guarantee no functionality loss.
 - W10.0 (guardrails, no visual change) and W10.1 (navigation consolidation) promoted to Now.
 
-### 2026-11-15 — W10.0 partial (safe bug fixes shipped)
+### 2026-11-15 — W10.0 partial (safe bug fixes shipped); plan-only thereafter
 - Fixed `require('@notention/core')` in `InboxView` (ESM runtime error) → static `MatchEngine` import.
 - Wired Advanced-panel navigation: Local Match request/offer cards and Recent Activity are now clickable and open the note.
 - Added audit finding #8: Inbox Local Match "Accept"/"Dismiss" were dead controls (resolved by W10.2 Overview merge).
 - UI production build passes (`pnpm --filter @notention/ui build`, 16 s).
-- Remaining W10.0: visual snapshots, reachability test, axe baseline.
+- **Per user direction, this session is plan-only after these two fixes; no further code changes.**
+- Added execution protocol, before/after IA, widget consolidation ledger, per-phase verification checklist, and risk register.
+- Remaining W10.0: visual snapshots, reachability test, axe baseline (await approval).
 
 ---
 
