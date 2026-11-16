@@ -20,6 +20,7 @@ import {ActionsView} from './views/ActionsView';
 import {InboxView} from './views/InboxView';
 import {LabelsView} from './views/LabelsView';
 import {OntologyView} from './views/OntologyView';
+import {SkillManagementView} from './skills';
 
 interface MainViewProps {
     sortedNotes?: Note[];
@@ -73,6 +74,8 @@ export function MainView({sortedNotes}: MainViewProps) {
                 return <ChatView/>;
             case 'settings':
                 return <SettingsView/>;
+            case 'skills':
+                return <SkillManagementView/>;
             default:
                 return <InboxView sortedNotes={sortedNotes}/>;
         }

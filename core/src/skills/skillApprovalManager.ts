@@ -1,4 +1,4 @@
-import { SkillDefinition, SkillMatch } from './skillPatternMatcher.js';
+import type { Skill } from './types.js';
 import { logWarn } from '../utils/logging.js';
 
 /**
@@ -15,20 +15,26 @@ export interface SkillApproval {
     autoExecute: boolean;
 }
 
+export interface ApprovalSkillMatch {
+    skill: Skill;
+    confidence: number;
+    matchedAttributes: string[];
+}
+
 export class SkillApprovalManager {
     private approvals: Map<string, SkillApproval> = new Map();
 
     // Callbacks for user prompts
     private onApprovalRequest?: (
-        skill: SkillDefinition,
-        match: SkillMatch,
+        skill: Skill,
+        match: ApprovalSkillMatch,
         reason: string
     ) => Promise<boolean>;
 
     constructor(
         onApprovalRequest?: (
-            skill: SkillDefinition,
-            match: SkillMatch,
+            skill: Skill,
+            match: ApprovalSkillMatch,
             reason: string
         ) => Promise<boolean>
     ) {
@@ -48,8 +54,8 @@ export class SkillApprovalManager {
      * Returns true if approved (either previously or newly approved by user)
      */
     async requestApproval(
-        skill: SkillDefinition,
-        match: SkillMatch
+        skill: Skill,
+        match: ApprovalSkillMatch
     ): Promise<boolean> {
         // Check if already approved
         if (this.isApproved(skill.id)) {
@@ -84,7 +90,7 @@ export class SkillApprovalManager {
     /**
      * Generate human-readable approval reason
      */
-    private generateApprovalReason(skill: SkillDefinition, match: SkillMatch): string {
+    private generateApprovalReason(skill: Skill, match: ApprovalSkillMatch): string {
         const attrs = match.matchedAttributes.join(', ');
         return (
             `"${skill.name}" wants to execute because your note contains: ${attrs}. ` +
@@ -128,8 +134,8 @@ export class SkillApprovalManager {
      */
     setApprovalCallback(
         callback: (
-            skill: SkillDefinition,
-            match: SkillMatch,
+            skill: Skill,
+            match: ApprovalSkillMatch,
             reason: string
         ) => Promise<boolean>
     ): void {

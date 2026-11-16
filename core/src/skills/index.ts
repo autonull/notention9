@@ -8,5 +8,6 @@ export * from './ReminderSkill.js';
 export * from './SkillRegistry.js';
 export * from './skillPatternMatcher.js';
 export * from './skillApprovalManager.js';
+export * from './SkillExecutor.js';
 export * from './metaphor/MetaphorRegistry.js';
 export * from './metaphor/MetaphorMapper.js';

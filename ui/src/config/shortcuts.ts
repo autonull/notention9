@@ -36,6 +36,7 @@ export const SHORTCUT_GROUPS: ShortcutGroup[] = [
             viewShortcuts('Ontology', '8'),
             viewShortcuts('Trash', '9'),
             viewShortcuts('Settings', '0'),
+            viewShortcuts('Skills', 'S'),
         ],
     },
     {

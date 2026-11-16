@@ -176,7 +176,7 @@
   - All tests pass (127 optimize, 866 core, 42 UI files).
 - [x] **W4.2 Ranking + dedupe.** Improve ordering (recency, distance, constraint coverage) and collapse near-duplicate offers.
   - Acceptance: top-5 relevance ↑ on match set; no duplicate clusters in top-5.
-- [ ] **W4.3 Action/skill approval UX.** Clear "what will happen" preview, capability scope, and one-tap approve/deny; audit trail entry.
+- [x] **W4.3 Action/skill approval UX.** Clear "what will happen" preview, capability scope, and one-tap approve/deny; audit trail entry.
   - Acceptance: agent action cannot run without an approval record; UI shows scope.
 - [ ] **W4.4 Digest / notification loop.** Optional daily or on-demand digest of new matches and pending actions; respects quiet hours.
   - Acceptance: opt-in only; digest is local-first and exportable.
@@ -430,13 +430,13 @@ user can switch back for one release.
 | 21 | ~~**W5.2 Keyboard navigation & focus management**~~ ✅ | Keyboard-only | M |
 | 22 | ~~**W5.3 Screen reader semantics**~~ ✅ | Screen readers | M |
 | 23 | ~~**W8.2 Local eval canary**~~ ✅ | Regression prevention | S |
-| 24 | **W3.3 Calibrated confidence display** ✅ | Trust | M |
-| 25 | **W3.4 Feedback controls** ✅ | Trust/improvement loop | M |
-| 26 | **W4.2 Ranking + dedupe** ✅ | Match usefulness | M |
+| 24 | ~~**W3.3 Calibrated confidence display**~~ ✅ | Trust | M |
+| 25 | ~~**W3.4 Feedback controls**~~ ✅ | Trust/improvement loop | M |
+| 26 | ~~**W4.2 Ranking + dedupe**~~ ✅ | Match usefulness | M |
 | 27 | **W5.4 Reduced motion | 27 | **W5.4 Reduced motion & high contrast** | Accessibility | M | high contrast** ✅ | Accessibility | M |
 
 ### Next (after Now)
-W4.3 Action/skill approval UX · W4.4 Digest/notification loop ·
+W4.4 Digest/notification loop ·
 W5.5 i18n completeness + RTL audit · W5.6 Responsive/mobile pass ·
 W6.1 Performance budgets · W6.2 Offline/local-only mode · W7.1 Export/import round-trip.
 
@@ -815,3 +815,22 @@ pnpm eval:verify-manifest
 - Color-blind friendly: all status indicators use both color AND text/icons (confidence badges, provenance badges, focus source).
 - Added Accessibility section to SettingsView with ShieldIcon.
 - All unit tests pass (866 core, 42 UI files). Build passes.
+
+### 2026-11-16 — W4.3 Action/skill approval UX complete
+- Created `SkillExecutor` in `core/src/skills/SkillExecutor.ts` with approval-gated execution flow using `SkillApprovalManager`
+- Created `SkillApprovalDialog` component (`ui/src/components/skills/SkillApprovalDialog.tsx`) with:
+  - Clear "what will happen" preview with action list
+  - Capability scope display (external domains, auth requirements, expected outcome)
+  - One-tap approve/deny with "remember choice" checkbox for auto-execution
+  - Full keyboard navigation (Tab, Enter, Escape)
+  - Focus management and ARIA accessibility
+- Created `SkillManagementView` (`ui/src/components/skills/SkillManagementView.tsx`) for managing skill approvals:
+  - Shows all registered skills with approval status badges
+  - Test run button for each skill
+  - Execution history with success/failure tracking
+  - Approve/revoke controls
+- Updated `SkillApprovalManager` to work with `Skill` interface (from types.ts) instead of `SkillDefinition`
+- Added navigation entry for Skills view (Alt+S shortcut, in More menu)
+- Integrated into MainView and command palette
+- All core tests (866), UI tests (42 files), optimize tests (127) pass
+- Production build passes

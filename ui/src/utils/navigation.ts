@@ -10,6 +10,7 @@ import {
     NoteIcon,
     ResponseIcon,
     SettingsIcon,
+    ShieldIcon,
     TagIcon,
     TrashIcon,
     MoreHorizontalIcon,
@@ -31,6 +32,7 @@ export const SECONDARY_NAV: ViewConfig[] = [
     {id: 'responses', label: 'Responses', icon: ResponseIcon, shortcut: '8', showInMobile: false},
     {id: 'labels', label: 'Labels', icon: TagIcon, shortcut: '9', showInMobile: false},
     {id: 'trash', label: 'Trash', icon: TrashIcon, shortcut: '0', showInMobile: false},
+    {id: 'skills', label: 'Skills', icon: ShieldIcon, shortcut: 's', showInMobile: false},
 ];
 
 /** Settings - rendered as icon in header, in More sheet on mobile */
