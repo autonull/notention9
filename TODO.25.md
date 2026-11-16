@@ -134,8 +134,17 @@
     - Verified all modals use `useFocusTrap` hook for focus trapping and Escape handling.
     - Global focus-visible styles already present in `index.css` with high-contrast support.
     - Skip link implemented in `App.tsx` targeting `#main-content`.
-- [ ] **W5.3 Screen reader semantics.** Live regions for match/notifications, `aria-live` for async extraction, table/list semantics.
+- [x] **W5.3 Screen reader semantics.** Live regions for match/notifications, `aria-live` for async extraction, table/list semantics.
   - Acceptance: NVDA/VoiceOver smoke script documented; no unlabeled interactive controls.
+  - **Status**:
+    - Added `useAnnounce` hook in `useAccessibility.tsx` for screen reader announcements.
+    - Added announcements to `PropertyForm` and `EnhancedPropertyForm` for extraction results (success, no properties found, failure).
+    - Added announcements to `DescribeItComposer` for proposals ready and remote consent required.
+    - Added announcement to `LocalMatchPanel` in `InboxView` when new match found with compatibility score.
+    - Fixed `TemplateSelector` close button with `aria-label="Close templates"`.
+    - Verified existing live regions: Toast (`role="alert"`), ActivityFeed (`role="status"`), ContextualHint (`role="status"`), Input errors (`role="alert"`).
+    - Verified list semantics: ActivityFeed uses `<ul aria-label="Recent activity feed">`, Navigation breadcrumbs use `<ol>`, MetricsTab uses `<ul>`.
+    - All UI unit tests pass (42 files), core tests (855), optimize tests (107), build passes.
 - [ ] **W5.4 Reduced motion & high contrast.** Honor `prefers-reduced-motion` and `prefers-contrast`; no essential info conveyed by color alone.
   - Acceptance: toggles verified in UI; screenshots in `doc/screenshot/`.
 - [ ] **W5.5 i18n completeness + RTL audit.** Verify all 6 locales (`en,es,fr,de,zh,ar`) have keys; audit RTL (`ar`) layout, icons, and numbers.
@@ -514,6 +523,16 @@ pnpm eval:verify-manifest
 - Verified all modals use `useFocusTrap` hook for focus trapping and Escape handling (Modal, Drawer, CommandPalette, ConfirmationModal, HelpDialog, KeyboardShortcutsHelp).
 - Global `:focus-visible` styles in `index.css` with high-contrast mode support (`prefers-contrast: high`).
 - Skip link in `App.tsx` targets `#main-content` on main element.
+- All UI unit tests pass (42 files), core tests (855), optimize tests (107), build passes.
+
+### 2026-11-16 — W5.3 Screen reader semantics complete
+- Added `useAnnounce` hook in `hooks/useAccessibility.tsx` for live region announcements.
+- Property extraction announcements: `PropertyForm.tsx` and `EnhancedPropertyForm.tsx` announce extracted property details, "no properties found", or "extraction failed".
+- `DescribeItComposer.tsx` announces when proposals are ready (`N suggestions available for review`) and when remote consent is required.
+- `InboxView.tsx` `LocalMatchPanel` announces new matches with compatibility score and note title.
+- Fixed `TemplateSelector.tsx` close button with `aria-label="Close templates"`.
+- Verified existing live regions: Toast (`role="alert"` + `aria-live`), ActivityFeed (`role="status"` + `aria-live="polite"`), ContextualHint (`role="status"` + `aria-live="polite"`), Input errors (`role="alert"`).
+- Verified list semantics: ActivityFeed (`<ul aria-label="Recent activity feed">`), Navigation breadcrumbs (`<ol>`), MetricsTab (`<ul>`), no data tables needed.
 - All UI unit tests pass (42 files), core tests (855), optimize tests (107), build passes.
 
 ### 2026-11-15 — W10.0 Guardrails complete

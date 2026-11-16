@@ -25,7 +25,7 @@ export function TemplateSelector({ontology, onSelect, onClose}: TemplateSelector
                     <CubeIcon className="w-4 h-4"/>
                     Templates
                 </h3>
-                <button onClick={onClose} className="text-gray-500 hover:text-white">&times;</button>
+                <button onClick={onClose} className="text-gray-500 hover:text-white" aria-label="Close templates">&times;</button>
             </div>
             <div className="flex flex-col gap-2">
                 {templates.map(template => (

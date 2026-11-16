@@ -155,3 +155,8 @@ export function useFontSize() {
     const { settings } = useAccessibility();
     return settings.fontSize;
 }
+
+export function useAnnounce() {
+    const { announce } = useAccessibility();
+    return announce;
+}

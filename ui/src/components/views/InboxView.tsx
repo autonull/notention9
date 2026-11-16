@@ -5,6 +5,7 @@ import {useNotes} from '../../hooks/useNotes';
 import {useView} from '../../hooks/useViewContext';
 import {useSettings} from '../../hooks/useSettingsContext';
 import {useCommands} from '../../hooks/useCommands';
+import {useAnnounce} from '../../hooks/useAccessibility';
 import {NoteListItem} from '../sidebar/NoteListItem';
 import {EmptyStatePreset, EmptyState, NotesEmptyIllustration} from '../ui/Primitives';
 import {DashboardStatSkeleton, ActivityFeedSkeleton} from '../ui/Skeleton';
@@ -227,6 +228,7 @@ function advancedPanelCount(notes: Note[], settings: any): number {
 function LocalMatchPanel({notes, settings, onNavigate}: {notes: Note[]; settings: any; onNavigate: (id: string) => void}) {
     const [localMatch, setLocalMatch] = React.useState<any>(null);
     const [showExplanation, setShowExplanation] = React.useState(false);
+    const announce = useAnnounce();
 
     React.useEffect(() => {
         if (notes.length < 2 || !settings.ontology?.length) {
@@ -243,8 +245,13 @@ function LocalMatchPanel({notes, settings, onNavigate}: {notes: Note[]; settings
             )
             .filter(match => match.result.score > 0.4)
             .sort((a, b) => b.result.score - a.result.score)[0] ?? null;
+        const previousMatch = localMatch;
         setLocalMatch(match);
-    }, [notes, settings.ontology]);
+        // Announce new match
+        if (match && (!previousMatch || previousMatch.note.id !== match.note.id)) {
+            announce(`Match found: ${Math.round(match.result.score * 100)}% compatibility with ${match.note.title || 'untitled note'}`);
+        }
+    }, [notes, settings.ontology, localMatch, announce]);
 
     if (!localMatch) return null;
 

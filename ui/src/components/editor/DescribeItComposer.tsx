@@ -1,10 +1,11 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import type {OntologyNode, Property} from '@notention/core';
 import {Modal} from '../ui/Modal';
 import {Button} from '../ui/Button';
 import {CheckIcon, SparklesIcon, XMarkIcon} from '../ui/icons';
 import {useDescribeIt} from '../../hooks/useDescribeIt';
 import {LmConsentModal} from '../modals/LmConsentModal';
+import {useAnnounce} from '../../hooks/useAccessibility';
 
 interface DescribeItComposerProps {
     isOpen: boolean;
@@ -23,6 +24,7 @@ const SOURCE_LABEL: Record<string, string> = {
 
 export function DescribeItComposer({isOpen, onClose, onApply, ontology, placeholder, autoFocus}: DescribeItComposerProps) {
     const [text, setText] = useState('');
+    const announce = useAnnounce();
     const {
         proposals,
         accepted,
@@ -38,6 +40,20 @@ export function DescribeItComposer({isOpen, onClose, onApply, ontology, placehol
         reject,
         reset
     } = useDescribeIt(ontology);
+
+    // Announce when proposals are ready
+    useEffect(() => {
+        if (proposals.length > 0 && status === 'idle') {
+            announce(`${proposals.length} suggestion${proposals.length > 1 ? 's' : ''} available for review`);
+        }
+    }, [proposals, status, announce]);
+
+    // Announce when remote consent is needed
+    useEffect(() => {
+        if (pendingRemoteText !== null) {
+            announce('Remote model consent required. Text will leave the device.');
+        }
+    }, [pendingRemoteText, announce]);
 
     const handleClose = () => {
         reset();

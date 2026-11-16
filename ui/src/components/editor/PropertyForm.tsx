@@ -4,6 +4,7 @@ import type {OntologyNode} from '@notention/core';
 import {Logger} from '@notention/core';
 import {getCurrentPosition} from '../../utils/geolocation';
 import {useToast} from '../../hooks/useToast';
+import {useAnnounce} from '../../hooks/useAccessibility';
 import {Input} from '../ui/Input';
 import {Button} from '../ui/Button';
 import {IconButton} from '../ui/Button';
@@ -41,6 +42,7 @@ export function PropertyForm({
     const [showExtraction, setShowExtraction] = useState(false);
     const [extractionText, setExtractionText] = useState('');
     const {addToast} = useToast();
+    const announce = useAnnounce();
 
     // Update state if props change (e.g. location picked from parent)
     useEffect(() => {
@@ -94,12 +96,15 @@ export function PropertyForm({
                 setValue(property.values.join(','));
                 setShowExtraction(false);
                 addToast('Property extracted!', 'success');
+                announce(`Property extracted: ${property.key} ${property.operator} ${property.values.join(', ')}`);
             } else {
                 addToast('No properties found in text.', 'info');
+                announce('No properties found in text.');
             }
         } catch (e) {
             Logger.getInstance().error("Property extraction failed", e instanceof Error ? e : new Error(String(e)));
             addToast('Extraction failed.', 'error');
+            announce('Extraction failed.');
         }
     };
 

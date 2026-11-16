@@ -4,6 +4,7 @@ import {DescribeItComposer} from '../../components/editor/DescribeItComposer';
 import {ExtractionReview} from '../../components/editor/ExtractionReview';
 import {SettingsProvider} from '../../components/contexts/SettingsContext';
 import {ToastProvider} from '../../components/contexts/ToastProvider';
+import {AccessibilityProvider} from '../../hooks/useAccessibility';
 import type {OntologyNode, Property} from '@notention/core';
 import {DEFAULT_ONTOLOGY} from '@notention/core';
 
@@ -19,13 +20,15 @@ describe('Natural Language Capture End-to-End (P1)', () => {
         render(
             <SettingsProvider>
                 <ToastProvider>
-                    <DescribeItComposer
-                        isOpen={true}
-                        onClose={vi.fn()}
-                        onApply={vi.fn()}
-                        ontology={ontology}
-                        {...props}
-                    />
+                    <AccessibilityProvider>
+                        <DescribeItComposer
+                            isOpen={true}
+                            onClose={vi.fn()}
+                            onApply={vi.fn()}
+                            ontology={ontology}
+                            {...props}
+                        />
+                    </AccessibilityProvider>
                 </ToastProvider>
             </SettingsProvider>
         );
