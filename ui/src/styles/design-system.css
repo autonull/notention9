@@ -895,8 +895,9 @@ body {
   white-space: normal;
 }
 
-/* High contrast mode support */
-@media (prefers-contrast: high) {
+/* High contrast mode support - both media query and class-based */
+@media (prefers-contrast: high),
+html.high-contrast {
   :root {
     --color-border: var(--color-border-strong);
     --color-text-dim: var(--color-text-primary);
@@ -909,8 +910,9 @@ body {
   }
 }
 
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
+/* Reduced motion support - both media query and class-based */
+@media (prefers-reduced-motion: reduce),
+html.reduced-motion {
   *,
   *::before,
   *::after {

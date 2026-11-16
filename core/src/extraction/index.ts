@@ -35,3 +35,22 @@ export {
     pruneUngrounded,
     pruneUngroundedWithSpans,
 } from './propertyGrounding.js';
+
+export {
+    runConfidenceCalibration,
+    addCalibrationToProperties,
+    calibrateConfidence,
+    type CalibrationConfig,
+    type CalibrationResult,
+    type ConfidenceBin,
+    DEFAULT_CALIBRATION_CONFIG,
+} from './confidenceCalibration.js';
+
+export {
+    getConfidenceBucket,
+    getConfidenceBucketLabel,
+    getConfidenceBucketColor,
+    type PropertyWithCalibration,
+    CONFIDENCE_BUCKETS,
+    type ConfidenceBucket,
+} from './confidenceDisplay.js';

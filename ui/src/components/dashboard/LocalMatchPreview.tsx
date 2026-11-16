@@ -1,7 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import {Button} from '../ui/Button';
-import {CheckCircleIcon, XCircleIcon, MinusIcon, InformationCircleIcon, ArrowPathIcon, PencilIcon, XMarkIcon} from '../ui/icons';
+import {CheckCircleIcon, XCircleIcon, MinusIcon, InformationCircleIcon, ArrowPathIcon, PencilIcon, XMarkIcon, ThumbsUpIcon, ThumbsDownIcon, EditIcon} from '../ui/icons';
 import type {MatchResult, PropertyMatch, Property, Note, MatchDetails} from '@notention/core';
+import {recordFriction} from '@notention/core/telemetry/journal';
 
 interface LocalMatchPreviewProps {
     match: {
@@ -198,14 +199,20 @@ export function LocalMatchPreview({match, onSelectNote, onAcceptMatch, onRejectM
                         <Button
                             size="sm"
                             variant="success"
-                            onClick={() => onAcceptMatch(match.request.id, match.note.id, match.result.score)}
+                            onClick={() => {
+                                recordFriction({ workflow: 'match', seam: 'local-match', kind: 'match_accepted', count: 1, noteId: match.note.id });
+                                onAcceptMatch(match.request.id, match.note.id, match.result.score);
+                            }}
                         >
                             <CheckCircleIcon className="w-4 h-4 mr-1"/> Respond
                         </Button>
                         <Button
                             size="sm"
                             variant="ghost"
-                            onClick={() => setShowRecovery(true)}
+                            onClick={() => {
+                                recordFriction({ workflow: 'match', seam: 'local-match', kind: 'match_rejected', count: 1, noteId: match.note.id });
+                                setShowRecovery(true);
+                            }}
                             className="text-yellow-400 hover:text-yellow-300"
                             title="This match isn't right - help me correct it"
                         >
@@ -221,6 +228,7 @@ export function LocalMatchPreview({match, onSelectNote, onAcceptMatch, onRejectM
                                     size="sm"
                                     variant="secondary"
                                     onClick={() => {
+                                        recordFriction({ workflow: 'match', seam: 'local-match', kind: 'match_rejected', count: 1, noteId: match.note.id });
                                         onRejectMatch(match.request.id, match.note.id);
                                         setShowRecovery(false);
                                     }}
@@ -231,6 +239,7 @@ export function LocalMatchPreview({match, onSelectNote, onAcceptMatch, onRejectM
                                     size="sm"
                                     variant="primary"
                                     onClick={() => {
+                                        recordFriction({ workflow: 'match', seam: 'local-match', kind: 'clarification_requested', count: 1, noteId: match.request.id });
                                         onReviseRequest(match.request.id);
                                         setShowRecovery(false);
                                     }}

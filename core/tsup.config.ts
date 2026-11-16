@@ -11,6 +11,7 @@ const BROWSER_TWINS = [
     'telemetry/ledger',
     'ui/ProfileRegistry',
     'utils/common',
+    'extraction/confidenceCalibration',
 ];
 const browserVariantRewrite = {
     name: 'browser-variant-rewrite',

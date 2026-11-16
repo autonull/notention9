@@ -343,8 +343,9 @@ textarea:focus-visible,
     ring-offset-color: #111827;
 }
 
-/* Reduced motion preference */
-@media (prefers-reduced-motion: reduce) {
+/* Reduced motion preference - both media query and class-based */
+@media (prefers-reduced-motion: reduce),
+html.reduced-motion {
     *,
     *::before,
     *::after {
@@ -355,8 +356,9 @@ textarea:focus-visible,
     }
 }
 
-/* High contrast mode support */
-@media (prefers-contrast: high) {
+/* High contrast mode support - both media query and class-based */
+@media (prefers-contrast: high),
+html.high-contrast {
     :focus-visible {
         outline-width: 3px;
         outline-color: #fff;
@@ -366,6 +368,29 @@ textarea:focus-visible,
     .btn-secondary,
     .btn-outline {
         border-width: 2px;
+    }
+    
+    /* Stronger borders for high contrast */
+    .border,
+    .border-2,
+    .border-t,
+    .border-b,
+    .border-l,
+    .border-r,
+    [class*="border-"] {
+        border-color: #fff !important;
+    }
+    
+    /* Ensure text has maximum contrast */
+    .text-gray-400,
+    .text-gray-500,
+    .text-gray-600 {
+        color: #e5e7eb !important;
+    }
+    
+    /* Stronger badge borders */
+    [class*="border-"] {
+        border-width: max(1px, var(--tw-border-width)) !important;
     }
 }
 

@@ -1,5 +1,5 @@
 import React, {useMemo, useCallback, useState, useEffect} from 'react';
-import {MatchEngine, type Note, PropertyExtractor, getTextFromHtml, createResponseNote, logMatchAccepted, logMatchRejected} from '@notention/core';
+import {MatchEngine, type Note, PropertyExtractor, getTextFromHtml, createResponseNote, logMatchAccepted, logMatchRejected, rankMatches, deduplicateMatches, findLocalMatchesEnhanced} from '@notention/core';
 
 import {useNotes} from '../../hooks/useNotes';
 import {useView} from '../../hooks/useViewContext';
@@ -306,15 +306,20 @@ export function InboxView({sortedNotes}: InboxViewProps) {
     const localMatch = useMemo(() => {
         if (notes.length < 2) return null;
         const engine = new MatchEngine(settings.ontology || []);
-        return notes
-            .filter(note => note.properties.some(p => p.key === 'intent' && p.values.includes('request')))
-            .flatMap(request =>
-                notes
-                    .filter(note => note.id !== request.id)
-                    .map(note => ({request, note, result: engine.calculateMatchScore(request, note)}))
-            )
-            .filter(match => match.result.score > 0.4)
-            .sort((a, b) => b.result.score - a.result.score)[0] ?? null;
+        const requests = notes.filter(note => note.properties.some(p => p.key === 'intent' && p.values.includes('request')));
+        const offers = notes.filter(note => !note.properties.some(p => p.key === 'intent' && p.values.includes('request')));
+        
+        if (requests.length === 0 || offers.length === 0) return null;
+        
+        // Use enhanced matching with ranking and deduping for the first request
+        const request = requests[0];
+        const matches = findLocalMatchesEnhanced(engine, request, offers, {
+            threshold: 0.4,
+            ranking: { scoreWeight: 0.5, recencyWeight: 0.2, coverageWeight: 0.2, distanceWeight: 0.1 },
+            deduplicate: { similarityThreshold: 0.85 },
+        });
+        
+        return matches[0] ? { request, note: matches[0].note, result: matches[0].result } : null;
     }, [notes, settings.ontology]);
 
     const handleMatchViewed = useCallback(() => markMatchViewed(localMatch?.request.id), [markMatchViewed, localMatch?.request.id]);
@@ -889,15 +894,23 @@ function LocalMatchPanel({notes, settings, onNavigate}: {notes: Note[]; settings
             return;
         }
         const engine = new MatchEngine(settings.ontology || []);
-        const match = notes
-            .filter(note => note.properties.some(p => p.key === 'intent' && p.values.includes('request')))
-            .flatMap(request =>
-                notes
-                    .filter(note => note.id !== request.id)
-                    .map(note => ({request, note, result: engine.calculateMatchScore(request, note)}))
-            )
-            .filter(match => match.result.score > 0.4)
-            .sort((a, b) => b.result.score - a.result.score)[0] ?? null;
+        const requests = notes.filter(note => note.properties.some(p => p.key === 'intent' && p.values.includes('request')));
+        const offers = notes.filter(note => !note.properties.some(p => p.key === 'intent' && p.values.includes('request')));
+        
+        if (requests.length === 0 || offers.length === 0) {
+            setLocalMatch(null);
+            return;
+        }
+        
+        // Use enhanced matching with ranking and deduping for the first request
+        const request = requests[0];
+        const matches = findLocalMatchesEnhanced(engine, request, offers, {
+            threshold: 0.4,
+            ranking: { scoreWeight: 0.5, recencyWeight: 0.2, coverageWeight: 0.2, distanceWeight: 0.1 },
+            deduplicate: { similarityThreshold: 0.85 },
+        });
+        
+        const match = matches[0] ? { request, note: matches[0].note, result: matches[0].result } : null;
         const previousMatch = localMatch;
         setLocalMatch(match);
         // Announce new match

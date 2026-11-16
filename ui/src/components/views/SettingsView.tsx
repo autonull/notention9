@@ -11,8 +11,9 @@ import {AutomationTab} from '../settings/AutomationTab';
 import {NetworkManagementSection} from '../settings/NetworkManagementSection';
 import {ProfileSettings} from '../settings/ProfileSettings';
 import {RevisionsTab} from '../settings/RevisionsTab';
+import {AccessibilityTab} from '../settings/AccessibilityTab';
 import {CollapsibleSection} from '../ui/CollapsibleSection';
-import {SparklesIcon, BoltIcon, TagIcon, GlobeIcon, KeyIcon, CubeIcon, ChartBarIcon, UserGroupIcon, ClockIcon} from '../ui/icons';
+import {SparklesIcon, BoltIcon, TagIcon, GlobeIcon, KeyIcon, CubeIcon, ChartBarIcon, UserGroupIcon, ClockIcon, ShieldIcon} from '../ui/icons';
 
 interface SettingsGroup {
     id: string;
@@ -77,6 +78,14 @@ export function SettingsView() {
                 {id: 'revisions', label: 'Revisions', icon: <ClockIcon className="h-4 w-4" />},
             ],
         },
+        {
+            id: 'accessibility',
+            label: 'Accessibility',
+            icon: <ShieldIcon className="h-5 w-5" />,
+            tabs: [
+                {id: 'accessibility', label: 'Accessibility', icon: <ShieldIcon className="h-4 w-4" />},
+            ],
+        },
     ];
 
     const renderTabContent = () => {
@@ -99,6 +108,8 @@ export function SettingsView() {
                 return <ProfileSettings/>;
             case 'revisions':
                 return <RevisionsTab userId="default-user"/>;
+            case 'accessibility':
+                return <AccessibilityTab/>;
             default:
                 return null;
         }

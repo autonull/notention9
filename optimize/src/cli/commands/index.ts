@@ -8,3 +8,4 @@ export { UXEvaluateCommand } from './uxEvaluate.js';
 export { FrictionDigestCommand } from './frictionDigest.js';
 export { EvalCanaryCommand } from './evalCanary.js';
 export { EvalMatchCommand } from './evalMatch.js';
+export { EvalConfidenceCommand } from './evalConfidence.js';

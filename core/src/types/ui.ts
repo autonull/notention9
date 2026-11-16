@@ -43,4 +43,8 @@ export interface AppSettings {
     actionCompleted: boolean;
     dismissed: boolean;
   };
+  accessibility?: {
+    reducedMotion?: boolean;
+    highContrast?: boolean;
+  };
 }

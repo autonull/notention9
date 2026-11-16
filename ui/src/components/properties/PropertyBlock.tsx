@@ -1,5 +1,7 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {findAttributeDef, OntologyNode, Property} from '@notention/core';
+import {getConfidenceBucket, getConfidenceBucketLabel, getConfidenceBucketColor, type PropertyWithCalibration} from '@notention/core/extraction';
+import {recordFriction, type FrictionKind} from '@notention/core/telemetry/journal';
 import {AttributeWidget} from './widgets/registry';
 import {OperatorDropdown} from './OperatorDropdown';
 import {getCorrectionSuggestions, type CorrectionSuggestion} from './correctionSuggestions';
@@ -16,11 +18,15 @@ import {
     XMarkIcon,
     LightBulbIcon,
     PinIcon,
-    InfoIcon
+    InfoIcon,
+    ThumbsUpIcon,
+    ThumbsDownIcon,
+    CheckIcon,
+    EditIcon
 } from '../ui/icons';
 
 interface PropertyBlockProps {
-    property: Property;
+    property: PropertyWithCalibration;
     onUpdate: (updated: Property) => void;
     onDelete: () => void;
     ontology: OntologyNode[];
@@ -117,6 +123,12 @@ export function PropertyBlock({
         'inferred': 'text-yellow-400 bg-yellow-900/30 border-yellow-700/50',
     };
     const provenanceColor = provenanceColors[provenance] || provenanceColors['user'];
+    
+    // Confidence bucket display (calibrated)
+    const confidenceBucket = property.confidenceBucket ?? getConfidenceBucket(property.confidence ?? 0.5);
+    const confidenceBucketColor = getConfidenceBucketColor(confidenceBucket);
+    const confidenceBucketLabel = getConfidenceBucketLabel(confidenceBucket);
+    
     const hasSourceSpan = property.sourceSpan && property.sourceSpan[0] !== undefined && property.sourceSpan[1] !== undefined;
 
     const handleFocusSource = useCallback((e: React.MouseEvent) => {
@@ -170,6 +182,10 @@ export function PropertyBlock({
                         <span className={`px-1.5 py-0.5 text-[10px] font-medium rounded border ${provenanceColor}`}>
                             {provenance}
                         </span>
+                        {/* Confidence bucket badge (calibrated) */}
+                        <span className={`px-1.5 py-0.5 text-[10px] font-medium rounded border ${confidenceBucketColor}`}>
+                            {confidenceBucketLabel}
+                        </span>
                         {/* Focus source button */}
                         {hasSourceSpan && (
                             <button
@@ -180,6 +196,41 @@ export function PropertyBlock({
                                 <PinIcon className="w-3.5 h-3.5" />
                             </button>
                         )}
+                        {/* Feedback controls */}
+                        <div className="flex items-center gap-0.5 ml-1 border-l border-gray-700/50 pl-1.5">
+                            <button
+                                className="p-1 text-gray-500 hover:text-green-400 hover:bg-green-900/20 rounded transition-colors"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    recordFriction({ workflow: 'match', seam: 'property', kind: 'match_accepted', count: 1, noteId: property.sourceSpan ? undefined : undefined });
+                                }}
+                                title="Accept property"
+                            >
+                                <CheckIcon className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                                className="p-1 text-gray-500 hover:text-yellow-400 hover:bg-yellow-900/20 rounded transition-colors"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setIsEditing(true);
+                                    recordFriction({ workflow: 'match', seam: 'property', kind: 'correction', count: 1 });
+                                }}
+                                title="Correct property"
+                            >
+                                <EditIcon className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                                className="p-1 text-gray-500 hover:text-red-400 hover:bg-red-900/20 rounded transition-colors"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    recordFriction({ workflow: 'match', seam: 'property', kind: 'match_rejected', count: 1 });
+                                    onDelete();
+                                }}
+                                title="Reject property"
+                            >
+                                <ThumbsDownIcon className="w-3.5 h-3.5" />
+                            </button>
+                        </div>
                         {isValid(property) && <div className="w-1.5 h-1.5 rounded-full bg-green-500/50 shadow-[0_0_4px_rgba(34,197,94,0.5)]"></div>}
                         <button
                             className="p-1 text-gray-500 hover:text-red-400 hover:bg-red-900/20 rounded transition-colors"
@@ -203,6 +254,10 @@ export function PropertyBlock({
                             <span className={`px-1.5 py-0.5 text-[10px] font-medium rounded border ${provenanceColor}`}>
                                 {provenance}
                             </span>
+                            {/* Confidence bucket badge in editing mode */}
+                            <span className={`px-1.5 py-0.5 text-[10px] font-medium rounded border ${confidenceBucketColor}`}>
+                                {confidenceBucketLabel}
+                            </span>
                             {/* Focus source button in editing mode */}
                             {hasSourceSpan && (
                                 <button
@@ -213,6 +268,41 @@ export function PropertyBlock({
                                     <PinIcon className="w-3.5 h-3.5" />
                                 </button>
                             )}
+                            {/* Feedback controls in editing mode */}
+                            <div className="flex items-center gap-0.5 ml-1 border-l border-gray-700/50 pl-1.5">
+                                <button
+                                    className="p-1 text-gray-500 hover:text-green-400 hover:bg-green-900/20 rounded transition-colors"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        recordFriction({ workflow: 'match', seam: 'property', kind: 'match_accepted', count: 1 });
+                                        handleSave();
+                                    }}
+                                    title="Accept property"
+                                >
+                                    <CheckIcon className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                    className="p-1 text-gray-500 hover:text-yellow-400 hover:bg-yellow-900/20 rounded transition-colors"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        recordFriction({ workflow: 'match', seam: 'property', kind: 'correction', count: 1 });
+                                    }}
+                                    title="Mark as corrected"
+                                >
+                                    <EditIcon className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                    className="p-1 text-gray-500 hover:text-red-400 hover:bg-red-900/20 rounded transition-colors"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        recordFriction({ workflow: 'match', seam: 'property', kind: 'match_rejected', count: 1 });
+                                        onDelete();
+                                    }}
+                                    title="Reject property"
+                                >
+                                    <ThumbsDownIcon className="w-3.5 h-3.5" />
+                                </button>
+                            </div>
                         </div>
                         <button
                             onClick={(e) => {
