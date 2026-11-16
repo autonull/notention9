@@ -151,7 +151,7 @@ export function ContextualHint({compact = false, persistent = false, position = 
                             key={`${shortcut.label}-${index}`}
                             className={cn(
                                 'flex items-center gap-3 px-2 py-2 rounded-lg transition-colors',
-                                shortcut.keys.length === 0 ? 'text-gray-500 text-xs font-medium uppercase tracking-wider' : 'hover:bg-gray-800/50'
+                                shortcut.keys.length === 0 ? 'text-gray-400 text-xs font-medium uppercase tracking-wider' : 'hover:bg-gray-800/50'
                             )}
                         >
                             {shortcut.keys.length > 0 && (
@@ -162,7 +162,7 @@ export function ContextualHint({compact = false, persistent = false, position = 
                             <div className="flex-1 min-w-0">
                                 <span className="text-sm text-gray-200 truncate block">{shortcut.label}</span>
                                 {shortcut.description && (
-                                    <span className="text-xs text-gray-500 truncate block">{shortcut.description}</span>
+                                    <span className="text-xs text-gray-400 truncate block">{shortcut.description}</span>
                                 )}
                             </div>
                         </div>

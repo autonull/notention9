@@ -123,8 +123,9 @@
 ### W5 — Accessibility & Internationalization
 **Goal**: WCAG 2.2 AA and a fully usable UI in all shipped locales, keyboard-only and screen reader included.
 
-- [ ] **W5.1 Axe audit + fixes.** Run `axe-core` across main views; fix serious/critical issues (labels, roles, contrast).
+- [x] **W5.1 Axe audit + fixes.** Run `axe-core` across main views; fix serious/critical issues (labels, roles, contrast).
   - Acceptance: zero serious/critical axe violations on Inbox, Notes, Actions, Settings.
+  - **Status**: Fixed color-contrast violations on all 11 views (Inbox, Notes, Map, Timeline, Network, Chat, Actions, Responses, Labels, Trash, Settings). Changed `text-gray-500`/`text-gray-600` to `text-gray-400`/`text-gray-200` for WCAG AA compliance in ContextualHint, NewNoteButton, Button, InboxView, NetworkManagementSection, UnifiedSelector, and FilterBar components.
 - [ ] **W5.2 Keyboard navigation & focus management.** Visible focus ring, logical tab order, focus trap in modals/dialogs, Esc closes.
   - Acceptance: can complete capture→match→action without a mouse; automated focus test.
 - [ ] **W5.3 Screen reader semantics.** Live regions for match/notifications, `aria-live` for async extraction, table/list semantics.
@@ -481,6 +482,21 @@ pnpm eval:verify-manifest
 - **Recommended default**: Qwen 3.5 2B — 10/10 golden, 55.7% quality, ~2.5 GB VRAM.
 - Qwen 3.5 4B regresses (falls back to deterministic extraction); needs investigation.
 - All tests pass, builds clean.
+
+### 2026-11-16 — W5.1 Axe audit + fixes complete
+- Installed `axe-core` and `@axe-core/playwright` for automated accessibility testing.
+- Created `axe-audit.spec.ts` testing all 11 main views (Inbox, Notes, Map, Timeline, Network, Chat, Actions, Responses, Labels, Trash, Settings).
+- Fixed color-contrast violations (WCAG 2.1 AA) across all views:
+  - `ContextualHint.tsx`: section divider and description text (`text-gray-500` → `text-gray-400`)
+  - `NewNoteButton.tsx`: keyboard shortcut label (`text-gray-500` → `text-gray-400`)
+  - `Button.tsx` (IconButton): keyboard shortcut label (`text-gray-500` → `text-gray-400`)
+  - `InboxView.tsx`: "Request"/"Offer" section headers (`text-gray-500` → `text-gray-400`)
+  - `NetworkManagementSection.tsx`: provider ID label (`text-gray-500` → `text-gray-400`)
+  - `UnifiedSelector.tsx`: "Recent" section header (`text-gray-500` → `text-gray-400`)
+  - `FilterBar.tsx`: inactive filter tabs (`text-gray-600` → `text-gray-400`, hover `text-gray-400` → `text-gray-200`)
+- All 11 axe audit tests pass (zero serious/critical violations).
+- All UI unit tests pass (42 test files).
+- All e2e journey tests pass (navigation, export-import, golden-demo, seeded-workspace).
 
 ### 2026-11-15 — W10.0 Guardrails complete
 - Fixed `fs` polyfill issue: made ontology loader browser-compatible by detecting browser environment and using `DEFAULT_ONTOLOGY` instead of filesystem access (`core/src/ontology/loader.ts`).

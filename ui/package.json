@@ -30,9 +30,9 @@
     "@tiptap/starter-kit": "^3.33.0",
     "date-fns": "^4.4.0",
     "dompurify": "^3.4.17",
-    "iconv-lite": "^0.7.2",
     "i18next": "^25.0.0",
     "i18next-browser-languagedetector": "^8.0.0",
+    "iconv-lite": "^0.7.2",
     "leaflet": "1.9.4",
     "localforage": "^1.10.0",
     "nostr-tools": "^2.26.0",
@@ -44,6 +44,7 @@
     "xmlchars": "^2.2.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@esbuild-plugins/node-modules-polyfill": "^0.2.2",
     "@eslint/js": "^9.32.0",
@@ -63,6 +64,7 @@
     "@vitest/coverage-v8": "^3.2.4",
     "assert": "^2.1.0",
     "autoprefixer": "^10.4.24",
+    "axe-core": "^4.14.0",
     "buffer": "^6.0.3",
     "constants-browserify": "^1.0.0",
     "crypto-browserify": "^3.12.1",

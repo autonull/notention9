@@ -208,7 +208,7 @@ export function UnifiedSelector({
                 <div className="overflow-y-auto flex-1 p-1 custom-scrollbar">
                     {recentKeys.length > 0 && !filter && (
                         <div className="mb-2">
-                            <div className="px-2 py-1 text-xs font-bold text-gray-500 uppercase tracking-wider">Recent</div>
+                            <div className="px-2 py-1 text-xs font-bold text-gray-400 uppercase tracking-wider">Recent</div>
                             {recentKeys.map((key, i) => (
                                 <button
                                     key={key}

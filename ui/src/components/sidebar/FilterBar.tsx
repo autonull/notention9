@@ -89,7 +89,7 @@ export function FilterBar({searchTerm, onSetSearch, notes = []}: FilterBarProps)
             ? (isAll
                 ? 'bg-gray-700 text-white shadow-sm'
                 : 'bg-blue-900/40 text-blue-400 shadow-sm shadow-blue-900/20')
-            : 'text-gray-600 hover:text-gray-400 hover:bg-gray-800/50'
+            : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800/50'
     );
 
     return (

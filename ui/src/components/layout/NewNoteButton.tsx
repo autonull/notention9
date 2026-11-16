@@ -77,7 +77,7 @@ export function NewNoteButton({
             </div>
 
             {label && (
-                <span className="hidden lg:inline text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                <span className="hidden lg:inline text-[10px] font-bold text-gray-400 uppercase tracking-wider">
                     {label}
                 </span>
             )}

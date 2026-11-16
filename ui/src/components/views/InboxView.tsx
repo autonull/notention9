@@ -344,7 +344,7 @@ function LocalMatchPanel({notes, settings, onNavigate}: {notes: Note[]; settings
                     onClick={() => onNavigate(localMatch.request.id)}
                     className="text-left bg-gray-800/50 hover:bg-gray-700/50 rounded-xl p-4 transition-colors"
                 >
-                    <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Request</p>
+                    <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">Request</p>
                     <p className="font-medium">{localMatch.request.title || 'Untitled'}</p>
                     <p className="text-sm text-gray-400 mt-1 line-clamp-2">{localMatch.request.content.replace(/<[^>]*>/g, '')}</p>
                 </button>
@@ -353,7 +353,7 @@ function LocalMatchPanel({notes, settings, onNavigate}: {notes: Note[]; settings
                     onClick={() => onNavigate(localMatch.note.id)}
                     className="text-left bg-gray-800/50 hover:bg-gray-700/50 rounded-xl p-4 transition-colors"
                 >
-                    <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Offer</p>
+                    <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">Offer</p>
                     <p className="font-medium">{localMatch.note.title || 'Untitled'}</p>
                     <p className="text-sm text-gray-400 mt-1 line-clamp-2">{localMatch.note.content.replace(/<[^>]*>/g, '')}</p>
                 </button>

@@ -165,7 +165,7 @@ export function IconButton({
         >
             <Icon className={iconSizes[size]} />
             {label && (
-                <span className="ml-2 text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                <span className="ml-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider">
                     {label}
                 </span>
             )}
