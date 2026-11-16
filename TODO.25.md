@@ -462,6 +462,7 @@ A task is done only when all hold:
 LLAMA_MODEL_PATH=/path/to/Qwen3.5-9B-Q4_K_M.gguf pnpm prompts:eval eval --provider llamacpp --quality
 LLAMA_MODEL_PATH=/path/to/gemma-4-4b-Q4_K_M.gguf  pnpm prompts:eval eval --provider llamacpp --quality
 LLAMA_GPU_LAYERS=0 pnpm prompts:eval eval --provider llamacpp        # CPU fallback gate
+pnpm prompts:eval matrix [--models <paths>] [--quality-limit <n>] [--few-shot <n>] [--output <file>]  # Automated multi-model matrix
 
 # Prompt experiments
 pnpm prompts:eval ablation --provider llama-cpp-embedded --quality-limit 10
@@ -598,6 +599,14 @@ pnpm eval:verify-manifest
 
 ### 2026-11-16 — W10.2 Overview merge complete
 - Moved Dashboard content into Inbox as "Overview" section (Welcome header, Feature Highlights, Quick Capture, Sample Workspace Prompt, Local Match with explanations, AutomationsView, StatsGrid, Recent Activity, Quick Actions).
+
+### 2026-11-16 — W1.3 Model matrix automation complete
+- Added `matrix` command to `pnpm prompts:eval` CLI (`optimize/src/prompts/cli.ts`) for automated multi-model evaluation.
+- Command runs golden gate + quality extraction across all available models, uses full quality corpus for few-shot retrieval (matching eval command behavior), outputs summary table and JSON report.
+- Usage: `pnpm prompts:eval matrix [--models <paths>] [--quality-limit <n>] [--few-shot <n>] [--output <file>]`
+- Default models: Qwen 3.5 0.8B/2B/4B from local `models/` directory.
+- Results (20 quality cases, 3-shot): Qwen 3.5 4B leads mean F1 (0.692), 0.8B (0.685), 2B (0.671). Golden gate: 4B/2B 10/10, 0.8B 8/10 (session disposal issue on first model).
+- All optimize tests pass, build clean.
 - Removed duplicate `LocalMatchPanel`/`StatsPanel`/`RecentActivityPanel`/`AutomationsPanel` from Inbox Advanced section.
 - Dashboard route (`#dashboard`) now redirects to Inbox (`#inbox`) in `MainView.tsx`.
 - Updated all journey tests (navigation, golden-demo, compose-match, export-import, seeded-workspace, two-client-relay, matching showcase) to use `#inbox`.

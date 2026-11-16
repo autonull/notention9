@@ -587,4 +587,218 @@ program
         await closeLlamaCpp();
     });
 
+// ============================================================================
+// MATRIX: Model matrix evaluation across multiple models
+// ============================================================================
+
+interface ModelMatrixResult {
+    modelPath: string;
+    modelName: string;
+    goldenPassed: number;
+    goldenTotal: number;
+    qualityPassed: number;
+    qualityTotal: number;
+    qualityMeanF1: number;
+    qualityMeanPrecision: number;
+    qualityMeanRecall: number;
+    timestamp: string;
+}
+
+async function loadAllQualityCasesForFewShot(): Promise<LabelledCase[]> {
+    const casesDir = join(__dirname, '..', '..', '..', 'data', 'eval', 'cases');
+    const manifestPath = join(casesDir, 'manifest.json');
+    const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
+
+    const extractionCases = manifest.cases.filter((c: any) => c.qualityFamily === 'extraction');
+    return extractionCases.map((c: any) => {
+        const casePath = join(casesDir, c.path);
+        const caseData = JSON.parse(readFileSync(casePath, 'utf-8'));
+        return { id: c.id, input: caseData.input, expected: caseData.expected };
+    });
+}
+
+async function runModelEvaluation(
+    modelPath: string,
+    modelName: string,
+    goldenCases: GoldenCase[],
+    qualityCases: GoldenCase[],
+    fewShotBank: LabelledCase[],
+    fewShotCount: number
+): Promise<ModelMatrixResult> {
+    const { LlamaCppProvider } = await import('./providers/llamaCppProvider.js');
+    const { closeLlamaCpp } = await import('../llm/index.js');
+
+    const provider = new LlamaCppProvider({
+        modelPath,
+        fewShotBank,
+        fewShotCount,
+    });
+
+    // Golden gate
+    const goldenResults = await evaluateGoldenSet(goldenCases, provider, DEFAULT_ONTOLOGY);
+    const goldenPassed = goldenResults.filter(r => r.passed).length;
+    const goldenTotal = goldenResults.length;
+
+    // Quality extraction
+    let qualityPassed = 0;
+    let totalF1 = 0;
+    let totalPrecision = 0;
+    let totalRecall = 0;
+
+    for (const testCase of qualityCases) {
+        const actual = await provider.extract(testCase.input, DEFAULT_ONTOLOGY);
+        const score = scoreExtraction(testCase.expected, actual);
+
+        const casePassed = score.missing.length === 0 && score.extra.length === 0;
+        if (casePassed) qualityPassed++;
+
+        totalF1 += score.f1;
+        totalPrecision += score.precision;
+        totalRecall += score.recall;
+    }
+
+    await closeLlamaCpp();
+
+    return {
+        modelPath,
+        modelName,
+        goldenPassed,
+        goldenTotal,
+        qualityPassed,
+        qualityTotal: qualityCases.length,
+        qualityMeanF1: totalF1 / qualityCases.length,
+        qualityMeanPrecision: totalPrecision / qualityCases.length,
+        qualityMeanRecall: totalRecall / qualityCases.length,
+        timestamp: new Date().toISOString(),
+    };
+}
+
+program
+    .command('matrix')
+    .description('Run model matrix evaluation across multiple GGUF models')
+    .option('--models <paths>', 'Comma-separated model paths (default: 0.8B,2B,4B in models dir)')
+    .option('--quality-limit <n>', 'Evaluate only the first N quality cases', '60')
+    .option('--few-shot <n>', 'Retrieved examples per input (0 disables)', '3')
+    .option('--output <file>', 'Output results JSON file')
+    .action(async (options) => {
+        console.log('📊 Notention Model Matrix Evaluation');
+        console.log('=====================================\n');
+
+        const goldenCases = await loadGoldenCases();
+        console.log(`Loaded ${goldenCases.length} golden cases`);
+
+        let qualityCases = await loadQualityCases();
+        if (options.qualityLimit) {
+            qualityCases = qualityCases.slice(0, Number(options.qualityLimit));
+        }
+        console.log(`Loaded ${qualityCases.length} quality cases (test subset)`);
+
+        // Load full quality corpus for few-shot retrieval (matches eval command behavior)
+        const fewShotBank = await loadAllQualityCasesForFewShot();
+        console.log(`Loaded ${fewShotBank.length} cases for few-shot retrieval`);
+
+        const fewShotCount = Number(options.fewShot ?? 3);
+
+        // Default models to test
+        const defaultModels = [
+            { name: 'Qwen 3.5 0.8B', path: '/home/me/notention9/models/Qwen_Qwen3.5-0.8B-Q4_K_M.gguf' },
+            { name: 'Qwen 3.5 2B', path: '/home/me/notention9/models/Qwen_Qwen3.5-2B-Q4_K_M.gguf' },
+            { name: 'Qwen 3.5 4B', path: '/home/me/notention9/models/Qwen_Qwen3.5-4B-Q4_K_M.gguf' },
+        ];
+
+        let modelsToTest = defaultModels;
+        if (options.models) {
+            modelsToTest = options.models.split(',').map((p: string) => {
+                const trimmed = p.trim();
+                const name = trimmed.split('/').pop()?.replace('.gguf', '') ?? trimmed;
+                return { name, path: trimmed };
+            });
+        }
+
+        // Filter to existing models
+        const { existsSync } = await import('node:fs');
+        modelsToTest = modelsToTest.filter(m => existsSync(m.path));
+        
+        if (modelsToTest.length === 0) {
+            console.error('No valid models found to test');
+            process.exit(1);
+        }
+
+        console.log(`\nTesting ${modelsToTest.length} model(s):`);
+        for (const m of modelsToTest) {
+            console.log(`  - ${m.name}: ${m.path}`);
+        }
+        console.log('');
+
+        const results: ModelMatrixResult[] = [];
+
+        for (const model of modelsToTest) {
+            console.log(`\n${'='.repeat(60)}`);
+            console.log(`Evaluating: ${model.name}`);
+            console.log('='.repeat(60));
+
+            try {
+                const result = await runModelEvaluation(
+                    model.path,
+                    model.name,
+                    goldenCases,
+                    qualityCases,
+                    fewShotBank,
+                    fewShotCount
+                );
+                results.push(result);
+
+                console.log(`\nGolden Gate: ${result.goldenPassed}/${result.goldenTotal} (${((result.goldenPassed / result.goldenTotal) * 100).toFixed(1)}%)`);
+                console.log(`Quality Extraction: ${result.qualityPassed}/${result.qualityTotal} (${((result.qualityPassed / result.qualityTotal) * 100).toFixed(1)}%)`);
+                console.log(`Mean F1: ${result.qualityMeanF1.toFixed(3)} (P: ${result.qualityMeanPrecision.toFixed(3)}, R: ${result.qualityMeanRecall.toFixed(3)})`);
+            } catch (error) {
+                console.error(`Failed to evaluate ${model.name}:`, error);
+                results.push({
+                    modelPath: model.path,
+                    modelName: model.name,
+                    goldenPassed: 0,
+                    goldenTotal: goldenCases.length,
+                    qualityPassed: 0,
+                    qualityTotal: qualityCases.length,
+                    qualityMeanF1: 0,
+                    qualityMeanPrecision: 0,
+                    qualityMeanRecall: 0,
+                    timestamp: new Date().toISOString(),
+                });
+            }
+        }
+
+        // Summary table
+        console.log('\n' + '='.repeat(100));
+        console.log('MODEL MATRIX SUMMARY');
+        console.log('='.repeat(100));
+        console.log('Model                    | Golden Pass | Quality Pass | Mean F1 | Mean Prec | Mean Rec');
+        console.log('-'.repeat(100));
+
+        const sorted = [...results].sort((a, b) => b.qualityMeanF1 - a.qualityMeanF1);
+        for (const r of sorted) {
+            const marker = r === sorted[0] ? ' ← BEST' : '';
+            console.log(`${r.modelName.padEnd(24)} | ${String(r.goldenPassed).padStart(5)}/${r.goldenTotal} | ${String(r.qualityPassed).padStart(6)}/${r.qualityTotal} | ${r.qualityMeanF1.toFixed(3)}   | ${r.qualityMeanPrecision.toFixed(3)}    | ${r.qualityMeanRecall.toFixed(3)}${marker}`);
+        }
+
+        console.log('-'.repeat(100));
+
+        if (options.output) {
+            const { writeFileSync } = await import('node:fs');
+            const output = {
+                timestamp: new Date().toISOString(),
+                goldenCases: goldenCases.length,
+                qualityCases: qualityCases.length,
+                fewShotCount,
+                results: sorted,
+                winner: sorted[0]?.modelName ?? 'none',
+            };
+            writeFileSync(options.output, JSON.stringify(output, null, 2));
+            console.log(`\nResults written to ${options.output}`);
+        }
+
+        await closeBridge();
+        await closeLlamaCpp();
+    });
+
 program.parse();
