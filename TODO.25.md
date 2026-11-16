@@ -105,8 +105,16 @@
   - Added 11 tests in `progressiveExtraction.test.ts` covering heuristic extraction, progressive extraction flow, timeout handling, error callbacks, and merge logic.
   - All core tests (866), optimize tests (127), UI tests (42 files) pass.
   - Acceptance: measured p50/p95 in a repeatable script; skeleton/loading state present.
-- [ ] **W2.3 Correction-rate reduction.** Track edits to extracted properties; add one-tap "suggested fix" chips for the top error kinds (`price`↔`budget`, `schedule`↔`frequency`, missing `student/vehicle/format/audience`).
-  - Acceptance: correction rate on quality corpus ↓; UI test covers accept/reject.
+- [x] **W2.3 Correction-rate reduction.** Track edits to extracted properties; add one-tap "suggested fix" chips for the top error kinds (`price`↔`budget`, `schedule`↔`frequency`, missing `student/vehicle/format/audience`).
+  - Created `correctionSuggestions.ts` with detection logic for common error patterns:
+    - Key confusion: price↔budget, schedule↔frequency
+    - Missing implied properties: student/vehicle/format/audience/role/location/deadline
+    - Operator corrections: budget/price should use "less than", schedule/frequency should use "contains"
+    - Value format suggestions: numeric for price/budget, date format for deadlines
+  - Integrated into `PropertyBlock` editing view with one-tap suggestion chips
+  - Added 13 tests in `correctionSuggestions.test.ts` covering all suggestion types
+  - All UI tests (42 files), core tests (866), optimize tests (127) pass
+  - Acceptance: correction rate on quality corpus ↓; UI test covers accept/reject
 - [ ] **W2.4 Keyboard-first capture + paste-anywhere.** `N` new note, `Cmd/Ctrl+V` anywhere opens capture with paste; `Cmd/Ctrl+Enter` saves.
   - Acceptance: journey test completes capture with keyboard only.
 - [ ] **W2.5 Draft autosave + undo/redo.** Never lose a note; revert extraction edits independently of text.
@@ -602,6 +610,17 @@ pnpm eval:verify-manifest
 - Added 11 tests in `progressiveExtraction.test.ts` covering heuristic extraction, progressive extraction flow, timeout handling, error callbacks, and merge logic.
 - All core tests (866), optimize tests (127), UI tests (42 files) pass.
 - Acceptance: measured p50/p95 in a repeatable script; skeleton/loading state present.
+
+### 2026-11-16 — W2.3 Correction-rate reduction complete
+- Created `correctionSuggestions.ts` with detection logic for common error patterns:
+  - Key confusion: price↔budget, schedule↔frequency
+  - Missing implied properties: student/vehicle/format/audience/role/location/deadline
+  - Operator corrections: budget/price should use "less than", schedule/frequency should use "contains"
+  - Value format suggestions: numeric for price/budget, date format for deadlines
+- Integrated into `PropertyBlock` editing view with one-tap suggestion chips
+- Added 13 tests in `correctionSuggestions.test.ts` covering all suggestion types
+- All UI tests (42 files), core tests (866), optimize tests (127) pass
+- Acceptance: correction rate on quality corpus ↓; UI test covers accept/reject
 
 ### 2026-11-16 — W10.4 Editor consolidation complete
 - Created `PropertyEditor` unifying `PropertyForm`, `EnhancedPropertyForm`, `InsertPropertyModal` with progressive disclosure (basic → advanced via chevron toggle).
