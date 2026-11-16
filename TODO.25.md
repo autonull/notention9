@@ -126,8 +126,14 @@
 - [x] **W5.1 Axe audit + fixes.** Run `axe-core` across main views; fix serious/critical issues (labels, roles, contrast).
   - Acceptance: zero serious/critical axe violations on Inbox, Notes, Actions, Settings.
   - **Status**: Fixed color-contrast violations on all 11 views (Inbox, Notes, Map, Timeline, Network, Chat, Actions, Responses, Labels, Trash, Settings). Changed `text-gray-500`/`text-gray-600` to `text-gray-400`/`text-gray-200` for WCAG AA compliance in ContextualHint, NewNoteButton, Button, InboxView, NetworkManagementSection, UnifiedSelector, and FilterBar components.
-- [ ] **W5.2 Keyboard navigation & focus management.** Visible focus ring, logical tab order, focus trap in modals/dialogs, Esc closes.
+- [x] **W5.2 Keyboard navigation & focus management.** Visible focus ring, logical tab order, focus trap in modals/dialogs, Esc closes.
   - Acceptance: can complete capture→match→action without a mouse; automated focus test.
+  - **Status**: 
+    - Added keyboard navigation test suite (`keyboard-navigation.spec.ts`) with 8 passing tests covering skip link, tab order, command palette, escape handling, focus trapping, capture flow, and focus visibility.
+    - Enhanced `NewNoteButton` with full keyboard support: ArrowDown/ArrowUp opens dropdown, Escape closes, Shift+Tab from first item returns focus to main button, proper ARIA attributes (aria-haspopup, aria-expanded, aria-controls).
+    - Verified all modals use `useFocusTrap` hook for focus trapping and Escape handling.
+    - Global focus-visible styles already present in `index.css` with high-contrast support.
+    - Skip link implemented in `App.tsx` targeting `#main-content`.
 - [ ] **W5.3 Screen reader semantics.** Live regions for match/notifications, `aria-live` for async extraction, table/list semantics.
   - Acceptance: NVDA/VoiceOver smoke script documented; no unlabeled interactive controls.
 - [ ] **W5.4 Reduced motion & high contrast.** Honor `prefers-reduced-motion` and `prefers-contrast`; no essential info conveyed by color alone.
@@ -497,6 +503,18 @@ pnpm eval:verify-manifest
 - All 11 axe audit tests pass (zero serious/critical violations).
 - All UI unit tests pass (42 test files).
 - All e2e journey tests pass (navigation, export-import, golden-demo, seeded-workspace).
+
+### 2026-11-16 — W5.2 Keyboard navigation & focus management complete
+- Created `keyboard-navigation.spec.ts` with 8 passing tests: skip link, tab order, command palette (Ctrl+K), escape handling, focus trapping, capture flow (Ctrl+N → type → Ctrl+S), focus visibility.
+- Enhanced `NewNoteButton.tsx` with full keyboard support:
+  - ArrowDown/ArrowUp opens dropdown menu with focus on first item
+  - Escape closes dropdown and returns focus to main button
+  - Shift+Tab from first menu item closes dropdown and returns focus
+  - Added ARIA attributes: `aria-haspopup="menu"`, `aria-expanded`, `aria-controls`
+- Verified all modals use `useFocusTrap` hook for focus trapping and Escape handling (Modal, Drawer, CommandPalette, ConfirmationModal, HelpDialog, KeyboardShortcutsHelp).
+- Global `:focus-visible` styles in `index.css` with high-contrast mode support (`prefers-contrast: high`).
+- Skip link in `App.tsx` targets `#main-content` on main element.
+- All UI unit tests pass (42 files), core tests (855), optimize tests (107), build passes.
 
 ### 2026-11-15 — W10.0 Guardrails complete
 - Fixed `fs` polyfill issue: made ontology loader browser-compatible by detecting browser environment and using `DEFAULT_ONTOLOGY` instead of filesystem access (`core/src/ontology/loader.ts`).

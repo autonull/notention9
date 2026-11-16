@@ -12,14 +12,15 @@ interface NewNoteButtonProps {
 }
 
 export function NewNoteButton({
-                                                                onNewNote,
-                                                                onCreateIntent,
-                                                                templates = [],
-                                                                onCreateFromTemplate,
-                                                                label
-                                                            }: NewNoteButtonProps) {
+                                                                 onNewNote,
+                                                                 onCreateIntent,
+                                                                 templates = [],
+                                                                 onCreateFromTemplate,
+                                                                 label
+                                                             }: NewNoteButtonProps) {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const mainButtonRef = useRef<HTMLButtonElement>(null);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -30,7 +31,7 @@ export function NewNoteButton({
         const handleEscape = (event: KeyboardEvent) => {
             if (event.key === 'Escape' && isDropdownOpen) {
                 setIsDropdownOpen(false);
-                dropdownRef.current?.querySelector<HTMLElement>('button')?.focus();
+                mainButtonRef.current?.focus();
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
@@ -40,6 +41,30 @@ export function NewNoteButton({
             document.removeEventListener('keydown', handleEscape);
         };
     }, [isDropdownOpen]);
+
+    const handleMainButtonKeyDown = (event: React.KeyboardEvent) => {
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+            event.preventDefault();
+            setIsDropdownOpen(true);
+            setTimeout(() => {
+                dropdownRef.current?.querySelector<HTMLElement>('[role="menuitem"]')?.focus();
+            }, 0);
+        }
+    };
+
+    const handleMenuKeyDown = (event: React.KeyboardEvent) => {
+        if (event.key === 'Escape') {
+            setIsDropdownOpen(false);
+            mainButtonRef.current?.focus();
+        } else if (event.key === 'Tab' && event.shiftKey) {
+            const firstItem = dropdownRef.current?.querySelector('[role="menuitem"]');
+            if (event.target === firstItem) {
+                event.preventDefault();
+                setIsDropdownOpen(false);
+                mainButtonRef.current?.focus();
+            }
+        }
+    };
 
     const handleIntentClick = (type: 'request' | 'offer') => {
         onCreateIntent(type);
@@ -57,9 +82,14 @@ export function NewNoteButton({
         <div className="relative flex items-center gap-2 ml-4" ref={dropdownRef}>
             <div className="flex bg-blue-600 rounded-lg shadow-sm hover:bg-blue-700 transition-colors">
                 <button
+                    ref={mainButtonRef}
                     onClick={onNewNote}
+                    onKeyDown={handleMainButtonKeyDown}
                     className="flex items-center gap-2 px-3 py-2 text-white font-medium border-r border-blue-500 rounded-l-lg hover:bg-blue-800/20 touch-target"
                     title={`New Note (${modShortcut('N')})`}
+                    aria-haspopup="menu"
+                    aria-expanded={isDropdownOpen}
+                    aria-controls="new-note-menu"
                 >
                     <PlusIcon className="w-5 h-5"/>
                     <span className="hidden sm:inline">New Note</span>
@@ -84,8 +114,10 @@ export function NewNoteButton({
 
             {isDropdownOpen && (
                 <div
+                    id="new-note-menu"
                     role="menu"
                     aria-label="New note options"
+                    onKeyDown={handleMenuKeyDown}
                     className="absolute top-full left-0 mt-2 w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-50 overflow-hidden animate-fade-in">
                     <button
                         role="menuitem"
