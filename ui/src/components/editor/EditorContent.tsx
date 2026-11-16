@@ -6,7 +6,6 @@ import React from 'react';
 import {HybridEditor} from './HybridEditor';
 import {TemplateSelector} from './TemplateSelector';
 import {MetaphorRenderer} from '../metaphor/MetaphorRenderer';
-import {ContextPanel} from './ContextPanel';
 import {MatchReplies} from '../match/MatchReplies';
 import type {Note, OntologyNode, Template, ScoredMatch} from '@notention/core';
 import type {TiptapEditorRef} from './TiptapEditor';
@@ -25,8 +24,6 @@ interface EditorContentProps {
     onMagic: () => void;
     onTemplates: () => void;
     notes: Note[];
-    onPickLocation: () => Promise<string>;
-    onPickTime: (key: string) => void;
     saveStatus: 'saved' | 'saving' | 'error' | undefined;
     isTemplateSelectorOpen: boolean;
     onCloseTemplateSelector: () => void;
@@ -45,8 +42,6 @@ export function EditorContent({
     onMagic,
     onTemplates,
     notes,
-    onPickLocation,
-    onPickTime,
     saveStatus,
     isTemplateSelectorOpen,
     onCloseTemplateSelector,
@@ -92,11 +87,6 @@ export function EditorContent({
                         {activeMetaphor && (
                             <MetaphorRenderer note={dirtyNote} metaphor={activeMetaphor}/>
                         )}
-                        <ContextPanel
-                            note={dirtyNote}
-                            onPickLocation={onPickLocation}
-                            onPickTime={onPickTime}
-                        />
                     </>
                 }
             />

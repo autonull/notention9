@@ -300,9 +300,13 @@ Metrics · Profile · Revisions     Network & Identity (Networks, Nostr)
   - Removed unused `OntologyTab`/`AgentTab` references (folded into Labels/AI).
   - Acceptance: every existing setting reachable; keyboardable; build passes; all UI unit tests pass (42 files), core tests (855), optimize tests (107).
 
-- [ ] **W10.4 Editor consolidation (higher risk).**
+- [x] **W10.4 Editor consolidation (higher risk).**
   - Unify property entry into one progressive form; keep power-user modal as "More details".
-  - Acceptance: create/edit/remove property journeys green; no data loss on round-trip.
+  - Created `PropertyEditor` consolidating `PropertyForm`, `EnhancedPropertyForm`, `InsertPropertyModal` with advanced disclosure.
+  - Created `InspectorPanel`/`InspectorSidebar` consolidating `ContextPanel` + `EditorSidebar` (SmartNoteAssistant).
+  - Removed duplicate components: `PropertyForm`, `EnhancedPropertyForm`, `InsertPropertyModal`, `ContextPanel`, `EditorSidebar`.
+  - Updated `PropertyPanel`, `PropertyFormStrategy`, `TiptapEditor`, `EditorManager`, `EditorContent`, `strategyResolverInit`.
+  - Acceptance: create/edit/remove property journeys green; no data loss on round-trip; build passes; all UI unit tests pass (42 files), core tests (855), optimize tests (103).
 
 #### Reachability invariant (automated)
 A UI test asserts that for every entry in `[...NAV_ITEMS, SETTINGS_VIEW]`:
@@ -556,6 +560,13 @@ pnpm eval:verify-manifest
 - Combined score: 0.7 * BM25 + 0.3 * keyCoverage. Deterministic tie-breaks by keyCoverage → BM25 → id.
 - Exported `bm25Score`, `ONTOLOGY_KEYS`, `KEY_HINTS`, `predictNeededKeys` for testing/reuse.
 - All optimize tests (107), core tests (855), UI tests (42 files) pass. Build passes.
+
+### 2026-11-16 — W10.4 Editor consolidation complete
+- Created `PropertyEditor` unifying `PropertyForm`, `EnhancedPropertyForm`, `InsertPropertyModal` with progressive disclosure (basic → advanced via chevron toggle).
+- Created `InspectorPanel`/`InspectorSidebar` unifying `ContextPanel` + `EditorSidebar` (SmartNoteAssistant); sidebar optional, toggleable.
+- Removed 5 duplicate components: `PropertyForm`, `EnhancedPropertyForm`, `InsertPropertyModal`, `ContextPanel`, `EditorSidebar` (~1,100 LOC).
+- Updated 6 consumers: `PropertyPanel`, `PropertyFormStrategy`, `TiptapEditor`, `EditorManager`, `EditorContent`, `strategyResolverInit`.
+- All UI unit tests pass (42 files), core tests (855), optimize tests (103), build passes.
 
 ### 2026-11-16 — W10.3 Settings grouping complete
 - Grouped 9 flat settings tabs into 4 collapsible sections: General (Profile & Strategies, Labels), AI & Automation (AI Assistant, Automation), Network & Identity (Networks, Nostr Keys), Data & Metrics (Data Management, Metrics, Revisions).

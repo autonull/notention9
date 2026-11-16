@@ -1,6 +1,6 @@
 import {Button} from '../ui/Button';
 import { PlusIcon } from '../ui/icons';
-import { PropertyForm } from '../editor/PropertyForm';
+import { PropertyEditor } from '../editor/PropertyEditor';
 import { PropertyBlock } from '../properties/PropertyBlock';
 import { ExtractionReview } from '../editor/ExtractionReview';
 import { Property, OntologyNode } from '@notention/core';
@@ -67,9 +67,9 @@ export function PropertyPanel({
             )}
 
             {isAddingProperty && (
-                <PropertyForm
+                <PropertyEditor
                     initialKey=""
-                    initialOp="is"
+                    initialOperator="is"
                     initialValue=""
                     isAdding={true}
                     onSave={onSaveProperty}

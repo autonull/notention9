@@ -11,7 +11,7 @@ import {propertyToHtml} from '@notention/core';
 import {EditorHeader} from './EditorHeader';
 import {TiptapEditorRef} from './TiptapEditor';
 import {EditorContent} from './EditorContent';
-import {EditorSidebar} from './EditorSidebar';
+import {InspectorSidebar} from './InspectorPanel';
 import {EditorModals} from './EditorModals';
 import {PublishErrorBanner} from './PublishErrorBanner';
 import {MobileBackdrop} from './MobileBackdrop';
@@ -179,8 +179,6 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                     }}
                     onTemplates={() => setIsTemplateSelectorOpen(!isTemplateSelectorOpen)}
                     notes={notes}
-                    onPickLocation={handleRequestLocationPick}
-                    onPickTime={handlePickTime}
                     saveStatus={saveStatus}
                     isTemplateSelectorOpen={isTemplateSelectorOpen}
                     onCloseTemplateSelector={() => setIsTemplateSelectorOpen(false)}
@@ -191,7 +189,7 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                     isVisible={isInspectorOpen}
                     onClick={() => setIsInspectorOpen(false)}
                 />
-                <EditorSidebar
+                <InspectorSidebar
                     isOpen={isInspectorOpen}
                     onClose={() => setIsInspectorOpen(false)}
                     note={dirtyNote}

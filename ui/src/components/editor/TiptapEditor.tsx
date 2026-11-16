@@ -10,7 +10,7 @@ import {useToast} from '../../hooks/useToast';
 import {useEditorClick} from './useEditorClick';
 import {EditorStatusBar} from './EditorStatusBar';
 import {EditorBubbleMenu} from './EditorBubbleMenu';
-import {InsertPropertyModal} from './InsertPropertyModal';
+import {PropertyEditor} from './PropertyEditor';
 import {DescribeItComposer} from './DescribeItComposer';
 import {usePropertyInsertion} from '../../hooks/usePropertyInsertion';
 import {useOntologySuggestions} from '../../hooks/useOntologySuggestions';
@@ -182,19 +182,20 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
                 onApply={properties => insertProperties(editor, properties)}
                 ontology={ontology}
             />
-            <InsertPropertyModal
+            <PropertyEditor
+                isModal
                 isOpen={isPropertyModalOpen}
                 onClose={handleClosePropertyModal}
-                onInsert={(key, op, val, icon, propertyId) => handleInsertProperty(editor, key, op, val, icon)}
+                onSave={(key, op, val, propertyId, icon) => handleInsertProperty(editor, key, op, val, icon)}
                 initialKey={initialModalData?.key}
                 initialOperator={initialModalData?.operator}
                 initialValue={initialModalData?.value}
                 initialPropertyId={initialModalData?.propertyId}
-                attributeDef={initialModalData?.key ? findAttributeDef(initialModalData.key, ontology) : undefined}
-                ontology={ontology}
-                isEditing={!!initialModalData}
+                isAdding={!initialModalData}
                 onPickLocation={onPickLocation}
+                ontology={ontology}
                 suggestions={allSuggestions}
+                title={initialModalData ? "Edit detail" : "Add detail"}
             />
             <div className="flex-grow overflow-y-auto" onClick={handleEditorClick}>
                 {topContent}

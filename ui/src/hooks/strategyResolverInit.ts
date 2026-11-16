@@ -13,7 +13,7 @@ import { STRATEGY_CONFIGS_UI } from '../strategies/strategyConfigs';
 // Eagerly import all strategy components to avoid React 19 hydration error #525
 // from lazy-loaded chunks in production build
 import { QuickCapture } from '../components/dashboard/QuickCapture';
-import { PropertyForm } from '../components/editor/PropertyForm';
+import { PropertyEditor } from '../components/editor/PropertyEditor';
 import { DescribeItComposer } from '../components/editor/DescribeItComposer';
 import { TemplateSelector } from '../components/editor/TemplateSelector';
 import { TagInput } from '../components/editor/TagInput';
@@ -127,7 +127,7 @@ export async function registerUIStrategies(): Promise<void> {
     const strategyImplMap: Record<string, React.ComponentType<any>> = {
         'describe-it-composer': DescribeItComposer,
         'tag-input': TagInput,
-        'property-form': PropertyForm,
+        'property-form': PropertyEditor,
         'template-selector': TemplateSelector,
         'quick-capture': QuickCapture,
         'local-match-preview': LocalMatchPreview,
