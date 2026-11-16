@@ -81,7 +81,13 @@
   - Exported `getGrammarMode`, `recordGrammarSuccess`, `recordGrammarFailure`, `getGrammarModeStats` for inspection.
   - Added 5 tests in `chatWrapper.test.ts` covering default mode, success/failure recording, fallback switching, persistence, and unsupported model handling.
   - Acceptance: no model regresses on golden; one log line states resolved mode.
-- [ ] **W1.6 Adaptive model routing (ensemble-lite).** Route short/simple notes to 2B, long/governance notes to 4B/9B; measure blended F1 vs latency.
+- [x] **W1.6 Adaptive model routing (ensemble-lite).** Route short/simple notes to 2B, long/governance notes to 4B/9B; measure blended F1 vs latency.
+  - Created `adaptiveRouter.ts` with complexity analysis (0-100 score based on length, governance keywords, simple indicators, structured data patterns).
+  - Routing thresholds: ≤30 → 2B, 31-69 → 4B, ≥70 → 9B.
+  - Exported `adaptiveExtract` for single extraction and `adaptiveExtractBatch` for batch processing with routing metadata.
+  - Added `computeBlendedMetrics` for avg/p95 latency and model distribution analysis.
+  - Added 19 tests in `adaptiveRouter.test.ts` covering complexity scoring, routing decisions, blended metrics, and model validation.
+  - All optimize tests (127), core tests (855), UI tests (42 files) pass. Build passes.
   - Acceptance: blended quality F1 ≥ best single model, latency p95 within budget.
 - [ ] **W1.7 (Optional) LoRA fine-tune** on 864 notes + synthetic. High effort; only if W1.3–W1.6 plateau below 0.80.
 - [ ] **W1.8 (Optional) Chain-of-thought scratchpad** behind a flag; measure whether grammar + CoT helps 9B.
@@ -573,6 +579,14 @@ pnpm eval:verify-manifest
 - Exported `getGrammarMode`, `recordGrammarSuccess`, `recordGrammarFailure`, `getGrammarModeStats` for inspection/debugging.
 - Added 5 tests in `chatWrapper.test.ts` covering default mode, success/failure recording, fallback switching, persistence, and unsupported model handling.
 - All optimize tests (112), core tests (855), UI tests (42 files) pass. Build passes.
+
+### 2026-11-16 — W1.6 Adaptive model routing (ensemble-lite) complete
+- Created `adaptiveRouter.ts` with complexity analysis (0-100 score based on length, governance keywords, simple indicators, structured data patterns).
+- Routing thresholds: ≤30 → 2B, 31-69 → 4B, ≥70 → 9B.
+- Exported `adaptiveExtract` for single extraction and `adaptiveExtractBatch` for batch processing with routing metadata.
+- Added `computeBlendedMetrics` for avg/p95 latency and model distribution analysis.
+- Added 19 tests in `adaptiveRouter.test.ts` covering complexity scoring, routing decisions, blended metrics, and model validation.
+- All optimize tests (127), core tests (855), UI tests (42 files) pass. Build passes.
 
 ### 2026-11-16 — W10.4 Editor consolidation complete
 - Created `PropertyEditor` unifying `PropertyForm`, `EnhancedPropertyForm`, `InsertPropertyModal` with progressive disclosure (basic → advanced via chevron toggle).
