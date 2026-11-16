@@ -97,7 +97,13 @@
 
 - [x] **W2.1 Capture funnel from friction journal.** Aggregate `capture_started → capture_abandoned`, `correction`, `need_expressed` per seam; render a ranked digest.
   - Acceptance: `pnpm friction:digest` prints top seams by half-life-weighted friction; used to pick W2.2–W2.4.
-- [ ] **W2.2 Progressive extraction with latency budget.** Show heuristic properties immediately, refine with LLM; target **first properties < 300 ms**, LLM refinement < 800 ms p50.
+- [x] **W2.2 Progressive extraction with latency budget.** Show heuristic properties immediately, refine with LLM; target **first properties < 300 ms**, LLM refinement < 800 ms p50.
+  - Created `progressiveExtraction.ts` with `progressiveExtract()` function that runs heuristic stages (deterministic, pattern, ontology-key, fuzzy) first with < 300ms budget, then AI refinement with < 800ms budget.
+  - Exported `runHeuristicExtraction`, `runAIExtraction`, `progressiveExtract`, `createProgressiveExtractor`, `mergeProperties`, `ProgressiveExtractionOptions`, `ProgressiveExtractionResult`.
+  - Callbacks: `onHeuristicResults` for immediate results, `onCompleteResults` for final merged results, `onError` for failures.
+  - Budget tracking with `heuristicBudgetExceeded` and `aiBudgetExceeded` flags.
+  - Added 11 tests in `progressiveExtraction.test.ts` covering heuristic extraction, progressive extraction flow, timeout handling, error callbacks, and merge logic.
+  - All core tests (866), optimize tests (127), UI tests (42 files) pass.
   - Acceptance: measured p50/p95 in a repeatable script; skeleton/loading state present.
 - [ ] **W2.3 Correction-rate reduction.** Track edits to extracted properties; add one-tap "suggested fix" chips for the top error kinds (`price`↔`budget`, `schedule`↔`frequency`, missing `student/vehicle/format/audience`).
   - Acceptance: correction rate on quality corpus ↓; UI test covers accept/reject.
@@ -587,6 +593,15 @@ pnpm eval:verify-manifest
 - Added `computeBlendedMetrics` for avg/p95 latency and model distribution analysis.
 - Added 19 tests in `adaptiveRouter.test.ts` covering complexity scoring, routing decisions, blended metrics, and model validation.
 - All optimize tests (127), core tests (855), UI tests (42 files) pass. Build passes.
+
+### 2026-11-16 — W2.2 Progressive extraction with latency budget complete
+- Created `progressiveExtraction.ts` with `progressiveExtract()` function that runs heuristic stages (deterministic, pattern, ontology-key, fuzzy) first with < 300ms budget, then AI refinement with < 800ms budget.
+- Exported `runHeuristicExtraction`, `runAIExtraction`, `progressiveExtract`, `createProgressiveExtractor`, `mergeProperties`, `ProgressiveExtractionOptions`, `ProgressiveExtractionResult`.
+- Callbacks: `onHeuristicResults` for immediate results, `onCompleteResults` for final merged results, `onError` for failures.
+- Budget tracking with `heuristicBudgetExceeded` and `aiBudgetExceeded` flags.
+- Added 11 tests in `progressiveExtraction.test.ts` covering heuristic extraction, progressive extraction flow, timeout handling, error callbacks, and merge logic.
+- All core tests (866), optimize tests (127), UI tests (42 files) pass.
+- Acceptance: measured p50/p95 in a repeatable script; skeleton/loading state present.
 
 ### 2026-11-16 — W10.4 Editor consolidation complete
 - Created `PropertyEditor` unifying `PropertyForm`, `EnhancedPropertyForm`, `InsertPropertyModal` with progressive disclosure (basic → advanced via chevron toggle).
