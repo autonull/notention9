@@ -125,6 +125,8 @@ const nodeEntries = [
   'src/ui/profileDefaults.ts',
   // Telemetry
   'src/telemetry/journal.ts',
+  'src/telemetry/digestPipeline.ts',
+  'src/telemetry/frictionUtils.ts',
   'src/telemetry/revisionStore.ts',
   'src/telemetry/ledger.ts',
   'src/telemetry/revisionDriver.ts',

@@ -63,6 +63,18 @@
       "browser": "./dist/browser/telemetry/journal.js",
       "types": "./dist/telemetry/journal.d.ts"
     },
+    "./telemetry/digestPipeline": {
+      "import": "./dist/telemetry/digestPipeline.js",
+      "node": "./dist/telemetry/digestPipeline.js",
+      "browser": "./dist/browser/telemetry/digestPipeline.js",
+      "types": "./dist/telemetry/digestPipeline.d.ts"
+    },
+    "./telemetry/frictionUtils": {
+      "import": "./dist/telemetry/frictionUtils.js",
+      "node": "./dist/telemetry/frictionUtils.js",
+      "browser": "./dist/browser/telemetry/frictionUtils.js",
+      "types": "./dist/telemetry/frictionUtils.d.ts"
+    },
     "./prompts": {
       "import": "./dist/prompts/index.js",
       "node": "./dist/prompts/index.js",

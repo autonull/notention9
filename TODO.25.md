@@ -65,7 +65,7 @@
 ### W2 — Capture Usability (time-to-value, abandonment, corrections)
 **Goal**: A stranger captures a useful structured note fast; abandonment and correction rates fall.
 
-- [ ] **W2.1 Capture funnel from friction journal.** Aggregate `capture_started → capture_abandoned`, `correction`, `need_expressed` per seam; render a ranked digest.
+- [x] **W2.1 Capture funnel from friction journal.** Aggregate `capture_started → capture_abandoned`, `correction`, `need_expressed` per seam; render a ranked digest.
   - Acceptance: `pnpm friction:digest` prints top seams by half-life-weighted friction; used to pick W2.2–W2.4.
 - [ ] **W2.2 Progressive extraction with latency budget.** Show heuristic properties immediately, refine with LLM; target **first properties < 300 ms**, LLM refinement < 800 ms p50.
   - Acceptance: measured p50/p95 in a repeatable script; skeleton/loading state present.
@@ -427,6 +427,14 @@ pnpm eval:verify-manifest
 - Added unit tests for Gemma 3/4 detection in `optimize/src/tests/ai/chatWrapper.test.ts` (6 new tests).
 - Gemma models now return `supportsGrammar: true` based on actual capability.
 - Build passes, all 107 optimize tests pass.
+
+### 2026-11-15 — W2.1 Friction digest CLI complete
+- Created `FrictionDigestCommand` in `optimize/src/cli/commands/frictionDigest.ts`.
+- Registered in optimize CLI and added `pnpm friction:digest` script in root package.json.
+- Supports `--days`, `--top`, `--json`, `--half-life`, `--min-count`, `--min-age` options.
+- Uses existing `DigestPipeline` and `Journal` from `@notention/core/telemetry`.
+- Exports added for `telemetry/digestPipeline` and `telemetry/frictionUtils` in core package.json.
+- Build passes, all tests pass.
 
 ---
 

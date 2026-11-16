@@ -12,6 +12,7 @@ import {
     MarkFixedCommand,
     FindingsCommand,
     UXEvaluateCommand,
+    FrictionDigestCommand,
 } from './cli/commands/index.js';
 
 // Import to register journeys
@@ -28,6 +29,7 @@ commandRegistry.register(new ReproduceCommand());
 commandRegistry.register(new MarkFixedCommand());
 commandRegistry.register(new FindingsCommand());
 commandRegistry.register(new UXEvaluateCommand());
+commandRegistry.register(new FrictionDigestCommand());
 
 interface ParsedFlags {
     json: boolean;
@@ -118,7 +120,7 @@ function printHelp(): void {
 Usage: pnpm optimize <command> [args]
 
 Commands:
-${commandRegistry.getAll().map((cmd) => `  ${cmd.name.padEnd(15)} ${cmd.description}`).join('\n')}
+${commandRegistry.getAll().map((cmd) => `  ${cmd.name.padEnd(18)} ${cmd.description}`).join('\n')}
 
 Options (common):
   --json                   Output as JSON

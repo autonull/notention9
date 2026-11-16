@@ -5,3 +5,4 @@ export { ReproduceCommand } from './reproduce.js';
 export { MarkFixedCommand } from './markFixed.js';
 export { FindingsCommand } from './findings.js';
 export { UXEvaluateCommand } from './uxEvaluate.js';
+export { FrictionDigestCommand } from './frictionDigest.js';
