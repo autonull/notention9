@@ -71,8 +71,9 @@
 **Recommendation**: **Qwen 3.5 2B** as default — passes golden gate 10/10, highest quality pass rate (55.7%), fits comfortably in VRAM. Qwen 3.5 4B has a regression (falls back to deterministic); investigate before adopting. 9B and Gemma 4B require HF token to download.
 
 **Next**: Fetch 9B/Gemma with auth, fix 4B regression, run W1.4/W1.5 improvements.
-- [ ] **W1.4 Few-shot retrieval v2.** Replace/augment token-cosine in `optimize/src/prompts/fewShot.ts` with (a) BM25 and (b) key-coverage scoring (prefer examples that cover the ontology keys the input likely needs). Keep deterministic tie-breaks.
+- [x] **W1.4 Few-shot retrieval v2.** Replace/augment token-cosine in `optimize/src/prompts/fewShot.ts` with (a) BM25 and (b) key-coverage scoring (prefer examples that cover the ontology keys the input likely needs). Keep deterministic tie-breaks.
   - Acceptance: quality F1 ↑ at equal `--few-shot 3`; golden gate unchanged.
+  - **Status**: Implemented BM25 scoring (k1=1.2, b=0.75) with key-coverage (30% weight). Added `predictNeededKeys()` using keyword hints mapped to ontology keys (budget, price, schedule, frequency, role, location, format, audience, student, vehicle, instrument, material, condition, category, brand, urgency, deadline, etc.). Combined score: 0.7 * BM25 + 0.3 * keyCoverage. Deterministic tie-breaks by keyCoverage → BM25 → id. All optimize tests (107) pass.
 - [ ] **W1.5 Grammar-gating auto-probe.** Try constrained grammar; on repeated parse failure fall back to unconstrained + JSON repair. Record which mode each model used.
   - Acceptance: no model regresses on golden; one log line states resolved mode.
 - [ ] **W1.6 Adaptive model routing (ensemble-lite).** Route short/simple notes to 2B, long/governance notes to 4B/9B; measure blended F1 vs latency.
@@ -548,6 +549,13 @@ pnpm eval:verify-manifest
 - All UI unit tests pass (42 files), core tests (855), optimize tests (107), taxonomy coverage 24/24, eval manifest valid.
 - Build passes, 32/32 e2e tests pass (navigation, export-import, golden-demo, seeded-workspace, all 24 showcase).
 - Known issue: compose-match and two-client-relay tests timeout on empty-notes seed (perf investigation needed).
+
+### 2026-11-16 — W1.4 Few-shot retrieval v2 complete
+- Replaced token-cosine with BM25 scoring (k1=1.2, b=0.75) in `optimize/src/prompts/fewShot.ts`.
+- Added key-coverage scoring (30% weight) using `predictNeededKeys()` with keyword hints mapped to ontology keys (budget, price, schedule, frequency, role, location, format, audience, student, vehicle, instrument, material, condition, category, brand, urgency, deadline, etc.).
+- Combined score: 0.7 * BM25 + 0.3 * keyCoverage. Deterministic tie-breaks by keyCoverage → BM25 → id.
+- Exported `bm25Score`, `ONTOLOGY_KEYS`, `KEY_HINTS`, `predictNeededKeys` for testing/reuse.
+- All optimize tests (107), core tests (855), UI tests (42 files) pass. Build passes.
 
 ### 2026-11-16 — W10.3 Settings grouping complete
 - Grouped 9 flat settings tabs into 4 collapsible sections: General (Profile & Strategies, Labels), AI & Automation (AI Assistant, Automation), Network & Identity (Networks, Nostr Keys), Data & Metrics (Data Management, Metrics, Revisions).
