@@ -159,9 +159,15 @@ export const EXTRACTION_EXAMPLES: readonly ExtractionExample[] = [
     },
 ];
 
-export function buildSystemPrompt(ontology: OntologyNode[]): string {
+/** Core examples that all models need (original 8 + governance 9 + 3 key = 20) */
+const CORE_EXTRACTION_EXAMPLES = EXTRACTION_EXAMPLES.slice(0, 20);
+
+/** Full examples for grammar-supported models (Qwen 3+) */
+const FULL_EXTRACTION_EXAMPLES = EXTRACTION_EXAMPLES; // All 29 examples
+
+export function buildSystemPrompt(ontology: OntologyNode[], supportsGrammar: boolean = true): string {
     const keys = leafOntologyKeys(ontology).join(', ') || 'none';
-    const examples = EXTRACTION_EXAMPLES
+    const examples = (supportsGrammar ? FULL_EXTRACTION_EXAMPLES : CORE_EXTRACTION_EXAMPLES)
         .map(example => `"${example.input}" -> ${example.output}`)
         .join('\n');
 

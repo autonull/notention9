@@ -97,6 +97,25 @@
 - Scaling trend now: 0.8B=0.667 → 2B=0.724 → 4B=0.742
 - 4B model benefits most from additional in-prompt examples (capacity to generalize)
 
+### Session 11 — 2026-11-15
+
+#### 1. Dual prompt strategy: full prompt for grammar models, minimal for non-grammar
+- The 9 new in-prompt examples helped Qwen models (0.8B→0.667, 2B→0.724, 4B→0.742) but broke Llama 3.2 3B golden gate (10/10 → 8/10) due to prompt length/complexity without grammar constraints.
+- **Solution**: `buildSystemPrompt(ontology, supportsGrammar)` now takes a `supportsGrammar` boolean:
+  - **Grammar models (Qwen 3+)**: full 29 examples (all governance + residual)
+  - **Non-grammar models (Llama 3.x)**: core 20 examples (original 8 + governance 9 + 3 key)
+- `llamaCppBridge.ts` passes `modelSupportsGrammar(modelPath)` to select the appropriate prompt.
+- **Result**: Both model families work:
+  - Qwen 0.8B/2B/4B: full prompt, quality F1 0.667/0.724/0.742 maintained
+  - Llama 3.2 3B: minimal prompt, golden gate restored to **10/10 (F1 0.872)**, quality ~10/60 (limited by no grammar)
+
+#### 2. All verification passes
+- Core tests: 855 passed
+- Optimize tests: 97 passed / 4 skipped
+- Taxonomy coverage: 24/24 coarse (100%)
+- Optimizer loop dry run: all 6 steps complete
+- Golden gate: 10/10 on Qwen 0.8B (F1 0.674) and Llama 3.2 3B (F1 0.872)
+
 ### Session 6 — 2026-11-15
 
 #### 1. Two-step router→extraction pipeline implemented
@@ -261,7 +280,7 @@ Success criteria:
 | Qwen 3.5 0.8B | 0.667 F1 (25/60), 26 GPU layers |
 | Qwen 3.5 2B | **0.724 F1** (39/60), 26 GPU layers |
 | Qwen 3.5 4B | **0.742 F1** (37/60), 34 GPU layers |
-| Llama 3.2 3B | Golden 10/10 (F1 0.891), Quality ~9/60 (no grammar) |
+| Llama 3.2 3B | Golden 10/10 (F1 0.872), Quality ~10/60 (no grammar) |
 | Optimize tests | 97 passed / 4 skipped |
 | Simulator tests | 116 passed (35 scenarios + calibration + taxonomy) |
 | Core / agent / cli tests | 855 / 17 / 6 |

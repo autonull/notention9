@@ -181,7 +181,7 @@ export async function getOrCreateLlamaSession(options: LlamaCppBridgeOptions): P
         contextSize: options.contextSize ?? DEFAULT_CONTEXT_SIZE,
         gpuLayers: options.gpuLayers ?? resolveGpuLayers(),
         temperature: options.temperature ?? DEFAULT_TEMPERATURE,
-        systemPrompt: options.systemPrompt ?? buildSystemPrompt(DEFAULT_ONTOLOGY),
+        systemPrompt: options.systemPrompt ?? buildSystemPrompt(DEFAULT_ONTOLOGY, modelSupportsGrammar(options.modelPath || getModelPath())),
     };
 
     if (cachedSession && currentOptions &&
@@ -307,7 +307,7 @@ export async function extractWithLlamaCpp(
     const modelPath = options.modelPath ?? getModelPath();
     const useGrammar = modelSupportsGrammar(modelPath);
 
-    const systemPrompt = options.systemPrompt ?? buildSystemPrompt(ontology);
+    const systemPrompt = options.systemPrompt ?? buildSystemPrompt(ontology, useGrammar);
     const session = await getOrCreateLlamaSession({ ...options, systemPrompt });
     const grammar = useGrammar ? await getOrCreateGrammar(cachedLlama!, ontology) : undefined;
 
