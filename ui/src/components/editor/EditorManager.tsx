@@ -50,7 +50,11 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
         publishError,
         privacyConfirmation,
         handlePrivacyConfirm,
-        handlePrivacyCancel
+        handlePrivacyCancel,
+        canUndo,
+        canRedo,
+        undo,
+        redo
     } = useEditorLogic({note, onSave});
 
     const {
@@ -89,6 +93,32 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
     }, [hasNext, sortedNotes, currentIndex, setSelectedNoteId]);
 
     const {handleExport, handleCopyContent} = useEditorActions(dirtyNote);
+
+    const handleUndo = useCallback(() => {
+        const restored = undo();
+        if (restored) {
+            handleNoteUpdate(restored);
+        }
+    }, [undo, handleNoteUpdate]);
+
+    const handleRedo = useCallback(() => {
+        const restored = redo();
+        if (restored) {
+            handleNoteUpdate(restored);
+        }
+    }, [redo, handleNoteUpdate]);
+
+    // Listen for global undo/redo events
+    useEffect(() => {
+        const handleUndoEvent = () => handleUndo();
+        const handleRedoEvent = () => handleRedo();
+        window.addEventListener('editor-undo', handleUndoEvent);
+        window.addEventListener('editor-redo', handleRedoEvent);
+        return () => {
+            window.removeEventListener('editor-undo', handleUndoEvent);
+            window.removeEventListener('editor-redo', handleRedoEvent);
+        };
+    }, [handleUndo, handleRedo]);
 
     useEditorShortcuts({
         dirtyNote,
@@ -158,6 +188,10 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                 actionLabel={actionLabel}
                 missingProperties={missingProperties}
                 onAddProperty={handleAddPropertyHint}
+                canUndo={canUndo}
+                canRedo={canRedo}
+                onUndo={handleUndo}
+                onRedo={handleRedo}
             />
             {publishError && (
                 <PublishErrorBanner error={publishError} onRetry={handlePublish} />

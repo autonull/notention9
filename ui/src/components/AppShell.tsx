@@ -117,6 +117,8 @@ export function AppShell() {
         onPasteToCapture: (clipboardText: string) => {
             window.dispatchEvent(new CustomEvent('paste-to-capture', {detail: {text: clipboardText}}));
         },
+        onUndo: () => window.dispatchEvent(new CustomEvent('editor-undo')),
+        onRedo: () => window.dispatchEvent(new CustomEvent('editor-redo')),
         onPreviousNote: () => {
             if (sortedNotes.length > 0 && selectedNoteId) {
                 const currentIndex = sortedNotes.findIndex(note => note.id === selectedNoteId);

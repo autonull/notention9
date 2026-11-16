@@ -3,7 +3,7 @@ import { Note, OntologyNode } from '@notention/core';
 import { useView } from './useViewContext';
 import { useOntologyMatching } from './useOntologyMatching';
 import { useEditorPublishing } from './useEditorPublishing';
-import { useNotePersistence } from './editor/useNotePersistence';
+import { useEditorPersistence } from './editor/useEditorPersistence';
 import { useNoteProperties } from './editor/useNoteProperties';
 import { useNoteStatus } from './editor/useNoteStatus';
 import { useNoteIntegration } from './editor/useNoteIntegration';
@@ -23,8 +23,16 @@ export function useEditorLogic({ note, onSave }: UseEditorLogicProps) {
         dirtyNote,
         setDirtyNote,
         saveStatus,
-        saveImmediately
-    } = useNotePersistence(note, onSave);
+        saveImmediately,
+        hasDraft,
+        isRestoring,
+        canUndo,
+        canRedo,
+        undo,
+        redo,
+        clearDraft,
+        restoreDraft
+    } = useEditorPersistence(note, onSave);
 
     const {
         handleContentSave,
@@ -113,6 +121,15 @@ export function useEditorLogic({ note, onSave }: UseEditorLogicProps) {
         publishError,
         privacyConfirmation,
         handlePrivacyConfirm,
-        handlePrivacyCancel
+        handlePrivacyCancel,
+        // Draft autosave & undo/redo
+        hasDraft,
+        isRestoring,
+        canUndo,
+        canRedo,
+        undo,
+        redo,
+        clearDraft,
+        restoreDraft
     };
 }

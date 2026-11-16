@@ -9,6 +9,8 @@ interface UseKeyboardShortcutsProps {
 	onPropertyPalette?: () => void;
 	onSave?: () => void;
 	onPasteToCapture?: (clipboardText: string) => void;
+	onUndo?: () => void;
+	onRedo?: () => void;
 	onPreviousNote?: () => void;
 	onNextNote?: () => void;
 	onBackToList?: () => void;
@@ -25,6 +27,8 @@ export function useKeyboardShortcuts({
 	onPropertyPalette,
 	onSave,
 	onPasteToCapture,
+	onUndo,
+	onRedo,
 	onPreviousNote,
 	onNextNote,
 	onBackToList,
@@ -122,6 +126,18 @@ export function useKeyboardShortcuts({
 				}
 			}
 
+			// Undo: Ctrl+Z or Cmd+Z (allow in inputs)
+			if (isMeta && !isShift && e.key.toLowerCase() === 'z') {
+				e.preventDefault();
+				onUndo?.();
+			}
+
+			// Redo: Ctrl+Shift+Z or Cmd+Shift+Z (allow in inputs)
+			if (isMeta && isShift && e.key.toLowerCase() === 'z') {
+				e.preventDefault();
+				onRedo?.();
+			}
+
 			// Search Sidebar: Ctrl+/ or Cmd+/
 			if (isMeta && e.key === '/') {
 				e.preventDefault();
@@ -175,6 +191,9 @@ export function useKeyboardShortcuts({
 		onCommandPalette,
 		onPropertyPalette,
 		onSave,
+		onPasteToCapture,
+		onUndo,
+		onRedo,
 		onPreviousNote,
 		onNextNote,
 		onBackToList,

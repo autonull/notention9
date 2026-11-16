@@ -8,7 +8,9 @@ import {
     TagIcon,
     SparklesIcon,
     EllipsisVerticalIcon,
-    ArrowUpTrayIcon
+    ArrowUpTrayIcon,
+    ArrowLeftIcon,
+    ArrowRightIcon
 } from '../ui/icons';
 import {IconButton} from '../ui/Button';
 import {Button} from '../ui/Button';
@@ -35,6 +37,10 @@ export interface EditorControlsProps {
     isPublishing: boolean;
     isPublished: boolean;
     actionLabel: string;
+    canUndo?: boolean;
+    canRedo?: boolean;
+    onUndo?: () => void;
+    onRedo?: () => void;
 }
 
 export function EditorControls({
@@ -57,7 +63,11 @@ export function EditorControls({
     onPublish,
     isPublishing,
     isPublished,
-    actionLabel
+    actionLabel,
+    canUndo = false,
+    canRedo = false,
+    onUndo,
+    onRedo
 }: EditorControlsProps) {
     const menuItems: DropdownMenuItem[] = [
         ...(onToggleToolbar ? [{
@@ -108,6 +118,31 @@ export function EditorControls({
 
             {/* Core Interaction Toggles */}
             <div className="flex items-center gap-1">
+                {/* Undo/Redo */}
+                {(canUndo || canRedo) && (
+                    <div className="flex items-center gap-1 border-r border-gray-700/50 pr-2 mr-1">
+                        <IconButton
+                            onClick={onUndo}
+                            disabled={!canUndo}
+                            tooltip="Undo (Ctrl+Z)"
+                            icon={ArrowLeftIcon}
+                            variant="ghost"
+                            size="sm"
+                            label="Ctrl+Z"
+                            className="touch-target"
+                        />
+                        <IconButton
+                            onClick={onRedo}
+                            disabled={!canRedo}
+                            tooltip="Redo (Ctrl+Shift+Z)"
+                            icon={ArrowRightIcon}
+                            variant="ghost"
+                            size="sm"
+                            label="Ctrl+Shift+Z"
+                            className="touch-target"
+                        />
+                    </div>
+                )}
                 {onToggleInspector && (
                     <IconButton
                         onClick={onToggleInspector}

@@ -123,8 +123,16 @@
     - Updated `InboxView` to listen for `paste-to-capture` event, set QuickCapture input, and focus/navigate to Inbox.
     - Updated keyboard shortcuts config (`SHORTCUT_GROUPS`) with new entries for "Save Note (Cmd+Enter)" and "Paste to Capture (Cmd+V)".
     - All UI tests (42 files), core tests (866), optimize tests (127) pass. Build passes.
-- [ ] **W2.5 Draft autosave + undo/redo.** Never lose a note; revert extraction edits independently of text.
+- [x] **W2.5 Draft autosave + undo/redo.** Never lose a note; revert extraction edits independently of text.
   - Acceptance: reload restores draft; undo restores pre-extraction state.
+  - **Status**:
+    - Created `useDraftAutosave` hook with localStorage persistence (survives page reload, 7-day TTL).
+    - Created `useEditorPersistence` hook combining debounced save + draft autosave + undo/redo.
+    - Integrated into `useEditorLogic` → `EditorManager` → `EditorHeader` → `EditorControls`.
+    - Added undo/redo buttons in editor toolbar with keyboard shortcuts (Ctrl+Z / Ctrl+Shift+Z).
+    - Added global keyboard listeners in `AppShell` dispatching `editor-undo`/`editor-redo` events.
+    - Updated shortcuts config with Undo/Redo entries.
+    - All UI tests (42 files), core tests (866), optimize tests (127) pass. Build passes.
 - [ ] **W2.6 First-run onboarding checklist.** Three steps: capture → see match → take action. Dismissible; detected from real state, not flags alone.
   - Acceptance: fresh profile shows checklist; disappears when steps complete.
 
@@ -658,6 +666,16 @@ pnpm eval:verify-manifest
 - Fixed `LightbulbIcon` import typo in `PropertyBlock.tsx` (was `LightbulbIcon`, corrected to `LightBulbIcon`).
 - All UI tests (42 files), core tests (866), optimize tests (127) pass. Build passes.
 - Acceptance: keyboard-only capture flow works (Cmd+V → paste → Cmd+Enter to save).
+
+### 2026-11-16 — W2.5 Draft autosave + undo/redo complete
+- Created `useDraftAutosave` hook with localStorage persistence (survives page reload, 7-day TTL).
+- Created `useEditorPersistence` hook combining debounced save + draft autosave + undo/redo (50-entry history).
+- Integrated into `useEditorLogic` → `EditorManager` → `EditorHeader` → `EditorControls`.
+- Added undo/redo buttons in editor toolbar with keyboard shortcuts (Ctrl+Z / Ctrl+Shift+Z).
+- Added global keyboard listeners in `AppShell` dispatching `editor-undo`/`editor-redo` events.
+- Updated shortcuts config with Undo/Redo entries.
+- All UI tests (42 files), core tests (866), optimize tests (127) pass. Build passes.
+- Acceptance: reload restores draft; undo/redo restores previous text and property states.
 
 ---
 

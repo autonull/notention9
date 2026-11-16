@@ -38,6 +38,10 @@ interface EditorHeaderProps {
     missingProperties?: string[];
     onAddProperty?: (key: string) => void;
     onUpdateNote: (note: Note) => void;
+    canUndo?: boolean;
+    canRedo?: boolean;
+    onUndo?: () => void;
+    onRedo?: () => void;
 }
 
 export function EditorHeader({
@@ -70,7 +74,11 @@ export function EditorHeader({
     actionLabel = 'Publish',
     missingProperties = [],
     onAddProperty,
-    onUpdateNote
+    onUpdateNote,
+    canUndo = false,
+    canRedo = false,
+    onUndo,
+    onRedo
 }: EditorHeaderProps) {
     const [isTagInputVisible, setIsTagInputVisible] = useState(tags.length > 0);
 
@@ -144,6 +152,10 @@ export function EditorHeader({
                     isPublished={isPublished}
                     onExport={onExport}
                     actionLabel={actionLabel}
+                    canUndo={canUndo}
+                    canRedo={canRedo}
+                    onUndo={onUndo}
+                    onRedo={onRedo}
                 />
             </div>
 
