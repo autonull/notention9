@@ -333,6 +333,10 @@ program
     .option('--quality', 'Evaluate on quality extraction cases (default)', true)
     .option('--repetitions <n>', 'Number of repetitions per case', '3')
     .option('--output <file>', 'Output results JSON file')
+    .option('--provider <name>', 'Provider to use: deterministic | llamacpp | llama-cpp-embedded | llama-cpp-server', 'deterministic')
+    .option('--model-path <path>', 'GGUF model path for embedded llama.cpp')
+    .option('--server-url <url>', 'OpenAI-compatible server URL for llama.cpp server mode')
+    .option('--model-name <name>', 'Model name for server mode')
     .action(async (options) => {
         console.log('🧪 Notention Prompt Ablation Study (E13)');
         console.log('==========================================\n');
@@ -366,7 +370,30 @@ program
         for (const variant of PROMPT_VARIANTS) {
             console.log(`\n--- Evaluating ${variant.version} ---`);
             
-            const provider = new VariantProvider(variant.version, variant.template);
+            let provider: any;
+            if (options.provider === 'deterministic') {
+                provider = new VariantProvider(variant.version, variant.template);
+            } else if (options.provider === 'llamacpp' || options.provider === 'llama-cpp-embedded') {
+                const { LlamaCppProvider } = await import('./providers/llamaCppProvider.js');
+                provider = new LlamaCppProvider({
+                    modelPath: options.modelPath,
+                    fewShotBank: [],
+                    fewShotCount: 0,
+                    systemPrompt: variant.template,
+                });
+            } else if (options.provider === 'llama-cpp-server') {
+                const { LlamaCppProvider } = await import('./providers/llamaCppProvider.js');
+                provider = new LlamaCppProvider({
+                    serverUrl: options.serverUrl,
+                    modelName: options.modelName,
+                    fewShotBank: [],
+                    fewShotCount: 0,
+                    systemPrompt: variant.template,
+                });
+            } else {
+                throw new Error(`Unknown provider: ${options.provider}`);
+            }
+
             const caseResults: any[] = [];
 
             for (const testCase of qualityCases) {

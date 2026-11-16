@@ -25,6 +25,8 @@ export interface LlamaCppProviderOptions {
     /** Few-shot bank for retrieval-augmented prompting */
     fewShotBank?: readonly LabelledCase[];
     fewShotCount?: number;
+    /** Custom system prompt (overrides default ontology-derived prompt) */
+    systemPrompt?: string;
 }
 
 export class LlamaCppProvider implements Provider {
@@ -54,6 +56,7 @@ export class LlamaCppProvider implements Provider {
                     gpuLayers: this.options.gpuLayers ?? 'max',
                     temperature: this.options.temperature ?? 0,
                     fewShotCount: this.options.fewShotCount ?? 3,
+                    systemPrompt: this.options.systemPrompt,
                 };
                 // Only include fewShotBank if it's a non-empty array
                 if (this.options.fewShotBank && this.options.fewShotBank.length > 0) {
@@ -72,6 +75,7 @@ export class LlamaCppProvider implements Provider {
     private async extractViaServer(text: string, ontology: OntologyNode[]): Promise<Property[]> {
         const serverUrl = this.options.serverUrl ?? process.env.LLAMA_CPP_SERVER_URL ?? 'http://localhost:8080/v1';
         const modelName = this.options.modelName ?? process.env.LLAMA_CPP_MODEL_NAME ?? 'Qwen2.5-7B-Instruct';
+        const systemPrompt = this.options.systemPrompt ?? this.buildSystemPrompt(ontology);
 
         try {
             const response = await fetch(`${serverUrl}/chat/completions`, {
@@ -80,7 +84,7 @@ export class LlamaCppProvider implements Provider {
                 body: JSON.stringify({
                     model: modelName,
                     messages: [
-                        { role: 'system', content: this.buildSystemPrompt(ontology) },
+                        { role: 'system', content: systemPrompt },
                         { role: 'user', content: `Extract from: "${text}"` },
                     ],
                     temperature: this.options.temperature ?? 0,

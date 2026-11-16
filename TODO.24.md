@@ -116,6 +116,21 @@
 - Optimizer loop dry run: all 6 steps complete
 - Golden gate: 10/10 on Qwen 0.8B (F1 0.674) and Llama 3.2 3B (F1 0.872)
 
+### Session 12 — 2026-11-15
+
+#### 1. E13 ablation study: LLM provider integration
+- Added `--provider` option to `pnpm prompts:eval ablation` command (deterministic | llamacpp | llama-cpp-embedded | llama-cpp-server)
+- Added `systemPrompt` option to `LlamaCppProvider` to override default ontology-derived prompt with variant template
+- Each of 6 prompt variants (V1–V6) can now be evaluated with real LLM instead of deterministic fallback
+- CLI creates a fresh provider per variant with the variant's template as system prompt
+- Verified: TypeScript clean, all tests pass (core 855, optimize 97/4), taxonomy 24/24, optimizer loop 6/6 steps
+- Ablation with LLM provider works but is slow (~360 inferences for full 60-case run); use `--quality-limit` for iteration
+
+#### 2. LlamaCppProvider enhancement
+- `LlamaCppProviderOptions` now accepts `systemPrompt` for both embedded and server modes
+- Embedded mode: passes to `LlamaCppBridgeProvider` which uses it for session creation
+- Server mode: uses custom system prompt in API request instead of built-in `buildSystemPrompt`
+
 ### Session 6 — 2026-11-15
 
 #### 1. Two-step router→extraction pipeline implemented
@@ -301,6 +316,9 @@ pnpm prompts:eval eval --provider llamacpp --quality --quality-limit 10 --few-sh
 pnpm prompts:eval eval --provider deterministic      # baseline
 LLAMA_MODEL_PATH=/home/me/notention9/models/Qwen_Qwen3.5-4B-Q4_K_M.gguf pnpm prompts:eval eval --provider llamacpp
 pnpm prompts:eval compare --limit 60 --few-shot 3     # 1-step vs 2-step side-by-side
+pnpm prompts:eval ablation --provider deterministic    # prompt variant ablation (deterministic)
+pnpm prompts:eval ablation --provider llama-cpp-embedded --model-path <path>  # LLM ablation
+pnpm prompts:eval ablation --provider llama-cpp-server --server-url <url>    # server mode ablation
 pnpm taxonomy:coverage                        # computed coverage; add --write to reconcile JSON
 pnpm test                                    # core + agent + cli + optimize + simulator
 pnpm --filter @notention/ui test             # UI (batched)
