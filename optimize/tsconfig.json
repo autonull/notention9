@@ -17,6 +17,7 @@
       "@notention/optimize": ["./src/index.ts"],
       "@notention/optimize/*": ["./src/*"],
       "@notention/core/*": ["../core/dist/*"],
+      "@notention/simulator/*": ["../simulator/dist/*"],
       "@notention/eval": ["../ui/eval/dist"],
       "@notention/eval/*": ["../ui/eval/dist/*"]
     }

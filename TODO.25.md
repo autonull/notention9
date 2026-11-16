@@ -148,7 +148,7 @@
 
 - [ ] **W8.1 Friction digest CLI + dashboard.** `pnpm friction:digest [--days N] [--json]` over the journal using `digestPipeline`; surface top signals in Settings → Metrics.
   - Acceptance: deterministic digest on fixture events; dashboard reads live journal.
-- [ ] **W8.2 Local eval canary.** One command runs golden + quality + match + taxonomy and writes a report; **no CI/provider dependency** (per user preference).
+- [x] **W8.2 Local eval canary.** One command runs golden + quality + match + taxonomy and writes a report; **no CI/provider dependency** (per user preference).
   - Acceptance: `pnpm eval:canary` exits non-zero on regression; artifact written under `data/`.
 - [ ] **W8.3 LLM call telemetry.** Record model, tokens, latency, mode (grammar/unconstrained) per call; aggregate p50/p95.
   - Acceptance: report shows cost/latency per model.
@@ -441,6 +441,14 @@ pnpm eval:verify-manifest
 - Uses existing `MatchResult` from core (`matches`, `conflicts`, `missing` arrays) — no new core logic needed.
 - Added `slide-down` animation in `ui/src/index.css`.
 - Build passes, all UI/core/optimize tests pass.
+
+### 2026-11-15 — W8.2 Local eval canary complete
+- Created `EvalCanaryCommand` in `optimize/src/cli/commands/evalCanary.ts`.
+- Runs golden gate (10 cases), quality extraction (60 cases), quality match (22 cases), taxonomy coverage (24 cells).
+- Supports `--provider deterministic|llamacpp`, `--model`, `--output`, `--json`, and individual gate flags (`--golden-only`, etc.).
+- Exports added for simulator taxonomy module; core package exports used for `createNote`, `MatchEngine`, etc.
+- Writes timestamped JSON report to `data/eval/canary/`; exits non-zero on any gate failure.
+- Build passes, all optimize tests pass.
 - Created `FrictionDigestCommand` in `optimize/src/cli/commands/frictionDigest.ts`.
 - Registered in optimize CLI and added `pnpm friction:digest` script in root package.json.
 - Supports `--days`, `--top`, `--json`, `--half-life`, `--min-count`, `--min-age` options.

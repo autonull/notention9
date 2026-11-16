@@ -7,7 +7,8 @@
     "./types": "./dist/types.js",
     "./scenario": "./dist/scenario.js",
     "./agent": "./dist/agent.js",
-    "./constants": "./dist/constants.js"
+    "./constants": "./dist/constants.js",
+    "./scenarios/taxonomy": "./dist/scenarios/taxonomy.js"
   },
   "scripts": {
     "start": "tsx src/index.ts",
