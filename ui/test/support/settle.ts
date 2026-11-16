@@ -15,7 +15,7 @@ export const settle = async (page: Page) => {
             return bridge && typeof bridge.state === 'function';
         }, { timeout: 10000 });
 
-        // Wait for state to be populated (note may be null on dashboard)
+        // Wait for state to be populated (note may be null on inbox)
         await page.waitForFunction(() => {
             const bridge = (window as any).__NOTENTION__;
             const state = bridge?.state?.();

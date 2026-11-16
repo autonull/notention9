@@ -1,0 +1,7 @@
+{
+  "area": "map",
+  "state": "pins",
+  "file": "map/pins.png",
+  "viewport": "desktop",
+  "description": "Geographic notes on the map with a selected note popup."
+}

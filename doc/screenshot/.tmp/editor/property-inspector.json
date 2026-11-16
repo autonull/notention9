@@ -1,0 +1,7 @@
+{
+  "area": "editor",
+  "state": "property-inspector",
+  "file": "editor/property-inspector.png",
+  "viewport": "desktop",
+  "description": "Inspector with typed widgets, ontology hints, and validation."
+}

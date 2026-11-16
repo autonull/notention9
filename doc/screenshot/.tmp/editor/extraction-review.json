@@ -1,0 +1,7 @@
+{
+  "area": "editor",
+  "state": "extraction-review",
+  "file": "editor/extraction-review.png",
+  "viewport": "desktop",
+  "description": "Deterministic suggestions with confidence and accept/reject, no model configured."
+}

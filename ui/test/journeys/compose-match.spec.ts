@@ -67,7 +67,7 @@ test('a request and an offer composed through the popup match each other', async
     expect(editorText).not.toContain(']');
 
     await page.evaluate(() => {
-        window.location.hash = '#dashboard';
+        window.location.hash = '#inbox';
         window.dispatchEvent(new PopStateEvent('popstate'));
     });
 
@@ -95,7 +95,7 @@ test('the journey records the time-to-first-match anchors', async ({page}) => {
     await addDetail(page, 'stack', 'TypeScript');
 
     await page.evaluate(() => {
-        window.location.hash = '#dashboard';
+        window.location.hash = '#inbox';
         window.dispatchEvent(new PopStateEvent('popstate'));
     });
 

@@ -22,9 +22,9 @@ test('sample workspace shows explained match for React developer', async ({page}
     const aiRequests = trackAiRequests(page);
     await seed(page, {notes: demoNotes(), settings: defaultSettings()});
 
-    // Navigate to dashboard
+    // Navigate to inbox (dashboard redirects here per W10.2)
     await page.evaluate(() => {
-        window.location.hash = '#dashboard';
+        window.location.hash = '#inbox';
         window.dispatchEvent(new PopStateEvent('popstate'));
     });
 

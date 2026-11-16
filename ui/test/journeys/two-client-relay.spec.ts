@@ -51,7 +51,7 @@ test.describe('Local matching journey (two-note matching)', () => {
         await addDetail(page, 'language', 'English');
 
         await page.evaluate(() => {
-            window.location.hash = '#dashboard';
+            window.location.hash = '#inbox';
             window.dispatchEvent(new PopStateEvent('popstate'));
         });
 
@@ -83,7 +83,7 @@ test.describe('Local matching journey (two-note matching)', () => {
         await addDetail(page, 'language', 'English');
 
         await page.evaluate(() => {
-            window.location.hash = '#dashboard';
+            window.location.hash = '#inbox';
             window.dispatchEvent(new PopStateEvent('popstate'));
         });
 

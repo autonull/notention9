@@ -17,10 +17,10 @@ export async function runJourneyTest(journeyId: string, page: any) {
         window.__OPTIMIZE_RUN_ID__ = runId;
     }, runId);
 
-    // Determine initial hash: if journey has seed notes, navigate to first note; otherwise dashboard
+    // Determine initial hash: if journey has seed notes, navigate to first note; otherwise inbox (W10.2)
     const initialHash = journey.seed.notes.length > 0
         ? `notes/${journey.seed.notes[0].id}`
-        : 'dashboard';
+        : 'inbox';
     
     // Seed the database with the journey's seed data
     await seed(page, {

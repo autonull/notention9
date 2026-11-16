@@ -16,7 +16,6 @@ import {NotesView} from './views/NotesView';
 import {TrashView} from './views/TrashView';
 import {SettingsView} from './views/SettingsView';
 import {ResponsesView} from './views/ResponsesView';
-import {DashboardView} from './dashboard/DashboardView';
 import {ActionsView} from './views/ActionsView';
 import {InboxView} from './views/InboxView';
 import {LabelsView} from './views/LabelsView';
@@ -47,9 +46,8 @@ export function MainView({sortedNotes}: MainViewProps) {
     const renderView = () => {
         switch (activeView) {
             case 'inbox':
+            case 'dashboard': // Redirect dashboard to inbox (W10.2 Overview merge)
                 return <InboxView sortedNotes={sortedNotes}/>;
-            case 'dashboard':
-                return <DashboardView/>;
             case 'notes':
                 return <NotesView sortedNotes={sortedNotes}/>;
             case 'trash':

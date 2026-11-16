@@ -7,7 +7,7 @@ test('a seeded workspace anchors the need before the match is explained', async 
     await seed(page, {notes: demoNotes(), settings: defaultSettings()});
 
     await page.evaluate(() => {
-        window.location.hash = '#dashboard';
+        window.location.hash = '#inbox';
         window.dispatchEvent(new PopStateEvent('popstate'));
     });
 

@@ -1,0 +1,7 @@
+{
+  "area": "network",
+  "state": "connect-identity",
+  "file": "network/connect-identity.png",
+  "viewport": "desktop",
+  "description": "Network view before an identity exists, prompting setup."
+}

@@ -288,7 +288,7 @@ Metrics · Profile · Revisions     Network & Identity (Networks, Nostr)
   - Mobile: 4 tabs + More sheet; keep all shortcuts (`Alt+1..0`) working.
   - Acceptance: every view reachable in ≤2 clicks; e2e navigation + shortcuts green; mobile nav no horizontal scroll at 360px.
 
-- [ ] **W10.2 Overview merge.**
+- [x] **W10.2 Overview merge.**
   - Move Dashboard content into Inbox as an "Overview" section (or tab); delete duplicate `LocalMatchPanel`/`StatsPanel`/`RecentActivityPanel`/`AutomationsPanel`.
   - Keep Dashboard route as an alias for one release (redirect) to avoid broken links.
   - Acceptance: no duplicated widgets; journeys updated; no broken routes.
@@ -342,15 +342,16 @@ user can switch back for one release.
 |---|------|--------|--------|
 | 1 | ~~**W10.0 UI guardrails** (bug fixes + snapshots + reachability test)~~ ✅ | Safe base for UI change | S |
 | 2 | ~~**W10.1 navigation consolidation** (3 primary + More)~~ ✅ | Biggest UX clarity win | M |
-| 3 | W1.1 + W1.3 model matrix (incl. **9B**, **Gemma 4 4B**) | Quality decision | M |
-| 4 | W1.2 Gemma wrapper detection | Unlocks Gemma | S |
-| 5 | W2.1 friction digest CLI | Turns telemetry into priorities | S |
-| 6 | W3.1 "Why this match" panel | Trust | M |
-| 7 | W5.1 axe audit + critical fixes | Accessibility | M |
-| 8 | W8.2 local eval canary | Prevents regressions | S |
+| 3 | ~~**W10.2 Overview merge** (Dashboard → Inbox)~~ ✅ | Removes duplicate panels | M |
+| 4 | W1.1 + W1.3 model matrix (incl. **9B**, **Gemma 4 4B**) | Quality decision | M |
+| 5 | W1.2 Gemma wrapper detection | Unlocks Gemma | S |
+| 6 | W2.1 friction digest CLI | Turns telemetry into priorities | S |
+| 7 | W3.1 "Why this match" panel | Trust | M |
+| 8 | W5.1 axe audit + critical fixes | Accessibility | M |
+| 9 | W8.2 local eval canary | Prevents regressions | S |
 
 ### Next (after Now)
-W10.2 Overview merge (Dashboard → Inbox) · W1.4 retrieval v2 · W1.5 grammar auto-probe ·
+W10.3 Settings grouping · W1.4 retrieval v2 · W1.5 grammar auto-probe ·
 W2.2 latency budget · W2.3 correction chips · W4.1 match gate · W6.1 performance budgets ·
 W6.2 offline mode · W7.1 export/import.
 
@@ -534,6 +535,17 @@ pnpm eval:verify-manifest
 - Verified existing live regions: Toast (`role="alert"` + `aria-live`), ActivityFeed (`role="status"` + `aria-live="polite"`), ContextualHint (`role="status"` + `aria-live="polite"`), Input errors (`role="alert"`).
 - Verified list semantics: ActivityFeed (`<ul aria-label="Recent activity feed">`), Navigation breadcrumbs (`<ol>`), MetricsTab (`<ul>`), no data tables needed.
 - All UI unit tests pass (42 files), core tests (855), optimize tests (107), build passes.
+
+### 2026-11-16 — W10.2 Overview merge complete
+- Moved Dashboard content into Inbox as "Overview" section (Welcome header, Feature Highlights, Quick Capture, Sample Workspace Prompt, Local Match with explanations, AutomationsView, StatsGrid, Recent Activity, Quick Actions).
+- Removed duplicate `LocalMatchPanel`/`StatsPanel`/`RecentActivityPanel`/`AutomationsPanel` from Inbox Advanced section.
+- Dashboard route (`#dashboard`) now redirects to Inbox (`#inbox`) in `MainView.tsx`.
+- Updated all journey tests (navigation, golden-demo, compose-match, export-import, seeded-workspace, two-client-relay, matching showcase) to use `#inbox`.
+- Updated showcase tests: dashboard scenes renamed to inbox scenes.
+- Updated DataTab test mock to use `inbox` activeView.
+- All UI unit tests pass (42 files), core tests (855), optimize tests (107), taxonomy coverage 24/24, eval manifest valid.
+- Build passes, 32/32 e2e tests pass (navigation, export-import, golden-demo, seeded-workspace, all 24 showcase).
+- Known issue: compose-match and two-client-relay tests timeout on empty-notes seed (perf investigation needed).
 
 ### 2026-11-15 — W10.0 Guardrails complete
 - Fixed `fs` polyfill issue: made ontology loader browser-compatible by detecting browser environment and using `DEFAULT_ONTOLOGY` instead of filesystem access (`core/src/ontology/loader.ts`).

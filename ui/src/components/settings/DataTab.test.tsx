@@ -54,7 +54,7 @@ describe('DataTab', () => {
     };
 
     const mockView = {
-        activeView: 'dashboard',
+        activeView: 'inbox',
         setActiveView: vi.fn(),
         selectedNoteId: null,
         setSelectedNoteId: vi.fn(),

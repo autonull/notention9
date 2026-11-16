@@ -47,7 +47,7 @@ test('export, clear, and restore a backup', async ({page}) => {
     await page.getByRole('button', {name: 'Restore & Overwrite'}).click();
 
     await page.evaluate(() => {
-        window.location.hash = '#dashboard';
+        window.location.hash = '#inbox';
         window.dispatchEvent(new PopStateEvent('popstate'));
     });
     await expect(page.getByTestId('local-match')).toBeVisible({timeout: 15_000});
