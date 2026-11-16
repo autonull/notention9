@@ -56,6 +56,71 @@ let cachedSession: LlamaChatSession | null = null;
 let cachedGrammar: { signature: string; grammar: LlamaGrammar } | null = null;
 let currentOptions: Required<Omit<LlamaCppBridgeOptions, 'timeout' | 'fewShotBank' | 'fewShotCount' | 'maxTokens'>> | null = null;
 
+// Grammar gating state
+interface GrammarModeState {
+    modelPath: string;
+    mode: 'grammar' | 'fallback';
+    failures: number;
+    lastUpdated: number;
+}
+
+const GRAMMAR_MODE_KEY = 'notention:grammar-mode';
+const MAX_GRAMMAR_FAILURES = 3;
+
+function loadGrammarModes(): Map<string, GrammarModeState> {
+    try {
+        const stored = localStorage.getItem(GRAMMAR_MODE_KEY);
+        if (!stored) return new Map();
+        const data = JSON.parse(stored) as GrammarModeState[];
+        return new Map(data.map(s => [s.modelPath, s]));
+    } catch {
+        return new Map();
+    }
+}
+
+function saveGrammarModes(modes: Map<string, GrammarModeState>): void {
+    try {
+        const data = Array.from(modes.values());
+        localStorage.setItem(GRAMMAR_MODE_KEY, JSON.stringify(data));
+    } catch {
+        // Ignore localStorage errors (e.g., in Node.js without polyfill)
+    }
+}
+
+export function getGrammarMode(modelPath: string): 'grammar' | 'fallback' {
+    const modes = loadGrammarModes();
+    const state = modes.get(modelPath);
+    if (!state) return 'grammar';
+    return state.mode;
+}
+
+export function recordGrammarSuccess(modelPath: string): void {
+    const modes = loadGrammarModes();
+    const state = modes.get(modelPath) || { modelPath, mode: 'grammar', failures: 0, lastUpdated: Date.now() };
+    state.failures = 0;
+    state.mode = 'grammar';
+    state.lastUpdated = Date.now();
+    modes.set(modelPath, state);
+    saveGrammarModes(modes);
+}
+
+export function recordGrammarFailure(modelPath: string): void {
+    const modes = loadGrammarModes();
+    const state = modes.get(modelPath) || { modelPath, mode: 'grammar', failures: 0, lastUpdated: Date.now() };
+    state.failures += 1;
+    state.lastUpdated = Date.now();
+    if (state.failures >= MAX_GRAMMAR_FAILURES) {
+        state.mode = 'fallback';
+        console.log(`[LlamaCpp] Grammar mode disabled for ${modelPath} after ${state.failures} consecutive failures`);
+    }
+    modes.set(modelPath, state);
+    saveGrammarModes(modes);
+}
+
+export function getGrammarModeStats(): GrammarModeState[] {
+    return Array.from(loadGrammarModes().values());
+}
+
 const DEFAULT_CONTEXT_SIZE = 4096;
 const DEFAULT_GPU_LAYERS: GpuLayerSetting = 'max'; // Use the GPU when one is available
 const DEFAULT_TEMPERATURE = 0; // Greedy decoding: the golden gate must be reproducible
@@ -316,19 +381,36 @@ export function parseResponse(response: string, ontology: OntologyNode[]): Prope
         });
 }
 
+async function runExtraction(
+    modelPath: string,
+    session: LlamaChatSession,
+    userPrompt: string,
+    grammar?: LlamaGrammar,
+    maxTokens: number = 512,
+    temperature: number = DEFAULT_TEMPERATURE
+): Promise<string> {
+    return session.prompt(userPrompt, {
+        maxTokens,
+        temperature,
+        grammar,
+    });
+}
+
 export async function extractWithLlamaCpp(
     text: string,
     ontology: OntologyNode[] = DEFAULT_ONTOLOGY,
     options: LlamaCppBridgeOptions
 ): Promise<Property[]> {
     const modelPath = options.modelPath ?? getModelPath();
-    const useGrammar = modelSupportsGrammar(modelPath);
+    const modelSupportsGrammar_ = modelSupportsGrammar(modelPath);
+    const grammarMode = modelSupportsGrammar_ ? getGrammarMode(modelPath) : 'fallback';
 
+    const useGrammar = grammarMode === 'grammar';
     const systemPrompt = options.systemPrompt ?? buildSystemPrompt(ontology, useGrammar);
     const session = await getOrCreateLlamaSession({ ...options, systemPrompt });
     const grammar = useGrammar ? await getOrCreateGrammar(cachedLlama!, ontology) : undefined;
 
-    console.log('[LlamaCpp] Running inference...', useGrammar ? '(with grammar)' : '(no grammar)');
+    console.log('[LlamaCpp] Running inference...', useGrammar ? '(with grammar)' : '(no grammar, fallback)');
 
     // Each extraction is independent; do not let prior cases bias the model.
     // Clearing only the chat history keeps the old KV cache, which degrades
@@ -341,17 +423,52 @@ export async function extractWithLlamaCpp(
         : [];
     const userPrompt = `${renderFewShot(examples)}Extract from: "${text}"`;
 
-    const response = await session.prompt(userPrompt, {
-        maxTokens: 512,
-        temperature: options.temperature ?? DEFAULT_TEMPERATURE,
-        grammar,
-    });
+    let response: string;
+    let properties: Property[] = [];
 
-    if (process.env.LLAMA_DEBUG) {
-        console.log('[LlamaCpp] Raw response:', JSON.stringify(response));
+    if (useGrammar) {
+        // Try with grammar first
+        try {
+            response = await runExtraction(modelPath, session, userPrompt, grammar, 512, options.temperature ?? DEFAULT_TEMPERATURE);
+            
+            if (process.env.LLAMA_DEBUG) {
+                console.log('[LlamaCpp] Raw response (grammar):', JSON.stringify(response));
+            }
+
+            properties = pruneUngrounded(parseResponse(response, ontology), text);
+            
+            // If we got valid properties, record success
+            if (properties.length > 0) {
+                recordGrammarSuccess(modelPath);
+                return properties;
+            }
+            
+            // Empty result with grammar - might be a parse issue, try fallback
+            console.log('[LlamaCpp] Grammar extraction returned empty, trying fallback...');
+        } catch (error) {
+            console.warn('[LlamaCpp] Grammar extraction failed, trying fallback:', error);
+        }
+
+        // Grammar failed or returned empty - record failure and try fallback
+        recordGrammarFailure(modelPath);
     }
 
-    return pruneUngrounded(parseResponse(response, ontology), text);
+    // Fallback: run without grammar, with JSON repair
+    session.resetChatHistory();
+    await cachedSequence?.clearHistory();
+
+    const fallbackSystemPrompt = buildSystemPrompt(ontology, false);
+    await getOrCreateLlamaSession({ ...options, systemPrompt: fallbackSystemPrompt });
+
+    response = await runExtraction(modelPath, session, userPrompt, undefined, 512, options.temperature ?? DEFAULT_TEMPERATURE);
+
+    if (process.env.LLAMA_DEBUG) {
+        console.log('[LlamaCpp] Raw response (fallback):', JSON.stringify(response));
+    }
+
+    properties = pruneUngrounded(parseResponse(response, ontology), text);
+    
+    return properties;
 }
 
 export async function closeLlamaCpp(): Promise<void> {

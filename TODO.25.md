@@ -74,7 +74,12 @@
 - [x] **W1.4 Few-shot retrieval v2.** Replace/augment token-cosine in `optimize/src/prompts/fewShot.ts` with (a) BM25 and (b) key-coverage scoring (prefer examples that cover the ontology keys the input likely needs). Keep deterministic tie-breaks.
   - Acceptance: quality F1 ↑ at equal `--few-shot 3`; golden gate unchanged.
   - **Status**: Implemented BM25 scoring (k1=1.2, b=0.75) with key-coverage (30% weight). Added `predictNeededKeys()` using keyword hints mapped to ontology keys (budget, price, schedule, frequency, role, location, format, audience, student, vehicle, instrument, material, condition, category, brand, urgency, deadline, etc.). Combined score: 0.7 * BM25 + 0.3 * keyCoverage. Deterministic tie-breaks by keyCoverage → BM25 → id. All optimize tests (107) pass.
-- [ ] **W1.5 Grammar-gating auto-probe.** Try constrained grammar; on repeated parse failure fall back to unconstrained + JSON repair. Record which mode each model used.
+- [x] **W1.5 Grammar-gating auto-probe.** Try constrained grammar; on repeated parse failure fall back to unconstrained + JSON repair. Record which mode each model used.
+  - Implemented grammar mode tracking with localStorage persistence (`notention:grammar-mode`).
+  - Auto-probe logic: tries grammar first for supported models; on parse failure/empty result, records failure and retries without grammar (fallback).
+  - After 3 consecutive failures, permanently switches model to fallback mode.
+  - Exported `getGrammarMode`, `recordGrammarSuccess`, `recordGrammarFailure`, `getGrammarModeStats` for inspection.
+  - Added 5 tests in `chatWrapper.test.ts` covering default mode, success/failure recording, fallback switching, persistence, and unsupported model handling.
   - Acceptance: no model regresses on golden; one log line states resolved mode.
 - [ ] **W1.6 Adaptive model routing (ensemble-lite).** Route short/simple notes to 2B, long/governance notes to 4B/9B; measure blended F1 vs latency.
   - Acceptance: blended quality F1 ≥ best single model, latency p95 within budget.
@@ -560,6 +565,14 @@ pnpm eval:verify-manifest
 - Combined score: 0.7 * BM25 + 0.3 * keyCoverage. Deterministic tie-breaks by keyCoverage → BM25 → id.
 - Exported `bm25Score`, `ONTOLOGY_KEYS`, `KEY_HINTS`, `predictNeededKeys` for testing/reuse.
 - All optimize tests (107), core tests (855), UI tests (42 files) pass. Build passes.
+
+### 2026-11-16 — W1.5 Grammar-gating auto-probe complete
+- Implemented grammar mode tracking with localStorage persistence (`notention:grammar-mode`).
+- Auto-probe logic in `extractWithLlamaCpp`: tries grammar first for supported models; on parse failure/empty result, records failure and retries without grammar (fallback).
+- After 3 consecutive failures (`MAX_GRAMMAR_FAILURES`), permanently switches model to fallback mode.
+- Exported `getGrammarMode`, `recordGrammarSuccess`, `recordGrammarFailure`, `getGrammarModeStats` for inspection/debugging.
+- Added 5 tests in `chatWrapper.test.ts` covering default mode, success/failure recording, fallback switching, persistence, and unsupported model handling.
+- All optimize tests (112), core tests (855), UI tests (42 files) pass. Build passes.
 
 ### 2026-11-16 — W10.4 Editor consolidation complete
 - Created `PropertyEditor` unifying `PropertyForm`, `EnhancedPropertyForm`, `InsertPropertyModal` with progressive disclosure (basic → advanced via chevron toggle).
