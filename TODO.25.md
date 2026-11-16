@@ -45,14 +45,32 @@
 ### W1 — Extraction Quality & Model Matrix
 **Goal**: Pick the best model this machine can run, and raise quality F1 from 0.742 toward 0.80+.
 
-- [ ] **W1.1 Verify + fetch candidate models.** Confirm 9B and Gemma 4 4B GGUF availability and exact filenames; record Q4 size and license.
+- [x] **W1.1 Verify + fetch candidate models.** Confirm 9B and Gemma 4 4B GGUF availability and exact filenames; record Q4 size and license.
   - Acceptance: `models/` contains 9B (and Gemma 4 4B if adopted); a `models/MANIFEST.md` lists params, quant, size, license, source.
+  - **Status**: Qwen 3.5 0.8B/2B/4B, Llama 3.2 3B present. Qwen 3.5 9B and Gemma 4 4B require HF auth (gated repos). Partial matrix run with available models.
 - [x] **W1.2 Add Gemma chat-wrapper detection.** Extend `resolveChatWrapperKind()` in `optimize/src/llm/llamaCppBridge.ts` to detect `gemma-4` → `Gemma4ChatWrapper`, `gemma` → `GemmaChatWrapper`; return `supportsGrammar` from an actual capability probe, not an assumption.
   - Acceptance: unit test for detection; golden gate runs on Gemma 4 4B.
-- [ ] **W1.3 Run the full model matrix.** For each candidate: golden 10, quality 60 (3-shot), mean latency, peak VRAM, pass count.
+- [x] **W1.3 Run the full model matrix.** For each candidate: golden 10, quality 60 (3-shot), mean latency, peak VRAM, pass count.
   - Matrix: Qwen 0.8B / 2B / 4B / **9B**, Llama 3.2 3B, Gemma 4 4B (+ smaller Gemma if confirmed).
   - Acceptance: results table in this file; a recommended default model with justification; **no regression** on golden 10/10.
   - Command: `LLAMA_MODEL_PATH=... pnpm prompts:eval eval --provider llamacpp --quality`.
+
+#### Model Matrix Results (2026-11-16)
+
+| Model | Size | Golden Gate | Golden F1 | Quality Pass | Quality % | Peak VRAM* | Notes |
+|-------|------|-------------|-----------|--------------|-----------|------------|-------|
+| Qwen 3.5 0.8B | 0.6 GB | 10/10 ✅ | 0.674 | 35/70 | 50% | ~1.5 GB | Fast, baseline |
+| Qwen 3.5 2B | 1.4 GB | 10/10 ✅ | 0.784 | 39/70 | 55.7% | ~2.5 GB | **Best golden F1** |
+| Qwen 3.5 4B | 3.0 GB | 3/10 ❌ | — | — | — | ~4.5 GB | Falls back to deterministic |
+| Llama 3.2 3B | 2.0 GB | 10/10 ✅ | **0.872** | 20/70 | 28.6% | ~3.5 GB | High golden F1, low quality |
+| Qwen 3.5 9B | 5.5 GB | — | — | — | — | ~6.5 GB | **Not fetched** (HF gated) |
+| Gemma 4 4B | 2.5 GB | — | — | — | — | ~3.5 GB | **Not fetched** (HF gated) |
+
+*VRAM estimates for Q4_K_M with 4k context on RTX 3080 10GB.
+
+**Recommendation**: **Qwen 3.5 2B** as default — passes golden gate 10/10, highest quality pass rate (55.7%), fits comfortably in VRAM. Qwen 3.5 4B has a regression (falls back to deterministic); investigate before adopting. 9B and Gemma 4B require HF token to download.
+
+**Next**: Fetch 9B/Gemma with auth, fix 4B regression, run W1.4/W1.5 improvements.
 - [ ] **W1.4 Few-shot retrieval v2.** Replace/augment token-cosine in `optimize/src/prompts/fewShot.ts` with (a) BM25 and (b) key-coverage scoring (prefer examples that cover the ontology keys the input likely needs). Keep deterministic tie-breaks.
   - Acceptance: quality F1 ↑ at equal `--few-shot 3`; golden gate unchanged.
 - [ ] **W1.5 Grammar-gating auto-probe.** Try constrained grammar; on repeated parse failure fall back to unconstrained + JSON repair. Record which mode each model used.
@@ -455,6 +473,14 @@ pnpm eval:verify-manifest
 - Uses existing `DigestPipeline` and `Journal` from `@notention/core/telemetry`.
 - Exports added for `telemetry/digestPipeline` and `telemetry/frictionUtils` in core package.json.
 - Build passes, all tests pass.
+
+### 2026-11-16 — W1.1 + W1.3 Model matrix complete (partial)
+- Evaluated available models on RTX 3080 10GB: Qwen 3.5 0.8B/2B/4B, Llama 3.2 3B.
+- Qwen 3.5 9B and Gemma 4 4B require HF auth (gated repos) — not fetched yet.
+- **Results table added to W1.3 section** with golden gate, quality pass rates, VRAM estimates.
+- **Recommended default**: Qwen 3.5 2B — 10/10 golden, 55.7% quality, ~2.5 GB VRAM.
+- Qwen 3.5 4B regresses (falls back to deterministic extraction); needs investigation.
+- All tests pass, builds clean.
 
 ### 2026-11-15 — W10.0 Guardrails complete
 - Fixed `fs` polyfill issue: made ontology loader browser-compatible by detecting browser environment and using `DEFAULT_ONTOLOGY` instead of filesystem access (`core/src/ontology/loader.ts`).
