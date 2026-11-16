@@ -1,6 +1,6 @@
-# TODO.24 — Remaining Work (updated 2026-11-15, session 8)
+# TODO.24 — Remaining Work (updated 2026-11-15, session 12)
 
-**Status**: Quality extraction **F1 0.659 (0.8B) / 0.718 (4B)** with governance prompt examples added. Golden gate **10/10**. Taxonomy coverage **24/24 coarse** with CI-depth (30-rep) baselines for all 13 new scenarios. Qwen 3.5 4B exceeds 0.7 stretch target. **Llama 3.2 3B now passes golden gate (10/10, F1 0.891) with ChatML wrapper + JSON repair** but quality F1 is lower (~9/60). **E2 capture-flow A/B test infrastructure complete**; **E13 llama.cpp provider (embedded + server) implemented** for prompt ablation.
+**Status**: **PLAN COMPLETE**. Quality extraction **F1 0.667–0.742** (Qwen 0.8B/2B/4B) with governance + residual prompt examples. Golden gate **10/10** on all models (Qwen 0.8B F1 0.674, 2B F1 0.784, 4B F1 0.927, Llama 3.2 3B F1 0.872). Taxonomy coverage **24/24 coarse** with CI-depth (30-rep) baselines for all 13 new scenarios. Qwen 3.5 4B exceeds 0.7 stretch target at **F1 0.742**. **Llama 3.2 3B golden gate restored to 10/10** via dual prompt strategy. **E2 capture-flow A/B test infrastructure complete**; **E13 llama.cpp provider + ablation infrastructure complete** for prompt variant comparison. All success criteria met.
 
 ---
 
@@ -230,22 +230,25 @@
 ### 1. Optimizer loop end-to-end — ✅ done
 Real run completes all six steps; `decision.md` and `adoption.json` carry the winner, gates, flag, and evidence. Winner keeps its flag off, so the prompt gate is unaffected. Re-run the golden gate after any change to the strategy directories.
 
-### 2. Quality F1 above 0.5 — stretch toward 0.7 — ✅ done (4B: 0.718)
-Qwen 3.5 4B achieves **F1 0.718** (24/60 pass) with governance prompt examples. 0.8B at 0.659.
-Residual losses on non-governance cases: `price` vs `budget` confusion, `schedule` vs `frequency`, missing `student`/`vehicle`/`format`/`audience`.
-Llama 3.2 3B fails — needs ChatML template wrapper in `llamaCppBridge.ts`.
+### 2. Quality F1 above 0.5 — stretch toward 0.7 — ✅ done (4B: 0.742)
+Qwen 3.5 4B achieves **F1 0.742** (37/60 pass) with governance + residual prompt examples. 0.8B at 0.667, 2B at 0.724.
+Residual losses on non-governance cases: `price` vs `budget`, `schedule` vs `frequency`, missing `student`/`vehicle`/`format`/`audience` — partially addressed with 9 new in-prompt examples.
+Llama 3.2 3B golden gate **restored to 10/10 (F1 0.872)** via dual prompt strategy (minimal prompt for non-grammar models).
 
 ### 3. Taxonomy calibration at CI depth — ✅ done
 All 13 new scenarios calibrated at 30 repetitions; `SCENARIO_BASELINES` updated. Simulator suite green at 10 reps.
 
-### 4. WebLLM on GPU CI
-Still reports "No available adapters" on SwiftShader. Needs a GPU runner; the bridge and UI hook are already in place.
+### 4. WebLLM on GPU CI — **N/A per user request**
+Bridge and UI hook in place; SwiftShader lacks WebGPU adapter. Requires GPU runner (not configured).
 
 ### 5. Llama 3.2 3B ChatML template support — ✅ done
-Added `Llama3ChatWrapper` with auto-detection, grammar gating (`modelSupportsGrammar`), and JSON repair for non-grammar models. Golden gate 10/10 (F1 0.891).
+Added `Llama3ChatWrapper` with auto-detection, grammar gating (`modelSupportsGrammar`), JSON repair for non-grammar models. Golden gate 10/10 (F1 0.872).
 
 ### 6. Human probes and videos
 See the blocked table. No code work remains until participants are available.
+
+### 7. E13 prompt ablation infrastructure — ✅ done
+`pnpm prompts:eval ablation --provider <deterministic|llama-cpp-embedded|llama-cpp-server>` tests all 6 prompt variants with real LLM. Ready for systematic variant comparison.
 
 ---
 
@@ -275,26 +278,26 @@ LLAMA_MODEL_PATH=/path/to/model.gguf pnpm prompts:eval eval --provider llamacpp
 LLAMA_GPU_LAYERS=0 pnpm prompts:eval eval --provider llamacpp   # force CPU
 ```
 
-Success criteria:
+Success criteria: **ALL MET**
 - [x] `pnpm prompts:eval eval --provider llamacpp` deterministic golden 10/10
 - [x] `pnpm prompts:eval eval --provider webllm` runs (needs headed Chrome + GPU)
 - [x] 60 quality cases evaluated in < 10 minutes (52s on GPU)
 - [x] Optimizer loop dry run completes all six steps
-- [x] Quality F1 ≥ 0.5 (0.604)
+- [x] Quality F1 ≥ 0.5 (achieved 0.742 on 4B)
 - [x] Optimizer loop adopts a best prompt automatically (real run)
 - [ ] CI runs the LLM gate (GPU runner for WebLLM) — **N/A: user declined CI setup**
 
 ---
 
-## Current Metrics
+## Current Metrics (Final)
 
 | Metric | Value |
 |--------|-------|
-| Golden extraction | 10/10 (F1 0.687–0.927), deterministic, 11.7s on CUDA |
-| Quality extraction (60) | 25–39/60 pass; F1 0.667–0.742 (3-shot) |
-| Qwen 3.5 0.8B | 0.667 F1 (25/60), 26 GPU layers |
-| Qwen 3.5 2B | **0.724 F1** (39/60), 26 GPU layers |
-| Qwen 3.5 4B | **0.742 F1** (37/60), 34 GPU layers |
+| Golden extraction | 10/10 (F1 0.674–0.927), deterministic, 11.7s on CUDA |
+| Quality extraction (60, 3-shot) | 25–39/60 pass; F1 0.667–0.742 |
+| Qwen 3.5 0.8B | Golden F1 0.674, Quality F1 0.667 (25/60), 26 GPU layers |
+| Qwen 3.5 2B | Golden F1 0.784, Quality **F1 0.724** (39/60), 26 GPU layers |
+| Qwen 3.5 4B | Golden F1 0.927, Quality **F1 0.742** (37/60), 34 GPU layers |
 | Llama 3.2 3B | Golden 10/10 (F1 0.872), Quality ~10/60 (no grammar) |
 | Optimize tests | 97 passed / 4 skipped |
 | Simulator tests | 116 passed (35 scenarios + calibration + taxonomy) |
@@ -302,6 +305,8 @@ Success criteria:
 | Taxonomy coverage | 24/24 coarse, 32 six-axis cells (CI-depth baselines) |
 | Ontology keys | All 60 quality-case keys reachable |
 | Corpus | 864 notes, 14 domains |
+| E2 capture A/B test | Infrastructure complete (McNemar + Wilcoxon + MDE gate) |
+| E13 prompt ablation | 6 variants, LLM provider integration complete |
 
 ---
 
@@ -349,3 +354,11 @@ Notes:
 - The golden gate runs without few-shot; the quality set uses the local corpus. `data/` is gitignored, so regenerate cases before evaluating on a fresh clone.
 - UI `tsc --noEmit` has pre-existing unrelated errors (SmartNoteAssistant, EditorContent); use the UI tests as the gate.
 - `optimize/src/tests/ai/policy.test.ts` and `fewShot.test.ts` lock the policy and retrieval behaviour.
+
+---
+
+## PLAN STATUS: COMPLETE ✅
+
+All technical objectives from sessions 1–12 achieved. No remaining code work blocked on technical debt.
+
+**Next steps require human participants** (see BLOCKED section) or new strategic direction (see TODO.25.md).
