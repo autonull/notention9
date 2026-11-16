@@ -11,7 +11,7 @@ import {
     PlusIcon,
     SidebarIcon,
 } from '../components/ui/icons';
-import {NAV_ITEMS, SETTINGS_VIEW} from '../utils/navigation';
+import {ALL_NAV_VIEWS} from '../utils/navigation';
 import {modShortcut} from '../utils/platform';
 
 interface UseCommandsProps {
@@ -43,7 +43,7 @@ export function useCommands({setIsHelpOpen}: UseCommandsProps) {
         setActiveView('notes');
     };
 
-    const viewCommands = [...NAV_ITEMS, SETTINGS_VIEW].map((item) => {
+    const viewCommands = ALL_NAV_VIEWS.map((item) => {
         const Icon = item.icon;
         return {
             label: `Go to ${item.label}`,

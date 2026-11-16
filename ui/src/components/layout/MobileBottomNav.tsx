@@ -1,13 +1,14 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useState, useRef, useEffect} from 'react';
 import {useView} from '../../hooks/useViewContext';
 import {useNotes} from '../../hooks/useNotes';
 import type {View} from '@notention/core';
-import {HelpIcon, PlusIcon, SearchIcon} from '../ui/icons';
+import {HelpIcon, PlusIcon, SearchIcon, XIcon} from '../ui/icons';
 import {IconButton} from '../ui/Button';
 import {cn} from '../../utils/ui';
-import {NAV_ITEMS, SETTINGS_VIEW} from '../../utils/navigation';
+import {PRIMARY_NAV, SECONDARY_NAV, SETTINGS_VIEW, MORE_NAV_ITEM} from '../../utils/navigation';
 
-const NAVIGATION = [...NAV_ITEMS, SETTINGS_VIEW];
+const MOBILE_NAV = [...PRIMARY_NAV, MORE_NAV_ITEM];
+const MORE_SHEET_ITEMS = [...SECONDARY_NAV, SETTINGS_VIEW];
 
 interface MobileBottomNavProps {
     isOpen?: boolean;
@@ -16,6 +17,18 @@ interface MobileBottomNavProps {
 export function MobileBottomNav({isOpen = false}: MobileBottomNavProps) {
     const {activeView, setActiveView, setIsPaletteOpen, setSelectedNoteId, notificationCount, chatNotificationCount} = useView();
     const {addNote} = useNotes();
+    const [isMoreSheetOpen, setIsMoreSheetOpen] = useState(false);
+    const sheetRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (sheetRef.current && !sheetRef.current.contains(event.target as Node)) {
+                setIsMoreSheetOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     const handleSelect = useCallback((view: View) => {
         if (view === 'notes') {
@@ -23,6 +36,7 @@ export function MobileBottomNav({isOpen = false}: MobileBottomNavProps) {
         }
         setActiveView(view);
         setIsPaletteOpen(false);
+        setIsMoreSheetOpen(false);
     }, [setActiveView, setIsPaletteOpen, setSelectedNoteId]);
 
     const handleCreateNote = useCallback(() => {
@@ -30,6 +44,14 @@ export function MobileBottomNav({isOpen = false}: MobileBottomNavProps) {
         setSelectedNoteId(note.id);
         setActiveView('notes');
     }, [addNote, setSelectedNoteId, setActiveView]);
+
+    const getBadgeCount = (item: {badgeCountKey?: 'notificationCount' | 'chatNotificationCount'}) => {
+        if (item.badgeCountKey === 'notificationCount') return notificationCount;
+        if (item.badgeCountKey === 'chatNotificationCount') return chatNotificationCount;
+        return 0;
+    };
+
+    const isPrimaryActive = (id: string) => activeView === id;
 
     return (
         <div
@@ -39,19 +61,43 @@ export function MobileBottomNav({isOpen = false}: MobileBottomNavProps) {
             )}
         >
             <div className="card glass rounded-t-2xl shadow-2xl overflow-hidden border-t border-gray-700/50">
+                {/* Main nav bar: 4 tabs (Inbox, Notes, Actions, More) */}
                 <div
                     className="flex items-center gap-0.5 px-2 py-2.5 pb-1 overflow-x-auto scrollbar-hide scroll-snap-x"
                     role="tablist"
                     aria-label="Main navigation"
                 >
-                    {NAVIGATION.map((item) => {
+                    {MOBILE_NAV.map((item) => {
                         const Icon = item.icon;
-                        const isActive = activeView === item.id;
-                        const badgeCount = item.badgeCountKey === 'notificationCount'
-                            ? notificationCount
-                            : item.badgeCountKey === 'chatNotificationCount'
-                                ? chatNotificationCount
-                                : 0;
+                        const isActive = isPrimaryActive(item.id) || (item.id === 'more' && isMoreSheetOpen);
+                        const badgeCount = getBadgeCount(item as {badgeCountKey?: 'notificationCount' | 'chatNotificationCount'});
+
+                        if (item.id === 'more') {
+                            return (
+                                <button
+                                    key={item.id}
+                                    onClick={() => setIsMoreSheetOpen(!isMoreSheetOpen)}
+                                    className={cn(
+                                        'btn btn-ghost btn-xs flex flex-col items-center gap-1 px-3 py-2.5 rounded-xl min-w-[60px] flex-shrink-0 touch-target transition-all duration-200 snap-start',
+                                        isActive
+                                            ? 'bg-indigo-600/20 text-indigo-400'
+                                            : 'text-gray-500 hover:text-gray-300 hover:bg-gray-800/50 active:bg-gray-700/50'
+                                    )}
+                                    aria-label={item.label}
+                                    aria-expanded={isMoreSheetOpen}
+                                    aria-haspopup="true"
+                                    aria-keyshortcuts={'shortcut' in item && item.shortcut ? `Alt+${item.shortcut}` : undefined}
+                                    role="tab"
+                                >
+                                    <div className="relative flex items-center justify-center">
+                                        <Icon className={cn('w-6 h-6', isActive ? 'text-indigo-400' : '')}/>
+                                    </div>
+                                    <span className="text-[10px] font-medium uppercase tracking-wider truncate max-w-[56px] text-center">
+                                        {item.label}
+                                    </span>
+                                </button>
+                            );
+                        }
 
                         return (
                             <button
@@ -84,6 +130,7 @@ export function MobileBottomNav({isOpen = false}: MobileBottomNavProps) {
                     })}
                 </div>
 
+                {/* Bottom bar: central capture button + search + help */}
                 <div className="flex items-center justify-between px-3 pb-3 border-t border-gray-700/30">
                     <IconButton
                         onClick={handleCreateNote}
@@ -115,6 +162,58 @@ export function MobileBottomNav({isOpen = false}: MobileBottomNavProps) {
                     </div>
                 </div>
             </div>
+
+            {/* More sheet - slides up from bottom */}
+            {isMoreSheetOpen && (
+                <div
+                    ref={sheetRef}
+                    className="fixed bottom-0 left-0 right-0 z-40 md:hidden animate-slide-up"
+                    role="dialog"
+                    aria-label="More views"
+                >
+                    <div className="card glass rounded-t-2xl shadow-2xl border-t border-gray-700/50 max-h-[60vh] overflow-hidden">
+                        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700/30">
+                            <h3 className="text-sm font-semibold text-gray-300">More</h3>
+                            <button
+                                onClick={() => setIsMoreSheetOpen(false)}
+                                className="btn btn-ghost btn-sm p-2 rounded-xl touch-target text-gray-500 hover:text-white hover:bg-gray-800/50"
+                                aria-label="Close"
+                            >
+                                <XIcon className="w-5 h-5"/>
+                            </button>
+                        </div>
+                        <div className="px-2 py-2 space-y-1 overflow-y-auto max-h-[50vh]">
+                            {MORE_SHEET_ITEMS.map((item) => {
+                                const Icon = item.icon;
+                                const isActive = activeView === item.id;
+                                const badgeCount = getBadgeCount(item);
+                                return (
+                                    <button
+                                        key={item.id}
+                                        onClick={() => handleSelect(item.id)}
+                                        className={`w-full px-3 py-3 flex items-center gap-3 text-left rounded-xl transition-colors ${
+                                            isActive
+                                                ? 'bg-indigo-600/20 text-indigo-400'
+                                                : 'text-gray-300 hover:bg-gray-800/50 hover:text-white'
+                                        }`}
+                                        role="menuitem"
+                                        aria-current={isActive ? 'page' : undefined}
+                                        aria-keyshortcuts={item.shortcut ? `Alt+${item.shortcut}` : undefined}
+                                    >
+                                        <Icon className="w-6 h-6 flex-shrink-0" aria-hidden="true"/>
+                                        <span className="text-base font-medium truncate">{item.label}</span>
+                                        {badgeCount > 0 && (
+                                            <span className="ml-auto min-w-[20px] h-[20px] px-2 bg-red-500 text-[11px] font-bold rounded-full flex items-center justify-center text-white">
+                                                {badgeCount > 9 ? '9+' : badgeCount}
+                                            </span>
+                                        )}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

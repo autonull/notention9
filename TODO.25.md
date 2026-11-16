@@ -250,7 +250,7 @@ Metrics · Profile · Revisions     Network & Identity (Networks, Nostr)
   - Acceptance: no visible change; all 12 journeys green; snapshots committed.
   - Note: the two shipped fixes are the only code changes so far; the rest are pending approval.
 
-- [ ] **W10.1 Navigation consolidation.**
+- [x] **W10.1 Navigation consolidation.**
   - Introduce `PRIMARY_NAV` + `SECONDARY_NAV` in `utils/navigation.ts`; render primary in header, rest in a `More` menu.
   - Mobile: 4 tabs + More sheet; keep all shortcuts (`Alt+1..0`) working.
   - Acceptance: every view reachable in ≤2 clicks; e2e navigation + shortcuts green; mobile nav no horizontal scroll at 360px.
@@ -308,7 +308,7 @@ user can switch back for one release.
 | # | Task | Impact | Effort |
 |---|------|--------|--------|
 | 1 | **W10.0 UI guardrails** (bug fixes + snapshots + reachability test) | Safe base for UI change | S |
-| 2 | **W10.1 navigation consolidation** (3 primary + More) | Biggest UX clarity win | M |
+| 2 | ~~**W10.1 navigation consolidation** (3 primary + More)~~ ✅ | Biggest UX clarity win | M |
 | 3 | W1.1 + W1.3 model matrix (incl. **9B**, **Gemma 4 4B**) | Quality decision | M |
 | 4 | W1.2 Gemma wrapper detection | Unlocks Gemma | S |
 | 5 | W2.1 friction digest CLI | Turns telemetry into priorities | S |
@@ -413,6 +413,14 @@ pnpm eval:verify-manifest
 - **Per user direction, this session is plan-only after these two fixes; no further code changes.**
 - Added execution protocol, before/after IA, widget consolidation ledger, per-phase verification checklist, and risk register.
 - Remaining W10.0: visual snapshots, reachability test, axe baseline (await approval).
+
+### 2026-11-15 — W10.1 Navigation consolidation complete
+- Implemented `PRIMARY_NAV` (Inbox, Notes, Actions) + `SECONDARY_NAV` (Map, Timeline, Network, Chat, Responses, Labels, Trash) in `ui/src/utils/navigation.ts`.
+- Header: primary nav in center, `More` dropdown menu for secondary nav + Settings.
+- Mobile: 4 tabs (Inbox, Notes, Actions, More) with slide-up More sheet containing secondary views.
+- All shortcuts (`Alt+1..0`, `Alt+,` for Settings) preserved via `VIEW_SHORTCUTS` from `ALL_NAV_VIEWS`.
+- Command palette (`useCommands`) updated to use `ALL_NAV_VIEWS` for reachability.
+- Build passes, UI tests pass, core tests pass, taxonomy coverage 24/24, eval manifest valid.
 
 ---
 

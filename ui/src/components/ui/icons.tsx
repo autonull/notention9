@@ -926,3 +926,13 @@ export function MicrophoneIcon(props: IconProps) { return (
         />
     </OutlineIcon>
 ); }
+
+export function MoreHorizontalIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M12 5.25a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z"
+        />
+    </OutlineIcon>
+); }

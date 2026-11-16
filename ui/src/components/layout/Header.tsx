@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react';
+import React, {useMemo, useState, useRef, useEffect} from 'react';
 
 import {useSettings} from '../../hooks/useSettingsContext';
 import {useView} from '../../hooks/useViewContext';
@@ -7,15 +7,106 @@ import type {Template, View} from '@notention/core';
 import {generateTemplatesFromOntology} from '@notention/core';
 import {NavButton} from './NavButton';
 import {IconButton} from '../ui/Button';
-import {SearchIcon, SidebarIcon} from '../ui/icons';
+import {SearchIcon, SidebarIcon, MoreHorizontalIcon, ChevronDownIcon} from '../ui/icons';
 import {NewNoteButton} from './NewNoteButton';
 import {ConnectionStatus} from './ConnectionStatus';
-import {NAV_ITEMS, SETTINGS_VIEW} from '../../utils/navigation';
+import {PRIMARY_NAV, SECONDARY_NAV, SETTINGS_VIEW} from '../../utils/navigation';
 import {modShortcut} from '../../utils/platform';
 
 interface HeaderProps {
     onNewNote: () => void;
     onToggleSidebar: () => void;
+}
+
+function MoreMenu({
+    activeView,
+    setActiveView,
+    notificationCount,
+    chatNotificationCount
+}: {
+    activeView: View;
+    setActiveView: (view: View) => void;
+    notificationCount: number;
+    chatNotificationCount: number;
+}) {
+    const [isOpen, setIsOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const handleNavClick = (view: View) => {
+        setActiveView(view);
+        setIsOpen(false);
+    };
+
+    return (
+        <div className="relative" ref={menuRef}>
+            <IconButton
+                onClick={() => setIsOpen(!isOpen)}
+                icon={MoreHorizontalIcon}
+                tooltip="More (Alt+M)"
+                tooltipPosition="bottom"
+                variant="ghost"
+                size="lg"
+                aria-expanded={isOpen}
+                aria-haspopup="true"
+                label={modShortcut('M')}
+            />
+            {isOpen && (
+                <div
+                    className="absolute right-0 top-full mt-1.5 min-w-[180px] bg-gray-900/95 backdrop-blur-md border border-gray-700/50 rounded-xl shadow-xl py-1.5 z-50"
+                    role="menu"
+                >
+                    {SECONDARY_NAV.map((item) => {
+                        const badgeCount = item.badgeCountKey
+                            ? (item.badgeCountKey === 'notificationCount' ? notificationCount : chatNotificationCount)
+                            : undefined;
+                        return (
+                            <button
+                                key={item.id}
+                                onClick={() => handleNavClick(item.id)}
+                                className={`w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg transition-colors ${
+                                    activeView === item.id
+                                        ? 'bg-indigo-600/20 text-indigo-400'
+                                        : 'text-gray-300 hover:bg-gray-800/50 hover:text-white'
+                                }`}
+                                role="menuitem"
+                                aria-current={activeView === item.id ? 'page' : undefined}
+                                aria-keyshortcuts={item.shortcut ? `Alt+${item.shortcut}` : undefined}
+                            >
+                                <item.icon className="w-5 h-5 flex-shrink-0" aria-hidden="true"/>
+                                <span className="text-sm font-medium truncate">{item.label}</span>
+                                {badgeCount !== undefined && badgeCount > 0 && (
+                                    <span className="ml-auto min-w-[18px] h-[18px] px-1.5 bg-red-500 text-[10px] font-bold rounded-full flex items-center justify-center text-white">
+                                        {badgeCount > 9 ? '9+' : badgeCount}
+                                    </span>
+                                )}
+                            </button>
+                        );
+                    })}
+                    <hr className="my-1.5 border-gray-700/50"/>
+                    <button
+                        onClick={() => handleNavClick(SETTINGS_VIEW.id)}
+                        className="w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg transition-colors text-gray-300 hover:bg-gray-800/50 hover:text-white"
+                        role="menuitem"
+                        aria-current={activeView === SETTINGS_VIEW.id ? 'page' : undefined}
+                        aria-keyshortcuts={SETTINGS_VIEW.shortcut ? `${modShortcut(SETTINGS_VIEW.shortcut)}` : undefined}
+                    >
+                        <SETTINGS_VIEW.icon className="w-5 h-5 flex-shrink-0" aria-hidden="true"/>
+                        <span className="text-sm font-medium truncate">{SETTINGS_VIEW.label}</span>
+                    </button>
+                </div>
+            )}
+        </div>
+    );
 }
 
 export function Header({onNewNote, onToggleSidebar}: HeaderProps) {
@@ -100,9 +191,9 @@ export function Header({onNewNote, onToggleSidebar}: HeaderProps) {
                 />
             </div>
 
-            {/* Center Section - Navigation (Hidden on Mobile) */}
-            <div className="hidden md:flex items-center gap-2">
-                {NAV_ITEMS.map((item) => {
+            {/* Center Section - Primary Navigation (Hidden on Mobile) */}
+            <div className="hidden md:flex items-center gap-1">
+                {PRIMARY_NAV.map((item) => {
                     const badgeCount = item.badgeCountKey
                         ? (item.badgeCountKey === 'notificationCount' ? notificationCount : chatNotificationCount)
                         : undefined;
@@ -118,6 +209,12 @@ export function Header({onNewNote, onToggleSidebar}: HeaderProps) {
                         />
                     );
                 })}
+                <MoreMenu
+                    activeView={activeView}
+                    setActiveView={setActiveView}
+                    notificationCount={notificationCount}
+                    chatNotificationCount={chatNotificationCount}
+                />
             </div>
 
             {/* Right Section */}
