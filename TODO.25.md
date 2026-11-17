@@ -484,11 +484,32 @@ user can switch back for one release.
 ~~W8.1 Friction digest dashboard~~ ✅ · ~~W8.3 LLM call telemetry~~ ✅ · ~~W8.4 A/B → decisions~~ ✅ ·
 ~~W9.1 Quickstart~~ ✅ · ~~W9.2 Model selection guide~~ ✅ · ~~W9.3 Decision records~~ ✅ · ~~W9.4 Eval how-to~~ ✅ ·
 W1.7 LoRA fine-tune (if quality plateaus < 0.80).
+W11.1 Remove onboarding · W11.2 Consolidate New Note · W11.3 Redundancy audit · W11.4 Stranger test verify
 
 ### Parked (do not start yet)
 - WebLLM GPU CI (user declined CI; SwiftShader lacks adapters).
 - Multi-modal (image→properties) — needs ontology extension.
 - Server-side llama.cpp batching — only if throughput becomes a constraint.
+
+---
+
+## W11 — UI Cleanup & Redundancy Removal (Next Session)
+**Goal**: Eliminate all redundant UI elements; make the system immediately intuitive without onboarding.
+
+### Feedback from Screenshot Review (2026-11-17)
+
+| # | Issue | Evidence | Fix |
+|---|-------|----------|-----|
+| 1 | **Onboarding checklist** ("Welcome, 3 steps to get started") | `ui/src/components/ui/OnboardingChecklist.tsx` integrated in `InboxView` | **Remove entirely**. If the system isn't immediately intuitive, it's worthless. |
+| 2 | **Multiple "New Note" buttons** (2–3 visible) | Screenshots show: Quick Capture header button, Inbox toolbar button, possibly Notes view button | **Consolidate to one**. Single entry point: Quick Capture at top of Inbox. Remove others. |
+| 3 | **Other widget redundancies** | Dashboard→Inbox merge (W10.2) may have left duplicates; Settings grouping (W10.3) may have overlapping controls | Audit all views for duplicate actions, panels, affordances. Keep one per action. |
+
+### Planned Tasks
+
+- [ ] **W11.1 Remove onboarding checklist.** Delete `OnboardingChecklist.tsx`, remove from `InboxView`, remove onboarding fields from `AppSettings`/`SettingsContext`.
+- [ ] **W11.2 Consolidate "New Note" entry points.** Audit all "New Note" / "Add Note" / "Quick Capture" buttons. Keep only Quick Capture in Inbox header.
+- [ ] **W11.3 Full redundancy audit.** Walk every view (Inbox, Notes, Map, Timeline, Network, Chat, Actions, Responses, Labels, Trash, Settings) and list duplicate widgets/actions. Eliminate.
+- [ ] **W11.4 Verify stranger test still passes.** After removal, run `pnpm stranger-test` — unaided golden path must be < 2 min.
 
 ---
 
@@ -1044,6 +1065,11 @@ pnpm eval:verify-manifest
 - Created `doc/EVAL_HOWTO.md` covering all 4 gates (golden, quality extraction, quality match, taxonomy) + canary
 - Case format examples for each gate, commands to run, how to add new cases
 - F1/ECE interpretation guide, CI integration snippet, troubleshooting table
+
+### 2026-11-17 — Screenshot review feedback (for W11)
+- **Onboarding checklist** must go — if the system isn't immediately intuitive, it's worthless.
+- **Multiple "New Note" buttons** (2–3 visible in screenshots) → consolidate to one (Quick Capture in Inbox header).
+- **Other widget redundancies** likely remain post-W10; full audit needed.
 
 ---
 
