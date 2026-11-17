@@ -31,6 +31,7 @@ const browserEntries = {
   'index': 'src/index.browser.ts',
   // Domain barrels
   'notes/index': 'src/notes/index.ts',
+  'notes/propertyExtractor/index': 'src/notes/propertyExtractor/index.ts',
   'matching/index': 'src/matching/index.ts',
   'ontology/index': 'src/ontology/index.ts',
   'ontology/ontologyService': 'src/ontology/ontologyService.ts',

@@ -4,6 +4,7 @@ import {Input} from '../ui/Input';
 import {Button} from '../ui/Button';
 import {SearchIcon, TagIcon, SparklesIcon, ArrowRightIcon} from '../ui/icons';
 import {cn} from '../../utils/ui';
+import {ExtractionStatus, ExtractionProviderBadge} from '../ui/Primitives';
 
 interface QuickCaptureProps {
     input: string;
@@ -17,6 +18,13 @@ interface QuickCaptureProps {
     placeholder?: string;
     /** Strategy param: focus the capture field on mount */
     autoFocus?: boolean;
+    /** Extraction status for AI/heuristic fallback indication */
+    extractionLoading?: boolean;
+    extractionFallbackUsed?: boolean;
+    extractionProviderUsed?: string;
+    extractionProviderKind?: string;
+    extractionError?: Error | null;
+    extractionRetry?: () => void;
 }
 
 const TEMPLATES = {
@@ -49,12 +57,30 @@ const ICON_MAP = {
     lightbulb: <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>,
 };
 
-export function QuickCapture({input, onInputChange, onSubmit, extractedProps, onTemplateClick, onFocus, onBlur, placeholder, autoFocus}: QuickCaptureProps) {
+export function QuickCapture({
+    input,
+    onInputChange,
+    onSubmit,
+    extractedProps,
+    onTemplateClick,
+    onFocus,
+    onBlur,
+    placeholder,
+    autoFocus,
+    extractionLoading,
+    extractionFallbackUsed,
+    extractionProviderUsed,
+    extractionProviderKind,
+    extractionError,
+    extractionRetry,
+}: QuickCaptureProps) {
     const inputRef = React.useRef<HTMLInputElement>(null);
 
     React.useEffect(() => {
         if (autoFocus) inputRef.current?.focus();
     }, [autoFocus]);
+
+    const showExtractionStatus = extractionLoading || extractionFallbackUsed || extractionError;
 
     return (
         <section className="relative overflow-hidden rounded-3xl border border-gray-800 bg-gradient-to-br from-gray-900/50 to-gray-900/80 p-6 md:p-8 animate-fade-in-up stagger-1">
@@ -92,6 +118,19 @@ export function QuickCapture({input, onInputChange, onSubmit, extractedProps, on
                     </div>
                 </form>
 
+                {showExtractionStatus && (
+                    <div className="mb-4" data-testid="extraction-status">
+                        <ExtractionStatus
+                            loading={extractionLoading}
+                            fallbackUsed={extractionFallbackUsed}
+                            providerUsed={extractionProviderUsed}
+                            providerKind={extractionProviderKind}
+                            error={extractionError}
+                            onRetry={extractionRetry}
+                        />
+                    </div>
+                )}
+
                 {(extractedProps.length > 0 || input.includes('#')) && (
                     <div className="flex flex-wrap justify-center gap-2 mb-6 min-h-[28px] animate-fade-in">
                         {extractedProps.map((prop, idx) => (
@@ -116,6 +155,16 @@ export function QuickCapture({input, onInputChange, onSubmit, extractedProps, on
                                 #{tag.split(' ')[0]}
                             </Badge>
                         ))}
+                    </div>
+                )}
+
+                {showExtractionStatus && extractionProviderUsed && (
+                    <div className="mb-4 flex justify-center" data-testid="extraction-provider-badge">
+                        <ExtractionProviderBadge
+                            providerUsed={extractionProviderUsed}
+                            providerKind={extractionProviderKind}
+                            fallbackUsed={extractionFallbackUsed}
+                        />
                     </div>
                 )}
 

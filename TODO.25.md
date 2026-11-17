@@ -352,7 +352,7 @@ Metrics · Profile · Revisions     Network & Identity (Networks, Nostr)
   - [x] Wire dead `onNavigate` handlers; Local Match cards and Recent Activity now open the note. *(shipped)*
   - [x] Add visual snapshots for all views (showcase tests pass: 24/24).
   - [x] Add a reachability test: every `View` id is reachable via palette + shortcut (navigation test passes).
-  - [ ] Add axe baseline (may fail; record and triage).
+  - [x] Add axe baseline (may fail; record and triage) — all 11 views pass, no serious/critical violations.
   - Acceptance: no visible change; all 12 journeys green; snapshots committed.
 
 - [x] **W10.1 Navigation consolidation.**
@@ -763,6 +763,18 @@ pnpm eval:verify-manifest
 - Updated roadmap (Section 3) to reflect actual implementation status: W10.0–W10.4, W1.1–W1.6, W2.1–W2.6, W3.1, W4.1, W5.1–W5.3, W8.2 all complete.
 - Remaining Now items: none (all complete).
 - Added detailed status entries for W3.1 in W3 section.
+
+### 2026-11-16 — W10.0 Axe baseline complete
+- Ran `axe-core` audit across all 11 views (Inbox, Notes, Map, Timeline, Network, Chat, Actions, Responses, Labels, Trash, Settings).
+- No serious or critical WCAG 2.1 AA violations found; baseline recorded.
+- All journeys and showcase tests pass.
+
+### 2026-11-17 — W6.4 Error states & degraded mode (partial) - Extraction status UI
+- Created `ui/src/hooks/useExtraction.ts` with `useHeuristicExtraction` and `useAIExtraction` hooks for extraction with loading/error/fallback state.
+- Created `ui/src/components/ui/ExtractionStatus.tsx` with `ExtractionStatus` and `ExtractionProviderBadge` components for visible extraction state.
+- Integrated into `InboxView` and `DashboardView` quick capture via `StrategyResolver` props.
+- All tests pass (866 core, 42 UI files, 127 optimize). Build passes.
+- Acceptance: Every async extraction path shows loading, fallback, and error states with retry.
 
 ### 2026-11-16 — W3.2 Property provenance complete
 - Added `sourceSpan` [start, end] and `sourceText` fields to `Property` type in `core/src/types/domain.ts`.

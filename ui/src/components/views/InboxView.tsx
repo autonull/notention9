@@ -28,6 +28,8 @@ import {AutomationsView} from '../dashboard/AutomationsView';
 import {StatsGrid} from '../dashboard/StatsGrid';
 import {ActivityFeed} from '../widgets/ActivityFeed';
 import {sanitizeHTML} from '../../utils/sanitize';
+import {useHeuristicExtraction} from '../../hooks/useExtraction';
+import {ExtractionStatus, ExtractionProviderBadge} from '../ui/Primitives';
 
 interface InboxViewProps {
     sortedNotes?: Note[];
@@ -64,25 +66,27 @@ export function InboxView({sortedNotes}: InboxViewProps) {
     } = useMatchTracking('match', 'match');
     const {rejectMatch} = useRejectedMatches();
 
-    const extractor = useMemo(() => new PropertyExtractor(settings.ontology), [settings.ontology]);
-    const [extractedProps, setExtractedProps] = useState<Array<{key: string; operator: string; values: string[]}>>([]);
-
     const captureStrategy = useSeamStrategy(SEAM_ROLES.CAPTURE);
     const initialOp = (captureStrategy?.getDefaultProps() as {initialOp?: string} | undefined)?.initialOp ?? 'is';
 
+    // Extraction with loading/error/fallback state
+    const extraction = useHeuristicExtraction(quickCaptureInput, settings.ontology ?? []);
+    const [extractedProps, setExtractedProps] = useState<Array<{key: string; operator: string; values: string[]}>>([]);
+
+    // Run extraction when input changes
     useEffect(() => {
         if (!quickCaptureInput.trim()) {
             setExtractedProps([]);
             return;
         }
         let cancelled = false;
-        extractor.extractFromText(quickCaptureInput).then(props => {
-            if (!cancelled) {
-                setExtractedProps(props.map(p => ({key: p.key, operator: p.operator, values: p.values})));
+        extraction.extract().then(() => {
+            if (!cancelled && extraction.data) {
+                setExtractedProps(extraction.data.properties.map(p => ({key: p.key, operator: p.operator, values: p.values})));
             }
         });
         return () => {cancelled = true;};
-    }, [quickCaptureInput, extractor]);
+    }, [quickCaptureInput, extraction]);
 
     useEffect(() => {
         const handleStatusChange = (status: {status: string}) => setAgentStatus(status);
@@ -439,6 +443,12 @@ export function InboxView({sortedNotes}: InboxViewProps) {
                     quickCaptureInput={quickCaptureInput}
                     setQuickCaptureInput={setQuickCaptureInput}
                     extractedProps={extractedProps}
+                    extractionLoading={extraction.loading}
+                    extractionFallbackUsed={extraction.fallbackUsed}
+                    extractionProviderUsed={extraction.providerUsed}
+                    extractionProviderKind={extraction.providerKind}
+                    extractionError={extraction.error}
+                    extractionRetry={extraction.retry}
                     handleQuickCapture={handleQuickCapture}
                     handleQuickTemplate={handleQuickTemplate}
                     handleQuickAction={handleQuickAction}
@@ -517,6 +527,12 @@ function OverviewSection({
     quickCaptureInput,
     setQuickCaptureInput,
     extractedProps,
+    extractionLoading,
+    extractionFallbackUsed,
+    extractionProviderUsed,
+    extractionProviderKind,
+    extractionError,
+    extractionRetry,
     handleQuickCapture,
     handleQuickTemplate,
     handleQuickAction,
@@ -607,6 +623,12 @@ function OverviewSection({
                     onTemplateClick: handleQuickTemplate,
                     onFocus: startCaptureTracking,
                     onBlur: () => stopCaptureTracking(false),
+                    extractionLoading,
+                    extractionFallbackUsed,
+                    extractionProviderUsed,
+                    extractionProviderKind,
+                    extractionError,
+                    extractionRetry,
                 }}
                 fallback={<div data-testid="quick-capture-fallback">Loading capture...</div>}
             />

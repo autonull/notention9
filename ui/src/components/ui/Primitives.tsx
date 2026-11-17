@@ -24,6 +24,7 @@ export * from './ErrorHandler';
 export * from './SkipLink';
 export * from './FeedbackWidget';
 export * from './EmptyState';
+export * from './ExtractionStatus';
 
 // Re-export commonly used types
 export type {ButtonProps, IconButtonProps} from './Button';

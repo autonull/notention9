@@ -4,7 +4,7 @@ import { PropertyValidationError } from '../../utils/errors/index.js';
 import { parseQuantity } from '../quantities/index.js';
 import { normalizeNoteProperties } from '../properties.js';
 import { validateProperty } from '../../utils/validation.js';
-import { ExtractionPipeline, defaultStages, ExtractionOptions } from '../../extraction/index.js';
+import { ExtractionPipeline, defaultStages, ExtractionOptions, ExtractionResult } from '../../extraction/index.js';
 import { TYPE_CHECKERS } from './patterns.js';
 import { Logger } from '../../utils/logging.js';
 
@@ -30,6 +30,17 @@ export class PropertyExtractor {
     const properties = result.properties;
 
     return this.normalizeProperties(properties);
+  }
+
+  async extractFromTextWithStages(text: string, options?: ExtractionOptions): Promise<ExtractionResult> {
+    const pipeline = options ? new ExtractionPipeline(defaultStages) : this.pipeline;
+    const result = await pipeline.extract(text, this.ontologyService.getAllNodes(), options ?? (this.pipeline as any).defaultOptions);
+    const normalizedProperties = this.normalizeProperties(result.properties);
+    
+    return {
+      ...result,
+      properties: normalizedProperties,
+    };
   }
 
   private normalizeProperties(properties: Property[]): Property[] {

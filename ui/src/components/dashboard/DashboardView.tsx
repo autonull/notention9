@@ -27,6 +27,7 @@ import {DashboardStatSkeleton, ActivityFeedSkeleton, QuickActionsSkeleton} from 
 import {Skeleton} from '../ui/Skeleton';
 import {StrategyResolver, SEAM_ROLES} from '../StrategyResolver';
 import {useSeamStrategy} from '../../hooks/useStrategyResolver';
+import {useHeuristicExtraction} from '../../hooks/useExtraction';
 
 const QUICK_CAPTURE_MARKUP = /(?:^|\s)(?:#[\w-]+|\b[\w.-]+:\S+)/g;
 
@@ -50,25 +51,27 @@ export function DashboardView() {
     const { markViewed: markMatchViewed, handleAccept: handleMatchAccept, handleReject: handleMatchReject, handleClarification: handleMatchClarification, handleExplained: handleMatchExplained, handleDismissed: handleMatchDismissed, recordResponseCreated } = useMatchTracking('match', 'match');
     const {rejectMatch} = useRejectedMatches();
 
-    const extractor = useMemo(() => new PropertyExtractor(settings.ontology), [settings.ontology]);
-    const [extractedProps, setExtractedProps] = useState<Array<{key: string; operator: string; values: string[]}>>([]);
-
     const captureStrategy = useSeamStrategy(SEAM_ROLES.CAPTURE);
     const initialOp = (captureStrategy?.getDefaultProps() as {initialOp?: string} | undefined)?.initialOp ?? 'is';
 
+    // Extraction with loading/error/fallback state
+    const extraction = useHeuristicExtraction(quickCaptureInput, settings.ontology ?? []);
+    const [extractedProps, setExtractedProps] = useState<Array<{key: string; operator: string; values: string[]}>>([]);
+
+    // Run extraction when input changes
     useEffect(() => {
         if (!quickCaptureInput.trim()) {
             setExtractedProps([]);
             return;
         }
         let cancelled = false;
-        extractor.extractFromText(quickCaptureInput).then(props => {
-            if (!cancelled) {
-                setExtractedProps(props.map(p => ({ key: p.key, operator: p.operator, values: p.values })));
+        extraction.extract().then(() => {
+            if (!cancelled && extraction.data) {
+                setExtractedProps(extraction.data.properties.map(p => ({ key: p.key, operator: p.operator, values: p.values })));
             }
         });
         return () => { cancelled = true; };
-    }, [quickCaptureInput, extractor]);
+    }, [quickCaptureInput, extraction]);
 
     useEffect(() => {
         const handleStatusChange = (status: {status: string}) => setAgentStatus(status);
@@ -303,6 +306,12 @@ export function DashboardView() {
                         onTemplateClick: handleQuickTemplate,
                         onFocus: startCaptureTracking,
                         onBlur: () => stopCaptureTracking(false),
+                        extractionLoading: extraction.loading,
+                        extractionFallbackUsed: extraction.fallbackUsed,
+                        extractionProviderUsed: extraction.providerUsed,
+                        extractionProviderKind: extraction.providerKind,
+                        extractionError: extraction.error,
+                        extractionRetry: extraction.retry,
                     }}
                     fallback={<div data-testid="quick-capture-fallback">Loading capture...</div>}
                 />

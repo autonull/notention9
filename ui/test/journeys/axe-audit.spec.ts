@@ -2,23 +2,25 @@ import {test, expect} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
 const VIEWS = [
-    {name: 'Inbox', path: '/'},
-    {name: 'Notes', path: '/notes'},
-    {name: 'Map', path: '/map'},
-    {name: 'Timeline', path: '/timeline'},
-    {name: 'Network', path: '/network'},
-    {name: 'Chat', path: '/chat'},
-    {name: 'Actions', path: '/actions'},
-    {name: 'Responses', path: '/responses'},
-    {name: 'Labels', path: '/labels'},
-    {name: 'Trash', path: '/trash'},
-    {name: 'Settings', path: '/settings'},
+    {name: 'Inbox', hash: 'inbox'},
+    {name: 'Notes', hash: 'notes'},
+    {name: 'Map', hash: 'map'},
+    {name: 'Timeline', hash: 'timeline'},
+    {name: 'Network', hash: 'network'},
+    {name: 'Chat', hash: 'chat'},
+    {name: 'Actions', hash: 'actions'},
+    {name: 'Responses', hash: 'responses'},
+    {name: 'Labels', hash: 'labels'},
+    {name: 'Trash', hash: 'trash'},
+    {name: 'Settings', hash: 'settings'},
 ];
 
 for (const view of VIEWS) {
     test.describe(`axe: ${view.name}`, () => {
         test(`no serious/critical violations on ${view.name}`, async ({page}) => {
-            await page.goto(view.path);
+            await page.goto('/');
+            await page.waitForLoadState('networkidle');
+            await page.evaluate((hash) => { window.location.hash = hash; }, view.hash);
             await page.waitForLoadState('networkidle');
 
             const results = await new AxeBuilder({page})

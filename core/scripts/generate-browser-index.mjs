@@ -10,6 +10,7 @@ const content = `// Proper ESM re-export for @notention/core main entry
 
 // Domain barrels
 export * from './notes/index.js';
+export * from './notes/propertyExtractor/index.js';
 export * from './matching/index.js';
 export * from './ontology/index.js';
 export * from './network/index.js';
