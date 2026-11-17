@@ -7,11 +7,15 @@ import localforage from 'localforage';
 import type {AppSettings, ExportNote, Note} from '@notention/core';
 import {
     buildExportEnvelope,
+    decryptBackup,
+    encryptBackup,
     generateNotesCSV,
     generateNotesMarkdown,
+    isEncryptedBackup,
     Logger,
     readExportEnvelope,
     readSingleNote,
+    type EncryptedBackup,
 } from '@notention/core';
 import {STORAGE_KEYS} from '../../config/storageKeys';
 
@@ -23,6 +27,12 @@ interface ImportExportSectionProps {
     onImportSuccess?: (noteCount: number) => void;
     onImportFailed?: (error: string) => void;
     onImportNote?: (noteId: string) => void;
+}
+
+interface PendingImport {
+    type: 'full' | 'note' | 'encrypted';
+    data: {notes: ExportNote[]; settings: AppSettings} | ExportNote | EncryptedBackup;
+    message: string;
 }
 
 interface PendingImport {
@@ -83,6 +93,33 @@ export function ImportExportSection({
         onExportWorkspace?.();
     };
 
+    const handleExportEncrypted = async () => {
+        const passphrase = prompt('Enter a passphrase for the encrypted backup:');
+        if (!passphrase) return;
+
+        const confirmPassphrase = prompt('Confirm passphrase:');
+        if (passphrase !== confirmPassphrase) {
+            addToast('Passphrases do not match', 'error');
+            return;
+        }
+
+        try {
+            const exportData = buildExportEnvelope(notes, settings);
+            const encryptedBackup = await encryptBackup(exportData, passphrase);
+            const blob = new Blob([JSON.stringify(encryptedBackup, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `notention-encrypted-backup-${new Date().toISOString().slice(0, 10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            addToast('Encrypted backup exported successfully', 'success');
+            onExportWorkspace?.();
+        } catch (err) {
+            addToast('Encrypted export failed: ' + (err instanceof Error ? err.message : String(err)), 'error');
+        }
+    };
+
     const handleImportFile = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -91,6 +128,24 @@ export function ImportExportSection({
         reader.onload = async (event) => {
             try {
                 const data = JSON.parse(event.target?.result as string);
+
+                // Check for encrypted backup first
+                if (isEncryptedBackup(data)) {
+                    const passphrase = prompt('Enter passphrase to decrypt backup:');
+                    if (!passphrase) return;
+
+                    try {
+                        const envelope = await decryptBackup(data, passphrase);
+                        setPendingImport({
+                            type: 'encrypted',
+                            data: envelope,
+                            message: `Found encrypted backup with ${envelope.notes.length} notes. This will OVERWRITE your current notes and settings. Continue?`
+                        });
+                    } catch (decryptErr) {
+                        addToast('Decryption failed. Incorrect passphrase or corrupted backup.', 'error', 5000);
+                    }
+                    return;
+                }
 
                 if (data?.notes && data?.settings) {
                     const envelope = readExportEnvelope(data);
@@ -123,7 +178,7 @@ export function ImportExportSection({
                     return;
                 }
 
-                throw new Error('Unknown file format. Expected a backup or a note.');
+                throw new Error('Unknown file format. Expected a backup, encrypted backup, or a note.');
             } catch (err: unknown) {
                 const message = err instanceof Error ? err.message : String(err);
                 addToast('Import failed: ' + message, 'error', 5000);
@@ -144,6 +199,13 @@ export function ImportExportSection({
                 await localforage.setItem(STORAGE_KEYS.notes, envelope.notes);
                 await localforage.setItem(STORAGE_KEYS.settings, envelope.settings);
                 addToast('Import successful. Reloading...', 'success');
+                onImportSuccess?.(envelope.notes.length);
+                setTimeout(() => window.location.reload(), 1500);
+            } else if (pendingImport.type === 'encrypted') {
+                const envelope = pendingImport.data as ExportEnvelope;
+                await localforage.setItem(STORAGE_KEYS.notes, envelope.notes);
+                await localforage.setItem(STORAGE_KEYS.settings, envelope.settings);
+                addToast('Encrypted backup restored. Reloading...', 'success');
                 onImportSuccess?.(envelope.notes.length);
                 setTimeout(() => window.location.reload(), 1500);
             } else {
@@ -177,13 +239,21 @@ export function ImportExportSection({
                 <DocumentDuplicateIcon className="h-6 w-6 text-blue-400"/>
                 Backup & Restore
             </h2>
-            <div className="flex gap-4">
+            <div className="flex flex-wrap gap-4">
                 <Button
                     onClick={handleExport}
                     variant="primary"
                     icon={ArrowDownIcon}
                 >
                     Export JSON
+                </Button>
+
+                <Button
+                    onClick={handleExportEncrypted}
+                    variant="primary"
+                    icon={ArrowDownIcon}
+                >
+                    Export Encrypted Backup
                 </Button>
 
                 <Button
@@ -218,7 +288,7 @@ export function ImportExportSection({
                 />
             </div>
             <p className="text-sm text-gray-400 mt-2">
-                Backups include notes and settings, never your private key. Single notes can be exported from the editor menu.
+                Backups include notes and settings, never your private key. Encrypted backups require a passphrase. Single notes can be exported from the editor menu.
             </p>
 
             <ConfirmationModal

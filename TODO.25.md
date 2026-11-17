@@ -247,7 +247,7 @@
 - [x] **W7.1 Export/import round-trip.** JSON + Markdown export; import restores notes, properties, tags, and revisions.
   - Acceptance: round-trip test is lossless for a seeded workspace (extend `export-import.spec.ts`).
   - **Status**: Added `generateNotesMarkdown` and `generateSingleNoteMarkdown` in `core/src/utils/markdownExport.ts`. Exported via core package. Added "Export Markdown" button in `ImportExportSection`. JSON and CSV export already existed.
-- [ ] **W7.2 Encrypted local backup.** One-click backup with a user passphrase; documented restore.
+- [x] **W7.2 Encrypted local backup.** One-click backup with a user passphrase; documented restore.
   - Acceptance: backup restores on a clean profile.
 - [ ] **W7.3 Schema/version migration.** Versioned workspace format with forward-migration and a dry-run check.
   - Acceptance: old fixture migrates; migration is idempotent.
@@ -942,6 +942,16 @@ pnpm eval:verify-manifest
   5. VirtualizedList bounds: 15 items rendered (expected ~20) ✅
   6. Cache growth control: 2000 entries, 0.57 MB ✅
 - All 6 checks pass; test exits non-zero on failure for CI integration.
+- All UI tests (42 files), core tests (866), optimize tests (127) pass. Build passes.
+
+### 2026-11-17 — W7.2 Encrypted local backup complete
+- Created `core/src/export/backupEncryption.ts` with AES-GCM encryption (PBKDF2 100k iterations)
+- Added `encryptBackup` / `decryptBackup` / `isEncryptedBackup` utilities
+- Integrated into `ImportExportSection`:
+  - "Export Encrypted Backup" button with passphrase confirmation
+  - Automatic detection and decryption of encrypted backup files on import
+  - Passphrase prompt on import with proper error handling
+- Uses existing crypto primitives from `@noble/hashes` and `@noble/ciphers`
 - All UI tests (42 files), core tests (866), optimize tests (127) pass. Build passes.
 
 ---
