@@ -33,6 +33,8 @@ export interface AIInitOptions {
     enableRemote?: boolean;
     enableWebLLM?: boolean;
     enableHeuristic?: boolean;
+    piiRedactionEnabled?: boolean;
+    piiOverrideEnabled?: boolean;
 }
 
 /** Signature of the provider set a configuration asks for. */
@@ -43,6 +45,8 @@ function configSignature(options: AIInitOptions): string {
         options.enableRemote ?? true,
         options.enableWebLLM ?? true,
         options.enableHeuristic ?? true,
+        options.piiRedactionEnabled ?? true,
+        options.piiOverrideEnabled ?? false,
     ]);
 }
 
@@ -74,6 +78,8 @@ async function applyProviders(options: AIInitOptions): Promise<void> {
         enableRemote = true,
         enableWebLLM = true,
         enableHeuristic = true,
+        piiRedactionEnabled = true,
+        piiOverrideEnabled = false,
     } = options;
 
     const enabled = new Set<string>();
@@ -113,7 +119,7 @@ async function applyProviders(options: AIInitOptions): Promise<void> {
 
     // 3. Remote (Gemini) - highest priority when available
     if (enableRemote && isGeminiApiKeyAvailable(remoteApiKey)) {
-        const remoteProvider = new RemoteAIProvider(remoteApiKey);
+        const remoteProvider = new RemoteAIProvider(remoteApiKey, piiRedactionEnabled, piiOverrideEnabled);
         inferenceRouter.registerProvider(remoteProvider, {
             name: 'gemini',
             kind: 'remote',

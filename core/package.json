@@ -98,6 +98,12 @@
       "browser": "./dist/browser/telemetry/frictionUtils.js",
       "types": "./dist/telemetry/frictionUtils.d.ts"
     },
+    "./utils/piiRedaction": {
+      "import": "./dist/utils/piiRedaction.js",
+      "node": "./dist/utils/piiRedaction.js",
+      "browser": "./dist/browser/utils/piiRedaction.js",
+      "types": "./dist/utils/piiRedaction.d.ts"
+    },
     "./prompts": {
       "import": "./dist/prompts/index.js",
       "node": "./dist/prompts/index.js",

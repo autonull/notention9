@@ -253,8 +253,16 @@
 - [x] **W7.3 Schema/version migration.** Versioned workspace format with forward-migration and a dry-run check.
   - Acceptance: old fixture migrates; migration is idempotent.
   - **Status**: Created migration system in `core/src/storage/migrations.ts` with v0→v1 migration for legacy data. Added `MigrateCommand` in `optimize/src/cli/commands/migrate.ts` with `pnpm optimize migrate --dry-run|--apply --input <file> --json` CLI. Migration chain supports sequential version upgrades. Added 15 migration tests. All tests pass (898 core, 127 optimize, 42 UI files). Build passes.
-- [ ] **W7.4 Privacy redaction.** Before any remote inference/transport, strip or mask detected PII (email/phone/SSN) with a visible indicator.
+- [x] **W7.4 Privacy redaction.** Before any remote inference/transport, strip or mask detected PII (email/phone/SSN) with a visible indicator.
   - Acceptance: redaction test on PII fixtures; user override is explicit.
+  - **Status**: 
+    - Created `core/src/utils/piiRedaction.ts` with `redactPII`, `redactPIIForTransport`, `detectPII`, `hasPII`, `getPIIStats` functions
+    - Added comprehensive tests in `core/src/utils/piiRedaction.test.ts` (26 tests passing)
+    - Integrated into `RemoteAIProvider` - automatically redacts prompts before sending to Google Gemini
+    - Added settings in AITab: "Redact PII before sending" (enabled by default) and "Allow sending unredacted (override)" (disabled by default)
+    - Added toast notifications when PII is redacted during remote inference
+    - Exported via `@notention/core/utils/piiRedaction` for both Node.js and browser
+    - All tests pass (921 core, 127 optimize, 42 UI files). Build passes.
 
 ### W8 — Observability & Measurement Loop
 **Goal**: Every usability/quality claim is backed by a repeatable measurement.
@@ -462,7 +470,7 @@ user can switch back for one release.
 
 ### Later (larger/strategic)
 ~~W6.3 Large workspace~~ ✅ · ~~W6.4 Error states & degraded mode~~ ✅ · ~~W6.5 Leak check~~ ✅ ·
-~~W7.2 Encrypted backup~~ ✅ · ~~W7.3 Schema migration~~ ✅ · W7.4 Privacy redaction ·
+~~W7.2 Encrypted backup~~ ✅ · ~~W7.3 Schema migration~~ ✅ · ~~W7.4 Privacy redaction~~ ✅ ·
 ~~W8.1 Friction digest dashboard~~ ✅ · W8.3 LLM call telemetry · W8.4 A/B → decisions ·
 W9.1 Quickstart · W9.2 Model selection guide · W9.3 Decision records · W9.4 Eval how-to ·
 W1.7 LoRA fine-tune (if quality plateaus < 0.80).
@@ -977,6 +985,18 @@ pnpm eval:verify-manifest
   - Displays count, age in days, decayed weight, and duration bucket per signal
   - Limited to top 5 signals per workflow for readability
 - All UI tests (42 files), core tests (895), optimize tests (127) pass. Build passes.
+
+### 2026-11-17 — W7.4 Privacy redaction complete
+- Created `core/src/utils/piiRedaction.ts` with `redactPII`, `redactPIIForTransport`, `detectPII`, `hasPII`, `getPIIStats` functions
+- Comprehensive regex patterns for email, US phone numbers (multiple formats), and SSN (with validation for invalid area/group/serial numbers)
+- Added 26 tests in `core/src/utils/piiRedaction.test.ts` covering detection, redaction, custom masks, filtering by kind, edge cases
+- Integrated into `RemoteAIProvider` - automatically redacts prompts before sending to Google Gemini when enabled
+- Added settings in `AITab`:
+  - "Redact PII before sending" (enabled by default)
+  - "Allow sending unredacted (override)" (disabled by default, explicit opt-in)
+- Added toast notifications when PII is redacted during remote inference (via `useGardener` and `useAutoTagging`)
+- Exported via `@notention/core/utils/piiRedaction` for both Node.js and browser builds
+- All UI tests (42 files), core tests (921), optimize tests (127) pass. Build passes.
 
 ---
 

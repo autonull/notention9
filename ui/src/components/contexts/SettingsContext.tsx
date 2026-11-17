@@ -23,6 +23,8 @@ export function SettingsProvider({
         {
             aiEnabled: false,
             aiRemoteConsent: false,
+            aiPiiRedactionEnabled: true,
+            aiPiiOverrideEnabled: false,
             developerMode: false,
             theme: 'dark',
             nostr: {

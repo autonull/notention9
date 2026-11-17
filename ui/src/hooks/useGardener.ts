@@ -64,10 +64,12 @@ export function useGardener() {
             enableRemote: settings.aiEnabled && settings.aiProvider !== 'webllm' && capabilities.llm !== 'none',
             enableWebLLM: settings.aiEnabled && settings.aiProvider === 'webllm' && capabilities.llm === 'browser',
             enableHeuristic: true,
+            piiRedactionEnabled: settings.aiPiiRedactionEnabled ?? true,
+            piiOverrideEnabled: settings.aiPiiOverrideEnabled ?? false,
         });
         aiReady.current = init;
         init.then(() => setInitialized(true));
-    }, [settings.aiEnabled, settings.aiProvider, settings.aiModel, settings.googleGeminiApiKey]);
+    }, [settings.aiEnabled, settings.aiProvider, settings.aiModel, settings.googleGeminiApiKey, settings.aiPiiRedactionEnabled, settings.aiPiiOverrideEnabled]);
 
     /** Resolves once the AI providers are registered. */
     const whenAIReady = useCallback(() => aiReady.current, []);
@@ -153,8 +155,15 @@ export function useGardener() {
     }, [setSettings, addToast]);
 
     const alignToOntology = useCallback(async (text: string, ontology: OntologyNode[]) => {
-        return await gardener.alignToOntology(text, ontology);
-    }, [gardener]);
+        const result = await gardener.alignToOntology(text, ontology);
+        // Check for PII redaction after remote inference
+        const redactionInfo = routerAdapter.getLastRedactionInfo();
+        if (redactionInfo?.hasRedactions && settings.aiPiiRedactionEnabled) {
+            const kinds = [...new Set(redactionInfo.matches.map(m => m.kind))].join(', ');
+            addToast(`PII redacted (${kinds}) before sending to remote AI`, 'info');
+        }
+        return result;
+    }, [gardener, settings.aiPiiRedactionEnabled, addToast]);
 
     const optimizeOntology = useCallback(async () => {
         const result = await gardener.optimizeOntology(settings.ontology || []);

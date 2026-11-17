@@ -39,6 +39,11 @@ export interface InferenceOptions {
     autoRepair?: boolean;
 }
 
+export interface RedactionInfo {
+    hasRedactions: boolean;
+    matches: Array<{ kind: string; original: string; redacted: string }>;
+}
+
 export interface InferenceResult<T> {
     data: T | null;
     error: Error | null;
@@ -48,6 +53,7 @@ export interface InferenceResult<T> {
     retries: number;
     fallbackUsed: boolean;
     validation?: PipelineResult<T>;
+    redactionInfo?: RedactionInfo;
 }
 
 /**
@@ -261,6 +267,11 @@ export class InferenceRouter {
             if (result.data !== null && result.error === null) {
                 if (i > 0) {
                     result.fallbackUsed = true;
+                }
+                // Capture redaction info from remote providers
+                if (config.kind === 'remote' && 'getLastRedactionInfo' in provider) {
+                    const remoteProvider = provider as { getLastRedactionInfo: () => RedactionInfo };
+                    result.redactionInfo = remoteProvider.getLastRedactionInfo();
                 }
                 return result;
             }

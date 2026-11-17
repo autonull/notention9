@@ -28,3 +28,4 @@ export * from './Registry.js';
 // export * from './BasePlugin.js';  // Node.js only
 export * from './resolutionUtils.js';
 export * from './mutex.js';
+export * from './piiRedaction.js';

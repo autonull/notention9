@@ -14,6 +14,8 @@ export interface AppSettings {
   aiModel?: string;
   googleGeminiApiKey?: string;
   aiRemoteConsent?: boolean;
+  aiPiiRedactionEnabled?: boolean;
+  aiPiiOverrideEnabled?: boolean;
   capabilities?: {
     browser?: boolean;
     files?: boolean;

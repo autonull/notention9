@@ -181,6 +181,45 @@ export function AITab({settings, setSettings}: AITabProps) {
                     />
                 </div>
             )}
+
+            {!isWebLLM && isEnabled && (
+                <div className="space-y-4 pt-4 border-t border-gray-700">
+                    <div className="flex items-center justify-between">
+                        <div className="flex-grow">
+                            <label htmlFor="ai-pii-redaction" className="font-medium text-gray-300">
+                                Redact PII before sending
+                            </label>
+                            <p className="text-sm text-gray-500 mt-1">
+                                Automatically mask emails, phone numbers, and SSNs in text sent to the remote provider.
+                                Recommended for privacy.
+                            </p>
+                        </div>
+                        <Toggle
+                            id="ai-pii-redaction"
+                            checked={settings.aiPiiRedactionEnabled ?? true}
+                            onChange={(checked) => setSettings((prev) => ({...prev, aiPiiRedactionEnabled: checked}))}
+                            ariaLabel="Redact PII before sending"
+                        />
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                        <div className="flex-grow">
+                            <label htmlFor="ai-pii-override" className="font-medium text-gray-300">
+                                Allow sending unredacted (override)
+                            </label>
+                            <p className="text-sm text-gray-500 mt-1">
+                                Explicitly allow sending text with detected PII unmasked. Use with caution.
+                            </p>
+                        </div>
+                        <Toggle
+                            id="ai-pii-override"
+                            checked={!!settings.aiPiiOverrideEnabled}
+                            onChange={(checked) => setSettings((prev) => ({...prev, aiPiiOverrideEnabled: checked}))}
+                            ariaLabel="Allow sending unredacted"
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -1,7 +1,7 @@
 import type {Note, OntologyNode, Property} from '@notention/core';
 import type {InferredAttribute} from './types';
 import {BaseAIProvider} from './BaseProvider.js';
-import {buildAttributeIndex, collectOntologyKeys, Logger, parsePropertiesJson, pruneUngroundedWithSpans} from '@notention/core';
+import {buildAttributeIndex, collectOntologyKeys, Logger, parsePropertiesJson, pruneUngroundedWithSpans, redactPII} from '@notention/core';
 import {GoogleGenAI} from '@google/genai';
 
 export const isGeminiApiKeyAvailable = (userKey?: string): boolean => {
@@ -9,29 +9,59 @@ export const isGeminiApiKeyAvailable = (userKey?: string): boolean => {
     return !!(key && key !== 'YOUR_GEMINI_API_KEY');
 };
 
+export interface RedactionInfo {
+    hasRedactions: boolean;
+    matches: Array<{ kind: string; original: string; redacted: string }>;
+}
+
 export class RemoteAIProvider extends BaseAIProvider {
     readonly name = 'Google Gemini';
     readonly kind = 'remote' as const;
     readonly isAvailable: boolean;
     private client: GoogleGenAI | null = null;
     private readonly modelName = 'gemini-1.5-flash';
+    private lastRedactionInfo: RedactionInfo = { hasRedactions: false, matches: [] };
+    private readonly piiRedactionEnabled: boolean;
+    private readonly piiOverrideEnabled: boolean;
 
-    constructor(apiKey?: string) {
+    constructor(apiKey?: string, piiRedactionEnabled = true, piiOverrideEnabled = false) {
         super();
         const key = apiKey || process.env.API_KEY;
         this.isAvailable = !!(key && key !== 'YOUR_GEMINI_API_KEY');
+        this.piiRedactionEnabled = piiRedactionEnabled;
+        this.piiOverrideEnabled = piiOverrideEnabled;
         if (this.isAvailable) {
             this.client = new GoogleGenAI({apiKey: key || ''});
         }
     }
 
+    getLastRedactionInfo(): RedactionInfo {
+        return { ...this.lastRedactionInfo };
+    }
+
+    private redactPrompt(prompt: string): string {
+        if (!this.piiRedactionEnabled || this.piiOverrideEnabled) {
+            this.lastRedactionInfo = { hasRedactions: false, matches: [] };
+            return prompt;
+        }
+        const result = redactPII(prompt);
+        this.lastRedactionInfo = {
+            hasRedactions: result.hasRedactions,
+            matches: result.matches.map(m => ({ kind: m.kind, original: m.original, redacted: m.redacted })),
+        };
+        return result.text;
+    }
+
     async generateCompletion(prompt: string): Promise<string> {
         if (!this.client) throw new Error('AI Provider not configured');
+
+        // Redact PII before sending to remote API
+        const redactedPrompt = this.redactPrompt(prompt);
 
         try {
             const response = await this.client.models.generateContent({
                 model: this.modelName,
-                contents: prompt,
+                contents: redactedPrompt,
             });
             return response.text?.trim() || '';
         } catch (e) {
