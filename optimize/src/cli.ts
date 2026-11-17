@@ -18,6 +18,7 @@ import {
     EvalMatchCommand,
     EvalConfidenceCommand,
     PerfBudgetCommand,
+    MigrateCommand,
 } from './cli/commands/index.js';
 
 // Import to register journeys
@@ -40,6 +41,7 @@ commandRegistry.register(new EvalCanaryCommand());
 commandRegistry.register(new EvalMatchCommand());
 commandRegistry.register(new EvalConfidenceCommand());
 commandRegistry.register(new PerfBudgetCommand());
+commandRegistry.register(new MigrateCommand());
 
 interface ParsedFlags {
     json: boolean;
@@ -81,6 +83,15 @@ function parseFlags(args: string[]): ParsedFlags {
         if (commitFlag) commitSha = commitFlag.split('=')[1];
     }
 
+    let input: string | undefined;
+    const inputIndex = args.findIndex((r) => r === '--input');
+    if (inputIndex !== -1 && inputIndex + 1 < args.length) {
+        input = args[inputIndex + 1];
+    } else {
+        const inputFlag = args.find((r) => r.startsWith('--input='));
+        if (inputFlag) input = inputFlag.split('=')[1];
+    }
+
     const flagSet = new Set([
         '--json',
         '--a11y',
@@ -91,6 +102,7 @@ function parseFlags(args: string[]): ParsedFlags {
         '--commit',
         '--scenarios',
         '--output',
+        '--input',
         '--no-report',
         '--threshold-match-relevance',
         '--threshold-time-to-match',
@@ -101,19 +113,22 @@ function parseFlags(args: string[]): ParsedFlags {
     const positionals = args.filter((r, i) => {
         if (flagSet.has(r)) return false;
         if (r.startsWith('--status=') || r.startsWith('--commit=')) return false;
-        if (r.startsWith('--scenarios=') || r.startsWith('--output=')) return false;
+        if (r.startsWith('--scenarios=') || r.startsWith('--output=') || r.startsWith('--input=')) return false;
         if (r.startsWith('--threshold-')) return false;
         if (i === statusIndex + 1 && args[statusIndex] === '--status') return false;
         if (i === commitIndex + 1 && args[commitIndex] === '--commit') return false;
+        if (i === inputIndex + 1 && args[inputIndex] === '--input') return false;
         return true;
     });
 
     // Parse flag values into an object for easy access
-    const flags: Record<string, unknown> = { json, a11y, allowDraft, simulator, headless, status, commitSha };
+    const flags: Record<string, unknown> = { json, a11y, allowDraft, simulator, headless, status, commitSha, input };
+    const specialFlags = new Set(['status', 'commit', 'scenarios', 'output', 'input']);
     for (const arg of args) {
         if (arg.startsWith('--')) {
             const [key, value] = arg.split('=');
             const flagName = key.slice(2).replace(/-/g, '');
+            if (specialFlags.has(flagName)) continue;
             if (value !== undefined) {
                 flags[flagName] = isNaN(Number(value)) ? value : Number(value);
             } else if (!key.includes('=')) {
@@ -122,7 +137,7 @@ function parseFlags(args: string[]): ParsedFlags {
         }
     }
 
-    return { json, a11y, allowDraft, simulator, headless, status, commitSha, positionals, ...flags };
+    return { json, a11y, allowDraft, simulator, headless, status, commitSha, input, positionals, ...flags };
 }
 
 function printHelp(): void {
@@ -151,11 +166,6 @@ Run 'pnpm optimize <command> --help' for command-specific options.
 async function main(): Promise<number> {
     const rawArgs = process.argv.slice(2);
 
-    if (rawArgs.includes('--help') || rawArgs.includes('-h')) {
-        printHelp();
-        return 0;
-    }
-
     const flags = parseFlags(rawArgs);
 
     if (flags.positionals.length === 0) {
@@ -172,6 +182,12 @@ async function main(): Promise<number> {
             cmd.printHelp();
             return 0;
         }
+    }
+
+    // Global help only if no subcommand or explicit --help with no subcommand
+    if (rawArgs.includes('--help') || rawArgs.includes('-h')) {
+        printHelp();
+        return 0;
     }
 
     const command = commandRegistry.get(subcommand);

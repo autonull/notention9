@@ -119,6 +119,7 @@ const nodeEntries = [
   'src/config/NoteBasedConfig.ts',
   'src/storage/index.ts',
   'src/storage/recovery.ts',
+  'src/storage/migrations.ts',
   'src/templates/index.ts',
   'src/fixtures/index.ts',
   'src/feedback/index.ts',

@@ -4,6 +4,7 @@ import {
     STORAGE_SCHEMA_VERSION,
     getStorageVersion,
     validateStorageSchema,
+    migrateStorageSchema,
     type StorageSchema,
 } from './migrations.js';
 import {logInfo, logWarn, logError} from '../utils/logging.js';
@@ -80,12 +81,72 @@ export class ValidatedStorage {
         };
     }
 
+    async getFullSchemaWithMigration(): Promise<StorageSchema | null> {
+        const [notesRaw, settingsRaw, version] = await Promise.all([
+            this.storage.getItem(STORAGE_KEYS.notes),
+            this.storage.getItem(STORAGE_KEYS.settings),
+            this.getSchemaVersion(),
+        ]);
+
+        if (!notesRaw && !settingsRaw) return null;
+
+        const schemaVersion = version || getStorageVersion(notesRaw) || getStorageVersion(settingsRaw);
+
+        if (schemaVersion === STORAGE_SCHEMA_VERSION) {
+            return {
+                version: STORAGE_SCHEMA_VERSION,
+                notes: (notesRaw as {notes: StorageSchema['notes']})?.notes ?? [],
+                settings: (settingsRaw as {settings: StorageSchema['settings']})?.settings ?? this.getDefaultSettings(),
+            };
+        }
+
+        const combinedData = {
+            version: schemaVersion,
+            notes: (notesRaw as {notes: StorageSchema['notes']})?.notes ?? [],
+            settings: (settingsRaw as {settings: StorageSchema['settings']})?.settings ?? this.getDefaultSettings(),
+        };
+
+        try {
+            const migrated = migrateStorageSchema(combinedData, STORAGE_SCHEMA_VERSION);
+            return migrated;
+        } catch (error) {
+            const err = error instanceof Error ? error : new Error(String(error));
+            logError(`Migration failed: ${err.message}`, err, 'validatedStorage');
+            return null;
+        }
+    }
+
     async setFullSchema(schema: StorageSchema): Promise<void> {
         await Promise.all([
             this.storage.setItem(STORAGE_KEYS.notes, {version: STORAGE_SCHEMA_VERSION, notes: schema.notes}),
             this.storage.setItem(STORAGE_KEYS.settings, {version: STORAGE_SCHEMA_VERSION, settings: schema.settings}),
             this.setSchemaVersion(STORAGE_SCHEMA_VERSION),
         ]);
+    }
+
+    async applyMigration(dryRun = false): Promise<{success: boolean; dryRun: boolean; message: string}> {
+        const fullSchema = await this.getFullSchemaWithMigration();
+        if (!fullSchema) {
+            return {success: false, dryRun, message: 'No data to migrate or migration failed'};
+        }
+
+        if (fullSchema.version === STORAGE_SCHEMA_VERSION) {
+            return {success: true, dryRun, message: 'Already at latest version'};
+        }
+
+        if (dryRun) {
+            return {success: true, dryRun, message: `Would migrate from v${fullSchema.version} to v${STORAGE_SCHEMA_VERSION}`};
+        }
+
+        try {
+            await this.setFullSchema(fullSchema);
+            logInfo(`Successfully migrated storage from v${fullSchema.version} to v${STORAGE_SCHEMA_VERSION}`, 'validatedStorage');
+            return {success: true, dryRun, message: `Migrated from v${fullSchema.version} to v${STORAGE_SCHEMA_VERSION}`};
+        } catch (error) {
+            const err = error instanceof Error ? error : new Error(String(error));
+            logError(`Migration apply failed: ${err.message}`, err, 'validatedStorage');
+            return {success: false, dryRun, message: `Migration failed: ${err.message}`};
+        }
     }
 
     async clear(): Promise<void> {

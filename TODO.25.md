@@ -214,8 +214,9 @@
     - Verified existing live regions: Toast (`role="alert"`), ActivityFeed (`role="status"`), ContextualHint (`role="status"`), Input errors (`role="alert"`).
     - Verified list semantics: ActivityFeed uses `<ul aria-label="Recent activity feed">`, Navigation breadcrumbs use `<ol>`, MetricsTab uses `<ul>`.
     - All UI unit tests pass (42 files), core tests (855), optimize tests (107), build passes.
-- [x] **W5.4 Reduced motion - [ ] **W5.4 Reduced motion & high contrast.** high contrast.** Honor `prefers-reduced-motion` and `prefers-contrast`; no essential info conveyed by color alone.
+- [x] **W5.4 Reduced motion & high contrast.** Honor `prefers-reduced-motion` and `prefers-contrast`; no essential info conveyed by color alone.
   - Acceptance: toggles verified in UI; screenshots in `doc/screenshot/`.
+  - **Status**: Implemented `prefers-reduced-motion` and `prefers-contrast` media query handling in CSS. Added accessibility settings in `AppSettings` with `reducedMotion` and `highContrast` options. All UI tests pass.
 - [x] **W5.5 i18n completeness + RTL audit.** Verify all 6 locales (`en,es,fr,de,zh,ar`) have keys; audit RTL (`ar`) layout, icons, and numbers.
   - Acceptance: missing-key check = 0; RTL screenshots reviewed.
 - [x] **W5.6 Responsive/mobile pass.** Bottom nav, touch targets ≥ 44px, no horizontal scroll at 360px.
@@ -249,8 +250,9 @@
   - **Status**: Added `generateNotesMarkdown` and `generateSingleNoteMarkdown` in `core/src/utils/markdownExport.ts`. Exported via core package. Added "Export Markdown" button in `ImportExportSection`. JSON and CSV export already existed.
 - [x] **W7.2 Encrypted local backup.** One-click backup with a user passphrase; documented restore.
   - Acceptance: backup restores on a clean profile.
-- [ ] **W7.3 Schema/version migration.** Versioned workspace format with forward-migration and a dry-run check.
+- [x] **W7.3 Schema/version migration.** Versioned workspace format with forward-migration and a dry-run check.
   - Acceptance: old fixture migrates; migration is idempotent.
+  - **Status**: Created migration system in `core/src/storage/migrations.ts` with v0→v1 migration for legacy data. Added `MigrateCommand` in `optimize/src/cli/commands/migrate.ts` with `pnpm optimize migrate --dry-run|--apply --input <file> --json` CLI. Migration chain supports sequential version upgrades. Added 15 migration tests. All tests pass (898 core, 127 optimize, 42 UI files). Build passes.
 - [ ] **W7.4 Privacy redaction.** Before any remote inference/transport, strip or mask detected PII (email/phone/SSN) with a visible indicator.
   - Acceptance: redaction test on PII fixtures; user override is explicit.
 
@@ -455,11 +457,11 @@ user can switch back for one release.
 ### Next (after Now)
 ~~W5.5 i18n completeness + RTL audit~~ ✅ · ~~W5.6 Responsive/mobile pass~~ ✅ ·
 ~~W6.1 Performance budgets~~ ✅ · ~~W6.2 Offline/local-only mode~~ ✅ · ~~W7.1 Export/import round-trip~~ ✅
-W6.3 Large workspace · ~~W6.4 Error states & degraded mode~~ ✅ · W6.5 Leak check
+~~W6.3 Large workspace~~ ✅ · ~~W6.4 Error states & degraded mode~~ ✅ · ~~W6.5 Leak check~~ ✅
 
 ### Later (larger/strategic)
-W6.3 Large workspace · ~~W6.4 Error states & degraded mode~~ ✅ · W6.5 Leak check ·
-W7.2 Encrypted backup · W7.3 Schema migration · W7.4 Privacy redaction ·
+~~W6.3 Large workspace~~ ✅ · ~~W6.4 Error states & degraded mode~~ ✅ · ~~W6.5 Leak check~~ ✅ ·
+~~W7.2 Encrypted backup~~ ✅ · ~~W7.3 Schema migration~~ ✅ · W7.4 Privacy redaction ·
 W8.1 Friction digest dashboard · W8.3 LLM call telemetry · W8.4 A/B → decisions ·
 W9.1 Quickstart · W9.2 Model selection guide · W9.3 Decision records · W9.4 Eval how-to ·
 W1.7 LoRA fine-tune (if quality plateaus < 0.80).
@@ -953,6 +955,15 @@ pnpm eval:verify-manifest
   - Passphrase prompt on import with proper error handling
 - Uses existing crypto primitives from `@noble/hashes` and `@noble/ciphers`
 - All UI tests (42 files), core tests (866), optimize tests (127) pass. Build passes.
+
+### 2026-11-17 — W7.3 Schema/version migration complete
+- Created migration system in `core/src/storage/migrations.ts` with `MIGRATIONS` registry and `migrateStorageSchema`/`dryRunMigration` functions
+- Added v0→v1 migration for legacy data (normalizes note structure, applies default settings)
+- Created `MigrateCommand` in `optimize/src/cli/commands/migrate.ts` with `pnpm optimize migrate --dry-run|--apply --input <file> --json --target-version <n>`
+- Migration chain supports sequential version upgrades (v0→v1→v2...)
+- Added 15 migration tests in `core/src/storage/migrations.test.ts`
+- Fixed CLI flag parsing for `--input` string argument
+- All UI tests (42 files), core tests (898), optimize tests (127) pass. Build passes.
 
 ---
 

@@ -38,6 +38,12 @@
       "node": "./dist/storage/index.js",
       "browser": "./dist/browser/storage/index.js"
     },
+    "./storage/migrations": {
+      "import": "./dist/storage/migrations.js",
+      "node": "./dist/storage/migrations.js",
+      "browser": "./dist/browser/storage/migrations.js",
+      "types": "./dist/storage/migrations.d.ts"
+    },
     "./config": {
       "import": "./dist/config.js",
       "node": "./dist/config.js",
