@@ -47,6 +47,8 @@ blob-report/
 simulator/tmp-*.js
 simulator/tmp-*.ts
 ux-evaluation-report.json
+doc/screenshot/.tmp/
+doc/screenshot.swap/
 
 # Optimizer
 optimize/src/**/*.js
