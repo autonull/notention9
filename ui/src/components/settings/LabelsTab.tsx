@@ -97,8 +97,8 @@ export function LabelsTab() {
     };
 
     return (
-        <div className="bg-gray-900/70 p-6 rounded-lg animate-fade-in space-y-6">
-            <div className="flex flex-col gap-2">
+        <div className="bg-gray-900/70 p-4 md:p-6 rounded-lg animate-fade-in lg:flex-1 lg:min-h-0 lg:flex lg:flex-col">
+            <div className="flex flex-col gap-2 shrink-0">
                 <h2 className="text-xl font-semibold text-gray-100 flex items-center gap-3">
                     <TagIcon className="h-6 w-6 text-emerald-400"/>
                     Labels
@@ -108,100 +108,106 @@ export function LabelsTab() {
                 </p>
             </div>
 
-            <div className="p-4 bg-gray-800 rounded-lg border border-gray-700">
-                <div className="flex gap-2 items-center mb-4">
-                    <div className="flex-1">
-                        <Input
-                            label="Create new label"
-                            value={newTagInput}
-                            onChange={(e) => setNewTagInput(e.target.value)}
-                            placeholder="e.g. project, urgent, personal"
-                            onKeyDown={(e) => e.key === 'Enter' && handleCreateTag()}
-                        />
+            <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:flex-1 lg:min-h-0">
+                <div className="flex flex-col gap-4">
+                    <div className="p-4 bg-gray-800 rounded-lg border border-gray-700">
+                        <div className="flex gap-2 items-center mb-4">
+                            <div className="flex-1">
+                                <Input
+                                    label="Create new label"
+                                    value={newTagInput}
+                                    onChange={(e) => setNewTagInput(e.target.value)}
+                                    placeholder="e.g. project, urgent, personal"
+                                    onKeyDown={(e) => e.key === 'Enter' && handleCreateTag()}
+                                />
+                            </div>
+                            <Button onClick={handleCreateTag} variant="primary" icon={PlusIcon}>
+                                Add
+                            </Button>
+                        </div>
+
+                        <p className="text-xs text-gray-400">
+                            {sortedTags.length} label{sortedTags.length !== 1 ? 's' : ''} in use across {notes.length} note{notes.length !== 1 ? 's' : ''}
+                        </p>
                     </div>
-                    <Button onClick={handleCreateTag} variant="primary" icon={PlusIcon}>
-                        Add
-                    </Button>
+
+                    <div className="bg-gray-900/30 p-4 rounded-lg border border-gray-700/30 lg:mt-auto">
+                        <h3 className="text-sm font-semibold text-gray-300 mb-2">Advanced</h3>
+                        <p className="text-xs text-gray-400 leading-relaxed">
+                            For full ontology editing (custom attributes, types, relationships), use the{' '}
+                            <button
+                                onClick={() => setSettings(prev => ({...prev, activeView: 'ontology'}))}
+                                className="text-blue-400 hover:underline"
+                            >
+                                Ontology Editor
+                            </button>
+                            .
+                        </p>
+                    </div>
                 </div>
 
-                <p className="text-xs text-gray-400 mb-4">
-                    {sortedTags.length} label{sortedTags.length !== 1 ? 's' : ''} in use across {notes.length} note{notes.length !== 1 ? 's' : ''}
-                </p>
-
-                {sortedTags.length === 0 ? (
-                    <EmptyState
-                        variant="minimal"
-                        icon={TagIcon}
-                        title="No labels yet"
-                        description={<>Create one above, or add a tag inline with <code className="text-blue-400">#tag</code> in a note.</>}
-                    />
-                ) : (
-                    <div className="space-y-2 max-h-96 overflow-y-auto">
-                        {sortedTags.map(({tag, count}) => (
-                            <div key={tag} className="flex items-center justify-between p-3 bg-gray-900/50 rounded-lg border border-gray-700/30">
-                                {editingTag === tag ? (
-                                    <div className="flex-1 flex items-center gap-2">
-                                        <input
-                                            type="text"
-                                            value={editValue}
-                                            onChange={(e) => setEditValue(e.target.value)}
-                                            onBlur={() => handleRenameTag(tag, editValue)}
-                                            onKeyDown={(e) => handleKeyDown(e, tag)}
-                                            autoFocus
-                                            className="flex-1 bg-gray-800 border border-gray-600 rounded px-2 py-1 text-white text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                        />
-                                        <Button variant="ghost" size="sm" onClick={() => handleRenameTag(tag, editValue)} icon={CheckIcon} aria-label="Save"/>
-                                        <Button variant="ghost" size="sm" onClick={handleCancelEdit} icon={XIcon} aria-label="Cancel"/>
-                                    </div>
-                                ) : (
-                                    <>
-                                        <div className="flex items-center gap-3 flex-1 min-w-0">
-                                            <TagIcon className="w-5 h-5 text-emerald-400 flex-shrink-0"/>
-                                            <span className="font-medium text-white truncate">#{tag}</span>
-                                            <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-emerald-500/20 text-emerald-300">
-                                                {count} note{count !== 1 ? 's' : ''}
-                                            </span>
+                <div className="lg:overflow-y-auto custom-scrollbar">
+                    {sortedTags.length === 0 ? (
+                        <EmptyState
+                            variant="minimal"
+                            icon={TagIcon}
+                            title="No labels yet"
+                            description={<>Create one, or add a tag inline with <code className="text-blue-400">#tag</code> in a note.</>}
+                        />
+                    ) : (
+                        <div className="space-y-2">
+                            {sortedTags.map(({tag, count}) => (
+                                <div key={tag} className="flex items-center justify-between p-3 bg-gray-900/50 rounded-lg border border-gray-700/30">
+                                    {editingTag === tag ? (
+                                        <div className="flex-1 flex items-center gap-2">
+                                            <input
+                                                type="text"
+                                                value={editValue}
+                                                onChange={(e) => setEditValue(e.target.value)}
+                                                onBlur={() => handleRenameTag(tag, editValue)}
+                                                onKeyDown={(e) => handleKeyDown(e, tag)}
+                                                autoFocus
+                                                className="flex-1 bg-gray-800 border border-gray-600 rounded px-2 py-1 text-white text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                            />
+                                            <Button variant="ghost" size="sm" onClick={() => handleRenameTag(tag, editValue)} icon={CheckIcon} aria-label="Save"/>
+                                            <Button variant="ghost" size="sm" onClick={handleCancelEdit} icon={XIcon} aria-label="Cancel"/>
                                         </div>
-                                        <div className="flex items-center gap-1">
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => handleStartEdit(tag)}
-                                                aria-label={`Rename ${tag}`}
-                                                className="text-gray-400 hover:text-white hover:bg-gray-700/50"
-                                            >
-                                                <PencilIcon className="w-4 h-4"/>
-                                            </Button>
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => handleDeleteTag(tag)}
-                                                aria-label={`Delete ${tag}`}
-                                                className="text-gray-400 hover:text-red-400 hover:bg-red-500/10"
-                                            >
-                                                <TrashIcon className="w-4 h-4"/>
-                                            </Button>
-                                        </div>
-                                    </>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </div>
-
-            <div className="bg-gray-900/30 p-4 rounded-lg border border-gray-700/30">
-                <h3 className="text-sm font-semibold text-gray-300 mb-2">Advanced</h3>
-                <p className="text-xs text-gray-400 leading-relaxed">
-                    For full ontology editing (custom attributes, types, relationships), use the{' '}
-                    <button
-                        onClick={() => setSettings(prev => ({...prev, activeView: 'ontology'}))}
-                        className="text-blue-400 hover:underline"
-                    >
-                        Ontology Editor
-                    </button>
-                    .
-                </p>
+                                    ) : (
+                                        <>
+                                            <div className="flex items-center gap-3 flex-1 min-w-0">
+                                                <TagIcon className="w-5 h-5 text-emerald-400 flex-shrink-0"/>
+                                                <span className="font-medium text-white truncate">#{tag}</span>
+                                                <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-emerald-500/20 text-emerald-300">
+                                                    {count} note{count !== 1 ? 's' : ''}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center gap-1">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => handleStartEdit(tag)}
+                                                    aria-label={`Rename ${tag}`}
+                                                    className="text-gray-400 hover:text-white hover:bg-gray-700/50"
+                                                >
+                                                    <PencilIcon className="w-4 h-4"/>
+                                                </Button>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => handleDeleteTag(tag)}
+                                                    aria-label={`Delete ${tag}`}
+                                                    className="text-gray-400 hover:text-red-400 hover:bg-red-500/10"
+                                                >
+                                                    <TrashIcon className="w-4 h-4"/>
+                                                </Button>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

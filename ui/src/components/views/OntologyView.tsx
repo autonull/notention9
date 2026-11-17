@@ -104,10 +104,15 @@ export function OntologyView() {
 
     return (
         <div className="p-4 md:p-6 h-full overflow-y-auto bg-gray-900 text-white custom-scrollbar">
-            <div className="flex flex-col gap-4 mb-6 border-b border-gray-700/50 pb-4">
+            <div className="flex flex-col gap-3 mb-4 border-b border-gray-700/50 pb-4">
 
-                <div className="flex justify-between items-center">
-                    <h2 className="text-xl font-bold text-white">Ontology</h2>
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <h2 className="text-xl font-bold text-white">Ontology</h2>
+                        <p className="text-sm text-gray-400">
+                            The shared vocabulary of your network, built from the details in your notes.
+                        </p>
+                    </div>
 
                     <div className="flex items-center gap-2">
                         {safeActiveTab === 'graph' && (
@@ -130,25 +135,25 @@ export function OntologyView() {
 
                 <div className="flex items-center gap-2 overflow-x-auto pb-1">
                     <Button
-                        onClick={handleOptimize}
+                        onClick={handleEvolve}
                         disabled={isEvolving}
                         loading={isEvolving}
                         variant="primary"
                         size="xs"
-                        className="bg-blue-700/80 hover:bg-blue-600 flex-shrink-0"
+                        className="flex-shrink-0"
                     >
-                        Optimize
+                        {isEvolving ? 'Updating...' : 'Update Ontology'}
                     </Button>
 
                     <Button
-                        onClick={handleEvolve}
+                        onClick={handleOptimize}
                         disabled={isEvolving}
                         loading={isEvolving}
-                        variant="success"
+                        variant="secondary"
                         size="xs"
-                        className="bg-green-700/80 hover:bg-green-600 flex-shrink-0"
+                        className="flex-shrink-0"
                     >
-                        {isEvolving ? 'Updating...' : 'Update Ontology'}
+                        Optimize
                     </Button>
                 </div>
             </div>
@@ -199,19 +204,6 @@ export function OntologyView() {
                     </div>
                 ) : (
                     <>
-                        <div
-                            className="mb-6 flex items-start gap-4 p-4 bg-blue-900/20 border border-blue-900/50 rounded-lg">
-                            <div className="text-2xl">🌱</div>
-                            <div>
-                                <h3 className="font-bold text-white mb-1">The Ontology</h3>
-                                <p className="text-sm text-gray-400">
-                                    This graph represents the shared vocabulary of your network.
-                                    As you add structured details to notes (for example a price or a skill), the Semantic
-                                    Engine automatically updates this structure.
-                                </p>
-                            </div>
-                        </div>
-
                         {isEditing && (
                             <div className="mb-4 flex justify-end">
                                 <Button

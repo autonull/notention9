@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-17T21:16:38.480Z",
+  "generatedAt": "2026-11-17T22:46:06.249Z",
   "cases": [
     {
       "id": "inbox-empty",
@@ -12,11 +12,11 @@
           "height": 900
         },
         "scrollHeight": 900,
-        "contentRatio": 0.644,
-        "wastedSpace": 34,
-        "wastedRatio": 0.038,
-        "trailingSpace": 122,
-        "contentHeight": 665,
+        "contentRatio": 0.611,
+        "wastedSpace": 0,
+        "wastedRatio": 0,
+        "trailingSpace": 210,
+        "contentHeight": 577,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
@@ -25,7 +25,7 @@
           "height": 342,
           "footprint": 0.38
         },
-        "density": 7.5,
+        "density": 8.7,
         "actions": [
           {
             "label": "Create note",
@@ -45,7 +45,7 @@
           },
           {
             "label": "Or load a sample workspace",
-            "top": 677
+            "top": 669
           }
         ],
         "facts": 0
@@ -234,36 +234,36 @@
           "height": 900
         },
         "scrollHeight": 900,
-        "contentRatio": 0.229,
-        "wastedSpace": 345,
-        "wastedRatio": 0.383,
-        "trailingSpace": 126,
-        "contentHeight": 685,
+        "contentRatio": 0.307,
+        "wastedSpace": 272,
+        "wastedRatio": 0.302,
+        "trailingSpace": 114,
+        "contentHeight": 697,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 61.3,
+        "density": 61.7,
         "actions": [
           {
-            "label": "Today",
+            "label": "Jump to latest",
             "top": 145
+          },
+          {
+            "label": "Today",
+            "top": 205
           },
           {
             "label": "Back",
-            "top": 145
+            "top": 205
           },
           {
             "label": "Next",
-            "top": 145
+            "top": 205
           },
           {
             "label": "Month",
-            "top": 145
-          },
-          {
-            "label": "Week",
-            "top": 145
+            "top": 205
           }
         ],
         "facts": 0
@@ -280,32 +280,36 @@
           "height": 900
         },
         "scrollHeight": 900,
-        "contentRatio": 0.393,
-        "wastedSpace": 8,
-        "wastedRatio": 0.009,
-        "trailingSpace": 354,
-        "contentHeight": 467,
+        "contentRatio": 0.663,
+        "wastedSpace": 63,
+        "wastedRatio": 0.069,
+        "trailingSpace": 41,
+        "contentHeight": 771,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 8.6,
+        "density": 9.1,
         "actions": [
           {
             "label": "+ New Task",
-            "top": 80
+            "top": 88
           },
           {
             "label": "Print flyers for the meetuptype: task#ta",
             "top": 189
           },
           {
-            "label": "Print flyers for the meetupDesign is rea",
-            "top": 322
+            "label": "Collect tools for repair daytype: task#t",
+            "top": 310
           },
           {
-            "label": "Book the community halltype: task#task",
-            "top": 476
+            "label": "Ask John about the shared gardentype: ta",
+            "top": 385
+          },
+          {
+            "label": "Print flyers for the meetupdeadline: 202",
+            "top": 506
           }
         ],
         "facts": 0
@@ -314,7 +318,7 @@
     {
       "id": "responses",
       "view": "responses",
-      "state": "populated",
+      "state": "empty",
       "viewport": "desktop",
       "metrics": {
         "viewport": {
@@ -356,36 +360,36 @@
           "height": 900
         },
         "scrollHeight": 900,
-        "contentRatio": 0.544,
-        "wastedSpace": 72,
-        "wastedRatio": 0.08,
-        "trailingSpace": 12,
-        "contentHeight": 768,
+        "contentRatio": 0.571,
+        "wastedSpace": 66,
+        "wastedRatio": 0.073,
+        "trailingSpace": 0,
+        "contentHeight": 780,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 20.8,
+        "density": 25.6,
         "actions": [
           {
             "label": "Add",
-            "top": 228
+            "top": 220
+          },
+          {
+            "label": "Ontology Editor",
+            "top": 806
           },
           {
             "label": "Rename community",
-            "top": 348
+            "top": 205
           },
           {
             "label": "Delete community",
-            "top": 348
+            "top": 205
           },
           {
             "label": "Rename request",
-            "top": 430
-          },
-          {
-            "label": "Delete request",
-            "top": 430
+            "top": 287
           }
         ],
         "facts": 0
@@ -402,39 +406,39 @@
           "height": 900
         },
         "scrollHeight": 900,
-        "contentRatio": 0.538,
-        "wastedSpace": 87,
-        "wastedRatio": 0.097,
-        "trailingSpace": 3,
-        "contentHeight": 804,
+        "contentRatio": 0.739,
+        "wastedSpace": 45,
+        "wastedRatio": 0.05,
+        "trailingSpace": 0,
+        "contentHeight": 812,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 6.2,
+        "density": 28.3,
         "actions": [
           {
             "label": "Graph",
-            "top": 93
+            "top": 94
           },
           {
             "label": "Learning1",
-            "top": 93
+            "top": 94
           },
           {
             "label": "Conflicts0",
-            "top": 93
-          },
-          {
-            "label": "Optimize",
-            "top": 150
+            "top": 94
           },
           {
             "label": "Update Ontology",
-            "top": 150
+            "top": 148
+          },
+          {
+            "label": "Optimize",
+            "top": 148
           }
         ],
-        "facts": 0
+        "facts": 18
       }
     },
     {
@@ -616,16 +620,16 @@
           "height": 900
         },
         "scrollHeight": 900,
-        "contentRatio": 0.273,
-        "wastedSpace": 33,
-        "wastedRatio": 0.037,
-        "trailingSpace": 468,
-        "contentHeight": 327,
+        "contentRatio": 0.531,
+        "wastedSpace": 83,
+        "wastedRatio": 0.092,
+        "trailingSpace": 24,
+        "contentHeight": 771,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 61.2,
+        "density": 28.5,
         "actions": [
           {
             "label": "Add identity",
@@ -662,11 +666,11 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 0.594,
-        "wastedSpace": 165,
-        "wastedRatio": 0.195,
-        "trailingSpace": 0,
-        "contentHeight": 747,
+        "contentRatio": 0.447,
+        "wastedSpace": 0,
+        "wastedRatio": 0,
+        "trailingSpace": 352,
+        "contentHeight": 395,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
@@ -675,7 +679,7 @@
           "height": 172,
           "footprint": 0.204
         },
-        "density": 6.7,
+        "density": 12.7,
         "actions": [
           {
             "label": "Create note",
@@ -695,7 +699,7 @@
           },
           {
             "label": "Or load a sample workspace",
-            "top": 491
+            "top": 471
           }
         ],
         "facts": 0
@@ -741,7 +745,7 @@
           },
           {
             "label": "RequestLooking for a React developerWe a",
-            "top": 337
+            "top": 325
           }
         ],
         "facts": 0
@@ -884,36 +888,36 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 0.315,
-        "wastedSpace": 188,
-        "wastedRatio": 0.222,
-        "trailingSpace": 167,
-        "contentHeight": 588,
+        "contentRatio": 0.421,
+        "wastedSpace": 92,
+        "wastedRatio": 0.109,
+        "trailingSpace": 149,
+        "contentHeight": 606,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 71.4,
+        "density": 71,
         "actions": [
           {
+            "label": "Jump to latest",
+            "top": 173
+          },
+          {
             "label": "Today",
-            "top": 145
+            "top": 233
           },
           {
             "label": "Back",
-            "top": 145
+            "top": 233
           },
           {
             "label": "Next",
-            "top": 145
+            "top": 233
           },
           {
             "label": "Month",
-            "top": 205
-          },
-          {
-            "label": "Week",
-            "top": 205
+            "top": 293
           }
         ],
         "facts": 0
@@ -930,16 +934,16 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 0.419,
-        "wastedSpace": 8,
-        "wastedRatio": 0.009,
-        "trailingSpace": 298,
-        "contentHeight": 467,
+        "contentRatio": 0.626,
+        "wastedSpace": 0,
+        "wastedRatio": 0,
+        "trailingSpace": 136,
+        "contentHeight": 629,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 8.6,
+        "density": 9.5,
         "actions": [
           {
             "label": "+ New Task",
@@ -947,15 +951,19 @@
           },
           {
             "label": "Print flyers for the meetuptype: task#ta",
-            "top": 189
+            "top": 173
           },
           {
-            "label": "Print flyers for the meetupDesign is rea",
-            "top": 322
+            "label": "Collect tools for repair daytype: task#t",
+            "top": 294
           },
           {
-            "label": "Book the community halltype: task#task",
-            "top": 476
+            "label": "Ask John about the shared gardentype: ta",
+            "top": 369
+          },
+          {
+            "label": "Print flyers for the meetupdeadline: 202",
+            "top": 490
           }
         ],
         "facts": 0
@@ -964,7 +972,7 @@
     {
       "id": "responses",
       "view": "responses",
-      "state": "populated",
+      "state": "empty",
       "viewport": "mobile",
       "metrics": {
         "viewport": {
@@ -1006,36 +1014,36 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 0.562,
-        "wastedSpace": 72,
-        "wastedRatio": 0.085,
+        "contentRatio": 0.528,
+        "wastedSpace": 97,
+        "wastedRatio": 0.115,
         "trailingSpace": 0,
-        "contentHeight": 740,
+        "contentHeight": 748,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 18.9,
+        "density": 16,
         "actions": [
           {
             "label": "Add",
-            "top": 232
+            "top": 216
+          },
+          {
+            "label": "Ontology Editor",
+            "top": 406
           },
           {
             "label": "Rename community",
-            "top": 352
+            "top": 473
           },
           {
             "label": "Delete community",
-            "top": 352
+            "top": 473
           },
           {
             "label": "Rename request",
-            "top": 434
-          },
-          {
-            "label": "Delete request",
-            "top": 434
+            "top": 555
           }
         ],
         "facts": 0
@@ -1052,39 +1060,39 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 0.555,
-        "wastedSpace": 87,
-        "wastedRatio": 0.103,
-        "trailingSpace": 7,
-        "contentHeight": 752,
+        "contentRatio": 0.722,
+        "wastedSpace": 45,
+        "wastedRatio": 0.053,
+        "trailingSpace": 8,
+        "contentHeight": 756,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 6.6,
+        "density": 25.1,
         "actions": [
           {
             "label": "Graph",
-            "top": 85
+            "top": 165
           },
           {
             "label": "Learning1",
-            "top": 85
+            "top": 165
           },
           {
             "label": "Conflicts0",
-            "top": 85
-          },
-          {
-            "label": "Optimize",
-            "top": 142
+            "top": 165
           },
           {
             "label": "Update Ontology",
-            "top": 142
+            "top": 218
+          },
+          {
+            "label": "Optimize",
+            "top": 218
           }
         ],
-        "facts": 0
+        "facts": 14
       }
     },
     {
@@ -1266,16 +1274,16 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 0.419,
-        "wastedSpace": 9,
-        "wastedRatio": 0.011,
-        "trailingSpace": 245,
-        "contentHeight": 466,
+        "contentRatio": 0.591,
+        "wastedSpace": 27,
+        "wastedRatio": 0.032,
+        "trailingSpace": 0,
+        "contentHeight": 711,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 42.9,
+        "density": 28.1,
         "actions": [
           {
             "label": "Add identity",

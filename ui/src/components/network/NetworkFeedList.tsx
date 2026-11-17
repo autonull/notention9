@@ -1,8 +1,9 @@
 import React from 'react';
 import type {NostrEvent, NostrProfile} from '@notention/core';
 import {NostrEventCard} from './NostrEventCard';
-import {LoadingSpinner, SettingsIcon} from '../ui/icons';
+import {SettingsIcon} from '../ui/icons';
 import {Button} from '../ui/Button';
+import {Skeleton} from '../ui/Skeleton';
 import {EmptyState, NetworkEmptyIllustration} from '../ui/Primitives';
 import {useView} from '../../hooks/useViewContext';
 
@@ -25,8 +26,10 @@ export function NetworkFeedList({
 
     if (isLoading) {
         return (
-            <div className="flex justify-center items-center h-48">
-                <LoadingSpinner className="h-8 w-8 text-gray-400"/>
+            <div className="space-y-4" aria-busy="true" aria-label="Loading network feed">
+                {Array.from({length: 3}).map((_, index) => (
+                    <Skeleton key={index} variant="network-event" height={132} width="100%"/>
+                ))}
             </div>
         );
     }

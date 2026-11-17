@@ -77,7 +77,7 @@ export function useNetworkData({relays = DEFAULT_RELAYS}: UseNetworkDataProps = 
             }
         );
 
-        const timer = setTimeout(() => setIsLoading(false), 3000);
+        const timer = setTimeout(() => setIsLoading(false), 1500);
 
         return () => {
             clearTimeout(timer);

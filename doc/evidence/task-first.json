@@ -1,0 +1,477 @@
+{
+  "generatedAt": "2026-11-17T22:48:28.859Z",
+  "cases": [
+    {
+      "view": "inbox",
+      "state": "empty",
+      "viewport": "desktop",
+      "metrics": {
+        "primaries": [],
+        "duplicateLabels": [],
+        "focusableCount": 5,
+        "firstContentTop": 113,
+        "tabStopsToContent": 0
+      }
+    },
+    {
+      "view": "inbox",
+      "state": "populated",
+      "viewport": "desktop",
+      "metrics": {
+        "primaries": [],
+        "duplicateLabels": [],
+        "focusableCount": 13,
+        "firstContentTop": 113,
+        "tabStopsToContent": 0
+      }
+    },
+    {
+      "view": "notes",
+      "state": "populated",
+      "viewport": "desktop",
+      "metrics": {
+        "primaries": [
+          {
+            "label": "Publish",
+            "top": 81,
+            "tabStops": 9,
+            "visible": true
+          }
+        ],
+        "duplicateLabels": [],
+        "focusableCount": 60,
+        "firstContentTop": 82,
+        "tabStopsToContent": 0
+      }
+    },
+    {
+      "view": "notes",
+      "state": "populated",
+      "viewport": "desktop",
+      "metrics": {
+        "primaries": [],
+        "duplicateLabels": [],
+        "focusableCount": 12,
+        "firstContentTop": 140,
+        "tabStopsToContent": 0
+      }
+    },
+    {
+      "view": "trash",
+      "state": "populated",
+      "viewport": "desktop",
+      "metrics": {
+        "primaries": [],
+        "duplicateLabels": [],
+        "focusableCount": 2,
+        "firstContentTop": null,
+        "tabStopsToContent": null
+      }
+    },
+    {
+      "view": "timeline",
+      "state": "populated",
+      "viewport": "desktop",
+      "metrics": {
+        "primaries": [
+          {
+            "label": "Month",
+            "top": 205,
+            "tabStops": 5,
+            "visible": true
+          }
+        ],
+        "duplicateLabels": [],
+        "focusableCount": 44,
+        "firstContentTop": 205,
+        "tabStopsToContent": -1
+      }
+    },
+    {
+      "view": "actions",
+      "state": "populated",
+      "viewport": "desktop",
+      "metrics": {
+        "primaries": [
+          {
+            "label": "+ New Task",
+            "top": 88,
+            "tabStops": 0,
+            "visible": true
+          }
+        ],
+        "duplicateLabels": [],
+        "focusableCount": 7,
+        "firstContentTop": null,
+        "tabStopsToContent": null
+      }
+    },
+    {
+      "view": "responses",
+      "state": "empty",
+      "viewport": "desktop",
+      "metrics": {
+        "primaries": [
+          {
+            "label": "Find a match",
+            "top": 260,
+            "tabStops": 0,
+            "visible": true
+          }
+        ],
+        "duplicateLabels": [],
+        "focusableCount": 1,
+        "firstContentTop": null,
+        "tabStopsToContent": null
+      }
+    },
+    {
+      "view": "labels",
+      "state": "populated",
+      "viewport": "desktop",
+      "metrics": {
+        "primaries": [
+          {
+            "label": "Add",
+            "top": 220,
+            "tabStops": 1,
+            "visible": true
+          }
+        ],
+        "duplicateLabels": [],
+        "focusableCount": 21,
+        "firstContentTop": 233,
+        "tabStopsToContent": 0
+      }
+    },
+    {
+      "view": "ontology",
+      "state": "populated",
+      "viewport": "desktop",
+      "metrics": {
+        "primaries": [
+          {
+            "label": "Update Ontology",
+            "top": 148,
+            "tabStops": 4,
+            "visible": true
+          }
+        ],
+        "duplicateLabels": [],
+        "focusableCount": 6,
+        "firstContentTop": 330,
+        "tabStopsToContent": -1
+      }
+    },
+    {
+      "view": "map",
+      "state": "populated",
+      "viewport": "desktop",
+      "metrics": {
+        "primaries": [],
+        "duplicateLabels": [],
+        "focusableCount": 11,
+        "firstContentTop": null,
+        "tabStopsToContent": null
+      }
+    },
+    {
+      "view": "settings",
+      "state": "populated",
+      "viewport": "desktop",
+      "metrics": {
+        "primaries": [],
+        "duplicateLabels": [],
+        "focusableCount": 13,
+        "firstContentTop": 1398,
+        "tabStopsToContent": -1
+      }
+    },
+    {
+      "view": "chat",
+      "state": "empty",
+      "viewport": "desktop",
+      "metrics": {
+        "primaries": [
+          {
+            "label": "Set up identity",
+            "top": 292,
+            "tabStops": 0,
+            "visible": true
+          }
+        ],
+        "duplicateLabels": [],
+        "focusableCount": 1,
+        "firstContentTop": null,
+        "tabStopsToContent": null
+      }
+    },
+    {
+      "view": "editor",
+      "state": "populated",
+      "viewport": "desktop",
+      "metrics": {
+        "primaries": [
+          {
+            "label": "Publish",
+            "top": 81,
+            "tabStops": 8,
+            "visible": true
+          }
+        ],
+        "duplicateLabels": [],
+        "focusableCount": 45,
+        "firstContentTop": 82,
+        "tabStopsToContent": 0
+      }
+    },
+    {
+      "view": "network",
+      "state": "empty",
+      "viewport": "desktop",
+      "metrics": {
+        "primaries": [],
+        "duplicateLabels": [],
+        "focusableCount": 23,
+        "firstContentTop": 386,
+        "tabStopsToContent": 17
+      }
+    },
+    {
+      "view": "inbox",
+      "state": "empty",
+      "viewport": "mobile",
+      "metrics": {
+        "primaries": [],
+        "duplicateLabels": [],
+        "focusableCount": 5,
+        "firstContentTop": 97,
+        "tabStopsToContent": 0
+      }
+    },
+    {
+      "view": "inbox",
+      "state": "populated",
+      "viewport": "mobile",
+      "metrics": {
+        "primaries": [],
+        "duplicateLabels": [],
+        "focusableCount": 10,
+        "firstContentTop": 97,
+        "tabStopsToContent": 0
+      }
+    },
+    {
+      "view": "notes",
+      "state": "populated",
+      "viewport": "mobile",
+      "metrics": {
+        "primaries": [
+          {
+            "label": "Publish",
+            "top": 78,
+            "tabStops": 9,
+            "visible": true
+          }
+        ],
+        "duplicateLabels": [],
+        "focusableCount": 61,
+        "firstContentTop": 79,
+        "tabStopsToContent": 1
+      }
+    },
+    {
+      "view": "notes",
+      "state": "populated",
+      "viewport": "mobile",
+      "metrics": {
+        "primaries": [],
+        "duplicateLabels": [],
+        "focusableCount": 0,
+        "firstContentTop": 0,
+        "tabStopsToContent": -1
+      }
+    },
+    {
+      "view": "trash",
+      "state": "populated",
+      "viewport": "mobile",
+      "metrics": {
+        "primaries": [],
+        "duplicateLabels": [],
+        "focusableCount": 2,
+        "firstContentTop": null,
+        "tabStopsToContent": null
+      }
+    },
+    {
+      "view": "timeline",
+      "state": "populated",
+      "viewport": "mobile",
+      "metrics": {
+        "primaries": [
+          {
+            "label": "Month",
+            "top": 293,
+            "tabStops": 5,
+            "visible": true
+          }
+        ],
+        "duplicateLabels": [],
+        "focusableCount": 44,
+        "firstContentTop": 233,
+        "tabStopsToContent": -1
+      }
+    },
+    {
+      "view": "actions",
+      "state": "populated",
+      "viewport": "mobile",
+      "metrics": {
+        "primaries": [
+          {
+            "label": "+ New Task",
+            "top": 80,
+            "tabStops": 0,
+            "visible": true
+          }
+        ],
+        "duplicateLabels": [],
+        "focusableCount": 6,
+        "firstContentTop": null,
+        "tabStopsToContent": null
+      }
+    },
+    {
+      "view": "responses",
+      "state": "empty",
+      "viewport": "mobile",
+      "metrics": {
+        "primaries": [
+          {
+            "label": "Find a match",
+            "top": 260,
+            "tabStops": 0,
+            "visible": true
+          }
+        ],
+        "duplicateLabels": [],
+        "focusableCount": 1,
+        "firstContentTop": null,
+        "tabStopsToContent": null
+      }
+    },
+    {
+      "view": "labels",
+      "state": "populated",
+      "viewport": "mobile",
+      "metrics": {
+        "primaries": [
+          {
+            "label": "Add",
+            "top": 216,
+            "tabStops": 1,
+            "visible": true
+          }
+        ],
+        "duplicateLabels": [],
+        "focusableCount": 13,
+        "firstContentTop": 229,
+        "tabStopsToContent": 0
+      }
+    },
+    {
+      "view": "ontology",
+      "state": "populated",
+      "viewport": "mobile",
+      "metrics": {
+        "primaries": [
+          {
+            "label": "Update Ontology",
+            "top": 218,
+            "tabStops": 4,
+            "visible": true
+          }
+        ],
+        "duplicateLabels": [],
+        "focusableCount": 6,
+        "firstContentTop": 400,
+        "tabStopsToContent": -1
+      }
+    },
+    {
+      "view": "map",
+      "state": "populated",
+      "viewport": "mobile",
+      "metrics": {
+        "primaries": [],
+        "duplicateLabels": [],
+        "focusableCount": 11,
+        "firstContentTop": null,
+        "tabStopsToContent": null
+      }
+    },
+    {
+      "view": "settings",
+      "state": "populated",
+      "viewport": "mobile",
+      "metrics": {
+        "primaries": [],
+        "duplicateLabels": [],
+        "focusableCount": 13,
+        "firstContentTop": 1382,
+        "tabStopsToContent": -1
+      }
+    },
+    {
+      "view": "chat",
+      "state": "empty",
+      "viewport": "mobile",
+      "metrics": {
+        "primaries": [
+          {
+            "label": "Set up identity",
+            "top": 292,
+            "tabStops": 0,
+            "visible": true
+          }
+        ],
+        "duplicateLabels": [],
+        "focusableCount": 1,
+        "firstContentTop": null,
+        "tabStopsToContent": null
+      }
+    },
+    {
+      "view": "editor",
+      "state": "populated",
+      "viewport": "mobile",
+      "metrics": {
+        "primaries": [
+          {
+            "label": "Publish",
+            "top": 78,
+            "tabStops": 9,
+            "visible": true
+          }
+        ],
+        "duplicateLabels": [],
+        "focusableCount": 47,
+        "firstContentTop": 79,
+        "tabStopsToContent": 1
+      }
+    },
+    {
+      "view": "network",
+      "state": "empty",
+      "viewport": "mobile",
+      "metrics": {
+        "primaries": [],
+        "duplicateLabels": [],
+        "focusableCount": 21,
+        "firstContentTop": 520,
+        "tabStopsToContent": 17
+      }
+    }
+  ]
+}

@@ -270,7 +270,7 @@ export function InboxView(_props: InboxViewProps) {
 
     return (
         <div className="h-full overflow-y-auto bg-gray-950 text-white custom-scrollbar p-4 md:p-6 lg:p-8">
-            <div className="max-w-5xl mx-auto space-y-8 animate-fade-in">
+            <div className="max-w-5xl mx-auto space-y-5 md:space-y-8 animate-fade-in">
                 <section aria-label="Capture">
                     <StrategyResolver
                         seamRole={SEAM_ROLES.CAPTURE}
@@ -338,7 +338,7 @@ export function InboxView(_props: InboxViewProps) {
                     )}
 
                     {notes.length === 0 && (
-                        <div className="mt-4 text-center">
+                        <div className="mt-2 text-center">
                             <button
                                 type="button"
                                 onClick={loadSampleWorkspace}
@@ -350,7 +350,7 @@ export function InboxView(_props: InboxViewProps) {
                     )}
                 </section>
 
-                <AdvancedPanels />
+                {notes.length > 0 && <AdvancedPanels />}
             </div>
         </div>
     );
@@ -542,7 +542,7 @@ function LocalMatchCard({
 
 function AdvancedPanels() {
     return (
-        <details className="group border-t border-gray-800 pt-6">
+        <details className="group border-t border-gray-800 pt-4 md:pt-6">
             <summary className="flex items-center gap-3 cursor-pointer select-none text-gray-400 hover:text-gray-200 transition-colors">
                 <svg className="h-5 w-5 shrink-0 transform transition-transform group-open:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/>

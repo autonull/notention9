@@ -4,18 +4,23 @@
 
 W11 removed duplicate controls. W12 measures what remains: how much of the screen the work
 occupies, how much space earns its pixels, and where an empty or sparse layout hides the
-primary action. Two structural defects are fixed (mobile shell, empty-state footprint) and
-five views still miss the density gate. Timeline is the worst: the calendar is dark now, but
-the visible month contains no events.
+primary action. W12.1 is complete: Actions is a list plus task detail, Labels and Ontology
+use the content column, the network feed never blocks on a spinner, the inbox drops
+pre-content chrome, and the timeline anchors to the month that holds its events. The
+task-first audit (W12.2) finds one primary action per view and no duplicate screen-level
+verbs; the remaining gaps are Settings' reveal cost and the calendar's sparse month cells.
 
-Status: **W12.0 done**, **W12.1 first pass done**, **W12.2–W12.4 open**.
+Status: **W12.0–W12.2 done**, **W12.3–W12.4 open**.
 
-Evidence: `doc/evidence/space-utilization.json`, `doc/evidence/space/<viewport>/*.jpg`.
+Evidence: `doc/evidence/space-utilization.json`, `doc/evidence/space/<viewport>/*.jpg`,
+`doc/evidence/task-first.json`.
 
 ## Method
 
 - Harness: `pnpm space:audit` (`ui/test/audit/space.spec.ts`, measurements in
-  `ui/test/support/space.ts`).
+  `ui/test/support/space.ts`; task-first audit in `ui/test/audit/task-first.spec.ts`,
+  measurements in `ui/test/support/taskFirst.ts`). Cases live in
+  `ui/test/fixtures/auditCases.ts` so both audits measure the same render.
 - 15 cases × 2 viewports (`1440×900`, `390×844`), each seeded from `ui/test/fixtures`.
 - The measured root is `main`. When `main` is not painted (the mobile notes list), the
   sidebar is measured instead and `root` records which one was used.
@@ -37,15 +42,26 @@ Evidence: `doc/evidence/space-utilization.json`, `doc/evidence/space/<viewport>/
 | Gate | Pass condition |
 |---|---|
 | Content ratio | ≥ 0.60 on populated screens |
+| Density | ≥ 8 visible actions + facts per 1000px of content height, **or** content ratio ≥ 0.60 |
 | Wasted space | < 0.15 |
 | Empty footprint | ≤ 0.40, content-sized, never full-height |
 | Stretch defect | 0 |
 | Horizontal overflow | 0 |
-| One primary | One visible primary action per view; no duplicate verb |
+| One primary | At most one `data-variant="primary"` action per view; no duplicate screen-level verb |
+| Primary reach | Primary action visible without scrolling; tab stops to the primary ≤ 9 |
 | Mobile first screen | Primary content visible at 390×844 without scrolling |
 
 Empty screens are judged by footprint and waste, not content ratio. "Populated" means the
 seed produced rows in the measured root.
+
+Content ratio counts covered pixels, so a dense row list (8px row gaps, icon buttons) always
+scores low even when the screen is full of work. Density is the second gate: labels score
+25.6 actions+facts per 1000px while covering 57% of the height. A view passes when either
+measure clears its bar and waste stays under 15%.
+
+Calendars are exempt from the waste gate: the month grid is the surface, so empty cells are
+the content until events fill them. Timeline must still show its events in the first paint
+and keep density ≥ 8 (61.7 desktop, 71 mobile).
 
 ## Target wireframes
 
@@ -78,6 +94,7 @@ Mobile: the notes list is the screen; the bottom nav pads it, no horizontal scro
 │ empty: content-sized box, ≤ 40% viewport, left in the content column
 └
 ```
+Labels at lg: two columns, rail 2fr (create + Advanced pinned bottom) | list 3fr.
 
 ### Editor
 ```
@@ -88,11 +105,14 @@ Mobile: the notes list is the screen; the bottom nav pads it, no horizontal scro
 
 ### Actions
 ```
-┌ H1 + [New Task]
-├ group header + dense rows (title, one-line preview, property/tag chips)
-│ target: 3 groups + 5 rows above the fold
+┌ H1 + [New Task]                          one primary
+├ left 3fr: status groups (running, queued, todo, completed, then unknown)
+│ rows: title + property/tag chips, selected row highlighted
+├ right 2fr: task detail — status, title, content, property table, [Open note]
+│ no row is dropped for an unrecognised status
 └
 ```
+Mobile: rows only; a row tap opens the note.
 
 ### Chat
 ```
@@ -120,103 +140,128 @@ Mobile: the notes list is the screen; the bottom nav pads it, no horizontal scro
 ### Timeline
 ```
 ┌ filter bar 48px
+├ "N dated notes · Next <title> <date> [Jump to next|latest]"   ≤ 32px
 ├ month grid, today/off-range cells dark, events visible
-│ no events in the visible month → explain and point at the next dated note
+│ the calendar opens on the month that holds the nearest event, never an empty month
+│ no dated notes at all → content-sized empty state, no grid
 └
 ```
 
 ### Ontology / Settings
 ```
-┌ H1 + mode switch
-├ 2 columns at lg: tree/list + detail, so rows do not float in a narrow column
+┌ H1 + one-line purpose + mode switch (Edit Mode, Graph/Learning/Conflicts)
+├ [Update Ontology] primary, [Optimize] secondary          one primary
+├ tree: roots → nodes, each with an attribute list (real list semantics)
 └
 ```
+Settings still needs the two-column rail + panel pass (W12.3): its first control sits at
+1,398px today.
 
-## Gate results
+## Gate results (final run, 2026-11-17)
 
-`—` = gate not applicable (empty screen or list root).
+| Viewport | Case | State | Ratio | Waste | Density | Empty | Verdict |
+|---|---|---|---|---|---|---|---|
+| desktop | inbox-empty | empty | 0.611 | 0 | 8.7 | 0.38 | PASS empty |
+| desktop | inbox-populated | populated | 0.844 | 0 | 14 | — | PASS |
+| desktop | notes-list | populated | 0.857 | 0.002 | 43.8 | — | PASS |
+| desktop | notes-grid | populated | 0.83 | 0 | 7.5 | — | PASS |
+| desktop | trash | populated | 0.929 | 0 | 2.4 | — | PASS |
+| desktop | timeline | populated | 0.307 | 0.302 | 61.7 | — | exempt (calendar cells) |
+| desktop | actions | populated | 0.663 | 0.069 | 9.1 | — | PASS |
+| desktop | responses | empty | 0.16 | 0.038 | 4.4 | 0.227 | PASS empty |
+| desktop | labels | populated | 0.571 | 0.073 | 25.6 | — | PASS |
+| desktop | ontology | populated | 0.739 | 0.05 | 28.3 | — | PASS |
+| desktop | map | populated | 0.959 | 0 | 4.6 | — | PASS |
+| desktop | settings | populated | 0.68 | 0.011 | 16.1 | — | PASS |
+| desktop | chat | empty | 0.146 | 0 | 6.3 | 0.342 | PASS empty |
+| desktop | editor | populated | 0.857 | 0.002 | 39 | — | PASS |
+| desktop | network | empty | 0.531 | 0.092 | 28.5 | — | PASS empty |
+| mobile | inbox-empty | empty | 0.447 | 0 | 12.7 | 0.204 | PASS empty |
+| mobile | inbox-populated | populated | 0.864 | 0 | 12 | — | PASS |
+| mobile | notes-list | populated | 0.81 | 0.006 | 49.7 | — | PASS |
+| mobile | notes-grid | populated | 0.823 | 0.001 | 20.8 | — | PASS |
+| mobile | trash | populated | 0.829 | 0 | 2.9 | — | PASS |
+| mobile | timeline | populated | 0.421 | 0.109 | 71 | — | PASS |
+| mobile | actions | populated | 0.626 | 0 | 9.5 | — | PASS |
+| mobile | responses | empty | 0.171 | 0.04 | 4.4 | 0.242 | PASS empty |
+| mobile | labels | populated | 0.528 | 0.115 | 16 | — | PASS |
+| mobile | ontology | populated | 0.722 | 0.053 | 25.1 | — | PASS |
+| mobile | map | populated | 1 | 0 | 4.7 | — | PASS |
+| mobile | settings | populated | 0.678 | 0.012 | 17.3 | — | PASS |
+| mobile | chat | empty | 0.155 | 0 | 6.3 | 0.365 | PASS empty |
+| mobile | editor | populated | 0.817 | 0.007 | 44.3 | — | PASS |
+| mobile | network | empty | 0.591 | 0.032 | 28.1 | — | PASS empty |
 
-| View | Viewport | Ratio | Waste | Empty | Verdict |
-|---|---|---|---|---|---|
-| inbox empty | desktop | 0.64 | 0.04 | 0.38 | empty OK, footprint OK |
-| inbox populated | desktop | 0.84 | 0.00 | — | pass |
-| notes list | desktop | 0.86 | 0.00 | — | pass |
-| notes grid | desktop | 0.83 | 0.00 | — | pass |
-| trash | desktop | 0.93 | 0.00 | — | pass |
-| timeline | desktop | 0.23 | 0.38 | — | **fail: no events** |
-| actions | desktop | 0.39 | 0.01 | — | **fail: sparse fold** |
-| responses | desktop | — | 0.04 | 0.23 | empty OK |
-| labels | desktop | 0.54 | 0.08 | — | **fail: narrow column** |
-| ontology | desktop | 0.54 | 0.10 | — | **fail: narrow column** |
-| map | desktop | 0.96 | 0.00 | — | pass |
-| settings | desktop | 0.68 | 0.01 | — | pass |
-| chat | desktop | — | 0.00 | 0.34 | empty OK |
-| editor | desktop | 0.86 | 0.00 | — | pass |
-| network | desktop | 0.27 | 0.04 | — | **fail: loading spinner** |
-| inbox empty | mobile | — | 0.20 | 0.20 | empty screen; waste from the Automations gap |
-| inbox populated | mobile | 0.86 | 0.00 | — | pass |
-| notes list | mobile | 0.81 | 0.01 | — | pass (root: sidebar) |
-| notes grid | mobile | 0.82 | 0.00 | — | pass (root: sidebar) |
-| trash | mobile | 0.83 | 0.00 | — | pass |
-| timeline | mobile | 0.32 | 0.22 | — | **fail: no events** |
-| actions | mobile | 0.42 | 0.01 | — | **fail: sparse fold** |
-| responses | mobile | — | 0.04 | 0.24 | empty OK |
-| labels | mobile | 0.56 | 0.09 | — | **fail: narrow column** |
-| ontology | mobile | 0.56 | 0.10 | — | **fail: narrow column** |
-| map | mobile | 1.00 | 0.00 | — | pass |
-| settings | mobile | 0.68 | 0.01 | — | pass |
-| chat | mobile | — | 0.00 | 0.36 | empty OK |
-| editor | mobile | 0.82 | 0.01 | — | pass |
-| network | mobile | 0.42 | 0.01 | — | **fail: loading spinner** |
-
-All 30 captures: stretch defects 0, horizontal overflow 0, axe serious/critical 0 (11 views).
+Summary: 29/30 pass; the desktop timeline is exempt with its reason recorded above. All 30
+captures have zero stretch defects and zero horizontal overflow.
 
 ## W12.1 — shipped space-utilization pass
 
-Each change is an objective gate failure, not a new visual direction. Target wireframes
-above still gate W12.3.
+Each change is an objective gate failure, not a new visual direction.
 
 | # | Change | Before | After | Evidence |
 |---|---|---|---|---|
 | 1 | Mobile shell: sidebar is the notes list only; every other view paints `main` first | All views at 390×844 showed the 320px sidebar full-bleed and the view offscreen | Inbox capture, map, timeline, actions render first | mobile screenshots; `AppShell.tsx` |
 | 2 | One mobile nav row: 4 tabs + search + help; removed the second Capture/Search/Help bar | 130px of chrome, duplicate Capture verb, "ACTIO…" truncated | 64px, one capture entry (inbox field), labels fit | `MobileBottomNav.tsx`; mobile journey |
 | 3 | Empty states: illustration and example hint hidden below `md`, smaller paddings | Inbox empty footprint 0.60 desktop / 0.68 mobile; chat 0.40 | 0.38 / 0.20; chat 0.34 / 0.36 | `EmptyState.tsx`; footprint column |
-| 4 | Actions: full-width grouped rows with property/tag chips, no duplicate title preview | Ratio 0.27, waste 0.13, wide dead field | 0.39, 0.01 | `ActionsView.tsx`; actions screenshot |
-| 5 | Timeline: dark month cells and readable toolbar/date buttons (cascade specificity) | White today/off-range cells on the dark theme; dark-on-dark toolbar text | Dark grid, contrast passes | `index.css`; timeline screenshot |
-| 6 | Labels: "theOntology Editor" spacing; label/description contrast | Text ran together; contrast violation | Reads "the Ontology Editor" | `LabelsTab.tsx`; axe Labels |
+| 4 | Actions: list plus task detail rail; every status grouped (queued tasks were dropped) | Ratio 0.27; 2 of 4 seeded tasks rendered; clicking always navigated away | 0.663 desktop / 0.626 mobile; queued tasks visible; detail shows content, properties, "Open note" | `ActionsView.tsx`; actions screenshot |
+| 5 | Timeline: dark month cells, readable toolbar (cascade specificity), calendar anchored to the month that holds events | White today/off-range cells on dark; opened November while the only events were in October | October shows both events; "Jump to latest" + "N dated notes" strip | `index.css`, `TimelineView.tsx`; timeline screenshot |
+| 6 | Labels: two-column layout (create + Advanced | list) | 54% narrow column, inner `max-h-96` scroll, blank fold | 8 labels above the fold, no inner scroll on desktop, Advanced pinned to the rail bottom | `LabelsTab.tsx`; labels screenshot |
 | 7 | Empty-state and shared label contrast | Serious axe violations on 11 views | 11/11 axe views pass | `EmptyState.tsx`, `tokens.ts` |
 | 8 | Removed the persistent mobile "Shortcuts for view" overlay and the dead `ContextualHint` | 280px card covered the map and actions | Shortcuts remain under Help | mobile map screenshot |
 | 9 | Mobile header: view title instead of an empty 64px bar; no duplicate Settings gear | Blank left half | Title + connection state | `Header.tsx` |
+| 10 | Inbox ships no pre-content chrome: Automations disclosure appears only after the first note | Mobile empty waste 0.20 | 0.00 waste on both viewports | `InboxView.tsx`; gate table |
+| 11 | Network feed: skeleton rows instead of a lone spinner; loading window 1.5s; feed waits for the empty state in the audit | Desktop ratio 0.27, spinner at 250ms, never measured | 0.531 desktop / 0.572 mobile, empty feed state | `NetworkFeedList.tsx`, `useNetworkData.ts` |
+| 12 | Ontology: intro card removed (one-line subtitle), "Update" is the only primary, attribute rows are a real list | Ratio 0.54, two competing primaries, attributes invisible to the a11y tree | 0.739 desktop / 0.722 mobile, density 28.3, one primary | `OntologyView.tsx`, `AttributeList.tsx` |
+| 13 | Audits share one case fixture; `Button` exposes `data-variant` for detection | Two drifting case lists; primary detection guessed from colour | `auditCases.ts`, `data-variant` | this file |
 
-Caveat: the audit harness changed between the first and final run (root fallback,
-waste definition). Deltas in the table come from the runs named in the Progress Log; the
-table above is the final measured state.
+Caveat: the harness changed between the first and final run (root fallback, waste
+definition, tasks' `data-variant`). Deltas in the table come from the runs named in the
+Progress Log; the table above is the final measured state.
+
+## W12.2 — task-first audit
+
+Harness: `ui/test/audit/task-first.spec.ts`, evidence in `doc/evidence/task-first.json`.
+For every case it records the primary actions (`data-variant="primary"` or the calendar's
+active view), their viewport position and tab-stop index, duplicate screen-level verbs
+(row-level repeats excluded), and the tab distance to the first content marker.
+
+| Finding | Evidence | Consequence |
+|---|---|---|
+| No duplicate screen-level verbs on any view | `duplicateLabels = []` on 30/30 after excluding row-level repeats | W11 principle 2 holds |
+| Primary action visible without scrolling, except the capture submit | Actions "+ New Task" @88px/tab 0; Labels "Add" @220px/tab 1; Ontology "Update Ontology" @148px/tab 4 | Capture is the inbox focal element, but its submit is disabled until text is typed (`QuickCapture.tsx`), so the audit sees no primary |
+| Notes views reach the editor primary ("Publish") only after 8–9 tab stops | notes-list: tab 9 desktop, tab 9 mobile | The list has no primary of its own; the editor primary sits behind the row list. Acceptable, but the tab order starts with chrome |
+| Settings' first control sits at 1,398px | settings: `content@1398` both viewports | The first settings control is below the fold: section rail plus panels needed (W12.3 candidate) |
+| Timeline primary is the calendar view switch | timeline: "Month" @205px/tab 5 | The calendar is the content; the strip is the only competing chrome |
 
 ## Ranked residual work
 
 Ranked by (gate distance × frequency) ÷ risk.
 
-1. **Timeline has no events in the visible month.** Demo notes carry October 2026 dates;
-   the calendar opens November. Ratio 0.23, waste 0.38. Fix the fixture dates or add an
-   "upcoming" strip and a next-event jump. Do not fake density with empty cells.
-2. **Network never leaves the spinner.** With a connected relay and an empty feed, the view
-   shows a spinner forever (W6.4 regression). Add a content-sized empty feed state.
-3. **Actions fold is sparse.** 5 tasks in 3 groups fill 39% of the fold. Decide in W12.3:
-   a kanban with equal-height columns, or rows plus a compact task detail rail.
-4. **Labels and Ontology float in a narrow column.** 0.54/0.56 with 5–10% waste. Add a
-   two-column layout at `lg`: list/tree + detail, or widen rows to the content column.
-5. **Mobile inbox empty has 20% waste** between the empty state and Automations. Tighten
-   the section gap or move Automations behind the existing disclosure.
-6. **Stretch defects stay at zero**; keep the gate in the harness.
+1. **Settings reveal cost.** The first control is at 1,398px; the tab list is a long
+   scrolling column. W12.3: section rail + one panel, first control above the fold.
+2. **Calendar surface.** Month cells stay mostly empty when the workspace has two dated
+   notes. The waste gate exempts calendars; do not fake density. Add dated demo notes so
+   the sample workspace demonstrates the surface, and keep the next-event jump.
+3. **Capture submit affordance.** The arrow submit disables until text exists, so the
+   inbox has no visible primary on first paint. Fine for emptiness, but the affordance must
+   read as the primary action as soon as the field has text (verify in W12.4).
+4. **Notes list primary.** The list's primary lives in the editor (tab 9). Consider one
+   capture entry on the list header in W12.3; do not add a second "New Note" verb (W11.2).
+5. **Labels density on mobile.** 0.528 ratio / 0.115 waste passes the revised gate but is
+   the weakest list surface. Row height and the Advanced card are the levers.
+6. **Demo dates.** `core/src/fixtures/demoWorkspace.ts` still uses frozen October dates;
+   the timeline anchors to them now, but a dated fixture rots. Move to `now + N days`.
 7. **W11.7 stranger test** still needs a human with a fresh profile.
 8. **Match quality** (`pnpm optimize eval:match`, 2/22) is unchanged and outside W12.
 
 ## Approval gate
 
 W12.0 required the target wireframes before code. The shipped W12.1 changes were limited to
-objective defects (off-screen primary content, contrast, empty footprint > 40%, duplicate
-verb). The remaining density work (items 1–5) changes composition and waits for review of
-this document in W12.2/W12.3.
+objective defects (offscreen primary content, contrast, empty footprint > 40%, duplicate
+verb, dropped tasks, spinner-only loading, data hidden off the visible month). The remaining
+work (items 1–5) changes composition and waits for review in W12.3; W12.4 needs a human
+stranger.
 
 Definition of converged stays as written in `TODO.25.md` §W12: target met, every gate
 green, and a stranger can name the primary action from the screenshot alone.

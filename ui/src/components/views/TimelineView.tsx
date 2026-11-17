@@ -1,5 +1,5 @@
-import React, {useMemo, useState} from 'react';
-import {Calendar, dateFnsLocalizer} from 'react-big-calendar';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
+import {Calendar, dateFnsLocalizer, type View} from 'react-big-calendar';
 import {format, getDay, parse, startOfWeek} from 'date-fns';
 import {enUS} from 'date-fns/locale';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -39,6 +39,9 @@ export function TimelineView() {
     const {setSelectedNoteId, setActiveView} = useView();
     const [locationFilterId, setLocationFilterId] = useState<string>('');
     const [filterRadius, setFilterRadius] = useState<number>(50); // km
+    const [date, setDate] = useState(() => new Date());
+    const [view, setView] = useState<View>('month');
+    const anchored = useRef(false);
 
     // Get all notes that have a location property
     const locationNotes = useMemo(() => {
@@ -115,6 +118,24 @@ export function TimelineView() {
         return evts;
     }, [notes, locationFilterId, filterRadius]);
 
+    const orderedEvents = useMemo(
+        () => [...events].sort((a, b) => a.start.getTime() - b.start.getTime()),
+        [events],
+    );
+
+    const latestEvent = orderedEvents[orderedEvents.length - 1] ?? null;
+    const nextEvent = useMemo(
+        () => orderedEvents.find(event => event.start.getTime() >= Date.now()) ?? null,
+        [orderedEvents],
+    );
+    const anchorDate = nextEvent?.start ?? latestEvent?.start ?? null;
+
+    useEffect(() => {
+        if (anchored.current || !anchorDate) return;
+        anchored.current = true;
+        setDate(anchorDate);
+    }, [anchorDate]);
+
     const handleSelectEvent = (event: CalendarEvent) => {
         setSelectedNoteId(event.id);
         setActiveView('notes');
@@ -174,25 +195,48 @@ export function TimelineView() {
                 )}
             </div>
 
-            {events.length === 0 && (
+            {events.length === 0 ? (
                 <EmptyState
                     variant="minimal"
                     title="No dated notes yet"
                     description="Add a start or deadline detail to a note to see it on the calendar."
                     action={<Button variant="primary" onClick={() => setActiveView('inbox')}>Go to capture</Button>}
                 />
+            ) : (
+                <>
+                    <div className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-gray-400">
+                        <span>
+                            {events.length} dated note{events.length === 1 ? '' : 's'}
+                        </span>
+                        <span aria-hidden="true">·</span>
+                        <span className="truncate">
+                            {nextEvent
+                                ? `Next: ${nextEvent.title} — ${format(nextEvent.start, 'MMM d, HH:mm')}`
+                                : latestEvent && `Latest: ${format(latestEvent.start, 'MMM d, yyyy')}`}
+                        </span>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => anchorDate && setDate(anchorDate)}
+                        >
+                            {nextEvent ? 'Jump to next' : 'Jump to latest'}
+                        </Button>
+                    </div>
+                    <Calendar
+                        localizer={localizer}
+                        events={events}
+                        startAccessor="start"
+                        endAccessor="end"
+                        style={{height: '100%'}}
+                        date={date}
+                        onNavigate={setDate}
+                        view={view}
+                        onView={setView}
+                        onSelectEvent={handleSelectEvent}
+                        views={['month', 'week', 'day', 'agenda']}
+                    />
+                </>
             )}
-
-            <Calendar
-                localizer={localizer}
-                events={events}
-                startAccessor="start"
-                endAccessor="end"
-                style={{height: '100%'}}
-                onSelectEvent={handleSelectEvent}
-                views={['month', 'week', 'day', 'agenda']}
-                defaultView='month'
-            />
         </div>
     );
 }
