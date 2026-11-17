@@ -218,7 +218,7 @@
   - Acceptance: toggles verified in UI; screenshots in `doc/screenshot/`.
 - [x] **W5.5 i18n completeness + RTL audit.** Verify all 6 locales (`en,es,fr,de,zh,ar`) have keys; audit RTL (`ar`) layout, icons, and numbers.
   - Acceptance: missing-key check = 0; RTL screenshots reviewed.
-- [ ] **W5.6 Responsive/mobile pass.** Bottom nav, touch targets ≥ 44px, no horizontal scroll at 360px.
+- [x] **W5.6 Responsive/mobile pass.** Bottom nav, touch targets ≥ 44px, no horizontal scroll at 360px.
   - Acceptance: mobile journey test passes.
 
 ### W6 — Performance & Reliability
@@ -445,7 +445,7 @@ user can switch back for one release.
 | 28 | **W5.4 Reduced motion & high contrast** ✅ | Accessibility | M |
 
 ### Next (after Now)
-~~W5.5 i18n completeness + RTL audit~~ ✅ · W5.6 Responsive/mobile pass ·
+~~W5.5 i18n completeness + RTL audit~~ ✅ · ~~W5.6 Responsive/mobile pass~~ ✅ ·
 W6.1 Performance budgets · W6.2 Offline/local-only mode · W7.1 Export/import round-trip.
 
 ### Later (larger/strategic)
@@ -834,6 +834,16 @@ pnpm eval:verify-manifest
   - LanguageSelector: dropdown positioning, item text alignment, spacing flip in RTL.
 - All 6 locale files updated with new keys (EN, ES, FR, DE, ZH, AR).
 - All tests pass (866 core, 42 UI files, 127 optimize). Build passes.
+
+### 2026-11-16 — W5.6 Responsive/mobile pass complete
+- Mobile bottom nav (`MobileBottomNav.tsx`) verified: 4 primary tabs (Inbox, Notes, Actions, More) + central capture button + search/help buttons.
+- All touch targets meet ≥ 44px minimum (validated via Playwright mobile journey tests at 360px viewport).
+- No horizontal overflow at 360px width across all 13 navigation routes.
+- More sheet (overflow menu) opens/closes and navigates to secondary views (Map, Timeline, Network, Chat, Responses, Labels, Trash, Skills, Settings).
+- Sidebar visible on mobile notes view (full-width, swipe-to-close gesture supported).
+- Quick capture input accessible and meets touch target requirements.
+- Added mobile journey test suite (`ui/test/journeys/mobile.mobile.spec.ts`) with 9 tests covering navigation, touch targets, overflow, sidebar, quick capture, and persistence.
+- All tests pass (866 core, 42 UI files, 127 optimize, 9 mobile Playwright). Build passes.
 
 ### 2026-11-16 — W4.3 Action/skill approval UX complete
 - Created `SkillExecutor` in `core/src/skills/SkillExecutor.ts` with approval-gated execution flow using `SkillApprovalManager`

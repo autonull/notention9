@@ -60,6 +60,13 @@ export default defineConfig({
             },
         },
         {
+            name: 'mobile',
+            testMatch: 'journeys/**/*.mobile.spec.ts',
+            use: {
+                viewport: {width: 360, height: 640},
+            },
+        },
+        {
             name: 'showcase',
             testMatch: 'showcase/**/*.scene.ts',
             use: {

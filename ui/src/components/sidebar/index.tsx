@@ -65,7 +65,7 @@ function SidebarContent({ onToggleSidebar, isSidebarOpen, sidebarWidth, isCollap
     }, []);
 
     return (
-        <div className={cn('bg-gray-900 flex flex-col h-full transition-all duration-300 ease-in-out')}>
+        <div data-testid="sidebar" className={cn('bg-gray-900 flex flex-col h-full transition-all duration-300 ease-in-out')}>
             <SidebarHeader
                 searchInputRef={searchInputRef}
                 focusSearch={focusSearch}

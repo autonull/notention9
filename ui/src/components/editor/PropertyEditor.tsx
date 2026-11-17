@@ -153,8 +153,9 @@ export function PropertyEditor({
     };
 
     const handlePickLocation = async (): Promise<string> => {
+        if (!onPickLocation) return '';
         if (isAdding && !key) setKey('location');
-        const result = onPickLocation!();
+        const result = onPickLocation();
         if (result instanceof Promise) {
             const loc = await result;
             return loc ?? '';
@@ -376,15 +377,7 @@ export function PropertyEditor({
                         }}
                         attributeDef={activeDef}
                         operator={operator}
-                        onPickLocation={onPickLocation ? async (): Promise<string> => {
-                            if (isAdding && !key) setKey('location');
-                            const result = onPickLocation();
-                            if (result instanceof Promise) {
-                                const loc = await result;
-                                return loc ?? '';
-                            }
-                            return '';
-                        } : undefined}
+                        onPickLocation={handlePickLocation}
                         onPickTime={onPickTime}
                         readonly={readonly || !!activeDef?.readonly}
                         numericOptions={activeDef?.numericOptions}
