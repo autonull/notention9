@@ -50,6 +50,7 @@
     "loop": "tsx optimize/src/loop/cli.ts",
     "prompts:eval": "tsx optimize/src/prompts/cli.ts",
     "friction:digest": "tsx optimize/src/cli.ts friction:digest",
+    "perf:budget": "tsx optimize/src/cli.ts perf:budget",
     "showcase": "tsx scripts/generate-showcases.ts",
     "probe": "tsx scripts/comprehension-probe.ts",
     "stranger-test": "tsx scripts/stranger-test.ts",

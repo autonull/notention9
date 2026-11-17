@@ -8,6 +8,7 @@ import type {AppSettings, ExportNote, Note} from '@notention/core';
 import {
     buildExportEnvelope,
     generateNotesCSV,
+    generateNotesMarkdown,
     Logger,
     readExportEnvelope,
     readSingleNote,
@@ -66,6 +67,19 @@ export function ImportExportSection({
         a.click();
         URL.revokeObjectURL(url);
         addToast('CSV exported successfully', 'success');
+        onExportWorkspace?.();
+    };
+
+    const handleExportMarkdown = () => {
+        const markdownContent = generateNotesMarkdown(notes);
+        const blob = new Blob([markdownContent], {type: 'text/markdown;charset=utf-8;'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `notention-notes-${new Date().toISOString().slice(0, 10)}.md`;
+        a.click();
+        URL.revokeObjectURL(url);
+        addToast('Markdown exported successfully', 'success');
         onExportWorkspace?.();
     };
 
@@ -178,6 +192,14 @@ export function ImportExportSection({
                     icon={ArrowDownIcon}
                 >
                     Export CSV
+                </Button>
+
+                <Button
+                    onClick={handleExportMarkdown}
+                    variant="secondary"
+                    icon={ArrowDownIcon}
+                >
+                    Export Markdown
                 </Button>
 
                 <Button

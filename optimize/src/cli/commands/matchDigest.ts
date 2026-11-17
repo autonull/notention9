@@ -4,7 +4,7 @@
  */
 
 import { Command } from '../Command.js';
-import { getDefaultAdapter } from '@notention/core/storage/Storage.js';
+import { getDefaultAdapter } from '@notention/core/storage';
 import { join } from 'node:path';
 import { existsSync, mkdirSync, readFileSync, writeFileSync, appendFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -15,7 +15,7 @@ import {
     createMatchDigestConfig,
     type MatchDigestEvent,
     type MatchDigestConfig,
-} from '@notention/core/telemetry/matchDigest.js';
+} from '@notention/core/telemetry/matchDigest';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const PROJECT_ROOT = join(__dirname, '..', '..', '..');

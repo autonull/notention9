@@ -191,6 +191,12 @@ export {
     generateNotesCSV,
 } from './utils/csvExport.js';
 
+// Markdown Export - from utils/markdownExport.js
+export {
+    generateNotesMarkdown,
+    generateSingleNoteMarkdown,
+} from './utils/markdownExport.js';
+
 // Pattern recognition - from patternRecognition/index.js
 export {
     patternRecognitionService,

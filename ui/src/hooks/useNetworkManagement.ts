@@ -154,10 +154,15 @@ export function useNetworkManagement() {
         }));
     }, [setSettings]);
 
+    const setPrivacyMode = useCallback((mode: 'local-only' | 'shared') => {
+        setSettings((prev) => ({ ...prev, privacyMode: mode }));
+    }, [setSettings]);
+
     return {
         providers,
         toggleProvider,
         updateProviderSettings,
+        setPrivacyMode,
         meshtasticSettings: settings.meshtastic || {},
         nostrSettings: settings.nostr || {},
         isPrivateMode: settings.privacyMode === 'local-only'

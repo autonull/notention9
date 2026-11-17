@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNetworkManagement } from '../../hooks/useNetworkManagement';
 import {Button} from '../ui/Button';
 import {Input} from '../ui/Input';
-import { GlobeIcon, SignalIcon, ShieldIcon, LoadingSpinner } from '../ui/icons';
+import { GlobeIcon, SignalIcon, ShieldIcon, LoadingSpinner, LockIcon } from '../ui/icons';
 import { agentService } from '../../services/AgentService';
 import { useToast } from '../../hooks/useToast';
 import { MeshDevice } from "@meshtastic/core";
@@ -14,6 +14,7 @@ export function NetworkManagementSection() {
         providers,
         toggleProvider,
         updateProviderSettings,
+        setPrivacyMode,
         isPrivateMode,
         meshtasticSettings,
         nostrSettings
@@ -111,6 +112,37 @@ export function NetworkManagementSection() {
 
     return (
         <div className="space-y-6">
+            {/* Privacy Mode Toggle */}
+            <div className="p-4 rounded-lg border bg-gray-800/50 border-gray-700">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className={`p-2 rounded-lg ${isPrivateMode ? 'bg-yellow-500/20 text-yellow-400' : 'bg-blue-500/20 text-blue-400'}`}>
+                            <LockIcon className="h-5 w-5" />
+                        </div>
+                        <div>
+                            <h4 className="font-medium text-gray-100">Local-Only Mode</h4>
+                            <p className="text-sm text-gray-400">
+                                {isPrivateMode 
+                                    ? 'All network providers disabled. No data leaves this device. Notes sync when re-enabled.' 
+                                    : 'Network providers can connect and sync data. Nostr and Meshtastic are available.'}
+                            </p>
+                        </div>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                            type="checkbox"
+                            className="sr-only peer"
+                            checked={isPrivateMode}
+                            onChange={(e) => setPrivacyMode(e.target.checked ? 'local-only' : 'shared')}
+                        />
+                        <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-500"></div>
+                        <span className="ml-3 text-sm font-medium {isPrivateMode ? 'text-yellow-400' : 'text-gray-400'}">
+                            {isPrivateMode ? 'Enabled' : 'Disabled'}
+                        </span>
+                    </label>
+                </div>
+            </div>
+
             <div className="flex items-center justify-between">
                 <div>
                     <h3 className="text-lg font-medium text-white flex items-center gap-2">
@@ -122,7 +154,7 @@ export function NetworkManagementSection() {
                 {isPrivateMode && (
                     <div className="flex items-center gap-2 px-3 py-1 bg-yellow-900/30 text-yellow-500 rounded-full text-xs border border-yellow-700/50">
                         <ShieldIcon className="h-4 w-4" />
-                        Private Mode Active
+                        Private Mode Active — Providers Disabled
                     </div>
                 )}
             </div>

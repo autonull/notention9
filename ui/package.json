@@ -39,6 +39,7 @@
     "react": "^19.0.0",
     "react-big-calendar": "^1.19.4",
     "react-dom": "^19.0.0",
+    "react-router-dom": "^7.0.0",
     "react-i18next": "^15.0.0",
     "tippy.js": "^6.3.7",
     "xmlchars": "^2.2.0"

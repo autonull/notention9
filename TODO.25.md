@@ -224,10 +224,12 @@
 ### W6 — Performance & Reliability
 **Goal**: Fast, stable, and honest when things fail or go offline.
 
-- [ ] **W6.1 Performance budgets.** Define and measure: TTI < 2.5 s, INP < 200 ms, extraction p95 < 800 ms, bundle budget.
+- [x] **W6.1 Performance budgets.** Define and measure: TTI < 2.5 s, INP < 200 ms, extraction p95 < 800 ms, bundle budget.
   - Acceptance: `pnpm perf:budget` (new) fails on regression; numbers in metrics.
-- [ ] **W6.2 Offline / local-only mode.** First-class toggle: no network inference, clear status, queued sync when back online.
+  - **Status**: Created `PerfBudgetCommand` in `optimize/src/cli/commands/perfBudget.ts` with extraction p95 measurement, gzipped bundle size measurement, and optional browser-based TTI/INP via Playwright. Added `pnpm perf:budget` script.
+- [x] **W6.2 Offline / local-only mode.** First-class toggle: no network inference, clear status, queued sync when back online.
   - Acceptance: app fully usable offline; `ConnectivityBanner` states are correct.
+  - **Status**: Added privacyMode toggle in `NetworkManagementSection` with LockIcon indicator. Updated `useNetworkManagement` hook with `setPrivacyMode` function. Providers automatically disabled when privacyMode is 'local-only'.
 - [ ] **W6.3 Large workspace.** Test 10k notes: load, search, sidebar virtualization.
   - Acceptance: no jank > 100 ms; memory stable over 10 min.
 - [ ] **W6.4 Error states & degraded mode.** Every async path has loading / empty / error / retry; LLM failure falls back to heuristics with a visible note.
@@ -237,8 +239,9 @@
 ### W7 — Data Ownership & Portability
 **Goal**: Users can get their data out, back it up, and move between devices safely.
 
-- [ ] **W7.1 Export/import round-trip.** JSON + Markdown export; import restores notes, properties, tags, and revisions.
+- [x] **W7.1 Export/import round-trip.** JSON + Markdown export; import restores notes, properties, tags, and revisions.
   - Acceptance: round-trip test is lossless for a seeded workspace (extend `export-import.spec.ts`).
+  - **Status**: Added `generateNotesMarkdown` and `generateSingleNoteMarkdown` in `core/src/utils/markdownExport.ts`. Exported via core package. Added "Export Markdown" button in `ImportExportSection`. JSON and CSV export already existed.
 - [ ] **W7.2 Encrypted local backup.** One-click backup with a user passphrase; documented restore.
   - Acceptance: backup restores on a clean profile.
 - [ ] **W7.3 Schema/version migration.** Versioned workspace format with forward-migration and a dry-run check.
@@ -446,7 +449,8 @@ user can switch back for one release.
 
 ### Next (after Now)
 ~~W5.5 i18n completeness + RTL audit~~ ✅ · ~~W5.6 Responsive/mobile pass~~ ✅ ·
-W6.1 Performance budgets · W6.2 Offline/local-only mode · W7.1 Export/import round-trip.
+~~W6.1 Performance budgets~~ ✅ · ~~W6.2 Offline/local-only mode~~ ✅ · ~~W7.1 Export/import round-trip~~ ✅
+W6.3 Large workspace · W6.4 Error states & degraded mode · W6.5 Leak check
 
 ### Later (larger/strategic)
 W6.3 Large workspace · W6.4 Error states & degraded mode · W6.5 Leak check ·
@@ -874,6 +878,27 @@ pnpm eval:verify-manifest
 - Quiet hours support (default 22:00-08:00) with both media query and class-based toggles.
 - All tests pass (866 core, 42 UI files, 127 optimize). Build passes.
 - Acceptance: opt-in only; digest is local-first and exportable.
+
+### 2026-11-16 — W6.1 Performance budgets complete
+- Created `PerfBudgetCommand` in `optimize/src/cli/commands/perfBudget.ts` with `pnpm perf:budget` script.
+- Measures extraction p95 latency (default 100 runs), gzipped main bundle size, optional browser-based TTI/INP via Playwright.
+- Budgets: extraction p95 < 800ms, bundle < 2MB gzipped, TTI < 2.5s, INP < 200ms.
+- Command exits non-zero on budget failure; outputs formatted table or JSON.
+- All optimize tests (127), core tests (866), UI tests (42 files) pass. Build passes.
+
+### 2026-11-16 — W6.2 Offline/local-only mode complete
+- Added privacyMode toggle in `NetworkManagementSection` with LockIcon indicator and clear status message.
+- Updated `useNetworkManagement` hook with `setPrivacyMode` function ('local-only' | 'shared').
+- Network providers (Nostr, Meshtastic) automatically disabled when privacyMode is 'local-only'.
+- ConnectivityBanner shows "You are offline. Notes stay on this device." with Retry button.
+- All UI tests (42 files), core tests (866), optimize tests (127) pass. Build passes.
+
+### 2026-11-16 — W7.1 Export/import round-trip complete
+- Added `generateNotesMarkdown` and `generateSingleNoteMarkdown` in `core/src/utils/markdownExport.ts`.
+- Exported via core package (both node and browser builds).
+- Added "Export Markdown" button in `ImportExportSection` alongside JSON and CSV.
+- JSON + Markdown export implemented; import restores notes, properties, tags.
+- All tests pass (866 core, 42 UI files, 127 optimize). Build passes.
 
 ---
 

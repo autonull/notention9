@@ -33,6 +33,7 @@ const browserEntries = {
   'notes/index': 'src/notes/index.ts',
   'matching/index': 'src/matching/index.ts',
   'ontology/index': 'src/ontology/index.ts',
+  'ontology/ontologyService': 'src/ontology/ontologyService.ts',
   'network/index': 'src/network/index.ts',
   'skills/index': 'src/skills/index.ts',
   'extraction/index': 'src/extraction/index.ts',
@@ -81,6 +82,9 @@ const browserEntries = {
   'schemas/generated/seam-definitions': 'src/schemas/generated/seam-definitions.ts',
   // Types
   'types/index': 'src/types/index.ts',
+  // Utils exports
+  'utils/csvExport': 'src/utils/csvExport.ts',
+  'utils/markdownExport': 'src/utils/markdownExport.ts',
 };
 
 const nodeEntries = [
@@ -90,6 +94,7 @@ const nodeEntries = [
   'src/notes/index.ts',
   'src/matching/index.ts',
   'src/ontology/index.ts',
+  'src/ontology/ontologyService.ts',
   'src/ontology/domains.ts',
   'src/ontology/domains.facets.ts',
   'src/ontology/schema.ts',

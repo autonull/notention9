@@ -10,3 +10,4 @@ export { MatchDigestCommand } from './matchDigest.js';
 export { EvalCanaryCommand } from './evalCanary.js';
 export { EvalMatchCommand } from './evalMatch.js';
 export { EvalConfidenceCommand } from './evalConfidence.js';
+export { PerfBudgetCommand } from './perfBudget.js';

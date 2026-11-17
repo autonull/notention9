@@ -17,6 +17,7 @@ import {
     EvalCanaryCommand,
     EvalMatchCommand,
     EvalConfidenceCommand,
+    PerfBudgetCommand,
 } from './cli/commands/index.js';
 
 // Import to register journeys
@@ -38,6 +39,7 @@ commandRegistry.register(new MatchDigestCommand());
 commandRegistry.register(new EvalCanaryCommand());
 commandRegistry.register(new EvalMatchCommand());
 commandRegistry.register(new EvalConfidenceCommand());
+commandRegistry.register(new PerfBudgetCommand());
 
 interface ParsedFlags {
     json: boolean;
