@@ -232,8 +232,13 @@
   - **Status**: Added privacyMode toggle in `NetworkManagementSection` with LockIcon indicator. Updated `useNetworkManagement` hook with `setPrivacyMode` function. Providers automatically disabled when privacyMode is 'local-only'.
 - [ ] **W6.3 Large workspace.** Test 10k notes: load, search, sidebar virtualization.
   - Acceptance: no jank > 100 ms; memory stable over 10 min.
-- [ ] **W6.4 Error states & degraded mode.** Every async path has loading / empty / error / retry; LLM failure falls back to heuristics with a visible note.
+- [x] **W6.4 Error states & degraded mode.** Every async path has loading / empty / error / retry; LLM failure falls back to heuristics with a visible note.
   - Acceptance: fault-injection test covers extraction, transport, and storage failures.
+  - **Status**: Created `FaultInjection.test.ts` in `core/src/tests/integration/` with 17 tests covering:
+    - Extraction: AI provider failures, timeouts, validation failures, hanging providers, sequential failures
+    - Transport: No healthy relays (outbox queueing), partial publish failures, subscription reconnection
+    - Storage: Write failures, read corruption, outbox storage failures, version mismatches, persistence across restarts
+    - Combined: Extraction during network outage, concurrent multi-system failures
 - [ ] **W6.5 Leak & long-session check.** Memory/CPU over a 30-min session; no listener leaks.
 
 ### W7 — Data Ownership & Portability
@@ -450,10 +455,10 @@ user can switch back for one release.
 ### Next (after Now)
 ~~W5.5 i18n completeness + RTL audit~~ ✅ · ~~W5.6 Responsive/mobile pass~~ ✅ ·
 ~~W6.1 Performance budgets~~ ✅ · ~~W6.2 Offline/local-only mode~~ ✅ · ~~W7.1 Export/import round-trip~~ ✅
-W6.3 Large workspace · W6.4 Error states & degraded mode · W6.5 Leak check
+W6.3 Large workspace · ~~W6.4 Error states & degraded mode~~ ✅ · W6.5 Leak check
 
 ### Later (larger/strategic)
-W6.3 Large workspace · W6.4 Error states & degraded mode · W6.5 Leak check ·
+W6.3 Large workspace · ~~W6.4 Error states & degraded mode~~ ✅ · W6.5 Leak check ·
 W7.2 Encrypted backup · W7.3 Schema migration · W7.4 Privacy redaction ·
 W8.1 Friction digest dashboard · W8.3 LLM call telemetry · W8.4 A/B → decisions ·
 W9.1 Quickstart · W9.2 Model selection guide · W9.3 Decision records · W9.4 Eval how-to ·
@@ -775,6 +780,15 @@ pnpm eval:verify-manifest
 - Integrated into `InboxView` and `DashboardView` quick capture via `StrategyResolver` props.
 - All tests pass (866 core, 42 UI files, 127 optimize). Build passes.
 - Acceptance: Every async extraction path shows loading, fallback, and error states with retry.
+
+### 2026-11-17 — W6.4 Error states & degraded mode complete
+- Created `core/src/tests/integration/FaultInjection.test.ts` with 17 fault-injection tests covering:
+  - **Extraction failures**: AI provider failures, timeouts, validation failures, hanging providers, sequential failures with fallback to heuristic
+  - **Transport failures**: No healthy relays (outbox queueing), partial publish failures (at least one relay succeeds), subscription reconnection
+  - **Storage failures**: Write failures (disk full), read corruption, outbox storage failures, version mismatches, persistence across restarts
+  - **Combined scenarios**: Extraction during network outage, concurrent multi-system failures
+- All tests pass (883 core, 42 UI files, 127 optimize). Build passes.
+- Acceptance: fault-injection test covers extraction, transport, and storage failures.
 
 ### 2026-11-16 — W3.2 Property provenance complete
 - Added `sourceSpan` [start, end] and `sourceText` fields to `Property` type in `core/src/types/domain.ts`.

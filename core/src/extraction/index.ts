@@ -54,3 +54,11 @@ export {
     CONFIDENCE_BUCKETS,
     type ConfidenceBucket,
 } from './confidenceDisplay.js';
+
+export {
+    runHeuristicExtraction,
+    progressiveExtract,
+    createProgressiveExtractor,
+    type ProgressiveExtractionOptions,
+    type ProgressiveExtractionResult,
+} from './progressiveExtraction.js';
