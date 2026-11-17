@@ -84,7 +84,7 @@ describe('Export/Import Round-trip', () => {
 });
 
 describe('Storage Schema Validation', () => {
-    it('should detect version 0 (legacy) data', () => {
+    it('should detect version 0 (no version field)', () => {
         const legacyData = {
             notes: [{id: '1', content: 'test', createdAt: '', updatedAt: '', properties: []}],
             settings: {theme: 'dark'},
@@ -97,7 +97,7 @@ describe('Storage Schema Validation', () => {
         expect(getStorageVersion(versionedData)).toBe(2);
     });
 
-    it('should validate current version data', () => {
+    it('should validate current version data (v0)', () => {
         const currentData = {version: STORAGE_SCHEMA_VERSION, notes: [], settings: {}};
         const validated = validateStorageSchema(currentData);
         expect(validated.version).toBe(STORAGE_SCHEMA_VERSION);
@@ -105,10 +105,12 @@ describe('Storage Schema Validation', () => {
         expect(validated.settings).toEqual({});
     });
 
-    it('should reject data without version', () => {
+    it('should accept data without version (treated as v0)', () => {
         const legacyData = {notes: [], settings: {}};
-        expect(() => validateStorageSchema(legacyData))
-            .toThrow(`expected ${STORAGE_SCHEMA_VERSION}, got none`);
+        const validated = validateStorageSchema(legacyData);
+        expect(validated.version).toBe(0);
+        expect(validated.notes).toEqual([]);
+        expect(validated.settings).toEqual({});
     });
 
     it('should reject data with wrong version', () => {
@@ -161,10 +163,16 @@ describe('ValidatedStorage', () => {
         expect(retrieved).toHaveLength(2);
     });
 
-    it('should reject notes with wrong version', async () => {
+    it('should accept notes with correct version (v0)', async () => {
         await storage['storage'].setItem('notention-notes', {version: 0, notes: [createTestNote()]});
         const retrieved = await storage.getNotes();
-        expect(retrieved).toEqual([]);
+        expect(retrieved).toHaveLength(1);
+    });
+
+    it('should accept settings with correct version (v0)', async () => {
+        await storage['storage'].setItem('notention-settings-v2', {version: 0, settings: {theme: 'light'}});
+        const retrieved = await storage.getSettings();
+        expect(retrieved.theme).toBe('light');
     });
 
     it('should store and retrieve settings with correct version', async () => {
@@ -172,12 +180,6 @@ describe('ValidatedStorage', () => {
         await storage.setSettings(settings);
         const retrieved = await storage.getSettings();
         expect(retrieved.theme).toBe('light');
-    });
-
-    it('should reject settings with wrong version', async () => {
-        await storage['storage'].setItem('notention-settings', {version: 0, theme: 'light'});
-        const retrieved = await storage.getSettings();
-        expect(retrieved.theme).toBe('dark'); // default
     });
 
     it('should store and retrieve full schema with version', async () => {
@@ -192,8 +194,8 @@ describe('ValidatedStorage', () => {
         expect(retrieved?.notes).toHaveLength(1);
     });
 
-    it('should return null for legacy schema on full schema retrieval', async () => {
-        const legacySchema = {
+    it('should return schema for v0 data on full schema retrieval', async () => {
+        const v0Schema = {
             notes: [{
                 id: 'legacy-1',
                 content: 'Legacy note',
@@ -203,10 +205,13 @@ describe('ValidatedStorage', () => {
             }],
             settings: {theme: 'light'},
         };
-        await storage['storage'].setItem('notention-notes', legacySchema.notes);
-        await storage['storage'].setItem('notention-settings', legacySchema.settings);
+        await storage['storage'].setItem('notention-notes', {version: 0, notes: v0Schema.notes});
+        await storage['storage'].setItem('notention-settings-v2', {version: 0, settings: v0Schema.settings});
 
         const retrieved = await storage.getFullSchema();
-        expect(retrieved).toBeNull();
+        expect(retrieved).not.toBeNull();
+        expect(retrieved?.version).toBe(0);
+        expect(retrieved?.notes).toHaveLength(1);
+        expect(retrieved?.settings.theme).toBe('light');
     });
 });

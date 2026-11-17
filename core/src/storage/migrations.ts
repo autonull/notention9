@@ -1,6 +1,9 @@
 import type {Note, AppSettings} from '../types/index.js';
 
-export const STORAGE_SCHEMA_VERSION = 1;
+// DO NOT BUMP VERSION until there are actual users.
+// We currently have NO users. Schema is at v0.
+// Migration infrastructure is ready but idle - no migrations registered yet.
+export const STORAGE_SCHEMA_VERSION = 0;
 
 export interface StorageSchema {
     version: number;
@@ -15,57 +18,8 @@ export interface MigrationStep {
     description: string;
 }
 
-function migrateV0toV1(data: StorageSchema): StorageSchema {
-    const notes = Array.isArray(data.notes) ? data.notes : [];
-    const settings = data.settings && typeof data.settings === 'object' ? data.settings : {};
-
-    const defaultSettings: StorageSchema['settings'] = {
-        theme: 'dark',
-        developerMode: false,
-        aiEnabled: false,
-        aiRemoteConsent: false,
-        capabilities: {browser: false, files: false},
-        user: {name: ''},
-        nostr: {privkey: null, relays: []},
-        ontology: [],
-        customTemplates: [],
-    };
-
-    return {
-        version: 1,
-        notes: notes.map((note: any) => ({
-            id: note.id ?? crypto.randomUUID(),
-            title: note.title ?? '',
-            content: note.content ?? '',
-            tags: Array.isArray(note.tags) ? note.tags : [],
-            properties: Array.isArray(note.properties) ? note.properties : [],
-            createdAt: note.createdAt ?? new Date().toISOString(),
-            updatedAt: note.updatedAt ?? new Date().toISOString(),
-            publishedAt: note.publishedAt,
-            pinned: note.pinned,
-            deletedAt: note.deletedAt,
-            nostrEventId: note.nostrEventId,
-            source: note.source ?? {type: 'user', identifier: 'legacy', timestamp: Date.now()},
-            privacy: note.privacy ?? 'private',
-            priority: typeof note.priority === 'number' ? note.priority : 0,
-            status: note.status,
-            deadline: note.deadline,
-            commitment: note.commitment,
-            document: note.document,
-            contentHtml: note.contentHtml,
-        })),
-        settings: {...defaultSettings, ...settings},
-    };
-}
-
-export const MIGRATIONS: MigrationStep[] = [
-    {
-        fromVersion: 0,
-        toVersion: 1,
-        migrate: migrateV0toV1,
-        description: 'Initialize schema with default settings and normalize note structure',
-    },
-];
+// No migrations registered yet. Will add v0->v1 when we have users and a real schema change.
+export const MIGRATIONS: MigrationStep[] = [];
 
 export function getStorageVersion(data: unknown): number {
     if (typeof data === 'object' && data !== null && 'version' in data) {

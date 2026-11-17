@@ -958,12 +958,14 @@ pnpm eval:verify-manifest
 
 ### 2026-11-17 — W7.3 Schema/version migration complete
 - Created migration system in `core/src/storage/migrations.ts` with `MIGRATIONS` registry and `migrateStorageSchema`/`dryRunMigration` functions
-- Added v0→v1 migration for legacy data (normalizes note structure, applies default settings)
+- Schema version is **v0** (only version). No migrations registered - infrastructure ready but idle.
 - Created `MigrateCommand` in `optimize/src/cli/commands/migrate.ts` with `pnpm optimize migrate --dry-run|--apply --input <file> --json --target-version <n>`
-- Migration chain supports sequential version upgrades (v0→v1→v2...)
-- Added 15 migration tests in `core/src/storage/migrations.test.ts`
+- Migration chain supports sequential version upgrades when needed (v0→v1→v2...)
+- Added 15 migration tests in `core/src/storage/migrations.test.ts` (updated for v0)
 - Fixed CLI flag parsing for `--input` string argument
-- All UI tests (42 files), core tests (898), optimize tests (127) pass. Build passes.
+- Fixed existing storage tests for v0 schema
+- All UI tests (42 files), core tests (895), optimize tests (127) pass. Build passes.
+- **Note**: DO NOT BUMP VERSION until there are actual users (we have none).
 
 ---
 
