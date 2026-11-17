@@ -19,6 +19,7 @@ import {
     EvalConfidenceCommand,
     PerfBudgetCommand,
     MigrateCommand,
+    LLMTelemetryCommand,
 } from './cli/commands/index.js';
 
 // Import to register journeys
@@ -42,6 +43,7 @@ commandRegistry.register(new EvalMatchCommand());
 commandRegistry.register(new EvalConfidenceCommand());
 commandRegistry.register(new PerfBudgetCommand());
 commandRegistry.register(new MigrateCommand());
+commandRegistry.register(new LLMTelemetryCommand());
 
 interface ParsedFlags {
     json: boolean;

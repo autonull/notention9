@@ -145,6 +145,7 @@ const nodeEntries = [
   'src/telemetry/revisionUtils.ts',
   'src/telemetry/constants.ts',
   'src/telemetry/matchDigest.ts',
+  'src/telemetry/llmTelemetry.ts',
   // Nostr
   'src/network/nostr/nostr.ts',
   'src/network/nostr/privacy.ts',

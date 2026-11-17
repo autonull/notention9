@@ -26,7 +26,7 @@ import {
 } from 'node-llama-cpp';
 
 export { getLlama };
-import { DEFAULT_ONTOLOGY, parsePropertiesJson } from '@notention/core';
+import { DEFAULT_ONTOLOGY, parsePropertiesJson, getLLMTelemetry, type LLMMode } from '@notention/core';
 import type { Property, OntologyNode } from '@notention/core';
 import { buildSystemPrompt, leafOntologyKeys } from '../prompts/extractionPrompt.js';
 import { VALID_OPERATOR_SET, pruneUngrounded, pruneUngroundedWithSpans } from '../prompts/policy.js';
@@ -233,6 +233,18 @@ export function modelSupportsGrammar(modelPath: string): boolean {
     return resolveChatWrapperKind(modelPath).supportsGrammar;
 }
 
+/** Extract a readable model name from the model path. */
+export function getModelNameFromPath(modelPath: string): string {
+    const baseName = modelPath.split(/[\\/]/).pop() ?? modelPath;
+    // Remove .gguf extension and common suffixes
+    return baseName
+        .replace(/\.gguf$/i, '')
+        .replace(/-Q\d+_K_[A-Z]+$/i, '')
+        .replace(/-FP16$/i, '')
+        .replace(/-F16$/i, '')
+        .replace(/-Q[48]_[0-9]$/i, '');
+}
+
 export async function getOrCreateGrammar(llama: Llama, ontology: OntologyNode[]): Promise<LlamaGrammar> {
     const keys = leafOntologyKeys(ontology);
     const signature = keys.join('|');
@@ -402,6 +414,7 @@ export async function extractWithLlamaCpp(
     options: LlamaCppBridgeOptions
 ): Promise<Property[]> {
     const modelPath = options.modelPath ?? getModelPath();
+    const modelName = getModelNameFromPath(modelPath);
     const modelSupportsGrammar_ = modelSupportsGrammar(modelPath);
     const grammarMode = modelSupportsGrammar_ ? getGrammarMode(modelPath) : 'fallback';
 
@@ -425,28 +438,48 @@ export async function extractWithLlamaCpp(
 
     let response: string;
     let properties: Property[] = [];
+    const telemetry = getLLMTelemetry();
 
     if (useGrammar) {
         // Try with grammar first
+        const grammarStartTime = performance.now();
         try {
             response = await runExtraction(modelPath, session, userPrompt, grammar, 512, options.temperature ?? DEFAULT_TEMPERATURE);
-            
+            const latencyMs = Math.round(performance.now() - grammarStartTime);
+
             if (process.env.LLAMA_DEBUG) {
                 console.log('[LlamaCpp] Raw response (grammar):', JSON.stringify(response));
             }
 
             properties = pruneUngroundedWithSpans(parseResponse(response, ontology), text);
-            
+
+            // Record telemetry for grammar mode
+            telemetry.record({
+                model: modelName,
+                mode: 'grammar',
+                latencyMs,
+                success: properties.length > 0,
+            });
+
             // If we got valid properties, record success
             if (properties.length > 0) {
                 recordGrammarSuccess(modelPath);
                 return properties;
             }
-            
+
             // Empty result with grammar - might be a parse issue, try fallback
             console.log('[LlamaCpp] Grammar extraction returned empty, trying fallback...');
         } catch (error) {
+            const latencyMs = Math.round(performance.now() - grammarStartTime);
             console.warn('[LlamaCpp] Grammar extraction failed, trying fallback:', error);
+
+            telemetry.record({
+                model: modelName,
+                mode: 'grammar',
+                latencyMs,
+                success: false,
+                error: error instanceof Error ? error.message : 'Unknown error',
+            });
         }
 
         // Grammar failed or returned empty - record failure and try fallback
@@ -460,14 +493,24 @@ export async function extractWithLlamaCpp(
     const fallbackSystemPrompt = buildSystemPrompt(ontology, false);
     await getOrCreateLlamaSession({ ...options, systemPrompt: fallbackSystemPrompt });
 
+    const fallbackStartTime = performance.now();
     response = await runExtraction(modelPath, session, userPrompt, undefined, 512, options.temperature ?? DEFAULT_TEMPERATURE);
+    const fallbackLatencyMs = Math.round(performance.now() - fallbackStartTime);
 
     if (process.env.LLAMA_DEBUG) {
         console.log('[LlamaCpp] Raw response (fallback):', JSON.stringify(response));
     }
 
     properties = pruneUngroundedWithSpans(parseResponse(response, ontology), text);
-    
+
+    // Record telemetry for fallback mode
+    telemetry.record({
+        model: modelName,
+        mode: 'fallback',
+        latencyMs: fallbackLatencyMs,
+        success: properties.length > 0,
+    });
+
     return properties;
 }
 

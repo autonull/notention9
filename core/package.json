@@ -80,6 +80,12 @@
       "browser": "./dist/browser/telemetry/journal.js",
       "types": "./dist/telemetry/journal.d.ts"
     },
+    "./telemetry/llmTelemetry": {
+      "import": "./dist/telemetry/llmTelemetry.js",
+      "node": "./dist/telemetry/llmTelemetry.js",
+      "browser": "./dist/browser/telemetry/llmTelemetry.js",
+      "types": "./dist/telemetry/llmTelemetry.d.ts"
+    },
     "./telemetry/matchDigest": {
       "import": "./dist/telemetry/matchDigest.js",
       "node": "./dist/telemetry/matchDigest.js",

@@ -272,8 +272,9 @@
   - **Status**: CLI implemented in `optimize/src/cli/commands/frictionDigest.ts`. Dashboard added to `MetricsTab` in `ui/src/components/settings/MetricsTab.tsx` showing signals grouped by workflow with evidence class indicators (measured/observed/hypothesized/asserted).
 - [x] **W8.2 Local eval canary.** One command runs golden + quality + match + taxonomy and writes a report; **no CI/provider dependency** (per user preference).
   - Acceptance: `pnpm eval:canary` exits non-zero on regression; artifact written under `data/`.
-- [ ] **W8.3 LLM call telemetry.** Record model, tokens, latency, mode (grammar/unconstrained) per call; aggregate p50/p95.
+- [x] **W8.3 LLM call telemetry.** Record model, tokens, latency, mode (grammar/unconstrained) per call; aggregate p50/p95.
   - Acceptance: report shows cost/latency per model.
+  - **Status**: Created `core/src/telemetry/llmTelemetry.ts` with `LLMTelemetry` class, `getLLMTelemetry` singleton, and `recordLLMCall` helper. Integrated into `extractWithLlamaCpp` in `optimize/src/llm/llamaCppBridge.ts` to record grammar and fallback mode calls. Added CLI command `pnpm optimize llm:telemetry [--days N] [--json] [--model <name>] [--mode <mode>]` in `optimize/src/cli/commands/llmTelemetry.ts`. Added 12 tests in `core/src/tests/telemetry/llmTelemetry.test.ts`. All tests pass (933 core, 127 optimize).
 - [ ] **W8.4 Wire A/B results to decisions.** E2 capture A/B + E13 ablation outputs feed the optimizer loop's adopt step.
   - Acceptance: `decision.md` cites the experiment artifact.
 
@@ -471,7 +472,7 @@ user can switch back for one release.
 ### Later (larger/strategic)
 ~~W6.3 Large workspace~~ ✅ · ~~W6.4 Error states & degraded mode~~ ✅ · ~~W6.5 Leak check~~ ✅ ·
 ~~W7.2 Encrypted backup~~ ✅ · ~~W7.3 Schema migration~~ ✅ · ~~W7.4 Privacy redaction~~ ✅ ·
-~~W8.1 Friction digest dashboard~~ ✅ · W8.3 LLM call telemetry · W8.4 A/B → decisions ·
+~~W8.1 Friction digest dashboard~~ ✅ · ~~W8.3 LLM call telemetry~~ ✅ · W8.4 A/B → decisions ·
 W9.1 Quickstart · W9.2 Model selection guide · W9.3 Decision records · W9.4 Eval how-to ·
 W1.7 LoRA fine-tune (if quality plateaus < 0.80).
 
@@ -997,6 +998,13 @@ pnpm eval:verify-manifest
 - Added toast notifications when PII is redacted during remote inference (via `useGardener` and `useAutoTagging`)
 - Exported via `@notention/core/utils/piiRedaction` for both Node.js and browser builds
 - All UI tests (42 files), core tests (921), optimize tests (127) pass. Build passes.
+
+### 2026-11-17 — W8.3 LLM call telemetry complete
+- Created `core/src/telemetry/llmTelemetry.ts` with `LLMTelemetry` class, `getLLMTelemetry` singleton, and `recordLLMCall` helper for recording model, tokens, latency, mode (grammar/fallback/unconstrained) per call with p50/p95 aggregation
+- Integrated into `extractWithLlamaCpp` in `optimize/src/llm/llamaCppBridge.ts` to automatically record grammar and fallback mode calls with timing and success status
+- Added CLI command `pnpm optimize llm:telemetry [--days N] [--json] [--model <name>] [--mode <mode>]` in `optimize/src/cli/commands/llmTelemetry.ts`
+- Added 12 tests in `core/src/tests/telemetry/llmTelemetry.test.ts` covering recording, aggregation, retention, sampling, and reporting
+- All UI tests (42 files), core tests (933), optimize tests (127) pass. Build passes.
 
 ---
 
