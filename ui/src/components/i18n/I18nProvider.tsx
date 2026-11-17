@@ -1,4 +1,4 @@
-import React, { useEffect, createElement } from 'react';
+import React, { useEffect } from 'react';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 import i18n from '../../i18n';
 
@@ -17,8 +17,10 @@ function I18nInitializer() {
 }
 
 export function I18nProvider({ children }: I18nProviderProps) {
-    return createElement(I18nextProvider as React.ComponentType<{ i18n: typeof i18n; children: React.ReactNode }>, { i18n },
-        createElement(I18nInitializer),
-        children
+    return (
+        <I18nextProvider i18n={i18n}>
+            <I18nInitializer />
+            {children}
+        </I18nextProvider>
     );
 }

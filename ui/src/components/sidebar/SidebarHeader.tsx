@@ -16,7 +16,7 @@ export function SidebarHeader({
     isCollapsed,
     showFullContent
 }: {
-    searchInputRef: React.RefObject<HTMLInputElement>;
+    searchInputRef: React.RefObject<HTMLInputElement | null>;
     focusSearch: () => void;
     onToggleSidebar: (() => void) | undefined;
     isCollapsed: boolean;

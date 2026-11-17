@@ -4,7 +4,7 @@ import {Button} from '../ui/Button';
 import {ConfirmationModal} from '../ui/Primitives';
 import {useToast} from '../../hooks/useToast';
 import localforage from 'localforage';
-import type {AppSettings, ExportNote, Note} from '@notention/core';
+import type {AppSettings, ExportEnvelope, ExportNote, Note} from '@notention/core';
 import {
     buildExportEnvelope,
     decryptBackup,
@@ -32,12 +32,6 @@ interface ImportExportSectionProps {
 interface PendingImport {
     type: 'full' | 'note' | 'encrypted';
     data: {notes: ExportNote[]; settings: AppSettings} | ExportNote | EncryptedBackup;
-    message: string;
-}
-
-interface PendingImport {
-    type: 'full' | 'note';
-    data: {notes: ExportNote[]; settings: AppSettings} | ExportNote;
     message: string;
 }
 

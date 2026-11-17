@@ -52,6 +52,7 @@ export interface AttributeDefinition {
   referenceType?: string;
   default?: unknown;
   options?: string[];
+  aliases?: string[];
   extends?: string;
 }
 
@@ -192,6 +193,7 @@ function compileNodes(
         operators: effectiveOperators,
         default: attrDef.default,
         options: attrDef.options,
+        aliases: attrDef.aliases,
         extends: attrDef.extends
       } as OntologyAttribute;
     }

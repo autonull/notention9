@@ -321,7 +321,7 @@ export function SkillManagementView() {
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
                                             <Badge 
-                                                variant={record.success ? 'success' : 'error'} 
+                                                variant={record.success ? 'success' : 'danger'}
                                                 size="sm"
                                             >
                                                 {record.success ? 'Success' : 'Failed'}

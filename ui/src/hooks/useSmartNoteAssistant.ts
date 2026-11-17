@@ -56,6 +56,8 @@ interface UseSmartNoteAssistantReturn {
     // Modal state
     attributeModalOpen: boolean;
     setAttributeModalOpen: (open: boolean) => void;
+    targetKey: string;
+    setTargetKey: (key: string) => void;
     inferredType: string;
     setInferredType: (type: string) => void;
 
@@ -94,6 +96,7 @@ export function useSmartNoteAssistant({
     const propertyReview = usePropertyReview(note.content, properties, settings.ontology || []);
 
     const [attributeModalOpen, setAttributeModalOpen] = useState(false);
+    const [targetKey, setTargetKey] = useState('');
     const [inferredType, setInferredType] = useState<string>('string');
 
     const [isOpen, setIsOpen] = useState(true);
@@ -251,6 +254,8 @@ export function useSmartNoteAssistant({
         setPropertyToDelete,
         attributeModalOpen,
         setAttributeModalOpen,
+        targetKey,
+        setTargetKey,
         inferredType,
         setInferredType,
         handleSaveProperty,

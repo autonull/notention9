@@ -10,7 +10,7 @@ import {ITEM_HEIGHT} from '../../constants/ui';
 import {useSidebar} from './SidebarContext';
 
 interface SidebarListProps {
-    virtualListRef: React.RefObject<VirtualizedListRef>;
+    virtualListRef: React.RefObject<VirtualizedListRef | null>;
 }
 
 const SidebarListInner = forwardRef<VirtualizedListRef, SidebarListProps>(({ virtualListRef }, ref) => {

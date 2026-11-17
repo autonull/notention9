@@ -117,6 +117,13 @@ export interface Skill {
     /** Version string */
     version: string;
 
+    /** Optional skill metadata (domains, auth requirements) */
+    metadata?: {
+        domains?: string[];
+        requiresAuth?: boolean;
+        [key: string]: unknown;
+    };
+
     /** Semantic patterns this skill recognizes from the ontology */
     patterns: PropertyPattern[];
 

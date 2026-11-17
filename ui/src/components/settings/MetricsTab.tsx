@@ -23,7 +23,7 @@ export function MetricsTab() {
         }
         let mounted = true;
         setLoadingDigest(true);
-        getFrictionSignals().then(signals => {
+        Promise.resolve(getFrictionSignals()).then(signals => {
             if (mounted) {
                 setFrictionSignals(signals);
                 setLoadingDigest(false);

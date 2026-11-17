@@ -18,7 +18,6 @@ import {
     XMarkIcon,
     LightBulbIcon,
     PinIcon,
-    InfoIcon,
     ThumbsUpIcon,
     ThumbsDownIcon,
     CheckIcon,
@@ -106,7 +105,11 @@ export function PropertyBlock({
     const getValidOperators = (key: string, ontology: OntologyNode[]): string[] => {
         const attributeDef = findAttributeDefInTree(key, ontology);
         if (!attributeDef) return ['is', 'contains', 'matches'];
-        return [...attributeDef.operators.real, ...attributeDef.operators.imaginary];
+        const operators = [
+            ...(attributeDef.operators?.real ?? []),
+            ...(attributeDef.operators?.imaginary ?? [])
+        ];
+        return operators.length > 0 ? operators : ['is'];
     };
 
     const IconComponent = getPropertyIcon(property.key);

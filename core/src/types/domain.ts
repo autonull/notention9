@@ -113,6 +113,7 @@ export interface OntologyAttribute {
     imaginary?: string[];
   };
   options?: string[];
+  aliases?: string[];
   referenceType?: string;
   numericOptions?: {unit?: string; precision?: number; min?: number; max?: number};
   affinityOptions?: {bipolar?: boolean; targetType?: 'tag' | 'ontology_class' | 'peer'};

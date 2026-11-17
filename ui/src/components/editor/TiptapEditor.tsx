@@ -100,7 +100,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
         scrollToPosition: (pos: number) => {
             if (editor && !editor.isDestroyed && editor.view) {
                 editor.view.dispatch(editor.view.state.tr.setSelection(
-                    new TextSelection(editor.view.state.doc, pos)
+                    TextSelection.create(editor.view.state.doc, pos)
                 ));
                 editor.view.focus();
                 // Scroll into view
@@ -153,7 +153,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
             if (editor && !editor.isDestroyed && editor.view) {
                 const { start } = event.detail;
                 editor.view.dispatch(editor.view.state.tr.setSelection(
-                    new TextSelection(editor.view.state.doc, start)
+                    TextSelection.create(editor.view.state.doc, start)
                 ));
                 editor.view.focus();
                 const coords = editor.view.coordsAtPos(start);
@@ -215,7 +215,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
             <PropertyEditor
                 isModal
                 isOpen={isPropertyModalOpen}
-                onClose={handleClosePropertyModal}
+                onCancel={handleClosePropertyModal}
                 onSave={(key, op, val, propertyId, icon) => handleInsertProperty(editor, key, op, val, icon)}
                 initialKey={initialModalData?.key}
                 initialOperator={initialModalData?.operator}

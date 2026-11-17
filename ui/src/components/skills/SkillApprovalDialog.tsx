@@ -66,7 +66,7 @@ export function SkillApprovalDialog({
             } else if (e.key === 'Tab') {
                 e.preventDefault();
                 const elements = ['reject', 'autoExecute', 'approve'] as const;
-                const currentIndex = elements.indexOf(focusedElement);
+                const currentIndex = focusedElement ? elements.indexOf(focusedElement) : -1;
                 const nextIndex = (currentIndex + 1) % elements.length;
                 setFocusedElement(elements[nextIndex]);
             }

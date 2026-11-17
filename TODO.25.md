@@ -173,6 +173,7 @@
   - Reports precision, recall, F1 per case and averages; pass threshold: mean F1 ≥ 0.5.
   - Outputs JSON report to `data/eval/match/` with timestamp.
   - Current result: 5/22 cases pass, mean F1=0.197 (threshold 0.5) — shows room for extraction/matching improvement.
+  - **2026-11-17 update**: 2/22 cases pass, mean F1=0.061 (`data/eval/match/match-eval-2026-11-17T19-02-49-931Z.json`). Same result with and without the numeric-constraint fix, so this is a pre-existing extraction/fixture mismatch, not a new matching regression.
   - All tests pass (127 optimize, 866 core, 42 UI files).
 - [x] **W4.2 Ranking + dedupe.** Improve ordering (recency, distance, constraint coverage) and collapse near-duplicate offers.
   - Acceptance: top-5 relevance ↑ on match set; no duplicate clusters in top-5.
@@ -1234,6 +1235,15 @@ pnpm eval:verify-manifest
 - **Note**: raw-HTML-in-Actions was fixed this session (`getTextFromHtml` in `ActionsView`); the
   `actions/board` showcase now passes. The rest of W11 is plan-only.
 
+### 2026-11-17 — W11 follow-ups, typecheck cleanup, avatar fallback
+- Re-ran `ui/test/journeys/compose-match.spec.ts`: both journeys pass (10.1s, 6.7s), including the `match_explained` anchor.
+- Fixed numeric constraint dispatch in `core/src/matching/matchers.ts`: `integer`, `currency`, `quantity`, `duration`, `percentage` now use the number matcher. A request `rate:800` versus offer `rate:1200` is a conflict, not a missing property. Added a core regression test with a currency ontology attribute.
+- Cleared all pre-existing UI `tsc --noEmit` errors (51 → 0): smart-assistant target-key state, editor match response/ref types, alias metadata, i18n provider JSX, icon props, settings selects/metrics, skill metadata/badge variants, and `@types/react`/`@types/react-dom` alignment to React 19.
+- Added avatar error fallback in `ui/src/components/ui/Avatar.tsx`; broken/missing profile pictures now show initials/icon instead of a broken image.
+- Updated `ui/test/journeys/navigation.spec.ts` expectations to the W11 vocabulary: "Read-only public feed", "Chat needs an identity", and "Responses". Navigation journeys now pass (3/3).
+- Verification: `pnpm --filter @notention/core test` 934 passed; `pnpm test:ui` all 42 files passed; `pnpm --filter @notention/ui build` passed; `pnpm --filter @notention/ui exec tsc --noEmit` passed; `pnpm taxonomy:coverage` 24/24.
+- `pnpm optimize eval:match` remains below gate: 2/22 cases, mean F1=0.061. Identical result with the matcher fix reverted, so track it as the next extraction/fixture task, not a regression from this change.
+
 ### 2026-11-17 — W11 audit + cleanup complete (except human stranger test)
 - **W11.0**: `doc/UI_AUDIT.md` with the per-screenshot table, ranked removals, before/after IA, and harness findings.
 - **W11.1**: deleted `OnboardingChecklist`, its settings state, and its three tracking effects.
@@ -1245,15 +1255,18 @@ pnpm eval:verify-manifest
 - **W11.8**: `getTextFromHtml` previews everywhere; one icon per view; match card reduced to Respond / Revise / Not a match plus disclosure.
 - **Evidence harness fixed**: `seed` built `/##view` (double hash) so network/matching screenshots were actually the Inbox; the URL router could also push the default view before a deep link committed. 24/24 screenshots now capture the intended view.
 - **Blocking UI bugs fixed while proving the screens**: editor missing `useEffect`/`onPickLocation` wiring, capture extraction effect loop on first keystroke, Map-vs-tree `findAttributeDef` collision, and the per-key "New concept discovered" toast storm.
-- **Tests**: `pnpm test` (core 933, agent 17, CLI 6, optimize 127); `pnpm test:ui` (42 files); `pnpm screenshots` (24/24); `pnpm taxonomy:coverage` 24/24. Journey checks: navigation, mobile, keyboard, describe-it, and the compose-match popup pass; the compose-match *anchor* test still needs a re-run after wiring `match_explained.noteId`.
-- **Remaining work for the next session**:
-  1. Re-run `ui/test/journeys/compose-match.spec.ts`; the anchor test now receives the request id for `match_explained`.
-  2. Investigate numeric `rate` equality returning a neutral match (800 vs 1200 becomes "missing" instead of conflicting). This is in `MatchEngine.evaluateConstraint`, not the UI.
-  3. Run the human stranger test (W11.7) and attach the timing artifact.
-  4. Clean up the pre-existing UI `tsc --noEmit` errors in settings/hooks; `vite build` passes.
-  5. Map marker images still fall back to a broken image when a profile has no picture.
-- **W11.7 remains blocked**: the stranger test is a human timing gate. Run `pnpm stranger-test` with a fresh profile and attach the observed install → capture → match → export time.
+- **Tests**: `pnpm test` (core 933, agent 17, CLI 6, optimize 127); `pnpm test:ui` (42 files); `pnpm screenshots` (24/24); `pnpm taxonomy:coverage` 24/24. Journey checks: navigation, mobile, keyboard, describe-it, and the compose-match popup pass; the compose-match *anchor* test was re-run on 2026-11-17 and passes 2/2.
+- **Remaining work after 2026-11-17**:
+  1. **W11.7 human stranger test** — still blocked: requires a human with a fresh profile. Run `pnpm stranger-test`, attach the observed install → capture → match → export timing.
+  2. **Match quality regression** — `pnpm optimize eval:match` is 2/22 with mean F1=0.061, below the 0.5 pass threshold (identical with/without the currency matcher fix). The quality fixtures expect `free` requests to match mentor/resume/legal offers, but extraction emits `price:is:free` and `need:...` while offers expose `skill`/`price`; reconcile extraction keys or expand offers. Attach a per-case report.
+  3. **W12.0 baseline + target wireframes** — start the design-convergence audit in `doc/UI_CONVERGENCE.md`: wireframes per view, space-utilization measurements, no code until approved.
+  4. **W1.7 LoRA fine-tune** (optional) — only if quality plateaus below 0.80 after W1.3–W1.6.
+- **Closed on 2026-11-17**: compose-match anchor re-run (2/2 pass), numeric/currency `rate` conflict fix, UI `tsc --noEmit` cleanup, avatar fallback for missing/broken profile pictures.
 - **Next session**: W12 design-convergence audit (§W12). Repeat the full audit, add space utilization as a defect class, and require target wireframes before code.
+
+### 2026-11-17 — W11.7 remains blocked; W12.0 is next
+- W11.7 still needs a human with a fresh profile to run `pnpm stranger-test` and attach timing.
+- W12.0 (wireframes + space-utilization baseline) is the next actionable step; it is documentation-only until approved.
 
 
 ---

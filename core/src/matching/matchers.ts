@@ -52,6 +52,8 @@ const OPERATOR_RESULTS: Record<string, {
     '=': { ok: (o, r) => Math.abs(o - r) < (r * 0.05), msg: (o, r) => `~= ${r}`, vm: 'close', nokMsg: (o, r) => `${o} != ${r}`, nvm: 'diff' }
 };
 
+const NUMERIC_TYPES = new Set(['number', 'integer', 'currency', 'quantity', 'duration', 'percentage']);
+
 const isRangeRequest = (request: Property): boolean =>
     request.operator === 'between' ||
     request.operator === 'range' ||
@@ -290,7 +292,7 @@ export const evaluateProperty = (
         else if (GEO_OPS.has(request.operator)) type = 'geo';
     }
 
-    switch (type) {
+    switch (NUMERIC_TYPES.has(type) ? 'number' : type) {
         case 'number':
             return evaluateNumber(request, offer);
         case 'geo':

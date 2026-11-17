@@ -155,13 +155,13 @@ export function MatchDigestTab() {
                             <div>
                                 <label className="block text-sm font-medium text-gray-300 mb-1">Min Match Score</label>
                                 <Select
-                                    value={matchDigestSettings.minMatchScore}
+                                    value={String(matchDigestSettings.minMatchScore)}
                                     onChange={(v) => handleSettingChange('minMatchScore', Number(v))}
                                     options={[
-                                        {value: 0.3, label: 'Low (30%)'},
-                                        {value: 0.5, label: 'Medium (50%)'},
-                                        {value: 0.7, label: 'High (70%)'},
-                                        {value: 0.85, label: 'Very High (85%)'},
+                                        {value: '0.3', label: 'Low (30%)'},
+                                        {value: '0.5', label: 'Medium (50%)'},
+                                        {value: '0.7', label: 'High (70%)'},
+                                        {value: '0.85', label: 'Very High (85%)'},
                                     ]}
                                 />
                             </div>
@@ -174,10 +174,10 @@ export function MatchDigestTab() {
                                     Quiet Hours Start
                                 </label>
                                 <Select
-                                    value={matchDigestSettings.quietHoursStart}
+                                    value={String(matchDigestSettings.quietHoursStart)}
                                     onChange={(v) => handleSettingChange('quietHoursStart', Number(v))}
                                     options={Array.from({length: 24}, (_, i) => ({
-                                        value: i,
+                                        value: String(i),
                                         label: `${i.toString().padStart(2, '0')}:00`,
                                     }))}
                                 />
@@ -189,10 +189,10 @@ export function MatchDigestTab() {
                                     Quiet Hours End
                                 </label>
                                 <Select
-                                    value={matchDigestSettings.quietHoursEnd}
+                                    value={String(matchDigestSettings.quietHoursEnd)}
                                     onChange={(v) => handleSettingChange('quietHoursEnd', Number(v))}
                                     options={Array.from({length: 24}, (_, i) => ({
-                                        value: i,
+                                        value: String(i),
                                         label: `${i.toString().padStart(2, '0')}:00`,
                                     }))}
                                 />

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { cn } from '../../utils/ui';
 import { componentTokens, colors } from '../../styles/tokens';
 
@@ -26,6 +26,13 @@ export function Avatar({
     ...props
 }: AvatarProps) {
     const tokens = componentTokens.avatar;
+    const [imageFailed, setImageFailed] = useState(false);
+
+    useEffect(() => {
+        setImageFailed(false);
+    }, [src]);
+
+    const showImage = Boolean(src) && !imageFailed;
 
     const statusColors = {
         online: colors.status.online,
@@ -59,11 +66,12 @@ export function Avatar({
                 )}
                 aria-label={name || alt}
             >
-                {src ? (
+                {showImage ? (
                     <img
                         src={src}
                         alt={alt || name || ''}
                         className="w-full h-full object-cover"
+                        onError={() => setImageFailed(true)}
                     />
                 ) : initials ? (
                     <span>{initials}</span>

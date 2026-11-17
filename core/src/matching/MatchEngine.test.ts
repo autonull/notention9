@@ -21,6 +21,11 @@ const ontology: OntologyNode[] = [
                 type: 'number',
                 description: 'Cost',
                 operators: { real: ['is', '<', '>'], imaginary: ['is', 'between'] },
+            },
+            'rate': {
+                type: 'currency',
+                description: 'Money per unit',
+                operators: { real: ['is'], imaginary: [] },
             }
         },
         children: []
@@ -137,6 +142,16 @@ describe('MatchEngine', () => {
              const req = createNote([{ key: 'price', operator: 'is', values: ['100'] }]);
              // Offer has price but value mismatch (conflict)
              const off = createNote([{ key: 'price', operator: 'is', values: ['200'] }]);
+
+             const res = engine.calculateMatchScore(req, off);
+
+             expect(res.conflicts.length).toBe(1);
+             expect(res.missing.length).toBe(0);
+        });
+
+        it('treats currency properties as numeric constraints', () => {
+             const req = createNote([{ key: 'rate', operator: 'is', values: ['800'] }]);
+             const off = createNote([{ key: 'rate', operator: 'is', values: ['1200'] }]);
 
              const res = engine.calculateMatchScore(req, off);
 

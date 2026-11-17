@@ -17,7 +17,7 @@ export interface CorrectionSuggestion {
 /**
  * Common confusion pairs from extraction analysis
  */
-const CONFUSION_PAIRS: Record<string, string[]> = {
+export const CONFUSION_PAIRS: Record<string, string[]> = {
     // Budget/Price confusion
     'price': ['budget'],
     'budget': ['price'],
@@ -43,7 +43,7 @@ const CONFUSION_PAIRS: Record<string, string[]> = {
 /**
  * Properties that are commonly missing when certain keys are present
  */
-const IMPLIED_PROPERTIES: Record<string, string[]> = {
+export const IMPLIED_PROPERTIES: Record<string, string[]> = {
     'price': ['budget', 'currency'],
     'budget': ['price', 'currency'],
     'schedule': ['frequency', 'deadline'],
@@ -60,7 +60,7 @@ const IMPLIED_PROPERTIES: Record<string, string[]> = {
 /**
  * Operator corrections for common mistakes
  */
-const OPERATOR_CORRECTIONS: Record<string, { wrong: string; correct: string }[]> = {
+export const OPERATOR_CORRECTIONS: Record<string, { wrong: string; correct: string }[]> = {
     'budget': [
         { wrong: 'is', correct: 'less than' },
         { wrong: 'greater than', correct: 'less than' },
@@ -124,7 +124,7 @@ export function getCorrectionSuggestions(
                         operator: getDefaultOperator(impliedKey, ontology),
                         values: [getDefaultValue(impliedKey, ontology)],
                         confidence: 0.7,
-                        provenance: 'correction-suggestion',
+                        provenance: 'user',
                     }),
                     confidence: 0.7,
                 });

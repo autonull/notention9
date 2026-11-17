@@ -12,9 +12,10 @@ import type {TiptapEditorRef} from './TiptapEditor';
 import {metaphorMapper} from '@notention/core';
 import {useMatches} from '../../hooks/useMatches';
 import {useNotes} from '../../hooks/useNotes';
+import {useView} from '../../hooks/useViewContext';
 
 interface EditorContentProps {
-    editorRef: React.RefObject<TiptapEditorRef>;
+    editorRef: React.RefObject<TiptapEditorRef | null>;
     dirtyNote: Note;
     onSave: (content: string) => void;
     onNoteUpdate: (note: Partial<Note>) => void;
@@ -29,7 +30,7 @@ interface EditorContentProps {
     onCloseTemplateSelector: () => void;
     onInsertTemplate: (template: OntologyNode) => void;
     onMatchClick: (match: ScoredMatch) => void;
-    onPickLocation?: () => Promise<string> | void;
+    onPickLocation?: () => Promise<string>;
 }
 
 export function EditorContent({
@@ -53,6 +54,7 @@ export function EditorContent({
     const activeMetaphor = metaphorMapper.mapToMetaphor(dirtyNote);
     const matches = useMatches(dirtyNote);
     const {addNote} = useNotes();
+    const {setSelectedNoteId} = useView();
 
     const handleMatchRespond = (match: ScoredMatch) => {
         // Create a response note
@@ -65,7 +67,7 @@ export function EditorContent({
             ],
             tags: ['response'],
         });
-        onMatchClick(responseNote);
+        setSelectedNoteId(responseNote.id);
     };
 
     return (

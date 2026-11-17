@@ -128,10 +128,6 @@ export function SmartNoteAssistant({
                             setInferredType(type);
                             setAttributeModalOpen(true);
                         }}
-                        onLinkDiscovered={(key, type) => {
-                            setTargetKey(key);
-                            setAliasModalOpen(true);
-                        }}
                         noteId={note.id}
                         onSelectLocalMatch={handleSelectLocalMatch}
                     />

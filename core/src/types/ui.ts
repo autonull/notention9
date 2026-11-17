@@ -10,6 +10,7 @@ export interface AppSettings {
   developerMode: boolean;
   privacyMode?: string;
   aiEnabled?: boolean;
+  automationEnabled?: boolean;
   aiProvider?: string;
   aiModel?: string;
   googleGeminiApiKey?: string;

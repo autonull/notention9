@@ -1,6 +1,6 @@
 import React from 'react';
 
-export type IconProps = React.SVGProps<SVGSVGElement>;
+export type IconProps = React.SVGProps<SVGSVGElement> & { title?: string };
 
 export function BaseIcon({
                                                                                                                   className,
