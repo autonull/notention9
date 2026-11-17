@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
+  "browser": "./dist/browser/index.js",
   "exports": {
     ".": {
       "import": "./dist/index.node.js",
@@ -57,11 +58,27 @@
       "node": "./dist/extraction/deterministic.js",
       "browser": "./dist/browser/extraction/deterministic.js"
     },
+    "./extraction/propertyGrounding": {
+      "import": "./dist/extraction/propertyGrounding.js",
+      "node": "./dist/extraction/propertyGrounding.js",
+      "browser": "./dist/browser/extraction/propertyGrounding.js"
+    },
+    "./extraction/confidenceCalibration": {
+      "import": "./dist/extraction/confidenceCalibration.js",
+      "node": "./dist/extraction/confidenceCalibration.js",
+      "browser": "./dist/browser/extraction/confidenceCalibration.js"
+    },
     "./telemetry/journal": {
       "import": "./dist/telemetry/journal.js",
       "node": "./dist/telemetry/journal.js",
       "browser": "./dist/browser/telemetry/journal.js",
       "types": "./dist/telemetry/journal.d.ts"
+    },
+    "./telemetry/matchDigest": {
+      "import": "./dist/telemetry/matchDigest.js",
+      "node": "./dist/telemetry/matchDigest.js",
+      "browser": "./dist/browser/telemetry/matchDigest.js",
+      "types": "./dist/telemetry/matchDigest.d.ts"
     },
     "./telemetry/digestPipeline": {
       "import": "./dist/telemetry/digestPipeline.js",

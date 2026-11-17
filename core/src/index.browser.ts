@@ -127,6 +127,7 @@ export {
 // Extraction - from extraction/index.js
 export {
     ExtractionPipeline,
+    pruneUngroundedWithSpans,
 } from './extraction/index.js';
 
 // PropertyExtractor - from notes/propertyExtractor/index.js
@@ -363,6 +364,21 @@ export {
     generateFrictionDigest,
     getFrictionCounts,
 } from './telemetry/journal.js';
+
+// Telemetry - Match Digest
+export {
+    recordMatchEvent,
+    getMatchEvents,
+    generateMatchDigestFromStore,
+    generateJsonMatchDigestFromStore,
+    recordNewMatch,
+    recordPendingAction,
+    recordMatchAccepted,
+    recordMatchDismissed,
+    recordActionCompleted,
+    getMatchDigestJournal,
+    resetMatchDigestJournal,
+} from './telemetry/matchDigest.js';
 export * as validation from './validation/index.js';
 export * as events from './events/index.js';
 export * as patternRecognition from './patternRecognition/index.js';

@@ -13,6 +13,7 @@ import {
     FindingsCommand,
     UXEvaluateCommand,
     FrictionDigestCommand,
+    MatchDigestCommand,
     EvalCanaryCommand,
     EvalMatchCommand,
     EvalConfidenceCommand,
@@ -33,6 +34,7 @@ commandRegistry.register(new MarkFixedCommand());
 commandRegistry.register(new FindingsCommand());
 commandRegistry.register(new UXEvaluateCommand());
 commandRegistry.register(new FrictionDigestCommand());
+commandRegistry.register(new MatchDigestCommand());
 commandRegistry.register(new EvalCanaryCommand());
 commandRegistry.register(new EvalMatchCommand());
 commandRegistry.register(new EvalConfidenceCommand());

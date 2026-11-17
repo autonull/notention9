@@ -70,6 +70,29 @@ export {
     type RelayLatencySample,
     type SyncHealthSnapshot
 } from './telemetry/syncHealth.js';
+export {
+    MatchDigestPipeline,
+    generateMatchDigest,
+    generateJsonMatchDigest,
+    generateMatchDigestFromStore,
+    generateJsonMatchDigestFromStore,
+    type MatchDigestEvent,
+    type MatchDigestAggregate,
+    type MatchDigestSignal,
+    type MatchDigestConfig,
+    DEFAULT_MATCH_DIGEST_CONFIG,
+    createMatchDigestConfig,
+    isInQuietHours,
+    getMatchDigestConfig,
+    setMatchDigestConfig,
+    recordMatchEvent,
+    getMatchEvents,
+    recordNewMatch,
+    recordPendingAction,
+    recordMatchAccepted,
+    recordMatchDismissed,
+    recordActionCompleted,
+} from './telemetry/matchDigest.js';
 export * from './fixtures/index.js';
 export * from './feedback/index.js';
 

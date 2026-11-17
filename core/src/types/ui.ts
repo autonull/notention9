@@ -47,4 +47,15 @@ export interface AppSettings {
     reducedMotion?: boolean;
     highContrast?: boolean;
   };
+  matchDigest?: {
+    enabled: boolean;
+    frequency: 'daily' | 'on-demand' | 'disabled';
+    quietHoursStart: number;  // 0-23
+    quietHoursEnd: number;    // 0-23
+    minMatchScore: number;    // 0-1
+    includePendingActions: boolean;
+    includeAcceptedMatches: boolean;
+    includeDismissedMatches: boolean;
+    includeCompletedActions: boolean;
+  };
 }

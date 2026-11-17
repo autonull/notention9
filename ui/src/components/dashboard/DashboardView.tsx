@@ -5,6 +5,7 @@ import {useView} from '../../hooks/useViewContext';
 import {useSettings} from '../../hooks/useSettingsContext';
 import {agentService} from '../../services/AgentService';
 import {MatchEngine, PropertyExtractor, getTextFromHtml, createResponseNote, logMatchAccepted, logMatchRejected} from '@notention/core';
+import {recordMatchAccepted, recordMatchDismissed, recordNewMatch} from '@notention/core/telemetry/matchDigest';
 import {sanitizeHTML} from '../../utils/sanitize';
 import {useDemoWorkspace} from '../../hooks/useDemoWorkspace';
 import {useCaptureTracking, useMatchTracking} from '../../hooks/useFrictionRecorder';
@@ -177,6 +178,13 @@ export function DashboardView() {
             .sort((a, b) => b.result.score - a.result.score)[0] ?? null;
     }, [notes, settings.ontology]);
 
+    // Record new match digest event when a match is found
+    useEffect(() => {
+        if (localMatch && localMatch.result.score > 0.4) {
+            recordNewMatch(localMatch.request.id, localMatch.note.id, localMatch.result.score);
+        }
+    }, [localMatch]);
+
     const handleMatchViewed = useCallback(() => markMatchViewed(localMatch?.request.id), [markMatchViewed, localMatch?.request.id]);
 
     const handleSelectNote = useCallback((id: string) => {
@@ -202,6 +210,9 @@ export function DashboardView() {
         handleMatchAccept(requestId);
         recordResponseCreated(requestId);
         
+        // Record match digest event
+        recordMatchAccepted(requestId, noteId, score);
+        
         // Navigate to the response note
         setSelectedNoteId(responseNote.id);
         setActiveView('notes');
@@ -211,6 +222,9 @@ export function DashboardView() {
         handleMatchReject(requestId);
         logMatchRejected(requestId, noteId);
         rejectMatch(noteId);
+        
+        // Record match digest event for dismissed match
+        recordMatchDismissed(requestId, noteId, 0);
     }, [handleMatchReject, rejectMatch]);
 
     const handleReviseRequest = useCallback((requestId: string) => {

@@ -895,9 +895,8 @@ body {
   white-space: normal;
 }
 
-/* High contrast mode support - both media query and class-based */
-@media (prefers-contrast: high),
-html.high-contrast {
+/* High contrast mode support - media query */
+@media (prefers-contrast: high) {
   :root {
     --color-border: var(--color-border-strong);
     --color-text-dim: var(--color-text-primary);
@@ -910,9 +909,20 @@ html.high-contrast {
   }
 }
 
-/* Reduced motion support - both media query and class-based */
-@media (prefers-reduced-motion: reduce),
-html.reduced-motion {
+/* High contrast mode support - class-based */
+html.high-contrast {
+  --color-border: var(--color-border-strong);
+  --color-text-dim: var(--color-text-primary);
+  --color-text-quiet: var(--color-text-secondary);
+}
+
+html.high-contrast .btn-ghost:hover:not(:disabled) {
+  background-color: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+}
+
+/* Reduced motion support - media query */
+@media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
@@ -921,6 +931,16 @@ html.reduced-motion {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* Reduced motion support - class-based */
+html.reduced-motion *,
+html.reduced-motion *::before,
+html.reduced-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
 }
 
 /* Focus visible polyfill for older browsers */

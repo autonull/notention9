@@ -8,12 +8,13 @@ import {MetricsTab} from '../settings/MetricsTab';
 import {NostrTab} from '../settings/NostrTab';
 import {LabelsTab} from '../settings/LabelsTab';
 import {AutomationTab} from '../settings/AutomationTab';
+import {MatchDigestTab} from '../settings/MatchDigestTab';
 import {NetworkManagementSection} from '../settings/NetworkManagementSection';
 import {ProfileSettings} from '../settings/ProfileSettings';
 import {RevisionsTab} from '../settings/RevisionsTab';
 import {AccessibilityTab} from '../settings/AccessibilityTab';
 import {CollapsibleSection} from '../ui/CollapsibleSection';
-import {SparklesIcon, BoltIcon, TagIcon, GlobeIcon, KeyIcon, CubeIcon, ChartBarIcon, UserGroupIcon, ClockIcon, ShieldIcon} from '../ui/icons';
+import {SparklesIcon, BoltIcon, TagIcon, GlobeIcon, KeyIcon, CubeIcon, ChartBarIcon, UserGroupIcon, ClockIcon, ShieldIcon, InboxIcon} from '../ui/icons';
 
 interface SettingsGroup {
     id: string;
@@ -57,6 +58,7 @@ export function SettingsView() {
             tabs: [
                 {id: 'ai', label: 'AI Assistant', icon: <SparklesIcon className="h-4 w-4" />},
                 {id: 'automation', label: 'Automation', icon: <BoltIcon className="h-4 w-4" />},
+                {id: 'matchDigest', label: 'Match Digest', icon: <InboxIcon className="h-4 w-4" />},
             ],
         },
         {
@@ -94,6 +96,8 @@ export function SettingsView() {
                 return <AITab settings={settings} setSettings={setSettings}/>;
             case 'automation':
                 return <AutomationTab/>;
+            case 'matchDigest':
+                return <MatchDigestTab/>;
             case 'labels':
                 return <LabelsTab/>;
             case 'network':

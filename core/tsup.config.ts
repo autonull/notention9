@@ -9,6 +9,7 @@ const BROWSER_TWINS = [
     'telemetry/journal',
     'telemetry/revisionStore',
     'telemetry/ledger',
+    'telemetry/matchDigest',
     'ui/ProfileRegistry',
     'utils/common',
     'extraction/confidenceCalibration',
@@ -57,6 +58,8 @@ const browserEntries = {
   'suggestions/SuggestionStore': 'src/suggestions/SuggestionStore.browser.ts',
   'validation/index': 'src/validation/index.ts',
   'events/index': 'src/events/index.ts',
+  'extraction/confidenceCalibration': 'src/extraction/confidenceCalibration.ts',
+  'extraction/propertyGrounding': 'src/extraction/propertyGrounding.ts',
   // UI
   'ui/index': 'src/ui/index.browser.ts',
   'ui/strategy': 'src/ui/strategy.ts',
@@ -67,6 +70,7 @@ const browserEntries = {
   'telemetry/journal': 'src/telemetry/journal.browser.ts',
   'telemetry/revisionStore': 'src/telemetry/revisionStore.browser.ts',
   'telemetry/ledger': 'src/telemetry/ledger.browser.ts',
+  'telemetry/matchDigest': 'src/telemetry/matchDigest.browser.ts',
   // Nostr
   'network/nostr/nostr': 'src/network/nostr/nostr.ts',
   'network/nostr/privacy': 'src/network/nostr/privacy.ts',
@@ -133,6 +137,7 @@ const nodeEntries = [
   'src/telemetry/revisionDriver.ts',
   'src/telemetry/revisionUtils.ts',
   'src/telemetry/constants.ts',
+  'src/telemetry/matchDigest.ts',
   // Nostr
   'src/network/nostr/nostr.ts',
   'src/network/nostr/privacy.ts',

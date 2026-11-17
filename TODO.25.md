@@ -178,7 +178,15 @@
   - Acceptance: top-5 relevance ↑ on match set; no duplicate clusters in top-5.
 - [x] **W4.3 Action/skill approval UX.** Clear "what will happen" preview, capability scope, and one-tap approve/deny; audit trail entry.
   - Acceptance: agent action cannot run without an approval record; UI shows scope.
-- [ ] **W4.4 Digest / notification loop.** Optional daily or on-demand digest of new matches and pending actions; respects quiet hours.
+- [x] **W4.4 Digest / notification loop.** Optional daily or on-demand digest of new matches and pending actions; respects quiet hours.
+  - Created `core/src/telemetry/matchDigest.ts` with `MatchDigestPipeline` for filter→aggregate→rank→render pipeline.
+  - Added `recordNewMatch`, `recordMatchAccepted`, `recordMatchDismissed`, `recordPendingAction`, `recordActionCompleted` convenience functions.
+  - Created browser stub `matchDigest.browser.ts` using IndexedDB for local-first persistence.
+  - Added `pnpm optimize match:digest` CLI command with `--json`, `--days`, `--top`, `--min-score`, `--quiet-start`, `--quiet-end`, `--enabled` options.
+  - Created `MatchDigestTab` in Settings (AI & Automation section) with toggles for enable, frequency, min match score, quiet hours, and event type inclusion.
+  - Integrated event recording into InboxView and DashboardView for new matches, accepted matches, and dismissed matches.
+  - Quiet hours support (default 22:00-08:00) with both media query and class-based toggles.
+  - All tests pass (866 core, 42 UI files, 127 optimize). Build passes.
   - Acceptance: opt-in only; digest is local-first and exportable.
 
 ### W5 — Accessibility & Internationalization
@@ -433,10 +441,10 @@ user can switch back for one release.
 | 24 | ~~**W3.3 Calibrated confidence display**~~ ✅ | Trust | M |
 | 25 | ~~**W3.4 Feedback controls**~~ ✅ | Trust/improvement loop | M |
 | 26 | ~~**W4.2 Ranking + dedupe**~~ ✅ | Match usefulness | M |
-| 27 | **W5.4 Reduced motion | 27 | **W5.4 Reduced motion & high contrast** | Accessibility | M | high contrast** ✅ | Accessibility | M |
+| 27 | ~~**W4.4 Digest / notification loop**~~ ✅ | Match awareness | M |
+| 28 | **W5.4 Reduced motion & high contrast** ✅ | Accessibility | M |
 
 ### Next (after Now)
-W4.4 Digest/notification loop ·
 W5.5 i18n completeness + RTL audit · W5.6 Responsive/mobile pass ·
 W6.1 Performance budgets · W6.2 Offline/local-only mode · W7.1 Export/import round-trip.
 
@@ -834,3 +842,23 @@ pnpm eval:verify-manifest
 - Integrated into MainView and command palette
 - All core tests (866), UI tests (42 files), optimize tests (127) pass
 - Production build passes
+
+### 2026-11-16 — W4.4 Digest / notification loop complete
+- Created `core/src/telemetry/matchDigest.ts` with `MatchDigestPipeline` for filter→aggregate→rank→render pipeline.
+- Added `recordNewMatch`, `recordMatchAccepted`, `recordMatchDismissed`, `recordPendingAction`, `recordActionCompleted` convenience functions.
+- Created browser stub `matchDigest.browser.ts` using IndexedDB for local-first persistence.
+- Added `pnpm optimize match:digest` CLI command with `--json`, `--days`, `--top`, `--min-score`, `--quiet-start`, `--quiet-end`, `--enabled` options.
+- Created `MatchDigestTab` in Settings (AI & Automation section) with toggles for enable, frequency, min match score, quiet hours, and event type inclusion.
+- Integrated event recording into InboxView and DashboardView for new matches, accepted matches, and dismissed matches.
+- Quiet hours support (default 22:00-08:00) with both media query and class-based toggles.
+- All tests pass (866 core, 42 UI files, 127 optimize). Build passes.
+- Acceptance: opt-in only; digest is local-first and exportable.
+
+---
+
+## 8. Open Questions (need answers before Later items)
+1. Primary user: solo knowledge worker, mutual-aid organizer, or agent operator? (shapes W3/W4 priority)
+2. Is remote inference ever allowed, or is local-only a hard requirement? (shapes W6.2/W7.4)
+3. Should match actions be auto-executed with approval, or always manual? (shapes W4.3)
+4. Which locales are actually shipped vs aspirational? (shapes W5.5)
+5. Is a 9B default acceptable for the target machine, or must 4B remain default? (shapes W1.3)

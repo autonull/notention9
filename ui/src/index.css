@@ -343,9 +343,8 @@ textarea:focus-visible,
     ring-offset-color: #111827;
 }
 
-/* Reduced motion preference - both media query and class-based */
-@media (prefers-reduced-motion: reduce),
-html.reduced-motion {
+/* Reduced motion preference - media query */
+@media (prefers-reduced-motion: reduce) {
     *,
     *::before,
     *::after {
@@ -356,9 +355,18 @@ html.reduced-motion {
     }
 }
 
-/* High contrast mode support - both media query and class-based */
-@media (prefers-contrast: high),
-html.high-contrast {
+/* Reduced motion preference - class-based */
+html.reduced-motion *,
+html.reduced-motion *::before,
+html.reduced-motion *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+}
+
+/* High contrast mode support - media query */
+@media (prefers-contrast: high) {
     :focus-visible {
         outline-width: 3px;
         outline-color: #fff;
@@ -392,6 +400,38 @@ html.high-contrast {
     [class*="border-"] {
         border-width: max(1px, var(--tw-border-width)) !important;
     }
+}
+
+/* High contrast mode support - class-based */
+html.high-contrast :focus-visible {
+    outline-width: 3px;
+    outline-color: #fff;
+}
+
+html.high-contrast .btn-primary,
+html.high-contrast .btn-secondary,
+html.high-contrast .btn-outline {
+    border-width: 2px;
+}
+
+html.high-contrast .border,
+html.high-contrast .border-2,
+html.high-contrast .border-t,
+html.high-contrast .border-b,
+html.high-contrast .border-l,
+html.high-contrast .border-r,
+html.high-contrast [class*="border-"] {
+    border-color: #fff !important;
+}
+
+html.high-contrast .text-gray-400,
+html.high-contrast .text-gray-500,
+html.high-contrast .text-gray-600 {
+    color: #e5e7eb !important;
+}
+
+html.high-contrast [class*="border-"] {
+    border-width: max(1px, var(--tw-border-width)) !important;
 }
 
 /* Touch target minimum sizes */

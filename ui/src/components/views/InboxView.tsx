@@ -1,5 +1,6 @@
 import React, {useMemo, useCallback, useState, useEffect} from 'react';
 import {MatchEngine, type Note, PropertyExtractor, getTextFromHtml, createResponseNote, logMatchAccepted, logMatchRejected, rankMatches, deduplicateMatches, findLocalMatchesEnhanced} from '@notention/core';
+import {recordMatchAccepted, recordMatchDismissed, recordNewMatch, recordPendingAction, recordActionCompleted} from '@notention/core/telemetry/matchDigest';
 
 import {useNotes} from '../../hooks/useNotes';
 import {useView} from '../../hooks/useViewContext';
@@ -322,6 +323,13 @@ export function InboxView({sortedNotes}: InboxViewProps) {
         return matches[0] ? { request, note: matches[0].note, result: matches[0].result } : null;
     }, [notes, settings.ontology]);
 
+    // Record new match digest event when a match is found
+    useEffect(() => {
+        if (localMatch && localMatch.result.score >= 0.4) {
+            recordNewMatch(localMatch.request.id, localMatch.note.id, localMatch.result.score);
+        }
+    }, [localMatch]);
+
     const handleMatchViewed = useCallback(() => markMatchViewed(localMatch?.request.id), [markMatchViewed, localMatch?.request.id]);
 
     const handleAcceptMatch = useCallback((requestId: string, noteId: string, score: number) => {
@@ -342,6 +350,9 @@ export function InboxView({sortedNotes}: InboxViewProps) {
         handleMatchAccept(requestId);
         recordResponseCreated(requestId);
 
+        // Record match digest event
+        recordMatchAccepted(requestId, noteId, score);
+
         // Navigate to the response note
         setSelectedNoteId(responseNote.id);
         setActiveView('notes');
@@ -351,6 +362,10 @@ export function InboxView({sortedNotes}: InboxViewProps) {
         handleMatchReject(requestId);
         logMatchRejected(requestId, noteId);
         rejectMatch(noteId);
+        
+        // Record match digest event for dismissed match
+        // We need to find the score - for now use 0 since it's rejected
+        recordMatchDismissed(requestId, noteId, 0);
     }, [handleMatchReject, rejectMatch]);
 
     const handleReviseRequest = useCallback((requestId: string) => {
