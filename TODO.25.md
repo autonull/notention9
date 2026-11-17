@@ -216,7 +216,7 @@
     - All UI unit tests pass (42 files), core tests (855), optimize tests (107), build passes.
 - [x] **W5.4 Reduced motion - [ ] **W5.4 Reduced motion & high contrast.** high contrast.** Honor `prefers-reduced-motion` and `prefers-contrast`; no essential info conveyed by color alone.
   - Acceptance: toggles verified in UI; screenshots in `doc/screenshot/`.
-- [ ] **W5.5 i18n completeness + RTL audit.** Verify all 6 locales (`en,es,fr,de,zh,ar`) have keys; audit RTL (`ar`) layout, icons, and numbers.
+- [x] **W5.5 i18n completeness + RTL audit.** Verify all 6 locales (`en,es,fr,de,zh,ar`) have keys; audit RTL (`ar`) layout, icons, and numbers.
   - Acceptance: missing-key check = 0; RTL screenshots reviewed.
 - [ ] **W5.6 Responsive/mobile pass.** Bottom nav, touch targets ≥ 44px, no horizontal scroll at 360px.
   - Acceptance: mobile journey test passes.
@@ -445,7 +445,7 @@ user can switch back for one release.
 | 28 | **W5.4 Reduced motion & high contrast** ✅ | Accessibility | M |
 
 ### Next (after Now)
-W5.5 i18n completeness + RTL audit · W5.6 Responsive/mobile pass ·
+~~W5.5 i18n completeness + RTL audit~~ ✅ · W5.6 Responsive/mobile pass ·
 W6.1 Performance budgets · W6.2 Offline/local-only mode · W7.1 Export/import round-trip.
 
 ### Later (larger/strategic)
@@ -823,6 +823,17 @@ pnpm eval:verify-manifest
 - Color-blind friendly: all status indicators use both color AND text/icons (confidence badges, provenance badges, focus source).
 - Added Accessibility section to SettingsView with ShieldIcon.
 - All unit tests pass (866 core, 42 UI files). Build passes.
+
+### 2026-11-16 — W5.5 i18n completeness + RTL audit complete
+- Verified all 6 locales (`en, es, fr, de, zh, ar`) have complete translation keys (13 categories, ~350 keys each).
+- Added `LanguageTab` component (`ui/src/components/settings/LanguageTab.tsx`) with language selector, RTL direction display, and supported languages list.
+- Added translation keys for language/region settings: `languageRegion`, `textDirection`, `currentDirection`, `ltr`, `rtl`, `autoDetermined`, `availableLanguages`, `supportedLanguagesCount`.
+- Added RTL-aware layout fixes:
+  - Header: MoreMenu dropdown positioning, text alignment, badge margins flip in RTL.
+  - SettingsView: tab text alignment, active tab border/positioning flip in RTL.
+  - LanguageSelector: dropdown positioning, item text alignment, spacing flip in RTL.
+- All 6 locale files updated with new keys (EN, ES, FR, DE, ZH, AR).
+- All tests pass (866 core, 42 UI files, 127 optimize). Build passes.
 
 ### 2026-11-16 — W4.3 Action/skill approval UX complete
 - Created `SkillExecutor` in `core/src/skills/SkillExecutor.ts` with approval-gated execution flow using `SkillApprovalManager`

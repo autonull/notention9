@@ -294,7 +294,15 @@
     "version": "الإصدار",
     "license": "الترخيص",
     "privacyPolicy": "سياسة الخصوصية",
-    "termsOfService": "شروط الخدمة"
+    "termsOfService": "شروط الخدمة",
+    "languageRegion": "اللغة والمنطقة",
+    "textDirection": "اتجاه النص",
+    "currentDirection": "الاتجاه الحالي",
+    "ltr": "من اليسار إلى اليمين (LTR)",
+    "rtl": "من اليمين إلى اليسار (RTL)",
+    "autoDetermined": "يتم تحديده تلقائيًا بواسطة اللغة المحددة.",
+    "availableLanguages": "اللغات المتاحة",
+    "supportedLanguagesCount": "جميع لغات {count} المدعومة بأسمائها الأصلية:"
   },
   "profile": {
     "profile": "الملف الشخصي",

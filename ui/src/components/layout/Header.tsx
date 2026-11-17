@@ -3,6 +3,7 @@ import React, {useMemo, useState, useRef, useEffect} from 'react';
 import {useSettings} from '../../hooks/useSettingsContext';
 import {useView} from '../../hooks/useViewContext';
 import {useNoteActions} from '../../hooks/useNoteActions';
+import {useDirection} from '../../hooks/useI18n';
 import type {Template, View} from '@notention/core';
 import {generateTemplatesFromOntology} from '@notention/core';
 import {NavButton} from './NavButton';
@@ -22,15 +23,18 @@ function MoreMenu({
     activeView,
     setActiveView,
     notificationCount,
-    chatNotificationCount
+    chatNotificationCount,
+    direction
 }: {
     activeView: View;
     setActiveView: (view: View) => void;
     notificationCount: number;
     chatNotificationCount: number;
+    direction: 'ltr' | 'rtl';
 }) {
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
+    const isRTL = direction === 'rtl';
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -62,7 +66,9 @@ function MoreMenu({
             />
             {isOpen && (
                 <div
-                    className="absolute right-0 top-full mt-1.5 min-w-[180px] bg-gray-900/95 backdrop-blur-md border border-gray-700/50 rounded-xl shadow-xl py-1.5 z-50"
+                    className={`absolute top-full mt-1.5 min-w-[180px] bg-gray-900/95 backdrop-blur-md border border-gray-700/50 rounded-xl shadow-xl py-1.5 z-50 ${
+                        isRTL ? 'left-0 right-auto' : 'right-0 left-auto'
+                    }`}
                     role="menu"
                 >
                     {SECONDARY_NAV.map((item) => {
@@ -73,7 +79,7 @@ function MoreMenu({
                             <button
                                 key={item.id}
                                 onClick={() => handleNavClick(item.id)}
-                                className={`w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg transition-colors ${
+                                className={`w-full px-3 py-2 flex items-center gap-3 rounded-lg transition-colors ${isRTL ? 'text-right' : 'text-left'} ${
                                     activeView === item.id
                                         ? 'bg-indigo-600/20 text-indigo-400'
                                         : 'text-gray-300 hover:bg-gray-800/50 hover:text-white'
@@ -85,7 +91,7 @@ function MoreMenu({
                                 <item.icon className="w-5 h-5 flex-shrink-0" aria-hidden="true"/>
                                 <span className="text-sm font-medium truncate">{item.label}</span>
                                 {badgeCount !== undefined && badgeCount > 0 && (
-                                    <span className="ml-auto min-w-[18px] h-[18px] px-1.5 bg-red-500 text-[10px] font-bold rounded-full flex items-center justify-center text-white">
+                                    <span className={`min-w-[18px] h-[18px] px-1.5 bg-red-500 text-[10px] font-bold rounded-full flex items-center justify-center text-white ${isRTL ? 'mr-auto' : 'ml-auto'}`}>
                                         {badgeCount > 9 ? '9+' : badgeCount}
                                     </span>
                                 )}
@@ -95,7 +101,7 @@ function MoreMenu({
                     <hr className="my-1.5 border-gray-700/50"/>
                     <button
                         onClick={() => handleNavClick(SETTINGS_VIEW.id)}
-                        className="w-full px-3 py-2 flex items-center gap-3 text-left rounded-lg transition-colors text-gray-300 hover:bg-gray-800/50 hover:text-white"
+                        className={`w-full px-3 py-2 flex items-center gap-3 rounded-lg transition-colors text-gray-300 hover:bg-gray-800/50 hover:text-white ${isRTL ? 'text-right' : 'text-left'}`}
                         role="menuitem"
                         aria-current={activeView === SETTINGS_VIEW.id ? 'page' : undefined}
                         aria-keyshortcuts={SETTINGS_VIEW.shortcut ? `${modShortcut(SETTINGS_VIEW.shortcut)}` : undefined}
@@ -122,6 +128,8 @@ export function Header({onNewNote, onToggleSidebar}: HeaderProps) {
     } = useView();
     const {settings} = useSettings();
     const {createNoteAndNavigate} = useNoteActions();
+    const direction = useDirection();
+    const isRTL = direction === 'rtl';
 
     const handleNavClick = (view: View) => {
         if (view === 'notes' && activeView === 'notes' && selectedNoteId) {
@@ -214,6 +222,7 @@ export function Header({onNewNote, onToggleSidebar}: HeaderProps) {
                     setActiveView={setActiveView}
                     notificationCount={notificationCount}
                     chatNotificationCount={chatNotificationCount}
+                    direction={direction}
                 />
             </div>
 

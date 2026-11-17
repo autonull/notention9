@@ -77,7 +77,7 @@ export function LanguageSelector({
                 aria-label={t('common.language')}
                 aria-orientation="vertical"
                 className={cn(
-                    'absolute right-0 mt-1 w-48 origin-top-right rounded-lg shadow-lg border',
+                    'absolute mt-1 w-48 origin-top-right rounded-lg shadow-lg border',
                     'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700',
                     'py-1 z-50 animate-in fade-in-0 zoom-in-95 duration-150',
                     direction === 'rtl' ? 'left-0 right-auto' : 'right-0 left-auto'
@@ -95,7 +95,8 @@ export function LanguageSelector({
                             if (menu) menu.hidden = true;
                         }}
                         className={cn(
-                            'w-full px-3 py-2 text-sm text-left transition-colors',
+                            'w-full px-3 py-2 text-sm transition-colors',
+                            direction === 'rtl' ? 'text-right' : 'text-left',
                             'focus:outline-none focus:bg-blue-50 dark:focus:bg-blue-900/30',
                             language === lang.code
                                 ? 'bg-blue-50 dark:bg-blue-900/30 font-medium text-blue-700 dark:text-blue-300'
@@ -105,7 +106,7 @@ export function LanguageSelector({
                         <div className="flex items-center justify-between">
                             <span>{lang.nativeName}</span>
                             {showNativeName && lang.name !== lang.nativeName && (
-                                <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
+                                <span className={`text-xs text-gray-500 dark:text-gray-400 ${direction === 'rtl' ? 'mr-2' : 'ml-2'}`}>
                                     {lang.name}
                                 </span>
                             )}

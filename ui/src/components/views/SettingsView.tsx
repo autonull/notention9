@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {cn} from '../../utils/ui';
 
 import {useSettingsView} from '../../hooks/useSettingsView';
+import {useDirection} from '../../hooks/useI18n';
 import {AITab} from '../settings/AITab';
 import {DataTab} from '../settings/DataTab';
 import {MetricsTab} from '../settings/MetricsTab';
@@ -13,6 +14,7 @@ import {NetworkManagementSection} from '../settings/NetworkManagementSection';
 import {ProfileSettings} from '../settings/ProfileSettings';
 import {RevisionsTab} from '../settings/RevisionsTab';
 import {AccessibilityTab} from '../settings/AccessibilityTab';
+import {LanguageTab} from '../settings/LanguageTab';
 import {CollapsibleSection} from '../ui/CollapsibleSection';
 import {SparklesIcon, BoltIcon, TagIcon, GlobeIcon, KeyIcon, CubeIcon, ChartBarIcon, UserGroupIcon, ClockIcon, ShieldIcon, InboxIcon} from '../ui/icons';
 
@@ -32,6 +34,8 @@ export function SettingsView() {
         settings,
         setSettings,
     } = useSettingsView();
+    const direction = useDirection();
+    const isRTL = direction === 'rtl';
 
     const [activeTab, setActiveTab] = useState('ai');
     const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
@@ -49,6 +53,7 @@ export function SettingsView() {
             tabs: [
                 {id: 'profile', label: 'Profile & Strategies', icon: <UserGroupIcon className="h-4 w-4" />},
                 {id: 'labels', label: 'Labels', icon: <TagIcon className="h-4 w-4" />},
+                {id: 'language', label: 'Language & Region', icon: <GlobeIcon className="h-4 w-4" />},
             ],
         },
         {
@@ -110,6 +115,8 @@ export function SettingsView() {
                 return <MetricsTab/>;
             case 'profile':
                 return <ProfileSettings/>;
+            case 'language':
+                return <LanguageTab/>;
             case 'revisions':
                 return <RevisionsTab userId="default-user"/>;
             case 'accessibility':
@@ -145,15 +152,16 @@ export function SettingsView() {
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id)}
                                     className={cn(
-                                        'w-full px-3 py-2.5 rounded-lg text-sm font-medium text-left transition-all duration-150 flex items-center gap-3',
+                                        'w-full px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 flex items-center gap-3',
+                                        isRTL ? 'text-right' : 'text-left',
                                         activeTab === tab.id
-                                            ? 'bg-blue-900/30 text-blue-400 border-l-2 border-blue-500 pl-1'
+                                            ? `bg-blue-900/30 text-blue-400 ${isRTL ? 'border-r-2 border-blue-500 pr-1' : 'border-l-2 border-blue-500 pl-1'}`
                                             : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
                                     )}
                                     aria-current={activeTab === tab.id ? 'page' : undefined}
                                 >
                                     {tab.icon && <span className="flex-shrink-0 w-5 h-5" aria-hidden="true">{tab.icon}</span>}
-                                    <span className="flex-1 truncate text-left">{tab.label}</span>
+                                    <span className={`flex-1 truncate ${isRTL ? 'text-right' : 'text-left'}`}>{tab.label}</span>
                                 </button>
                             ))}
                         </div>
