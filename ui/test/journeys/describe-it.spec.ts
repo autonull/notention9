@@ -22,7 +22,9 @@ test('describe it proposes details that only reach the note when accepted', asyn
     const aiRequests = trackAiRequests(page);
     await seed(page, {notes: [], settings: defaultSettings()});
 
-    await page.getByTitle('New Note').click();
+    const capture = page.getByTestId('quick-capture-input');
+    await capture.fill('Looking for a React developer');
+    await capture.press('Enter');
     await expect(page.getByPlaceholder('Untitled Note')).toBeVisible();
 
     await page.getByTestId('describe-it').click();

@@ -1,5 +1,5 @@
 import React, { createContext, ReactNode, useContext, useCallback, useState, useMemo } from 'react';
-import type { Note, SidebarViewMode, SortOrder } from '@notention/core';
+import { getTextFromHtml, type Note, type SidebarViewMode, type SortOrder } from '@notention/core';
 import { useLocalForage } from '../../hooks/useLocalForage';
 import { useViewNavigation, useViewSelection, useViewLocation } from '../../hooks/useViewContext';
 import { useNotes } from '../../hooks/useNotes';
@@ -105,33 +105,10 @@ export function SidebarProvider({
         addToast('Note restored', 'success');
     }, [restoreNote, addToast]);
 
-    const handleCreateNote = useCallback((title?: string) => {
-        const overrides: Partial<Note> = {};
-        if (title && typeof title === 'string') {
-            overrides.title = title;
-        }
-
-        if (sortedNotes.length === 0 && !title && !searchTerm) {
-            overrides.title = "Welcome to Notention";
-            overrides.content = `
-<h2>Getting Started</h2>
-<p>Notention is a tool for thought that evolves into a peer-to-peer network.</p>
-<ul>
-    <li><strong>Quick Capture:</strong> Use the Dashboard to instantly create Tasks, Ideas, or Journal entries.</li>
-    <li><strong>Add details:</strong> Use the Add detail button in the editor to attach structured facts like a status, price, or deadline. Details render as chips.</li>
-    <li><strong>Retrieve:</strong> Use the sidebar filters to quickly find Tasks or Ideas.</li>
-    <li><strong>Network:</strong> Publish to Nostr to find matches in the P2P economy.</li>
-</ul>
-<p>Try it out! Create a note, add an "idea" detail, and see it appear in the Ideas filter.</p>
-      `.trim();
-        }
-
-        const newNote = addNote(overrides);
-        setSelectedNoteId(newNote.id);
-        useViewNavigation().setActiveView('notes');
-        if (title) setSearchTerm('');
-    }, [sortedNotes.length, searchTerm, addNote, setSelectedNoteId, setSearchTerm]);
-
+    const handleCreateNote = useCallback(() => {
+        useViewNavigation().setActiveView('inbox');
+        requestAnimationFrame(() => window.dispatchEvent(new CustomEvent('focus-capture')));
+    }, []);
     const handleTogglePin = useCallback((note: Note) => {
         updateNote({ ...note, pinned: !note.pinned });
         addToast(note.pinned ? 'Note unpinned' : 'Note pinned', 'info');
@@ -160,7 +137,7 @@ export function SidebarProvider({
     ), [setSelectedNoteId, handleDeleteRequest, handleTogglePin, isTrashView, handleRestore, searchTerm]);
 
     const renderCollapsedTooltip = useCallback((note: Note) => {
-        const preview = note.content ? note.content.replace(/<[^>]*>/g, '').slice(0, 120) : 'No content';
+        const preview = note.content ? getTextFromHtml(note.content).slice(0, 120) : 'No content';
         return (
             <div className="p-3 max-w-xs">
                 <p className="font-medium text-white text-sm mb-1 truncate">{note.title || 'Untitled'}</p>

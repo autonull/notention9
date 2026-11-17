@@ -3,9 +3,12 @@ import {useChatView} from '../../hooks/useChatView';
 import {useView} from '../../hooks/useViewContext';
 import {ChatWindow} from '../chat/ChatWindow';
 import {ContactList} from '../chat/ContactList';
+import {EmptyState} from '../ui/Primitives';
+import {Button} from '../ui/Button';
+import {KeyIcon} from '../ui/icons';
 
 export function ChatView() {
-    const {resetChatNotification} = useView();
+    const {resetChatNotification, setActiveView} = useView();
 
     // Clear notifications when entering chat view
     useEffect(() => {
@@ -35,15 +38,12 @@ export function ChatView() {
 
     if (!privkey || !pubkey) {
         return (
-            <div className="flex flex-col items-center justify-center h-full text-center bg-gray-800/50 rounded-lg p-8">
-                <h2 className="text-3xl font-bold text-gray-400">
-                    Chat Requires Nostr Account
-                </h2>
-                <p className="text-gray-500 mt-2">
-                    Please create or configure your Nostr account in the
-                    &quot;Network&quot; tab.
-                </p>
-            </div>
+            <EmptyState
+                icon={KeyIcon}
+                title="Chat needs an identity"
+                description="Messages are encrypted end to end and signed by your key. Add an identity to start a conversation."
+                action={<Button variant="primary" onClick={() => setActiveView('settings')}>Set up identity</Button>}
+            />
         );
     }
 

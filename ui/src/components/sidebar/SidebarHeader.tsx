@@ -5,10 +5,8 @@ import {FilterBar} from './FilterBar';
 import {SortSelector} from './SortSelector';
 import {ViewSelector} from './ViewSelector';
 import {IconButton} from '../ui/Button';
-import {Button} from '../ui/Button';
-import {PlusIcon, ChevronLeftIcon, ChevronRightIcon} from '../ui/icons';
+import {ChevronLeftIcon, ChevronRightIcon} from '../ui/icons';
 import {cn} from '../../utils/ui';
-import {modShortcut} from '../../utils/platform';
 import {useSidebar} from './SidebarContext';
 
 export function SidebarHeader({
@@ -33,8 +31,7 @@ export function SidebarHeader({
         setSortOrder,
         sortedNotes,
         showPinnedOnly,
-        setShowPinnedOnly,
-        handleCreateNote
+        setShowPinnedOnly
     } = useSidebar();
 
     const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
@@ -71,20 +68,6 @@ export function SidebarHeader({
                         className="flex-shrink-0 touch-target-48"
                         aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
                     />
-                )}
-                {showFullContent && (
-                    <Button
-                        onClick={handleCreateNote}
-                        tooltip={`New Note (${modShortcut('N')})`}
-                        tooltipPosition="bottom"
-                        leftIcon={<PlusIcon className="w-5 h-5"/>}
-                        variant="primary"
-                        size="md"
-                        className="flex-shrink-0 shadow-lg shadow-blue-500/20 touch-target-48"
-                        aria-label="Create new note"
-                    >
-                        New Note
-                    </Button>
                 )}
             </div>
 

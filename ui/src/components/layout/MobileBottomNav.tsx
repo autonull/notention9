@@ -1,6 +1,5 @@
 import React, {useCallback, useState, useRef, useEffect} from 'react';
 import {useView} from '../../hooks/useViewContext';
-import {useNotes} from '../../hooks/useNotes';
 import type {View} from '@notention/core';
 import {HelpIcon, PlusIcon, SearchIcon, XIcon} from '../ui/icons';
 import {IconButton} from '../ui/Button';
@@ -16,7 +15,6 @@ interface MobileBottomNavProps {
 
 export function MobileBottomNav({isOpen = false}: MobileBottomNavProps) {
     const {activeView, setActiveView, setIsPaletteOpen, setSelectedNoteId, notificationCount, chatNotificationCount} = useView();
-    const {addNote} = useNotes();
     const [isMoreSheetOpen, setIsMoreSheetOpen] = useState(false);
     const sheetRef = useRef<HTMLDivElement>(null);
 
@@ -40,10 +38,10 @@ export function MobileBottomNav({isOpen = false}: MobileBottomNavProps) {
     }, [setActiveView, setIsPaletteOpen, setSelectedNoteId]);
 
     const handleCreateNote = useCallback(() => {
-        const note = addNote();
-        setSelectedNoteId(note.id);
-        setActiveView('notes');
-    }, [addNote, setSelectedNoteId, setActiveView]);
+        setSelectedNoteId(null);
+        setActiveView('inbox');
+        requestAnimationFrame(() => window.dispatchEvent(new CustomEvent('focus-capture')));
+    }, [setSelectedNoteId, setActiveView]);
 
     const getBadgeCount = (item: {badgeCountKey?: 'notificationCount' | 'chatNotificationCount'}) => {
         if (item.badgeCountKey === 'notificationCount') return notificationCount;
@@ -137,9 +135,9 @@ export function MobileBottomNav({isOpen = false}: MobileBottomNavProps) {
                         icon={PlusIcon}
                         variant="primary"
                         size="lg"
-                        tooltip="New Note"
+                        tooltip="Capture"
                         tooltipPosition="top"
-                        aria-label="New Note"
+                        aria-label="Capture"
                         className="touch-target"
                     />
 

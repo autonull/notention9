@@ -8,6 +8,7 @@ import {SelectorRegistryProvider} from './properties/SelectorRegistry';
 import {KeyboardShortcutsHelp} from './ui/Primitives';
 import {ContextualHint} from './ui/ContextualHint';
 import {NoteIcon} from './ui/icons';
+import {getTextFromHtml} from '@notention/core';
 
 import {useNotes} from '../hooks/useNotes';
 import {useView} from '../hooks/useViewContext';
@@ -53,7 +54,7 @@ export function AppShell() {
         setSelectedNoteId
     });
 
-    const {commands, handleNewNote} = useCommands({setIsHelpOpen});
+    const {commands} = useCommands({setIsHelpOpen});
     const {addToast} = useToast();
     const isMobile = useIsMobile();
 
@@ -93,7 +94,11 @@ export function AppShell() {
     }, [addToast, setIsShortcutsHelpOpen]);
 
     useKeyboardShortcuts({
-        onNewNote: handleNewNote,
+        onNewNote: () => {
+            setSelectedNoteId(null);
+            setActiveView('inbox');
+            requestAnimationFrame(() => window.dispatchEvent(new CustomEvent('focus-capture')));
+        },
         onSearch: () => {
             const focusSearch = () => document.getElementById('sidebar-search-input')?.focus();
             if (isMobile && selectedNoteId) {
@@ -166,7 +171,7 @@ export function AppShell() {
         const noteItems = sortedNotes.slice(0, 100).map((note) => ({
             id: note.id,
             label: note.title || 'Untitled',
-            description: note.content ? note.content.replace(/<[^>]*>/g, '').slice(0, 60) : '',
+            description: note.content ? getTextFromHtml(note.content).slice(0, 60) : '',
             icon: <NoteIcon className="h-5 w-5"/>,
             action: () => {
                 setSelectedNoteId(note.id);
@@ -200,7 +205,7 @@ export function AppShell() {
         <PendingConfirmationsProvider>
             <SelectorRegistryProvider>
                 <div className="flex flex-col h-screen bg-gray-950 text-gray-200" data-ready>
-                    <Header onNewNote={handleNewNote} onToggleSidebar={toggleSidebar}/>
+                    <Header onToggleSidebar={toggleSidebar}/>
                     <ConnectivityBanner/>
                     <div className="flex flex-1 overflow-hidden relative">
                         <div className={sidebarClasses} style={style}>

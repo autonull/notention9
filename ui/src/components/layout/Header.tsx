@@ -1,21 +1,16 @@
 import React, {useMemo, useState, useRef, useEffect} from 'react';
 
-import {useSettings} from '../../hooks/useSettingsContext';
 import {useView} from '../../hooks/useViewContext';
-import {useNoteActions} from '../../hooks/useNoteActions';
 import {useDirection} from '../../hooks/useI18n';
-import type {Template, View} from '@notention/core';
-import {generateTemplatesFromOntology} from '@notention/core';
+import type {View} from '@notention/core';
 import {NavButton} from './NavButton';
 import {IconButton} from '../ui/Button';
 import {SearchIcon, SidebarIcon, MoreHorizontalIcon, ChevronDownIcon} from '../ui/icons';
-import {NewNoteButton} from './NewNoteButton';
 import {ConnectionStatus} from './ConnectionStatus';
 import {PRIMARY_NAV, SECONDARY_NAV, SETTINGS_VIEW} from '../../utils/navigation';
 import {modShortcut} from '../../utils/platform';
 
 interface HeaderProps {
-    onNewNote: () => void;
     onToggleSidebar: () => void;
 }
 
@@ -115,7 +110,7 @@ function MoreMenu({
     );
 }
 
-export function Header({onNewNote, onToggleSidebar}: HeaderProps) {
+export function Header({onToggleSidebar}: HeaderProps) {
     const {
         activeView,
         setActiveView,
@@ -126,8 +121,6 @@ export function Header({onNewNote, onToggleSidebar}: HeaderProps) {
         setSelectedNoteId,
         setIsPaletteOpen
     } = useView();
-    const {settings} = useSettings();
-    const {createNoteAndNavigate} = useNoteActions();
     const direction = useDirection();
     const isRTL = direction === 'rtl';
 
@@ -138,30 +131,6 @@ export function Header({onNewNote, onToggleSidebar}: HeaderProps) {
             setActiveView(view);
         }
     };
-
-    const handleCreateIntent = (type: 'request' | 'offer') => {
-        const isRequest = type === 'request';
-        createNoteAndNavigate(
-            isRequest ? 'New Request' : 'New Offer',
-            `<p>${isRequest ? 'I am looking for...' : 'I can provide...'}</p>`,
-            [
-                {key: 'intent', operator: 'is', values: [type]},
-                {key: 'status', operator: 'is', values: [isRequest ? 'open' : 'available']},
-            ],
-            {tags: [type]}
-        );
-    };
-
-    const handleCreateFromTemplate = (template: Template) => {
-        createNoteAndNavigate(undefined, template.content);
-    };
-
-    const generatedTemplates = useMemo(() => {
-        return generateTemplatesFromOntology(settings.ontology ?? []);
-    }, [settings.ontology]);
-
-    // Combine generated templates with custom ones
-    const allTemplates = [...generatedTemplates, ...(settings.customTemplates ?? [])];
 
     return (
         <header
@@ -177,14 +146,6 @@ export function Header({onNewNote, onToggleSidebar}: HeaderProps) {
                     size="lg"
                     className="hidden md:flex"
                     label={modShortcut('\\')}
-                />
-
-                <NewNoteButton
-                    onNewNote={onNewNote}
-                    onCreateIntent={handleCreateIntent}
-                    templates={allTemplates}
-                    onCreateFromTemplate={handleCreateFromTemplate}
-                    label={modShortcut('N')}
                 />
 
                 <IconButton

@@ -9,6 +9,7 @@ import {IconButton} from '../ui/Button';
 import {Button} from '../ui/Button';
 import {Input} from '../ui/Input';
 import {Skeleton} from '../ui/Skeleton';
+import {EmptyState} from '../ui/Primitives';
 
 interface ContactListProps {
     privkey: string;
@@ -188,10 +189,12 @@ export function ContactList({
                 {!isLoading && filteredContacts.map(renderContactItem)}
 
                 {!isLoading && contacts.length === 0 && (
-                    <div className="p-8 text-center text-gray-500 text-sm">
-                        <p className="mb-2">No contacts yet.</p>
-                        <p>Add someone via npub to start chatting.</p>
-                    </div>
+                    <EmptyState
+                        variant="minimal"
+                        icon={UserPlusIcon}
+                        title="No contacts yet"
+                        description="Add someone by npub above to start chatting."
+                    />
                 )}
             </div>
         </div>

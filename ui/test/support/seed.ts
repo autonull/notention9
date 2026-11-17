@@ -30,8 +30,9 @@ const put = async (page: Page, entries: Record<string, unknown>) => {
 };
 
 export async function seed(page: Page, options: SeedOptions) {
-    // App uses hash-based routing, so navigate to the hash URL
-    const url = options.hash ? `/#${options.hash}` : '/';
+    // App uses hash-based routing; callers pass '#view' values.
+    const hash = options.hash ? (options.hash.startsWith('#') ? options.hash : `#${options.hash}`) : '';
+    const url = hash ? `/${hash}` : '/';
     await page.goto(url);
     await page.waitForSelector('[data-ready]');
     await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 300)));

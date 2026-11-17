@@ -21,7 +21,7 @@ export function useHeuristicExtraction(
     text: string,
     ontology: OntologyNode[],
     options?: ExtractionOptions
-): ExtractionState<ExtractionResult> & {extract: () => Promise<void>} {
+): ExtractionState<ExtractionResult> & {extract: () => Promise<ExtractionResult | null>} {
     const [state, setState] = useState<ExtractionState<ExtractionResult>>({
         data: null,
         loading: false,
@@ -40,11 +40,11 @@ export function useHeuristicExtraction(
     ontologyRef.current = ontology;
     optionsRef.current = options;
 
-    const extract = useCallback(async () => {
+    const extract = useCallback(async (): Promise<ExtractionResult | null> => {
         setState(prev => ({...prev, loading: true, error: null}));
         try {
             const extractor = extractorRef.current;
-            const result = await extractor.extractFromTextWithStages(textRef.current, ontologyRef.current, optionsRef.current);
+            const result = await extractor.extractFromTextWithStages(textRef.current, optionsRef.current);
             setState(prev => ({
                 ...prev,
                 data: result,
@@ -53,6 +53,7 @@ export function useHeuristicExtraction(
                 providerUsed: 'heuristic',
                 providerKind: 'heuristic',
             }));
+            return result;
         } catch (e) {
             const error = e instanceof Error ? e : new Error(String(e));
             setState(prev => ({
@@ -61,6 +62,7 @@ export function useHeuristicExtraction(
                 error,
                 fallbackUsed: false,
             }));
+            return null;
         }
     }, []);
 

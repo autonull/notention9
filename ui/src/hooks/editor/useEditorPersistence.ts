@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Note } from '@notention/core';
-import { useNotePersistence, UseDebouncedSaveResult } from './useNotePersistence';
+import { useNotePersistence } from './useNotePersistence';
+import type { UseDebouncedSaveResult } from '../useDebouncedSave';
 import { useDraftAutosave } from './useDraftAutosave';
 
 export interface UseEditorPersistenceResult extends UseDebouncedSaveResult<Note> {
@@ -40,10 +41,10 @@ export function useEditorPersistence(
     }, [persistence.dirtyNote, draft]);
 
     // Restore draft on mount if available
-    const [hasRestored, setHasRestored] = useRef(false);
+    const [hasRestored, setHasRestored] = useState(false);
     useEffect(() => {
-        if (hasRestored.current) return;
-        hasRestored.current = true;
+        if (hasRestored) return;
+        setHasRestored(true);
 
         if (draft.hasDraft) {
             const restored = draft.restoreDraft();
@@ -51,7 +52,7 @@ export function useEditorPersistence(
                 persistence.setDirtyNote(restored);
             }
         }
-    }, [draft, persistence]);
+    }, [draft, persistence, hasRestored]);
 
     const wrappedSetDirtyNote = useCallback((updater: React.SetStateAction<Note>) => {
         const newNote = typeof updater === 'function' ? updater(dirtyNoteRef.current) : updater;

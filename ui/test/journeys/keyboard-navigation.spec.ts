@@ -30,12 +30,9 @@ test.describe('Keyboard Navigation', () => {
         await expect(focused).toBeVisible();
     });
 
-    test('New Note button accessible via keyboard - creates blank note', async ({page}) => {
-        // Ctrl+N creates a blank note and navigates to notes view
+    test('Ctrl+N focuses the single capture field', async ({page}) => {
         await page.keyboard.press('Control+N');
-        
-        // Should navigate to notes view with new note selected
-        await expect(page.locator('#main-content')).toBeVisible();
+        await expect(page.getByTestId('quick-capture-input')).toBeFocused();
     });
 
     test('Command palette opens with Ctrl+K', async ({page}) => {
@@ -66,25 +63,18 @@ test.describe('Keyboard Navigation', () => {
         await expect(focused).toBeVisible();
     });
 
-    test('Capture flow: New Note -> Type -> Save (keyboard only)', async ({page}) => {
-        // Open new note with Ctrl+N (creates blank note)
+    test('Capture flow: capture -> Enter -> Save (keyboard only)', async ({page}) => {
         await page.keyboard.press('Control+N');
-        
-        // Wait for editor to load
+        const capture = page.getByTestId('quick-capture-input');
+        await expect(capture).toBeFocused();
+        await page.keyboard.type('Test note for keyboard navigation');
+        await page.keyboard.press('Enter');
+
         const editor = page.locator('[contenteditable="true"]');
         await expect(editor).toBeVisible();
-        
-        // Focus and type content
-        await editor.click();
-        await page.keyboard.type('Test note for keyboard navigation');
-        
-        // Verify content is in editor
         await expect(editor).toContainText('Test note for keyboard navigation');
-        
-        // Save with Ctrl+S
+
         await page.keyboard.press('Control+S');
-        
-        // Verify content persists after save
         await expect(editor).toContainText('Test note for keyboard navigation');
     });
 

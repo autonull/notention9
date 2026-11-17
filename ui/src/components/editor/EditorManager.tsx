@@ -1,4 +1,4 @@
-import React, {useRef, useState, useCallback} from 'react';
+import React, {useRef, useState, useCallback, useEffect} from 'react';
 import {useEditorLogic} from '../../hooks/useEditorLogic';
 import {useEditorModals} from '../../hooks/useEditorModals';
 import {useView} from '../../hooks/useViewContext';
@@ -218,6 +218,7 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                     onCloseTemplateSelector={() => setIsTemplateSelectorOpen(false)}
                     onInsertTemplate={handleInsertTemplate}
                     onMatchClick={handleMatchClick}
+                    onPickLocation={handleRequestLocationPick}
                 />
                 <MobileBackdrop
                     isVisible={isInspectorOpen}

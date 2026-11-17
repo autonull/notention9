@@ -1,6 +1,6 @@
 import type { Template } from './domain.js';
 
-export type View = 'notes' | 'network' | 'chat' | 'settings' | 'map' | 'timeline' | 'trash' | 'simulator' | 'inbox' | 'actions' | 'responses' | 'labels' | 'ontology';
+export type View = 'notes' | 'network' | 'chat' | 'settings' | 'map' | 'timeline' | 'trash' | 'simulator' | 'inbox' | 'actions' | 'responses' | 'labels' | 'ontology' | 'skills';
 
 export type SidebarViewMode = 'list' | 'grid';
 
@@ -37,14 +37,6 @@ export interface AppSettings {
   };
   ontology?: any[];
   customTemplates?: Template[];
-  onboarding?: {
-    completed: boolean;
-    step: number;
-    captureCompleted: boolean;
-    matchCompleted: boolean;
-    actionCompleted: boolean;
-    dismissed: boolean;
-  };
   accessibility?: {
     reducedMotion?: boolean;
     highContrast?: boolean;

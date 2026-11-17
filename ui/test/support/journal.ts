@@ -60,8 +60,8 @@ export async function waitForFrictionEvent(
     let seen: JournalEvent[] = [];
     while (Date.now() < deadline) {
         seen = await readFrictionJournal(page);
-        const found = seen.find(event => event.kind === kind);
-        if (found) return found;
+        const matches = seen.filter(event => event.kind === kind);
+        if (matches.length > 0) return matches[matches.length - 1];
         await page.waitForTimeout(250);
     }
     throw new Error(

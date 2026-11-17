@@ -192,8 +192,5 @@ function areNotesEqual(a: Note, b: Note): boolean {
     if (a.status !== b.status) return false;
     if (JSON.stringify(a.tags) !== JSON.stringify(b.tags)) return false;
     if (JSON.stringify(a.properties) !== JSON.stringify(b.properties)) return false;
-    if (a.location?.lat !== b.location?.lat) return false;
-    if (a.location?.lon !== b.location?.lon) return false;
-    if (a.location?.label !== b.location?.label) return false;
     return true;
 }

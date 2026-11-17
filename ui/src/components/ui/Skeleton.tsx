@@ -88,20 +88,6 @@ export function NoteItemSkeleton() {
     );
 }
 
-export function DashboardStatSkeleton() {
-    return (
-        <Skeleton variant="dashboard-stat" className="animate-fade-in">
-            <div className="flex items-center gap-3">
-                <Skeleton variant="circular" width={40} height={40} className="p-2 bg-gray-800 rounded-xl"/>
-                <div className="flex-1 min-w-0">
-                    <Skeleton variant="text" width="40%" className="text-sm"/>
-                    <Skeleton variant="text" width="80px" className="text-3xl font-bold mt-2"/>
-                </div>
-            </div>
-        </Skeleton>
-    );
-}
-
 export function NetworkEventSkeleton() {
     return (
         <Skeleton variant="network-event" className="animate-fade-in border border-gray-700/50">
@@ -184,34 +170,6 @@ export function MatchesPanelSkeleton() {
                         </div>
                     </div>
                 </Skeleton>
-            ))}
-        </div>
-    );
-}
-
-export function QuickActionsSkeleton() {
-    return (
-        <aside className="bg-gray-900/50 rounded-3xl border border-gray-700/30 p-6 flex flex-col gap-3 backdrop-blur-sm shadow-xl animate-fade-in">
-            <Skeleton variant="text" width="30%" className="text-lg font-bold mb-2"/>
-            {Array.from({length: 6}).map((_, i) => (
-                <Skeleton key={i} variant="rectangular" height={60} width="100%" className="rounded-xl animate-fade-in" style={{animationDelay: `${i * 50}ms`}}/>
-            ))}
-        </aside>
-    );
-}
-
-export function ActivityFeedSkeleton() {
-    return (
-        <div className="p-6 flex-1 space-y-4">
-            {Array.from({length: 5}).map((_, i) => (
-                <div key={i} className="flex items-start gap-3 animate-fade-in" style={{animationDelay: `${i * 50}ms`}}>
-                    <Skeleton variant="circular" width={8} height={8} className="flex-shrink-0 mt-1.5 bg-blue-500"/>
-                    <div className="flex-1 min-w-0 space-y-1">
-                        <Skeleton variant="text" width="80%" className="text-sm font-medium"/>
-                        <Skeleton variant="text" width="60%" className="text-xs"/>
-                        <Skeleton variant="text" width="40%" className="text-xs"/>
-                    </div>
-                </div>
             ))}
         </div>
     );

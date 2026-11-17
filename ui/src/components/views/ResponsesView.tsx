@@ -3,8 +3,9 @@ import {useNotes} from '../../hooks/useNotes';
 import {useView} from '../../hooks/useViewContext';
 import {Button} from '../ui/Button';
 import {Card} from '../ui/Card';
-import {Note} from '@notention/core';
-import {CheckCircleIcon, XCircleIcon, ArrowPathIcon, PencilIcon} from '../ui/icons';
+import {getTextFromHtml, Note} from '@notention/core';
+import {CheckCircleIcon, ResponseIcon, XCircleIcon} from '../ui/icons';
+import {EmptyState} from '../ui/Primitives';
 import {logMatchWithdrawn, createWithdrawalNote} from '@notention/core';
 import {useFrictionRecorder} from '../../hooks/useFrictionRecorder';
 
@@ -69,7 +70,7 @@ export function ResponsesView() {
                 <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 text-sm">
-                            <span className="text-green-400 font-bold">↩️ Response</span>
+                            <span className="text-green-400 font-bold">Response</span>
                             {matchScore && <span className="text-green-500 font-mono">{Number(matchScore) * 100}%</span>}
                         </div>
                         <div className="font-semibold truncate">{response.title || 'Untitled Response'}</div>
@@ -77,7 +78,7 @@ export function ResponsesView() {
                             {request && <span>📥 {request.title}</span>}
                             {offer && <span>📤 {offer.title}</span>}
                         </div>
-                        <div className="text-sm text-gray-500 mt-1 truncate">{response.content.slice(0, 150)}</div>
+                        <div className="text-sm text-gray-500 mt-1 truncate">{getTextFromHtml(response.content).slice(0, 150)}</div>
                     </div>
                     <Button
                         size="sm"
@@ -102,11 +103,11 @@ export function ResponsesView() {
         return (
             <Card key={withdrawal.id} className="mb-2 p-3 bg-gray-800/50 border-l-4 border-gray-600" onClick={() => handleNoteClick(withdrawal.id)}>
                 <div className="flex items-center gap-2">
-                    <span className="text-gray-500 font-bold">↪️ Withdrawn</span>
+                    <span className="text-gray-500 font-bold">Withdrawn</span>
                     <div className="font-semibold text-gray-400">{withdrawal.title || 'Untitled Withdrawal'}</div>
                     {responseId && <span className="text-xs text-gray-500 ml-2">for {responseId.slice(0, 8)}</span>}
                 </div>
-                <div className="text-sm text-gray-500 mt-1 truncate">{withdrawal.content.slice(0, 150)}</div>
+                <div className="text-sm text-gray-500 mt-1 truncate">{getTextFromHtml(withdrawal.content).slice(0, 150)}</div>
             </Card>
         );
     };
@@ -115,16 +116,16 @@ export function ResponsesView() {
         <div className="h-full bg-gray-900 p-4 flex flex-col overflow-y-auto text-gray-200">
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold flex items-center gap-2">
-                    <span className="text-green-400">↩️</span> My Responses
+                    <ResponseIcon className="w-6 h-6 text-green-400"/> Responses
                 </h1>
             </div>
 
             {activeResponses.length === 0 && withdrawals.length === 0 ? (
-                <div className="text-center py-12 text-gray-500">
-                    <div className="text-6xl mb-4">↩️</div>
-                    <p className="text-lg">No responses yet</p>
-                    <p className="text-sm mt-2">Accept a match from the Dashboard to create a response</p>
-                </div>
+                <EmptyState
+                    title="No responses yet"
+                    description="Accept a match in the inbox to create a response."
+                    action={<Button variant="primary" onClick={() => setActiveView('inbox')}>Find a match</Button>}
+                />
             ) : (
                 <>
                     {activeResponses.length > 0 && (

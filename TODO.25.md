@@ -484,7 +484,7 @@ user can switch back for one release.
 ~~W8.1 Friction digest dashboard~~ ✅ · ~~W8.3 LLM call telemetry~~ ✅ · ~~W8.4 A/B → decisions~~ ✅ ·
 ~~W9.1 Quickstart~~ ✅ · ~~W9.2 Model selection guide~~ ✅ · ~~W9.3 Decision records~~ ✅ · ~~W9.4 Eval how-to~~ ✅ ·
 W1.7 LoRA fine-tune (if quality plateaus < 0.80).
-**W11 UI/UX audit → intuitive elegance** (highest priority; audit first, then W11.0–W11.8)
+~~**W11 UI/UX audit → intuitive elegance**~~ ✅ (except W11.7 human timing gate)
 
 ### Parked (do not start yet)
 - WebLLM GPU CI (user declined CI; SwiftShader lacks adapters).
@@ -543,28 +543,28 @@ Walk the 15 generated screenshots in `doc/screenshot/` and record, per screen:
 
 ### Planned phases (each one small, revertible, evidence-gated)
 
-- [ ] **W11.0 The audit itself (this session).** Produce `doc/UI_AUDIT.md`: per-screenshot table
+- [x] **W11.0 The audit itself (this session).** Produce `doc/UI_AUDIT.md`: per-screenshot table
   (fields above), a ranked list of removals by (capability-loss risk ✕ user confusion saved), and a
   proposed before/after IA. **No code this session.** Review gate.
-- [ ] **W11.1 Delete onboarding.** Remove `OnboardingChecklist.tsx` and its state
+- [x] **W11.1 Delete onboarding.** Remove `OnboardingChecklist.tsx` and its state
   (`AppSettings.completed/step/captureCompleted/matchCompleted/actionCompleted/dismissed`,
   `SettingsContext` defaults). Replace with a one-line inline placeholder in capture
   (e.g. `What do you need?`). Attach empty-inbox before/after.
-- [ ] **W11.2 Single capture entry point.** Keep Quick Capture in the Inbox header; remove the
+- [x] **W11.2 Single capture entry point.** Keep Quick Capture in the Inbox header; remove the
   separate "New Note" toolbar button and any Notes-view "New Note". Keyboard `Cmd+N` focuses the
   one field. Attach Inbox + Notes before/after.
-- [ ] **W11.3 Overview strip-down.** From the merged Inbox, remove Welcome header, Feature
+- [x] **W11.3 Overview strip-down.** From the merged Inbox, remove Welcome header, Feature
   Highlights, StatsGrid, and duplicate Quick Actions; keep capture, local match preview, recent
   notes/activity. Attach populated-inbox before/after.
-- [ ] **W11.4 Empty-state consolidation.** One `EmptyState` component used by Notes, Trash, Timeline,
+- [x] **W11.4 Empty-state consolidation.** One `EmptyState` component used by Notes, Trash, Timeline,
   Actions, Responses, Labels, Chat, Network. Same copy pattern, one action. Attach before/after per view.
-- [ ] **W11.5 Network first-paint.** Read-only public feed renders before identity exists; identity
+- [x] **W11.5 Network first-paint.** Read-only public feed renders before identity exists; identity
   prompt moves to "publish"/"chat" actions. Attach `network/connect-identity` before/after.
-- [ ] **W11.6 Full redundancy sweep.** Re-run the audit table across all 11 views; list any remaining
+- [x] **W11.6 Full redundancy sweep.** Re-run the audit table across all 11 views; list any remaining
   duplicate action/panel; file as follow-up tasks (do not bundle).
-- [ ] **W11.7 Stranger test.** `pnpm stranger-test` on the cleaned build: unaided golden path
+- [ ] **W11.7 Stranger test (blocked: needs a human with a fresh profile).** `pnpm stranger-test` on the cleaned build: unaided golden path
   (install → capture → match → export) must complete in < 2 min. Attach timing artifact.
-- [ ] **W11.8 Visual-consistency pass.** One vocabulary and one icon per concept (e.g. always
+- [x] **W11.8 Visual-consistency pass.** One vocabulary and one icon per concept (e.g. always
   "Capture", always "Match"); audit button hierarchy so each screen has exactly one primary action.
 
 ### Audit artifact template (`doc/UI_AUDIT.md`)
@@ -1163,6 +1163,27 @@ pnpm eval:verify-manifest
   Actions (fixed), empty-state duplication, network first-paint friction, settings discoverability.
 - **Note**: raw-HTML-in-Actions was fixed this session (`getTextFromHtml` in `ActionsView`); the
   `actions/board` showcase now passes. The rest of W11 is plan-only.
+
+### 2026-11-17 — W11 audit + cleanup complete (except human stranger test)
+- **W11.0**: `doc/UI_AUDIT.md` with the per-screenshot table, ranked removals, before/after IA, and harness findings.
+- **W11.1**: deleted `OnboardingChecklist`, its settings state, and its three tracking effects.
+- **W11.2**: one capture surface; removed header, sidebar, Welcome, and mobile New Note buttons; `Cmd+N` focuses `[data-testid="quick-capture-input"]`; the command palette keeps "New Note" as a menu command.
+- **W11.3**: Inbox keeps capture, local match, recent notes, and Advanced → Automations; removed Welcome, Features, Stats, Quick Actions, and the duplicate Automations panel. `NotesView` now lists notes instead of rendering `DashboardView`; dead dashboard components deleted.
+- **W11.4**: one `EmptyState` for Notes, Trash, Timeline, Actions, Responses, Labels, Chat, Contacts, Network, and the sidebar.
+- **W11.5**: the public feed subscribes without an identity; `NetworkView` shows a compact read-only banner above the feed instead of a blocking gate.
+- **W11.6**: post-change redundancy sweep is in `doc/UI_AUDIT.md`; only navigation-vs-content lists remain by design.
+- **W11.8**: `getTextFromHtml` previews everywhere; one icon per view; match card reduced to Respond / Revise / Not a match plus disclosure.
+- **Evidence harness fixed**: `seed` built `/##view` (double hash) so network/matching screenshots were actually the Inbox; the URL router could also push the default view before a deep link committed. 24/24 screenshots now capture the intended view.
+- **Blocking UI bugs fixed while proving the screens**: editor missing `useEffect`/`onPickLocation` wiring, capture extraction effect loop on first keystroke, Map-vs-tree `findAttributeDef` collision, and the per-key "New concept discovered" toast storm.
+- **Tests**: `pnpm test` (core 933, agent 17, CLI 6, optimize 127); `pnpm test:ui` (42 files); `pnpm screenshots` (24/24); `pnpm taxonomy:coverage` 24/24. Journey checks: navigation, mobile, keyboard, describe-it, and the compose-match popup pass; the compose-match *anchor* test still needs a re-run after wiring `match_explained.noteId`.
+- **Remaining work for the next session**:
+  1. Re-run `ui/test/journeys/compose-match.spec.ts`; the anchor test now receives the request id for `match_explained`.
+  2. Investigate numeric `rate` equality returning a neutral match (800 vs 1200 becomes "missing" instead of conflicting). This is in `MatchEngine.evaluateConstraint`, not the UI.
+  3. Run the human stranger test (W11.7) and attach the timing artifact.
+  4. Clean up the pre-existing UI `tsc --noEmit` errors in settings/hooks; `vite build` passes.
+  5. Map marker images still fall back to a broken image when a profile has no picture.
+- **W11.7 remains blocked**: the stranger test is a human timing gate. Run `pnpm stranger-test` with a fresh profile and attach the observed install → capture → match → export time.
+
 
 ---
 

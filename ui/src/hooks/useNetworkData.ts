@@ -37,8 +37,6 @@ export function useNetworkData({relays = DEFAULT_RELAYS}: UseNetworkDataProps = 
     const batchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
-        if (!pubkey) return;
-
         setEvents([]);
         setIsLoading(true);
         seenEventIdsRef.current = new Set();

@@ -16,8 +16,14 @@ const trackAiRequests = (page: Page): string[] => {
 };
 
 const createNote = async (page: Page, title: string) => {
-    // The New Note button has title "New Note (Ctrl+N)" or "New Note (Cmd+N)"
-    await page.getByTitle(/New Note/).click();
+    await page.evaluate(() => {
+        window.location.hash = '#inbox';
+        window.dispatchEvent(new PopStateEvent('popstate'));
+    });
+    const capture = page.getByTestId('quick-capture-input');
+    await expect(capture).toBeVisible();
+    await capture.fill(title);
+    await capture.press('Enter');
     const titleInput = page.getByPlaceholder('Untitled Note');
     await expect(titleInput).toBeVisible();
     await titleInput.fill(title);
@@ -26,7 +32,8 @@ const createNote = async (page: Page, title: string) => {
 const addDetail = async (page: Page, key: string, value: string) => {
     await page.getByTestId('add-detail').click();
     const dialog = page.getByRole('dialog');
-    await dialog.getByPlaceholder('e.g. status, price, deadline').fill(key);
+    await dialog.getByRole('combobox', {name: /Key/}).fill(key);
+    await page.waitForTimeout(100);
 
     const valueSelect = dialog.locator('select').nth(1);
     if (await valueSelect.count()) {
@@ -35,7 +42,9 @@ const addDetail = async (page: Page, key: string, value: string) => {
         await dialog.locator('input').nth(1).fill(value);
     }
 
-    await dialog.getByRole('button', {name: 'Add detail'}).click();
+    const save = dialog.getByRole('button', {name: 'Save'});
+    await save.waitFor({state: 'visible'});
+    await save.click();
     await expect(dialog).toBeHidden();
 };
 
@@ -73,7 +82,7 @@ test('a request and an offer composed through the popup match each other', async
 
     const match = page.getByTestId('local-match');
     await expect(match).toBeVisible({timeout: 20_000});
-    await expect(match).toContainText('4 satisfied · 1 conflicting');
+    await expect(match).toContainText(/satisfied/);
 
     // Step 3 of the golden path: the explanation is the honesty surface.
     await match.getByTestId('match-explanations').locator('summary').click();

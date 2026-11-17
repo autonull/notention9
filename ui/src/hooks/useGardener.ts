@@ -144,7 +144,6 @@ export function useGardener() {
                         }
                     };
                     hasChanges = true;
-                    addToast(`New concept discovered: ${prop.key}`, 'info');
                 }
             }
 

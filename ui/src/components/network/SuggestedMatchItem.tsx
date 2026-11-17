@@ -1,5 +1,5 @@
 import React from 'react';
-import type {NostrEvent} from '@notention/core';
+import {getTextFromHtml, type NostrEvent} from '@notention/core';
 
 export interface SuggestionMatch {
     localNoteId: string;
@@ -23,7 +23,7 @@ export function SuggestedMatchItem({match, onSelect}: SuggestedMatchItemProps) {
                 <span className="text-xs text-gray-500">Your note: {match.localNoteId.slice(0, 6)}...</span>
             </div>
             <div className="text-white font-medium text-sm mb-1 line-clamp-1">
-                {match.event.content.slice(0, 50)}...
+                {getTextFromHtml(match.event.content).slice(0, 50)}...
             </div>
         </div>
     );

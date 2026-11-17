@@ -83,16 +83,9 @@ export function QuickCapture({
     const showExtractionStatus = extractionLoading || extractionFallbackUsed || extractionError;
 
     return (
-        <section className="relative overflow-hidden rounded-3xl border border-gray-800 bg-gradient-to-br from-gray-900/50 to-gray-900/80 p-6 md:p-8 animate-fade-in-up stagger-1">
-            <div className="relative z-10 max-w-2xl mx-auto text-center">
-                <h2 className="text-2xl md:text-3xl font-bold mb-2 tracking-tight text-white">
-                    Quick Capture
-                </h2>
-                <p className="text-gray-500 text-sm mb-6 font-medium">
-                    Instant notes, tasks, and ideas with semantic extraction.
-                </p>
-
-                <form onSubmit={onSubmit} className="relative mb-6">
+        <section className="relative overflow-hidden rounded-2xl border border-gray-800 bg-gray-900/50 p-4 animate-fade-in-up stagger-1">
+            <div className="relative z-10 max-w-3xl mx-auto">
+                <form onSubmit={onSubmit} className="relative">
                     <div className="relative">
                         <Input
                             ref={inputRef}
@@ -168,35 +161,39 @@ export function QuickCapture({
                     </div>
                 )}
 
-                <div className="flex flex-wrap justify-center gap-2 mb-6">
-                    {(Object.entries(TEMPLATES) as [string, typeof TEMPLATES['task']][]).map(([type, t]) => (
-                        <Button
-                            key={type}
-                            onClick={() => onTemplateClick(type)}
-                            variant="outline"
-                            size="sm"
-                            className={cn('gap-2', t.borderColor, 'hover:scale-105 active:scale-95 touch-target-48')}
-                            leftIcon={
-                                <div className={cn('p-2 rounded-xl', t.gradient, 'text-white')}>
-                                    {ICON_MAP[type as keyof typeof ICON_MAP] || ICON_MAP.note}
-                                </div>
-                            }
-                        >
-                            <span className={cn('text-[10px] font-bold uppercase tracking-widest', t.color)}>
-                                {type}
-                            </span>
-                        </Button>
-                    ))}
-                </div>
+                <details className="mt-3 group">
+                    <summary className="cursor-pointer text-xs text-gray-500 hover:text-gray-300 list-none flex items-center gap-1.5">
+                        <span className="transition-transform group-open:rotate-90">›</span>
+                        More ways to capture
+                    </summary>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                        {(Object.entries(TEMPLATES) as [string, typeof TEMPLATES['task']][]).map(([type, t]) => (
+                            <Button
+                                key={type}
+                                onClick={() => onTemplateClick(type)}
+                                variant="outline"
+                                size="sm"
+                                className={cn('gap-2', t.borderColor, 'touch-target-48')}
+                                leftIcon={
+                                    <div className={cn('p-1.5 rounded-lg', t.gradient, 'text-white')}>
+                                        {ICON_MAP[t.icon as keyof typeof ICON_MAP]}
+                                    </div>
+                                }
+                            >
+                                {t.title}
+                            </Button>
+                        ))}
+                    </div>
+                </details>
 
-                <details className="group text-left max-w-md mx-auto">
-                    <summary className="flex items-center justify-center gap-2 text-gray-500 text-sm cursor-pointer select-none">
+                <details className="group mt-2">
+                    <summary className="flex items-center gap-2 text-gray-500 text-xs cursor-pointer select-none list-none">
                         <span>Capture tips</span>
                         <svg className="w-4 h-4 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/>
                         </svg>
                     </summary>
-                    <div className="mt-4 p-4 bg-gray-900/50 rounded-xl border border-gray-700/50 text-sm text-gray-400 space-y-2 animate-fade-in">
+                    <div className="mt-2 p-3 bg-gray-950/50 rounded-xl border border-gray-800 text-xs text-gray-400 space-y-1.5 animate-fade-in">
                         <div className="flex items-center gap-2"><kbd className="px-1.5 py-0.5 bg-gray-800 rounded text-xs">#tag</kbd><span>Add tags inline</span></div>
                         <div className="flex items-center gap-2"><kbd className="px-1.5 py-0.5 bg-gray-800 rounded text-xs">key:value</kbd><span>Add properties</span></div>
                         <div className="flex items-center gap-2"><kbd className="px-1.5 py-0.5 bg-gray-800 rounded text-xs">@mention</kbd><span>Reference other notes</span></div>

@@ -11,7 +11,7 @@ export interface EmptyStateProps {
     action?: React.ReactNode;
     className?: string;
     iconClassName?: string;
-    variant?: 'default' | 'card' | 'minimal' | 'illustrated' | 'onboarding' | 'actionable';
+    variant?: 'default' | 'card' | 'minimal' | 'illustrated' | 'actionable';
     illustration?: React.ReactNode;
     secondaryAction?: React.ReactNode;
     showSearchSuggestion?: boolean;
@@ -26,7 +26,6 @@ const variantStyles = {
     card: 'empty-state p-8',
     minimal: 'flex flex-col items-center justify-center py-6 px-4 text-center',
     illustrated: 'flex flex-col items-center justify-center py-16 px-6 text-center max-w-md mx-auto',
-    onboarding: 'flex flex-col items-center justify-center py-20 px-6 text-center max-w-lg mx-auto',
     actionable: 'empty-state-actionable',
 };
 
@@ -35,7 +34,6 @@ const iconContainerStyles = {
     card: 'empty-state-icon',
     minimal: 'flex items-center justify-center rounded-full mb-3 bg-gray-800 p-3',
     illustrated: 'flex items-center justify-center rounded-full mb-6 w-20 h-20 bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30',
-    onboarding: 'flex items-center justify-center rounded-full mb-8 w-24 h-24 bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30 animate-pulse-subtle',
     actionable: 'empty-state-icon',
 };
 
@@ -44,7 +42,6 @@ const titleStyles = {
     card: 'empty-state-title text-lg',
     minimal: 'font-medium text-gray-300 text-base mb-1',
     illustrated: 'font-semibold text-white text-xl mb-3',
-    onboarding: 'font-bold text-white text-2xl mb-4',
     actionable: 'empty-state-title',
 };
 
@@ -53,7 +50,6 @@ const descriptionStyles = {
     card: 'empty-state-description text-gray-500',
     minimal: 'text-sm max-w-xs text-gray-500 mb-4',
     illustrated: 'text-base max-w-md text-gray-400 mb-8 leading-relaxed',
-    onboarding: 'text-lg max-w-lg text-gray-300 mb-10 leading-relaxed',
     actionable: 'empty-state-description',
 };
 

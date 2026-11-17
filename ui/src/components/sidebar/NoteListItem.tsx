@@ -10,7 +10,7 @@ interface NoteListItemProps {
     note: Note;
     isSelected: boolean;
     onSelect: () => void;
-    onDelete: () => void;
+    onDelete?: () => void;
     onPin?: () => void;
     isTrash?: boolean;
     onRestore?: () => void;
@@ -71,7 +71,7 @@ export const NoteListItem = React.memo(({
             id: 'delete',
             label: isTrash ? 'Delete' : 'Trash',
             icon: <TrashIcon className="w-5 h-5"/>,
-            onClick: () => onDelete(),
+            onClick: () => onDelete?.(),
             variant: 'destructive',
             backgroundColor: '#dc2626',
         } as const,
@@ -101,7 +101,7 @@ export const NoteListItem = React.memo(({
         if (e.key === 'Delete' || e.key === 'Backspace') {
             e.preventDefault();
             e.stopPropagation();
-            onDelete();
+            onDelete?.();
         } else if (e.key.toLowerCase() === 'p' && onPin) {
             e.preventDefault();
             e.stopPropagation();
@@ -204,7 +204,7 @@ export const NoteListItem = React.memo(({
                             />
                         )}
                         <IconButton
-                            onClick={(e) => { e.stopPropagation(); onDelete(); }}
+                            onClick={(e) => { e.stopPropagation(); onDelete?.(); }}
                             tabIndex={-1}
                             className="text-gray-500 hover:text-red-400 p-0.5"
                             icon={TrashIcon}

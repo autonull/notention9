@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {findAttributeDef, OntologyNode, Property} from '@notention/core';
+import {findAttributeDefInTree, OntologyNode, Property} from '@notention/core';
 import {getConfidenceBucket, getConfidenceBucketLabel, getConfidenceBucketColor, type PropertyWithCalibration} from '@notention/core/extraction';
 import {recordFriction, type FrictionKind} from '@notention/core/telemetry/journal';
 import {AttributeWidget} from './widgets/registry';
@@ -85,7 +85,7 @@ export function PropertyBlock({
     }, [handleSave, handleCancel]);
 
     const getWidget = () => {
-        const attributeDef = findAttributeDef(property.key, ontology);
+        const attributeDef = findAttributeDefInTree(property.key, ontology);
 
         return (
             <AttributeWidget
@@ -104,7 +104,7 @@ export function PropertyBlock({
         : [];
 
     const getValidOperators = (key: string, ontology: OntologyNode[]): string[] => {
-        const attributeDef = findAttributeDef(key, ontology);
+        const attributeDef = findAttributeDefInTree(key, ontology);
         if (!attributeDef) return ['is', 'contains', 'matches'];
         return [...attributeDef.operators.real, ...attributeDef.operators.imaginary];
     };

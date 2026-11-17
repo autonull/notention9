@@ -47,7 +47,6 @@ export function MainView({sortedNotes}: MainViewProps) {
     const renderView = () => {
         switch (activeView) {
             case 'inbox':
-            case 'dashboard': // Redirect dashboard to inbox (W10.2 Overview merge)
                 return <InboxView sortedNotes={sortedNotes}/>;
             case 'notes':
                 return <NotesView sortedNotes={sortedNotes}/>;

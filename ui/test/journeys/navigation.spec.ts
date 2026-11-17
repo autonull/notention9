@@ -8,8 +8,8 @@ test.beforeEach(async ({page}) => {
 });
 
 const routes: Array<[string, string]> = [
-    ['#inbox', 'Welcome back'],
-    ['#notes', 'Quick Capture'],
+    ['#inbox', 'Recent notes'],
+    ['#notes', 'Notes'],
     ['#actions', 'Actions'],
     ['#map', 'OpenStreetMap'],
     ['#timeline', 'Spacetime Filter'],
@@ -19,7 +19,7 @@ const routes: Array<[string, string]> = [
     ['#labels', 'Labels'],
     ['#trash', 'Recently deleted'],
     ['#settings', 'Settings'],
-    ['#dashboard', 'Welcome back'], // W10.2: dashboard redirects to inbox
+    ['#dashboard', 'Recent notes'], // W10.2: dashboard redirects to inbox
     ['#ontology', 'Ontology'],
 ];
 

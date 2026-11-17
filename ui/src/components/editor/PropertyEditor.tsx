@@ -2,7 +2,7 @@ import React, {useEffect, useMemo, useState} from 'react';
 import {CheckIcon, ClockIcon, InformationCircleIcon, MapPinIcon, SearchSparkleIcon, XIcon, SparklesIcon, ChevronDownIcon, ChevronUpIcon} from '../ui/icons';
 import type {OntologyNode, OntologyAttribute} from '@notention/core';
 import {Logger} from '@notention/core';
-import {findAttributeDef, validateAttributeValue} from '@notention/core';
+import {findAttributeDefInTree, validateAttributeValue} from '@notention/core';
 import {getCurrentPosition} from '../../utils/geolocation';
 import {useToast} from '../../hooks/useToast';
 import {useAnnounce} from '../../hooks/useAccessibility';
@@ -88,7 +88,7 @@ export function PropertyEditor({
 
     const activeDef = useMemo(() => {
         if (ontology && key) {
-            const found = findAttributeDef(key, ontology);
+            const found = findAttributeDefInTree(key, ontology);
             if (found) return found;
         }
         return undefined;
@@ -179,7 +179,7 @@ export function PropertyEditor({
         const newKey = e.target.value;
         setKey(newKey);
         if (!operator || operator === 'is') {
-            const def = findAttributeDef(newKey, ontology);
+            const def = findAttributeDefInTree(newKey, ontology);
             if (def?.operators?.real?.[0]) {
                 setOperator(def.operators.real[0]);
             }

@@ -8,8 +8,8 @@ test.beforeEach(async ({page}) => {
 });
 
 const mobileRoutes: Array<[string, string]> = [
-    ['#inbox', 'Welcome back'],
-    ['#notes', 'Quick Capture'],
+    ['#inbox', 'Recent notes'],
+    ['#notes', 'Notes'],
     ['#actions', 'Actions'],
     ['#map', 'OpenStreetMap'],
     ['#timeline', 'Spacetime Filter'],
@@ -19,7 +19,7 @@ const mobileRoutes: Array<[string, string]> = [
     ['#labels', 'Labels'],
     ['#trash', 'Recently deleted'],
     ['#settings', 'Settings'],
-    ['#dashboard', 'Welcome back'], // W10.2: dashboard redirects to inbox
+    ['#dashboard', 'Recent notes'], // W10.2: dashboard redirects to inbox
     ['#ontology', 'Ontology'],
 ];
 
@@ -82,7 +82,7 @@ test('mobile: touch targets meet 44px minimum', async ({page}) => {
 
     // Check capture button (in bottom bar, not header)
     const bottomBar = page.locator('.fixed.bottom-0').first();
-    const captureBtn = bottomBar.getByRole('button', {name: 'New Note'});
+    const captureBtn = bottomBar.getByRole('button', {name: 'Capture'});
     await expect(captureBtn).toBeVisible();
     const captureBox = await captureBtn.boundingBox();
     if (captureBox) {
@@ -193,6 +193,6 @@ test('mobile: persistence survives reload', async ({page}) => {
     await page.evaluate(() => { window.location.hash = '#inbox'; window.dispatchEvent(new PopStateEvent('popstate')); });
     
     await page.reload();
-    await expect(page.locator('main')).toContainText('Welcome back');
+    await expect(page.locator('main')).toContainText('Recent notes');
     await clearStorage(page);
 });

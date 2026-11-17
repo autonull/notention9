@@ -9,6 +9,8 @@ import {useView} from '../../hooks/useViewContext';
 import {MapPinIcon} from '../ui/icons';
 import {haversineDistance, parseGeoFromValues} from '@notention/core';
 import {Skeleton} from '../ui/Skeleton';
+import {EmptyState} from '../ui/Primitives';
+import {Button} from '../ui/Button';
 
 const locales = {
     'en-US': enUS,
@@ -171,6 +173,15 @@ export function TimelineView() {
                     </div>
                 )}
             </div>
+
+            {events.length === 0 && (
+                <EmptyState
+                    variant="minimal"
+                    title="No dated notes yet"
+                    description="Add a start or deadline detail to a note to see it on the calendar."
+                    action={<Button variant="primary" onClick={() => setActiveView('inbox')}>Go to capture</Button>}
+                />
+            )}
 
             <Calendar
                 localizer={localizer}

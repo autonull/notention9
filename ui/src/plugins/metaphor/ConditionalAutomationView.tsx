@@ -1,6 +1,6 @@
 import React, {useMemo} from 'react';
 import {cn} from '../../utils/ui';
-import {Property} from '@notention/core';
+import {getTextFromHtml, Property} from '@notention/core';
 
 interface RuleCardProps {
     note: {
@@ -80,7 +80,7 @@ export function ConditionalAutomationView({note}: RuleCardProps) {
                     </div>
                     <div className="min-w-0">
                         <h4 className="font-medium text-gray-100 truncate">{note.title || 'Unnamed Automation'}</h4>
-                        <p className="text-xs text-gray-500 truncate">{note.content ? note.content.slice(0, 100) : 'No description'}</p>
+                        <p className="text-xs text-gray-500 truncate">{note.content ? getTextFromHtml(note.content).slice(0, 100) : 'No description'}</p>
                     </div>
                 </div>
                 <span className={cn('flex-shrink-0 px-2 py-1 rounded-full text-xs font-medium border', frequencyColors[frequency] || frequencyColors.continuous)}>

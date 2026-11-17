@@ -29,6 +29,7 @@ interface EditorContentProps {
     onCloseTemplateSelector: () => void;
     onInsertTemplate: (template: OntologyNode) => void;
     onMatchClick: (match: ScoredMatch) => void;
+    onPickLocation?: () => Promise<string> | void;
 }
 
 export function EditorContent({
@@ -46,7 +47,8 @@ export function EditorContent({
     isTemplateSelectorOpen,
     onCloseTemplateSelector,
     onInsertTemplate,
-    onMatchClick
+    onMatchClick,
+    onPickLocation
 }: EditorContentProps) {
     const activeMetaphor = metaphorMapper.mapToMetaphor(dirtyNote);
     const matches = useMatches(dirtyNote);

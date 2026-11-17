@@ -72,7 +72,7 @@ test('network feed', async ({page}) => {
         settings: defaultSettings({nostr: {privkey: Buffer.from(viewer.secret).toString('hex'), relays: [RELAY_URL]}}),
         hash: '#network',
     });
-    await page.waitForSelector('text=Monthly meetup at the community hall');
+    await page.locator('main').getByText(/Monthly meetup at the community hall/).first().waitFor();
     await snap(page, {
         area: 'network',
         state: 'feed',
@@ -82,6 +82,9 @@ test('network feed', async ({page}) => {
 
 test('network no identity', async ({page}) => {
     await seed(page, {notes: demoNotes(), settings: defaultSettings(), hash: '#network'});
+    await page.getByText('Read-only public feed').waitFor();
+    await page.getByRole('heading', {name: /Public Feed/}).waitFor();
+    await page.locator('main').getByText('Garden help on Saturdays').first().waitFor({timeout: 15_000});
     await snap(page, {
         area: 'network',
         state: 'connect-identity',
@@ -93,7 +96,7 @@ test('settings networks', async ({page}) => {
     await seed(page, {notes: demoNotes(), settings: defaultSettings()});
     await page.evaluate(() => { window.location.hash = '#settings'; window.dispatchEvent(new PopStateEvent('popstate')); });
     await page.waitForSelector('main');
-    await page.getByRole('tab', {name: /🌐 Networks/}).click();
+    await page.getByRole('button', {name: 'Networks'}).click();
     await page.waitForTimeout(200);
     await snap(page, {
         area: 'settings',

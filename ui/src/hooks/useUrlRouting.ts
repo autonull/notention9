@@ -8,79 +8,71 @@ interface UseUrlRoutingProps {
     setSelectedNoteId: (id: string | null) => void;
 }
 
+const VALID_VIEWS: View[] = [
+    'inbox',
+    'notes',
+    'map',
+    'timeline',
+    'network',
+    'chat',
+    'ontology',
+    'settings',
+    'trash',
+    'actions',
+    'responses',
+    'labels',
+    'skills',
+];
+
+const viewFromHash = (hash: string): {view: View; id: string | null} => {
+    if (hash === 'dashboard') return {view: 'inbox', id: null};
+    if (!hash) return {view: 'inbox', id: null};
+
+    const [view, id] = hash.split('/');
+    return {
+        view: VALID_VIEWS.includes(view as View) ? (view as View) : 'notes',
+        id: id || null,
+    };
+};
+
 export function useUrlRouting({
                                   activeView,
                                   setActiveView,
                                   selectedNoteId,
                                   setSelectedNoteId,
                               }: UseUrlRoutingProps) {
-    // Use a ref to track if the update is coming from the URL to prevent loops
-    const isUpdatingFromUrl = useRef(false);
+    // Set while the URL drives the view state; cleared once that state commits.
+    const pendingFromUrl = useRef<{view: View; id: string | null} | null>(null);
 
-    // 1. Listen for URL changes (PopState)
     useEffect(() => {
-        const handlePopState = () => {
-            const hash = window.location.hash.slice(1); // remove '#'
-
-            // If no hash, allow state to drive URL (canonicalize to #notes)
-            if (!hash) {
-                isUpdatingFromUrl.current = false;
-                // Ensure we are in default state
-                setActiveView('inbox');
-                setSelectedNoteId(null);
-                return;
-            }
-
-            isUpdatingFromUrl.current = true;
-            const [view, id] = hash.split('/');
-
-            // Validate view
-            const validViews: View[] = [
-                'inbox',
-                'notes',
-                'map',
-                'timeline',
-                'network',
-                'chat',
-                'ontology',
-                'settings',
-                'trash',
-                'actions',
-                'dashboard',
-                'responses',
-                'labels',
-            ];
-
-            const newView = validViews.includes(view as View) ? (view as View) : 'notes';
-
-            setActiveView(newView);
-            setSelectedNoteId(id || null);
-
-            // Reset after a tick
-            setTimeout(() => {
-                isUpdatingFromUrl.current = false;
-            }, 0);
+        const handleUrlChange = () => {
+            const next = viewFromHash(window.location.hash.slice(1));
+            pendingFromUrl.current = next;
+            setActiveView(next.view);
+            setSelectedNoteId(next.id);
         };
 
-        // Initialize on mount
-        handlePopState();
-
-        window.addEventListener('popstate', handlePopState);
-        return () => window.removeEventListener('popstate', handlePopState);
+        handleUrlChange();
+        window.addEventListener('popstate', handleUrlChange);
+        return () => window.removeEventListener('popstate', handleUrlChange);
     }, [setActiveView, setSelectedNoteId]);
 
-    // 2. Update URL when state changes
     useEffect(() => {
-        if (isUpdatingFromUrl.current) return;
+        const pending = pendingFromUrl.current;
+        if (pending) {
+            if (pending.view === activeView && pending.id === selectedNoteId) {
+                pendingFromUrl.current = null;
+            }
+            return;
+        }
 
         let hash = `#${activeView}`;
         if (activeView === 'notes' && selectedNoteId) {
             hash += `/${selectedNoteId}`;
         }
 
-        // Only push if changed
         if (window.location.hash !== hash) {
             window.history.pushState(null, '', hash);
         }
     }, [activeView, selectedNoteId]);
-};
+}

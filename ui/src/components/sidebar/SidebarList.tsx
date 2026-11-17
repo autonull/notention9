@@ -3,7 +3,8 @@ import type {Note} from '@notention/core';
 import {VirtualizedList, VirtualizedListRef} from '../ui/VirtualizedList';
 import {NoteListItem} from './NoteListItem';
 import {NoteGridItem} from './NoteGridItem';
-import {EmptyStatePreset, EmptyState, NotesEmptyIllustration} from '../ui/Primitives';
+import {EmptyState, NotesEmptyIllustration, SearchEmptyIllustration, TrashEmptyIllustration} from '../ui/Primitives';
+import {Button} from '../ui/Button';
 import {cn} from '../../utils/ui';
 import {ITEM_HEIGHT} from '../../constants/ui';
 import {useSidebar} from './SidebarContext';
@@ -27,7 +28,6 @@ const SidebarListInner = forwardRef<VirtualizedListRef, SidebarListProps>(({ vir
         renderItem,
         getItemKey,
         renderCollapsedTooltip,
-        loadSampleWorkspace,
         handleCreateNote,
         searchTerm,
         setSearchTerm
@@ -40,19 +40,22 @@ const SidebarListInner = forwardRef<VirtualizedListRef, SidebarListProps>(({ vir
     const EmptyStateFallback = useCallback(() => {
         if (searchTerm) {
             return (
-                <EmptyStatePreset
-                    type="noMatches"
-                    searchTerm={searchTerm}
-                    onClearSearch={() => setSearchTerm('')}
+                <EmptyState
+                    variant="illustrated"
+                    illustration={<SearchEmptyIllustration/>}
+                    title="No matching notes"
+                    description={`No notes match "${searchTerm}".`}
+                    action={<Button variant="secondary" onClick={() => setSearchTerm('')}>Clear search</Button>}
                 />
             );
         }
-        if (sortedNotes.length === 0) {
+        if (isTrashView) {
             return (
-                <EmptyStatePreset
-                    type="firstNote"
-                    onCreateNote={handleCreateNote}
-                    onLoadSample={loadSampleWorkspace}
+                <EmptyState
+                    variant="illustrated"
+                    illustration={<TrashEmptyIllustration/>}
+                    title="Trash is empty"
+                    description="Deleted notes stay here for 30 days."
                 />
             );
         }
@@ -60,14 +63,12 @@ const SidebarListInner = forwardRef<VirtualizedListRef, SidebarListProps>(({ vir
             <EmptyState
                 variant="illustrated"
                 illustration={<NotesEmptyIllustration/>}
-                title="No notes match your filters"
-                description="Try adjusting your filters or sort order."
-                hint="Press ⌘/ to search, or use filters to narrow results"
-                showShortcuts
-                shortcutContext="notes"
+                title="No notes yet"
+                description="Capture in the inbox. Everything stays on this device."
+                action={<Button variant="secondary" onClick={handleCreateNote}>Go to capture</Button>}
             />
         );
-    }, [searchTerm, setSearchTerm, sortedNotes, loadSampleWorkspace, handleCreateNote]);
+    }, [searchTerm, setSearchTerm, isTrashView, handleCreateNote]);
 
     return (
         <div

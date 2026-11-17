@@ -5,6 +5,7 @@ import {useToast} from '../../hooks/useToast';
 import {TagIcon, PencilIcon, TrashIcon, PlusIcon, CheckIcon, XIcon} from '../ui/icons';
 import {Button} from '../ui/Button';
 import {Input} from '../ui/Input';
+import {EmptyState} from '../ui/Primitives';
 
 export function LabelsTab() {
     const {notes, updateNote} = useNotes();
@@ -128,10 +129,12 @@ export function LabelsTab() {
                 </p>
 
                 {sortedTags.length === 0 ? (
-                    <div className="text-center py-8 text-gray-500">
-                        <TagIcon className="w-12 h-12 mx-auto mb-3 opacity-30"/>
-                        <p>No labels yet. Create one above or add tags inline with <code className="text-blue-400">#tag</code> in notes.</p>
-                    </div>
+                    <EmptyState
+                        variant="minimal"
+                        icon={TagIcon}
+                        title="No labels yet"
+                        description={<>Create one above, or add a tag inline with <code className="text-blue-400">#tag</code> in a note.</>}
+                    />
                 ) : (
                     <div className="space-y-2 max-h-96 overflow-y-auto">
                         {sortedTags.map(({tag, count}) => (

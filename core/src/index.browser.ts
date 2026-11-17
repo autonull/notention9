@@ -59,6 +59,14 @@ export {
     generateId,
 } from './utils/common.browser.js';
 
+export {
+    detectPII,
+    redactPII,
+    redactPIIForTransport,
+    hasPII,
+    getPIIStats,
+} from './utils/piiRedaction.js';
+
 // Utils - from utils/string.js
 export {
     levenshteinDistance,
@@ -419,3 +427,19 @@ export {
     isValidEvent,
     verifiedSymbol,
 } from './network/nostr/protocol.js';
+export * from './export/backupEncryption.js';
+
+export {findLocalMatchesEnhanced, rankMatches, deduplicateMatches} from './matching/ranking.js';
+
+
+
+
+
+
+
+
+export {IndeedSkill} from './skills/IndeedSkill.js';
+export {CraigslistSkill} from './skills/CraigslistSkill.js';
+export {GitHubSkill} from './skills/GitHubSkill.js';
+export {ReminderSkill} from './skills/ReminderSkill.js';
+export {SkillExecutor} from './skills/SkillExecutor.js';

@@ -44,8 +44,10 @@ const CORE_BROWSER_TWINS = [
     'telemetry/journal',
     'telemetry/revisionStore',
     'telemetry/ledger',
+    'telemetry/matchDigest',
     'ui/ProfileRegistry',
     'utils/common',
+    'extraction/index',
 ];
 const coreBrowserVariantPlugin = {
     name: 'core-browser-variant',
@@ -192,11 +194,12 @@ export default defineConfig(({mode}) => {
                 { find: '@notention/core/schemas/generated/seam-definitions', replacement: path.resolve(__dirname, isDev ? '../core/src/schemas/generated/seam-definitions.ts' : '../core/dist/browser/schemas/generated/seam-definitions.js') },
                 { find: '@notention/core/constants/seams', replacement: path.resolve(__dirname, isDev ? '../core/src/constants/seams.ts' : '../core/dist/browser/constants/seams.js') },
                 { find: '@notention/core/telemetry/journal', replacement: path.resolve(__dirname, isDev ? '../core/src/telemetry/journal.browser.ts' : '../core/dist/browser/telemetry/journal.js') },
+                { find: '@notention/core/telemetry/matchDigest', replacement: path.resolve(__dirname, isDev ? '../core/src/telemetry/matchDigest.browser.ts' : '../core/dist/browser/telemetry/matchDigest.js') },
                 { find: '@notention/core/telemetry/revisionStore', replacement: path.resolve(__dirname, isDev ? '../core/src/telemetry/revisionStore.browser.ts' : '../core/dist/browser/telemetry/revisionStore.js') },
                 { find: '@notention/core/validation', replacement: path.resolve(__dirname, isDev ? '../core/src/validation/index.ts' : '../core/dist/browser/validation/index.js') },
                 { find: '@notention/core/storage', replacement: path.resolve(__dirname, isDev ? '../core/src/storage/index.ts' : '../core/dist/browser/storage/index.js') },
                 // Additional subpaths for direct imports from @notention/core
-                { find: '@notention/core/extraction', replacement: path.resolve(__dirname, isDev ? '../core/src/extraction/index.ts' : '../core/dist/browser/extraction/index.js') },
+                { find: '@notention/core/extraction', replacement: path.resolve(__dirname, isDev ? '../core/src/extraction/index.browser.ts' : '../core/dist/browser/extraction/index.js') },
                 { find: '@notention/core/notes', replacement: path.resolve(__dirname, isDev ? '../core/src/notes/index.ts' : '../core/dist/browser/notes/index.js') },
                 { find: '@notention/core/ontology', replacement: path.resolve(__dirname, isDev ? '../core/src/ontology/index.ts' : '../core/dist/browser/ontology/index.js') },
                 { find: '@notention/core/matching', replacement: path.resolve(__dirname, isDev ? '../core/src/matching/index.ts' : '../core/dist/browser/matching/index.js') },
