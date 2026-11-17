@@ -259,8 +259,9 @@
 ### W8 — Observability & Measurement Loop
 **Goal**: Every usability/quality claim is backed by a repeatable measurement.
 
-- [ ] **W8.1 Friction digest CLI + dashboard.** `pnpm friction:digest [--days N] [--json]` over the journal using `digestPipeline`; surface top signals in Settings → Metrics.
+- [x] **W8.1 Friction digest CLI + dashboard.** `pnpm friction:digest [--days N] [--json]` over the journal using `digestPipeline`; surface top signals in Settings → Metrics.
   - Acceptance: deterministic digest on fixture events; dashboard reads live journal.
+  - **Status**: CLI implemented in `optimize/src/cli/commands/frictionDigest.ts`. Dashboard added to `MetricsTab` in `ui/src/components/settings/MetricsTab.tsx` showing signals grouped by workflow with evidence class indicators (measured/observed/hypothesized/asserted).
 - [x] **W8.2 Local eval canary.** One command runs golden + quality + match + taxonomy and writes a report; **no CI/provider dependency** (per user preference).
   - Acceptance: `pnpm eval:canary` exits non-zero on regression; artifact written under `data/`.
 - [ ] **W8.3 LLM call telemetry.** Record model, tokens, latency, mode (grammar/unconstrained) per call; aggregate p50/p95.
@@ -462,7 +463,7 @@ user can switch back for one release.
 ### Later (larger/strategic)
 ~~W6.3 Large workspace~~ ✅ · ~~W6.4 Error states & degraded mode~~ ✅ · ~~W6.5 Leak check~~ ✅ ·
 ~~W7.2 Encrypted backup~~ ✅ · ~~W7.3 Schema migration~~ ✅ · W7.4 Privacy redaction ·
-W8.1 Friction digest dashboard · W8.3 LLM call telemetry · W8.4 A/B → decisions ·
+~~W8.1 Friction digest dashboard~~ ✅ · W8.3 LLM call telemetry · W8.4 A/B → decisions ·
 W9.1 Quickstart · W9.2 Model selection guide · W9.3 Decision records · W9.4 Eval how-to ·
 W1.7 LoRA fine-tune (if quality plateaus < 0.80).
 
@@ -966,6 +967,16 @@ pnpm eval:verify-manifest
 - Fixed existing storage tests for v0 schema
 - All UI tests (42 files), core tests (895), optimize tests (127) pass. Build passes.
 - **Note**: DO NOT BUMP VERSION until there are actual users (we have none).
+
+### 2026-11-17 — W8.1 Friction digest dashboard complete
+- CLI already existed in `optimize/src/cli/commands/frictionDigest.ts` (`pnpm friction:digest --days N --json --top N`)
+- Added Friction Digest section to `MetricsTab` in `ui/src/components/settings/MetricsTab.tsx`:
+  - Fetches signals from browser friction journal via `getFrictionSignals()`
+  - Groups signals by workflow (capture, match, elicit, etc.)
+  - Shows evidence class icons: 🔴 Measured (direct user action), 🟡 Observed (indirect), 🟢 Hypothesized (start without completion), ⚪ Asserted
+  - Displays count, age in days, decayed weight, and duration bucket per signal
+  - Limited to top 5 signals per workflow for readability
+- All UI tests (42 files), core tests (895), optimize tests (127) pass. Build passes.
 
 ---
 

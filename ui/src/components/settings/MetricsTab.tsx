@@ -1,17 +1,38 @@
 import React, {useState, useEffect} from 'react';
 import {Button} from '../ui/Button';
 import {useMetrics, Metrics, hasConsent, setConsent} from '../../hooks/useMetrics';
-import {ArrowUpTrayIcon, TrashIcon, ChevronDownIcon, ChevronUpIcon} from '../ui/icons';
+import {ArrowUpTrayIcon, TrashIcon, ChevronDownIcon, ChevronUpIcon, ExclamationTriangleIcon, CheckCircleIcon, ClockIcon, InformationCircleIcon} from '../ui/icons';
+import {getFrictionSignals, type FrictionSignal} from '@notention/core/telemetry/journal';
 
 export function MetricsTab() {
     const {consent, toggleConsent, getQueue, clearQueue} = useMetrics();
     const [queue, setQueue] = useState<ReturnType<typeof getQueue>>([]);
     const [showRaw, setShowRaw] = useState(false);
+    const [frictionSignals, setFrictionSignals] = useState<FrictionSignal[]>([]);
+    const [loadingDigest, setLoadingDigest] = useState(false);
 
     useEffect(() => {
         const loaded = getQueue();
         setQueue(loaded);
     }, [getQueue]);
+
+    useEffect(() => {
+        if (!consent) {
+            setFrictionSignals([]);
+            return;
+        }
+        let mounted = true;
+        setLoadingDigest(true);
+        getFrictionSignals().then(signals => {
+            if (mounted) {
+                setFrictionSignals(signals);
+                setLoadingDigest(false);
+            }
+        }).catch(() => {
+            if (mounted) setLoadingDigest(false);
+        });
+        return () => { mounted = false; };
+    }, [consent]);
 
     const handleConsentChange = (enabled: boolean) => {
         toggleConsent(enabled);
@@ -20,6 +41,7 @@ export function MetricsTab() {
             setQueue(loaded);
         } else {
             setQueue([]);
+            setFrictionSignals([]);
         }
     };
 
@@ -45,6 +67,27 @@ export function MetricsTab() {
     }, {} as Record<string, number>);
 
     const totalEvents = queue.length;
+
+    const getEvidenceIcon = (evidenceClass: FrictionSignal['evidenceClass']) => {
+        switch (evidenceClass) {
+            case 'measured': return <ExclamationTriangleIcon className="w-4 h-4 text-red-400" title="Measured — direct user action, sufficient count" />;
+            case 'observed': return <ClockIcon className="w-4 h-4 text-yellow-400" title="Observed — indirect signal" />;
+            case 'hypothesized': return <InformationCircleIcon className="w-4 h-4 text-green-400" title="Hypothesized — start without completion" />;
+            default: return <CheckCircleIcon className="w-4 h-4 text-gray-400" title="Asserted" />;
+        }
+    };
+
+    const groupByWorkflow = (signals: FrictionSignal[]) => {
+        const map = new Map<string, FrictionSignal[]>();
+        for (const s of signals) {
+            const arr = map.get(s.workflow) ?? [];
+            arr.push(s);
+            map.set(s.workflow, arr);
+        }
+        return map;
+    };
+
+    const workflowGroups = groupByWorkflow(frictionSignals);
 
     return (
         <div className="bg-gray-900/70 p-6 rounded-lg animate-fade-in space-y-8">
@@ -108,6 +151,51 @@ export function MetricsTab() {
                                 </div>
                             ))}
                     </div>
+                </div>
+            )}
+
+            {consent && (
+                <div className="border border-gray-700 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-lg font-medium text-gray-100">Friction Digest</h3>
+                        {loadingDigest && <span className="text-xs text-gray-500 animate-pulse">Loading…</span>}
+                    </div>
+                    {loadingDigest ? (
+                        <p className="text-sm text-gray-400">Analyzing friction journal…</p>
+                    ) : frictionSignals.length === 0 ? (
+                        <p className="text-sm text-gray-400">No friction events recorded yet. Use the app to generate signals.</p>
+                    ) : (
+                        <div className="space-y-4">
+                            {Array.from(workflowGroups.entries()).map(([workflow, signals]) => (
+                                <div key={workflow} className="space-y-2">
+                                    <h4 className="text-sm font-medium text-gray-300 uppercase tracking-wider">{workflow}</h4>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                        {signals.slice(0, 5).map((signal, idx) => (
+                                            <div key={`${signal.workflow}-${signal.seam}-${signal.kind}-${idx}`} className="bg-gray-800/50 rounded-lg p-3 border border-gray-700">
+                                                <div className="flex items-start gap-2">
+                                                    {getEvidenceIcon(signal.evidenceClass)}
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex items-center gap-2 text-sm">
+                                                            <span className="font-mono text-xs text-gray-400 bg-gray-700 px-1.5 py-0.5 rounded">{signal.kind}</span>
+                                                            <span className="text-xs text-gray-500">({signal.seam})</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-3 mt-1 text-xs text-gray-400">
+                                                            <span><strong>{signal.count}×</strong></span>
+                                                            <span>{signal.ageDays}d ago</span>
+                                                            <span>weight: <strong className="text-gray-200">{signal.weight.toFixed(2)}</strong></span>
+                                                            {signal.durationBucket && (
+                                                                <span className="font-mono text-xs bg-gray-700 px-1.5 py-0.5 rounded">{signal.durationBucket}</span>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             )}
 
