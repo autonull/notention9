@@ -660,19 +660,23 @@ For every screenshot, record:
   one-row mobile nav, empty-state cap, Actions list + task detail, Labels two-column, Ontology
   one-primary header with a real attribute list, Timeline event-month anchor + jump strip, network
   skeletons instead of a spinner, no pre-content chrome in an empty inbox. **29/30 gate cases pass**
-  (desktop timeline exempt: month cells are the surface; mobile Settings passes on reveal cost);
-  the desktop timeline is exempt (month cells are the surface). Evidence:
+  (desktop timeline exempt: month cells are the surface; mobile Settings passes on reveal cost).
+  Evidence:
   `doc/evidence/space-utilization.json`, `doc/evidence/space/<viewport>/*.jpg`.
 - [x] **W12.2 Task-first audit.** `ui/test/audit/task-first.spec.ts` scores primary actions,
   tab-stops, duplicate verbs, and first-content distance on the same 30 renders
   (`doc/evidence/task-first.json`). Result: one primary per view, no duplicate screen-level verbs,
-  all primaries visible without scrolling; the two findings (Settings' first control at 1,398px,
-  notes lists reach "Publish" at tab 9) are W12.3 candidates.
-- [ ] **W12.3 Convergence implementation.** One view per round; each round needs a screenshot diff
-  and the gates above. **Round 1 shipped (Settings)**: section rail + panel at `lg`, `Section` select
-  on mobile, `role="tablist"` with arrow keys and roving tabindex; first control 1,398px → 391px
-  desktop / 454px mobile, 3 tab stops; `relay changes persist` journey now passes. Remaining rounds:
-  capture submit affordance, notes-list capture entry, labels mobile rows.
+  all primaries visible without scrolling. Findings: Settings' first control was at 1,398px (fixed in
+  round 1 below); notes lists reach "Publish" at tab 9 (round 2 candidate).
+- [x] **W12.3a Convergence round 1 — Settings.** Section rail (16rem) + panel at `lg`, `Section`
+  select above `lg`, `role="tablist"`/`tab`/`tabpanel` with roving tabindex and arrow/Home/End keys.
+  First control 1,398px → 391px desktop / 454px mobile, 3 tab stops; `relay changes persist`
+  journey now passes. Evidence: `doc/screenshot/settings/networks.png`,
+  `doc/evidence/space/*/settings.jpg`.
+- [ ] **W12.3b Convergence rounds 2–4.** One view per round, each with a before/after screenshot
+  diff: (a) capture submit affordance with text present; (b) one capture entry in the notes-list
+  header (no second "New Note" verb); (c) labels mobile row height. Gates in
+  `doc/UI_CONVERGENCE.md` §Ranked residual work.
 - [ ] **W12.4 Re-audit + human stranger test.** Same artifacts; attach timing and final verdict.
 
 ### Definition of converged (for W12)
