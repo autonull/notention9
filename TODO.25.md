@@ -484,7 +484,7 @@ user can switch back for one release.
 ~~W8.1 Friction digest dashboard~~ ✅ · ~~W8.3 LLM call telemetry~~ ✅ · ~~W8.4 A/B → decisions~~ ✅ ·
 ~~W9.1 Quickstart~~ ✅ · ~~W9.2 Model selection guide~~ ✅ · ~~W9.3 Decision records~~ ✅ · ~~W9.4 Eval how-to~~ ✅ ·
 W1.7 LoRA fine-tune (if quality plateaus < 0.80).
-W11.1 Remove onboarding · W11.2 Consolidate New Note · W11.3 Redundancy audit · W11.4 Stranger test verify
+**W11 UI/UX audit → intuitive elegance** (highest priority; audit first, then W11.0–W11.8)
 
 ### Parked (do not start yet)
 - WebLLM GPU CI (user declined CI; SwiftShader lacks adapters).
@@ -493,23 +493,110 @@ W11.1 Remove onboarding · W11.2 Consolidate New Note · W11.3 Redundancy audit 
 
 ---
 
-## W11 — UI Cleanup & Redundancy Removal (Next Session)
-**Goal**: Eliminate all redundant UI elements; make the system immediately intuitive without onboarding.
+## W11 — UI/UX Audit & Intuitive Elegance (Next Session — Highest Priority)
+**Goal**: A UI that a stranger uses correctly on first sight — no onboarding, no duplicate entry
+points, no visual noise. **Intuitive elegance**: every element earns its place; capability is
+preserved behind progressive disclosure, never carried by clutter.
 
-### Feedback from Screenshot Review (2026-11-17)
+> **User verdict (2026-11-17)**: "Deeply disappointed with the state of the system as visible
+> through the screenshots." The W10 work consolidated structure but did not produce a calm surface.
+> This session is **audit-only**: produce findings and a sequenced plan. **No code changes until the
+> audit is reviewed.**
 
-| # | Issue | Evidence | Fix |
-|---|-------|----------|-----|
-| 1 | **Onboarding checklist** ("Welcome, 3 steps to get started") | `ui/src/components/ui/OnboardingChecklist.tsx` integrated in `InboxView` | **Remove entirely**. If the system isn't immediately intuitive, it's worthless. |
-| 2 | **Multiple "New Note" buttons** (2–3 visible) | Screenshots show: Quick Capture header button, Inbox toolbar button, possibly Notes view button | **Consolidate to one**. Single entry point: Quick Capture at top of Inbox. Remove others. |
-| 3 | **Other widget redundancies** | Dashboard→Inbox merge (W10.2) may have left duplicates; Settings grouping (W10.3) may have overlapping controls | Audit all views for duplicate actions, panels, affordances. Keep one per action. |
+### Principles (non-negotiable)
 
-### Planned Tasks
+1. **If it needs onboarding, it failed.** Delete the checklist. A first-run hint is at most one
+   sentence of inline placeholder text, not a 3-step card.
+2. **One action, one affordance.** Every verb (new note, capture, match, publish) appears exactly
+   once per screen, in a fixed location.
+3. **The screen shows the work, not the chrome.** The note list and the current need are the
+   content; everything else recedes into a menu, a sidebar, or a shortcut.
+4. **Progressive disclosure over removal.** Hide power behind "More"/menus; never delete a capability.
+5. **Consistent vocabulary and iconography.** Same word and icon for the same concept everywhere.
+6. **Evidence-gated.** Each phase attaches a before/after screenshot diff, and axe/journey tests stay green.
 
-- [ ] **W11.1 Remove onboarding checklist.** Delete `OnboardingChecklist.tsx`, remove from `InboxView`, remove onboarding fields from `AppSettings`/`SettingsContext`.
-- [ ] **W11.2 Consolidate "New Note" entry points.** Audit all "New Note" / "Add Note" / "Quick Capture" buttons. Keep only Quick Capture in Inbox header.
-- [ ] **W11.3 Full redundancy audit.** Walk every view (Inbox, Notes, Map, Timeline, Network, Chat, Actions, Responses, Labels, Trash, Settings) and list duplicate widgets/actions. Eliminate.
-- [ ] **W11.4 Verify stranger test still passes.** After removal, run `pnpm stranger-test` — unaided golden path must be < 2 min.
+### Audit method (screenshot-by-screenshot)
+
+Walk the 15 generated screenshots in `doc/screenshot/` and record, per screen:
+
+| Field | Meaning |
+|-------|---------|
+| **Primary action** | The single thing a first-time user should do here. Is it the most prominent element? |
+| **Duplicate actions** | Any verb/button that also exists elsewhere on the same screen. |
+| **Orphan/empty chrome** | Panels with placeholders, headings with no content, unused whitespace. |
+| **Competing emphasis** | More than one visual primary (color, size) on the screen. |
+| **Navigation cost** | How many clicks/keys to reach the primary action from first paint. |
+| **Removal candidate** | What can be deleted outright with no capability loss. |
+| **Disclosure candidate** | What can move behind a menu/shortcut. |
+
+### Known findings from the 2026-11-17 review (seed the audit with these)
+
+| # | Finding | Screenshot evidence | Planned fix |
+|---|---------|---------------------|-------------|
+| 1 | **Onboarding checklist** ("Welcome, 3 steps to get started") | `inbox/empty.png` — `OnboardingChecklist.tsx` in `InboxView` | Delete entirely; replace with a single inline placeholder cue at most |
+| 2 | **2–3 "New Note" buttons** | Quick Capture header button + Inbox toolbar button (+ Notes view) | One entry point: the Quick Capture field at top of Inbox |
+| 3 | **Dashboard remnant copy** | `inbox/populated.png` still shows merged dashboard panels (Welcome header, Feature Highlights, StatsGrid) inside Inbox | Strip to: capture field, match preview, note/activity list |
+| 4 | **Raw HTML in Actions board** (fixed this session) | `actions/board.png` showed `<p>…</p>` | `getTextFromHtml()` in `ActionsView` (done) — audit other views for the same bug |
+| 5 | **Empty-state duplication** | `notes/trash.png`, `timeline/month.png`, etc. may repeat the same empty pattern with different chrome | One shared `EmptyState` component; one action per empty state |
+| 6 | **Network setup friction** | `network/connect-identity.png` prompts identity before the feed shows anything | Show read-only public feed first; identity only when publishing/chatting |
+| 7 | **Settings tab sprawl (re-check)** | `network.scene.ts` "settings networks" test required a `🌐 Networks` tab click — is the grouping discoverable? | Verify 4 sections are visible without hunting; no hidden duplicate tabs |
+
+### Planned phases (each one small, revertible, evidence-gated)
+
+- [ ] **W11.0 The audit itself (this session).** Produce `doc/UI_AUDIT.md`: per-screenshot table
+  (fields above), a ranked list of removals by (capability-loss risk ✕ user confusion saved), and a
+  proposed before/after IA. **No code this session.** Review gate.
+- [ ] **W11.1 Delete onboarding.** Remove `OnboardingChecklist.tsx` and its state
+  (`AppSettings.completed/step/captureCompleted/matchCompleted/actionCompleted/dismissed`,
+  `SettingsContext` defaults). Replace with a one-line inline placeholder in capture
+  (e.g. `What do you need?`). Attach empty-inbox before/after.
+- [ ] **W11.2 Single capture entry point.** Keep Quick Capture in the Inbox header; remove the
+  separate "New Note" toolbar button and any Notes-view "New Note". Keyboard `Cmd+N` focuses the
+  one field. Attach Inbox + Notes before/after.
+- [ ] **W11.3 Overview strip-down.** From the merged Inbox, remove Welcome header, Feature
+  Highlights, StatsGrid, and duplicate Quick Actions; keep capture, local match preview, recent
+  notes/activity. Attach populated-inbox before/after.
+- [ ] **W11.4 Empty-state consolidation.** One `EmptyState` component used by Notes, Trash, Timeline,
+  Actions, Responses, Labels, Chat, Network. Same copy pattern, one action. Attach before/after per view.
+- [ ] **W11.5 Network first-paint.** Read-only public feed renders before identity exists; identity
+  prompt moves to "publish"/"chat" actions. Attach `network/connect-identity` before/after.
+- [ ] **W11.6 Full redundancy sweep.** Re-run the audit table across all 11 views; list any remaining
+  duplicate action/panel; file as follow-up tasks (do not bundle).
+- [ ] **W11.7 Stranger test.** `pnpm stranger-test` on the cleaned build: unaided golden path
+  (install → capture → match → export) must complete in < 2 min. Attach timing artifact.
+- [ ] **W11.8 Visual-consistency pass.** One vocabulary and one icon per concept (e.g. always
+  "Capture", always "Match"); audit button hierarchy so each screen has exactly one primary action.
+
+### Audit artifact template (`doc/UI_AUDIT.md`)
+
+```markdown
+# UI/UX Audit — 2026-11-17
+
+## Verdict
+<one paragraph: what is wrong, what "intuitive elegance" means for this app>
+
+## Per-screenshot findings
+### inbox/empty.png
+- Primary action: <…> — is it the most prominent element? <yes/no>
+- Duplicate actions: <list>
+- Orphan chrome: <list>
+- Competing emphasis: <list>
+- Navigation cost: <clicks/keys to primary action>
+- Removal candidates: <list, with capability preserved how>
+- Disclosure candidates: <list, where it moves>
+
+… (one section per screenshot)
+
+## Ranked removals
+| Rank | Change | Confusion saved | Capability-loss risk | Phase |
+|------|--------|-----------------|----------------------|-------|
+| 1 | Delete onboarding | High | None | W11.1 |
+| 2 | One capture entry | High | None (other buttons hidden behind Cmd+N) | W11.2 |
+| … | | | | |
+
+## Proposed IA (before → after)
+<nav + screen map>
+```
 
 ---
 
@@ -1066,10 +1153,16 @@ pnpm eval:verify-manifest
 - Case format examples for each gate, commands to run, how to add new cases
 - F1/ECE interpretation guide, CI integration snippet, troubleshooting table
 
-### 2026-11-17 — Screenshot review feedback (for W11)
-- **Onboarding checklist** must go — if the system isn't immediately intuitive, it's worthless.
-- **Multiple "New Note" buttons** (2–3 visible in screenshots) → consolidate to one (Quick Capture in Inbox header).
-- **Other widget redundancies** likely remain post-W10; full audit needed.
+### 2026-11-17 — Screenshot review feedback → W11 rewritten as an audit
+- **User verdict**: deeply disappointed with the UI as visible through the screenshots, despite W10 work.
+- **Direction**: audit-only next session — no code changes until the audit is reviewed.
+- **W11 reshaped**: was "cleanup tasks"; now a 6-principle, screenshot-by-screenshot audit
+  that produces `doc/UI_AUDIT.md`, a ranked removals table, and a proposed before/after IA, then phases
+  W11.0 (audit) → W11.1–W11.8 (revertible, evidence-gated).
+- **Known seeds**: onboarding checklist, 2–3 "New Note" buttons, dashboard remnant copy, raw HTML in
+  Actions (fixed), empty-state duplication, network first-paint friction, settings discoverability.
+- **Note**: raw-HTML-in-Actions was fixed this session (`getTextFromHtml` in `ActionsView`); the
+  `actions/board` showcase now passes. The rest of W11 is plan-only.
 
 ---
 
