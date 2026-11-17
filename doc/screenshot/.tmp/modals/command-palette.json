@@ -1,7 +1,0 @@
-{
-  "area": "modals",
-  "state": "command-palette",
-  "file": "modals/command-palette.png",
-  "viewport": "desktop",
-  "description": "Command palette with a query matching notes and commands."
-}

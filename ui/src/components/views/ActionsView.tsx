@@ -3,7 +3,7 @@ import {useNotes} from '../../hooks/useNotes';
 import {useView} from '../../hooks/useViewContext';
 import {Button} from '../ui/Button';
 import {Card} from '../ui/Card';
-import {Note} from '@notention/core';
+import {Note, getTextFromHtml} from '@notention/core';
 import {Skeleton} from '../ui/Skeleton';
 
 export function ActionsView() {
@@ -66,7 +66,7 @@ export function ActionsView() {
     const renderNoteCard = (note: Note) => (
         <Card key={note.id} className="mb-2 p-3 cursor-pointer hover:bg-gray-800 transition-colors" onClick={() => handleNoteClick(note.id)}>
             <div className="font-semibold">{note.title || 'Untitled Note'}</div>
-            <div className="text-sm text-gray-400 mt-1 truncate">{note.content.slice(0, 100)}</div>
+            <div className="text-sm text-gray-400 mt-1 truncate">{getTextFromHtml(note.content).slice(0, 100)}</div>
         </Card>
     );
 

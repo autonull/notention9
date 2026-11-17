@@ -78,6 +78,10 @@ export * from './ui/strategy.js';
 export * from './telemetry/journal.js';
 export * from './telemetry/revisionStore.js';
 export * from './telemetry/ledger.js';
+export * from './telemetry/matchDigest.js';
+export * from './telemetry/digestPipeline.js';
+export * from './telemetry/frictionUtils.js';
+export * from './telemetry/llmTelemetry.js';
 
 // Schemas (generated)
 export * from './schemas/generated/seam-definitions.js';
