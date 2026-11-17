@@ -162,17 +162,8 @@ export function AppShell() {
         isMobileNoteList ? 'hidden' : 'block'
     );
 
-    const paletteItems = useMemo(() => [
-        ...commands.map((cmd) => ({
-            id: `cmd-${cmd.label}`,
-            label: cmd.label,
-            icon: cmd.icon,
-            action: cmd.action,
-            category: 'Navigation',
-            shortcut: cmd.shortcut,
-            keywords: cmd.label.toLowerCase().split(' '),
-        })),
-        ...sortedNotes.map((note) => ({
+    const paletteItems = useMemo(() => {
+        const noteItems = sortedNotes.slice(0, 100).map((note) => ({
             id: note.id,
             label: note.title || 'Untitled',
             description: note.content ? note.content.replace(/<[^>]*>/g, '').slice(0, 60) : '',
@@ -190,8 +181,20 @@ export function AppShell() {
                     ...values.map(value => `${key.toLowerCase()}:${value.toLowerCase()}`),
                 ]),
             ],
-        })),
-    ], [commands, sortedNotes, setActiveView, setSelectedNoteId]);
+        }));
+        return [
+            ...commands.map((cmd) => ({
+                id: `cmd-${cmd.label}`,
+                label: cmd.label,
+                icon: cmd.icon,
+                action: cmd.action,
+                category: 'Navigation',
+                shortcut: cmd.shortcut,
+                keywords: cmd.label.toLowerCase().split(' '),
+            })),
+            ...noteItems,
+        ];
+    }, [commands, sortedNotes, setActiveView, setSelectedNoteId]);
 
     return (
         <PendingConfirmationsProvider>
@@ -239,6 +242,7 @@ export function AppShell() {
                         showShortcuts={true}
                         showRecent={true}
                         fuzzySearch={true}
+                        maxItems={100}
                     />
                     <ContextualHint compact persistent position="bottom-left"/>
                     <HelpDialog

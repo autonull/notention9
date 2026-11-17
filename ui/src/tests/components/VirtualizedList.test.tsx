@@ -66,4 +66,64 @@ describe('VirtualizedList', () => {
 
         expect(screen.getByText('Alpha')).toBeTruthy();
     });
+
+    it('handles 10k items with virtualization (only renders visible items)', () => {
+        const largeItems = Array.from({length: 10000}, (_, i) => ({id: `item-${i}`, label: `Item ${i}`}));
+        const onItemClick = vi.fn();
+        
+        render(
+            <VirtualizedList
+                items={largeItems}
+                itemHeight={40}
+                containerHeight={400}
+                getItemKey={item => item.id}
+                onItemClick={onItemClick}
+                role="listbox"
+                aria-label="Large list"
+            >
+                {item => <div className="note-list-item" data-testid={item.id}>{item.label}</div>}
+            </VirtualizedList>
+        );
+
+        // Should only render visible items (containerHeight / itemHeight + overscan)
+        // 400/40 = 10 visible + ~5 overscan = ~15 items
+        const renderedItems = screen.getAllByTestId((id: string) => id.startsWith('item-'));
+        expect(renderedItems.length).toBeLessThan(30); // Should be ~15-20, not 10000
+        
+        // First visible item should be item-0
+        expect(screen.getByTestId('item-0')).toBeTruthy();
+        
+        // Item at index 100 should NOT be rendered initially
+        expect(screen.queryByTestId('item-100')).toBeFalsy();
+    });
+
+    it('scrolls to index and renders correct items', () => {
+        const largeItems = Array.from({length: 10000}, (_, i) => ({id: `item-${i}`, label: `Item ${i}`}));
+        const onItemClick = vi.fn();
+        const {container} = render(
+            <VirtualizedList
+                items={largeItems}
+                itemHeight={40}
+                containerHeight={400}
+                getItemKey={item => item.id}
+                onItemClick={onItemClick}
+                role="listbox"
+                aria-label="Large list"
+                overscan={5}
+            >
+                {item => <div className="note-list-item" data-testid={item.id}>{item.label}</div>}
+            </VirtualizedList>
+        );
+
+        const list = container.firstChild as HTMLElement;
+        // Scroll to item 500
+        list.scrollTop = 500 * 40;
+        fireEvent.scroll(list);
+
+        // Items around 500 should now be rendered (with overscan=5, renders 489-494)
+        expect(screen.getByTestId('item-490')).toBeTruthy();
+        expect(screen.getByTestId('item-494')).toBeTruthy();
+        // Item 0 should no longer be rendered (scrolled away)
+        expect(screen.queryByTestId('item-0')).toBeFalsy();
+    });
 });

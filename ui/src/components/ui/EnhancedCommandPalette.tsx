@@ -134,6 +134,7 @@ export interface EnhancedCommandPaletteProps {
     showRecent?: boolean;
     recentItems?: CommandPaletteItem[];
     maxRecent?: number;
+    maxItems?: number;
     onRecentChange?: (items: CommandPaletteItem[]) => void;
     fuzzySearch?: boolean;
     persistRecent?: boolean;
@@ -150,6 +151,7 @@ export function EnhancedCommandPalette({
     showRecent = true,
     recentItems: initialRecentItems = [],
     maxRecent = 8,
+    maxItems = 100,
     onRecentChange,
     fuzzySearch = true,
     persistRecent = true,
@@ -207,7 +209,8 @@ export function EnhancedCommandPalette({
                     description: item.description || 'Recently used',
                 })));
             }
-            result.push(...items);
+            // Limit regular items when no query to avoid rendering thousands of DOM nodes
+            result.push(...items.slice(0, maxItems));
             return result;
         }
 
@@ -248,7 +251,7 @@ export function EnhancedCommandPalette({
         });
 
         return scoredWithMatches;
-    }, [items, query, fuzzySearch, showRecent, recentItems, maxRecent]);
+    }, [items, query, fuzzySearch, showRecent, recentItems, maxRecent, maxItems]);
 
     useEffect(() => {
         if (isOpen) {
