@@ -13,9 +13,9 @@ const mobileRoutes: Array<[string, string]> = [
     ['#actions', 'Actions'],
     ['#map', 'OpenStreetMap'],
     ['#timeline', 'Spacetime Filter'],
-    ['#network', 'Network'],
-    ['#chat', 'Chat Requires Nostr Account'],
-    ['#responses', 'My Responses'],
+    ['#network', 'Public Feed'],
+    ['#chat', 'Chat needs an identity'],
+    ['#responses', 'No responses yet'],
     ['#labels', 'Labels'],
     ['#trash', 'Recently deleted'],
     ['#settings', 'Settings'],
@@ -80,13 +80,13 @@ test('mobile: touch targets meet 44px minimum', async ({page}) => {
         }
     }
 
-    // Check capture button (in bottom bar, not header)
+    // One capture entry: the inbox field, not a duplicate bottom-bar button
     const bottomBar = page.locator('.fixed.bottom-0').first();
-    const captureBtn = bottomBar.getByRole('button', {name: 'Capture'});
-    await expect(captureBtn).toBeVisible();
-    const captureBox = await captureBtn.boundingBox();
+    await expect(bottomBar.getByRole('button', {name: 'Capture'})).toHaveCount(0);
+    const capture = page.getByTestId('quick-capture-input');
+    await expect(capture).toBeVisible();
+    const captureBox = await capture.boundingBox();
     if (captureBox) {
-        expect(captureBox.width).toBeGreaterThanOrEqual(44);
         expect(captureBox.height).toBeGreaterThanOrEqual(44);
     }
 

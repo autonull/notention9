@@ -3,7 +3,6 @@ export * from './Navigation';
 export * from './Overlay';
 export * from './VirtualizedList';
 export * from './EnhancedCommandPalette';
-export * from './ContextualHint';
 export * from './Skeleton';
 export * from './CollapsibleSection';
 

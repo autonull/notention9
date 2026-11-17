@@ -2,7 +2,6 @@ import React from 'react';
 import {useNotes} from '../../hooks/useNotes';
 import {useView} from '../../hooks/useViewContext';
 import {Button} from '../ui/Button';
-import {Card} from '../ui/Card';
 import {Note, getTextFromHtml} from '@notention/core';
 import {Skeleton} from '../ui/Skeleton';
 import {LightBulbIcon} from '../ui/icons';
@@ -65,12 +64,40 @@ export function ActionsView() {
         setActiveView('notes');
     };
 
-    const renderNoteCard = (note: Note) => (
-        <Card key={note.id} className="mb-2 p-3 cursor-pointer hover:bg-gray-800 transition-colors" onClick={() => handleNoteClick(note.id)}>
-            <div className="font-semibold">{note.title || 'Untitled Note'}</div>
-            <div className="text-sm text-gray-400 mt-1 truncate">{getTextFromHtml(note.content).slice(0, 100)}</div>
-        </Card>
-    );
+    const renderNoteCard = (note: Note) => {
+        const title = note.title || 'Untitled Note';
+        const preview = getTextFromHtml(note.content).trim().slice(0, 100);
+        const details = note.properties.filter(property => property.key !== 'status');
+        return (
+            <button
+                key={note.id}
+                onClick={() => handleNoteClick(note.id)}
+                className="w-full px-3 py-2.5 text-left hover:bg-gray-800/60 transition-colors"
+            >
+                <div className="font-semibold truncate">{title}</div>
+                {preview && preview !== title && (
+                    <div className="text-sm text-gray-400 mt-0.5 line-clamp-1">{preview}</div>
+                )}
+                {(details.length > 0 || note.tags.length > 0) && (
+                    <div className="mt-1.5 flex flex-wrap gap-1.5">
+                        {details.slice(0, 3).map(property => (
+                            <span
+                                key={property.key}
+                                className="rounded bg-gray-700/40 px-1.5 py-0.5 text-[11px] text-gray-300"
+                            >
+                                {property.key}: {property.values.join(', ')}
+                            </span>
+                        ))}
+                        {note.tags.slice(0, 3).map(tag => (
+                            <span key={tag} className="rounded bg-blue-500/10 px-1.5 py-0.5 text-[11px] text-blue-300">
+                                #{tag}
+                            </span>
+                        ))}
+                    </div>
+                )}
+            </button>
+        );
+    };
 
     const sections = [
         {title: 'Running', notes: runningNotes},
@@ -97,12 +124,16 @@ export function ActionsView() {
                     action={<Button variant="primary" onClick={handleNewTask}>Create a task</Button>}
                 />
             ) : (
-                sections.filter(section => section.notes.length > 0).map(section => (
-                    <div key={section.title} className="mb-6">
-                        <h2 className="text-lg font-bold mb-3 text-gray-300">{section.title.toUpperCase()} ({section.notes.length})</h2>
-                        {section.notes.map(renderNoteCard)}
-                    </div>
-                ))
+                <div className="space-y-6">
+                    {sections.filter(section => section.notes.length > 0).map(section => (
+                        <section key={section.title} aria-label={section.title}>
+                            <h2 className="text-lg font-bold mb-2 text-gray-300">{section.title.toUpperCase()} ({section.notes.length})</h2>
+                            <div className="divide-y divide-gray-700/40 rounded-lg border border-gray-700/50 bg-gray-800/20 overflow-hidden">
+                                {section.notes.map(renderNoteCard)}
+                            </div>
+                        </section>
+                    ))}
+                </div>
             )}
         </div>
     );

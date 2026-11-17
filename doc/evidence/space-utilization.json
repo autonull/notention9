@@ -1,0 +1,1305 @@
+{
+  "generatedAt": "2026-11-17T21:16:38.480Z",
+  "cases": [
+    {
+      "id": "inbox-empty",
+      "view": "inbox",
+      "state": "empty",
+      "viewport": "desktop",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "scrollHeight": 900,
+        "contentRatio": 0.644,
+        "wastedSpace": 34,
+        "wastedRatio": 0.038,
+        "trailingSpace": 122,
+        "contentHeight": 665,
+        "root": "main",
+        "overflowX": 0,
+        "stretchDefects": [],
+        "emptyState": {
+          "element": "flex flex-col items-center justify-center py-4 px-6 text-cen",
+          "height": 342,
+          "footprint": 0.38
+        },
+        "density": 7.5,
+        "actions": [
+          {
+            "label": "Create note",
+            "top": 120
+          },
+          {
+            "label": "New Task",
+            "top": 211
+          },
+          {
+            "label": "Journal",
+            "top": 211
+          },
+          {
+            "label": "Idea",
+            "top": 211
+          },
+          {
+            "label": "Or load a sample workspace",
+            "top": 677
+          }
+        ],
+        "facts": 0
+      }
+    },
+    {
+      "id": "inbox-populated",
+      "view": "inbox",
+      "state": "populated",
+      "viewport": "desktop",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "scrollHeight": 900,
+        "contentRatio": 0.844,
+        "wastedSpace": 0,
+        "wastedRatio": 0,
+        "trailingSpace": 0,
+        "contentHeight": 787,
+        "root": "main",
+        "overflowX": 0,
+        "stretchDefects": [],
+        "emptyState": null,
+        "density": 14,
+        "actions": [
+          {
+            "label": "Create note",
+            "top": 120
+          },
+          {
+            "label": "New Task",
+            "top": 211
+          },
+          {
+            "label": "Journal",
+            "top": 211
+          },
+          {
+            "label": "Idea",
+            "top": 211
+          },
+          {
+            "label": "RequestLooking for a React developerWe a",
+            "top": 353
+          }
+        ],
+        "facts": 0
+      }
+    },
+    {
+      "id": "notes-list",
+      "view": "notes",
+      "state": "populated",
+      "viewport": "desktop",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "scrollHeight": 900,
+        "contentRatio": 0.857,
+        "wastedSpace": 2,
+        "wastedRatio": 0.002,
+        "trailingSpace": 0,
+        "contentHeight": 821,
+        "root": "main",
+        "overflowX": 0,
+        "stretchDefects": [],
+        "emptyState": null,
+        "density": 43.8,
+        "actions": [
+          {
+            "label": "Private",
+            "top": 92
+          },
+          {
+            "label": "Semi",
+            "top": 92
+          },
+          {
+            "label": "Public",
+            "top": 92
+          },
+          {
+            "label": "Undo (Ctrl+Z)",
+            "top": 81
+          },
+          {
+            "label": "Redo (Ctrl+Shift+Z)",
+            "top": 81
+          }
+        ],
+        "facts": 5
+      }
+    },
+    {
+      "id": "notes-grid",
+      "view": "notes",
+      "state": "populated",
+      "viewport": "desktop",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "scrollHeight": 900,
+        "contentRatio": 0.83,
+        "wastedSpace": 0,
+        "wastedRatio": 0,
+        "trailingSpace": 0,
+        "contentHeight": 804,
+        "root": "main",
+        "overflowX": 0,
+        "stretchDefects": [],
+        "emptyState": null,
+        "density": 7.5,
+        "actions": [
+          {
+            "label": "Move to trash",
+            "top": 201
+          },
+          {
+            "label": "Move to trash",
+            "top": 330
+          },
+          {
+            "label": "Move to trash",
+            "top": 458
+          },
+          {
+            "label": "Move to trash",
+            "top": 587
+          },
+          {
+            "label": "Move to trash",
+            "top": 716
+          }
+        ],
+        "facts": 0
+      }
+    },
+    {
+      "id": "trash",
+      "view": "trash",
+      "state": "populated",
+      "viewport": "desktop",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "scrollHeight": 900,
+        "contentRatio": 0.929,
+        "wastedSpace": 0,
+        "wastedRatio": 0,
+        "trailingSpace": 0,
+        "contentHeight": 836,
+        "root": "main",
+        "overflowX": 0,
+        "stretchDefects": [],
+        "emptyState": null,
+        "density": 2.4,
+        "actions": [
+          {
+            "label": "Restore",
+            "top": 199
+          },
+          {
+            "label": "Delete forever",
+            "top": 199
+          }
+        ],
+        "facts": 0
+      }
+    },
+    {
+      "id": "timeline",
+      "view": "timeline",
+      "state": "populated",
+      "viewport": "desktop",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "scrollHeight": 900,
+        "contentRatio": 0.229,
+        "wastedSpace": 345,
+        "wastedRatio": 0.383,
+        "trailingSpace": 126,
+        "contentHeight": 685,
+        "root": "main",
+        "overflowX": 0,
+        "stretchDefects": [],
+        "emptyState": null,
+        "density": 61.3,
+        "actions": [
+          {
+            "label": "Today",
+            "top": 145
+          },
+          {
+            "label": "Back",
+            "top": 145
+          },
+          {
+            "label": "Next",
+            "top": 145
+          },
+          {
+            "label": "Month",
+            "top": 145
+          },
+          {
+            "label": "Week",
+            "top": 145
+          }
+        ],
+        "facts": 0
+      }
+    },
+    {
+      "id": "actions",
+      "view": "actions",
+      "state": "populated",
+      "viewport": "desktop",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "scrollHeight": 900,
+        "contentRatio": 0.393,
+        "wastedSpace": 8,
+        "wastedRatio": 0.009,
+        "trailingSpace": 354,
+        "contentHeight": 467,
+        "root": "main",
+        "overflowX": 0,
+        "stretchDefects": [],
+        "emptyState": null,
+        "density": 8.6,
+        "actions": [
+          {
+            "label": "+ New Task",
+            "top": 80
+          },
+          {
+            "label": "Print flyers for the meetuptype: task#ta",
+            "top": 189
+          },
+          {
+            "label": "Print flyers for the meetupDesign is rea",
+            "top": 322
+          },
+          {
+            "label": "Book the community halltype: task#task",
+            "top": 476
+          }
+        ],
+        "facts": 0
+      }
+    },
+    {
+      "id": "responses",
+      "view": "responses",
+      "state": "populated",
+      "viewport": "desktop",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "scrollHeight": 900,
+        "contentRatio": 0.16,
+        "wastedSpace": 34,
+        "wastedRatio": 0.038,
+        "trailingSpace": 592,
+        "contentHeight": 229,
+        "root": "main",
+        "overflowX": 0,
+        "stretchDefects": [],
+        "emptyState": {
+          "element": "flex flex-col items-center justify-center py-8 px-4 text-cen",
+          "height": 204,
+          "footprint": 0.227
+        },
+        "density": 4.4,
+        "actions": [
+          {
+            "label": "Find a match",
+            "top": 260
+          }
+        ],
+        "facts": 0
+      }
+    },
+    {
+      "id": "labels",
+      "view": "labels",
+      "state": "populated",
+      "viewport": "desktop",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "scrollHeight": 900,
+        "contentRatio": 0.544,
+        "wastedSpace": 72,
+        "wastedRatio": 0.08,
+        "trailingSpace": 12,
+        "contentHeight": 768,
+        "root": "main",
+        "overflowX": 0,
+        "stretchDefects": [],
+        "emptyState": null,
+        "density": 20.8,
+        "actions": [
+          {
+            "label": "Add",
+            "top": 228
+          },
+          {
+            "label": "Rename community",
+            "top": 348
+          },
+          {
+            "label": "Delete community",
+            "top": 348
+          },
+          {
+            "label": "Rename request",
+            "top": 430
+          },
+          {
+            "label": "Delete request",
+            "top": 430
+          }
+        ],
+        "facts": 0
+      }
+    },
+    {
+      "id": "ontology",
+      "view": "ontology",
+      "state": "populated",
+      "viewport": "desktop",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "scrollHeight": 900,
+        "contentRatio": 0.538,
+        "wastedSpace": 87,
+        "wastedRatio": 0.097,
+        "trailingSpace": 3,
+        "contentHeight": 804,
+        "root": "main",
+        "overflowX": 0,
+        "stretchDefects": [],
+        "emptyState": null,
+        "density": 6.2,
+        "actions": [
+          {
+            "label": "Graph",
+            "top": 93
+          },
+          {
+            "label": "Learning1",
+            "top": 93
+          },
+          {
+            "label": "Conflicts0",
+            "top": 93
+          },
+          {
+            "label": "Optimize",
+            "top": 150
+          },
+          {
+            "label": "Update Ontology",
+            "top": 150
+          }
+        ],
+        "facts": 0
+      }
+    },
+    {
+      "id": "map",
+      "view": "map",
+      "state": "populated",
+      "viewport": "desktop",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "scrollHeight": 900,
+        "contentRatio": 0.959,
+        "wastedSpace": 0,
+        "wastedRatio": 0,
+        "trailingSpace": 0,
+        "contentHeight": 863,
+        "root": "main",
+        "overflowX": 0,
+        "stretchDefects": [],
+        "emptyState": null,
+        "density": 4.6,
+        "actions": [
+          {
+            "label": "Zoom in",
+            "top": 92
+          },
+          {
+            "label": "Zoom out",
+            "top": 122
+          },
+          {
+            "label": "Leaflet",
+            "top": 868
+          },
+          {
+            "label": "OpenStreetMap",
+            "top": 868
+          }
+        ],
+        "facts": 0
+      }
+    },
+    {
+      "id": "settings",
+      "view": "settings",
+      "state": "populated",
+      "viewport": "desktop",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "scrollHeight": 900,
+        "contentRatio": 0.68,
+        "wastedSpace": 10,
+        "wastedRatio": 0.011,
+        "trailingSpace": 1,
+        "contentHeight": 806,
+        "root": "main",
+        "overflowX": 0,
+        "stretchDefects": [],
+        "emptyState": null,
+        "density": 16.1,
+        "actions": [
+          {
+            "label": "General",
+            "top": 189
+          },
+          {
+            "label": "Profile & Strategies",
+            "top": 253
+          },
+          {
+            "label": "Labels",
+            "top": 301
+          },
+          {
+            "label": "Language & Region",
+            "top": 349
+          },
+          {
+            "label": "AI & Automation",
+            "top": 407
+          }
+        ],
+        "facts": 0
+      }
+    },
+    {
+      "id": "chat",
+      "view": "chat",
+      "state": "empty",
+      "viewport": "desktop",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "scrollHeight": 900,
+        "contentRatio": 0.146,
+        "wastedSpace": 0,
+        "wastedRatio": 0,
+        "trailingSpace": 560,
+        "contentHeight": 158,
+        "root": "main",
+        "overflowX": 0,
+        "stretchDefects": [],
+        "emptyState": {
+          "element": "flex flex-col items-center justify-center py-8 px-4 text-cen",
+          "height": 308,
+          "footprint": 0.342
+        },
+        "density": 6.3,
+        "actions": [
+          {
+            "label": "Set up identity",
+            "top": 292
+          }
+        ],
+        "facts": 0
+      }
+    },
+    {
+      "id": "editor",
+      "view": "editor",
+      "state": "populated",
+      "viewport": "desktop",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "scrollHeight": 900,
+        "contentRatio": 0.857,
+        "wastedSpace": 2,
+        "wastedRatio": 0.002,
+        "trailingSpace": 0,
+        "contentHeight": 821,
+        "root": "main",
+        "overflowX": 0,
+        "stretchDefects": [],
+        "emptyState": null,
+        "density": 39,
+        "actions": [
+          {
+            "label": "Private",
+            "top": 92
+          },
+          {
+            "label": "Semi",
+            "top": 92
+          },
+          {
+            "label": "Public",
+            "top": 92
+          },
+          {
+            "label": "Undo (Ctrl+Z)",
+            "top": 81
+          },
+          {
+            "label": "Redo (Ctrl+Shift+Z)",
+            "top": 81
+          }
+        ],
+        "facts": 2
+      }
+    },
+    {
+      "id": "network",
+      "view": "network",
+      "state": "empty",
+      "viewport": "desktop",
+      "metrics": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "scrollHeight": 900,
+        "contentRatio": 0.273,
+        "wastedSpace": 33,
+        "wastedRatio": 0.037,
+        "trailingSpace": 468,
+        "contentHeight": 327,
+        "root": "main",
+        "overflowX": 0,
+        "stretchDefects": [],
+        "emptyState": null,
+        "density": 61.2,
+        "actions": [
+          {
+            "label": "Add identity",
+            "top": 105
+          },
+          {
+            "label": "Retry All",
+            "top": 227
+          },
+          {
+            "label": "All",
+            "top": 397
+          },
+          {
+            "label": "Entity",
+            "top": 397
+          },
+          {
+            "label": "Communication",
+            "top": 397
+          }
+        ],
+        "facts": 0
+      }
+    },
+    {
+      "id": "inbox-empty",
+      "view": "inbox",
+      "state": "empty",
+      "viewport": "mobile",
+      "metrics": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "scrollHeight": 844,
+        "contentRatio": 0.594,
+        "wastedSpace": 165,
+        "wastedRatio": 0.195,
+        "trailingSpace": 0,
+        "contentHeight": 747,
+        "root": "main",
+        "overflowX": 0,
+        "stretchDefects": [],
+        "emptyState": {
+          "element": "flex flex-col items-center justify-center py-4 px-6 text-cen",
+          "height": 172,
+          "footprint": 0.204
+        },
+        "density": 6.7,
+        "actions": [
+          {
+            "label": "Create note",
+            "top": 104
+          },
+          {
+            "label": "New Task",
+            "top": 195
+          },
+          {
+            "label": "Journal",
+            "top": 195
+          },
+          {
+            "label": "Idea",
+            "top": 251
+          },
+          {
+            "label": "Or load a sample workspace",
+            "top": 491
+          }
+        ],
+        "facts": 0
+      }
+    },
+    {
+      "id": "inbox-populated",
+      "view": "inbox",
+      "state": "populated",
+      "viewport": "mobile",
+      "metrics": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "scrollHeight": 844,
+        "contentRatio": 0.864,
+        "wastedSpace": 0,
+        "wastedRatio": 0,
+        "trailingSpace": 0,
+        "contentHeight": 747,
+        "root": "main",
+        "overflowX": 0,
+        "stretchDefects": [],
+        "emptyState": null,
+        "density": 12,
+        "actions": [
+          {
+            "label": "Create note",
+            "top": 104
+          },
+          {
+            "label": "New Task",
+            "top": 195
+          },
+          {
+            "label": "Journal",
+            "top": 195
+          },
+          {
+            "label": "Idea",
+            "top": 251
+          },
+          {
+            "label": "RequestLooking for a React developerWe a",
+            "top": 337
+          }
+        ],
+        "facts": 0
+      }
+    },
+    {
+      "id": "notes-list",
+      "view": "notes",
+      "state": "populated",
+      "viewport": "mobile",
+      "metrics": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "scrollHeight": 844,
+        "contentRatio": 0.81,
+        "wastedSpace": 5,
+        "wastedRatio": 0.006,
+        "trailingSpace": 80,
+        "contentHeight": 745,
+        "root": "main",
+        "overflowX": 0,
+        "stretchDefects": [],
+        "emptyState": null,
+        "density": 49.7,
+        "actions": [
+          {
+            "label": "Back to List",
+            "top": 76
+          },
+          {
+            "label": "Private",
+            "top": 90
+          },
+          {
+            "label": "Semi",
+            "top": 90
+          },
+          {
+            "label": "Public",
+            "top": 90
+          },
+          {
+            "label": "Undo (Ctrl+Z)",
+            "top": 78
+          }
+        ],
+        "facts": 5
+      }
+    },
+    {
+      "id": "notes-grid",
+      "view": "notes",
+      "state": "populated",
+      "viewport": "mobile",
+      "metrics": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "scrollHeight": 844,
+        "contentRatio": 0.823,
+        "wastedSpace": 1,
+        "wastedRatio": 0.001,
+        "trailingSpace": 0,
+        "contentHeight": 768,
+        "root": "sidebar",
+        "overflowX": 0,
+        "stretchDefects": [],
+        "emptyState": null,
+        "density": 20.8,
+        "actions": [
+          {
+            "label": "All",
+            "top": 145
+          },
+          {
+            "label": "Tasks",
+            "top": 145
+          },
+          {
+            "label": "Journal",
+            "top": 145
+          },
+          {
+            "label": "Ideas",
+            "top": 145
+          },
+          {
+            "label": "People",
+            "top": 145
+          }
+        ],
+        "facts": 0
+      }
+    },
+    {
+      "id": "trash",
+      "view": "trash",
+      "state": "populated",
+      "viewport": "mobile",
+      "metrics": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "scrollHeight": 844,
+        "contentRatio": 0.829,
+        "wastedSpace": 0,
+        "wastedRatio": 0,
+        "trailingSpace": 80,
+        "contentHeight": 700,
+        "root": "main",
+        "overflowX": 0,
+        "stretchDefects": [],
+        "emptyState": null,
+        "density": 2.9,
+        "actions": [
+          {
+            "label": "Restore",
+            "top": 239
+          },
+          {
+            "label": "Delete forever",
+            "top": 239
+          }
+        ],
+        "facts": 0
+      }
+    },
+    {
+      "id": "timeline",
+      "view": "timeline",
+      "state": "populated",
+      "viewport": "mobile",
+      "metrics": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "scrollHeight": 844,
+        "contentRatio": 0.315,
+        "wastedSpace": 188,
+        "wastedRatio": 0.222,
+        "trailingSpace": 167,
+        "contentHeight": 588,
+        "root": "main",
+        "overflowX": 0,
+        "stretchDefects": [],
+        "emptyState": null,
+        "density": 71.4,
+        "actions": [
+          {
+            "label": "Today",
+            "top": 145
+          },
+          {
+            "label": "Back",
+            "top": 145
+          },
+          {
+            "label": "Next",
+            "top": 145
+          },
+          {
+            "label": "Month",
+            "top": 205
+          },
+          {
+            "label": "Week",
+            "top": 205
+          }
+        ],
+        "facts": 0
+      }
+    },
+    {
+      "id": "actions",
+      "view": "actions",
+      "state": "populated",
+      "viewport": "mobile",
+      "metrics": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "scrollHeight": 844,
+        "contentRatio": 0.419,
+        "wastedSpace": 8,
+        "wastedRatio": 0.009,
+        "trailingSpace": 298,
+        "contentHeight": 467,
+        "root": "main",
+        "overflowX": 0,
+        "stretchDefects": [],
+        "emptyState": null,
+        "density": 8.6,
+        "actions": [
+          {
+            "label": "+ New Task",
+            "top": 80
+          },
+          {
+            "label": "Print flyers for the meetuptype: task#ta",
+            "top": 189
+          },
+          {
+            "label": "Print flyers for the meetupDesign is rea",
+            "top": 322
+          },
+          {
+            "label": "Book the community halltype: task#task",
+            "top": 476
+          }
+        ],
+        "facts": 0
+      }
+    },
+    {
+      "id": "responses",
+      "view": "responses",
+      "state": "populated",
+      "viewport": "mobile",
+      "metrics": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "scrollHeight": 844,
+        "contentRatio": 0.171,
+        "wastedSpace": 34,
+        "wastedRatio": 0.04,
+        "trailingSpace": 536,
+        "contentHeight": 229,
+        "root": "main",
+        "overflowX": 0,
+        "stretchDefects": [],
+        "emptyState": {
+          "element": "flex flex-col items-center justify-center py-8 px-4 text-cen",
+          "height": 204,
+          "footprint": 0.242
+        },
+        "density": 4.4,
+        "actions": [
+          {
+            "label": "Find a match",
+            "top": 260
+          }
+        ],
+        "facts": 0
+      }
+    },
+    {
+      "id": "labels",
+      "view": "labels",
+      "state": "populated",
+      "viewport": "mobile",
+      "metrics": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "scrollHeight": 844,
+        "contentRatio": 0.562,
+        "wastedSpace": 72,
+        "wastedRatio": 0.085,
+        "trailingSpace": 0,
+        "contentHeight": 740,
+        "root": "main",
+        "overflowX": 0,
+        "stretchDefects": [],
+        "emptyState": null,
+        "density": 18.9,
+        "actions": [
+          {
+            "label": "Add",
+            "top": 232
+          },
+          {
+            "label": "Rename community",
+            "top": 352
+          },
+          {
+            "label": "Delete community",
+            "top": 352
+          },
+          {
+            "label": "Rename request",
+            "top": 434
+          },
+          {
+            "label": "Delete request",
+            "top": 434
+          }
+        ],
+        "facts": 0
+      }
+    },
+    {
+      "id": "ontology",
+      "view": "ontology",
+      "state": "populated",
+      "viewport": "mobile",
+      "metrics": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "scrollHeight": 844,
+        "contentRatio": 0.555,
+        "wastedSpace": 87,
+        "wastedRatio": 0.103,
+        "trailingSpace": 7,
+        "contentHeight": 752,
+        "root": "main",
+        "overflowX": 0,
+        "stretchDefects": [],
+        "emptyState": null,
+        "density": 6.6,
+        "actions": [
+          {
+            "label": "Graph",
+            "top": 85
+          },
+          {
+            "label": "Learning1",
+            "top": 85
+          },
+          {
+            "label": "Conflicts0",
+            "top": 85
+          },
+          {
+            "label": "Optimize",
+            "top": 142
+          },
+          {
+            "label": "Update Ontology",
+            "top": 142
+          }
+        ],
+        "facts": 0
+      }
+    },
+    {
+      "id": "map",
+      "view": "map",
+      "state": "populated",
+      "viewport": "mobile",
+      "metrics": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "scrollHeight": 844,
+        "contentRatio": 1,
+        "wastedSpace": 0,
+        "wastedRatio": 0,
+        "trailingSpace": 0,
+        "contentHeight": 844,
+        "root": "main",
+        "overflowX": 0,
+        "stretchDefects": [],
+        "emptyState": null,
+        "density": 4.7,
+        "actions": [
+          {
+            "label": "Zoom in",
+            "top": 92
+          },
+          {
+            "label": "Zoom out",
+            "top": 122
+          },
+          {
+            "label": "Leaflet",
+            "top": 732
+          },
+          {
+            "label": "OpenStreetMap",
+            "top": 732
+          }
+        ],
+        "facts": 0
+      }
+    },
+    {
+      "id": "settings",
+      "view": "settings",
+      "state": "populated",
+      "viewport": "mobile",
+      "metrics": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "scrollHeight": 844,
+        "contentRatio": 0.678,
+        "wastedSpace": 10,
+        "wastedRatio": 0.012,
+        "trailingSpace": 17,
+        "contentHeight": 750,
+        "root": "main",
+        "overflowX": 0,
+        "stretchDefects": [],
+        "emptyState": null,
+        "density": 17.3,
+        "actions": [
+          {
+            "label": "General",
+            "top": 173
+          },
+          {
+            "label": "Profile & Strategies",
+            "top": 237
+          },
+          {
+            "label": "Labels",
+            "top": 285
+          },
+          {
+            "label": "Language & Region",
+            "top": 333
+          },
+          {
+            "label": "AI & Automation",
+            "top": 391
+          }
+        ],
+        "facts": 0
+      }
+    },
+    {
+      "id": "chat",
+      "view": "chat",
+      "state": "empty",
+      "viewport": "mobile",
+      "metrics": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "scrollHeight": 844,
+        "contentRatio": 0.155,
+        "wastedSpace": 0,
+        "wastedRatio": 0,
+        "trailingSpace": 504,
+        "contentHeight": 158,
+        "root": "main",
+        "overflowX": 0,
+        "stretchDefects": [],
+        "emptyState": {
+          "element": "flex flex-col items-center justify-center py-8 px-4 text-cen",
+          "height": 308,
+          "footprint": 0.365
+        },
+        "density": 6.3,
+        "actions": [
+          {
+            "label": "Set up identity",
+            "top": 292
+          }
+        ],
+        "facts": 0
+      }
+    },
+    {
+      "id": "editor",
+      "view": "editor",
+      "state": "populated",
+      "viewport": "mobile",
+      "metrics": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "scrollHeight": 844,
+        "contentRatio": 0.817,
+        "wastedSpace": 6,
+        "wastedRatio": 0.007,
+        "trailingSpace": 80,
+        "contentHeight": 745,
+        "root": "main",
+        "overflowX": 0,
+        "stretchDefects": [],
+        "emptyState": null,
+        "density": 44.3,
+        "actions": [
+          {
+            "label": "Back to List",
+            "top": 76
+          },
+          {
+            "label": "Private",
+            "top": 90
+          },
+          {
+            "label": "Semi",
+            "top": 90
+          },
+          {
+            "label": "Public",
+            "top": 90
+          },
+          {
+            "label": "Undo (Ctrl+Z)",
+            "top": 78
+          }
+        ],
+        "facts": 2
+      }
+    },
+    {
+      "id": "network",
+      "view": "network",
+      "state": "empty",
+      "viewport": "mobile",
+      "metrics": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "scrollHeight": 844,
+        "contentRatio": 0.419,
+        "wastedSpace": 9,
+        "wastedRatio": 0.011,
+        "trailingSpace": 245,
+        "contentHeight": 466,
+        "root": "main",
+        "overflowX": 0,
+        "stretchDefects": [],
+        "emptyState": null,
+        "density": 42.9,
+        "actions": [
+          {
+            "label": "Add identity",
+            "top": 181
+          },
+          {
+            "label": "Retry All",
+            "top": 279
+          },
+          {
+            "label": "All",
+            "top": 479
+          },
+          {
+            "label": "Entity",
+            "top": 479
+          },
+          {
+            "label": "Communication",
+            "top": 479
+          }
+        ],
+        "facts": 0
+      }
+    }
+  ]
+}

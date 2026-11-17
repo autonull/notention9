@@ -6,7 +6,6 @@ import {Sidebar} from './sidebar';
 import {MainView} from './MainView';
 import {SelectorRegistryProvider} from './properties/SelectorRegistry';
 import {KeyboardShortcutsHelp} from './ui/Primitives';
-import {ContextualHint} from './ui/ContextualHint';
 import {NoteIcon} from './ui/icons';
 import {getTextFromHtml} from '@notention/core';
 
@@ -161,6 +160,8 @@ export function AppShell() {
 
     const isMobileNoteList = isMobile && activeView === 'notes' && !selectedNoteId;
     const effectiveSidebarOpen = isMobile ? isMobileNoteList : isSidebarOpen;
+    // On mobile the sidebar is the notes list, not permanent chrome; every other view paints first.
+    const hideSidebar = isMobile && !effectiveSidebarOpen;
 
     const mainClasses = cn(
         'flex-1 overflow-hidden pb-20 md:pb-0',
@@ -208,7 +209,7 @@ export function AppShell() {
                     <Header onToggleSidebar={toggleSidebar}/>
                     <ConnectivityBanner/>
                     <div className="flex flex-1 overflow-hidden relative">
-                        <div className={sidebarClasses} style={style}>
+                        <div className={hideSidebar ? 'hidden' : cn(sidebarClasses, isMobile && 'pb-20')} style={style}>
                             <Sidebar
                                 sortedNotes={sortedNotes}
                                 onToggleSidebar={toggleSidebar}
@@ -249,7 +250,6 @@ export function AppShell() {
                         fuzzySearch={true}
                         maxItems={100}
                     />
-                    <ContextualHint compact persistent position="bottom-left"/>
                     <HelpDialog
                         isOpen={isHelpOpen}
                         onClose={() => setIsHelpOpen(false)}

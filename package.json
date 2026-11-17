@@ -35,6 +35,7 @@
     "generate:definitions": "tsx scripts/generate-definitions.ts",
     "lint:schemas": "tsx scripts/lint-schemas.ts",
     "lint:contracts": "tsx scripts/lint-contracts.ts",
+    "space:audit": "pnpm --filter @notention/ui space:audit",
     "screenshots": "pnpm --filter @notention/ui screenshots",
     "test:e2e": "pnpm --filter @notention/ui test:e2e",
     "relay": "pnpm --filter @notention/agent relay --",

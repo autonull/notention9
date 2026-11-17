@@ -13,6 +13,7 @@
     "test": "tsx /home/me/notention9/scripts/test-ui-batched.ts",
     "typecheck": "tsc --noEmit",
     "typecheck:test": "tsc -p test/tsconfig.json --noEmit",
+    "space:audit": "playwright test --config test/playwright.config.ts --project=audit",
     "screenshots": "node test/scripts/reset-screenshot.mjs && playwright test --config test/playwright.config.ts --project=showcase --workers=4 && node test/scripts/build-index.mjs",
     "test:e2e": "playwright test --config test/playwright.config.ts"
   },

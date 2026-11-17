@@ -1018,7 +1018,7 @@ html.reduced-motion *::after {
 
 .empty-state-description {
   font-size: var(--text-sm);
-  color: var(--color-text-quiet);
+  color: #9ca3af;
   max-width: 300px;
 }
 
@@ -2116,7 +2116,7 @@ html.reduced-motion *::after {
 
 .empty-state-description {
   font-size: var(--text-sm);
-  color: var(--color-text-quiet);
+  color: #9ca3af;
   max-width: 300px;
 }
 

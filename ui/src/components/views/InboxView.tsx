@@ -342,7 +342,7 @@ export function InboxView(_props: InboxViewProps) {
                             <button
                                 type="button"
                                 onClick={loadSampleWorkspace}
-                                className="text-sm text-gray-500 underline decoration-gray-700 underline-offset-4 hover:text-gray-300"
+                                className="text-sm text-gray-400 underline decoration-gray-600 underline-offset-4 hover:text-gray-200"
                             >
                                 Or load a sample workspace
                             </button>

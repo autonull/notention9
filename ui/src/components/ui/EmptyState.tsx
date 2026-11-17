@@ -22,15 +22,15 @@ export interface EmptyStateProps {
 }
 
 const variantStyles = {
-    default: 'flex flex-col items-center justify-center py-12 px-4 text-center',
+    default: 'flex flex-col items-center justify-center py-8 px-4 text-center',
     card: 'empty-state p-8',
     minimal: 'flex flex-col items-center justify-center py-6 px-4 text-center',
-    illustrated: 'flex flex-col items-center justify-center py-16 px-6 text-center max-w-md mx-auto',
+    illustrated: 'flex flex-col items-center justify-center py-4 px-6 text-center max-w-md mx-auto',
     actionable: 'empty-state-actionable',
 };
 
 const iconContainerStyles = {
-    default: 'flex items-center justify-center rounded-full mb-4 bg-gray-800 p-4',
+    default: 'flex items-center justify-center rounded-full mb-3 bg-gray-800 p-3',
     card: 'empty-state-icon',
     minimal: 'flex items-center justify-center rounded-full mb-3 bg-gray-800 p-3',
     illustrated: 'flex items-center justify-center rounded-full mb-6 w-20 h-20 bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30',
@@ -46,10 +46,10 @@ const titleStyles = {
 };
 
 const descriptionStyles = {
-    default: 'text-sm max-w-xs text-gray-500 mb-6',
-    card: 'empty-state-description text-gray-500',
-    minimal: 'text-sm max-w-xs text-gray-500 mb-4',
-    illustrated: 'text-base max-w-md text-gray-400 mb-8 leading-relaxed',
+    default: 'text-sm max-w-xs text-gray-300 mb-4',
+    card: 'empty-state-description text-gray-300',
+    minimal: 'text-sm max-w-xs text-gray-300 mb-4',
+    illustrated: 'text-base max-w-md text-gray-300 mb-4 leading-relaxed',
     actionable: 'empty-state-description',
 };
 
@@ -92,9 +92,9 @@ export function EmptyState({
     const contextShortcuts = shortcutContexts[shortcutContext || ''] || [];
 
     return (
-        <div className={cn(variantStyles[variant], className)}>
+        <div className={cn(variantStyles[variant], className)} data-empty-state={variant}>
             {illustration ? (
-                <div className="mb-6" aria-hidden="true">{illustration}</div>
+                <div className="mb-4 hidden md:block" aria-hidden="true">{illustration}</div>
             ) : Icon && (
                 <div className={cn(iconContainerStyles[variant] || iconContainerStyles.default)}>
                     <Icon className={iconClassName}/>
@@ -109,8 +109,8 @@ export function EmptyState({
                 </div>
             )}
             {hint && (
-                <div className="mb-6 p-3 bg-gray-800/50 rounded-lg border border-gray-700/50 max-w-xs text-left animate-fade-in-up">
-                    <p className="text-xs text-gray-500 mb-1">{hint}</p>
+                <div className="mb-6 hidden md:block p-3 bg-gray-800/50 rounded-lg border border-gray-700/50 max-w-xs text-left animate-fade-in-up">
+                    <p className="text-xs text-gray-300 mb-1">{hint}</p>
                 </div>
             )}
             {showSearchSuggestion && searchTerm && (
@@ -144,7 +144,7 @@ export function EmptyState({
 
 export function EmptyStateIllustration({children}: {children: React.ReactNode}) {
     return (
-        <svg className="w-48 h-48 text-gray-700/50" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <svg className="w-28 h-28 text-gray-700/50" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <defs>
                 <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.1"/>

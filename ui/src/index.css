@@ -1201,67 +1201,84 @@ html.high-contrast [class*="border-"] {
     font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-.rbc-toolbar button {
+.rbc-calendar .rbc-toolbar button {
     color: #e5e7eb;
     border-color: #374151;
 }
 
-.rbc-toolbar button:hover {
+.rbc-calendar .rbc-toolbar button:hover {
     background-color: #374151;
 }
 
-.rbc-toolbar button.rbc-active {
+.rbc-calendar .rbc-toolbar button.rbc-active {
     background-color: #2563eb;
     color: white;
     border-color: #2563eb;
 }
 
-.rbc-off-range-bg {
-    background: #111827;
+.rbc-calendar .rbc-off-range-bg {
+    background: #0b1220;
 }
 
-.rbc-today {
+.rbc-calendar .rbc-today {
     background: #1f2937;
 }
 
-.rbc-event {
+.rbc-calendar .rbc-date-cell {
+    color: #9ca3af;
+}
+
+.rbc-calendar .rbc-button-link {
+    color: #d1d5db;
+}
+
+.rbc-calendar .rbc-button-link:hover {
+    color: #f9fafb;
+}
+
+.rbc-calendar .rbc-off-range {
+    color: #4b5563;
+}
+
+.rbc-calendar .rbc-event {
     background-color: #2563eb;
     border-radius: 4px;
 }
 
-.rbc-time-view,
-.rbc-month-view {
+.rbc-calendar .rbc-time-view,
+.rbc-calendar .rbc-month-view {
     border-color: #374151;
+    background: #111827;
 }
 
-.rbc-day-bg + .rbc-day-bg {
+.rbc-calendar .rbc-day-bg + .rbc-day-bg {
     border-left-color: #374151;
 }
 
-.rbc-time-header-content {
+.rbc-calendar .rbc-time-header-content {
     border-left-color: #374151;
 }
 
-.rbc-time-content {
+.rbc-calendar .rbc-time-content {
     border-top-color: #374151;
 }
 
-.rbc-timeslot-group {
+.rbc-calendar .rbc-timeslot-group {
     border-bottom-color: #374151;
 }
 
-.rbc-time-content > * + * > * {
+.rbc-calendar .rbc-time-content > * + * > * {
     border-left-color: #374151;
 }
 
-.rbc-header {
+.rbc-calendar .rbc-header {
     border-bottom-color: #374151;
 }
 
-.rbc-month-row + .rbc-month-row {
+.rbc-calendar .rbc-month-row + .rbc-month-row {
     border-top-color: #374151;
 }
 
-.rbc-day-bg {
+.rbc-calendar .rbc-day-bg {
     border-left-color: #374151;
 }

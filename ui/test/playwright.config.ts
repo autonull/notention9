@@ -55,6 +55,7 @@ export default defineConfig({
         {
             name: 'journeys',
             testMatch: 'journeys/**/*.spec.ts',
+            testIgnore: ['**/*.mobile.spec.ts'],
             use: {
                 viewport: {width: 1440, height: 900},
             },
@@ -69,6 +70,13 @@ export default defineConfig({
         {
             name: 'showcase',
             testMatch: 'showcase/**/*.scene.ts',
+            use: {
+                viewport: {width: 1440, height: 900},
+            },
+        },
+        {
+            name: 'audit',
+            testMatch: 'audit/**/*.spec.ts',
             use: {
                 viewport: {width: 1440, height: 900},
             },

@@ -28,7 +28,7 @@ export function TrashView() {
                         </div>
                         <div>
                             <h1 className="text-2xl font-bold text-white">Recently deleted</h1>
-                            <p className="text-sm text-gray-500">Restore a note or delete it permanently. Deleted notes are never removed automatically.</p>
+                            <p className="text-sm text-gray-400">Restore a note or delete it permanently. Deleted notes are never removed automatically.</p>
                         </div>
                     </div>
                     <div className="space-y-2">
@@ -63,7 +63,7 @@ export function TrashView() {
                     </div>
                     <div>
                         <h1 className="text-2xl font-bold text-white">Recently deleted</h1>
-                        <p className="text-sm text-gray-500">Restore a note or delete it permanently. Deleted notes are never removed automatically.</p>
+                        <p className="text-sm text-gray-400">Restore a note or delete it permanently. Deleted notes are never removed automatically.</p>
                     </div>
                 </div>
 
@@ -79,7 +79,7 @@ export function TrashView() {
                             <div key={note.id} className="flex items-center gap-4 rounded-xl border border-gray-800 bg-gray-900/60 p-4">
                                 <div className="min-w-0 flex-1">
                                     <div className="truncate font-semibold text-gray-200">{note.title || 'Untitled Note'}</div>
-                                    <div className="mt-1 truncate text-sm text-gray-500">{getTextFromHtml(note.content) || 'No content'}</div>
+                                    <div className="mt-1 truncate text-sm text-gray-400">{getTextFromHtml(note.content) || 'No content'}</div>
                                     <div className="mt-1 text-xs text-gray-600">
                                         Deleted {note.deletedAt ? new Date(note.deletedAt).toLocaleString() : 'recently'}
                                     </div>

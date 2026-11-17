@@ -1,4 +1,5 @@
 import React from 'react';
+import {useIsMobile} from '../../hooks/useMediaQuery';
 import {Badge} from '../ui/Badge';
 import {Input} from '../ui/Input';
 import {Button} from '../ui/Button';
@@ -75,6 +76,7 @@ export function QuickCapture({
     extractionRetry,
 }: QuickCaptureProps) {
     const inputRef = React.useRef<HTMLInputElement>(null);
+    const isMobile = useIsMobile();
 
     React.useEffect(() => {
         if (autoFocus) inputRef.current?.focus();
@@ -93,7 +95,7 @@ export function QuickCapture({
                             onChange={(e) => onInputChange(e.target.value)}
                             onFocus={onFocus}
                             onBlur={onBlur}
-                            placeholder={placeholder ?? `What's on your mind? Try: "Buy milk #shopping" or "Meeting at 3pm"`}
+                            placeholder={isMobile ? "What's on your mind?" : placeholder ?? `What's on your mind? Try: "Buy milk #shopping" or "Meeting at 3pm"`}
                             leftIcon={<SearchIcon className="w-5 h-5" />}
                             className="text-lg py-4 pr-16"
                             autoComplete="off"
@@ -162,7 +164,7 @@ export function QuickCapture({
                 )}
 
                 <details className="mt-3 group">
-                    <summary className="cursor-pointer text-xs text-gray-500 hover:text-gray-300 list-none flex items-center gap-1.5">
+                    <summary className="cursor-pointer text-xs text-gray-400 hover:text-gray-200 list-none flex items-center gap-1.5">
                         <span className="transition-transform group-open:rotate-90">›</span>
                         More ways to capture
                     </summary>
@@ -188,7 +190,7 @@ export function QuickCapture({
 
                 <details className="group mt-2">
                     <summary className="flex items-center gap-2 text-gray-500 text-xs cursor-pointer select-none list-none">
-                        <span>Capture tips</span>
+                        <span className="text-gray-400">Capture tips</span>
                         <svg className="w-4 h-4 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/>
                         </svg>

@@ -9,7 +9,7 @@ test.beforeEach(async ({page}) => {
 
 test('chat explains that an identity is required', async ({page}) => {
     await seed(page, {notes: demoNotes(), settings: defaultSettings(), hash: '#chat'});
-    await expect(page.getByText('Chat Requires Nostr Account')).toBeVisible();
+    await expect(page.getByText('Chat needs an identity')).toBeVisible();
 });
 
 test('relay changes persist', async ({page}) => {

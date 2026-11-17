@@ -136,7 +136,10 @@ export function Header({onToggleSidebar}: HeaderProps) {
         <header
             className="flex-shrink-0 bg-gray-900/80 backdrop-blur-md h-16 px-4 flex items-center justify-between border-b border-gray-700/50 z-50 relative">
             {/* Left Section */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 min-w-0">
+                <h1 className="md:hidden text-sm font-semibold text-gray-200 truncate">
+                    {[...PRIMARY_NAV, ...SECONDARY_NAV, SETTINGS_VIEW].find(item => item.id === activeView)?.label ?? 'Notes'}
+                </h1>
                 <IconButton
                     onClick={onToggleSidebar}
                     tooltip={isSidebarOpen ? "Close Sidebar" : "Open Sidebar"}
@@ -190,13 +193,15 @@ export function Header({onToggleSidebar}: HeaderProps) {
             {/* Right Section */}
             <div className="flex items-center gap-2">
                 <ConnectionStatus/>
-                <NavButton
-                    icon={<SETTINGS_VIEW.icon/>}
-                    label={SETTINGS_VIEW.label}
-                    tooltip={SETTINGS_VIEW.label}
-                    isActive={activeView === SETTINGS_VIEW.id}
-                    onClick={() => setActiveView(SETTINGS_VIEW.id)}
-                />
+                <div className="hidden md:flex">
+                    <NavButton
+                        icon={<SETTINGS_VIEW.icon/>}
+                        label={SETTINGS_VIEW.label}
+                        tooltip={SETTINGS_VIEW.label}
+                        isActive={activeView === SETTINGS_VIEW.id}
+                        onClick={() => setActiveView(SETTINGS_VIEW.id)}
+                    />
+                </div>
             </div>
         </header>
     );

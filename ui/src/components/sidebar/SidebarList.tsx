@@ -3,7 +3,7 @@ import type {Note} from '@notention/core';
 import {VirtualizedList, VirtualizedListRef} from '../ui/VirtualizedList';
 import {NoteListItem} from './NoteListItem';
 import {NoteGridItem} from './NoteGridItem';
-import {EmptyState, NotesEmptyIllustration, SearchEmptyIllustration, TrashEmptyIllustration} from '../ui/Primitives';
+import {EmptyState, SearchEmptyIllustration, TrashEmptyIllustration} from '../ui/Primitives';
 import {Button} from '../ui/Button';
 import {cn} from '../../utils/ui';
 import {ITEM_HEIGHT} from '../../constants/ui';
@@ -28,7 +28,6 @@ const SidebarListInner = forwardRef<VirtualizedListRef, SidebarListProps>(({ vir
         renderItem,
         getItemKey,
         renderCollapsedTooltip,
-        handleCreateNote,
         searchTerm,
         setSearchTerm
     } = useSidebar();
@@ -61,14 +60,12 @@ const SidebarListInner = forwardRef<VirtualizedListRef, SidebarListProps>(({ vir
         }
         return (
             <EmptyState
-                variant="illustrated"
-                illustration={<NotesEmptyIllustration/>}
+                variant="minimal"
                 title="No notes yet"
                 description="Capture in the inbox. Everything stays on this device."
-                action={<Button variant="secondary" onClick={handleCreateNote}>Go to capture</Button>}
             />
         );
-    }, [searchTerm, setSearchTerm, isTrashView, handleCreateNote]);
+    }, [searchTerm, setSearchTerm, isTrashView]);
 
     return (
         <div

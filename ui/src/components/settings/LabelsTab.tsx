@@ -124,7 +124,7 @@ export function LabelsTab() {
                     </Button>
                 </div>
 
-                <p className="text-xs text-gray-500 mb-4">
+                <p className="text-xs text-gray-400 mb-4">
                     {sortedTags.length} label{sortedTags.length !== 1 ? 's' : ''} in use across {notes.length} note{notes.length !== 1 ? 's' : ''}
                 </p>
 
@@ -192,8 +192,8 @@ export function LabelsTab() {
 
             <div className="bg-gray-900/30 p-4 rounded-lg border border-gray-700/30">
                 <h3 className="text-sm font-semibold text-gray-300 mb-2">Advanced</h3>
-                <p className="text-xs text-gray-500 leading-relaxed">
-                    For full ontology editing (custom attributes, types, relationships), use the
+                <p className="text-xs text-gray-400 leading-relaxed">
+                    For full ontology editing (custom attributes, types, relationships), use the{' '}
                     <button
                         onClick={() => setSettings(prev => ({...prev, activeView: 'ontology'}))}
                         className="text-blue-400 hover:underline"

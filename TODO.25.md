@@ -655,9 +655,11 @@ For every screenshot, record:
 
 ### Phases
 
-- [ ] **W12.0 Baseline + target wireframes.** `doc/UI_CONVERGENCE.md`; no code.
-- [ ] **W12.1 Space-utilization pass.** Remove stretch/centering artifacts, cap empty-state height,
-  normalize section spacing, reclaim the first screen. Attach before/after per view.
+- [x] **W12.0 Baseline + target wireframes.** `doc/UI_CONVERGENCE.md` + `doc/evidence/space/` (30 captures, metrics JSON); no code.
+- [ ] **W12.1 Space-utilization pass.** *First pass shipped*: mobile shell (sidebar only on the notes
+  list), one-row mobile nav, empty-state cap, Actions rows, Timeline dark cells, contrast. 10/15
+  cases pass the density gate; Timeline/Actions/Labels/Ontology/Network remain (see
+  `doc/UI_CONVERGENCE.md` §Ranked residual work).
 - [ ] **W12.2 Task-first audit.** Stranger script, keyboard-only, mobile, large workspace; score
   navigation and reveal cost.
 - [ ] **W12.3 Convergence implementation.** One view per round; each round needs a screenshot diff
@@ -1257,16 +1259,24 @@ pnpm eval:verify-manifest
 - **Blocking UI bugs fixed while proving the screens**: editor missing `useEffect`/`onPickLocation` wiring, capture extraction effect loop on first keystroke, Map-vs-tree `findAttributeDef` collision, and the per-key "New concept discovered" toast storm.
 - **Tests**: `pnpm test` (core 933, agent 17, CLI 6, optimize 127); `pnpm test:ui` (42 files); `pnpm screenshots` (24/24); `pnpm taxonomy:coverage` 24/24. Journey checks: navigation, mobile, keyboard, describe-it, and the compose-match popup pass; the compose-match *anchor* test was re-run on 2026-11-17 and passes 2/2.
 - **Remaining work after 2026-11-17**:
-  1. **W11.7 human stranger test** — still blocked: requires a human with a fresh profile. Run `pnpm stranger-test`, attach the observed install → capture → match → export timing.
-  2. **Match quality regression** — `pnpm optimize eval:match` is 2/22 with mean F1=0.061, below the 0.5 pass threshold (identical with/without the currency matcher fix). The quality fixtures expect `free` requests to match mentor/resume/legal offers, but extraction emits `price:is:free` and `need:...` while offers expose `skill`/`price`; reconcile extraction keys or expand offers. Attach a per-case report.
-  3. **W12.0 baseline + target wireframes** — start the design-convergence audit in `doc/UI_CONVERGENCE.md`: wireframes per view, space-utilization measurements, no code until approved.
-  4. **W1.7 LoRA fine-tune** (optional) — only if quality plateaus below 0.80 after W1.3–W1.6.
+  1. **W12.1 residuals** — timeline has no events in the visible month (0.23 ratio / 0.38 waste); network never leaves the spinner (0.27); Actions (0.39), Labels (0.54), Ontology (0.54) still miss the density gate. Target wireframes and fixes are in `doc/UI_CONVERGENCE.md`.
+  2. **W12.2 task-first audit** — stranger script, keyboard-only, mobile, large workspace; human review of the wireframes before W12.3 composition changes.
+  3. **W11.7 human stranger test** — still blocked: requires a human with a fresh profile. Run `pnpm stranger-test`, attach the observed install → capture → match → export timing.
+  4. **Match quality regression** — `pnpm optimize eval:match` is 2/22 with mean F1=0.061, below the 0.5 pass threshold (identical with/without the currency matcher fix). The quality fixtures expect `free` requests to match mentor/resume/legal offers, but extraction emits `price:is:free` and `need:...` while offers expose `skill`/`price`; reconcile extraction keys or expand offers. Attach a per-case report.
+  5. **W1.7 LoRA fine-tune** (optional) — only if quality plateaus below 0.80 after W1.3–W1.6.
 - **Closed on 2026-11-17**: compose-match anchor re-run (2/2 pass), numeric/currency `rate` conflict fix, UI `tsc --noEmit` cleanup, avatar fallback for missing/broken profile pictures.
 - **Next session**: W12 design-convergence audit (§W12). Repeat the full audit, add space utilization as a defect class, and require target wireframes before code.
 
 ### 2026-11-17 — W11.7 remains blocked; W12.0 is next
 - W11.7 still needs a human with a fresh profile to run `pnpm stranger-test` and attach timing.
 - W12.0 (wireframes + space-utilization baseline) is the next actionable step; it is documentation-only until approved.
+
+### 2026-11-17 — W12.0 + W12.1 first pass complete
+- **W12.0**: `doc/UI_CONVERGENCE.md` with target wireframes, gate vocabulary, 30-capture gate table, and ranked residuals. New harness: `pnpm space:audit` (`ui/test/audit/space.spec.ts`, `ui/test/support/space.ts`) writes `doc/evidence/space-utilization.json` and 15 views × 2 viewports to `doc/evidence/space/`.
+- **W12.1**: mobile shell now hides the sidebar outside the notes list (every view previously painted off-screen at 390×844); one mobile nav row (130px → 64px) with one capture entry; empty states cap at 0.38/0.20 footprint; Actions rows 0.27 → 0.39 ratio; Timeline calendar is dark and legible; "theOntology" spacing fixed; box removed from the mobile map.
+- **Gates**: 0/30 stretch defects, 0/30 horizontal overflow, 11/11 axe views pass. 10/15 cases pass the density gate.
+- **Residual**: Timeline has no events in the visible month (demo dates are October 2026); Network spins forever on an empty feed; Actions (0.39), Labels (0.54), Ontology (0.54) remain below 0.60. Composition changes wait for W12.2/W12.3 review.
+- **Tests**: `pnpm test:ui` 42 files pass; mobile journey 9/9; axe 11/11; `tsc --noEmit` clean. The full journeys suite has relay/copy failures outside W12 (chat copy expectation updated; relay persistence still fails).
 
 
 ---
