@@ -485,6 +485,7 @@ user can switch back for one release.
 ~~W9.1 Quickstart~~ ✅ · ~~W9.2 Model selection guide~~ ✅ · ~~W9.3 Decision records~~ ✅ · ~~W9.4 Eval how-to~~ ✅ ·
 W1.7 LoRA fine-tune (if quality plateaus < 0.80).
 ~~**W11 UI/UX audit → intuitive elegance**~~ ✅ (except W11.7 human timing gate)
+**W12 design-convergence audit** (next session; repeat the full audit, now including wasted empty space)
 
 ### Parked (do not start yet)
 - WebLLM GPU CI (user declined CI; SwiftShader lacks adapters).
@@ -597,6 +598,75 @@ Walk the 15 generated screenshots in `doc/screenshot/` and record, per screen:
 ## Proposed IA (before → after)
 <nav + screen map>
 ```
+
+---
+
+## W12 — Design Convergence Audit (Next Session — Highest Priority)
+**Goal**: Move from "less clutter" to a surface we would defend. W11 removed duplicates; W12 must
+decide what remains, how dense it is, and how much space each element is allowed to occupy.
+
+> **User verdict (2026-11-17, after W11)**: the audit produced positive results, but the design has
+> not converged on the ideal. Repeat the complete audit in a future session, and treat **wasted empty
+> space** as a first-class defect, not a neutral gap.
+
+### W12 principles (add to W11's principles)
+
+1. **Target before judgment.** One wireframe per view before screenshots: primary action, content,
+   disclosure, density. The wireframe is the review gate; no code until it is approved.
+2. **Space must earn its pixels.** A gap is either separation that aids scanning (`8–24px`), a
+   deliberate focal empty state, or a defect. No `h-full`/centering that leaves a lone card in a
+   large field.
+3. **Density is a feature.** A populated screen should show the work, not float it in a sparse
+   column. Aim for one screen of content above the fold on desktop and mobile.
+4. **One focal point per viewport.** If the eye lands on whitespace before the work, the layout
+   failed. Capture, match, or list is the first paint; chrome recedes.
+5. **Empty states are content-sized.** They must not stretch to the viewport. Cap them and let the
+   next section show, or remove the section when it has nothing.
+6. **No dead zones between repeats.** Stacked sections may not add top/bottom padding that produces
+   > 24px of inert space; shared section spacing wins over per-component padding.
+7. **Convergence gates.** Every view has exactly one primary action, no duplicate verb, no orphan
+   chrome, no full-height placeholder, and a measured navigation cost.
+
+### Space-utilization audit (new required fields)
+
+For every screenshot, record:
+
+| Field | Measurement | Gate |
+|---|---|---|
+| Content ratio | Content pixels ÷ viewport height, above the fold | ≥ 60% on populated screens |
+| Wasted vertical space | Sum of inert gaps > 24px plus empty regions outside a focal empty state | < 15% of viewport |
+| Stretch defect | `h-full`/`min-h-screen`/centered wrapper holding one card | Zero |
+| Empty footprint | Empty-state box height ÷ viewport height | ≤ 40%, never full-height |
+| Density | Visible actions + facts per 1000px of content height, excluding nav | No sparse column |
+| Mobile first screen | Primary content visible at `390×844` without scroll | Yes |
+| Reveal cost | Scroll + clicks/keys to the primary action and to the match/list | ≤ 1 screen |
+
+### Repeat method (task-first, not screenshot-only)
+
+1. Regenerate all screenshots from the current build at `1440×900` and `390×844`.
+2. Run the task scripts: capture, match, respond, export; keyboard-only; empty, populated, large;
+   network with and without identity.
+3. Score each view with the W11 fields **plus** the space fields above.
+4. Write `doc/UI_CONVERGENCE.md`: target wireframe, current state, delta, ranked fixes.
+5. Review gate: no code until the target wireframes are approved.
+6. Implement one view per commit, with a before/after screenshot diff.
+7. Re-audit with the same screenshots and tasks; the gates must pass before calling it converged.
+
+### Phases
+
+- [ ] **W12.0 Baseline + target wireframes.** `doc/UI_CONVERGENCE.md`; no code.
+- [ ] **W12.1 Space-utilization pass.** Remove stretch/centering artifacts, cap empty-state height,
+  normalize section spacing, reclaim the first screen. Attach before/after per view.
+- [ ] **W12.2 Task-first audit.** Stranger script, keyboard-only, mobile, large workspace; score
+  navigation and reveal cost.
+- [ ] **W12.3 Convergence implementation.** One view per round; each round needs a screenshot diff
+  and the gates above.
+- [ ] **W12.4 Re-audit + human stranger test.** Same artifacts; attach timing and final verdict.
+
+### Definition of converged (for W12)
+
+A view is converged only when the target wireframe is met, every gate is green, and a stranger can
+name the primary action from the screenshot alone. If a view needs explanation, it is not converged.
 
 ---
 
@@ -1183,6 +1253,7 @@ pnpm eval:verify-manifest
   4. Clean up the pre-existing UI `tsc --noEmit` errors in settings/hooks; `vite build` passes.
   5. Map marker images still fall back to a broken image when a profile has no picture.
 - **W11.7 remains blocked**: the stranger test is a human timing gate. Run `pnpm stranger-test` with a fresh profile and attach the observed install → capture → match → export time.
+- **Next session**: W12 design-convergence audit (§W12). Repeat the full audit, add space utilization as a defect class, and require target wireframes before code.
 
 
 ---
