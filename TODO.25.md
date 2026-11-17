@@ -282,10 +282,18 @@
 ### W9 — Documentation & Onboarding
 **Goal**: A new contributor or user can succeed without tribal knowledge.
 
-- [ ] **W9.1 Quickstart.** 10-minute path: install, choose a model, capture, match, export.
-- [ ] **W9.2 Model selection guide.** VRAM table (0.8B→9B, Llama, Gemma), quant, expected F1, latency.
-- [ ] **W9.3 Decision records.** One ADR per major choice (dual prompt, grammar gating, local-first telemetry).
-- [ ] **W9.4 Eval how-to.** Golden vs quality vs match sets; how to add a case; how to read F1/ECE.
+- [x] **W9.1 Quickstart.** 10-minute path: install, choose a model, capture, match, export.
+  - Acceptance: `doc/QUICKSTART.md` covers install, model choice, capture, match, export in ≤10 min.
+  - **Status**: Created `doc/QUICKSTART.md` with numbered steps, model table, shortcuts, troubleshooting.
+- [x] **W9.2 Model selection guide.** VRAM table (0.8B→9B, Llama, Gemma), quant, expected F1, latency.
+  - Acceptance: `doc/MODEL_SELECTION.md` has VRAM breakdown, quality/latency matrix, download links.
+  - **Status**: Created `doc/MODEL_SELECTION.md` with matrix from W1.3, VRAM budget, adaptive routing, env vars.
+- [x] **W9.3 Decision records.** One ADR per major choice (dual prompt, grammar gating, local-first telemetry).
+  - Acceptance: `doc/decisions/017-dual-prompt.md`, `018-grammar-gating.md`, `019-local-first-telemetry.md` + index.
+  - **Status**: Created 3 ADRs with context/decision/consequences/verification; added `doc/decisions/README.md` index.
+- [x] **W9.4 Eval how-to.** Golden vs quality vs match sets; how to add a case; how to read F1/ECE.
+  - Acceptance: `doc/EVAL_HOWTO.md` covers all 4 gates, canary, adding cases, F1/ECE interpretation, CI.
+  - **Status**: Created `doc/EVAL_HOWTO.md` with gate tables, commands, case format, troubleshooting.
 
 ### W10 — UI/UX Simplification (progressive disclosure)
 **Goal**: A calmer, more intuitive interface with **no loss of functionality**, reached in small,
@@ -474,7 +482,7 @@ user can switch back for one release.
 ~~W6.3 Large workspace~~ ✅ · ~~W6.4 Error states & degraded mode~~ ✅ · ~~W6.5 Leak check~~ ✅ ·
 ~~W7.2 Encrypted backup~~ ✅ · ~~W7.3 Schema migration~~ ✅ · ~~W7.4 Privacy redaction~~ ✅ ·
 ~~W8.1 Friction digest dashboard~~ ✅ · ~~W8.3 LLM call telemetry~~ ✅ · ~~W8.4 A/B → decisions~~ ✅ ·
-W9.1 Quickstart · W9.2 Model selection guide · W9.3 Decision records · W9.4 Eval how-to ·
+~~W9.1 Quickstart~~ ✅ · ~~W9.2 Model selection guide~~ ✅ · ~~W9.3 Decision records~~ ✅ · ~~W9.4 Eval how-to~~ ✅ ·
 W1.7 LoRA fine-tune (if quality plateaus < 0.80).
 
 ### Parked (do not start yet)
@@ -1013,6 +1021,29 @@ pnpm eval:verify-manifest
 - Evidence list in decision.md now cites all four artifacts: `evaluation-report.json`, `gate-reports.json`, `e2-capture-results.json`, `e13-ablation-results.json`
 - Added `loadE2CaptureResult` and `loadE13AblationResult` utilities in `optimize/src/loop/artifactIO.ts`
 - All TypeScript compiles clean; full loop dry-run and adopt step work end-to-end
+
+### 2026-11-17 — W9.1 Quickstart complete
+- Created `doc/QUICKSTART.md` with 8-step numbered path: install, choose model, start app, capture request, capture offer, see match, export, next steps
+- Includes model recommendation table (Qwen 3.5 2B default), shortcuts reference, troubleshooting
+- Covers all three export formats: Markdown, JSON, Encrypted Backup
+
+### 2026-11-17 — W9.2 Model selection guide complete
+- Created `doc/MODEL_SELECTION.md` with VRAM budget breakdown, quality/latency matrix from W1.3
+- Download locations for all 6 candidate models (Qwen 0.8B/2B/4B/9B, Llama 3.2 3B, Gemma 4 4B)
+- Adaptive routing thresholds, grammar gating behavior, env var reference
+- Quality vs latency tradeoff visualization
+
+### 2026-11-17 — W9.3 Decision records complete
+- Created 3 ADRs in `doc/decisions/`:
+  - `017-dual-prompt.md`: Two-stage progressive extraction (heuristic → LLM)
+  - `018-grammar-gating.md`: Auto-probe with persisted fallback mode per model
+  - `019-local-first-telemetry.md`: Three-layer stack (journal → digest → specialized)
+- Added `doc/decisions/README.md` index with all 19 ADRs
+
+### 2026-11-17 — W9.4 Eval how-to complete
+- Created `doc/EVAL_HOWTO.md` covering all 4 gates (golden, quality extraction, quality match, taxonomy) + canary
+- Case format examples for each gate, commands to run, how to add new cases
+- F1/ECE interpretation guide, CI integration snippet, troubleshooting table
 
 ---
 
