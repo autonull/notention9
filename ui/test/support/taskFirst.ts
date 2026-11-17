@@ -40,7 +40,7 @@ export const measureTaskFirst = (page: Page): Promise<TaskFirstMetrics> =>
             !!element.closest('[role="listitem"],li,article,.note-list-item,.rbc-event');
         const focusable = Array.from(
             main.querySelectorAll<HTMLElement>(
-                'button:not([disabled]),a[href],input:not([type="hidden"]):not([disabled]),textarea:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])',
+                'button:not([disabled]):not([tabindex="-1"]),a[href],input:not([type="hidden"]):not([disabled]),textarea:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])',
             ),
         ).filter(visible);
         const label = (element: Element) =>

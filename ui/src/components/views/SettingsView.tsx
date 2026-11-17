@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {cn} from '../../utils/ui';
 
 import {useSettingsView} from '../../hooks/useSettingsView';
@@ -15,7 +15,6 @@ import {ProfileSettings} from '../settings/ProfileSettings';
 import {RevisionsTab} from '../settings/RevisionsTab';
 import {AccessibilityTab} from '../settings/AccessibilityTab';
 import {LanguageTab} from '../settings/LanguageTab';
-import {CollapsibleSection} from '../ui/CollapsibleSection';
 import {SparklesIcon, BoltIcon, TagIcon, GlobeIcon, KeyIcon, CubeIcon, ChartBarIcon, UserGroupIcon, ClockIcon, ShieldIcon, InboxIcon} from '../ui/icons';
 
 interface SettingsGroup {
@@ -38,12 +37,7 @@ export function SettingsView() {
     const isRTL = direction === 'rtl';
 
     const [activeTab, setActiveTab] = useState('ai');
-    const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
-        general: true,
-        aiAutomation: true,
-        networkIdentity: true,
-        dataMetrics: true,
-    });
+    const tabRefs = useRef(new Map<string, HTMLButtonElement>());
 
     const groups: SettingsGroup[] = [
         {
@@ -126,51 +120,101 @@ export function SettingsView() {
         }
     };
 
+    const tabs = groups.flatMap(group => group.tabs);
+    const activeLabel = tabs.find(tab => tab.id === activeTab)?.label ?? 'Settings';
+
+    const selectTab = (id: string) => {
+        setActiveTab(id);
+        tabRefs.current.get(id)?.focus();
+    };
+
+    const handleTabKeyDown = (event: React.KeyboardEvent) => {
+        const index = tabs.findIndex(tab => tab.id === activeTab);
+        const next =
+            event.key === 'ArrowDown' || event.key === 'ArrowRight' ? (index + 1) % tabs.length :
+            event.key === 'ArrowUp' || event.key === 'ArrowLeft' ? (index - 1 + tabs.length) % tabs.length :
+            event.key === 'Home' ? 0 :
+            event.key === 'End' ? tabs.length - 1 : -1;
+        if (next < 0) return;
+        event.preventDefault();
+        selectTab(tabs[next].id);
+    };
+
     return (
-        <div className="p-4 md:p-8 h-full overflow-y-auto bg-gray-950 flex flex-col">
-            <div
-                className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <div className="p-4 md:p-6 h-full overflow-y-auto lg:overflow-hidden bg-gray-950 flex flex-col">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-2 shrink-0">
                 <div>
-                    <h2 className="text-3xl font-bold text-white mb-1 tracking-tight">Settings</h2>
+                    <h2 className="text-2xl md:text-3xl font-bold text-white tracking-tight">Settings</h2>
                     <p className="text-gray-400 text-sm font-medium">Preferences and network data.</p>
                 </div>
             </div>
 
-            <div className="flex flex-col gap-4">
-                {groups.map((group) => (
-                    <CollapsibleSection
-                        key={group.id}
-                        title={group.label}
-                        icon={group.icon}
-                        defaultOpen={expandedGroups[group.id]}
-                        onToggle={(open) => setExpandedGroups(prev => ({...prev, [group.id]: open}))}
-                        className="bg-gray-900/50 border border-gray-700/50 rounded-xl"
-                    >
-                        <div className="space-y-2 pt-2">
-                            {group.tabs.map((tab) => (
-                                <button
-                                    key={tab.id}
-                                    onClick={() => setActiveTab(tab.id)}
-                                    className={cn(
-                                        'w-full px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 flex items-center gap-3',
-                                        isRTL ? 'text-right' : 'text-left',
-                                        activeTab === tab.id
-                                            ? `bg-blue-900/30 text-blue-400 ${isRTL ? 'border-r-2 border-blue-500 pr-1' : 'border-l-2 border-blue-500 pl-1'}`
-                                            : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
-                                    )}
-                                    aria-current={activeTab === tab.id ? 'page' : undefined}
-                                >
-                                    {tab.icon && <span className="flex-shrink-0 w-5 h-5" aria-hidden="true">{tab.icon}</span>}
-                                    <span className={`flex-1 truncate ${isRTL ? 'text-right' : 'text-left'}`}>{tab.label}</span>
-                                </button>
+            <label className="lg:hidden mb-3">
+                <span className="block text-xs uppercase font-bold text-gray-400 mb-1 tracking-wider">Section</span>
+                <select
+                    value={activeTab}
+                    onChange={(event) => setActiveTab(event.target.value)}
+                    className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500"
+                >
+                    {groups.map(group => (
+                        <optgroup key={group.id} label={group.label}>
+                            {group.tabs.map(tab => (
+                                <option key={tab.id} value={tab.id}>{tab.label}</option>
                             ))}
-                        </div>
-                    </CollapsibleSection>
-                ))}
-            </div>
+                        </optgroup>
+                    ))}
+                </select>
+            </label>
 
-            <div className="flex-grow mt-6 pt-6 border-t border-gray-700/50 animate-fade-in">
-                {renderTabContent()}
+            <div className="flex-1 min-h-0 grid gap-4 lg:grid-cols-[minmax(0,16rem)_minmax(0,1fr)]">
+                <nav aria-label="Settings sections" className="hidden lg:block lg:overflow-y-auto custom-scrollbar pr-1">
+                    <div role="tablist" aria-orientation="vertical" onKeyDown={handleTabKeyDown} className="space-y-3">
+                        {groups.map((group) => (
+                            <div key={group.id}>
+                                <p className="px-3 mb-1 text-[11px] font-semibold uppercase tracking-wider text-gray-400">
+                                    {group.label}
+                                </p>
+                                <div className="space-y-1">
+                                    {group.tabs.map((tab) => (
+                                        <button
+                                            key={tab.id}
+                                            ref={(element) => {
+                                                if (element) tabRefs.current.set(tab.id, element);
+                                                else tabRefs.current.delete(tab.id);
+                                            }}
+                                            role="tab"
+                                            id={`settings-tab-${tab.id}`}
+                                            aria-selected={activeTab === tab.id}
+                                            aria-controls={`settings-panel-${tab.id}`}
+                                            tabIndex={activeTab === tab.id ? 0 : -1}
+                                            onClick={() => setActiveTab(tab.id)}
+                                            className={cn(
+                                                'w-full px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 flex items-center gap-3',
+                                                isRTL ? 'text-right' : 'text-left',
+                                                activeTab === tab.id
+                                                    ? `bg-blue-900/30 text-blue-400 ${isRTL ? 'border-r-2 border-blue-500 pr-1' : 'border-l-2 border-blue-500 pl-1'}`
+                                                    : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+                                            )}
+                                        >
+                                            {tab.icon && <span className="flex-shrink-0 w-5 h-5" aria-hidden="true">{tab.icon}</span>}
+                                            <span className={`flex-1 truncate ${isRTL ? 'text-right' : 'text-left'}`}>{tab.label}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </nav>
+
+                <section
+                    role="tabpanel"
+                    id={`settings-panel-${activeTab}`}
+                    aria-labelledby={`settings-tab-${activeTab}`}
+                    aria-label={activeLabel}
+                    className="min-w-0 lg:overflow-y-auto custom-scrollbar animate-fade-in"
+                >
+                    {renderTabContent()}
+                </section>
             </div>
         </div>
     );

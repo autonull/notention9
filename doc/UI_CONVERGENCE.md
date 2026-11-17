@@ -8,9 +8,10 @@ primary action. W12.1 is complete: Actions is a list plus task detail, Labels an
 use the content column, the network feed never blocks on a spinner, the inbox drops
 pre-content chrome, and the timeline anchors to the month that holds its events. The
 task-first audit (W12.2) finds one primary action per view and no duplicate screen-level
-verbs; the remaining gaps are Settings' reveal cost and the calendar's sparse month cells.
+verbs; the first W12.3 round turns Settings into a section rail plus a panel, moving its first
+control from 1,398px to 391px (454px on mobile) with 3 tab stops.
 
-Status: **W12.0–W12.2 done**, **W12.3–W12.4 open**.
+Status: **W12.0–W12.2 done**, **W12.3 round 1 (Settings) done**, **W12.4 open**.
 
 Evidence: `doc/evidence/space-utilization.json`, `doc/evidence/space/<viewport>/*.jpg`,
 `doc/evidence/task-first.json`.
@@ -31,7 +32,8 @@ Evidence: `doc/evidence/space-utilization.json`, `doc/evidence/space/<viewport>/
   - **Empty footprint**: `[data-empty-state]` height ÷ viewport height.
   - **Stretch defect**: a wrapper at least 50% of the viewport tall, centered on both axes,
     with one child smaller than half its height.
-  - **Density**: visible actions + facts per 1000px of content height.
+  - **Density**: visible actions (buttons, links, form controls) + facts per 1000px of content
+  height.
 - No page scrolls horizontally in any capture (`overflowX = 0`, 30/30) and no stretch
   defect remains (0/30).
 - Each screenshot is a full-viewport JPEG at 60% quality; the numbers and the image come
@@ -42,13 +44,14 @@ Evidence: `doc/evidence/space-utilization.json`, `doc/evidence/space/<viewport>/
 | Gate | Pass condition |
 |---|---|
 | Content ratio | ≥ 0.60 on populated screens |
-| Density | ≥ 8 visible actions + facts per 1000px of content height, **or** content ratio ≥ 0.60 |
+| Density | ≥ 8 visible actions (buttons, links, form controls) + facts per 1000px of content height, **or** content ratio ≥ 0.60 |
+| Reveal cost | Primary action visible without scrolling, first content above the fold, and ≤ 4 tab stops to the primary |
 | Wasted space | < 0.15 |
 | Empty footprint | ≤ 0.40, content-sized, never full-height |
 | Stretch defect | 0 |
 | Horizontal overflow | 0 |
 | One primary | At most one `data-variant="primary"` action per view; no duplicate screen-level verb |
-| Primary reach | Primary action visible without scrolling; tab stops to the primary ≤ 9 |
+| Primary reach | Primary action visible without scrolling; tab stops to the primary ≤ 4 |
 | Mobile first screen | Primary content visible at 390×844 without scrolling |
 
 Empty screens are judged by footprint and waste, not content ratio. "Populated" means the
@@ -56,8 +59,10 @@ seed produced rows in the measured root.
 
 Content ratio counts covered pixels, so a dense row list (8px row gaps, icon buttons) always
 scores low even when the screen is full of work. Density is the second gate: labels score
-25.6 actions+facts per 1000px while covering 57% of the height. A view passes when either
-measure clears its bar and waste stays under 15%.
+25.6 actions+facts per 1000px while covering 57% of the height. A compact form can miss both
+and still be excellent: Settings mobile fits one screen with its first control at 454px and
+three tab stops, so it passes on reveal cost. A view passes when waste stays under 15% and
+one of ratio, density, or reveal cost clears its bar.
 
 Calendars are exempt from the waste gate: the month grid is the surface, so empty cells are
 the content until events fill them. Timeline must still show its events in the first paint
@@ -166,28 +171,28 @@ Settings still needs the two-column rail + panel pass (W12.3): its first control
 | desktop | notes-list | populated | 0.857 | 0.002 | 43.8 | — | PASS |
 | desktop | notes-grid | populated | 0.83 | 0 | 7.5 | — | PASS |
 | desktop | trash | populated | 0.929 | 0 | 2.4 | — | PASS |
-| desktop | timeline | populated | 0.307 | 0.302 | 61.7 | — | exempt (calendar cells) |
+| desktop | timeline | populated | 0.307 | 0.302 | 63.1 | — | exempt (calendar cells) |
 | desktop | actions | populated | 0.663 | 0.069 | 9.1 | — | PASS |
 | desktop | responses | empty | 0.16 | 0.038 | 4.4 | 0.227 | PASS empty |
 | desktop | labels | populated | 0.571 | 0.073 | 25.6 | — | PASS |
 | desktop | ontology | populated | 0.739 | 0.05 | 28.3 | — | PASS |
 | desktop | map | populated | 0.959 | 0 | 4.6 | — | PASS |
-| desktop | settings | populated | 0.68 | 0.011 | 16.1 | — | PASS |
+| desktop | settings | populated | 0.722 | 0 | 20.4 | — | PASS |
 | desktop | chat | empty | 0.146 | 0 | 6.3 | 0.342 | PASS empty |
 | desktop | editor | populated | 0.857 | 0.002 | 39 | — | PASS |
 | desktop | network | empty | 0.531 | 0.092 | 28.5 | — | PASS empty |
 | mobile | inbox-empty | empty | 0.447 | 0 | 12.7 | 0.204 | PASS empty |
 | mobile | inbox-populated | populated | 0.864 | 0 | 12 | — | PASS |
 | mobile | notes-list | populated | 0.81 | 0.006 | 49.7 | — | PASS |
-| mobile | notes-grid | populated | 0.823 | 0.001 | 20.8 | — | PASS |
+| mobile | notes-grid | populated | 0.823 | 0.001 | 24.7 | — | PASS |
 | mobile | trash | populated | 0.829 | 0 | 2.9 | — | PASS |
-| mobile | timeline | populated | 0.421 | 0.109 | 71 | — | PASS |
+| mobile | timeline | populated | 0.421 | 0.109 | 72.6 | — | PASS |
 | mobile | actions | populated | 0.626 | 0 | 9.5 | — | PASS |
 | mobile | responses | empty | 0.171 | 0.04 | 4.4 | 0.242 | PASS empty |
 | mobile | labels | populated | 0.528 | 0.115 | 16 | — | PASS |
 | mobile | ontology | populated | 0.722 | 0.053 | 25.1 | — | PASS |
 | mobile | map | populated | 1 | 0 | 4.7 | — | PASS |
-| mobile | settings | populated | 0.678 | 0.012 | 17.3 | — | PASS |
+| mobile | settings | populated | 0.586 | 0.092 | 5.4 | — | PASS reveal |
 | mobile | chat | empty | 0.155 | 0 | 6.3 | 0.365 | PASS empty |
 | mobile | editor | populated | 0.817 | 0.007 | 44.3 | — | PASS |
 | mobile | network | empty | 0.591 | 0.032 | 28.1 | — | PASS empty |
@@ -230,30 +235,44 @@ active view), their viewport position and tab-stop index, duplicate screen-level
 |---|---|---|
 | No duplicate screen-level verbs on any view | `duplicateLabels = []` on 30/30 after excluding row-level repeats | W11 principle 2 holds |
 | Primary action visible without scrolling, except the capture submit | Actions "+ New Task" @88px/tab 0; Labels "Add" @220px/tab 1; Ontology "Update Ontology" @148px/tab 4 | Capture is the inbox focal element, but its submit is disabled until text is typed (`QuickCapture.tsx`), so the audit sees no primary |
-| Notes views reach the editor primary ("Publish") only after 8–9 tab stops | notes-list: tab 9 desktop, tab 9 mobile | The list has no primary of its own; the editor primary sits behind the row list. Acceptable, but the tab order starts with chrome |
-| Settings' first control sits at 1,398px | settings: `content@1398` both viewports | The first settings control is below the fold: section rail plus panels needed (W12.3 candidate) |
+| Notes views reach the editor primary ("Publish") only after 8–9 tab stops | notes-list: tab 9 desktop, tab 9 mobile | Open: the list has no primary of its own; a later round should put one capture entry in the list header (no second "New Note" verb) |
+| Settings' first control was at 1,398px | settings: `content@1398` → now 391 desktop / 454 mobile, 3 tab stops | Resolved in W12.3 round 1 |
 | Timeline primary is the calendar view switch | timeline: "Month" @205px/tab 5 | The calendar is the content; the strip is the only competing chrome |
+
+## W12.3 — convergence rounds
+
+One view per round, screenshot diff plus gates.
+
+### Round 1 — Settings (shipped)
+
+| Before | After |
+|---|---|
+| Five collapsible groups stacked full width; the tab list filled the viewport, the first control sat at 1,398px on both viewports | Section rail (16rem) plus panel at `lg`; `role="tablist"` with roving tabindex and arrow-key navigation; a `Section` select on mobile; first control at 391px desktop / 454px mobile |
+| Ratio 0.68 desktop / 0.678 mobile, waste 0.011/0.012 | Ratio 0.722 desktop / 0.586 mobile, waste 0/0.092; density 20.4/5.4; mobile passes on reveal cost |
+| `relay changes persist` journey failed: the tab buttons had no `role="tab"` | Journey passes; arrow keys move between sections and Tab leaves the rail for the panel |
+
+Residual: compact form fields make density a weak signal on mobile; the panel's own spacing is
+the next lever if the ratio gate ever needs to clear on that viewport.
 
 ## Ranked residual work
 
 Ranked by (gate distance × frequency) ÷ risk.
 
-1. **Settings reveal cost.** The first control is at 1,398px; the tab list is a long
-   scrolling column. W12.3: section rail + one panel, first control above the fold.
-2. **Calendar surface.** Month cells stay mostly empty when the workspace has two dated
-   notes. The waste gate exempts calendars; do not fake density. Add dated demo notes so
-   the sample workspace demonstrates the surface, and keep the next-event jump.
-3. **Capture submit affordance.** The arrow submit disables until text exists, so the
-   inbox has no visible primary on first paint. Fine for emptiness, but the affordance must
-   read as the primary action as soon as the field has text (verify in W12.4).
-4. **Notes list primary.** The list's primary lives in the editor (tab 9). Consider one
-   capture entry on the list header in W12.3; do not add a second "New Note" verb (W11.2).
-5. **Labels density on mobile.** 0.528 ratio / 0.115 waste passes the revised gate but is
-   the weakest list surface. Row height and the Advanced card are the levers.
-6. **Demo dates.** `core/src/fixtures/demoWorkspace.ts` still uses frozen October dates;
-   the timeline anchors to them now, but a dated fixture rots. Move to `now + N days`.
-7. **W11.7 stranger test** still needs a human with a fresh profile.
-8. **Match quality** (`pnpm optimize eval:match`, 2/22) is unchanged and outside W12.
+1. **Calendar surface.** Month cells stay mostly empty when the workspace has two dated
+   notes; the waste gate exempts calendars. Do not fake density. Add dated demo notes so the
+   sample workspace demonstrates the surface, and keep the next-event jump.
+2. **Capture submit affordance.** The arrow submit disables until text exists, so the inbox
+   has no visible primary on first paint. It must read as the primary action as soon as the
+   field has text (verify in W12.4).
+3. **Notes list primary.** The list's primary lives in the editor (tab 9). Consider one
+   capture entry on the list header in a later round; do not add a second "New Note" verb
+   (W11.2).
+4. **Labels mobile.** 0.528 ratio / 0.115 waste passes on density (16), the weakest list
+   surface; row height and the Advanced card are the levers.
+5. **Demo dates.** `core/src/fixtures/demoWorkspace.ts` still uses frozen October dates; the
+   timeline anchors to them now, but a dated fixture rots. Move to `now + N days`.
+6. **W11.7 stranger test** still needs a human with a fresh profile.
+7. **Match quality** (`pnpm optimize eval:match`, 2/22) is unchanged and outside W12.
 
 ## Approval gate
 

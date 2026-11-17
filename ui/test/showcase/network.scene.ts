@@ -96,7 +96,7 @@ test('settings networks', async ({page}) => {
     await seed(page, {notes: demoNotes(), settings: defaultSettings()});
     await page.evaluate(() => { window.location.hash = '#settings'; window.dispatchEvent(new PopStateEvent('popstate')); });
     await page.waitForSelector('main');
-    await page.getByRole('button', {name: 'Networks'}).click();
+    await page.getByRole('tab', {name: 'Networks'}).click();
     await page.waitForTimeout(200);
     await snap(page, {
         area: 'settings',

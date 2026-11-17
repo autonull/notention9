@@ -659,7 +659,8 @@ For every screenshot, record:
 - [x] **W12.1 Space-utilization pass.** Shipped: mobile shell (sidebar only on the notes list),
   one-row mobile nav, empty-state cap, Actions list + task detail, Labels two-column, Ontology
   one-primary header with a real attribute list, Timeline event-month anchor + jump strip, network
-  skeletons instead of a spinner, no pre-content chrome in an empty inbox. **29/30 gate cases pass**;
+  skeletons instead of a spinner, no pre-content chrome in an empty inbox. **29/30 gate cases pass**
+  (desktop timeline exempt: month cells are the surface; mobile Settings passes on reveal cost);
   the desktop timeline is exempt (month cells are the surface). Evidence:
   `doc/evidence/space-utilization.json`, `doc/evidence/space/<viewport>/*.jpg`.
 - [x] **W12.2 Task-first audit.** `ui/test/audit/task-first.spec.ts` scores primary actions,
@@ -668,7 +669,10 @@ For every screenshot, record:
   all primaries visible without scrolling; the two findings (Settings' first control at 1,398px,
   notes lists reach "Publish" at tab 9) are W12.3 candidates.
 - [ ] **W12.3 Convergence implementation.** One view per round; each round needs a screenshot diff
-  and the gates above.
+  and the gates above. **Round 1 shipped (Settings)**: section rail + panel at `lg`, `Section` select
+  on mobile, `role="tablist"` with arrow keys and roving tabindex; first control 1,398px → 391px
+  desktop / 454px mobile, 3 tab stops; `relay changes persist` journey now passes. Remaining rounds:
+  capture submit affordance, notes-list capture entry, labels mobile rows.
 - [ ] **W12.4 Re-audit + human stranger test.** Same artifacts; attach timing and final verdict.
 
 ### Definition of converged (for W12)
@@ -1290,6 +1294,7 @@ pnpm eval:verify-manifest
 - **W12.2**: new task-first harness (`ui/test/audit/task-first.spec.ts`, `ui/test/support/taskFirst.ts`, `doc/evidence/task-first.json`). One primary per view, no duplicate screen-level verbs, primaries visible without scrolling. Findings: Settings first control at 1,398px; notes lists reach "Publish" at tab 9.
 - **Audit plumbing**: cases live in `ui/test/fixtures/auditCases.ts`; `Button` exposes `data-variant` so the audit detects the real primary instead of guessing from colour.
 - **Tests**: `pnpm test:ui` 42 files pass; `tsc --noEmit` clean; `pnpm space:audit` 2/2 pass. Network relay-down journeys still fail in the local dev config because `VITE_ENABLE_AGENT=false` disables the agent (pre-existing environment mismatch, not a W12 regression).
+- **W12.3 round 1 (Settings)**: five stacked collapsible groups → section rail + panel at `lg` and a `Section` select on mobile; proper `role="tablist"`/`tab`/`tabpanel` with arrow-key navigation and roving tabindex. First control 1,398px → 391px desktop / 454px mobile; 3 tab stops to the primary on both; ratio 0.68 → 0.722 desktop, mobile 0.678 → 0.586 and passes on reveal cost. `settings.spec.ts` now passes 3/3 (relay persistence included).
 
 ---
 

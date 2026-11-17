@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-17T22:48:28.859Z",
+  "generatedAt": "2026-11-17T23:33:47.227Z",
   "cases": [
     {
       "view": "inbox",
@@ -20,7 +20,7 @@
       "metrics": {
         "primaries": [],
         "duplicateLabels": [],
-        "focusableCount": 13,
+        "focusableCount": 11,
         "firstContentTop": 113,
         "tabStopsToContent": 0
       }
@@ -51,7 +51,7 @@
       "metrics": {
         "primaries": [],
         "duplicateLabels": [],
-        "focusableCount": 12,
+        "focusableCount": 6,
         "firstContentTop": 140,
         "tabStopsToContent": 0
       }
@@ -180,11 +180,18 @@
       "state": "populated",
       "viewport": "desktop",
       "metrics": {
-        "primaries": [],
+        "primaries": [
+          {
+            "label": "Save",
+            "top": 389,
+            "tabStops": 3,
+            "visible": true
+          }
+        ],
         "duplicateLabels": [],
-        "focusableCount": 13,
-        "firstContentTop": 1398,
-        "tabStopsToContent": -1
+        "focusableCount": 4,
+        "firstContentTop": 391,
+        "tabStopsToContent": 2
       }
     },
     {
@@ -416,11 +423,18 @@
       "state": "populated",
       "viewport": "mobile",
       "metrics": {
-        "primaries": [],
+        "primaries": [
+          {
+            "label": "Save",
+            "top": 452,
+            "tabStops": 3,
+            "visible": true
+          }
+        ],
         "duplicateLabels": [],
-        "focusableCount": 13,
-        "firstContentTop": 1382,
-        "tabStopsToContent": -1
+        "focusableCount": 4,
+        "firstContentTop": 454,
+        "tabStopsToContent": 2
       }
     },
     {

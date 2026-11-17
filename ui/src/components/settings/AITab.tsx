@@ -124,7 +124,7 @@ export function AITab({settings, setSettings}: AITabProps) {
                                 Save
                             </Button>
                         </div>
-                        <p className="text-xs text-gray-500 mt-2">
+                        <p className="text-xs text-gray-400 mt-2">
                             Your key is stored locally in your browser and sent directly to Google. It never touches our
                             servers.
                         </p>
@@ -138,7 +138,7 @@ export function AITab({settings, setSettings}: AITabProps) {
                            className={`font-medium ${isEnabled || (isWebLLM) ? 'text-gray-300' : 'text-gray-500'}`}>
                         Enable AI Features
                     </label>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-sm text-gray-400 mt-1">
                         Enables features like note summarization, auto-tagging, and ontology gardening.
                     </p>
                 </div>
@@ -168,7 +168,7 @@ export function AITab({settings, setSettings}: AITabProps) {
                         <label htmlFor="ai-remote-consent" className="font-medium text-gray-300">
                             Allow sending note text to Google Gemini
                         </label>
-                        <p className="text-sm text-gray-500 mt-1">
+                        <p className="text-sm text-gray-400 mt-1">
                             Off by default. When allowed, the text you describe is sent to the remote provider once you
                             confirm it in the composer.
                         </p>
@@ -189,7 +189,7 @@ export function AITab({settings, setSettings}: AITabProps) {
                             <label htmlFor="ai-pii-redaction" className="font-medium text-gray-300">
                                 Redact PII before sending
                             </label>
-                            <p className="text-sm text-gray-500 mt-1">
+                            <p className="text-sm text-gray-400 mt-1">
                                 Automatically mask emails, phone numbers, and SSNs in text sent to the remote provider.
                                 Recommended for privacy.
                             </p>
@@ -207,7 +207,7 @@ export function AITab({settings, setSettings}: AITabProps) {
                             <label htmlFor="ai-pii-override" className="font-medium text-gray-300">
                                 Allow sending unredacted (override)
                             </label>
-                            <p className="text-sm text-gray-500 mt-1">
+                            <p className="text-sm text-gray-400 mt-1">
                                 Explicitly allow sending text with detected PII unmasked. Use with caution.
                             </p>
                         </div>

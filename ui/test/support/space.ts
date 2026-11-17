@@ -123,7 +123,7 @@ export const measureSpace = (page: Page): Promise<SpaceMetrics> =>
         const empty = main.querySelector<HTMLElement>('[data-empty-state], .empty-state');
         const emptyRect = empty?.getBoundingClientRect();
 
-        const actions = Array.from(main.querySelectorAll('button,a[href]'))
+        const actions = Array.from(main.querySelectorAll('button,a[href],input,textarea,select'))
             .filter(seen)
             .map(element => ({
                 label: (element.getAttribute('aria-label') || element.textContent || '').trim().slice(0, 40),

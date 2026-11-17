@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-17T22:46:06.249Z",
+  "generatedAt": "2026-11-17T23:31:14.782Z",
   "cases": [
     {
       "id": "inbox-empty",
@@ -243,8 +243,12 @@
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 61.7,
+        "density": 63.1,
         "actions": [
+          {
+            "label": "Anywhere (Global)Near Looking for a Reac",
+            "top": 89
+          },
           {
             "label": "Jump to latest",
             "top": 145
@@ -259,10 +263,6 @@
           },
           {
             "label": "Next",
-            "top": 205
-          },
-          {
-            "label": "Month",
             "top": 205
           }
         ],
@@ -494,36 +494,36 @@
           "height": 900
         },
         "scrollHeight": 900,
-        "contentRatio": 0.68,
-        "wastedSpace": 10,
-        "wastedRatio": 0.011,
-        "trailingSpace": 1,
-        "contentHeight": 806,
+        "contentRatio": 0.722,
+        "wastedSpace": 0,
+        "wastedRatio": 0,
+        "trailingSpace": 82,
+        "contentHeight": 734,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 16.1,
+        "density": 20.4,
         "actions": [
           {
-            "label": "General",
-            "top": 189
-          },
-          {
             "label": "Profile & Strategies",
-            "top": 253
+            "top": 181
           },
           {
             "label": "Labels",
-            "top": 301
+            "top": 225
           },
           {
             "label": "Language & Region",
-            "top": 349
+            "top": 269
           },
           {
-            "label": "AI & Automation",
-            "top": 407
+            "label": "AI Assistant",
+            "top": 341
+          },
+          {
+            "label": "Automation",
+            "top": 385
           }
         ],
         "facts": 0
@@ -817,8 +817,12 @@
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 20.8,
+        "density": 24.7,
         "actions": [
+          {
+            "label": "Search notes",
+            "top": 76
+          },
           {
             "label": "All",
             "top": 145
@@ -833,10 +837,6 @@
           },
           {
             "label": "Ideas",
-            "top": 145
-          },
-          {
-            "label": "People",
             "top": 145
           }
         ],
@@ -897,8 +897,12 @@
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 71,
+        "density": 72.6,
         "actions": [
+          {
+            "label": "Anywhere (Global)Near Looking for a Reac",
+            "top": 89
+          },
           {
             "label": "Jump to latest",
             "top": 173
@@ -914,10 +918,6 @@
           {
             "label": "Next",
             "top": 233
-          },
-          {
-            "label": "Month",
-            "top": 293
           }
         ],
         "facts": 0
@@ -1148,36 +1148,32 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 0.678,
-        "wastedSpace": 10,
-        "wastedRatio": 0.012,
-        "trailingSpace": 17,
-        "contentHeight": 750,
+        "contentRatio": 0.586,
+        "wastedSpace": 78,
+        "wastedRatio": 0.092,
+        "trailingSpace": 26,
+        "contentHeight": 739,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 17.3,
+        "density": 5.4,
         "actions": [
           {
-            "label": "General",
-            "top": 173
+            "label": "Profile & StrategiesLabelsLanguage & Reg",
+            "top": 168
           },
           {
-            "label": "Profile & Strategies",
-            "top": 237
+            "label": "Google Gemini (Remote API)Llama 3.2 (Loc",
+            "top": 368
           },
           {
-            "label": "Labels",
-            "top": 285
+            "label": "Save",
+            "top": 452
           },
           {
-            "label": "Language & Region",
-            "top": 333
-          },
-          {
-            "label": "AI & Automation",
-            "top": 391
+            "label": "Enable AI Features",
+            "top": 646
           }
         ],
         "facts": 0
